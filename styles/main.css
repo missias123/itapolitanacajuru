@@ -1,22 +1,18 @@
-/* ===== ESTILO NEON PREMIUM (VERSÃO LOGOMARCA OFICIAL - 21/02/2026) ===== */
+/* ===== ESTILO NEON CLEAN (FUNDO BRANCO - 21/02/2026) ===== */
 
 :root {
-    /* CORES EXTRAÍDAS DA LOGOMARCA NEON */
-    --color-bg: #000000;          /* Fundo Preto Profundo */
-    --color-primary: #00E5FF;     /* Azul Ciano Neon (Círculo) */
-    --color-secondary: #FF007F;   /* Rosa Pink Neon (Texto POLITANA) */
-    --color-accent: #FFD700;      /* Amarelo/Laranja Neon (Cone e Raios) */
-    --color-green: #39FF14;       /* Verde Neon (Bola de Sorvete) */
-    --color-text: #FFFFFF;        /* Texto Branco para Contraste */
-    --color-card-bg: #121212;     /* Fundo dos Cartões Cinza Escuro */
-    
-    /* EFEITOS DE BRILHO (GLOW) */
-    --glow-primary: 0 0 10px #00E5FF, 0 0 20px #00E5FF;
-    --glow-secondary: 0 0 10px #FF007F, 0 0 20px #FF007F;
-    --glow-accent: 0 0 10px #FFD700, 0 0 20px #FFD700;
+    /* CORES EXTRAÍDAS DA LOGOMARCA NEON (AJUSTADAS PARA FUNDO BRANCO) */
+    --color-bg: #FFFFFF;          /* Fundo Branco Puro */
+    --color-primary: #00B8D4;     /* Azul Ciano (Círculo) - Ajustado para contraste */
+    --color-secondary: #D81B60;   /* Rosa Pink (Texto POLITANA) - Ajustado para contraste */
+    --color-accent: #FBC02D;      /* Amarelo/Laranja (Cone e Raios) - Ajustado para contraste */
+    --color-green: #2E7D32;       /* Verde (Bola de Sorvete) - Ajustado para contraste */
+    --color-text: #212121;        /* Texto Cinza Escuro para Leitura */
+    --color-card-bg: #F5F5F5;     /* Fundo dos Cartões Cinza Muito Claro */
     
     --transition: all 0.3s ease;
     --border-radius: 12px;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 body {
@@ -28,36 +24,34 @@ body {
     line-height: 1.6;
 }
 
-/* HEADER NEON */
+/* HEADER CLEAN */
 .header {
-    background-color: rgba(0, 0, 0, 0.9);
-    border-bottom: 2px solid var(--color-primary);
-    box-shadow: var(--glow-primary);
+    background-color: var(--color-bg);
+    border-bottom: 3px solid var(--color-primary);
     padding: 20px;
     text-align: center;
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-shadow: var(--shadow);
 }
 
 .logo {
     color: var(--color-primary);
-    text-shadow: var(--glow-primary);
     font-size: 2rem;
     margin: 0;
+    font-weight: 900;
 }
 
 .tagline {
     color: var(--color-secondary);
-    text-shadow: var(--glow-secondary);
     font-weight: bold;
 }
 
-/* BANNER REGIONAL NEON */
+/* BANNER REGIONAL CLEAN */
 .regional-banner {
-    background: linear-gradient(45deg, #000, #1a1a1a);
-    border: 2px solid var(--color-accent);
-    box-shadow: var(--glow-accent);
+    background-color: #E0F7FA; /* Azul Ciano muito claro */
+    border: 2px solid var(--color-primary);
     margin: 20px;
     padding: 20px;
     border-radius: var(--border-radius);
@@ -65,28 +59,27 @@ body {
 }
 
 .regional-banner h2 {
-    color: var(--color-accent);
-    text-shadow: var(--glow-accent);
+    color: var(--color-primary);
 }
 
-/* CARTÕES DE PRODUTO (BENTO GRID NEON) */
+/* CARTÕES DE PRODUTO (BENTO GRID CLEAN) */
 .product-item {
     background-color: var(--color-card-bg);
-    border: 1px solid #333;
+    border: 1px solid #E0E0E0;
     border-radius: var(--border-radius);
     padding: 15px;
     margin-bottom: 15px;
     transition: var(--transition);
+    box-shadow: var(--shadow);
 }
 
 .product-item:hover {
-    border-color: var(--color-green);
-    box-shadow: 0 0 15px var(--color-green);
+    border-color: var(--color-primary);
     transform: translateY(-5px);
 }
 
 .product-info h4 {
-    color: var(--color-primary);
+    color: var(--color-text);
     margin: 0 0 5px 0;
 }
 
@@ -96,69 +89,66 @@ body {
     font-size: 1.2rem;
 }
 
-/* BOTÕES NEON */
+/* BOTÕES NEON NO BRANCO */
 .btn-add, .btn-primary, .btn-regional {
-    background-color: transparent;
-    color: var(--color-accent);
-    border: 2px solid var(--color-accent);
-    padding: 10px 20px;
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 24px;
     border-radius: 30px;
     font-weight: bold;
     cursor: pointer;
     transition: var(--transition);
     text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 184, 212, 0.3);
 }
 
 .btn-add:hover {
-    background-color: var(--color-accent);
-    color: #000;
-    box-shadow: var(--glow-accent);
+    background-color: var(--color-secondary);
+    box-shadow: 0 4px 10px rgba(216, 27, 96, 0.3);
 }
 
-/* BOTÕES DE VOLTAR (SUPER VISÍVEIS NEON) */
+/* BOTÕES DE VOLTAR (SUPER VISÍVEIS NO BRANCO) */
 .btn-back {
-    background-color: transparent;
-    color: var(--color-secondary);
-    border: 2px solid var(--color-secondary);
+    background-color: var(--color-secondary);
+    color: #FFFFFF;
+    border: none;
     padding: 15px;
     width: 100%;
     margin-bottom: 32px; /* Espaçamento de 2 linhas */
     border-radius: var(--border-radius);
     font-weight: bold;
-    text-shadow: var(--glow-secondary);
-    box-shadow: var(--glow-secondary);
+    box-shadow: 0 4px 10px rgba(216, 27, 96, 0.3);
 }
 
-/* BOTÃO AVALIE-NOS NEON */
+/* BOTÃO AVALIE-NOS CLEAN */
 .btn-avalie {
-    background-color: transparent;
-    color: var(--color-green);
-    border: 2px solid var(--color-green);
+    background-color: var(--color-green);
+    color: #FFFFFF;
+    border: none;
     padding: 12px 24px;
     border-radius: var(--border-radius);
-    text-shadow: 0 0 10px var(--color-green);
-    box-shadow: 0 0 10px var(--color-green);
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
 }
 
-/* FOOTER NEON */
+/* FOOTER CLEAN */
 .footer {
-    background-color: #000;
-    border-top: 2px solid var(--color-primary);
+    background-color: #F5F5F5;
+    border-top: 3px solid var(--color-primary);
     padding: 40px 20px;
     text-align: center;
     margin-top: 50px;
 }
 
 .footer-content p {
-    color: #888;
+    color: #616161;
 }
 
 .footer-content strong {
     color: var(--color-primary);
-    text-shadow: var(--glow-primary);
 }
 
 /* MOBILE OPTIMIZATION */
