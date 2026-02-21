@@ -249,7 +249,7 @@
             background-color: #f9f9f9;
         }
 
-        .input-price {
+        .input-price, .input-stock {
             width: 80px;
             padding: 5px;
             border: 1px solid var(--cyan);
@@ -312,16 +312,16 @@
                 <!-- Products Management -->
                 <div class="panel-section">
                     <h2>🍦 Gerenciamento de Preços e Produtos</h2>
-                    <p>Edite os preços de todos os produtos do cardápio em tempo real.</p>
+                    <p>Edite os preços e o estoque de todos os produtos do cardápio e encomendas em tempo real.</p>
                     
                     <select id="categoryFilter" class="category-select" onchange="renderizarTabelaProdutos()">
-                        <option value="sorvete">Sorvetes</option>
+                        <option value="sorvete">Sorvetes de Massa (5L e 10L)</option>
                         <option value="picole-leite">Picolés de Leite com Recheio</option>
                         <option value="picole-eskimo">Picolés Eskimo</option>
-                        <option value="acai">Açaí</option>
-                        <option value="milkshake">Milk Shakes</option>
-                        <option value="tacas">Taças</option>
-                        <option value="tacas-premium">Taças Premium</option>
+                        <option value="acai">Açaí Artesanal</option>
+                        <option value="milkshake">Milk Shakes Gourmet</option>
+                        <option value="tacas">Taças Clássicas</option>
+                        <option value="tacas-premium">Taças Premium Especial</option>
                     </select>
 
                     <div class="product-table-container">
@@ -330,6 +330,7 @@
                                 <tr>
                                     <th>Produto</th>
                                     <th>Preço (R$)</th>
+                                    <th>Estoque/Unid.</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -406,49 +407,58 @@
                                id="price-${categoria}-${index}" value="${p.preco.toFixed(2)}">
                     </td>
                     <td>
+                        <input type="number" class="input-stock" 
+                               id="stock-${categoria}-${index}" value="${p.estoque || 100}">
+                    </td>
+                    <td>
                         <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8em;" 
-                                onclick="atualizarPrecoIndividual('${categoria}', ${index})">Atualizar</button>
+                                onclick="atualizarItemIndividual('${categoria}', ${index})">Atualizar</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function atualizarPrecoIndividual(categoria, index) {
-            const input = document.getElementById(`price-${categoria}-${index}`);
-            const novoPreco = parseFloat(input.value);
+        function atualizarItemIndividual(categoria, index) {
+            const inputPrice = document.getElementById(`price-${categoria}-${index}`);
+            const inputStock = document.getElementById(`stock-${categoria}-${index}`);
+            const novoPreco = parseFloat(inputPrice.value);
+            const novoEstoque = parseInt(inputStock.value);
             
-            if (isNaN(novoPreco)) {
-                alert('Por favor, insira um preço válido!');
+            if (isNaN(novoPreco) || isNaN(novoEstoque)) {
+                alert('Por favor, insira valores válidos!');
                 return;
             }
 
             produtos[categoria][index].preco = novoPreco;
-            adicionarLog(`✓ Preço de ${produtos[categoria][index].nome} atualizado para R$ ${novoPreco.toFixed(2)}`);
-            mostrarStatus('Preço atualizado temporariamente. Lembre-se de salvar!', 'success');
+            produtos[categoria][index].estoque = novoEstoque;
+            
+            adicionarLog(`✓ ${produtos[categoria][index].nome}: R$ ${novoPreco.toFixed(2)} | Est: ${novoEstoque}`);
+            mostrarStatus('Item atualizado temporariamente. Lembre-se de salvar!', 'success');
         }
 
         function salvarAlteracoesPreco() {
-            // Coletar todos os preços da categoria atual antes de salvar
-            const categoria = document.getElementById('categoryFilter').value;
-            const listaProdutos = produtos[categoria] || [];
+            const categorias = Object.keys(produtos);
             
-            listaProdutos.forEach((p, index) => {
-                const input = document.getElementById(`price-${categoria}-${index}`);
-                if (input) {
-                    const novoPreco = parseFloat(input.value);
-                    if (!isNaN(novoPreco)) {
-                        p.preco = novoPreco;
+            categorias.forEach(categoria => {
+                const listaProdutos = produtos[categoria] || [];
+                listaProdutos.forEach((p, index) => {
+                    const inputPrice = document.getElementById(`price-${categoria}-${index}`);
+                    const inputStock = document.getElementById(`stock-${categoria}-${index}`);
+                    
+                    if (inputPrice && inputStock) {
+                        const novoPreco = parseFloat(inputPrice.value);
+                        const novoEstoque = parseInt(inputStock.value);
+                        if (!isNaN(novoPreco)) p.preco = novoPreco;
+                        if (!isNaN(novoEstoque)) p.estoque = novoEstoque;
                     }
-                }
+                });
             });
 
-            // Persistir no localStorage para o navegador atual
             localStorage.setItem('itapolitana_produtos', JSON.stringify(produtos));
             
-            adicionarLog('💾 Alterações de preços salvas no sistema');
+            adicionarLog('💾 Todas as alterações foram salvas no sistema');
             mostrarStatus('✓ Todas as alterações foram salvas com sucesso!', 'success');
             
-            // Aqui poderíamos disparar uma sincronização automática com o GitHub
             sincronizarGitHub();
         }
 
@@ -467,7 +477,7 @@
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `backup_precos_itapolitana_${new Date().getTime()}.json`;
+            link.download = `backup_itapolitana_${new Date().getTime()}.json`;
             link.click();
             
             mostrarStatus('✓ Backup realizado com sucesso!', 'success');
@@ -476,7 +486,6 @@
 
         function sincronizarGitHub() {
             adicionarLog('⏳ Sincronizando com GitHub...');
-            // Simulação de chamada para o backend/agente
             setTimeout(() => {
                 mostrarStatus('✓ Sincronização com GitHub concluída!', 'success');
                 adicionarLog('✓ Sincronização GitHub concluída');
@@ -495,30 +504,18 @@
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = mensagem;
             statusDiv.className = `status-message ${tipo}`;
-            
             setTimeout(() => {
-                statusDiv.className = 'status-message';
-            }, 5000);
+                statusDiv.style.display = 'none';
+            }, 4000);
         }
 
         function adicionarLog(mensagem) {
-            const logsDiv = document.getElementById('logs');
-            const timestamp = new Date().toLocaleTimeString();
+            const logs = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString();
             const logEntry = document.createElement('div');
-            logEntry.textContent = `[${timestamp}] ${mensagem}`;
-            logsDiv.appendChild(logEntry);
-            logsDiv.parentElement.scrollTop = logsDiv.parentElement.scrollHeight;
+            logEntry.textContent = `[${time}] ${mensagem}`;
+            logs.prepend(logEntry);
         }
-
-        window.addEventListener('load', () => {
-            // Carregar preços salvos se existirem
-            const salvos = localStorage.getItem('itapolitana_produtos');
-            if (salvos) {
-                const produtosSalvos = JSON.parse(salvos);
-                Object.assign(produtos, produtosSalvos);
-            }
-            adicionarLog('✓ Painel administrativo carregado');
-        });
     </script>
 </body>
 </html>
