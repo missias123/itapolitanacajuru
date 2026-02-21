@@ -2,28 +2,44 @@
 
 const products = {
     sorvetes: [
-        // SORVETES ARTESANAIS (37 SABORES OFICIAIS)
-        { id: 1, name: 'Caixa 5L', category: 'Sorvetes', price: 35.00, description: 'Escolha até 3 sabores' },
-        { id: 2, name: 'Caixa 10L', category: 'Sorvetes', price: 65.00, description: 'Escolha até 3 sabores' },
-        { id: 3, name: 'Cone 1 Bola', category: 'Sorvetes', price: 5.00, description: 'Escolha 1 sabor' },
-        { id: 4, name: 'Cone 2 Bolas', category: 'Sorvetes', price: 8.00, description: 'Escolha 2 sabores' },
-        { id: 5, name: 'Cone 3 Bolas', category: 'Sorvetes', price: 10.00, description: 'Escolha 3 sabores' },
-        { id: 6, name: 'Torta de Sorvete', category: 'Sorvetes', price: 45.00, description: '3 sabores pré-definidos' },
-        { id: 7, name: 'Pote 500ml', category: 'Sorvetes', price: 15.00, description: 'Sabor único' },
-        { id: 8, name: 'Pote 1L', category: 'Sorvetes', price: 28.00, description: 'Sabor único' },
-        { id: 9, name: 'Pote 2L', category: 'Sorvetes', price: 52.00, description: 'Sabor único' }
-    ],
-    
-    // LISTA DE SABORES DISPONÍVEIS PARA SORVETES
-    sabores_sorvete: [
-        "Abacaxi ao Vinho", "Doce de Leite", "Abacaxi Suíço", "Açaí", "Ninho com Oreo", 
-        "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", 
-        "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", 
-        "Croquer", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", 
-        "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Pistache", "Limão", 
-        "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", 
-        "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", 
-        "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
+        // SORVETES ARTESANAIS (37 SABORES OFICIAIS LISTADOS NO CARDÁPIO)
+        { id: 1, name: 'Abacaxi ao Vinho', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 2, name: 'Doce de Leite', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 3, name: 'Abacaxi Suíço', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 4, name: 'Açaí', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 5, name: 'Ninho com Oreo', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 6, name: 'Algodão Doce (Blue Ice)', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 7, name: 'Amarena', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 8, name: 'Ameixa', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 9, name: 'Banana com Nutella', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 10, name: 'Bis e Trufa', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 11, name: 'Cereja Trufada', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 12, name: 'Chocolate', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 13, name: 'Chocolate com Café', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 14, name: 'Coco Queimado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 15, name: 'Creme Paris', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 16, name: 'Croquer', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 17, name: 'Ferrero Rocher', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 18, name: 'Flocos', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 19, name: 'Kinder Ovo', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 20, name: 'Leite Condensado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 21, name: 'Leite Ninho', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 22, name: 'Leite Ninho Folheado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 23, name: 'Leite Ninho com Pistache', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 24, name: 'Limão', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 25, name: 'Limão Suíço', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 26, name: 'Menta com Chocolate', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 27, name: 'Milho Verde', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 28, name: 'Morango Trufado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 29, name: 'Mousse de Maracujá', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 30, name: 'Mousse de Uva', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 31, name: 'Nozes', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 32, name: 'Nutella', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 33, name: 'Ovomaltine', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 34, name: 'Pistache', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 35, name: 'Prestígio', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 36, name: 'Sensação', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 37, name: 'Torta de Chocolate', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' }
     ],
     
     picoles: [
@@ -98,13 +114,18 @@ function renderProducts(category) {
     items.forEach(product => {
         const productDiv = document.createElement('div');
         productDiv.className = 'product-item';
+        
+        // Se o preço for 0 (como nos sabores de sorvete do cardápio), não mostrar o preço nem o botão de adicionar
+        const priceDisplay = product.price > 0 ? `<div class="product-price">R$ ${product.price.toFixed(2)}</div>` : '';
+        const buttonDisplay = product.price > 0 ? `<button class="btn-add" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Adicionar</button>` : '';
+        
         productDiv.innerHTML = `
             <div class="product-info">
                 <h4>${product.name}</h4>
                 <p>${product.description}</p>
             </div>
-            <div class="product-price">R$ ${product.price.toFixed(2)}</div>
-            <button class="btn-add" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Adicionar</button>
+            ${priceDisplay}
+            ${buttonDisplay}
         `;
         productList.appendChild(productDiv);
     });
