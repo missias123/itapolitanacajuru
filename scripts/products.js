@@ -75,7 +75,8 @@ const produtos = {
         { nome: "Açaí com Morango", preco: 12.00, estoque: 100 }
     ],
     milkshake: [
-        { nome: "Milk Shake Gourmet", preco: 15.00, estoque: 100 }
+        { nome: "Milk Shake Gourmet", preco: 15.00, estoque: 100 },
+        { nome: "Milk Shake Tradicional 300ml", preco: 12.00, estoque: 100 }
     ],
     tacas: [
         { nome: "Taça Clássica", preco: 18.00, estoque: 100 }
