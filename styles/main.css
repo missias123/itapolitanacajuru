@@ -428,14 +428,38 @@ html, body {
     background: var(--color-accent);
 }
 
-.btn-back {
-    background: var(--color-primary) !important;
-    color: var(--color-secondary) !important;
-    border: 2px solid var(--color-secondary) !important;
+.btn-back, 
+.btn-return,
+[class*="btn-back"],
+[class*="btn-return"] {
+    background-color: var(--color-secondary) !important; /* Dourado Metálico Vibrante */
+    color: var(--color-primary) !important; /* Texto Marrom Chocolate */
+    border: 3px solid var(--color-primary) !important; /* Borda Marrom Grossa para Destaque */
+    border-radius: 12px !important; /* Cantos mais arredondados para Mobile */
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    padding: 16px 24px !important; /* Botão maior para facilitar o toque */
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-bottom: 32px !important; /* Espaçamento de 2 linhas (32px) garantido */
 }
 
-.btn-back:hover {
-    background: var(--color-accent) !important;
+.btn-back::before {
+    content: "⬅️"; /* Ícone visual claro */
+    font-size: 18px;
+}
+
+.btn-back:hover,
+.btn-back:active {
+    background-color: #f1c40f !important; /* Dourado mais claro ao tocar */
+    transform: scale(0.98) !important; /* Efeito de clique no mobile */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
 }
 
 /* ===== BUTTON LAYOUTS ===== */
