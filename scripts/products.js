@@ -80,6 +80,15 @@ const produtos = {
         { nome: "Açaí com Granola", preco: 12.00 },
         { nome: "Açaí com Banana", preco: 12.00 },
         { nome: "Açaí com Morango", preco: 12.00 }
+    ],
+    milkshake: [
+        { nome: "Milk Shake (Escolher Sabor)", preco: 15.00 }
+    ],
+    tacas: [
+        { nome: "Taça (Escolher Sabor)", preco: 18.00 }
+    ],
+    "tacas-premium": [
+        { nome: "Taça Premium (Escolher Sabor)", preco: 25.00 }
     ]
 };
 
@@ -89,10 +98,10 @@ function renderizarProdutos() {
     const sorveteGrid = document.getElementById("sorvetes-grid");
     if (sorveteGrid) {
         sorveteGrid.innerHTML = produtos.sorvete.map(p => `
-            <div class="produto-card" onclick="selecionarProduto(\'sorvete\', \'${p.nome}\', ${p.preco})">
+            <div class="produto-card" onclick="selecionarProduto('sorvete', '${p.nome}', ${p.preco})">
                 <h4>${p.nome}</h4>
                 <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho(\'sorvete\', \'${p.nome}\', ${p.preco})">Comprar</button>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('sorvete', '${p.nome}', ${p.preco})">Comprar</button>
             </div>
         `).join("");
     }
@@ -101,10 +110,10 @@ function renderizarProdutos() {
     const picoleLeiteGrid = document.getElementById("picole-leite-grid");
     if (picoleLeiteGrid) {
         picoleLeiteGrid.innerHTML = produtos["picole-leite"].map(p => `
-            <div class="produto-card" onclick="selecionarProduto(\'picole-leite\', \'${p.nome}\', ${p.preco})">
+            <div class="produto-card" onclick="selecionarProduto('picole-leite', '${p.nome}', ${p.preco})">
                 <h4>${p.nome}</h4>
                 <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho(\'picole-leite\', \'${p.nome}\', ${p.preco})">Comprar</button>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('picole-leite', '${p.nome}', ${p.preco})">Comprar</button>
             </div>
         `).join("");
     }
@@ -113,10 +122,10 @@ function renderizarProdutos() {
     const picoleEskimoGrid = document.getElementById("picole-eskimo-grid");
     if (picoleEskimoGrid) {
         picoleEskimoGrid.innerHTML = produtos["picole-eskimo"].map(p => `
-            <div class="produto-card" onclick="selecionarProduto(\'picole-eskimo\', \'${p.nome}\', ${p.preco})">
+            <div class="produto-card" onclick="selecionarProduto('picole-eskimo', '${p.nome}', ${p.preco})">
                 <h4>${p.nome}</h4>
                 <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho(\'picole-eskimo\', \'${p.nome}\', ${p.preco})">Comprar</button>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('picole-eskimo', '${p.nome}', ${p.preco})">Comprar</button>
             </div>
         `).join("");
     }
@@ -125,10 +134,10 @@ function renderizarProdutos() {
     const acaiGrid = document.getElementById("acai-grid");
     if (acaiGrid) {
         acaiGrid.innerHTML = produtos.acai.map(p => `
-            <div class="produto-card" onclick="selecionarProduto(\'acai\', \'${p.nome}\', ${p.preco})">
+            <div class="produto-card" onclick="selecionarProduto('acai', '${p.nome}', ${p.preco})">
                 <h4>${p.nome}</h4>
                 <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho(\'acai\', \'${p.nome}\', ${p.preco})">Comprar</button>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('acai', '${p.nome}', ${p.preco})">Comprar</button>
             </div>
         `).join("");
     }
@@ -156,6 +165,7 @@ function selecionarProduto(categoria, nome, preco) {
     document.getElementById("categoria").value = categoria;
     atualizarSabores();
     document.getElementById("sabor").value = nome;
+    scrollToSection('encomendas');
 }
 
 // Inicializar produtos ao carregar a página
