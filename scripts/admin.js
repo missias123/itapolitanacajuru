@@ -120,6 +120,8 @@ function showAdminPanel() {
             <div class="admin-tabs">
                 <button class="tab-btn active" onclick="switchTab('stock')">📦 Stock</button>
                 <button class="tab-btn" onclick="switchTab('orders')">📋 Pedidos</button>
+                <button class="tab-btn" onclick="switchTab('backups')">💾 Backups</button>
+                <button class="tab-btn" onclick="switchTab('sync')">🔄 Sincronização</button>
                 <button class="tab-btn" onclick="switchTab('settings')">⚙️ Configurações</button>
             </div>
             
@@ -131,6 +133,26 @@ function showAdminPanel() {
             <div id="orders-tab" class="tab-content">
                 <h3>Pedidos Recebidos</h3>
                 <div id="orders-list" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+            
+            <div id="backups-tab" class="tab-content">
+                <h3>💾 Gerenciar Backups</h3>
+                <div style="margin-bottom: 16px;">
+                    <button class="btn btn-primary" onclick="createAutoBackup()" style="width: 100%; margin-bottom: 8px;">📥 Criar Backup Agora</button>
+                    <label style="display: block; margin-bottom: 8px;">
+                        <input type="file" id="backupFile" accept=".json" style="display: none;" onchange="importBackup(this.files[0])">
+                        <button class="btn btn-secondary" onclick="document.getElementById('backupFile').click()" style="width: 100%;">📤 Importar Backup</button>
+                    </label>
+                </div>
+                <div id="backups-list" style="max-height: 350px; overflow-y: auto;"></div>
+            </div>
+            
+            <div id="sync-tab" class="tab-content">
+                <h3>🔄 Log de Sincronização</h3>
+                <div style="margin-bottom: 16px;">
+                    <p style="font-size: 12px; color: #666;">Histórico de todas as alterações e sincronizações realizadas:</p>
+                </div>
+                <div id="sync-log" style="max-height: 350px; overflow-y: auto;"></div>
             </div>
             
             <div id="settings-tab" class="tab-content">
@@ -167,6 +189,18 @@ function showAdminPanel() {
     document.body.appendChild(modal);
     loadStockData();
     loadOrdersData();
+    
+    // Carregar backups
+    const backupsList = document.getElementById('backups-list');
+    if (backupsList) {
+        backupsList.innerHTML = renderBackupsList();
+    }
+    
+    // Carregar log de sincronização
+    const syncLog = document.getElementById('sync-log');
+    if (syncLog) {
+        syncLog.innerHTML = renderSyncLog();
+    }
 }
 
 // Fechar painel de admin
