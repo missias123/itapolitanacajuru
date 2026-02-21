@@ -222,5 +222,9 @@ document.head.appendChild(style);
 
 // Inicializar carrinho ao carregar
 document.addEventListener('DOMContentLoaded', () => {
+    // Sincronizar com base de dados centralizada se disponível
+    if (typeof syncAllData === 'function') {
+        syncAllData();
+    }
     updateCart();
 });

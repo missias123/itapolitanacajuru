@@ -1,9 +1,98 @@
-// ===== PAINEL ADMINISTRATIVO =====
+// ===== PAINEL ADMINISTRATIVO COM SINCRONIZAÇÃO CENTRALIZADA =====
 
 const ADMIN_PASSWORD = 'itapolitanacajuru2007';
 
+// ===== BASE DE DADOS CENTRALIZADA =====
+const DATABASE_KEY = 'itapolitana_database';
+
+// Inicializar base de dados se não existir
+function initializeDatabase() {
+    if (!localStorage.getItem(DATABASE_KEY)) {
+        const defaultDB = {
+            version: '2.0.0',
+            lastUpdated: new Date().toISOString(),
+            products: products,
+            settings: {
+                storeName: 'Sorveteria Itapolitana',
+                address: 'Pça Lgo São Bento, 311 - Centro, Cajuru/SP',
+                phone: '(16) 99147-2045',
+                hours: 'Seg-Dom: 10h às 22h',
+                regions: ['Cajuru', 'Santa Cruz da Esperança', 'Cássia dos Coqueiros'],
+                pickupDays: 'Após 3 dias úteis',
+                colors: {
+                    primary: '#8B4513',
+                    secondary: '#FFD700',
+                    accent: '#e91e63'
+                }
+            }
+        };
+        localStorage.setItem(DATABASE_KEY, JSON.stringify(defaultDB));
+    }
+}
+
+// Obter base de dados
+function getDatabase() {
+    return JSON.parse(localStorage.getItem(DATABASE_KEY) || '{}');
+}
+
+// Salvar base de dados
+function saveDatabase(db) {
+    db.lastUpdated = new Date().toISOString();
+    localStorage.setItem(DATABASE_KEY, JSON.stringify(db));
+    syncAllData(); // Sincronizar com toda a aplicação
+}
+
+// Sincronizar dados com toda a aplicação
+function syncAllData() {
+    const db = getDatabase();
+    
+    // Atualizar variável global de produtos
+    if (db.products) {
+        Object.keys(db.products).forEach(key => {
+            window.products[key] = db.products[key];
+        });
+    }
+    
+    // Atualizar settings globais
+    if (db.settings) {
+        window.appSettings = db.settings;
+    }
+    
+    // Recarregar visualização de produtos
+    const categorySelect = document.getElementById('category');
+    if (categorySelect) {
+        renderProducts(categorySelect.value);
+    }
+    
+    // Recarregar footer
+    updateFooter();
+    
+    console.log('✅ Dados sincronizados com sucesso');
+}
+
+// Atualizar footer com dados centralizados
+function updateFooter() {
+    const db = getDatabase();
+    const footer = document.querySelector('.footer-content');
+    
+    if (footer && db.settings) {
+        footer.innerHTML = `
+            <p><strong>${db.settings.storeName}</strong></p>
+            <p>Atendendo ${db.settings.regions.join(', ')} desde 2007</p>
+            <p>${db.settings.address}</p>
+            <p>Desenvolvido por SGTMISSIAS</p>
+            <p>&copy; 2007-2026 ${db.settings.storeName}. Todos os direitos reservados.</p>
+        `;
+    }
+}
+
+// Inicializar ao carregar
+initializeDatabase();
+
 // Abrir painel de admin
 function openAdmin() {
+    // Garantir que a base de dados está inicializada
+    initializeDatabase();
     const password = prompt('Digite a senha do Admin:');
     
     if (password === null) return; // Cancelado
@@ -17,6 +106,7 @@ function openAdmin() {
 
 // Mostrar painel de admin
 function showAdminPanel() {
+    const db = getDatabase();
     const modal = document.createElement('div');
     modal.className = 'admin-modal active';
     modal.id = 'adminModal';
@@ -44,15 +134,31 @@ function showAdminPanel() {
             </div>
             
             <div id="settings-tab" class="tab-content">
-                <h3>Configurações</h3>
+                <h3>Configurações Centralizadas</h3>
                 <div style="padding: 16px; background: #f5f5f5; border-radius: 8px;">
-                    <p><strong>Horário de Funcionamento:</strong> Seg-Dom 10h às 22h</p>
-                    <p><strong>Retirada:</strong> Após 3 dias úteis</p>
-                    <p><strong>Localização:</strong> Pça Lgo São Bento, 311 - Cajuru/SP</p>
-                    <p><strong>Contato:</strong> (16) 99147-2045</p>
-                    <p><strong>Regiões Atendidas:</strong> Cajuru, Santa Cruz da Esperança, Cássia dos Coqueiros</p>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">Nome da Loja:</label>
+                        <input type="text" id="storeName" value="${db.settings?.storeName || 'Sorveteria Itapolitana'}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">Endereço:</label>
+                        <input type="text" id="address" value="${db.settings?.address || 'Pça Lgo São Bento, 311 - Centro, Cajuru/SP'}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">Telefone:</label>
+                        <input type="text" id="phone" value="${db.settings?.phone || '(16) 99147-2045'}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">Horário:</label>
+                        <input type="text" id="hours" value="${db.settings?.hours || 'Seg-Dom: 10h às 22h'}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">Dias de Retirada:</label>
+                        <input type="text" id="pickupDays" value="${db.settings?.pickupDays || 'Após 3 dias úteis'}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
                     <hr style="margin: 16px 0;">
-                    <button class="btn btn-primary" onclick="exportData()" style="width: 100%;">📥 Exportar Dados</button>
+                    <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%; margin-bottom: 8px;">💾 Salvar Configurações</button>
+                    <button class="btn btn-secondary" onclick="exportData()" style="width: 100%;">📥 Exportar Dados</button>
                 </div>
             </div>
         </div>
@@ -86,6 +192,28 @@ function switchTab(tabName) {
     
     // Marcar botão como ativo
     event.target.classList.add('active');
+}
+
+// Salvar configurações
+function saveSettings() {
+    const db = getDatabase();
+    
+    db.settings = {
+        storeName: document.getElementById('storeName').value,
+        address: document.getElementById('address').value,
+        phone: document.getElementById('phone').value,
+        hours: document.getElementById('hours').value,
+        pickupDays: document.getElementById('pickupDays').value,
+        regions: db.settings?.regions || ['Cajuru', 'Santa Cruz da Esperança', 'Cássia dos Coqueiros'],
+        colors: db.settings?.colors || {
+            primary: '#8B4513',
+            secondary: '#FFD700',
+            accent: '#e91e63'
+        }
+    };
+    
+    saveDatabase(db);
+    showNotification('✅ Configurações salvas e sincronizadas!');
 }
 
 // Carregar dados de stock
@@ -208,13 +336,29 @@ function loadOrdersData() {
 
 // Editar produto
 function editProduct(id, category) {
-    alert('Função de edição em desenvolvimento. ID: ' + id + ', Categoria: ' + category);
+    const db = getDatabase();
+    const product = db.products[category].find(p => p.id === id);
+    
+    if (!product) {
+        alert('Produto não encontrado');
+        return;
+    }
+    
+    const newPrice = prompt(`Novo preço para "${product.name}" (atual: R$ ${product.price.toFixed(2)}):`, product.price);
+    
+    if (newPrice !== null && !isNaN(newPrice)) {
+        product.price = parseFloat(newPrice);
+        saveDatabase(db);
+        loadStockData(); // Recarregar tabela
+        showNotification(`✅ Preço de "${product.name}" atualizado para R$ ${product.price.toFixed(2)}`);
+    }
 }
 
 // Exportar dados
 function exportData() {
+    const db = getDatabase();
     const data = {
-        products: products,
+        database: db,
         orders: JSON.parse(localStorage.getItem('orders') || '[]'),
         exportDate: new Date().toLocaleString('pt-BR')
     };
@@ -224,10 +368,10 @@ function exportData() {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `itapolitana_dados_${Date.now()}.json`;
+    link.download = `itapolitana_backup_${Date.now()}.json`;
     link.click();
     
-    alert('Dados exportados com sucesso!');
+    showNotification('✅ Backup exportado com sucesso!');
 }
 
 // Estilos para o painel admin
@@ -290,8 +434,22 @@ const adminStyles = `
     .tab-content.active {
         display: block;
     }
+    
+    #settings-tab input {
+        font-family: inherit;
+    }
+    
+    #settings-tab label {
+        color: #333;
+    }
 `;
 
 const styleSheet = document.createElement('style');
 styleSheet.textContent = adminStyles;
 document.head.appendChild(styleSheet);
+
+// Sincronizar dados ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    initializeDatabase();
+    syncAllData();
+});
