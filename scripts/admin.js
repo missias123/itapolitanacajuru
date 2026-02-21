@@ -5,28 +5,35 @@ const ADMIN_PASSWORD = 'itapolitanacajuru2007';
 // ===== BASE DE DADOS CENTRALIZADA =====
 const DATABASE_KEY = 'itapolitana_database';
 
-// Inicializar base de dados se não existir
+// Inicializar base de dados se não existir (SINCRONIZADA COM MASTER_CONFIG)
 function initializeDatabase() {
-    if (!localStorage.getItem(DATABASE_KEY)) {
+    const masterConfig = typeof MASTER_CONFIG !== 'undefined' ? MASTER_CONFIG : null;
+    
+    if (!localStorage.getItem(DATABASE_KEY) || (masterConfig && masterConfig.version !== JSON.parse(localStorage.getItem(DATABASE_KEY)).version)) {
         const defaultDB = {
-            version: '2.0.0',
+            version: masterConfig ? masterConfig.version : '2.1.0',
             lastUpdated: new Date().toISOString(),
-            products: products,
+            products: products, // Já atualizado em products.js
             settings: {
                 storeName: 'Sorveteria Itapolitana',
                 address: 'Pça Lgo São Bento, 311 - Centro, Cajuru/SP',
                 phone: '(16) 99147-2045',
                 hours: 'Seg-Dom: 10h às 22h',
-                regions: ['Cajuru', 'Santa Cruz da Esperança', 'Cássia dos Coqueiros'],
+                regions: masterConfig ? masterConfig.seo.cities : ['Cajuru', 'Santa Cruz da Esperança', 'Cássia dos Coqueiros'],
                 pickupDays: 'Após 3 dias úteis',
-                colors: {
-                    primary: '#8B4513',
-                    secondary: '#FFD700',
-                    accent: '#e91e63'
+                colors: masterConfig ? {
+                    primary: masterConfig.appearance.primaryColor,
+                    secondary: masterConfig.appearance.secondaryColor,
+                    accent: masterConfig.appearance.accentColor
+                } : {
+                    primary: '#5D2E17',
+                    secondary: '#D4AF37',
+                    accent: '#8B4513'
                 }
             }
         };
         localStorage.setItem(DATABASE_KEY, JSON.stringify(defaultDB));
+        console.log('✅ Base de dados inicializada com a Configuração Mestre');
     }
 }
 
