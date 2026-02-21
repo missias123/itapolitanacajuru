@@ -2,15 +2,28 @@
 
 const products = {
     sorvetes: [
-        { id: 1, name: 'Caixa 5L', category: 'Sorvetes', price: 35.00, description: '2 ou 3 sabores' },
-        { id: 2, name: 'Caixa 10L', category: 'Sorvetes', price: 65.00, description: '2 ou 3 sabores' },
-        { id: 3, name: 'Cone 1 Bola', category: 'Sorvetes', price: 5.00, description: 'Múltiplos sabores' },
-        { id: 4, name: 'Cone 2 Bolas', category: 'Sorvetes', price: 8.00, description: 'Múltiplos sabores' },
-        { id: 5, name: 'Cone 3 Bolas', category: 'Sorvetes', price: 10.00, description: 'Múltiplos sabores' },
-        { id: 6, name: 'Torta de Sorvete', category: 'Sorvetes', price: 45.00, description: '3 sabores' },
+        // SORVETES ARTESANAIS (37 SABORES OFICIAIS)
+        { id: 1, name: 'Caixa 5L', category: 'Sorvetes', price: 35.00, description: 'Escolha até 3 sabores' },
+        { id: 2, name: 'Caixa 10L', category: 'Sorvetes', price: 65.00, description: 'Escolha até 3 sabores' },
+        { id: 3, name: 'Cone 1 Bola', category: 'Sorvetes', price: 5.00, description: 'Escolha 1 sabor' },
+        { id: 4, name: 'Cone 2 Bolas', category: 'Sorvetes', price: 8.00, description: 'Escolha 2 sabores' },
+        { id: 5, name: 'Cone 3 Bolas', category: 'Sorvetes', price: 10.00, description: 'Escolha 3 sabores' },
+        { id: 6, name: 'Torta de Sorvete', category: 'Sorvetes', price: 45.00, description: '3 sabores pré-definidos' },
         { id: 7, name: 'Pote 500ml', category: 'Sorvetes', price: 15.00, description: 'Sabor único' },
         { id: 8, name: 'Pote 1L', category: 'Sorvetes', price: 28.00, description: 'Sabor único' },
         { id: 9, name: 'Pote 2L', category: 'Sorvetes', price: 52.00, description: 'Sabor único' }
+    ],
+    
+    // LISTA DE SABORES DISPONÍVEIS PARA SORVETES
+    sabores_sorvete: [
+        "Abacaxi ao Vinho", "Doce de Leite", "Abacaxi Suíço", "Açaí", "Ninho com Oreo", 
+        "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", 
+        "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", 
+        "Croquer", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", 
+        "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Pistache", "Limão", 
+        "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", 
+        "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", 
+        "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
     ],
     
     picoles: [
