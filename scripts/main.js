@@ -4,6 +4,26 @@
 
 let carrinho = [];
 
+// Função para alternar visibilidade das categorias (Acordeão)
+function toggleCategoria(elemento) {
+    const categoria = elemento.parentElement;
+    const estaAtiva = categoria.classList.contains('ativa');
+    
+    // Fechar todas as outras categorias
+    document.querySelectorAll('.categoria').forEach(cat => {
+        cat.classList.remove('ativa');
+    });
+    
+    // Se não estava ativa, abrir a atual
+    if (!estaAtiva) {
+        categoria.classList.add('ativa');
+        // Rolar suavemente para a categoria aberta
+        setTimeout(() => {
+            categoria.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    }
+}
+
 // Função para adicionar ao carrinho
 function adicionarAoCarrinho(categoria = null, nome = null, preco = null) {
     let categoriaForm = categoria || document.getElementById('categoria').value;
@@ -51,6 +71,8 @@ function atualizarCarrinho() {
     const carrinhoItems = document.getElementById('carrinho-items');
     const total = document.getElementById('total');
 
+    if (!carrinhoItems || !total) return;
+
     if (carrinho.length === 0) {
         carrinhoItems.innerHTML = '<p style="color: #999; text-align: center;">Carrinho vazio</p>';
         total.textContent = '0,00';
@@ -95,7 +117,6 @@ function mostrarCarrinhoFinal() {
     document.getElementById('carrinho-acoes-normal').style.display = 'none';
     document.getElementById('carrinho-acoes-final').style.display = 'none';
     
-    // Alinhamento horizontal para "Voltar a comprar" e "Finalizar pedido"
     const acoesContainer = document.getElementById('carrinho-acoes-normal');
     acoesContainer.style.display = 'flex';
     acoesContainer.style.flexDirection = 'row';
@@ -133,7 +154,6 @@ function enviarPedido() {
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
 
-    // Construir mensagem do pedido
     let mensagem = `*PEDIDO SORVETERIA ITAPOLITANA*\n\n`;
     mensagem += `*Cliente:* ${nome}\n`;
     mensagem += `*Telefone:* ${telefone}\n\n`;
@@ -150,14 +170,11 @@ function enviarPedido() {
     mensagem += `\n*Atenção:* O produto será retirado na loja e só será produzido após o pagamento.\n`;
     mensagem += `\nPor favor, confirme o pedido!`;
 
-    // Codificar para URL
     const mensagemCodificada = encodeURIComponent(mensagem);
     const whatsappUrl = `https://wa.me/5516991472045?text=${mensagemCodificada}`;
 
-    // Abrir WhatsApp
     window.open(whatsappUrl, '_blank');
 
-    // Limpar carrinho após envio
     setTimeout(() => {
         carrinho = [];
         atualizarCarrinho();
@@ -183,7 +200,6 @@ function abrirModalSabores(categoria) {
     
     titulo.textContent = nomesCategorias[categoria] || 'Escolha seu sabor';
     
-    // Usar sabores de sorvete (caixas de 5 e 10 litros)
     const sabores = produtos.sorvete;
     
     lista.innerHTML = sabores.map(s => `
@@ -203,7 +219,6 @@ function selecionarSaborModal(categoria, sabor) {
     document.getElementById('categoria').value = categoria;
     atualizarSabores();
     
-    // Adicionar o sabor específico se não existir na lista da categoria
     const saborSelect = document.getElementById('sabor');
     const option = document.createElement('option');
     option.value = sabor;

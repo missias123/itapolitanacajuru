@@ -62,6 +62,45 @@
     
     <title>Sorveteria Itapolitana | Cajuru, Santa Cruz e Cássia dos Coqueiros</title>
     <link rel="stylesheet" href="styles/main.css">
+    <style>
+        /* Estilos para o Acordeão */
+        .categoria {
+            margin-bottom: 10px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        .categoria-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--pink) 100%);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+        .categoria-header::after {
+            content: '▼';
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+        .categoria.ativa .categoria-header::after {
+            transform: rotate(180deg);
+        }
+        .categoria-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.3s ease;
+            padding: 0 20px;
+        }
+        .categoria.ativa .categoria-content {
+            max-height: 2000px; /* Valor alto para permitir expansão */
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -96,50 +135,66 @@
             
             <!-- Sorvetes -->
             <div class="categoria">
-                <h3>🍦 Sorvetes de Massa (5L e 10L)</h3>
-                <div class="produtos-grid" id="sorvetes-grid"></div>
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍦 Sorvetes de Massa (5L e 10L)</span>
+                </div>
+                <div class="categoria-content">
+                    <div class="produtos-grid" id="sorvetes-grid"></div>
+                </div>
             </div>
 
             <!-- Picolés -->
             <div class="categoria">
-                <h3>🍭 Picolés Especiais</h3>
-                <div class="subcategoria">
-                    <h4>Picolé de Leite com Recheio - R$ 3,00</h4>
-                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Cremosos e com recheio generoso. Escolha entre nossos sabores exclusivos.</p>
-                    <div class="produtos-grid" id="picole-leite-grid"></div>
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍭 Picolés Especiais</span>
                 </div>
-                <div class="subcategoria">
-                    <h4>Picolés Eskimo - R$ 8,00</h4>
-                    <div class="produtos-grid" id="picole-eskimo-grid"></div>
+                <div class="categoria-content">
+                    <div class="subcategoria">
+                        <h4>Picolé de Leite com Recheio - R$ 3,00</h4>
+                        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Cremosos e com recheio generoso. Escolha entre nossos sabores exclusivos.</p>
+                        <div class="produtos-grid" id="picole-leite-grid"></div>
+                    </div>
+                    <div class="subcategoria">
+                        <h4>Picolés Eskimo - R$ 8,00</h4>
+                        <div class="produtos-grid" id="picole-eskimo-grid"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Milk Shakes e Taças -->
             <div class="categoria">
-                <h3>🥤 Shakes e Taças Premium</h3>
-                <div class="produtos-grid">
-                    <div class="produto-card">
-                        <h4>Milk Shake Gourmet</h4>
-                        <div class="produto-preco">R$ 15,00</div>
-                        <button class="btn-escolher" onclick="abrirModalSabores('milkshake')">Escolher Sabores</button>
-                    </div>
-                    <div class="produto-card">
-                        <h4>Taça Clássica</h4>
-                        <div class="produto-preco">R$ 18,00</div>
-                        <button class="btn-escolher" onclick="abrirModalSabores('tacas')">Escolher Sabores</button>
-                    </div>
-                    <div class="produto-card">
-                        <h4>Taça Premium Especial</h4>
-                        <div class="produto-preco">R$ 25,00</div>
-                        <button class="btn-escolher" onclick="abrirModalSabores('tacas-premium')">Escolher Sabores</button>
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🥤 Shakes e Taças Premium</span>
+                </div>
+                <div class="categoria-content">
+                    <div class="produtos-grid">
+                        <div class="produto-card">
+                            <h4>Milk Shake Gourmet</h4>
+                            <div class="produto-preco">R$ 15,00</div>
+                            <button class="btn-escolher" onclick="abrirModalSabores('milkshake')">Escolher Sabores</button>
+                        </div>
+                        <div class="produto-card">
+                            <h4>Taça Clássica</h4>
+                            <div class="produto-preco">R$ 18,00</div>
+                            <button class="btn-escolher" onclick="abrirModalSabores('tacas')">Escolher Sabores</button>
+                        </div>
+                        <div class="produto-card">
+                            <h4>Taça Premium Especial</h4>
+                            <div class="produto-preco">R$ 25,00</div>
+                            <button class="btn-escolher" onclick="abrirModalSabores('tacas-premium')">Escolher Sabores</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Açaí -->
             <div class="categoria">
-                <h3>🥤 Açaí Artesanal</h3>
-                <div class="produtos-grid" id="acai-grid"></div>
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🥤 Açaí Artesanal</span>
+                </div>
+                <div class="categoria-content">
+                    <div class="produtos-grid" id="acai-grid"></div>
+                </div>
             </div>
         </section>
 
