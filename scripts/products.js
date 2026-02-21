@@ -4,84 +4,84 @@
 
 const produtos = {
     sorvete: [
-        { nome: "Abacaxi ao Vinho", preco: 7.50 },
-        { nome: "Abacaxi Suíço", preco: 7.50 },
-        { nome: "Açaí", preco: 8.50 },
-        { nome: "Algodão Doce (Blue Ice)", preco: 7.50 },
-        { nome: "Amarena", preco: 8.00 },
-        { nome: "Ameixa", preco: 7.50 },
-        { nome: "Banana com Nutella", preco: 8.50 },
-        { nome: "Bis e Trufa", preco: 8.50 },
-        { nome: "Cereja Trufada", preco: 8.00 },
-        { nome: "Chocolate", preco: 7.50 },
-        { nome: "Chocolate com Café", preco: 8.00 },
-        { nome: "Coco Queimado", preco: 8.00 },
-        { nome: "Creme Paris", preco: 7.50 },
-        { nome: "Croquer", preco: 8.00 },
-        { nome: "Doce de Leite", preco: 8.00 },
-        { nome: "Ferrero Rocher", preco: 9.00 },
-        { nome: "Flocos", preco: 7.50 },
-        { nome: "Kinder Ovo", preco: 9.00 },
-        { nome: "Leite Condensado", preco: 8.00 },
-        { nome: "Leite Ninho", preco: 8.00 },
-        { nome: "Leite Ninho Folheado", preco: 8.50 },
-        { nome: "Leite Ninho com Pistache", preco: 9.00 },
-        { nome: "Limão", preco: 7.50 },
-        { nome: "Limão Suíço", preco: 7.50 },
-        { nome: "Menta com Chocolate", preco: 8.00 },
-        { nome: "Milho Verde", preco: 7.50 },
-        { nome: "Morango Trufado", preco: 8.00 },
-        { nome: "Mousse de Maracujá", preco: 7.50 },
-        { nome: "Mousse de Uva", preco: 7.50 },
-        { nome: "Ninho com Oreo", preco: 8.50 },
-        { nome: "Nozes", preco: 8.00 },
-        { nome: "Nutella", preco: 9.00 },
-        { nome: "Ovomaltine", preco: 8.50 },
-        { nome: "Pistache", preco: 9.00 },
-        { nome: "Prestígio", preco: 8.00 },
-        { nome: "Sensação", preco: 8.00 },
-        { nome: "Torta de Chocolate", preco: 8.50 }
+        { nome: "Abacaxi ao Vinho", preco: 7.50, estoque: 100 },
+        { nome: "Abacaxi Suíço", preco: 7.50, estoque: 100 },
+        { nome: "Açaí", preco: 8.50, estoque: 100 },
+        { nome: "Algodão Doc (Blue Ice)", preco: 7.50, estoque: 100 },
+        { nome: "Amarena", preco: 8.00, estoque: 100 },
+        { nome: "Ameixa", preco: 7.50, estoque: 100 },
+        { nome: "Banana com Nutella", preco: 8.50, estoque: 100 },
+        { nome: "Bis e Trufa", preco: 8.50, estoque: 100 },
+        { nome: "Cereja Trufada", preco: 8.00, estoque: 100 },
+        { nome: "Chocolate", preco: 7.50, estoque: 100 },
+        { nome: "Chocolate com Café", preco: 8.00, estoque: 100 },
+        { nome: "Coco Queimado", preco: 8.00, estoque: 100 },
+        { nome: "Creme Paris", preco: 7.50, estoque: 100 },
+        { nome: "Croquer", preco: 8.00, estoque: 100 },
+        { nome: "Doce de Leite", preco: 8.00, estoque: 100 },
+        { nome: "Ferrero Rocher", preco: 9.00, estoque: 100 },
+        { nome: "Flocos", preco: 7.50, estoque: 100 },
+        { nome: "Kinder Ovo", preco: 9.00, estoque: 100 },
+        { nome: "Leite Condensado", preco: 8.00, estoque: 100 },
+        { nome: "Leite Ninho", preco: 8.00, estoque: 100 },
+        { nome: "Leite Ninho Folheado", preco: 8.50, estoque: 100 },
+        { nome: "Leite Ninho com Pistache", preco: 9.00, estoque: 100 },
+        { nome: "Limão", preco: 7.50, estoque: 100 },
+        { nome: "Limão Suíço", preco: 7.50, estoque: 100 },
+        { nome: "Menta com Chocolate", preco: 8.00, estoque: 100 },
+        { nome: "Milho Verde", preco: 7.50, estoque: 100 },
+        { nome: "Morango Trufado", preco: 8.00, estoque: 100 },
+        { nome: "Mousse de Maracujá", preco: 7.50, estoque: 100 },
+        { nome: "Mousse de Uva", preco: 7.50, estoque: 100 },
+        { nome: "Ninho com Oreo", preco: 8.50, estoque: 100 },
+        { nome: "Nozes", preco: 8.00, estoque: 100 },
+        { nome: "Nutella", preco: 9.00, estoque: 100 },
+        { nome: "Ovomaltine", preco: 8.50, estoque: 100 },
+        { nome: "Pistache", preco: 9.00, estoque: 100 },
+        { nome: "Prestígio", preco: 8.00, estoque: 100 },
+        { nome: "Sensação", preco: 8.00, estoque: 100 },
+        { nome: "Torta de Chocolate", preco: 8.50, estoque: 100 }
     ],
     "picole-leite": [
-        { nome: "Açaí", preco: 3.00 },
-        { nome: "Blue Ice", preco: 3.00 },
-        { nome: "Caraxi", preco: 3.00 },
-        { nome: "Coco Branco", preco: 3.00 },
-        { nome: "Chocolate", preco: 3.00 },
-        { nome: "Amarena", preco: 3.00 },
-        { nome: "Leite Condensado", preco: 3.00 },
-        { nome: "Mamão Papaia", preco: 3.00 },
-        { nome: "Maracujá", preco: 3.00 },
-        { nome: "Morango", preco: 3.00 },
-        { nome: "Menta com Chocolate", preco: 3.00 },
-        { nome: "Nata com Goiaba", preco: 3.00 }
+        { nome: "Açaí", preco: 3.00, estoque: 100 },
+        { nome: "Blue Ice", preco: 3.00, estoque: 100 },
+        { nome: "Caraxi", preco: 3.00, estoque: 100 },
+        { nome: "Coco Branco", preco: 3.00, estoque: 100 },
+        { nome: "Chocolate", preco: 3.00, estoque: 100 },
+        { nome: "Amarena", preco: 3.00, estoque: 100 },
+        { nome: "Leite Condensado", preco: 3.00, estoque: 100 },
+        { nome: "Mamão Papaia", preco: 3.00, estoque: 100 },
+        { nome: "Maracujá", preco: 3.00, estoque: 100 },
+        { nome: "Morango", preco: 3.00, estoque: 100 },
+        { nome: "Menta com Chocolate", preco: 3.00, estoque: 100 },
+        { nome: "Nata com Goiaba", preco: 3.00, estoque: 100 }
     ],
     "picole-eskimo": [
-        { nome: "Brigadeiro", preco: 8.00 },
-        { nome: "Bombom", preco: 8.00 },
-        { nome: "Nutella", preco: 8.00 },
-        { nome: "Ovomaltine", preco: 8.00 },
-        { nome: "Leite Ninho", preco: 8.00 },
-        { nome: "Nata", preco: 8.00 },
-        { nome: "Morango", preco: 8.00 },
-        { nome: "Prestígio", preco: 8.00 }
+        { nome: "Brigadeiro", preco: 8.00, estoque: 100 },
+        { nome: "Bombom", preco: 8.00, estoque: 100 },
+        { nome: "Nutella", preco: 8.00, estoque: 100 },
+        { nome: "Ovomaltine", preco: 8.00, estoque: 100 },
+        { nome: "Leite Ninho", preco: 8.00, estoque: 100 },
+        { nome: "Nata", preco: 8.00, estoque: 100 },
+        { nome: "Morango", preco: 8.00, estoque: 100 },
+        { nome: "Prestígio", preco: 8.00, estoque: 100 }
     ],
     acai: [
-        { nome: "Açaí 300ml", preco: 12.00 },
-        { nome: "Açaí 500ml", preco: 13.00 },
-        { nome: "Açaí 1L", preco: 15.00 },
-        { nome: "Açaí com Granola", preco: 12.00 },
-        { nome: "Açaí com Banana", preco: 12.00 },
-        { nome: "Açaí com Morango", preco: 12.00 }
+        { nome: "Açaí 300ml", preco: 12.00, estoque: 100 },
+        { nome: "Açaí 500ml", preco: 13.00, estoque: 100 },
+        { nome: "Açaí 1L", preco: 15.00, estoque: 100 },
+        { nome: "Açaí com Granola", preco: 12.00, estoque: 100 },
+        { nome: "Açaí com Banana", preco: 12.00, estoque: 100 },
+        { nome: "Açaí com Morango", preco: 12.00, estoque: 100 }
     ],
     milkshake: [
-        { nome: "Milk Shake Gourmet", preco: 15.00 }
+        { nome: "Milk Shake Gourmet", preco: 15.00, estoque: 100 }
     ],
     tacas: [
-        { nome: "Taça Clássica", preco: 18.00 }
+        { nome: "Taça Clássica", preco: 18.00, estoque: 100 }
     ],
     "tacas-premium": [
-        { nome: "Taça Premium Especial", preco: 25.00 }
+        { nome: "Taça Premium Especial", preco: 25.00, estoque: 100 }
     ]
 };
 
@@ -141,6 +141,8 @@ function atualizarSabores() {
     const categoria = document.getElementById("categoria").value;
     const saborSelect = document.getElementById("sabor");
     
+    if (!saborSelect) return;
+    
     saborSelect.innerHTML = "<option value=\"\">Selecione um sabor</option>";
     
     if (categoria && produtos[categoria]) {
@@ -155,10 +157,16 @@ function atualizarSabores() {
 
 // Função para selecionar produto
 function selecionarProduto(categoria, nome, preco) {
-    document.getElementById("categoria").value = categoria;
-    atualizarSabores();
-    document.getElementById("sabor").value = nome;
-    scrollToSection('encomendas');
+    const catSelect = document.getElementById("categoria");
+    if (catSelect) {
+        catSelect.value = categoria;
+        atualizarSabores();
+        const saborSelect = document.getElementById("sabor");
+        if (saborSelect) {
+            saborSelect.value = nome;
+        }
+        scrollToSection('encomendas');
+    }
 }
 
 // Inicializar produtos ao carregar a página
