@@ -118,6 +118,11 @@ function renderProducts(category) {
 
 // Inicializar com primeira categoria
 document.addEventListener('DOMContentLoaded', () => {
+    // Garantir que a base de dados está inicializada (se admin.js estiver carregado)
+    if (typeof initializeDatabase === 'function') {
+        initializeDatabase();
+    }
+    
     renderProducts('sorvetes');
     
     // Listener para mudança de categoria

@@ -13,6 +13,16 @@ function initializeApp() {
         console.log('Bem-vindo à Sorveteria Itapolitana!');
     }
     
+    // Inicializar base de dados centralizada
+    if (typeof initializeDatabase === 'function') {
+        initializeDatabase();
+    }
+    
+    // Sincronizar dados
+    if (typeof syncAllData === 'function') {
+        syncAllData();
+    }
+    
     // Inicializar carrinho
     updateCart();
     
