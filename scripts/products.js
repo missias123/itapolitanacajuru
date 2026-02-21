@@ -8,7 +8,7 @@ const products = {
         { id: 3, name: 'Abacaxi Suíço', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
         { id: 4, name: 'Açaí', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
         { id: 5, name: 'Ninho com Oreo', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 6, name: 'Algodão Doce (Blue Ice)', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
+        { id: 6, name: 'Algodão Doc (Blue Ice)', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
         { id: 7, name: 'Amarena', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
         { id: 8, name: 'Ameixa', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
         { id: 9, name: 'Banana com Nutella', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
@@ -67,14 +67,15 @@ const products = {
     ],
     
     milkshakes: [
-        { id: 301, name: 'Milkshake Morango', category: 'Milkshakes', price: 9.00, description: 'Escolher sabores' },
-        { id: 302, name: 'Milkshake Chocolate', category: 'Milkshakes', price: 9.00, description: 'Escolher sabores' },
-        { id: 303, name: 'Milkshake Baunilha', category: 'Milkshakes', price: 9.00, description: 'Escolher sabores' }
+        // MILKSHAKES (PODE ESCOLHER QUALQUER UM DOS 37 SABORES)
+        { id: 301, name: 'Milkshake Artesanal', category: 'Milkshakes', price: 9.00, description: 'Escolha qualquer um dos 37 sabores de sorvete artesanal' },
+        { id: 302, name: 'Milkshake Especial', category: 'Milkshakes', price: 11.00, description: 'Com Nutella ou Ferrero Rocher' }
     ],
     
     tacas: [
-        { id: 401, name: 'Taça Simples', category: 'Taças', price: 12.00, description: 'Escolher sabores' },
-        { id: 402, name: 'Taça Dupla', category: 'Taças', price: 18.00, description: 'Escolher sabores' }
+        // TAÇAS (PODE ESCOLHER QUALQUER UM DOS 37 SABORES)
+        { id: 401, name: 'Taça Simples', category: 'Taças', price: 12.00, description: '1 Bola (Escolha entre os 37 sabores artesanais)' },
+        { id: 402, name: 'Taça Dupla', category: 'Taças', price: 18.00, description: '2 Bolas (Escolha entre os 37 sabores artesanais)' }
     ],
     
     tacas_premium: [
