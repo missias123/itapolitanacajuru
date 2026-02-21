@@ -1,4 +1,4 @@
-// ===== PRODUTOS PADRONIZADOS =====
+// ===== PRODUTOS PADRONIZADOS (VERSÃO CORRIGIDA) =====
 
 const products = {
     sorvetes: [
@@ -16,26 +16,36 @@ const products = {
     ],
     
     picoles: [
-        // Frutas/Água (R$ 2,50)
-        { id: 101, name: 'Picolé Abacaxi', category: 'Picolés', price: 2.50, description: 'Frutas/Água', flavor: 'Abacaxi' },
-        { id: 102, name: 'Picolé Goiaba', category: 'Picolés', price: 2.50, description: 'Frutas/Água', flavor: 'Goiaba' },
-        { id: 103, name: 'Picolé Limão', category: 'Picolés', price: 2.50, description: 'Frutas/Água', flavor: 'Limão' },
-        { id: 104, name: 'Picolé Uva', category: 'Picolés', price: 2.50, description: 'Frutas/Água', flavor: 'Uva' },
-        { id: 105, name: 'Picolé Maracujá', category: 'Picolés', price: 2.50, description: 'Frutas/Água', flavor: 'Maracujá' },
+        // PICOLÉ DE LEITE COM RECHEIO (R$ 3,00) - ATUALIZADO CONFORME PDF
+        { id: 101, name: 'Picolé Morango', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Morango' },
+        { id: 102, name: 'Picolé Maracujá', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Maracujá' },
+        { id: 103, name: 'Picolé Limão', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Limão' },
+        { id: 104, name: 'Picolé Coco', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Coco' },
+        { id: 105, name: 'Picolé Amendoim', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Amendoim' },
+        { id: 106, name: 'Picolé Doce de Leite', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Doce de Leite' },
+        { id: 107, name: 'Picolé Chocolate', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Chocolate' },
+        { id: 108, name: 'Picolé Abacaxi', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Abacaxi' },
+        { id: 109, name: 'Picolé Banana', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Banana' },
+        { id: 110, name: 'Picolé Uva', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Uva' },
+        { id: 111, name: 'Picolé Goiaba', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Goiaba' },
+        { id: 112, name: 'Picolé Blue Ice', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Blue Ice' },
+        { id: 113, name: 'Picolé Caraxi', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Caraxi' },
+        { id: 114, name: 'Picolé Coco Branco', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Coco Branco' },
+        { id: 115, name: 'Picolé Amarena', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Amarena' },
+        { id: 116, name: 'Picolé Leite Condensado', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Leite Condensado' },
+        { id: 117, name: 'Picolé Mamão Papaia', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Mamão Papaia' },
+        { id: 118, name: 'Picolé Menta c/ Choc', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Menta c/ Choc' },
+        { id: 119, name: 'Picolé Nata c/ Goiaba', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Nata c/ Goiaba' },
         
-        // Leite sem Recheio (R$ 2,50)
-        { id: 106, name: 'Picolé Coco Queimado', category: 'Picolés', price: 2.50, description: 'Leite sem Recheio', flavor: 'Coco Queimado' },
-        { id: 107, name: 'Picolé Amendoim', category: 'Picolés', price: 2.50, description: 'Leite sem Recheio', flavor: 'Amendoim' },
-        
-        // Leite com Recheio (R$ 3,00)
-        { id: 108, name: 'Picolé Morango', category: 'Picolés', price: 3.00, description: 'Leite com Recheio', flavor: 'Morango' },
-        { id: 109, name: 'Picolé Chocolate', category: 'Picolés', price: 3.00, description: 'Leite com Recheio', flavor: 'Chocolate' },
-        { id: 110, name: 'Picolé Doce de Leite', category: 'Picolés', price: 3.00, description: 'Leite com Recheio', flavor: 'Doce de Leite' },
-        
-        // Eskimo (R$ 8,00) - BRIGADEIRO AQUI!
-        { id: 111, name: 'Picolé Brigadeiro', category: 'Picolés', price: 8.00, description: 'Eskimo Premium', flavor: 'Brigadeiro' },
-        { id: 112, name: 'Picolé Bombom', category: 'Picolés', price: 8.00, description: 'Eskimo Premium', flavor: 'Bombom' },
-        { id: 113, name: 'Picolé Nutella', category: 'Picolés', price: 8.00, description: 'Eskimo Premium', flavor: 'Nutella' }
+        // PICOLÉS ESKIMOS (R$ 8,00) - ATUALIZADO CONFORME PDF
+        { id: 120, name: 'Picolé Brigadeiro', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Brigadeiro' },
+        { id: 121, name: 'Picolé Bombom', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Bombom' },
+        { id: 122, name: 'Picolé Nutella', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Nutella' },
+        { id: 123, name: 'Picolé Ovomaltine', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Ovomaltine' },
+        { id: 124, name: 'Picolé Leite Ninho', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Leite Ninho' },
+        { id: 125, name: 'Picolé Nata', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Nata' },
+        { id: 126, name: 'Picolé Morango (Eskimo)', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Morango' },
+        { id: 127, name: 'Picolé Prestígio', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Prestígio' }
     ],
     
     acai: [
