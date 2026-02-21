@@ -50,7 +50,8 @@ const products = {
     
     tacas_premium: [
         { id: 501, name: 'Taça Premium Chocolate', category: 'Taças Premium', price: 20.00, description: 'Com calda de chocolate' },
-        { id: 502, name: 'Taça Premium Morango', category: 'Taças Premium', price: 20.00, description: 'Com calda de morango' }
+        {{ id: 507, name: 'Taça Premium Especial', category: 'Taças Premium', price: 28.00, description: 'Combinação premium' },
+        { id: 508, name: 'Taça Unicórnio', category: 'Taças Premium', price: 28.00, description: 'Mágica e colorida' }
     ]
 };
 
