@@ -1,11 +1,11 @@
 /* ===== VARIÁVEIS E RESET ===== */
 :root {
-    --color-primary: #8B4513;
-    --color-secondary: #FFD700;
-    --color-accent: #e91e63;
-    --color-text: #333;
-    --color-bg: #f5f5f5;
-    --color-white: #fff;
+    --color-primary: #5D2E17; /* Marrom Chocolate Profundo (Logomarca) */
+    --color-secondary: #D4AF37; /* Dourado Metálico (Logomarca) */
+    --color-accent: #8B4513; /* Marrom Médio para detalhes */
+    --color-text: #2D1A12; /* Texto Marrom Escuro */
+    --color-bg: #FFFBF0; /* Creme Suave para fundo */
+    --color-white: #ffffff;
     --spacing-sm: 8px;
     --spacing-md: 16px;
     --spacing-lg: 24px;
@@ -29,31 +29,36 @@ html, body {
 
 /* ===== HEADER ===== */
 .header {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #6b3410 100%);
-    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #3d1e0f 100%);
+    color: var(--color-secondary);
     padding: var(--spacing-lg);
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-bottom: 4px solid var(--color-secondary);
 }
 
 .header-content h1 {
     font-size: 28px;
     margin-bottom: var(--spacing-sm);
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .header-content .tagline {
     font-size: 14px;
     opacity: 0.9;
+    color: var(--color-white);
 }
 
 /* ===== REGIONAL BANNER ===== */
 .regional-banner {
-    background: linear-gradient(135deg, var(--color-accent) 0%, #c2185b 100%);
-    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: var(--color-secondary);
     padding: var(--spacing-lg);
     text-align: center;
     margin: var(--spacing-md) 0;
+    border-bottom: 2px solid var(--color-secondary);
 }
 
 .banner-content h2 {
@@ -135,7 +140,7 @@ html, body {
 }
 
 .menu-item:hover {
-    border-color: var(--color-primary);
+    border-color: var(--color-secondary);
     transform: translateY(-2px);
 }
 
@@ -155,16 +160,17 @@ html, body {
     display: inline-block;
     padding: 10px 20px;
     background: var(--color-primary);
-    color: var(--color-white);
+    color: var(--color-secondary);
     text-decoration: none;
     border-radius: var(--border-radius);
     font-size: 14px;
     font-weight: 600;
     transition: var(--transition);
+    border: 1px solid var(--color-secondary);
 }
 
 .btn-menu:hover {
-    background: #6b3410;
+    background: var(--color-accent);
     transform: scale(1.05);
 }
 
@@ -187,12 +193,13 @@ html, body {
     background: var(--color-bg);
     border-radius: var(--border-radius);
     margin-bottom: var(--spacing-md);
-    border-left: 4px solid var(--color-accent);
+    border-top: 4px solid var(--color-primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .regional-card h3 {
     font-size: 18px;
-    color: var(--color-accent);
+    color: var(--color-primary);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -206,17 +213,18 @@ html, body {
     display: inline-block;
     margin-top: var(--spacing-md);
     padding: 10px 16px;
-    background: var(--color-accent);
-    color: var(--color-white);
+    background: var(--color-primary);
+    color: var(--color-secondary);
     text-decoration: none;
     border-radius: var(--border-radius);
     font-size: 13px;
     font-weight: 600;
     transition: var(--transition);
+    border: 1px solid var(--color-secondary);
 }
 
 .btn-regional:hover {
-    background: #c2185b;
+    background: var(--color-accent);
     transform: scale(1.05);
 }
 
@@ -279,7 +287,7 @@ html, body {
 .product-item {
     padding: var(--spacing-md);
     background: var(--color-white);
-    border: 2px solid #ddd;
+    border: 2px solid #eee;
     border-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
@@ -300,14 +308,14 @@ html, body {
 .product-price {
     font-size: 18px;
     font-weight: 700;
-    color: var(--color-accent);
+    color: var(--color-primary);
 }
 
 .btn-add {
     padding: 8px 12px;
     background: var(--color-primary);
-    color: var(--color-white);
-    border: none;
+    color: var(--color-secondary);
+    border: 1px solid var(--color-secondary);
     border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 12px;
@@ -316,7 +324,7 @@ html, body {
 }
 
 .btn-add:hover {
-    background: #6b3410;
+    background: var(--color-accent);
 }
 
 /* ===== CART SECTION ===== */
@@ -325,6 +333,7 @@ html, body {
     padding: var(--spacing-md);
     border-radius: var(--border-radius);
     margin-top: var(--spacing-lg);
+    border: 1px solid #eee;
 }
 
 .cart-section h3 {
@@ -356,7 +365,7 @@ html, body {
 
 .cart-item-price {
     font-size: 14px;
-    color: var(--color-accent);
+    color: var(--color-primary);
     font-weight: 700;
 }
 
@@ -391,39 +400,42 @@ html, body {
 
 .btn-primary {
     background: var(--color-primary);
-    color: var(--color-white);
+    color: var(--color-secondary);
+    border: 1px solid var(--color-secondary);
 }
 
 .btn-primary:hover {
-    background: #6b3410;
+    background: var(--color-accent);
 }
 
 .btn-secondary {
     background: var(--color-secondary);
-    color: var(--color-text);
+    color: var(--color-primary);
+    font-weight: bold;
 }
 
 .btn-secondary:hover {
-    background: #e6c200;
+    background: #c5a02e;
 }
 
 .btn-submit {
-    background: var(--color-accent);
-    color: var(--color-white);
+    background: var(--color-primary);
+    color: var(--color-secondary);
+    border: 2px solid var(--color-secondary);
 }
 
 .btn-submit:hover {
-    background: #c2185b;
+    background: var(--color-accent);
 }
 
 .btn-back {
     background: var(--color-primary) !important;
-    color: var(--color-white) !important;
+    color: var(--color-secondary) !important;
     border: 2px solid var(--color-secondary) !important;
 }
 
 .btn-back:hover {
-    background: #6b3410 !important;
+    background: var(--color-accent) !important;
 }
 
 /* ===== BUTTON LAYOUTS ===== */
@@ -466,8 +478,8 @@ html, body {
 .btn-admin {
     padding: 12px 16px;
     background: var(--color-primary);
-    color: var(--color-white);
-    border: none;
+    color: var(--color-secondary);
+    border: 2px solid var(--color-secondary);
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -485,88 +497,24 @@ html, body {
     box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
 
-/* ===== ADMIN MODAL ===== */
-.admin-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-}
-
-.admin-modal.active {
-    display: flex;
-}
-
-.admin-modal-content {
-    background: var(--color-white);
-    padding: var(--spacing-lg);
-    border-radius: var(--border-radius);
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.admin-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-lg);
-}
-
-.admin-modal-header h2 {
-    font-size: 20px;
-    color: var(--color-primary);
-}
-
-.btn-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-}
-
 /* ===== FOOTER ===== */
 .footer {
     background: var(--color-primary);
     color: var(--color-white);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-lg);
     text-align: center;
     margin-top: var(--spacing-xl);
+    border-top: 4px solid var(--color-secondary);
 }
 
 .footer-content p {
-    font-size: 13px;
-    margin-bottom: 8px;
-    line-height: 1.5;
+    font-size: 14px;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-secondary);
 }
 
 .footer-content p:first-child {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: var(--spacing-md);
-}
-
-/* ===== UTILITIES ===== */
-.hidden {
-    display: none !important;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.mt-md {
-    margin-top: var(--spacing-md);
-}
-
-.mb-md {
-    margin-bottom: var(--spacing-md);
+    color: var(--color-white);
 }
