@@ -43,6 +43,7 @@ const produtos = {
         { nome: "Torta de Chocolate", preco: 8.50 }
     ],
     "picole-leite": [
+        { nome: "Brigadeiro", preco: 3.00 },
         { nome: "Morango", preco: 3.00 },
         { nome: "Maracujá", preco: 3.00 },
         { nome: "Limão", preco: 3.00 },
@@ -53,15 +54,7 @@ const produtos = {
         { nome: "Abacaxi", preco: 3.00 },
         { nome: "Banana", preco: 3.00 },
         { nome: "Uva", preco: 3.00 },
-        { nome: "Goiaba", preco: 3.00 },
-        { nome: "Blue Ice", preco: 3.00 },
-        { nome: "Caraxi", preco: 3.00 },
-        { nome: "Coco Branco", preco: 3.00 },
-        { nome: "Amarena", preco: 3.00 },
-        { nome: "Leite Condensado", preco: 3.00 },
-        { nome: "Mamão Papaia", preco: 3.00 },
-        { nome: "Menta com Chocolate", preco: 3.00 },
-        { nome: "Nata com Goiaba", preco: 3.00 }
+        { nome: "Goiaba", preco: 3.00 }
     ],
     "picole-eskimo": [
         { nome: "Brigadeiro", preco: 8.00 },
