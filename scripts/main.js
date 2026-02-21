@@ -86,6 +86,43 @@ function limparCarrinho() {
     }
 }
 
+// Lógica de Etapas do Pedido
+function mostrarCarrinhoFinal() {
+    if (carrinho.length === 0) {
+        alert('Adicione itens ao carrinho antes de finalizar!');
+        return;
+    }
+    document.getElementById('carrinho-acoes-normal').style.display = 'none';
+    document.getElementById('carrinho-acoes-final').style.display = 'none';
+    
+    // Alinhamento horizontal para "Voltar a comprar" e "Finalizar pedido"
+    const acoesContainer = document.getElementById('carrinho-acoes-normal');
+    acoesContainer.style.display = 'flex';
+    acoesContainer.style.flexDirection = 'row';
+    acoesContainer.style.gap = '10px';
+    
+    scrollToSection('encomendas');
+}
+
+function etapaFinalPedido() {
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+
+    if (!nome || !telefone) {
+        alert('Por favor, preencha seu nome e telefone!');
+        return;
+    }
+
+    document.getElementById('carrinho-acoes-normal').style.display = 'none';
+    document.getElementById('carrinho-acoes-final').style.display = 'block';
+}
+
+function voltarEtapaPedido() {
+    document.getElementById('carrinho-acoes-final').style.display = 'none';
+    document.getElementById('carrinho-acoes-normal').style.display = 'flex';
+    scrollToSection('cardapio');
+}
+
 // Função para enviar pedido
 function enviarPedido() {
     if (carrinho.length === 0) {
@@ -95,11 +132,6 @@ function enviarPedido() {
 
     const nome = document.getElementById('nome').value.trim();
     const telefone = document.getElementById('telefone').value.trim();
-
-    if (!nome || !telefone) {
-        alert('Por favor, preencha seu nome e telefone!');
-        return;
-    }
 
     // Construir mensagem do pedido
     let mensagem = `*PEDIDO SORVETERIA ITAPOLITANA*\n\n`;
@@ -115,11 +147,12 @@ function enviarPedido() {
     });
 
     mensagem += `\n*Total:* R$ ${total.toFixed(2)}\n`;
+    mensagem += `\n*Atenção:* O produto será retirado na loja e só será produzido após o pagamento.\n`;
     mensagem += `\nPor favor, confirme o pedido!`;
 
     // Codificar para URL
     const mensagemCodificada = encodeURIComponent(mensagem);
-    const whatsappUrl = `https://wa.me/551633541234?text=${mensagemCodificada}`;
+    const whatsappUrl = `https://wa.me/5516991472045?text=${mensagemCodificada}`;
 
     // Abrir WhatsApp
     window.open(whatsappUrl, '_blank');
@@ -130,8 +163,64 @@ function enviarPedido() {
         atualizarCarrinho();
         document.getElementById('nome').value = '';
         document.getElementById('telefone').value = '';
+        document.getElementById('carrinho-acoes-final').style.display = 'none';
+        document.getElementById('carrinho-acoes-normal').style.display = 'flex';
         mostrarNotificacao('Pedido enviado com sucesso!');
     }, 500);
+}
+
+// Modal de Sabores
+function abrirModalSabores(categoria) {
+    const modal = document.getElementById('modal-sabores');
+    const titulo = document.getElementById('modal-titulo');
+    const lista = document.getElementById('lista-sabores-modal');
+    
+    const nomesCategorias = {
+        'milkshake': 'Sabores para Milk Shake',
+        'tacas': 'Sabores para Taças',
+        'tacas-premium': 'Sabores para Taças Premium'
+    };
+    
+    titulo.textContent = nomesCategorias[categoria] || 'Escolha seu sabor';
+    
+    // Usar sabores de sorvete (caixas de 5 e 10 litros)
+    const sabores = produtos.sorvete;
+    
+    lista.innerHTML = sabores.map(s => `
+        <div class="sabor-item-modal" onclick="selecionarSaborModal('${categoria}', '${s.nome}')">
+            ${s.nome}
+        </div>
+    `).join('');
+    
+    modal.style.display = 'block';
+}
+
+function fecharModalSabores() {
+    document.getElementById('modal-sabores').style.display = 'none';
+}
+
+function selecionarSaborModal(categoria, sabor) {
+    document.getElementById('categoria').value = categoria;
+    atualizarSabores();
+    
+    // Adicionar o sabor específico se não existir na lista da categoria
+    const saborSelect = document.getElementById('sabor');
+    const option = document.createElement('option');
+    option.value = sabor;
+    option.textContent = sabor;
+    option.selected = true;
+    saborSelect.appendChild(option);
+    
+    fecharModalSabores();
+    scrollToSection('encomendas');
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    const modal = document.getElementById('modal-sabores');
+    if (event.target == modal) {
+        fecharModalSabores();
+    }
 }
 
 // Função para rolar até uma seção
@@ -145,54 +234,15 @@ function scrollToSection(sectionId) {
 // Função para mostrar notificação
 function mostrarNotificacao(mensagem) {
     const notif = document.createElement('div');
-    notif.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #00E5FF 0%, #39FF14 100%);
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-        font-weight: 600;
-    `;
+    notif.className = 'notificacao-itapolitana';
     notif.textContent = mensagem;
     document.body.appendChild(notif);
 
     setTimeout(() => {
-        notif.style.animation = 'slideOut 0.3s ease-out';
+        notif.classList.add('fade-out');
         setTimeout(() => notif.remove(), 300);
     }, 3000);
 }
-
-// Adicionar animações CSS
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideOut {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
 
 // Inicializar ao carregar
 document.addEventListener('DOMContentLoaded', function() {
