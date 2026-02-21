@@ -1,170 +1,200 @@
-// ===== INICIALIZAÇÃO PRINCIPAL =====
+// ========================================
+// SORVETERIA ITAPOLITANA - MAIN SCRIPT
+// ========================================
 
-// Inicializar quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
-});
+let carrinho = [];
 
-function initializeApp() {
-    // Verificar se é primeira visita
-    const isFirstVisit = !localStorage.getItem('itapolitana_visited');
-    if (isFirstVisit) {
-        localStorage.setItem('itapolitana_visited', 'true');
-        console.log('Bem-vindo à Sorveteria Itapolitana!');
+// Função para adicionar ao carrinho
+function adicionarAoCarrinho(categoria = null, nome = null, preco = null) {
+    let categoriaForm = categoria || document.getElementById('categoria').value;
+    let nomeForm = nome || document.getElementById('sabor').value;
+    let precoForm = preco;
+    let quantidadeForm = parseInt(document.getElementById('quantidade').value) || 1;
+
+    if (!categoriaForm || !nomeForm) {
+        alert('Por favor, selecione uma categoria e um sabor!');
+        return;
     }
-    
-    // Inicializar base de dados centralizada
-    if (typeof initializeDatabase === 'function') {
-        initializeDatabase();
-    }
-    
-    // Sincronizar dados
-    if (typeof syncAllData === 'function') {
-        syncAllData();
-    }
-    
-    // Inicializar carrinho
-    updateCart();
-    
-    // Configurar listeners
-    setupEventListeners();
-    
-    // Aplicar tema
-    applyTheme();
-}
 
-function setupEventListeners() {
-    // Fechar modal ao clicar fora
-    document.addEventListener('click', (e) => {
-        const modal = document.getElementById('adminModal');
-        if (modal && e.target === modal) {
-            closeAdmin();
-        }
-    });
-    
-    // Fechar modal com ESC
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('adminModal');
-            if (modal) closeAdmin();
-        }
-    });
-}
-
-function applyTheme() {
-    // Aplicar tema baseado na hora do dia
-    const hour = new Date().getHours();
-    const isDark = hour >= 18 || hour < 6;
-    
-    if (isDark) {
-        document.body.style.backgroundColor = '#1a1a1a';
-        document.body.style.color = '#f0f0f0';
+    // Se não foi passado preço, buscar do array de produtos
+    if (!precoForm) {
+        const produtoEncontrado = produtos[categoriaForm]?.find(p => p.nome === nomeForm);
+        precoForm = produtoEncontrado?.preco || 0;
     }
-}
 
-// Função para rastrear eventos (Analytics)
-function trackEvent(eventName, eventData) {
-    const event = {
-        name: eventName,
-        data: eventData,
-        timestamp: new Date().toISOString()
+    const item = {
+        id: Date.now(),
+        categoria: categoriaForm,
+        nome: nomeForm,
+        preco: precoForm,
+        quantidade: quantidadeForm
     };
+
+    carrinho.push(item);
+    atualizarCarrinho();
     
-    // Enviar para servidor (se configurado)
-    console.log('Event:', event);
+    // Limpar formulário
+    document.getElementById('quantidade').value = 1;
+    
+    // Feedback visual
+    mostrarNotificacao(`${nomeForm} adicionado ao carrinho!`);
 }
 
-// Função para verificar conectividade
-function checkConnectivity() {
-    if (!navigator.onLine) {
-        showNotification('⚠️ Sem conexão com a internet');
+// Função para remover do carrinho
+function removerDoCarrinho(id) {
+    carrinho = carrinho.filter(item => item.id !== id);
+    atualizarCarrinho();
+}
+
+// Função para atualizar exibição do carrinho
+function atualizarCarrinho() {
+    const carrinhoItems = document.getElementById('carrinho-items');
+    const total = document.getElementById('total');
+
+    if (carrinho.length === 0) {
+        carrinhoItems.innerHTML = '<p style="color: #999; text-align: center;">Carrinho vazio</p>';
+        total.textContent = '0,00';
+        return;
+    }
+
+    let totalPreco = 0;
+    carrinhoItems.innerHTML = carrinho.map(item => {
+        const subtotal = item.preco * item.quantidade;
+        totalPreco += subtotal;
+        
+        return `
+            <div class="carrinho-item">
+                <div class="carrinho-item-info">
+                    <div class="carrinho-item-nome">${item.nome}</div>
+                    <div>Quantidade: ${item.quantidade}</div>
+                    <div class="carrinho-item-preco">R$ ${subtotal.toFixed(2)}</div>
+                </div>
+                <button class="btn-remover" onclick="removerDoCarrinho(${item.id})">Remover</button>
+            </div>
+        `;
+    }).join('');
+
+    total.textContent = totalPreco.toFixed(2);
+}
+
+// Função para limpar carrinho
+function limparCarrinho() {
+    if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+        carrinho = [];
+        atualizarCarrinho();
+        mostrarNotificacao('Carrinho limpo!');
     }
 }
 
-// Monitorar conectividade
-window.addEventListener('online', () => {
-    showNotification('✅ Conexão restaurada');
-});
-
-window.addEventListener('offline', () => {
-    showNotification('❌ Sem conexão com a internet');
-});
-
-// Função para compartilhar
-function shareApp() {
-    if (navigator.share) {
-        navigator.share({
-            title: 'Sorveteria Itapolitana',
-            text: 'Confira nossos sorvetes, picolés e açaí artesanais!',
-            url: window.location.href
-        }).catch(err => console.log('Erro ao compartilhar:', err));
-    } else {
-        alert('Compartilhamento não suportado neste navegador');
+// Função para enviar pedido
+function enviarPedido() {
+    if (carrinho.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
     }
-}
 
-// Função para instalar app
-function installApp() {
-    if (window.deferredPrompt) {
-        window.deferredPrompt.prompt();
-        window.deferredPrompt.userChoice.then(choiceResult => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('App instalado');
-            }
-            window.deferredPrompt = null;
-        });
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+
+    if (!nome || !telefone) {
+        alert('Por favor, preencha seu nome e telefone!');
+        return;
     }
-}
 
-// Detectar possibilidade de instalação
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    window.deferredPrompt = e;
-});
+    // Construir mensagem do pedido
+    let mensagem = `*PEDIDO SORVETERIA ITAPOLITANA*\n\n`;
+    mensagem += `*Cliente:* ${nome}\n`;
+    mensagem += `*Telefone:* ${telefone}\n\n`;
+    mensagem += `*Itens do Pedido:*\n`;
 
-// Service Worker (se suportado)
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(err => {
-        console.log('Service Worker não registrado:', err);
+    let total = 0;
+    carrinho.forEach((item, index) => {
+        const subtotal = item.preco * item.quantidade;
+        total += subtotal;
+        mensagem += `${index + 1}. ${item.nome} (${item.quantidade}x) - R$ ${subtotal.toFixed(2)}\n`;
     });
+
+    mensagem += `\n*Total:* R$ ${total.toFixed(2)}\n`;
+    mensagem += `\nPor favor, confirme o pedido!`;
+
+    // Codificar para URL
+    const mensagemCodificada = encodeURIComponent(mensagem);
+    const whatsappUrl = `https://wa.me/551633541234?text=${mensagemCodificada}`;
+
+    // Abrir WhatsApp
+    window.open(whatsappUrl, '_blank');
+
+    // Limpar carrinho após envio
+    setTimeout(() => {
+        carrinho = [];
+        atualizarCarrinho();
+        document.getElementById('nome').value = '';
+        document.getElementById('telefone').value = '';
+        mostrarNotificacao('Pedido enviado com sucesso!');
+    }, 500);
 }
 
-// Função para enviar feedback
-function sendFeedback() {
-    const feedback = prompt('Envie seu feedback sobre o site:');
-    if (feedback) {
-        const feedbackData = {
-            message: feedback,
-            timestamp: new Date().toLocaleString('pt-BR'),
-            userAgent: navigator.userAgent
-        };
-        
-        // Salvar feedback
-        let feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
-        feedbacks.push(feedbackData);
-        localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
-        
-        showNotification('✅ Obrigado pelo feedback!');
+// Função para rolar até uma seção
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
-// Função para limpar cache
-function clearCache() {
-    if (confirm('Deseja limpar o cache do site?')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        showNotification('✅ Cache limpo com sucesso');
-        location.reload();
-    }
+// Função para mostrar notificação
+function mostrarNotificacao(mensagem) {
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #00E5FF 0%, #39FF14 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+        font-weight: 600;
+    `;
+    notif.textContent = mensagem;
+    document.body.appendChild(notif);
+
+    setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notif.remove(), 300);
+    }, 3000);
 }
 
-// Versão do app
-const APP_VERSION = '2.0.0';
-console.log(`Sorveteria Itapolitana v${APP_VERSION}`);
+// Adicionar animações CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
 
-// Log de performance
-window.addEventListener('load', () => {
-    const perfData = window.performance.timing;
-    const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-    console.log(`Tempo de carregamento: ${pageLoadTime}ms`);
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Inicializar ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarCarrinho();
 });

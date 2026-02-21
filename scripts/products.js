@@ -1,148 +1,164 @@
-// ===== PRODUTOS PADRONIZADOS (VERSÃO FINAL CORRIGIDA - 21/02/2026) =====
+// ========================================
+// SORVETERIA ITAPOLITANA - PRODUCT DATA
+// ========================================
 
-const products = {
-    sorvetes: [
-        // SORVETES ARTESANAIS (37 SABORES OFICIAIS LISTADOS NO CARDÁPIO)
-        { id: 1, name: 'Abacaxi ao Vinho', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 2, name: 'Doce de Leite', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 3, name: 'Abacaxi Suíço', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 4, name: 'Açaí', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 5, name: 'Ninho com Oreo', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 6, name: 'Algodão Doc (Blue Ice)', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 7, name: 'Amarena', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 8, name: 'Ameixa', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 9, name: 'Banana com Nutella', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 10, name: 'Bis e Trufa', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 11, name: 'Cereja Trufada', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 12, name: 'Chocolate', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 13, name: 'Chocolate com Café', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 14, name: 'Coco Queimado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 15, name: 'Creme Paris', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 16, name: 'Croquer', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 17, name: 'Ferrero Rocher', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 18, name: 'Flocos', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 19, name: 'Kinder Ovo', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 20, name: 'Leite Condensado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 21, name: 'Leite Ninho', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 22, name: 'Leite Ninho Folheado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 23, name: 'Leite Ninho com Pistache', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 24, name: 'Limão', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 25, name: 'Limão Suíço', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 26, name: 'Menta com Chocolate', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 27, name: 'Milho Verde', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 28, name: 'Morango Trufado', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 29, name: 'Mousse de Maracujá', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 30, name: 'Mousse de Uva', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 31, name: 'Nozes', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 32, name: 'Nutella', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 33, name: 'Ovomaltine', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 34, name: 'Pistache', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 35, name: 'Prestígio', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 36, name: 'Sensação', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' },
-        { id: 37, name: 'Torta de Chocolate', category: 'Sorvetes', price: 0, description: 'Sorvete Artesanal' }
+const produtos = {
+    sorvete: [
+        { nome: "Baunilha", preco: 7.50 },
+        { nome: "Chocolate", preco: 7.50 },
+        { nome: "Morango", preco: 7.50 },
+        { nome: "Pistache", preco: 8.00 },
+        { nome: "Café", preco: 7.50 },
+        { nome: "Coco", preco: 7.50 },
+        { nome: "Flocos", preco: 7.50 },
+        { nome: "Goiaba", preco: 7.50 },
+        { nome: "Manga", preco: 7.50 },
+        { nome: "Maracujá", preco: 7.50 },
+        { nome: "Melancia", preco: 7.50 },
+        { nome: "Menta", preco: 7.50 },
+        { nome: "Nata", preco: 7.50 },
+        { nome: "Açaí", preco: 8.50 },
+        { nome: "Abacaxi", preco: 7.50 },
+        { nome: "Amêndoa", preco: 8.00 },
+        { nome: "Avelã", preco: 8.00 },
+        { nome: "Banana", preco: 7.50 },
+        { nome: "Blueberry", preco: 8.00 },
+        { nome: "Brigadeiro", preco: 8.00 },
+        { nome: "Caramelo", preco: 7.50 },
+        { nome: "Cereja", preco: 7.50 },
+        { nome: "Chocolate Branco", preco: 8.00 },
+        { nome: "Chocolate com Avelã", preco: 8.50 },
+        { nome: "Chocolate com Menta", preco: 8.00 },
+        { nome: "Creme", preco: 7.50 },
+        { nome: "Doce de Leite", preco: 8.00 },
+        { nome: "Framboesa", preco: 8.00 },
+        { nome: "Gengibre", preco: 7.50 },
+        { nome: "Hortelã", preco: 7.50 },
+        { nome: "Kiwi", preco: 7.50 },
+        { nome: "Leite Condensado", preco: 8.00 },
+        { nome: "Limão", preco: 7.50 },
+        { nome: "Mel", preco: 8.00 },
+        { nome: "Mirtilo", preco: 8.00 },
+        { nome: "Morango com Chocolate", preco: 8.50 },
+        { nome: "Nutella", preco: 9.00 }
     ],
-    
-    picoles: [
-        // PICOLÉS DE LEITE COM RECHEIO (R$ 3,00) - LISTA EXATA SOLICITADA
-        { id: 101, name: 'Picolé Morango', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Morango' },
-        { id: 102, name: 'Picolé Maracujá', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Maracujá' },
-        { id: 103, name: 'Picolé Limão', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Limão' },
-        { id: 104, name: 'Picolé Coco', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Coco' },
-        { id: 105, name: 'Picolé Amendoim', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Amendoim' },
-        { id: 106, name: 'Picolé Doce de Leite', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Doce de Leite' },
-        { id: 107, name: 'Picolé Chocolate', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Chocolate' },
-        { id: 108, name: 'Picolé Abacaxi', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Abacaxi' },
-        { id: 109, name: 'Picolé Banana', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Banana' },
-        { id: 110, name: 'Picolé Uva', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Uva' },
-        { id: 111, name: 'Picolé Goiaba', category: 'Picolé de Leite com Recheio', price: 3.00, description: 'Leite com Recheio', flavor: 'Goiaba' },
-        
-        // PICOLÉS ESKIMOS (R$ 8,00) - BRIGADEIRO MOVIDO PARA AQUI
-        { id: 120, name: 'Picolé Brigadeiro', category: 'Picolés Eskimos', price: 8.00, description: 'Eskimo Premium', flavor: 'Brigadeiro' }
+    "picole-leite": [
+        { nome: "Morango", preco: 3.00 },
+        { nome: "Maracujá", preco: 3.00 },
+        { nome: "Limão", preco: 3.00 },
+        { nome: "Coco", preco: 3.00 },
+        { nome: "Amendoim", preco: 3.00 },
+        { nome: "Doce de Leite", preco: 3.00 },
+        { nome: "Chocolate", preco: 3.00 },
+        { nome: "Abacaxi", preco: 3.00 },
+        { nome: "Banana", preco: 3.00 },
+        { nome: "Uva", preco: 3.00 },
+        { nome: "Goiaba", preco: 3.00 },
+        { nome: "Blue Ice", preco: 3.00 },
+        { nome: "Caraxi", preco: 3.00 },
+        { nome: "Coco Branco", preco: 3.00 },
+        { nome: "Amarena", preco: 3.00 },
+        { nome: "Leite Condensado", preco: 3.00 },
+        { nome: "Mamão Papaia", preco: 3.00 },
+        { nome: "Menta com Chocolate", preco: 3.00 },
+        { nome: "Nata com Goiaba", preco: 3.00 }
     ],
-    
+    "picole-eskimo": [
+        { nome: "Brigadeiro", preco: 8.00 },
+        { nome: "Bombom", preco: 8.00 },
+        { nome: "Nutella", preco: 8.00 },
+        { nome: "Ovomaltine", preco: 8.00 },
+        { nome: "Leite Ninho", preco: 8.00 },
+        { nome: "Nata", preco: 8.00 },
+        { nome: "Morango", preco: 8.00 },
+        { nome: "Prestígio", preco: 8.00 }
+    ],
     acai: [
-        { id: 201, name: 'Açaí 300ml', category: 'Açaí Promoção', price: 12.00, description: 'Com granola e mel' },
-        { id: 202, name: 'Açaí 500ml', category: 'Açaí Promoção', price: 18.00, description: 'Com granola e mel' },
-        { id: 207, name: 'Açaí Família 1L', category: 'Açaí Promoção', price: 35.00, description: 'Para compartilhar' }
-    ],
-    
-    milkshakes: [
-        // MILKSHAKES (PODE ESCOLHER QUALQUER UM DOS 37 SABORES)
-        { id: 301, name: 'Milkshake Artesanal', category: 'Milkshakes', price: 9.00, description: 'Escolha qualquer um dos 37 sabores de sorvete artesanal' },
-        { id: 302, name: 'Milkshake Especial', category: 'Milkshakes', price: 11.00, description: 'Com Nutella ou Ferrero Rocher' }
-    ],
-    
-    tacas: [
-        // TAÇAS (PODE ESCOLHER QUALQUER UM DOS 37 SABORES)
-        { id: 401, name: 'Taça Simples', category: 'Taças', price: 12.00, description: '1 Bola (Escolha entre os 37 sabores artesanais)' },
-        { id: 402, name: 'Taça Dupla', category: 'Taças', price: 18.00, description: '2 Bolas (Escolha entre os 37 sabores artesanais)' }
-    ],
-    
-    tacas_premium: [
-        { id: 501, name: 'Taça Premium Chocolate', category: 'Taças Premium', price: 20.00, description: 'Com calda de chocolate' },
-        { id: 502, name: 'Taça Premium Morango', category: 'Taças Premium', price: 20.00, description: 'Com calda de morango' },
-        { id: 503, name: 'Taça Premium Caramelo', category: 'Taças Premium', price: 22.00, description: 'Com calda de caramelo' },
-        { id: 504, name: 'Taça Premium Nutella', category: 'Taças Premium', price: 24.00, description: 'Com Nutella' },
-        { id: 505, name: 'Taça Premium Doce de Leite', category: 'Taças Premium', price: 22.00, description: 'Com doce de leite' },
-        { id: 506, name: 'Taça Premium Frutas', category: 'Taças Premium', price: 25.00, description: 'Com frutas vermelhas' },
-        { id: 507, name: 'Taça Premium Especial', category: 'Taças Premium', price: 28.00, description: 'Combinação premium' },
-        { id: 508, name: 'Taça Unicórnio', category: 'Taças Premium', price: 28.00, description: 'Mágica e colorida (Edição Especial)' }
+        { nome: "Açaí com Granola", preco: 12.00 },
+        { nome: "Açaí com Banana", preco: 12.00 },
+        { nome: "Açaí com Morango", preco: 12.00 },
+        { nome: "Açaí com Mel", preco: 12.00 },
+        { nome: "Açaí com Granola e Mel", preco: 13.00 },
+        { nome: "Açaí Especial", preco: 15.00 }
     ]
 };
 
-// Função para obter produtos por categoria
-function getProductsByCategory(category) {
-    const categoryMap = {
-        'sorvetes': products.sorvetes,
-        'picoles': products.picoles,
-        'acai': products.acai,
-        'milkshakes': products.milkshakes,
-        'tacas': products.tacas,
-        'tacas_premium': products.tacas_premium
-    };
-    
-    return categoryMap[category] || [];
-}
-
 // Função para renderizar produtos
-function renderProducts(category) {
-    const productList = document.getElementById('products');
-    if (!productList) return;
-    
-    const items = getProductsByCategory(category);
-    productList.innerHTML = '';
-    
-    items.forEach(product => {
-        const productDiv = document.createElement('div');
-        productDiv.className = 'product-item';
-        
-        // Se o preço for 0 (como nos sabores de sorvete do cardápio), não mostrar o preço nem o botão de adicionar
-        const priceDisplay = product.price > 0 ? `<div class="product-price">R$ ${product.price.toFixed(2)}</div>` : '';
-        const buttonDisplay = product.price > 0 ? `<button class="btn-add" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Adicionar</button>` : '';
-        
-        productDiv.innerHTML = `
-            <div class="product-info">
-                <h4>${product.name}</h4>
-                <p>${product.description}</p>
+function renderizarProdutos() {
+    // Sorvetes
+    const sorveteGrid = document.getElementById('sorvetes-grid');
+    if (sorveteGrid) {
+        sorveteGrid.innerHTML = produtos.sorvete.map(p => `
+            <div class="produto-card" onclick="selecionarProduto('sorvete', '${p.nome}', ${p.preco})">
+                <h4>${p.nome}</h4>
+                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('sorvete', '${p.nome}', ${p.preco})">Comprar</button>
             </div>
-            ${priceDisplay}
-            ${buttonDisplay}
-        `;
-        productList.appendChild(productDiv);
-    });
+        `).join('');
+    }
+
+    // Picolés de Leite com Recheio
+    const picoleLeiteGrid = document.getElementById('picole-leite-grid');
+    if (picoleLeiteGrid) {
+        picoleLeiteGrid.innerHTML = produtos["picole-leite"].map(p => `
+            <div class="produto-card" onclick="selecionarProduto('picole-leite', '${p.nome}', ${p.preco})">
+                <h4>${p.nome}</h4>
+                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('picole-leite', '${p.nome}', ${p.preco})">Comprar</button>
+            </div>
+        `).join('');
+    }
+
+    // Picolés Eskimo
+    const picoleEskimoGrid = document.getElementById('picole-eskimo-grid');
+    if (picoleEskimoGrid) {
+        picoleEskimoGrid.innerHTML = produtos["picole-eskimo"].map(p => `
+            <div class="produto-card" onclick="selecionarProduto('picole-eskimo', '${p.nome}', ${p.preco})">
+                <h4>${p.nome}</h4>
+                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('picole-eskimo', '${p.nome}', ${p.preco})">Comprar</button>
+            </div>
+        `).join('');
+    }
+
+    // Açaí
+    const acaiGrid = document.getElementById('acai-grid');
+    if (acaiGrid) {
+        acaiGrid.innerHTML = produtos.acai.map(p => `
+            <div class="produto-card" onclick="selecionarProduto('acai', '${p.nome}', ${p.preco})">
+                <h4>${p.nome}</h4>
+                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
+                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('acai', '${p.nome}', ${p.preco})">Comprar</button>
+            </div>
+        `).join('');
+    }
 }
 
-// Inicializar com primeira categoria
-document.addEventListener('DOMContentLoaded', () => {
-    if (typeof initializeDatabase === 'function') {
-        initializeDatabase();
-    }
-    renderProducts('sorvetes');
+// Função para atualizar sabores no formulário
+function atualizarSabores() {
+    const categoria = document.getElementById('categoria').value;
+    const saborSelect = document.getElementById('sabor');
     
-    const categorySelect = document.getElementById('category');
-    if (categorySelect) {
-        categorySelect.addEventListener('change', (e) => {
-            renderProducts(e.target.value);
+    saborSelect.innerHTML = '<option value="">Selecione um sabor</option>';
+    
+    if (categoria && produtos[categoria]) {
+        produtos[categoria].forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.nome;
+            option.textContent = `${p.nome} - R$ ${p.preco.toFixed(2)}`;
+            saborSelect.appendChild(option);
         });
     }
+}
+
+// Função para selecionar produto
+function selecionarProduto(categoria, nome, preco) {
+    document.getElementById('categoria').value = categoria;
+    atualizarSabores();
+    document.getElementById('sabor').value = nome;
+}
+
+// Inicializar produtos ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    renderizarProdutos();
 });

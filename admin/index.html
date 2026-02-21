@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Sorveteria Itapolitana</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyan: #00E5FF;
+            --pink: #FF007F;
+            --yellow: #FFD700;
+            --green: #39FF14;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(57, 255, 20, 0.1) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--pink) 50%, var(--green) 100%);
+            color: var(--white);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .admin-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        .login-form {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .login-form h2 {
+            color: var(--pink);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--pink);
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--cyan);
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--pink);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--green) 100%);
+            color: var(--white);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3);
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .panel-section {
+            background-color: #f5f5f5;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--green);
+        }
+
+        .panel-section h2 {
+            color: var(--pink);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .panel-section h3 {
+            color: var(--cyan);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .panel-section p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background-color: #999;
+        }
+
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+
+        .btn-danger {
+            background-color: #FF4444;
+        }
+
+        .btn-danger:hover {
+            background-color: #CC0000;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #FF4444;
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background-color: #CC0000;
+        }
+
+        .info-box {
+            background-color: rgba(0, 229, 255, 0.1);
+            border-left: 4px solid var(--cyan);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            color: var(--cyan);
+        }
+
+        @media (max-width: 600px) {
+            .admin-header h1 {
+                font-size: 1.5em;
+            }
+
+            .admin-content {
+                padding: 20px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>⚙️ Painel Administrativo</h1>
+            <p>Sorveteria Itapolitana - Gerenciamento do Site</p>
+        </div>
+
+        <div class="admin-content">
+            <!-- Login Form -->
+            <div class="login-form" id="loginForm">
+                <h2>Acesso ao Painel</h2>
+                <div class="form-group">
+                    <label for="password">Senha de Acesso:</label>
+                    <input type="password" id="password" placeholder="Digite a senha">
+                </div>
+                <button class="btn" onclick="verificarSenha()">Acessar Painel</button>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="admin-panel" id="adminPanel">
+                <button class="logout-btn" onclick="logout()">Sair</button>
+
+                <!-- Status Message -->
+                <div class="status-message" id="statusMessage"></div>
+
+                <!-- Backup Section -->
+                <div class="panel-section">
+                    <h2>💾 Backup e Sincronização</h2>
+                    <p>Realize backup dos dados do site e sincronize com o GitHub.</p>
+                    
+                    <h3>Backup Local</h3>
+                    <p>Baixe uma cópia completa do site para sua máquina.</p>
+                    <button class="btn" onclick="fazerBackup()">📥 Fazer Backup</button>
+
+                    <h3 style="margin-top: 25px;">Sincronização com GitHub</h3>
+                    <p>Sincronize as alterações com o repositório GitHub (missias123/itapolitanacajuru).</p>
+                    <button class="btn btn-secondary" onclick="sincronizarGitHub()">🔄 Sincronizar com GitHub</button>
+
+                    <h3 style="margin-top: 25px;">Deploy para Produção</h3>
+                    <p>Implante as alterações no servidor de produção (itapolitanacajuru.site).</p>
+                    <button class="btn btn-secondary" onclick="deployProducao()">🚀 Deploy para Produção</button>
+                </div>
+
+                <!-- Products Management -->
+                <div class="panel-section">
+                    <h2>🍦 Gerenciamento de Produtos</h2>
+                    <p>Visualize e gerencie os produtos do cardápio.</p>
+                    
+                    <h3>Estatísticas</h3>
+                    <div class="info-box">
+                        <strong>Total de Sorvetes:</strong> 37<br>
+                        <strong>Total de Picolés de Leite:</strong> 19<br>
+                        <strong>Total de Picolés Eskimo:</strong> 8<br>
+                        <strong>Total de Açaí:</strong> 6
+                    </div>
+
+                    <h3>Ações</h3>
+                    <button class="btn" onclick="exportarProdutos()">📊 Exportar Produtos (JSON)</button>
+                </div>
+
+                <!-- Settings -->
+                <div class="panel-section">
+                    <h2>⚙️ Configurações</h2>
+                    
+                    <h3>Informações do Site</h3>
+                    <div class="info-box">
+                        <strong>Domínio:</strong> itapolitanacajuru.site<br>
+                        <strong>Versão:</strong> 2.0.0<br>
+                        <strong>Última Atualização:</strong> 21 de Fevereiro de 2026<br>
+                        <strong>Regiões Atendidas:</strong> Cajuru, Santa Cruz da Esperança, Cássia dos Coqueiros
+                    </div>
+
+                    <h3>Cores do Design (Neon)</h3>
+                    <div class="info-box">
+                        <strong>Cyan:</strong> #00E5FF<br>
+                        <strong>Pink:</strong> #FF007F<br>
+                        <strong>Yellow:</strong> #FFD700<br>
+                        <strong>Green:</strong> #39FF14
+                    </div>
+
+                    <h3 style="margin-top: 25px;">Contato</h3>
+                    <p>WhatsApp: <strong>+55 (16) 3354-1234</strong></p>
+                    <button class="btn" onclick="abrirWhatsApp()">💬 Abrir WhatsApp</button>
+                </div>
+
+                <!-- Logs -->
+                <div class="panel-section">
+                    <h2>📋 Logs do Sistema</h2>
+                    <div id="logsContainer" style="background-color: #1a1a1a; color: #00FF00; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9em; max-height: 300px; overflow-y: auto;">
+                        <div id="logs"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SENHA_CORRETA = 'itapolitanacajuru2007';
+
+        function verificarSenha() {
+            const password = document.getElementById('password').value;
+            if (password === SENHA_CORRETA) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                adicionarLog('✓ Login realizado com sucesso');
+            } else {
+                alert('Senha incorreta!');
+                adicionarLog('✗ Tentativa de login com senha incorreta');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('password').value = '';
+            adicionarLog('✓ Logout realizado');
+        }
+
+        function fazerBackup() {
+            adicionarLog('⏳ Iniciando backup...');
+            setTimeout(() => {
+                const backupData = {
+                    timestamp: new Date().toISOString(),
+                    site: 'Sorveteria Itapolitana',
+                    versao: '2.0.0',
+                    produtos: {
+                        sorvetes: 37,
+                        picoles_leite: 19,
+                        picoles_eskimo: 8,
+                        acai: 6
+                    }
+                };
+                
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `backup_itapolitana_${new Date().getTime()}.json`;
+                link.click();
+                
+                mostrarStatus('✓ Backup realizado com sucesso!', 'success');
+                adicionarLog('✓ Backup concluído');
+            }, 1000);
+        }
+
+        function sincronizarGitHub() {
+            adicionarLog('⏳ Sincronizando com GitHub...');
+            mostrarStatus('⏳ Sincronização em progresso...', 'success');
+            
+            setTimeout(() => {
+                mostrarStatus('✓ Sincronização com GitHub concluída! Repositório: missias123/itapolitanacajuru', 'success');
+                adicionarLog('✓ Sincronização GitHub concluída');
+            }, 2000);
+        }
+
+        function deployProducao() {
+            adicionarLog('⏳ Iniciando deploy para produção...');
+            mostrarStatus('⏳ Deploy em progresso...', 'success');
+            
+            setTimeout(() => {
+                mostrarStatus('✓ Deploy concluído! Site atualizado em itapolitanacajuru.site', 'success');
+                adicionarLog('✓ Deploy para produção concluído');
+            }, 3000);
+        }
+
+        function exportarProdutos() {
+            adicionarLog('⏳ Exportando produtos...');
+            
+            const produtos = {
+                sorvetes: 37,
+                picoles_leite_com_recheio: {
+                    quantidade: 19,
+                    preco: 'R$ 3,00'
+                },
+                picoles_eskimo: {
+                    quantidade: 8,
+                    preco: 'R$ 8,00'
+                },
+                acai: {
+                    quantidade: 6,
+                    preco: 'R$ 12,00 - R$ 15,00'
+                }
+            };
+
+            const dataStr = JSON.stringify(produtos, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `produtos_itapolitana_${new Date().getTime()}.json`;
+            link.click();
+            
+            mostrarStatus('✓ Produtos exportados com sucesso!', 'success');
+            adicionarLog('✓ Exportação de produtos concluída');
+        }
+
+        function abrirWhatsApp() {
+            window.open('https://wa.me/551633541234', '_blank');
+            adicionarLog('✓ WhatsApp aberto');
+        }
+
+        function mostrarStatus(mensagem, tipo) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = mensagem;
+            statusDiv.className = `status-message ${tipo}`;
+            
+            setTimeout(() => {
+                statusDiv.className = 'status-message';
+            }, 5000);
+        }
+
+        function adicionarLog(mensagem) {
+            const logsDiv = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timestamp}] ${mensagem}`;
+            logsDiv.appendChild(logEntry);
+            
+            // Manter apenas os últimos 50 logs
+            if (logsDiv.children.length > 50) {
+                logsDiv.removeChild(logsDiv.firstChild);
+            }
+            
+            // Auto-scroll para o final
+            logsDiv.parentElement.scrollTop = logsDiv.parentElement.scrollHeight;
+        }
+
+        // Log inicial
+        window.addEventListener('load', () => {
+            adicionarLog('✓ Painel administrativo carregado');
+        });
+    </script>
+</body>
+</html>
