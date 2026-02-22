@@ -639,7 +639,7 @@ function enviarChat(){
   inp.value='';
   addMsg('user',msg);
   const t=document.getElementById('chat-typing');t.classList.add('show');
-  setTimeout(()=>{t.classList.remove('show');addMsg('bot',getResp(msg);},700+Math.random()*500);
+  setTimeout(()=>{t.classList.remove('show');addMsg('bot',getResp(msg));},700+Math.random()*500);
 }
 function addMsg(tipo,txt){
   const m=document.getElementById('chat-msgs');
@@ -648,9 +648,14 @@ function addMsg(tipo,txt){
 }
 function getResp(msg){
   const l=msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  for(const[k,r]of Object.entries(RESPOSTAS)){if(k!=='default'&&l.includes(k))return r;}
-  return RESPOSTAS.default;
-}}
+  for(const[k,r]of Object.entries(RESPOSTAS)){
+    if(k!=='default'&&l.includes(k)){
+      return typeof r==='function'?r():r;
+    }
+  }
+  const d=RESPOSTAS.default;
+  return typeof d==='function'?d():d;
+}
 
 // ── PWA ──
 let deferredPrompt=null;

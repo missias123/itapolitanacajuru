@@ -93,6 +93,11 @@ function criarSecao(id,titulo,conteudo){
 }
 function renderAdmin(){
   const body=document.getElementById('admin-body');body.innerHTML='';
+  // Card de acesso rápido à promoção
+  const promoCard=document.createElement('div');
+  promoCard.style.cssText='background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
+  promoCard.innerHTML='<div><div style="font-size:15px;font-weight:800">🎉 Gerenciar Promoção</div><div style="font-size:12px;opacity:.85;margin-top:3px">Poste foto, texto e link da promoção do dia</div></div><a href="promocao.html" style="background:#F9A825;color:#111;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">Abrir →</a>';
+  body.appendChild(promoCard);
   body.appendChild(criarSecao('sorvetes','🍦 Sorvetes de Massa',renderSorvetes()));
   body.appendChild(criarSecao('picoles','🍭 Picolés',renderPicoles()));
   body.appendChild(criarSecao('acai','🫐 Açaí Artesanal',renderAcai()));
