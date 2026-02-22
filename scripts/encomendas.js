@@ -14,25 +14,25 @@ const SABORES_SORVETE = [
 
 const PRODUTOS = {
   caixas: [
-    { id:"cx5l2s", nome:"Caixa 5 Litros – 2 Sabores", preco:85.00, maxSabores:2, estoque:20 },
-    { id:"cx5l3s", nome:"Caixa 5 Litros – 3 Sabores", preco:85.00, maxSabores:3, estoque:20 },
-    { id:"cx10l2s", nome:"Caixa 10 Litros – 2 Sabores", preco:160.00, maxSabores:2, estoque:15 },
-    { id:"cx10l3s", nome:"Caixa 10 Litros – 3 Sabores", preco:160.00, maxSabores:3, estoque:15 }
+    { id:"cx5l2s", nome:"Caixa 5 Litros – 2 Sabores", preco:100.00, maxSabores:2, estoque:20 },
+    { id:"cx5l3s", nome:"Caixa 5 Litros – 3 Sabores", preco:115.00, maxSabores:3, estoque:20 },
+    { id:"cx10l2s", nome:"Caixa 10 Litros – 2 Sabores", preco:150.00, maxSabores:2, estoque:15 },
+    { id:"cx10l3s", nome:"Caixa 10 Litros – 3 Sabores", preco:165.00, maxSabores:3, estoque:15 }
   ],
   tortas: [
     { id:"torta1", nome:"Torta de Sorvete", preco:75.00, maxSabores:3, estoque:10 }
   ],
   picoles: [
-    { id:"pic_agua", nome:"Picolé de Fruta/Água", precoVarejo:4.00, precoAtacado:3.00, estoque:250,
-      sabores:["Abacaxi","Caju","Coco","Goiaba","Limão","Maracujá","Melancia","Melão","Morango","Uva","Uva Verde"] },
-    { id:"pic_leite", nome:"Picolé de Leite", precoVarejo:5.00, precoAtacado:4.00, estoque:250,
-      sabores:["Baunilha","Brigadeiro","Caramelo","Chocolate","Coco","Creme","Doce de Leite","Flocos","Morango","Ninho","Paçoca"] },
-    { id:"pic_recheado", nome:"Picolé de Leite Recheado", precoVarejo:6.50, precoAtacado:5.50, estoque:200,
-      sabores:["Brigadeiro Recheado","Chocolate Recheado","Doce de Leite Recheado","Morango Recheado","Ninho Recheado","Nutella Recheado"] },
-    { id:"pic_ninho", nome:"Picolé Leite Ninho", precoVarejo:7.00, precoAtacado:6.00, estoque:200,
-      sabores:["Ninho","Ninho com Morango","Ninho com Nutella","Ninho com Paçoca","Ninho com Brigadeiro"] },
-    { id:"pic_esquimo", nome:"Picolé Esquimó", precoVarejo:8.00, precoAtacado:7.00, estoque:150,
-      sabores:["Esquimó Chocolate","Esquimó Chocolate Branco","Esquimó Morango","Esquimó Coco","Esquimó Baunilha"] }
+    { id:"pic_agua", nome:"Picolé de Fruta/Água", precoVarejo:2.50, precoAtacado:2.50, estoque:200,
+      sabores:["Abacaxi","Caju","Goiaba","Groselha","Limão","Melância","Uva","Tamarindo"] },
+    { id:"pic_leite", nome:"Picolé de Leite sem Recheio", precoVarejo:2.50, precoAtacado:2.50, estoque:200,
+      sabores:["Coco Queimado","Milho Verde","Amendoim","Pistache"] },
+    { id:"pic_recheado", nome:"Picolé de Leite com Recheio", precoVarejo:3.00, precoAtacado:3.00, estoque:200,
+      sabores:["Açaí","Blue Ice","Caraxi","Coco Branco","Chocolate","Amarena","Leite Condensado","Mamão Papaia","Maracujá","Morango","Menta com Chocolate","Nata com Goiaba"] },
+    { id:"pic_ninho", nome:"Picolé Leite Ninho", precoVarejo:4.00, precoAtacado:4.00, estoque:200,
+      sabores:["Leite Ninho"] },
+    { id:"pic_esquimo", nome:"Picolé Eskimo", precoVarejo:8.00, precoAtacado:8.00, estoque:200,
+      sabores:["Bombom","Nutella","Ovomaltine","Leite Ninho","Nata","Morango","Brigadeiro","Prestígio"] }
   ]
 };
 
