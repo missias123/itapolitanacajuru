@@ -156,7 +156,10 @@ img{max-width:100%;display:block}
 .promo-btn{background:linear-gradient(135deg,#FFD600,#FF8F00);color:#1A0A00;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:800;width:100%;box-shadow:0 4px 12px rgba(255,214,0,.5)}
 
 /* CHATBOT */
-.chat-fab{position:fixed;top:80px;right:12px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50px;padding:10px 18px;font-size:13px;font-weight:800;z-index:300;box-shadow:0 4px 20px rgba(232,0,13,.5);display:flex;align-items:center;gap:6px;white-space:nowrap;letter-spacing:.3px}
+.chat-fab{display:none}
+/* BOTÃO FALE CONOSCO HERO */
+@keyframes pulse-chat{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.7),0 4px 20px rgba(37,211,102,.4)}60%{box-shadow:0 0 0 14px rgba(37,211,102,0),0 4px 20px rgba(37,211,102,.4)}}
+.hero-chat-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:13px 30px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px;animation:pulse-chat 2s infinite;margin-bottom:14px;box-shadow:0 4px 20px rgba(37,211,102,.5)}
 .chat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:700;align-items:flex-end;justify-content:center}
 .chat-overlay.show{display:flex}
 .chat-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;height:72vh;display:flex;flex-direction:column}
@@ -244,6 +247,8 @@ img{max-width:100%;display:block}
 <section class="hero">
   <h2>O Sorvete Mais Amado de Cajuru e Região</h2>
   <p>Produção própria com ingredientes selecionados. Sorvetes artesanais, picolés recheados e açaí premium desde 2007.</p>
+  <button class="hero-chat-btn" onclick="abrirChat()">💬 Fale Conosco</button>
+  <br>
   <button class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
     🍦 Ver Cardápio Completo
   </button>
