@@ -6,25 +6,44 @@
     <title>Painel Administrativo - Sorveteria Itapolitana</title>
     <link rel="stylesheet" href="../styles/main.css">
     <style>
-        body { background: #f4f4f4; font-family: 'Inter', sans-serif; }
-        .admin-container { max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .login-box { max-width: 400px; margin: 100px auto; padding: 30px; background: white; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        :root {
+            --pink: #FF007F;
+            --cyan: #00E5FF;
+        }
+        body { background: #f4f4f4; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        .login-box { 
+            max-width: 400px; 
+            margin: 100px auto; 
+            padding: 30px; 
+            background: white; 
+            border-radius: 15px; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            display: block; /* Garantir que está visível */
+        }
+        .admin-container { 
+            max-width: 1000px; 
+            margin: 40px auto; 
+            padding: 20px; 
+            background: white; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            display: none; 
+        }
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .btn-admin { width: 100%; padding: 12px; background: var(--pink); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-admin:hover { background: var(--cyan); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        .btn-admin { width: 100%; padding: 12px; background: var(--pink); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        .btn-admin:hover { background: #e60073; }
         
-        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .category-section { margin-bottom: 40px; }
+        .category-section h3 { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--cyan); color: #00acc1; }
+        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .product-edit-card { padding: 15px; border: 1px solid #eee; border-radius: 10px; background: #fafafa; }
         .product-edit-card h4 { margin-bottom: 10px; color: var(--pink); }
         .edit-fields { display: flex; gap: 10px; }
         .edit-fields div { flex: 1; }
-        .edit-fields input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; }
-        
-        .category-section { margin-bottom: 40px; }
-        .category-section h3 { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--cyan); color: var(--cyan); }
+        .edit-fields input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
         
         .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 20px; z-index: 1000; }
         .btn-save { padding: 12px 40px; background: #2ecc71; color: white; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; }
@@ -35,16 +54,18 @@
     <!-- Login Section -->
     <div id="login-section" class="login-box">
         <h2 style="color: var(--pink); margin-bottom: 20px;">Acesso Restrito</h2>
+        <p style="margin-bottom: 20px; color: #666;">Digite a senha para gerenciar os produtos.</p>
         <div class="form-group">
-            <label>Senha Administrativa</label>
-            <input type="password" id="admin-password" placeholder="Digite a senha...">
+            <label for="admin-password">Senha Administrativa</label>
+            <input type="password" id="admin-password" placeholder="Digite a senha..." onkeypress="if(event.key === 'Enter') checkLogin()">
         </div>
         <button class="btn-admin" onclick="checkLogin()">Entrar no Painel</button>
+        <p style="margin-top: 20px;"><a href="../index.html" style="color: #888; text-decoration: none; font-size: 14px;">← Voltar ao Site</a></p>
     </div>
 
     <!-- Admin Panel Section -->
-    <div id="admin-panel" class="admin-container" style="display: none;">
-        <div class="admin-header">
+    <div id="admin-panel" class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
             <h2>⚙️ Gerenciamento de Produtos</h2>
             <span id="status-msg" style="color: #2ecc71; font-weight: 600;"></span>
         </div>
@@ -53,8 +74,10 @@
             <!-- Categorias serão inseridas aqui via JS -->
         </div>
 
+        <div style="height: 80px;"></div> <!-- Espaço para a barra de salvar -->
+
         <div class="save-bar">
-            <button class="btn-save" onclick="saveChanges()">Salvar Todas as Alterações</button>
+            <button class="btn-save" onclick="saveChanges()">Salvar Alterações</button>
             <button class="btn-logout" onclick="logout()">Sair</button>
         </div>
     </div>
@@ -62,7 +85,7 @@
     <script src="../scripts/products.js"></script>
     <script>
         const ADMIN_PASS = "itapolitana2007";
-        let localProducts = JSON.parse(JSON.stringify(produtos));
+        let localProducts = {};
 
         function checkLogin() {
             const pass = document.getElementById('admin-password').value;
@@ -79,19 +102,15 @@
             const container = document.getElementById('products-management');
             container.innerHTML = '';
 
-            // Garantir que os produtos estão carregados
-            if (typeof produtos === 'undefined' || !produtos) {
-                container.innerHTML = '<p style="color: red; padding: 20px;">Erro: Dados de produtos não encontrados. Verifique o arquivo products.js.</p>';
+            if (typeof produtos === 'undefined') {
+                container.innerHTML = '<p style="color: red;">Erro: Arquivo de produtos não carregado.</p>';
                 return;
             }
 
-            // Usar os produtos globais se localProducts estiver vazio
-            if (Object.keys(localProducts).length === 0) {
-                localProducts = JSON.parse(JSON.stringify(produtos));
-            }
+            localProducts = JSON.parse(JSON.stringify(produtos));
 
             const categoriasNomes = {
-                'sorvete': '🍦 Sorvetes de Massa (5L e 10L)',
+                'sorvete': '🍦 Sorvetes de Massa',
                 'picole-leite': '🍭 Picolés de Leite com Recheio',
                 'picole-eskimo': '🍭 Picolés Eskimo',
                 'acai': '🥤 Açaí Artesanal',
@@ -100,11 +119,8 @@
                 'tacas-premium': '🍫 Taças Premium'
             };
 
-            // Iterar sobre todas as categorias definidas no objeto produtos
             Object.keys(localProducts).forEach(catId => {
                 const catProdutos = localProducts[catId];
-                if (!catProdutos || catProdutos.length === 0) return;
-
                 const section = document.createElement('div');
                 section.className = 'category-section';
                 
@@ -122,7 +138,7 @@
                                         onchange="updateLocalProduct('${catId}', ${index}, 'preco', this.value)">
                                 </div>
                                 <div>
-                                    <label style="font-size: 12px; color: #888;">Estoque (un)</label>
+                                    <label style="font-size: 12px; color: #888;">Estoque</label>
                                     <input type="number" value="${p.estoque || 100}" 
                                         onchange="updateLocalProduct('${catId}', ${index}, 'estoque', this.value)">
                                 </div>
@@ -142,19 +158,14 @@
         }
 
         function saveChanges() {
-            // Em um ambiente real, isso enviaria para um backend ou API do GitHub
-            // Aqui, vamos simular o salvamento e mostrar uma mensagem
-            console.log('Salvando alterações:', localProducts);
-            
             const status = document.getElementById('status-msg');
-            status.textContent = '⌛ Salvando no GitHub...';
+            status.textContent = '⌛ Salvando...';
             
-            // Simular delay de rede
             setTimeout(() => {
-                status.textContent = '✅ Alterações salvas com sucesso!';
+                status.textContent = '✅ Salvo com sucesso!';
+                alert('Alterações salvas! (Simulação de envio ao servidor)');
                 setTimeout(() => status.textContent = '', 3000);
-                alert('As alterações foram enviadas para o GitHub e estarão ativas em instantes!');
-            }, 1500);
+            }, 1000);
         }
 
         function logout() {
