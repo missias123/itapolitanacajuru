@@ -20,7 +20,7 @@ const PRODUTOS = {
     { id:"cx10l3s", nome:"Caixa 10 Litros – 3 Sabores", preco:165.00, maxSabores:3, estoque:15 }
   ],
   tortas: [
-    { id:"torta1", nome:"Torta de Sorvete", preco:75.00, maxSabores:3, estoque:10 }
+    { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3, estoque:10 }
   ],
   picoles: [
     { id:"pic_agua", nome:"Picolé de Fruta/Água", precoVarejo:2.50, precoAtacado:1.80, estoque:200,
