@@ -87,6 +87,10 @@ img{max-width:100%;display:block}
 #acc-tacas-p>.acc-body{border-color:#FFCC02}
 #acc-torta>.acc-header{background:linear-gradient(135deg,#2E7D32,#43A047)}
 #acc-torta>.acc-body{border-color:#A5D6A7}
+#acc-iso>.acc-header{background:linear-gradient(135deg,#00838F,#00BCD4)}
+#acc-iso>.acc-body{border-color:#80DEEA}
+#acc-sobremesas>.acc-header{background:linear-gradient(135deg,#6A1B9A,#AB47BC)}
+#acc-sobremesas>.acc-body{border-color:#CE93D8}
 
 /* GRID PRODUTOS (visualização) */
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
@@ -369,8 +373,29 @@ img{max-width:100%;display:block}
     </div>
   </div>
 
+  <!-- ISOPORES DE VIAGEM -->
+  <div class="acc" id="acc-iso">
+    <div class="acc-header" onclick="toggleAcc('acc-iso')">
+      <div class="acc-left">
+        <span class="acc-icon">🧊</span>
+        <div><div class="acc-title">Isopores de Viagem</div><div class="acc-sub">4 tamanhos · Leve sorvete para casa</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="iso-body"></div>
+  </div>
+  <!-- SOBREMESAS GELADAS -->
+  <div class="acc" id="acc-sobremesas">
+    <div class="acc-header" onclick="toggleAcc('acc-sobremesas')">
+      <div class="acc-left">
+        <span class="acc-icon">🍨</span>
+        <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Fundue, Petit Gateau, Sorvete Diet e mais</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="sobremesas-body"></div>
+  </div>
 </section>
-
 <!-- RODAPÉ -->
 <footer class="footer">
   <h3>📍 Onde Estamos</h3>
@@ -571,6 +596,38 @@ function renderPicoles(){
   }
 }
 
+// ── RENDER ISOPORES DE VIAGEM ── (lê do products.js)
+function renderIso(){
+  const b=document.getElementById('iso-body');if(!b)return;b.innerHTML='';
+  if(produtos&&produtos.isopores_viagem){
+    const grid=document.createElement('div');grid.className='prod-grid';
+    Object.entries(produtos.isopores_viagem).forEach(([tam,preco])=>{
+      const d=document.createElement('div');d.className='prod-card';
+      d.innerHTML=`<div class="prod-nome">🧊 Isopore ${tam}</div><div class="prod-desc">Leve sorvete para casa</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      grid.appendChild(d);
+    });
+    b.appendChild(grid);
+    const btn=document.createElement('div');btn.style='margin-top:12px';
+    btn.innerHTML=`<button class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore')">🍨 Ver os 36 Sabores</button>`;
+    b.appendChild(btn);
+  }
+}
+// ── RENDER SOBREMESAS GELADAS ── (lê do products.js)
+function renderSobremesas(){
+  const b=document.getElementById('sobremesas-body');if(!b)return;b.innerHTML='';
+  if(produtos&&produtos.sobremesas){
+    const grid=document.createElement('div');grid.className='prod-grid';
+    Object.entries(produtos.sobremesas).forEach(([nome,preco])=>{
+      const d=document.createElement('div');d.className='prod-card';
+      d.innerHTML=`<div class="prod-nome">🍨 ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      grid.appendChild(d);
+    });
+    b.appendChild(grid);
+    const btn=document.createElement('div');btn.style='margin-top:12px';
+    btn.innerHTML=`<button class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas')">🍨 Ver os 36 Sabores</button>`;
+    b.appendChild(btn);
+  }
+}
 // ── ABRIR MODAL SABORES ──
 function abrirSabores(tipo,titulo){
   document.getElementById('ms-titulo').textContent=titulo;
@@ -709,7 +766,7 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
-  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();
+  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();renderIso();renderSobremesas();
   // Todos os accordions fechados por padrão
   // Atualizar preço da torta do products.js
   const tp=document.getElementById('torta-preco');
