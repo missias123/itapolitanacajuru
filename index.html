@@ -519,6 +519,18 @@ img{max-width:100%;display:block}
   </div>
 
 
+  <!-- COMPLEMENTOS NO CARDÁPIO -->
+  <div class="acc" id="acc-complementos">
+    <div class="acc-header" onclick="toggleAcc('acc-complementos')" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
+      <div class="acc-left">
+        <span class="acc-icon">🍪</span>
+        <div><div class="acc-title" style="color:#fff">Complementos para Sorvetes</div><div class="acc-sub" style="color:rgba(255,255,255,0.85)">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div></div>
+      </div>
+      <span class="acc-arrow" style="color:#fff">▼</span>
+    </div>
+    <div class="acc-body" id="acc-body-complementos"></div>
+  </div>
+
 </section>
 <!-- RODAPÉ -->
 <footer class="footer">
@@ -993,6 +1005,46 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
   if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('pwa-banner').classList.remove('show');}
 });
 
+// ── COMPLEMENTOS CARDÁPIO ──
+function getComplementosCardapio() {
+  const PADRAO = [
+    {id:'canudinho',nome:'Canudinho Wafer UN',preco:0.25,estoque:999},
+    {id:'casquinha',nome:'Casquinhas UN',preco:0.25,estoque:999},
+    {id:'cascao',nome:'Cascão UN',preco:1.00,estoque:999},
+    {id:'cestinha',nome:'Cestinha UN',preco:1.00,estoque:999},
+    {id:'cobertura',nome:'Cobertura 1.3L UN',preco:40.00,estoque:999}
+  ];
+  try { const s = localStorage.getItem('itap_complementos'); if(s) return JSON.parse(s); } catch(e){}
+  return PADRAO;
+}
+function renderComplementosCardapio() {
+  const el = document.getElementById('acc-body-complementos');
+  if (!el) return;
+  const comps = getComplementosCardapio();
+  let fotos = {};
+  try { fotos = JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){}
+  el.innerHTML = `
+    <div style="padding:4px 0 10px">
+      <p style="font-size:0.82rem;color:#555;margin:0 0 12px;text-align:center;">Clique em qualquer produto para ir às encomendas e continuar comprando</p>
+      ${comps.map(c => {
+        const esgotado = c.estoque <= 0;
+        const foto = fotos['comp_enc_'+c.id] || '';
+        const fotoHtml = foto
+          ? `<img src="${foto}" style="width:50px;height:50px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
+          : `<div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
+        return `<a href="encomendas.html#caixas" style="display:flex;align-items:center;background:${esgotado?'#FFF3F3':'#FAFAFA'};border:1.5px solid ${esgotado?'#FFCDD2':'#E0E0E0'};border-radius:12px;padding:12px;margin-bottom:10px;text-decoration:none;${esgotado?'opacity:0.6;pointer-events:none;':''};cursor:pointer;">
+          ${fotoHtml}
+          <div style="flex:1;">
+            <div style="font-size:0.9rem;font-weight:800;color:#1A0A00;">${c.nome}${esgotado?'<span style="font-size:0.7rem;background:#EF5350;color:#fff;border-radius:4px;padding:2px 6px;margin-left:6px;">ESGOTADO</span>':''}</div>
+            <div style="font-size:0.82rem;color:#B71C1C;font-weight:700;">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
+          </div>
+          <span style="font-size:1.2rem;color:#B71C1C;font-weight:900;margin-left:8px;">›</span>
+        </a>`;
+      }).join('')}
+      <a href="encomendas.html#caixas" style="display:block;width:100%;padding:14px;background:linear-gradient(135deg,#B71C1C,#E53935);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:900;cursor:pointer;margin-top:6px;text-align:center;text-decoration:none;">🛒 Ir para Encomendas e Comprar →</a>
+    </div>`;
+}
+
 // ── BANNER CARDÁPIO ──
 // Se houver banner personalizado no admin, sobrepõe o padrão
 function carregarBanner(){
@@ -1009,6 +1061,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   carregarBanner();
   carregarBarraPromo();
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();renderIso();renderSobremesas();
+  renderComplementosCardapio();
   // Todos os accordions fechados por padrão
   // Foto da torta
   const tortaFotoArea=document.getElementById('torta-foto-area');

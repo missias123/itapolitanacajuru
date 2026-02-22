@@ -142,6 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
     }, 200);
   }
+  // Abrir caixas se vier de complementos
+  if(hash === 'complementos'){
+    const el = document.getElementById('conteudo-caixas');
+    if(el){ el.classList.add('aberto'); }
+    setTimeout(()=>{
+      const sec = document.getElementById('caixas');
+      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 200);
+  }
 });
 
 function renderizarTudo() {
