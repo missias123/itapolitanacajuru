@@ -530,7 +530,14 @@ function imgCard(chave,emoji){
   return `<div class="prod-card-sem-foto">${emoji||'🍦'}</div>`;
 }
 // ── ACCORDION ──
-function toggleAcc(id){document.getElementById(id).classList.toggle('open')}
+function toggleAcc(id){
+  const el=document.getElementById(id);
+  const isOpen=el.classList.contains('open');
+  // Fechar todos os accordions
+  document.querySelectorAll('.acc.open').forEach(a=>a.classList.remove('open'));
+  // Se estava fechado, abrir o clicado; se estava aberto, deixar fechado
+  if(!isOpen) el.classList.add('open');
+}
 
 // ── MODAL HELPERS ──
 function fecharModal(id){document.getElementById(id).classList.remove('show')}
