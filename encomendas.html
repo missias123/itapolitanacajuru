@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encomendas - Sorveteria Itapolitana</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/encomendas.css">
+</head>
+<body>
+    <div class="container">
+        <header class="encomendas-header">
+            <a href="index.html" class="btn-voltar">← Voltar para Home</a>
+            <div class="logo-container">
+                <img src="images/logo.png" alt="Logo Itapolitana" class="logo-img">
+                <div>
+                    <h2>AÇAITERIA & SORVETERIA ITAPOLITANA</h2>
+                    <p>Desde 2007 em Cajuru</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="gerenciar/index.html" class="btn-estoque">Estoque</a>
+                <a href="https://wa.me/5516991472045" target="_blank" class="btn-whatsapp">WhatsApp</a>
+            </div>
+        </header>
+
+        <main>
+            <div class="progresso-pedido">
+                <div class="etapa ativa">1. Selecionar Produto</div>
+                <div class="etapa">2. Carrinho</div>
+                <div class="etapa">3. Checkout</div>
+            </div>
+
+            <h2 class="selecione-title">🛍️ Selecione o Produto</h2>
+
+            <div id="categorias-container"></div>
+        </main>
+    </div>
+
+    <script src="scripts/products.js"></script>
+    <script src="scripts/encomendas.js"></script>
+</body>
+</html>
+<div id="modal-sabores-encomenda" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="fecharModal('modal-sabores-encomenda')">&times;</span>
+        <h3 id="modal-sabores-titulo"></h3>
+        <p id="modal-sabores-subtitulo"></p>
+        <div id="sabores-grid" class="opcoes-grid">
+            <!-- Sabores serão inseridos dinamicamente aqui -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-confirmar" onclick="confirmarSelecaoSabores()">Confirmar</button>
+        </div>
+    </div>
+</div>

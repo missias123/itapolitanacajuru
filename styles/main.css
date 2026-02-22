@@ -1,7 +1,5 @@
 /* ========================================
    SORVETERIA ITAPOLITANA - PREMIUM STYLES
-   Inspirado em benchmarks de grandes empresas (iFood, McDonald's, Ben & Jerry's)
-   Foco: Conversão, Velocidade e UX Mobile-First
    ======================================== */
 
 :root {
@@ -10,13 +8,12 @@
     --yellow: #FFD700;
     --green: #39FF14;
     --white: #FFFFFF;
-    --bg-soft: #FDFBF7; /* Creme suave e moderno */
+    --bg-soft: #FDFBF7;
     --bg-card: #FFFFFF;
-    --text-dark: #2D2424; /* Marrom escuro quase preto para melhor contraste */
+    --text-dark: #2D2424;
     --text-light: #5E5454;
     --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
     --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
-    --shadow-neon: 0 0 15px rgba(255, 0, 127, 0.2);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -24,20 +21,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html {
-    scroll-behavior: smooth;
-    font-size: 16px;
 }
 
 body {
-    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-soft);
     color: var(--text-dark);
-    line-height: 1.6;
-    overflow-x: hidden;
 }
 
 .container {
@@ -46,95 +35,9 @@ body {
     padding: 0 16px;
 }
 
-/* ========================================
-   BOTÕES PADRONIZADOS (Cores da Logomarca)
-   ======================================== */
-
-.btn-padrao, .nav-btn, .cta-button, .btn-comprar, .btn-adicionar, .btn-finalizar, .btn-enviar-pedido, .btn-voltar-etapa, .btn-escolher {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: var(--transition);
-    cursor: pointer;
-    border: none;
-    font-size: 0.9em;
-    text-decoration: none;
-    box-shadow: var(--shadow-sm);
-}
-
-/* Botão Principal (Rosa) */
-.btn-pink, .cta-button, .btn-finalizar, .btn-enviar-pedido {
-    background-color: var(--pink);
-    color: white;
-}
-
-.btn-pink:hover, .cta-button:hover, .btn-finalizar:hover, .btn-enviar-pedido:hover {
-    background-color: #e60073;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 0, 127, 0.3);
-}
-
-/* Botão Secundário (Ciano) */
-.btn-cyan, .nav-btn, .btn-adicionar, .btn-voltar-etapa, .btn-escolher {
-    background-color: var(--cyan);
-    color: var(--text-dark);
-}
-
-.btn-cyan:hover, .nav-btn:hover, .btn-adicionar:hover, .btn-voltar-etapa:hover, .btn-escolher:hover {
-    background-color: #00d4eb;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 229, 255, 0.3);
-}
-
-/* Botão de Compra (Verde/Amarelo) */
-.btn-comprar {
-    background-color: var(--green);
-    color: #1a5a00;
-    width: 100%;
-}
-
-.btn-comprar:hover {
-    background-color: #32e612;
-    transform: scale(1.02);
-}
-
-/* Botão de Sair/Fechar (Acessível Mobile) */
-.btn-sair, .close, .logout-btn {
-    background-color: #ff4444;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 12px;
-    font-weight: 700;
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-sair:hover, .logout-btn:hover {
-    background-color: #cc0000;
-}
-
-/* ========================================
-   HEADER & NAVIGATION
-   ======================================== */
-
+/* Header */
 .header {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
     padding: 15px 0;
-    box-shadow: var(--shadow-sm);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 .logo-section {
@@ -145,199 +48,165 @@ body {
 .logo {
     font-size: 2.2em;
     color: var(--pink);
-    margin-bottom: 2px;
     font-weight: 800;
-    letter-spacing: -1px;
 }
 
 .tagline {
     color: var(--text-light);
     font-size: 0.8em;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
 }
 
-.nav {
+.header-buttons {
     display: flex;
     justify-content: center;
     gap: 10px;
-    padding: 5px 0;
+    padding: 10px 0;
 }
 
-.nav-btn {
-    background: transparent;
-    color: var(--text-dark);
-    box-shadow: none;
-    font-size: 0.8em;
-    padding: 8px 16px;
+.header-btn {
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.nav-btn:hover {
-    background: rgba(0, 229, 255, 0.1);
-    color: #00acc1;
-    transform: none;
-    box-shadow: none;
-}
+.header-btn.purple { background-color: #8A2BE2; }
+.header-btn.orange { background-color: #FFA500; }
+.header-btn.green { background-color: #28A745; }
+.header-btn.yellow { background-color: #FFD700; }
 
-/* ========================================
-   HERO SECTION
-   ======================================== */
-
-.hero {
-    background: linear-gradient(135deg, #FFF5F8 0%, #F0FDFF 100%);
-    border-radius: 30px;
-    padding: 60px 20px;
-    text-align: center;
-    margin: 30px 0 50px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(255, 0, 127, 0.05);
-    position: relative;
-    overflow: hidden;
-}
-
-.hero h2 {
-    font-size: 2.5em;
-    color: var(--text-dark);
-    margin-bottom: 20px;
-    font-weight: 800;
-    line-height: 1.1;
-}
-
-.hero p {
-    font-size: 1.2em;
-    color: var(--text-light);
-    margin-bottom: 30px;
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* ========================================
-   CARDÁPIO
-   ======================================== */
-
+/* Cardápio */
 .cardapio h2 {
     font-size: 2em;
     font-weight: 800;
     margin-bottom: 40px;
     text-align: center;
-    position: relative;
-}
-
-.cardapio h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 4px;
-    background: var(--pink);
-    border-radius: 2px;
 }
 
 .categoria {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border-radius: 20px;
+    overflow: hidden;
     background: var(--bg-card);
     box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(0,0,0,0.03);
 }
 
 .categoria-header {
-    padding: 25px;
-    background: transparent;
-    color: var(--text-dark);
-    font-size: 1.2em;
+    padding: 20px 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
 }
 
-.produtos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
+.categoria-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+    padding: 0 20px;
 }
 
-.produto-card {
-    background: #F9FAFB;
-    border-radius: 20px;
+.categoria.ativa .categoria-content {
+    max-height: 2000px;
     padding: 20px;
-    border: 1px solid transparent;
-    transition: var(--transition);
 }
 
-.produto-card:hover {
-    background: white;
-    border-color: var(--pink);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-5px);
+/* Modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.6);
 }
 
-.produto-preco {
-    color: var(--pink);
-    font-size: 1.3em;
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; 
+    padding: 30px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 500px;
 }
 
-/* ========================================
-   ENCOMENDAS
-   ======================================== */
-
-.encomendas {
-    background: white;
-    border-radius: 30px;
-    padding: 40px;
-    margin-bottom: 50px;
-    box-shadow: var(--shadow-md);
+/* Modal de Promoção */
+.modal-content-promo {
+    background-color: #000;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
 }
 
-.form-group label {
-    color: var(--text-dark);
+.close-promo-btn {
+    color: #fff;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.form-group input, .form-group select {
-    background: #F3F4F6;
-    border: 1px solid transparent;
+.btn-regulamento, .btn-participar {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
 }
 
-.form-group input:focus {
-    background: white;
-    border-color: var(--pink);
+.btn-regulamento { background: #fff; color: #000; }
+.btn-participar { background: #ff8c00; color: #000; }
+
+.countdown-container {
+    background: #6a0dad;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
 }
 
-/* ========================================
-   REGIONAL BANNERS
-   ======================================== */
-
-.regional-banner {
-    background: #FEF3C7;
-    color: #92400E;
-    border: none;
+#countdown {
+    display: flex;
+    justify-content: space-around;
+    color: #fff;
+    font-size: 1.5em;
+}
+/* Estilos para a Seção de Picolés */
+.picole-card {
+    background: #fff;
+    border: 1px solid #eee;
     border-radius: 15px;
-    font-size: 1em;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* ========================================
-   FOOTER
-   ======================================== */
-
-.footer {
-    background: #1F2937;
-    color: white;
-    padding: 60px 0;
-    margin-top: 80px;
+.picole-card h4 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
 }
 
-.footer p {
-    color: #9CA3AF;
+.picole-card p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #FF007F;
+    margin-bottom: 15px;
 }
 
-/* ========================================
-   MOBILE OPTIMIZATIONS
-   ======================================== */
 
-@media (max-width: 430px) {
-    .logo { font-size: 1.8em; }
-    .hero h2 { font-size: 1.8em; }
-    .produtos-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .hero { padding: 40px 15px; }
-}

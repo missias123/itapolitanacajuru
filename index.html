@@ -167,11 +167,12 @@
                 <h1 class="logo">🍦 Itapolitana</h1>
                 <p class="tagline">Qualidade Artesanal desde 2007</p>
             </div>
-            <nav class="nav">
-                <button class="nav-btn" onclick="scrollToSection('cardapio')">Cardápio</button>
-                <button class="nav-btn" onclick="scrollToSection('encomendas')">Encomendas</button>
-                <button class="nav-btn" onclick="scrollToSection('regioes')">Regiões</button>
-            </nav>
+<div class="header-buttons">
+                <a href="encomendas.html" class="header-btn purple">🛒 Encomendas</a>
+                <a href="#" class="header-btn orange" id="promo-btn">🎉 Promoção</a>
+                <a href="https://wa.me/5516991472045" target="_blank" class="header-btn green">💬 Chat</a>
+                <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817,618m/data=!3m2!1e3!4b1!4m6!3m5!1s0x94b7791707728ce9:0x9f59a9d96f0a5fc2!8m2!3d-21.2776816!4d-47.3046068!16s%2Fg%2F11c6w5qmq5?entry=ttu" target="_blank" class="header-btn yellow">⭐ Avalie</a>
+            </div>
         </header>
 
         <!-- Regional Trust Banner -->
@@ -193,14 +194,50 @@
             <!-- Sorvetes -->
             <div class="categoria">
                 <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍦 Sorvetes de Massa (5L e 10L)</span>
+                    <span>🍦 Sorvetes de Massa</span>
                 </div>
                 <div class="categoria-content">
                     <div class="produtos-grid" id="sorvetes-grid"></div>
+                    <button class="btn-escolher" onclick="abrirModalSabores('sorvetes')">Escolher Sabores</button>
                 </div>
             </div>
 
             <!-- Picolés -->
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍭 Picolés</span>
+                </div>
+                <div class="categoria-content" id="picoles-container">
+                    <!-- Conteúdo dos picolés será gerado aqui -->
+                </div>
+            </div>
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍭 Picolés de Frutas/Água - R$ 2,50</span>
+                </div>
+                <div class="categoria-content">
+                    <button class="btn-escolher" onclick="abrirModalSabores('picole_frutas_agua')">Escolher Sabores</button>
+                    <div class="produtos-grid" id="picole-frutas-agua-grid"></div>
+                </div>
+            </div>
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍭 Picolés de Leite sem Recheio - R$ 2,50</span>
+                </div>
+                <div class="categoria-content">
+                    <button class="btn-escolher" onclick="abrirModalSabores('picole_leite_sem_recheio')">Escolher Sabores</button>
+                    <div class="produtos-grid" id="picole-leite-sem-recheio-grid"></div>
+                </div>
+            </div>
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍭 Picolé de Leite Ninho - R$ 4,00</span>
+                </div>
+                <div class="categoria-content">
+                    <button class="btn-escolher" onclick="abrirModalSabores('picole_leite_ninho')">Escolher Sabores</button>
+                    <div class="produtos-grid" id="picole-leite-ninho-grid"></div>
+                </div>
+            </div>
             <div class="categoria">
                 <div class="categoria-header" onclick="toggleCategoria(this)">
                     <span>🍭 Picolés Especiais</span>
@@ -209,38 +246,63 @@
                     <div class="subcategoria">
                         <h4>Picolé de Leite com Recheio - R$ 3,00</h4>
                         <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Cremosos e com recheio generoso. Escolha entre nossos sabores exclusivos.</p>
+                        <button class="btn-escolher" onclick="abrirModalSabores('picole_leite_com_recheio')">Escolher Sabores</button>
                         <div class="produtos-grid" id="picole-leite-grid"></div>
                     </div>
                     <div class="subcategoria">
                         <h4>Picolés Eskimo - R$ 8,00</h4>
+                        <button class="btn-escolher" onclick="abrirModalSabores('picole_eskimo')">Escolher Sabores</button>
                         <div class="produtos-grid" id="picole-eskimo-grid"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Milk Shakes e Taças -->
+            <!-- Milk Shakes -->
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🥤 Milk Shakes</span>
+                </div>
+                <div class="categoria-content">
+                    <div class="produtos-grid" id="milkshake-grid"></div>
+                    <button class="btn-escolher" onclick="abrirModalSabores('milkshake')">Escolher Sabores</button>
+                </div>
+            </div>
+
+            <!-- Taças -->
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🍨 Taças</span>
+                </div>
+                <div class="categoria-content">
+                    <div class="produtos-grid" id="tacas-grid"></div>
+                    <button class="btn-escolher" onclick="abrirModalSabores('tacas')">Escolher Sabores</button>
+                </div>
+            </div>
+
+            <!-- Taças Premium -->
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🏆 Taças Premium</span>
+                </div>
+                <div class="categoria-content" id="tacas-premium-container">
+                    <!-- Conteúdo das taças premium será gerado aqui -->
+                </div>
+            </div>
+            <div class="categoria">
+                <div class="categoria-header" onclick="toggleCategoria(this)">
+                    <span>🏆 Taças Premium</span>
+                </div>
+                <div class="categoria-content">
+                    <div class="produtos-grid" id="tacas-premium-grid"></div>
+                    <button class="btn-escolher" onclick="abrirModalSabores('tacas_premium')">Escolher Sabores</button>
+                </div>
+            </div>
             <div class="categoria">
                 <div class="categoria-header" onclick="toggleCategoria(this)">
                     <span>🥤 Shakes e Taças Premium</span>
                 </div>
                 <div class="categoria-content">
-                    <div class="produtos-grid">
-                        <div class="produto-card">
-                            <h4>Milk Shake Gourmet</h4>
-                            <div class="produto-preco">R$ 15,00</div>
-                            <button class="btn-escolher" onclick="abrirModalSabores('milkshake')">Escolher Sabores</button>
-                        </div>
-                        <div class="produto-card">
-                            <h4>Taça Clássica</h4>
-                            <div class="produto-preco">R$ 18,00</div>
-                            <button class="btn-escolher" onclick="abrirModalSabores('tacas')">Escolher Sabores</button>
-                        </div>
-                        <div class="produto-card">
-                            <h4>Taça Premium Especial</h4>
-                            <div class="produto-preco">R$ 25,00</div>
-                            <button class="btn-escolher" onclick="abrirModalSabores('tacas-premium')">Escolher Sabores</button>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
 
@@ -251,6 +313,7 @@
                 </div>
                 <div class="categoria-content">
                     <div class="produtos-grid" id="acai-grid"></div>
+                    <button class="btn-escolher" onclick="abrirModalComplementos('acai')">Montar seu Açaí</button>
                 </div>
             </div>
         </section>
@@ -386,5 +449,30 @@
             }
         }
     </script>
+<!-- Modal Genérico para Seleção -->
+<div id="modal-selecao" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="fecharModal('modal-selecao')">&times;</span>
+        <h3 id="modal-titulo"></h3>
+        <div id="modal-opcoes" class="opcoes-grid">
+            <!-- Opções serão inseridas dinamicamente aqui -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-confirmar" onclick="confirmarSelecao()">Confirmar</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
+<div id="promotion-modal" class="modal" style="display: none;">
+    <div class="modal-content-promo">
+        <span class="close-promo-btn">&times;</span>
+        <img src="images/promo_banner.png" alt="Promoção Banner" style="width:100%; border-radius: 15px;">
+        <a href="#" class="btn-regulamento">Ver Regulamento Completo</a>
+        <div class="countdown-container">
+            <p>PRIMEIRO SORTEIO EM:</p>
+            <div id="countdown"></div>
+        </div>
+        <a href="https://instagram.com/sorveteriaitapolitanacajuru" target="_blank" class="btn-participar">PARTICIPAR DO SORTEIO: ACESSE @SORVETERIAITAPOLITANACAJURU NO INSTAGRAM</a>
+    </div>
+</div>
