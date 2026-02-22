@@ -22,18 +22,15 @@ const PRODUTOS = {
   tortas: [
     { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3, estoque:10 }
   ],
-  picoles: [
-    { id:"pic_agua", nome:"Picolé de Fruta/Água", precoVarejo:2.50, precoAtacado:1.80, estoque:200,
-      sabores:["Abacaxi","Caju","Goiaba","Groselha","Limão","Melância","Uva","Tamarindo"] },
-    { id:"pic_leite", nome:"Picolé de Leite sem Recheio", precoVarejo:2.50, precoAtacado:1.80, estoque:200,
-      sabores:["Coco Queimado","Milho Verde","Amendoim","Pistache"] },
-    { id:"pic_recheado", nome:"Picolé de Leite com Recheio", precoVarejo:3.00, precoAtacado:2.00, estoque:200,
-      sabores:["Açaí","Blue Ice","Caraxi","Coco Branco","Chocolate","Amarena","Leite Condensado","Mamão Papaia","Maracujá","Morango","Menta com Chocolate","Nata com Goiaba"] },
-    { id:"pic_ninho", nome:"Picolé Leite Ninho", precoVarejo:4.00, precoAtacado:3.00, estoque:200,
-      sabores:["Leite Ninho"] },
-    { id:"pic_esquimo", nome:"Picolé Eskimo", precoVarejo:8.00, precoAtacado:6.00, estoque:200,
-      sabores:["Bombom","Nutella","Ovomaltine","Leite Ninho","Nata","Morango","Brigadeiro","Prestígio"] }
-  ]
+  // Picolés carregados do products.js (fonte única)
+  picoles: Object.entries(produtos.picoles).map(([key, p]) => ({
+    id: 'pic_'+key,
+    nome: p.nome,
+    precoVarejo: p.preco_varejo,
+    precoAtacado: p.preco_atacado,
+    estoque: p.estoque,
+    sabores: p.sabores
+  }))
 };
 
 // Estado global

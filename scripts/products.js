@@ -1,7 +1,7 @@
 const produtos = {
     sorvetes: {
         sabores: [
-            "Abacaxi ao Vinho", "Abacaxi Suíço", "Açaí", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho com Creme Paris", "Leite Ninho com Nutella", "Leite Ninho Foleado", "Leite Ninho com Óreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
+            "Abacaxi ao Vinho", "Abacaxi Suíço", "Açaí", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho com Creme Paris", "Leite Ninho com Nutella", "Leite Ninho Folheado", "Leite Ninho com Óreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
         ],
         precos: {
             casquinha_copo: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
@@ -11,11 +11,11 @@ const produtos = {
         }
     },
     picoles: {
-        frutas_agua: { preco: 2.50, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
-        leite_sem_recheio: { preco: 2.50, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
-        leite_com_recheio: { preco: 3.00, sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
-        leite_ninho: { preco: 4.00, sabores: ["Leite Ninho"] },
-        eskimos: { preco: 8.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
+        frutas_agua: { nome: "Picolé de Fruta/Água", preco_varejo: 2.50, preco_atacado: 1.80, estoque: 200, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
+        leite_sem_recheio: { nome: "Picolé de Leite sem Recheio", preco_varejo: 2.50, preco_atacado: 1.80, estoque: 200, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
+        leite_com_recheio: { nome: "Picolé de Leite com Recheio", preco_varejo: 3.00, preco_atacado: 2.00, estoque: 200, sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
+        leite_ninho: { nome: "Picolé Leite Ninho", preco_varejo: 4.00, preco_atacado: 3.00, estoque: 200, sabores: ["Leite Ninho"] },
+        eskimos: { nome: "Picolé Eskimo", preco_varejo: 8.00, preco_atacado: 6.00, estoque: 200, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
     },
     acai: {
         copos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
