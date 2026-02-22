@@ -486,7 +486,7 @@ img{max-width:100%;display:block}
       <span class="acc-arrow">▼</span>
     </div>
     <div class="acc-body">
-      <a href="encomendas.html#caixas" class="enc-link-btn">🧃 Ver Caixas de Sorvete e Encomendar →</a>
+      <div id="lista-caixas-cardapio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button></div>
     </div>
   </div>
 
@@ -1025,23 +1025,24 @@ function renderComplementosCardapio() {
   try { fotos = JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){}
   el.innerHTML = `
     <div style="padding:4px 0 10px">
-      <p style="font-size:0.82rem;color:#555;margin:0 0 12px;text-align:center;">Clique em qualquer produto para ir às encomendas e continuar comprando</p>
       ${comps.map(c => {
         const esgotado = c.estoque <= 0;
         const foto = fotos['comp_enc_'+c.id] || '';
         const fotoHtml = foto
           ? `<img src="${foto}" style="width:50px;height:50px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
           : `<div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
-        return `<a href="encomendas.html#caixas" style="display:flex;align-items:center;background:${esgotado?'#FFF3F3':'#FAFAFA'};border:1.5px solid ${esgotado?'#FFCDD2':'#E0E0E0'};border-radius:12px;padding:12px;margin-bottom:10px;text-decoration:none;${esgotado?'opacity:0.6;pointer-events:none;':''};cursor:pointer;">
+        return `<div style="display:flex;align-items:center;background:${esgotado?'#FFF3F3':'#FAFAFA'};border:1.5px solid ${esgotado?'#FFCDD2':'#E0E0E0'};border-radius:12px;padding:12px;margin-bottom:10px;${esgotado?'opacity:0.6;':''}">
           ${fotoHtml}
           <div style="flex:1;">
             <div style="font-size:0.9rem;font-weight:800;color:#1A0A00;">${c.nome}${esgotado?'<span style="font-size:0.7rem;background:#EF5350;color:#fff;border-radius:4px;padding:2px 6px;margin-left:6px;">ESGOTADO</span>':''}</div>
             <div style="font-size:0.82rem;color:#B71C1C;font-weight:700;">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
           </div>
-          <span style="font-size:1.2rem;color:#B71C1C;font-weight:900;margin-left:8px;">›</span>
-        </a>`;
+        </div>`;
       }).join('')}
-      <a href="encomendas.html#caixas" style="display:block;width:100%;padding:14px;background:linear-gradient(135deg,#B71C1C,#E53935);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:900;cursor:pointer;margin-top:6px;text-align:center;text-decoration:none;">🛒 Ir para Encomendas e Comprar →</a>
+      <div style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:4px">
+        <div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">🛒 Para encomendar complementos, acesse a página de Encomendas no menu acima</div>
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button>
+      </div>
     </div>`;
 }
 

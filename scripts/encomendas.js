@@ -61,13 +61,14 @@ const PRODUTOS = {
   }))
 };
 
+
 // ---- COMPLEMENTOS ----
 const COMPLEMENTOS_PADRAO = [
   { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:100, foto:'' },
   { id:'casquinhas',     nome:'Casquinhas',      preco:0.25, estoque:100, foto:'' },
   { id:'cascao',         nome:'Cascão',          preco:1.00, estoque:100, foto:'' },
   { id:'cestinha',       nome:'Cestinha',        preco:1.00, estoque:100, foto:'' },
-  { id:'cobertura_13l',  nome:'Cobertura 1.3L',  preco:40.00,estoque:100, foto:'' }
+  { id:'cobertura_13l',  nome:'Cobertura 1.3L',  preco:40.00, estoque:100, foto:'' }
 ];
 function getComplementos() {
   let lista;
@@ -75,54 +76,75 @@ function getComplementos() {
     const salvo = localStorage.getItem('itap_complementos');
     lista = salvo ? JSON.parse(salvo) : COMPLEMENTOS_PADRAO;
   } catch(e) { lista = COMPLEMENTOS_PADRAO; }
-  // Injetar fotos do itap_fotos (mesmo localStorage do admin)
   let fotos = {};
   try { fotos = JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){}
   return lista.map(c => ({ ...c, foto: fotos['comp_enc_'+c.id] || c.foto || '' }));
 }
-let compQtds = {}; // { id: quantidade }
-
-function renderizarComplementos() {
-  const lista = document.getElementById('comp-sorvete-lista');
-  if (!lista) return;
+let compQtds = {};
+function inicializarCompQtds() {
   const comps = getComplementos();
   compQtds = {};
-  comps.forEach(c => { compQtds[c.id] = 0; });
+  comps.forEach(c => { if (compQtds[c.id] === undefined) compQtds[c.id] = 0; });
+}
+function toggleComplementosCaixas() {
+  const lista = document.getElementById('comp-caixas-lista');
+  const arrow = document.getElementById('comp-arrow');
+  if (!lista) return;
+  const aberto = lista.style.display === 'none' || lista.style.display === '';
+  if (aberto) {
+    lista.style.display = 'block';
+    if (arrow) arrow.innerHTML = '&#9650;';
+    renderizarComplementosCaixas();
+  } else {
+    lista.style.display = 'none';
+    if (arrow) arrow.innerHTML = '&#9660;';
+  }
+}
+function renderizarComplementosCaixas() {
+  const lista = document.getElementById('comp-caixas-lista');
+  if (!lista) return;
+  inicializarCompQtds();
+  const comps = getComplementos();
   lista.innerHTML = comps.map(c => {
     const esgotado = c.estoque <= 0;
+    const qtd = compQtds[c.id] || 0;
     const fotoHtml = c.foto
-      ? `<img src="${c.foto}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;margin-right:10px;flex-shrink:0;" onerror="this.style.display='none'">`
-      : `<div style="width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#F3E5F5,#EDE7F6);display:flex;align-items:center;justify-content:center;font-size:22px;margin-right:10px;flex-shrink:0;">🍪</div>`;
+      ? `<img src="${c.foto}" style="width:52px;height:52px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
+      : `<div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
     return `
-    <div class="comp-sorvete-item${esgotado?' esgotado':''}" id="comp-item-${c.id}">
+    <div id="comp-cx-item-${c.id}" style="display:flex;align-items:center;background:#fff;border:1.5px solid ${qtd>0?'#B71C1C':'#E0E0E0'};border-radius:12px;padding:12px;margin-bottom:10px;${esgotado?'opacity:0.5;':''}">
       ${fotoHtml}
-      <div class="comp-sorvete-info">
-        <span class="comp-sorvete-nome">${c.nome}${esgotado?'<span class="comp-sorvete-tag-esgotado">ESGOTADO</span>':''}</span>
-        <span class="comp-sorvete-preco">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</span>
+      <div style="flex:1;">
+        <div style="font-size:0.92rem;font-weight:800;color:#1A0A00;">${c.nome}${esgotado?'<span style="font-size:0.7rem;background:#EF5350;color:#fff;border-radius:4px;padding:2px 6px;font-weight:700;margin-left:6px;">ESGOTADO</span>':''}</div>
+        <div style="font-size:0.82rem;color:#B71C1C;font-weight:700;">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
       </div>
-      <div class="comp-sorvete-ctrl">
-        <button class="comp-btn comp-btn-menos" onclick="alterarComp('${c.id}',-1)" ${esgotado?'disabled':''}>−</button>
-        <span class="comp-qtd" id="comp-qtd-${c.id}">0</span>
-        <button class="comp-btn comp-btn-mais" onclick="alterarComp('${c.id}',1)" ${esgotado?'disabled':''}><b>+</b></button>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <button onclick="alterarCompCaixa('${c.id}',-1)" ${esgotado?'disabled':''} style="width:34px;height:34px;border-radius:50%;border:2px solid #B71C1C;background:#fff;color:#B71C1C;font-size:1.2rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <span id="comp-cx-qtd-${c.id}" style="font-size:1rem;font-weight:800;min-width:20px;text-align:center;">${qtd}</span>
+        <button onclick="alterarCompCaixa('${c.id}',1)" ${esgotado?'disabled':''} style="width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#B71C1C,#E53935);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
       </div>
     </div>`;
   }).join('');
+  atualizarBtnAddComps();
 }
-
-function alterarComp(id, delta) {
+function alterarCompCaixa(id, delta) {
   const comps = getComplementos();
   const c = comps.find(x => x.id === id);
-  if (!c) return;
-  if (c.estoque <= 0) return;
+  if (!c || c.estoque <= 0) return;
   const atual = compQtds[id] || 0;
   const novo = Math.max(0, Math.min(atual + delta, c.estoque));
   compQtds[id] = novo;
-  const el = document.getElementById('comp-qtd-'+id);
+  const el = document.getElementById('comp-cx-qtd-'+id);
   if (el) el.textContent = novo;
-  const item = document.getElementById('comp-item-'+id);
-  if (item) item.classList.toggle('ativo', novo > 0);
+  const item = document.getElementById('comp-cx-item-'+id);
+  if (item) item.style.borderColor = novo > 0 ? '#B71C1C' : '#E0E0E0';
+  atualizarBtnAddComps();
 }
-
+function atualizarBtnAddComps() {
+  const total = Object.values(compQtds).reduce((a,b)=>a+b, 0);
+  const btn = document.getElementById('btn-add-comps-carrinho');
+  if (btn) btn.style.display = total > 0 ? 'block' : 'none';
+}
 function getCompsCarrinho() {
   const comps = getComplementos();
   return comps
@@ -136,8 +158,28 @@ function getCompsCarrinho() {
       tipo: 'complemento'
     }));
 }
-
-// Estado global
+function adicionarCompsAoCarrinho() {
+  const compsParaAdicionar = getCompsCarrinho();
+  if (compsParaAdicionar.length === 0) return;
+  compsParaAdicionar.forEach(comp => {
+    const ex = carrinho.find(c => c.id === comp.id);
+    if (ex) { ex.quantidade += comp.quantidade; }
+    else { carrinho.push({...comp}); }
+  });
+  // Resetar quantidades
+  const comps = getComplementos();
+  comps.forEach(c => {
+    compQtds[c.id] = 0;
+    const el = document.getElementById('comp-cx-qtd-'+c.id);
+    if (el) el.textContent = '0';
+    const item = document.getElementById('comp-cx-item-'+c.id);
+    if (item) item.style.borderColor = '#E0E0E0';
+  });
+  const btn = document.getElementById('btn-add-comps-carrinho');
+  if (btn) btn.style.display = 'none';
+  atualizarBotaoCarrinho();
+  showToast('✅ Complementos adicionados ao carrinho!', 'sucesso');
+}
 let carrinho = [];
 let produtoAtual = null;
 let saboresSelecionados = [];
@@ -249,7 +291,6 @@ function abrirSaboresSorvete(id, cat) {
     <button class="sabor-item" onclick="toggleSabor('${s}',this)">${s}</button>`).join('');
 
   atualizarBtnConfirmar();
-  renderizarComplementos();
   abrirModal('modal-sabores');
 }
 
@@ -288,11 +329,8 @@ function confirmarSabores() {
     quantidade: 1,
     tipo: 'sorvete'
   });
-  // Adicionar complementos selecionados ao carrinho
-  getCompsCarrinho().forEach(comp => addCarrinho(comp));
   fecharModal('modal-sabores');
-  const nComps = getCompsCarrinho().length;
-  showToast(`✅ ${produtoAtual.nome} adicionado${nComps>0?' + complementos':''}!`, 'sucesso');
+  showToast(`✅ ${produtoAtual.nome} adicionado ao carrinho!`, 'sucesso');
 }
 
 // ---- MODAL PICOLÉS ----
@@ -576,91 +614,3 @@ function toggleSecao(id) {
   if (icon) icon.textContent = aberto ? '▲' : '▼';
 }
 
-// ---- COMPLEMENTOS NA SEÇÃO DE CAIXAS ----
-function toggleComplementosCaixas() {
-  const lista = document.getElementById('comp-caixas-lista');
-  const arrow = document.getElementById('comp-arrow');
-  if (!lista) return;
-  const aberto = lista.style.display === 'none' || lista.style.display === '';
-  if (aberto) {
-    lista.style.display = 'block';
-    if (arrow) arrow.innerHTML = '&#9650;';
-    renderizarComplementosCaixas();
-  } else {
-    lista.style.display = 'none';
-    if (arrow) arrow.innerHTML = '&#9660;';
-  }
-}
-
-function renderizarComplementosCaixas() {
-  const lista = document.getElementById('comp-caixas-lista');
-  if (!lista) return;
-  const comps = getComplementos();
-  lista.innerHTML = comps.map(c => {
-    const esgotado = c.estoque <= 0;
-    const qtd = compQtds[c.id] || 0;
-    const fotoHtml = c.foto
-      ? `<img src="${c.foto}" style="width:52px;height:52px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
-      : `<div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
-    return `
-    <div class="comp-sorvete-item${esgotado?' esgotado':''}" id="comp-cx-item-${c.id}" style="background:#fff;border:1.5px solid #E0E0E0;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;">
-      ${fotoHtml}
-      <div style="flex:1;">
-        <div style="font-size:0.92rem;font-weight:800;color:#1A0A00;">${c.nome}${esgotado?'<span style="font-size:0.7rem;background:#EF5350;color:#fff;border-radius:4px;padding:2px 6px;font-weight:700;margin-left:6px;">ESGOTADO</span>':''}</div>
-        <div style="font-size:0.82rem;color:#B71C1C;font-weight:700;">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-        <button onclick="alterarCompCaixa('${c.id}',-1)" ${esgotado?'disabled':''} style="width:34px;height:34px;border-radius:50%;border:2px solid #B71C1C;background:#fff;color:#B71C1C;font-size:1.2rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
-        <span id="comp-cx-qtd-${c.id}" style="font-size:1rem;font-weight:800;min-width:20px;text-align:center;">${qtd}</span>
-        <button onclick="alterarCompCaixa('${c.id}',1)" ${esgotado?'disabled':''} style="width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#B71C1C,#E53935);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function alterarCompCaixa(id, delta) {
-  const comps = getComplementos();
-  const c = comps.find(x => x.id === id);
-  if (!c || c.estoque <= 0) return;
-  const atual = compQtds[id] || 0;
-  const novo = Math.max(0, Math.min(atual + delta, c.estoque));
-  compQtds[id] = novo;
-  // Atualizar exibição no card de caixas
-  const el = document.getElementById('comp-cx-qtd-'+id);
-  if (el) el.textContent = novo;
-  const item = document.getElementById('comp-cx-item-'+id);
-  if (item) item.style.borderColor = novo > 0 ? '#B71C1C' : '#E0E0E0';
-  // Atualizar também no modal (se estiver aberto)
-  const elModal = document.getElementById('comp-qtd-'+id);
-  if (elModal) elModal.textContent = novo;
-  const itemModal = document.getElementById('comp-item-'+id);
-  if (itemModal) itemModal.classList.toggle('ativo', novo > 0);
-  // Mostrar/ocultar botão de adicionar ao carrinho
-  const totalComps = Object.values(compQtds).reduce((a,b)=>a+b,0);
-  const btnAddComps = document.getElementById('btn-add-comps-carrinho');
-  if (btnAddComps) btnAddComps.style.display = totalComps > 0 ? 'block' : 'none';
-  // Atualizar botão do carrinho
-  atualizarBotaoCarrinho();
-}
-function adicionarCompsAoCarrinho() {
-  const compsParaAdicionar = getCompsCarrinho();
-  if (compsParaAdicionar.length === 0) return;
-  compsParaAdicionar.forEach(comp => {
-    const ex = carrinho.find(c => c.id === comp.id);
-    if (ex) { ex.quantidade += comp.quantidade; }
-    else { carrinho.push({...comp}); }
-  });
-  // Resetar quantidades
-  const comps = getComplementos();
-  comps.forEach(c => {
-    compQtds[c.id] = 0;
-    const el = document.getElementById('comp-cx-qtd-'+c.id);
-    if (el) el.textContent = '0';
-    const item = document.getElementById('comp-cx-item-'+c.id);
-    if (item) item.style.borderColor = '#E0E0E0';
-  });
-  const btnAddComps = document.getElementById('btn-add-comps-carrinho');
-  if (btnAddComps) btnAddComps.style.display = 'none';
-  atualizarBotaoCarrinho();
-  showToast('✅ Complementos adicionados ao carrinho!', 'sucesso');
-}
