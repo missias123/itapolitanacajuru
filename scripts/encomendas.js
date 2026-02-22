@@ -15,7 +15,7 @@ function getSaboresAtivos() {
     "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
     "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
     "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-    "Leite Ninho com Nutella","Leite Ninho Folheado","Leite Ninho com Óreo","Limão",
+    "Leite Ninho com Nutella","Leite Ninho Foleado","Leite Ninho com Óreo","Limão",
     "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
     "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
     "Pistache","Prestígio","Sensação","Torta de Chocolate"
