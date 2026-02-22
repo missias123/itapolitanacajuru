@@ -3,250 +3,183 @@
 // ========================================
 
 let carrinho = [];
+let selecaoAtual = {};
 
 // Função para alternar visibilidade das categorias (Acordeão)
 function toggleCategoria(elemento) {
     const categoria = elemento.parentElement;
-    const estaAtiva = categoria.classList.contains('ativa');
-    
-    // Fechar todas as outras categorias
-    document.querySelectorAll('.categoria').forEach(cat => {
-        cat.classList.remove('ativa');
-    });
-    
-    // Se não estava ativa, abrir a atual
-    if (!estaAtiva) {
-        categoria.classList.add('ativa');
-        // Rolar suavemente para a categoria aberta
-        setTimeout(() => {
-            categoria.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300);
+    categoria.classList.toggle("ativa");
+}
+
+// Funções do Modal Genérico
+function abrirModal(titulo, opcoes, tipo, categoria) {
+    const modal = document.getElementById('modal-selecao');
+    const modalTitulo = document.getElementById('modal-titulo');
+    const modalOpcoes = document.getElementById('modal-opcoes');
+
+    modalTitulo.textContent = titulo;
+    modalOpcoes.innerHTML = '';
+    selecaoAtual = { tipo, categoria, itens: {} };
+
+    if (tipo === 'sabores') {
+        opcoes.forEach(sabor => {
+            modalOpcoes.innerHTML += `
+                <div class="opcao-item" onclick="selecionarItem(this, '${sabor}', null, false)">
+                    ${sabor}
+                </div>
+            `;
+        });
+    } else if (tipo === 'complementos') {
+        for (const compCategoria in opcoes) {
+            const { preco, itens } = opcoes[compCategoria];
+            modalOpcoes.innerHTML += `<h4 class="complemento-categoria">${compCategoria.replace('_', ' ')} - R$ ${preco.toFixed(2)}</h4>`;
+            itens.forEach(item => {
+                modalOpcoes.innerHTML += `
+                    <div class="opcao-item" onclick="selecionarItem(this, '${item}', ${preco}, true)">
+                        ${item}
+                    </div>
+                `;
+            });
+        }
+    }
+
+    modal.style.display = 'block';
+}
+
+function fecharModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function selecionarItem(elemento, nome, preco, multiplo) {
+    if (!multiplo) {
+        document.querySelectorAll('#modal-opcoes .opcao-item.selecionado').forEach(el => el.classList.remove('selecionado'));
+        selecaoAtual.itens = {}; 
+    }
+
+    elemento.classList.toggle('selecionado');
+
+    if (elemento.classList.contains('selecionado')) {
+        selecaoAtual.itens[nome] = { preco };
+    } else {
+        delete selecaoAtual.itens[nome];
     }
 }
 
-// Função para adicionar ao carrinho
-function adicionarAoCarrinho(categoria = null, nome = null, preco = null) {
-    let categoriaForm = categoria || document.getElementById('categoria').value;
-    let nomeForm = nome || document.getElementById('sabor').value;
-    let precoForm = preco;
-    let quantidadeForm = parseInt(document.getElementById('quantidade').value) || 1;
-
-    if (!categoriaForm || !nomeForm) {
-        alert('Por favor, selecione uma categoria e um sabor!');
+function confirmarSelecao() {
+    if (Object.keys(selecaoAtual.itens).length === 0) {
+        alert("Selecione ao menos uma opção.");
         return;
     }
 
-    // Se não foi passado preço, buscar do array de produtos
-    if (!precoForm) {
-        const produtoEncontrado = produtos[categoriaForm]?.find(p => p.nome === nomeForm);
-        precoForm = produtoEncontrado?.preco || 0;
+    if (selecaoAtual.tipo === 'sabores') {
+        const nomeSabor = Object.keys(selecaoAtual.itens)[0];
+        let preco = 0;
+
+        if(selecaoAtual.categoria.startsWith('picole')){
+            preco = produtos.picoles[selecaoAtual.categoria.replace('picole_', '')].preco;
+        } else if (selecaoAtual.categoria === 'milkshake'){
+            preco = produtos.milkshake.tradicional['300ml']; // Preço base
+        } else if (selecaoAtual.categoria === 'tacas'){
+            preco = produtos.tacas.tradicionais['Colegial']; // Preço base
+        } else if (selecaoAtual.categoria === 'tacas_premium'){
+            preco = produtos.tacas.sujas['Prestígio']; // Preço base
+        }
+
+        adicionarAoCarrinho(selecaoAtual.categoria, `${selecaoAtual.categoria.replace('_', ' ')} - ${nomeSabor}`, preco);
+
+    } else if (selecaoAtual.tipo === 'complementos') {
+        const tamanho = prompt("Qual o tamanho do copo de açaí? (300ml, 360ml, 400ml, 600ml)");
+        if (produtos.acai.copos[tamanho]) {
+            let precoFinal = produtos.acai.copos[tamanho];
+            let nomeFinal = `Açaí ${tamanho} com: `;
+            const complementosSelecionados = [];
+
+            for (const nome in selecaoAtual.itens) {
+                precoFinal += selecaoAtual.itens[nome].preco;
+                complementosSelecionados.push(nome);
+            }
+            nomeFinal += complementosSelecionados.join(', ');
+
+            adicionarAoCarrinho('açaí', nomeFinal, precoFinal);
+        } else {
+            alert("Tamanho de copo inválido!");
+            return;
+        }
     }
 
-    const item = {
-        id: Date.now(),
-        categoria: categoriaForm,
-        nome: nomeForm,
-        preco: precoForm,
-        quantidade: quantidadeForm
-    };
-
-    carrinho.push(item);
-    atualizarCarrinho();
-    
-    // Limpar formulário
-    document.getElementById('quantidade').value = 1;
-    
-    // Feedback visual
-    mostrarNotificacao(`${nomeForm} adicionado ao carrinho!`);
+    fecharModal('modal-selecao');
 }
 
-// Função para remover do carrinho
+// Funções para abrir modais específicos
+function abrirModalSabores(categoria) {
+    let sabores = produtos.sorvetes.sabores;
+    let titulo = "Escolha os Sabores";
+
+    if (categoria.startsWith('picole')) {
+        const tipoPicole = categoria.replace('picole_', '');
+        sabores = produtos.picoles[tipoPicole].sabores;
+        titulo = `Sabores de Picolé - ${tipoPicole.replace(/_/g, ' ')}`;
+    }
+
+    abrirModal(titulo, sabores, 'sabores', categoria);
+}
+
+function abrirModalComplementos(categoria) {
+    if (categoria === 'acai') {
+        abrirModal("Monte seu Açaí", produtos.acai.complementos, 'complementos', 'acai');
+    }
+}
+
+// Funções do Carrinho
+function adicionarAoCarrinho(categoria, nome, preco, quantidade = 1) {
+    const item = {
+        id: Date.now(),
+        categoria,
+        nome,
+        preco,
+        quantidade
+    };
+    carrinho.push(item);
+    atualizarCarrinho();
+    mostrarNotificacao(`${nome} adicionado ao carrinho!`);
+}
+
 function removerDoCarrinho(id) {
     carrinho = carrinho.filter(item => item.id !== id);
     atualizarCarrinho();
 }
 
-// Função para atualizar exibição do carrinho
 function atualizarCarrinho() {
     const carrinhoItems = document.getElementById('carrinho-items');
-    const total = document.getElementById('total');
+    const totalEl = document.getElementById('total');
+    let totalPreco = 0;
 
-    if (!carrinhoItems || !total) return;
+    if (!carrinhoItems) return;
 
     if (carrinho.length === 0) {
-        carrinhoItems.innerHTML = '<p style="color: #999; text-align: center;">Carrinho vazio</p>';
-        total.textContent = '0,00';
+        carrinhoItems.innerHTML = '<p>Carrinho vazio</p>';
+        if(totalEl) totalEl.textContent = '0,00';
         return;
     }
 
-    let totalPreco = 0;
     carrinhoItems.innerHTML = carrinho.map(item => {
         const subtotal = item.preco * item.quantidade;
         totalPreco += subtotal;
-        
         return `
             <div class="carrinho-item">
-                <div class="carrinho-item-info">
+                <div>
                     <div class="carrinho-item-nome">${item.nome}</div>
-                    <div>Quantidade: ${item.quantidade}</div>
-                    <div class="carrinho-item-preco">R$ ${subtotal.toFixed(2)}</div>
+                    <div class="carrinho-item-preco">R$ ${item.preco.toFixed(2)} x ${item.quantidade} = R$ ${subtotal.toFixed(2)}</div>
                 </div>
-                <button class="btn-remover" onclick="removerDoCarrinho(${item.id})">Remover</button>
+                <button onclick="removerDoCarrinho(${item.id})">Remover</button>
             </div>
         `;
     }).join('');
 
-    total.textContent = totalPreco.toFixed(2);
+    if(totalEl) totalEl.textContent = totalPreco.toFixed(2).replace('.', ',');
 }
 
-// Função para limpar carrinho
-function limparCarrinho() {
-    if (confirm('Tem certeza que deseja limpar o carrinho?')) {
-        carrinho = [];
-        atualizarCarrinho();
-        mostrarNotificacao('Carrinho limpo!');
-    }
-}
-
-// Lógica de Etapas do Pedido
-function mostrarCarrinhoFinal() {
-    if (carrinho.length === 0) {
-        alert('Adicione itens ao carrinho antes de finalizar!');
-        return;
-    }
-    document.getElementById('carrinho-acoes-normal').style.display = 'none';
-    document.getElementById('carrinho-acoes-final').style.display = 'none';
-    
-    const acoesContainer = document.getElementById('carrinho-acoes-normal');
-    acoesContainer.style.display = 'flex';
-    acoesContainer.style.flexDirection = 'row';
-    acoesContainer.style.gap = '10px';
-    
-    scrollToSection('encomendas');
-}
-
-function etapaFinalPedido() {
-    const nome = document.getElementById('nome').value.trim();
-    const telefone = document.getElementById('telefone').value.trim();
-
-    if (!nome || !telefone) {
-        alert('Por favor, preencha seu nome e telefone!');
-        return;
-    }
-
-    document.getElementById('carrinho-acoes-normal').style.display = 'none';
-    document.getElementById('carrinho-acoes-final').style.display = 'block';
-}
-
-function voltarEtapaPedido() {
-    document.getElementById('carrinho-acoes-final').style.display = 'none';
-    document.getElementById('carrinho-acoes-normal').style.display = 'flex';
-    scrollToSection('cardapio');
-}
-
-// Função para enviar pedido
-function enviarPedido() {
-    if (carrinho.length === 0) {
-        alert('Seu carrinho está vazio!');
-        return;
-    }
-
-    const nome = document.getElementById('nome').value.trim();
-    const telefone = document.getElementById('telefone').value.trim();
-
-    let mensagem = `*PEDIDO SORVETERIA ITAPOLITANA*\n\n`;
-    mensagem += `*Cliente:* ${nome}\n`;
-    mensagem += `*Telefone:* ${telefone}\n\n`;
-    mensagem += `*Itens do Pedido:*\n`;
-
-    let total = 0;
-    carrinho.forEach((item, index) => {
-        const subtotal = item.preco * item.quantidade;
-        total += subtotal;
-        mensagem += `${index + 1}. ${item.nome} (${item.quantidade}x) - R$ ${subtotal.toFixed(2)}\n`;
-    });
-
-    mensagem += `\n*Total:* R$ ${total.toFixed(2)}\n`;
-    mensagem += `\n*Atenção:* O produto será retirado na loja e só será produzido após o pagamento.\n`;
-    mensagem += `\nPor favor, confirme o pedido!`;
-
-    const mensagemCodificada = encodeURIComponent(mensagem);
-    const whatsappUrl = `https://wa.me/5516991472045?text=${mensagemCodificada}`;
-
-    window.open(whatsappUrl, '_blank');
-
-    setTimeout(() => {
-        carrinho = [];
-        atualizarCarrinho();
-        document.getElementById('nome').value = '';
-        document.getElementById('telefone').value = '';
-        document.getElementById('carrinho-acoes-final').style.display = 'none';
-        document.getElementById('carrinho-acoes-normal').style.display = 'flex';
-        mostrarNotificacao('Pedido enviado com sucesso!');
-    }, 500);
-}
-
-// Modal de Sabores
-function abrirModalSabores(categoria) {
-    const modal = document.getElementById('modal-sabores');
-    const titulo = document.getElementById('modal-titulo');
-    const lista = document.getElementById('lista-sabores-modal');
-    
-    const nomesCategorias = {
-        'milkshake': 'Sabores para Milk Shake',
-        'tacas': 'Sabores para Taças',
-        'tacas-premium': 'Sabores para Taças Premium'
-    };
-    
-    titulo.textContent = nomesCategorias[categoria] || 'Escolha seu sabor';
-    
-    const sabores = produtos.sorvete;
-    
-    lista.innerHTML = sabores.map(s => `
-        <div class="sabor-item-modal" onclick="selecionarSaborModal('${categoria}', '${s.nome}')">
-            ${s.nome}
-        </div>
-    `).join('');
-    
-    modal.style.display = 'block';
-}
-
-function fecharModalSabores() {
-    document.getElementById('modal-sabores').style.display = 'none';
-}
-
-function selecionarSaborModal(categoria, sabor) {
-    document.getElementById('categoria').value = categoria;
-    atualizarSabores();
-    
-    const saborSelect = document.getElementById('sabor');
-    const option = document.createElement('option');
-    option.value = sabor;
-    option.textContent = sabor;
-    option.selected = true;
-    saborSelect.appendChild(option);
-    
-    fecharModalSabores();
-    scrollToSection('encomendas');
-}
-
-// Fechar modal ao clicar fora
-window.onclick = function(event) {
-    const modal = document.getElementById('modal-sabores');
-    if (event.target == modal) {
-        fecharModalSabores();
-    }
-}
-
-// Função para rolar até uma seção
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
-// Função para mostrar notificação
+// Notificação
 function mostrarNotificacao(mensagem) {
     const notif = document.createElement('div');
     notif.className = 'notificacao-itapolitana';
@@ -255,11 +188,85 @@ function mostrarNotificacao(mensagem) {
 
     setTimeout(() => {
         notif.classList.add('fade-out');
-        setTimeout(() => notif.remove(), 300);
-    }, 3000);
+        setTimeout(() => notif.remove(), 500);
+    }, 2000);
 }
 
-// Inicializar ao carregar
-document.addEventListener('DOMContentLoaded', function() {
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
     atualizarCarrinho();
 });
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    const modal = document.getElementById('modal-selecao');
+    if (event.target == modal) {
+        fecharModal('modal-selecao');
+    }
+}
+
+function scrollToSection(id){
+    const element = document.getElementById(id);
+    element.scrollIntoView({behavior: "smooth"});
+}
+document.addEventListener("DOMContentLoaded", () => {
+    const promoBtn = document.getElementById("promo-btn");
+    const promoModal = document.getElementById("promotion-modal");
+    const closePromoBtn = document.querySelector(".close-promo-btn");
+
+    if (promoBtn) {
+        promoBtn.onclick = () => promoModal.style.display = "block";
+    }
+
+    if (closePromoBtn) {
+        closePromoBtn.onclick = () => promoModal.style.display = "none";
+    }
+
+    window.onclick = (event) => {
+        if (event.target == promoModal) {
+            promoModal.style.display = "none";
+        }
+    };
+
+    // Countdown Timer
+    const countdownElement = document.getElementById("countdown");
+    if (countdownElement) {
+        const sorteioDate = new Date("2026-03-31T23:59:59").getTime();
+
+        const interval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = sorteioDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownElement.innerHTML = `<div>${days}<span>DIAS</span></div><div>${hours}<span>HORAS</span></div><div>${minutes}<span>MIN</span></div><div>${seconds}<span>SEG</span></div>`;
+
+            if (distance < 0) {
+                clearInterval(interval);
+                countdownElement.innerHTML = "SORTEIO REALIZADO";
+            }
+        }, 1000);
+    }
+});
+
+function renderizarPicoles() {
+    const container = document.getElementById('picoles-container');
+    if (!container) return;
+
+    for (const tipo in produtos.picoles) {
+        const picole = produtos.picoles[tipo];
+        const card = document.createElement('div');
+        card.className = 'picole-card';
+        card.innerHTML = `
+            <h4>${picole.nome}</h4>
+            <p>R$ ${picole.preco.toFixed(2)}</p>
+            <button onclick="abrirModalSabores('picole_${tipo}')">Ver Sabores</button>
+        `;
+        container.appendChild(card);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', renderizarPicoles);

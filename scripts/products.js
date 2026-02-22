@@ -1,176 +1,75 @@
-// ========================================
-// SORVETERIA ITAPOLITANA - PRODUCT DATA
-// ========================================
-
 const produtos = {
-    sorvete: [
-        { nome: "Abacaxi ao Vinho", preco: 7.50, estoque: 100 },
-        { nome: "Abacaxi Suíço", preco: 7.50, estoque: 100 },
-        { nome: "Açaí", preco: 8.50, estoque: 100 },
-        { nome: "Algodão Doc (Blue Ice)", preco: 7.50, estoque: 100 },
-        { nome: "Amarena", preco: 8.00, estoque: 100 },
-        { nome: "Ameixa", preco: 7.50, estoque: 100 },
-        { nome: "Banana com Nutella", preco: 8.50, estoque: 100 },
-        { nome: "Bis e Trufa", preco: 8.50, estoque: 100 },
-        { nome: "Cereja Trufada", preco: 8.00, estoque: 100 },
-        { nome: "Chocolate", preco: 7.50, estoque: 100 },
-        { nome: "Chocolate com Café", preco: 8.00, estoque: 100 },
-        { nome: "Coco Queimado", preco: 8.00, estoque: 100 },
-        { nome: "Creme Paris", preco: 7.50, estoque: 100 },
-        { nome: "Croquer", preco: 8.00, estoque: 100 },
-        { nome: "Doce de Leite", preco: 8.00, estoque: 100 },
-        { nome: "Ferrero Rocher", preco: 9.00, estoque: 100 },
-        { nome: "Flocos", preco: 7.50, estoque: 100 },
-        { nome: "Kinder Ovo", preco: 9.00, estoque: 100 },
-        { nome: "Leite Condensado", preco: 8.00, estoque: 100 },
-        { nome: "Leite Ninho", preco: 8.00, estoque: 100 },
-        { nome: "Leite Ninho Folheado", preco: 8.50, estoque: 100 },
-        { nome: "Leite Ninho com Pistache", preco: 9.00, estoque: 100 },
-        { nome: "Limão", preco: 7.50, estoque: 100 },
-        { nome: "Limão Suíço", preco: 7.50, estoque: 100 },
-        { nome: "Menta com Chocolate", preco: 8.00, estoque: 100 },
-        { nome: "Milho Verde", preco: 7.50, estoque: 100 },
-        { nome: "Morango Trufado", preco: 8.00, estoque: 100 },
-        { nome: "Mousse de Maracujá", preco: 7.50, estoque: 100 },
-        { nome: "Mousse de Uva", preco: 7.50, estoque: 100 },
-        { nome: "Ninho com Oreo", preco: 8.50, estoque: 100 },
-        { nome: "Nozes", preco: 8.00, estoque: 100 },
-        { nome: "Nutella", preco: 9.00, estoque: 100 },
-        { nome: "Ovomaltine", preco: 8.50, estoque: 100 },
-        { nome: "Pistache", preco: 9.00, estoque: 100 },
-        { nome: "Prestígio", preco: 8.00, estoque: 100 },
-        { nome: "Sensação", preco: 8.00, estoque: 100 },
-        { nome: "Torta de Chocolate", preco: 8.50, estoque: 100 }
-    ],
-    "picole-leite": [
-        { nome: "Açaí", preco: 3.00, estoque: 100 },
-        { nome: "Blue Ice", preco: 3.00, estoque: 100 },
-        { nome: "Caraxi", preco: 3.00, estoque: 100 },
-        { nome: "Coco Branco", preco: 3.00, estoque: 100 },
-        { nome: "Chocolate", preco: 3.00, estoque: 100 },
-        { nome: "Amarena", preco: 3.00, estoque: 100 },
-        { nome: "Leite Condensado", preco: 3.00, estoque: 100 },
-        { nome: "Mamão Papaia", preco: 3.00, estoque: 100 },
-        { nome: "Maracujá", preco: 3.00, estoque: 100 },
-        { nome: "Morango", preco: 3.00, estoque: 100 },
-        { nome: "Menta com Chocolate", preco: 3.00, estoque: 100 },
-        { nome: "Nata com Goiaba", preco: 3.00, estoque: 100 }
-    ],
-    "picole-eskimo": [
-        { nome: "Brigadeiro", preco: 8.00, estoque: 100 },
-        { nome: "Bombom", preco: 8.00, estoque: 100 },
-        { nome: "Nutella", preco: 8.00, estoque: 100 },
-        { nome: "Ovomaltine", preco: 8.00, estoque: 100 },
-        { nome: "Leite Ninho", preco: 8.00, estoque: 100 },
-        { nome: "Nata", preco: 8.00, estoque: 100 },
-        { nome: "Morango", preco: 8.00, estoque: 100 },
-        { nome: "Prestígio", preco: 8.00, estoque: 100 }
-    ],
-    acai: [
-        { nome: "Açaí 300ml", preco: 12.00, estoque: 100 },
-        { nome: "Açaí 500ml", preco: 13.00, estoque: 100 },
-        { nome: "Açaí 1L", preco: 15.00, estoque: 100 },
-        { nome: "Açaí com Granola", preco: 12.00, estoque: 100 },
-        { nome: "Açaí com Banana", preco: 12.00, estoque: 100 },
-        { nome: "Açaí com Morango", preco: 12.00, estoque: 100 }
-    ],
-    milkshake: [
-        { nome: "Milk Shake Gourmet", preco: 15.00, estoque: 100 },
-        { nome: "Milk Shake Tradicional 300ml", preco: 12.00, estoque: 100 }
-    ],
-    tacas: [
-        { nome: "Taça Clássica", preco: 18.00, estoque: 100 }
-    ],
-    "tacas-premium": [
-        { nome: "Taça Premium Especial", preco: 25.00, estoque: 100 }
-    ]
-};
-
-// Função para renderizar produtos
-function renderizarProdutos() {
-    // Sorvetes
-    const sorveteGrid = document.getElementById("sorvetes-grid");
-    if (sorveteGrid) {
-        sorveteGrid.innerHTML = produtos.sorvete.map(p => `
-            <div class="produto-card" onclick="selecionarProduto('sorvete', '${p.nome}', ${p.preco})">
-                <h4>${p.nome}</h4>
-                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('sorvete', '${p.nome}', ${p.preco})">Comprar</button>
-            </div>
-        `).join("");
-    }
-
-    // Picolés de Leite com Recheio
-    const picoleLeiteGrid = document.getElementById("picole-leite-grid");
-    if (picoleLeiteGrid) {
-        picoleLeiteGrid.innerHTML = produtos["picole-leite"].map(p => `
-            <div class="produto-card" onclick="selecionarProduto('picole-leite', '${p.nome}', ${p.preco})">
-                <h4>${p.nome}</h4>
-                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('picole-leite', '${p.nome}', ${p.preco})">Comprar</button>
-            </div>
-        `).join("");
-    }
-
-    // Picolés Eskimo
-    const picoleEskimoGrid = document.getElementById("picole-eskimo-grid");
-    if (picoleEskimoGrid) {
-        picoleEskimoGrid.innerHTML = produtos["picole-eskimo"].map(p => `
-            <div class="produto-card" onclick="selecionarProduto('picole-eskimo', '${p.nome}', ${p.preco})">
-                <h4>${p.nome}</h4>
-                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('picole-eskimo', '${p.nome}', ${p.preco})">Comprar</button>
-            </div>
-        `).join("");
-    }
-
-    // Açaí
-    const acaiGrid = document.getElementById("acai-grid");
-    if (acaiGrid) {
-        acaiGrid.innerHTML = produtos.acai.map(p => `
-            <div class="produto-card" onclick="selecionarProduto('acai', '${p.nome}', ${p.preco})">
-                <h4>${p.nome}</h4>
-                <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
-                <button class="btn-comprar" onclick="event.stopPropagation(); adicionarAoCarrinho('acai', '${p.nome}', ${p.preco})">Comprar</button>
-            </div>
-        `).join("");
-    }
-}
-
-// Função para atualizar sabores no formulário
-function atualizarSabores() {
-    const categoria = document.getElementById("categoria").value;
-    const saborSelect = document.getElementById("sabor");
-    
-    if (!saborSelect) return;
-    
-    saborSelect.innerHTML = "<option value=\"\">Selecione um sabor</option>";
-    
-    if (categoria && produtos[categoria]) {
-        produtos[categoria].forEach(p => {
-            const option = document.createElement("option");
-            option.value = p.nome;
-            option.textContent = `${p.nome} - R$ ${p.preco.toFixed(2)}`;
-            saborSelect.appendChild(option);
-        });
-    }
-}
-
-// Função para selecionar produto
-function selecionarProduto(categoria, nome, preco) {
-    const catSelect = document.getElementById("categoria");
-    if (catSelect) {
-        catSelect.value = categoria;
-        atualizarSabores();
-        const saborSelect = document.getElementById("sabor");
-        if (saborSelect) {
-            saborSelect.value = nome;
+    sorvetes: {
+        sabores: [
+            "Abacaxi ao Vinho", "Abacaxi Suíço", "Açaí", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho com Creme Paris", "Leite Ninho com Nutella", "Leite Ninho Foleado", "Leite Ninho com Óreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
+        ],
+        precos: {
+            casquinha_copo: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
+            copo_recheado: { "1 Bola": 10.00, "2 Bolas": 12.00, "3 Bolas": 15.00 },
+            cascao: { "1 Bola": 12.00, "2 Bolas": 16.00 },
+            cestinha: { "1 Bola": 14.00, "2 Bolas": 18.00, "3 Bolas": 20.00 }
         }
-        scrollToSection('encomendas');
+    },
+    picoles: {
+        frutas_agua: { preco: 2.50, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
+        leite_sem_recheio: { preco: 2.50, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
+        leite_com_recheio: { preco: 3.00, sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
+        leite_ninho: { preco: 4.00, sabores: ["Leite Ninho"] },
+        eskimos: { preco: 8.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
+    },
+    acai: {
+        copos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
+        complementos: {
+            frutas: { preco: 2.00, itens: ["Morango", "Banana", "Uva", "Kiwi", "Abacaxi", "Cereja"] },
+            cremes: { preco: 3.00, itens: ["Nutella", "Creme de Ninho", "Geleia de Morango", "Creme de Amendoim", "Goiabada", "Creme de Pistache", "Mel"] },
+            guloseimas: { preco: 2.00, itens: ["Granola", "Paçoca", "Leite em Pó", "Ovomaltine", "Confete", "Chocoball", "Chantilly", "Granulado", "Leite Condensado"] },
+            chocolates: { preco: 4.00, itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Óreo", "Gotas de Chocolate", "Talento"] }
+        }
+    },
+    caixas_viagem: {
+        "10 Litros (2 sabores)": 150.00,
+        "10 Litros (3 sabores)": 165.00,
+        "5 Litros (2 sabores)": 100.00,
+        "5 Litros (3 sabores)": 115.00
+    },
+    isopores_viagem: {
+        "4 Bolas": 25.00,
+        "7 Bolas": 30.00,
+        "9 Bolas": 40.00,
+        "12 Bolas": 50.00
+    },
+    milkshake: {
+        tradicional: { "300ml": 17.00, "400ml": 20.00, "500ml": 22.00, "750ml": 28.00 },
+        top: { "360ml": 20.00, "600ml": 24.00 },
+        adicional_ovomaltine: 3.00
+    },
+    tacas: {
+        tradicionais: {
+            "Colegial": 20.00,
+            "Sundae": 23.00,
+            "Banana Split": 25.00,
+            "Universitário": 23.00,
+            "Morango Split": 28.00,
+            "Vaca Preta": 23.00,
+            "Sundae com Nutella": 28.00,
+            "Ula-Ula": 48.00
+        },
+        sujas: {
+            "Prestígio": 42.00,
+            "Bis com Negresco": 42.00,
+            "Lacta com Leite Ninho": 42.00,
+            "Kit Kat": 42.00,
+            "Morango com Ovomaltine": 42.00,
+            "Sonho de Valsa": 45.00,
+            "Unicórnio": 28.00
+        }
+    },
+    sobremesas: {
+        "Torta de Sorvete": 100.00,
+        "Fundue": 25.00,
+        "Sorvete com Bolo no Pote": 25.00,
+        "Petit Gateau (1 bola)": 20.00,
+        "Petit Gateau (2 bolas)": 25.00,
+        "Sorvete Diet (1 bola)": 10.00
     }
-}
-
-// Inicializar produtos ao carregar a página
-document.addEventListener("DOMContentLoaded", function() {
-    renderizarProdutos();
-});
+};
