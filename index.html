@@ -23,43 +23,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Schema LocalBusiness (SEO Avançado) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "IceCreamShop",
-        "name": "Sorveteria Itapolitana",
-        "image": "https://itapolitanacajuru.site/images/logo.png",
-        "@id": "https://itapolitanacajuru.site/",
-        "url": "https://itapolitanacajuru.site/",
-        "telephone": "+5516991472045",
-        "priceRange": "$",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Pça Lgo São Bento, 311 - Centro",
-            "addressLocality": "Cajuru",
-            "addressRegion": "SP",
-            "postalCode": "13750-000",
-            "addressCountry": "BR"
-        },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": -21.2733,
-            "longitude": -47.3033
-        },
-        "openingHoursSpecification": {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-            "opens": "10:00",
-            "closes": "22:00"
-        },
-        "sameAs": [
-            "https://wa.me/5516991472045"
-        ],
-        "areaServed": ["Cajuru", "Santa Cruz da Esperança", "Cássia dos Coqueiros"]
-    }
-    </script>
-    
     <title>Sorveteria Itapolitana | Cajuru, Santa Cruz e Cássia dos Coqueiros</title>
     <link rel="stylesheet" href="styles/main.css">
     <style>
@@ -108,62 +71,47 @@
             padding: 0 20px;
         }
         .categoria.ativa .categoria-content {
-            max-height: 2000px; /* Valor alto para permitir expansão */
+            max-height: 2000px;
             padding: 20px;
         }
 
-        /* Estilo do Botão Admin Dourado Elegante */
-        .btn-admin-dourado {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            padding: 10px 20px;
-            background-color: #FFFFFF;
-            color: #D4AF37; /* Dourado Metálico */
+        /* Botão Admin no Topo com Destaque */
+        .top-admin-bar {
+            background: #D4AF37;
+            padding: 8px 0;
+            text-align: center;
+            position: relative;
+            z-index: 1001;
+        }
+        .btn-admin-top {
+            background: white;
+            color: #D4AF37;
+            padding: 6px 20px;
+            border-radius: 50px;
             text-decoration: none;
             font-weight: 800;
-            font-size: 0.9em;
-            text-align: center;
-            border-radius: 50px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4), 0 0 5px rgba(255, 255, 255, 0.8);
-            border: 2px solid #D4AF37;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            border: 2px solid white;
             transition: all 0.3s ease;
-            cursor: pointer;
+            display: inline-block;
         }
-
-        .btn-admin-dourado:hover {
+        .btn-admin-top:hover {
+            background: #D4AF37;
+            color: white;
             transform: scale(1.05);
-            background-color: #D4AF37;
-            color: #FFFFFF;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
-        }
-
-        .btn-admin-brilhante:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(255, 255, 255, 0.6);
-            background-color: #f0f0f0;
-        }
-
-        @keyframes brilho-pulsante {
-            from { box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); }
-            to { box-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 0, 127, 0.3); }
         }
     </style>
 </head>
 <body>
-    <!-- Botão Admin Dourado Elegante -->
-    <a href="gerenciar/index.html" class="btn-admin-dourado">
-        Painel Admin
-    </a>
+    <!-- Barra Admin no Topo -->
+    <div class="top-admin-bar">
+        <a href="gerenciar/index.html" class="btn-admin-top">Acesso Administrativo</a>
+    </div>
 
     <div class="container">
-        <!-- Botão Admin Direto -->
-        <div style="text-align: right; padding: 10px;">
-            <a href="gerenciar/index.html" style="background: white; color: #D4AF37; border: 2px solid #D4AF37; padding: 5px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 12px;">PAINEL ADMIN</a>
-        </div>
         <!-- Header -->
         <header class="header">
             <div class="logo-section">
@@ -277,86 +225,84 @@
 
                     <div class="form-group">
                         <label for="categoria">O que deseja pedir?</label>
-                        <select id="categoria" name="categoria" onchange="atualizarSabores()">
+                        <select id="categoria" name="categoria" onchange="atualizarSabores()" required>
                             <option value="">Selecione uma categoria</option>
-                            <option value="sorvete">Sorvete de Massa</option>
-                            <option value="picole-leite">Picolé de Leite Recheado (R$ 3,00)</option>
-                            <option value="picole-eskimo">Picolés Eskimo (R$ 8,00)</option>
-                            <option value="acai">Açaí</option>
-                            <option value="milkshake">Milk Shake</option>
-                            <option value="tacas">Taças</option>
-                            <option value="tacas-premium">Taças Premium</option>
+                            <option value="sorvete">Sorvete de Massa (5L/10L)</option>
+                            <option value="picole-leite">Picolé de Leite com Recheio</option>
+                            <option value="picole-eskimo">Picolé Eskimo</option>
+                            <option value="acai">Açaí Artesanal</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="sabor">Escolha o Sabor</label>
+                        <label for="sabor">Sabor Escolhido</label>
                         <select id="sabor" name="sabor" required>
-                            <option value="">Selecione primeiro a categoria</option>
+                            <option value="">Selecione a categoria primeiro</option>
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="quantidade">Quantidade</label>
-                        <input type="number" id="quantidade" name="quantidade" min="1" value="1" required>
                     </div>
 
                     <div class="botoes-encomenda-row">
-                        <button type="button" class="btn-adicionar" onclick="adicionarAoCarrinho()">+ Adicionar</button>
-                        <button type="button" class="btn-finalizar" onclick="mostrarCarrinhoFinal()">Finalizar</button>
+                        <button type="button" class="btn-adicionar" onclick="adicionarAoCarrinhoManual()">Adicionar ao Carrinho</button>
                     </div>
                 </form>
 
-                <!-- Carrinho -->
-                <div class="carrinho" id="carrinho-container">
-                    <h3>🛒 Seu Carrinho</h3>
-                    <div id="carrinho-items"></div>
+                <div class="carrinho">
+                    <h3>Seu Pedido</h3>
+                    <div id="itens-carrinho">
+                        <p style="color: #888; text-align: center; padding: 20px;">Seu carrinho está vazio.</p>
+                    </div>
                     <div class="carrinho-total">
-                        <strong>Total: R$ <span id="total">0,00</span></strong>
+                        Total: <span id="total-pedido">R$ 0,00</span>
                     </div>
-                    <div class="carrinho-acoes" id="carrinho-acoes-normal">
-                        <button class="btn-adicionar" style="background: #eee;" onclick="scrollToSection('cardapio')">Continuar Comprando</button>
-                        <button class="btn-finalizar" onclick="etapaFinalPedido()">Concluir Pedido</button>
-                    </div>
-                    <div class="carrinho-acoes-final" id="carrinho-acoes-final" style="display: none;">
-                        <button class="btn-finalizar" style="width: 100%; margin-bottom: 15px;" onclick="enviarPedido()">🚀 Enviar para WhatsApp</button>
-                        <button class="btn-adicionar" style="width: 100%;" onclick="voltarEtapaPedido()">Voltar e Editar</button>
-                    </div>
+                    <button class="btn-finalizar" onclick="finalizarPedido()" style="width: 100%; margin-top: 20px;">Enviar Pedido via WhatsApp</button>
                 </div>
             </div>
         </section>
 
         <!-- Regiões Section -->
-        <section id="regioes" class="regioes">
-            <h2>Onde Estamos</h2>
-            <div class="regiao-card">
-                <h3>📍 Loja Matriz - Cajuru</h3>
-                <p>Pça Lgo São Bento, 311 - Centro, Cajuru/SP</p>
-                <p><strong>Horário:</strong> Todos os dias, das 10h às 22h</p>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">Atendemos também clientes de <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> com sistema de encomenda e retirada.</p>
+        <section id="regioes" class="footer" style="margin-top: 0; border-radius: 30px 30px 0 0;">
+            <div class="container">
+                <h2 style="color: white; margin-bottom: 30px;">Onde Estamos</h2>
+                <p>📍 Pça Lgo São Bento, 311 - Centro, Cajuru/SP</p>
+                <p>📞 (16) 99147-2045</p>
+                <p>⏰ Seg-Dom: 10h às 22h</p>
+                <div style="margin-top: 30px; border-top: 1px solid #444; padding-top: 20px;">
+                    <p>© 2007-2026 Sorveteria Itapolitana. Todos os direitos reservados.</p>
+                </div>
             </div>
         </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p><strong>Sorveteria Itapolitana</strong> - Desde 2007</p>
-            <p>Cajuru • Santa Cruz da Esperança • Cássia dos Coqueiros</p>
-            <p style="margin-top: 20px; font-size: 0.8em; opacity: 0.7;">&copy; 2026 Sorveteria Itapolitana. Todos os direitos reservados.</p>
-            
-
-        </footer>
     </div>
 
     <!-- Modal de Sabores -->
     <div id="modal-sabores" class="modal">
         <div class="modal-content">
             <span class="close" onclick="fecharModalSabores()">&times;</span>
-            <h3 id="modal-titulo" style="margin-bottom: 20px; color: var(--pink);">Escolha seu Sabor</h3>
-            <div id="lista-sabores-modal" class="sabores-grid-modal"></div>
+            <h3 id="modal-titulo">Escolha o Sabor</h3>
+            <div id="modal-lista-sabores" class="sabores-grid-modal"></div>
         </div>
     </div>
 
     <script src="scripts/products.js"></script>
     <script src="scripts/main.js"></script>
+    <script>
+        function toggleCategoria(header) {
+            const categoria = header.parentElement;
+            categoria.classList.toggle('ativa');
+        }
+
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                const headerOffset = 100;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+    </script>
 </body>
 </html>
