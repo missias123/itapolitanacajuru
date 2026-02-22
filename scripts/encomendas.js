@@ -615,6 +615,32 @@ function alterarCompCaixa(id, delta) {
   if (elModal) elModal.textContent = novo;
   const itemModal = document.getElementById('comp-item-'+id);
   if (itemModal) itemModal.classList.toggle('ativo', novo > 0);
+  // Mostrar/ocultar botão de adicionar ao carrinho
+  const totalComps = Object.values(compQtds).reduce((a,b)=>a+b,0);
+  const btnAddComps = document.getElementById('btn-add-comps-carrinho');
+  if (btnAddComps) btnAddComps.style.display = totalComps > 0 ? 'block' : 'none';
   // Atualizar botão do carrinho
   atualizarBotaoCarrinho();
+}
+function adicionarCompsAoCarrinho() {
+  const compsParaAdicionar = getCompsCarrinho();
+  if (compsParaAdicionar.length === 0) return;
+  compsParaAdicionar.forEach(comp => {
+    const ex = carrinho.find(c => c.id === comp.id);
+    if (ex) { ex.quantidade += comp.quantidade; }
+    else { carrinho.push({...comp}); }
+  });
+  // Resetar quantidades
+  const comps = getComplementos();
+  comps.forEach(c => {
+    compQtds[c.id] = 0;
+    const el = document.getElementById('comp-cx-qtd-'+c.id);
+    if (el) el.textContent = '0';
+    const item = document.getElementById('comp-cx-item-'+c.id);
+    if (item) item.style.borderColor = '#E0E0E0';
+  });
+  const btnAddComps = document.getElementById('btn-add-comps-carrinho');
+  if (btnAddComps) btnAddComps.style.display = 'none';
+  atualizarBotaoCarrinho();
+  showToast('✅ Complementos adicionados ao carrinho!', 'sucesso');
 }
