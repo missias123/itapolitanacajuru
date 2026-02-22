@@ -889,5 +889,35 @@
 
 <script src="scripts/products.js?v=1771804173"></script>
 <script src="scripts/encomendas.js?v=1771804173"></script>
+<script>
+// OVERRIDE: complementos vao direto ao carrinho sem botao intermediario
+function alterarCompCaixa(id, delta) {
+  var comps = getComplementos();
+  var c = comps.find(function(x){ return x.id === id; });
+  if (!c || c.estoque <= 0) return;
+  var atual = compQtds[id] || 0;
+  var novo = Math.max(0, Math.min(atual + delta, c.estoque));
+  if (novo === atual) return;
+  compQtds[id] = novo;
+  var el = document.getElementById('comp-cx-qtd-'+id);
+  if (el) el.textContent = novo;
+  var item = document.getElementById('comp-cx-item-'+id);
+  if (item) item.style.borderColor = novo > 0 ? '#B71C1C' : '#E0E0E0';
+  var carrinhoId = 'comp_'+id;
+  var idx = carrinho.findIndex(function(x){ return x.id === carrinhoId; });
+  if (novo === 0) {
+    if (idx !== -1) carrinho.splice(idx, 1);
+  } else if (idx !== -1) {
+    carrinho[idx].quantidade = novo;
+  } else {
+    carrinho.push({ id: carrinhoId, nome: c.nome, preco: c.preco, sabores: [], quantidade: novo, tipo: 'complemento' });
+  }
+  var total = carrinho.reduce(function(a,b){ return a+b.quantidade; }, 0);
+  var badge = document.getElementById('carrinho-badge');
+  var btn = document.getElementById('btn-carrinho');
+  if (badge) badge.textContent = total;
+  if (btn) { btn.disabled = total === 0; }
+}
+</script>
 </body>
 </html>
