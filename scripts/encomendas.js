@@ -44,6 +44,82 @@ const PRODUTOS = {
   }))
 };
 
+// ---- COMPLEMENTOS ----
+const COMPLEMENTOS_PADRAO = [
+  { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:999, foto:'' },
+  { id:'casquinhas',     nome:'Casquinhas',      preco:0.25, estoque:999, foto:'' },
+  { id:'cascao',         nome:'Cascão',          preco:1.00, estoque:999, foto:'' },
+  { id:'cestinha',       nome:'Cestinha',        preco:1.00, estoque:999, foto:'' },
+  { id:'cobertura_13l',  nome:'Cobertura 1.3L',  preco:40.00,estoque:999, foto:'' }
+];
+function getComplementos() {
+  let lista;
+  try {
+    const salvo = localStorage.getItem('itap_complementos');
+    lista = salvo ? JSON.parse(salvo) : COMPLEMENTOS_PADRAO;
+  } catch(e) { lista = COMPLEMENTOS_PADRAO; }
+  // Injetar fotos do itap_fotos (mesmo localStorage do admin)
+  let fotos = {};
+  try { fotos = JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){}
+  return lista.map(c => ({ ...c, foto: fotos['comp_enc_'+c.id] || c.foto || '' }));
+}
+let compQtds = {}; // { id: quantidade }
+
+function renderizarComplementos() {
+  const lista = document.getElementById('comp-sorvete-lista');
+  if (!lista) return;
+  const comps = getComplementos();
+  compQtds = {};
+  comps.forEach(c => { compQtds[c.id] = 0; });
+  lista.innerHTML = comps.map(c => {
+    const esgotado = c.estoque <= 0;
+    const fotoHtml = c.foto
+      ? `<img src="${c.foto}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;margin-right:10px;flex-shrink:0;" onerror="this.style.display='none'">`
+      : `<div style="width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#F3E5F5,#EDE7F6);display:flex;align-items:center;justify-content:center;font-size:22px;margin-right:10px;flex-shrink:0;">🍪</div>`;
+    return `
+    <div class="comp-sorvete-item${esgotado?' esgotado':''}" id="comp-item-${c.id}">
+      ${fotoHtml}
+      <div class="comp-sorvete-info">
+        <span class="comp-sorvete-nome">${c.nome}${esgotado?'<span class="comp-sorvete-tag-esgotado">ESGOTADO</span>':''}</span>
+        <span class="comp-sorvete-preco">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</span>
+      </div>
+      <div class="comp-sorvete-ctrl">
+        <button class="comp-btn comp-btn-menos" onclick="alterarComp('${c.id}',-1)" ${esgotado?'disabled':''}>−</button>
+        <span class="comp-qtd" id="comp-qtd-${c.id}">0</span>
+        <button class="comp-btn comp-btn-mais" onclick="alterarComp('${c.id}',1)" ${esgotado?'disabled':''}><b>+</b></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function alterarComp(id, delta) {
+  const comps = getComplementos();
+  const c = comps.find(x => x.id === id);
+  if (!c) return;
+  if (c.estoque <= 0) return;
+  const atual = compQtds[id] || 0;
+  const novo = Math.max(0, Math.min(atual + delta, c.estoque));
+  compQtds[id] = novo;
+  const el = document.getElementById('comp-qtd-'+id);
+  if (el) el.textContent = novo;
+  const item = document.getElementById('comp-item-'+id);
+  if (item) item.classList.toggle('ativo', novo > 0);
+}
+
+function getCompsCarrinho() {
+  const comps = getComplementos();
+  return comps
+    .filter(c => (compQtds[c.id]||0) > 0)
+    .map(c => ({
+      id: 'comp_'+c.id,
+      nome: c.nome,
+      preco: c.preco,
+      sabores: [],
+      quantidade: compQtds[c.id],
+      tipo: 'complemento'
+    }));
+}
+
 // Estado global
 let carrinho = [];
 let produtoAtual = null;
@@ -144,6 +220,7 @@ function abrirSaboresSorvete(id, cat) {
     <button class="sabor-item" onclick="toggleSabor('${s}',this)">${s}</button>`).join('');
 
   atualizarBtnConfirmar();
+  renderizarComplementos();
   abrirModal('modal-sabores');
 }
 
@@ -182,8 +259,11 @@ function confirmarSabores() {
     quantidade: 1,
     tipo: 'sorvete'
   });
+  // Adicionar complementos selecionados ao carrinho
+  getCompsCarrinho().forEach(comp => addCarrinho(comp));
   fecharModal('modal-sabores');
-  showToast(`✅ ${produtoAtual.nome} adicionado!`, 'sucesso');
+  const nComps = getCompsCarrinho().length;
+  showToast(`✅ ${produtoAtual.nome} adicionado${nComps>0?' + complementos':''}!`, 'sucesso');
 }
 
 // ---- MODAL PICOLÉS ----
