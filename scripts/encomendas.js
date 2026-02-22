@@ -55,6 +55,17 @@ let selecoesPickle = {};
 document.addEventListener('DOMContentLoaded', () => {
   renderizarTudo();
   atualizarBotaoCarrinho();
+  // Abrir seção via hash (ex: encomendas.html#caixas)
+  const hash = window.location.hash.replace('#','');
+  const mapa = {caixas:'conteudo-caixas', tortas:'conteudo-tortas', picoles:'conteudo-picoles'};
+  if(hash && mapa[hash]){
+    const el = document.getElementById(mapa[hash]);
+    if(el){ el.classList.add('aberto'); }
+    setTimeout(()=>{
+      const sec = document.getElementById(hash);
+      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 200);
+  }
 });
 
 function renderizarTudo() {
