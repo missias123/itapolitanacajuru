@@ -332,7 +332,7 @@ img{max-width:100%;display:block}
       <div class="prod-card" style="max-width:280px">
         <div class="prod-nome">🎂 Torta de Sorvete</div>
         <div class="prod-desc">Feita com 3 sabores à sua escolha. Perfeita para festas e comemorações.</div>
-        <div class="prod-preco">R$ 100,00</div>
+        <div class="prod-preco" id="torta-preco">R$ 100,00</div>
       </div>
       <div style="margin-top:12px">
         <button class="btn-sabores" onclick="abrirSabores('sorvetes','🎂 Sabores para Torta de Sorvete')">🍨 Ver os 36 Sabores</button>
@@ -449,108 +449,85 @@ function toggleAcc(id){document.getElementById(id).classList.toggle('open')}
 function fecharModal(id){document.getElementById(id).classList.remove('show')}
 function abrirModal(id){document.getElementById(id).classList.add('show')}
 
-// ── RENDER SORVETES ──
+// ── RENDER SORVETES ── (lê do products.js)
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
-  const tipos=[
-    {nome:'Casquinha / Copo',desc:'1 bola',preco:8.00},
-    {nome:'Copo Recheado',desc:'1 bola + recheio',preco:10.00},
-    {nome:'Cascão',desc:'Casquinha grande',preco:10.00},
-    {nome:'Cestinha',desc:'Cestinha crocante',preco:12.00}
-  ];
-  tipos.forEach(t=>{
-    const c=document.createElement('div');c.className='prod-card';
-    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-desc">${t.desc}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
-    g.appendChild(c);
-  });
+  const nomes={casquinha_copo:'Casquinha / Copo',copo_recheado:'Copo Recheado',cascao:'Cascão',cestinha:'Cestinha'};
+  const desc={casquinha_copo:'1 bola',copo_recheado:'1 bola + recheio',cascao:'Casquinha grande',cestinha:'Cestinha crocante'};
+  if(produtos&&produtos.sorvetes&&produtos.sorvetes.precos){
+    Object.entries(produtos.sorvetes.precos).forEach(([key,precos])=>{
+      const preco=Object.values(precos)[0];
+      const c=document.createElement('div');c.className='prod-card';
+      c.innerHTML=`<div class="prod-nome">${nomes[key]||key}</div><div class="prod-desc">${desc[key]||''}</div><div class="prod-preco">A partir de R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      g.appendChild(c);
+    });
+  }
 }
 
-// ── RENDER MILKSHAKE ──
+// ── RENDER MILKSHAKE ── (lê do products.js)
 function renderMilk(){
   const g=document.getElementById('milk-grid');
-  const tipos=[
-    {nome:'Milkshake Tradicional 300ml',preco:17.00},
-    {nome:'Milkshake Tradicional 400ml',preco:20.00},
-    {nome:'Milkshake Tradicional 500ml',preco:22.00},
-    {nome:'Milkshake Tradicional 750ml',preco:28.00},
-    {nome:'Milkshake Top 360ml',preco:20.00},
-    {nome:'Milkshake Top 600ml',preco:24.00}
-  ];
-  tipos.forEach(t=>{
-    const c=document.createElement('div');c.className='prod-card';
-    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
-    g.appendChild(c);
-  });
+  if(produtos&&produtos.milkshake){
+    const m=produtos.milkshake;
+    const tipos=[];
+    if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,preco])=>tipos.push({nome:`Milkshake Tradicional ${tam}`,preco}));
+    if(m.top) Object.entries(m.top).forEach(([tam,preco])=>tipos.push({nome:`Milkshake Top ${tam}`,preco}));
+    tipos.forEach(t=>{
+      const c=document.createElement('div');c.className='prod-card';
+      c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
+      g.appendChild(c);
+    });
+  }
 }
 
-// ── RENDER TAÇAS ──
+// ── RENDER TAÇAS ── (lê do products.js)
 function renderTacas(){
   const g=document.getElementById('tacas-grid');
-  const tipos=[
-    {nome:'Taça Colegial',preco:20.00},
-    {nome:'Taça Sundae',preco:23.00},
-    {nome:'Taça Banana Split',preco:25.00},
-    {nome:'Taça Universitária',preco:25.00},
-    {nome:'Taça Morango Split',preco:28.00},
-    {nome:'Taça Vaca Preta',preco:23.00},
-    {nome:'Taça Sundae com Nutella',preco:28.00},
-    {nome:'Taça Ula-Ula',preco:48.00}
-  ];
-  tipos.forEach(t=>{
-    const c=document.createElement('div');c.className='prod-card';
-    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
-    g.appendChild(c);
-  });
+  if(produtos&&produtos.tacas&&produtos.tacas.tradicionais){
+    Object.entries(produtos.tacas.tradicionais).forEach(([nome,preco])=>{
+      const c=document.createElement('div');c.className='prod-card';
+      c.innerHTML=`<div class="prod-nome">Taça ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      g.appendChild(c);
+    });
+  }
 }
 
-// ── RENDER TAÇAS PREMIUM ──
+// ── RENDER TAÇAS PREMIUM ── (lê do products.js)
 function renderTacasP(){
   const g=document.getElementById('tacas-p-grid');
-  const tipos=[
-    {nome:'Taça Suja – Prestígio',preco:42.00},
-    {nome:'Taça Suja – Bis com Negresco',preco:42.00},
-    {nome:'Taça Suja – Lacto com Leite Ninho',preco:42.00},
-    {nome:'Taça Suja – Kit Kat',preco:42.00},
-    {nome:'Taça Suja – Morango com Ovomaltine',preco:42.00},
-    {nome:'Taça Suja – Sonho de Valsa',preco:45.00},
-    {nome:'Taça Suja – Unicórnio',preco:38.00}
-  ];
-  tipos.forEach(t=>{
-    const c=document.createElement('div');c.className='prod-card';
-    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
-    g.appendChild(c);
-  });
+  if(produtos&&produtos.tacas&&produtos.tacas.sujas){
+    Object.entries(produtos.tacas.sujas).forEach(([nome,preco])=>{
+      const c=document.createElement('div');c.className='prod-card';
+      c.innerHTML=`<div class="prod-nome">Taça Suja – ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      g.appendChild(c);
+    });
+  }
 }
 
-// ── RENDER AÇAÍ ──
+// ── RENDER AÇAÍ ── (lê do products.js)
 function renderAcai(){
   const b=document.getElementById('acai-body');b.innerHTML='';
-  const copos=[
-    {tam:'300ml',preco:15.00},{tam:'360ml',preco:16.00},
-    {tam:'400ml',preco:17.00},{tam:'600ml',preco:20.00}
-  ];
-  copos.forEach(c=>{
-    const d=document.createElement('div');d.className='acai-item';
-    d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${c.tam}</span><span class="acai-preco">R$ ${c.preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button class="btn-comp" onclick="abrirComplementos()">🍓 Ver Ingredientes Disponíveis</button>`;
-    b.appendChild(d);
-  });
+  if(produtos&&produtos.acai&&produtos.acai.copos){
+    Object.entries(produtos.acai.copos).forEach(([tam,preco])=>{
+      const d=document.createElement('div');d.className='acai-item';
+      d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${tam}</span><span class="acai-preco">R$ ${preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button class="btn-comp" onclick="abrirComplementos()">🍓 Ver Ingredientes Disponíveis</button>`;
+      b.appendChild(d);
+    });
+  }
 }
 
-// ── RENDER PICOLÉS ──
+// ── RENDER PICOLÉS ── (lê do products.js)
+const iconesPicole={frutas_agua:'🍉',leite_sem_recheio:'🍦',leite_com_recheio:'🍫',leite_ninho:'⭐',eskimos:'🍬'};
 function renderPicoles(){
   const b=document.getElementById('picoles-body');b.innerHTML='';
-  const tipos=[
-    {key:'frutas_agua',nome:'Picolé de Fruta / Base Água',icon:'🍉',preco:2.50},
-    {key:'leite_sem_recheio',nome:'Picolé de Leite',icon:'🍦',preco:2.50},
-    {key:'leite_com_recheio',nome:'Picolé de Leite Recheado',icon:'🍫',preco:3.00},
-    {key:'leite_ninho',nome:'Picolé de Leite Ninho',icon:'⭐',preco:4.00},
-    {key:'eskimos',nome:'Picolés Eskimo',icon:'🍬',preco:8.00}
-  ];
-  tipos.forEach(t=>{
-    const d=document.createElement('div');d.className='picole-item';
-    d.innerHTML=`<div class="picole-row"><span class="picole-nome">${t.icon} ${t.nome}</span><span class="picole-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</span></div><button class="btn-sabores" onclick="abrirPicole('${t.key}','${t.nome}')">🍭 Ver Sabores Disponíveis</button>`;
-    b.appendChild(d);
-  });
+  if(produtos&&produtos.picoles){
+    Object.entries(produtos.picoles).forEach(([key,p])=>{
+      const d=document.createElement('div');d.className='picole-item';
+      const icon=iconesPicole[key]||'🍭';
+      d.innerHTML=`<div class="picole-row"><span class="picole-nome">${icon} ${p.nome}</span><span class="picole-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button class="btn-sabores" onclick="abrirPicole('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
+      b.appendChild(d);
+    });
+  }
 }
 
 // ── ABRIR MODAL SABORES ──
@@ -572,20 +549,14 @@ function abrirPicole(key,nome){
   abrirModal('modal-picole');
 }
 
-// ── ABRIR COMPLEMENTOS AÇAÍ ──
+// ── ABRIR COMPLEMENTOS AÇAÍ ── (lê do products.js)
+const labelComp={frutas:'🍓 Frutas',cremes:'🍯 Cremes',guloseimas:'🍬 Guloseimas',chocolates:'🍫 Chocolates'};
 function abrirComplementos(){
   const lista=document.getElementById('comp-lista');lista.innerHTML='';
-  const grupos={
-    frutas:{label:'🍓 Frutas',preco:2.00},
-    cremes:{label:'🍯 Cremes',preco:3.00},
-    guloseimas:{label:'🍬 Guloseimas',preco:2.00},
-    chocolates:{label:'🍫 Chocolates',preco:4.00}
-  };
   if(produtos&&produtos.acai&&produtos.acai.complementos){
-    Object.entries(grupos).forEach(([k,info])=>{
-      const itens=produtos.acai.complementos[k]?produtos.acai.complementos[k].itens:[];
+    Object.entries(produtos.acai.complementos).forEach(([k,info])=>{
       const g=document.createElement('div');g.className='comp-group';
-      g.innerHTML=`<div class="comp-group-h">${info.label}<span class="comp-preco">+ R$ ${info.preco.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${itens.map(i=>`<span class="chip-comp">${i}</span>`).join('')}</div>`;
+      g.innerHTML=`<div class="comp-group-h">${labelComp[k]||k}<span class="comp-preco">+ R$ ${info.preco.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${info.itens.map(i=>`<span class="chip-comp">${i}</span>`).join('')}</div>`;
       lista.appendChild(g);
     });
   }
@@ -620,21 +591,21 @@ const RESPOSTAS={
   'encomenda':'Para encomendas, clique em 🛒 Encomendas no topo! Trabalhamos com Sorvete em Caixa, Torta de Sorvete e Picolés no atacado. Prazo: 3 dias úteis após pagamento. 📦',
   'sabor':'Temos 36 sabores de sorvete! Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache e muito mais. Veja no cardápio! 🍦',
   'sabores':'Temos 36 sabores de sorvete! Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache e muito mais. Veja no cardápio! 🍦',
-  'preço':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Taças a partir de R$ 20,00 · Açaí a partir de R$ 15,00. 💰',
-  'preco':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Taças a partir de R$ 20,00 · Açaí a partir de R$ 15,00. 💰',
-  'preços':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Taças a partir de R$ 20,00 · Açaí a partir de R$ 15,00. 💰',
-  'açaí':'Açaí artesanal em 300ml (R$ 15), 360ml (R$ 16), 400ml (R$ 17) e 600ml (R$ 20). Personalize com frutas, cremes e chocolates! 🫐',
-  'acai':'Açaí artesanal em 300ml (R$ 15), 360ml (R$ 16), 400ml (R$ 17) e 600ml (R$ 20). Personalize com frutas, cremes e chocolates! 🫐',
-  'picolé':'5 tipos: Fruta/Água (R$ 2,50), Leite (R$ 2,50), Leite Recheado (R$ 3,00), Leite Ninho (R$ 4,00) e Eskimo (R$ 8,00). Atacado via encomenda! 🍭',
-  'picole':'5 tipos: Fruta/Água (R$ 2,50), Leite (R$ 2,50), Leite Recheado (R$ 3,00), Leite Ninho (R$ 4,00) e Eskimo (R$ 8,00). Atacado via encomenda! 🍭',
-  'picolés':'5 tipos: Fruta/Água (R$ 2,50), Leite (R$ 2,50), Leite Recheado (R$ 3,00), Leite Ninho (R$ 4,00) e Eskimo (R$ 8,00). Atacado via encomenda! 🍭',
+  'preço':()=>`Sorvetes a partir de R$ ${Object.values(produtos.sorvetes.precos.casquinha_copo)[0].toFixed(2).replace('.',',')} · Milkshakes a partir de R$ ${Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')} · Açaí a partir de R$ ${Object.values(produtos.acai.copos)[0].toFixed(2).replace('.',',')}. 💰`,
+  'preco':()=>`Sorvetes a partir de R$ ${Object.values(produtos.sorvetes.precos.casquinha_copo)[0].toFixed(2).replace('.',',')} · Milkshakes a partir de R$ ${Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')} · Açaí a partir de R$ ${Object.values(produtos.acai.copos)[0].toFixed(2).replace('.',',')}. 💰`,
+  'preços':()=>`Sorvetes a partir de R$ ${Object.values(produtos.sorvetes.precos.casquinha_copo)[0].toFixed(2).replace('.',',')} · Milkshakes a partir de R$ ${Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')} · Açaí a partir de R$ ${Object.values(produtos.acai.copos)[0].toFixed(2).replace('.',',')}. 💰`,
+  'açaí':()=>`Açaí artesanal em ${Object.entries(produtos.acai.copos).map(([t,p])=>`${t} (R$ ${p.toFixed(0)})`).join(', ')}. Personalize com frutas, cremes e chocolates! 🫐`,
+  'acai':()=>`Açaí artesanal em ${Object.entries(produtos.acai.copos).map(([t,p])=>`${t} (R$ ${p.toFixed(0)})`).join(', ')}. Personalize com frutas, cremes e chocolates! 🫐`,
+  'picolé':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
+  'picole':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
+  'picolés':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
   'delivery':'Não fazemos delivery. Retirada somente na loja: Pça Lgo São Bento, 311 – Cajuru/SP. 🏪',
   'entrega':'Para encomendas, prazo de 3 dias úteis após pagamento. Retirada na loja. 📦',
   'telefone':'WhatsApp: (16) 99147-2045 📱',
   'whatsapp':'WhatsApp: (16) 99147-2045 📱',
   'contato':'WhatsApp: (16) 99147-2045 📱',
-  'torta':'Torta de Sorvete R$ 100,00 com 3 sabores à escolha. Encomende com 3 dias de antecedência! 🎂',
-  'caixa':'Caixas de 5L (a partir de R$ 100) e 10L (a partir de R$ 150) com 2 ou 3 sabores. Faça sua encomenda! 🍦',
+  'torta':()=>`Torta de Sorvete R$ ${produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',')} com 3 sabores à escolha. Encomende com 3 dias de antecedência! 🎂`,
+  'caixa':()=>`Caixas de 5L (a partir de R$ ${Math.min(...Object.values(produtos.caixas_viagem).filter((_,i,a)=>i<2)).toFixed(0)}) e 10L (a partir de R$ ${Math.min(...Object.values(produtos.caixas_viagem).filter((_,i,a)=>i>=2)).toFixed(0)}) com 2 ou 3 sabores. Faça sua encomenda! 🍦`,
   'cajuru':'Estamos em Cajuru/SP desde 2007! Atendemos também Santa Cruz da Esperança e Cássia dos Coqueiros. 📍',
   'default':'Posso te ajudar com: horários, endereço, preços, sabores, encomendas ou picolés. O que deseja saber? 😊'
 };
@@ -673,6 +644,11 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcai();renderPicoles();
+  // Atualizar preço da torta do products.js
+  const tp=document.getElementById('torta-preco');
+  if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
+  // Corrigir chatbot: resolver funções
+  Object.keys(respostas).forEach(k=>{if(typeof respostas[k]==='function')respostas[k]=respostas[k]();});
 });
 </script>
 </body>
