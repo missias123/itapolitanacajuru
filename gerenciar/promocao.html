@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerenciar Promoção – Itapolitana</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+.header{background:#1F2937;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:16px;font-weight:800}
+.header-btns{display:flex;gap:8px}
+.btn-back{background:#374151;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.btn-back:hover{background:#4B5563}
+.body{max-width:520px;margin:0 auto;padding:24px 16px 100px}
+.card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;padding:24px;margin-bottom:16px}
+.card h2{font-size:16px;font-weight:800;color:#111827;margin-bottom:6px}
+.card p{font-size:13px;color:#6A0DAD;font-weight:600;margin-bottom:20px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px}
+.field input[type=text],.field input[type=url],.field textarea{width:100%;padding:12px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;font-family:inherit;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:#6A0DAD}
+.field textarea{min-height:90px}
+/* Upload de foto */
+.upload-area{border:2px dashed #D1D5DB;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;background:#FAFAFA}
+.upload-area:hover,.upload-area.drag{border-color:#6A0DAD;background:#F5F0FF}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:36px;margin-bottom:8px}
+.upload-txt{font-size:14px;font-weight:700;color:#374151}
+.upload-sub{font-size:12px;color:#9CA3AF;margin-top:4px}
+.preview-wrap{margin-top:14px;display:none}
+.preview-wrap img{width:100%;border-radius:10px;max-height:220px;object-fit:cover;border:1px solid #E5E7EB}
+.btn-remove-img{background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;width:100%}
+/* Preview do modal */
+.preview-modal{background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:16px;padding:22px 18px;color:#fff;text-align:center;margin-top:16px}
+.preview-modal .pm-icon{font-size:36px;margin-bottom:8px}
+.preview-modal .pm-img{width:100%;border-radius:10px;max-height:160px;object-fit:cover;margin-bottom:10px;display:none}
+.preview-modal .pm-title{font-size:18px;font-weight:900;margin-bottom:6px}
+.preview-modal .pm-desc{font-size:13px;opacity:.9;margin-bottom:14px;line-height:1.5}
+.preview-modal .pm-btn{background:#F9A825;color:#111;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;width:100%;cursor:pointer}
+/* Botões de ação */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 16px;display:flex;gap:10px;justify-content:center;z-index:200}
+.btn-salvar{background:#6A0DAD;color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:800;cursor:pointer;flex:1;max-width:220px}
+.btn-salvar:hover{background:#5a0b9d}
+.btn-limpar{background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-limpar:hover{background:#FECACA}
+.status{font-size:13px;font-weight:700;color:#10B981;text-align:center;padding:6px;display:none}
+/* Toggle ativo */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F3F4F6;margin-bottom:14px}
+.toggle-row label{font-size:14px;font-weight:700;color:#111827}
+.toggle-row span{font-size:12px;color:#6B7280;display:block;margin-top:2px}
+.toggle{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#D1D5DB;border-radius:26px;cursor:pointer;transition:.3s}
+.slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+input:checked+.slider{background:#6A0DAD}
+input:checked+.slider:before{transform:translateX(22px)}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🎉 Gerenciar Promoção</h1>
+  <div class="header-btns">
+    <a href="index.html" class="btn-back">⚙️ Admin</a>
+    <a href="../index.html" class="btn-back">🏠 Site</a>
+  </div>
+</div>
+
+<div class="body">
+  <!-- CONFIGURAÇÃO -->
+  <div class="card">
+    <h2>🎉 Configurar Promoção</h2>
+    <p>O que você preencher aqui aparece no botão "Promoção" do site.</p>
+
+    <div class="toggle-row">
+      <div>
+        <label>Promoção Ativa</label>
+        <span>Quando desativada, o botão Promoção fica oculto</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="promo-ativa" checked onchange="atualizarPreview()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label>📸 Foto da Promoção</label>
+      <div class="upload-area" id="upload-area">
+        <input type="file" id="foto-input" accept="image/*" onchange="carregarFoto(this)">
+        <div class="upload-icon">📸</div>
+        <div class="upload-txt">Clique ou arraste uma foto aqui</div>
+        <div class="upload-sub">JPG, PNG ou WEBP · Máx. 5MB</div>
+      </div>
+      <div class="preview-wrap" id="preview-wrap">
+        <img id="foto-preview" src="" alt="Preview">
+        <button class="btn-remove-img" onclick="removerFoto()">🗑️ Remover Foto</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>📝 Título da Promoção</label>
+      <input type="text" id="promo-titulo" placeholder="Ex: Promoção de Verão! 🌞" maxlength="60" oninput="atualizarPreview()">
+    </div>
+
+    <div class="field">
+      <label>💬 Texto / Descrição</label>
+      <textarea id="promo-texto" placeholder="Ex: Sorvete duplo por R$ 12,00 hoje! Aproveite enquanto durar." maxlength="200" oninput="atualizarPreview()"></textarea>
+    </div>
+
+    <div class="field">
+      <label>🔗 Link do Botão</label>
+      <input type="url" id="promo-link" placeholder="https://wa.me/5516991472045" oninput="atualizarPreview()">
+      <div style="font-size:11px;color:#9CA3AF;margin-top:4px">Pode ser WhatsApp, Instagram, ou qualquer link</div>
+    </div>
+
+    <div class="field">
+      <label>🔘 Texto do Botão</label>
+      <input type="text" id="promo-btn-txt" placeholder="Ex: 💬 Falar com a Loja" maxlength="40" oninput="atualizarPreview()">
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="card">
+    <h2>👁️ Preview do Modal</h2>
+    <p>Assim vai aparecer para os clientes ao clicar em "Promoção"</p>
+    <div class="preview-modal" id="preview-modal">
+      <div class="pm-icon" id="pm-icon">🎉</div>
+      <img class="pm-img" id="pm-img" src="" alt="">
+      <div class="pm-title" id="pm-title">Promoção Especial!</div>
+      <div class="pm-desc" id="pm-desc">Confira nossas promoções especiais de hoje.</div>
+      <button class="pm-btn" id="pm-btn">💬 Falar com a Loja</button>
+    </div>
+  </div>
+
+  <div class="status" id="status-ok">✅ Promoção salva! Aparecerá no site imediatamente.</div>
+</div>
+
+<div class="save-bar">
+  <button class="btn-limpar" onclick="limparPromo()">🗑️ Limpar</button>
+  <button class="btn-salvar" onclick="salvarPromo()">💾 Salvar Promoção</button>
+</div>
+
+<script>
+// Carregar dados salvos ao abrir
+window.addEventListener('DOMContentLoaded', () => {
+  const d = JSON.parse(localStorage.getItem('itap_promo') || '{}');
+  if (d.titulo) document.getElementById('promo-titulo').value = d.titulo;
+  if (d.descricao) document.getElementById('promo-texto').value = d.descricao;
+  if (d.link) document.getElementById('promo-link').value = d.link;
+  if (d.btnTexto) document.getElementById('promo-btn-txt').value = d.btnTexto;
+  if (d.ativa === false) document.getElementById('promo-ativa').checked = false;
+  if (d.imagem) {
+    document.getElementById('foto-preview').src = d.imagem;
+    document.getElementById('preview-wrap').style.display = 'block';
+    document.getElementById('upload-area').style.display = 'none';
+  }
+  atualizarPreview();
+});
+
+function carregarFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Foto muito grande! Máximo 5MB.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('foto-preview').src = e.target.result;
+    document.getElementById('preview-wrap').style.display = 'block';
+    document.getElementById('upload-area').style.display = 'none';
+    atualizarPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerFoto() {
+  document.getElementById('foto-preview').src = '';
+  document.getElementById('preview-wrap').style.display = 'none';
+  document.getElementById('upload-area').style.display = 'block';
+  document.getElementById('foto-input').value = '';
+  atualizarPreview();
+}
+
+function atualizarPreview() {
+  const titulo = document.getElementById('promo-titulo').value || 'Promoção Especial!';
+  const texto = document.getElementById('promo-texto').value || 'Confira nossas promoções especiais de hoje.';
+  const btnTxt = document.getElementById('promo-btn-txt').value || '💬 Falar com a Loja';
+  const imgSrc = document.getElementById('foto-preview').src;
+  const temImg = imgSrc && imgSrc !== window.location.href;
+
+  document.getElementById('pm-title').textContent = titulo;
+  document.getElementById('pm-desc').textContent = texto;
+  document.getElementById('pm-btn').textContent = btnTxt;
+
+  const pmImg = document.getElementById('pm-img');
+  const pmIcon = document.getElementById('pm-icon');
+  if (temImg && document.getElementById('preview-wrap').style.display !== 'none') {
+    pmImg.src = imgSrc;
+    pmImg.style.display = 'block';
+    pmIcon.style.display = 'none';
+  } else {
+    pmImg.style.display = 'none';
+    pmIcon.style.display = 'block';
+  }
+}
+
+function salvarPromo() {
+  const titulo = document.getElementById('promo-titulo').value.trim();
+  const descricao = document.getElementById('promo-texto').value.trim();
+  const link = document.getElementById('promo-link').value.trim();
+  const btnTexto = document.getElementById('promo-btn-txt').value.trim();
+  const ativa = document.getElementById('promo-ativa').checked;
+  const imgEl = document.getElementById('foto-preview');
+  const imagem = (document.getElementById('preview-wrap').style.display !== 'none') ? imgEl.src : '';
+
+  const dados = { titulo, descricao, link, btnTexto, ativa, imagem, atualizado: new Date().toISOString() };
+  localStorage.setItem('itap_promo', JSON.stringify(dados));
+
+  const s = document.getElementById('status-ok');
+  s.style.display = 'block';
+  setTimeout(() => s.style.display = 'none', 4000);
+}
+
+function limparPromo() {
+  if (!confirm('Limpar toda a promoção?')) return;
+  localStorage.removeItem('itap_promo');
+  document.getElementById('promo-titulo').value = '';
+  document.getElementById('promo-texto').value = '';
+  document.getElementById('promo-link').value = '';
+  document.getElementById('promo-btn-txt').value = '';
+  document.getElementById('promo-ativa').checked = true;
+  removerFoto();
+  atualizarPreview();
+}
+
+// Drag & drop
+const area = document.getElementById('upload-area');
+area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag'); });
+area.addEventListener('dragleave', () => area.classList.remove('drag'));
+area.addEventListener('drop', e => {
+  e.preventDefault(); area.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const dt = new DataTransfer(); dt.items.add(file);
+    document.getElementById('foto-input').files = dt.files;
+    carregarFoto(document.getElementById('foto-input'));
+  }
+});
+</script>
+</body>
+</html>
