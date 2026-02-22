@@ -464,8 +464,9 @@ img{max-width:100%;display:block}
     <div class="promo-title" id="promo-title">Promoção Especial!</div>
     <div class="promo-desc" id="promo-desc">Confira nossas promoções especiais de hoje. Aproveite enquanto durar!</div>
     <div class="promo-timer-box">
-      <div class="promo-timer-lbl">Oferta válida por:</div>
-      <div class="promo-timer-val" id="promo-timer">00:00:00</div>
+      <div class="promo-timer-lbl">⏳ Promoção encerra em:</div>
+      <div class="promo-timer-val" id="promo-timer">00:00:00:00</div>
+      <div style="font-size:10px;opacity:.7;margin-top:4px;letter-spacing:1px">DIAS &nbsp; HH &nbsp; MM &nbsp; SS</div>
     </div>
     <button class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()">💬 Falar com a Loja</button>
   </div>
@@ -710,15 +711,32 @@ function abrirLinkPromo(){
 }
 function abrirPromo(){carregarPromo();abrirModal('promo-overlay');iniciarTimer();}
 function iniciarTimer(){
-  const fim=new Date();fim.setHours(22,0,0,0);
-  if(fim<new Date())fim.setDate(fim.getDate()+1);
+  // Usa data/hora salva pelo admin, ou hoje às 22h como padrão
+  let fim;
+  try{
+    const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+    if(d.dataFim&&d.horaFim){
+      fim=new Date(d.dataFim+'T'+d.horaFim+':00');
+    }
+  }catch(e){}
+  if(!fim||isNaN(fim)){
+    // Padrão: 1 de abril de 2026 às 22h
+    fim=new Date('2026-04-01T22:00:00');
+  }
+  // Se já passou, não exibe
+  if(fim<=new Date()){
+    document.getElementById('promo-timer').textContent='00:00:00:00';
+    return;
+  }
   if(promoInt)clearInterval(promoInt);
   promoInt=setInterval(()=>{
-    const d=fim-new Date();if(d<=0){clearInterval(promoInt);return;}
-    const h=String(Math.floor(d/3600000)).padStart(2,'0');
-    const m=String(Math.floor((d%3600000)/60000)).padStart(2,'0');
-    const s=String(Math.floor((d%60000)/1000)).padStart(2,'0');
-    document.getElementById('promo-timer').textContent=`${h}:${m}:${s}`;
+    const diff=fim-new Date();
+    if(diff<=0){clearInterval(promoInt);document.getElementById('promo-timer').textContent='00:00:00:00';return;}
+    const dias=String(Math.floor(diff/86400000)).padStart(2,'0');
+    const h=String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+    const m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const s=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    document.getElementById('promo-timer').textContent=`${dias}:${h}:${m}:${s}`;
   },1000);
 }
 
