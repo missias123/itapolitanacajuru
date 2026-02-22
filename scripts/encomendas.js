@@ -3,14 +3,25 @@
 // Lógica completa do fluxo de encomendas
 // ============================================================
 
-const SABORES_SORVETE = [
-  "Abacaxi","Amendoim","Banana","Baunilha","Brigadeiro","Caju","Caramelo",
-  "Chocolate","Chocolate Belga","Chocolate com Menta","Chocolate Suíço",
-  "Coco","Creme","Doce de Leite","Flocos","Goiaba","Iogurte","Limão",
-  "Maracujá","Melancia","Melão","Morango","Morango Trufado","Napolitano",
-  "Ninho","Ninho com Morango","Nutella","Ovomaltine","Paçoca","Pistache",
-  "Prestígio","Rapadura","Romeu e Julieta","Uva","Uva Verde","Vanilla"
-];
+// Sabores carregados do admin (localStorage) ou lista padrão
+function getSaboresAtivos() {
+  const salvo = localStorage.getItem('itap_sabores');
+  if (salvo) {
+    const dados = JSON.parse(salvo);
+    return dados.filter(s => !s.esgotado).map(s => s.nome);
+  }
+  return [
+    "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
+    "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
+    "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
+    "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho","Leite Ninho com Creme Paris",
+    "Leite Ninho com Nutella","Leite Ninho Folheado","Leite Ninho com Óreo","Limão",
+    "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
+    "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
+    "Pistache","Prestígio","Sensação","Torta de Chocolate"
+  ];
+}
+const SABORES_SORVETE = getSaboresAtivos();
 
 const PRODUTOS = {
   caixas: [
