@@ -1,176 +1,211 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Sorveteria Itapolitana</title>
-    <link rel="stylesheet" href="../styles/main.css">
-    <style>
-        :root {
-            --pink: #FF007F;
-            --cyan: #00E5FF;
-        }
-        body { background: #f4f4f4; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        .login-box { 
-            max-width: 400px; 
-            margin: 100px auto; 
-            padding: 30px; 
-            background: white; 
-            border-radius: 15px; 
-            text-align: center; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            display: block; /* Garantir que está visível */
-        }
-        .admin-container { 
-            max-width: 1000px; 
-            margin: 40px auto; 
-            padding: 20px; 
-            background: white; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            display: none; 
-        }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        .btn-admin { width: 100%; padding: 12px; background: var(--pink); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 16px; }
-        .btn-admin:hover { background: #e60073; }
-        
-        .category-section { margin-bottom: 40px; }
-        .category-section h3 { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--cyan); color: #00acc1; }
-        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-edit-card { padding: 15px; border: 1px solid #eee; border-radius: 10px; background: #fafafa; }
-        .product-edit-card h4 { margin-bottom: 10px; color: var(--pink); }
-        .edit-fields { display: flex; gap: 10px; }
-        .edit-fields div { flex: 1; }
-        .edit-fields input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        
-        .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; justify-content: center; gap: 20px; z-index: 1000; }
-        .btn-save { padding: 12px 40px; background: #2ecc71; color: white; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; }
-        .btn-logout { padding: 12px 20px; background: #e74c3c; color: white; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Itapolitana Cajuru</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:#fff;border-radius:16px;padding:32px 24px;max-width:360px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}
+.login-box h2{font-size:20px;font-weight:900;margin-bottom:8px}
+.login-box p{font-size:13px;color:#6A0DAD;font-weight:700;margin-bottom:24px}
+.login-box input{width:100%;padding:12px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:#6A0DAD}
+.btn-login{width:100%;padding:13px;background:#6A0DAD;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer}
+.btn-login:hover{background:#5a0b9d}
+.back-link{display:block;margin-top:16px;font-size:13px;color:#6A0DAD;text-decoration:none}
+#admin-panel{display:none}
+.admin-header{background:#1F2937;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.admin-header h1{font-size:16px;font-weight:800}
+.btn-logout{background:#EF4444;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.admin-body{max-width:960px;margin:0 auto;padding:20px 16px 100px}
+.cat-section{background:#fff;border-radius:14px;border:1px solid #E5E7EB;margin-bottom:16px;overflow:hidden}
+.cat-header{padding:14px 18px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.cat-header h3{font-size:15px;font-weight:800;flex:1}
+.cat-arrow{font-size:12px;color:#6A0DAD;transition:transform .3s}
+.cat-section.open .cat-arrow{transform:rotate(180deg)}
+.cat-body{display:none;padding:16px}
+.cat-section.open .cat-body{display:block}
+.prod-edit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.prod-edit-card{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:14px}
+.prod-edit-card h4{font-size:13px;font-weight:800;margin-bottom:10px;color:#111827}
+.field-row{display:flex;gap:8px;margin-bottom:8px}
+.field-row label{font-size:11px;font-weight:700;color:#6A0DAD;display:block;margin-bottom:3px}
+.field-row input{width:100%;padding:7px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none}
+.field-row input:focus{border-color:#6A0DAD}
+.btn-esgotar{width:100%;padding:7px;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-esgotar.esgotado{background:#EF4444;color:#fff}
+.sabores-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.sabor-chip{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
+.sabor-chip.esgotado{background:#FEE2E2;color:#EF4444;border-color:#FECACA;text-decoration:line-through}
+.preco-simples-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.preco-simples-card{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:12px}
+.preco-simples-card label{font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px}
+.preco-simples-card input{width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:14px;font-weight:700;outline:none}
+.preco-simples-card input:focus{border-color:#6A0DAD}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 20px;display:flex;gap:10px;justify-content:center;z-index:200}
+.btn-save{background:#6A0DAD;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:800;cursor:pointer}
+.btn-save:hover{background:#5a0b9d}
+.status-msg{font-size:13px;font-weight:700;color:#10B981;align-self:center}
+</style>
 </head>
 <body>
-    <!-- Login Section -->
-    <div id="login-section" class="login-box">
-        <h2 style="color: var(--pink); margin-bottom: 20px;">Acesso Restrito</h2>
-        <p style="margin-bottom: 20px; color: #6A0DAD;">Digite a senha para gerenciar os produtos.</p>
-        <div class="form-group">
-            <label for="admin-password">Senha Administrativa</label>
-            <input type="password" id="admin-password" placeholder="Digite a senha..." onkeypress="if(event.key === 'Enter') checkLogin()">
-        </div>
-        <button class="btn-admin" onclick="checkLogin()">Entrar no Painel</button>
-        <p style="margin-top: 20px;"><a href="../index.html" style="color: #6A0DAD; text-decoration: none; font-size: 14px;">← Voltar ao Site</a></p>
+<div class="login-wrap" id="login-section">
+  <div class="login-box">
+    <h2>⚙️ Painel Admin</h2>
+    <p>Sorveteria Itapolitana Cajuru</p>
+    <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
+    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <a href="../index.html" class="back-link">← Voltar ao site</a>
+  </div>
+</div>
+<div id="admin-panel">
+  <div class="admin-header">
+    <h1>⚙️ Gerenciamento – Itapolitana Cajuru</h1>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+  <div class="admin-body" id="admin-body"></div>
+  <div class="save-bar">
+    <span class="status-msg" id="status-msg"></span>
+    <button class="btn-save" onclick="salvarTudo()">💾 Baixar products.js Atualizado</button>
+  </div>
+</div>
+<script src="../scripts/products.js"></script>
+<script>
+const ADMIN_PASS="itapolitana2007";
+function checkLogin(){
+  const p=document.getElementById('admin-password').value;
+  if(p===ADMIN_PASS){
+    document.getElementById('login-section').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    renderAdmin();
+  }else{alert('Senha incorreta!');}
+}
+function logout(){location.reload();}
+function toggleCat(id){document.getElementById('cat-'+id).classList.toggle('open');}
+function criarSecao(id,titulo,conteudo){
+  const s=document.createElement('div');
+  s.className='cat-section';s.id='cat-'+id;
+  s.innerHTML=`<div class="cat-header" onclick="toggleCat('${id}')"><h3>${titulo}</h3><span class="cat-arrow">▼</span></div><div class="cat-body">${conteudo}</div>`;
+  return s;
+}
+function renderAdmin(){
+  const body=document.getElementById('admin-body');body.innerHTML='';
+  body.appendChild(criarSecao('sorvetes','🍦 Sorvetes de Massa',renderSorvetes()));
+  body.appendChild(criarSecao('picoles','🍭 Picolés',renderPicoles()));
+  body.appendChild(criarSecao('acai','🫐 Açaí Artesanal',renderAcai()));
+  body.appendChild(criarSecao('milkshake','🥤 Milkshakes',renderMilkshake()));
+  body.appendChild(criarSecao('tacas','🍨 Taças',renderTacas()));
+  body.appendChild(criarSecao('caixas','📦 Caixas de Viagem',renderCaixas()));
+  body.appendChild(criarSecao('isopores','🧊 Isopores de Viagem',renderIsopores()));
+  body.appendChild(criarSecao('sobremesas','🎂 Sobremesas',renderSobremesas()));
+}
+function renderSorvetes(){
+  const p=produtos.sorvetes;
+  const nomes={casquinha_copo:'Casquinha/Copo',copo_recheado:'Copo Recheado',cascao:'Cascão',cestinha:'Cestinha'};
+  let html='<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Preços por Apresentação</h4><div class="preco-simples-grid">';
+  Object.entries(p.precos).forEach(([key,precos])=>{
+    Object.entries(precos).forEach(([tam,preco])=>{
+      html+=`<div class="preco-simples-card"><label>${nomes[key]||key} – ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.sorvetes.precos['${key}']['${tam}']=parseFloat(this.value)"></div>`;
+    });
+  });
+  html+='</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Sabores (clique para marcar esgotado)</h4><div class="sabores-grid">';
+  p.sabores.forEach(s=>{html+=`<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`;});
+  html+='</div>';
+  return html;
+}
+function renderPicoles(){
+  let html='<div class="prod-edit-grid">';
+  Object.entries(produtos.picoles).forEach(([key,p])=>{
+    html+=`<div class="prod-edit-card"><h4>${p.nome}</h4>
+    <div class="field-row">
+      <div style="flex:1"><label>Varejo (R$)</label><input type="number" step="0.01" value="${p.preco_varejo}" onchange="produtos.picoles['${key}'].preco_varejo=parseFloat(this.value)"></div>
+      <div style="flex:1"><label>Atacado (R$)</label><input type="number" step="0.01" value="${p.preco_atacado}" onchange="produtos.picoles['${key}'].preco_atacado=parseFloat(this.value)"></div>
     </div>
-
-    <!-- Admin Panel Section -->
-    <div id="admin-panel" class="admin-container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
-            <h2>⚙️ Gerenciamento de Produtos</h2>
-            <span id="status-msg" style="color: #2ecc71; font-weight: 600;"></span>
-        </div>
-
-        <div id="products-management">
-            <!-- Categorias serão inseridas aqui via JS -->
-        </div>
-
-        <div style="height: 80px;"></div> <!-- Espaço para a barra de salvar -->
-
-        <div class="save-bar">
-            <button class="btn-save" onclick="saveChanges()">Salvar Alterações</button>
-            <button class="btn-logout" onclick="logout()">Sair</button>
-        </div>
-    </div>
-
-    <script src="../scripts/products.js"></script>
-    <script>
-        const ADMIN_PASS = "itapolitana2007";
-        let localProducts = {};
-
-        function checkLogin() {
-            const pass = document.getElementById('admin-password').value;
-            if (pass === ADMIN_PASS) {
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                renderAdminProducts();
-            } else {
-                alert('Senha incorreta!');
-            }
-        }
-
-        function renderAdminProducts() {
-            const container = document.getElementById('products-management');
-            container.innerHTML = '';
-
-            if (typeof produtos === 'undefined') {
-                container.innerHTML = '<p style="color: red;">Erro: Arquivo de produtos não carregado.</p>';
-                return;
-            }
-
-            localProducts = JSON.parse(JSON.stringify(produtos));
-
-            const categoriasNomes = {
-                'sorvete': '🍦 Sorvetes de Massa',
-                'picole-leite': '🍭 Picolés de Leite com Recheio',
-                'picole-eskimo': '🍭 Picolés Eskimo',
-                'acai': '🥤 Açaí Artesanal',
-                'milkshake': '🥤 Milk Shakes',
-                'tacas': '🍨 Taças Clássicas',
-                'tacas-premium': '🍫 Taças Premium'
-            };
-
-            Object.keys(localProducts).forEach(catId => {
-                const catProdutos = localProducts[catId];
-                const section = document.createElement('div');
-                section.className = 'category-section';
-                
-                let html = `<h3>${categoriasNomes[catId] || catId}</h3>`;
-                html += `<div class="product-list">`;
-                
-                catProdutos.forEach((p, index) => {
-                    html += `
-                        <div class="product-edit-card">
-                            <h4>${p.nome}</h4>
-                            <div class="edit-fields">
-                                <div>
-                                    <label style="font-size: 12px; color: #6A0DAD;">Preço (R$)</label>
-                                    <input type="number" step="0.01" value="${p.preco}" 
-                                        onchange="updateLocalProduct('${catId}', ${index}, 'preco', this.value)">
-                                </div>
-                                <div>
-                                    <label style="font-size: 12px; color: #6A0DAD;">Estoque</label>
-                                    <input type="number" value="${p.estoque || 100}" 
-                                        onchange="updateLocalProduct('${catId}', ${index}, 'estoque', this.value)">
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += `</div>`;
-                section.innerHTML = html;
-                container.appendChild(section);
-            });
-        }
-
-        function updateLocalProduct(catId, index, field, value) {
-            localProducts[catId][index][field] = parseFloat(value);
-        }
-
-        function saveChanges() {
-            const status = document.getElementById('status-msg');
-            status.textContent = '⌛ Salvando...';
-            
-            setTimeout(() => {
-                status.textContent = '✅ Salvo com sucesso!';
-                alert('Alterações salvas! (Simulação de envio ao servidor)');
-                setTimeout(() => status.textContent = '', 3000);
-            }, 1000);
-        }
-
-        function logout() {
-            location.reload();
-        }
-    </script>
+    <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value)"></div></div>
+    <div style="margin-top:8px;font-size:11px;color:#6A0DAD;font-weight:700">Sabores:</div>
+    <div class="sabores-grid" style="margin-top:6px">${p.sabores.map(s=>`<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`).join('')}</div>
+    <button class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
+    </div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function renderAcai(){
+  let html='<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Tamanhos de Copo</h4><div class="preco-simples-grid">';
+  Object.entries(produtos.acai.copos).forEach(([tam,preco])=>{
+    html+=`<div class="preco-simples-card"><label>Açaí ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.acai.copos['${tam}']=parseFloat(this.value)"></div>`;
+  });
+  html+='</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Complementos</h4>';
+  const lbl={frutas:'🍓 Frutas',cremes:'🍯 Cremes',guloseimas:'🍬 Guloseimas',chocolates:'🍫 Chocolates'};
+  Object.entries(produtos.acai.complementos).forEach(([k,info])=>{
+    html+=`<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:13px;font-weight:700">${lbl[k]||k}</span><span style="font-size:11px;color:#6A0DAD">Preço: R$</span><input type="number" step="0.01" value="${info.preco}" style="width:70px;padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px" onchange="produtos.acai.complementos['${k}'].preco=parseFloat(this.value)"></div><div class="sabores-grid">${info.itens.map(i=>`<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${i}</span>`).join('')}</div></div>`;
+  });
+  return html;
+}
+function renderMilkshake(){
+  const m=produtos.milkshake;
+  let html='<div class="preco-simples-grid">';
+  Object.entries(m.tradicional).forEach(([tam,preco])=>{
+    html+=`<div class="preco-simples-card"><label>Tradicional ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.tradicional['${tam}']=parseFloat(this.value)"></div>`;
+  });
+  Object.entries(m.top).forEach(([tam,preco])=>{
+    html+=`<div class="preco-simples-card"><label>Top ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.top['${tam}']=parseFloat(this.value)"></div>`;
+  });
+  html+=`<div class="preco-simples-card"><label>Adicional Ovomaltine</label><input type="number" step="0.01" value="${m.adicional_ovomaltine}" onchange="produtos.milkshake.adicional_ovomaltine=parseFloat(this.value)"></div>`;
+  html+='</div>';
+  return html;
+}
+function renderTacas(){
+  let html='<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Taças Tradicionais</h4><div class="preco-simples-grid">';
+  Object.entries(produtos.tacas.tradicionais).forEach(([nome,preco])=>{
+    html+=`<div class="preco-simples-card"><label>Taça ${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.tradicionais['${nome}']=parseFloat(this.value)"></div>`;
+  });
+  html+='</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Taças Sujas</h4><div class="preco-simples-grid">';
+  Object.entries(produtos.tacas.sujas).forEach(([nome,preco])=>{
+    html+=`<div class="preco-simples-card"><label>Taça Suja – ${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.sujas['${nome}']=parseFloat(this.value)"></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function renderCaixas(){
+  let html='<div class="preco-simples-grid">';
+  Object.entries(produtos.caixas_viagem).forEach(([nome,preco])=>{
+    html+=`<div class="preco-simples-card"><label>${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.caixas_viagem['${nome}']=parseFloat(this.value)"></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function renderIsopores(){
+  let html='<div class="preco-simples-grid">';
+  Object.entries(produtos.isopores_viagem).forEach(([nome,preco])=>{
+    html+=`<div class="preco-simples-card"><label>${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.isopores_viagem['${nome}']=parseFloat(this.value)"></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function renderSobremesas(){
+  let html='<div class="preco-simples-grid">';
+  Object.entries(produtos.sobremesas).forEach(([nome,preco])=>{
+    html+=`<div class="preco-simples-card"><label>${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.sobremesas['${nome}']=parseFloat(this.value)"></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function salvarTudo(){
+  const msg=document.getElementById('status-msg');
+  msg.textContent='⌛ Gerando arquivo...';
+  const novoJS='// products.js – Atualizado em '+new Date().toLocaleDateString('pt-BR')+'\nconst produtos = '+JSON.stringify(produtos,null,4)+';\n';
+  const blob=new Blob([novoJS],{type:'text/javascript'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='products.js';
+  a.click();
+  msg.textContent='✅ products.js baixado! Envie ao GitHub para aplicar no site.';
+  setTimeout(()=>msg.textContent='',6000);
+}
+</script>
 </body>
 </html>
