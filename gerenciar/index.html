@@ -239,6 +239,27 @@ function renderAdmin() {
   `;
   body.appendChild(bannerCard);
 
+  // ── CARD SABORES DE SORVETE ──
+  const saboresCard = document.createElement('div');
+  saboresCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
+  saboresCard.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:24px">🍦</span>
+      <div>
+        <div style="font-size:16px;font-weight:900;color:#E8000D">Sabores de Sorvete</div>
+        <div style="font-size:12px;color:#6B7280;margin-top:2px">Gerencie os sabores disponíveis no cardápio e encomendas</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <input id="novo-sabor-input" type="text" placeholder="Nome do novo sabor..." style="flex:1;min-width:180px;padding:10px 14px;border:2px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none" onfocus="this.style.borderColor='#E8000D'" onblur="this.style.borderColor='#E5E7EB'">
+      <button onclick="adicionarSabor()" style="background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">➕ Acrescentar</button>
+    </div>
+    <div id="lista-sabores-admin" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px"></div>
+    <div id="sabores-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
+  `;
+  body.appendChild(saboresCard);
+  renderSaboresAdmin();
+
   body.appendChild(criarSecao('sorvetes', '🍦 Sorvetes de Massa', renderSorvetes()));
   body.appendChild(criarSecao('picoles', '🍭 Picolés', renderPicoles()));
   body.appendChild(criarSecao('acai', '🫐 Açaí Artesanal', renderAcai()));
@@ -407,6 +428,92 @@ function renderSobremesas() {
   });
   html += '</div>';
   return html;
+}
+
+// ── SABORES DE SORVETE ──
+const SABORES_PADRAO = [
+  "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
+  "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
+  "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
+  "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho","Leite Ninho com Creme Paris",
+  "Leite Ninho com Nutella","Leite Ninho Folheado","Leite Ninho com Óreo","Limão",
+  "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
+  "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
+  "Pistache","Prestígio","Sensação","Torta de Chocolate"
+];
+
+function getSaboresAdmin() {
+  try {
+    const salvo = localStorage.getItem('itap_sabores');
+    if (salvo) return JSON.parse(salvo);
+  } catch(e) {}
+  // Inicializar com sabores padrão
+  const lista = SABORES_PADRAO.map(nome => ({ nome, esgotado: false }));
+  localStorage.setItem('itap_sabores', JSON.stringify(lista));
+  return lista;
+}
+
+function salvarSaboresAdmin(lista) {
+  localStorage.setItem('itap_sabores', JSON.stringify(lista));
+  // Atualizar também no products.js em memória
+  if (produtos && produtos.sorvetes) {
+    produtos.sorvetes.sabores = lista.filter(s => !s.esgotado).map(s => s.nome);
+  }
+}
+
+function renderSaboresAdmin() {
+  const container = document.getElementById('lista-sabores-admin');
+  if (!container) return;
+  const lista = getSaboresAdmin();
+  container.innerHTML = lista.map((s, i) => `
+    <div style="background:${s.esgotado ? '#FEF2F2' : '#F0FDF4'};border:1px solid ${s.esgotado ? '#FECACA' : '#BBF7D0'};border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <span style="font-size:13px;font-weight:700;color:${s.esgotado ? '#EF4444' : '#111827'};flex:1;${s.esgotado ? 'text-decoration:line-through' : ''}">${s.nome}</span>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button onclick="toggleEsgotadoSabor(${i})" style="padding:5px 10px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:${s.esgotado ? '#10B981' : '#EF4444'};color:#fff">
+          ${s.esgotado ? '✅ Ativar' : '❌ Esgotar'}
+        </button>
+        <button onclick="excluirSabor(${i})" style="padding:5px 8px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:#6B7280;color:#fff" title="Excluir">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function adicionarSabor() {
+  const input = document.getElementById('novo-sabor-input');
+  const nome = input.value.trim();
+  if (!nome) { mostrarStatusSabores('⚠️ Digite o nome do sabor!'); return; }
+  const lista = getSaboresAdmin();
+  if (lista.find(s => s.nome.toLowerCase() === nome.toLowerCase())) {
+    mostrarStatusSabores('⚠️ Sabor já existe na lista!'); return;
+  }
+  lista.push({ nome, esgotado: false });
+  salvarSaboresAdmin(lista);
+  input.value = '';
+  renderSaboresAdmin();
+  mostrarStatusSabores('✅ Sabor "' + nome + '" adicionado com sucesso!');
+}
+
+function toggleEsgotadoSabor(idx) {
+  const lista = getSaboresAdmin();
+  lista[idx].esgotado = !lista[idx].esgotado;
+  salvarSaboresAdmin(lista);
+  renderSaboresAdmin();
+  const status = lista[idx].esgotado ? '❌ "' + lista[idx].nome + '" marcado como ESGOTADO' : '✅ "' + lista[idx].nome + '" reativado!';
+  mostrarStatusSabores(status);
+}
+
+function excluirSabor(idx) {
+  const lista = getSaboresAdmin();
+  const nome = lista[idx].nome;
+  if (!confirm('Excluir o sabor "' + nome + '" permanentemente?')) return;
+  lista.splice(idx, 1);
+  salvarSaboresAdmin(lista);
+  renderSaboresAdmin();
+  mostrarStatusSabores('🗑️ "' + nome + '" excluído permanentemente.');
+}
+
+function mostrarStatusSabores(msg) {
+  const el = document.getElementById('sabores-status');
+  if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 4000); }
 }
 
 // ── SALVAR ──

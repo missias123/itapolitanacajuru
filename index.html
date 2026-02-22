@@ -665,10 +665,17 @@ function renderSobremesas(){
   }
 }
 // ── ABRIR MODAL SABORES ──
+function getSaboresDisponiveis(){
+  try{
+    const salvo=localStorage.getItem('itap_sabores');
+    if(salvo){const lista=JSON.parse(salvo);return lista.filter(s=>!s.esgotado).map(s=>s.nome);}
+  }catch(e){}
+  return produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
+}
 function abrirSabores(tipo,titulo){
   document.getElementById('ms-titulo').textContent=titulo;
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
-  const sabores=produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
+  const sabores=getSaboresDisponiveis();
   sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   abrirModal('modal-sabores');
 }
