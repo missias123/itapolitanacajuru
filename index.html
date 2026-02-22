@@ -59,17 +59,32 @@ img{max-width:100%;display:block}
 .cardapio-h{font-size:22px;font-weight:900;text-align:center;margin-bottom:16px}
 
 /* ACCORDION */
-.acc{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:1px solid #E5E7EB;box-shadow:0 1px 6px rgba(0,0,0,.05);isolation:isolate}
-.acc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;user-select:none;min-height:56px;transition:background .15s}
-.acc-header:hover{background:#F9FAFB}
-.acc-left{display:flex;align-items:center;gap:10px}
-.acc-icon{font-size:22px;flex-shrink:0}
-.acc-title{font-size:15px;font-weight:800;color:#111827}
-.acc-sub{font-size:11px;color:#6A0DAD;font-weight:700;margin-top:2px}
-.acc-arrow{font-size:12px;color:#6A0DAD;font-weight:700;transition:transform .3s;flex-shrink:0}
+.acc{border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.12);isolation:isolate}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;user-select:none;min-height:64px;transition:filter .15s}
+.acc-header:hover{filter:brightness(1.08)}
+.acc-left{display:flex;align-items:center;gap:12px}
+.acc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,.25);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.acc-title{font-size:16px;font-weight:900;color:#fff}
+.acc-sub{font-size:12px;color:rgba(255,255,255,.85);font-weight:600;margin-top:2px}
+.acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
 .acc.open .acc-arrow{transform:rotate(180deg)}
-.acc-body{display:none;padding:16px;border-top:1px solid #F3F4F6}
+.acc-body{display:none;padding:16px;background:#fff;border:2px solid transparent}
 .acc.open .acc-body{display:block}
+/* Cores por categoria */
+#acc-sorvetes>.acc-header{background:linear-gradient(135deg,#7B1FA2,#9C27B0)}
+#acc-sorvetes>.acc-body{border-color:#CE93D8}
+#acc-picoles>.acc-header{background:linear-gradient(135deg,#E65100,#FF9800)}
+#acc-picoles>.acc-body{border-color:#FFCC80}
+#acc-acai>.acc-header{background:linear-gradient(135deg,#C62828,#F44336)}
+#acc-acai>.acc-body{border-color:#EF9A9A}
+#acc-milk>.acc-header{background:linear-gradient(135deg,#0277BD,#03A9F4)}
+#acc-milk>.acc-body{border-color:#81D4FA}
+#acc-tacas>.acc-header{background:linear-gradient(135deg,#AD1457,#E91E63)}
+#acc-tacas>.acc-body{border-color:#F48FB1}
+#acc-tacas-p>.acc-header{background:linear-gradient(135deg,#E65100,#FF6F00)}
+#acc-tacas-p>.acc-body{border-color:#FFCC02}
+#acc-torta>.acc-header{background:linear-gradient(135deg,#2E7D32,#43A047)}
+#acc-torta>.acc-body{border-color:#A5D6A7}
 
 /* GRID PRODUTOS (visualização) */
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
@@ -671,11 +686,7 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcai();renderPicoles();
-  // Abrir todos os accordions exceto Torta
-  ['acc-sorvetes','acc-milk','acc-tacas','acc-tacas-p','acc-acai','acc-picoles'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.classList.add('open');
-  });
+  // Todos os accordions fechados por padrão
   // Atualizar preço da torta do products.js
   const tp=document.getElementById('torta-preco');
   if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
