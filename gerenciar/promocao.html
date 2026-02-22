@@ -117,6 +117,28 @@ input:checked+.slider:before{transform:translateX(22px)}
       <label>🔘 Texto do Botão</label>
       <input type="text" id="promo-btn-txt" placeholder="Ex: 💬 Falar com a Loja" maxlength="40" oninput="atualizarPreview()">
     </div>
+
+    <!-- RELÓGIO DA PROMOÇÃO -->
+    <div style="background:linear-gradient(135deg,#1A0A00,#3E1A00);border-radius:14px;padding:18px;margin-top:4px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:22px">⏰</span>
+        <div>
+          <div style="font-size:14px;font-weight:900;color:#FFD54F">Relógio da Promoção</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:2px">Define até quando o contador regride no modal</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:140px">
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:700">DATA DE ENCERRAMENTO</div>
+          <input type="date" id="promo-data-fim" oninput="atualizarTimerLabel()" style="width:100%;padding:10px 12px;border-radius:8px;border:none;font-size:14px;font-weight:700;outline:none">
+        </div>
+        <div style="flex:1;min-width:110px">
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:700">HORÁRIO</div>
+          <input type="time" id="promo-hora-fim" value="22:00" oninput="atualizarTimerLabel()" style="width:100%;padding:10px 12px;border-radius:8px;border:none;font-size:14px;font-weight:700;outline:none">
+        </div>
+      </div>
+      <div id="timer-preview-label" style="margin-top:12px;background:rgba(255,213,79,.15);border:1px solid rgba(255,213,79,.4);border-radius:8px;padding:10px;font-size:13px;color:#FFD54F;font-weight:700;text-align:center">⏳ Relógio: até 22:00 de hoje</div>
+    </div>
   </div>
 
   <!-- PREVIEW -->
@@ -154,8 +176,29 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('preview-wrap').style.display = 'block';
     document.getElementById('upload-area').style.display = 'none';
   }
+  // Carregar data/hora do relógio
+  document.getElementById('promo-data-fim').value = d.dataFim || '2026-04-01';
+  document.getElementById('promo-hora-fim').value = d.horaFim || '22:00';
   atualizarPreview();
+  atualizarTimerLabel();
 });
+
+function atualizarTimerLabel() {
+  const data = document.getElementById('promo-data-fim').value || '2026-04-01';
+  const hora = document.getElementById('promo-hora-fim').value || '22:00';
+  const fim = new Date(data + 'T' + hora + ':00');
+  const lbl = document.getElementById('timer-preview-label');
+  if (!lbl) return;
+  const agora = new Date();
+  if (isNaN(fim)) { lbl.textContent = '⚠️ Data inválida'; return; }
+  const diff = fim - agora;
+  if (diff <= 0) { lbl.textContent = '⏳ Promoção já encerrada'; return; }
+  const dias = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const dataFmt = fim.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  lbl.textContent = `⏳ ${dias} dias, ${h}h e ${m}min restantes • Encerra em ${dataFmt} às ${hora}`;
+}
 
 function carregarFoto(input) {
   const file = input.files[0];
@@ -211,7 +254,9 @@ function salvarPromo() {
   const imgEl = document.getElementById('foto-preview');
   const imagem = (document.getElementById('preview-wrap').style.display !== 'none') ? imgEl.src : '';
 
-  const dados = { titulo, descricao, link, btnTexto, ativa, imagem, atualizado: new Date().toISOString() };
+  const dataFim = document.getElementById('promo-data-fim').value || '2026-04-01';
+  const horaFim = document.getElementById('promo-hora-fim').value || '22:00';
+  const dados = { titulo, descricao, link, btnTexto, ativa, imagem, dataFim, horaFim, atualizado: new Date().toISOString() };
   localStorage.setItem('itap_promo', JSON.stringify(dados));
 
   const s = document.getElementById('status-ok');
