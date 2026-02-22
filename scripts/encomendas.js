@@ -46,11 +46,11 @@ const PRODUTOS = {
 
 // ---- COMPLEMENTOS ----
 const COMPLEMENTOS_PADRAO = [
-  { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:999, foto:'' },
-  { id:'casquinhas',     nome:'Casquinhas',      preco:0.25, estoque:999, foto:'' },
-  { id:'cascao',         nome:'Cascão',          preco:1.00, estoque:999, foto:'' },
-  { id:'cestinha',       nome:'Cestinha',        preco:1.00, estoque:999, foto:'' },
-  { id:'cobertura_13l',  nome:'Cobertura 1.3L',  preco:40.00,estoque:999, foto:'' }
+  { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:100, foto:'' },
+  { id:'casquinhas',     nome:'Casquinhas',      preco:0.25, estoque:100, foto:'' },
+  { id:'cascao',         nome:'Cascão',          preco:1.00, estoque:100, foto:'' },
+  { id:'cestinha',       nome:'Cestinha',        preco:1.00, estoque:100, foto:'' },
+  { id:'cobertura_13l',  nome:'Cobertura 1.3L',  preco:40.00,estoque:100, foto:'' }
 ];
 function getComplementos() {
   let lista;
