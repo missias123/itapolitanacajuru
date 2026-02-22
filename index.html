@@ -391,14 +391,15 @@ img{max-width:100%;display:block}
 <div class="promo-overlay" id="promo-overlay">
   <div class="promo-box">
     <button class="promo-close" onclick="fecharModal('promo-overlay')">✕</button>
-    <div class="promo-icon">🎉</div>
-    <div class="promo-title">Promoção Especial!</div>
-    <div class="promo-desc">Confira nossas promoções especiais de hoje. Aproveite enquanto durar!</div>
+    <div class="promo-icon" id="promo-icon">🎉</div>
+    <img id="promo-img" src="" alt="Promoção" style="display:none;width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover">
+    <div class="promo-title" id="promo-title">Promoção Especial!</div>
+    <div class="promo-desc" id="promo-desc">Confira nossas promoções especiais de hoje. Aproveite enquanto durar!</div>
     <div class="promo-timer-box">
       <div class="promo-timer-lbl">Oferta válida por:</div>
       <div class="promo-timer-val" id="promo-timer">00:00:00</div>
     </div>
-    <button class="promo-btn" onclick="window.open('https://wa.me/5516991472045','_blank')">💬 Falar com a Loja</button>
+    <button class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()">💬 Falar com a Loja</button>
   </div>
 </div>
 
@@ -565,7 +566,27 @@ function abrirComplementos(){
 
 // ── PROMOÇÃO ──
 let promoInt=null;
-function abrirPromo(){abrirModal('promo-overlay');iniciarTimer();}
+// ── PROMOÇÃO DINÂMICA ──
+function carregarPromo(){
+  const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+  if(d.titulo){document.getElementById('promo-title').textContent=d.titulo;}
+  if(d.descricao){document.getElementById('promo-desc').textContent=d.descricao;}
+  if(d.imagem){
+    const img=document.getElementById('promo-img');
+    img.src=d.imagem;img.style.display='block';
+    document.getElementById('promo-icon').style.display='none';
+  }
+  if(d.link){
+    const btn=document.getElementById('promo-btn');
+    btn.textContent=d.btnTexto||'🔗 Ver Promoção';
+  }
+}
+function abrirLinkPromo(){
+  const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+  const url=d.link||'https://wa.me/5516991472045';
+  window.open(url,'_blank');
+}
+function abrirPromo(){carregarPromo();abrirModal('promo-overlay');iniciarTimer();}
 function iniciarTimer(){
   const fim=new Date();fim.setHours(22,0,0,0);
   if(fim<new Date())fim.setDate(fim.getDate()+1);
@@ -644,6 +665,11 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcai();renderPicoles();
+  // Abrir todos os accordions exceto Torta
+  ['acc-sorvetes','acc-milk','acc-tacas','acc-tacas-p','acc-acai','acc-picoles'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.classList.add('open');
+  });
   // Atualizar preço da torta do products.js
   const tp=document.getElementById('torta-preco');
   if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
