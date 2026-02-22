@@ -79,6 +79,17 @@
             const container = document.getElementById('products-management');
             container.innerHTML = '';
 
+            // Garantir que os produtos estão carregados
+            if (typeof produtos === 'undefined' || !produtos) {
+                container.innerHTML = '<p style="color: red; padding: 20px;">Erro: Dados de produtos não encontrados. Verifique o arquivo products.js.</p>';
+                return;
+            }
+
+            // Usar os produtos globais se localProducts estiver vazio
+            if (Object.keys(localProducts).length === 0) {
+                localProducts = JSON.parse(JSON.stringify(produtos));
+            }
+
             const categoriasNomes = {
                 'sorvete': '🍦 Sorvetes de Massa (5L e 10L)',
                 'picole-leite': '🍭 Picolés de Leite com Recheio',
@@ -89,7 +100,11 @@
                 'tacas-premium': '🍫 Taças Premium'
             };
 
-            for (const [catId, catProdutos] of Object.entries(localProducts)) {
+            // Iterar sobre todas as categorias definidas no objeto produtos
+            Object.keys(localProducts).forEach(catId => {
+                const catProdutos = localProducts[catId];
+                if (!catProdutos || catProdutos.length === 0) return;
+
                 const section = document.createElement('div');
                 section.className = 'category-section';
                 
@@ -119,7 +134,7 @@
                 html += `</div>`;
                 section.innerHTML = html;
                 container.appendChild(section);
-            }
+            });
         }
 
         function updateLocalProduct(catId, index, field, value) {
