@@ -292,7 +292,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="milk-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🥤 Sabores para Milkshake')">🍨 Ver os 36 Sabores</button>
+        <button class="btn-sabores" onclick="abrirMilkshakeSabores()">🥤 Ver Tamanhos e Preços</button>
       </div>
     </div>
   </div>
@@ -309,7 +309,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="tacas-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Taças')">🍨 Ver os 36 Sabores</button>
+        <button class="btn-sabores" onclick="abrirTacasTradicionais()">🍨 Ver as 8 Taças</button>
       </div>
     </div>
   </div>
@@ -326,7 +326,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="tacas-p-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🏆 Sabores para Taças Premium')">🍨 Ver os 36 Sabores</button>
+        <button class="btn-sabores" onclick="abrirTacasSujas()">🏆 Ver as 7 Taças Premium</button>
       </div>
     </div>
   </div>
@@ -680,6 +680,43 @@ function abrirSabores(tipo,titulo){
   abrirModal('modal-sabores');
 }
 
+// ── MILKSHAKE: TAMANHOS E PREÇOS ──
+function abrirMilkshakeSabores(){
+  document.getElementById('ms-titulo').textContent='🥤 Milkshakes – Tamanhos e Preços';
+  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+  const m=produtos&&produtos.milkshake?produtos.milkshake:{};
+  const opcoes=[];
+  if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,p])=>opcoes.push(`Tradicional ${tam} – R$ ${p.toFixed(2).replace('.',',')}`))
+  if(m.top) Object.entries(m.top).forEach(([tam,p])=>opcoes.push(`Top ${tam} – R$ ${p.toFixed(2).replace('.',',')}`))
+  if(m.adicional_ovomaltine) opcoes.push(`+ Ovomaltine – R$ ${m.adicional_ovomaltine.toFixed(2).replace('.',',')}`);
+  opcoes.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  document.getElementById('ms-sub').textContent='Escolha o tamanho ao fazer seu pedido na loja';
+  abrirModal('modal-sabores');
+}
+// ── TAÇAS TRADICIONAIS ──
+function abrirTacasTradicionais(){
+  document.getElementById('ms-titulo').textContent='🍨 Taças – 8 Opções';
+  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+  const t=produtos&&produtos.tacas&&produtos.tacas.tradicionais?produtos.tacas.tradicionais:{};
+  Object.entries(t).forEach(([nome,p])=>{
+    const sp=document.createElement('span');sp.className='chip-sabor';
+    sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
+  });
+  document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
+  abrirModal('modal-sabores');
+}
+// ── TAÇAS PREMIUM (SUJAS) ──
+function abrirTacasSujas(){
+  document.getElementById('ms-titulo').textContent='🏆 Taças Premium (Sujas) – 7 Opções';
+  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+  const t=produtos&&produtos.tacas&&produtos.tacas.sujas?produtos.tacas.sujas:{};
+  Object.entries(t).forEach(([nome,p])=>{
+    const sp=document.createElement('span');sp.className='chip-sabor';
+    sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
+  });
+  document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
+  abrirModal('modal-sabores');
+}
 // ── ABRIR MODAL PICOLÉ ──
 function abrirPicole(key,nome){
   document.getElementById('mp-titulo').textContent=`🍭 Sabores – ${nome}`;
