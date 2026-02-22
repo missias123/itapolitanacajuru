@@ -103,6 +103,55 @@
             color: white;
             transform: scale(1.05);
         }
+
+        /* Estilos para o Carrinho */
+        .carrinho-item {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .carrinho-item-info {
+            flex: 1;
+        }
+        .carrinho-item-nome {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .carrinho-item-preco {
+            color: var(--pink);
+            font-weight: 600;
+        }
+        .btn-remover {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .notificacao-itapolitana {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 3000;
+            box-shadow: var(--shadow-md);
+        }
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -241,20 +290,27 @@
                         </select>
                     </div>
 
+                    <div class="form-group">
+                        <label for="quantidade">Quantidade</label>
+                        <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
+                    </div>
+
                     <div class="botoes-encomenda-row">
-                        <button type="button" class="btn-adicionar" onclick="adicionarAoCarrinhoManual()">Adicionar ao Carrinho</button>
+                        <button type="button" class="btn-adicionar" onclick="adicionarAoCarrinho()">Adicionar ao Carrinho</button>
                     </div>
                 </form>
 
                 <div class="carrinho">
                     <h3>Seu Pedido</h3>
-                    <div id="itens-carrinho">
+                    <div id="carrinho-items">
                         <p style="color: #888; text-align: center; padding: 20px;">Seu carrinho está vazio.</p>
                     </div>
                     <div class="carrinho-total">
-                        Total: <span id="total-pedido">R$ 0,00</span>
+                        Total: R$ <span id="total">0,00</span>
                     </div>
-                    <button class="btn-finalizar" onclick="finalizarPedido()" style="width: 100%; margin-top: 20px;">Enviar Pedido via WhatsApp</button>
+                    <div id="carrinho-acoes-normal">
+                        <button class="btn-finalizar" onclick="enviarPedido()" style="width: 100%; margin-top: 20px;">Enviar Pedido via WhatsApp</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -278,7 +334,7 @@
         <div class="modal-content">
             <span class="close" onclick="fecharModalSabores()">&times;</span>
             <h3 id="modal-titulo">Escolha o Sabor</h3>
-            <div id="modal-lista-sabores" class="sabores-grid-modal"></div>
+            <div id="lista-sabores-modal" class="sabores-grid-modal"></div>
         </div>
     </div>
 
@@ -287,7 +343,15 @@
     <script>
         function toggleCategoria(header) {
             const categoria = header.parentElement;
-            categoria.classList.toggle('ativa');
+            const estaAtiva = categoria.classList.contains('ativa');
+            
+            document.querySelectorAll('.categoria').forEach(cat => {
+                cat.classList.remove('ativa');
+            });
+            
+            if (!estaAtiva) {
+                categoria.classList.add('ativa');
+            }
         }
 
         function scrollToSection(id) {
@@ -300,6 +364,24 @@
                 window.scrollTo({
                     top: offsetPosition,
                     behavior: "smooth"
+                });
+            }
+        }
+
+        function atualizarSabores() {
+            const categoria = document.getElementById('categoria').value;
+            const saborSelect = document.getElementById('sabor');
+            
+            if (!saborSelect) return;
+            
+            saborSelect.innerHTML = '<option value="">Selecione um sabor</option>';
+            
+            if (categoria && produtos[categoria]) {
+                produtos[categoria].forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.nome;
+                    option.textContent = `${p.nome} - R$ ${p.preco.toFixed(2)}`;
+                    saborSelect.appendChild(option);
                 });
             }
         }
