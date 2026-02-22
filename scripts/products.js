@@ -17,6 +17,16 @@ const produtos = {
         leite_ninho: { nome: "Picolé Leite Ninho", preco_varejo: 4.00, preco_atacado: 3.00, estoque: 200, sabores: ["Leite Ninho"] },
         eskimos: { nome: "Picolé Eskimo", preco_varejo: 8.00, preco_atacado: 6.00, estoque: 200, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
     },
+    acai_promocao: [
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Leite em Pó + Leite Condensado", preco: 15.00 },
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Leite em Pó + Leite Condensado", preco: 16.00 },
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Nutella", preco: 18.00 },
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Confete + Leite Condensado", preco: 17.00 },
+        { nome: "Açaí Promocional 500ml", desc: "Açaí + Morango + Granola + Leite Condensado + Leite em Pó", preco: 20.00 },
+        { nome: "Açaí Promocional 500ml", desc: "Açaí + Banana + Creme Leite Ninho + Paçoca", preco: 20.00 },
+        { nome: "Açaí Promocional 600ml", desc: "Açaí + Morango + Banana + Leite em Pó + Leite Condensado", preco: 23.00 },
+        { nome: "Açaí Promocional 700ml", desc: "Açaí + Morango + Nutella", preco: 28.00 }
+    ],
     acai: {
         copos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
         complementos: {

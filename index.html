@@ -75,6 +75,8 @@ img{max-width:100%;display:block}
 #acc-sorvetes>.acc-body{border-color:#CE93D8}
 #acc-picoles>.acc-header{background:linear-gradient(135deg,#E65100,#FF9800)}
 #acc-picoles>.acc-body{border-color:#FFCC80}
+#acc-acai-promo>.acc-header{background:linear-gradient(135deg,#880E4F,#E91E63)}
+#acc-acai-promo>.acc-body{border-color:#F48FB1}
 #acc-acai>.acc-header{background:linear-gradient(135deg,#C62828,#F44336)}
 #acc-acai>.acc-body{border-color:#EF9A9A}
 #acc-milk>.acc-header{background:linear-gradient(135deg,#0277BD,#03A9F4)}
@@ -310,6 +312,17 @@ img{max-width:100%;display:block}
     </div>
   </div>
 
+  <!-- AÇAÍ PROMOÇÃO -->
+  <div class="acc" id="acc-acai-promo">
+    <div class="acc-header" onclick="toggleAcc('acc-acai-promo')">
+      <div class="acc-left">
+        <span class="acc-icon">🛖</span>
+        <div><div class="acc-title">Açaí Promoção</div><div class="acc-sub">8 combos especiais · 400ml a 700ml</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="acai-promo-body"></div>
+  </div>
   <!-- AÇAÍ -->
   <div class="acc" id="acc-acai">
     <div class="acc-header" onclick="toggleAcc('acc-acai')">
@@ -522,6 +535,17 @@ function renderTacasP(){
 }
 
 // ── RENDER AÇAÍ ── (lê do products.js)
+// ── RENDER AÇAÍ PROMOÇÃO ── (lê do products.js)
+function renderAcaiPromo(){
+  const b=document.getElementById('acai-promo-body');if(!b)return;b.innerHTML='';
+  if(produtos&&produtos.acai_promocao){
+    produtos.acai_promocao.forEach((p,i)=>{
+      const d=document.createElement('div');d.className='acai-item';
+      d.innerHTML=`<div class="acai-row"><span class="acai-nome">🛖 ${p.nome}</span><span class="acai-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">${p.desc}</div>`;
+      b.appendChild(d);
+    });
+  }
+}
 function renderAcai(){
   const b=document.getElementById('acai-body');b.innerHTML='';
   if(produtos&&produtos.acai&&produtos.acai.copos){
@@ -685,7 +709,7 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
-  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcai();renderPicoles();
+  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();
   // Todos os accordions fechados por padrão
   // Atualizar preço da torta do products.js
   const tp=document.getElementById('torta-preco');
