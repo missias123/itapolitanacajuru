@@ -137,7 +137,7 @@ function showAdminPanel() {
 
             <div style="margin-bottom:20px;">
                 <h3>📦 Gestão de Preços e Sabores</h3>
-                <p style="font-size:12px; color:#666;">Qualquer alteração aqui será enviada automaticamente para o GitHub.</p>
+                <p style="font-size:12px; color:#6A0DAD;">Qualquer alteração aqui será enviada automaticamente para o GitHub.</p>
                 <div id="admin-product-list"></div>
             </div>
 
