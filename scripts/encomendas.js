@@ -546,3 +546,66 @@ function toggleSecao(id) {
   const icon = el.previousElementSibling?.querySelector('.toggle-icon');
   if (icon) icon.textContent = aberto ? '▲' : '▼';
 }
+
+// ---- COMPLEMENTOS NA SEÇÃO DE CAIXAS ----
+function toggleComplementosCaixas() {
+  const lista = document.getElementById('comp-caixas-lista');
+  const arrow = document.getElementById('comp-arrow');
+  if (!lista) return;
+  const aberto = lista.style.display === 'none' || lista.style.display === '';
+  if (aberto) {
+    lista.style.display = 'block';
+    if (arrow) arrow.innerHTML = '&#9650;';
+    renderizarComplementosCaixas();
+  } else {
+    lista.style.display = 'none';
+    if (arrow) arrow.innerHTML = '&#9660;';
+  }
+}
+
+function renderizarComplementosCaixas() {
+  const lista = document.getElementById('comp-caixas-lista');
+  if (!lista) return;
+  const comps = getComplementos();
+  lista.innerHTML = comps.map(c => {
+    const esgotado = c.estoque <= 0;
+    const qtd = compQtds[c.id] || 0;
+    const fotoHtml = c.foto
+      ? `<img src="${c.foto}" style="width:52px;height:52px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
+      : `<div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
+    return `
+    <div class="comp-sorvete-item${esgotado?' esgotado':''}" id="comp-cx-item-${c.id}" style="background:#fff;border:1.5px solid #E0E0E0;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;">
+      ${fotoHtml}
+      <div style="flex:1;">
+        <div style="font-size:0.92rem;font-weight:800;color:#1A0A00;">${c.nome}${esgotado?'<span style="font-size:0.7rem;background:#EF5350;color:#fff;border-radius:4px;padding:2px 6px;font-weight:700;margin-left:6px;">ESGOTADO</span>':''}</div>
+        <div style="font-size:0.82rem;color:#B71C1C;font-weight:700;">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <button onclick="alterarCompCaixa('${c.id}',-1)" ${esgotado?'disabled':''} style="width:34px;height:34px;border-radius:50%;border:2px solid #B71C1C;background:#fff;color:#B71C1C;font-size:1.2rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <span id="comp-cx-qtd-${c.id}" style="font-size:1rem;font-weight:800;min-width:20px;text-align:center;">${qtd}</span>
+        <button onclick="alterarCompCaixa('${c.id}',1)" ${esgotado?'disabled':''} style="width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#B71C1C,#E53935);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function alterarCompCaixa(id, delta) {
+  const comps = getComplementos();
+  const c = comps.find(x => x.id === id);
+  if (!c || c.estoque <= 0) return;
+  const atual = compQtds[id] || 0;
+  const novo = Math.max(0, Math.min(atual + delta, c.estoque));
+  compQtds[id] = novo;
+  // Atualizar exibição no card de caixas
+  const el = document.getElementById('comp-cx-qtd-'+id);
+  if (el) el.textContent = novo;
+  const item = document.getElementById('comp-cx-item-'+id);
+  if (item) item.style.borderColor = novo > 0 ? '#B71C1C' : '#E0E0E0';
+  // Atualizar também no modal (se estiver aberto)
+  const elModal = document.getElementById('comp-qtd-'+id);
+  if (elModal) elModal.textContent = novo;
+  const itemModal = document.getElementById('comp-item-'+id);
+  if (itemModal) itemModal.classList.toggle('ativo', novo > 0);
+  // Atualizar botão do carrinho
+  atualizarBotaoCarrinho();
+}
