@@ -190,11 +190,15 @@ img{max-width:100%;display:block}
 .pwa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:6px 14px;font-size:11px;color:#fff;font-weight:600}
 
 /* RODAPÉ */
-.footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:32px 16px;margin-top:24px;text-align:center}
+.footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:32px 16px;margin-top:24px;text-align:center;position:relative;overflow:hidden}
 .footer h3{color:#FFFFFF;font-size:16px;margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
 .footer p{font-size:13px;margin-bottom:8px;line-height:1.6;font-weight:600}
 .footer-copy{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.25);font-size:12px;color:#F3E5F5;letter-spacing:.3px;font-weight:600}
 .btn-admin-footer{display:inline-block;margin-top:16px;padding:8px 16px;background:rgba(255,255,255,.15);color:#FFFFFF;border-radius:8px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.3)}
+.footer-inner{position:relative;display:flex;align-items:center;justify-content:center;gap:0}
+.footer-church{width:160px;min-width:120px;flex-shrink:0;object-fit:cover;object-position:center top;border-radius:10px;opacity:.85;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.footer-text{flex:1;max-width:420px;padding:0 12px;text-align:center}
+@media(max-width:600px){.footer-church{width:90px;min-width:70px}.footer-inner{gap:0}}
 
 /* DESKTOP */
 @media(min-width:600px){
@@ -412,14 +416,19 @@ img{max-width:100%;display:block}
 </section>
 <!-- RODAPÉ -->
 <footer class="footer">
-  <h3>📍 Onde Estamos</h3>
-  <p>Pça Lgo São Bento, 311 – Centro, Cajuru/SP</p>
-  <p>📞 (16) 99147-2045</p>
-  <p>⏰ Segunda a Domingo: 10h às 22h</p>
-  <p style="margin-top:12px;font-size:12px;color:#EF4444;font-weight:600">🚫 Não fazemos delivery · Retirada somente na loja</p>
-
-  <a href="gerenciar/index.html" class="btn-admin-footer">⚙️ Painel Administrativo</a>
-  <div class="footer-copy">© 2007–2026 Sorveteria Itapolitana · Todos os direitos reservados</div>
+  <div class="footer-inner">
+    <img src="img/igreja-cajuru.jpg" alt="Igreja Matriz São Bento – Cajuru/SP" class="footer-church">
+    <div class="footer-text">
+      <h3>📍 Onde Estamos</h3>
+      <p>Pça Lgo São Bento, 311 – Centro, Cajuru/SP</p>
+      <p>📞 (16) 99147-2045</p>
+      <p>⏰ Segunda a Domingo: 10h às 22h</p>
+      <p style="margin-top:12px;font-size:12px;color:#EF4444;font-weight:600">🚫 Não fazemos delivery · Retirada somente na loja</p>
+      <a href="gerenciar/index.html" class="btn-admin-footer">⚙️ Painel Administrativo</a>
+      <div class="footer-copy">© 2007–2026 Sorveteria Itapolitana · Todos os direitos reservados</div>
+    </div>
+    <img src="img/igreja-cajuru.jpg" alt="Igreja Matriz São Bento – Cajuru/SP" class="footer-church">
+  </div>
 </footer>
 
 <!-- MODAL SABORES -->
