@@ -212,31 +212,30 @@ function renderAdmin() {
   promoCard.innerHTML = '<div><div style="font-size:15px;font-weight:800">🎉 Gerenciar Promoção</div><div style="font-size:12px;opacity:.85;margin-top:3px">Poste foto, texto e link da promoção do dia</div></div><a href="promocao.html" style="background:#F9A825;color:#111;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">Abrir →</a>';
   body.appendChild(promoCard);
 
-  // ── CARD BANNER CENTRAL ──
+  // ── CARD BANNER DO SITE ──
   const bannerCard = document.createElement('div');
-  bannerCard.style.cssText = 'background:#fff;border-radius:14px;border:1px solid #E5E7EB;padding:18px 20px;margin-bottom:16px';
+  bannerCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #6A0DAD;padding:18px 20px;margin-bottom:16px';
   const bannerDados = (()=>{try{return JSON.parse(localStorage.getItem('itap_banner')||'{}');}catch(e){return {};}})();
   const temBanner = !!bannerDados.img;
+  // Banner atual: se tiver no localStorage usa ele, senão mostra o padrão do site
+  const bannerSrc = temBanner ? bannerDados.img : '../images/banner-cardapio.png';
   bannerCard.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <span style="font-size:20px">🖼️</span>
-      <div><div style="font-size:15px;font-weight:800;color:#111827">Banner Central do Site</div>
-      <div style="font-size:12px;color:#6B7280;margin-top:2px">Exibido entre o botão 'Ver Cardápio' e os cards de info</div></div>
+      <span style="font-size:24px">🖼️</span>
+      <div>
+        <div style="font-size:16px;font-weight:900;color:#6A0DAD">Banner do Site</div>
+        <div style="font-size:12px;color:#6B7280;margin-top:2px">Aparece no topo do cardápio. Substitua quando quiser.</div>
+      </div>
     </div>
-    <div id="banner-preview-area" style="margin-bottom:12px">
-      ${temBanner
-        ? `<img src="${bannerDados.img}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`
-        : `<div style="width:100%;height:100px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC);border:2px dashed #FF6B35;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:#FF6B35;font-weight:700;font-size:13px"><span style="font-size:28px">🖼️</span>Nenhum banner cadastrado</div>`
-      }
+    <div id="banner-preview-area" style="margin-bottom:14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.12)">
+      <img src="${bannerSrc}" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.style.display='none'">
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <label style="flex:1;min-width:140px;background:#EDE9FE;color:#6A0DAD;border:1px solid #C4B5FD;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;text-align:center">
-        📷 ${temBanner ? 'Trocar Banner' : 'Adicionar Banner'}
-        <input type="file" accept="image/*" style="display:none" onchange="onBannerChange(this)">
-      </label>
-      ${temBanner ? `<button onclick="removerBanner()" style="flex:1;min-width:120px;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer">🗑️ Remover Banner</button>` : ''}
-    </div>
-    <div id="banner-status" style="margin-top:8px;font-size:12px;font-weight:700;color:#10B981"></div>
+    <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#6A0DAD,#9C27B0);color:#fff;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(106,13,173,.4);margin-bottom:8px">
+      📷 Substituir Banner do Site
+      <input type="file" accept="image/*" style="display:none" onchange="onBannerChange(this)">
+    </label>
+    ${temBanner ? `<button onclick="removerBanner()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">🔄 Restaurar Banner Padrão</button>` : ''}
+    <div id="banner-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
   `;
   body.appendChild(bannerCard);
 
