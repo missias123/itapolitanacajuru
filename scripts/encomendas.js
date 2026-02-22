@@ -83,7 +83,7 @@ function getComplementos() {
 let compQtds = {};
 function inicializarCompQtds() {
   const comps = getComplementos();
-  compQtds = {};
+  // Apenas inicializa IDs que ainda não existem — preserva valores já selecionados
   comps.forEach(c => { if (compQtds[c.id] === undefined) compQtds[c.id] = 0; });
 }
 function toggleComplementosCaixas() {
