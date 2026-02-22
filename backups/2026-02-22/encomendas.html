@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encomendas – Sorveteria Itapolitana Cajuru</title>
+  <link rel="icon" href="images/logo.png">
+  <style>
+    :root {
+      --azul: #1565C0;
+      --azul-escuro: #0D47A1;
+      --vermelho: #D32F2F;
+      --amarelo: #F9A825;
+      --branco: #FFFFFF;
+      --cinza-claro: #F5F5F5;
+      --cinza: #9E9E9E;
+      --verde: #2E7D32;
+      --sombra: 0 2px 12px rgba(0,0,0,0.12);
+      --radius: 14px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--cinza-claro); color: #212121; }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .header-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .header-logo img { width:44px; height:44px; border-radius:50%; border:2px solid var(--amarelo); }
+    .header-logo-texto h1 { font-size:1rem; color:white; line-height:1.2; }
+    .header-logo-texto p { font-size:0.7rem; color:rgba(255,255,255,0.8); }
+    .header-acoes { display:flex; gap:10px; align-items:center; }
+    .btn-voltar {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-voltar:hover { background: rgba(255,255,255,0.25); }
+
+    /* BOTÃO CARRINHO FIXO */
+    .btn-carrinho-fixo {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      background: var(--amarelo);
+      color: #212121;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 200;
+      transition: all 0.2s;
+    }
+    .btn-carrinho-fixo:disabled { background: var(--cinza); color: white; cursor: not-allowed; }
+    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    .btn-carrinho-fixo .badge {
+      background: var(--vermelho);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* BANNER INFO */
+    .banner-info {
+      background: linear-gradient(90deg, var(--vermelho), var(--azul));
+      color: white;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .hero h2 { font-size: 1.6rem; margin-bottom: 6px; }
+    .hero p { font-size: 0.9rem; opacity: 0.85; }
+
+    /* CONTAINER PRINCIPAL */
+    .container { max-width: 800px; margin: 0 auto; padding: 20px 16px 100px; }
+
+    /* SEÇÃO CATEGORIA */
+    .categoria {
+      background: white;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--sombra);
+      overflow: hidden;
+    }
+    .categoria-header {
+      padding: 18px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+    .categoria-header:hover { opacity: 0.9; }
+    .categoria-header-left { display:flex; align-items:center; gap:14px; }
+    .categoria-emoji { font-size: 1.8rem; }
+    .categoria-info h3 { font-size: 1.1rem; color: white; }
+    .categoria-info p { font-size: 0.8rem; color: rgba(255,255,255,0.85); margin-top:2px; }
+    .toggle-icon { font-size: 1.2rem; color: white; transition: transform 0.3s; }
+    .categoria-conteudo { display: none; padding: 16px; border-top: 1px solid #eee; }
+    .categoria-conteudo.aberto { display: block; }
+
+    /* CORES DAS CATEGORIAS */
+    .cat-caixas .categoria-header { background: linear-gradient(135deg, #7B1FA2, #9C27B0); }
+    .cat-tortas .categoria-header { background: linear-gradient(135deg, var(--vermelho), #E91E63); }
+    .cat-picoles .categoria-header { background: linear-gradient(135deg, #E65100, #FF9800); }
+
+    /* CARDS DE PRODUTO */
+    .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    .prod-card {
+      border: 2px solid #eee;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .prod-card-img { width: 100%; height: 130px; object-fit: cover; display: block; }
+    .prod-card-sem-foto { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; background: linear-gradient(135deg, #E3F2FD, #F3E5F5); }
+    .prod-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .prod-card:hover { border-color: var(--azul); box-shadow: 0 4px 16px rgba(21,101,192,0.15); }
+    .prod-card.esgotado { opacity: 0.6; pointer-events: none; }
+    .prod-nome { font-size: 0.95rem; font-weight: 700; color: #212121; }
+    .prod-preco { font-size: 1.2rem; font-weight: 800; color: var(--azul); }
+    .prod-precos-picole { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; }
+    .prod-precos-picole .destaque { color: var(--verde); font-weight: 700; }
+    .prod-estoque { font-size: 0.78rem; color: var(--cinza); }
+    .tag-esgotado {
+      background: var(--vermelho);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .btn-sabores {
+      background: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-sabores:hover:not(:disabled) { background: var(--azul-escuro); transform: translateY(-1px); }
+    .btn-sabores:disabled { background: var(--cinza); cursor: not-allowed; }
+    .btn-picole { background: #E65100; }
+    .btn-picole:hover:not(:disabled) { background: #BF360C; }
+
+    /* MODAL BASE */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.ativo { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.ativo .modal-box { transform: translateY(0); }
+    .modal-header {
+      background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
+      color: white;
+      padding: 20px;
+      border-radius: 20px 20px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .modal-header-top { display:flex; justify-content:space-between; align-items:center; }
+    .modal-titulo { font-size: 1.1rem; font-weight: 700; }
+    .modal-subtitulo { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+    .btn-fechar-modal {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-fechar-modal:hover { background: rgba(255,255,255,0.35); }
+    .modal-body { padding: 20px; }
+
+    /* GRID SABORES */
+    .grid-sabores {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .sabor-item {
+      border: 2px solid #E0E0E0;
+      background: white;
+      border-radius: 10px;
+      padding: 10px 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .sabor-item:hover { border-color: var(--azul); color: var(--azul); }
+    .sabor-item.sel {
+      background: var(--azul);
+      border-color: var(--azul);
+      color: white;
+      font-weight: 700;
+    }
+    .btn-confirmar {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #E0E0E0;
+      color: #6A0DAD; font-weight: 700;
+      transition: all 0.2s;
+    }
+    .btn-confirmar.pronto { background: var(--verde); color: white; }
+    .btn-confirmar:disabled { cursor: not-allowed; }
+
+    /* COMPLEMENTOS SORVETE */
+    .comp-sorvete-titulo {
+      font-size: 1.05rem; font-weight: 900; color: #fff;
+      margin: 14px 0 12px; padding: 14px 18px;
+      background: linear-gradient(135deg,#B71C1C,#E53935,#FF5252);
+      border-radius: 14px;
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 16px rgba(183,28,28,0.35);
+      border: 2px solid rgba(255,255,255,0.25);
+      cursor: default;
+      display: block;
+      width: 100%;
+    }
+    .comp-sorvete-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: #FAFAFA;
+      border: 1px solid #E8E8E8; border-radius: 10px; margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .comp-sorvete-item.esgotado { opacity: 0.5; pointer-events: none; }
+    .comp-sorvete-item.ativo { border-color: #6A0DAD; background: #F3E5F5; }
+    .comp-sorvete-info { flex: 1; }
+    .comp-sorvete-nome { font-size: 0.9rem; font-weight: 700; color: #1A0A00; display: block; }
+    .comp-sorvete-preco { font-size: 0.8rem; color: #6A0DAD; font-weight: 600; }
+    .comp-sorvete-tag-esgotado { font-size: 0.72rem; background: #EF5350; color: white; border-radius: 4px; padding: 2px 6px; font-weight: 700; margin-left: 6px; }
+    .comp-sorvete-ctrl { display: flex; align-items: center; gap: 8px; }
+    .comp-btn {
+      width: 32px; height: 32px; border: none; border-radius: 8px;
+      font-size: 1.1rem; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .comp-btn-menos { background: #EF5350; color: white; }
+    .comp-btn-menos:hover { background: #C62828; }
+    .comp-btn-mais { background: #43A047; color: white; }
+    .comp-btn-mais:hover { background: #1B5E20; }
+    .comp-qtd { font-size: 1rem; font-weight: 800; min-width: 24px; text-align: center; color: #1A0A00; }
+
+    /* MODAL PICOLÉ */
+    .picole-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #F5F5F5;
+    }
+    .picole-sabor-nome { font-size: 0.9rem; font-weight: 500; flex: 1; }
+    .qty-ctrl { display:flex; align-items:center; gap:10px; }
+    .btn-qty {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--azul);
+      background: white;
+      color: var(--azul);
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-qty:hover { background: var(--azul); color: white; }
+    .qty-val { font-size: 1rem; font-weight: 700; min-width: 28px; text-align: center; }
+    .picole-total-bar {
+      background: #F5F5F5;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .aviso-minimo {
+      background: #FFF3E0;
+      border: 1px solid #FFB300;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #E65100;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .btn-add-picoles {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #E65100;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-add-picoles:disabled { background: var(--cinza); cursor: not-allowed; }
+    .btn-add-picoles:not(:disabled):hover { background: #BF360C; }
+
+    /* MODAL CARRINHO */
+    .steps-bar {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: #F5F5F5;
+      gap: 8px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--cinza);
+      flex: 1;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #E0E0E0;
+      color: #6A0DAD; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .step.ativo .step-num { background: var(--azul); color: white; }
+    .step.completo .step-num { background: var(--verde); color: white; }
+    .step.ativo .step-label { color: var(--azul); font-weight: 600; }
+    .step-sep { color: #E0E0E0; font-size: 1.2rem; }
+    .etapa { display: none; padding: 20px; }
+    .etapa.ativa { display: block; }
+
+    /* CART ITEMS */
+    .cart-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #F0F0F0;
+      align-items: flex-start;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-nome { font-weight: 700; font-size: 0.95rem; }
+    .cart-item-sabores { font-size: 0.78rem; color: var(--cinza); margin: 4px 0; line-height: 1.5; }
+    .cart-item-preco-unit { font-size: 0.8rem; color: var(--azul); }
+    .cart-item-ctrl { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+    .cart-item-sub { font-weight: 700; font-size: 0.95rem; color: var(--azul); }
+    .btn-remover { background:none; border:none; cursor:pointer; font-size:1.1rem; padding:4px; }
+    .total-bar {
+      background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+      color: white;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .aviso-min-carrinho {
+      background: #FFF3E0;
+      border: 1px solid #FFB300;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #E65100;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .btn-proxima-etapa {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--azul);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-proxima-etapa:disabled { background: var(--cinza); cursor: not-allowed; }
+    .btn-proxima-etapa:not(:disabled):hover { background: var(--azul-escuro); }
+
+    /* RESUMO PEDIDO */
+    .resumo-titulo { font-size: 1rem; font-weight: 700; margin-bottom: 14px; color: var(--azul); }
+    .resumo-item {
+      border: 1px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .resumo-item-topo { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .qty-ctrl-mini { display:flex; align-items:center; gap:8px; }
+    .btn-qty-mini {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--azul);
+      background: white;
+      color: var(--azul);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-qty-mini:hover { background: var(--azul); color: white; }
+    .resumo-sabor { font-size: 0.8rem; color: #6A0DAD; font-weight: 700; margin: 2px 0; }
+    .resumo-sub { font-weight: 700; color: var(--azul); font-size: 0.9rem; margin-top: 8px; text-align: right; }
+    .resumo-total-final {
+      background: var(--azul);
+      color: white;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.05rem;
+      margin: 14px 0;
+    }
+    .aviso-prazo {
+      background: #E3F2FD;
+      border: 1px solid var(--azul);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: var(--azul-escuro);
+      margin: 14px 0;
+    }
+
+    /* FORMULÁRIO DADOS */
+    .form-grupo { margin-bottom: 16px; }
+    .form-grupo label { display:block; font-weight:600; font-size:0.88rem; margin-bottom:6px; color:#424242; }
+    .form-grupo input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-grupo input:focus { border-color: var(--azul); }
+    .btn-finalizar {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--verde);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .btn-finalizar:hover { background: #1B5E20; }
+    .btn-voltar-etapa {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--azul);
+      border-radius: 12px;
+      background: white;
+      color: var(--azul);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-continuar-comprando {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #D32F2F, #F44336);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(211,47,47,0.35);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-continuar-comprando:hover { background: linear-gradient(135deg,#B71C1C,#D32F2F); transform: translateY(-1px); }
+
+    /* CONFIRMAÇÃO */
+    .confirmacao-box { text-align: center; padding: 20px 0; }
+    .confirmacao-icon { font-size: 4rem; margin-bottom: 16px; }
+    .confirmacao-titulo { font-size: 1.4rem; font-weight: 800; color: var(--verde); margin-bottom: 8px; }
+    .confirmacao-num { font-size: 0.9rem; color: var(--cinza); margin-bottom: 20px; }
+    .btn-whatsapp-final {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #25D366;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn-whatsapp-final:hover { background: #128C7E; }
+    .btn-novo-pedido {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--azul);
+      border-radius: 12px;
+      background: white;
+      color: var(--azul);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .btn-voltar-cardapio {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--cinza-claro);
+      color: #424242;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #212121;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .toast.ativo { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.sucesso { background: var(--verde); }
+    .toast.alerta { background: var(--vermelho); }
+
+    /* RESPONSIVO */
+    @media (max-width: 480px) {
+      .prod-grid { grid-template-columns: 1fr; }
+      .grid-sabores { grid-template-columns: repeat(3, 1fr); }
+      .header-logo-texto h1 { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="index.html" class="header-logo">
+    <img src="images/logo.png" alt="Itapolitana">
+    <div class="header-logo-texto">
+      <h1>Itapolitana Cajuru</h1>
+      <p>Encomendas</p>
+    </div>
+  </a>
+  <div class="header-acoes">
+    <a href="index.html" class="btn-voltar">← Cardápio</a>
+  </div>
+</header>
+
+<!-- BANNER INFO -->
+<div class="banner-info">
+  📍 Atendemos Cajuru, Cássia dos Coqueiros e Santa Cruz da Esperança &nbsp;|&nbsp; 🏪 Retirada na loja
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h2>🛒 Faça sua Encomenda</h2>
+  <p>Sorvetes em caixa, tortas e picolés no atacado</p>
+</div>
+
+<!-- CONTAINER PRINCIPAL -->
+<div class="container">
+
+  <!-- SORVETE EM CAIXA -->
+  <div class="categoria cat-caixas" id="caixas">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🍦</span>
+        <div class="categoria-info">
+          <h3>Sorvete em Caixa</h3>
+          <p>4 opções disponíveis</p>
+        </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-caixas">
+      <div class="prod-grid" id="lista-caixas"></div>
+      <!-- CARD COMPLEMENTOS - fora do grid, abaixo dos produtos -->
+      <div id="card-complementos-caixas" style="margin-top:14px">
+        <button onclick="toggleComplementosCaixas()" style="width:100%;padding:18px;background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;border:none;border-radius:14px;font-size:1.05rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;box-shadow:0 4px 18px rgba(183,28,28,0.4);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px">
+          <span style="font-size:1.4rem">🍪</span> Complementos para Sorvetes <span id="comp-arrow" style="font-size:1rem">&#9660;</span>
+        </button>
+        <div id="comp-caixas-lista" style="display:none;margin-top:12px"></div>
+        <button id="btn-add-comps-carrinho" onclick="adicionarCompsAoCarrinho()" style="display:none;width:100%;margin-top:12px;padding:16px;background:linear-gradient(135deg,#1B5E20,#2E7D32,#43A047);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;box-shadow:0 4px 18px rgba(27,94,32,0.4);cursor:pointer;">
+          🛒 ADICIONAR COMPLEMENTOS AO CARRINHO
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TORTA DE SORVETE -->
+  <div class="categoria cat-tortas" id="tortas">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🎂</span>
+        <div class="categoria-info">
+          <h3>Torta de Sorvete</h3>
+          <p>Perfeita para festas</p>
+        </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-tortas">
+      <div class="prod-grid" id="lista-tortas"></div>
+    </div>
+  </div>
+
+  <!-- PICOLÉS ATACADO -->
+  <div class="categoria cat-picoles" id="picoles">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-picoles')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🍭</span>
+        <div class="categoria-info">
+          <h3>Picolés (Atacado)</h3>
+          <p>Mínimo 100 unidades</p>
+        </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-picoles">
+      <div class="prod-grid" id="lista-picoles"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTÃO CARRINHO FIXO -->
+<button class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" disabled>
+  🛒 Ver Carrinho
+  <span class="badge" id="carrinho-badge">0</span>
+</button>
+
+<!-- MODAL SABORES SORVETE -->
+<div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div>
+          <div class="modal-titulo">Escolher Sabores</div>
+          <div class="modal-subtitulo" id="modal-subtitulo-sabores"></div>
+        </div>
+        <button class="btn-fechar-modal" onclick="fecharModal('modal-sabores')">✕</button>
+      </div>
+    </div>
+    <!-- 1. SABORES COM SCROLL PRÓPRIO -->
+    <div style="padding:16px 20px 0;overflow-y:auto;max-height:35vh">
+      <div class="grid-sabores" id="grid-sabores"></div>
+    </div>
+    <!-- BOTÃO CONFIRMAR -->
+    <div style="padding:12px 20px 20px">
+      <button class="btn-confirmar" id="btn-confirmar-sabores" onclick="confirmarSabores()" disabled>
+        Confirmar Seleção (0/0)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PICOLÉ -->
+<div class="modal-overlay" id="modal-picole" onclick="if(event.target===this)fecharModal('modal-picole')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div>
+          <div class="modal-titulo" id="picole-titulo"></div>
+          <div class="modal-subtitulo" id="picole-precos"></div>
+        </div>
+        <button class="btn-fechar-modal" onclick="fecharModal('modal-picole')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div id="lista-sabores-picole"></div>
+      <div class="picole-total-bar">
+        <span>Total selecionado:</span>
+        <strong><span id="total-picoles">0</span> picolés</strong>
+      </div>
+      <div class="aviso-minimo" id="aviso-minimo-picole"></div>
+      <button class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
+        Selecione ao menos 1 picolé
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARRINHO -->
+<div class="modal-overlay" id="modal-carrinho" onclick="if(event.target===this)fecharCarrinho()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div class="modal-titulo">🛒 Meu Pedido</div>
+        <button class="btn-fechar-modal" onclick="fecharCarrinho()">✕</button>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps-bar">
+      <div class="step" id="step-revisao">
+        <div class="step-num">1</div>
+        <span class="step-label">Revisão</span>
+      </div>
+      <span class="step-sep">›</span>
+      <div class="step" id="step-dados">
+        <div class="step-num">2</div>
+        <span class="step-label">Seus Dados</span>
+      </div>
+      <span class="step-sep">›</span>
+      <div class="step" id="step-confirmacao">
+        <div class="step-num">3</div>
+        <span class="step-label">Confirmação</span>
+      </div>
+    </div>
+
+    <!-- ETAPA 1: REVISÃO -->
+    <div class="etapa" id="etapa-revisao">
+      <div id="lista-carrinho"></div>
+      <div class="total-bar">
+        <span>Total</span>
+        <span id="total-carrinho">R$ 0,00</span>
+      </div>
+      <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
+      <button class="btn-proxima-etapa" id="btn-ir-dados" onclick="irParaDados()">
+        ✅ Quero Finalizar o Pedido
+      </button>
+      <button class="btn-continuar-comprando" onclick="fecharCarrinho()">
+        🛒 Continuar Comprando
+      </button>
+    </div>
+
+    <!-- ETAPA 2: DADOS PESSOAIS -->
+    <div class="etapa" id="etapa-dados">
+      <div id="resumo-pedido"></div>
+      <div class="form-grupo">
+        <label>👤 Seu Nome Completo *</label>
+        <input type="text" id="cliente-nome" placeholder="Ex: João da Silva" autocomplete="name">
+      </div>
+      <div class="form-grupo">
+        <label>📱 Seu WhatsApp *</label>
+        <input type="tel" id="cliente-tel" placeholder="Ex: (16) 99999-9999" autocomplete="tel">
+      </div>
+      <button class="btn-finalizar" onclick="finalizarPedido()">
+        📲 Confirmar e Enviar Pedido
+      </button>
+      <button class="btn-voltar-etapa" onclick="mostrarEtapa('revisao')">
+        ← Voltar ao Carrinho
+      </button>
+    </div>
+
+    <!-- ETAPA 3: CONFIRMAÇÃO -->
+    <div class="etapa" id="etapa-confirmacao">
+      <div class="confirmacao-box">
+        <div class="confirmacao-icon">🎉</div>
+        <div class="confirmacao-titulo">Pedido Confirmado!</div>
+        <div class="confirmacao-num">Nº do Pedido: <strong id="num-pedido"></strong></div>
+        <p style="font-size:0.88rem;color:#6A0DAD;font-weight:700;margin-bottom:20px;">
+          Clique abaixo para enviar seu pedido via WhatsApp. Nossa equipe entrará em contato para confirmar o pagamento.
+        </p>
+        <button class="btn-whatsapp-final" id="btn-whatsapp-final">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L0 24l6.335-1.508A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.655-.502-5.187-1.381l-.371-.22-3.763.896.943-3.668-.242-.381A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          Enviar Pedido via WhatsApp
+        </button>
+        <button class="btn-novo-pedido" onclick="novoPedido()">🔄 Fazer Novo Pedido</button>
+        <button class="btn-voltar-cardapio" onclick="window.location.href='index.html'">← Voltar ao Cardápio</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="scripts/products.js"></script>
+<script src="scripts/encomendas.js"></script>
+</body>
+</html>
