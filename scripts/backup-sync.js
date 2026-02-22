@@ -150,7 +150,7 @@ function renderBackupsList() {
     const backups = getBackups();
     
     if (backups.length === 0) {
-        return '<p style="text-align: center; color: #999; padding: 20px;">Nenhum backup disponível</p>';
+        return '<p style="text-align: center; color: #6A0DAD; padding: 20px;">Nenhum backup disponível</p>';
     }
     
     let html = '<div style="display: grid; gap: 12px;">';
@@ -160,7 +160,7 @@ function renderBackupsList() {
         html += `
             <div style="padding: 12px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #2196F3;">
                 <p style="margin: 0 0 8px 0;"><strong>${backup.description}</strong></p>
-                <p style="margin: 0 0 8px 0; font-size: 12px; color: #666;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; color: #6A0DAD;">
                     ${date.toLocaleString('pt-BR')}
                 </p>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -181,7 +181,7 @@ function renderSyncLog() {
     const logs = getSyncLog();
     
     if (logs.length === 0) {
-        return '<p style="text-align: center; color: #999; padding: 20px;">Nenhuma atividade registrada</p>';
+        return '<p style="text-align: center; color: #6A0DAD; padding: 20px;">Nenhuma atividade registrada</p>';
     }
     
     let html = '<table style="width: 100%; border-collapse: collapse; font-size: 12px;">';

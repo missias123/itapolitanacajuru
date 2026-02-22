@@ -42,7 +42,7 @@ function updateCart() {
     const totalDiv = document.getElementById('total');
     
     if (cart.length === 0) {
-        cartDiv.innerHTML = '<p style="text-align: center; color: #999;">Seu carrinho está vazio</p>';
+        cartDiv.innerHTML = '<p style="text-align: center; color: #6A0DAD;">Seu carrinho está vazio</p>';
         totalDiv.textContent = 'R$ 0,00';
         return;
     }
@@ -59,7 +59,7 @@ function updateCart() {
         cartItem.innerHTML = `
             <div>
                 <div class="cart-item-name">${item.name}</div>
-                <div style="font-size: 12px; color: #999;">
+                <div style="font-size: 12px; color: #6A0DAD;">
                     Qtd: <input type="number" min="1" value="${item.quantity}" 
                     onchange="updateQuantity(${item.id}, this.value)" 
                     style="width: 40px; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
