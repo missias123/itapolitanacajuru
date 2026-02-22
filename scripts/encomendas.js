@@ -130,7 +130,6 @@ function renderizarComplementosCaixas() {
       </div>
     </div>`;
   }).join('');
-  atualizarBtnAddComps();
 }
 function alterarCompCaixa(id, delta) {
   const comps = getComplementos();
@@ -138,52 +137,35 @@ function alterarCompCaixa(id, delta) {
   if (!c || c.estoque <= 0) return;
   const atual = compQtds[id] || 0;
   const novo = Math.max(0, Math.min(atual + delta, c.estoque));
+  if (novo === atual) return;
   compQtds[id] = novo;
+  // Atualizar visual do contador
   const el = document.getElementById('comp-cx-qtd-'+id);
   if (el) el.textContent = novo;
   const item = document.getElementById('comp-cx-item-'+id);
   if (item) item.style.borderColor = novo > 0 ? '#B71C1C' : '#E0E0E0';
-  atualizarBtnAddComps();
-}
-function atualizarBtnAddComps() {
-  const total = Object.values(compQtds).reduce((a,b)=>a+b, 0);
-  const btn = document.getElementById('btn-add-comps-carrinho');
-  if (btn) btn.style.display = total > 0 ? 'block' : 'none';
-}
-function getCompsCarrinho() {
-  const comps = getComplementos();
-  return comps
-    .filter(c => (compQtds[c.id]||0) > 0)
-    .map(c => ({
-      id: 'comp_'+c.id,
+  // Atualizar diretamente no carrinho
+  const carrinhoId = 'comp_'+id;
+  const ex = carrinho.find(x => x.id === carrinhoId);
+  if (novo === 0) {
+    // Remover do carrinho se quantidade zerou
+    const idx = carrinho.findIndex(x => x.id === carrinhoId);
+    if (idx !== -1) carrinho.splice(idx, 1);
+  } else if (ex) {
+    // Atualizar quantidade existente
+    ex.quantidade = novo;
+  } else {
+    // Adicionar novo item ao carrinho
+    carrinho.push({
+      id: carrinhoId,
       nome: c.nome,
       preco: c.preco,
       sabores: [],
-      quantidade: compQtds[c.id],
+      quantidade: novo,
       tipo: 'complemento'
-    }));
-}
-function adicionarCompsAoCarrinho() {
-  const compsParaAdicionar = getCompsCarrinho();
-  if (compsParaAdicionar.length === 0) return;
-  compsParaAdicionar.forEach(comp => {
-    const ex = carrinho.find(c => c.id === comp.id);
-    if (ex) { ex.quantidade += comp.quantidade; }
-    else { carrinho.push({...comp}); }
-  });
-  // Resetar quantidades
-  const comps = getComplementos();
-  comps.forEach(c => {
-    compQtds[c.id] = 0;
-    const el = document.getElementById('comp-cx-qtd-'+c.id);
-    if (el) el.textContent = '0';
-    const item = document.getElementById('comp-cx-item-'+c.id);
-    if (item) item.style.borderColor = '#E0E0E0';
-  });
-  const btn = document.getElementById('btn-add-comps-carrinho');
-  if (btn) btn.style.display = 'none';
+    });
+  }
   atualizarBotaoCarrinho();
-  showToast('✅ Complementos adicionados ao carrinho!', 'sucesso');
 }
 
 // ---- INIT ----
