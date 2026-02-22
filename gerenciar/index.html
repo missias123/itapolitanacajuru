@@ -49,6 +49,22 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 .btn-save{background:#6A0DAD;color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:800;cursor:pointer}
 .btn-save:hover{background:#5a0b9d}
 .status-msg{font-size:13px;font-weight:700;color:#10B981;align-self:center}
+
+/* ── CAMPO DE FOTO ── */
+.foto-bloco{margin-bottom:10px}
+.foto-bloco-label{font-size:11px;font-weight:700;color:#6A0DAD;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.foto-area{border:2px dashed #D1D5DB;border-radius:10px;overflow:hidden;background:#fff;cursor:pointer;transition:border-color .2s;position:relative;min-height:100px;display:flex;align-items:center;justify-content:center}
+.foto-area:hover{border-color:#6A0DAD}
+.foto-area.tem-foto{border:2px solid #10B981}
+.foto-area img{width:100%;height:120px;object-fit:cover;display:block}
+.foto-placeholder{text-align:center;padding:16px 10px;pointer-events:none}
+.foto-placeholder .icone{font-size:28px;margin-bottom:4px}
+.foto-placeholder p{font-size:11px;color:#9CA3AF;font-weight:600;line-height:1.4}
+.foto-placeholder p span{color:#6A0DAD;font-weight:700}
+.foto-input{display:none}
+.foto-acoes{display:flex;gap:6px;margin-top:6px}
+.btn-trocar-foto{flex:1;padding:6px;background:#EDE9FE;color:#6A0DAD;border:1px solid #C4B5FD;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
+.btn-remover-foto{flex:1;padding:6px;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
@@ -74,142 +90,338 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 </div>
 <script src="../scripts/products.js"></script>
 <script>
-const ADMIN_PASS="itapolitana2007";
-function checkLogin(){
-  const p=document.getElementById('admin-password').value;
-  if(p===ADMIN_PASS){
-    document.getElementById('login-section').style.display='none';
-    document.getElementById('admin-panel').style.display='block';
-    renderAdmin();
-  }else{alert('Senha incorreta!');}
+const ADMIN_PASS = "itapolitana2007";
+
+// ── FOTOS: salvas em localStorage por chave única ──
+function getFotos() {
+  try { return JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){ return {}; }
 }
-function logout(){location.reload();}
-function toggleCat(id){document.getElementById('cat-'+id).classList.toggle('open');}
-function criarSecao(id,titulo,conteudo){
-  const s=document.createElement('div');
-  s.className='cat-section';s.id='cat-'+id;
-  s.innerHTML=`<div class="cat-header" onclick="toggleCat('${id}')"><h3>${titulo}</h3><span class="cat-arrow">▼</span></div><div class="cat-body">${conteudo}</div>`;
+function salvarFoto(chave, base64) {
+  const fotos = getFotos();
+  fotos[chave] = base64;
+  localStorage.setItem('itap_fotos', JSON.stringify(fotos));
+}
+function removerFoto(chave) {
+  const fotos = getFotos();
+  delete fotos[chave];
+  localStorage.setItem('itap_fotos', JSON.stringify(fotos));
+}
+
+// ── BLOCO HTML DE FOTO ──
+function blocoFoto(chave) {
+  const fotos = getFotos();
+  const temFoto = !!fotos[chave];
+  const imgSrc = temFoto ? fotos[chave] : '';
+  return `
+    <div class="foto-bloco" id="foto-bloco-${chave}">
+      <div class="foto-bloco-label">📷 Foto do Produto</div>
+      <div class="foto-area ${temFoto ? 'tem-foto' : ''}" onclick="document.getElementById('foto-input-${chave}').click()">
+        ${temFoto
+          ? `<img src="${imgSrc}" alt="Foto" id="foto-img-${chave}">`
+          : `<div class="foto-placeholder" id="foto-placeholder-${chave}"><div class="icone">📷</div><p>Toque para<br><span>adicionar foto</span></p></div>`
+        }
+      </div>
+      <input type="file" accept="image/*" class="foto-input" id="foto-input-${chave}"
+        onchange="onFotoChange('${chave}', this)">
+      ${temFoto ? `
+      <div class="foto-acoes" id="foto-acoes-${chave}">
+        <button class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
+        <button class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
+      </div>` : `<div class="foto-acoes" id="foto-acoes-${chave}" style="display:none">
+        <button class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
+        <button class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
+      </div>`}
+    </div>`;
+}
+
+function onFotoChange(chave, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    salvarFoto(chave, base64);
+    // Atualizar UI
+    const area = input.closest('.foto-area') || input.parentElement.querySelector('.foto-area');
+    const blocoEl = document.getElementById('foto-bloco-' + chave);
+    const fotoArea = blocoEl.querySelector('.foto-area');
+    fotoArea.classList.add('tem-foto');
+    fotoArea.innerHTML = `<img src="${base64}" alt="Foto" id="foto-img-${chave}">`;
+    const acoes = document.getElementById('foto-acoes-' + chave);
+    acoes.style.display = 'flex';
+    // Reatribuir onclick ao trocar
+    fotoArea.onclick = () => document.getElementById('foto-input-' + chave).click();
+  };
+  reader.readAsDataURL(file);
+}
+
+function onRemoverFoto(chave) {
+  removerFoto(chave);
+  const blocoEl = document.getElementById('foto-bloco-' + chave);
+  const fotoArea = blocoEl.querySelector('.foto-area');
+  fotoArea.classList.remove('tem-foto');
+  fotoArea.innerHTML = `<div class="foto-placeholder" id="foto-placeholder-${chave}"><div class="icone">📷</div><p>Toque para<br><span>adicionar foto</span></p></div>`;
+  fotoArea.onclick = () => document.getElementById('foto-input-' + chave).click();
+  const acoes = document.getElementById('foto-acoes-' + chave);
+  acoes.style.display = 'none';
+}
+
+// ── BANNER DO CARDÁPIO ──
+function onBannerChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    localStorage.setItem('itap_banner', JSON.stringify({ img: e.target.result }));
+    const preview = document.getElementById('banner-preview-area');
+    if (preview) preview.innerHTML = `<img src="${e.target.result}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
+    const status = document.getElementById('banner-status');
+    if (status) { status.textContent = '✅ Banner salvo! Já visível no cardápio.'; setTimeout(() => status.textContent = '', 4000); }
+    setTimeout(() => renderAdmin(), 200);
+  };
+  reader.readAsDataURL(file);
+}
+function removerBanner() {
+  localStorage.removeItem('itap_banner');
+  renderAdmin();
+}
+
+// ── LOGIN ──
+function checkLogin() {
+  const p = document.getElementById('admin-password').value;
+  if (p === ADMIN_PASS) {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderAdmin();
+  } else { alert('Senha incorreta!'); }
+}
+function logout() { location.reload(); }
+function toggleCat(id) { document.getElementById('cat-' + id).classList.toggle('open'); }
+function criarSecao(id, titulo, conteudo) {
+  const s = document.createElement('div');
+  s.className = 'cat-section'; s.id = 'cat-' + id;
+  s.innerHTML = `<div class="cat-header" onclick="toggleCat('${id}')"><h3>${titulo}</h3><span class="cat-arrow">▼</span></div><div class="cat-body">${conteudo}</div>`;
   return s;
 }
-function renderAdmin(){
-  const body=document.getElementById('admin-body');body.innerHTML='';
-  // Card de acesso rápido à promoção
-  const promoCard=document.createElement('div');
-  promoCard.style.cssText='background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
-  promoCard.innerHTML='<div><div style="font-size:15px;font-weight:800">🎉 Gerenciar Promoção</div><div style="font-size:12px;opacity:.85;margin-top:3px">Poste foto, texto e link da promoção do dia</div></div><a href="promocao.html" style="background:#F9A825;color:#111;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">Abrir →</a>';
+
+// ── RENDER ADMIN ──
+function renderAdmin() {
+  const body = document.getElementById('admin-body'); body.innerHTML = '';
+  const promoCard = document.createElement('div');
+  promoCard.style.cssText = 'background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
+  promoCard.innerHTML = '<div><div style="font-size:15px;font-weight:800">🎉 Gerenciar Promoção</div><div style="font-size:12px;opacity:.85;margin-top:3px">Poste foto, texto e link da promoção do dia</div></div><a href="promocao.html" style="background:#F9A825;color:#111;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">Abrir →</a>';
   body.appendChild(promoCard);
-  body.appendChild(criarSecao('sorvetes','🍦 Sorvetes de Massa',renderSorvetes()));
-  body.appendChild(criarSecao('picoles','🍭 Picolés',renderPicoles()));
-  body.appendChild(criarSecao('acai','🫐 Açaí Artesanal',renderAcai()));
-  body.appendChild(criarSecao('milkshake','🥤 Milkshakes',renderMilkshake()));
-  body.appendChild(criarSecao('tacas','🍨 Taças',renderTacas()));
-  body.appendChild(criarSecao('caixas','📦 Caixas de Viagem',renderCaixas()));
-  body.appendChild(criarSecao('isopores','🧊 Isopores de Viagem',renderIsopores()));
-  body.appendChild(criarSecao('sobremesas','🎂 Sobremesas',renderSobremesas()));
+
+  // ── CARD BANNER CENTRAL ──
+  const bannerCard = document.createElement('div');
+  bannerCard.style.cssText = 'background:#fff;border-radius:14px;border:1px solid #E5E7EB;padding:18px 20px;margin-bottom:16px';
+  const bannerDados = (()=>{try{return JSON.parse(localStorage.getItem('itap_banner')||'{}');}catch(e){return {};}})();
+  const temBanner = !!bannerDados.img;
+  bannerCard.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:20px">🖼️</span>
+      <div><div style="font-size:15px;font-weight:800;color:#111827">Banner Central do Site</div>
+      <div style="font-size:12px;color:#6B7280;margin-top:2px">Exibido entre o botão 'Ver Cardápio' e os cards de info</div></div>
+    </div>
+    <div id="banner-preview-area" style="margin-bottom:12px">
+      ${temBanner
+        ? `<img src="${bannerDados.img}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`
+        : `<div style="width:100%;height:100px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC);border:2px dashed #FF6B35;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:#FF6B35;font-weight:700;font-size:13px"><span style="font-size:28px">🖼️</span>Nenhum banner cadastrado</div>`
+      }
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <label style="flex:1;min-width:140px;background:#EDE9FE;color:#6A0DAD;border:1px solid #C4B5FD;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;text-align:center">
+        📷 ${temBanner ? 'Trocar Banner' : 'Adicionar Banner'}
+        <input type="file" accept="image/*" style="display:none" onchange="onBannerChange(this)">
+      </label>
+      ${temBanner ? `<button onclick="removerBanner()" style="flex:1;min-width:120px;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer">🗑️ Remover Banner</button>` : ''}
+    </div>
+    <div id="banner-status" style="margin-top:8px;font-size:12px;font-weight:700;color:#10B981"></div>
+  `;
+  body.appendChild(bannerCard);
+
+  body.appendChild(criarSecao('sorvetes', '🍦 Sorvetes de Massa', renderSorvetes()));
+  body.appendChild(criarSecao('picoles', '🍭 Picolés', renderPicoles()));
+  body.appendChild(criarSecao('acai', '🫐 Açaí Artesanal', renderAcai()));
+  body.appendChild(criarSecao('milkshake', '🥤 Milkshakes', renderMilkshake()));
+  body.appendChild(criarSecao('tacas', '🍨 Taças', renderTacas()));
+  body.appendChild(criarSecao('caixas', '📦 Caixas de Viagem', renderCaixas()));
+  body.appendChild(criarSecao('isopores', '🧊 Isopores de Viagem', renderIsopores()));
+  body.appendChild(criarSecao('sobremesas', '🎂 Sobremesas', renderSobremesas()));
 }
-function renderSorvetes(){
-  const p=produtos.sorvetes;
-  const nomes={casquinha_copo:'Casquinha/Copo',copo_recheado:'Copo Recheado',cascao:'Cascão',cestinha:'Cestinha'};
-  let html='<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Preços por Apresentação</h4><div class="preco-simples-grid">';
-  Object.entries(p.precos).forEach(([key,precos])=>{
-    Object.entries(precos).forEach(([tam,preco])=>{
-      html+=`<div class="preco-simples-card"><label>${nomes[key]||key} – ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.sorvetes.precos['${key}']['${tam}']=parseFloat(this.value)"></div>`;
+
+// ── SORVETES ──
+function renderSorvetes() {
+  const p = produtos.sorvetes;
+  const nomes = { casquinha_copo: 'Casquinha/Copo', copo_recheado: 'Copo Recheado', cascao: 'Cascão', cestinha: 'Cestinha' };
+  let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Preços por Apresentação</h4><div class="preco-simples-grid">';
+  Object.entries(p.precos).forEach(([key, precos]) => {
+    Object.entries(precos).forEach(([tam, preco]) => {
+      const chave = 'sorvete_' + key + '_' + tam.replace(/\s/g,'_');
+      html += `<div class="preco-simples-card">
+        ${blocoFoto(chave)}
+        <label>${nomes[key] || key} – ${tam}</label>
+        <input type="number" step="0.01" value="${preco}" onchange="produtos.sorvetes.precos['${key}']['${tam}']=parseFloat(this.value)">
+      </div>`;
     });
   });
-  html+='</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Sabores (clique para marcar esgotado)</h4><div class="sabores-grid">';
-  p.sabores.forEach(s=>{html+=`<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`;});
-  html+='</div>';
+  html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Sabores (clique para marcar esgotado)</h4><div class="sabores-grid">';
+  p.sabores.forEach(s => { html += `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`; });
+  html += '</div>';
   return html;
 }
-function renderPicoles(){
-  let html='<div class="prod-edit-grid">';
-  Object.entries(produtos.picoles).forEach(([key,p])=>{
-    html+=`<div class="prod-edit-card"><h4>${p.nome}</h4>
-    <div class="field-row">
-      <div style="flex:1"><label>Varejo (R$)</label><input type="number" step="0.01" value="${p.preco_varejo}" onchange="produtos.picoles['${key}'].preco_varejo=parseFloat(this.value)"></div>
-      <div style="flex:1"><label>Atacado (R$)</label><input type="number" step="0.01" value="${p.preco_atacado}" onchange="produtos.picoles['${key}'].preco_atacado=parseFloat(this.value)"></div>
-    </div>
-    <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value)"></div></div>
-    <div style="margin-top:8px;font-size:11px;color:#6A0DAD;font-weight:700">Sabores:</div>
-    <div class="sabores-grid" style="margin-top:6px">${p.sabores.map(s=>`<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`).join('')}</div>
-    <button class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
+
+// ── PICOLÉS ──
+function renderPicoles() {
+  let html = '<div class="prod-edit-grid">';
+  Object.entries(produtos.picoles).forEach(([key, p]) => {
+    const chave = 'picole_' + key;
+    html += `<div class="prod-edit-card">
+      ${blocoFoto(chave)}
+      <h4>${p.nome}</h4>
+      <div class="field-row">
+        <div style="flex:1"><label>Varejo (R$)</label><input type="number" step="0.01" value="${p.preco_varejo}" onchange="produtos.picoles['${key}'].preco_varejo=parseFloat(this.value)"></div>
+        <div style="flex:1"><label>Atacado (R$)</label><input type="number" step="0.01" value="${p.preco_atacado}" onchange="produtos.picoles['${key}'].preco_atacado=parseFloat(this.value)"></div>
+      </div>
+      <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value)"></div></div>
+      <div style="margin-top:8px;font-size:11px;color:#6A0DAD;font-weight:700">Sabores:</div>
+      <div class="sabores-grid" style="margin-top:6px">${p.sabores.map(s => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`).join('')}</div>
+      <button class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
     </div>`;
   });
-  html+='</div>';
+  html += '</div>';
   return html;
 }
-function renderAcai(){
-  let html='<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Tamanhos de Copo</h4><div class="preco-simples-grid">';
-  Object.entries(produtos.acai.copos).forEach(([tam,preco])=>{
-    html+=`<div class="preco-simples-card"><label>Açaí ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.acai.copos['${tam}']=parseFloat(this.value)"></div>`;
+
+// ── AÇAÍ ──
+function renderAcai() {
+  let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Tamanhos de Copo</h4><div class="preco-simples-grid">';
+  Object.entries(produtos.acai.copos).forEach(([tam, preco]) => {
+    const chave = 'acai_' + tam.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>Açaí ${tam}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.acai.copos['${tam}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+='</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Complementos</h4>';
-  const lbl={frutas:'🍓 Frutas',cremes:'🍯 Cremes',guloseimas:'🍬 Guloseimas',chocolates:'🍫 Chocolates'};
-  Object.entries(produtos.acai.complementos).forEach(([k,info])=>{
-    html+=`<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:13px;font-weight:700">${lbl[k]||k}</span><span style="font-size:11px;color:#6A0DAD">Preço: R$</span><input type="number" step="0.01" value="${info.preco}" style="width:70px;padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px" onchange="produtos.acai.complementos['${k}'].preco=parseFloat(this.value)"></div><div class="sabores-grid">${info.itens.map(i=>`<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${i}</span>`).join('')}</div></div>`;
+  html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Complementos</h4>';
+  const lbl = { frutas: '🍓 Frutas', cremes: '🍯 Cremes', guloseimas: '🍬 Guloseimas', chocolates: '🍫 Chocolates' };
+  Object.entries(produtos.acai.complementos).forEach(([k, info]) => {
+    html += `<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:13px;font-weight:700">${lbl[k] || k}</span><span style="font-size:11px;color:#6A0DAD">Preço: R$</span><input type="number" step="0.01" value="${info.preco}" style="width:70px;padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px" onchange="produtos.acai.complementos['${k}'].preco=parseFloat(this.value)"></div><div class="sabores-grid">${info.itens.map(i => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${i}</span>`).join('')}</div></div>`;
   });
   return html;
 }
-function renderMilkshake(){
-  const m=produtos.milkshake;
-  let html='<div class="preco-simples-grid">';
-  Object.entries(m.tradicional).forEach(([tam,preco])=>{
-    html+=`<div class="preco-simples-card"><label>Tradicional ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.tradicional['${tam}']=parseFloat(this.value)"></div>`;
+
+// ── MILKSHAKE ──
+function renderMilkshake() {
+  const m = produtos.milkshake;
+  let html = '<div class="preco-simples-grid">';
+  Object.entries(m.tradicional).forEach(([tam, preco]) => {
+    const chave = 'milk_trad_' + tam.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>Tradicional ${tam}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.tradicional['${tam}']=parseFloat(this.value)">
+    </div>`;
   });
-  Object.entries(m.top).forEach(([tam,preco])=>{
-    html+=`<div class="preco-simples-card"><label>Top ${tam}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.top['${tam}']=parseFloat(this.value)"></div>`;
+  Object.entries(m.top).forEach(([tam, preco]) => {
+    const chave = 'milk_top_' + tam.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>Top ${tam}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.top['${tam}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+=`<div class="preco-simples-card"><label>Adicional Ovomaltine</label><input type="number" step="0.01" value="${m.adicional_ovomaltine}" onchange="produtos.milkshake.adicional_ovomaltine=parseFloat(this.value)"></div>`;
-  html+='</div>';
+  html += `<div class="preco-simples-card">
+    ${blocoFoto('milk_ovomaltine')}
+    <label>Adicional Ovomaltine</label>
+    <input type="number" step="0.01" value="${m.adicional_ovomaltine}" onchange="produtos.milkshake.adicional_ovomaltine=parseFloat(this.value)">
+  </div>`;
+  html += '</div>';
   return html;
 }
-function renderTacas(){
-  let html='<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Taças Tradicionais</h4><div class="preco-simples-grid">';
-  Object.entries(produtos.tacas.tradicionais).forEach(([nome,preco])=>{
-    html+=`<div class="preco-simples-card"><label>Taça ${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.tradicionais['${nome}']=parseFloat(this.value)"></div>`;
+
+// ── TAÇAS ──
+function renderTacas() {
+  let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Taças Tradicionais</h4><div class="preco-simples-grid">';
+  Object.entries(produtos.tacas.tradicionais).forEach(([nome, preco]) => {
+    const chave = 'taca_trad_' + nome.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>Taça ${nome}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.tradicionais['${nome}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+='</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Taças Sujas</h4><div class="preco-simples-grid">';
-  Object.entries(produtos.tacas.sujas).forEach(([nome,preco])=>{
-    html+=`<div class="preco-simples-card"><label>Taça Suja – ${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.sujas['${nome}']=parseFloat(this.value)"></div>`;
+  html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Taças Sujas</h4><div class="preco-simples-grid">';
+  Object.entries(produtos.tacas.sujas).forEach(([nome, preco]) => {
+    const chave = 'taca_suja_' + nome.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>Taça Suja – ${nome}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.sujas['${nome}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+='</div>';
+  html += '</div>';
   return html;
 }
-function renderCaixas(){
-  let html='<div class="preco-simples-grid">';
-  Object.entries(produtos.caixas_viagem).forEach(([nome,preco])=>{
-    html+=`<div class="preco-simples-card"><label>${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.caixas_viagem['${nome}']=parseFloat(this.value)"></div>`;
+
+// ── CAIXAS ──
+function renderCaixas() {
+  let html = '<div class="preco-simples-grid">';
+  Object.entries(produtos.caixas_viagem).forEach(([nome, preco]) => {
+    const chave = 'caixa_' + nome.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>${nome}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.caixas_viagem['${nome}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+='</div>';
+  html += '</div>';
   return html;
 }
-function renderIsopores(){
-  let html='<div class="preco-simples-grid">';
-  Object.entries(produtos.isopores_viagem).forEach(([nome,preco])=>{
-    html+=`<div class="preco-simples-card"><label>${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.isopores_viagem['${nome}']=parseFloat(this.value)"></div>`;
+
+// ── ISOPORES ──
+function renderIsopores() {
+  let html = '<div class="preco-simples-grid">';
+  Object.entries(produtos.isopores_viagem).forEach(([nome, preco]) => {
+    const chave = 'isopore_' + nome.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>${nome}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.isopores_viagem['${nome}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+='</div>';
+  html += '</div>';
   return html;
 }
-function renderSobremesas(){
-  let html='<div class="preco-simples-grid">';
-  Object.entries(produtos.sobremesas).forEach(([nome,preco])=>{
-    html+=`<div class="preco-simples-card"><label>${nome}</label><input type="number" step="0.01" value="${preco}" onchange="produtos.sobremesas['${nome}']=parseFloat(this.value)"></div>`;
+
+// ── SOBREMESAS ──
+function renderSobremesas() {
+  let html = '<div class="preco-simples-grid">';
+  Object.entries(produtos.sobremesas).forEach(([nome, preco]) => {
+    const chave = 'sobremesa_' + nome.replace(/\s/g,'_');
+    html += `<div class="preco-simples-card">
+      ${blocoFoto(chave)}
+      <label>${nome}</label>
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.sobremesas['${nome}']=parseFloat(this.value)">
+    </div>`;
   });
-  html+='</div>';
+  html += '</div>';
   return html;
 }
-function salvarTudo(){
-  const msg=document.getElementById('status-msg');
-  msg.textContent='⌛ Gerando arquivo...';
-  const novoJS='// products.js – Atualizado em '+new Date().toLocaleDateString('pt-BR')+'\nconst produtos = '+JSON.stringify(produtos,null,4)+';\n';
-  const blob=new Blob([novoJS],{type:'text/javascript'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='products.js';
+
+// ── SALVAR ──
+function salvarTudo() {
+  const msg = document.getElementById('status-msg');
+  msg.textContent = '⌛ Gerando arquivo...';
+  const novoJS = '// products.js – Atualizado em ' + new Date().toLocaleDateString('pt-BR') + '\nconst produtos = ' + JSON.stringify(produtos, null, 4) + ';\n';
+  const blob = new Blob([novoJS], { type: 'text/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'products.js';
   a.click();
-  msg.textContent='✅ products.js baixado! Envie ao GitHub para aplicar no site.';
-  setTimeout(()=>msg.textContent='',6000);
+  msg.textContent = '✅ products.js baixado! Envie ao GitHub para aplicar no site.';
+  setTimeout(() => msg.textContent = '', 6000);
 }
 </script>
 </body>

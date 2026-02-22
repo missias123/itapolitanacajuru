@@ -7,11 +7,11 @@
 <meta name="theme-color" content="#1565C0">
 <title>Sorveteria Itapolitana – Cajuru/SP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900;1000&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;-webkit-text-size-adjust:100%}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background-color:#FFF8F0;color:#1A0A00;line-height:1.5;min-height:100vh;position:relative}
+body{font-family:'Nunito','Inter',-apple-system,BlinkMacSystemFont,sans-serif;background-color:#FFF8F0;color:#1A0A00;line-height:1.5;min-height:100vh;position:relative;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body::before{content:'';position:fixed;inset:0;background-image:url('images/logo.png');background-repeat:repeat;background-size:110px 110px;opacity:0.35;pointer-events:none;z-index:0}
 body>*{position:relative;z-index:1}
 a{text-decoration:none;color:inherit}
@@ -28,8 +28,8 @@ img{max-width:100%;display:block}
 .header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
 .brand{display:flex;align-items:center;gap:10px}
 .brand-icon{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid #E5E7EB;background:#fff}.brand-icon img{width:100%;height:100%;object-fit:cover}
-.brand-name{font-size:15px;font-weight:900;color:#E8000D;line-height:1.2;text-shadow:0 0 10px rgba(232,0,13,.6),0 0 20px rgba(255,80,0,.4)}
-.brand-sub{font-size:11px;color:#7B2D8B;font-weight:700}
+.brand-name{font-size:16px;font-weight:1000;color:#E8000D;line-height:1.1;text-shadow:0 0 10px rgba(232,0,13,.6),0 0 20px rgba(255,80,0,.4);letter-spacing:.5px;text-transform:uppercase}
+.brand-sub{font-size:11px;color:#7B2D8B;font-weight:700;letter-spacing:.3px}
 .header-nav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%}
 .nav-btn{display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;min-height:44px;transition:opacity .15s,transform .1s;white-space:nowrap;width:100%;text-align:center}
 .nav-btn:active{transform:scale(.97);opacity:.9}
@@ -43,20 +43,25 @@ img{max-width:100%;display:block}
 
 /* HERO */
 .hero{background:linear-gradient(160deg,#FFFDF9 0%,#FFF3E0 50%,#FCE4EC 100%);padding:24px 16px;text-align:center;border-bottom:2px solid #FF6B35;isolation:isolate}
-.hero h2{font-size:20px;font-weight:900;margin-bottom:8px;line-height:1.3}
-.hero p{font-size:14px;color:#7B2D8B;font-weight:700;max-width:480px;margin:0 auto 16px}
-.hero-cta{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;padding:13px 28px;border-radius:50px;font-size:15px;font-weight:800;box-shadow:0 4px 20px rgba(232,0,13,.45)}
+.hero h2{font-size:22px;font-weight:900;margin-bottom:8px;line-height:1.25;letter-spacing:-.3px;color:#1A0A00}
+.hero p{font-size:14px;color:#7B2D8B;font-weight:600;max-width:480px;margin:0 auto 16px;line-height:1.6;letter-spacing:.1px}
+.hero-cta{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:800;box-shadow:0 4px 20px rgba(232,0,13,.45);letter-spacing:.3px;text-transform:uppercase}
 
+/* BANNER CARDÁPIO */
+.cardapio-banner{width:100%;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.18);margin-bottom:16px;display:none}
+.cardapio-banner.show{display:block}
+.cardapio-banner img{width:100%;height:auto;display:block;max-height:240px;object-fit:cover}
+.cardapio-banner-vazio{width:100%;height:80px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC);border:2px dashed #FF6B35;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#FF6B35;font-weight:700;font-size:13px;margin-bottom:16px}
 /* INFO CARDS */
 .info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;max-width:960px;margin:0 auto}
 .info-card{background:linear-gradient(135deg,#FFFDF9,#FFF8F0);border-radius:14px;padding:14px;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.15);isolation:isolate}
 .info-icon{font-size:22px;margin-bottom:6px}
-.info-title{font-size:12px;font-weight:700;color:#1A0A00;margin-bottom:3px}
+.info-title{font-size:12px;font-weight:800;color:#1A0A00;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
 .info-text{font-size:11px;color:#7B2D8B;font-weight:700;line-height:1.4}
 
 /* CARDÁPIO */
 .cardapio{max-width:960px;margin:0 auto;padding:16px}
-.cardapio-h{font-size:22px;font-weight:900;text-align:center;margin-bottom:16px}
+.cardapio-h{font-size:22px;font-weight:900;text-align:center;margin-bottom:16px;letter-spacing:-.2px;color:#1A0A00}
 
 /* ACCORDION */
 .acc{border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.12);isolation:isolate}
@@ -64,8 +69,8 @@ img{max-width:100%;display:block}
 .acc-header:hover{filter:brightness(1.08)}
 .acc-left{display:flex;align-items:center;gap:12px}
 .acc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,.25);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
-.acc-title{font-size:16px;font-weight:900;color:#fff}
-.acc-sub{font-size:12px;color:rgba(255,255,255,.85);font-weight:600;margin-top:2px}
+.acc-title{font-size:16px;font-weight:900;color:#fff;letter-spacing:.2px}
+.acc-sub{font-size:12px;color:rgba(255,255,255,.9);font-weight:600;margin-top:2px;letter-spacing:.1px}
 .acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
 .acc.open .acc-arrow{transform:rotate(180deg)}
 .acc-body{display:none;padding:16px;background:#fff;border:2px solid transparent}
@@ -94,10 +99,13 @@ img{max-width:100%;display:block}
 
 /* GRID PRODUTOS (visualização) */
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.prod-card{background:linear-gradient(135deg,#FFFDF9,#FFF8F0);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.12);isolation:isolate}
-.prod-nome{font-size:13px;font-weight:700;color:#1A0A00;margin-bottom:4px}
+.prod-card{background:linear-gradient(135deg,#FFFDF9,#FFF8F0);border-radius:14px;overflow:hidden;text-align:center;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.12);isolation:isolate}
+.prod-card-img{width:100%;height:110px;object-fit:cover;display:block}
+.prod-card-sem-foto{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC)}
+.prod-card-body{padding:10px 12px 14px}
+.prod-nome{font-size:13px;font-weight:800;color:#1A0A00;margin-bottom:4px;letter-spacing:.1px;line-height:1.3}
 .prod-desc{font-size:11px;color:#7B2D8B;font-weight:700;margin-bottom:8px;line-height:1.4}
-.prod-preco{font-size:17px;font-weight:900;color:#E8000D}
+.prod-preco{font-size:18px;font-weight:900;color:#E8000D;letter-spacing:-.3px}
 .prod-esgotado{font-size:11px;color:#EF4444;font-weight:700;margin-top:4px}
 
 /* BOTÕES VER SABORES / COMPLEMENTOS */
@@ -183,9 +191,9 @@ img{max-width:100%;display:block}
 
 /* RODAPÉ */
 .footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:32px 16px;margin-top:24px;text-align:center}
-.footer h3{color:#FFFFFF;font-size:16px;margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,.3)}
-.footer p{font-size:13px;margin-bottom:8px;line-height:1.6}
-.footer-copy{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.25);font-size:12px;color:#F3E5F5}
+.footer h3{color:#FFFFFF;font-size:16px;margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
+.footer p{font-size:13px;margin-bottom:8px;line-height:1.6;font-weight:600}
+.footer-copy{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.25);font-size:12px;color:#F3E5F5;letter-spacing:.3px;font-weight:600}
 .btn-admin-footer{display:inline-block;margin-top:16px;padding:8px 16px;background:rgba(255,255,255,.15);color:#FFFFFF;border-radius:8px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.3)}
 
 /* DESKTOP */
@@ -236,7 +244,6 @@ img{max-width:100%;display:block}
     🍦 Ver Cardápio Completo
   </button>
 </section>
-
 <!-- INFO CARDS -->
 <div class="info-cards">
   <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="info-card" style="text-decoration:none;color:inherit;display:block"><div class="info-icon">📍</div><div class="info-title">Localização</div><div class="info-text" style="color:#4285F4;font-weight:700">Pça Lgo São Bento, 311 – Cajuru/SP 🗺️</div></a>
@@ -247,7 +254,10 @@ img{max-width:100%;display:block}
 
 <!-- CARDÁPIO -->
 <section id="cardapio" class="cardapio">
-  <h2 class="cardapio-h">Nosso Cardápio</h2>
+  <!-- BANNER ENQUADRADO -->
+  <div class="cardapio-banner" id="cardapio-banner">
+    <img id="cardapio-banner-img" src="" alt="Banner Itapolitana">
+  </div>
 
   <!-- SORVETES -->
   <div class="acc" id="acc-sorvetes">
@@ -362,10 +372,13 @@ img{max-width:100%;display:block}
       <span class="acc-arrow">▼</span>
     </div>
     <div class="acc-body">
-      <div class="prod-card" style="max-width:280px">
-        <div class="prod-nome">🎂 Torta de Sorvete</div>
-        <div class="prod-desc">Feita com 3 sabores à sua escolha. Perfeita para festas e comemorações.</div>
-        <div class="prod-preco" id="torta-preco">R$ 100,00</div>
+      <div class="prod-card" style="max-width:280px" id="torta-card">
+        <div id="torta-foto-area"></div>
+        <div class="prod-card-body">
+          <div class="prod-nome">🎂 Torta de Sorvete</div>
+          <div class="prod-desc">Feita com 3 sabores à sua escolha. Perfeita para festas e comemorações.</div>
+          <div class="prod-preco" id="torta-preco">R$ 100,00</div>
+        </div>
       </div>
       <div style="margin-top:12px">
         <button class="btn-sabores" onclick="abrirSabores('sorvetes','🎂 Sabores para Torta de Sorvete')">🍨 Ver os 36 Sabores</button>
@@ -498,6 +511,13 @@ img{max-width:100%;display:block}
 
 <script src="scripts/products.js"></script>
 <script>
+// ── FOTOS DO PRODUTO (localStorage) ──
+function getFotos(){try{return JSON.parse(localStorage.getItem('itap_fotos')||'{}');}catch(e){return {};}}
+function imgCard(chave,emoji){
+  const f=getFotos()[chave];
+  if(f) return `<img class="prod-card-img" src="${f}" alt="foto">`;
+  return `<div class="prod-card-sem-foto">${emoji||'🍦'}</div>`;
+}
 // ── ACCORDION ──
 function toggleAcc(id){document.getElementById(id).classList.toggle('open')}
 
@@ -513,8 +533,9 @@ function renderSorvetes(){
   if(produtos&&produtos.sorvetes&&produtos.sorvetes.precos){
     Object.entries(produtos.sorvetes.precos).forEach(([key,precos])=>{
       const preco=Object.values(precos)[0];
+      const chave='sorvete_'+key+'_'+Object.keys(precos)[0].replace(/\s/g,'_');
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=`<div class="prod-nome">${nomes[key]||key}</div><div class="prod-desc">${desc[key]||''}</div><div class="prod-preco">A partir de R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      c.innerHTML=imgCard(chave,'🍦')+`<div class="prod-card-body"><div class="prod-nome">${nomes[key]||key}</div><div class="prod-desc">${desc[key]||''}</div><div class="prod-preco">A partir de R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -526,11 +547,11 @@ function renderMilk(){
   if(produtos&&produtos.milkshake){
     const m=produtos.milkshake;
     const tipos=[];
-    if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,preco])=>tipos.push({nome:`Milkshake Tradicional ${tam}`,preco}));
-    if(m.top) Object.entries(m.top).forEach(([tam,preco])=>tipos.push({nome:`Milkshake Top ${tam}`,preco}));
+    if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,preco])=>tipos.push({nome:`Milkshake Tradicional ${tam}`,preco,chave:'milk_trad_'+tam.replace(/\s/g,'_')}));
+    if(m.top) Object.entries(m.top).forEach(([tam,preco])=>tipos.push({nome:`Milkshake Top ${tam}`,preco,chave:'milk_top_'+tam.replace(/\s/g,'_')}));
     tipos.forEach(t=>{
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
+      c.innerHTML=imgCard(t.chave,'🥤')+`<div class="prod-card-body"><div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -541,20 +562,21 @@ function renderTacas(){
   const g=document.getElementById('tacas-grid');
   if(produtos&&produtos.tacas&&produtos.tacas.tradicionais){
     Object.entries(produtos.tacas.tradicionais).forEach(([nome,preco])=>{
+      const chave='taca_trad_'+nome.replace(/\s/g,'_');
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=`<div class="prod-nome">Taça ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      c.innerHTML=imgCard(chave,'🍨')+`<div class="prod-card-body"><div class="prod-nome">Taça ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
 }
-
 // ── RENDER TAÇAS PREMIUM ── (lê do products.js)
 function renderTacasP(){
   const g=document.getElementById('tacas-p-grid');
   if(produtos&&produtos.tacas&&produtos.tacas.sujas){
     Object.entries(produtos.tacas.sujas).forEach(([nome,preco])=>{
+      const chave='taca_suja_'+nome.replace(/\s/g,'_');
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=`<div class="prod-nome">Taça Suja – ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      c.innerHTML=imgCard(chave,'🍰')+`<div class="prod-card-body"><div class="prod-nome">Taça Suja – ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -603,8 +625,9 @@ function renderIso(){
   if(produtos&&produtos.isopores_viagem){
     const grid=document.createElement('div');grid.className='prod-grid';
     Object.entries(produtos.isopores_viagem).forEach(([tam,preco])=>{
+      const chave='isopore_'+tam.replace(/\s/g,'_');
       const d=document.createElement('div');d.className='prod-card';
-      d.innerHTML=`<div class="prod-nome">🧊 Isopore ${tam}</div><div class="prod-desc">Leve sorvete para casa</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      d.innerHTML=imgCard(chave,'🧊')+`<div class="prod-card-body"><div class="prod-nome">🧊 Isopore ${tam}</div><div class="prod-desc">Leve sorvete para casa</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
       grid.appendChild(d);
     });
     b.appendChild(grid);
@@ -619,8 +642,9 @@ function renderSobremesas(){
   if(produtos&&produtos.sobremesas){
     const grid=document.createElement('div');grid.className='prod-grid';
     Object.entries(produtos.sobremesas).forEach(([nome,preco])=>{
+      const chave='sobremesa_'+nome.replace(/\s/g,'_');
       const d=document.createElement('div');d.className='prod-card';
-      d.innerHTML=`<div class="prod-nome">🍨 ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div>`;
+      d.innerHTML=imgCard(chave,'🎂')+`<div class="prod-card-body"><div class="prod-nome">🍨 ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
       grid.appendChild(d);
     });
     b.appendChild(grid);
@@ -765,10 +789,25 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
   if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('pwa-banner').classList.remove('show');}
 });
 
+// ── BANNER CARDÁPIO ──
+function carregarBanner(){
+  try{
+    const dados=JSON.parse(localStorage.getItem('itap_banner')||'{}');
+    if(dados.img){
+      const wrap=document.getElementById('cardapio-banner');
+      const img=document.getElementById('cardapio-banner-img');
+      if(wrap&&img){img.src=dados.img;wrap.classList.add('show');}
+    }
+  }catch(e){}
+}
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
+  carregarBanner();
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();renderIso();renderSobremesas();
   // Todos os accordions fechados por padrão
+  // Foto da torta
+  const tortaFotoArea=document.getElementById('torta-foto-area');
+  if(tortaFotoArea)tortaFotoArea.innerHTML=imgCard('sobremesa_Torta_de_Sorvete','🎂');
   // Atualizar preço da torta do products.js
   const tp=document.getElementById('torta-preco');
   if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
