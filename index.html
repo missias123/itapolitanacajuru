@@ -101,28 +101,55 @@
             padding: 20px;
         }
 
-        /* Estilo do Botão Admin Brilhante */
-        .btn-admin-brilhante {
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            margin: 20px auto;
-            padding: 20px;
+        /* Estilo do Botão Admin Flutuante Gigante */
+        .btn-admin-flutuante {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            padding: 30px 50px;
             background-color: #FFFFFF;
             color: #FF007F;
             text-decoration: none;
             font-weight: 900;
-            font-size: 1.5em;
+            font-size: 2em;
             text-align: center;
-            border-radius: 15px;
+            border-radius: 20px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(255, 255, 255, 0.6);
-            border: 4px solid #FF007F;
+            letter-spacing: 3px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 100px rgba(255, 0, 127, 0.5);
+            border: 6px solid #FF007F;
             transition: all 0.3s ease;
-            animation: brilho-pulsante 1.5s infinite alternate;
-            position: relative;
-            z-index: 9999;
+            animation: super-brilho 1s infinite alternate;
+            cursor: pointer;
+        }
+
+        .btn-admin-flutuante:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background-color: #FF007F;
+            color: #FFFFFF;
+        }
+
+        @keyframes super-brilho {
+            from { box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+            to { box-shadow: 0 0 60px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 0, 127, 0.8); }
+        }
+
+        /* Esconder o botão após clicar ou se necessário */
+        .fechar-admin {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: #000;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            line-height: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #fff;
         }
 
         .btn-admin-brilhante:hover {
@@ -138,11 +165,13 @@
     </style>
 </head>
 <body>
+    <!-- Botão Admin Flutuante Gigante -->
+    <a href="admin/index.html" class="btn-admin-flutuante" id="btn-admin-main">
+        ACESSO ADMIN AQUI
+        <div class="fechar-admin" onclick="event.preventDefault(); document.getElementById('btn-admin-main').style.display='none';">×</div>
+    </a>
+
     <div class="container">
-        <!-- Botão Admin Gigante no Topo -->
-        <div style="padding: 20px 0; background: #FF007F; text-align: center;">
-            <a href="admin/index.html" class="btn-admin-brilhante">ACESSO ADMIN AQUI</a>
-        </div>
         <!-- Header -->
         <header class="header">
             <div class="logo-section">
