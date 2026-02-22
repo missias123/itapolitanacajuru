@@ -205,6 +205,27 @@ img{max-width:100%;display:block}
 .pwa-install{background:#F9A825;color:#111;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800}
 .pwa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:6px 14px;font-size:11px;color:#fff;font-weight:600}
 
+/* SEÇÃO ENCOMENDAS NO CARDÁPIO */
+#acc-encomendas>.acc-header{background:linear-gradient(135deg,#0D47A1,#1565C0)}
+#acc-encomendas>.acc-body{border-color:#90CAF9}
+.enc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.enc-card{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;overflow:hidden;text-align:center;box-shadow:0 0 0 2px #1565C0,0 4px 12px rgba(21,101,192,.15);cursor:pointer;text-decoration:none;display:block;transition:transform .15s,box-shadow .15s}
+.enc-card:hover{transform:translateY(-3px);box-shadow:0 0 0 2px #1565C0,0 8px 20px rgba(21,101,192,.3)}
+.enc-card-icon{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:34px;background:linear-gradient(135deg,#1565C0,#0D47A1)}
+.enc-card-body{padding:10px 12px 14px}
+.enc-card-nome{font-size:13px;font-weight:800;color:#0D47A1;margin-bottom:4px;line-height:1.3}
+.enc-card-desc{font-size:11px;color:#1565C0;font-weight:700;margin-bottom:6px;line-height:1.4}
+.enc-card-preco{font-size:17px;font-weight:900;color:#E8000D}
+.enc-card-preco-duo{font-size:11px;color:#1565C0;font-weight:700;line-height:1.5}
+.enc-cta{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border-radius:12px;padding:14px 20px;font-size:15px;font-weight:800;text-decoration:none;margin-top:4px;box-shadow:0 4px 16px rgba(21,101,192,.4);transition:transform .15s}
+.enc-cta:hover{transform:translateY(-2px)}
+.enc-picole-item{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 0 0 2px #1565C0,0 4px 12px rgba(21,101,192,.12);cursor:pointer;text-decoration:none;display:block;transition:transform .15s}
+.enc-picole-item:hover{transform:translateY(-2px)}
+.enc-picole-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.enc-picole-nome{font-size:14px;font-weight:800;color:#0D47A1}
+.enc-picole-precos{font-size:12px;color:#1565C0;font-weight:700;line-height:1.6}
+.enc-picole-sabores{font-size:11px;color:#7B2D8B;font-weight:700;margin-top:4px}
+
 /* RODAPÉ */
 .footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:32px 16px;margin-top:24px;text-align:center;position:relative;overflow:hidden}
 .footer h3{color:#FFFFFF;font-size:16px;margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
@@ -445,6 +466,112 @@ img{max-width:100%;display:block}
       <span class="acc-arrow">▼</span>
     </div>
     <div class="acc-body" id="sobremesas-body"></div>
+  </div>
+
+  <!-- ENCOMENDAS NO CARDÁPIO -->
+  <div class="acc" id="acc-encomendas">
+    <div class="acc-header" onclick="toggleAcc('acc-encomendas')">
+      <div class="acc-left">
+        <span class="acc-icon">🛋️</span>
+        <div><div class="acc-title">Encomendas</div><div class="acc-sub">Caixas de sorvete, tortas e picolés · Clique para encomendar</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="encomendas-cardapio-body">
+
+      <!-- CAIXAS DE SORVETE -->
+      <div style="font-size:14px;font-weight:900;color:#0D47A1;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #BBDEFB">🧃 Caixas de Sorvete</div>
+      <div class="enc-grid">
+        <a href="encomendas.html" class="enc-card">
+          <div class="enc-card-icon" style="background:linear-gradient(135deg,#1565C0,#0D47A1)">🧃</div>
+          <div class="enc-card-body">
+            <div class="enc-card-nome">Caixa 5L – 2 Sabores</div>
+            <div class="enc-card-desc">5 litros · até 2 sabores</div>
+            <div class="enc-card-preco">R$ 100,00</div>
+          </div>
+        </a>
+        <a href="encomendas.html" class="enc-card">
+          <div class="enc-card-icon" style="background:linear-gradient(135deg,#1565C0,#0D47A1)">🧃</div>
+          <div class="enc-card-body">
+            <div class="enc-card-nome">Caixa 5L – 3 Sabores</div>
+            <div class="enc-card-desc">5 litros · até 3 sabores</div>
+            <div class="enc-card-preco">R$ 115,00</div>
+          </div>
+        </a>
+        <a href="encomendas.html" class="enc-card">
+          <div class="enc-card-icon" style="background:linear-gradient(135deg,#0D47A1,#1A237E)">🧃</div>
+          <div class="enc-card-body">
+            <div class="enc-card-nome">Caixa 10L – 2 Sabores</div>
+            <div class="enc-card-desc">10 litros · até 2 sabores</div>
+            <div class="enc-card-preco">R$ 150,00</div>
+          </div>
+        </a>
+        <a href="encomendas.html" class="enc-card">
+          <div class="enc-card-icon" style="background:linear-gradient(135deg,#0D47A1,#1A237E)">🧃</div>
+          <div class="enc-card-body">
+            <div class="enc-card-nome">Caixa 10L – 3 Sabores</div>
+            <div class="enc-card-desc">10 litros · até 3 sabores</div>
+            <div class="enc-card-preco">R$ 165,00</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- TORTA DE SORVETE -->
+      <div style="font-size:14px;font-weight:900;color:#0D47A1;margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid #BBDEFB">🎂 Torta de Sorvete</div>
+      <div class="enc-grid">
+        <a href="encomendas.html" class="enc-card">
+          <div class="enc-card-icon" style="background:linear-gradient(135deg,#1B5E20,#43A047)">🎂</div>
+          <div class="enc-card-body">
+            <div class="enc-card-nome">Torta de Sorvete</div>
+            <div class="enc-card-desc">3 sabores à escolha · Festas e comemorações</div>
+            <div class="enc-card-preco">R$ 100,00</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- PICOLÉS -->
+      <div style="font-size:14px;font-weight:900;color:#0D47A1;margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid #BBDEFB">🍭 Picolés (Mín. 100 un.)</div>
+      <a href="encomendas.html" class="enc-picole-item">
+        <div class="enc-picole-row">
+          <span class="enc-picole-nome">🍭 Picolé de Fruta/Água</span>
+        </div>
+        <div class="enc-picole-precos">Varejo: R$ 2,50 &nbsp;|&nbsp; <strong>Atacado: R$ 1,80</strong></div>
+        <div class="enc-picole-sabores">Sabores: Abacaxi, Caju, Goiaba, Groselha, Limão, Melancia, Uva, Tamarindo</div>
+      </a>
+      <a href="encomendas.html" class="enc-picole-item">
+        <div class="enc-picole-row">
+          <span class="enc-picole-nome">🍭 Picolé de Leite sem Recheio</span>
+        </div>
+        <div class="enc-picole-precos">Varejo: R$ 2,50 &nbsp;|&nbsp; <strong>Atacado: R$ 1,80</strong></div>
+        <div class="enc-picole-sabores">Sabores: Coco Queimado, Milho Verde, Amendoim, Pistache</div>
+      </a>
+      <a href="encomendas.html" class="enc-picole-item">
+        <div class="enc-picole-row">
+          <span class="enc-picole-nome">🍭 Picolé de Leite com Recheio</span>
+        </div>
+        <div class="enc-picole-precos">Varejo: R$ 3,00 &nbsp;|&nbsp; <strong>Atacado: R$ 2,00</strong></div>
+        <div class="enc-picole-sabores">Sabores: Açaí, Blue Ice, Caraxi, Coco Branco, Chocolate, Amarena, Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba</div>
+      </a>
+      <a href="encomendas.html" class="enc-picole-item">
+        <div class="enc-picole-row">
+          <span class="enc-picole-nome">🍭 Picolé Leite Ninho</span>
+        </div>
+        <div class="enc-picole-precos">Varejo: R$ 4,00 &nbsp;|&nbsp; <strong>Atacado: R$ 3,00</strong></div>
+        <div class="enc-picole-sabores">Sabor: Leite Ninho</div>
+      </a>
+      <a href="encomendas.html" class="enc-picole-item">
+        <div class="enc-picole-row">
+          <span class="enc-picole-nome">🍭 Picolé Eskimo</span>
+        </div>
+        <div class="enc-picole-precos">Varejo: R$ 8,00 &nbsp;|&nbsp; <strong>Atacado: R$ 6,00</strong></div>
+        <div class="enc-picole-sabores">Sabores: Bombom, Nutella, Ovomaltine, Leite Ninho, Nata, Morango, Brigadeiro, Prestígio</div>
+      </a>
+
+      <!-- BOTÃO ENCOMENDAR -->
+      <a href="encomendas.html" class="enc-cta">
+        🛋️ Ir para Encomendas &nbsp;→
+      </a>
+    </div>
   </div>
 </section>
 <!-- RODAPÉ -->
