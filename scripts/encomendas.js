@@ -80,6 +80,11 @@ function getComplementos() {
   try { fotos = JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){}
   return lista.map(c => ({ ...c, foto: fotos['comp_enc_'+c.id] || c.foto || '' }));
 }
+let carrinho = [];
+let produtoAtual = null;
+let saboresSelecionados = [];
+let picoleAtual = null;
+let selecoesPickle = {};
 let compQtds = {};
 function inicializarCompQtds() {
   const comps = getComplementos();
@@ -180,11 +185,6 @@ function adicionarCompsAoCarrinho() {
   atualizarBotaoCarrinho();
   showToast('✅ Complementos adicionados ao carrinho!', 'sucesso');
 }
-let carrinho = [];
-let produtoAtual = null;
-let saboresSelecionados = [];
-let picoleAtual = null;
-let selecoesPickle = {};
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
