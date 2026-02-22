@@ -255,8 +255,8 @@ img{max-width:100%;display:block}
 <!-- CARDÁPIO -->
 <section id="cardapio" class="cardapio">
   <!-- BANNER ENQUADRADO -->
-  <div class="cardapio-banner" id="cardapio-banner">
-    <img id="cardapio-banner-img" src="" alt="Banner Itapolitana">
+  <div class="cardapio-banner show" id="cardapio-banner">
+    <img id="cardapio-banner-img" src="images/banner-cardapio.png" alt="Sorveteria Itapolitana Cajuru">
   </div>
 
   <!-- SORVETES -->
@@ -790,13 +790,13 @@ document.getElementById('pwa-btn').addEventListener('click',async()=>{
 });
 
 // ── BANNER CARDÁPIO ──
+// Se houver banner personalizado no admin, sobrepõe o padrão
 function carregarBanner(){
   try{
     const dados=JSON.parse(localStorage.getItem('itap_banner')||'{}');
     if(dados.img){
-      const wrap=document.getElementById('cardapio-banner');
       const img=document.getElementById('cardapio-banner-img');
-      if(wrap&&img){img.src=dados.img;wrap.classList.add('show');}
+      if(img) img.src=dados.img;
     }
   }catch(e){}
 }
