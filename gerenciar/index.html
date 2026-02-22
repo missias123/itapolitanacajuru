@@ -289,8 +289,72 @@ function renderAdmin() {
   body.appendChild(criarSecao('isopores', '🧊 Isopores de Viagem', renderIsopores()));
   body.appendChild(criarSecao('sobremesas', '🎂 Sobremesas', renderSobremesas()));
   body.appendChild(criarSecao('complementos_enc', '🍪 Complementos de Encomenda', renderComplementosEnc()));
+  body.appendChild(criarSecao('caixas_enc', '📦 Caixas de Sorvete – Encomenda (Estoque)', renderCaixasEnc()));
 }
 
+// ── CAIXAS DE ENCOMENDA (ESGOTÁVEIS) ──
+const CAIXAS_ENC_PADRAO = [
+  { id:'cx5l_2s',  nome:'Caixa 5 Litros – 2 Sabores',  preco:100.00, estoque:20, esgotado:false },
+  { id:'cx5l_3s',  nome:'Caixa 5 Litros – 3 Sabores',  preco:115.00, estoque:20, esgotado:false },
+  { id:'cx10l_2s', nome:'Caixa 10 Litros – 2 Sabores', preco:150.00, estoque:15, esgotado:false },
+  { id:'cx10l_3s', nome:'Caixa 10 Litros – 3 Sabores', preco:165.00, estoque:15, esgotado:false }
+];
+function getCaixasEnc() {
+  try { const s = localStorage.getItem('itap_caixas_enc'); if(s) return JSON.parse(s); } catch(e){}
+  return JSON.parse(JSON.stringify(CAIXAS_ENC_PADRAO));
+}
+function saveCaixasEnc(lista) {
+  localStorage.setItem('itap_caixas_enc', JSON.stringify(lista));
+}
+function renderCaixasEnc() {
+  const lista = getCaixasEnc();
+  let html = '<div style="margin-bottom:12px;padding:10px 14px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;color:#92400E;font-weight:600">💡 Quando o estoque chegar a 0 ou você clicar em <strong>Esgotar</strong>, a caixa fica indisponível para os clientes na página de encomendas.</div>';
+  lista.forEach((c, i) => {
+    const esgotado = c.esgotado || c.estoque <= 0;
+    html += `<div style="background:${esgotado?'#FEF2F2':'#F9FAFB'};border:2px solid ${esgotado?'#FECACA':'#E5E7EB'};border-radius:12px;padding:14px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:22px">📦</span>
+        <span style="font-size:14px;font-weight:800;color:${esgotado?'#EF4444':'#111827'};flex:1">${c.nome}${esgotado?' — <span style="color:#EF4444;font-size:12px">ESGOTADO</span>':''}</span>
+        <button onclick="toggleEsgotadoCaixa(${i})" style="padding:6px 14px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:${esgotado?'#10B981':'#EF4444'};color:#fff">${esgotado?'✅ Reativar':'❌ Esgotar'}</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Preço (R$)</label>
+          <input type="number" step="0.01" min="0" value="${c.preco.toFixed(2)}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700" onchange="editarCaixaEnc(${i},'preco',parseFloat(this.value))">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Estoque (caixas)</label>
+          <input type="number" min="0" value="${c.estoque}" style="width:100%;padding:8px 10px;border:1px solid ${esgotado?'#FECACA':'#E5E7EB'};border-radius:7px;font-size:13px;font-weight:700;background:${esgotado?'#FEF2F2':'#fff'}" onchange="editarCaixaEnc(${i},'estoque',parseInt(this.value))">
+        </div>
+      </div>
+    </div>`;
+  });
+  html += '<div id="caixas-enc-status" style="margin-top:8px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>';
+  return html;
+}
+function editarCaixaEnc(i, campo, val) {
+  const lista = getCaixasEnc();
+  lista[i][campo] = val;
+  if(campo==='estoque') lista[i].esgotado = (val <= 0);
+  saveCaixasEnc(lista);
+  const status = document.getElementById('caixas-enc-status');
+  if(status){ status.textContent = '✅ '+lista[i].nome+' atualizado!'; setTimeout(()=>status.textContent='',3000); }
+  // Remontar para atualizar cores
+  const body = document.getElementById('cat-caixas_enc');
+  if(body){ const bd = body.querySelector('.cat-body'); if(bd) bd.innerHTML = renderCaixasEnc(); }
+}
+function toggleEsgotadoCaixa(i) {
+  const lista = getCaixasEnc();
+  lista[i].esgotado = !lista[i].esgotado;
+  if(lista[i].esgotado) lista[i].estoque = 0;
+  saveCaixasEnc(lista);
+  const body = document.getElementById('cat-caixas_enc');
+  if(body){ const bd = body.querySelector('.cat-body'); if(bd) bd.innerHTML = renderCaixasEnc(); }
+  const msg = lista[i].esgotado
+    ? '❌ "'+lista[i].nome+'" ESGOTADO — não aparecerá para clientes'
+    : '✅ "'+lista[i].nome+'" reativado com sucesso!';
+  mostrarStatusComps(msg);
+}
 // ── COMPLEMENTOS DE ENCOMENDA ──
 const COMPLEMENTOS_ENC_PADRAO = [
   { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:999 },

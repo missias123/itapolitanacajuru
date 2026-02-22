@@ -23,13 +23,30 @@ function getSaboresAtivos() {
 }
 const SABORES_SORVETE = getSaboresAtivos();
 
+// Caixas de encomenda: carregadas do admin (localStorage) ou padrão
+function getCaixasEncomenda() {
+  const PADRAO = [
+    { id:"cx5l_2s",  nome:"Caixa 5 Litros – 2 Sabores",  preco:100.00, maxSabores:2, estoque:20, esgotado:false },
+    { id:"cx5l_3s",  nome:"Caixa 5 Litros – 3 Sabores",  preco:115.00, maxSabores:3, estoque:20, esgotado:false },
+    { id:"cx10l_2s", nome:"Caixa 10 Litros – 2 Sabores", preco:150.00, maxSabores:2, estoque:15, esgotado:false },
+    { id:"cx10l_3s", nome:"Caixa 10 Litros – 3 Sabores", preco:165.00, maxSabores:3, estoque:15, esgotado:false }
+  ];
+  try {
+    const salvo = localStorage.getItem('itap_caixas_enc');
+    if (salvo) {
+      const dados = JSON.parse(salvo);
+      return dados.map((c, i) => ({
+        ...PADRAO[i] || {},
+        ...c,
+        maxSabores: PADRAO[i] ? PADRAO[i].maxSabores : 2
+      }));
+    }
+  } catch(e) {}
+  return PADRAO;
+}
+
 const PRODUTOS = {
-  caixas: [
-    { id:"cx5l2s", nome:"Caixa 5 Litros – 2 Sabores", preco:100.00, maxSabores:2, estoque:20 },
-    { id:"cx5l3s", nome:"Caixa 5 Litros – 3 Sabores", preco:115.00, maxSabores:3, estoque:20 },
-    { id:"cx10l2s", nome:"Caixa 10 Litros – 2 Sabores", preco:150.00, maxSabores:2, estoque:15 },
-    { id:"cx10l3s", nome:"Caixa 10 Litros – 3 Sabores", preco:165.00, maxSabores:3, estoque:15 }
-  ],
+  caixas: getCaixasEncomenda(),
   tortas: [
     { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3, estoque:10 }
   ],
@@ -163,17 +180,20 @@ function renderizarTudo() {
 function renderizarCaixas() {
   const c = document.getElementById('lista-caixas');
   if (!c) return;
-  c.innerHTML = PRODUTOS.caixas.map(p => `
-    <div class="prod-card ${p.estoque===0?'esgotado':''}">
+  c.innerHTML = PRODUTOS.caixas.map(p => {
+    const esgotado = p.esgotado || p.estoque <= 0;
+    return `
+    <div class="prod-card ${esgotado?'esgotado':''}">
       <div class="prod-body">
         <div class="prod-nome">${p.nome}</div>
         <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
-        <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
+        <div class="prod-estoque">${esgotado?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','caixas')" ${p.estoque===0?'disabled':''}>
+      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','caixas')" ${esgotado?'disabled':''}>
         🍦 Escolher ${p.maxSabores} Sabores
       </button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ---- RENDERIZAR TORTAS ----
