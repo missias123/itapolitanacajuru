@@ -6,47 +6,27 @@
 <title>Gerenciar Promoção – Itapolitana</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+
+/* HEADER */
 .header{background:#1F2937;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .header h1{font-size:16px;font-weight:800}
 .header-btns{display:flex;gap:8px}
 .btn-back{background:#374151;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
 .btn-back:hover{background:#4B5563}
-.body{max-width:520px;margin:0 auto;padding:24px 16px 100px}
-.card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;padding:24px;margin-bottom:16px}
-.card h2{font-size:16px;font-weight:800;color:#111827;margin-bottom:6px}
-.card p{font-size:13px;color:#6A0DAD;font-weight:600;margin-bottom:20px}
-.field{margin-bottom:18px}
-.field label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px}
-.field input[type=text],.field input[type=url],.field textarea{width:100%;padding:12px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;font-family:inherit;resize:vertical}
-.field input:focus,.field textarea:focus{border-color:#6A0DAD}
-.field textarea{min-height:90px}
-/* Upload de foto */
-.upload-area{border:2px dashed #D1D5DB;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;background:#FAFAFA}
-.upload-area:hover,.upload-area.drag{border-color:#6A0DAD;background:#F5F0FF}
-.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:36px;margin-bottom:8px}
-.upload-txt{font-size:14px;font-weight:700;color:#374151}
-.upload-sub{font-size:12px;color:#9CA3AF;margin-top:4px}
-.preview-wrap{margin-top:14px;display:none}
-.preview-wrap img{width:100%;border-radius:10px;max-height:220px;object-fit:cover;border:1px solid #E5E7EB}
-.btn-remove-img{background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;width:100%}
-/* Preview do modal */
-.preview-modal{background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:16px;padding:22px 18px;color:#fff;text-align:center;margin-top:16px}
-.preview-modal .pm-icon{font-size:36px;margin-bottom:8px}
-.preview-modal .pm-img{width:100%;border-radius:10px;max-height:160px;object-fit:cover;margin-bottom:10px;display:none}
-.preview-modal .pm-title{font-size:18px;font-weight:900;margin-bottom:6px}
-.preview-modal .pm-desc{font-size:13px;opacity:.9;margin-bottom:14px;line-height:1.5}
-.preview-modal .pm-btn{background:#F9A825;color:#111;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;width:100%;cursor:pointer}
-/* Botões de ação */
-.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 16px;display:flex;gap:10px;justify-content:center;z-index:200}
-.btn-salvar{background:#6A0DAD;color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:800;cursor:pointer;flex:1;max-width:220px}
-.btn-salvar:hover{background:#5a0b9d}
-.btn-limpar{background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer}
-.btn-limpar:hover{background:#FECACA}
-.status{font-size:13px;font-weight:700;color:#10B981;text-align:center;padding:6px;display:none}
-/* Toggle ativo */
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F3F4F6;margin-bottom:14px}
+.btn-ver{background:#6A0DAD;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.btn-ver:hover{background:#5a0b9d}
+
+/* BODY */
+.body{max-width:560px;margin:0 auto;padding:20px 16px 100px}
+
+/* CARD */
+.card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;padding:22px;margin-bottom:16px}
+.card-title{font-size:16px;font-weight:800;color:#111827;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card-sub{font-size:12px;color:#6A0DAD;font-weight:600;margin-bottom:20px}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #F3F4F6;margin-bottom:18px}
 .toggle-row label{font-size:14px;font-weight:700;color:#111827}
 .toggle-row span{font-size:12px;color:#6B7280;display:block;margin-top:2px}
 .toggle{position:relative;width:48px;height:26px;flex-shrink:0}
@@ -55,151 +35,251 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 .slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
 input:checked+.slider{background:#6A0DAD}
 input:checked+.slider:before{transform:translateX(22px)}
+
+/* FIELD */
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px}
+.field-hint{font-size:11px;color:#9CA3AF;margin-top:4px}
+.field input[type=text],.field input[type=url],.field textarea{width:100%;padding:12px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none;font-family:inherit;resize:vertical;transition:border-color .2s}
+.field input:focus,.field textarea:focus{border-color:#6A0DAD;box-shadow:0 0 0 3px rgba(106,13,173,.1)}
+.field textarea{min-height:90px}
+.char-count{font-size:11px;color:#9CA3AF;text-align:right;margin-top:2px}
+
+/* UPLOAD FOTO */
+.upload-area{border:2px dashed #D1D5DB;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;background:#FAFAFA}
+.upload-area:hover,.upload-area.drag{border-color:#6A0DAD;background:#F5F0FF}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:36px;margin-bottom:8px}
+.upload-txt{font-size:14px;font-weight:700;color:#374151}
+.upload-sub{font-size:12px;color:#9CA3AF;margin-top:4px}
+.preview-wrap{margin-top:14px;display:none}
+.preview-wrap img{width:100%;border-radius:10px;max-height:240px;object-fit:cover;border:1px solid #E5E7EB}
+.btn-remove-img{background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;width:100%}
+
+/* RELÓGIO */
+.relogio-card{background:linear-gradient(135deg,#1A0A00,#3E1A00);border-radius:14px;padding:18px;margin-top:4px}
+.relogio-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.relogio-titulo{font-size:14px;font-weight:900;color:#FFD54F}
+.relogio-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.relogio-campos{display:flex;gap:10px;flex-wrap:wrap}
+.relogio-campo{flex:1;min-width:130px}
+.relogio-campo-lbl{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.relogio-campo input{width:100%;padding:10px 12px;border-radius:8px;border:none;font-size:14px;font-weight:700;outline:none;font-family:inherit}
+.relogio-preview{margin-top:12px;background:rgba(255,213,79,.12);border:1px solid rgba(255,213,79,.35);border-radius:8px;padding:10px;font-size:13px;color:#FFD54F;font-weight:700;text-align:center}
+
+/* PREVIEW DA PÁGINA */
+.page-preview{background:linear-gradient(135deg,#0D0D0D,#1a0030);border-radius:14px;overflow:hidden;margin-top:4px}
+.pp-hero{position:relative;height:160px;display:flex;align-items:flex-end;background:linear-gradient(135deg,#1a0030,#6A0DAD)}
+.pp-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.pp-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent)}
+.pp-hero-content{position:relative;z-index:2;padding:12px 14px;width:100%}
+.pp-titulo{font-size:16px;font-weight:900;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+.pp-desc{font-size:12px;color:rgba(255,255,255,.85);margin-top:3px}
+.pp-cd{background:linear-gradient(135deg,#1A0A00,#3E1A00);padding:12px;text-align:center}
+.pp-cd-lbl{font-size:10px;color:rgba(255,213,79,.8);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pp-cd-row{display:flex;justify-content:center;gap:6px}
+.pp-cd-box{background:rgba(0,0,0,.4);border:1.5px solid rgba(255,213,79,.4);border-radius:8px;padding:6px 10px;min-width:44px;text-align:center}
+.pp-cd-num{font-size:18px;font-weight:900;color:#FFD54F;line-height:1}
+.pp-cd-unit{font-size:8px;color:rgba(255,213,79,.7);font-weight:700;text-transform:uppercase}
+.pp-body{padding:12px 14px}
+.pp-btn{display:block;background:linear-gradient(135deg,#FFD600,#FF8F00);color:#1A0A00;border-radius:10px;padding:11px;font-size:13px;font-weight:800;text-align:center;margin-bottom:8px}
+.pp-badge{display:inline-block;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font-size:10px;font-weight:900;padding:4px 10px;border-radius:20px;margin-bottom:8px}
+
+/* SAVE BAR */
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 16px;display:flex;gap:10px;justify-content:center;z-index:200}
+.btn-salvar{background:#6A0DAD;color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:800;cursor:pointer;flex:1;max-width:220px}
+.btn-salvar:hover{background:#5a0b9d}
+.btn-limpar{background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer}
+.status{font-size:13px;font-weight:700;color:#10B981;text-align:center;padding:8px;display:none;background:#ECFDF5;border-radius:8px;margin-bottom:8px}
 </style>
 </head>
 <body>
+
 <div class="header">
   <h1>🎉 Gerenciar Promoção</h1>
   <div class="header-btns">
     <a href="index.html" class="btn-back">⚙️ Admin</a>
+    <a href="../promocao.html" target="_blank" class="btn-ver">👁️ Ver Página</a>
     <a href="../index.html" class="btn-back">🏠 Site</a>
   </div>
 </div>
 
 <div class="body">
-  <!-- CONFIGURAÇÃO -->
+
+  <!-- ATIVAR/DESATIVAR -->
   <div class="card">
-    <h2>🎉 Configurar Promoção</h2>
-    <p>O que você preencher aqui aparece no botão "Promoção" do site.</p>
+    <div class="card-title">⚙️ Configurações Gerais</div>
+    <div class="card-sub">Ative ou desative a promoção. Quando desativada, a barra do topo some.</div>
 
     <div class="toggle-row">
       <div>
         <label>Promoção Ativa</label>
-        <span>Quando desativada, o botão Promoção fica oculto</span>
+        <span>Quando ativa, aparece a barra no topo do site</span>
       </div>
       <label class="toggle">
         <input type="checkbox" id="promo-ativa" checked onchange="atualizarPreview()">
         <span class="slider"></span>
       </label>
     </div>
+  </div>
+
+  <!-- FOTO -->
+  <div class="card">
+    <div class="card-title">📸 Foto da Promoção</div>
+    <div class="card-sub">Aparece grande no topo da página de promoção</div>
+
+    <div class="upload-area" id="upload-area">
+      <input type="file" id="foto-input" accept="image/*" onchange="carregarFoto(this)">
+      <div class="upload-icon">📸</div>
+      <div class="upload-txt">Clique ou arraste uma foto aqui</div>
+      <div class="upload-sub">JPG, PNG ou WEBP · Máx. 5MB</div>
+    </div>
+    <div class="preview-wrap" id="preview-wrap">
+      <img id="foto-preview" src="" alt="Preview">
+      <button class="btn-remove-img" onclick="removerFoto()">🗑️ Remover Foto</button>
+    </div>
+  </div>
+
+  <!-- TEXTOS -->
+  <div class="card">
+    <div class="card-title">✏️ Textos da Promoção</div>
+    <div class="card-sub">Título e descrição aparecem na barra do topo e na página completa</div>
 
     <div class="field">
-      <label>📸 Foto da Promoção</label>
-      <div class="upload-area" id="upload-area">
-        <input type="file" id="foto-input" accept="image/*" onchange="carregarFoto(this)">
-        <div class="upload-icon">📸</div>
-        <div class="upload-txt">Clique ou arraste uma foto aqui</div>
-        <div class="upload-sub">JPG, PNG ou WEBP · Máx. 5MB</div>
-      </div>
-      <div class="preview-wrap" id="preview-wrap">
-        <img id="foto-preview" src="" alt="Preview">
-        <button class="btn-remove-img" onclick="removerFoto()">🗑️ Remover Foto</button>
-      </div>
+      <label>🏷️ Título da Promoção</label>
+      <input type="text" id="promo-titulo" placeholder="Ex: Sorvete Duplo por R$ 12,00! 🍦" maxlength="60" oninput="atualizarPreview()">
+      <div class="char-count"><span id="cc-titulo">0</span>/60</div>
     </div>
 
     <div class="field">
-      <label>📝 Título da Promoção</label>
-      <input type="text" id="promo-titulo" placeholder="Ex: Promoção de Verão! 🌞" maxlength="60" oninput="atualizarPreview()">
+      <label>💬 Descrição (aparece abaixo do título)</label>
+      <input type="text" id="promo-desc" placeholder="Ex: Só hoje! Aproveite enquanto durar." maxlength="100" oninput="atualizarPreview()">
+      <div class="char-count"><span id="cc-desc">0</span>/100</div>
     </div>
 
     <div class="field">
-      <label>💬 Texto / Descrição</label>
-      <textarea id="promo-texto" placeholder="Ex: Sorvete duplo por R$ 12,00 hoje! Aproveite enquanto durar." maxlength="200" oninput="atualizarPreview()"></textarea>
+      <label>📄 Texto Detalhado (opcional)</label>
+      <textarea id="promo-texto-extra" placeholder="Detalhes da promoção, regras, validade..." maxlength="500" oninput="atualizarPreview()"></textarea>
+      <div class="field-hint">Aparece na página de promoção abaixo da foto. Pode deixar em branco.</div>
     </div>
+  </div>
+
+  <!-- LINK -->
+  <div class="card">
+    <div class="card-title">🔗 Link e Botão Principal</div>
+    <div class="card-sub">Para onde o cliente vai ao clicar no botão principal da promoção</div>
 
     <div class="field">
-      <label>🔗 Link do Botão</label>
+      <label>🔗 Link de Redirecionamento</label>
       <input type="url" id="promo-link" placeholder="https://wa.me/5516991472045" oninput="atualizarPreview()">
-      <div style="font-size:11px;color:#9CA3AF;margin-top:4px">Pode ser WhatsApp, Instagram, ou qualquer link</div>
+      <div class="field-hint">Pode ser WhatsApp, Instagram, ou qualquer link</div>
     </div>
 
     <div class="field">
-      <label>🔘 Texto do Botão</label>
-      <input type="text" id="promo-btn-txt" placeholder="Ex: 💬 Falar com a Loja" maxlength="40" oninput="atualizarPreview()">
+      <label>🔘 Texto do Botão Principal</label>
+      <input type="text" id="promo-btn-txt" placeholder="Ex: 💬 Falar com a Loja" maxlength="50" oninput="atualizarPreview()">
     </div>
+  </div>
 
-    <!-- RELÓGIO DA PROMOÇÃO -->
-    <div style="background:linear-gradient(135deg,#1A0A00,#3E1A00);border-radius:14px;padding:18px;margin-top:4px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+  <!-- RELÓGIO -->
+  <div class="card">
+    <div class="card-title">⏰ Relógio Regressivo</div>
+    <div class="card-sub">Define até quando o contador regride na página de promoção</div>
+
+    <div class="relogio-card">
+      <div class="relogio-header">
         <span style="font-size:22px">⏰</span>
         <div>
-          <div style="font-size:14px;font-weight:900;color:#FFD54F">Relógio da Promoção</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:2px">Define até quando o contador regride no modal</div>
+          <div class="relogio-titulo">Data de Encerramento</div>
+          <div class="relogio-sub">O relógio conta regressivamente até esta data</div>
         </div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-        <div style="flex:1;min-width:140px">
-          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:700">DATA DE ENCERRAMENTO</div>
-          <input type="date" id="promo-data-fim" oninput="atualizarTimerLabel()" style="width:100%;padding:10px 12px;border-radius:8px;border:none;font-size:14px;font-weight:700;outline:none">
+      <div class="relogio-campos">
+        <div class="relogio-campo">
+          <div class="relogio-campo-lbl">Data de Encerramento</div>
+          <input type="date" id="promo-data-fim" oninput="atualizarTimerLabel()">
         </div>
-        <div style="flex:1;min-width:110px">
-          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;font-weight:700">HORÁRIO</div>
-          <input type="time" id="promo-hora-fim" value="22:00" oninput="atualizarTimerLabel()" style="width:100%;padding:10px 12px;border-radius:8px;border:none;font-size:14px;font-weight:700;outline:none">
+        <div class="relogio-campo">
+          <div class="relogio-campo-lbl">Horário</div>
+          <input type="time" id="promo-hora-fim" value="22:00" oninput="atualizarTimerLabel()">
         </div>
       </div>
-      <div id="timer-preview-label" style="margin-top:12px;background:rgba(255,213,79,.15);border:1px solid rgba(255,213,79,.4);border-radius:8px;padding:10px;font-size:13px;color:#FFD54F;font-weight:700;text-align:center">⏳ Relógio: até 22:00 de hoje</div>
+      <div id="timer-preview-label" class="relogio-preview">⏳ Defina a data acima</div>
     </div>
   </div>
 
-  <!-- PREVIEW -->
+  <!-- PREVIEW DA PÁGINA -->
   <div class="card">
-    <h2>👁️ Preview do Modal</h2>
-    <p>Assim vai aparecer para os clientes ao clicar em "Promoção"</p>
-    <div class="preview-modal" id="preview-modal">
-      <div class="pm-icon" id="pm-icon">🎉</div>
-      <img class="pm-img" id="pm-img" src="" alt="">
-      <div class="pm-title" id="pm-title">Promoção Especial!</div>
-      <div class="pm-desc" id="pm-desc">Confira nossas promoções especiais de hoje.</div>
-      <button class="pm-btn" id="pm-btn">💬 Falar com a Loja</button>
+    <div class="card-title">👁️ Preview da Página</div>
+    <div class="card-sub">Assim vai aparecer para os clientes</div>
+
+    <div class="page-preview">
+      <div class="pp-hero">
+        <img class="pp-hero-img" id="pp-img" src="" alt="">
+        <div class="pp-hero-overlay"></div>
+        <div class="pp-hero-content">
+          <div class="pp-badge">🔥 Promoção Ativa</div>
+          <div class="pp-titulo" id="pp-titulo">Promoção Especial!</div>
+          <div class="pp-desc" id="pp-desc">Clique e veja a oferta completa</div>
+        </div>
+      </div>
+      <div class="pp-cd">
+        <div class="pp-cd-lbl">⏳ Promoção encerra em</div>
+        <div class="pp-cd-row">
+          <div class="pp-cd-box"><div class="pp-cd-num" id="pp-d">00</div><div class="pp-cd-unit">Dias</div></div>
+          <div class="pp-cd-box"><div class="pp-cd-num" id="pp-h">00</div><div class="pp-cd-unit">Horas</div></div>
+          <div class="pp-cd-box"><div class="pp-cd-num" id="pp-m">00</div><div class="pp-cd-unit">Min</div></div>
+          <div class="pp-cd-box"><div class="pp-cd-num" id="pp-s">00</div><div class="pp-cd-unit">Seg</div></div>
+        </div>
+      </div>
+      <div class="pp-body">
+        <div class="pp-btn" id="pp-btn">💬 Falar com a Loja</div>
+      </div>
     </div>
   </div>
 
-  <div class="status" id="status-ok">✅ Promoção salva! Aparecerá no site imediatamente.</div>
+  <div class="status" id="status-ok">✅ Promoção salva com sucesso! A barra aparecerá no topo do site.</div>
 </div>
 
 <div class="save-bar">
-  <button class="btn-limpar" onclick="limparPromo()">🗑️ Limpar</button>
+  <button class="btn-limpar" onclick="limparPromo()">🗑️ Limpar Tudo</button>
   <button class="btn-salvar" onclick="salvarPromo()">💾 Salvar Promoção</button>
 </div>
 
 <script>
-// Carregar dados salvos ao abrir
+// ── CARREGAR AO ABRIR ──
 window.addEventListener('DOMContentLoaded', () => {
   const d = JSON.parse(localStorage.getItem('itap_promo') || '{}');
-  if (d.titulo) document.getElementById('promo-titulo').value = d.titulo;
-  if (d.descricao) document.getElementById('promo-texto').value = d.descricao;
-  if (d.link) document.getElementById('promo-link').value = d.link;
-  if (d.btnTexto) document.getElementById('promo-btn-txt').value = d.btnTexto;
+  if (d.titulo)       document.getElementById('promo-titulo').value = d.titulo;
+  if (d.descricao)    document.getElementById('promo-desc').value = d.descricao;
+  if (d.textoExtra)   document.getElementById('promo-texto-extra').value = d.textoExtra;
+  if (d.link)         document.getElementById('promo-link').value = d.link;
+  if (d.btnTexto)     document.getElementById('promo-btn-txt').value = d.btnTexto;
   if (d.ativa === false) document.getElementById('promo-ativa').checked = false;
+
+  document.getElementById('promo-data-fim').value = d.dataFim || '2026-04-01';
+  document.getElementById('promo-hora-fim').value = d.horaFim || '22:00';
+
   if (d.imagem) {
     document.getElementById('foto-preview').src = d.imagem;
     document.getElementById('preview-wrap').style.display = 'block';
     document.getElementById('upload-area').style.display = 'none';
   }
-  // Carregar data/hora do relógio
-  document.getElementById('promo-data-fim').value = d.dataFim || '2026-04-01';
-  document.getElementById('promo-hora-fim').value = d.horaFim || '22:00';
+
   atualizarPreview();
   atualizarTimerLabel();
+  iniciarPreviewCountdown();
 });
 
-function atualizarTimerLabel() {
-  const data = document.getElementById('promo-data-fim').value || '2026-04-01';
-  const hora = document.getElementById('promo-hora-fim').value || '22:00';
-  const fim = new Date(data + 'T' + hora + ':00');
-  const lbl = document.getElementById('timer-preview-label');
-  if (!lbl) return;
-  const agora = new Date();
-  if (isNaN(fim)) { lbl.textContent = '⚠️ Data inválida'; return; }
-  const diff = fim - agora;
-  if (diff <= 0) { lbl.textContent = '⏳ Promoção já encerrada'; return; }
-  const dias = Math.floor(diff / 86400000);
-  const h = Math.floor((diff % 86400000) / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const dataFmt = fim.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
-  lbl.textContent = `⏳ ${dias} dias, ${h}h e ${m}min restantes • Encerra em ${dataFmt} às ${hora}`;
-}
+// ── CONTADORES DE CARACTERES ──
+document.getElementById('promo-titulo').addEventListener('input', function(){
+  document.getElementById('cc-titulo').textContent = this.value.length;
+});
+document.getElementById('promo-desc').addEventListener('input', function(){
+  document.getElementById('cc-desc').textContent = this.value.length;
+});
 
+// ── FOTO ──
 function carregarFoto(input) {
   const file = input.files[0];
   if (!file) return;
@@ -222,41 +302,71 @@ function removerFoto() {
   atualizarPreview();
 }
 
+// ── PREVIEW ──
 function atualizarPreview() {
   const titulo = document.getElementById('promo-titulo').value || 'Promoção Especial!';
-  const texto = document.getElementById('promo-texto').value || 'Confira nossas promoções especiais de hoje.';
+  const desc   = document.getElementById('promo-desc').value || 'Clique e veja a oferta completa';
   const btnTxt = document.getElementById('promo-btn-txt').value || '💬 Falar com a Loja';
   const imgSrc = document.getElementById('foto-preview').src;
-  const temImg = imgSrc && imgSrc !== window.location.href;
+  const temImg = imgSrc && document.getElementById('preview-wrap').style.display !== 'none';
 
-  document.getElementById('pm-title').textContent = titulo;
-  document.getElementById('pm-desc').textContent = texto;
-  document.getElementById('pm-btn').textContent = btnTxt;
+  document.getElementById('pp-titulo').textContent = titulo;
+  document.getElementById('pp-desc').textContent = desc;
+  document.getElementById('pp-btn').textContent = btnTxt;
 
-  const pmImg = document.getElementById('pm-img');
-  const pmIcon = document.getElementById('pm-icon');
-  if (temImg && document.getElementById('preview-wrap').style.display !== 'none') {
-    pmImg.src = imgSrc;
-    pmImg.style.display = 'block';
-    pmIcon.style.display = 'none';
-  } else {
-    pmImg.style.display = 'none';
-    pmIcon.style.display = 'block';
-  }
+  const ppImg = document.getElementById('pp-img');
+  if (temImg) { ppImg.src = imgSrc; ppImg.style.display = 'block'; }
+  else { ppImg.style.display = 'none'; }
 }
 
-function salvarPromo() {
-  const titulo = document.getElementById('promo-titulo').value.trim();
-  const descricao = document.getElementById('promo-texto').value.trim();
-  const link = document.getElementById('promo-link').value.trim();
-  const btnTexto = document.getElementById('promo-btn-txt').value.trim();
-  const ativa = document.getElementById('promo-ativa').checked;
-  const imgEl = document.getElementById('foto-preview');
-  const imagem = (document.getElementById('preview-wrap').style.display !== 'none') ? imgEl.src : '';
+// ── TIMER LABEL ──
+function atualizarTimerLabel() {
+  const data = document.getElementById('promo-data-fim').value || '2026-04-01';
+  const hora = document.getElementById('promo-hora-fim').value || '22:00';
+  const fim = new Date(data + 'T' + hora + ':00');
+  const lbl = document.getElementById('timer-preview-label');
+  if (isNaN(fim)) { lbl.textContent = '⚠️ Data inválida'; return; }
+  const diff = fim - new Date();
+  if (diff <= 0) { lbl.textContent = '⏰ Esta data já passou'; return; }
+  const dias = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const dataFmt = fim.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  lbl.textContent = `⏳ ${dias} dias, ${h}h e ${m}min restantes · Encerra em ${dataFmt} às ${hora}`;
+}
 
-  const dataFim = document.getElementById('promo-data-fim').value || '2026-04-01';
-  const horaFim = document.getElementById('promo-hora-fim').value || '22:00';
-  const dados = { titulo, descricao, link, btnTexto, ativa, imagem, dataFim, horaFim, atualizado: new Date().toISOString() };
+// ── PREVIEW COUNTDOWN (mini) ──
+let ppInt = null;
+function iniciarPreviewCountdown() {
+  if (ppInt) clearInterval(ppInt);
+  ppInt = setInterval(() => {
+    const data = document.getElementById('promo-data-fim').value || '2026-04-01';
+    const hora = document.getElementById('promo-hora-fim').value || '22:00';
+    const fim = new Date(data + 'T' + hora + ':00');
+    const diff = fim - new Date();
+    if (diff <= 0) { clearInterval(ppInt); return; }
+    document.getElementById('pp-d').textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
+    document.getElementById('pp-h').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+    document.getElementById('pp-m').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+    document.getElementById('pp-s').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+  }, 1000);
+}
+
+// ── SALVAR ──
+function salvarPromo() {
+  const dados = {
+    titulo:      document.getElementById('promo-titulo').value.trim(),
+    descricao:   document.getElementById('promo-desc').value.trim(),
+    textoExtra:  document.getElementById('promo-texto-extra').value.trim(),
+    link:        document.getElementById('promo-link').value.trim(),
+    btnTexto:    document.getElementById('promo-btn-txt').value.trim(),
+    ativa:       document.getElementById('promo-ativa').checked,
+    dataFim:     document.getElementById('promo-data-fim').value || '2026-04-01',
+    horaFim:     document.getElementById('promo-hora-fim').value || '22:00',
+    imagem:      (document.getElementById('preview-wrap').style.display !== 'none')
+                   ? document.getElementById('foto-preview').src : '',
+    atualizado:  new Date().toISOString()
+  };
   localStorage.setItem('itap_promo', JSON.stringify(dados));
 
   const s = document.getElementById('status-ok');
@@ -264,19 +374,24 @@ function salvarPromo() {
   setTimeout(() => s.style.display = 'none', 4000);
 }
 
+// ── LIMPAR ──
 function limparPromo() {
-  if (!confirm('Limpar toda a promoção?')) return;
+  if (!confirm('Limpar toda a promoção? Isso vai apagar foto, textos e links.')) return;
   localStorage.removeItem('itap_promo');
   document.getElementById('promo-titulo').value = '';
-  document.getElementById('promo-texto').value = '';
+  document.getElementById('promo-desc').value = '';
+  document.getElementById('promo-texto-extra').value = '';
   document.getElementById('promo-link').value = '';
   document.getElementById('promo-btn-txt').value = '';
   document.getElementById('promo-ativa').checked = true;
+  document.getElementById('promo-data-fim').value = '2026-04-01';
+  document.getElementById('promo-hora-fim').value = '22:00';
   removerFoto();
   atualizarPreview();
+  atualizarTimerLabel();
 }
 
-// Drag & drop
+// ── DRAG & DROP ──
 const area = document.getElementById('upload-area');
 area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag'); });
 area.addEventListener('dragleave', () => area.classList.remove('drag'));
