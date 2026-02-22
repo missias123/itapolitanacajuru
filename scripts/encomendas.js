@@ -523,7 +523,14 @@ function abrirModal(id) {
 }
 function fecharModal(id) {
   const m = document.getElementById(id);
-  if (m) { m.classList.remove('ativo'); document.body.style.overflow=''; }
+  if (m) { m.classList.remove('ativo'); }
+  // Verificar se ainda há algum modal aberto antes de restaurar o scroll
+  const algumAberto = document.querySelectorAll('.modal-overlay.ativo').length > 0;
+  if (!algumAberto) {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.documentElement.style.overflow = '';
+  }
 }
 function showToast(msg, tipo='sucesso') {
   const t = document.getElementById('toast');
