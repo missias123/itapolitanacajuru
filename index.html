@@ -1,478 +1,677 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="description" content="Sorveteria Itapolitana em Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros. Sorvetes artesanais, picolés recheados e açaí premium desde 2007. Peça online e retire na loja!">
-    <meta name="keywords" content="sorveteria em Cajuru, sorvete em Santa Cruz da Esperança, sorveteria em Cássia dos Coqueiros, picolé recheado, açaí artesanal, Sorveteria Itapolitana, delivery de sorvete">
-    <meta name="author" content="Sorveteria Itapolitana">
-    <meta name="theme-color" content="#FF007F">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="business.business">
-    <meta property="og:title" content="Sorveteria Itapolitana - A Melhor da Região de Cajuru">
-    <meta property="og:description" content="Sorvetes, picolés e açaí artesanais desde 2007. Atendemos Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros.">
-    <meta property="og:image" content="https://itapolitanacajuru.site/images/og-image.jpg">
-    <meta property="og:url" content="https://itapolitanacajuru.site/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sorveteria Itapolitana em Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros. Sorvetes artesanais, picolés e açaí desde 2007.">
+<meta name="theme-color" content="#1565C0">
+<title>Sorveteria Itapolitana – Cajuru/SP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f5f5f8;color:#111827;line-height:1.5;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none}
+img{max-width:100%;display:block}
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <title>Sorveteria Itapolitana | Cajuru, Santa Cruz e Cássia dos Coqueiros</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <style>
-        /* Estilos para o Acordeão */
-        .categoria {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: var(--bg-card);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-        .categoria-header {
-            padding: 20px 25px;
-            background: white;
-            color: var(--text-dark);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-        }
-        .categoria-header span {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .categoria-header:hover {
-            background: #FFF5F8;
-            color: var(--pink);
-        }
-        .categoria-header::after {
-            content: '▼';
-            font-size: 0.8em;
-            transition: transform 0.3s ease;
-        }
-        .categoria.ativa .categoria-header::after {
-            transform: rotate(180deg);
-        }
-        .categoria-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out, padding 0.3s ease;
-            padding: 0 20px;
-        }
-        .categoria.ativa .categoria-content {
-            max-height: 2000px;
-            padding: 20px;
-        }
+/* ADMIN BAR */
+.admin-bar{background:#1F2937;text-align:center;padding:5px 12px}
+.admin-bar a{color:#6B7280;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.admin-bar a:hover{color:#F9FAFB}
 
-        /* Botão Admin no Topo com Destaque */
-        .top-admin-bar {
-            background: #D4AF37;
-            padding: 8px 0;
-            text-align: center;
-            position: relative;
-            z-index: 1001;
-        }
-        .btn-admin-top {
-            background: white;
-            color: #D4AF37;
-            padding: 6px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            border: 2px solid white;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-        .btn-admin-top:hover {
-            background: #D4AF37;
-            color: white;
-            transform: scale(1.05);
-        }
+/* HEADER */
+.header{background:#fff;border-bottom:1px solid #E5E7EB;padding:12px 16px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid #E5E7EB;background:#fff}.brand-icon img{width:100%;height:100%;object-fit:cover}
+.brand-name{font-size:15px;font-weight:900;color:#1565C0;line-height:1.2}
+.brand-sub{font-size:11px;color:#9CA3AF}
+.header-nav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.nav-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:10px;font-size:13px;font-weight:700;min-height:44px;transition:opacity .15s,transform .1s;white-space:nowrap}
+.nav-btn:active{transform:scale(.97);opacity:.9}
+.nav-purple{background:#1565C0;color:#fff}
+.nav-orange{background:#D32F2F;color:#fff}
+.nav-green{background:#25D366;color:#fff}
+.nav-yellow{background:#F9A825;color:#111}
 
-        /* Estilos para o Carrinho */
-        .carrinho-item {
-            background: white;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .carrinho-item-info {
-            flex: 1;
-        }
-        .carrinho-item-nome {
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-        .carrinho-item-preco {
-            color: var(--pink);
-            font-weight: 600;
-        }
-        .btn-remover {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .notificacao-itapolitana {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            z-index: 3000;
-            box-shadow: var(--shadow-md);
-        }
-        .fade-out {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-    </style>
+/* FAIXA REGIONAL */
+.regional{background:linear-gradient(135deg,#1565C0,#D32F2F);color:#fff;text-align:center;padding:8px 16px;font-size:12px;font-weight:600}
+
+/* HERO */
+.hero{background:#fff;padding:24px 16px;text-align:center;border-bottom:1px solid #E5E7EB}
+.hero h2{font-size:20px;font-weight:900;margin-bottom:8px;line-height:1.3}
+.hero p{font-size:14px;color:#6B7280;max-width:480px;margin:0 auto 16px}
+.hero-cta{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1565C0,#D32F2F);color:#fff;padding:13px 28px;border-radius:50px;font-size:15px;font-weight:800;box-shadow:0 4px 16px rgba(21,101,192,.35)}
+
+/* INFO CARDS */
+.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;max-width:960px;margin:0 auto}
+.info-card{background:#fff;border-radius:14px;padding:14px;border:1px solid #E5E7EB}
+.info-icon{font-size:22px;margin-bottom:6px}
+.info-title{font-size:12px;font-weight:700;color:#374151;margin-bottom:3px}
+.info-text{font-size:11px;color:#6B7280;line-height:1.4}
+
+/* CARDÁPIO */
+.cardapio{max-width:960px;margin:0 auto;padding:16px}
+.cardapio-h{font-size:22px;font-weight:900;text-align:center;margin-bottom:16px}
+
+/* ACCORDION */
+.acc{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:1px solid #E5E7EB;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;user-select:none;min-height:56px;transition:background .15s}
+.acc-header:hover{background:#F9FAFB}
+.acc-left{display:flex;align-items:center;gap:10px}
+.acc-icon{font-size:22px;flex-shrink:0}
+.acc-title{font-size:15px;font-weight:800;color:#111827}
+.acc-sub{font-size:11px;color:#9CA3AF;margin-top:2px}
+.acc-arrow{font-size:12px;color:#9CA3AF;transition:transform .3s;flex-shrink:0}
+.acc.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{display:none;padding:16px;border-top:1px solid #F3F4F6}
+.acc.open .acc-body{display:block}
+
+/* GRID PRODUTOS (visualização) */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.prod-card{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:12px;padding:14px 12px;text-align:center}
+.prod-nome{font-size:13px;font-weight:700;color:#111827;margin-bottom:4px}
+.prod-desc{font-size:11px;color:#9CA3AF;margin-bottom:8px;line-height:1.4}
+.prod-preco{font-size:17px;font-weight:900;color:#1565C0}
+.prod-esgotado{font-size:11px;color:#EF4444;font-weight:700;margin-top:4px}
+
+/* BOTÕES VER SABORES / COMPLEMENTOS */
+.btn-sabores{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:9px 18px;background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:8px;font-size:13px;font-weight:700;transition:background .15s}
+.btn-sabores:hover{background:#BBDEFB}
+.btn-comp{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:9px 18px;background:#FFF8E1;color:#F9A825;border:1px solid #FFE082;border-radius:8px;font-size:13px;font-weight:700;transition:background .15s}
+.btn-comp:hover{background:#FFF3CD}
+
+/* AÇAÍ CARD */
+.acai-item{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:10px}
+.acai-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.acai-nome{font-size:14px;font-weight:700}
+.acai-preco{font-size:18px;font-weight:900;color:#1565C0}
+.acai-desc{font-size:12px;color:#9CA3AF;margin-bottom:8px}
+
+/* PICOLÉ ITEM */
+.picole-item{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:10px}
+.picole-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.picole-nome{font-size:14px;font-weight:700}
+.picole-preco{font-size:16px;font-weight:900;color:#1565C0}
+
+/* MODAL BOTTOM SHEET */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:600px;max-height:82vh;overflow-y:auto;padding:20px 16px 32px;position:relative}
+.modal-handle{width:40px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 16px}
+.modal-close{position:absolute;top:16px;right:16px;background:#F3F4F6;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;font-weight:700;color:#374151;display:flex;align-items:center;justify-content:center}
+.modal-title{font-size:18px;font-weight:900;margin-bottom:4px}
+.modal-sub{font-size:13px;color:#9CA3AF;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-sabor{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+.chip-comp{background:#FFF8E1;color:#E65100;border:1px solid #FFE082;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600}
+.comp-group{margin-bottom:16px}
+.comp-group-h{font-size:13px;font-weight:800;color:#374151;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.comp-preco{font-size:12px;color:#1565C0;font-weight:700}
+
+/* PROMOÇÃO MODAL */
+.promo-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;align-items:center;justify-content:center;padding:16px}
+.promo-overlay.show{display:flex}
+.promo-box{background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:20px;padding:28px 24px;max-width:380px;width:100%;color:#fff;text-align:center;position:relative}
+.promo-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.promo-icon{font-size:48px;margin-bottom:12px}
+.promo-title{font-size:22px;font-weight:900;margin-bottom:8px}
+.promo-desc{font-size:14px;opacity:.9;margin-bottom:20px;line-height:1.5}
+.promo-timer-box{background:rgba(0,0,0,.2);border-radius:12px;padding:12px;margin-bottom:20px}
+.promo-timer-lbl{font-size:11px;opacity:.8;margin-bottom:6px}
+.promo-timer-val{font-size:28px;font-weight:900;letter-spacing:2px}
+.promo-btn{background:#F9A825;color:#111;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:800;width:100%}
+
+/* CHATBOT */
+.chat-fab{position:fixed;top:76px;right:16px;background:linear-gradient(135deg,#1565C0,#D32F2F);color:#fff;border:none;border-radius:50px;padding:10px 16px;font-size:13px;font-weight:800;z-index:300;box-shadow:0 4px 16px rgba(21,101,192,.4);display:flex;align-items:center;gap:6px}
+.chat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:700;align-items:flex-end;justify-content:center}
+.chat-overlay.show{display:flex}
+.chat-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;height:72vh;display:flex;flex-direction:column}
+.chat-hdr{background:linear-gradient(135deg,#1565C0,#D32F2F);color:#fff;padding:16px 20px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between}
+.chat-hdr h3{font-size:16px;font-weight:800}
+.chat-hdr p{font-size:11px;opacity:.8}
+.chat-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:80%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5}
+.msg.bot{background:#F3F4F6;color:#111827;align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:#1565C0;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-typing{background:#F3F4F6;color:#9CA3AF;align-self:flex-start;padding:10px 14px;border-radius:16px;font-size:13px;display:none}
+.chat-typing.show{display:block}
+.chat-sugs{padding:8px 16px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid #F3F4F6;scrollbar-width:none}
+.chat-sugs::-webkit-scrollbar{display:none}
+.sug{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.chat-inp-row{padding:12px 16px;display:flex;gap:8px;border-top:1px solid #F3F4F6}
+.chat-inp{flex:1;padding:10px 14px;border:1px solid #E5E7EB;border-radius:50px;font-size:14px;font-family:inherit;outline:none}
+.chat-inp:focus{border-color:#1565C0}
+.chat-send{background:#1565C0;color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* PWA BANNER */
+.pwa-banner{display:none;position:fixed;bottom:16px;left:16px;right:16px;max-width:420px;margin:0 auto;background:linear-gradient(135deg,#1565C0,#D32F2F);color:#fff;border-radius:16px;padding:16px;z-index:400;box-shadow:0 8px 32px rgba(21,101,192,.4);align-items:center;gap:12px}
+.pwa-banner.show{display:flex}
+.pwa-icon{font-size:32px;flex-shrink:0}
+.pwa-text h4{font-size:14px;font-weight:800;margin-bottom:3px}
+.pwa-text p{font-size:12px;opacity:.9}
+.pwa-btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.pwa-install{background:#F9A825;color:#111;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800}
+.pwa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:6px 14px;font-size:11px;color:#fff;font-weight:600}
+
+/* RODAPÉ */
+.footer{background:#111827;color:#9CA3AF;padding:32px 16px;margin-top:24px;text-align:center}
+.footer h3{color:#F9FAFB;font-size:16px;margin-bottom:16px}
+.footer p{font-size:13px;margin-bottom:8px;line-height:1.6}
+.footer-copy{margin-top:24px;padding-top:16px;border-top:1px solid #374151;font-size:12px;color:#6B7280}
+.btn-admin-footer{display:inline-block;margin-top:16px;padding:8px 16px;background:#374151;color:#9CA3AF;border-radius:8px;font-size:11px;font-weight:600}
+
+/* DESKTOP */
+@media(min-width:600px){
+  .header-inner{flex-direction:row;align-items:center;justify-content:space-between}
+  .header-nav{grid-template-columns:repeat(3,auto);gap:8px}
+  .nav-btn{padding:10px 16px}
+  .info-cards{grid-template-columns:repeat(4,1fr)}
+  .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+}
+</style>
 </head>
 <body>
-    <!-- Barra Admin no Topo -->
-    <div class="top-admin-bar">
-        <a href="gerenciar/index.html" class="btn-admin-top">Acesso Administrativo</a>
-    </div>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo-section">
-                <h1 class="logo">🍦 Itapolitana</h1>
-                <p class="tagline">Qualidade Artesanal desde 2007</p>
-            </div>
-<div class="header-buttons">
-                <a href="encomendas.html" class="header-btn purple">🛒 Encomendas</a>
-                <a href="#" class="header-btn orange" id="promo-btn">🎉 Promoção</a>
-                <a href="https://wa.me/5516991472045" target="_blank" class="header-btn green">💬 Chat</a>
-                <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817,618m/data=!3m2!1e3!4b1!4m6!3m5!1s0x94b7791707728ce9:0x9f59a9d96f0a5fc2!8m2!3d-21.2776816!4d-47.3046068!16s%2Fg%2F11c6w5qmq5?entry=ttu" target="_blank" class="header-btn yellow">⭐ Avalie</a>
-            </div>
-        </header>
-
-        <!-- Regional Trust Banner -->
-        <div class="regional-banner">
-            📍 Atendemos Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros
-        </div>
-
-        <!-- Hero Section -->
-        <section class="hero">
-            <h2>O Sorvete Mais Amado de Cajuru e Região</h2>
-            <p>Descubra o sabor inconfundível da <strong>Sorveteria Itapolitana</strong>. Produção própria com ingredientes selecionados para garantir a melhor experiência para você e sua família.</p>
-            <button class="cta-button" onclick="scrollToSection('cardapio')">Ver Cardápio Completo</button>
-        </section>
-
-        <!-- Cardápio Section -->
-        <section id="cardapio" class="cardapio">
-            <h2>Nosso Cardápio</h2>
-            
-            <!-- Sorvetes -->
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍦 Sorvetes de Massa</span>
-                </div>
-                <div class="categoria-content">
-                    <div class="produtos-grid" id="sorvetes-grid"></div>
-                    <button class="btn-escolher" onclick="abrirModalSabores('sorvetes')">Escolher Sabores</button>
-                </div>
-            </div>
-
-            <!-- Picolés -->
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍭 Picolés</span>
-                </div>
-                <div class="categoria-content" id="picoles-container">
-                    <!-- Conteúdo dos picolés será gerado aqui -->
-                </div>
-            </div>
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍭 Picolés de Frutas/Água - R$ 2,50</span>
-                </div>
-                <div class="categoria-content">
-                    <button class="btn-escolher" onclick="abrirModalSabores('picole_frutas_agua')">Escolher Sabores</button>
-                    <div class="produtos-grid" id="picole-frutas-agua-grid"></div>
-                </div>
-            </div>
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍭 Picolés de Leite sem Recheio - R$ 2,50</span>
-                </div>
-                <div class="categoria-content">
-                    <button class="btn-escolher" onclick="abrirModalSabores('picole_leite_sem_recheio')">Escolher Sabores</button>
-                    <div class="produtos-grid" id="picole-leite-sem-recheio-grid"></div>
-                </div>
-            </div>
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍭 Picolé de Leite Ninho - R$ 4,00</span>
-                </div>
-                <div class="categoria-content">
-                    <button class="btn-escolher" onclick="abrirModalSabores('picole_leite_ninho')">Escolher Sabores</button>
-                    <div class="produtos-grid" id="picole-leite-ninho-grid"></div>
-                </div>
-            </div>
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍭 Picolés Especiais</span>
-                </div>
-                <div class="categoria-content">
-                    <div class="subcategoria">
-                        <h4>Picolé de Leite com Recheio - R$ 3,00</h4>
-                        <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Cremosos e com recheio generoso. Escolha entre nossos sabores exclusivos.</p>
-                        <button class="btn-escolher" onclick="abrirModalSabores('picole_leite_com_recheio')">Escolher Sabores</button>
-                        <div class="produtos-grid" id="picole-leite-grid"></div>
-                    </div>
-                    <div class="subcategoria">
-                        <h4>Picolés Eskimo - R$ 8,00</h4>
-                        <button class="btn-escolher" onclick="abrirModalSabores('picole_eskimo')">Escolher Sabores</button>
-                        <div class="produtos-grid" id="picole-eskimo-grid"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Milk Shakes -->
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🥤 Milk Shakes</span>
-                </div>
-                <div class="categoria-content">
-                    <div class="produtos-grid" id="milkshake-grid"></div>
-                    <button class="btn-escolher" onclick="abrirModalSabores('milkshake')">Escolher Sabores</button>
-                </div>
-            </div>
-
-            <!-- Taças -->
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🍨 Taças</span>
-                </div>
-                <div class="categoria-content">
-                    <div class="produtos-grid" id="tacas-grid"></div>
-                    <button class="btn-escolher" onclick="abrirModalSabores('tacas')">Escolher Sabores</button>
-                </div>
-            </div>
-
-            <!-- Taças Premium -->
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🏆 Taças Premium</span>
-                </div>
-                <div class="categoria-content" id="tacas-premium-container">
-                    <!-- Conteúdo das taças premium será gerado aqui -->
-                </div>
-            </div>
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🏆 Taças Premium</span>
-                </div>
-                <div class="categoria-content">
-                    <div class="produtos-grid" id="tacas-premium-grid"></div>
-                    <button class="btn-escolher" onclick="abrirModalSabores('tacas_premium')">Escolher Sabores</button>
-                </div>
-            </div>
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🥤 Shakes e Taças Premium</span>
-                </div>
-                <div class="categoria-content">
-                    
-                </div>
-            </div>
-
-            <!-- Açaí -->
-            <div class="categoria">
-                <div class="categoria-header" onclick="toggleCategoria(this)">
-                    <span>🥤 Açaí Artesanal</span>
-                </div>
-                <div class="categoria-content">
-                    <div class="produtos-grid" id="acai-grid"></div>
-                    <button class="btn-escolher" onclick="abrirModalComplementos('acai')">Montar seu Açaí</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Encomendas Section -->
-        <section id="encomendas" class="encomendas">
-            <div class="encomendas-banner regional-banner">
-                🛒 Faça seu Pedido Online e Retire na Loja
-            </div>
-            <div class="form-container">
-                <form id="encomenda-form">
-                    <div class="form-group">
-                        <label for="nome">Seu Nome</label>
-                        <input type="text" id="nome" name="nome" placeholder="Como podemos te chamar?" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telefone">WhatsApp</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(16) 99999-9999" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="categoria">O que deseja pedir?</label>
-                        <select id="categoria" name="categoria" onchange="atualizarSabores()" required>
-                            <option value="">Selecione uma categoria</option>
-                            <option value="sorvete">Sorvete de Massa (5L/10L)</option>
-                            <option value="picole-leite">Picolé de Leite com Recheio</option>
-                            <option value="picole-eskimo">Picolé Eskimo</option>
-                            <option value="acai">Açaí Artesanal</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sabor">Sabor Escolhido</label>
-                        <select id="sabor" name="sabor" required>
-                            <option value="">Selecione a categoria primeiro</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="quantidade">Quantidade</label>
-                        <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
-                    </div>
-
-                    <div class="botoes-encomenda-row">
-                        <button type="button" class="btn-adicionar" onclick="adicionarAoCarrinho()">Adicionar ao Carrinho</button>
-                    </div>
-                </form>
-
-                <div class="carrinho">
-                    <h3>Seu Pedido</h3>
-                    <div id="carrinho-items">
-                        <p style="color: #888; text-align: center; padding: 20px;">Seu carrinho está vazio.</p>
-                    </div>
-                    <div class="carrinho-total">
-                        Total: R$ <span id="total">0,00</span>
-                    </div>
-                    <div id="carrinho-acoes-normal">
-                        <button class="btn-finalizar" onclick="enviarPedido()" style="width: 100%; margin-top: 20px;">Enviar Pedido via WhatsApp</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Regiões Section -->
-        <section id="regioes" class="footer" style="margin-top: 0; border-radius: 30px 30px 0 0;">
-            <div class="container">
-                <h2 style="color: white; margin-bottom: 30px;">Onde Estamos</h2>
-                <p>📍 Pça Lgo São Bento, 311 - Centro, Cajuru/SP</p>
-                <p>📞 (16) 99147-2045</p>
-                <p>⏰ Seg-Dom: 10h às 22h</p>
-                <div style="margin-top: 30px; border-top: 1px solid #444; padding-top: 20px;">
-                    <p>© 2007-2026 Sorveteria Itapolitana. Todos os direitos reservados.</p>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- Modal de Sabores -->
-    <div id="modal-sabores" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModalSabores()">&times;</span>
-            <h3 id="modal-titulo">Escolha o Sabor</h3>
-            <div id="lista-sabores-modal" class="sabores-grid-modal"></div>
-        </div>
-    </div>
-
-    <script src="scripts/products.js"></script>
-    <script src="scripts/main.js"></script>
-    <script>
-        function toggleCategoria(header) {
-            const categoria = header.parentElement;
-            const estaAtiva = categoria.classList.contains('ativa');
-            
-            document.querySelectorAll('.categoria').forEach(cat => {
-                cat.classList.remove('ativa');
-            });
-            
-            if (!estaAtiva) {
-                categoria.classList.add('ativa');
-            }
-        }
-
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                const headerOffset = 100;
-                const elementPosition = element.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth"
-                });
-            }
-        }
-
-        function atualizarSabores() {
-            const categoria = document.getElementById('categoria').value;
-            const saborSelect = document.getElementById('sabor');
-            
-            if (!saborSelect) return;
-            
-            saborSelect.innerHTML = '<option value="">Selecione um sabor</option>';
-            
-            if (categoria && produtos[categoria]) {
-                produtos[categoria].forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.nome;
-                    option.textContent = `${p.nome} - R$ ${p.preco.toFixed(2)}`;
-                    saborSelect.appendChild(option);
-                });
-            }
-        }
-    </script>
-<!-- Modal Genérico para Seleção -->
-<div id="modal-selecao" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="fecharModal('modal-selecao')">&times;</span>
-        <h3 id="modal-titulo"></h3>
-        <div id="modal-opcoes" class="opcoes-grid">
-            <!-- Opções serão inseridas dinamicamente aqui -->
-        </div>
-        <div class="modal-footer">
-            <button class="btn-confirmar" onclick="confirmarSelecao()">Confirmar</button>
-        </div>
-    </div>
+<!-- BARRA ADMIN DISCRETA -->
+<div class="admin-bar">
+  <a href="gerenciar/index.html">⚙️ Painel Administrativo</a>
 </div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon"><img src="images/logo.png" alt="Logo Itapolitana"></div>
+      <div>
+        <div class="brand-name">ITAPOLITANA CAJURU</div>
+        <div class="brand-sub">Açaiteria &amp; Sorveteria · Desde 2007</div>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <a href="encomendas.html" class="nav-btn nav-purple">🛒 Encomendas</a>
+      <button class="nav-btn nav-orange" onclick="abrirPromo()">🎉 Promoção</button>
+      <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="nav-btn nav-yellow">⭐ Avalie</a>
+    </nav>
+  </div>
+</header>
+
+<!-- FAIXA REGIONAL -->
+<div class="regional">
+  📍 Atendemos Cajuru · Santa Cruz da Esperança · Cássia dos Coqueiros
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <h2>O Sorvete Mais Amado de Cajuru e Região</h2>
+  <p>Produção própria com ingredientes selecionados. Sorvetes artesanais, picolés recheados e açaí premium desde 2007.</p>
+  <button class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
+    🍦 Ver Cardápio Completo
+  </button>
+</section>
+
+<!-- INFO CARDS -->
+<div class="info-cards">
+  <div class="info-card"><div class="info-icon">📍</div><div class="info-title">Localização</div><div class="info-text">Pça Lgo São Bento, 311 – Cajuru/SP</div></div>
+  <div class="info-card"><div class="info-icon">⏰</div><div class="info-title">Horário</div><div class="info-text">Seg–Dom: 10h às 22h</div></div>
+  <div class="info-card"><div class="info-icon">🏪</div><div class="info-title">Retirada</div><div class="info-text">Somente na loja</div></div>
+  <div class="info-card"><div class="info-icon">📱</div><div class="info-title">Contato</div><div class="info-text">(16) 99147-2045</div></div>
+</div>
+
+<!-- CARDÁPIO -->
+<section id="cardapio" class="cardapio">
+  <h2 class="cardapio-h">Nosso Cardápio</h2>
+
+  <!-- SORVETES -->
+  <div class="acc" id="acc-sorvetes">
+    <div class="acc-header" onclick="toggleAcc('acc-sorvetes')">
+      <div class="acc-left">
+        <span class="acc-icon">🍦</span>
+        <div><div class="acc-title">Sorvetes de Massa</div><div class="acc-sub">Casquinha, copo, cascão, cestinha · 36 sabores</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div id="sorvetes-grid" class="prod-grid"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🍦 36 Sabores de Sorvete')">🍨 Ver os 36 Sabores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MILKSHAKES -->
+  <div class="acc" id="acc-milk">
+    <div class="acc-header" onclick="toggleAcc('acc-milk')">
+      <div class="acc-left">
+        <span class="acc-icon">🥤</span>
+        <div><div class="acc-title">Milkshakes</div><div class="acc-sub">Tradicional e Top · Vários tamanhos · 36 sabores</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div id="milk-grid" class="prod-grid"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🥤 Sabores para Milkshake')">🍨 Ver os 36 Sabores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAÇAS -->
+  <div class="acc" id="acc-tacas">
+    <div class="acc-header" onclick="toggleAcc('acc-tacas')">
+      <div class="acc-left">
+        <span class="acc-icon">🍨</span>
+        <div><div class="acc-title">Taças</div><div class="acc-sub">8 opções · Colegial, Sundae, Banana Split e mais · 36 sabores</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div id="tacas-grid" class="prod-grid"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Taças')">🍨 Ver os 36 Sabores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAÇAS PREMIUM -->
+  <div class="acc" id="acc-tacas-p">
+    <div class="acc-header" onclick="toggleAcc('acc-tacas-p')">
+      <div class="acc-left">
+        <span class="acc-icon">🏆</span>
+        <div><div class="acc-title">Taças Premium (Taças Sujas)</div><div class="acc-sub">7 opções · Prestígio, Kit Kat, Unicórnio e mais · 36 sabores</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div id="tacas-p-grid" class="prod-grid"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🏆 Sabores para Taças Premium')">🍨 Ver os 36 Sabores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇAÍ -->
+  <div class="acc" id="acc-acai">
+    <div class="acc-header" onclick="toggleAcc('acc-acai')">
+      <div class="acc-left">
+        <span class="acc-icon">🫐</span>
+        <div><div class="acc-title">Açaí Artesanal</div><div class="acc-sub">Monte o seu · 300ml a 600ml · Ingredientes extras</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="acai-body"></div>
+  </div>
+
+  <!-- PICOLÉS -->
+  <div class="acc" id="acc-picoles">
+    <div class="acc-header" onclick="toggleAcc('acc-picoles')">
+      <div class="acc-left">
+        <span class="acc-icon">🍭</span>
+        <div><div class="acc-title">Picolés</div><div class="acc-sub">5 tipos · Fruta, Leite, Recheado, Ninho, Eskimo</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="picoles-body"></div>
+  </div>
+
+  <!-- TORTA DE SORVETE -->
+  <div class="acc" id="acc-torta">
+    <div class="acc-header" onclick="toggleAcc('acc-torta')">
+      <div class="acc-left">
+        <span class="acc-icon">🎂</span>
+        <div><div class="acc-title">Torta de Sorvete</div><div class="acc-sub">Encomende com 3 dias de antecedência · 36 sabores</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="prod-card" style="max-width:280px">
+        <div class="prod-nome">🎂 Torta de Sorvete</div>
+        <div class="prod-desc">Feita com 3 sabores à sua escolha. Perfeita para festas e comemorações.</div>
+        <div class="prod-preco">R$ 100,00</div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🎂 Sabores para Torta de Sorvete')">🍨 Ver os 36 Sabores</button>
+        <a href="encomendas.html" class="btn-comp" style="margin-left:8px">🛒 Encomendar</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- RODAPÉ -->
+<footer class="footer">
+  <h3>📍 Onde Estamos</h3>
+  <p>Pça Lgo São Bento, 311 – Centro, Cajuru/SP</p>
+  <p>📞 (16) 99147-2045</p>
+  <p>⏰ Segunda a Domingo: 10h às 22h</p>
+  <p style="margin-top:12px;font-size:12px;color:#EF4444;font-weight:600">🚫 Não fazemos delivery · Retirada somente na loja</p>
+  <a href="gerenciar/index.html" class="btn-admin-footer">⚙️ Painel Administrativo</a>
+  <div class="footer-copy">© 2007–2026 Sorveteria Itapolitana · Todos os direitos reservados</div>
+</footer>
+
+<!-- MODAL SABORES -->
+<div class="modal-overlay" id="modal-sabores">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="fecharModal('modal-sabores')">✕</button>
+    <div class="modal-title" id="ms-titulo">Sabores Disponíveis</div>
+    <div class="modal-sub">Informe o sabor desejado ao fazer seu pedido na loja</div>
+    <div class="chips" id="ms-chips"></div>
+  </div>
+</div>
+
+<!-- MODAL COMPLEMENTOS AÇAÍ -->
+<div class="modal-overlay" id="modal-comp">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="fecharModal('modal-comp')">✕</button>
+    <div class="modal-title">🫐 Complementos do Açaí</div>
+    <div class="modal-sub">Disponíveis para o Açaí Personalizado</div>
+    <div id="comp-lista"></div>
+  </div>
+</div>
+
+<!-- MODAL SABORES PICOLÉ -->
+<div class="modal-overlay" id="modal-picole">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="fecharModal('modal-picole')">✕</button>
+    <div class="modal-title" id="mp-titulo">Sabores do Picolé</div>
+    <div class="modal-sub" id="mp-sub"></div>
+    <div class="chips" id="mp-chips"></div>
+  </div>
+</div>
+
+<!-- MODAL PROMOÇÃO -->
+<div class="promo-overlay" id="promo-overlay">
+  <div class="promo-box">
+    <button class="promo-close" onclick="fecharModal('promo-overlay')">✕</button>
+    <div class="promo-icon">🎉</div>
+    <div class="promo-title">Promoção Especial!</div>
+    <div class="promo-desc">Confira nossas promoções especiais de hoje. Aproveite enquanto durar!</div>
+    <div class="promo-timer-box">
+      <div class="promo-timer-lbl">Oferta válida por:</div>
+      <div class="promo-timer-val" id="promo-timer">00:00:00</div>
+    </div>
+    <button class="promo-btn" onclick="window.open('https://wa.me/5516991472045','_blank')">💬 Falar com a Loja</button>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="chat-fab" onclick="abrirChat()">💬 Fale Conosco</button>
+
+<div class="chat-overlay" id="chat-overlay">
+  <div class="chat-box">
+    <div class="chat-hdr">
+      <div><h3>💬 Fale Conosco</h3><p>Assistente Itapolitana · Responde na hora</p></div>
+      <button class="chat-close" onclick="fecharModal('chat-overlay')">✕</button>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="msg bot">Olá! 👋 Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?</div>
+    </div>
+    <div class="chat-typing" id="chat-typing">Digitando...</div>
+    <div class="chat-sugs">
+      <button class="sug" onclick="enviarSug(this)">Horário</button>
+      <button class="sug" onclick="enviarSug(this)">Como encomendar</button>
+      <button class="sug" onclick="enviarSug(this)">Sabores</button>
+      <button class="sug" onclick="enviarSug(this)">Preços</button>
+      <button class="sug" onclick="enviarSug(this)">Localização</button>
+      <button class="sug" onclick="enviarSug(this)">Picolés</button>
+    </div>
+    <div class="chat-inp-row">
+      <input type="text" class="chat-inp" id="chat-inp" placeholder="Digite sua pergunta..." onkeydown="if(event.key==='Enter')enviarChat()">
+      <button class="chat-send" onclick="enviarChat()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA BANNER -->
+<div class="pwa-banner" id="pwa-banner">
+  <div class="pwa-icon">📲</div>
+  <div class="pwa-text"><h4>Instalar Aplicativo</h4><p>Adicione à tela inicial para acesso rápido e promoções!</p></div>
+  <div class="pwa-btns">
+    <button class="pwa-install" id="pwa-btn">Instalar Agora</button>
+    <button class="pwa-dismiss" onclick="document.getElementById('pwa-banner').classList.remove('show')">Agora não</button>
+  </div>
+</div>
+
+<script src="scripts/products.js"></script>
+<script>
+// ── ACCORDION ──
+function toggleAcc(id){document.getElementById(id).classList.toggle('open')}
+
+// ── MODAL HELPERS ──
+function fecharModal(id){document.getElementById(id).classList.remove('show')}
+function abrirModal(id){document.getElementById(id).classList.add('show')}
+
+// ── RENDER SORVETES ──
+function renderSorvetes(){
+  const g=document.getElementById('sorvetes-grid');
+  const tipos=[
+    {nome:'Casquinha / Copo',desc:'1 bola',preco:8.00},
+    {nome:'Copo Recheado',desc:'1 bola + recheio',preco:10.00},
+    {nome:'Cascão',desc:'Casquinha grande',preco:10.00},
+    {nome:'Cestinha',desc:'Cestinha crocante',preco:12.00}
+  ];
+  tipos.forEach(t=>{
+    const c=document.createElement('div');c.className='prod-card';
+    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-desc">${t.desc}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
+    g.appendChild(c);
+  });
+}
+
+// ── RENDER MILKSHAKE ──
+function renderMilk(){
+  const g=document.getElementById('milk-grid');
+  const tipos=[
+    {nome:'Milkshake Tradicional 300ml',preco:17.00},
+    {nome:'Milkshake Tradicional 400ml',preco:20.00},
+    {nome:'Milkshake Tradicional 500ml',preco:22.00},
+    {nome:'Milkshake Tradicional 750ml',preco:28.00},
+    {nome:'Milkshake Top 360ml',preco:20.00},
+    {nome:'Milkshake Top 600ml',preco:24.00}
+  ];
+  tipos.forEach(t=>{
+    const c=document.createElement('div');c.className='prod-card';
+    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
+    g.appendChild(c);
+  });
+}
+
+// ── RENDER TAÇAS ──
+function renderTacas(){
+  const g=document.getElementById('tacas-grid');
+  const tipos=[
+    {nome:'Taça Colegial',preco:20.00},
+    {nome:'Taça Sundae',preco:23.00},
+    {nome:'Taça Banana Split',preco:25.00},
+    {nome:'Taça Universitária',preco:25.00},
+    {nome:'Taça Morango Split',preco:28.00},
+    {nome:'Taça Vaca Preta',preco:23.00},
+    {nome:'Taça Sundae com Nutella',preco:28.00},
+    {nome:'Taça Ula-Ula',preco:48.00}
+  ];
+  tipos.forEach(t=>{
+    const c=document.createElement('div');c.className='prod-card';
+    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
+    g.appendChild(c);
+  });
+}
+
+// ── RENDER TAÇAS PREMIUM ──
+function renderTacasP(){
+  const g=document.getElementById('tacas-p-grid');
+  const tipos=[
+    {nome:'Taça Suja – Prestígio',preco:42.00},
+    {nome:'Taça Suja – Bis com Negresco',preco:42.00},
+    {nome:'Taça Suja – Lacto com Leite Ninho',preco:42.00},
+    {nome:'Taça Suja – Kit Kat',preco:42.00},
+    {nome:'Taça Suja – Morango com Ovomaltine',preco:42.00},
+    {nome:'Taça Suja – Sonho de Valsa',preco:45.00},
+    {nome:'Taça Suja – Unicórnio',preco:38.00}
+  ];
+  tipos.forEach(t=>{
+    const c=document.createElement('div');c.className='prod-card';
+    c.innerHTML=`<div class="prod-nome">${t.nome}</div><div class="prod-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</div>`;
+    g.appendChild(c);
+  });
+}
+
+// ── RENDER AÇAÍ ──
+function renderAcai(){
+  const b=document.getElementById('acai-body');b.innerHTML='';
+  const copos=[
+    {tam:'300ml',preco:15.00},{tam:'360ml',preco:16.00},
+    {tam:'400ml',preco:17.00},{tam:'600ml',preco:20.00}
+  ];
+  copos.forEach(c=>{
+    const d=document.createElement('div');d.className='acai-item';
+    d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${c.tam}</span><span class="acai-preco">R$ ${c.preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button class="btn-comp" onclick="abrirComplementos()">🍓 Ver Ingredientes Disponíveis</button>`;
+    b.appendChild(d);
+  });
+}
+
+// ── RENDER PICOLÉS ──
+function renderPicoles(){
+  const b=document.getElementById('picoles-body');b.innerHTML='';
+  const tipos=[
+    {key:'frutas_agua',nome:'Picolé de Fruta / Base Água',icon:'🍉',preco:2.50},
+    {key:'leite_sem_recheio',nome:'Picolé de Leite',icon:'🍦',preco:2.50},
+    {key:'leite_com_recheio',nome:'Picolé de Leite Recheado',icon:'🍫',preco:3.00},
+    {key:'leite_ninho',nome:'Picolé de Leite Ninho',icon:'⭐',preco:4.00},
+    {key:'eskimos',nome:'Picolés Eskimo',icon:'🍬',preco:8.00}
+  ];
+  tipos.forEach(t=>{
+    const d=document.createElement('div');d.className='picole-item';
+    d.innerHTML=`<div class="picole-row"><span class="picole-nome">${t.icon} ${t.nome}</span><span class="picole-preco">R$ ${t.preco.toFixed(2).replace('.',',')}</span></div><button class="btn-sabores" onclick="abrirPicole('${t.key}','${t.nome}')">🍭 Ver Sabores Disponíveis</button>`;
+    b.appendChild(d);
+  });
+}
+
+// ── ABRIR MODAL SABORES ──
+function abrirSabores(tipo,titulo){
+  document.getElementById('ms-titulo').textContent=titulo;
+  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+  const sabores=produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
+  sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  abrirModal('modal-sabores');
+}
+
+// ── ABRIR MODAL PICOLÉ ──
+function abrirPicole(key,nome){
+  document.getElementById('mp-titulo').textContent=`🍭 Sabores – ${nome}`;
+  document.getElementById('mp-sub').textContent='Sabores disponíveis para este tipo de picolé';
+  const chips=document.getElementById('mp-chips');chips.innerHTML='';
+  const sabs=produtos&&produtos.picoles&&produtos.picoles[key]?produtos.picoles[key].sabores:[];
+  sabs.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  abrirModal('modal-picole');
+}
+
+// ── ABRIR COMPLEMENTOS AÇAÍ ──
+function abrirComplementos(){
+  const lista=document.getElementById('comp-lista');lista.innerHTML='';
+  const grupos={
+    frutas:{label:'🍓 Frutas',preco:2.00},
+    cremes:{label:'🍯 Cremes',preco:3.00},
+    guloseimas:{label:'🍬 Guloseimas',preco:2.00},
+    chocolates:{label:'🍫 Chocolates',preco:4.00}
+  };
+  if(produtos&&produtos.acai&&produtos.acai.complementos){
+    Object.entries(grupos).forEach(([k,info])=>{
+      const itens=produtos.acai.complementos[k]?produtos.acai.complementos[k].itens:[];
+      const g=document.createElement('div');g.className='comp-group';
+      g.innerHTML=`<div class="comp-group-h">${info.label}<span class="comp-preco">+ R$ ${info.preco.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${itens.map(i=>`<span class="chip-comp">${i}</span>`).join('')}</div>`;
+      lista.appendChild(g);
+    });
+  }
+  abrirModal('modal-comp');
+}
+
+// ── PROMOÇÃO ──
+let promoInt=null;
+function abrirPromo(){abrirModal('promo-overlay');iniciarTimer();}
+function iniciarTimer(){
+  const fim=new Date();fim.setHours(22,0,0,0);
+  if(fim<new Date())fim.setDate(fim.getDate()+1);
+  if(promoInt)clearInterval(promoInt);
+  promoInt=setInterval(()=>{
+    const d=fim-new Date();if(d<=0){clearInterval(promoInt);return;}
+    const h=String(Math.floor(d/3600000)).padStart(2,'0');
+    const m=String(Math.floor((d%3600000)/60000)).padStart(2,'0');
+    const s=String(Math.floor((d%60000)/1000)).padStart(2,'0');
+    document.getElementById('promo-timer').textContent=`${h}:${m}:${s}`;
+  },1000);
+}
+
+// ── CHATBOT ──
+const RESPOSTAS={
+  'horário':'Funcionamos de Segunda a Domingo, das 10h às 22h. 🕙',
+  'funciona':'Funcionamos de Segunda a Domingo, das 10h às 22h. 🕙',
+  'aberto':'Funcionamos de Segunda a Domingo, das 10h às 22h. 🕙',
+  'endereço':'Estamos na Pça Lgo São Bento, 311 – Centro, Cajuru/SP. 📍',
+  'localização':'Estamos na Pça Lgo São Bento, 311 – Centro, Cajuru/SP. 📍',
+  'onde':'Estamos na Pça Lgo São Bento, 311 – Centro, Cajuru/SP. 📍',
+  'encomendar':'Para encomendas, clique em 🛒 Encomendas no topo! Trabalhamos com Sorvete em Caixa, Torta de Sorvete e Picolés no atacado. Prazo: 3 dias úteis após pagamento. 📦',
+  'encomenda':'Para encomendas, clique em 🛒 Encomendas no topo! Trabalhamos com Sorvete em Caixa, Torta de Sorvete e Picolés no atacado. Prazo: 3 dias úteis após pagamento. 📦',
+  'sabor':'Temos 36 sabores de sorvete! Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache e muito mais. Veja no cardápio! 🍦',
+  'sabores':'Temos 36 sabores de sorvete! Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache e muito mais. Veja no cardápio! 🍦',
+  'preço':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Taças a partir de R$ 20,00 · Açaí a partir de R$ 15,00. 💰',
+  'preco':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Taças a partir de R$ 20,00 · Açaí a partir de R$ 15,00. 💰',
+  'preços':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Taças a partir de R$ 20,00 · Açaí a partir de R$ 15,00. 💰',
+  'açaí':'Açaí artesanal em 300ml (R$ 15), 360ml (R$ 16), 400ml (R$ 17) e 600ml (R$ 20). Personalize com frutas, cremes e chocolates! 🫐',
+  'acai':'Açaí artesanal em 300ml (R$ 15), 360ml (R$ 16), 400ml (R$ 17) e 600ml (R$ 20). Personalize com frutas, cremes e chocolates! 🫐',
+  'picolé':'5 tipos: Fruta/Água (R$ 2,50), Leite (R$ 2,50), Leite Recheado (R$ 3,00), Leite Ninho (R$ 4,00) e Eskimo (R$ 8,00). Atacado via encomenda! 🍭',
+  'picole':'5 tipos: Fruta/Água (R$ 2,50), Leite (R$ 2,50), Leite Recheado (R$ 3,00), Leite Ninho (R$ 4,00) e Eskimo (R$ 8,00). Atacado via encomenda! 🍭',
+  'picolés':'5 tipos: Fruta/Água (R$ 2,50), Leite (R$ 2,50), Leite Recheado (R$ 3,00), Leite Ninho (R$ 4,00) e Eskimo (R$ 8,00). Atacado via encomenda! 🍭',
+  'delivery':'Não fazemos delivery. Retirada somente na loja: Pça Lgo São Bento, 311 – Cajuru/SP. 🏪',
+  'entrega':'Para encomendas, prazo de 3 dias úteis após pagamento. Retirada na loja. 📦',
+  'telefone':'WhatsApp: (16) 99147-2045 📱',
+  'whatsapp':'WhatsApp: (16) 99147-2045 📱',
+  'contato':'WhatsApp: (16) 99147-2045 📱',
+  'torta':'Torta de Sorvete R$ 100,00 com 3 sabores à escolha. Encomende com 3 dias de antecedência! 🎂',
+  'caixa':'Caixas de 5L (a partir de R$ 100) e 10L (a partir de R$ 150) com 2 ou 3 sabores. Faça sua encomenda! 🍦',
+  'cajuru':'Estamos em Cajuru/SP desde 2007! Atendemos também Santa Cruz da Esperança e Cássia dos Coqueiros. 📍',
+  'default':'Posso te ajudar com: horários, endereço, preços, sabores, encomendas ou picolés. O que deseja saber? 😊'
+};
+
+function abrirChat(){abrirModal('chat-overlay');}
+function enviarSug(btn){document.getElementById('chat-inp').value=btn.textContent;enviarChat();}
+function enviarChat(){
+  const inp=document.getElementById('chat-inp');
+  const msg=inp.value.trim();if(!msg)return;
+  inp.value='';
+  addMsg('user',msg);
+  const t=document.getElementById('chat-typing');t.classList.add('show');
+  setTimeout(()=>{t.classList.remove('show');addMsg('bot',getResp(msg);},700+Math.random()*500);
+}
+function addMsg(tipo,txt){
+  const m=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className=`msg ${tipo}`;d.textContent=txt;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+function getResp(msg){
+  const l=msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  for(const[k,r]of Object.entries(RESPOSTAS)){if(k!=='default'&&l.includes(k))return r;}
+  return RESPOSTAS.default;
+}}
+
+// ── PWA ──
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(()=>document.getElementById('pwa-banner').classList.add('show'),3000);
+});
+document.getElementById('pwa-btn').addEventListener('click',async()=>{
+  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('pwa-banner').classList.remove('show');}
+});
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcai();renderPicoles();
+});
+</script>
 </body>
 </html>
-<div id="promotion-modal" class="modal" style="display: none;">
-    <div class="modal-content-promo">
-        <span class="close-promo-btn">&times;</span>
-        <img src="images/promo_banner.png" alt="Promoção Banner" style="width:100%; border-radius: 15px;">
-        <a href="#" class="btn-regulamento">Ver Regulamento Completo</a>
-        <div class="countdown-container">
-            <p>PRIMEIRO SORTEIO EM:</p>
-            <div id="countdown"></div>
-        </div>
-        <a href="https://instagram.com/sorveteriaitapolitanacajuru" target="_blank" class="btn-participar">PARTICIPAR DO SORTEIO: ACESSE @SORVETERIAITAPOLITANACAJURU NO INSTAGRAM</a>
-    </div>
-</div>
