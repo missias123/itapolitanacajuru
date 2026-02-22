@@ -284,6 +284,38 @@
     .btn-confirmar.pronto { background: var(--verde); color: white; }
     .btn-confirmar:disabled { cursor: not-allowed; }
 
+    /* COMPLEMENTOS SORVETE */
+    .comp-sorvete-titulo {
+      font-size: 0.95rem; font-weight: 800; color: #6A0DAD;
+      margin: 18px 0 10px; padding: 10px 14px;
+      background: linear-gradient(135deg,#F3E5F5,#EDE7F6);
+      border-radius: 10px; border-left: 4px solid #6A0DAD;
+    }
+    .comp-sorvete-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: #FAFAFA;
+      border: 1px solid #E8E8E8; border-radius: 10px; margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .comp-sorvete-item.esgotado { opacity: 0.5; pointer-events: none; }
+    .comp-sorvete-item.ativo { border-color: #6A0DAD; background: #F3E5F5; }
+    .comp-sorvete-info { flex: 1; }
+    .comp-sorvete-nome { font-size: 0.9rem; font-weight: 700; color: #1A0A00; display: block; }
+    .comp-sorvete-preco { font-size: 0.8rem; color: #6A0DAD; font-weight: 600; }
+    .comp-sorvete-tag-esgotado { font-size: 0.72rem; background: #EF5350; color: white; border-radius: 4px; padding: 2px 6px; font-weight: 700; margin-left: 6px; }
+    .comp-sorvete-ctrl { display: flex; align-items: center; gap: 8px; }
+    .comp-btn {
+      width: 32px; height: 32px; border: none; border-radius: 8px;
+      font-size: 1.1rem; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .comp-btn-menos { background: #EF5350; color: white; }
+    .comp-btn-menos:hover { background: #C62828; }
+    .comp-btn-mais { background: #43A047; color: white; }
+    .comp-btn-mais:hover { background: #1B5E20; }
+    .comp-qtd { font-size: 1rem; font-weight: 800; min-width: 24px; text-align: center; color: #1A0A00; }
+
     /* MODAL PICOLÉ */
     .picole-row {
       display: flex;
@@ -718,6 +750,10 @@
       <button class="btn-confirmar" id="btn-confirmar-sabores" onclick="confirmarSabores()" disabled>
         Confirmar Seleção (0/0)
       </button>
+
+      <!-- COMPLEMENTOS -->
+      <div class="comp-sorvete-titulo">🍪 Quero Adicionar Complementos ao Sorvete</div>
+      <div class="comp-sorvete-lista" id="comp-sorvete-lista"></div>
     </div>
   </div>
 </div>
