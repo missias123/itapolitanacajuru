@@ -23,6 +23,17 @@ img{max-width:100%;display:block}
 .admin-bar a{color:#FF6B35;font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase}
 .admin-bar a:hover{color:#F9FAFB}
 
+/* BARRA DE PROMOÇÃO NO TOPO */
+.promo-top-bar{display:none;background:linear-gradient(135deg,#E8000D,#FF6B35,#FFD600);color:#1A0A00;text-align:center;padding:0;cursor:pointer;text-decoration:none;position:relative;overflow:hidden}
+.promo-top-bar.show{display:block}
+.promo-top-bar-inner{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 40px 11px 16px;position:relative;z-index:1}
+.promo-top-bar-titulo{font-size:clamp(13px,3.5vw,16px);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
+.promo-top-bar-sub{font-size:clamp(11px,3vw,13px);font-weight:700;opacity:.85}
+.promo-top-bar-cta{background:rgba(0,0,0,.18);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:900;white-space:nowrap;flex-shrink:0}
+.promo-top-bar-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.2);border:none;border-radius:50%;width:26px;height:26px;color:#1A0A00;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+.promo-top-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2.5s infinite}
+
 /* HEADER */
 .header{background:linear-gradient(135deg,#FFFDF9,#FFF3E0);border-bottom:2px solid #FF6B35;padding:12px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(255,107,53,.18);isolation:isolate}
 .header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
@@ -217,6 +228,19 @@ img{max-width:100%;display:block}
 </head>
 <body>
 
+<!-- BARRA DE PROMOÇÃO NO TOPO -->
+<a href="promocao.html" class="promo-top-bar" id="promo-top-bar">
+  <div class="promo-top-bar-inner">
+    <span style="font-size:20px">🔥</span>
+    <div>
+      <div class="promo-top-bar-titulo" id="ptb-titulo">Promoção Especial!</div>
+      <div class="promo-top-bar-sub" id="ptb-sub">Clique e veja a oferta completa</div>
+    </div>
+    <span class="promo-top-bar-cta">Ver agora →</span>
+  </div>
+  <button class="promo-top-bar-close" onclick="event.preventDefault();event.stopPropagation();fecharBarraPromo()" title="Fechar">✕</button>
+</a>
+
 <!-- BARRA ADMIN DISCRETA -->
 <div class="admin-bar">
   <a href="gerenciar/index.html">⚙️ Painel Administrativo</a>
@@ -234,7 +258,7 @@ img{max-width:100%;display:block}
     </div>
     <nav class="header-nav">
       <a href="encomendas.html" class="nav-btn nav-purple">🛒 Encomendas</a>
-      <button class="nav-btn nav-orange" onclick="abrirPromo()">🎉 Promoção</button>
+      <a href="promocao.html" class="nav-btn nav-orange" id="nav-promo-btn">🎉 Promoção</a>
       <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="nav-btn nav-yellow">⭐ Avalie</a>
     </nav>
   </div>
@@ -760,6 +784,24 @@ function abrirComplementos(){
 
 // ── PROMOÇÃO ──
 let promoInt=null;
+// ── BARRA DE PROMOÇÃO NO TOPO ──
+function carregarBarraPromo(){
+  const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+  const fechada=sessionStorage.getItem('promo_bar_fechada');
+  if(!d.ativa&&d.ativa!==undefined){return;} // promoção desativada
+  if(fechada){return;} // usuário fechou nesta sessão
+  const bar=document.getElementById('promo-top-bar');
+  if(!bar)return;
+  if(d.titulo){document.getElementById('ptb-titulo').textContent=d.titulo;}
+  if(d.descricao){document.getElementById('ptb-sub').textContent=d.descricao;}
+  bar.classList.add('show');
+}
+function fecharBarraPromo(){
+  sessionStorage.setItem('promo_bar_fechada','1');
+  const bar=document.getElementById('promo-top-bar');
+  if(bar){bar.classList.remove('show');}
+}
+
 // ── PROMOÇÃO DINÂMICA ──
 function carregarPromo(){
   const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
@@ -892,6 +934,7 @@ function carregarBanner(){
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   carregarBanner();
+  carregarBarraPromo();
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();renderIso();renderSobremesas();
   // Todos os accordions fechados por padrão
   // Foto da torta
