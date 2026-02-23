@@ -643,15 +643,20 @@ function alterarCompEnc(id, delta) {
 // ---- ACRÉSCIMOS (sincronizado com admin - itap_acrescimos) ----
 function getAcrescimosEnc() {
   const PADRAO = [
-    { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:999, esgotado:false },
-    { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:999, esgotado:false },
-    { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:999, esgotado:false },
-    { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:999, esgotado:false },
-    { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:20,  esgotado:false }
+    { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:100, esgotado:false },
+    { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:100, esgotado:false },
+    { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:100, esgotado:false },
+    { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:100, esgotado:false },
+    { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:100, esgotado:false }
   ];
   try {
     const salvo = localStorage.getItem('itap_acrescimos');
-    if (salvo) return JSON.parse(salvo);
+    if (salvo) {
+      const todos = JSON.parse(salvo);
+      // Filtrar apenas slots com nome preenchido (ativos)
+      const ativos = todos.filter(c => c.nome && c.nome.trim() !== '');
+      return ativos.length > 0 ? ativos : PADRAO;
+    }
   } catch(e) {}
   return PADRAO;
 }

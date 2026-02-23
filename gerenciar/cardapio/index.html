@@ -295,15 +295,28 @@ function renderSobremesas(){
 }
 
 
-// ── ACRÉSCIMOS (chave: itap_acrescimos) ──
+// ── ACRÉSCIMOS – 100 slots editáveis sincronizados com encomendas ──
 const ACRESCIMOS_PADRAO = [
-  { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:999, esgotado:false },
-  { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:999, esgotado:false },
-  { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:999, esgotado:false },
-  { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:999, esgotado:false },
-  { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:20,  esgotado:false }
+  { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:100, esgotado:false },
+  { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:100, esgotado:false },
+  { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:100, esgotado:false },
+  { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:100, esgotado:false },
+  { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:100, esgotado:false }
 ];
+const TOTAL_SLOTS_ACR = 100;
+function getAcrescimosAdmin() {
+  let lista;
+  try { const s = localStorage.getItem('itap_acrescimos'); if(s) lista = JSON.parse(s); } catch(e){}
+  if (!lista) lista = JSON.parse(JSON.stringify(ACRESCIMOS_PADRAO));
+  // Garantir sempre 100 slots
+  while (lista.length < TOTAL_SLOTS_ACR) {
+    const n = lista.length + 1;
+    lista.push({ id:'acr_slot_'+n, nome:'', preco:0, estoque:0, esgotado:true, vazio:true });
+  }
+  return lista;
+}
 function getAcrescimos() {
+  // Versão usada pelas encomendas: retorna apenas os ativos (com nome)
   try { const s = localStorage.getItem('itap_acrescimos'); if(s) return JSON.parse(s); } catch(e){}
   return JSON.parse(JSON.stringify(ACRESCIMOS_PADRAO));
 }
@@ -311,51 +324,90 @@ function salvarAcrescimos(lista) {
   localStorage.setItem('itap_acrescimos', JSON.stringify(lista));
 }
 function renderAcrescimos() {
-  const lista = getAcrescimos();
-  let h = '<div id="lista-acr-admin">';
+  const lista = getAcrescimosAdmin();
+  const ativos = lista.filter(c => c.nome && c.nome.trim() !== '').length;
+  let h = `<div style="margin-bottom:14px;padding:12px 14px;background:#EFF6FF;border-radius:10px;border:1px solid #BFDBFE;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div>
+      <div style="font-size:13px;font-weight:800;color:#1D4ED8">📊 ${TOTAL_SLOTS_ACR} Slots de Acréscimos Editáveis</div>
+      <div style="font-size:11px;color:#3B82F6;margin-top:2px">${ativos} ativo(s) • ${TOTAL_SLOTS_ACR - ativos} vazio(s) • Estoque controla disponibilidade nas encomendas</div>
+    </div>
+    <button onclick="zerarTodosAcr()" style="padding:6px 12px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:#EF4444;color:#fff">❌ Esgotar Todos</button>
+  </div>`;
+  h += '<div id="lista-acr-admin">';
   lista.forEach((c, i) => {
     const esg = c.esgotado || c.estoque <= 0;
-    h += `<div style="background:${esg?'#FEF2F2':'#FAFAFA'};border:1px solid ${esg?'#FECACA':'#E5E7EB'};border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:800;color:${esg?'#EF4444':'#111827'};flex:1">${c.nome}${esg?' ⚠️ ESGOTADO':''}</span>
-        <button onclick="toggleEsgotadoAcr(${i})" style="padding:6px 12px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:${esg?'#10B981':'#EF4444'};color:#fff">${esg?'✅ Reativar':'❌ Esgotar'}</button>
+    const vazio = !c.nome || c.nome.trim() === '';
+    const bg = vazio ? '#F9FAFB' : (esg ? '#FEF2F2' : '#F0FDF4');
+    const bord = vazio ? '#E5E7EB' : (esg ? '#FECACA' : '#BBF7D0');
+    h += `<div style="background:${bg};border:2px solid ${bord};border-radius:12px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:800;color:#9CA3AF;background:#F3F4F6;border-radius:6px;padding:2px 7px;min-width:32px;text-align:center">#${i+1}</span>
+        <span style="font-size:12px;font-weight:800;color:${vazio?'#9CA3AF':(esg?'#EF4444':'#15803D')};flex:1">${vazio?'(slot vazio — preencha o nome para ativar)':c.nome}${(!vazio&&esg)?' ⚠️ ESGOTADO':(!vazio?' ✅ ATIVO':'')}</span>
+        ${!vazio ? `<button onclick="toggleEsgotadoAcr(${i})" style="padding:5px 10px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:${esg?'#10B981':'#EF4444'};color:#fff">${esg?'✅ Reativar':'❌ Esgotar'}</button>` : ''}
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <div style="flex:1;min-width:130px">
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Nome</label>
-          <input type="text" value="${c.nome}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box" onchange="editarAcr(${i},'nome',this.value)">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:120px">
+          <label style="font-size:10px;font-weight:700;color:#6B7280;display:block;margin-bottom:3px;text-transform:uppercase">Nome do Produto</label>
+          <input type="text" id="acr-nome-${i}" value="${c.nome||''}" placeholder="Ex: Granulado, Calda de Morango..." style="width:100%;padding:7px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;background:#fff" onchange="editarAcr(${i},'nome',this.value)">
         </div>
-        <div style="width:90px">
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Preço (R$)</label>
-          <input type="number" step="0.01" min="0" value="${c.preco}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box" onchange="editarAcr(${i},'preco',parseFloat(this.value))">
+        <div style="width:88px">
+          <label style="font-size:10px;font-weight:700;color:#6B7280;display:block;margin-bottom:3px;text-transform:uppercase">Preço R$</label>
+          <input type="number" step="0.01" min="0" value="${c.preco||0}" style="width:100%;padding:7px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;background:#fff" onchange="editarAcr(${i},'preco',parseFloat(this.value)||0)">
         </div>
-        <div style="width:90px">
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Estoque</label>
-          <input type="number" min="0" value="${c.estoque}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box" onchange="editarAcr(${i},'estoque',parseInt(this.value))">
+        <div style="width:88px">
+          <label style="font-size:10px;font-weight:700;color:#6B7280;display:block;margin-bottom:3px;text-transform:uppercase">Estoque</label>
+          <input type="number" min="0" max="9999" value="${c.estoque||0}" style="width:100%;padding:7px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box;background:#fff" onchange="editarAcr(${i},'estoque',parseInt(this.value)||0)">
         </div>
       </div>
-      <div id="acr-status-${i}" style="margin-top:6px;font-size:12px;font-weight:700;color:#10B981;height:16px"></div>
+      <div id="acr-status-${i}" style="margin-top:4px;font-size:11px;font-weight:700;color:#10B981;min-height:14px"></div>
     </div>`;
   });
   h += '</div>';
   return h;
 }
 function editarAcr(i, campo, valor) {
-  const lista = getAcrescimos();
+  const lista = getAcrescimosAdmin();
   lista[i][campo] = valor;
-  if(campo === 'estoque') lista[i].esgotado = valor <= 0;
+  if (campo === 'estoque') {
+    lista[i].esgotado = (parseInt(valor) || 0) <= 0;
+  }
+  if (campo === 'nome') {
+    const preenchido = valor && valor.trim() !== '';
+    lista[i].vazio = !preenchido;
+    // Ao preencher nome pela primeira vez, ativar com estoque 100
+    if (preenchido && (lista[i].estoque || 0) <= 0) {
+      lista[i].estoque = 100;
+      lista[i].esgotado = false;
+    }
+    if (!preenchido) {
+      lista[i].esgotado = true;
+      lista[i].estoque = 0;
+    }
+  }
   salvarAcrescimos(lista);
   const el = document.getElementById('acr-status-'+i);
-  if(el){ el.textContent = '✅ Salvo!'; setTimeout(()=>el.textContent='',2500); }
+  if (el) { el.textContent = '✅ Salvo!'; setTimeout(()=>el.textContent='', 2500); }
+  // Re-renderizar ao mudar nome para atualizar status visual
+  if (campo === 'nome') {
+    const sec = document.getElementById('sec-acrescimos');
+    if (sec) { const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
+  }
 }
 function toggleEsgotadoAcr(i) {
-  const lista = getAcrescimos();
+  const lista = getAcrescimosAdmin();
   lista[i].esgotado = !lista[i].esgotado;
-  lista[i].estoque = lista[i].esgotado ? 0 : 999;
+  lista[i].estoque = lista[i].esgotado ? 0 : 100;
   salvarAcrescimos(lista);
-  // Re-renderizar seção
-  const sec = document.getElementById('cat-acrescimos');
-  if(sec){ const bd = sec.querySelector('.cat-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
+  const sec = document.getElementById('sec-acrescimos');
+  if (sec) { const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
+}
+function zerarTodosAcr() {
+  if (!confirm('Esgotar TODOS os acréscimos ativos?')) return;
+  const lista = getAcrescimosAdmin();
+  lista.forEach(c => { if(c.nome && c.nome.trim()!=='') { c.esgotado=true; c.estoque=0; } });
+  salvarAcrescimos(lista);
+  const sec = document.getElementById('sec-acrescimos');
+  if (sec) { const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
 }
 // ── INICIAR ──
 function iniciarAdmin(){
