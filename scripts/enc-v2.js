@@ -594,25 +594,48 @@ function finalizarPedido() {
   const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente).trim();
   const tel  = ((telEl  ? telEl.value  : '') || _telCliente).trim();
   const end  = ((endEl  ? endEl.value  : '') || _enderecoCliente).trim();
-
   if (!nome) { showToast('⚠️ Preencha seu nome completo.', 'alerta'); return; }
   if (!tel)  { showToast('⚠️ Preencha seu WhatsApp com DDD.', 'alerta'); return; }
   if (!end)  { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
 
-  let total = 0;
-  // Gerar número sequencial único: NNNN/MM/AAAA HH:MM
-  const seqAtual = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
-  localStorage.setItem('itap_seq_pedido', seqAtual.toString());
+  // Bloquear botão para evitar duplo clique
+  const btnFin = document.getElementById('btn-finalizar');
+  if (btnFin) { btnFin.disabled = true; btnFin.textContent = '⏳ Gerando pedido...'; }
+
+  // Data/hora atual
   const agora = new Date();
-  const dd = String(agora.getDate()).padStart(2, '0');
-  const mm = String(agora.getMonth() + 1).padStart(2, '0');
+  const dd   = String(agora.getDate()).padStart(2, '0');
+  const mm   = String(agora.getMonth() + 1).padStart(2, '0');
   const aaaa = agora.getFullYear();
-  const hh = String(agora.getHours()).padStart(2, '0');
-  const min = String(agora.getMinutes()).padStart(2, '0');
-  const seqStr = String(seqAtual).padStart(4, '0');
-  const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
+  const hh   = String(agora.getHours()).padStart(2, '0');
+  const min  = String(agora.getMinutes()).padStart(2, '0');
   const dataFormatada = `${dd}/${mm}/${aaaa} ${hh}:${min}`;
 
+  // ============================================================
+  // SISTEMA PROFISSIONAL DE NUMERAÇÃO DE PEDIDOS
+  // Contador centralizado no servidor — número único e sequencial
+  // Nunca se repete, independente do dispositivo ou navegador
+  // ============================================================
+  fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up')
+    .then(r => r.json())
+    .then(data => {
+      const seq = data.count || 1;
+      const seqStr = String(seq).padStart(4, '0');
+      const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
+      _concluirPedido(nome, tel, end, numPedido, dataFormatada);
+    })
+    .catch(() => {
+      // Fallback: contador local se o servidor estiver indisponível
+      const seqLocal = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
+      localStorage.setItem('itap_seq_pedido', seqLocal.toString());
+      const seqStr = 'L' + String(seqLocal).padStart(3, '0');
+      const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
+      _concluirPedido(nome, tel, end, numPedido, dataFormatada);
+    });
+}
+
+function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
+  let total = 0;
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
   msg += `🔢 *Pedido Nº:* ${numPedido}\n📅 *Data:* ${dataFormatada}\n\n`;
   msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n📍 *Endereço:* ${end}\n\n`;
@@ -629,8 +652,7 @@ function finalizarPedido() {
   msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
   msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
   msg += `📍 Retirada na loja em Cajuru/SP`;
-
-   // Salvar pedido no localStorage para o Admin visualizar
+  // Salvar pedido no localStorage para o Admin visualizar
   try {
     const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
     pedidos.unshift({
@@ -643,11 +665,9 @@ function finalizarPedido() {
       total: total,
       status: 'novo'
     });
-    // Manter apenas os últimos 50 pedidos
     if (pedidos.length > 50) pedidos.length = 50;
     localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
   } catch(e) { console.warn('Erro ao salvar pedido:', e); }
-
   const numEl = document.getElementById('num-pedido');
   if (numEl) numEl.textContent = numPedido;
   const dataEl = document.getElementById('data-pedido');
