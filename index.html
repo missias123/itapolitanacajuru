@@ -49,6 +49,31 @@ img{max-width:100%;display:block}
 .nav-orange{background:linear-gradient(135deg,#FB923C,#F97316);color:#fff;box-shadow:0 4px 14px rgba(249,115,22,.4)}
 .nav-green{background:linear-gradient(135deg,#4ADE80,#16A34A);color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.4)}
 .nav-yellow{background:linear-gradient(135deg,#FCD34D,#F59E0B);color:#1A0A00;box-shadow:0 4px 14px rgba(245,158,11,.4)}
+/* BANNER CLIMA */
+.clima-banner{width:100%;background:linear-gradient(135deg,#0EA5E9,#38BDF8,#7DD3FC);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;overflow:hidden}
+.clima-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cellipse cx='20' cy='10' rx='18' ry='8' fill='rgba(255,255,255,0.12)'/%3E%3Cellipse cx='60' cy='8' rx='25' ry='10' fill='rgba(255,255,255,0.08)'/%3E%3Cellipse cx='85' cy='12' rx='14' ry='6' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") center/cover no-repeat;pointer-events:none}
+.clima-banner-left{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.clima-banner-icone{font-size:36px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15));animation:clima-float 3s ease-in-out infinite}
+@keyframes clima-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.clima-banner-temp{font-size:28px;font-weight:900;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+.clima-banner-info{display:flex;flex-direction:column;gap:1px}
+.clima-banner-desc{font-size:12px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+.clima-banner-cidade{font-size:10px;color:rgba(255,255,255,.85);font-weight:700;letter-spacing:.3px}
+.clima-banner-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;position:relative;z-index:1}
+.clima-banner-detalhe{font-size:10px;color:rgba(255,255,255,.9);font-weight:700}
+.clima-banner-msg{font-size:12px;font-weight:900;color:#FFF9C4;text-align:right;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.2);max-width:140px}
+.clima-banner-loading{font-size:12px;color:rgba(255,255,255,.8);font-weight:700;text-align:center;width:100%;padding:4px 0}
+/* WIDGET CLIMA */
+.clima-widget{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:12px;padding:8px 14px;margin-top:4px;border:1.5px solid #93C5FD;gap:8px}
+.clima-left{display:flex;align-items:center;gap:8px}
+.clima-icone{font-size:22px;line-height:1}
+.clima-temp{font-size:18px;font-weight:900;color:#1D4ED8;line-height:1}
+.clima-desc{font-size:11px;color:#3B82F6;font-weight:700;line-height:1.2}
+.clima-cidade{font-size:10px;color:#6B7280;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.clima-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.clima-detalhe{font-size:10px;color:#6B7280;font-weight:600}
+.clima-sorvete-msg{font-size:10px;font-weight:800;color:#E8000D;text-align:right;line-height:1.3}
+.clima-loading{font-size:11px;color:#9CA3AF;font-weight:600}
 /* FAIXA REGIONAL */
 .regional{background:linear-gradient(135deg,#FF6B35,#E8000D,#7B2D8B);color:#fff;text-align:center;padding:10px 16px;text-shadow:0 1px 3px rgba(0,0,0,.3)}
 .regional-linha1{font-size:14px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
@@ -306,6 +331,21 @@ img{max-width:100%;display:block}
       <a href="promocao.html" class="nav-btn nav-orange" id="nav-promo-btn">🎉 Promoção</a>
       <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="nav-btn nav-yellow">⭐ Avalie</a>
     </nav>
+    <!-- WIDGET CLIMA CAJURU -->
+    <div class="clima-widget" id="clima-widget">
+      <div class="clima-left">
+        <div class="clima-icone" id="clima-icone">⏳</div>
+        <div>
+          <div class="clima-temp" id="clima-temp"><span class="clima-loading">Carregando...</span></div>
+          <div class="clima-desc" id="clima-desc">Cajuru/SP</div>
+          <div class="clima-cidade">📍 Cajuru · SP</div>
+        </div>
+      </div>
+      <div class="clima-right">
+        <div class="clima-detalhe" id="clima-detalhe"></div>
+        <div class="clima-sorvete-msg" id="clima-sorvete-msg"></div>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -319,6 +359,24 @@ img{max-width:100%;display:block}
 <!-- STRIP SENSORIAL TOPO -->
 <div class="strip-sensorial" id="strip-sensorial">
   🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 36 Sabores · Desde 2007 · Artesanal · 🍦
+</div>
+
+<!-- BANNER CLIMA CAJURU -->
+<div class="clima-banner" id="clima-banner">
+  <div class="clima-banner-left">
+    <div class="clima-banner-icone" id="clima-icone">⏳</div>
+    <div>
+      <div class="clima-banner-temp" id="clima-temp">--°C</div>
+      <div class="clima-banner-info">
+        <div class="clima-banner-desc" id="clima-desc">Carregando clima...</div>
+        <div class="clima-banner-cidade">📍 Cajuru · SP</div>
+      </div>
+    </div>
+  </div>
+  <div class="clima-banner-right">
+    <div class="clima-banner-detalhe" id="clima-detalhe"></div>
+    <div class="clima-banner-msg" id="clima-msg"></div>
+  </div>
 </div>
 
 <!-- HERO -->
@@ -1148,7 +1206,77 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
   // Corrigir chatbot: resolver funções
   Object.keys(respostas).forEach(k=>{if(typeof respostas[k]==='function')respostas[k]=respostas[k]();});
+  // Carregar clima
+  carregarClima();
 });
+
+// CLIMA CAJURU - Open-Meteo (gratuito, sem chave)
+function carregarClima(){
+  const codigos={
+    0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
+    45:'🌫️',48:'🌫️',
+    51:'🌦️',53:'🌦️',55:'🌧️',
+    61:'🌧️',63:'🌧️',65:'🌧️',
+    71:'🌨️',73:'🌨️',75:'❄️',
+    80:'🌦️',81:'🌧️',82:'⛈️',
+    95:'⛈️',96:'⛈️',99:'⛈️'
+  };
+  const descs={
+    0:'Céu limpo',1:'Principalmente limpo',2:'Parcialmente nublado',3:'Nublado',
+    45:'Névoa',48:'Névoa com gelo',
+    51:'Garoa leve',53:'Garoa moderada',55:'Garoa intensa',
+    61:'Chuva leve',63:'Chuva moderada',65:'Chuva forte',
+    71:'Neve leve',73:'Neve moderada',75:'Neve forte',
+    80:'Pancadas leves',81:'Pancadas moderadas',82:'Pancadas fortes',
+    95:'Tempestade',96:'Tempestade com granizo',99:'Tempestade forte'
+  };
+  const msgs={
+    0:'☀️ Dia quente! Hora do sorvete! 🍦',
+    1:'🌤️ Tempo lindo! Venha tomar um sorvete!',
+    2:'⛅ Nublado mas gostoso! Sorvete é sempre bom!',
+    3:'☁️ Nublado? Sorvete anima qualquer dia!',
+    45:'🌫️ Névoa? Sorvete esquenta o coração!',
+    48:'🌫️ Névoa? Sorvete esquenta o coração!',
+    51:'🌦️ Garoa? Sorvete com cobertura quente!',
+    53:'🌦️ Garoa? Sorvete com cobertura quente!',
+    55:'🌧️ Chuva? Sorvete de chocolate aquece!',
+    61:'🌧️ Chuva? Sorvete de chocolate aquece!',
+    63:'🌧️ Chuva? Sorvete de chocolate aquece!',
+    65:'🌧️ Chuva forte? Venha nos visitar!',
+    80:'🌦️ Pancadas? Sorvete é sempre a resposta!',
+    81:'🌧️ Chuva? Sorvete de chocolate aquece!',
+    82:'⛈️ Tempestade? Sorvete resolve tudo!',
+    95:'⛈️ Tempestade? Sorvete resolve tudo!'
+  };
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.2756&longitude=-47.2978&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=America%2FSao_Paulo')
+    .then(r=>r.json())
+    .then(d=>{
+      const c=d.current;
+      const temp=Math.round(c.temperature_2m);
+      const code=c.weathercode;
+      const icone=codigos[code]||'🌡️';
+      const desc=descs[code]||'Clima atual';
+      const msg=msgs[code]||msgs[temp>=28?0:temp>=20?1:2]||'🍦 Venha tomar um sorvete!';
+      document.getElementById('clima-icone').textContent=icone;
+      document.getElementById('clima-temp').textContent=temp+'°C';
+      document.getElementById('clima-desc').textContent=desc;
+      document.getElementById('clima-detalhe').textContent='💧 '+c.relativehumidity_2m+'%  💨 '+Math.round(c.windspeed_10m)+' km/h';
+      document.getElementById('clima-msg').textContent=temp>=28?'🔥 Calor de '+temp+'°C! Sorvete urgente! 🍦':temp>=22?'☀️ '+temp+'°C em Cajuru! Sorvete é a pedida!':'🍦 '+temp+'°C em Cajuru! Venha se refrescar!';
+      // Mudar cor do banner conforme temperatura
+      const banner=document.getElementById('clima-banner');
+      if(banner){
+        if(temp>=30)banner.style.background='linear-gradient(135deg,#F97316,#EF4444,#FB923C)';
+        else if(temp>=25)banner.style.background='linear-gradient(135deg,#0EA5E9,#38BDF8,#7DD3FC)';
+        else banner.style.background='linear-gradient(135deg,#818CF8,#6366F1,#A78BFA)';
+      }
+    })
+    .catch(()=>{
+      document.getElementById('clima-icone').textContent='🌡️';
+      document.getElementById('clima-temp').textContent='--°C';
+      document.getElementById('clima-desc').textContent='Clima indisponível';
+      document.getElementById('clima-msg').textContent='🍦 Venha tomar um sorvete!';
+    });
+}
 </script>
 </body>
 </html>
