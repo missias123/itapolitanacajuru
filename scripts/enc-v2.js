@@ -87,36 +87,36 @@ const PRODUTOS = {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
-  // Modal carrinho: delegação de eventos unificada
+  // Modal carrinho: listeners diretos nos botões (sem conflito de dupla chamada)
   const modalCarrinho = document.getElementById('modal-carrinho');
   if (modalCarrinho) {
+    // Fechar ao clicar no overlay (fora do modal-box)
     modalCarrinho.addEventListener('click', function(e) {
-      // Botão ir para dados (etapa 1 → 2)
-      const btnIrDados = e.target.closest('#btn-ir-dados');
-      if (btnIrDados && !btnIrDados.disabled) {
-        e.stopPropagation();
-        e.preventDefault();
-        irParaDados();
-        return;
-      }
-      // Botão Confirmar e Enviar Pedido (etapa 2 → 3)
-      const btnFinalizar = e.target.closest('.btn-finalizar');
-      if (btnFinalizar) {
-        e.stopPropagation();
-        e.preventDefault();
-        finalizarPedido();
-        return;
-      }
-      // Botão Voltar ao Carrinho
-      const btnVoltar = e.target.closest('.btn-voltar-etapa');
-      if (btnVoltar) {
-        e.stopPropagation();
-        e.preventDefault();
-        mostrarEtapa('revisao');
-        return;
-      }
-      // Fechar apenas se clicar diretamente no overlay (fora do modal-box)
       if (e.target === modalCarrinho) fecharCarrinho();
+    });
+  }
+  // Botão ir para dados (etapa 1 → 2)
+  const btnIrDados = document.getElementById('btn-ir-dados');
+  if (btnIrDados) {
+    btnIrDados.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!btnIrDados.disabled) irParaDados();
+    });
+  }
+  // Botão Confirmar e Enviar Pedido (etapa 2 → 3)
+  const btnFinalizar = document.getElementById('btn-finalizar');
+  if (btnFinalizar) {
+    btnFinalizar.addEventListener('click', function(e) {
+      e.stopPropagation();
+      finalizarPedido();
+    });
+  }
+  // Botão Voltar ao Carrinho
+  const btnVoltarEtapa = document.getElementById('btn-voltar-etapa');
+  if (btnVoltarEtapa) {
+    btnVoltarEtapa.addEventListener('click', function(e) {
+      e.stopPropagation();
+      mostrarEtapa('revisao');
     });
   }
   renderizarTudo();
