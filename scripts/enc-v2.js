@@ -52,11 +52,27 @@ function getCaixasEncomenda() {
   return PADRAO;
 }
 
+function getTortasEncomenda() {
+  const PADRAO = [
+    { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3, estoque:10, esgotado:false }
+  ];
+  try {
+    const salvo = localStorage.getItem('itap_tortas_enc');
+    if (salvo) {
+      const dados = JSON.parse(salvo);
+      return dados.map((t, i) => ({
+        ...PADRAO[i] || {},
+        ...t,
+        maxSabores: (PADRAO[i] ? PADRAO[i].maxSabores : 3)
+      }));
+    }
+  } catch(e) {}
+  return PADRAO;
+}
+
 const PRODUTOS = {
   caixas: getCaixasEncomenda(),
-  tortas: [
-    { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3, estoque:10 }
-  ],
+  tortas: getTortasEncomenda(),
   // Picolés carregados do products.js (fonte única)
   picoles: Object.entries(produtos.picoles).map(([key, p]) => ({
     id: 'pic_'+key,
@@ -75,12 +91,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalCarrinho = document.getElementById('modal-carrinho');
   if (modalCarrinho) {
     modalCarrinho.addEventListener('click', function(e) {
-      // Botão Finalizar Pedido
-      const btnFinalizar = e.target.closest('#btn-ir-dados');
-      if (btnFinalizar && !btnFinalizar.disabled) {
+      // Botão ir para dados (etapa 1 → 2)
+      const btnIrDados = e.target.closest('#btn-ir-dados');
+      if (btnIrDados && !btnIrDados.disabled) {
         e.stopPropagation();
         e.preventDefault();
         irParaDados();
+        return;
+      }
+      // Botão Confirmar e Enviar Pedido (etapa 2 → 3)
+      const btnFinalizar = e.target.closest('.btn-finalizar');
+      if (btnFinalizar) {
+        e.stopPropagation();
+        e.preventDefault();
+        finalizarPedido();
+        return;
+      }
+      // Botão Voltar ao Carrinho
+      const btnVoltar = e.target.closest('.btn-voltar-etapa');
+      if (btnVoltar) {
+        e.stopPropagation();
+        e.preventDefault();
+        mostrarEtapa('revisao');
         return;
       }
       // Fechar apenas se clicar diretamente no overlay (fora do modal-box)
