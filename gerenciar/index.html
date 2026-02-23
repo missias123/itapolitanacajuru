@@ -298,7 +298,7 @@ function renderAdmin() {
   renderSaboresAdmin();
 
   body.appendChild(criarSecao('sorvetes', '🍦 Sorvetes de Massa', renderSorvetes()));
-  body.appendChild(criarSecao('picoles', '🍭 Picolés', renderPicoles()));
+  body.appendChild(criarSecao('picoles', '🍭 Picolés', renderPicolés()));
   body.appendChild(criarSecao('acai', '🫐 Açaí Artesanal', renderAcai()));
   body.appendChild(criarSecao('milkshake', '🥤 Milkshakes', renderMilkshake()));
   body.appendChild(criarSecao('tacas', '🍨 Taças', renderTacas()));
@@ -376,7 +376,7 @@ function toggleEsgotadoCaixa(i) {
 // ── SORVETES ──
 function renderSorvetes() {
   const p = produtos.sorvetes;
-  const nomes = { casquinha_copo: 'Casquinha/Copo', copo_recheado: 'Copo Recheado', cascao: 'Cascão', cestinha: 'Cestinha' };
+  const nomes = { casquinha_copo: 'Casquinha/Copo', copo_recheado: 'Copo Recheado', cascão: 'Cascão', cestinha: 'Cestinha' };
   let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Preços por Apresentação</h4><div class="preco-simples-grid">';
   Object.entries(p.precos).forEach(([key, precos]) => {
     Object.entries(precos).forEach(([tam, preco]) => {
@@ -395,7 +395,7 @@ function renderSorvetes() {
 }
 
 // ── PICOLÉS ──
-function renderPicoles() {
+function renderPicolés() {
   let html = '<div class="prod-edit-grid">';
   Object.entries(produtos.picoles).forEach(([key, p]) => {
     const chave = 'picole_' + key;
@@ -547,7 +547,7 @@ const SABORES_PADRAO = [
   "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
   "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
   "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-  "Leite Ninho Foleado","Leite Ninho com Óreo","Limão",
+  "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
   "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
   "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
   "Pistache","Prestígio","Sensação","Torta de Chocolate"
@@ -641,5 +641,6 @@ function salvarTudo() {
   setTimeout(() => msg.textContent = '', 6000);
 }
 </script>
+<script src="../scripts/ortografia.js"></script>
 </body>
 </html>

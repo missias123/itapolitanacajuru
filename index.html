@@ -551,7 +551,7 @@ img{max-width:100%;display:block}
     <div class="acc-header" onclick="toggleAcc('acc-picoles')">
       <div class="acc-left">
         <span class="acc-icon">🧊</span>
-        <div><div class="acc-title">Picolés</div><div class="acc-sub">Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Eskimo</div></div>
+        <div><div class="acc-title">Picolés</div><div class="acc-sub">Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó</div></div>
       </div>
       <span class="acc-arrow">▼</span>
     </div>
@@ -667,7 +667,7 @@ img{max-width:100%;display:block}
     <div class="acc-header" onclick="toggleAcc('acc-sobremesas')">
       <div class="acc-left">
         <span class="acc-icon">🍨</span>
-        <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fundue, Petit Gateau e mais</div></div>
+        <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau e mais</div></div>
       </div>
       <span class="acc-arrow">▼</span>
     </div>
@@ -866,8 +866,8 @@ function abrirModal(id){document.getElementById(id).classList.add('show')}
 // ── RENDER SORVETES ── (lê do products.js)
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
-  const nomes={casquinha_copo:'Casquinha / Copo',copo_recheado:'Copo Recheado',cascao:'Cascão',cestinha:'Cestinha'};
-  const desc={casquinha_copo:'1 bola',copo_recheado:'1 bola + recheio',cascao:'Casquinha grande',cestinha:'Cestinha crocante'};
+  const nomes={casquinha_copo:'Casquinha / Copo',copo_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha'};
+  const desc={casquinha_copo:'1 bola',copo_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha crocante'};
   if(produtos&&produtos.sorvetes&&produtos.sorvetes.precos){
     Object.entries(produtos.sorvetes.precos).forEach(([key,precos])=>{
       const preco=Object.values(precos)[0];
@@ -944,14 +944,14 @@ function renderAcai(){
 }
 
 // ── RENDER PICOLÉS ── (lê do products.js)
-const iconesPicole={frutas_agua:'🍉',leite_sem_recheio:'🍦',leite_com_recheio:'🍫',leite_ninho:'⭐',eskimos:'🍬'};
-function renderPicoles(){
+const iconesPicolé={frutas_agua:'🍉',leite_sem_recheio:'🍦',leite_com_recheio:'🍫',leite_ninho:'⭐',esquimós:'🍬'};
+function renderPicolés(){
   const b=document.getElementById('picoles-body');b.innerHTML='';
   if(produtos&&produtos.picoles){
     Object.entries(produtos.picoles).forEach(([key,p])=>{
       const d=document.createElement('div');d.className='picole-item';
-      const icon=iconesPicole[key]||'🍭';
-      d.innerHTML=`<div class="picole-row"><span class="picole-nome">${icon} ${p.nome}</span><span class="picole-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicole('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
+      const icon=iconesPicolé[key]||'🍭';
+      d.innerHTML=`<div class="picole-row"><span class="picole-nome">${icon} ${p.nome}</span><span class="picole-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicolé('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
       b.appendChild(d);
     });
   }
@@ -1045,7 +1045,7 @@ function abrirTacasSujas(){
   abrirModal('modal-sabores');
 }
 // ── ABRIR MODAL PICOLÉ ──
-function abrirPicole(key,nome){
+function abrirPicolé(key,nome){
   document.getElementById('mp-titulo').textContent=`🍭 Sabores – ${nome}`;
   document.getElementById('mp-sub').textContent='Sabores disponíveis para este tipo de picolé';
   const chips=document.getElementById('mp-chips');chips.innerHTML='';
@@ -1202,7 +1202,7 @@ function getComplementosCardapio() {
   const PADRAO = [
     {id:'canudinho',nome:'Canudinho Wafer UN',preco:0.25,estoque:999},
     {id:'casquinha',nome:'Casquinhas UN',preco:0.25,estoque:999},
-    {id:'cascao',nome:'Cascão UN',preco:1.00,estoque:999},
+    {id:'cascão',nome:'Cascão UN',preco:1.00,estoque:999},
     {id:'cestinha',nome:'Cestinha UN',preco:1.00,estoque:999},
     {id:'cobertura',nome:'Cobertura 1.3L UN',preco:40.00,estoque:999}
   ];
@@ -1301,7 +1301,7 @@ setInterval(() => {
 document.addEventListener('DOMContentLoaded',()=>{
   carregarBanner();
   carregarBarraPromo();
-  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicoles();renderIso();renderSobremesas();
+  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicolés();renderIso();renderSobremesas();
   renderComplementosCardapio();
   // Todos os accordions fechados por padrão
   // Foto da torta

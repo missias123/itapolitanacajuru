@@ -1,0 +1,43 @@
+name: ✅ Correção Ortográfica Automática
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  corrigir-ortografia:
+    name: Verificar e Corrigir Português Oficial
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Baixar código
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🔍 Executar correção ortográfica
+        run: python3 scripts/corrigir_ortografia.py
+
+      - name: 📝 Verificar se houve correções
+        id: check_changes
+        run: |
+          git diff --quiet && echo "changes=false" >> $GITHUB_OUTPUT || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: 💾 Fazer commit das correções automáticas
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "ortografia-bot@itapolitana.com.br"
+          git config --local user.name "Bot Ortografia Itapolitana"
+          git add -A
+          git commit -m "🔤 Auto-correção ortográfica: português oficial aplicado"
+          git push
