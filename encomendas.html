@@ -704,13 +704,37 @@
     }
   </style>
 <!-- v:1771806853-neuro -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FoodService",
+  "name": "Encomendas – Sorveteria Itapolitana Cajuru",
+  "description": "Encomende tortas de sorvete, caixas 5L e 10L, picolés no atacado e acréscimos. Retirada na loja em Cajuru/SP.",
+  "url": "https://itapolitanacajuru.com.br/encomendas.html",
+  "telephone": "+55-16-99147-2045",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "R. Cel. Manoel Caetano, 311",
+    "addressLocality": "Cajuru",
+    "addressRegion": "SP",
+    "addressCountry": "BR"
+  }
+}
+</script>
+<meta name="theme-color" content="#1565C0">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Encomendas – Sorveteria Itapolitana Cajuru">
+  <meta name="twitter:description" content="Encomende tortas, caixas de sorvete e picolés para festas. Retirada na loja em Cajuru/SP.">
+  <meta name="twitter:image" content="https://itapolitanacajuru.com.br/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 </head>
 <body>
 
 <!-- HEADER -->
 <header class="header">
   <a href="index.html" class="header-logo">
-    <img src="images/logo.png" alt="Itapolitana">
+    <img loading="lazy" src="images/logo.png" alt="Itapolitana">
     <div class="header-logo-texto">
       <h1>Itapolitana Cajuru</h1>
       <p>Encomendas</p>
@@ -816,7 +840,7 @@
 </div>
 
 <!-- BOTÃO CARRINHO FIXO -->
-<button class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" disabled>
+<button type="button" class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" disabled>
   🛒 Ver Carrinho
   <span class="badge" id="carrinho-badge">0</span>
 </button>
@@ -830,7 +854,7 @@
           <div class="modal-titulo">Escolher Sabores</div>
           <div class="modal-subtitulo" id="modal-subtitulo-sabores"></div>
         </div>
-        <button class="btn-fechar-modal" onclick="fecharModal('modal-sabores')">✕</button>
+        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-sabores')">✕</button>
       </div>
     </div>
     <!-- 1. SABORES COM SCROLL PRÓPRIO -->
@@ -839,7 +863,7 @@
     </div>
     <!-- BOTÃO CONFIRMAR -->
     <div style="padding:12px 20px 20px">
-      <button class="btn-confirmar" id="btn-confirmar-sabores" onclick="confirmarSabores()" disabled>
+      <button type="button" class="btn-confirmar" id="btn-confirmar-sabores" onclick="confirmarSabores()" disabled>
         Confirmar Seleção (0/0)
       </button>
     </div>
@@ -855,7 +879,7 @@
           <div class="modal-titulo" id="picole-titulo"></div>
           <div class="modal-subtitulo" id="picole-precos"></div>
         </div>
-        <button class="btn-fechar-modal" onclick="fecharModal('modal-picole')">✕</button>
+        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picole')">✕</button>
       </div>
     </div>
     <div class="modal-body">
@@ -865,7 +889,7 @@
         <strong><span id="total-picoles">0</span> picolés</strong>
       </div>
       <div class="aviso-minimo" id="aviso-minimo-picole"></div>
-      <button class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
+      <button type="button" class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
         Selecione ao menos 1 picolé
       </button>
     </div>
@@ -878,7 +902,7 @@
     <div class="modal-header">
       <div class="modal-header-top">
         <div class="modal-titulo">🛒 Meu Pedido</div>
-        <button class="btn-fechar-modal" onclick="fecharCarrinho()">✕</button>
+        <button type="button" class="btn-fechar-modal" onclick="fecharCarrinho()">✕</button>
       </div>
     </div>
 
@@ -908,10 +932,10 @@
         <span id="total-carrinho">R$ 0,00</span>
       </div>
       <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
-      <button class="btn-proxima-etapa" id="btn-ir-dados" onclick="irParaDados()">
+      <button type="button" class="btn-proxima-etapa" id="btn-ir-dados" onclick="event.stopPropagation();irParaDados()">
         ✅ Quero Finalizar o Pedido
       </button>
-      <button class="btn-continuar-comprando" onclick="fecharCarrinho()">
+      <button type="button" class="btn-continuar-comprando" onclick="fecharCarrinho()">
         🛒 Continuar Comprando
       </button>
     </div>
@@ -927,10 +951,10 @@
         <label>📱 Seu WhatsApp *</label>
         <input type="tel" id="cliente-tel" placeholder="Ex: (16) 99999-9999" autocomplete="tel">
       </div>
-      <button class="btn-finalizar" onclick="finalizarPedido()">
+      <button type="button" class="btn-finalizar" onclick="finalizarPedido()">
         📲 Confirmar e Enviar Pedido
       </button>
-      <button class="btn-voltar-etapa" onclick="mostrarEtapa('revisao')">
+      <button type="button" class="btn-voltar-etapa" onclick="mostrarEtapa('revisao')">
         ← Voltar ao Carrinho
       </button>
     </div>
@@ -944,12 +968,12 @@
         <p style="font-size:0.88rem;color:#6A0DAD;font-weight:700;margin-bottom:20px;">
           Clique abaixo para enviar seu pedido via WhatsApp. Nossa equipe entrará em contato para confirmar o pagamento.
         </p>
-        <button class="btn-whatsapp-final" id="btn-whatsapp-final">
+        <button type="button" class="btn-whatsapp-final" id="btn-whatsapp-final">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.847L0 24l6.335-1.508A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.655-.502-5.187-1.381l-.371-.22-3.763.896.943-3.668-.242-.381A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
           Enviar Pedido via WhatsApp
         </button>
-        <button class="btn-novo-pedido" onclick="novoPedido()">🔄 Fazer Novo Pedido</button>
-        <button class="btn-voltar-cardapio" onclick="window.location.href='index.html'">← Voltar ao Cardápio</button>
+        <button type="button" class="btn-novo-pedido" onclick="novoPedido()">🔄 Fazer Novo Pedido</button>
+        <button type="button" class="btn-voltar-cardapio" onclick="window.location.href='index.html'">← Voltar ao Cardápio</button>
       </div>
     </div>
 
