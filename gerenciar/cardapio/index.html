@@ -294,6 +294,69 @@ function renderSobremesas(){
   return h;
 }
 
+
+// ── ACRÉSCIMOS (chave: itap_acrescimos) ──
+const ACRESCIMOS_PADRAO = [
+  { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:999, esgotado:false },
+  { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:999, esgotado:false },
+  { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:999, esgotado:false },
+  { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:999, esgotado:false },
+  { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:20,  esgotado:false }
+];
+function getAcrescimos() {
+  try { const s = localStorage.getItem('itap_acrescimos'); if(s) return JSON.parse(s); } catch(e){}
+  return JSON.parse(JSON.stringify(ACRESCIMOS_PADRAO));
+}
+function salvarAcrescimos(lista) {
+  localStorage.setItem('itap_acrescimos', JSON.stringify(lista));
+}
+function renderAcrescimos() {
+  const lista = getAcrescimos();
+  let h = '<div id="lista-acr-admin">';
+  lista.forEach((c, i) => {
+    const esg = c.esgotado || c.estoque <= 0;
+    h += `<div style="background:${esg?'#FEF2F2':'#FAFAFA'};border:1px solid ${esg?'#FECACA':'#E5E7EB'};border-radius:12px;padding:14px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:800;color:${esg?'#EF4444':'#111827'};flex:1">${c.nome}${esg?' ⚠️ ESGOTADO':''}</span>
+        <button onclick="toggleEsgotadoAcr(${i})" style="padding:6px 12px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:${esg?'#10B981':'#EF4444'};color:#fff">${esg?'✅ Reativar':'❌ Esgotar'}</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:130px">
+          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Nome</label>
+          <input type="text" value="${c.nome}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box" onchange="editarAcr(${i},'nome',this.value)">
+        </div>
+        <div style="width:90px">
+          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Preço (R$)</label>
+          <input type="number" step="0.01" min="0" value="${c.preco}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box" onchange="editarAcr(${i},'preco',parseFloat(this.value))">
+        </div>
+        <div style="width:90px">
+          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Estoque</label>
+          <input type="number" min="0" value="${c.estoque}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box" onchange="editarAcr(${i},'estoque',parseInt(this.value))">
+        </div>
+      </div>
+      <div id="acr-status-${i}" style="margin-top:6px;font-size:12px;font-weight:700;color:#10B981;height:16px"></div>
+    </div>`;
+  });
+  h += '</div>';
+  return h;
+}
+function editarAcr(i, campo, valor) {
+  const lista = getAcrescimos();
+  lista[i][campo] = valor;
+  if(campo === 'estoque') lista[i].esgotado = valor <= 0;
+  salvarAcrescimos(lista);
+  const el = document.getElementById('acr-status-'+i);
+  if(el){ el.textContent = '✅ Salvo!'; setTimeout(()=>el.textContent='',2500); }
+}
+function toggleEsgotadoAcr(i) {
+  const lista = getAcrescimos();
+  lista[i].esgotado = !lista[i].esgotado;
+  lista[i].estoque = lista[i].esgotado ? 0 : 999;
+  salvarAcrescimos(lista);
+  // Re-renderizar seção
+  const sec = document.getElementById('cat-acrescimos');
+  if(sec){ const bd = sec.querySelector('.cat-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
+}
 // ── INICIAR ──
 function iniciarAdmin(){
   carregarDados();
@@ -308,6 +371,7 @@ function iniciarAdmin(){
   body.appendChild(criarSecao('caixas_viagem','📦 Caixas de Viagem – Preços', renderCaixasViagem()));
   body.appendChild(criarSecao('isopores','🧊 Isopores de Viagem – Preços', renderIsopores()));
   body.appendChild(criarSecao('sobremesas','🎂 Sobremesas – Preços', renderSobremesas()));
+  body.appendChild(criarSecao('acrescimos','🍪 Acréscimos – Estoque e Preços', renderAcrescimos()));
 }
 
 function salvarTudo(){
