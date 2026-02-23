@@ -437,9 +437,22 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn-add-picoles:disabled { background: var(--cinza); cursor: not-allowed; }
+     .btn-add-picoles:disabled { background: var(--cinza); cursor: not-allowed; }
     .btn-add-picoles:not(:disabled):hover { background: #BF360C; }
-
+    .btn-continuar-picoles {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #E65100;
+      border-radius: 12px;
+      background: white;
+      color: #E65100;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+    .btn-continuar-picoles:hover { background: #FFF3E0; }
     /* MODAL CARRINHO */
     .steps-bar {
       display: flex;
@@ -1071,20 +1084,22 @@
         <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
       </div>
     </div>
-    <div class="modal-body">
+        <div class="modal-body">
       <div id="lista-sabores-picolé"></div>
       <div class="picolé-total-bar">
-        <span>Total selecionado:</span>
-        <strong><span id="total-picoles">0</span> picolés</strong>
+        <span>🧺 Total geral (todos os tipos):</span>
+        <strong><span id="total-picoles">0</span> / 250 picolés</strong>
       </div>
       <div class="aviso-minimo" id="aviso-minimo-picolé"></div>
       <button type="button" class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
-        Selecione ao menos 1 picolé
+        🍭 Selecione ao menos 100 picolés no total
+      </button>
+      <button type="button" class="btn-continuar-picoles" id="btn-continuar-picoles" onclick="fecharModal('modal-picolé')">
+        ← Continuar Comprando outros tipos
       </button>
     </div>
   </div>
 </div>
-
 <!-- MODAL CARRINHO -->
 <div class="modal-overlay" id="modal-carrinho">
   <div class="modal-box">

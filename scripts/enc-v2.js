@@ -7,8 +7,8 @@
 var carrinho = [];
 var produtoAtual = null;
 var saboresSelecionados = [];
-var picoleAtual = null;
-var selecoesPickle = {};
+var selecoesPickle = {};        // seleções do modal atual (por sabor)
+var selecoesPickleGlobal = {};  // acumulado de TODOS os tipos (chave: tipo_id + sabor)
 var _nomeCliente = '';
 var _telCliente = '';
 var _enderecoCliente = '';
@@ -354,11 +354,25 @@ function abrirModalPicolé(id) {
 function qtdPickle(sabor, delta) {
   if (!selecoesPickle[sabor]) selecoesPickle[sabor] = 0;
   const nova = selecoesPickle[sabor] + delta;
-  if (nova < 0 || nova > 250) return;
+  if (nova < 0) return;
+  // Verificar limite global de 250
+  const totalGlobal = totalPickleGlobal();
+  const diff = nova - (selecoesPickle[sabor] || 0);
+  if (totalGlobal + diff > MAX_PICOLES) {
+    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalGlobal}.`, 'alerta');
+    return;
+  }
   selecoesPickle[sabor] = nova;
+  // Atualizar o global
+  const chave = picoleAtual.id + '::' + sabor;
+  if (nova === 0) { delete selecoesPickleGlobal[chave]; }
+  else { selecoesPickleGlobal[chave] = nova; }
   const el = document.getElementById(`pqty-${sabor.replace(/\s+/g,'_')}`);
   if (el) el.textContent = nova;
   atualizarTotalPickle();
+}
+function totalPickleGlobal() {
+  return Object.values(selecoesPickleGlobal).reduce((a,b)=>a+b,0);
 }
 
 const MIN_PICOLES = 100;
@@ -398,20 +412,36 @@ function atualizarTotalPickle() {
 }
 
 function confirmarPickle() {
-  const total = Object.values(selecoesPickle).reduce((a,b)=>a+b,0);
-  if (total < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés por pedido. Você selecionou ${total}.`, 'alerta'); return; }
-  if (total > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés por pedido.`, 'alerta'); return; }
-  const sabores = Object.entries(selecoesPickle).filter(([,q])=>q>0).map(([s,q])=>`${s}: ${q} un.`);
-  addCarrinho({
-    id: picoleAtual.id+'_'+Date.now(),
-    nome: picoleAtual.nome,
-    preco: picoleAtual.precoAtacado,
-    sabores,
-    quantidade: total,
-    tipo: 'picolé'
+  const totalGlobal = totalPickleGlobal();
+  if (totalGlobal < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue comprando outros tipos!`, 'alerta'); return; }
+  if (totalGlobal > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); return; }
+  // Agrupar todos os picolés do global por tipo
+  const porTipo = {};
+  Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
+    const [tipoId, ...saborParts] = chave.split('::');
+    const sabor = saborParts.join('::');
+    if (!porTipo[tipoId]) porTipo[tipoId] = { sabores: [], qtdTotal: 0 };
+    porTipo[tipoId].sabores.push(`${sabor}: ${qtd} un.`);
+    porTipo[tipoId].qtdTotal += qtd;
   });
+  // Adicionar um item no carrinho por tipo de picolé
+  Object.entries(porTipo).forEach(([tipoId, dados]) => {
+    const p = PRODUTOS.picoles.find(x => x.id === tipoId);
+    if (!p) return;
+    addCarrinho({
+      id: tipoId + '_picole',
+      nome: p.nome,
+      preco: p.precoAtacado,
+      sabores: dados.sabores,
+      quantidade: dados.qtdTotal,
+      tipo: 'picolé'
+    });
+  });
+  // Limpar seleções globais
+  selecoesPickleGlobal = {};
+  selecoesPickle = {};
   fecharModal('modal-picolé');
-  showToast(`✅ ${total} picolé(s) adicionado(s)!`, 'sucesso');
+  showToast(`✅ ${totalGlobal} picolé(s) adicionado(s) ao carrinho!`, 'sucesso');
 }
 
 // ---- CARRINHO ----
