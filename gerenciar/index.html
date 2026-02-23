@@ -105,7 +105,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   <div class="admin-body" id="admin-body"></div>
   <div class="save-bar">
     <span class="status-msg" id="status-msg"></span>
-    <button type="button" class="btn-save" onclick="salvarTudo()">💾 Baixar products.js Atualizado</button>
+    <button type="button" class="btn-save" onclick="salvarTudo()" id="btn-salvar-tudo">☁️ Sincronizar com o Site</button>
   </div>
 </div>
 <script src="../scripts/products.js"></script>
@@ -383,7 +383,7 @@ function renderSorvetes() {
       html += `<div class="preco-simples-card">
         ${blocoFoto(chave)}
         <label>${nomes[key] || key} – ${tam}</label>
-        <input type="number" step="0.01" value="${preco}" onchange="produtos.sorvetes.precos['${key}']['${tam}']=parseFloat(this.value)">
+        <input type="number" step="0.01" value="${preco}" onchange="produtos.sorvetes.precos['${key}']['${tam}']=parseFloat(this.value);autoSalvar()">
       </div>`;
     });
   });
@@ -402,10 +402,10 @@ function renderPicolés() {
       ${blocoFoto(chave)}
       <h4>${p.nome}</h4>
       <div class="field-row">
-        <div style="flex:1"><label>Varejo (R$)</label><input type="number" step="0.01" value="${p.preco_varejo}" onchange="produtos.picoles['${key}'].preco_varejo=parseFloat(this.value)"></div>
-        <div style="flex:1"><label>Atacado (R$)</label><input type="number" step="0.01" value="${p.preco_atacado}" onchange="produtos.picoles['${key}'].preco_atacado=parseFloat(this.value)"></div>
+        <div style="flex:1"><label>Varejo (R$)</label><input type="number" step="0.01" value="${p.preco_varejo}" onchange="produtos.picoles['${key}'].preco_varejo=parseFloat(this.value);autoSalvar()"></div>
+        <div style="flex:1"><label>Atacado (R$)</label><input type="number" step="0.01" value="${p.preco_atacado}" onchange="produtos.picoles['${key}'].preco_atacado=parseFloat(this.value);autoSalvar()"></div>
       </div>
-      <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value)"></div></div>
+      <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value);autoSalvar()"></div></div>
       <div style="margin-top:8px;font-size:11px;color:#6A0DAD;font-weight:700">Sabores:</div>
       <div class="sabores-grid" style="margin-top:6px">${p.sabores.map(s => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`).join('')}</div>
       <button type="button" class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
@@ -423,7 +423,7 @@ function renderAcai() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>Açaí ${tam}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.acai.copos['${tam}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.acai.copos['${tam}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Complementos</h4>';
@@ -433,7 +433,7 @@ function renderAcai() {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <span style="font-size:13px;font-weight:700;flex:1">${lbl[k] || k}</span>
         <span style="font-size:11px;color:#6A0DAD">Preço: R$</span>
-        <input type="number" step="0.01" value="${info.preco}" style="width:70px;padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px" onchange="produtos.acai.complementos['${k}'].preco=parseFloat(this.value)">
+        <input type="number" step="0.01" value="${info.preco}" style="width:70px;padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px" onchange="produtos.acai.complementos['${k}'].preco=parseFloat(this.value);autoSalvar()">
       </div>
       ${blocoFoto('acai_comp_'+k)}
       <div class="sabores-grid" style="margin-top:8px">${info.itens.map(i => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${i}</span>`).join('')}</div>
@@ -451,7 +451,7 @@ function renderMilkshake() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>Tradicional ${tam}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.tradicional['${tam}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.tradicional['${tam}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   Object.entries(m.top).forEach(([tam, preco]) => {
@@ -459,13 +459,13 @@ function renderMilkshake() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>Top ${tam}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.top['${tam}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.top['${tam}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += `<div class="preco-simples-card">
     ${blocoFoto('milk_ovomaltine')}
     <label>Adicional Ovomaltine</label>
-    <input type="number" step="0.01" value="${m.adicional_ovomaltine}" onchange="produtos.milkshake.adicional_ovomaltine=parseFloat(this.value)">
+    <input type="number" step="0.01" value="${m.adicional_ovomaltine}" onchange="produtos.milkshake.adicional_ovomaltine=parseFloat(this.value);autoSalvar()">
   </div>`;
   html += '</div>';
   return html;
@@ -479,7 +479,7 @@ function renderTacas() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>Taça ${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.tradicionais['${nome}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.tradicionais['${nome}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Taças Sujas</h4><div class="preco-simples-grid">';
@@ -488,7 +488,7 @@ function renderTacas() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>Taça Suja – ${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.sujas['${nome}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.sujas['${nome}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += '</div>';
@@ -503,7 +503,7 @@ function renderCaixas() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.caixas_viagem['${nome}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.caixas_viagem['${nome}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += '</div>';
@@ -518,7 +518,7 @@ function renderIsopores() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.isopores_viagem['${nome}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.isopores_viagem['${nome}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += '</div>';
@@ -533,7 +533,7 @@ function renderSobremesas() {
     html += `<div class="preco-simples-card">
       ${blocoFoto(chave)}
       <label>${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.sobremesas['${nome}']=parseFloat(this.value)">
+      <input type="number" step="0.01" value="${preco}" onchange="produtos.sobremesas['${nome}']=parseFloat(this.value);autoSalvar()">
     </div>`;
   });
   html += '</div>';
@@ -626,18 +626,94 @@ function mostrarStatusSabores(msg) {
   if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 4000); }
 }
 
-// ── SALVAR ──
-function salvarTudo() {
+// ── SINCRONIZAÇÃO NA NUVEM ──
+const GIST_ID = '92bd9d1997c2fdd225ad3115c7028445';
+const GIST_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_ID + '/raw/itap-produtos.json';
+
+function getCaixasEnc() {
+  try { return JSON.parse(localStorage.getItem('itap_caixas_enc') || 'null') || []; } catch(e) { return []; }
+}
+
+function _coletarDados() {
+  return {
+    picoles: produtos.picoles,
+    caixas_enc: getCaixasEnc(),
+    tortas_enc: JSON.parse(localStorage.getItem('itap_tortas_enc') || 'null') || [
+      {id:'torta1',nome:'Torta de Sorvete',preco:100.00,maxSabores:3,estoque:10,esgotado:false}
+    ],
+    sorvetes_precos: produtos.sorvetes.precos,
+    acai: produtos.acai,
+    milkshake: produtos.milkshake,
+    tacas: produtos.tacas,
+    caixas_viagem: produtos.caixas_viagem,
+    isopores_viagem: produtos.isopores_viagem,
+    sobremesas: produtos.sobremesas
+  };
+}
+
+let _autoSalvarTimer = null;
+function autoSalvar() {
+  clearTimeout(_autoSalvarTimer);
+  _autoSalvarTimer = setTimeout(() => _enviarParaNuvem(), 1000);
+}
+
+async function _enviarParaNuvem() {
   const msg = document.getElementById('status-msg');
-  msg.textContent = '⌛ Gerando arquivo...';
-  const novoJS = '// products.js – Atualizado em ' + new Date().toLocaleDateString('pt-BR') + '\nconst produtos = ' + JSON.stringify(produtos, null, 4) + ';\n';
-  const blob = new Blob([novoJS], { type: 'text/javascript' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'products.js';
-  a.click();
-  msg.textContent = '✅ products.js baixado! Envie ao GitHub para aplicar no site.';
-  setTimeout(() => msg.textContent = '', 6000);
+  const token = localStorage.getItem('itap_gh_token') || '';
+  const dados = _coletarDados();
+  // Sempre salvar no localStorage como cache local
+  localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
+  if (!token) {
+    msg.textContent = '💾 Salvo localmente';
+    setTimeout(() => msg.textContent = '', 3000);
+    return;
+  }
+  msg.textContent = '☁️ Salvando no site...';
+  try {
+    const resp = await fetch('https://api.github.com/gists/' + GIST_ID, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': 'token ' + token,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ files: { 'itap-produtos.json': { content: JSON.stringify(dados, null, 2) } } })
+    });
+    if (resp.ok) {
+      msg.textContent = '✅ Preços atualizados no site!';
+    } else {
+      msg.textContent = '⚠️ Erro na nuvem – salvo localmente';
+    }
+  } catch(e) {
+    msg.textContent = '⚠️ Sem internet – salvo localmente';
+  }
+  setTimeout(() => msg.textContent = '', 4000);
+}
+
+// ── SALVAR (botão manual) ──
+function salvarTudo() {
+  const token = localStorage.getItem('itap_gh_token') || '';
+  if (!token) {
+    const novoToken = prompt('🔑 Para sincronizar automático com o site, insira o Token GitHub:\n\n(Ou cancele para baixar o arquivo manualmente)');
+    if (novoToken && novoToken.trim()) {
+      localStorage.setItem('itap_gh_token', novoToken.trim());
+      _enviarParaNuvem();
+      return;
+    }
+    // Fallback: baixar arquivo
+    const msg = document.getElementById('status-msg');
+    msg.textContent = '⌛ Gerando arquivo...';
+    const novoJS = '// products.js \u2013 Atualizado em ' + new Date().toLocaleDateString('pt-BR') + '\nconst produtos = ' + JSON.stringify(produtos, null, 4) + ';\n';
+    const blob = new Blob([novoJS], { type: 'text/javascript' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'products.js';
+    a.click();
+    msg.textContent = '✅ products.js baixado!';
+    setTimeout(() => msg.textContent = '', 6000);
+    return;
+  }
+  _enviarParaNuvem();
 }
 </script>
 <script src="../scripts/ortografia.js"></script>
