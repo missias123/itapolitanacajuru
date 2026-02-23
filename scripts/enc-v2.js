@@ -9,6 +9,8 @@ var produtoAtual = null;
 var saboresSelecionados = [];
 var picoleAtual = null;
 var selecoesPickle = {};
+var _nomeCliente = '';
+var _telCliente = '';
 
 // Sabores carregados do admin (localStorage) ou lista padrão
 function getSaboresAtivos() {
@@ -534,11 +536,11 @@ function renderResumoPedido() {
 }
 
 function finalizarPedido() {
-  // Leitura robusta dos campos (compatível com todos os browsers)
+  // Leitura robusta dos campos — usa variáveis globais como fallback
   const nomeEl = document.getElementById('cliente-nome');
   const telEl  = document.getElementById('cliente-tel');
-  const nome = (nomeEl ? nomeEl.value : '').trim();
-  const tel  = (telEl  ? telEl.value  : '').trim();
+  const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente).trim();
+  const tel  = ((telEl  ? telEl.value  : '') || _telCliente).trim();
 
   if (!nome) { showToast('Informe seu nome completo.','alerta'); return; }
   if (!tel || tel.length < 8) { showToast('Informe seu WhatsApp com DDD.','alerta'); return; }
