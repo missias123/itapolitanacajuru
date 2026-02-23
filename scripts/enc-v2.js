@@ -414,10 +414,17 @@ function mostrarEtapa(etapa) {
 }
 
 function irParaDados() {
+  if (carrinho.length === 0) { showToast('Carrinho vazio!','alerta'); return; }
   const totalPic = carrinho.filter(i=>i.tipo==='picole').reduce((a,b)=>a+b.quantidade,0);
   if (totalPic > 0 && totalPic < 100) { showToast(`Mínimo 100 picolés. Você tem ${totalPic}.`,'alerta'); return; }
   renderResumoPedido();
+  const etapaDados = document.getElementById('etapa-dados');
+  if (!etapaDados) { showToast('Erro ao carregar formulário. Recarregue a página.','alerta'); return; }
   mostrarEtapa('dados');
+  setTimeout(() => {
+    const modalBox = document.querySelector('#modal-carrinho .modal-box');
+    if (modalBox) modalBox.scrollTop = 0;
+  }, 100);
 }
 
 function renderResumoPedido() {
