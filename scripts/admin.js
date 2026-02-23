@@ -1,6 +1,6 @@
 // ===== PAINEL ADMINISTRATIVO COM SINCRONIZAÇÃO CENTRALIZADA E GITHUB AUTO-SYNC =====
 
-const ADMIN_PASSWORD = 'itapolitana2007@';
+const ADMIN_PASSWORD = 'itapolitana2007';
 const GITHUB_CONFIG = {
     owner: 'missias123',
     repo: 'itapolitanacajuru',

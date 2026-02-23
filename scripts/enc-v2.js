@@ -481,10 +481,14 @@ function renderResumoPedido() {
 }
 
 function finalizarPedido() {
-  const nome = document.getElementById('cliente-nome').value.trim();
-  const tel = document.getElementById('cliente-tel').value.trim();
-  if (!nome) { showToast('Informe seu nome.','alerta'); return; }
-  if (!tel) { showToast('Informe seu WhatsApp.','alerta'); return; }
+  // Leitura robusta dos campos (compatível com todos os browsers)
+  const nomeEl = document.getElementById('cliente-nome');
+  const telEl  = document.getElementById('cliente-tel');
+  const nome = (nomeEl ? nomeEl.value : '').trim();
+  const tel  = (telEl  ? telEl.value  : '').trim();
+
+  if (!nome) { showToast('Informe seu nome completo.','alerta'); return; }
+  if (!tel || tel.length < 8) { showToast('Informe seu WhatsApp com DDD.','alerta'); return; }
 
   let total = 0;
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
@@ -494,17 +498,42 @@ function finalizarPedido() {
     const sub = item.preco * item.quantidade;
     total += sub;
     msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
-    item.sabores.forEach(s => msg += `   • ${s}\n`);
+    if (item.sabores && item.sabores.length > 0) {
+      item.sabores.forEach(s => msg += `   • ${s}\n`);
+    }
     msg += `   Subtotal: R$ ${sub.toFixed(2).replace('.',',')}\n`;
   });
   msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
   msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
-  msg += `📍 Retirada: Rua Liga dos Bairros, Cajuru/SP`;
+  msg += `📍 Retirada na loja em Cajuru/SP`;
 
-  const numPedido = 'ITA'+Date.now().toString().slice(-6);
-  document.getElementById('num-pedido').textContent = numPedido;
-  document.getElementById('btn-whatsapp-final').onclick = () =>
-    window.open(`https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`, '_blank');
+  const numPedido = 'ITA' + Date.now().toString().slice(-6);
+
+  // Salvar pedido no localStorage para o Admin visualizar
+  try {
+    const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
+    pedidos.unshift({
+      num: numPedido,
+      data: new Date().toLocaleString('pt-BR'),
+      nome: nome,
+      tel: tel,
+      itens: carrinho.map(i => ({ nome: i.nome, qtd: i.quantidade, sabores: i.sabores || [], preco: i.preco })),
+      total: total,
+      status: 'novo'
+    });
+    // Manter apenas os últimos 50 pedidos
+    if (pedidos.length > 50) pedidos.length = 50;
+    localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
+  } catch(e) { console.warn('Erro ao salvar pedido:', e); }
+
+  const numEl = document.getElementById('num-pedido');
+  if (numEl) numEl.textContent = numPedido;
+
+  const btnWpp = document.getElementById('btn-whatsapp-final');
+  if (btnWpp) {
+    btnWpp.onclick = () =>
+      window.open(`https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`, '_blank');
+  }
 
   mostrarEtapa('confirmacao');
 }
