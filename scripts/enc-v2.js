@@ -86,12 +86,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
     }, 200);
   }
+  // Abrir acrescimos via hash
+  if(hash === 'acrescimos'){
+    const el = document.getElementById('conteudo-acrescimos');
+    if(el){ el.classList.add('aberto'); }
+    setTimeout(()=>{
+      const sec = document.getElementById('acrescimos');
+      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 200);
+  }
+  // Re-renderizar acrescimos ao abrir a seção
+  const headerAcr = document.querySelector('#acrescimos .categoria-header');
+  if(headerAcr){
+    headerAcr.addEventListener('click', function(){
+      setTimeout(renderizarAcrescimos, 50);
+    });
+  }
 });
 
 function renderizarTudo() {
   renderizarCaixas();
   renderizarTortas();
   renderizarPicoles();
+  renderizarAcrescimos();
 }
 
 // ---- RENDERIZAR CAIXAS ----
@@ -605,6 +622,76 @@ function alterarCompEnc(id, delta) {
     carrinho.push({ id: comp.id, nome: comp.nome, preco: comp.preco, quantidade: 1, sabores: [], tipo: 'complemento' });
   }
   const qtdEl = document.getElementById('comp-qtd-' + id);
+  if (qtdEl) {
+    const item = carrinho.find(x => x.id === id);
+    qtdEl.textContent = item ? item.quantidade : 0;
+  }
+  atualizarBotaoCarrinho();
+}
+
+// ---- ACRÉSCIMOS (sincronizado com admin - itap_acrescimos) ----
+function getAcrescimosEnc() {
+  const PADRAO = [
+    { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:999, esgotado:false },
+    { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:999, esgotado:false },
+    { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:999, esgotado:false },
+    { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:999, esgotado:false },
+    { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:20,  esgotado:false }
+  ];
+  try {
+    const salvo = localStorage.getItem('itap_acrescimos');
+    if (salvo) return JSON.parse(salvo);
+  } catch(e) {}
+  return PADRAO;
+}
+function renderizarAcrescimos() {
+  const lista_el = document.getElementById('lista-acrescimos');
+  if (!lista_el) return;
+  const lista = getAcrescimosEnc();
+  lista_el.innerHTML = lista.map(c => {
+    const esgotado = c.esgotado || c.estoque <= 0;
+    const item = carrinho.find(x => x.id === c.id);
+    const qtd = item ? item.quantidade : 0;
+    if (esgotado) {
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid #FECACA;margin-bottom:8px;opacity:0.6">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:24px">🍪</span>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:#1a1a1a">${c.nome}</div>
+            <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
+          </div>
+        </div>
+        <span style="background:#fee2e2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700">ESGOTADO</span>
+      </div>`;
+    }
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid #e5e7eb;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:24px">🍪</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#1a1a1a">${c.nome}</div>
+          <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="alterarAcrescimo('${c.id}',-1)" style="width:36px;height:36px;border-radius:50%;border:2px solid #1B5E20;background:#fff;color:#1B5E20;font-size:22px;font-weight:700;cursor:pointer;line-height:1">−</button>
+        <span id="acr-qtd-${c.id}" style="font-size:16px;font-weight:700;min-width:22px;text-align:center">${qtd}</span>
+        <button onclick="alterarAcrescimo('${c.id}',1)" style="width:36px;height:36px;border-radius:50%;border:none;background:#1B5E20;color:#fff;font-size:22px;font-weight:700;cursor:pointer;line-height:1">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function alterarAcrescimo(id, delta) {
+  const lista = getAcrescimosEnc();
+  const comp = lista.find(c => c.id === id);
+  if (!comp) return;
+  const idx = carrinho.findIndex(x => x.id === id);
+  if (idx > -1) {
+    carrinho[idx].quantidade += delta;
+    if (carrinho[idx].quantidade <= 0) carrinho.splice(idx, 1);
+  } else if (delta > 0) {
+    carrinho.push({ id: comp.id, nome: comp.nome, preco: comp.preco, quantidade: 1, sabores: [], tipo: 'acrescimo' });
+  }
+  const qtdEl = document.getElementById('acr-qtd-' + id);
   if (qtdEl) {
     const item = carrinho.find(x => x.id === id);
     qtdEl.textContent = item ? item.quantidade : 0;
