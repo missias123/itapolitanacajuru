@@ -92,20 +92,18 @@ img{max-width:100%;display:block}
 .clima-banner-msg{font-size:12px;font-weight:900;color:#FFF9C4;text-align:right;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.2);max-width:140px}
 .clima-banner-loading{font-size:12px;color:rgba(255,255,255,.8);font-weight:700;text-align:center;width:100%;padding:4px 0}
 /* WIDGET CLIMA */
-.clima-widget{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:12px;padding:8px 14px;margin-top:4px;border:1.5px solid #93C5FD;gap:8px}
-.clima-left{display:flex;align-items:center;gap:8px}
-.clima-icone{font-size:22px;line-height:1}
-.clima-temp{font-size:18px;font-weight:900;color:#1D4ED8;line-height:1}
-.clima-desc{font-size:11px;color:#3B82F6;font-weight:700;line-height:1.2}
-.clima-cidade{font-size:10px;color:#6B7280;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
-.clima-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-.clima-detalhe{font-size:10px;color:#6B7280;font-weight:600}
-.clima-sorvete-msg{font-size:10px;font-weight:800;color:#E8000D;text-align:right;line-height:1.3}
-.clima-loading{font-size:11px;color:#9CA3AF;font-weight:600}
-/* RELÓGIO DIGITAL */
-.relogio-digital{background:linear-gradient(135deg,#1A0A00,#3D1A00);color:#fff;text-align:center;padding:8px 16px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
-.relogio-hora{font-size:22px;font-weight:900;letter-spacing:3px;color:#FF6B35;font-family:'Courier New',monospace;text-shadow:0 0 10px rgba(255,107,53,.6)}
-.relogio-data{font-size:12px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.5px;text-transform:capitalize}
+
+
+
+/* WIDGET RELÓGIO AZUL */
+.relogio-digital{background:linear-gradient(135deg,#1565C0,#1976D2,#1E88E5);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:3px solid #FFD600;flex-wrap:wrap}
+.relogio-esq{display:flex;flex-direction:column;gap:2px}
+.relogio-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px}
+.relogio-hora{font-size:clamp(26px,7vw,38px);font-weight:900;letter-spacing:4px;color:#fff;font-family:'Courier New',monospace;line-height:1}
+.relogio-data{font-size:12px;font-weight:600;color:rgba(255,255,255,.85);margin-top:3px;text-transform:capitalize}
+.relogio-dir{text-align:right;display:flex;flex-direction:column;gap:2px}
+.relogio-local{font-size:13px;font-weight:800;color:#fff}
+.relogio-fuso{font-size:11px;color:rgba(255,255,255,.8);font-weight:600}
 
 /* HERO */
 .hero{background:linear-gradient(160deg,#FFF8F0 0%,#FFF0E0 40%,#FFE8F0 80%,#F8E8FF 100%);padding:28px 16px 32px;text-align:center;border-bottom:3px solid #FF6B35;isolation:isolate;position:relative;overflow:hidden}
@@ -400,28 +398,21 @@ img{max-width:100%;display:block}
       <a href="promocao.html" class="nav-btn nav-orange" id="nav-promo-btn">🎉 Promoção</a>
       <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="nav-btn nav-yellow">⭐ Avalie</a>
     </nav>
-    <!-- WIDGET CLIMA CAJURU -->
-    <div class="clima-widget" id="clima-widget">
-      <div class="clima-left">
-        <div class="clima-icone" id="clima-icone">⏳</div>
-        <div>
-          <div class="clima-temp" id="clima-temp"><span class="clima-loading">Carregando...</span></div>
-          <div class="clima-desc" id="clima-desc">Cajuru/SP</div>
-          <div class="clima-cidade">📍 Cajuru · SP</div>
-        </div>
-      </div>
-      <div class="clima-right">
-        <div class="clima-detalhe" id="clima-detalhe"></div>
-        <div class="clima-sorvete-msg" id="clima-sorvete-msg"></div>
-      </div>
-    </div>
+
   </div>
 </header>
 
-<!-- RELÓGIO DIGITAL -->
+<!-- WIDGET RELÓGIO AZUL -->
 <div class="relogio-digital" id="relogio-digital">
-  <div class="relogio-hora" id="relogio-hora">00:00:00</div>
-  <div class="relogio-data" id="relogio-data">carregando...</div>
+  <div class="relogio-esq">
+    <div class="relogio-label">Horário de Cajuru</div>
+    <div class="relogio-hora" id="relogio-hora">00:00:00</div>
+    <div class="relogio-data" id="relogio-data">carregando...</div>
+  </div>
+  <div class="relogio-dir">
+    <div class="relogio-local">São Paulo - Brasil</div>
+    <div class="relogio-fuso">Fuso: GMT-3</div>
+  </div>
 </div>
 
 <!-- STRIP SENSORIAL TOPO -->
@@ -430,21 +421,7 @@ img{max-width:100%;display:block}
 </div>
 
 <!-- WIDGET CLIMA MODERNO -->
-<div id="widget-clima-moderno" style="background:#fff;border-bottom:2px solid #e0e7ff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span id="clima-icone" style="font-size:32px;">⏳</span>
-    <div>
-      <div id="clima-temp" style="font-size:22px;font-weight:900;color:#1a73e8;line-height:1;">--°C</div>
-      <div id="clima-desc" style="font-size:11px;font-weight:700;color:#555;">Carregando...</div>
-      <div style="font-size:10px;color:#888;font-weight:600;">📍 Cajuru · SP</div>
-    </div>
-  </div>
-  <div style="text-align:right;">
-    <div id="clima-detalhe" style="font-size:10px;color:#888;font-weight:600;"></div>
-    <div id="clima-hora" style="font-size:20px;font-weight:900;color:#1a73e8;">--:--</div>
-    <div id="clima-msg" style="font-size:11px;font-weight:800;color:#E8000D;max-width:130px;"></div>
-  </div>
-</div>
+
 
 <!-- HERO -->
 <section class="hero">
@@ -677,18 +654,17 @@ img{max-width:100%;display:block}
 
 <!-- RODAPÉ COMPACTO -->
 <footer class="footer">
+  <!-- FOTO IGREJA INTEIRA -->
+  <div style="width:100%;margin-bottom:12px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4);">
+    <img loading="lazy" src="images/igreja-cajuru.jpg" alt="Igreja São Bento – Cajuru/SP" style="width:100%;height:auto;display:block;object-fit:contain;">
+    <div style="font-size:9px;color:#F3E5F5;text-align:center;padding:4px 0 2px;background:rgba(0,0,0,.3);">⛪ Igreja São Bento – Cajuru/SP</div>
+  </div>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;box-sizing:border-box">
     <!-- TEXTO ESQUERDA -->
     <div style="flex:1;text-align:left;font-size:9px;line-height:1.5;">
       <div style="font-weight:900;color:#FFD54F;font-size:10px;margin-bottom:2px;">📍 Cajuru/SP</div>
       <div>R. Cel. Manoel Caetano, 311</div>
       <div>Pça Largo São Bento</div>
-      <div style="color:#EF4444;font-weight:700;">🚫 Sem delivery</div>
-    </div>
-    <!-- IGREJA CENTRO -->
-    <div style="flex-shrink:0;text-align:center;">
-      <img loading="lazy" src="img/igreja-cajuru.jpg" alt="Igreja São Bento – Cajuru/SP" style="width:64px;height:64px;object-fit:cover;object-position:center top;border-radius:8px;opacity:.9;box-shadow:0 2px 8px rgba(0,0,0,.4);display:block;">
-      <div style="font-size:8px;color:#F3E5F5;margin-top:2px;">⛪ São Bento</div>
     </div>
     <!-- TEXTO DIREITA -->
     <div style="flex:1;text-align:right;font-size:9px;line-height:1.5;">
@@ -1273,92 +1249,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
   // Corrigir chatbot: resolver funções
   Object.keys(respostas).forEach(k=>{if(typeof respostas[k]==='function')respostas[k]=respostas[k]();});
-  // Carregar clima
-  carregarClima();
 });
 
-// CLIMA CAJURU - Open-Meteo (gratuito, sem chave)
-function carregarClima(){
-  const codigos={
-    0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
-    45:'🌫️',48:'🌫️',
-    51:'🌦️',53:'🌦️',55:'🌧️',
-    61:'🌧️',63:'🌧️',65:'🌧️',
-    71:'🌨️',73:'🌨️',75:'❄️',
-    80:'🌦️',81:'🌧️',82:'⛈️',
-    95:'⛈️',96:'⛈️',99:'⛈️'
-  };
-  const descs={
-    0:'Céu limpo',1:'Principalmente limpo',2:'Parcialmente nublado',3:'Nublado',
-    45:'Névoa',48:'Névoa com gelo',
-    51:'Garoa leve',53:'Garoa moderada',55:'Garoa intensa',
-    61:'Chuva leve',63:'Chuva moderada',65:'Chuva forte',
-    71:'Neve leve',73:'Neve moderada',75:'Neve forte',
-    80:'Pancadas leves',81:'Pancadas moderadas',82:'Pancadas fortes',
-    95:'Tempestade',96:'Tempestade com granizo',99:'Tempestade forte'
-  };
-  const msgs={
-    0:'☀️ Dia quente! Hora do sorvete! 🍦',
-    1:'🌤️ Tempo lindo! Venha tomar um sorvete!',
-    2:'⛅ Nublado mas gostoso! Sorvete é sempre bom!',
-    3:'☁️ Nublado? Sorvete anima qualquer dia!',
-    45:'🌫️ Névoa? Sorvete esquenta o coração!',
-    48:'🌫️ Névoa? Sorvete esquenta o coração!',
-    51:'🌦️ Garoa? Sorvete com cobertura quente!',
-    53:'🌦️ Garoa? Sorvete com cobertura quente!',
-    55:'🌧️ Chuva? Sorvete de chocolate aquece!',
-    61:'🌧️ Chuva? Sorvete de chocolate aquece!',
-    63:'🌧️ Chuva? Sorvete de chocolate aquece!',
-    65:'🌧️ Chuva forte? Venha nos visitar!',
-    80:'🌦️ Pancadas? Sorvete é sempre a resposta!',
-    81:'🌧️ Chuva? Sorvete de chocolate aquece!',
-    82:'⛈️ Tempestade? Sorvete resolve tudo!',
-    95:'⛈️ Tempestade? Sorvete resolve tudo!'
-  };
-  fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.2756&longitude=-47.2978&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=America%2FSao_Paulo')
-    .then(r=>r.json())
-    .then(d=>{
-      const c=d.current;
-      const temp=Math.round(c.temperature_2m);
-      const code=c.weathercode;
-      const icone=codigos[code]||'🌡️';
-      const desc=descs[code]||'Clima atual';
-      const msg=msgs[code]||msgs[temp>=28?0:temp>=20?1:2]||'🍦 Venha tomar um sorvete!';
-      document.getElementById('clima-icone').textContent=icone;
-      document.getElementById('clima-temp').textContent=temp+'°C';
-      document.getElementById('clima-desc').textContent=desc;
-      document.getElementById('clima-detalhe').textContent='💧 '+c.relativehumidity_2m+'%  💨 '+Math.round(c.windspeed_10m)+' km/h';
-      document.getElementById('clima-msg').textContent=temp>=28?'🔥 Calor de '+temp+'°C! Sorvete urgente! 🍦':temp>=22?'☀️ '+temp+'°C em Cajuru! Sorvete é a pedida!':'🍦 '+temp+'°C em Cajuru! Venha se refrescar!';
-      // Atualizar cor do widget moderno conforme temperatura
-      const widget=document.getElementById('widget-clima-moderno');
-      if(widget){
-        if(temp>=30) widget.style.borderBottomColor='#EF4444';
-        else if(temp>=25) widget.style.borderBottomColor='#0EA5E9';
-        else widget.style.borderBottomColor='#818CF8';
-      }
-    })
-    .catch(()=>{
-      document.getElementById('clima-icone').textContent='🌡️';
-      document.getElementById('clima-temp').textContent='--°C';
-      document.getElementById('clima-desc').textContent='Clima indisponível';
-      document.getElementById('clima-msg').textContent='🍦 Venha tomar um sorvete!';
-    });
-}
-// Relógio em tempo real
-function atualizarRelogio(){
-  const el=document.getElementById('clima-hora');
-  if(el){
-    const n=new Date();
-    const h=String(n.getHours()).padStart(2,'0');
-    const m=String(n.getMinutes()).padStart(2,'0');
-    const s=String(n.getSeconds()).padStart(2,'0');
-    el.textContent=h+':'+m+':'+s;
-  }
-}
-atualizarRelogio();
-setInterval(atualizarRelogio,1000);
+
 </script>
 
+<script>
 // RELÓGIO DIGITAL
 (function(){
   function atualizarRelogio(){
@@ -1380,5 +1276,6 @@ setInterval(atualizarRelogio,1000);
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
 })();
+</script>
 </body>
 </html>
