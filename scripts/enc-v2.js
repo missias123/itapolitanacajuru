@@ -412,10 +412,10 @@ function mostrarEtapa(etapa) {
   document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
   const el = document.getElementById(`etapa-${etapa}`);
   if (el) el.classList.add('ativa');
-  // Controlar visibilidade da barra de ação (só na etapa de revisão)
-  const actionBar = document.getElementById('modal-action-bar');
-  if (actionBar) {
-    actionBar.classList.toggle('hidden', etapa !== 'revisao');
+  // Botão Finalizar: visível apenas na etapa de revisão
+  const btnIrDados = document.getElementById('btn-ir-dados');
+  if (btnIrDados) {
+    btnIrDados.closest('div[style]') && (btnIrDados.closest('div[style]').style.display = etapa === 'revisao' ? 'flex' : 'none');
   }
   // Steps
   const steps = ['revisao','dados','confirmacao'];
