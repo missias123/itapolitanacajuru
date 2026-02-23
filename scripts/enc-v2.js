@@ -600,7 +600,21 @@ function finalizarPedido() {
   if (!end)  { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
 
   let total = 0;
+  // Gerar número sequencial único: NNNN/MM/AAAA HH:MM
+  const seqAtual = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
+  localStorage.setItem('itap_seq_pedido', seqAtual.toString());
+  const agora = new Date();
+  const dd = String(agora.getDate()).padStart(2, '0');
+  const mm = String(agora.getMonth() + 1).padStart(2, '0');
+  const aaaa = agora.getFullYear();
+  const hh = String(agora.getHours()).padStart(2, '0');
+  const min = String(agora.getMinutes()).padStart(2, '0');
+  const seqStr = String(seqAtual).padStart(4, '0');
+  const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
+  const dataFormatada = `${dd}/${mm}/${aaaa} ${hh}:${min}`;
+
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
+  msg += `🔢 *Pedido Nº:* ${numPedido}\n📅 *Data:* ${dataFormatada}\n\n`;
   msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n📍 *Endereço:* ${end}\n\n`;
   msg += `📦 *ITENS:*\n`;
   carrinho.forEach(item => {
@@ -616,9 +630,7 @@ function finalizarPedido() {
   msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
   msg += `📍 Retirada na loja em Cajuru/SP`;
 
-  const numPedido = 'ITA' + Date.now().toString().slice(-6);
-
-  // Salvar pedido no localStorage para o Admin visualizar
+   // Salvar pedido no localStorage para o Admin visualizar
   try {
     const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
     pedidos.unshift({
@@ -638,6 +650,8 @@ function finalizarPedido() {
 
   const numEl = document.getElementById('num-pedido');
   if (numEl) numEl.textContent = numPedido;
+  const dataEl = document.getElementById('data-pedido');
+  if (dataEl) dataEl.textContent = `📅 Data: ${dataFormatada}`;
 
   // Atualizar o href do link WhatsApp diretamente (evita bloqueio de popup)
   const linkWpp = document.getElementById('link-whatsapp-final');
