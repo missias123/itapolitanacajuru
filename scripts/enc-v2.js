@@ -130,6 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+  // Botão Desistir e Voltar às Encomendas (etapa 3)
+  const btnVoltarCardapio = document.getElementById('btn-voltar-cardapio');
+  if (btnVoltarCardapio) {
+    btnVoltarCardapio.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fecharCarrinho();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
   // Botão Voltar às Encomendas (etapa 2) — fecha o modal, mantém o carrinho
   const btnSairFormulario = document.getElementById('btn-sair-formulario');
   if (btnSairFormulario) {
@@ -139,15 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
-  // Botão Voltar ao Cardápio — fecha o modal, MANTÉM o carrinho, rola ao topo
-  const btnVoltarCardapio = document.getElementById('btn-voltar-cardapio');
-  if (btnVoltarCardapio) {
-    btnVoltarCardapio.addEventListener('click', function(e) {
-      e.stopPropagation();
-      fecharCarrinho();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
+
   renderizarTudo();
   atualizarBotaoCarrinho();
   // Abrir seção via hash (ex: encomendas.html#caixas)
