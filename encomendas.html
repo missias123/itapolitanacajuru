@@ -461,6 +461,30 @@
     }
     .btn-continuar-picoles:hover { background: linear-gradient(135deg, #FFE0B2, #FFCC80); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(230,81,0,0.3); }
     .btn-continuar-picoles:active { transform: translateY(0); }
+    /* TIPOS DE PICOLÉ */
+    .btn-tipo-picole {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E65100;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
+      color: #BF360C;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(230,81,0,0.15);
+    }
+    .btn-tipo-picole:hover { background: linear-gradient(135deg, #FFE0B2, #FFCC80); transform: translateY(-1px); }
+    .btn-tipo-picole.esgotado { opacity: 0.4; cursor: not-allowed; }
+    .btn-tipo-nome { flex: 1; text-align: left; }
+    .btn-tipo-qtd { background: #E65100; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.85rem; }
+    .btn-tipo-preco { font-size: 0.8rem; color: #795548; }
     /* MODAL CARRINHO */
     .steps-bar {
       display: flex;
@@ -1092,17 +1116,30 @@
         <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
       </div>
     </div>
-        <div class="modal-body">
+    <!-- TELA DE SELEÇÃO DE TIPO -->
+    <div id="picole-tela-tipos" style="display:none;padding:16px 20px 20px">
+      <p style="text-align:center;font-weight:700;color:#E65100;margin-bottom:12px">🍭 Escolha o tipo de picolé:</p>
+      <div id="picole-lista-tipos"></div>
+      <div class="picolé-total-bar" style="margin-top:12px">
+        <span>🧳 Total acumulado:</span>
+        <strong><span id="total-picoles-tipos">0</span> / 250 picolés</strong>
+      </div>
+      <button type="button" class="btn-add-picoles" id="btn-add-picoles-tipos" onclick="confirmarPickle()" disabled style="margin-top:10px">
+        🍭 Selecione ao menos 100 picolés para liberar
+      </button>
+    </div>
+    <!-- TELA DE SABORES DO TIPO -->
+    <div class="modal-body" id="picole-tela-sabores">
       <div id="lista-sabores-picolé"></div>
       <div class="picolé-total-bar">
-        <span>🧺 Total geral (todos os tipos):</span>
+        <span>🧳 Total geral (todos os tipos):</span>
         <strong><span id="total-picoles">0</span> / 250 picolés</strong>
       </div>
       <div class="aviso-minimo" id="aviso-minimo-picolé"></div>
       <button type="button" class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
         🍭 Selecione ao menos 100 picolés no total
       </button>
-      <button type="button" class="btn-continuar-picoles" id="btn-continuar-picoles" onclick="fecharModal('modal-picolé')">
+      <button type="button" class="btn-continuar-picoles" id="btn-continuar-picoles" onclick="mostrarTelasTiposPicole()">
         ← Comprar Outros Sabores
       </button>
     </div>
