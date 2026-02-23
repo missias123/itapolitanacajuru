@@ -326,6 +326,56 @@ function confirmarSabores() {
 }
 
 // ---- MODAL PICOLÉS ----
+function mostrarTelasTiposPicole() {
+  // Mostra a tela de seleção de tipos dentro do modal
+  const telaTipos = document.getElementById('picole-tela-tipos');
+  const telaSabores = document.getElementById('picole-tela-sabores');
+  if (telaTipos) telaTipos.style.display = 'block';
+  if (telaSabores) telaSabores.style.display = 'none';
+  // Atualizar título
+  const titulo = document.getElementById('picolé-titulo');
+  if (titulo) titulo.textContent = 'Picolés — Escolha o Tipo';
+  const precos = document.getElementById('picolé-precos');
+  if (precos) precos.textContent = 'Toque em um tipo para ver os sabores';
+  // Renderizar botões dos tipos
+  const lista = document.getElementById('picole-lista-tipos');
+  if (lista) {
+    lista.innerHTML = PRODUTOS.picoles.map(p => {
+      const totalTipo = Object.entries(selecoesPickleGlobal)
+        .filter(([k]) => k.startsWith(p.id + '::'))
+        .reduce((a,[,v]) => a + v, 0);
+      const esgotado = p.estoque === 0;
+      return `
+        <button class="btn-tipo-picole ${esgotado ? 'esgotado' : ''}" onclick="abrirTipoPicole('${p.id}')" ${esgotado ? 'disabled' : ''}>
+          <span class="btn-tipo-nome">${p.nome}</span>
+          ${totalTipo > 0 ? `<span class="btn-tipo-qtd">${totalTipo} un.</span>` : ''}
+          <span class="btn-tipo-preco">Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}</span>
+        </button>`;
+    }).join('');
+  }
+  // Atualizar total na tela de tipos
+  const elTipos = document.getElementById('total-picoles-tipos');
+  if (elTipos) elTipos.textContent = totalPickleGlobal();
+  // Atualizar botão na tela de tipos
+  const btnTipos = document.getElementById('btn-add-picoles-tipos');
+  const totalGlobal = totalPickleGlobal();
+  if (btnTipos) {
+    if (totalGlobal === 0) { btnTipos.disabled = true; btnTipos.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`; }
+    else if (totalGlobal < MIN_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`; }
+    else if (totalGlobal > MAX_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`; }
+    else { btnTipos.disabled = false; btnTipos.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`; }
+  }
+}
+
+function abrirTipoPicole(id) {
+  // Abre os sabores do tipo selecionado dentro do mesmo modal
+  const telaTipos = document.getElementById('picole-tela-tipos');
+  const telaSabores = document.getElementById('picole-tela-sabores');
+  if (telaTipos) telaTipos.style.display = 'none';
+  if (telaSabores) telaSabores.style.display = 'block';
+  abrirModalPicolé(id);
+}
+
 function abrirModalPicolé(id) {
   const p = PRODUTOS.picoles.find(x => x.id === id);
   if (!p) return;
