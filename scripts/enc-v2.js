@@ -130,12 +130,13 @@ document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
-  // Botão Novo Pedido
-  const btnNovoPedido = document.getElementById('btn-novo-pedido');
-  if (btnNovoPedido) {
-    btnNovoPedido.addEventListener('click', function(e) {
+  // Botão Voltar às Encomendas (etapa 2) — fecha o modal, mantém o carrinho
+  const btnSairFormulario = document.getElementById('btn-sair-formulario');
+  if (btnSairFormulario) {
+    btnSairFormulario.addEventListener('click', function(e) {
       e.stopPropagation();
-      novoPedido();
+      fecharCarrinho();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
   // Botão Voltar ao Cardápio — fecha o modal, MANTÉM o carrinho, rola ao topo
