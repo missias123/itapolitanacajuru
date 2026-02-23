@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Cardápio – Itapolitana Cajuru</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F3F4F6;min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.12)}
+.login-box h2{font-size:20px;font-weight:800;color:#1F2937;margin-bottom:6px;text-align:center}
+.login-box p{font-size:13px;color:#6B7280;text-align:center;margin-bottom:24px}
+.inp-wrap{position:relative;margin-bottom:14px}
+.inp-wrap input{width:100%;padding:12px 44px 12px 14px;border:2px solid #E5E7EB;border-radius:12px;font-size:15px;outline:none;transition:border .2s}
+.inp-wrap input:focus{border-color:#7B1FA2}
+.btn-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer}
+.back-link{display:block;text-align:center;margin-top:16px;color:#7B1FA2;font-size:13px;font-weight:600;text-decoration:none}
+.erro{color:#EF4444;font-size:13px;text-align:center;margin-top:8px;display:none}
+
+#admin-panel{display:none}
+.adm-header{background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+.adm-header h1{font-size:16px;font-weight:800}
+.btn-logout{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.adm-body{max-width:800px;margin:0 auto;padding:20px 16px 80px}
+
+.secao{background:#fff;border-radius:14px;border:1px solid #E5E7EB;margin-bottom:16px;overflow:hidden}
+.secao-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;background:#FAFAFA}
+.secao-header h3{font-size:15px;font-weight:800;color:#1F2937;display:flex;align-items:center;gap:8px}
+.secao-arrow{font-size:12px;color:#6B7280;transition:transform .2s}
+.secao.open .secao-arrow{transform:rotate(180deg)}
+.secao-body{display:none;padding:16px 18px}
+.secao.open .secao-body{display:block}
+
+.campo-grupo{margin-bottom:16px}
+.campo-grupo label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.campo-linha{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.campo-linha span{font-size:13px;color:#374151;font-weight:600;min-width:140px;flex-shrink:0}
+.campo-linha input[type=number]{width:90px;padding:8px 10px;border:2px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:700;color:#1F2937;outline:none;transition:border .2s}
+.campo-linha input[type=number]:focus{border-color:#7B1FA2}
+.prefixo{font-size:13px;color:#6B7280;font-weight:600}
+
+.tag-esgotado{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.tag-esgotado.ativo{background:#FEE2E2;color:#DC2626}
+.tag-esgotado.inativo{background:#D1FAE5;color:#059669}
+
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:200}
+.btn-salvar{background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;flex:1;max-width:300px}
+.status-msg{font-size:13px;color:#059669;font-weight:700}
+
+.grid-precos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.preco-card{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:12px}
+.preco-card label{font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:6px}
+.preco-card input{width:100%;padding:8px 10px;border:2px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:700;outline:none}
+.preco-card input:focus{border-color:#7B1FA2}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-section">
+  <div class="login-box">
+    <h2>🍦 Admin Cardápio</h2>
+    <p>Sorveteria Itapolitana Cajuru</p>
+    <div class="inp-wrap">
+      <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
+      <button class="btn-olho" id="btn-olho" onclick="toggleSenha()">👁️</button>
+    </div>
+    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <div class="erro" id="erro-msg">Senha incorreta. Tente novamente.</div>
+    <a href="../../index.html" class="back-link">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="admin-panel">
+  <div class="adm-header">
+    <h1>🍦 Admin Cardápio – Itapolitana Cajuru</h1>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+  <div class="adm-body" id="adm-body"></div>
+  <div class="save-bar">
+    <span class="status-msg" id="status-msg"></span>
+    <button class="btn-salvar" onclick="salvarTudo()">💾 Salvar Alterações</button>
+  </div>
+</div>
+
+<script src="../../scripts/products.js"></script>
+<script>
+const ADMIN_PASS = "itapolitana2007@";
+const STORAGE_KEY = "itap_cardapio_precos";
+
+// ── LOGIN ──
+function toggleSenha(){
+  const inp = document.getElementById('admin-password');
+  const btn = document.getElementById('btn-olho');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁️';}
+}
+function checkLogin(){
+  const v = document.getElementById('admin-password').value;
+  if(v === ADMIN_PASS){
+    document.getElementById('login-section').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    iniciarAdmin();
+  } else {
+    document.getElementById('erro-msg').style.display='block';
+  }
+}
+function logout(){
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('login-section').style.display='flex';
+  document.getElementById('admin-password').value='';
+}
+
+// ── DADOS ──
+let dados = {};
+function carregarDados(){
+  const salvo = localStorage.getItem(STORAGE_KEY);
+  if(salvo){ try{ dados = JSON.parse(salvo); }catch(e){ dados={}; } }
+}
+function salvarDados(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+}
+function getPreco(chave, sub){
+  if(dados[chave] && dados[chave][sub] !== undefined) return dados[chave][sub];
+  // fallback para products.js
+  try{
+    const partes = chave.split('.');
+    let obj = produtos;
+    for(const p of partes) obj = obj[p];
+    if(sub) return obj[sub];
+    return obj;
+  }catch(e){ return 0; }
+}
+function setPreco(chave, sub, val){
+  if(!dados[chave]) dados[chave] = {};
+  dados[chave][sub] = val;
+}
+
+// ── SEÇÃO ──
+function criarSecao(id, titulo, conteudo){
+  const s = document.createElement('div');
+  s.className = 'secao';
+  s.id = 'sec-'+id;
+  s.innerHTML = `
+    <div class="secao-header" onclick="toggleSecao('${id}')">
+      <h3>${titulo}</h3>
+      <span class="secao-arrow">▼</span>
+    </div>
+    <div class="secao-body">${conteudo}</div>`;
+  return s;
+}
+function toggleSecao(id){
+  const s = document.getElementById('sec-'+id);
+  if(s) s.classList.toggle('open');
+}
+
+// ── RENDER ──
+function renderSorvetes(){
+  const p = produtos.sorvetes.precos;
+  let h = '<div class="grid-precos">';
+  const nomes = {
+    casquinha_copo:'Casquinha/Copo',
+    copo_recheado:'Copo Recheado',
+    cascao:'Cascão',
+    cestinha:'Cestinha'
+  };
+  for(const [tipo, nomeTipo] of Object.entries(nomes)){
+    for(const [qtd, preco] of Object.entries(p[tipo]||{})){
+      const chave = `sorvetes.precos.${tipo}`;
+      const val = getPreco(chave, qtd) || preco;
+      h += `<div class="preco-card">
+        <label>${nomeTipo} – ${qtd}</label>
+        <input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('${chave}','${qtd}',parseFloat(this.value))">
+      </div>`;
+    }
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderPicoles(){
+  let h = '<div class="grid-precos">';
+  for(const [key, p] of Object.entries(produtos.picoles)){
+    const vVal = getPreco('picoles.'+key,'preco_varejo') || p.preco_varejo;
+    const aVal = getPreco('picoles.'+key,'preco_atacado') || p.preco_atacado;
+    h += `<div class="preco-card">
+      <label>${p.nome}</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:80px">
+          <div style="font-size:10px;color:#6B7280;margin-bottom:4px">Varejo</div>
+          <input type="number" step="0.10" min="0" value="${vVal}" onchange="setPreco('picoles.${key}','preco_varejo',parseFloat(this.value))">
+        </div>
+        <div style="flex:1;min-width:80px">
+          <div style="font-size:10px;color:#6B7280;margin-bottom:4px">Atacado</div>
+          <input type="number" step="0.10" min="0" value="${aVal}" onchange="setPreco('picoles.${key}','preco_atacado',parseFloat(this.value))">
+        </div>
+      </div>
+    </div>`;
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderAcai(){
+  let h = '<div class="campo-grupo"><label>Copos de Açaí</label><div class="grid-precos">';
+  for(const [tam, preco] of Object.entries(produtos.acai.copos)){
+    const val = getPreco('acai.copos', tam) || preco;
+    h += `<div class="preco-card"><label>${tam}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('acai.copos','${tam}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div></div>';
+  h += '<div class="campo-grupo"><label>Complementos do Açaí (por item)</label><div class="grid-precos">';
+  const nomesComp = {frutas:'Frutas',cremes:'Cremes',guloseimas:'Guloseimas',chocolates:'Chocolates'};
+  for(const [key, grupo] of Object.entries(produtos.acai.complementos)){
+    const val = getPreco('acai.complementos.'+key,'preco') || grupo.preco;
+    h += `<div class="preco-card"><label>${nomesComp[key]||key}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('acai.complementos.${key}','preco',parseFloat(this.value))"></div>`;
+  }
+  h += '</div></div>';
+  return h;
+}
+
+function renderAcaiPromo(){
+  let h = '<div class="grid-precos">';
+  produtos.acai_promocao.forEach((item, i) => {
+    const val = getPreco('acai_promocao', i) || item.preco;
+    h += `<div class="preco-card"><label>${item.nome}<br><span style="font-weight:400;font-size:10px">${item.desc}</span></label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('acai_promocao',${i},parseFloat(this.value))"></div>`;
+  });
+  h += '</div>';
+  return h;
+}
+
+function renderMilkshake(){
+  let h = '<div class="campo-grupo"><label>Tradicional</label><div class="grid-precos">';
+  for(const [tam, preco] of Object.entries(produtos.milkshake.tradicional)){
+    const val = getPreco('milkshake.tradicional', tam) || preco;
+    h += `<div class="preco-card"><label>${tam}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('milkshake.tradicional','${tam}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div></div><div class="campo-grupo"><label>Top</label><div class="grid-precos">';
+  for(const [tam, preco] of Object.entries(produtos.milkshake.top)){
+    const val = getPreco('milkshake.top', tam) || preco;
+    h += `<div class="preco-card"><label>${tam}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('milkshake.top','${tam}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div></div><div class="campo-grupo"><label>Adicional Ovomaltine</label><div class="grid-precos">';
+  const addVal = getPreco('milkshake','adicional_ovomaltine') || produtos.milkshake.adicional_ovomaltine;
+  h += `<div class="preco-card"><label>Adicional</label><input type="number" step="0.50" min="0" value="${addVal}" onchange="setPreco('milkshake','adicional_ovomaltine',parseFloat(this.value))"></div>`;
+  h += '</div></div>';
+  return h;
+}
+
+function renderTacas(){
+  let h = '<div class="campo-grupo"><label>Taças Tradicionais</label><div class="grid-precos">';
+  for(const [nome, preco] of Object.entries(produtos.tacas.tradicionais)){
+    const val = getPreco('tacas.tradicionais', nome) || preco;
+    h += `<div class="preco-card"><label>${nome}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('tacas.tradicionais','${nome}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div></div><div class="campo-grupo"><label>Taças Sujas</label><div class="grid-precos">';
+  for(const [nome, preco] of Object.entries(produtos.tacas.sujas)){
+    const val = getPreco('tacas.sujas', nome) || preco;
+    h += `<div class="preco-card"><label>${nome}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('tacas.sujas','${nome}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div></div>';
+  return h;
+}
+
+function renderCaixasViagem(){
+  let h = '<div class="grid-precos">';
+  for(const [nome, preco] of Object.entries(produtos.caixas_viagem)){
+    const val = getPreco('caixas_viagem', nome) || preco;
+    h += `<div class="preco-card"><label>${nome}</label><input type="number" step="1" min="0" value="${val}" onchange="setPreco('caixas_viagem','${nome}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderIsopores(){
+  let h = '<div class="grid-precos">';
+  for(const [nome, preco] of Object.entries(produtos.isopores_viagem)){
+    const val = getPreco('isopores_viagem', nome) || preco;
+    h += `<div class="preco-card"><label>${nome}</label><input type="number" step="1" min="0" value="${val}" onchange="setPreco('isopores_viagem','${nome}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderSobremesas(){
+  let h = '<div class="grid-precos">';
+  for(const [nome, preco] of Object.entries(produtos.sobremesas)){
+    const val = getPreco('sobremesas', nome) || preco;
+    h += `<div class="preco-card"><label>${nome}</label><input type="number" step="0.50" min="0" value="${val}" onchange="setPreco('sobremesas','${nome}',parseFloat(this.value))"></div>`;
+  }
+  h += '</div>';
+  return h;
+}
+
+// ── INICIAR ──
+function iniciarAdmin(){
+  carregarDados();
+  const body = document.getElementById('adm-body');
+  body.innerHTML = '';
+  body.appendChild(criarSecao('sorvetes','🍦 Sorvetes de Massa – Preços', renderSorvetes()));
+  body.appendChild(criarSecao('picoles','🍭 Picolés – Preços', renderPicoles()));
+  body.appendChild(criarSecao('acai','🫐 Açaí – Preços', renderAcai()));
+  body.appendChild(criarSecao('acai_promo','🫐 Açaí Promocional – Preços', renderAcaiPromo()));
+  body.appendChild(criarSecao('milkshake','🥤 Milkshakes – Preços', renderMilkshake()));
+  body.appendChild(criarSecao('tacas','🍨 Taças – Preços', renderTacas()));
+  body.appendChild(criarSecao('caixas_viagem','📦 Caixas de Viagem – Preços', renderCaixasViagem()));
+  body.appendChild(criarSecao('isopores','🧊 Isopores de Viagem – Preços', renderIsopores()));
+  body.appendChild(criarSecao('sobremesas','🎂 Sobremesas – Preços', renderSobremesas()));
+}
+
+function salvarTudo(){
+  salvarDados();
+  const msg = document.getElementById('status-msg');
+  msg.textContent = '✅ Salvo com sucesso!';
+  setTimeout(()=>msg.textContent='', 3000);
+}
+</script>
+</body>
+</html>
