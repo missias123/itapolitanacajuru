@@ -574,6 +574,18 @@ function renderResumoPedido() {
     </div>`;
 }
 
+function verificarFormulario() {
+  const nome = (document.getElementById('cliente-nome')?.value || '').trim();
+  const tel  = (document.getElementById('cliente-tel')?.value  || '').trim();
+  const end  = (document.getElementById('cliente-endereco')?.value || '').trim();
+  const btn  = document.getElementById('btn-finalizar');
+  if (!btn) return;
+  const liberado = nome.length >= 3 && tel.length >= 8 && end.length >= 5;
+  btn.disabled = !liberado;
+  btn.style.opacity = liberado ? '1' : '0.4';
+  btn.title = liberado ? 'Confirmar e Enviar' : 'Preencha todos os campos para continuar';
+}
+
 function finalizarPedido() {
   // Leitura robusta dos campos — usa variáveis globais como fallback
   const nomeEl = document.getElementById('cliente-nome');
