@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnContinuar.addEventListener('click', function(e) {
       e.stopPropagation();
       fecharCarrinho();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
   // Botão Novo Pedido
@@ -137,12 +138,13 @@ document.addEventListener('DOMContentLoaded', () => {
       novoPedido();
     });
   }
-  // Botão Voltar ao Cardápio
+  // Botão Voltar ao Cardápio — fecha o modal, MANTÉM o carrinho, rola ao topo
   const btnVoltarCardapio = document.getElementById('btn-voltar-cardapio');
   if (btnVoltarCardapio) {
     btnVoltarCardapio.addEventListener('click', function(e) {
       e.stopPropagation();
-      window.location.href = 'index.html';
+      fecharCarrinho();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
   renderizarTudo();
@@ -599,7 +601,8 @@ function novoPedido() {
   carrinho = [];
   fecharCarrinho();
   atualizarBotaoCarrinho();
-  showToast('✅ Novo pedido iniciado!','sucesso');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('✅ Novo pedido iniciado! Carrinho limpo.','sucesso');
 }
 
 // ---- UTILS ----
