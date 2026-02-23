@@ -1,3 +1,14 @@
+# Netlify configuration — cache instantâneo para atualizações em tempo real
+
+# HTML: nunca cachear, sempre buscar versão mais recente
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
+# Arquivos JS: nunca cachear
 [[headers]]
   for = "/scripts/*"
   [headers.values]
@@ -5,9 +16,31 @@
     Pragma = "no-cache"
     Expires = "0"
 
+# Admin: nunca cachear
 [[headers]]
-  for = "/*.html"
+  for = "/gerenciar/*"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
     Pragma = "no-cache"
     Expires = "0"
+
+# Imagens: cache longo (7 dias)
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
