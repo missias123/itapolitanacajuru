@@ -267,6 +267,8 @@
       transition: transform 0.3s ease;
       position: relative;
       z-index: 1001;
+      pointer-events: all !important;
+      isolation: isolate;
     }
     .modal-overlay.ativo .modal-box { transform: translateY(0); }
     .modal-header {
@@ -977,7 +979,7 @@
 </div>
 
 <!-- MODAL CARRINHO -->
-<div class="modal-overlay" id="modal-carrinho" onclick="if(event.target===this)fecharCarrinho()">
+<div class="modal-overlay" id="modal-carrinho" onclick="if(event.target===this&&!event.target.closest('.modal-box'))fecharCarrinho()">
   <div class="modal-box">
     <div class="modal-header">
       <div class="modal-header-top">

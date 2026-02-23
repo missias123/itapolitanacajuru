@@ -89,10 +89,6 @@ img{max-width:100%;display:block}
 .clima-banner-detalhe{font-size:10px;color:rgba(255,255,255,.9);font-weight:700}
 .clima-banner-msg{font-size:12px;font-weight:900;color:#FFF9C4;text-align:right;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.2);max-width:140px}
 .clima-banner-loading{font-size:12px;color:rgba(255,255,255,.8);font-weight:700;text-align:center;width:100%;padding:4px 0}
-/* WIDGET CLIMA */
-
-
-
 /* WIDGET RELÓGIO AZUL */
 .relogio-digital{background:linear-gradient(135deg,#1565C0,#1976D2,#1E88E5);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:3px solid #FFD600;flex-wrap:wrap}
 .relogio-esq{display:flex;flex-direction:column;gap:2px}
@@ -102,6 +98,27 @@ img{max-width:100%;display:block}
 .relogio-dir{text-align:right;display:flex;flex-direction:column;gap:2px}
 .relogio-local{font-size:13px;font-weight:800;color:#fff}
 .relogio-fuso{font-size:11px;color:rgba(255,255,255,.8);font-weight:600}
+/* WIDGET CLIMA */
+.clima-widget{background:#FFFBF0;border-bottom:2px solid #FFD600;padding:16px 20px}
+.clima-main{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.clima-esq{display:flex;align-items:center;gap:16px}
+.clima-icone-big{font-size:52px;line-height:1;animation:clima-float 3s ease-in-out infinite}
+.clima-temp-num{font-size:48px;font-weight:900;color:#1A1A2E;line-height:1}
+.clima-desc-txt{font-size:14px;font-weight:700;color:#444;margin-top:2px}
+.clima-sensacao-txt{font-size:12px;color:#666;font-weight:600}
+.clima-cards{display:flex;gap:10px;flex-wrap:wrap}
+.clima-card{background:#fff;border-radius:12px;padding:12px 16px;min-width:90px;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.clima-card-tit{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;font-weight:600;margin-bottom:6px}
+.clima-card-val{font-size:22px;font-weight:900;color:#1A1A2E;line-height:1}
+.clima-card-un{font-size:11px;color:#888;font-weight:600;margin-top:2px}
+.clima-card-vento .clima-card-tit{color:#2563EB}
+.clima-card-umid .clima-card-tit{color:#0891B2}
+.clima-card-visib .clima-card-tit{color:#7C3AED}
+.clima-card-vento{border-left:3px solid #2563EB}
+.clima-card-umid{border-left:3px solid #0891B2}
+.clima-card-visib{border-left:3px solid #7C3AED}
+.clima-rodape{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid #F0E8D0;font-size:11px;color:#888;font-weight:600}
+.clima-loading-txt{text-align:center;padding:16px;color:#888;font-size:13px;font-weight:600}
 
 /* HERO */
 .hero{background:linear-gradient(160deg,#FFF8F0 0%,#FFF0E0 40%,#FFE8F0 80%,#F8E8FF 100%);padding:28px 16px 32px;text-align:center;border-bottom:3px solid #FF6B35;isolation:isolate;position:relative;overflow:hidden}
@@ -262,14 +279,7 @@ img{max-width:100%;display:block}
 .chat-inp:focus{border-color:#FF6B35;box-shadow:0 0 0 2px rgba(255,107,53,.2)}
 .chat-send{background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
-/* PWA BANNER */
-.pwa-banner{display:none;position:fixed;bottom:16px;left:16px;right:16px;max-width:420px;margin:0 auto;background:linear-gradient(135deg,#1565C0,#D32F2F);color:#fff;border-radius:16px;padding:16px;z-index:400;box-shadow:0 8px 32px rgba(21,101,192,.4);align-items:center;gap:12px}
-.pwa-banner.show{display:flex}
-.pwa-banner{background:linear-gradient(135deg,#FF6B35,#E8000D,#7B2D8B)}
-.pwa-icon{font-size:32px;flex-shrink:0}
-.pwa-text h4{font-size:14px;font-weight:800;margin-bottom:3px}
-.pwa-text p{font-size:12px;opacity:.9}
-.pwa-btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+
 .pwa-install{background:#F9A825;color:#111;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800}
 .pwa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:6px 14px;font-size:11px;color:#fff;font-weight:600}
 
@@ -318,6 +328,11 @@ img{max-width:100%;display:block}
   .relogio-digital{flex-direction:column;gap:4px;text-align:center}
   .relogio-dir{text-align:center}
   .relogio-hora{font-size:clamp(28px,8vw,40px)}
+  .clima-main{flex-direction:column;align-items:flex-start}
+  .clima-cards{width:100%;justify-content:space-between}
+  .clima-card{flex:1;min-width:80px}
+  .clima-temp{font-size:40px}
+  .clima-icone{font-size:44px}
   .hero h2{font-size:clamp(18px,6vw,26px)}
   .hero-cta{padding:13px 24px;font-size:14px}
   .info-cards{grid-template-columns:repeat(2,1fr)}
@@ -447,9 +462,41 @@ img{max-width:100%;display:block}
   🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 36 Sabores · Desde 2007 · Artesanal · 🍦
 </div>
 
-<!-- WIDGET CLIMA MODERNO -->
-
-
+<!-- WIDGET CLIMA -->
+<div class="clima-widget" id="clima-widget">
+  <div class="clima-loading-txt" id="clima-loading">⏳ Carregando clima de Cajuru...</div>
+  <div class="clima-main" id="clima-main" style="display:none">
+    <div class="clima-esq">
+      <div class="clima-icone-big" id="clima-icone">🌤️</div>
+      <div>
+        <div class="clima-temp-num"><span id="clima-temp">--</span>°</div>
+        <div class="clima-desc-txt" id="clima-desc">--</div>
+        <div class="clima-sensacao-txt">Sensação: <span id="clima-sensacao">--</span>°C</div>
+      </div>
+    </div>
+    <div class="clima-cards">
+      <div class="clima-card clima-card-vento">
+        <div class="clima-card-tit">⇌ Vento</div>
+        <div class="clima-card-val" id="clima-vento">--</div>
+        <div class="clima-card-un">km/h</div>
+      </div>
+      <div class="clima-card clima-card-umid">
+        <div class="clima-card-tit">💧 Umidade</div>
+        <div class="clima-card-val" id="clima-umidade">--</div>
+        <div class="clima-card-un">Relativa</div>
+      </div>
+      <div class="clima-card clima-card-visib">
+        <div class="clima-card-tit">👁 Visibilidade</div>
+        <div class="clima-card-val" id="clima-visib">--</div>
+        <div class="clima-card-un">km</div>
+      </div>
+    </div>
+  </div>
+  <div class="clima-rodape" id="clima-rodape" style="display:none">
+    <span>🟡 Atualizado em tempo real</span>
+    <span>Próxima atualização em 10 min</span>
+  </div>
+</div>
 <!-- HERO -->
 <section class="hero">
   <div class="sabores-badge">✨ 36 sabores artesanais disponíveis hoje</div>
@@ -688,27 +735,33 @@ img{max-width:100%;display:block}
 <!-- RODAPÉ COMPACTO -->
 <footer class="footer">
   <!-- FOTO IGREJA INTEIRA -->
-  <div style="width:100%;margin-bottom:12px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4);background:#000;text-align:center;">
-    <img loading="lazy" src="images/igreja-cajuru.jpg" alt="Igreja São Bento – Cajuru/SP" style="width:auto;max-width:100%;max-height:280px;height:auto;display:block;margin:0 auto;object-fit:contain;">
-    <div style="font-size:9px;color:#F3E5F5;text-align:center;padding:4px 0 2px;background:rgba(0,0,0,.3);">⛪ Igreja São Bento – Cajuru/SP</div>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;box-sizing:border-box">
-    <!-- TEXTO ESQUERDA -->
-    <div style="flex:1;text-align:left;font-size:9px;line-height:1.5;">
-      <div style="font-weight:900;color:#FFD54F;font-size:10px;margin-bottom:2px;">📍 Cajuru/SP</div>
-      <div>R. Cel. Manoel Caetano, 311</div>
-      <div>Pça Largo São Bento</div>
+  <div style="width:100%;margin-bottom:16px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.5);text-align:center;position:relative;">
+    <img loading="lazy" src="images/igreja-cajuru.jpg" alt="Igreja São Bento – Cajuru/SP" style="width:100%;max-height:260px;height:auto;display:block;object-fit:cover;object-position:center top;">
+    <div style="padding:10px 12px 8px;background:rgba(0,0,0,.6);">
+      <div style="font-size:15px;font-weight:800;color:#FFD54F;margin-bottom:4px;">⛪ Igreja São Bento – Cajuru/SP</div>
+      <div style="font-size:13px;color:#F3E5F5;font-weight:600;">📍 Estamos aqui: R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Centro, Cajuru/SP</div>
     </div>
-    <!-- TEXTO DIREITA -->
-    <div style="flex:1;text-align:right;font-size:9px;line-height:1.5;">
-      <div style="font-weight:900;color:#FFD54F;font-size:10px;margin-bottom:2px;">📞 Contato</div>
-      <div>(16) 99147-2045</div>
-      <div>⏰ 10h às 22h</div>
-      <div>Seg a Dom</div>
+    <a href="/gerenciar/" style="position:absolute;bottom:8px;right:8px;font-size:10px;color:rgba(255,255,255,.3);text-decoration:none;background:rgba(0,0,0,.25);border-radius:4px;padding:2px 7px;letter-spacing:.3px;" title="Área Administrativa">⚙ Admin</a>
+  </div>
+  <!-- INFO RODAPÉ -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+    <div style="flex:1;text-align:left;font-size:13px;line-height:1.8;">
+      <div style="font-weight:900;color:#FFD54F;font-size:14px;margin-bottom:5px;">📍 Onde Estamos</div>
+      <div style="color:#F3E5F5;font-weight:700;">R. Cel. Manoel Caetano, 311</div>
+      <div style="color:#F3E5F5;font-weight:600;">Pça Largo São Bento – Centro</div>
+      <div style="color:#F3E5F5;font-weight:600;">Cajuru/SP – CEP 14780-000</div>
+      <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:12px;color:#81D4FA;font-weight:700;text-decoration:none;">🗺️ Ver no Google Maps</a>
+    </div>
+    <div style="flex:1;text-align:right;font-size:13px;line-height:1.8;">
+      <div style="font-weight:900;color:#FFD54F;font-size:14px;margin-bottom:5px;">📞 Contato</div>
+      <div style="color:#F3E5F5;font-weight:700;">(16) 99147-2045</div>
+      <div style="color:#F3E5F5;font-weight:600;">⏰ 10h às 22h</div>
+      <div style="color:#F3E5F5;font-weight:600;">Segunda a Domingo</div>
+      <a href="https://wa.me/5516991472045" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:12px;color:#81D4FA;font-weight:700;text-decoration:none;">💬 WhatsApp</a>
     </div>
   </div>
-  <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;">
-    <div style="font-size:9px;color:#F3E5F5;">© 2007–2026 Sorveteria Itapolitana</div>
+  <div style="padding-top:10px;border-top:1px solid rgba(255,255,255,.2);text-align:center;">
+    <div style="font-size:13px;color:#F3E5F5;font-weight:600;">© 2007–2026 Sorveteria Itapolitana · Cajuru/SP · Todos os direitos reservados</div>
   </div>
 </footer>
 
@@ -790,15 +843,7 @@ img{max-width:100%;display:block}
   </div>
 </div>
 
-<!-- PWA BANNER -->
-<div class="pwa-banner" id="pwa-banner">
-  <div class="pwa-icon">📲</div>
-  <div class="pwa-text"><h4>Instalar Aplicativo</h4><p>Adicione à tela inicial para acesso rápido e promoções!</p></div>
-  <div class="pwa-btns">
-    <button type="button" class="pwa-install" id="pwa-btn">Instalar Agora</button>
-    <button type="button" class="pwa-dismiss" onclick="document.getElementById('pwa-banner').classList.remove('show')">Agora não</button>
-  </div>
-</div>
+
 
 <script src="scripts/products.js"></script>
 <script>
@@ -1156,15 +1201,6 @@ function getResp(msg){
   return typeof d==='function'?d():d;
 }
 
-// ── PWA ──
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();deferredPrompt=e;
-  setTimeout(()=>document.getElementById('pwa-banner').classList.add('show'),3000);
-});
-document.getElementById('pwa-btn').addEventListener('click',async()=>{
-  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('pwa-banner').classList.remove('show');}
-});
 
 // ── COMPLEMENTOS CARDÁPIO ──
 function getComplementosCardapio() {
@@ -1295,7 +1331,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const m = String(agora.getMinutes()).padStart(2,'0');
     const s = String(agora.getSeconds()).padStart(2,'0');
     const diasSemana = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
-    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
     const dia = diasSemana[agora.getDay()];
     const d = String(agora.getDate()).padStart(2,'0');
     const mes = meses[agora.getMonth()];
@@ -1303,10 +1339,54 @@ document.addEventListener('DOMContentLoaded',()=>{
     const elHora = document.getElementById('relogio-hora');
     const elData = document.getElementById('relogio-data');
     if(elHora) elHora.textContent = h+':'+m+':'+s;
-    if(elData) elData.textContent = dia+', '+d+' de '+mes+'. de '+ano;
+    if(elData) elData.textContent = dia+', '+d+' de '+mes+' de '+ano;
   }
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
+})();
+
+// WIDGET CLIMA - Open-Meteo (gratuito, sem chave)
+(function(){
+  const WMO = {
+    0:'Céu Limpo',1:'Principalmente Limpo',2:'Parcialmente Nublado',3:'Nublado',
+    45:'Neblina',48:'Geada',51:'Garoa Leve',53:'Garoa',55:'Garoa Forte',
+    61:'Chuva Leve',63:'Chuva',65:'Chuva Forte',
+    71:'Neve Leve',73:'Neve',75:'Neve Forte',
+    80:'Pancadas Leves',81:'Pancadas',82:'Pancadas Fortes',
+    95:'Tempestade',96:'Tempestade c/ Granizo',99:'Tempestade Forte'
+  };
+  const ICONES = {
+    0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
+    45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',
+    61:'🌦️',63:'🌧️',65:'🌧️',
+    71:'🌨️',73:'❄️',75:'❄️',
+    80:'🌦️',81:'🌧️',82:'⛈️',
+    95:'⛈️',96:'⛈️',99:'⛈️'
+  };
+  function getDesc(code){return WMO[code]||'--';}
+  function getIcon(code){return ICONES[code]||'🌤️';}
+  function carregarClima(){
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=-21.2776&longitude=-47.3072&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,visibility&timezone=America/Sao_Paulo&forecast_days=1')
+      .then(r=>r.json())
+      .then(d=>{
+        const c=d.current;
+        document.getElementById('clima-temp').textContent=Math.round(c.temperature_2m);
+        document.getElementById('clima-sensacao').textContent=Math.round(c.apparent_temperature);
+        document.getElementById('clima-desc').textContent=getDesc(c.weather_code);
+        document.getElementById('clima-icone').textContent=getIcon(c.weather_code);
+        document.getElementById('clima-vento').textContent=Math.round(c.wind_speed_10m);
+        document.getElementById('clima-umidade').textContent=c.relative_humidity_2m+'%';
+        document.getElementById('clima-visib').textContent=Math.round((c.visibility||0)/1000);
+        document.getElementById('clima-loading').style.display='none';
+        document.getElementById('clima-main').style.display='flex';
+        document.getElementById('clima-rodape').style.display='flex';
+      })
+      .catch(()=>{
+        document.getElementById('clima-loading').textContent='🌤️ Clima indisponível no momento';
+      });
+  }
+  carregarClima();
+  setInterval(carregarClima, 600000); // atualiza a cada 10 min
 })();
 </script>
 </body>
