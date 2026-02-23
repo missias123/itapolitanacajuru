@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Encomendas – Itapolitana Cajuru</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F3F4F6;min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:#fff;border-radius:20px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.12)}
+.login-box h2{font-size:20px;font-weight:800;color:#1F2937;margin-bottom:6px;text-align:center}
+.login-box p{font-size:13px;color:#6B7280;text-align:center;margin-bottom:24px}
+.inp-wrap{position:relative;margin-bottom:14px}
+.inp-wrap input{width:100%;padding:12px 44px 12px 14px;border:2px solid #E5E7EB;border-radius:12px;font-size:15px;outline:none;transition:border .2s}
+.inp-wrap input:focus{border-color:#E53935}
+.btn-olho{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,#E53935,#C62828);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer}
+.back-link{display:block;text-align:center;margin-top:16px;color:#E53935;font-size:13px;font-weight:600;text-decoration:none}
+.erro{color:#EF4444;font-size:13px;text-align:center;margin-top:8px;display:none}
+
+#admin-panel{display:none}
+.adm-header{background:linear-gradient(135deg,#E53935,#C62828);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+.adm-header h1{font-size:16px;font-weight:800}
+.btn-logout{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.adm-body{max-width:800px;margin:0 auto;padding:20px 16px 80px}
+
+.secao{background:#fff;border-radius:14px;border:1px solid #E5E7EB;margin-bottom:16px;overflow:hidden}
+.secao-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;background:#FAFAFA}
+.secao-header h3{font-size:15px;font-weight:800;color:#1F2937;display:flex;align-items:center;gap:8px}
+.secao-arrow{font-size:12px;color:#6B7280;transition:transform .2s}
+.secao.open .secao-arrow{transform:rotate(180deg)}
+.secao-body{display:none;padding:16px 18px}
+.secao.open .secao-body{display:block}
+
+.prod-edit-card{background:#F9FAFB;border:2px solid #E5E7EB;border-radius:12px;padding:14px;margin-bottom:12px}
+.prod-edit-card.esgotado{border-color:#FECACA;background:#FEF2F2}
+.prod-nome{font-size:14px;font-weight:800;color:#1F2937;margin-bottom:10px}
+.campos-linha{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.campo-box{flex:1;min-width:100px}
+.campo-box label{font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:4px;text-transform:uppercase}
+.campo-box input{width:100%;padding:8px 10px;border:2px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:700;outline:none;transition:border .2s}
+.campo-box input:focus{border-color:#E53935}
+.btn-esgotar{padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s}
+.btn-esgotar.ativo{background:#FEE2E2;color:#DC2626}
+.btn-esgotar.inativo{background:#D1FAE5;color:#059669}
+.tag-status{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;margin-left:8px}
+.tag-status.esgotado{background:#FEE2E2;color:#DC2626}
+.tag-status.ok{background:#D1FAE5;color:#059669}
+
+.aviso{padding:10px 14px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;color:#92400E;font-weight:600;margin-bottom:14px}
+
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E5E7EB;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:200}
+.btn-salvar{background:linear-gradient(135deg,#E53935,#C62828);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;flex:1;max-width:300px}
+.status-msg{font-size:13px;color:#059669;font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-section">
+  <div class="login-box">
+    <h2>📦 Admin Encomendas</h2>
+    <p>Sorveteria Itapolitana Cajuru</p>
+    <div class="inp-wrap">
+      <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
+      <button class="btn-olho" id="btn-olho" onclick="toggleSenha()">👁️</button>
+    </div>
+    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <div class="erro" id="erro-msg">Senha incorreta. Tente novamente.</div>
+    <a href="../../index.html" class="back-link">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="admin-panel">
+  <div class="adm-header">
+    <h1>📦 Admin Encomendas – Itapolitana Cajuru</h1>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+  <div class="adm-body" id="adm-body"></div>
+  <div class="save-bar">
+    <span class="status-msg" id="status-msg"></span>
+    <button class="btn-salvar" onclick="salvarTudo()">💾 Salvar Alterações</button>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASS = "itapolitana2007@";
+
+// ── LOGIN ──
+function toggleSenha(){
+  const inp = document.getElementById('admin-password');
+  const btn = document.getElementById('btn-olho');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁️';}
+}
+function checkLogin(){
+  const v = document.getElementById('admin-password').value;
+  if(v === ADMIN_PASS){
+    document.getElementById('login-section').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    iniciarAdmin();
+  } else {
+    document.getElementById('erro-msg').style.display='block';
+  }
+}
+function logout(){
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('login-section').style.display='flex';
+  document.getElementById('admin-password').value='';
+}
+
+// ── DADOS ──
+const CAIXAS_PADRAO = [
+  { id:'cx5l_2s',  nome:'Caixa 5 Litros – 2 Sabores',  preco:100.00, estoque:20, esgotado:false },
+  { id:'cx5l_3s',  nome:'Caixa 5 Litros – 3 Sabores',  preco:115.00, estoque:20, esgotado:false },
+  { id:'cx10l_2s', nome:'Caixa 10 Litros – 2 Sabores', preco:150.00, estoque:15, esgotado:false },
+  { id:'cx10l_3s', nome:'Caixa 10 Litros – 3 Sabores', preco:165.00, estoque:15, esgotado:false }
+];
+const TORTAS_PADRAO = [
+  { id:'torta1', nome:'Torta de Sorvete', preco:100.00, estoque:10, esgotado:false }
+];
+const PICOLES_PADRAO = [
+  { id:'pic_frutas_agua',      nome:'Picolé de Fruta/Água',       preco_varejo:2.50, preco_atacado:1.80, estoque:200, esgotado:false },
+  { id:'pic_leite_sem_recheio',nome:'Picolé de Leite sem Recheio',preco_varejo:2.50, preco_atacado:1.80, estoque:200, esgotado:false },
+  { id:'pic_leite_com_recheio',nome:'Picolé de Leite com Recheio',preco_varejo:3.00, preco_atacado:2.00, estoque:200, esgotado:false },
+  { id:'pic_leite_ninho',      nome:'Picolé Leite Ninho',         preco_varejo:4.00, preco_atacado:3.00, estoque:200, esgotado:false },
+  { id:'pic_eskimos',          nome:'Picolé Eskimo',              preco_varejo:8.00, preco_atacado:6.00, estoque:200, esgotado:false }
+];
+const COMPS_PADRAO = [
+  { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:999, esgotado:false },
+  { id:'casquinhas',      nome:'Casquinhas',      preco:0.25, estoque:999, esgotado:false },
+  { id:'cascao',          nome:'Cascão',          preco:1.00, estoque:999, esgotado:false },
+  { id:'cestinha',        nome:'Cestinha',        preco:1.00, estoque:999, esgotado:false },
+  { id:'cobertura_13l',   nome:'Cobertura 1.3L',  preco:40.00,estoque:999, esgotado:false }
+];
+
+function carregar(key, padrao){
+  try{
+    const s = localStorage.getItem(key);
+    if(s){
+      const d = JSON.parse(s);
+      return padrao.map((p,i) => ({...p,...(d[i]||{})}));
+    }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(padrao));
+}
+function salvar(key, lista){ localStorage.setItem(key, JSON.stringify(lista)); }
+
+let caixas, tortas, picoles, comps;
+
+// ── SEÇÃO ──
+function criarSecao(id, titulo, conteudo){
+  const s = document.createElement('div');
+  s.className = 'secao';
+  s.id = 'sec-'+id;
+  s.innerHTML = `
+    <div class="secao-header" onclick="toggleSecao('${id}')">
+      <h3>${titulo}</h3>
+      <span class="secao-arrow">▼</span>
+    </div>
+    <div class="secao-body">${conteudo}</div>`;
+  return s;
+}
+function toggleSecao(id){
+  const s = document.getElementById('sec-'+id);
+  if(s) s.classList.toggle('open');
+}
+
+// ── RENDER CAIXAS ──
+function renderCaixas(){
+  let h = '<div class="aviso">💡 Quando esgotado, a caixa fica indisponível para os clientes na página de encomendas.</div>';
+  caixas.forEach((c,i) => {
+    const esg = c.esgotado || c.estoque <= 0;
+    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="caixa-card-${i}">
+      <div class="prod-nome">${c.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
+      <div class="campos-linha">
+        <div class="campo-box"><label>Preço (R$)</label><input type="number" step="1" min="0" value="${c.preco}" onchange="editarCaixa(${i},'preco',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${c.estoque}" onchange="editarCaixa(${i},'estoque',parseInt(this.value))"></div>
+      </div>
+      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarCaixa(${i})">
+        ${esg?'✅ Reativar':'❌ Esgotar'}
+      </button>
+    </div>`;
+  });
+  return h;
+}
+function editarCaixa(i, campo, val){
+  caixas[i][campo] = val;
+  if(campo==='estoque') caixas[i].esgotado = val <= 0;
+  atualizarCardCaixa(i);
+}
+function toggleEsgotarCaixa(i){
+  caixas[i].esgotado = !caixas[i].esgotado;
+  if(caixas[i].esgotado) caixas[i].estoque = 0;
+  atualizarCardCaixa(i);
+}
+function atualizarCardCaixa(i){
+  const sec = document.getElementById('sec-caixas');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderCaixas(); }
+}
+
+// ── RENDER TORTAS ──
+function renderTortas(){
+  let h = '';
+  tortas.forEach((t,i) => {
+    const esg = t.esgotado || t.estoque <= 0;
+    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="torta-card-${i}">
+      <div class="prod-nome">${t.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
+      <div class="campos-linha">
+        <div class="campo-box"><label>Preço (R$)</label><input type="number" step="1" min="0" value="${t.preco}" onchange="editarTorta(${i},'preco',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${t.estoque}" onchange="editarTorta(${i},'estoque',parseInt(this.value))"></div>
+      </div>
+      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarTorta(${i})">
+        ${esg?'✅ Reativar':'❌ Esgotar'}
+      </button>
+    </div>`;
+  });
+  return h;
+}
+function editarTorta(i, campo, val){
+  tortas[i][campo] = val;
+  if(campo==='estoque') tortas[i].esgotado = val <= 0;
+  const sec = document.getElementById('sec-tortas');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderTortas(); }
+}
+function toggleEsgotarTorta(i){
+  tortas[i].esgotado = !tortas[i].esgotado;
+  if(tortas[i].esgotado) tortas[i].estoque = 0;
+  const sec = document.getElementById('sec-tortas');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderTortas(); }
+}
+
+// ── RENDER PICOLÉS ──
+function renderPicoles(){
+  let h = '';
+  picoles.forEach((p,i) => {
+    const esg = p.esgotado || p.estoque <= 0;
+    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="picole-card-${i}">
+      <div class="prod-nome">${p.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
+      <div class="campos-linha">
+        <div class="campo-box"><label>Varejo (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_varejo}" onchange="editarPicole(${i},'preco_varejo',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Atacado (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_atacado}" onchange="editarPicole(${i},'preco_atacado',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${p.estoque}" onchange="editarPicole(${i},'estoque',parseInt(this.value))"></div>
+      </div>
+      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarPicole(${i})">
+        ${esg?'✅ Reativar':'❌ Esgotar'}
+      </button>
+    </div>`;
+  });
+  return h;
+}
+function editarPicole(i, campo, val){
+  picoles[i][campo] = val;
+  if(campo==='estoque') picoles[i].esgotado = val <= 0;
+  const sec = document.getElementById('sec-picoles');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicoles(); }
+}
+function toggleEsgotarPicole(i){
+  picoles[i].esgotado = !picoles[i].esgotado;
+  if(picoles[i].esgotado) picoles[i].estoque = 0;
+  const sec = document.getElementById('sec-picoles');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicoles(); }
+}
+
+// ── RENDER COMPLEMENTOS ──
+function renderComps(){
+  let h = '';
+  comps.forEach((c,i) => {
+    const esg = c.esgotado || c.estoque <= 0;
+    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="comp-card-${i}">
+      <div class="prod-nome">${c.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
+      <div class="campos-linha">
+        <div class="campo-box"><label>Preço (R$)</label><input type="number" step="0.05" min="0" value="${c.preco}" onchange="editarComp(${i},'preco',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${c.estoque}" onchange="editarComp(${i},'estoque',parseInt(this.value))"></div>
+      </div>
+      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarComp(${i})">
+        ${esg?'✅ Reativar':'❌ Esgotar'}
+      </button>
+    </div>`;
+  });
+  return h;
+}
+function editarComp(i, campo, val){
+  comps[i][campo] = val;
+  if(campo==='estoque') comps[i].esgotado = val <= 0;
+  const sec = document.getElementById('sec-comps');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderComps(); }
+}
+function toggleEsgotarComp(i){
+  comps[i].esgotado = !comps[i].esgotado;
+  if(comps[i].esgotado) comps[i].estoque = 0;
+  const sec = document.getElementById('sec-comps');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderComps(); }
+}
+
+// ── INICIAR ──
+function iniciarAdmin(){
+  caixas  = carregar('itap_caixas_enc',   CAIXAS_PADRAO);
+  tortas  = carregar('itap_tortas_enc',   TORTAS_PADRAO);
+  picoles = carregar('itap_picoles_enc',  PICOLES_PADRAO);
+  comps   = carregar('itap_complementos', COMPS_PADRAO);
+
+  const body = document.getElementById('adm-body');
+  body.innerHTML = '';
+  body.appendChild(criarSecao('caixas',  '📦 Caixas de Sorvete',  renderCaixas()));
+  body.appendChild(criarSecao('tortas',  '🎂 Torta de Sorvete',   renderTortas()));
+  body.appendChild(criarSecao('picoles', '🍭 Picolés (Atacado)',  renderPicoles()));
+  body.appendChild(criarSecao('comps',   '🍪 Complementos',       renderComps()));
+}
+
+function salvarTudo(){
+  salvar('itap_caixas_enc',   caixas);
+  salvar('itap_tortas_enc',   tortas);
+  salvar('itap_picoles_enc',  picoles);
+  salvar('itap_complementos', comps);
+  const msg = document.getElementById('status-msg');
+  msg.textContent = '✅ Salvo com sucesso!';
+  setTimeout(()=>msg.textContent='', 3000);
+}
+</script>
+</body>
+</html>
