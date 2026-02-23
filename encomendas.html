@@ -1,4 +1,4 @@
-<!-- cache-bust: 1771871768 -->
+<!-- cache-bust: 1771878298 -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -825,6 +825,71 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
+
+    /* ===== BARRAS DE AÇÃO ===== */
+    .barra-acao {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 14px;
+      padding: 10px 16px;
+      margin: 8px 0;
+      min-height: 52px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: relative;
+      z-index: 1;
+    }
+    .barra-texto {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: white;
+      flex: 1;
+      text-align: center;
+      pointer-events: none;
+    }
+    /* Cores das barras */
+    .barra-verde  { background: linear-gradient(135deg, #1B5E20, #2E7D32, #43A047); }
+    .barra-azul   { background: linear-gradient(135deg, #0D47A1, #1565C0, #1976D2); }
+    .barra-wpp    { background: linear-gradient(135deg, #075E54, #128C7E, #25D366); }
+    .barra-cinza-claro { background: #F0F0F0; }
+    .barra-cinza-claro .barra-texto { color: #333; }
+
+    /* ===== BOTÕES REDONDOS ===== */
+    .btn-acao-redondo {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 50%;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+      z-index: 2;
+      position: relative;
+      pointer-events: all !important;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+      color: white;
+    }
+    .btn-acao-redondo:hover  { transform: scale(1.1); box-shadow: 0 5px 16px rgba(0,0,0,0.35); }
+    .btn-acao-redondo:active { transform: scale(0.95); }
+
+    /* Cores dos botões redondos */
+    .btn-vermelho    { background: linear-gradient(135deg, #B71C1C, #D32F2F); color: white; }
+    .btn-azul        { background: linear-gradient(135deg, #0D47A1, #1565C0); color: white; }
+    .btn-wpp         { background: linear-gradient(135deg, #075E54, #25D366); color: white; }
+    .btn-cinza       { background: linear-gradient(135deg, #616161, #9E9E9E); color: white; }
+    .btn-cinza-claro { background: white; color: #333; border: 2px solid #ccc; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+    /* Garantir cliques nos botões redondos */
+    .btn-acao-redondo * { pointer-events: none; }
 </style>
 <!-- v:1771806853-neuro -->
 
@@ -1094,10 +1159,12 @@
         <p style="font-size:0.88rem;color:#6A0DAD;font-weight:700;margin-bottom:20px;">
           Clique abaixo para enviar seu pedido via WhatsApp. Nossa equipe entrará em contato para confirmar o pagamento.
         </p>
-        <div class="barra-acao barra-wpp">
+        <a href="#" id="link-whatsapp-final" target="_blank" rel="noopener" style="text-decoration:none;display:block;">
+        <div class="barra-acao barra-wpp" style="cursor:pointer;">
           <span class="barra-texto">📲 Enviar Pedido via WhatsApp</span>
-          <button type="button" class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final" title="Enviar via WhatsApp">▶</button>
+          <span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final">▶</span>
         </div>
+        </a>
         <div class="barra-acao barra-cinza-claro">
           <span class="barra-texto" style="color:#333">🔄 Fazer Novo Pedido</span>
           <button type="button" class="btn-acao-redondo btn-azul" id="btn-novo-pedido" title="Novo Pedido">+</button>
