@@ -542,8 +542,9 @@ function finalizarPedido() {
   const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente).trim();
   const tel  = ((telEl  ? telEl.value  : '') || _telCliente).trim();
 
-  if (!nome) { showToast('Informe seu nome completo.','alerta'); return; }
-  if (!tel || tel.length < 8) { showToast('Informe seu WhatsApp com DDD.','alerta'); return; }
+  if (!nome) { nome = (prompt('Seu nome completo:') || '').trim(); }
+  if (!tel)  { tel  = (prompt('Seu WhatsApp com DDD:') || '').trim(); }
+  if (!nome || !tel) { alert('Preencha nome e WhatsApp.'); return; }
 
   let total = 0;
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
