@@ -12,7 +12,7 @@ const produtos = {
     },
     picoles: {
         frutas_agua: { nome: "Picolé de Fruta/Água", preco_varejo: 2.50, preco_atacado: 1.80, estoque: 200, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
-        leite_sem_recheio: { nome: "Picolé de Leite sem Recheio", preco_varejo: 2.50, preco_atacado: 1.80, estoque: 200, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
+        leite_sem_recheio: { nome: "Picolé de Leite sem Recheio", preco_varejo: 2.50, preco_atacado: 2.00, estoque: 200, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
         leite_com_recheio: { nome: "Picolé de Leite com Recheio", preco_varejo: 3.00, preco_atacado: 2.00, estoque: 200, sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
         leite_ninho: { nome: "Picolé Leite Ninho", preco_varejo: 4.00, preco_atacado: 3.00, estoque: 200, sabores: ["Leite Ninho"] },
         esquimós: { nome: "Picolé Esquimó", preco_varejo: 8.00, preco_atacado: 6.00, estoque: 200, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
