@@ -265,6 +265,8 @@
       overflow-y: auto;
       transform: translateY(100%);
       transition: transform 0.3s ease;
+      position: relative;
+      z-index: 1001;
     }
     .modal-overlay.ativo .modal-box { transform: translateY(0); }
     .modal-header {
@@ -701,6 +703,84 @@
       .prod-grid { grid-template-columns: 1fr; }
       .grid-sabores { grid-template-columns: repeat(3, 1fr); }
       .header-logo-texto h1 { font-size: 0.85rem; }
+
+      /* BOTÕES MOBILE - enquadramento perfeito */
+      .btn-sabores {
+        padding: 14px 10px;
+        font-size: 0.85rem;
+        border-radius: 10px;
+        min-height: 48px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .btn-proxima-etapa {
+        padding: 18px 16px;
+        font-size: 1rem;
+        border-radius: 14px;
+        min-height: 56px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        margin-top: 12px;
+      }
+      .btn-finalizar {
+        padding: 18px 16px;
+        font-size: 1rem;
+        border-radius: 14px;
+        min-height: 56px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .btn-continuar-comprando {
+        padding: 16px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+        min-height: 52px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .btn-voltar-etapa {
+        padding: 14px;
+        font-size: 0.88rem;
+        border-radius: 12px;
+        min-height: 48px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+      }
+      .modal-box {
+        max-height: 88vh;
+        border-radius: 16px 16px 0 0;
+      }
+      .etapa { padding: 16px 14px; }
+      .lista-carrinho-item {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .form-grupo input {
+        font-size: 16px; /* evita zoom automático no iOS */
+        padding: 14px 12px;
+      }
+      .prod-card { padding: 14px 12px; }
+      .prod-nome { font-size: 0.92rem; }
+      .prod-preco { font-size: 1rem; }
+      .total-bar {
+        font-size: 1rem;
+        padding: 14px 16px;
+      }
+    }
+
+    /* TOUCH - todos os botões interativos */
+    button, .btn-sabores, .btn-proxima-etapa, .btn-finalizar,
+    .btn-continuar-comprando, .btn-voltar-etapa, .categoria-header {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
   </style>
 <!-- v:1771806853-neuro -->
@@ -897,7 +977,7 @@
 </div>
 
 <!-- MODAL CARRINHO -->
-<div class="modal-overlay" id="modal-carrinho" onclick="if(event.target===this)fecharCarrinho()">
+<div class="modal-overlay" id="modal-carrinho" onclick="if(event.target===this&&!event.target.closest('.modal-box'))fecharCarrinho()">
   <div class="modal-box">
     <div class="modal-header">
       <div class="modal-header-top">
@@ -932,7 +1012,7 @@
         <span id="total-carrinho">R$ 0,00</span>
       </div>
       <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
-      <button type="button" class="btn-proxima-etapa" id="btn-ir-dados" onclick="event.stopPropagation();irParaDados()">
+      <button type="button" class="btn-proxima-etapa" id="btn-ir-dados" onclick="event.stopPropagation();event.preventDefault();irParaDados()">
         ✅ Quero Finalizar o Pedido
       </button>
       <button type="button" class="btn-continuar-comprando" onclick="fecharCarrinho()">
