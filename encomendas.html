@@ -528,6 +528,17 @@
     }
     .btn-proxima-etapa:disabled { background: var(--cinza); cursor: not-allowed; }
     .btn-proxima-etapa:not(:disabled):hover { background: var(--azul-escuro); }
+    /* Barra de ação sticky no rodapé do modal */
+    .modal-action-bar {
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding: 14px 20px 20px;
+      border-top: 1px solid #F0F0F0;
+      z-index: 50;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    }
+    .modal-action-bar.hidden { display: none; }
 
     /* RESUMO PEDIDO */
     .resumo-titulo { font-size: 1rem; font-weight: 700; margin-bottom: 14px; color: var(--azul); }
@@ -1014,10 +1025,13 @@
         <span id="total-carrinho">R$ 0,00</span>
       </div>
       <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
-      <button type="button" class="btn-proxima-etapa" id="btn-ir-dados" onclick="event.stopPropagation();event.preventDefault();irParaDados();return false;">
+    </div>
+    <!-- BARRA DE AÇÃO STICKY - SEMPRE VISÍVEL -->
+    <div class="modal-action-bar" id="modal-action-bar">
+      <button type="button" class="btn-proxima-etapa" id="btn-ir-dados">
         ✅ Quero Finalizar o Pedido
       </button>
-      <button type="button" class="btn-continuar-comprando" onclick="fecharCarrinho()">
+      <button type="button" class="btn-continuar-comprando" onclick="fecharCarrinho()" style="margin-top:10px">
         🛒 Continuar Comprando
       </button>
     </div>

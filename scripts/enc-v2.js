@@ -78,14 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === modalCarrinho) fecharCarrinho();
     });
   }
-  // Botão Finalizar Pedido - event listener dedicado para garantir funcionamento
+  // Botão Finalizar Pedido - event listener dedicado na barra sticky
   const btnIrDados = document.getElementById('btn-ir-dados');
   if (btnIrDados) {
     btnIrDados.addEventListener('click', function(e) {
       e.stopPropagation();
       e.preventDefault();
       irParaDados();
-    }, true); // capture=true para capturar antes do overlay
+    });
   }
   renderizarTudo();
   atualizarBotaoCarrinho();
@@ -412,6 +412,11 @@ function mostrarEtapa(etapa) {
   document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
   const el = document.getElementById(`etapa-${etapa}`);
   if (el) el.classList.add('ativa');
+  // Controlar visibilidade da barra de ação (só na etapa de revisão)
+  const actionBar = document.getElementById('modal-action-bar');
+  if (actionBar) {
+    actionBar.classList.toggle('hidden', etapa !== 'revisao');
+  }
   // Steps
   const steps = ['revisao','dados','confirmacao'];
   const idx = steps.indexOf(etapa);
