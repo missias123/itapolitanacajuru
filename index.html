@@ -154,7 +154,7 @@ img{max-width:100%;display:block}
 .cardapio-h{font-size:24px;font-weight:800;text-align:center;margin-bottom:16px;letter-spacing:-.3px;color:#1A0A00;font-family:"Poppins",sans-serif}
 
 /* ACCORDION */
-.acc{border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.15);isolation:isolate;transition:transform .2s,box-shadow .2s}.acc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.acc{border-radius:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.15);isolation:isolate;transition:transform .2s,box-shadow .2s}.acc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s}
 .acc-header:hover{filter:brightness(1.08)}
 .acc-left{display:flex;align-items:center;gap:12px}
@@ -363,6 +363,47 @@ img{max-width:100%;display:block}
   .relogio-hora{font-size:48px}
   .info-cards{grid-template-columns:repeat(4,1fr);max-width:960px;margin:0 auto}
 }
+
+/* ===== EFEITO NEON PREMIUM NOS TÓPICOS DO CARDÁPIO ===== */
+@keyframes neon-pulse {
+  0%   { box-shadow: 0 0 0 2px var(--neon-cor), 0 0 10px 3px var(--neon-cor), 0 0 24px 6px var(--neon-cor2), 0 0 48px 12px var(--neon-cor3), 0 3px 14px rgba(0,0,0,.15); }
+  50%  { box-shadow: 0 0 0 3px var(--neon-cor), 0 0 18px 6px var(--neon-cor), 0 0 40px 14px var(--neon-cor2), 0 0 80px 24px var(--neon-cor3), 0 6px 20px rgba(0,0,0,.2); }
+  100% { box-shadow: 0 0 0 2px var(--neon-cor), 0 0 10px 3px var(--neon-cor), 0 0 24px 6px var(--neon-cor2), 0 0 48px 12px var(--neon-cor3), 0 3px 14px rgba(0,0,0,.15); }
+}
+.acc {
+  --neon-cor:  rgba(255,255,255,0.9);
+  --neon-cor2: rgba(255,255,255,0.5);
+  --neon-cor3: rgba(255,255,255,0.2);
+  border: 2px solid transparent;
+  transition: border-color 0.35s ease, box-shadow 0.45s ease, transform 0.25s cubic-bezier(.34,1.56,.64,1);
+}
+.acc:hover {
+  transform: translateY(-4px) scale(1.015);
+  border-color: var(--neon-cor);
+  animation: neon-pulse 1.8s ease-in-out infinite;
+}
+.acc:not(:hover) {
+  animation: none;
+  box-shadow: 0 3px 14px rgba(0,0,0,.15);
+  border-color: transparent;
+  transform: translateY(0) scale(1);
+  transition: border-color 0.6s ease, box-shadow 0.6s ease, transform 0.35s ease;
+}
+/* Cores neon únicas por categoria */
+#acc-sorvetes     { --neon-cor: #E040FB; --neon-cor2: rgba(224,64,251,0.5); --neon-cor3: rgba(255,64,129,0.25); }
+#acc-picoles      { --neon-cor: #FFA000; --neon-cor2: rgba(255,160,0,0.5);   --neon-cor3: rgba(255,204,128,0.25); }
+#acc-acai-promo   { --neon-cor: #EA80FC; --neon-cor2: rgba(234,128,252,0.5); --neon-cor3: rgba(244,143,177,0.25); }
+#acc-acai         { --neon-cor: #7C4DFF; --neon-cor2: rgba(124,77,255,0.5);  --neon-cor3: rgba(179,157,219,0.25); }
+#acc-milk         { --neon-cor: #00E5FF; --neon-cor2: rgba(0,229,255,0.5);   --neon-cor3: rgba(129,212,250,0.25); }
+#acc-tacas        { --neon-cor: #FF4081; --neon-cor2: rgba(255,64,129,0.5);  --neon-cor3: rgba(244,143,177,0.25); }
+#acc-tacas-p      { --neon-cor: #FFD740; --neon-cor2: rgba(255,215,64,0.5);  --neon-cor3: rgba(255,171,64,0.25); }
+#acc-torta        { --neon-cor: #69F0AE; --neon-cor2: rgba(105,240,174,0.5); --neon-cor3: rgba(165,214,167,0.25); }
+#acc-iso          { --neon-cor: #64FFDA; --neon-cor2: rgba(100,255,218,0.5); --neon-cor3: rgba(128,222,234,0.25); }
+#acc-sobremesas   { --neon-cor: #82B1FF; --neon-cor2: rgba(130,177,255,0.5); --neon-cor3: rgba(206,147,216,0.25); }
+#acc-enc-caixas   { --neon-cor: #CE93D8; --neon-cor2: rgba(206,147,216,0.5); --neon-cor3: rgba(171,71,188,0.25); }
+#acc-enc-tortas   { --neon-cor: #FF5252; --neon-cor2: rgba(255,82,82,0.5);   --neon-cor3: rgba(244,143,177,0.25); }
+#acc-enc-picoles  { --neon-cor: #FFD740; --neon-cor2: rgba(255,215,64,0.5);  --neon-cor3: rgba(255,204,2,0.25); }
+#acc-encomendas   { --neon-cor: #40C4FF; --neon-cor2: rgba(64,196,255,0.5);  --neon-cor3: rgba(144,202,249,0.25); }
 </style>
 
 <!-- Schema.org LocalBusiness -->
