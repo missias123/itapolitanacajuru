@@ -438,12 +438,11 @@ function renderCarrinho() {
   const aviso = document.getElementById('aviso-min-carrinho');
   const btnNext = document.getElementById('btn-ir-dados');
   if (totalPic > 0 && totalPic < 100) {
-    if (aviso) { aviso.style.display='block'; aviso.textContent=`⚠️ Mínimo 100 picolés. Você tem ${totalPic}. Faltam ${100-totalPic}.`; }
-    if (btnNext) btnNext.disabled = true;
+    if (aviso) { aviso.style.display='block'; aviso.textContent=`⚠️ Mínimo 100 picolés para preço de atacado. Você tem ${totalPic}.`; }
   } else {
     if (aviso) aviso.style.display='none';
-    if (btnNext) btnNext.disabled = false;
   }
+  if (btnNext) btnNext.disabled = false;
 }
 
 function qtdCarrinho(i, delta) {
