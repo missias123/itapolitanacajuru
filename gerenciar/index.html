@@ -629,6 +629,7 @@ function mostrarStatusSabores(msg) {
 // ── SINCRONIZAÇÃO NA NUVEM ──
 const GIST_ID = '92bd9d1997c2fdd225ad3115c7028445';
 const GIST_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_ID + '/raw/itap-produtos.json';
+const PROXY_URL = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-prices';
 
 function getCaixasEnc() {
   try { return JSON.parse(localStorage.getItem('itap_caixas_enc') || 'null') || []; } catch(e) { return []; }
@@ -659,60 +660,32 @@ function autoSalvar() {
 
 async function _enviarParaNuvem() {
   const msg = document.getElementById('status-msg');
-  const token = localStorage.getItem('itap_gh_token') || '';
   const dados = _coletarDados();
   // Sempre salvar no localStorage como cache local
   localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
-  if (!token) {
-    msg.textContent = '💾 Salvo localmente';
-    setTimeout(() => msg.textContent = '', 3000);
-    return;
-  }
   msg.textContent = '☁️ Salvando no site...';
   try {
-    const resp = await fetch('https://api.github.com/gists/' + GIST_ID, {
-      method: 'PATCH',
+    const resp = await fetch(PROXY_URL, {
+      method: 'POST',
       headers: {
-        'Authorization': 'token ' + token,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Admin-Key': 'itap2007sync'
       },
-      body: JSON.stringify({ files: { 'itap-produtos.json': { content: JSON.stringify(dados, null, 2) } } })
+      body: JSON.stringify(dados)
     });
     if (resp.ok) {
       msg.textContent = '✅ Preços atualizados no site!';
     } else {
-      msg.textContent = '⚠️ Erro na nuvem – salvo localmente';
+      msg.textContent = '⚠️ Erro no servidor – salvo localmente';
     }
   } catch(e) {
-    msg.textContent = '⚠️ Sem internet – salvo localmente';
+    msg.textContent = '⚠️ Sem conexão – salvo localmente';
   }
   setTimeout(() => msg.textContent = '', 4000);
 }
 
 // ── SALVAR (botão manual) ──
 function salvarTudo() {
-  const token = localStorage.getItem('itap_gh_token') || '';
-  if (!token) {
-    const novoToken = prompt('🔑 Para sincronizar automático com o site, insira o Token GitHub:\n\n(Ou cancele para baixar o arquivo manualmente)');
-    if (novoToken && novoToken.trim()) {
-      localStorage.setItem('itap_gh_token', novoToken.trim());
-      _enviarParaNuvem();
-      return;
-    }
-    // Fallback: baixar arquivo
-    const msg = document.getElementById('status-msg');
-    msg.textContent = '⌛ Gerando arquivo...';
-    const novoJS = '// products.js \u2013 Atualizado em ' + new Date().toLocaleDateString('pt-BR') + '\nconst produtos = ' + JSON.stringify(produtos, null, 4) + ';\n';
-    const blob = new Blob([novoJS], { type: 'text/javascript' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'products.js';
-    a.click();
-    msg.textContent = '✅ products.js baixado!';
-    setTimeout(() => msg.textContent = '', 6000);
-    return;
-  }
   _enviarParaNuvem();
 }
 </script>
