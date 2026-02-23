@@ -505,6 +505,10 @@ function toggleSecao(id) {
   const aberto = el.classList.toggle('aberto');
   const icon = el.previousElementSibling?.querySelector('.toggle-icon');
   if (icon) icon.textContent = aberto ? '▲' : '▼';
+  // Re-renderizar acréscimos ao abrir a seção
+  if (id === 'conteudo-acrescimos' && aberto) {
+    setTimeout(renderizarAcrescimos, 10);
+  }
 }
 
 
