@@ -600,9 +600,12 @@
       padding: 14px 0 8px;
       border-top: 1px solid #F0F0F0;
       margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .btn-finalizar {
-      width: 100%;
+      flex: 1;
       padding: 16px;
       border: none;
       border-radius: 12px;
@@ -613,9 +616,26 @@
       cursor: pointer;
       transition: background 0.2s;
       margin-top: 0;
-      display: block;
     }
     .btn-finalizar:hover { background: #1B5E20; }
+    .btn-enviar-rapido {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: #D32F2F;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(211,47,47,0.4);
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-enviar-rapido:hover { background: #B71C1C; }
     .btn-voltar-etapa {
       width: 100%;
       padding: 12px;
@@ -1039,12 +1059,11 @@
       </div>
       <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
       <div style="padding:16px 0 24px;display:flex;flex-direction:column;gap:10px;">
-        <button type="button" class="btn-proxima-etapa" id="btn-ir-dados">
-          ✅ Quero Finalizar o Pedido
-        </button>
-        <button type="button" class="btn-continuar-comprando" id="btn-continuar-comprando">
-          🛒 Continuar Comprando
-        </button>
+        <div class="barra-acao barra-verde">
+          <button type="button" class="btn-acao-redondo btn-cinza-claro" id="btn-continuar-comprando" title="Continuar Comprando">✕</button>
+          <span class="barra-texto">✅ Quero Finalizar o Pedido</span>
+          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Finalizar Pedido">▶</button>
+        </div>
       </div>
     </div>
 
@@ -1060,12 +1079,11 @@
         <input type="text" id="cliente-tel" placeholder="Ex: (16) 99999-9999" autocomplete="tel" inputmode="tel" oninput="_telCliente=this.value">
       </div>
       <div class="botoes-etapa-dados">
-        <button type="button" class="btn-finalizar" id="btn-finalizar">
-          📲 Confirmar e Enviar Pedido
-        </button>
-        <button type="button" class="btn-voltar-etapa" id="btn-voltar-etapa">
-          ← Voltar ao Carrinho
-        </button>
+        <div class="barra-acao barra-verde">
+          <button type="button" class="btn-acao-redondo btn-cinza-claro" id="btn-voltar-etapa" title="Voltar ao Carrinho">◀</button>
+          <span class="barra-texto">📲 Confirmar e Enviar Pedido</span>
+          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-finalizar" title="Confirmar e Enviar">▶</button>
+        </div>
       </div>
     </div>
 
