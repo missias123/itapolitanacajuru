@@ -809,8 +809,8 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
   // garantir que o estoque e carrinho sejam atualizados mesmo
   // que o usuário saia da página ao abrir o WhatsApp
   // ============================================================
-  const caixas = carregarCaixas();
-  const tortas = carregarTortas();
+  const caixas = getCaixasEncomenda();
+  const tortas = getTortasEncomenda();
   carrinho.forEach(item => {
     const cx = caixas.find(c => c.id === item.id);
     if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
