@@ -379,23 +379,32 @@ function abrirTipoPicole(id) {
 function abrirModalPicolé(id) {
   const p = PRODUTOS.picoles.find(x => x.id === id);
   if (!p) return;
-  picoleAtual = p;
+   picoleAtual = p;
+  // Restaurar seleções já feitas para este tipo a partir do global
   selecoesPickle = {};
-
+  Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
+    if (chave.startsWith(p.id + '::')) {
+      const sabor = chave.slice(p.id.length + 2);
+      selecoesPickle[sabor] = qtd;
+    }
+  });
   document.getElementById('picolé-titulo').textContent = p.nome;
   document.getElementById('picolé-precos').textContent =
     `Varejo: R$ ${p.precoVarejo.toFixed(2).replace('.',',')} | Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}`;
 
   const lista = document.getElementById('lista-sabores-picolé');
-  lista.innerHTML = p.sabores.map(s => `
+  lista.innerHTML = p.sabores.map(s => {
+    const qtdAtual = selecoesPickle[s] || 0;
+    return `
     <div class="picolé-row">
       <span class="picolé-sabor-nome">${s}</span>
       <div class="qty-ctrl">
         <button class="btn-qty" onclick="qtdPickle('${s}',-1)">−</button>
-        <span class="qty-val" id="pqty-${s.replace(/\s+/g,'_')}"">0</span>
+        <span class="qty-val" id="pqty-${s.replace(/\s+/g,'_')}">${qtdAtual}</span>
         <button class="btn-qty" onclick="qtdPickle('${s}',1)">+</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   atualizarTotalPickle();
   abrirModal('modal-picolé');
