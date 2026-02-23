@@ -119,6 +119,30 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarEtapa('revisao');
     });
   }
+  // Botão Continuar Comprando
+  const btnContinuar = document.getElementById('btn-continuar-comprando');
+  if (btnContinuar) {
+    btnContinuar.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fecharCarrinho();
+    });
+  }
+  // Botão Novo Pedido
+  const btnNovoPedido = document.getElementById('btn-novo-pedido');
+  if (btnNovoPedido) {
+    btnNovoPedido.addEventListener('click', function(e) {
+      e.stopPropagation();
+      novoPedido();
+    });
+  }
+  // Botão Voltar ao Cardápio
+  const btnVoltarCardapio = document.getElementById('btn-voltar-cardapio');
+  if (btnVoltarCardapio) {
+    btnVoltarCardapio.addEventListener('click', function(e) {
+      e.stopPropagation();
+      window.location.href = 'index.html';
+    });
+  }
   renderizarTudo();
   atualizarBotaoCarrinho();
   // Abrir seção via hash (ex: encomendas.html#caixas)
