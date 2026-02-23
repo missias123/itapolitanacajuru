@@ -288,7 +288,9 @@ function atualizarBtnConfirmar() {
   const btn = document.getElementById('btn-confirmar-sabores');
   const max = produtoAtual ? produtoAtual.maxSabores : 0;
   const atual = saboresSelecionados.length;
-  btn.textContent = `Confirmar Seleção (${atual}/${max})`;
+  btn.title = `Confirmar Seleção (${atual}/${max})`;
+  const txtEl = document.getElementById('txt-confirmar-sabores');
+  if (txtEl) txtEl.textContent = `Confirmar Seleção (${atual}/${max})`;
   btn.disabled = atual !== max;
   btn.className = 'btn-confirmar' + (atual === max ? ' pronto' : '');
 }
