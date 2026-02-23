@@ -379,32 +379,35 @@ const MIN_PICOLES = 100;
 const MAX_PICOLES = 250;
 
 function atualizarTotalPickle() {
-  const total = Object.values(selecoesPickle).reduce((a,b)=>a+b,0);
+  // Usa o total GLOBAL (todos os tipos acumulados)
+  const totalGlobal = totalPickleGlobal();
   const el = document.getElementById('total-picoles');
-  if (el) el.textContent = total;
+  if (el) el.textContent = totalGlobal;
   const btn = document.getElementById('btn-add-picoles');
   const aviso = document.getElementById('aviso-minimo-picolé');
-  // Botão só libera com mínimo 100 e máximo 250
+  // Regra: bloqueado 0-99, liberado 100-250, bloqueado 251+
   if (btn) {
-    const liberado = total >= MIN_PICOLES && total <= MAX_PICOLES;
-    btn.disabled = !liberado;
-    if (total === 0) {
-      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés`;
-    } else if (total < MIN_PICOLES) {
-      btn.textContent = `🔒 Faltam ${MIN_PICOLES - total} picolés para o mínimo`;
-    } else if (total > MAX_PICOLES) {
-      btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés por pedido`;
+    if (totalGlobal === 0) {
+      btn.disabled = true;
+      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`;
+    } else if (totalGlobal < MIN_PICOLES) {
+      btn.disabled = true;
+      btn.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`;
+    } else if (totalGlobal > MAX_PICOLES) {
+      btn.disabled = true;
+      btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`;
     } else {
-      btn.textContent = `✅ Adicionar ${total} picolé(s) ao carrinho`;
+      btn.disabled = false;
+      btn.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`;
     }
   }
   if (aviso) {
-    if (total > 0 && total < MIN_PICOLES) {
+    if (totalGlobal > 0 && totalGlobal < MIN_PICOLES) {
       aviso.style.display = 'block';
-      aviso.textContent = `⚠️ Mínimo ${MIN_PICOLES} picolés por pedido. Você selecionou ${total}. Faltam ${MIN_PICOLES - total}.`;
-    } else if (total > MAX_PICOLES) {
+      aviso.textContent = `🧳 Total acumulado: ${totalGlobal} picolés. Faltam ${MIN_PICOLES - totalGlobal} para liberar o carrinho.`;
+    } else if (totalGlobal > MAX_PICOLES) {
       aviso.style.display = 'block';
-      aviso.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés por pedido. Reduza ${total - MAX_PICOLES} unidades.`;
+      aviso.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés. Reduza ${totalGlobal - MAX_PICOLES} unidades.`;
     } else {
       aviso.style.display = 'none';
     }
