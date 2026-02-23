@@ -293,11 +293,22 @@ function atualizarBtnConfirmar() {
   const btn = document.getElementById('btn-confirmar-sabores');
   const max = produtoAtual ? produtoAtual.maxSabores : 0;
   const atual = saboresSelecionados.length;
-  btn.title = `Confirmar Seleção (${atual}/${max})`;
+  const faltam = max - atual;
+  // Texto dinâmico indicando quantos sabores faltam
+  let txtBotao;
+  if (atual === 0) {
+    txtBotao = `🔒 Selecione ${max} sabores para continuar`;
+  } else if (faltam > 0) {
+    txtBotao = `🔒 Falta${faltam > 1 ? 'm' : ''} ${faltam} sabor${faltam > 1 ? 'es' : ''}`;
+  } else {
+    txtBotao = `✅ Confirmar Seleção (${atual}/${max})`;
+  }
+  btn.title = txtBotao;
   const txtEl = document.getElementById('txt-confirmar-sabores');
-  if (txtEl) txtEl.textContent = `Confirmar Seleção (${atual}/${max})`;
+  if (txtEl) txtEl.textContent = txtBotao;
+  // Botão só libera quando tiver exatamente o número de sabores necessário
   btn.disabled = atual !== max;
-  btn.className = 'btn-confirmar' + (atual === max ? ' pronto' : '');
+  btn.className = 'btn-confirmar' + (atual === max ? ' pronto' : ' bloqueado');
 }
 
 function confirmarSabores() {
