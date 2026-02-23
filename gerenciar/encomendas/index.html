@@ -288,6 +288,60 @@ function atualizarAcrescimos(){
   if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
 }
 
+// ── PEDIDOS RECEBIDOS ──
+function renderPedidos(){
+  const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
+  if(pedidos.length === 0){
+    return '<div class="aviso">📭 Nenhum pedido recebido ainda. Os pedidos aparecem aqui assim que o cliente finaliza no site.</div>';
+  }
+  const cores = { novo:'#dcfce7', visto:'#fef9c3', concluido:'#f3f4f6' };
+  const labels = { novo:'🆕 NOVO', visto:'👀 VISTO', concluido:'✅ CONCLUÍDO' };
+  let h = `<div class="aviso">📋 ${pedidos.length} pedido(s) registrado(s). Clique no status para atualizar.</div>`;
+  pedidos.forEach((p,i) => {
+    const cor = cores[p.status] || cores.novo;
+    const lbl = labels[p.status] || labels.novo;
+    const itensHtml = p.itens.map(it => {
+      const sabores = it.sabores && it.sabores.length > 0 ? `<div style="font-size:11px;color:#555;margin-left:8px">${it.sabores.map(s=>'• '+s).join(' ')}</div>` : '';
+      return `<div style="font-size:13px;margin-bottom:2px">▶ <strong>${it.nome}</strong> × ${it.qtd} — R$ ${(it.preco*it.qtd).toFixed(2).replace('.',',')}${sabores}</div>`;
+    }).join('');
+    h += `<div style="background:${cor};border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #e5e7eb">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-weight:800;font-size:15px">${p.nome} <span style="font-size:12px;color:#6b7280">${p.tel}</span></div>
+          <div style="font-size:11px;color:#6b7280">${p.data} · Nº ${p.num}</div>
+        </div>
+        <select onchange="atualizarStatusPedido(${i},this.value)" style="padding:4px 8px;border-radius:8px;border:1px solid #d1d5db;font-size:12px;font-weight:700;cursor:pointer">
+          <option value="novo" ${p.status==='novo'?'selected':''}>🆕 Novo</option>
+          <option value="visto" ${p.status==='visto'?'selected':''}>👀 Visto</option>
+          <option value="concluido" ${p.status==='concluido'?'selected':''}>✅ Concluído</option>
+        </select>
+      </div>
+      ${itensHtml}
+      <div style="font-weight:800;font-size:14px;color:#1B5E20;margin-top:6px">💰 Total: R$ ${p.total.toFixed(2).replace('.',',')}</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <a href="https://wa.me/55${p.tel.replace(/\D/g,'')}" target="_blank" style="padding:6px 12px;background:#25D366;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none">📲 WhatsApp</a>
+        <button onclick="removerPedido(${i})" style="padding:6px 12px;background:#fee2e2;color:#dc2626;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">🗑️ Remover</button>
+      </div>
+    </div>`;
+  });
+  return h;
+}
+function atualizarStatusPedido(i, status){
+  const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
+  if(pedidos[i]) { pedidos[i].status = status; localStorage.setItem('itap_pedidos', JSON.stringify(pedidos)); }
+  atualizarPedidos();
+}
+function removerPedido(i){
+  const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
+  pedidos.splice(i,1);
+  localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
+  atualizarPedidos();
+}
+function atualizarPedidos(){
+  const sec = document.getElementById('sec-pedidos');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPedidos(); }
+}
+
 // ── INICIAR ──
 function iniciarAdmin(){
   caixas     = carregar('itap_caixas_enc',   CAIXAS_PADRAO);
@@ -297,6 +351,10 @@ function iniciarAdmin(){
 
   const body = document.getElementById('adm-body');
   body.innerHTML = '';
+  // Seção de pedidos em destaque no topo
+  const secPedidos = criarSecao('pedidos', '🛒 Pedidos Recebidos', renderPedidos());
+  secPedidos.classList.add('open'); // aberta por padrão
+  body.appendChild(secPedidos);
   body.appendChild(criarSecao('caixas',     '📦 Caixas de Sorvete',  renderCaixas()));
   body.appendChild(criarSecao('tortas',     '🎂 Torta de Sorvete',   renderTortas()));
   body.appendChild(criarSecao('picoles',    '🍭 Picolés (Atacado)',  renderPicolés()));
