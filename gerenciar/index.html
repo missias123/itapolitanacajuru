@@ -76,14 +76,14 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
       <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()" style="width:100%;padding:12px 44px 12px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none;box-sizing:border-box">
       <button type="button" id="btn-olho" onclick="toggleSenha()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:20px;color:#6A0DAD;padding:0;line-height:1" title="Mostrar/ocultar senha">👁️</button>
     </div>
-    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <button type="button" class="btn-login" onclick="checkLogin()">Entrar</button>
     <a href="../index.html" class="back-link">← Voltar ao site</a>
   </div>
 </div>
 <div id="admin-panel">
   <div class="admin-header">
     <h1>⚙️ Gerenciamento – Itapolitana Cajuru</h1>
-    <button class="btn-logout" onclick="logout()">Sair</button>
+    <button type="button" class="btn-logout" onclick="logout()">Sair</button>
   </div>
   <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB">
     <a href="./cardapio/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(123,31,162,.35)">
@@ -105,7 +105,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   <div class="admin-body" id="admin-body"></div>
   <div class="save-bar">
     <span class="status-msg" id="status-msg"></span>
-    <button class="btn-save" onclick="salvarTudo()">💾 Baixar products.js Atualizado</button>
+    <button type="button" class="btn-save" onclick="salvarTudo()">💾 Baixar products.js Atualizado</button>
   </div>
 </div>
 <script src="../scripts/products.js"></script>
@@ -156,11 +156,11 @@ function blocoFoto(chave) {
         onchange="onFotoChange('${chave}', this)">
       ${temFoto ? `
       <div class="foto-acoes" id="foto-acoes-${chave}">
-        <button class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
-        <button class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
+        <button type="button" class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
+        <button type="button" class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
       </div>` : `<div class="foto-acoes" id="foto-acoes-${chave}" style="display:none">
-        <button class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
-        <button class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
+        <button type="button" class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
+        <button type="button" class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
       </div>`}
     </div>`;
 }
@@ -265,13 +265,13 @@ function renderAdmin() {
       </div>
     </div>
     <div id="banner-preview-area" style="margin-bottom:14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.12)">
-      <img src="${bannerSrc}" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.style.display='none'">
+      <img loading="lazy" src="${bannerSrc}" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.style.display='none'">
     </div>
     <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#6A0DAD,#9C27B0);color:#fff;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(106,13,173,.4);margin-bottom:8px">
       📷 Substituir Banner do Site
       <input type="file" accept="image/*" style="display:none" onchange="onBannerChange(this)">
     </label>
-    ${temBanner ? `<button onclick="removerBanner()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">🔄 Restaurar Banner Padrão</button>` : ''}
+    ${temBanner ? `<button type="button" onclick="removerBanner()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">🔄 Restaurar Banner Padrão</button>` : ''}
     <div id="banner-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
   `;
   body.appendChild(bannerCard);
@@ -289,7 +289,7 @@ function renderAdmin() {
     </div>
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <input id="novo-sabor-input" type="text" placeholder="Nome do novo sabor..." style="flex:1;min-width:180px;padding:10px 14px;border:2px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none" onfocus="this.style.borderColor='#E8000D'" onblur="this.style.borderColor='#E5E7EB'">
-      <button onclick="adicionarSabor()" style="background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">➕ Acrescentar</button>
+      <button type="button" onclick="adicionarSabor()" style="background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">➕ Acrescentar</button>
     </div>
     <div id="lista-sabores-admin" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px"></div>
     <div id="sabores-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
@@ -331,7 +331,7 @@ function renderCaixasEnc() {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <span style="font-size:22px">📦</span>
         <span style="font-size:14px;font-weight:800;color:${esgotado?'#EF4444':'#111827'};flex:1">${c.nome}${esgotado?' — <span style="color:#EF4444;font-size:12px">ESGOTADO</span>':''}</span>
-        <button onclick="toggleEsgotadoCaixa(${i})" style="padding:6px 14px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:${esgotado?'#10B981':'#EF4444'};color:#fff">${esgotado?'✅ Reativar':'❌ Esgotar'}</button>
+        <button type="button" onclick="toggleEsgotadoCaixa(${i})" style="padding:6px 14px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:${esgotado?'#10B981':'#EF4444'};color:#fff">${esgotado?'✅ Reativar':'❌ Esgotar'}</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div>
@@ -409,7 +409,7 @@ function renderPicoles() {
       <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value)"></div></div>
       <div style="margin-top:8px;font-size:11px;color:#6A0DAD;font-weight:700">Sabores:</div>
       <div class="sabores-grid" style="margin-top:6px">${p.sabores.map(s => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`).join('')}</div>
-      <button class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
+      <button type="button" class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
     </div>`;
   });
   html += '</div>';
@@ -580,10 +580,10 @@ function renderSaboresAdmin() {
     <div style="background:${s.esgotado ? '#FEF2F2' : '#F0FDF4'};border:1px solid ${s.esgotado ? '#FECACA' : '#BBF7D0'};border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
       <span style="font-size:13px;font-weight:700;color:${s.esgotado ? '#EF4444' : '#111827'};flex:1;${s.esgotado ? 'text-decoration:line-through' : ''}">${s.nome}</span>
       <div style="display:flex;gap:4px;flex-shrink:0">
-        <button onclick="toggleEsgotadoSabor(${i})" style="padding:5px 10px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:${s.esgotado ? '#10B981' : '#EF4444'};color:#fff">
+        <button type="button" onclick="toggleEsgotadoSabor(${i})" style="padding:5px 10px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:${s.esgotado ? '#10B981' : '#EF4444'};color:#fff">
           ${s.esgotado ? '✅ Ativar' : '❌ Esgotar'}
         </button>
-        <button onclick="excluirSabor(${i})" style="padding:5px 8px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:#6B7280;color:#fff" title="Excluir">🗑️</button>
+        <button type="button" onclick="excluirSabor(${i})" style="padding:5px 8px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:#6B7280;color:#fff" title="Excluir">🗑️</button>
       </div>
     </div>`).join('');
 }
