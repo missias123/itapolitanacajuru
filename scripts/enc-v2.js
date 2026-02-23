@@ -71,6 +71,15 @@ const PRODUTOS = {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
+  // Botão Finalizar Pedido - event listener dedicado para garantir funcionamento
+  const btnIrDados = document.getElementById('btn-ir-dados');
+  if (btnIrDados) {
+    btnIrDados.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      irParaDados();
+    }, true); // capture=true para capturar antes do overlay
+  }
   renderizarTudo();
   atualizarBotaoCarrinho();
   // Abrir seção via hash (ex: encomendas.html#caixas)
