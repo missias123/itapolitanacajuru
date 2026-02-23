@@ -471,6 +471,35 @@ function atualizarTotalPickle() {
       aviso.style.display = 'none';
     }
   }
+  // Atualizar barra de progresso fixa no header
+  const progressNum = document.getElementById('picole-progress-num');
+  const progressStatus = document.getElementById('picole-progress-status');
+  const progressFill = document.getElementById('picole-progress-fill');
+  if (progressNum) progressNum.textContent = totalGlobal;
+  if (progressFill) {
+    const pct = Math.min((totalGlobal / MAX_PICOLES) * 100, 100);
+    progressFill.style.width = pct + '%';
+    if (totalGlobal >= MIN_PICOLES && totalGlobal <= MAX_PICOLES) {
+      progressFill.classList.add('ok');
+    } else {
+      progressFill.classList.remove('ok');
+    }
+  }
+  if (progressStatus) {
+    if (totalGlobal === 0) {
+      progressStatus.textContent = `🔒 Faltam ${MIN_PICOLES}`;
+      progressStatus.classList.remove('ok');
+    } else if (totalGlobal < MIN_PICOLES) {
+      progressStatus.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal}`;
+      progressStatus.classList.remove('ok');
+    } else if (totalGlobal > MAX_PICOLES) {
+      progressStatus.textContent = `⚠️ Máx. atingido`;
+      progressStatus.classList.remove('ok');
+    } else {
+      progressStatus.textContent = `✅ Pronto!`;
+      progressStatus.classList.add('ok');
+    }
+  }
 }
 
 function confirmarPickle() {
