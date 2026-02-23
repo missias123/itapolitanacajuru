@@ -64,9 +64,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <p>Sorveteria Itapolitana Cajuru</p>
     <div class="inp-wrap">
       <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
-      <button class="btn-olho" id="btn-olho" onclick="toggleSenha()">👁️</button>
+      <button type="button" class="btn-olho" id="btn-olho" onclick="toggleSenha()">👁️</button>
     </div>
-    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <button type="button" class="btn-login" onclick="checkLogin()">Entrar</button>
     <div class="erro" id="erro-msg">Senha incorreta. Tente novamente.</div>
     <a href="../../index.html" class="back-link">← Voltar ao site</a>
   </div>
@@ -76,12 +76,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="admin-panel">
   <div class="adm-header">
     <h1>📦 Admin Encomendas – Itapolitana Cajuru</h1>
-    <button class="btn-logout" onclick="logout()">Sair</button>
+    <button type="button" class="btn-logout" onclick="logout()">Sair</button>
   </div>
   <div class="adm-body" id="adm-body"></div>
   <div class="save-bar">
     <span class="status-msg" id="status-msg"></span>
-    <button class="btn-salvar" onclick="salvarTudo()">💾 Salvar Alterações</button>
+    <button type="button" class="btn-salvar" onclick="salvarTudo()">💾 Salvar Alterações</button>
   </div>
 </div>
 
@@ -172,7 +172,7 @@ function renderCaixas(){
         <div class="campo-box"><label>Preço (R$)</label><input type="number" step="1" min="0" value="${c.preco}" onchange="editarCaixa(${i},'preco',parseFloat(this.value))"></div>
         <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${c.estoque}" onchange="editarCaixa(${i},'estoque',parseInt(this.value))"></div>
       </div>
-      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarCaixa(${i})">
+      <button type="button" class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarCaixa(${i})">
         ${esg?'✅ Reativar':'❌ Esgotar'}
       </button>
     </div>`;
@@ -205,7 +205,7 @@ function renderTortas(){
         <div class="campo-box"><label>Preço (R$)</label><input type="number" step="1" min="0" value="${t.preco}" onchange="editarTorta(${i},'preco',parseFloat(this.value))"></div>
         <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${t.estoque}" onchange="editarTorta(${i},'estoque',parseInt(this.value))"></div>
       </div>
-      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarTorta(${i})">
+      <button type="button" class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarTorta(${i})">
         ${esg?'✅ Reativar':'❌ Esgotar'}
       </button>
     </div>`;
@@ -237,7 +237,7 @@ function renderPicoles(){
         <div class="campo-box"><label>Atacado (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_atacado}" onchange="editarPicole(${i},'preco_atacado',parseFloat(this.value))"></div>
         <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${p.estoque}" onchange="editarPicole(${i},'estoque',parseInt(this.value))"></div>
       </div>
-      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarPicole(${i})">
+      <button type="button" class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarPicole(${i})">
         ${esg?'✅ Reativar':'❌ Esgotar'}
       </button>
     </div>`;

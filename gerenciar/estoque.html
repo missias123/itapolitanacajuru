@@ -141,7 +141,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
       <input type="password" id="est-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLoginEstoque()" style="width:100%;padding:12px 44px 12px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none;box-sizing:border-box">
       <button type="button" id="btn-olho-est" onclick="toggleSenhaEst()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:20px;color:#6A0DAD;padding:0;line-height:1" title="Mostrar/ocultar senha">👁️</button>
     </div>
-    <button class="btn-login" onclick="checkLoginEstoque()">Entrar</button>
+    <button type="button" class="btn-login" onclick="checkLoginEstoque()">Entrar</button>
     <a href="index.html" class="back-link">← Voltar ao Admin</a>
   </div>
 </div>
@@ -152,7 +152,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
     <h1>📦 Estoque de Insumos – Itapolitana</h1>
     <div class="header-btns">
       <a href="index.html" class="btn-admin">⚙️ Admin</a>
-      <button class="btn-logout" onclick="logoutEstoque()">Sair</button>
+      <button type="button" class="btn-logout" onclick="logoutEstoque()">Sair</button>
     </div>
   </div>
 
@@ -161,15 +161,15 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
     <div class="toolbar">
       <span class="toolbar-title">📦 Controle de Insumos</span>
       <input type="text" id="novo-item-nome" placeholder="Nome do produto (ex: Leite Integral 1L)..." onkeypress="if(event.key==='Enter')adicionarItem()">
-      <button class="btn-add" onclick="adicionarItem()">➕ Adicionar Item</button>
+      <button type="button" class="btn-add" onclick="adicionarItem()">➕ Adicionar Item</button>
     </div>
 
     <!-- FILTROS -->
     <div class="filtros">
-      <button class="filtro-btn ativo" onclick="setFiltro('todos',this)">📋 Todos</button>
-      <button class="filtro-btn alerta" onclick="setFiltro('baixo',this)">⚠️ Estoque Baixo</button>
-      <button class="filtro-btn" onclick="setFiltro('esgotado',this)" style="border-color:#EF4444;color:#EF4444">🚫 Esgotados</button>
-      <button class="filtro-btn" onclick="setFiltro('ok',this)" style="border-color:#10B981;color:#10B981">✅ Em Estoque</button>
+      <button type="button" class="filtro-btn ativo" onclick="setFiltro('todos',this)">📋 Todos</button>
+      <button type="button" class="filtro-btn alerta" onclick="setFiltro('baixo',this)">⚠️ Estoque Baixo</button>
+      <button type="button" class="filtro-btn" onclick="setFiltro('esgotado',this)" style="border-color:#EF4444;color:#EF4444">🚫 Esgotados</button>
+      <button type="button" class="filtro-btn" onclick="setFiltro('ok',this)" style="border-color:#10B981;color:#10B981">✅ Em Estoque</button>
     </div>
 
     <!-- STATS -->
@@ -182,8 +182,8 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   <!-- BARRA DE EXPORTAÇÃO -->
   <div class="export-bar">
     <span class="export-count" id="export-count">0 itens cadastrados</span>
-    <button class="btn-copy" onclick="abrirListaCompleta()">📋 Ver Lista Completa</button>
-    <button class="btn-pedido" onclick="gerarPedido()">📲 Gerar Pedido (WhatsApp)</button>
+    <button type="button" class="btn-copy" onclick="abrirListaCompleta()">📋 Ver Lista Completa</button>
+    <button type="button" class="btn-pedido" onclick="gerarPedido()">📲 Gerar Pedido (WhatsApp)</button>
   </div>
 </div>
 
@@ -192,14 +192,14 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   <div class="modal-box">
     <div class="modal-header">
       <h3 id="modal-titulo">📋 Lista de Insumos</h3>
-      <button class="modal-close" onclick="fecharModal()">✕</button>
+      <button type="button" class="modal-close" onclick="fecharModal()">✕</button>
     </div>
     <div class="modal-body">
       <textarea id="modal-texto" readonly></textarea>
     </div>
     <div class="modal-footer">
-      <button class="btn-copiar-lista" onclick="copiarLista()">📋 Copiar Lista</button>
-      <button class="btn-fechar-modal" onclick="fecharModal()">Fechar</button>
+      <button type="button" class="btn-copiar-lista" onclick="copiarLista()">📋 Copiar Lista</button>
+      <button type="button" class="btn-fechar-modal" onclick="fecharModal()">Fechar</button>
     </div>
   </div>
 </div>
@@ -361,7 +361,7 @@ function renderEstoque() {
       : `<div class="foto-placeholder-icon">📷</div>`;
     return `
       <div class="item-card ${status}" id="card-${item.id}">
-        <button class="btn-excluir" onclick="excluirItem('${item.id}')" title="Excluir">🗑️</button>
+        <button type="button" class="btn-excluir" onclick="excluirItem('${item.id}')" title="Excluir">🗑️</button>
         <div class="item-foto-area" onclick="document.getElementById('foto-${item.id}').click()">
           ${fotoHtml}
           <div class="foto-overlay">📷<span>Trocar foto</span></div>
@@ -370,9 +370,9 @@ function renderEstoque() {
         <div class="item-info">
           <input class="item-nome-input" value="${item.nome.replace(/"/g,'&quot;')}" onchange="atualizarNome('${item.id}',this.value)" onblur="atualizarNome('${item.id}',this.value)" placeholder="Nome do produto">
           <div class="contador">
-            <button class="contador-btn menos" onclick="alterarQtd('${item.id}',-1)">−</button>
+            <button type="button" class="contador-btn menos" onclick="alterarQtd('${item.id}',-1)">−</button>
             <span class="contador-num ${numClass}">${item.qtd}</span>
-            <button class="contador-btn mais" onclick="alterarQtd('${item.id}',+1)">+</button>
+            <button type="button" class="contador-btn mais" onclick="alterarQtd('${item.id}',+1)">+</button>
           </div>
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
             <span style="font-size:11px;color:#6B7280;font-weight:600">Unidade:</span>

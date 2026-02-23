@@ -65,9 +65,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <p>Sorveteria Itapolitana Cajuru</p>
     <div class="inp-wrap">
       <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
-      <button class="btn-olho" id="btn-olho" onclick="toggleSenha()">👁️</button>
+      <button type="button" class="btn-olho" id="btn-olho" onclick="toggleSenha()">👁️</button>
     </div>
-    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <button type="button" class="btn-login" onclick="checkLogin()">Entrar</button>
     <div class="erro" id="erro-msg">Senha incorreta. Tente novamente.</div>
     <a href="../../index.html" class="back-link">← Voltar ao site</a>
   </div>
@@ -77,12 +77,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="admin-panel">
   <div class="adm-header">
     <h1>🍦 Admin Cardápio – Itapolitana Cajuru</h1>
-    <button class="btn-logout" onclick="logout()">Sair</button>
+    <button type="button" class="btn-logout" onclick="logout()">Sair</button>
   </div>
   <div class="adm-body" id="adm-body"></div>
   <div class="save-bar">
     <span class="status-msg" id="status-msg"></span>
-    <button class="btn-salvar" onclick="salvarTudo()">💾 Salvar Alterações</button>
+    <button type="button" class="btn-salvar" onclick="salvarTudo()">💾 Salvar Alterações</button>
   </div>
 </div>
 
@@ -331,7 +331,7 @@ function renderAcrescimos() {
       <div style="font-size:13px;font-weight:800;color:#1D4ED8">📊 ${TOTAL_SLOTS_ACR} Slots de Acréscimos Editáveis</div>
       <div style="font-size:11px;color:#3B82F6;margin-top:2px">${ativos} ativo(s) • ${TOTAL_SLOTS_ACR - ativos} vazio(s) • Estoque controla disponibilidade nas encomendas</div>
     </div>
-    <button onclick="zerarTodosAcr()" style="padding:6px 12px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:#EF4444;color:#fff">❌ Esgotar Todos</button>
+    <button type="button" onclick="zerarTodosAcr()" style="padding:6px 12px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:#EF4444;color:#fff">❌ Esgotar Todos</button>
   </div>`;
   h += '<div id="lista-acr-admin">';
   lista.forEach((c, i) => {
@@ -343,7 +343,7 @@ function renderAcrescimos() {
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
         <span style="font-size:11px;font-weight:800;color:#9CA3AF;background:#F3F4F6;border-radius:6px;padding:2px 7px;min-width:32px;text-align:center">#${i+1}</span>
         <span style="font-size:12px;font-weight:800;color:${vazio?'#9CA3AF':(esg?'#EF4444':'#15803D')};flex:1">${vazio?'(slot vazio — preencha o nome para ativar)':c.nome}${(!vazio&&esg)?' ⚠️ ESGOTADO':(!vazio?' ✅ ATIVO':'')}</span>
-        ${!vazio ? `<button onclick="toggleEsgotadoAcr(${i})" style="padding:5px 10px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:${esg?'#10B981':'#EF4444'};color:#fff">${esg?'✅ Reativar':'❌ Esgotar'}</button>` : ''}
+        ${!vazio ? `<button type="button" onclick="toggleEsgotadoAcr(${i})" style="padding:5px 10px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;background:${esg?'#10B981':'#EF4444'};color:#fff">${esg?'✅ Reativar':'❌ Esgotar'}</button>` : ''}
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <div style="flex:1;min-width:120px">
