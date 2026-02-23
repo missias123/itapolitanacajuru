@@ -126,7 +126,7 @@ const PICOLES_PADRAO = [
   { id:'pic_leite_sem_recheio',nome:'Picolé de Leite sem Recheio',preco_varejo:2.50, preco_atacado:1.80, estoque:200, esgotado:false },
   { id:'pic_leite_com_recheio',nome:'Picolé de Leite com Recheio',preco_varejo:3.00, preco_atacado:2.00, estoque:200, esgotado:false },
   { id:'pic_leite_ninho',      nome:'Picolé Leite Ninho',         preco_varejo:4.00, preco_atacado:3.00, estoque:200, esgotado:false },
-  { id:'pic_eskimos',          nome:'Picolé Eskimo',              preco_varejo:8.00, preco_atacado:6.00, estoque:200, esgotado:false }
+  { id:'pic_esquimós',          nome:'Picolé Esquimó',              preco_varejo:8.00, preco_atacado:6.00, estoque:200, esgotado:false }
 ];
 
 function carregar(key, padrao){
@@ -226,35 +226,35 @@ function toggleEsgotarTorta(i){
 }
 
 // ── RENDER PICOLÉS ──
-function renderPicoles(){
+function renderPicolés(){
   let h = '';
   picoles.forEach((p,i) => {
     const esg = p.esgotado || p.estoque <= 0;
     h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="picole-card-${i}">
       <div class="prod-nome">${p.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
       <div class="campos-linha">
-        <div class="campo-box"><label>Varejo (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_varejo}" onchange="editarPicole(${i},'preco_varejo',parseFloat(this.value))"></div>
-        <div class="campo-box"><label>Atacado (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_atacado}" onchange="editarPicole(${i},'preco_atacado',parseFloat(this.value))"></div>
-        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${p.estoque}" onchange="editarPicole(${i},'estoque',parseInt(this.value))"></div>
+        <div class="campo-box"><label>Varejo (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_varejo}" onchange="editarPicolé(${i},'preco_varejo',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Atacado (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_atacado}" onchange="editarPicolé(${i},'preco_atacado',parseFloat(this.value))"></div>
+        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${p.estoque}" onchange="editarPicolé(${i},'estoque',parseInt(this.value))"></div>
       </div>
-      <button type="button" class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarPicole(${i})">
+      <button type="button" class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarPicolé(${i})">
         ${esg?'✅ Reativar':'❌ Esgotar'}
       </button>
     </div>`;
   });
   return h;
 }
-function editarPicole(i, campo, val){
+function editarPicolé(i, campo, val){
   picoles[i][campo] = val;
   if(campo==='estoque') picoles[i].esgotado = val <= 0;
   const sec = document.getElementById('sec-picoles');
-  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicoles(); }
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicolés(); }
 }
-function toggleEsgotarPicole(i){
+function toggleEsgotarPicolé(i){
   picoles[i].esgotado = !picoles[i].esgotado;
   if(picoles[i].esgotado) picoles[i].estoque = 0;
   const sec = document.getElementById('sec-picoles');
-  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicoles(); }
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicolés(); }
 }
 
 }
@@ -269,7 +269,7 @@ function iniciarAdmin(){
   body.innerHTML = '';
   body.appendChild(criarSecao('caixas',  '📦 Caixas de Sorvete',  renderCaixas()));
   body.appendChild(criarSecao('tortas',  '🎂 Torta de Sorvete',   renderTortas()));
-  body.appendChild(criarSecao('picoles', '🍭 Picolés (Atacado)',  renderPicoles()));
+  body.appendChild(criarSecao('picoles', '🍭 Picolés (Atacado)',  renderPicolés()));
 }
 
 function salvarTudo(){
@@ -281,5 +281,6 @@ function salvarTudo(){
   setTimeout(()=>msg.textContent='', 3000);
 }
 </script>
+<script src="../../scripts/ortografia.js"></script>
 </body>
 </html>

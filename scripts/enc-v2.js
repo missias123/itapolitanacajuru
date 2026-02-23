@@ -22,7 +22,7 @@ function getSaboresAtivos() {
     "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
     "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
     "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-    "Leite Ninho Foleado","Leite Ninho com Óreo","Limão",
+    "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
     "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
     "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
     "Pistache","Prestígio","Sensação","Torta de Chocolate"
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderizarTudo() {
   renderizarCaixas();
   renderizarTortas();
-  renderizarPicoles();
+  renderizarPicolés();
   renderizarAcrescimos();
 }
 
@@ -172,7 +172,7 @@ function renderizarTortas() {
 }
 
 // ---- RENDERIZAR PICOLÉS ----
-function renderizarPicoles() {
+function renderizarPicolés() {
   const c = document.getElementById('lista-picoles');
   if (!c) return;
   c.innerHTML = PRODUTOS.picoles.map(p => `
@@ -185,7 +185,7 @@ function renderizarPicoles() {
         </div>
         <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores btn-picole" onclick="abrirModalPicole('${p.id}')" ${p.estoque===0?'disabled':''}>
+      <button class="btn-sabores btn-picole" onclick="abrirModalPicolé('${p.id}')" ${p.estoque===0?'disabled':''}>
         🍭 Ver Sabores
       </button>
     </div>`).join('');
@@ -250,7 +250,7 @@ function confirmarSabores() {
 }
 
 // ---- MODAL PICOLÉS ----
-function abrirModalPicole(id) {
+function abrirModalPicolé(id) {
   const p = PRODUTOS.picoles.find(x => x.id === id);
   if (!p) return;
   picoleAtual = p;
@@ -573,133 +573,13 @@ function toggleSecao(id) {
 }
 
 
-// ---- COMPLEMENTOS ----
-function getComplementosEnc() {
-  const PADRAO = [
-    { id:'comp_canudinho', nome:'Canudinho Wafer',  preco:0.25,  estoque:100, esgotado:false },
-    { id:'comp_casquinha', nome:'Casquinhas',        preco:0.25,  estoque:100, esgotado:false },
-    { id:'comp_cascao',    nome:'Cascão',            preco:1.00,  estoque:100, esgotado:false },
-    { id:'comp_cestinha',  nome:'Cestinha',          preco:1.00,  estoque:100, esgotado:false },
-    { id:'comp_cobertura', nome:'Cobertura 1.3L',    preco:40.00, estoque:20,  esgotado:false }
-  ];
-  try {
-    const salvo = localStorage.getItem('itap_complementos');
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      return dados.map((c, i) => ({ ...PADRAO[i] || {}, ...c }));
-    }
-  } catch(e) {}
-  return PADRAO;
-}
-
-function renderizarComplementos() {
-  const lista = document.getElementById('lista-complementos-enc');
-  if (!lista) return;
-  const comps = getComplementosEnc();
-  lista.innerHTML = comps.map(c => {
-    const esgotado = c.esgotado || c.estoque <= 0;
-    const item = carrinho.find(x => x.id === c.id);
-    const qtd = item ? item.quantidade : 0;
-    return `<div class="comp-row" id="comp-row-${c.id}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid ${esgotado?'#FECACA':'#e5e7eb'};margin-bottom:2px;opacity:${esgotado?'0.6':'1'}">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:24px">🍪</span>
-        <div>
-          <div style="font-weight:700;font-size:14px;color:#1a1a1a">${c.nome}</div>
-          <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
-        </div>
-      </div>
-      ${esgotado
-        ? '<span style="background:#fee2e2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700">ESGOTADO</span>'
-        : `<div style="display:flex;align-items:center;gap:10px">
-            <button onclick="alterarCompEnc('${c.id}',-1)" style="width:34px;height:34px;border-radius:50%;border:2px solid #e53935;background:#fff;color:#e53935;font-size:20px;font-weight:700;cursor:pointer;line-height:1">−</button>
-            <span id="comp-qtd-${c.id}" style="font-size:16px;font-weight:700;min-width:20px;text-align:center">${qtd}</span>
-            <button onclick="alterarCompEnc('${c.id}',1)" style="width:34px;height:34px;border-radius:50%;border:none;background:#e53935;color:#fff;font-size:20px;font-weight:700;cursor:pointer;line-height:1">+</button>
-           </div>`
-      }
-    </div>`;
-  }).join('');
-}
-
-function alterarCompEnc(id, delta) {
-  const comps = getComplementosEnc();
-  const comp = comps.find(c => c.id === id);
-  if (!comp) return;
-  const idx = carrinho.findIndex(x => x.id === id);
-  if (idx > -1) {
-    carrinho[idx].quantidade += delta;
-    if (carrinho[idx].quantidade <= 0) carrinho.splice(idx, 1);
-  } else if (delta > 0) {
-    carrinho.push({ id: comp.id, nome: comp.nome, preco: comp.preco, quantidade: 1, sabores: [], tipo: 'complemento' });
-  }
-  const qtdEl = document.getElementById('comp-qtd-' + id);
-  if (qtdEl) {
-    const item = carrinho.find(x => x.id === id);
-    qtdEl.textContent = item ? item.quantidade : 0;
-  }
-  atualizarBotaoCarrinho();
-}
-
-
-// ---- COMPLEMENTOS ----
-function getComplementosEnc() {
-  const PADRAO = [
-    { id:'comp_canudinho', nome:'Canudinho Wafer',  preco:0.25,  estoque:100, esgotado:false },
-    { id:'comp_casquinha', nome:'Casquinhas',        preco:0.25,  estoque:100, esgotado:false },
-    { id:'comp_cascao',    nome:'Cascao',            preco:1.00,  estoque:100, esgotado:false },
-    { id:'comp_cestinha',  nome:'Cestinha',          preco:1.00,  estoque:100, esgotado:false },
-    { id:'comp_cobertura', nome:'Cobertura 1.3L',    preco:40.00, estoque:20,  esgotado:false }
-  ];
-  try {
-    const salvo = localStorage.getItem('itap_complementos');
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      return dados.map((c, i) => ({ ...PADRAO[i] || {}, ...c }));
-    }
-  } catch(e) {}
-  return PADRAO;
-}
-
-function renderizarComplementos() {
-  const lista = document.getElementById('lista-complementos-enc');
-  if (!lista) return;
-  const comps = getComplementosEnc();
-  lista.innerHTML = comps.map(c => {
-    const esgotado = c.esgotado || c.estoque <= 0;
-    const item = carrinho.find(x => x.id === c.id);
-    const qtd = item ? item.quantidade : 0;
-    const precoFmt = 'R$ ' + c.preco.toFixed(2).replace('.',',') + ' / un.';
-    if (esgotado) {
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid #FECACA;margin-bottom:2px;opacity:0.6"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:24px">&#127850;</span><div><div style="font-weight:700;font-size:14px;color:#1a1a1a">' + c.nome + '</div><div style="font-size:12px;color:#e53935;font-weight:600">' + precoFmt + '</div></div></div><span style="background:#fee2e2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700">ESGOTADO</span></div>';
-    }
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid #e5e7eb;margin-bottom:2px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:24px">&#127850;</span><div><div style="font-weight:700;font-size:14px;color:#1a1a1a">' + c.nome + '</div><div style="font-size:12px;color:#e53935;font-weight:600">' + precoFmt + '</div></div></div><div style="display:flex;align-items:center;gap:10px"><button onclick=\"alterarCompEnc(\'' + c.id + '\',-1)\" style=\"width:34px;height:34px;border-radius:50%;border:2px solid #e53935;background:#fff;color:#e53935;font-size:20px;font-weight:700;cursor:pointer\">-</button><span id=\"comp-qtd-' + c.id + '\" style=\"font-size:16px;font-weight:700;min-width:20px;text-align:center\">' + qtd + '</span><button onclick=\"alterarCompEnc(\'' + c.id + '\',1)\" style=\"width:34px;height:34px;border-radius:50%;border:none;background:#e53935;color:#fff;font-size:20px;font-weight:700;cursor:pointer\">+</button></div></div>';
-  }).join('');
-}
-
-function alterarCompEnc(id, delta) {
-  const comps = getComplementosEnc();
-  const comp = comps.find(c => c.id === id);
-  if (!comp) return;
-  const idx = carrinho.findIndex(x => x.id === id);
-  if (idx > -1) {
-    carrinho[idx].quantidade += delta;
-    if (carrinho[idx].quantidade <= 0) carrinho.splice(idx, 1);
-  } else if (delta > 0) {
-    carrinho.push({ id: comp.id, nome: comp.nome, preco: comp.preco, quantidade: 1, sabores: [], tipo: 'complemento' });
-  }
-  const qtdEl = document.getElementById('comp-qtd-' + id);
-  if (qtdEl) {
-    const item = carrinho.find(x => x.id === id);
-    qtdEl.textContent = item ? item.quantidade : 0;
-  }
-  atualizarBotaoCarrinho();
-}
 
 // ---- ACRÉSCIMOS (sincronizado com admin - itap_acrescimos) ----
 function getAcrescimosEnc() {
   const PADRAO = [
     { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:100, esgotado:false },
     { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:100, esgotado:false },
-    { id:'acr_cascao',    nome:'Cascão',          preco:1.00,  estoque:100, esgotado:false },
+    { id:'acr_cascão',    nome:'Cascão',          preco:1.00,  estoque:100, esgotado:false },
     { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:100, esgotado:false },
     { id:'acr_cobertura', nome:'Cobertura 1.3L',  preco:40.00, estoque:100, esgotado:false }
   ];

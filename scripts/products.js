@@ -1,12 +1,12 @@
 const produtos = {
     sorvetes: {
         sabores: [
-            "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Foleado", "Leite Ninho com Óreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
+            "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
         ],
         precos: {
             casquinha_copo: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
             copo_recheado: { "1 Bola": 10.00, "2 Bolas": 12.00, "3 Bolas": 15.00 },
-            cascao: { "1 Bola": 12.00, "2 Bolas": 16.00 },
+            cascão: { "1 Bola": 12.00, "2 Bolas": 16.00 },
             cestinha: { "1 Bola": 14.00, "2 Bolas": 18.00, "3 Bolas": 20.00 }
         }
     },
@@ -15,7 +15,7 @@ const produtos = {
         leite_sem_recheio: { nome: "Picolé de Leite sem Recheio", preco_varejo: 2.50, preco_atacado: 1.80, estoque: 200, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
         leite_com_recheio: { nome: "Picolé de Leite com Recheio", preco_varejo: 3.00, preco_atacado: 2.00, estoque: 200, sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
         leite_ninho: { nome: "Picolé Leite Ninho", preco_varejo: 4.00, preco_atacado: 3.00, estoque: 200, sabores: ["Leite Ninho"] },
-        eskimos: { nome: "Picolé Eskimo", preco_varejo: 8.00, preco_atacado: 6.00, estoque: 200, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
+        esquimós: { nome: "Picolé Esquimó", preco_varejo: 8.00, preco_atacado: 6.00, estoque: 200, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
     },
     acai_promocao: [
         { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Leite em Pó + Leite Condensado", preco: 15.00 },
@@ -33,7 +33,7 @@ const produtos = {
             frutas: { preco: 2.00, itens: ["Morango", "Banana", "Uva", "Kiwi", "Abacaxi", "Cereja"] },
             cremes: { preco: 3.00, itens: ["Nutella", "Creme de Ninho", "Geleia de Morango", "Creme de Amendoim", "Goiabada", "Creme de Pistache", "Mel"] },
             guloseimas: { preco: 2.00, itens: ["Granola", "Paçoca", "Leite em Pó", "Ovomaltine", "Confete", "Chocoball", "Chantilly", "Granulado", "Leite Condensado"] },
-            chocolates: { preco: 4.00, itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Óreo", "Gotas de Chocolate", "Talento"] }
+            chocolates: { preco: 4.00, itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Oreo", "Gotas de Chocolate", "Talento"] }
         }
     },
     caixas_viagem: {
@@ -76,10 +76,10 @@ const produtos = {
     },
     sobremesas: {
         "Torta de Sorvete": 100.00,
-        "Fundue": 25.00,
+        "Fondue": 25.00,
         "Sorvete com Bolo no Pote": 25.00,
-        "Petit Gateau (1 bola)": 20.00,
-        "Petit Gateau (2 bolas)": 25.00,
+        "Petit Gâteau (1 bola)": 20.00,
+        "Petit Gâteau (2 bolas)": 25.00,
         "Sorvete Diet (1 bola)": 10.00
     }
 };
