@@ -509,12 +509,33 @@ function showToast(msg, tipo='sucesso') {
 function toggleSecao(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const aberto = el.classList.toggle('aberto');
-  const icon = el.previousElementSibling?.querySelector('.toggle-icon');
-  if (icon) icon.textContent = aberto ? '▲' : '▼';
-  // Re-renderizar acréscimos ao abrir a seção
-  if (id === 'conteudo-acrescimos' && aberto) {
-    setTimeout(renderizarAcrescimos, 10);
+  const jaAberto = el.classList.contains('aberto');
+
+  // Fechar TODAS as seções abertas (accordion exclusivo)
+  const todasSecoes = ['conteudo-caixas', 'conteudo-tortas', 'conteudo-picoles', 'conteudo-acrescimos'];
+  todasSecoes.forEach(secId => {
+    const secEl = document.getElementById(secId);
+    if (secEl && secEl.classList.contains('aberto')) {
+      secEl.classList.remove('aberto');
+      const icon = secEl.previousElementSibling?.querySelector('.toggle-icon');
+      if (icon) icon.textContent = '▼';
+    }
+  });
+
+  // Se não estava aberto, abrir agora
+  if (!jaAberto) {
+    el.classList.add('aberto');
+    const icon = el.previousElementSibling?.querySelector('.toggle-icon');
+    if (icon) icon.textContent = '▲';
+    // Re-renderizar acréscimos ao abrir
+    if (id === 'conteudo-acrescimos') {
+      setTimeout(renderizarAcrescimos, 10);
+    }
+    // Scroll suave até a seção
+    setTimeout(() => {
+      const pai = el.closest('.categoria');
+      if (pai) pai.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 }
 
