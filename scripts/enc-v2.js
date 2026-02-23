@@ -587,12 +587,11 @@ function finalizarPedido() {
   const numEl = document.getElementById('num-pedido');
   if (numEl) numEl.textContent = numPedido;
 
-  const btnWpp = document.getElementById('btn-whatsapp-final');
-  if (btnWpp) {
-    btnWpp.onclick = () =>
-      window.open(`https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`, '_blank');
+  // Atualizar o href do link WhatsApp diretamente (evita bloqueio de popup)
+  const linkWpp = document.getElementById('link-whatsapp-final');
+  if (linkWpp) {
+    linkWpp.href = `https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`;
   }
-
   mostrarEtapa('confirmacao');
 }
 
