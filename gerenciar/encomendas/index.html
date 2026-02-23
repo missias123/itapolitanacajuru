@@ -128,13 +128,6 @@ const PICOLES_PADRAO = [
   { id:'pic_leite_ninho',      nome:'Picolé Leite Ninho',         preco_varejo:4.00, preco_atacado:3.00, estoque:200, esgotado:false },
   { id:'pic_eskimos',          nome:'Picolé Eskimo',              preco_varejo:8.00, preco_atacado:6.00, estoque:200, esgotado:false }
 ];
-const COMPS_PADRAO = [
-  { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:999, esgotado:false },
-  { id:'casquinhas',      nome:'Casquinhas',      preco:0.25, estoque:999, esgotado:false },
-  { id:'cascao',          nome:'Cascão',          preco:1.00, estoque:999, esgotado:false },
-  { id:'cestinha',        nome:'Cestinha',        preco:1.00, estoque:999, esgotado:false },
-  { id:'cobertura_13l',   nome:'Cobertura 1.3L',  preco:40.00,estoque:999, esgotado:false }
-];
 
 function carregar(key, padrao){
   try{
@@ -264,35 +257,6 @@ function toggleEsgotarPicole(i){
   if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicoles(); }
 }
 
-// ── RENDER COMPLEMENTOS ──
-function renderComps(){
-  let h = '';
-  comps.forEach((c,i) => {
-    const esg = c.esgotado || c.estoque <= 0;
-    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="comp-card-${i}">
-      <div class="prod-nome">${c.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
-      <div class="campos-linha">
-        <div class="campo-box"><label>Preço (R$)</label><input type="number" step="0.05" min="0" value="${c.preco}" onchange="editarComp(${i},'preco',parseFloat(this.value))"></div>
-        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${c.estoque}" onchange="editarComp(${i},'estoque',parseInt(this.value))"></div>
-      </div>
-      <button class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="toggleEsgotarComp(${i})">
-        ${esg?'✅ Reativar':'❌ Esgotar'}
-      </button>
-    </div>`;
-  });
-  return h;
-}
-function editarComp(i, campo, val){
-  comps[i][campo] = val;
-  if(campo==='estoque') comps[i].esgotado = val <= 0;
-  const sec = document.getElementById('sec-comps');
-  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderComps(); }
-}
-function toggleEsgotarComp(i){
-  comps[i].esgotado = !comps[i].esgotado;
-  if(comps[i].esgotado) comps[i].estoque = 0;
-  const sec = document.getElementById('sec-comps');
-  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderComps(); }
 }
 
 // ── INICIAR ──
@@ -300,21 +264,18 @@ function iniciarAdmin(){
   caixas  = carregar('itap_caixas_enc',   CAIXAS_PADRAO);
   tortas  = carregar('itap_tortas_enc',   TORTAS_PADRAO);
   picoles = carregar('itap_picoles_enc',  PICOLES_PADRAO);
-  comps   = carregar('itap_complementos', COMPS_PADRAO);
 
   const body = document.getElementById('adm-body');
   body.innerHTML = '';
   body.appendChild(criarSecao('caixas',  '📦 Caixas de Sorvete',  renderCaixas()));
   body.appendChild(criarSecao('tortas',  '🎂 Torta de Sorvete',   renderTortas()));
   body.appendChild(criarSecao('picoles', '🍭 Picolés (Atacado)',  renderPicoles()));
-  body.appendChild(criarSecao('comps',   '🍪 Complementos',       renderComps()));
 }
 
 function salvarTudo(){
   salvar('itap_caixas_enc',   caixas);
   salvar('itap_tortas_enc',   tortas);
   salvar('itap_picoles_enc',  picoles);
-  salvar('itap_complementos', comps);
   const msg = document.getElementById('status-msg');
   msg.textContent = '✅ Salvo com sucesso!';
   setTimeout(()=>msg.textContent='', 3000);

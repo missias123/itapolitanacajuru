@@ -93,7 +93,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
     </a>
     <a href="./encomendas/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#E53935,#C62828);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(229,57,53,.35)">
       <span style="font-size:28px;line-height:1">📦</span>
-      <div><div style="font-size:15px;font-weight:800">Admin Encomendas</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Caixas, tortas, picolés e complementos</div></div>
+      <div><div style="font-size:15px;font-weight:800">Admin Encomendas</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Caixas, tortas e picolés</div></div>
       <span style="margin-left:auto;font-size:18px">›</span>
     </a>
     <a href="./estoque.html" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#1F2937,#374151);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(31,41,55,.35)">
@@ -305,7 +305,6 @@ function renderAdmin() {
   body.appendChild(criarSecao('caixas', '📦 Caixas de Viagem', renderCaixas()));
   body.appendChild(criarSecao('isopores', '🧊 Isopores de Viagem', renderIsopores()));
   body.appendChild(criarSecao('sobremesas', '🎂 Sobremesas', renderSobremesas()));
-  body.appendChild(criarSecao('complementos_enc', '🍪 Complementos de Encomenda', renderComplementosEnc()));
   body.appendChild(criarSecao('caixas_enc', '📦 Caixas de Sorvete – Encomenda (Estoque)', renderCaixasEnc()));
 }
 
@@ -372,70 +371,6 @@ function toggleEsgotadoCaixa(i) {
     : '✅ "'+lista[i].nome+'" reativado com sucesso!';
   mostrarStatusComps(msg);
 }
-// ── COMPLEMENTOS DE ENCOMENDA ──
-const COMPLEMENTOS_ENC_PADRAO = [
-  { id:'canudinho_wafer', nome:'Canudinho Wafer', preco:0.25, estoque:999 },
-  { id:'casquinhas',     nome:'Casquinhas',      preco:0.25, estoque:999 },
-  { id:'cascao',         nome:'Cascão',          preco:1.00, estoque:999 },
-  { id:'cestinha',       nome:'Cestinha',        preco:1.00, estoque:999 },
-  { id:'cobertura_13l',  nome:'Cobertura 1.3L',  preco:40.00,estoque:999 }
-];
-function getComplementosEnc() {
-  try { const s = localStorage.getItem('itap_complementos'); if(s) return JSON.parse(s); } catch(e){}
-  return COMPLEMENTOS_ENC_PADRAO;
-}
-function salvarComplementosEnc(lista) {
-  localStorage.setItem('itap_complementos', JSON.stringify(lista));
-}
-function renderComplementosEnc() {
-  const lista = getComplementosEnc();
-  let html = '<div id="lista-comps-enc">';
-  lista.forEach((c, i) => {
-    const esgotado = c.estoque <= 0;
-    html += `
-    <div style="background:${esgotado?'#FEF2F2':'#FAFAFA'};border:1px solid ${esgotado?'#FECACA':'#E5E7EB'};border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:13px;font-weight:800;color:${esgotado?'#EF4444':'#111827'};flex:1">${c.nome}${esgotado?' ⚠️ ESGOTADO':''}</span>
-        <button onclick="toggleEsgotadoComp(${i})" style="padding:5px 10px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:${esgotado?'#10B981':'#EF4444'};color:#fff">${esgotado?'✅ Reativar':'❌ Esgotar'}</button>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-        <div style="flex:1;min-width:140px">
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Nome</label>
-          <input type="text" value="${c.nome}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700" onchange="editarComp(${i},'nome',this.value)">
-        </div>
-        <div style="width:90px">
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Preço (R$)</label>
-          <input type="number" step="0.01" value="${c.preco}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700" onchange="editarComp(${i},'preco',parseFloat(this.value))">
-        </div>
-        <div style="width:90px">
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Estoque</label>
-          <input type="number" min="0" value="${c.estoque}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700" onchange="editarComp(${i},'estoque',parseInt(this.value))">
-        </div>
-      </div>
-      ${blocoFoto('comp_enc_'+c.id)}
-    </div>`;
-  });
-  html += '</div><div id="comps-enc-status" style="margin-top:8px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>';
-  return html;
-}
-function editarComp(i, campo, valor) {
-  const lista = getComplementosEnc();
-  lista[i][campo] = valor;
-  salvarComplementosEnc(lista);
-  mostrarStatusComps('✅ ' + lista[i].nome + ' atualizado!');
-}
-function toggleEsgotadoComp(i) {
-  const lista = getComplementosEnc();
-  lista[i].estoque = lista[i].estoque <= 0 ? 999 : 0;
-  salvarComplementosEnc(lista);
-  // Remontar seção
-  const body = document.getElementById('cat-complementos_enc');
-  if(body){ const bd = body.querySelector('.cat-body'); if(bd) bd.innerHTML = renderComplementosEnc(); }
-  mostrarStatusComps(lista[i].estoque<=0 ? '❌ "'+lista[i].nome+'" ESGOTADO' : '✅ "'+lista[i].nome+'" reativado!');
-}
-function mostrarStatusComps(msg) {
-  const el = document.getElementById('comps-enc-status');
-  if(el){ el.textContent = msg; setTimeout(()=>el.textContent='',4000); }
 }
 
 // ── SORVETES ──
