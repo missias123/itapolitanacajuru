@@ -304,15 +304,15 @@ img{max-width:100%;display:block}
 @keyframes bounce-gatilho{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .gatilho-flutuante.show{display:block}
 /* RODAPÉ */
-.footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:32px 16px;margin-top:24px;text-align:center;position:relative;overflow:hidden}
-.footer h3{color:#FFFFFF;font-size:16px;margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
-.footer p{font-size:13px;margin-bottom:8px;line-height:1.6;font-weight:600}
-.footer-copy{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.25);font-size:12px;color:#F3E5F5;letter-spacing:.3px;font-weight:600}
+.footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:16px 12px;margin-top:16px;text-align:center;position:relative;overflow:hidden;width:100%;box-sizing:border-box}
+.footer h3{color:#FFFFFF;font-size:13px;margin-bottom:8px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
+.footer p{font-size:11px;margin-bottom:4px;line-height:1.4;font-weight:600}
+.footer-copy{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.25);font-size:10px;color:#F3E5F5;letter-spacing:.3px;font-weight:600}
 .btn-admin-footer{display:inline-block;margin-top:16px;padding:8px 16px;background:rgba(255,255,255,.15);color:#FFFFFF;border-radius:8px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.3)}
-.footer-inner{position:relative;display:flex;align-items:center;justify-content:center;gap:0}
-.footer-church{width:160px;min-width:120px;flex-shrink:0;object-fit:cover;object-position:center top;border-radius:10px;opacity:.85;box-shadow:0 4px 16px rgba(0,0,0,.4)}
-.footer-text{flex:1;max-width:420px;padding:0 12px;text-align:center}
-@media(max-width:600px){.footer-church{width:90px;min-width:70px}.footer-inner{gap:0}}
+.footer-inner{position:relative;display:flex;align-items:center;justify-content:center;gap:0;width:100%;box-sizing:border-box}
+.footer-church{width:70px;min-width:60px;flex-shrink:0;object-fit:cover;object-position:center top;border-radius:8px;opacity:.85;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.footer-text{flex:1;max-width:420px;padding:0 8px;text-align:center}
+@media(max-width:600px){.footer-church{width:60px;min-width:50px}.footer-inner{gap:0}.footer{padding:12px 10px}}
 
 /* DESKTOP */
 @media(min-width:600px){
@@ -431,21 +431,20 @@ img{max-width:100%;display:block}
   🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 36 Sabores · Desde 2007 · Artesanal · 🍦
 </div>
 
-<!-- BANNER CLIMA CAJURU -->
-<div class="clima-banner" id="clima-banner">
-  <div class="clima-banner-left">
-    <div class="clima-banner-icone" id="clima-icone">⏳</div>
+<!-- WIDGET CLIMA MODERNO -->
+<div id="widget-clima-moderno" style="background:#fff;border-bottom:2px solid #e0e7ff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span id="clima-icone" style="font-size:32px;">⏳</span>
     <div>
-      <div class="clima-banner-temp" id="clima-temp">--°C</div>
-      <div class="clima-banner-info">
-        <div class="clima-banner-desc" id="clima-desc">Carregando clima...</div>
-        <div class="clima-banner-cidade">📍 Cajuru · SP</div>
-      </div>
+      <div id="clima-temp" style="font-size:22px;font-weight:900;color:#1a73e8;line-height:1;">--°C</div>
+      <div id="clima-desc" style="font-size:11px;font-weight:700;color:#555;">Carregando...</div>
+      <div style="font-size:10px;color:#888;font-weight:600;">📍 Cajuru · SP</div>
     </div>
   </div>
-  <div class="clima-banner-right">
-    <div class="clima-banner-detalhe" id="clima-detalhe"></div>
-    <div class="clima-banner-msg" id="clima-msg"></div>
+  <div style="text-align:right;">
+    <div id="clima-detalhe" style="font-size:10px;color:#888;font-weight:600;"></div>
+    <div id="clima-hora" style="font-size:20px;font-weight:900;color:#1a73e8;">--:--</div>
+    <div id="clima-msg" style="font-size:11px;font-weight:800;color:#E8000D;max-width:130px;"></div>
   </div>
 </div>
 
@@ -480,7 +479,7 @@ img{max-width:100%;display:block}
   <div class="acc" id="acc-sorvetes">
     <div class="acc-header" onclick="toggleAcc('acc-sorvetes')">
       <div class="acc-left">
-        <span class="acc-icon">🍦</span>
+        <span class="acc-icon">🍨</span>
         <div><div class="acc-title">Sorvetes de Massa</div><div class="acc-sub">Casquinha, copo, cascão, cestinha · 36 sabores</div></div>
       </div>
       <span class="acc-arrow">▼</span>
@@ -492,12 +491,44 @@ img{max-width:100%;display:block}
       </div>
     </div>
   </div>
-
+  <!-- PICOLÉS -->
+  <div class="acc" id="acc-picoles">
+    <div class="acc-header" onclick="toggleAcc('acc-picoles')">
+      <div class="acc-left">
+        <span class="acc-icon">🍡</span>
+        <div><div class="acc-title">Picolés</div><div class="acc-sub">5 tipos · Fruta, Leite, Recheado, Ninho, Eskimo</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="picoles-body"></div>
+  </div>
+  <!-- AÇAÍ PROMOÇÃO -->
+  <div class="acc" id="acc-acai-promo">
+    <div class="acc-header" onclick="toggleAcc('acc-acai-promo')">
+      <div class="acc-left">
+        <span class="acc-icon">🫐</span>
+        <div><div class="acc-title">Açaí Promoção</div><div class="acc-sub">8 combos especiais · 400ml a 700ml</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="acai-promo-body"></div>
+  </div>
+  <!-- AÇAÍ -->
+  <div class="acc" id="acc-acai">
+    <div class="acc-header" onclick="toggleAcc('acc-acai')">
+      <div class="acc-left">
+        <span class="acc-icon">🍇</span>
+        <div><div class="acc-title">Açaí Artesanal</div><div class="acc-sub">Monte o seu · 300ml a 600ml · Ingredientes extras</div></div>
+      </div>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body" id="acai-body"></div>
+  </div>
   <!-- MILKSHAKES -->
   <div class="acc" id="acc-milk">
     <div class="acc-header" onclick="toggleAcc('acc-milk')">
       <div class="acc-left">
-        <span class="acc-icon">🥤</span>
+        <span class="acc-icon">🧋</span>
         <div><div class="acc-title">Milkshakes</div><div class="acc-sub">Tradicional e Top · Vários tamanhos · 36 sabores</div></div>
       </div>
       <span class="acc-arrow">▼</span>
@@ -509,12 +540,11 @@ img{max-width:100%;display:block}
       </div>
     </div>
   </div>
-
   <!-- TAÇAS -->
   <div class="acc" id="acc-tacas">
     <div class="acc-header" onclick="toggleAcc('acc-tacas')">
       <div class="acc-left">
-        <span class="acc-icon">🍨</span>
+        <span class="acc-icon">🍧</span>
         <div><div class="acc-title">Taças</div><div class="acc-sub">8 opções · Colegial, Sundae, Banana Split e mais · 36 sabores</div></div>
       </div>
       <span class="acc-arrow">▼</span>
@@ -526,12 +556,11 @@ img{max-width:100%;display:block}
       </div>
     </div>
   </div>
-
   <!-- TAÇAS PREMIUM -->
   <div class="acc" id="acc-tacas-p">
     <div class="acc-header" onclick="toggleAcc('acc-tacas-p')">
       <div class="acc-left">
-        <span class="acc-icon">🏆</span>
+        <span class="acc-icon">👑</span>
         <div><div class="acc-title">Taças Premium (Taças Sujas)</div><div class="acc-sub">7 opções · Prestígio, Kit Kat, Unicórnio e mais · 36 sabores</div></div>
       </div>
       <span class="acc-arrow">▼</span>
@@ -543,42 +572,6 @@ img{max-width:100%;display:block}
       </div>
     </div>
   </div>
-
-  <!-- AÇAÍ PROMOÇÃO -->
-  <div class="acc" id="acc-acai-promo">
-    <div class="acc-header" onclick="toggleAcc('acc-acai-promo')">
-      <div class="acc-left">
-        <span class="acc-icon">🛖</span>
-        <div><div class="acc-title">Açaí Promoção</div><div class="acc-sub">8 combos especiais · 400ml a 700ml</div></div>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="acai-promo-body"></div>
-  </div>
-  <!-- AÇAÍ -->
-  <div class="acc" id="acc-acai">
-    <div class="acc-header" onclick="toggleAcc('acc-acai')">
-      <div class="acc-left">
-        <span class="acc-icon">🫐</span>
-        <div><div class="acc-title">Açaí Artesanal</div><div class="acc-sub">Monte o seu · 300ml a 600ml · Ingredientes extras</div></div>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="acai-body"></div>
-  </div>
-
-  <!-- PICOLÉS -->
-  <div class="acc" id="acc-picoles">
-    <div class="acc-header" onclick="toggleAcc('acc-picoles')">
-      <div class="acc-left">
-        <span class="acc-icon">🍭</span>
-        <div><div class="acc-title">Picolés</div><div class="acc-sub">5 tipos · Fruta, Leite, Recheado, Ninho, Eskimo</div></div>
-      </div>
-      <span class="acc-arrow">▼</span>
-    </div>
-    <div class="acc-body" id="picoles-body"></div>
-  </div>
-
   <!-- TORTA DE SORVETE -->
   <div class="acc" id="acc-torta">
     <div class="acc-header" onclick="toggleAcc('acc-torta')">
@@ -603,7 +596,6 @@ img{max-width:100%;display:block}
       </div>
     </div>
   </div>
-
   <!-- ISOPORES DE VIAGEM -->
   <div class="acc" id="acc-iso">
     <div class="acc-header" onclick="toggleAcc('acc-iso')">
@@ -619,14 +611,13 @@ img{max-width:100%;display:block}
   <div class="acc" id="acc-sobremesas">
     <div class="acc-header" onclick="toggleAcc('acc-sobremesas')">
       <div class="acc-left">
-        <span class="acc-icon">🍨</span>
+        <span class="acc-icon">🍮</span>
         <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Fundue, Petit Gateau, Sorvete Diet e mais</div></div>
       </div>
       <span class="acc-arrow">▼</span>
     </div>
     <div class="acc-body" id="sobremesas-body"></div>
   </div>
-
   <!-- ENCOMENDAS NO CARDÁPIO: CAIXAS -->
   <div class="acc" id="acc-enc-caixas">
     <div class="acc-header" onclick="toggleAcc('acc-enc-caixas')">
@@ -640,7 +631,6 @@ img{max-width:100%;display:block}
       <div id="lista-caixas-cardapio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button></div>
     </div>
   </div>
-
   <!-- ENCOMENDAS NO CARDÁPIO: TORTAS -->
   <div class="acc" id="acc-enc-tortas">
     <div class="acc-header" onclick="toggleAcc('acc-enc-tortas')">
@@ -654,7 +644,6 @@ img{max-width:100%;display:block}
       <a href="encomendas.html#tortas" class="enc-link-btn">🎂 Ver Tortas de Sorvete e Encomendar →</a>
     </div>
   </div>
-
   <!-- ENCOMENDAS NO CARDÁPIO: PICOLÉS -->
   <div class="acc" id="acc-enc-picoles">
     <div class="acc-header" onclick="toggleAcc('acc-enc-picoles')">
@@ -668,8 +657,6 @@ img{max-width:100%;display:block}
       <a href="encomendas.html#picoles" class="enc-link-btn">🍭 Ver Picolés e Encomendar →</a>
     </div>
   </div>
-
-
   <!-- COMPLEMENTOS NO CARDÁPIO -->
   <div class="acc" id="acc-complementos">
     <div class="acc-header" onclick="toggleAcc('acc-complementos')" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
@@ -681,6 +668,7 @@ img{max-width:100%;display:block}
     </div>
     <div class="acc-body" id="acc-body-complementos"></div>
   </div>
+
 
 </section>
 <!-- GATILHO FLUTUANTE -->
@@ -1332,12 +1320,12 @@ function carregarClima(){
       document.getElementById('clima-desc').textContent=desc;
       document.getElementById('clima-detalhe').textContent='💧 '+c.relativehumidity_2m+'%  💨 '+Math.round(c.windspeed_10m)+' km/h';
       document.getElementById('clima-msg').textContent=temp>=28?'🔥 Calor de '+temp+'°C! Sorvete urgente! 🍦':temp>=22?'☀️ '+temp+'°C em Cajuru! Sorvete é a pedida!':'🍦 '+temp+'°C em Cajuru! Venha se refrescar!';
-      // Mudar cor do banner conforme temperatura
-      const banner=document.getElementById('clima-banner');
-      if(banner){
-        if(temp>=30)banner.style.background='linear-gradient(135deg,#F97316,#EF4444,#FB923C)';
-        else if(temp>=25)banner.style.background='linear-gradient(135deg,#0EA5E9,#38BDF8,#7DD3FC)';
-        else banner.style.background='linear-gradient(135deg,#818CF8,#6366F1,#A78BFA)';
+      // Atualizar cor do widget moderno conforme temperatura
+      const widget=document.getElementById('widget-clima-moderno');
+      if(widget){
+        if(temp>=30) widget.style.borderBottomColor='#EF4444';
+        else if(temp>=25) widget.style.borderBottomColor='#0EA5E9';
+        else widget.style.borderBottomColor='#818CF8';
       }
     })
     .catch(()=>{
@@ -1347,6 +1335,19 @@ function carregarClima(){
       document.getElementById('clima-msg').textContent='🍦 Venha tomar um sorvete!';
     });
 }
+// Relógio em tempo real
+function atualizarRelogio(){
+  const el=document.getElementById('clima-hora');
+  if(el){
+    const n=new Date();
+    const h=String(n.getHours()).padStart(2,'0');
+    const m=String(n.getMinutes()).padStart(2,'0');
+    const s=String(n.getSeconds()).padStart(2,'0');
+    el.textContent=h+':'+m+':'+s;
+  }
+}
+atualizarRelogio();
+setInterval(atualizarRelogio,1000);
 </script>
 </body>
 </html>
