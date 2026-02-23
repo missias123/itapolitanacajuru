@@ -3,6 +3,13 @@
 // Lógica completa do fluxo de encomendas
 // ============================================================
 
+// Variáveis globais
+var carrinho = [];
+var produtoAtual = null;
+var saboresSelecionados = [];
+var picoleAtual = null;
+var selecoesPickle = {};
+
 // Sabores carregados do admin (localStorage) ou lista padrão
 function getSaboresAtivos() {
   const salvo = localStorage.getItem('itap_sabores');
