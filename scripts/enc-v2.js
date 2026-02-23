@@ -350,25 +350,46 @@ function qtdPickle(sabor, delta) {
   atualizarTotalPickle();
 }
 
+const MIN_PICOLES = 100;
+const MAX_PICOLES = 250;
+
 function atualizarTotalPickle() {
   const total = Object.values(selecoesPickle).reduce((a,b)=>a+b,0);
   const el = document.getElementById('total-picoles');
   if (el) el.textContent = total;
   const btn = document.getElementById('btn-add-picoles');
   const aviso = document.getElementById('aviso-minimo-picolé');
+  // Botão só libera com mínimo 100 e máximo 250
   if (btn) {
-    btn.disabled = total === 0;
-    btn.textContent = total > 0 ? `Adicionar ${total} picolé(s) ao carrinho` : 'Selecione ao menos 1 picolé';
+    const liberado = total >= MIN_PICOLES && total <= MAX_PICOLES;
+    btn.disabled = !liberado;
+    if (total === 0) {
+      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés`;
+    } else if (total < MIN_PICOLES) {
+      btn.textContent = `🔒 Faltam ${MIN_PICOLES - total} picolés para o mínimo`;
+    } else if (total > MAX_PICOLES) {
+      btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés por pedido`;
+    } else {
+      btn.textContent = `✅ Adicionar ${total} picolé(s) ao carrinho`;
+    }
   }
   if (aviso) {
-    aviso.style.display = (total > 0 && total < 100) ? 'block' : 'none';
-    if (total > 0 && total < 100) aviso.textContent = `⚠️ Para atacado: mínimo 100 unidades. Faltam ${100-total}.`;
+    if (total > 0 && total < MIN_PICOLES) {
+      aviso.style.display = 'block';
+      aviso.textContent = `⚠️ Mínimo ${MIN_PICOLES} picolés por pedido. Você selecionou ${total}. Faltam ${MIN_PICOLES - total}.`;
+    } else if (total > MAX_PICOLES) {
+      aviso.style.display = 'block';
+      aviso.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés por pedido. Reduza ${total - MAX_PICOLES} unidades.`;
+    } else {
+      aviso.style.display = 'none';
+    }
   }
 }
 
 function confirmarPickle() {
   const total = Object.values(selecoesPickle).reduce((a,b)=>a+b,0);
-  if (total === 0) return;
+  if (total < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés por pedido. Você selecionou ${total}.`, 'alerta'); return; }
+  if (total > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés por pedido.`, 'alerta'); return; }
   const sabores = Object.entries(selecoesPickle).filter(([,q])=>q>0).map(([s,q])=>`${s}: ${q} un.`);
   addCarrinho({
     id: picoleAtual.id+'_'+Date.now(),
