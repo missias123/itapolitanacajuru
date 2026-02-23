@@ -309,15 +309,43 @@ img{max-width:100%;display:block}
 .footer-inner{position:relative;display:flex;align-items:center;justify-content:center;gap:0;width:100%;box-sizing:border-box}
 .footer-church{width:70px;min-width:60px;flex-shrink:0;object-fit:cover;object-position:center top;border-radius:8px;opacity:.85;box-shadow:0 2px 8px rgba(0,0,0,.4)}
 .footer-text{flex:1;max-width:420px;padding:0 8px;text-align:center}
-@media(max-width:600px){.footer-church{width:60px;min-width:50px}.footer-inner{gap:0}.footer{padding:12px 10px}}
-
-/* DESKTOP */
+/* MOBILE (até 600px) */
+@media(max-width:600px){
+  .footer-church{width:60px;min-width:50px}
+  .footer-inner{gap:0}
+  .footer{padding:12px 10px}
+  .relogio-digital{flex-direction:column;gap:4px;text-align:center}
+  .relogio-dir{text-align:center}
+  .relogio-hora{font-size:clamp(28px,8vw,40px)}
+  .hero h2{font-size:clamp(18px,6vw,26px)}
+  .hero-cta{padding:13px 24px;font-size:14px}
+  .info-cards{grid-template-columns:repeat(2,1fr)}
+  .acc-title{font-size:0.95rem}
+  .promo-top-bar{flex-direction:column;gap:4px;text-align:center}
+}
+/* TABLET (601px–900px) */
+@media(min-width:601px) and (max-width:900px){
+  .info-cards{grid-template-columns:repeat(2,1fr)}
+  .prod-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .relogio-hora{font-size:36px}
+}
+/* DESKTOP (acima de 600px) */
 @media(min-width:600px){
   .header-inner{flex-direction:row;align-items:center;justify-content:space-between}
   .header-nav{grid-template-columns:repeat(3,auto);gap:8px}
   .nav-btn{padding:10px 16px;font-size:13px}
   .info-cards{grid-template-columns:repeat(4,1fr)}
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .cardapio{padding:20px 24px}
+  .hero{padding:40px 24px 48px}
+  .hero h2{font-size:clamp(24px,3vw,36px)}
+}
+/* DESKTOP LARGO (acima de 1200px) */
+@media(min-width:1200px){
+  .cardapio{max-width:1100px}
+  .hero h2{font-size:40px}
+  .relogio-hora{font-size:48px}
+  .info-cards{grid-template-columns:repeat(4,1fr);max-width:960px;margin:0 auto}
 }
 </style>
 
@@ -375,7 +403,7 @@ img{max-width:100%;display:block}
     </div>
     <span class="promo-top-bar-cta">Ver agora →</span>
   </div>
-  <button class="promo-top-bar-close" onclick="event.preventDefault();event.stopPropagation();fecharBarraPromo()" title="Fechar">✕</button>
+  <button type="button" class="promo-top-bar-close" onclick="event.preventDefault();event.stopPropagation();fecharBarraPromo()" title="Fechar">✕</button>
 </a>
 
 <!-- BARRA ADMIN DISCRETA -->
@@ -396,7 +424,7 @@ img{max-width:100%;display:block}
     <nav class="header-nav">
       <a href="encomendas.html" class="nav-btn nav-purple">🛒 Encomendas</a>
       <a href="promocao.html" class="nav-btn nav-orange" id="nav-promo-btn">🎉 Promoção</a>
-      <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="nav-btn nav-yellow">⭐ Avalie</a>
+      <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="nav-btn nav-yellow" rel="noopener noreferrer">⭐ Avalie</a>
     </nav>
 
   </div>
@@ -429,15 +457,15 @@ img{max-width:100%;display:block}
   <div class="frase-sensorial" id="frase-rotativa">🍦 "Aquele creminho que derrete na boca..."</div>
   <h2>O Sorvete <span class="destaque-texto">Mais Cremoso</span> e Amado de Cajuru</h2>
   <p>Feito com ingredientes selecionados, cremoso na medida certa, gelado do jeito que você ama. Cada colherada é uma viagem de volta à infância. Desde 2007 fazendo sorrisos em Cajuru e região.</p>
-  <button class="hero-chat-btn" onclick="abrirChat()">💬 Fale Conosco</button>
+  <button type="button" class="hero-chat-btn" onclick="abrirChat()">💬 Fale Conosco</button>
   <br>
-  <button class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
+  <button type="button" class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
     🍦 Quero Ver os Sabores!
   </button>
 </section>
 <!-- INFO CARDS -->
 <div class="info-cards">
-  <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="info-card" style="text-decoration:none;color:inherit;display:block"><div class="info-icon">📍</div><div class="info-title">Localização</div><div class="info-text" style="color:#4285F4;font-weight:700">R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Cajuru/SP 🗺️</div></a>
+  <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" class="info-card" style="text-decoration:none;color:inherit;display:block" rel="noopener noreferrer"><div class="info-icon">📍</div><div class="info-title">Localização</div><div class="info-text" style="color:#4285F4;font-weight:700">R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Cajuru/SP 🗺️</div></a>
   <div class="info-card"><div class="info-icon">⏰</div><div class="info-title">Horário</div><div class="info-text">Seg–Dom: 10h às 22h</div></div>
   <div class="info-card"><div class="info-icon">🏪</div><div class="info-title">Retirada</div><div class="info-text">Somente na loja</div></div>
   <div class="info-card"><div class="info-icon">📱</div><div class="info-title">Contato</div><div class="info-text">(16) 99147-2045</div></div>
@@ -462,7 +490,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="sorvetes-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🍦 36 Sabores de Sorvete')">🍨 Ver os 36 Sabores</button>
+        <button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍦 36 Sabores de Sorvete')">🍨 Ver os 36 Sabores</button>
       </div>
     </div>
   </div>
@@ -511,7 +539,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="milk-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirMilkshakeSabores()">🥤 Ver Tamanhos e Preços</button>
+        <button type="button" class="btn-sabores" onclick="abrirMilkshakeSabores()">🥤 Ver Tamanhos e Preços</button>
       </div>
     </div>
   </div>
@@ -527,7 +555,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="tacas-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirTacasTradicionais()">🍨 Ver as 8 Taças</button>
+        <button type="button" class="btn-sabores" onclick="abrirTacasTradicionais()">🍨 Ver as 8 Taças</button>
       </div>
     </div>
   </div>
@@ -543,7 +571,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="tacas-p-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button class="btn-sabores" onclick="abrirTacasSujas()">🏆 Ver as 7 Taças Premium</button>
+        <button type="button" class="btn-sabores" onclick="abrirTacasSujas()">🏆 Ver as 7 Taças Premium</button>
       </div>
     </div>
   </div>
@@ -566,7 +594,7 @@ img{max-width:100%;display:block}
         </div>
       </div>
       <div style="margin-top:12px">
-        <button class="btn-sabores" onclick="abrirSabores('sorvetes','🎂 Sabores para Torta de Sorvete')">🍨 Ver os 36 Sabores</button>
+        <button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🎂 Sabores para Torta de Sorvete')">🍨 Ver os 36 Sabores</button>
         <a href="encomendas.html" class="btn-comp" style="margin-left:8px">🛒 Encomendar</a>
       </div>
     </div>
@@ -603,7 +631,7 @@ img{max-width:100%;display:block}
       <span class="acc-arrow">▼</span>
     </div>
     <div class="acc-body">
-      <div id="lista-caixas-cardapio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button></div>
+      <div id="lista-caixas-cardapio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button></div>
     </div>
   </div>
   <!-- ENCOMENDAS NO CARDÁPIO: TORTAS -->
@@ -684,7 +712,7 @@ img{max-width:100%;display:block}
 <div class="modal-overlay" id="modal-sabores">
   <div class="modal-box">
     <div class="modal-handle"></div>
-    <button class="modal-close" onclick="fecharModal('modal-sabores')">✕</button>
+    <button type="button" class="modal-close" onclick="fecharModal('modal-sabores')">✕</button>
     <div class="modal-title" id="ms-titulo">Sabores Disponíveis</div>
     <div class="modal-sub">Informe o sabor desejado ao fazer seu pedido na loja</div>
     <div class="chips" id="ms-chips"></div>
@@ -695,7 +723,7 @@ img{max-width:100%;display:block}
 <div class="modal-overlay" id="modal-comp">
   <div class="modal-box">
     <div class="modal-handle"></div>
-    <button class="modal-close" onclick="fecharModal('modal-comp')">✕</button>
+    <button type="button" class="modal-close" onclick="fecharModal('modal-comp')">✕</button>
     <div class="modal-title">🫐 Complementos do Açaí</div>
     <div class="modal-sub">Disponíveis para o Açaí Personalizado</div>
     <div id="comp-lista"></div>
@@ -706,7 +734,7 @@ img{max-width:100%;display:block}
 <div class="modal-overlay" id="modal-picole">
   <div class="modal-box">
     <div class="modal-handle"></div>
-    <button class="modal-close" onclick="fecharModal('modal-picole')">✕</button>
+    <button type="button" class="modal-close" onclick="fecharModal('modal-picole')">✕</button>
     <div class="modal-title" id="mp-titulo">Sabores do Picolé</div>
     <div class="modal-sub" id="mp-sub"></div>
     <div class="chips" id="mp-chips"></div>
@@ -716,7 +744,7 @@ img{max-width:100%;display:block}
 <!-- MODAL PROMOÇÃO -->
 <div class="promo-overlay" id="promo-overlay">
   <div class="promo-box">
-    <button class="promo-close" onclick="fecharModal('promo-overlay')">✕</button>
+    <button type="button" class="promo-close" onclick="fecharModal('promo-overlay')">✕</button>
     <div class="promo-icon" id="promo-icon">🎉</div>
     <img loading="lazy" id="promo-img" src="" alt="Promoção" style="display:none;width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover">
     <div class="promo-title" id="promo-title">Promoção Especial!</div>
@@ -726,34 +754,34 @@ img{max-width:100%;display:block}
       <div class="promo-timer-val" id="promo-timer">00:00:00:00</div>
       <div style="font-size:10px;opacity:.7;margin-top:4px;letter-spacing:1px">DIAS &nbsp; HH &nbsp; MM &nbsp; SS</div>
     </div>
-    <button class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()">💬 Falar com a Loja</button>
+    <button type="button" class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()">💬 Falar com a Loja</button>
   </div>
 </div>
 
 <!-- CHATBOT -->
-<button class="chat-fab" onclick="abrirChat()">💬 Fale Conosco</button>
+<button type="button" class="chat-fab" onclick="abrirChat()">💬 Fale Conosco</button>
 
 <div class="chat-overlay" id="chat-overlay">
   <div class="chat-box">
     <div class="chat-hdr">
       <div><h3>💬 Fale Conosco</h3><p>Assistente Itapolitana · Responde na hora</p></div>
-      <button class="chat-close" onclick="fecharModal('chat-overlay')">✕</button>
+      <button type="button" class="chat-close" onclick="fecharModal('chat-overlay')">✕</button>
     </div>
     <div class="chat-msgs" id="chat-msgs">
       <div class="msg bot">Olá! 👋 Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?</div>
     </div>
     <div class="chat-typing" id="chat-typing">Digitando...</div>
     <div class="chat-sugs">
-      <button class="sug" onclick="enviarSug(this)">Horário</button>
-      <button class="sug" onclick="enviarSug(this)">Como encomendar</button>
-      <button class="sug" onclick="enviarSug(this)">Sabores</button>
-      <button class="sug" onclick="enviarSug(this)">Preços</button>
-      <button class="sug" onclick="enviarSug(this)">Localização</button>
-      <button class="sug" onclick="enviarSug(this)">Picolés</button>
+      <button type="button" class="sug" onclick="enviarSug(this)">Horário</button>
+      <button type="button" class="sug" onclick="enviarSug(this)">Como encomendar</button>
+      <button type="button" class="sug" onclick="enviarSug(this)">Sabores</button>
+      <button type="button" class="sug" onclick="enviarSug(this)">Preços</button>
+      <button type="button" class="sug" onclick="enviarSug(this)">Localização</button>
+      <button type="button" class="sug" onclick="enviarSug(this)">Picolés</button>
     </div>
     <div class="chat-inp-row">
       <input type="text" class="chat-inp" id="chat-inp" placeholder="Digite sua pergunta..." onkeydown="if(event.key==='Enter')enviarChat()">
-      <button class="chat-send" onclick="enviarChat()">➤</button>
+      <button type="button" class="chat-send" onclick="enviarChat()">➤</button>
     </div>
   </div>
 </div>
@@ -763,8 +791,8 @@ img{max-width:100%;display:block}
   <div class="pwa-icon">📲</div>
   <div class="pwa-text"><h4>Instalar Aplicativo</h4><p>Adicione à tela inicial para acesso rápido e promoções!</p></div>
   <div class="pwa-btns">
-    <button class="pwa-install" id="pwa-btn">Instalar Agora</button>
-    <button class="pwa-dismiss" onclick="document.getElementById('pwa-banner').classList.remove('show')">Agora não</button>
+    <button type="button" class="pwa-install" id="pwa-btn">Instalar Agora</button>
+    <button type="button" class="pwa-dismiss" onclick="document.getElementById('pwa-banner').classList.remove('show')">Agora não</button>
   </div>
 </div>
 
@@ -865,7 +893,7 @@ function renderAcai(){
   if(produtos&&produtos.acai&&produtos.acai.copos){
     Object.entries(produtos.acai.copos).forEach(([tam,preco])=>{
       const d=document.createElement('div');d.className='acai-item';
-      d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${tam}</span><span class="acai-preco">R$ ${preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button class="btn-comp" onclick="abrirComplementos()">🍓 Ver Ingredientes Disponíveis</button>`;
+      d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${tam}</span><span class="acai-preco">R$ ${preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button type="button" class="btn-comp" onclick="abrirComplementos()">🍓 Ver Ingredientes Disponíveis</button>`;
       b.appendChild(d);
     });
   }
@@ -879,7 +907,7 @@ function renderPicoles(){
     Object.entries(produtos.picoles).forEach(([key,p])=>{
       const d=document.createElement('div');d.className='picole-item';
       const icon=iconesPicole[key]||'🍭';
-      d.innerHTML=`<div class="picole-row"><span class="picole-nome">${icon} ${p.nome}</span><span class="picole-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button class="btn-sabores" onclick="abrirPicole('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
+      d.innerHTML=`<div class="picole-row"><span class="picole-nome">${icon} ${p.nome}</span><span class="picole-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicole('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
       b.appendChild(d);
     });
   }
@@ -898,7 +926,7 @@ function renderIso(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<button class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore')">🍨 Ver os 36 Sabores</button>`;
+    btn.innerHTML=`<button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore')">🍨 Ver os 36 Sabores</button>`;
     b.appendChild(btn);
   }
 }
@@ -915,7 +943,7 @@ function renderSobremesas(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<button class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas')">🍨 Ver os 36 Sabores</button>`;
+    btn.innerHTML=`<button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas')">🍨 Ver os 36 Sabores</button>`;
     b.appendChild(btn);
   }
 }
@@ -1170,7 +1198,7 @@ function renderComplementosCardapio() {
       }).join('')}
       <div style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:4px">
         <div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">🛒 Para encomendar complementos, acesse a página de Encomendas no menu acima</div>
-        <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button>
+        <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topo → Encomendas</button>
       </div>
     </div>`;
 }
