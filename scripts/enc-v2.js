@@ -674,26 +674,30 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
   if (dataEl) dataEl.textContent = `📅 Data: ${dataFormatada}`;
 
   // Atualizar o href do link WhatsApp diretamente (evita bloqueio de popup)
+  // ============================================================
+  // ESVAZIAR CARRINHO E REDUZIR ESTOQUE IMEDIATAMENTE
+  // Feito aqui (antes de mostrar a tela de confirmação) para
+  // garantir que o estoque e carrinho sejam atualizados mesmo
+  // que o usuário saia da página ao abrir o WhatsApp
+  // ============================================================
+  const caixas = carregarCaixas();
+  const tortas = carregarTortas();
+  carrinho.forEach(item => {
+    const cx = caixas.find(c => c.id === item.id);
+    if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
+    const tr = tortas.find(t => t.id === item.id);
+    if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
+  });
+  localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
+  localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
+  // Esvaziar carrinho imediatamente
+  carrinho.length = 0;
+  atualizarBotaoCarrinho();
+
+  // Atualizar o link WhatsApp (apenas o href, sem onclick)
   const linkWpp = document.getElementById('link-whatsapp-final');
   if (linkWpp) {
     linkWpp.href = `https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`;
-    // Ao clicar no link WhatsApp, esvaziar carrinho e reduzir estoque
-    linkWpp.onclick = function() {
-      // Reduzir estoque de cada item do carrinho
-      const caixas = carregarCaixas();
-      const tortas = carregarTortas();
-      carrinho.forEach(item => {
-        const cx = caixas.find(c => c.id === item.id);
-        if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
-        const tr = tortas.find(t => t.id === item.id);
-        if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
-      });
-      localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
-      localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
-      // Esvaziar carrinho
-      carrinho.length = 0;
-      atualizarBotaoCarrinho();
-    };
   }
   mostrarEtapa('confirmacao');
 }
