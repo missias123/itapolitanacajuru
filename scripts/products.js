@@ -1,7 +1,7 @@
 const produtos = {
     sorvetes: {
         sabores: [
-            "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Foleado", "Leite Ninho com Oreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
+            "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"
         ],
         precos: {
             casquinha_copo: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },

@@ -12,9 +12,9 @@
 // ============================================================
 const DICIONARIO_ORTOGRAFIA = [
   // --- Nomes compostos (mais específicos primeiro) ---
-  ['Leite Ninho Foleado',          'Leite Ninho Foleado'],  // correto
-  ['Leite Ninho foleado',          'Leite Ninho Foleado'],
-  ['leite ninho foleado',          'Leite Ninho Foleado'],
+  ['Leite Ninho Folheado',          'Leite Ninho Folheado'],  // correto
+  ['Leite Ninho Folheado',          'Leite Ninho Folheado'],
+  ['Leite Ninho Folheado',          'Leite Ninho Folheado'],
   ['Petit Gateau',                 'Petit Gâteau'],
   ['petit gateau',                 'Petit Gâteau'],
   ['Petit gateau',                 'Petit Gâteau'],
@@ -57,8 +57,8 @@ const DICIONARIO_ORTOGRAFIA = [
   // --- Palavras simples ---
   ['Fundue',      'Fondue'],
   ['fundue',      'Fondue'],
-  ['Foleado',     'Foleado'],  // correto
-  ['foleado',     'Foleado'],
+  ['Folheado',     'Folheado'],  // correto
+  ['Folheado',     'Folheado'],
   ['Eskimo',      'Esquimó'],
   ['eskimo',      'Esquimó'],
   ['Picole',      'Picolé'],
