@@ -721,7 +721,9 @@ function finalizarPedido() {
 
   // Bloquear botão para evitar duplo clique
   const btnFin = document.getElementById('btn-finalizar');
-  if (btnFin) { btnFin.disabled = true; btnFin.textContent = '⏳ Gerando pedido...'; }
+  if (btnFin) { btnFin.disabled = true; btnFin.textContent = '⏳'; }
+  const barraTxt = document.querySelector('#etapa-dados .barra-texto');
+  if (barraTxt) barraTxt.textContent = '⏳ Gerando pedido...';
 
   // Data/hora atual
   const agora = new Date();
@@ -737,16 +739,21 @@ function finalizarPedido() {
   // Contador centralizado no servidor — número único e sequencial
   // Nunca se repete, independente do dispositivo ou navegador
   // ============================================================
-  fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up')
+  // Timeout de 5 segundos para não travar o botão
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up', { signal: controller.signal })
     .then(r => r.json())
     .then(data => {
+      clearTimeout(timeoutId);
       const seq = data.count || 1;
       const seqStr = String(seq).padStart(4, '0');
       const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
       _concluirPedido(nome, tel, end, numPedido, dataFormatada);
     })
     .catch(() => {
-      // Fallback: contador local se o servidor estiver indisponível
+      clearTimeout(timeoutId);
+      // Fallback: contador local se o servidor estiver indisponível ou demorar
       const seqLocal = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
       localStorage.setItem('itap_seq_pedido', seqLocal.toString());
       const seqStr = 'L' + String(seqLocal).padStart(3, '0');
@@ -756,6 +763,7 @@ function finalizarPedido() {
 }
 
 function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
+  try {
   let total = 0;
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
   msg += `🔢 *Pedido Nº:* ${numPedido}\n📅 *Data:* ${dataFormatada}\n\n`;
@@ -821,6 +829,14 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
     linkWpp.href = `https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`;
   }
   mostrarEtapa('confirmacao');
+  } catch(e) {
+    console.error('Erro ao concluir pedido:', e);
+    const btnFin = document.getElementById('btn-finalizar');
+    if (btnFin) { btnFin.disabled = false; btnFin.textContent = '▶'; }
+    const barraTxt2 = document.querySelector('#etapa-dados .barra-texto');
+    if (barraTxt2) barraTxt2.textContent = '📦 Confirmar e Enviar Pedido';
+    showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
+  }
 }
 
 function novoPedido() {
