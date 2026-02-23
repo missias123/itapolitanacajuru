@@ -485,6 +485,53 @@
     .btn-tipo-nome { flex: 1; text-align: left; }
     .btn-tipo-qtd { background: #E65100; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.85rem; }
     .btn-tipo-preco { font-size: 0.8rem; color: #795548; }
+    /* BARRA DE PROGRESSO PICOLÉS */
+    .picole-progress-bar {
+      background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+      border-top: 1px solid #FFCC80;
+      padding: 8px 16px 10px;
+    }
+    .picole-progress-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #BF360C;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .picole-progress-info strong {
+      font-size: 1.1rem;
+      color: #E65100;
+    }
+    .picole-progress-status {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #FFCCBC;
+      color: #BF360C;
+    }
+    .picole-progress-status.ok {
+      background: #C8E6C9;
+      color: #2E7D32;
+    }
+    .picole-progress-track {
+      height: 8px;
+      background: #FFCCBC;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .picole-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF7043, #E65100);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+    .picole-progress-fill.ok {
+      background: linear-gradient(90deg, #66BB6A, #2E7D32);
+    }
     /* MODAL CARRINHO */
     .steps-bar {
       display: flex;
@@ -1114,6 +1161,18 @@
           <div class="modal-subtitulo" id="picolé-precos"></div>
         </div>
         <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
+      </div>
+      <!-- BARRA DE PROGRESSO FIXA -->
+      <div class="picole-progress-bar">
+        <div class="picole-progress-info">
+          <span>🧳 Total selecionado:</span>
+          <strong id="picole-progress-num">0</strong>
+          <span>/ 250 picolés</span>
+          <span class="picole-progress-status" id="picole-progress-status">🔒 Faltam 100</span>
+        </div>
+        <div class="picole-progress-track">
+          <div class="picole-progress-fill" id="picole-progress-fill" style="width:0%"></div>
+        </div>
       </div>
     </div>
     <!-- TELA DE SELEÇÃO DE TIPO -->
