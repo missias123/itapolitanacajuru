@@ -176,16 +176,16 @@ function renderizarPicolés() {
   const c = document.getElementById('lista-picoles');
   if (!c) return;
   c.innerHTML = PRODUTOS.picoles.map(p => `
-    <div class="prod-card picole ${p.estoque===0?'esgotado':''}">
+    <div class="prod-card picolé ${p.estoque===0?'esgotado':''}">
       <div class="prod-body">
         <div class="prod-nome">${p.nome}</div>
-        <div class="prod-precos-picole">
+        <div class="prod-precos-picolé">
           <span>Varejo: R$ ${p.precoVarejo.toFixed(2).replace('.',',')}</span>
           <span class="destaque">Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}</span>
         </div>
         <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores btn-picole" onclick="abrirModalPicolé('${p.id}')" ${p.estoque===0?'disabled':''}>
+      <button class="btn-sabores btn-picolé" onclick="abrirModalPicolé('${p.id}')" ${p.estoque===0?'disabled':''}>
         🍭 Ver Sabores
       </button>
     </div>`).join('');
@@ -256,14 +256,14 @@ function abrirModalPicolé(id) {
   picoleAtual = p;
   selecoesPickle = {};
 
-  document.getElementById('picole-titulo').textContent = p.nome;
-  document.getElementById('picole-precos').textContent =
+  document.getElementById('picolé-titulo').textContent = p.nome;
+  document.getElementById('picolé-precos').textContent =
     `Varejo: R$ ${p.precoVarejo.toFixed(2).replace('.',',')} | Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}`;
 
-  const lista = document.getElementById('lista-sabores-picole');
+  const lista = document.getElementById('lista-sabores-picolé');
   lista.innerHTML = p.sabores.map(s => `
-    <div class="picole-row">
-      <span class="picole-sabor-nome">${s}</span>
+    <div class="picolé-row">
+      <span class="picolé-sabor-nome">${s}</span>
       <div class="qty-ctrl">
         <button class="btn-qty" onclick="qtdPickle('${s}',-1)">−</button>
         <span class="qty-val" id="pqty-${s.replace(/\s+/g,'_')}"">0</span>
@@ -272,7 +272,7 @@ function abrirModalPicolé(id) {
     </div>`).join('');
 
   atualizarTotalPickle();
-  abrirModal('modal-picole');
+  abrirModal('modal-picolé');
 }
 
 function qtdPickle(sabor, delta) {
@@ -290,7 +290,7 @@ function atualizarTotalPickle() {
   const el = document.getElementById('total-picoles');
   if (el) el.textContent = total;
   const btn = document.getElementById('btn-add-picoles');
-  const aviso = document.getElementById('aviso-minimo-picole');
+  const aviso = document.getElementById('aviso-minimo-picolé');
   if (btn) {
     btn.disabled = total === 0;
     btn.textContent = total > 0 ? `Adicionar ${total} picolé(s) ao carrinho` : 'Selecione ao menos 1 picolé';
@@ -311,9 +311,9 @@ function confirmarPickle() {
     preco: picoleAtual.precoAtacado,
     sabores,
     quantidade: total,
-    tipo: 'picole'
+    tipo: 'picolé'
   });
-  fecharModal('modal-picole');
+  fecharModal('modal-picolé');
   showToast(`✅ ${total} picolé(s) adicionado(s)!`, 'sucesso');
 }
 
@@ -378,7 +378,7 @@ function renderCarrinho() {
   if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
 
   // Verificar mínimo picolés
-  const totalPic = carrinho.filter(i=>i.tipo==='picole').reduce((a,b)=>a+b.quantidade,0);
+  const totalPic = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   const aviso = document.getElementById('aviso-min-carrinho');
   const btnNext = document.getElementById('btn-ir-dados');
   if (totalPic > 0 && totalPic < 100) {
@@ -436,7 +436,7 @@ function mostrarEtapa(etapa) {
 
 function irParaDados() {
   if (carrinho.length === 0) { showToast('Carrinho vazio!','alerta'); return; }
-  const totalPic = carrinho.filter(i=>i.tipo==='picole').reduce((a,b)=>a+b.quantidade,0);
+  const totalPic = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   if (totalPic > 0 && totalPic < 100) { showToast(`Mínimo 100 picolés. Você tem ${totalPic}.`,'alerta'); return; }
   renderResumoPedido();
   const etapaDados = document.getElementById('etapa-dados');

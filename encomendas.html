@@ -214,8 +214,8 @@
     .prod-card.esgotado { opacity: 0.6; pointer-events: none; }
     .prod-nome { font-size: 0.95rem; font-weight: 700; color: #212121; }
     .prod-preco { font-size: 1.2rem; font-weight: 800; color: var(--azul); }
-    .prod-precos-picole { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; }
-    .prod-precos-picole .destaque { color: var(--verde); font-weight: 700; }
+    .prod-precos-picolé { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; }
+    .prod-precos-picolé .destaque { color: var(--verde); font-weight: 700; }
     .prod-estoque { font-size: 0.78rem; color: var(--cinza); }
     .tag-esgotado {
       background: var(--vermelho);
@@ -239,8 +239,8 @@
     }
     .btn-sabores:hover:not(:disabled) { background: var(--azul-escuro); transform: translateY(-1px); }
     .btn-sabores:disabled { background: var(--cinza); cursor: not-allowed; }
-    .btn-picole { background: #E65100; }
-    .btn-picole:hover:not(:disabled) { background: #BF360C; }
+    .btn-picolé { background: #E65100; }
+    .btn-picolé:hover:not(:disabled) { background: #BF360C; }
 
     /* MODAL BASE */
     .modal-overlay {
@@ -381,14 +381,14 @@
     .comp-qtd { font-size: 1rem; font-weight: 800; min-width: 24px; text-align: center; color: #1A0A00; }
 
     /* MODAL PICOLÉ */
-    .picole-row {
+    .picolé-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 0;
       border-bottom: 1px solid #F5F5F5;
     }
-    .picole-sabor-nome { font-size: 0.9rem; font-weight: 500; flex: 1; }
+    .picolé-sabor-nome { font-size: 0.9rem; font-weight: 500; flex: 1; }
     .qty-ctrl { display:flex; align-items:center; gap:10px; }
     .btn-qty {
       width: 36px;
@@ -407,7 +407,7 @@
     }
     .btn-qty:hover { background: var(--azul); color: white; }
     .qty-val { font-size: 1rem; font-weight: 700; min-width: 28px; text-align: center; }
-    .picole-total-bar {
+    .picolé-total-bar {
       background: #F5F5F5;
       border-radius: 10px;
       padding: 14px 16px;
@@ -967,24 +967,24 @@
 </div>
 
 <!-- MODAL PICOLÉ -->
-<div class="modal-overlay" id="modal-picole" onclick="if(event.target===this)fecharModal('modal-picole')">
+<div class="modal-overlay" id="modal-picolé" onclick="if(event.target===this)fecharModal('modal-picolé')">
   <div class="modal-box">
     <div class="modal-header">
       <div class="modal-header-top">
         <div>
-          <div class="modal-titulo" id="picole-titulo"></div>
-          <div class="modal-subtitulo" id="picole-precos"></div>
+          <div class="modal-titulo" id="picolé-titulo"></div>
+          <div class="modal-subtitulo" id="picolé-precos"></div>
         </div>
-        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picole')">✕</button>
+        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
       </div>
     </div>
     <div class="modal-body">
-      <div id="lista-sabores-picole"></div>
-      <div class="picole-total-bar">
+      <div id="lista-sabores-picolé"></div>
+      <div class="picolé-total-bar">
         <span>Total selecionado:</span>
         <strong><span id="total-picoles">0</span> picolés</strong>
       </div>
-      <div class="aviso-minimo" id="aviso-minimo-picole"></div>
+      <div class="aviso-minimo" id="aviso-minimo-picolé"></div>
       <button type="button" class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
         Selecione ao menos 1 picolé
       </button>

@@ -86,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <script>
-const ADMIN_PASS = "itapolitana2007@";
+const ADMIN_PASS = "itapolitana2007";
 
 // ── LOGIN ──
 function toggleSenha(){
@@ -141,7 +141,7 @@ function carregar(key, padrao){
 }
 function salvar(key, lista){ localStorage.setItem(key, JSON.stringify(lista)); }
 
-let caixas, tortas, picoles, comps;
+let caixas, tortas, picoles, acrescimos;
 
 // ── SEÇÃO ──
 function criarSecao(id, titulo, conteudo){
@@ -230,7 +230,7 @@ function renderPicolés(){
   let h = '';
   picoles.forEach((p,i) => {
     const esg = p.esgotado || p.estoque <= 0;
-    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="picole-card-${i}">
+    h += `<div class="prod-edit-card ${esg?'esgotado':''}" id="picolé-card-${i}">
       <div class="prod-nome">${p.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
       <div class="campos-linha">
         <div class="campo-box"><label>Varejo (R$)</label><input type="number" step="0.10" min="0" value="${p.preco_varejo}" onchange="editarPicolé(${i},'preco_varejo',parseFloat(this.value))"></div>
@@ -257,25 +257,57 @@ function toggleEsgotarPicolé(i){
   if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderPicolés(); }
 }
 
+// ── ACRÉSCIMOS PADRÃO ──
+const ACRESCIMOS_PADRAO = [
+  { id:'acr_canudinho', nome:'Canudinho Wafer', preco:0.25,  estoque:100, esgotado:false },
+  { id:'acr_casquinha', nome:'Casquinhas',      preco:0.25,  estoque:100, esgotado:false },
+  { id:'acr_cascão',    nome:'Cascão',          preco:1.00,  estoque:100, esgotado:false },
+  { id:'acr_cestinha',  nome:'Cestinha',        preco:1.00,  estoque:100, esgotado:false },
+  { id:'acr_cobertura', nome:'Cobertura 1,3L',  preco:40.00, estoque:100, esgotado:false }
+];
+
+function renderAcrescimos(){
+  let h = '<div class="aviso">💡 Acréscimos disponíveis para encomendas de caixas. Altere preços e estoque aqui.</div>';
+  acrescimos.forEach((a,i) => {
+    const esg = a.esgotado || a.estoque <= 0;
+    h += `<div class="prod-edit-card ${esg?'esgotado':''}">
+      <div class="prod-nome">${a.nome} <span class="tag-status ${esg?'esgotado':'ok'}">${esg?'ESGOTADO':'DISPONÍVEL'}</span></div>
+      <div class="campos-linha">
+        <div class="campo-box"><label>Preço (R$)</label><input type="number" step="0.01" min="0" value="${a.preco}" onchange="acrescimos[${i}].preco=parseFloat(this.value)||0"></div>
+        <div class="campo-box"><label>Estoque (un)</label><input type="number" step="1" min="0" value="${a.estoque}" onchange="acrescimos[${i}].estoque=parseInt(this.value)||0;acrescimos[${i}].esgotado=acrescimos[${i}].estoque<=0;atualizarAcrescimos()"></div>
+      </div>
+      <button type="button" class="btn-esgotar ${esg?'inativo':'ativo'}" onclick="acrescimos[${i}].esgotado=!acrescimos[${i}].esgotado;if(acrescimos[${i}].esgotado)acrescimos[${i}].estoque=0;atualizarAcrescimos()">
+        ${esg?'✅ Reativar':'❌ Esgotar'}
+      </button>
+    </div>`;
+  });
+  return h;
+}
+function atualizarAcrescimos(){
+  const sec = document.getElementById('sec-acrescimos');
+  if(sec){ const bd = sec.querySelector('.secao-body'); if(bd) bd.innerHTML = renderAcrescimos(); }
 }
 
 // ── INICIAR ──
 function iniciarAdmin(){
-  caixas  = carregar('itap_caixas_enc',   CAIXAS_PADRAO);
-  tortas  = carregar('itap_tortas_enc',   TORTAS_PADRAO);
-  picoles = carregar('itap_picoles_enc',  PICOLES_PADRAO);
+  caixas     = carregar('itap_caixas_enc',   CAIXAS_PADRAO);
+  tortas     = carregar('itap_tortas_enc',   TORTAS_PADRAO);
+  picoles    = carregar('itap_picoles_enc',  PICOLES_PADRAO);
+  acrescimos = carregar('itap_acrescimos',   ACRESCIMOS_PADRAO);
 
   const body = document.getElementById('adm-body');
   body.innerHTML = '';
-  body.appendChild(criarSecao('caixas',  '📦 Caixas de Sorvete',  renderCaixas()));
-  body.appendChild(criarSecao('tortas',  '🎂 Torta de Sorvete',   renderTortas()));
-  body.appendChild(criarSecao('picoles', '🍭 Picolés (Atacado)',  renderPicolés()));
+  body.appendChild(criarSecao('caixas',     '📦 Caixas de Sorvete',  renderCaixas()));
+  body.appendChild(criarSecao('tortas',     '🎂 Torta de Sorvete',   renderTortas()));
+  body.appendChild(criarSecao('picoles',    '🍭 Picolés (Atacado)',  renderPicolés()));
+  body.appendChild(criarSecao('acrescimos', '🍪 Acréscimos',         renderAcrescimos()));
 }
 
 function salvarTudo(){
   salvar('itap_caixas_enc',   caixas);
   salvar('itap_tortas_enc',   tortas);
   salvar('itap_picoles_enc',  picoles);
+  salvar('itap_acrescimos',   acrescimos);
   const msg = document.getElementById('status-msg');
   msg.textContent = '✅ Salvo com sucesso!';
   setTimeout(()=>msg.textContent='', 3000);
