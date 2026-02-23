@@ -71,6 +71,13 @@ const PRODUTOS = {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
+  // Fechar modal-carrinho ao clicar no overlay (fora do modal-box)
+  const modalCarrinho = document.getElementById('modal-carrinho');
+  if (modalCarrinho) {
+    modalCarrinho.addEventListener('click', function(e) {
+      if (e.target === modalCarrinho) fecharCarrinho();
+    });
+  }
   // Botão Finalizar Pedido - event listener dedicado para garantir funcionamento
   const btnIrDados = document.getElementById('btn-ir-dados');
   if (btnIrDados) {
