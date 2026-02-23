@@ -11,6 +11,7 @@ var picoleAtual = null;
 var selecoesPickle = {};
 var _nomeCliente = '';
 var _telCliente = '';
+var _enderecoCliente = '';
 
 // Sabores carregados do admin (localStorage) ou lista padrão
 function getSaboresAtivos() {
@@ -545,16 +546,18 @@ function finalizarPedido() {
   // Leitura robusta dos campos — usa variáveis globais como fallback
   const nomeEl = document.getElementById('cliente-nome');
   const telEl  = document.getElementById('cliente-tel');
+  const endEl  = document.getElementById('cliente-endereco');
   const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente).trim();
   const tel  = ((telEl  ? telEl.value  : '') || _telCliente).trim();
+  const end  = ((endEl  ? endEl.value  : '') || _enderecoCliente).trim();
 
-  if (!nome) { nome = (prompt('Seu nome completo:') || '').trim(); }
-  if (!tel)  { tel  = (prompt('Seu WhatsApp com DDD:') || '').trim(); }
-  if (!nome || !tel) { alert('Preencha nome e WhatsApp.'); return; }
+  if (!nome) { showToast('⚠️ Preencha seu nome completo.', 'alerta'); return; }
+  if (!tel)  { showToast('⚠️ Preencha seu WhatsApp com DDD.', 'alerta'); return; }
+  if (!end)  { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
 
   let total = 0;
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
-  msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n\n`;
+  msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n📍 *Endereço:* ${end}\n\n`;
   msg += `📦 *ITENS:*\n`;
   carrinho.forEach(item => {
     const sub = item.preco * item.quantidade;
@@ -579,6 +582,7 @@ function finalizarPedido() {
       data: new Date().toLocaleString('pt-BR'),
       nome: nome,
       tel: tel,
+      endereco: end,
       itens: carrinho.map(i => ({ nome: i.nome, qtd: i.quantidade, sabores: i.sabores || [], preco: i.preco })),
       total: total,
       status: 'novo'
@@ -595,6 +599,23 @@ function finalizarPedido() {
   const linkWpp = document.getElementById('link-whatsapp-final');
   if (linkWpp) {
     linkWpp.href = `https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`;
+    // Ao clicar no link WhatsApp, esvaziar carrinho e reduzir estoque
+    linkWpp.onclick = function() {
+      // Reduzir estoque de cada item do carrinho
+      const caixas = carregarCaixas();
+      const tortas = carregarTortas();
+      carrinho.forEach(item => {
+        const cx = caixas.find(c => c.id === item.id);
+        if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
+        const tr = tortas.find(t => t.id === item.id);
+        if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
+      });
+      localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
+      localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
+      // Esvaziar carrinho
+      carrinho.length = 0;
+      atualizarBotaoCarrinho();
+    };
   }
   mostrarEtapa('confirmacao');
 }
