@@ -406,6 +406,11 @@ function mostrarEtapa(etapa) {
     if (i < idx) st.classList.add('completo');
     else if (i === idx) st.classList.add('ativo');
   });
+  // Scroll para o topo do modal
+  setTimeout(() => {
+    const modalBox = document.querySelector('#modal-carrinho .modal-box');
+    if (modalBox) modalBox.scrollTop = 0;
+  }, 50);
 }
 
 function irParaDados() {
