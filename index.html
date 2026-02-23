@@ -102,11 +102,10 @@ img{max-width:100%;display:block}
 .clima-detalhe{font-size:10px;color:#6B7280;font-weight:600}
 .clima-sorvete-msg{font-size:10px;font-weight:800;color:#E8000D;text-align:right;line-height:1.3}
 .clima-loading{font-size:11px;color:#9CA3AF;font-weight:600}
-/* FAIXA REGIONAL */
-.regional{background:linear-gradient(135deg,#FF6B35,#E8000D,#7B2D8B);color:#fff;text-align:center;padding:10px 16px;text-shadow:0 1px 3px rgba(0,0,0,.3)}
-.regional-linha1{font-size:14px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
-.regional-linha2{font-size:12px;font-weight:700;margin-bottom:3px}
-.regional-linha3{font-size:11px;font-weight:600;opacity:.92}
+/* RELÓGIO DIGITAL */
+.relogio-digital{background:linear-gradient(135deg,#1A0A00,#3D1A00);color:#fff;text-align:center;padding:8px 16px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.relogio-hora{font-size:22px;font-weight:900;letter-spacing:3px;color:#FF6B35;font-family:'Courier New',monospace;text-shadow:0 0 10px rgba(255,107,53,.6)}
+.relogio-data{font-size:12px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.5px;text-transform:capitalize}
 
 /* HERO */
 .hero{background:linear-gradient(160deg,#FFF8F0 0%,#FFF0E0 40%,#FFE8F0 80%,#F8E8FF 100%);padding:28px 16px 32px;text-align:center;border-bottom:3px solid #FF6B35;isolation:isolate;position:relative;overflow:hidden}
@@ -419,11 +418,10 @@ img{max-width:100%;display:block}
   </div>
 </header>
 
-<!-- FAIXA REGIONAL -->
-<div class="regional">
-  <div class="regional-linha1">🚫 Não fazemos delivery</div>
-  <div class="regional-linha2">🏪 Encomendas: retirada somente na loja</div>
-  <div class="regional-linha3">📍 Atendemos Cajuru · Santa Cruz da Esperança · Cássia dos Coqueiros</div>
+<!-- RELÓGIO DIGITAL -->
+<div class="relogio-digital" id="relogio-digital">
+  <div class="relogio-hora" id="relogio-hora">00:00:00</div>
+  <div class="relogio-data" id="relogio-data">carregando...</div>
 </div>
 
 <!-- STRIP SENSORIAL TOPO -->
@@ -1359,5 +1357,27 @@ function atualizarRelogio(){
 atualizarRelogio();
 setInterval(atualizarRelogio,1000);
 </script>
+
+// RELÓGIO DIGITAL
+(function(){
+  function atualizarRelogio(){
+    const agora = new Date();
+    const h = String(agora.getHours()).padStart(2,'0');
+    const m = String(agora.getMinutes()).padStart(2,'0');
+    const s = String(agora.getSeconds()).padStart(2,'0');
+    const diasSemana = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    const dia = diasSemana[agora.getDay()];
+    const d = String(agora.getDate()).padStart(2,'0');
+    const mes = meses[agora.getMonth()];
+    const ano = agora.getFullYear();
+    const elHora = document.getElementById('relogio-hora');
+    const elData = document.getElementById('relogio-data');
+    if(elHora) elHora.textContent = h+':'+m+':'+s;
+    if(elData) elData.textContent = dia+', '+d+' de '+mes+'. de '+ano;
+  }
+  atualizarRelogio();
+  setInterval(atualizarRelogio, 1000);
+})();
 </body>
 </html>
