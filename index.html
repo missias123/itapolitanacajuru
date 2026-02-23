@@ -55,10 +55,21 @@ img{max-width:100%;display:block}
 .regional-linha3{font-size:11px;font-weight:600;opacity:.92}
 
 /* HERO */
-.hero{background:linear-gradient(160deg,#FFFDF9 0%,#FFF3E0 50%,#FCE4EC 100%);padding:24px 16px;text-align:center;border-bottom:2px solid #FF6B35;isolation:isolate}
-.hero h2{font-size:22px;font-weight:900;margin-bottom:8px;line-height:1.25;letter-spacing:-.3px;color:#1A0A00}
-.hero p{font-size:14px;color:#7B2D8B;font-weight:600;max-width:480px;margin:0 auto 16px;line-height:1.6;letter-spacing:.1px}
-.hero-cta{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:800;box-shadow:0 4px 20px rgba(232,0,13,.45);letter-spacing:.3px;text-transform:uppercase}
+.hero{background:linear-gradient(160deg,#FFF8F0 0%,#FFF0E0 40%,#FFE8F0 80%,#F8E8FF 100%);padding:28px 16px 32px;text-align:center;border-bottom:3px solid #FF6B35;isolation:isolate;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(255,107,53,.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 30%,rgba(232,0,13,.06) 0%,transparent 60%);pointer-events:none}
+.hero h2{font-size:clamp(20px,5.5vw,28px);font-weight:900;margin-bottom:10px;line-height:1.2;letter-spacing:-.5px;color:#1A0A00;text-shadow:0 1px 3px rgba(0,0,0,.08)}
+.hero h2 .destaque-texto{background:linear-gradient(135deg,#E8000D,#FF6B35,#FF8F00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:14px;color:#5C2D6B;font-weight:600;max-width:480px;margin:0 auto 18px;line-height:1.7;letter-spacing:.1px}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;padding:15px 36px;border-radius:50px;font-size:15px;font-weight:900;box-shadow:0 6px 24px rgba(232,0,13,.5),0 2px 8px rgba(0,0,0,.15);letter-spacing:.5px;text-transform:uppercase;transition:transform .2s,box-shadow .2s}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(232,0,13,.6)}
+/* FRASE SENSORIAL ROTATIVA */
+.frase-sensorial{background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border:2px solid #FF6B35;border-radius:50px;padding:8px 20px;display:inline-block;margin-bottom:16px;font-size:13px;font-weight:800;color:#BF360C;letter-spacing:.3px;animation:pulse-frase 3s ease-in-out infinite}
+@keyframes pulse-frase{0%,100%{transform:scale(1);box-shadow:0 2px 8px rgba(255,107,53,.2)}50%{transform:scale(1.03);box-shadow:0 4px 16px rgba(255,107,53,.4)}}
+/* CONTADOR DE SABORES */
+.sabores-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7B2D8B,#AB47BC);color:#fff;border-radius:50px;padding:6px 16px;font-size:12px;font-weight:800;margin-bottom:12px;box-shadow:0 2px 10px rgba(123,45,139,.35)}
+/* STRIP SENSORIAL */
+.strip-sensorial{background:linear-gradient(135deg,#E8000D,#FF6B35,#FF8F00,#FF6B35,#E8000D);background-size:300% 100%;animation:gradiente-move 4s ease infinite;color:#fff;text-align:center;padding:10px 16px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+@keyframes gradiente-move{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
 /* BANNER CARDÁPIO */
 .cardapio-banner{width:100%;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.18);margin-bottom:16px;display:none}
@@ -234,6 +245,10 @@ img{max-width:100%;display:block}
 .enc-picole-precos{font-size:12px;color:#1565C0;font-weight:700;line-height:1.6}
 .enc-picole-sabores{font-size:11px;color:#7B2D8B;font-weight:700;margin-top:4px}
 
+/* GATILHO FLUTUANTE */
+.gatilho-flutuante{position:fixed;bottom:80px;left:16px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border-radius:50px;padding:10px 18px;font-size:12px;font-weight:800;box-shadow:0 4px 20px rgba(232,0,13,.5);z-index:150;animation:bounce-gatilho 2s ease-in-out infinite;cursor:pointer;border:none;display:none;max-width:200px;text-align:center;line-height:1.4}
+@keyframes bounce-gatilho{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.gatilho-flutuante.show{display:block}
 /* RODAPÉ */
 .footer{background:linear-gradient(135deg,#2D0A0A,#5C0A5C,#7B2D8B);color:#FFFFFF;padding:32px 16px;margin-top:24px;text-align:center;position:relative;overflow:hidden}
 .footer h3{color:#FFFFFF;font-size:16px;margin-bottom:16px;text-shadow:0 1px 4px rgba(0,0,0,.3);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
@@ -300,14 +315,21 @@ img{max-width:100%;display:block}
   <div class="regional-linha3">📍 Atendemos Cajuru · Santa Cruz da Esperança · Cássia dos Coqueiros</div>
 </div>
 
+<!-- STRIP SENSORIAL TOPO -->
+<div class="strip-sensorial" id="strip-sensorial">
+  🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 36 Sabores · Desde 2007 · Artesanal · 🍦
+</div>
+
 <!-- HERO -->
 <section class="hero">
-  <h2>O Sorvete Mais Cremoso e Amado de Cajuru e Região</h2>
-  <p>Produção própria com ingredientes selecionados. Sorvetes artesanais, picolés recheados e açaí premium desde 2007.</p>
+  <div class="sabores-badge">✨ 36 sabores artesanais disponíveis hoje</div>
+  <div class="frase-sensorial" id="frase-rotativa">🍦 "Aquele creminho que derrete na boca..."</div>
+  <h2>O Sorvete <span class="destaque-texto">Mais Cremoso</span> e Amado de Cajuru</h2>
+  <p>Feito com ingredientes selecionados, cremoso na medida certa, gelado do jeito que você ama. Cada colherada é uma viagem de volta à infância. Desde 2007 fazendo sorrisos em Cajuru e região.</p>
   <button class="hero-chat-btn" onclick="abrirChat()">💬 Fale Conosco</button>
   <br>
   <button class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
-    🍦 Ver Cardápio Completo
+    🍦 Quero Ver os Sabores!
   </button>
 </section>
 <!-- INFO CARDS -->
@@ -532,6 +554,11 @@ img{max-width:100%;display:block}
   </div>
 
 </section>
+<!-- GATILHO FLUTUANTE -->
+<button class="gatilho-flutuante" id="gatilho-flutuante" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
+  🍦 Estou com vontade!<br><small>Ver cardápio</small>
+</button>
+
 <!-- RODAPÉ v2 -->
 <footer class="footer">
   <div class="footer-inner">
@@ -1057,6 +1084,54 @@ function carregarBanner(){
     }
   }catch(e){}
 }
+// ── NEUROMARKETING: FRASES SENSORIAIS ROTATIVAS ──
+const FRASES_SENSORIAIS = [
+  '🍦 "Aquele creminho que derrete na boca..."',
+  '🍨 "Gelado, cremoso e irresistível!"',
+  '🍭 "Cada sabor conta uma história doce"',
+  '✨ "Feito com amor desde 2007"',
+  '🎂 "O sorvete que faz você fechar os olhos de prazer"',
+  '🍦 "Cremoso por dentro, felicidade por fora"',
+  '🌟 "Aquele sabor que você não consegue esquecer"',
+  '🍪 "Uma colherada e você já quer mais"',
+];
+let fraseIdx = 0;
+setInterval(() => {
+  fraseIdx = (fraseIdx + 1) % FRASES_SENSORIAIS.length;
+  const el = document.getElementById('frase-rotativa');
+  if (el) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-8px)';
+    setTimeout(() => {
+      el.textContent = FRASES_SENSORIAIS[fraseIdx];
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 400);
+  }
+}, 4000);
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('frase-rotativa');
+  if (el) el.style.transition = 'opacity .4s, transform .4s';
+});
+// ── GATILHO FLUTUANTE: aparece após 8s ──
+setTimeout(() => {
+  const g = document.getElementById('gatilho-flutuante');
+  if (g) g.classList.add('show');
+}, 8000);
+
+// ── STRIP SENSORIAL ROTATIVO ──
+const STRIPS = [
+  '🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 36 Sabores · Desde 2007 · Artesanal · 🍦',
+  '🍨 Sorvete de Massa · Picolés Recheados · Açaí Premium · Tortas · Milkshakes · Taças · 🍨',
+  '🎂 Encomende sua Torta de Sorvete · Caixas 5L e 10L · Picolés Atacado · Acréscimos · 🎂',
+];
+let stripIdx = 0;
+setInterval(() => {
+  stripIdx = (stripIdx + 1) % STRIPS.length;
+  const s = document.getElementById('strip-sensorial');
+  if (s) s.textContent = STRIPS[stripIdx];
+}, 5000);
+
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   carregarBanner();

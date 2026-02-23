@@ -102,13 +102,41 @@
 
     /* HERO */
     .hero {
-      background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+      background: linear-gradient(160deg, #0D47A1 0%, #1565C0 40%, #1976D2 70%, #0D47A1 100%);
+      background-size: 200% 200%;
+      animation: hero-gradiente 6s ease infinite;
       color: white;
-      padding: 28px 20px;
+      padding: 28px 20px 32px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
-    .hero h2 { font-size: 1.6rem; margin-bottom: 6px; }
-    .hero p { font-size: 0.9rem; opacity: 0.85; }
+    @keyframes hero-gradiente {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero h2 { font-size: 1.6rem; margin-bottom: 8px; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    .hero h2 .destaque { color: var(--amarelo); }
+    .hero p { font-size: 0.9rem; opacity: 0.92; line-height: 1.6; max-width: 480px; margin: 0 auto 12px; }
+    .hero-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .hero-badge {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      color: white;
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
 
     /* CONTAINER PRINCIPAL */
     .container { max-width: 800px; margin: 0 auto; padding: 20px 16px 100px; }
@@ -140,23 +168,31 @@
     .categoria-conteudo.aberto { display: block; }
 
     /* CORES DAS CATEGORIAS */
-    .cat-caixas .categoria-header { background: linear-gradient(135deg, #7B1FA2, #9C27B0); }
-    .cat-tortas .categoria-header { background: linear-gradient(135deg, var(--vermelho), #E91E63); }
-    .cat-picoles .categoria-header { background: linear-gradient(135deg, #E65100, #FF9800); }
-    .cat-acrescimos .categoria-header { background: linear-gradient(135deg, #1B5E20, #2E7D32); }
+    .cat-caixas .categoria-header { background: linear-gradient(135deg, #4A148C, #7B1FA2, #9C27B0); }
+    .cat-tortas .categoria-header { background: linear-gradient(135deg, #B71C1C, var(--vermelho), #E91E63); }
+    .cat-picoles .categoria-header { background: linear-gradient(135deg, #BF360C, #E65100, #FF9800); }
+    .cat-acrescimos .categoria-header { background: linear-gradient(135deg, #1B5E20, #2E7D32, #43A047); }
+    /* Sombra colorida por categoria */
+    .cat-caixas { box-shadow: 0 4px 20px rgba(123,31,162,.2); }
+    .cat-tortas { box-shadow: 0 4px 20px rgba(211,47,47,.2); }
+    .cat-picoles { box-shadow: 0 4px 20px rgba(230,81,0,.2); }
+    .cat-acrescimos { box-shadow: 0 4px 20px rgba(27,94,32,.2); }
+    /* Texto sensorial abaixo do título */
+    .categoria-info .frase-cat { font-size: 0.72rem; color: rgba(255,255,255,.75); margin-top: 3px; font-style: italic; font-weight: 600; }
 
     /* CARDS DE PRODUTO */
     .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
     .prod-card {
       border: 2px solid #eee;
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       gap: 0;
       background: white;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     }
+    .prod-card:hover:not(.esgotado) { transform: translateY(-4px); }
     .prod-card-img { width: 100%; height: 130px; object-fit: cover; display: block; }
     .prod-card-sem-foto { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; background: linear-gradient(135deg, #E3F2FD, #F3E5F5); }
     .prod-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
@@ -653,7 +689,7 @@
       .header-logo-texto h1 { font-size: 0.85rem; }
     }
   </style>
-<!-- v:1771806852 -->
+<!-- v:1771806853-neuro -->
 </head>
 <body>
 
@@ -673,13 +709,20 @@
 
 <!-- BANNER INFO -->
 <div class="banner-info">
-  📍 Atendemos Cajuru, Cássia dos Coqueiros e Santa Cruz da Esperança &nbsp;|&nbsp; 🏪 Retirada na loja
+  📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança &nbsp;·&nbsp; 🏪 Retirada na loja &nbsp;·&nbsp; ✨ Sorvete artesanal desde 2007
 </div>
 
 <!-- HERO -->
 <div class="hero">
-  <h2>🛒 Faça sua Encomenda</h2>
-  <p>Sorvetes em caixa, tortas, picolés e acréscimos</p>
+  <h2>🛒 Faça sua <span class="destaque">Encomenda</span></h2>
+  <p>Sorvetes cremosos em caixa, tortas irresistíveis, picolés gelados e acréscimos. Tudo artesanal, feito com amor desde 2007.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">✨ Artesanal</span>
+    <span class="hero-badge">🍦 36 Sabores</span>
+    <span class="hero-badge">🎂 Tortas Especiais</span>
+    <span class="hero-badge">📦 Caixas 5L e 10L</span>
+    <span class="hero-badge">🍭 Picolés Atacado</span>
+  </div>
 </div>
 
 <!-- CONTAINER PRINCIPAL -->
@@ -693,6 +736,7 @@
         <div class="categoria-info">
           <h3>Sorvete em Caixa</h3>
           <p>4 opções disponíveis</p>
+          <div class="frase-cat">✨ Cremoso, gelado e irresistível — perfeito para festas</div>
         </div>
       </div>
       <span class="toggle-icon">▼</span>
@@ -710,6 +754,7 @@
         <div class="categoria-info">
           <h3>Torta de Sorvete</h3>
           <p>Perfeita para festas</p>
+          <div class="frase-cat">🎂 Surpreenda quem você ama com uma torta gelada</div>
         </div>
       </div>
       <span class="toggle-icon">▼</span>
@@ -727,6 +772,7 @@
         <div class="categoria-info">
           <h3>Picolés (Atacado)</h3>
           <p>Mínimo 100 unidades</p>
+          <div class="frase-cat">🍭 Gelados, recheados e cheios de sabor</div>
         </div>
       </div>
       <span class="toggle-icon">▼</span>
@@ -743,6 +789,7 @@
         <div class="categoria-info">
           <h3>Acréscimos</h3>
           <p>Canudinho, casquinha, cobertura e mais</p>
+          <div class="frase-cat">🍪 O toque final que faz toda a diferença</div>
         </div>
       </div>
       <span class="toggle-icon">▼</span>
