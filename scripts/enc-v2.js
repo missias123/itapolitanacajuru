@@ -122,13 +122,21 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarEtapa('revisao');
     });
   }
-  // Botão Continuar Comprando
+  // Botão Continuar Comprando (etapa 1)
   const btnContinuar = document.getElementById('btn-continuar-comprando');
   if (btnContinuar) {
     btnContinuar.addEventListener('click', function(e) {
       e.stopPropagation();
       fecharCarrinho();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+  // Botão Revisar Carrinho (etapa 2 → 1) - alias do voltar-etapa
+  const btnVoltarEtapa2 = document.getElementById('btn-voltar-etapa2');
+  if (btnVoltarEtapa2) {
+    btnVoltarEtapa2.addEventListener('click', function(e) {
+      e.stopPropagation();
+      mostrarEtapa('revisao');
     });
   }
   // Botão Desistir e Voltar às Encomendas (etapa 3)
@@ -700,31 +708,50 @@ function verificarFormulario() {
   const tel  = (document.getElementById('cliente-tel')?.value  || '').trim();
   const end  = (document.getElementById('cliente-endereco')?.value || '').trim();
   const btn  = document.getElementById('btn-finalizar');
+  const hint = document.getElementById('campos-obrigatorios-hint');
+  const barra = document.getElementById('barra-btn-finalizar');
+  const texto = document.getElementById('texto-btn-finalizar');
   if (!btn) return;
   const liberado = nome.length >= 3 && tel.length >= 8 && end.length >= 5;
   btn.disabled = !liberado;
   btn.style.opacity = liberado ? '1' : '0.4';
-  btn.title = liberado ? 'Confirmar e Enviar' : 'Preencha todos os campos para continuar';
+  // Feedback visual corporativo
+  if (liberado) {
+    if (hint) hint.style.display = 'none';
+    if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
+    if (texto) texto.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
+    btn.title = 'Clique para gerar seu pedido';
+  } else {
+    if (hint) hint.style.display = 'block';
+    if (barra) barra.style.background = 'linear-gradient(135deg, #424242, #616161)';
+    if (texto) texto.textContent = '🔒 Preencha os campos abaixo';
+    btn.title = 'Preencha todos os campos para continuar';
+  }
 }
 
 function finalizarPedido() {
-  // Leitura robusta dos campos — usa variáveis globais como fallback
+  // ============================================================
+  // CHECKOUT CORPORATIVO — Padrão de produção
+  // Validação robusta + loading state + fallback garantido
+  // ============================================================
   const nomeEl = document.getElementById('cliente-nome');
   const telEl  = document.getElementById('cliente-tel');
   const endEl  = document.getElementById('cliente-endereco');
-  const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente).trim();
-  const tel  = ((telEl  ? telEl.value  : '') || _telCliente).trim();
-  const end  = ((endEl  ? endEl.value  : '') || _enderecoCliente).trim();
-  if (!nome) { showToast('⚠️ Preencha seu nome completo.', 'alerta'); return; }
-  if (!tel)  { showToast('⚠️ Preencha seu WhatsApp com DDD.', 'alerta'); return; }
-  if (!end)  { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
-
-  // Bloquear botão para evitar duplo clique
+  const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente || '').trim();
+  const tel  = ((telEl  ? telEl.value  : '') || _telCliente  || '').trim();
+  const end  = ((endEl  ? endEl.value  : '') || _enderecoCliente || '').trim();
+  // Validação de campos
+  if (!nome || nome.length < 3) { showToast('⚠️ Preencha seu nome completo (mínimo 3 caracteres).', 'alerta'); return; }
+  if (!tel  || tel.length  < 8) { showToast('⚠️ Preencha seu WhatsApp com DDD.', 'alerta'); return; }
+  if (!end  || end.length  < 5) { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
+  if (carrinho.length === 0)    { showToast('⚠️ Carrinho vazio! Adicione produtos.', 'alerta'); return; }
+  // === LOADING STATE: bloquear duplo clique e mostrar progresso ===
   const btnFin = document.getElementById('btn-finalizar');
+  const textoBtn = document.getElementById('texto-btn-finalizar');
+  const barra = document.getElementById('barra-btn-finalizar');
   if (btnFin) { btnFin.disabled = true; btnFin.textContent = '⏳'; }
-  const barraTxt = document.querySelector('#etapa-dados .barra-texto');
-  if (barraTxt) barraTxt.textContent = '⏳ Gerando pedido...';
-
+  if (textoBtn) textoBtn.textContent = '⏳ Gerando número do pedido...';
+  if (barra) barra.style.background = 'linear-gradient(135deg, #E65100, #FF6D00)';
   // Data/hora atual
   const agora = new Date();
   const dd   = String(agora.getDate()).padStart(2, '0');
@@ -733,36 +760,47 @@ function finalizarPedido() {
   const hh   = String(agora.getHours()).padStart(2, '0');
   const min  = String(agora.getMinutes()).padStart(2, '0');
   const dataFormatada = `${dd}/${mm}/${aaaa} ${hh}:${min}`;
-
+  // Função de reset do botão em caso de erro
+  function _resetBtnFinalizar() {
+    if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
+    if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
+    if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
+  }
   // ============================================================
-  // SISTEMA PROFISSIONAL DE NUMERAÇÃO DE PEDIDOS
-  // Contador centralizado no servidor — número único e sequencial
-  // Nunca se repete, independente do dispositivo ou navegador
+  // SISTEMA DE NUMERAÇÃO DE PEDIDOS
+  // Contador centralizado no servidor (CounterAPI)
+  // Fallback automático para contador local se API indisponível
   // ============================================================
-  // Timeout de 5 segundos para não travar o botão
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up', { signal: controller.signal })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then(data => {
       clearTimeout(timeoutId);
-      const seq = data.count || 1;
+      const seq = (data && data.count) ? data.count : 1;
       const seqStr = String(seq).padStart(4, '0');
       const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
-      _concluirPedido(nome, tel, end, numPedido, dataFormatada);
+      _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
     })
     .catch(() => {
       clearTimeout(timeoutId);
-      // Fallback: contador local se o servidor estiver indisponível ou demorar
-      const seqLocal = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
-      localStorage.setItem('itap_seq_pedido', seqLocal.toString());
-      const seqStr = 'L' + String(seqLocal).padStart(3, '0');
-      const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
-      _concluirPedido(nome, tel, end, numPedido, dataFormatada);
+      // Fallback robusto: contador local com prefixo 'L'
+      try {
+        const seqLocal = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
+        localStorage.setItem('itap_seq_pedido', seqLocal.toString());
+        const seqStr = 'L' + String(seqLocal).padStart(3, '0');
+        const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
+        _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
+      } catch(e) {
+        _resetBtnFinalizar();
+        showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
+      }
     });
 }
-
-function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
+function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   try {
   let total = 0;
   let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
@@ -830,11 +868,16 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada) {
   }
   mostrarEtapa('confirmacao');
   } catch(e) {
-    console.error('Erro ao concluir pedido:', e);
-    const btnFin = document.getElementById('btn-finalizar');
-    if (btnFin) { btnFin.disabled = false; btnFin.textContent = '▶'; }
-    const barraTxt2 = document.querySelector('#etapa-dados .barra-texto');
-    if (barraTxt2) barraTxt2.textContent = '📦 Confirmar e Enviar Pedido';
+    console.error('[ITAP] Erro ao concluir pedido:', e);
+    if (typeof _resetBtn === 'function') _resetBtn();
+    else {
+      const btnFin = document.getElementById('btn-finalizar');
+      if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
+      const textoBtn = document.getElementById('texto-btn-finalizar');
+      if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
+      const barra = document.getElementById('barra-btn-finalizar');
+      if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
+    }
     showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
   }
 }
