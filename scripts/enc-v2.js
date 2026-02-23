@@ -3,6 +3,57 @@
 // Lógica completa do fluxo de encomendas
 // ============================================================
 
+// ── SINCRONIZAÇÃO DE PREÇOS DA NUVEM ──
+const GIST_ID_PRECO = '92bd9d1997c2fdd225ad3115c7028445';
+const GIST_RAW_PRECO = 'https://gist.githubusercontent.com/missias123/' + GIST_ID_PRECO + '/raw/itap-produtos.json';
+
+async function carregarPrecosNuvem() {
+  try {
+    const resp = await fetch(GIST_RAW_PRECO + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error('Gist indisponível');
+    const dados = await resp.json();
+    if (dados.picoles) {
+      Object.entries(dados.picoles).forEach(([key, p]) => {
+        if (produtos.picoles[key]) {
+          produtos.picoles[key].preco_varejo = p.preco_varejo;
+          produtos.picoles[key].preco_atacado = p.preco_atacado;
+          if (p.estoque !== undefined) produtos.picoles[key].estoque = p.estoque;
+        }
+      });
+    }
+    if (dados.sorvetes_precos) produtos.sorvetes.precos = dados.sorvetes_precos;
+    if (dados.milkshake) produtos.milkshake = dados.milkshake;
+    if (dados.tacas) produtos.tacas = dados.tacas;
+    if (dados.acai) produtos.acai = dados.acai;
+    if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
+    if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
+    if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
+    localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
+    if (dados.caixas_enc && dados.caixas_enc.length > 0)
+      localStorage.setItem('itap_caixas_enc', JSON.stringify(dados.caixas_enc));
+    if (dados.tortas_enc && dados.tortas_enc.length > 0)
+      localStorage.setItem('itap_tortas_enc', JSON.stringify(dados.tortas_enc));
+    console.log('[Itap] Preços carregados da nuvem ✅');
+    return true;
+  } catch(e) {
+    const cache = localStorage.getItem('itap_produtos_nuvem');
+    if (cache) {
+      try {
+        const dados = JSON.parse(cache);
+        if (dados.picoles) {
+          Object.entries(dados.picoles).forEach(([key, p]) => {
+            if (produtos.picoles[key]) {
+              produtos.picoles[key].preco_varejo = p.preco_varejo;
+              produtos.picoles[key].preco_atacado = p.preco_atacado;
+            }
+          });
+        }
+      } catch(e2) {}
+    }
+    return false;
+  }
+}
+
 // Variáveis globais
 var carrinho = [];
 var produtoAtual = null;
@@ -158,6 +209,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Carregar preços da nuvem e re-renderizar
+  carregarPrecosNuvem().then(() => {
+    // Re-inicializar PRODUTOS com preços atualizados
+    PRODUTOS.caixas = getCaixasEncomenda();
+    PRODUTOS.tortas = getTortasEncomenda();
+    PRODUTOS.picoles = Object.entries(produtos.picoles).map(([key, p]) => ({
+      id: 'pic_'+key,
+      nome: p.nome,
+      precoVarejo: p.preco_varejo,
+      precoAtacado: p.preco_atacado,
+      estoque: p.estoque,
+      sabores: p.sabores
+    }));
+    renderizarTudo();
+    atualizarBotaoCarrinho();
+  });
   renderizarTudo();
   atualizarBotaoCarrinho();
   // Abrir seção via hash (ex: encomendas.html#caixas)
