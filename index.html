@@ -220,10 +220,10 @@ img{max-width:100%;display:block}
 .acai-desc{font-size:12px;color:#7B2D8B;font-weight:700;margin-bottom:8px}
 
 /* PICOLÉ ITEM */
-.picole-item{background:linear-gradient(135deg,#FFFDF9,#FFF3E0);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.12)}
-.picole-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.picole-nome{font-size:14px;font-weight:700}
-.picole-preco{font-size:16px;font-weight:900;color:#E8000D}
+.picolé-item{background:linear-gradient(135deg,#FFFDF9,#FFF3E0);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.12)}
+.picolé-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.picolé-nome{font-size:14px;font-weight:700}
+.picolé-preco{font-size:16px;font-weight:900;color:#E8000D}
 
 /* MODAL BOTTOM SHEET */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:flex-end;justify-content:center}
@@ -297,12 +297,12 @@ img{max-width:100%;display:block}
 .enc-card-preco-duo{font-size:11px;color:#1565C0;font-weight:700;line-height:1.5}
 .enc-cta{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border-radius:12px;padding:14px 20px;font-size:15px;font-weight:800;text-decoration:none;margin-top:4px;box-shadow:0 4px 16px rgba(21,101,192,.4);transition:transform .15s}
 .enc-cta:hover{transform:translateY(-2px)}
-.enc-picole-item{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 0 0 2px #1565C0,0 4px 12px rgba(21,101,192,.12);cursor:pointer;text-decoration:none;display:block;transition:transform .15s}
-.enc-picole-item:hover{transform:translateY(-2px)}
-.enc-picole-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.enc-picole-nome{font-size:14px;font-weight:800;color:#0D47A1}
-.enc-picole-precos{font-size:12px;color:#1565C0;font-weight:700;line-height:1.6}
-.enc-picole-sabores{font-size:11px;color:#7B2D8B;font-weight:700;margin-top:4px}
+.enc-picolé-item{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 0 0 2px #1565C0,0 4px 12px rgba(21,101,192,.12);cursor:pointer;text-decoration:none;display:block;transition:transform .15s}
+.enc-picolé-item:hover{transform:translateY(-2px)}
+.enc-picolé-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.enc-picolé-nome{font-size:14px;font-weight:800;color:#0D47A1}
+.enc-picolé-precos{font-size:12px;color:#1565C0;font-weight:700;line-height:1.6}
+.enc-picolé-sabores{font-size:11px;color:#7B2D8B;font-weight:700;margin-top:4px}
 
 /* GATILHO FLUTUANTE */
 .gatilho-flutuante{position:fixed;bottom:90px;right:10px;background:transparent;border:none;border-radius:50%;width:58px;height:58px;padding:0;z-index:150;cursor:pointer;display:none;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;animation:bounce-gatilho 2s ease-in-out infinite;filter:drop-shadow(0 4px 12px rgba(123,45,139,.7))}
@@ -783,10 +783,10 @@ img{max-width:100%;display:block}
 </div>
 
 <!-- MODAL SABORES PICOLÉ -->
-<div class="modal-overlay" id="modal-picole">
+<div class="modal-overlay" id="modal-picolé">
   <div class="modal-box">
     <div class="modal-handle"></div>
-    <button type="button" class="modal-close" onclick="fecharModal('modal-picole')">✕</button>
+    <button type="button" class="modal-close" onclick="fecharModal('modal-picolé')">✕</button>
     <div class="modal-title" id="mp-titulo">Sabores do Picolé</div>
     <div class="modal-sub" id="mp-sub"></div>
     <div class="chips" id="mp-chips"></div>
@@ -949,9 +949,9 @@ function renderPicolés(){
   const b=document.getElementById('picoles-body');b.innerHTML='';
   if(produtos&&produtos.picoles){
     Object.entries(produtos.picoles).forEach(([key,p])=>{
-      const d=document.createElement('div');d.className='picole-item';
+      const d=document.createElement('div');d.className='picolé-item';
       const icon=iconesPicolé[key]||'🍭';
-      d.innerHTML=`<div class="picole-row"><span class="picole-nome">${icon} ${p.nome}</span><span class="picole-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicolé('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
+      d.innerHTML=`<div class="picolé-row"><span class="picolé-nome">${icon} ${p.nome}</span><span class="picolé-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicolé('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
       b.appendChild(d);
     });
   }
@@ -1051,7 +1051,7 @@ function abrirPicolé(key,nome){
   const chips=document.getElementById('mp-chips');chips.innerHTML='';
   const sabs=produtos&&produtos.picoles&&produtos.picoles[key]?produtos.picoles[key].sabores:[];
   sabs.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  abrirModal('modal-picole');
+  abrirModal('modal-picolé');
 }
 
 // ── ABRIR COMPLEMENTOS AÇAÍ ── (lê do products.js)
@@ -1157,7 +1157,7 @@ const RESPOSTAS={
   'açaí':()=>`Açaí artesanal em ${Object.entries(produtos.acai.copos).map(([t,p])=>`${t} (R$ ${p.toFixed(0)})`).join(', ')}. Personalize com frutas, cremes e chocolates! 🫐`,
   'acai':()=>`Açaí artesanal em ${Object.entries(produtos.acai.copos).map(([t,p])=>`${t} (R$ ${p.toFixed(0)})`).join(', ')}. Personalize com frutas, cremes e chocolates! 🫐`,
   'picolé':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
-  'picole':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
+  'picolé':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
   'picolés':()=>`${Object.values(produtos.picoles).map(p=>`${p.nome} (R$ ${p.preco_varejo.toFixed(2).replace('.',',')})`).join(' · ')}. Atacado via encomenda! 🍭`,
   'delivery':'Não fazemos delivery. Retirada somente na loja: R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Cajuru/SP. 🏪',
   'entrega':'Para encomendas, prazo de 3 dias úteis após pagamento. Retirada na loja. 📦',
