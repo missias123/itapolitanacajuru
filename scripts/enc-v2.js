@@ -71,20 +71,20 @@ const PRODUTOS = {
 
 // ---- INIT ----
 document.addEventListener('DOMContentLoaded', () => {
-  // Fechar modal-carrinho ao clicar no overlay (fora do modal-box)
+  // Modal carrinho: delegação de eventos unificada
   const modalCarrinho = document.getElementById('modal-carrinho');
   if (modalCarrinho) {
     modalCarrinho.addEventListener('click', function(e) {
+      // Botão Finalizar Pedido
+      const btnFinalizar = e.target.closest('#btn-ir-dados');
+      if (btnFinalizar && !btnFinalizar.disabled) {
+        e.stopPropagation();
+        e.preventDefault();
+        irParaDados();
+        return;
+      }
+      // Fechar apenas se clicar diretamente no overlay (fora do modal-box)
       if (e.target === modalCarrinho) fecharCarrinho();
-    });
-  }
-  // Botão Finalizar Pedido - event listener dedicado na barra sticky
-  const btnIrDados = document.getElementById('btn-ir-dados');
-  if (btnIrDados) {
-    btnIrDados.addEventListener('click', function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      irParaDados();
     });
   }
   renderizarTudo();
