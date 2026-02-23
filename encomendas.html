@@ -1241,10 +1241,17 @@
       </div>
       <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
       <div style="padding:16px 0 24px;display:flex;flex-direction:column;gap:10px;">
+        <!-- BOTÃO PRINCIPAL: Avançar para preencher dados -->
         <div class="barra-acao barra-verde">
-          <button type="button" class="btn-acao-redondo btn-cinza-claro" id="btn-continuar-comprando" title="Continuar Comprando">✕</button>
-          <span class="barra-texto">✅ Quero Finalizar o Pedido</span>
-          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Finalizar Pedido">▶</button>
+          <span style="width:44px;"></span>
+          <span class="barra-texto">✅ Preencher Dados e Confirmar</span>
+          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Preencher Dados e Confirmar">▶</button>
+        </div>
+        <!-- BOTÃO SECUNDÁRIO: Continuar adicionando produtos -->
+        <div class="barra-acao barra-cinza-claro">
+          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-continuar-comprando" title="Continuar Comprando">✕</button>
+          <span class="barra-texto" style="color:#333">← Continuar Adicionando Produtos</span>
+          <span style="width:44px;"></span>
         </div>
       </div>
     </div>
@@ -1273,14 +1280,25 @@
         <input type="text" id="cliente-endereco" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" autocomplete="street-address" oninput="_enderecoCliente=this.value; verificarFormulario()">
       </div>
       <div class="botoes-etapa-dados">
-        <div class="barra-acao barra-verde">
-          <button type="button" class="btn-acao-redondo btn-cinza-claro" id="btn-voltar-etapa" title="Voltar ao Carrinho">◀</button>
-          <span class="barra-texto">📲 Confirmar e Enviar Pedido</span>
-          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-finalizar" title="Confirmar e Enviar" disabled>▶</button>
+        <!-- BOTÃO PRINCIPAL: Gerar pedido e enviar -->
+        <div class="barra-acao barra-verde" id="barra-btn-finalizar">
+          <span style="width:44px;"></span>
+          <span class="barra-texto" id="texto-btn-finalizar">📲 Gerar Pedido e Enviar via WhatsApp</span>
+          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-finalizar" title="Gerar Pedido" disabled style="opacity:0.4;">✓</button>
         </div>
+        <!-- DICA: campos obrigatórios -->
+        <div id="campos-obrigatorios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
+        <!-- BOTÃO VOLTAR: Revisar carrinho -->
+        <div class="barra-acao barra-azul">
+          <button type="button" class="btn-acao-redondo btn-cinza-claro" id="btn-voltar-etapa" title="Revisar Carrinho">◀</button>
+          <span class="barra-texto">🛒 Revisar Carrinho</span>
+          <span style="width:44px;"></span>
+        </div>
+        <!-- BOTÃO CANCELAR: Fechar modal -->
         <div class="barra-acao barra-cinza-claro">
-          <span class="barra-texto" style="color:#333">← Voltar às Encomendas</span>
-          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-sair-formulario" title="Voltar às Encomendas">◀</button>
+          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-sair-formulario" title="Cancelar">✕</button>
+          <span class="barra-texto" style="color:#555">Cancelar e Voltar às Encomendas</span>
+          <span style="width:44px;"></span>
         </div>
       </div>
     </div>
@@ -1295,17 +1313,25 @@
         <p style="font-size:0.88rem;color:#6A0DAD;font-weight:700;margin-bottom:20px;">
           Clique abaixo para enviar seu pedido via WhatsApp. Nossa equipe entrará em contato para confirmar o pagamento.
         </p>
-        <a href="#" id="link-whatsapp-final" target="_blank" rel="noopener" style="text-decoration:none;display:block;">
-        <div class="barra-acao barra-wpp" style="cursor:pointer;">
-          <span class="barra-texto">📲 Enviar Pedido via WhatsApp</span>
-          <span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final">▶</span>
-        </div>
+        <!-- BOTÃO PRINCIPAL: Enviar via WhatsApp -->
+        <a href="#" id="link-whatsapp-final" target="_blank" rel="noopener" style="text-decoration:none;display:block;margin-bottom:10px;">
+          <div class="barra-acao barra-wpp" style="cursor:pointer;">
+            <span style="font-size:1.4rem;">📲</span>
+            <span class="barra-texto" style="font-size:1rem;font-weight:900;letter-spacing:0.5px;">ENVIAR PEDIDO VIA WHATSAPP</span>
+            <span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final" style="font-size:1.3rem;">▶</span>
+          </div>
         </a>
-
-
-        <div class="barra-acao barra-cinza-claro" style="margin-top:10px;">
-          <span class="barra-texto" style="color:#333">← Desistir e Voltar às Encomendas</span>
-          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-voltar-cardapio" title="Desistir e Voltar">◀</button>
+        <!-- BOTÃO SECUNDÁRIO: Fazer novo pedido -->
+        <div class="barra-acao barra-azul" style="cursor:pointer;" onclick="novoPedido()">
+          <span style="font-size:1.2rem;">🛒</span>
+          <span class="barra-texto">Fazer Novo Pedido</span>
+          <button type="button" class="btn-acao-redondo btn-azul" title="Novo Pedido" style="background:linear-gradient(135deg,#0D47A1,#1565C0);font-size:1.3rem;">+</button>
+        </div>
+        <!-- BOTÃO TERCIÁRIO: Voltar sem enviar -->
+        <div class="barra-acao barra-cinza-claro" style="margin-top:6px;">
+          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-voltar-cardapio" title="Voltar">◀</button>
+          <span class="barra-texto" style="color:#666;font-size:0.85rem;">Voltar às Encomendas sem Enviar</span>
+          <span style="width:44px;"></span>
         </div>
       </div>
     </div>
