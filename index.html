@@ -1341,19 +1341,68 @@ setInterval(() => {
   if (s) s.textContent = STRIPS[stripIdx];
 }, 5000);
 
+// ── SINCRONIZAÇÃO DE PREÇOS DA NUVEM ──
+const GIST_ID_PRECO_CARD = '92bd9d1997c2fdd225ad3115c7028445';
+const GIST_RAW_PRECO_CARD = 'https://gist.githubusercontent.com/missias123/' + GIST_ID_PRECO_CARD + '/raw/itap-produtos.json';
+async function carregarPrecosNuvemCardapio() {
+  try {
+    const resp = await fetch(GIST_RAW_PRECO_CARD + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error('Gist indisponível');
+    const dados = await resp.json();
+    if (dados.picoles) {
+      Object.entries(dados.picoles).forEach(([key, p]) => {
+        if (produtos.picoles && produtos.picoles[key]) {
+          produtos.picoles[key].preco_varejo = p.preco_varejo;
+          produtos.picoles[key].preco_atacado = p.preco_atacado;
+        }
+      });
+    }
+    if (dados.sorvetes_precos) produtos.sorvetes.precos = dados.sorvetes_precos;
+    if (dados.milkshake) produtos.milkshake = dados.milkshake;
+    if (dados.tacas) produtos.tacas = dados.tacas;
+    if (dados.acai) produtos.acai = dados.acai;
+    if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
+    if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
+    if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
+    localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
+    console.log('[Itap Cardápio] Preços carregados da nuvem ✅');
+    return true;
+  } catch(e) {
+    const cache = localStorage.getItem('itap_produtos_nuvem');
+    if (cache) {
+      try {
+        const dados = JSON.parse(cache);
+        if (dados.picoles) Object.entries(dados.picoles).forEach(([key, p]) => { if (produtos.picoles && produtos.picoles[key]) { produtos.picoles[key].preco_varejo = p.preco_varejo; } });
+        if (dados.sorvetes_precos) produtos.sorvetes.precos = dados.sorvetes_precos;
+        if (dados.milkshake) produtos.milkshake = dados.milkshake;
+        if (dados.tacas) produtos.tacas = dados.tacas;
+        if (dados.acai) produtos.acai = dados.acai;
+        if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
+        if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
+        if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
+      } catch(e2) {}
+    }
+    return false;
+  }
+}
+function renderTudo() {
+  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicolés();renderIso();renderSobremesas();
+  renderComplementosCardapio();
+  const tortaFotoArea=document.getElementById('torta-foto-area');
+  if(tortaFotoArea)tortaFotoArea.innerHTML=imgCard('sobremesa_Torta_de_Sorvete','🎂');
+  const tp=document.getElementById('torta-preco');
+  if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
+}
 // ── INIT ──
 document.addEventListener('DOMContentLoaded',()=>{
   carregarBanner();
   carregarBarraPromo();
-  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAcaiPromo();renderAcai();renderPicolés();renderIso();renderSobremesas();
-  renderComplementosCardapio();
-  // Todos os accordions fechados por padrão
-  // Foto da torta
-  const tortaFotoArea=document.getElementById('torta-foto-area');
-  if(tortaFotoArea)tortaFotoArea.innerHTML=imgCard('sobremesa_Torta_de_Sorvete','🎂');
-  // Atualizar preço da torta do products.js
-  const tp=document.getElementById('torta-preco');
-  if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
+  // Carregar preços da nuvem primeiro, depois renderizar
+  carregarPrecosNuvemCardapio().then(() => {
+    renderTudo();
+  }).catch(() => {
+    renderTudo();
+  });
   // Corrigir chatbot: resolver funções
   Object.keys(respostas).forEach(k=>{if(typeof respostas[k]==='function')respostas[k]=respostas[k]();});
 });
