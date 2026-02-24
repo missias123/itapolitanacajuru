@@ -87,6 +87,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <script>
 const ADMIN_PASS = "itapolitana2007";
+const ADMIN_SOS = "sos2007";
 
 // ── LOGIN ──
 function toggleSenha(){
@@ -101,6 +102,23 @@ function checkLogin(){
     document.getElementById('login-section').style.display='none';
     document.getElementById('admin-panel').style.display='block';
     iniciarAdmin();
+  } else if(v === ADMIN_SOS){
+    document.getElementById('login-section').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    iniciarAdmin();
+    setTimeout(()=>{
+      const d=document.createElement('div');
+      d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;font-size:13px;font-weight:800;text-align:center';
+      d.innerHTML='🆘 Modo SOS — Verificando e corrigindo problemas...';
+      document.body.prepend(d);
+      const chaves=['itap_pedidos','itap_caixas_enc','itap_tortas_enc','itap_acrescimos'];
+      const corrompidas=[];
+      chaves.forEach(k=>{try{const v=localStorage.getItem(k);if(v)JSON.parse(v);}catch(e){localStorage.removeItem(k);corrompidas.push(k);}});
+      setTimeout(()=>{
+        d.style.background=corrompidas.length?'#D97706':'#16A34A';
+        d.innerHTML=corrompidas.length?'⚠️ SOS: Cache corrompido limpo ('+corrompidas.join(', ')+') <button onclick="location.reload()" style="margin-left:10px;background:#fff;color:#D97706;border:none;border-radius:5px;padding:3px 10px;font-weight:800;cursor:pointer">Recarregar</button>':'✅ SOS: Tudo funcionando! <button onclick="this.parentElement.remove()" style="margin-left:10px;background:#fff;color:#16A34A;border:none;border-radius:5px;padding:3px 10px;font-weight:800;cursor:pointer">Fechar</button>';
+      },1500);
+    },500);
   } else {
     document.getElementById('erro-msg').style.display='block';
   }
