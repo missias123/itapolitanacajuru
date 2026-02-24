@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminPanel = document.getElementById("admin-panel");
     const productManagement = document.getElementById("product-management");
 
-    const ADMIN_PASSWORD = "itapolitana2007@";
+    const ADMIN_PASSWORD = "itapolitana2007";
 
     loginBtn.addEventListener("click", () => {
         if (passwordInput.value === ADMIN_PASSWORD) {
