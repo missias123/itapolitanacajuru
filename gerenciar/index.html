@@ -217,7 +217,7 @@ function onBannerChange(input) {
       let dadosAtuais = {};
       try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
       dadosAtuais.bannerImg = imgBase64;
-      const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-691617.manus.computer/update-promo', {
+      const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {
         method: 'POST',
         headers: {'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},
         body: JSON.stringify(dadosAtuais)
@@ -241,7 +241,7 @@ function removerBanner() {
       let d = {};
       try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) d = await r.json(); } catch(e) {}
       delete d.bannerImg;
-      await fetch('https://5050-iws6e208zbbi8wf5hdl9t-691617.manus.computer/update-promo', {method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},body:JSON.stringify(d)});
+      await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},body:JSON.stringify(d)});
     } catch(e) {}
   })();
   // Limpa cache local também
