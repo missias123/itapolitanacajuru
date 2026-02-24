@@ -344,7 +344,7 @@ function checkLogin() {
       // 3. Acionar redeploy do GitHub Pages via Gist config
       let redeployOk = false;
       try {
-        const cfgResp = await fetch('https://gist.githubusercontent.com/missias123/a84c203501dfd5e7a3f21bd651dc0ac0/raw/sos-config.json?t=' + Date.now());
+        const cfgResp = await fetch('https://gist.githubusercontent.com/missias123/832853392f412ef307695de249ea969c/raw/sos-config.json?t=' + Date.now());
         const cfg = await cfgResp.json();
         // Pegar SHA atual
         const refResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/refs/heads/' + cfg.branch, {headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json'}});
@@ -883,7 +883,42 @@ async function _enviarParaNuvem() {
   }
   setTimeout(() => msg.textContent = '', 4000);
 }
-const PROXY_PROMO_URL = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo';
+const GITHUB_TOKEN = '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';
+const GITHUB_REPO = 'missias123/itapolitanacajuru';
+// Função para publicar dados diretamente no Gist (sem proxy)
+async function publicarNoGist(gistId, nomeArquivo, dados) {
+  const resp = await fetch('https://api.github.com/gists/' + gistId, {
+    method: 'PATCH',
+    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ files: { [nomeArquivo]: { content: JSON.stringify(dados, null, 2) } } })
+  });
+  if (!resp.ok) { const err = await resp.json(); throw new Error('GitHub error: ' + (err.message || resp.status)); }
+  return await resp.json();
+}
+// Função para fazer upload de foto diretamente no repositório GitHub
+async function uploadFotoGitHub(base64DataUrl) {
+  const matches = base64DataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
+  if (!matches) throw new Error('Formato de imagem inválido');
+  const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+  const conteudo = matches[2];
+  const nomeArquivo = 'fotos/promo-' + Date.now() + '.' + ext;
+  // Verificar se arquivo já existe
+  let sha = undefined;
+  try {
+    const check = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + nomeArquivo, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN } });
+    if (check.ok) { const d = await check.json(); sha = d.sha; }
+  } catch(e) {}
+  const body = { message: 'foto: upload promo ' + new Date().toISOString(), content: conteudo };
+  if (sha) body.sha = sha;
+  const resp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + nomeArquivo, {
+    method: 'PUT',
+    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!resp.ok) { const err = await resp.json(); throw new Error('GitHub upload error: ' + (err.message || resp.status) + ' ' + JSON.stringify(err)); }
+  const result = await resp.json();
+  return 'https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/' + nomeArquivo + '?t=' + Date.now();
+}
 const GIST_PROMO_ID = 'f1b0cb83ecadc3c2e00da6f2d7aa3c42';
 const GIST_PROMO_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_PROMO_ID + '/raw/itap-promo.json';
 
@@ -914,24 +949,15 @@ function onPromoFotoChange(input) {
     const img = document.getElementById('promo-foto-img');
     if (preview && img) { img.src = base64; preview.style.display = 'block'; }
     try {
-      const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/upload-foto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
-        body: JSON.stringify({ imagem: base64 })
-      });
-      const result = await resp.json();
-      if (result.status === 'ok' && result.url) {
-        const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(ex){return {};}})();
-        d.fotoUrl = result.url;
-        localStorage.setItem('itap_promo_local', JSON.stringify(d));
-        if (img) img.src = result.url;
-        if (fotoStatus) fotoStatus.textContent = '✅ Foto enviada! Clique em Postar para publicar.';
-        if (promoStatus) { promoStatus.textContent = '📷 Foto pronta! Clique em Postar.'; setTimeout(() => promoStatus.textContent = '', 5000); }
-      } else {
-        if (fotoStatus) fotoStatus.textContent = '❌ Erro no upload: ' + (result.error || 'tente novamente');
-      }
+      const url = await uploadFotoGitHub(base64);
+      const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(ex){return {};}})();
+      d.fotoUrl = url;
+      localStorage.setItem('itap_promo_local', JSON.stringify(d));
+      if (img) img.src = url;
+      if (fotoStatus) fotoStatus.textContent = '✅ Foto enviada! Clique em Postar para publicar.';
+      if (promoStatus) { promoStatus.textContent = '📷 Foto pronta! Clique em Postar.'; setTimeout(() => promoStatus.textContent = '', 5000); }
     } catch(err) {
-      if (fotoStatus) fotoStatus.textContent = '❌ Sem conexão com servidor.';
+      if (fotoStatus) fotoStatus.textContent = '❌ Erro no upload: ' + err.message;
     }
   };
   reader.readAsDataURL(file);
@@ -949,23 +975,13 @@ async function postarPromocao() {
   delete d.imagem;
   delete d.bannerImg;
   try {
-    const resp = await fetch(PROXY_PROMO_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
-      body: JSON.stringify(d)
-    });
-    const result = await resp.json();
-    if (result.status === 'ok') {
-      status.textContent = '✅ Promoção publicada no site!';
-      btn.textContent = '✅ Publicado!';
-      setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
-    } else {
-      status.textContent = '⚠️ Erro: ' + (result.error || 'tente novamente');
-      btn.textContent = '📢 Postar Promoção no Site';
-      btn.disabled = false;
-    }
+    await publicarNoGist(GIST_PROMO_ID, 'itap-promo.json', d);
+    limparTodosCaches();
+    status.textContent = '✅ Promoção publicada no site!';
+    btn.textContent = '✅ Publicado!';
+    setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
   } catch(e) {
-    status.textContent = '⚠️ Sem conexão com o servidor.';
+    status.textContent = '⚠️ Erro: ' + e.message;
     btn.textContent = '📢 Postar Promoção no Site';
     btn.disabled = false;
   }
@@ -975,17 +991,12 @@ async function desativarPromocao() {
   const status = document.getElementById('promo-status');
   status.textContent = '⏳ Desativando...';
   try {
-    const resp = await fetch(PROXY_PROMO_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
-      body: JSON.stringify({ ativo: false })
-    });
-    if (resp.ok) {
-      status.textContent = '🔕 Promoção desativada no site!';
-      setTimeout(() => status.textContent = '', 4000);
-    }
+    await publicarNoGist(GIST_PROMO_ID, 'itap-promo.json', { ativo: false });
+    limparTodosCaches();
+    status.textContent = '🔕 Promoção desativada no site!';
+    setTimeout(() => status.textContent = '', 4000);
   } catch(e) {
-    status.textContent = '⚠️ Erro ao desativar.';
+    status.textContent = '⚠️ Erro ao desativar: ' + e.message;
   }
 }
 // ── LIMPEZA COMPLETA DE CACHE ──────────────────────────────────────────────
@@ -1155,13 +1166,13 @@ async function executarDiagnostico() {
     }
   }
 
-  // 3. Verificar proxy
+  // 3. Verificar conexão com GitHub Gist
   try {
-    const r = await fetch(PROXY_PROMO_URL.replace('/update-promo', '/health'), { cache: 'no-store' });
-    if (r.ok) itens.push({ tipo: 'ok', msg: '✅ Servidor proxy: online' });
-    else itens.push({ tipo: 'aviso', msg: '⚠️ Servidor proxy: offline (Gist ainda funciona)' });
+    const r = await fetch('https://api.github.com/gists/' + GIST_PROMO_ID, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN }, cache: 'no-store' });
+    if (r.ok) itens.push({ tipo: 'ok', msg: '✅ GitHub Gist: conectado e funcionando' });
+    else itens.push({ tipo: 'erro', msg: '❌ GitHub Gist: erro ' + r.status + ' — token pode estar inválido' });
   } catch(e) {
-    itens.push({ tipo: 'aviso', msg: '⚠️ Servidor proxy: offline (Gist ainda funciona)' });
+    itens.push({ tipo: 'aviso', msg: '⚠️ GitHub Gist: sem conexão com internet' });
   }
 
   // Renderizar resultados
@@ -1183,11 +1194,7 @@ async function autoCorrigir() {
       const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
       d.fotoUrl = ''; // Remove foto corrompida
       localStorage.setItem('itap_promo_local', JSON.stringify(d));
-      await fetch(PROXY_PROMO_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
-        body: JSON.stringify({ ...d, fotoUrl: '' })
-      });
+      await publicarNoGist(GIST_PROMO_ID, 'itap-promo.json', { ...d, fotoUrl: '' });
     } catch(e) {}
   }
 
