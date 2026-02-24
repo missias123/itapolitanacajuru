@@ -267,7 +267,7 @@ function renderAdmin() {
   const promoCard = document.createElement('div');
   promoCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
   const _ps = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-  const _pf = _ps.imagem || '';
+  const _fotoUrl = _ps.fotoUrl || '';
   promoCard.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
       <span style="font-size:26px">🎉</span>
@@ -278,19 +278,16 @@ function renderAdmin() {
     </div>
     <div style="margin-bottom:12px">
       <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px">📷 Foto da Promoção</div>
-      <div id="promo-foto-preview" style="border-radius:10px;overflow:hidden;margin-bottom:8px;${_pf ? '' : 'display:none'}">
-        <img src="${_pf}" style="width:100%;max-height:180px;object-fit:cover;display:block" id="promo-foto-img">
+      <div id="promo-foto-preview" style="border-radius:10px;overflow:hidden;margin-bottom:8px;${_fotoUrl ? '' : 'display:none'}">
+        <img src="${_fotoUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;background:#111" id="promo-foto-img">
+        <div style="text-align:center;padding:5px;background:#111;font-size:11px;color:#10B981;font-weight:700">✅ Foto publicada no site</div>
       </div>
-      <div style="background:#FEF9C3;border:1px solid #FDE68A;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:#92400E;font-weight:700;line-height:1.6">
-        📐 <strong>Tamanho ideal:</strong> 800 × 400 px (paisagem)<br>
-        📱 Exibida no modal de promoção com altura máx. 200 px<br>
-        🌍 Na página /promoção.html: 1200 × 520 px (hero grande)<br>
-        ✅ Formatos: JPG, PNG, WEBP — máx. recomendado: 800 KB
-      </div>
+      <div id="promo-foto-status" style="text-align:center;font-size:12px;font-weight:700;color:#6B7280;margin-bottom:8px"></div>
       <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#FEF3C7;color:#92400E;border:2px dashed #F59E0B;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;box-sizing:border-box">
-        📷 ${_pf ? 'Trocar Foto' : 'Adicionar Foto'}
+        📷 ${_fotoUrl ? 'Trocar Foto da Promoção' : 'Adicionar Foto da Promoção'}
         <input type="file" accept="image/*" style="display:none" onchange="onPromoFotoChange(this)">
       </label>
+      <div style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:4px">JPG/PNG/WEBP · máx 2MB · ideal 800×800px</div>
     </div>
     <div style="margin-bottom:10px">
       <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📝 Título da Promoção</div>
@@ -748,6 +745,7 @@ const GIST_PROMO_ID = 'f1b0cb83ecadc3c2e00da6f2d7aa3c42';
 const GIST_PROMO_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_PROMO_ID + '/raw/itap-promo.json';
 
 function salvarPromoLocal() {
+  const atual = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
   const d = {
     titulo: (document.getElementById('promo-titulo')||{}).value || '',
     descricao: (document.getElementById('promo-desc')||{}).value || '',
@@ -755,7 +753,7 @@ function salvarPromoLocal() {
     link: (document.getElementById('promo-btn-link')||{}).value || 'https://www.instagram.com/sorveteriaitapolitanacajuru',
     dataFim: (document.getElementById('promo-data-fim')||{}).value || '',
     horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
-    imagem: (JSON.parse(localStorage.getItem('itap_promo_local')||'{}')).imagem || ''
+    fotoUrl:   atual.fotoUrl || ''
   };
   localStorage.setItem('itap_promo_local', JSON.stringify(d));
 }
@@ -763,49 +761,63 @@ function salvarPromoLocal() {
 function onPromoFotoChange(input) {
   const file = input.files[0];
   if (!file) return;
+  const fotoStatus = document.getElementById('promo-foto-status');
+  const promoStatus = document.getElementById('promo-status');
+  if (fotoStatus) fotoStatus.textContent = '⏳ Enviando foto para o servidor...';
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     const base64 = e.target.result;
-    const d = JSON.parse(localStorage.getItem('itap_promo_local') || '{}');
-    d.imagem = base64;
-    localStorage.setItem('itap_promo_local', JSON.stringify(d));
     const preview = document.getElementById('promo-foto-preview');
-    if (preview) {
-      preview.style.display = 'block';
-      const img = document.getElementById('promo-foto-img');
-      if (img) img.src = base64;
+    const img = document.getElementById('promo-foto-img');
+    if (preview && img) { img.src = base64; preview.style.display = 'block'; }
+    try {
+      const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/upload-foto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
+        body: JSON.stringify({ imagem: base64 })
+      });
+      const result = await resp.json();
+      if (result.status === 'ok' && result.url) {
+        const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(ex){return {};}})();
+        d.fotoUrl = result.url;
+        localStorage.setItem('itap_promo_local', JSON.stringify(d));
+        if (img) img.src = result.url;
+        if (fotoStatus) fotoStatus.textContent = '✅ Foto enviada! Clique em Postar para publicar.';
+        if (promoStatus) { promoStatus.textContent = '📷 Foto pronta! Clique em Postar.'; setTimeout(() => promoStatus.textContent = '', 5000); }
+      } else {
+        if (fotoStatus) fotoStatus.textContent = '❌ Erro no upload: ' + (result.error || 'tente novamente');
+      }
+    } catch(err) {
+      if (fotoStatus) fotoStatus.textContent = '❌ Sem conexão com servidor.';
     }
-    const status = document.getElementById('promo-status');
-    if (status) { status.textContent = '📷 Foto carregada! Clique em Postar para publicar.'; setTimeout(() => status.textContent = '', 4000); }
   };
   reader.readAsDataURL(file);
 }
 
 async function postarPromocao() {
-  // Limpa TODOS os dados antigos antes de publicar a nova promoção
-  limparTodosCaches();
   salvarPromoLocal();
-  const d = JSON.parse(localStorage.getItem('itap_promo_local') || '{}');
+  const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
   if (!d.titulo) { alert('Preencha pelo menos o título da promoção!'); return; }
   const btn = document.getElementById('btn-postar-promo');
   const status = document.getElementById('promo-status');
   btn.textContent = '⏳ Publicando...';
   btn.disabled = true;
   d.ativo = true;
+  delete d.imagem;
+  delete d.bannerImg;
   try {
     const resp = await fetch(PROXY_PROMO_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
       body: JSON.stringify(d)
     });
-      if (resp.ok) {
-        // Limpa cache novamente após confirmação do servidor
-        limparTodosCaches();
-        status.textContent = '✅ Promoção publicada! Cache limpo automaticamente.';
-        btn.textContent = '✅ Publicado!';
-        setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
+    const result = await resp.json();
+    if (result.status === 'ok') {
+      status.textContent = '✅ Promoção publicada no site!';
+      btn.textContent = '✅ Publicado!';
+      setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
     } else {
-      status.textContent = '⚠️ Erro ao publicar. Tente novamente.';
+      status.textContent = '⚠️ Erro: ' + (result.error || 'tente novamente');
       btn.textContent = '📢 Postar Promoção no Site';
       btn.disabled = false;
     }
