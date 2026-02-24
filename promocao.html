@@ -235,13 +235,11 @@ async function carregarPromo() {
   localStorage.removeItem('itap_promo_cache');
 
   // Busca dados frescos do Gist (fonte oficial), sem cache de browser
+  // NOTA: não usar headers customizados no fetch do Gist (causa CORS preflight)
+  // O timestamp no URL já é suficiente para evitar cache
   try {
     const resp = await fetch(_GIST_PROMO + '?nocache=' + Date.now(), {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache'
-      }
+      cache: 'no-store'
     });
     if (resp.ok) {
       const d = await resp.json();
