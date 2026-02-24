@@ -1216,7 +1216,7 @@ let _dadosPromoCache=null;
 async function _buscarDadosPromo(){
   if(_dadosPromoCache)return _dadosPromoCache;
   try{
-    const resp=await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now());
+    const resp=await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now());
     if(resp.ok){
       _dadosPromoCache=await resp.json();
       localStorage.setItem('itap_promo_cache',JSON.stringify(_dadosPromoCache));
@@ -1248,7 +1248,7 @@ async function abrirPromo(){await carregarPromo();abrirModal('promo-overlay');in
 async function iniciarTimer(){
   let fim;
   try{
-    const resp=await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now());
+    const resp=await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now());
     if(resp.ok){
       const d=await resp.json();
       localStorage.setItem('itap_promo_cache',JSON.stringify(d));
@@ -1419,7 +1419,7 @@ function renderComplementosCardapio() {
 async function carregarBanner(){
   // Tenta carregar banner do Gist (sincronizado pelo admin)
   try{
-    const resp=await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now());
+    const resp=await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now());
     if(resp.ok){
       const d=await resp.json();
       if(d.bannerImg){

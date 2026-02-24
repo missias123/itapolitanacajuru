@@ -280,7 +280,7 @@ function onBannerChange(input) {
     limparTodosCaches();
     try {
       let dadosAtuais = {};
-      try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
+      try { const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
       dadosAtuais.bannerImg = imgBase64;
       const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {
         method: 'POST',
@@ -304,7 +304,7 @@ function removerBanner() {
   (async () => {
     try {
       let d = {};
-      try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) d = await r.json(); } catch(e) {}
+      try { const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now()); if (r.ok) d = await r.json(); } catch(e) {}
       delete d.bannerImg;
       await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},body:JSON.stringify(d)});
     } catch(e) {}
@@ -898,6 +898,31 @@ async function _loadCfg() {
 }
 // Função para publicar dados diretamente no Gist (sem proxy)
 async function publicarNoGist(gistId, nomeArquivo, dados) {
+  // SOLUÇÃO DEFINITIVA: salva em dados/promo.json no repositório (escopo repo)
+  await _loadCfg();
+  const REPO = 'missias123/itapolitanacajuru';
+  const FILE = 'dados/promo.json';
+  // Obter SHA atual
+  let sha = null;
+  try {
+    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
+      headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+    });
+    if (r.ok) { const d = await r.json(); sha = d.sha; }
+  } catch(e) {}
+  // Salvar arquivo
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+  const body = { message: 'Admin: atualizar promo.json', content, branch: 'main' };
+  if (sha) body.sha = sha;
+  const resp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
+    method: 'PUT',
+    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!resp.ok) { const e = await resp.json(); throw new Error(e.message || 'Erro ao salvar'); }
+  return await resp.json();
+}
+async function _publicarNoGist_OLD(gistId, nomeArquivo, dados) {
   const resp = await fetch('https://api.github.com/gists/' + gistId, {
     method: 'PATCH',
     headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
