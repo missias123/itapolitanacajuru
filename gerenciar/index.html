@@ -210,6 +210,8 @@ function onBannerChange(input) {
     if (preview) preview.innerHTML = `<img src="${imgBase64}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
     const status = document.getElementById('banner-status');
     if (status) status.textContent = '⏳ Publicando banner no site...';
+    // Limpa caches antigos antes de publicar novo banner
+    limparTodosCaches();
     try {
       let dadosAtuais = {};
       try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
@@ -717,6 +719,8 @@ function autoSalvar() {
 
 async function _enviarParaNuvem() {
   const msg = document.getElementById('status-msg');
+  // Limpa caches antigos antes de salvar novos dados
+  limparTodosCaches();
   const dados = _coletarDados();
   localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
   msg.textContent = '☁️ Salvando no site...';
@@ -778,6 +782,8 @@ function onPromoFotoChange(input) {
 }
 
 async function postarPromocao() {
+  // Limpa TODOS os dados antigos antes de publicar a nova promoção
+  limparTodosCaches();
   salvarPromoLocal();
   const d = JSON.parse(localStorage.getItem('itap_promo_local') || '{}');
   if (!d.titulo) { alert('Preencha pelo menos o título da promoção!'); return; }
@@ -792,10 +798,12 @@ async function postarPromocao() {
       headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
       body: JSON.stringify(d)
     });
-    if (resp.ok) {
-      status.textContent = '✅ Promoção publicada no site!';
-      btn.textContent = '✅ Publicado!';
-      setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
+      if (resp.ok) {
+        // Limpa cache novamente após confirmação do servidor
+        limparTodosCaches();
+        status.textContent = '✅ Promoção publicada! Cache limpo automaticamente.';
+        btn.textContent = '✅ Publicado!';
+        setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
     } else {
       status.textContent = '⚠️ Erro ao publicar. Tente novamente.';
       btn.textContent = '📢 Postar Promoção no Site';
@@ -825,7 +833,28 @@ async function desativarPromocao() {
     status.textContent = '⚠️ Erro ao desativar.';
   }
 }
+// ── LIMPEZA COMPLETA DE CACHE ──────────────────────────────────────────────
+// Chamada automaticamente sempre que qualquer publicação for feita no admin.
+// Remove TODOS os caches antigos para garantir que o site exiba dados frescos.
+function limparTodosCaches() {
+  const chaves = [
+    'itap_promo_cache',
+    'itap_promo_local',
+    'itap_banner_cache',
+    'itap_banner',
+    'itap_produtos_nuvem',
+    'itap_fotos',
+    'itap_sabores',
+    'itap_caixas_enc',
+    'itap_complementos',
+    'itap_tortas_enc'
+  ];
+  chaves.forEach(k => localStorage.removeItem(k));
+  console.log('[Admin] Caches antigos limpos:', chaves.join(', '));
+}
+
 function salvarTudo() {
+  limparTodosCaches();
   _enviarParaNuvem();
 }
 </script>
