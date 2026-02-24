@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     divSabores.innerHTML += `
                         <div>
                             <span>${sabor}</span>
-                            <button onclick="esgotarSabor(\'${categoria}\', \'${sabor}\', this)">Esgotar</button>
+                            <button onclick="esgotarSabor('${categoria}', '${sabor}', this)">Esgotar</button>
                         </div>
                     `;
                 }
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <h4>${produto.replace(/_/g, ' ')}</h4>
                     <input type="number" value="${produtos[categoria][produto].preco || 0}" placeholder="Preço">
                     <input type="number" value="${produtos[categoria][produto].estoque || 0}" placeholder="Estoque">
-                    <button onclick="salvarProduto(\'${categoria}\', \'${produto}\', this)">Salvar</button><button onclick="esgotarProduto(\'${categoria}\', \'${produto}\', this)">Esgotar</button>
+                    <button onclick="salvarProduto('${categoria}', '${produto}', this)">Salvar</button><button onclick="esgotarProduto('${categoria}', '${produto}', this)">Esgotar</button>
                 `;
                 divCategoria.appendChild(divProduto);
                 }
