@@ -127,8 +127,6 @@ function toggleSenha() {
     btn.textContent = '👁️';
   }
 }
-
-// ── FOTOS: salvas em localStorage por chave única ──
 function getFotos() {
   try { return JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){ return {}; }
 }
@@ -142,8 +140,6 @@ function removerFoto(chave) {
   delete fotos[chave];
   localStorage.setItem('itap_fotos', JSON.stringify(fotos));
 }
-
-// ── BLOCO HTML DE FOTO ──
 function blocoFoto(chave) {
   const fotos = getFotos();
   const temFoto = !!fotos[chave];
@@ -204,8 +200,6 @@ function onRemoverFoto(chave) {
   const acoes = document.getElementById('foto-acoes-' + chave);
   acoes.style.display = 'none';
 }
-
-// ── BANNER DO CARDÁPIO ──
 function onBannerChange(input) {
   const file = input.files[0];
   if (!file) return;
@@ -247,12 +241,9 @@ function removerBanner() {
       await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},body:JSON.stringify(d)});
     } catch(e) {}
   })();
-  // Limpa cache local também
   localStorage.removeItem('itap_banner_cache');
   renderAdmin();
 }
-
-// ── LOGIN ──
 function checkLogin() {
   const p = document.getElementById('admin-password').value;
   if (p === ADMIN_PASS) {
@@ -269,11 +260,8 @@ function criarSecao(id, titulo, conteudo) {
   s.innerHTML = `<div class="cat-header" onclick="toggleCat('${id}')"><h3>${titulo}</h3><span class="cat-arrow">▼</span></div><div class="cat-body">${conteudo}</div>`;
   return s;
 }
-
-// ── RENDER ADMIN ──
 function renderAdmin() {
   const body = document.getElementById('admin-body'); body.innerHTML = '';
-  // ── CARD PROMOÇÃO COMPLETO ──
   const promoCard = document.createElement('div');
   promoCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
   const _ps = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
@@ -337,14 +325,10 @@ function renderAdmin() {
     <div id="promo-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
   `;
   body.appendChild(promoCard);
-
-  // ── CARD ESTOQUE DE INSUMOS ──
   const estoqueCard = document.createElement('div');
   estoqueCard.style.cssText = 'background:linear-gradient(135deg,#1F2937,#374151);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
   estoqueCard.innerHTML = '<div><div style="font-size:15px;font-weight:800">📦 Estoque de Insumos</div><div style="font-size:12px;opacity:.85;margin-top:3px">Controle ingredientes, embalagens e materiais (até 300 itens)</div></div><a href="estoque.html" style="background:#10B981;color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">📦 Abrir Estoque →</a>';
   body.appendChild(estoqueCard);
-
-  // ── CARD BANNER DO SITE ──
   const bannerCard = document.createElement('div');
   bannerCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #6A0DAD;padding:18px 20px;margin-bottom:16px';
   const bannerDados = (()=>{try{return JSON.parse(localStorage.getItem('itap_banner')||'{}');}catch(e){return {};}})();
@@ -375,8 +359,6 @@ function renderAdmin() {
     <div id="banner-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
   `;
   body.appendChild(bannerCard);
-
-  // ── CARD SABORES DE SORVETE ──
   const saboresCard = document.createElement('div');
   saboresCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
   saboresCard.innerHTML = `
@@ -407,8 +389,6 @@ function renderAdmin() {
   body.appendChild(criarSecao('sobremesas', '🎂 Sobremesas', renderSobremesas()));
   body.appendChild(criarSecao('caixas_enc', '📦 Caixas de Sorvete – Encomenda (Estoque)', renderCaixasEnc()));
 }
-
-// ── CAIXAS DE ENCOMENDA (ESGOTÁVEIS) ──
 const CAIXAS_ENC_PADRAO = [
   { id:'cx5l_2s',  nome:'Caixa 5 Litros – 2 Sabores',  preco:100.00, estoque:20, esgotado:false },
   { id:'cx5l_3s',  nome:'Caixa 5 Litros – 3 Sabores',  preco:115.00, estoque:20, esgotado:false },
@@ -455,7 +435,6 @@ function editarCaixaEnc(i, campo, val) {
   saveCaixasEnc(lista);
   const status = document.getElementById('caixas-enc-status');
   if(status){ status.textContent = '✅ '+lista[i].nome+' atualizado!'; setTimeout(()=>status.textContent='',3000); }
-  // Remontar para atualizar cores
   const body = document.getElementById('cat-caixas_enc');
   if(body){ const bd = body.querySelector('.cat-body'); if(bd) bd.innerHTML = renderCaixasEnc(); }
 }
@@ -471,8 +450,6 @@ function toggleEsgotadoCaixa(i) {
     : '✅ "'+lista[i].nome+'" reativado com sucesso!';
   mostrarStatusComps(msg);
 }
-
-// ── SORVETES ──
 function renderSorvetes() {
   const p = produtos.sorvetes;
   const nomes = { casquinha_copo: 'Casquinha/Copo', copo_recheado: 'Copo Recheado', cascão: 'Cascão', cestinha: 'Cestinha' };
@@ -492,8 +469,6 @@ function renderSorvetes() {
   html += '</div>';
   return html;
 }
-
-// ── PICOLÉS ──
 function renderPicolés() {
   let html = '<div class="prod-edit-grid">';
   Object.entries(produtos.picoles).forEach(([key, p]) => {
@@ -514,8 +489,6 @@ function renderPicolés() {
   html += '</div>';
   return html;
 }
-
-// ── AÇAÍ ──
 function renderAcai() {
   let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Tamanhos de Copo</h4><div class="preco-simples-grid">';
   Object.entries(produtos.acai.copos).forEach(([tam, preco]) => {
@@ -541,8 +514,6 @@ function renderAcai() {
   });
   return html;
 }
-
-// ── MILKSHAKE ──
 function renderMilkshake() {
   const m = produtos.milkshake;
   let html = '<div class="preco-simples-grid">';
@@ -570,8 +541,6 @@ function renderMilkshake() {
   html += '</div>';
   return html;
 }
-
-// ── TAÇAS ──
 function renderTacas() {
   let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Taças Tradicionais</h4><div class="preco-simples-grid">';
   Object.entries(produtos.tacas.tradicionais).forEach(([nome, preco]) => {
@@ -594,8 +563,6 @@ function renderTacas() {
   html += '</div>';
   return html;
 }
-
-// ── CAIXAS ──
 function renderCaixas() {
   let html = '<div class="preco-simples-grid">';
   Object.entries(produtos.caixas_viagem).forEach(([nome, preco]) => {
@@ -609,8 +576,6 @@ function renderCaixas() {
   html += '</div>';
   return html;
 }
-
-// ── ISOPORES ──
 function renderIsopores() {
   let html = '<div class="preco-simples-grid">';
   Object.entries(produtos.isopores_viagem).forEach(([nome, preco]) => {
@@ -624,8 +589,6 @@ function renderIsopores() {
   html += '</div>';
   return html;
 }
-
-// ── SOBREMESAS ──
 function renderSobremesas() {
   let html = '<div class="preco-simples-grid">';
   Object.entries(produtos.sobremesas).forEach(([nome, preco]) => {
@@ -639,8 +602,6 @@ function renderSobremesas() {
   html += '</div>';
   return html;
 }
-
-// ── SABORES DE SORVETE ──
 const SABORES_PADRAO = [
   "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
   "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
@@ -657,7 +618,6 @@ function getSaboresAdmin() {
     const salvo = localStorage.getItem('itap_sabores');
     if (salvo) return JSON.parse(salvo);
   } catch(e) {}
-  // Inicializar com sabores padrão
   const lista = SABORES_PADRAO.map(nome => ({ nome, esgotado: false }));
   localStorage.setItem('itap_sabores', JSON.stringify(lista));
   return lista;
@@ -665,7 +625,6 @@ function getSaboresAdmin() {
 
 function salvarSaboresAdmin(lista) {
   localStorage.setItem('itap_sabores', JSON.stringify(lista));
-  // Atualizar também no products.js em memória
   if (produtos && produtos.sorvetes) {
     produtos.sorvetes.sabores = lista.filter(s => !s.esgotado).map(s => s.nome);
   }
@@ -725,8 +684,6 @@ function mostrarStatusSabores(msg) {
   const el = document.getElementById('sabores-status');
   if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 4000); }
 }
-
-// ── SINCRONIZAÇÃO NA NUVEM ──
 const GIST_ID = '92bd9d1997c2fdd225ad3115c7028445';
 const GIST_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_ID + '/raw/itap-produtos.json';
 const PROXY_URL = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-prices';
@@ -761,7 +718,6 @@ function autoSalvar() {
 async function _enviarParaNuvem() {
   const msg = document.getElementById('status-msg');
   const dados = _coletarDados();
-  // Sempre salvar no localStorage como cache local
   localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
   msg.textContent = '☁️ Salvando no site...';
   try {
@@ -783,8 +739,6 @@ async function _enviarParaNuvem() {
   }
   setTimeout(() => msg.textContent = '', 4000);
 }
-
-// ── PROMOÇÃO: salvar local e postar na nuvem ──
 const PROXY_PROMO_URL = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo';
 const GIST_PROMO_ID = 'f1b0cb83ecadc3c2e00da6f2d7aa3c42';
 const GIST_PROMO_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_PROMO_ID + '/raw/itap-promo.json';
@@ -871,8 +825,6 @@ async function desativarPromocao() {
     status.textContent = '⚠️ Erro ao desativar.';
   }
 }
-
-// ── SALVAR (botão manual) ──
 function salvarTudo() {
   _enviarParaNuvem();
 }
