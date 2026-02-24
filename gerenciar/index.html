@@ -181,6 +181,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 <script src="../scripts/products.js"></script>
 <script>
 const ADMIN_PASS = "itapolitana2007";
+const ADMIN_SOS = "itapa2007"; // Senha de emergência — entra e auto-corrige bugs
 function toggleSenha() {
   const inp = document.getElementById('admin-password');
   const btn = document.getElementById('btn-olho');
@@ -317,6 +318,45 @@ function checkLogin() {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
     renderAdmin();
+  } else if (p === ADMIN_SOS) {
+    // Modo SOS: entra e tenta corrigir automaticamente
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderAdmin();
+    setTimeout(() => {
+      const sosDiv = document.createElement('div');
+      sosDiv.id = 'sos-banner';
+      sosDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#EF4444;color:#fff;padding:14px 18px;font-size:14px;font-weight:800;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.4)';
+      sosDiv.innerHTML = '🆘 Modo SOS ativado — Detectando e corrigindo problemas automaticamente...';
+      document.body.prepend(sosDiv);
+      // Auto-correção: limpar caches corrompidos
+      const chavesCorrompidas = [];
+      const chaves = ['itap_promo','itap_promo_cache','itap_promo_local','itap_banner','itap_banner_cache','itap_produtos_nuvem','itap_fotos','itap_sabores','itap_caixas_enc','itap_tortas_enc','itap_complementos','itap_acrescimos','itap_pedidos','itap_seq_pedido','pwa_dispensado'];
+      chaves.forEach(k => {
+        try {
+          const v = localStorage.getItem(k);
+          if (v) { JSON.parse(v); } // testa se é JSON válido
+        } catch(e) {
+          localStorage.removeItem(k);
+          chavesCorrompidas.push(k);
+        }
+      });
+      // Verificar se o script principal carregou
+      const problemas = [];
+      if (typeof renderAdmin !== 'function') problemas.push('Função renderAdmin não carregou');
+      if (typeof salvarPromo !== 'function') problemas.push('Função salvarPromo não carregou');
+      if (chavesCorrompidas.length > 0) problemas.push('Cache corrompido limpo: ' + chavesCorrompidas.join(', '));
+      // Exibir resultado
+      setTimeout(() => {
+        if (problemas.length === 0) {
+          sosDiv.style.background = '#16A34A';
+          sosDiv.innerHTML = '✅ Modo SOS: Nenhum problema encontrado! Tudo funcionando. <button onclick="this.parentElement.remove()" style="margin-left:12px;background:#fff;color:#16A34A;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Fechar</button>';
+        } else {
+          sosDiv.style.background = '#D97706';
+          sosDiv.innerHTML = '⚠️ Modo SOS: Corrigido automaticamente — ' + problemas.join(' | ') + ' <button onclick="location.reload()" style="margin-left:12px;background:#fff;color:#D97706;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Recarregar</button>';
+        }
+      }, 1500);
+    }, 500);
   } else { alert('Senha incorreta!'); }
 }
 function logout() { location.reload(); }
