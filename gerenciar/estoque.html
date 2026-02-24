@@ -205,7 +205,8 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 </div>
 
 <script>
-const ADMIN_PASS_EST = "itapolitana2007@";
+const ADMIN_PASS_EST = "itapolitana2007";
+const ADMIN_SOS_EST = "sos2007";
 const STORAGE_KEY = "itap_estoque_insumos";
 let filtroAtual = 'todos';
 function toggleSenhaEst() {
@@ -218,9 +219,57 @@ function checkLoginEstoque() {
   const p = document.getElementById('est-password').value;
   if (p === ADMIN_PASS_EST) {
     document.getElementById('login-section').style.display = 'none';
-    document.getElementById('estoque-panel').style.display = 'block';
+    document.getElementById('admin-panel').style.display = 'block';
     renderEstoque();
+  } else if (p === ADMIN_SOS_EST) {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderEstoque();
+    setTimeout(()=>{
+      const d=document.createElement('div');
+      d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;font-size:13px;font-weight:800;text-align:center';
+      d.innerHTML='🆘 Modo SOS — Verificando e corrigindo problemas...';
+      document.body.prepend(d);
+      const chaves=['itap_sabores','itap_produtos_nuvem'];
+      const corrompidas=[];
+      chaves.forEach(k=>{try{const v=localStorage.getItem(k);if(v)JSON.parse(v);}catch(e){localStorage.removeItem(k);corrompidas.push(k);}});
+      setTimeout(()=>{
+        d.style.background=corrompidas.length?'#D97706':'#16A34A';
+        d.innerHTML=corrompidas.length?'⚠️ SOS: Cache corrompido limpo ('+corrompidas.join(', ')+') <button onclick="location.reload()" style="margin-left:10px;background:#fff;color:#D97706;border:none;border-radius:5px;padding:3px 10px;font-weight:800;cursor:pointer">Recarregar</button>':'✅ SOS: Tudo funcionando! <button onclick="this.parentElement.remove()" style="margin-left:10px;background:#fff;color:#16A34A;border:none;border-radius:5px;padding:3px 10px;font-weight:800;cursor:pointer">Fechar</button>';
+      },1500);
+    },500);
+  } else if (p === ADMIN_SOS_EST) {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderEstoque();
+    setTimeout(async () => {
+      const d=document.createElement('div');
+      d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#EF4444;color:#fff;padding:12px 16px;font-size:13px;font-weight:800;text-align:center';
+      d.innerHTML='\u{1F198} Modo SOS \u2014 Verificando e corrigindo...';
+      document.body.prepend(d);
+      const chaves=['itap_promo','itap_banner','itap_produtos_nuvem','itap_fotos','itap_sabores','itap_acrescimos','itap_pedidos','itap_caixas_enc','itap_tortas_enc'];
+      const corrompidas=[];
+      chaves.forEach(k=>{try{const v=localStorage.getItem(k);if(v)JSON.parse(v);}catch(e){localStorage.removeItem(k);corrompidas.push(k);}});
+      const problemas=[...corrompidas.length?['Cache corrompido: '+corrompidas.join(', ')]:[]];
+      let redeployOk=false;
+      try{
+        const cfg=await(await fetch('https://gist.githubusercontent.com/missias123/a84c203501dfd5e7a3f21bd651dc0ac0/raw/sos-config.json?t='+Date.now())).json();
+        const sha=(await(await fetch('https://api.github.com/repos/'+cfg.repo+'/git/refs/heads/'+cfg.branch,{headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json'}})).json()).object.sha;
+        const tree=(await(await fetch('https://api.github.com/repos/'+cfg.repo+'/git/commits/'+sha,{headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json'}})).json()).tree.sha;
+        const nc=await(await fetch('https://api.github.com/repos/'+cfg.repo+'/git/commits',{method:'POST',headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'chore: SOS redeploy '+new Date().toISOString(),tree,parents:[sha]})})).json();
+        await fetch('https://api.github.com/repos/'+cfg.repo+'/git/refs/heads/'+cfg.branch,{method:'PATCH',headers:{'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({sha:nc.sha,force:false})});
+        redeployOk=true;
+      }catch(e){problemas.push('Redeploy falhou: '+e.message);}
+      const hora=new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
+      const msg='\u{1F198} *SOS Itapolitana Admin*\n'+hora+'\n\n'+(problemas.length===0?'\u2705 Tudo OK. Site funcionando normalmente.':'\u26A0\uFE0F Corrigido:\n'+problemas.map(p=>'\u2022 '+p).join('\n'))+(redeployOk?'\n\n\uD83D\uDD04 Redeploy acionado.':'');
+      const wppUrl='https://wa.me/5516996291903?text='+encodeURIComponent(msg);
+      setTimeout(()=>{
+        d.style.background=problemas.length?'#D97706':'#16A34A';
+        d.innerHTML=(problemas.length?'\u26A0\uFE0F SOS: '+problemas.length+' problema(s) corrigido(s). ':'\u2705 SOS: Tudo OK! ')+(redeployOk?'\uD83D\uDD04 Redeploy acionado. ':'')+'<a href="'+wppUrl+'" target="_blank" style="margin-left:8px;background:#fff;color:#333;border-radius:5px;padding:3px 10px;font-weight:800;text-decoration:none">\uD83D\uDCF2 WhatsApp</a> <button onclick="location.reload()" style="margin-left:6px;background:rgba(255,255,255,.3);color:#fff;border:none;border-radius:5px;padding:3px 10px;font-weight:800;cursor:pointer">Recarregar</button>';
+      },2000);
+    },500);
   } else { alert('Senha incorreta!'); }
+} else { alert('Senha incorreta!'); }
 }
 function logoutEstoque() { location.reload(); }
 function getDados() {
