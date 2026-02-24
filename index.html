@@ -872,7 +872,7 @@ img{max-width:100%;display:block}
       <div class="promo-timer-val" id="promo-timer">00:00:00:00</div>
       <div style="font-size:10px;opacity:.7;margin-top:4px;letter-spacing:1px">DIAS &nbsp; HH &nbsp; MM &nbsp; SS</div>
     </div>
-    <button type="button" class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()">💬 Falar com a Loja</button>
+    <button type="button" class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()">🎉 Ver Promoção Completa</button>
   </div>
 </div>
 
@@ -1218,7 +1218,7 @@ async function carregarPromo(){
 }
 async function abrirLinkPromo(){
   const d=await _buscarDadosPromo();
-  const url=d.link||'https://wa.me/5516991472045';
+  const url=d.link||'/promocao.html';
   window.open(url,'_blank');
 }
 async function abrirPromo(){await carregarPromo();abrirModal('promo-overlay');iniciarTimer();}
