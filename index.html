@@ -254,7 +254,7 @@ img{max-width:100%;display:block}
 .promo-btn{background:linear-gradient(135deg,#FFD600,#FF8F00);color:#1A0A00;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:800;width:100%;box-shadow:0 4px 12px rgba(255,214,0,.5)}
 
 /* CHATBOT */
-.chat-fab{display:none}
+.chat-fab{display:flex;position:fixed;bottom:80px;right:16px;z-index:600;align-items:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,.5);animation:pulse-chat 2.5s infinite;letter-spacing:.3px}
 /* BOTÃO FALE CONOSCO HERO */
 @keyframes pulse-chat{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.7),0 4px 20px rgba(37,211,102,.4)}60%{box-shadow:0 0 0 14px rgba(37,211,102,0),0 4px 20px rgba(37,211,102,.4)}}
 .hero-chat-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:13px 30px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.3px;animation:pulse-chat 2s infinite;margin-bottom:14px;box-shadow:0 4px 20px rgba(37,211,102,.5)}
@@ -280,8 +280,31 @@ img{max-width:100%;display:block}
 .chat-send{background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 
-.pwa-install{background:#F9A825;color:#111;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800}
-.pwa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:6px 14px;font-size:11px;color:#fff;font-weight:600}
+.pwa-install{background:#F9A825;color:#111;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer}
+    .pwa-dismiss{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:6px 14px;font-size:11px;color:#fff;font-weight:600;cursor:pointer}
+    /* PWA BANNER */
+    #pwa-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:900;background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff;padding:12px 16px;box-shadow:0 -4px 20px rgba(0,0,0,.3)}
+    #pwa-banner.show{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;animation:slideUpPwa .4s ease}
+    @keyframes slideUpPwa{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .pwa-banner-txt{flex:1;min-width:160px}
+    .pwa-banner-txt strong{display:block;font-size:13px;font-weight:900}
+    .pwa-banner-txt span{font-size:11px;opacity:.85}
+    .pwa-banner-btns{display:flex;gap:8px;flex-shrink:0}
+    /* MODAL FALE CONOSCO FORMULÁRIO */
+    #fale-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;align-items:flex-end;justify-content:center}
+    #fale-overlay.show{display:flex}
+    .fale-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;padding:0 0 32px;overflow:hidden}
+    .fale-hdr{background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .fale-hdr-txt h3{font-size:16px;font-weight:900;margin:0}
+    .fale-hdr-txt p{font-size:11px;opacity:.8;margin-top:2px}
+    .fale-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+    .fale-body{padding:0 20px}
+    .fale-label{font-size:12px;font-weight:700;color:#0D47A1;margin-bottom:4px;display:block}
+    .fale-input{width:100%;padding:12px 14px;border:2px solid #E3F2FD;border-radius:12px;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .2s;box-sizing:border-box}
+    .fale-input:focus{border-color:#1565C0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+    .fale-textarea{width:100%;padding:12px 14px;border:2px solid #E3F2FD;border-radius:12px;font-size:14px;font-family:inherit;outline:none;margin-bottom:16px;resize:vertical;min-height:100px;transition:border-color .2s;box-sizing:border-box}
+    .fale-textarea:focus{border-color:#1565C0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+    .fale-enviar{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(37,211,102,.4);font-family:inherit}
 
 /* SEÇÃO ENCOMENDAS NO CARDÁPIO */
 #acc-encomendas>.acc-header{background:linear-gradient(135deg,#0D47A1,#1565C0)}
@@ -544,7 +567,7 @@ img{max-width:100%;display:block}
   <div class="frase-sensorial" id="frase-rotativa">🍦 "Aquele creminho que derrete na boca..."</div>
   <h2>O Sorvete <span class="destaque-texto">Mais Cremoso</span> e Amado de Cajuru</h2>
   <p>Feito com ingredientes selecionados, cremoso na medida certa, gelado do jeito que você ama. Cada colherada é uma viagem de volta à infância. Desde 2007 fazendo sorrisos em Cajuru e região.</p>
-  <button type="button" class="hero-chat-btn" onclick="abrirChat()">💬 Fale Conosco</button>
+  <button type="button" class="hero-chat-btn" onclick="abrirFaleConosco()">💬 Fale Conosco</button>
   <br>
   <button type="button" class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
     🍦 Quero Ver os Sabores!
@@ -853,8 +876,42 @@ img{max-width:100%;display:block}
   </div>
 </div>
 
+<!-- PWA BANNER INSTALAR APP -->
+<div id="pwa-banner">
+  <div class="pwa-banner-txt">
+    <strong>📱 Adicionar à Tela Inicial</strong>
+    <span>Instale o app da Itapolitana e acesse mais rápido!</span>
+  </div>
+  <div class="pwa-banner-btns">
+    <button type="button" class="pwa-install" id="pwa-install-btn" onclick="instalarPWA()">⬇ Instalar</button>
+    <button type="button" class="pwa-dismiss" onclick="dispensarPWA()">Agora não</button>
+  </div>
+</div>
+
+<!-- MODAL FALE CONOSCO FORMULÁRIO -->
+<div id="fale-overlay" onclick="if(event.target===this)fecharModal('fale-overlay')">
+  <div class="fale-box">
+    <div class="fale-hdr">
+      <div class="fale-hdr-txt">
+        <h3>📩 Fale Conosco</h3>
+        <p>Envie sua mensagem via WhatsApp</p>
+      </div>
+      <button type="button" class="fale-close" onclick="fecharModal('fale-overlay')">✕</button>
+    </div>
+    <div class="fale-body">
+      <label class="fale-label" for="fale-nome">Seu nome</label>
+      <input type="text" class="fale-input" id="fale-nome" placeholder="Ex: Maria Silva" maxlength="60">
+      <label class="fale-label" for="fale-msg">Sua mensagem</label>
+      <textarea class="fale-textarea" id="fale-msg" placeholder="Escreva sua dúvida, sugestão ou pedido especial..."></textarea>
+      <button type="button" class="fale-enviar" onclick="enviarFaleConosco()">
+        💬 Enviar via WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- CHATBOT -->
-<button type="button" class="chat-fab" onclick="abrirChat()">💬 Fale Conosco</button>
+<button type="button" class="chat-fab" onclick="abrirFaleConosco()">💬 Fale Conosco</button>
 
 <div class="chat-overlay" id="chat-overlay">
   <div class="chat-box">
@@ -1238,6 +1295,44 @@ const RESPOSTAS={
 };
 
 function abrirChat(){abrirModal('chat-overlay');}
+function abrirFaleConosco(){abrirModal('fale-overlay');}
+function enviarFaleConosco(){
+  const nome=(document.getElementById('fale-nome').value||'').trim();
+  const msg=(document.getElementById('fale-msg').value||'').trim();
+  if(!msg){alert('Por favor, escreva sua mensagem.');return;}
+  const texto=nome?`Olá! Meu nome é ${nome}.\n\n${msg}`:`Olá!\n\n${msg}`;
+  const url='https://wa.me/5516991472045?text='+encodeURIComponent(texto);
+  window.open(url,'_blank');
+  fecharModal('fale-overlay');
+  document.getElementById('fale-nome').value='';
+  document.getElementById('fale-msg').value='';
+}
+// ── PWA INSTALL ──
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();
+  deferredPrompt=e;
+  const dispensado=localStorage.getItem('pwa_dispensado');
+  if(!dispensado){
+    setTimeout(()=>{
+      const banner=document.getElementById('pwa-banner');
+      if(banner)banner.classList.add('show');
+    },3000);
+  }
+});
+function instalarPWA(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(r){
+    if(r.outcome==='accepted'){dispensarPWA();}
+    deferredPrompt=null;
+  });
+}
+function dispensarPWA(){
+  localStorage.setItem('pwa_dispensado','1');
+  const banner=document.getElementById('pwa-banner');
+  if(banner)banner.classList.remove('show');
+}
 function enviarSug(btn){document.getElementById('chat-inp').value=btn.textContent;enviarChat();}
 function enviarChat(){
   const inp=document.getElementById('chat-inp');
