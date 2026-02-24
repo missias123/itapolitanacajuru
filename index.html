@@ -245,8 +245,8 @@ img{max-width:100%;display:block}
 /* MODAL BOTTOM SHEET */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:flex-end;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal-box{background:#FFFDF9;border-radius:24px 24px 0 0;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px 80px;position:relative;border-top:3px solid #FF6B35;box-sizing:border-box}
-@media(min-width:600px){.modal-overlay{align-items:center}.modal-box{border-radius:20px;max-height:80vh;max-width:560px}}
+.modal-box{background:#FFFDF9;border-radius:24px 24px 0 0;width:100%;max-width:600px;height:92vh;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px 80px;position:relative;border-top:3px solid #FF6B35;box-sizing:border-box}
+@media(min-width:600px){.modal-overlay{align-items:center}.modal-box{border-radius:20px;height:auto;max-height:85vh;max-width:560px}}
 .modal-handle{width:40px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 16px}
 .modal-close{position:absolute;top:16px;right:16px;background:#F3F4F6;border:none;border-radius:50%;width:36px;height:36px;font-size:18px;font-weight:700;color:#374151;display:flex;align-items:center;justify-content:center}
 .modal-title{font-size:18px;font-weight:900;margin-bottom:4px}
@@ -859,7 +859,7 @@ img{max-width:100%;display:block}
 </footer>
 
 
-<div class="modal-overlay" id="modal-sabores">
+<div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <button type="button" class="modal-close" onclick="fecharModal('modal-sabores')">✕</button>
@@ -870,7 +870,7 @@ img{max-width:100%;display:block}
 </div>
 
 
-<div class="modal-overlay" id="modal-comp">
+<div class="modal-overlay" id="modal-comp" onclick="if(event.target===this)fecharModal('modal-comp')">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <button type="button" class="modal-close" onclick="fecharModal('modal-comp')">✕</button>
@@ -881,7 +881,7 @@ img{max-width:100%;display:block}
 </div>
 
 
-<div class="modal-overlay" id="modal-picolé">
+<div class="modal-overlay" id="modal-picolé" onclick="if(event.target===this)fecharModal('modal-picolé')">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <button type="button" class="modal-close" onclick="fecharModal('modal-picolé')">✕</button>
