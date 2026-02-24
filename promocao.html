@@ -187,6 +187,9 @@ footer strong{color:#fff}
 </footer>
 
 <script>
+// Busca dados pelo proxy (sem cache CDN) — garante dados sempre frescos
+const _PROXY_PROMO = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/promo';
+// Fallback: Gist CDN (caso o proxy esteja offline)
 const _GIST_PROMO = 'https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json';
 
 function _aplicarPromo(d) {
@@ -219,12 +222,12 @@ function _aplicarPromo(d) {
     if (heroPh) heroPh.style.display = 'none';
   }
   const btn = document.getElementById('btn-principal');
-  // Botão principal sempre aponta para o Instagram
+  // Botão principal: usa o link e texto do admin (qualquer link é aceito)
   const INSTAGRAM = 'https://www.instagram.com/sorveteriaitapolitanacajuru';
-  btn.href = (d.link && d.link.includes('instagram')) ? d.link : INSTAGRAM;
+  btn.href = (d.link && d.link.trim()) ? d.link.trim() : INSTAGRAM;
   btn.target = '_blank';
   btn.rel = 'noopener noreferrer';
-  btn.innerHTML = d.btnTexto || '📸 Ver no Instagram';
+  btn.innerHTML = (d.btnTexto && d.btnTexto.trim()) ? d.btnTexto.trim() : '📸 Ver no Instagram';
   const txt = encodeURIComponent('🍦 ' + (d.titulo || 'Promoção Especial') + ' – Itapolitana Cajuru!\n' + window.location.href);
   document.getElementById('share-wpp').href = 'https://wa.me/?text=' + txt;
   iniciarCountdown(d.dataFim || '2026-04-01', d.horaFim || '22:00');
@@ -234,21 +237,33 @@ async function carregarPromo() {
   // Limpa SEMPRE o cache antigo — garante que dados de promoções antigas não aparecem
   localStorage.removeItem('itap_promo_cache');
 
-  // Busca dados frescos do Gist (fonte oficial), sem cache de browser
-  // NOTA: não usar headers customizados no fetch do Gist (causa CORS preflight)
-  // O timestamp no URL já é suficiente para evitar cache
+  // 1º Tenta buscar pelo proxy (dados sempre frescos, sem cache CDN)
   try {
-    const resp = await fetch(_GIST_PROMO + '?nocache=' + Date.now(), {
-      cache: 'no-store'
-    });
+    const resp = await fetch(_PROXY_PROMO + '?t=' + Date.now(), { cache: 'no-store' });
     if (resp.ok) {
       const d = await resp.json();
-      // Só salva no cache após carregar com sucesso
-      localStorage.setItem('itap_promo_cache', JSON.stringify(d));
-      _aplicarPromo(d);
+      if (d && d.titulo) {
+        localStorage.setItem('itap_promo_cache', JSON.stringify(d));
+        _aplicarPromo(d);
+        return; // sucesso — não precisa do fallback
+      }
     }
   } catch(e) {
-    console.warn('Promo: erro ao buscar do Gist', e.message);
+    console.warn('Promo: proxy indisponível, tentando Gist...', e.message);
+  }
+
+  // 2º Fallback: tenta o Gist CDN com timestamp para evitar cache
+  try {
+    const resp2 = await fetch(_GIST_PROMO + '?nocache=' + Date.now(), { cache: 'no-store' });
+    if (resp2.ok) {
+      const d2 = await resp2.json();
+      if (d2 && d2.titulo) {
+        localStorage.setItem('itap_promo_cache', JSON.stringify(d2));
+        _aplicarPromo(d2);
+      }
+    }
+  } catch(e2) {
+    console.warn('Promo: erro ao buscar do Gist', e2.message);
   }
 }
 
