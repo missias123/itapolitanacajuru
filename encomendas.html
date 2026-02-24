@@ -1,4 +1,4 @@
-<!-- cache-bust: 1771878298 -->
+<!-- cache-bust: 1771939682 -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -55,19 +55,22 @@
     .header-logo-texto p { font-size:0.7rem; color:rgba(255,255,255,0.8); }
     .header-acoes { display:flex; gap:10px; align-items:center; }
     .btn-voltar {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.4);
+      background: linear-gradient(135deg, #F9A825, #FFD600);
+      color: #1A0A00;
+      border: 2px solid #1A0A00;
+      box-shadow: 0 0 0 2px #FFD600, 0 2px 8px rgba(249,168,37,.5);
       padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
+      font-weight: 800;
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.2s;
     }
-    .btn-voltar:hover { background: rgba(255,255,255,0.25); }
+    .btn-voltar:hover { background: linear-gradient(135deg, #FFD600, #F9A825); transform: translateY(-1px); }
 
     /* BOTÃO CARRINHO FIXO */
     .btn-carrinho-fixo {
@@ -982,6 +985,23 @@
 
     /* Garantir cliques nos botões redondos */
     .btn-acao-redondo * { pointer-events: none; }
+    /* BOTÃO VOLTAR PADRÃO - Amarelo vibrante, seta ← */
+    .btn-voltar-padrao {
+      background: linear-gradient(135deg, #F9A825, #FFD600) !important;
+      color: #1A0A00 !important;
+      border: 3px solid #1A0A00 !important;
+      box-shadow: 0 0 0 2px #FFD600, 0 4px 14px rgba(249,168,37,.5) !important;
+    }
+    /* Quando em barra cinza claro (fundo claro), borda amarela escura */
+    .barra-cinza-claro .btn-voltar-padrao {
+      border: 3px solid #E65100 !important;
+      box-shadow: 0 0 0 2px #FFD600, 0 4px 14px rgba(249,168,37,.6) !important;
+    }
+    /* Quando em barra azul (fundo azul escuro), borda branca bem visivel */
+    .barra-azul .btn-voltar-padrao {
+      border: 3px solid #fff !important;
+      box-shadow: 0 0 0 2px #1565C0, 0 4px 14px rgba(249,168,37,.7) !important;
+    }
 </style>
 <!-- v:1771806853-neuro -->
 
@@ -1249,7 +1269,7 @@
         </div>
         <!-- BOTÃO SECUNDÁRIO: Continuar adicionando produtos -->
         <div class="barra-acao barra-cinza-claro">
-          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-continuar-comprando" title="Continuar Comprando">✕</button>
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-continuar-comprando" title="Continuar Comprando">←</button>
           <span class="barra-texto" style="color:#333">← Continuar Adicionando Produtos</span>
           <span style="width:44px;"></span>
         </div>
@@ -1290,14 +1310,14 @@
         <div id="campos-obrigatorios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
         <!-- BOTÃO VOLTAR: Revisar carrinho -->
         <div class="barra-acao barra-azul">
-          <button type="button" class="btn-acao-redondo btn-cinza-claro" id="btn-voltar-etapa" title="Revisar Carrinho">◀</button>
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-etapa" title="Revisar Carrinho">←</button>
           <span class="barra-texto">🛒 Revisar Carrinho</span>
           <span style="width:44px;"></span>
         </div>
         <!-- BOTÃO CANCELAR: Fechar modal -->
         <div class="barra-acao barra-cinza-claro">
-          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-sair-formulario" title="Cancelar">✕</button>
-          <span class="barra-texto" style="color:#555">Cancelar e Voltar às Encomendas</span>
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-sair-formulario" title="Cancelar">←</button>
+          <span class="barra-texto" style="color:#555">← Cancelar e Voltar às Encomendas</span>
           <span style="width:44px;"></span>
         </div>
       </div>
@@ -1329,8 +1349,8 @@
         </div>
         <!-- BOTÃO TERCIÁRIO: Voltar sem enviar -->
         <div class="barra-acao barra-cinza-claro" style="margin-top:6px;">
-          <button type="button" class="btn-acao-redondo btn-cinza" id="btn-voltar-cardapio" title="Voltar">◀</button>
-          <span class="barra-texto" style="color:#666;font-size:0.85rem;">Voltar às Encomendas sem Enviar</span>
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-cardapio" title="Voltar">←</button>
+          <span class="barra-texto" style="color:#666;font-size:0.85rem;">← Voltar às Encomendas sem Enviar</span>
           <span style="width:44px;"></span>
         </div>
       </div>
