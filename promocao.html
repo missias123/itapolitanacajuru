@@ -14,8 +14,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0D0D0D;color:#fff;m
 .logo-area img{height:42px;width:42px;border-radius:50%;object-fit:cover;border:2px solid #6A0DAD}
 .logo-txt{font-size:15px;font-weight:900;color:#fff}
 .logo-sub{font-size:11px;color:#aaa}
-.btn-voltar{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.btn-voltar:hover{background:rgba(255,255,255,.2)}
+.btn-voltar{background:linear-gradient(135deg,#F9A825,#FFD600);border:2px solid #1A0A00;color:#1A0A00;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 0 0 2px #FFD600,0 2px 8px rgba(249,168,37,.5)}
+.btn-voltar:hover{background:linear-gradient(135deg,#FFD600,#F9A825);transform:translateY(-1px)}
 
 /* FOTO HERO */
 .hero{position:relative;width:100%;min-height:300px;max-height:520px;overflow:hidden;display:flex;align-items:flex-end}
@@ -110,7 +110,7 @@ footer strong{color:#fff}
 
   <!-- Botões -->
   <div class="promo-links">
-    <a class="promo-btn btn-principal" id="btn-principal" href="https://wa.me/5516991472045" target="_blank" rel="noopener noreferrer">💬 Falar com a Loja</a>
+    <a class="promo-btn btn-principal" id="btn-principal" href="/promocao.html">🎉 Ver Promoção Completa</a>
     <a class="promo-btn btn-wpp" href="https://wa.me/5516991472045" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
     <a class="promo-btn btn-encomenda" href="encomendas.html">📋 Fazer Encomenda</a>
     <a class="promo-btn btn-cardapio" href="index.html#cardapio">🍦 Ver Cardápio</a>
@@ -157,11 +157,12 @@ function carregarPromo() {
     document.getElementById('hero-placeholder').style.display = 'none';
   }
 
+  const btn = document.getElementById('btn-principal');
   if (d.link) {
-    const btn = document.getElementById('btn-principal');
     btn.href = d.link;
-    if (d.btnTexto) btn.innerHTML = d.btnTexto;
+    btn.removeAttribute('target');
   }
+  if (d.btnTexto) btn.innerHTML = d.btnTexto;
 
   const txt = encodeURIComponent('🍦 ' + (d.titulo || 'Promoção Especial') + ' – Itapolitana Cajuru!\n' + window.location.href);
   document.getElementById('share-wpp').href = 'https://wa.me/?text=' + txt;

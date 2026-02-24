@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedidos – Itapolitana Cajuru</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#1F2937,#374151);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.header h1{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px}
+.btn-voltar{background:linear-gradient(135deg,#F9A825,#FFD600);color:#1A0A00;border:2px solid #1A0A00;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:5px;box-shadow:0 0 0 2px #FFD600}
+.btn-voltar:hover{background:linear-gradient(135deg,#FFD600,#F9A825)}
+
+/* BARRA DE AÇÕES */
+.barra-acoes{background:#fff;border-bottom:1px solid #E5E7EB;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:53px;z-index:99}
+.contador{font-size:14px;font-weight:700;color:#374151}
+.contador span{color:#E8000D;font-size:18px;font-weight:900}
+.btn-limpar-todos{background:linear-gradient(135deg,#DC2626,#EF4444);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(220,38,38,.4)}
+.btn-limpar-todos:hover{background:linear-gradient(135deg,#B91C1C,#DC2626);transform:translateY(-1px)}
+.btn-limpar-todos:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* FILTROS */
+.filtros{background:#fff;border-bottom:1px solid #E5E7EB;padding:10px 20px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-filtro{background:#F3F4F6;color:#374151;border:2px solid #E5E7EB;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-filtro.ativo{background:#1F2937;color:#fff;border-color:#1F2937}
+.btn-filtro.f-novo.ativo{background:#16A34A;border-color:#16A34A}
+.btn-filtro.f-visto.ativo{background:#D97706;border-color:#D97706}
+.btn-filtro.f-concluido.ativo{background:#6B7280;border-color:#6B7280}
+
+/* LISTA */
+.lista{max-width:720px;margin:0 auto;padding:16px 16px 100px}
+
+/* CARD PEDIDO */
+.card{background:#fff;border-radius:14px;border:1px solid #E5E7EB;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card.novo{border-left:5px solid #16A34A}
+.card.visto{border-left:5px solid #D97706}
+.card.concluido{border-left:5px solid #9CA3AF}
+.card-header{padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-nome{font-size:15px;font-weight:800;color:#111827}
+.card-tel{font-size:12px;color:#6B7280;font-weight:600}
+.card-meta{font-size:11px;color:#9CA3AF;margin-top:2px}
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.3px}
+.badge.novo{background:#DCFCE7;color:#166534}
+.badge.visto{background:#FEF9C3;color:#92400E}
+.badge.concluido{background:#F3F4F6;color:#4B5563}
+.card-itens{padding:0 16px 10px;border-top:1px solid #F3F4F6;margin-top:4px}
+.item-linha{font-size:13px;padding:5px 0;border-bottom:1px dashed #F3F4F6;color:#374151}
+.item-linha:last-child{border-bottom:none}
+.item-sabores{font-size:11px;color:#6B7280;margin-left:10px;margin-top:2px}
+.card-total{padding:8px 16px;background:#F9FAFB;font-size:14px;font-weight:800;color:#166534;border-top:1px solid #E5E7EB}
+.card-acoes{padding:10px 16px 14px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-wpp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.btn-status{background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-excluir{background:#FEE2E2;color:#DC2626;border:1px solid #FECACA;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;margin-left:auto}
+.btn-excluir:hover{background:#DC2626;color:#fff}
+
+/* VAZIO */
+.vazio{text-align:center;padding:60px 20px;color:#9CA3AF}
+.vazio-icone{font-size:56px;margin-bottom:16px}
+.vazio-txt{font-size:16px;font-weight:700;margin-bottom:6px;color:#374151}
+.vazio-sub{font-size:13px}
+
+/* MODAL CONFIRMAÇÃO */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.aberto{display:flex}
+.modal-box{background:#fff;border-radius:16px;padding:28px 24px;max-width:360px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.modal-icone{font-size:48px;margin-bottom:12px}
+.modal-titulo{font-size:18px;font-weight:900;margin-bottom:8px;color:#111827}
+.modal-desc{font-size:14px;color:#6B7280;margin-bottom:24px;line-height:1.5}
+.modal-btns{display:flex;gap:10px}
+.btn-confirmar{flex:1;background:linear-gradient(135deg,#DC2626,#EF4444);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer}
+.btn-cancelar{flex:1;background:#F3F4F6;color:#374151;border:1px solid #E5E7EB;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1F2937;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;z-index:9999;transition:transform .3s;pointer-events:none;white-space:nowrap}
+.toast.visivel{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <h1>📋 Pedidos de Encomenda</h1>
+  <a href="../" class="btn-voltar">← Admin</a>
+</header>
+
+<!-- BARRA DE AÇÕES -->
+<div class="barra-acoes">
+  <div class="contador">Total: <span id="total-contador">0</span> pedido(s)</div>
+  <button type="button" class="btn-limpar-todos" id="btn-limpar-todos" onclick="confirmarLimparTodos()">
+    🗑️ Limpar Todos
+  </button>
+</div>
+
+<!-- FILTROS -->
+<div class="filtros">
+  <button type="button" class="btn-filtro ativo" data-filtro="todos" onclick="filtrar('todos')">📋 Todos</button>
+  <button type="button" class="btn-filtro f-novo" data-filtro="novo" onclick="filtrar('novo')">🆕 Novos</button>
+  <button type="button" class="btn-filtro f-visto" data-filtro="visto" onclick="filtrar('visto')">👀 Vistos</button>
+  <button type="button" class="btn-filtro f-concluido" data-filtro="concluido" onclick="filtrar('concluido')">✅ Concluídos</button>
+</div>
+
+<!-- LISTA DE PEDIDOS -->
+<div class="lista" id="lista-pedidos"></div>
+
+<!-- MODAL CONFIRMAÇÃO LIMPAR TODOS -->
+<div class="modal-overlay" id="modal-limpar">
+  <div class="modal-box">
+    <div class="modal-icone">🗑️</div>
+    <div class="modal-titulo">Limpar Todos os Pedidos?</div>
+    <div class="modal-desc">Esta ação vai remover <strong>todos os pedidos</strong> da lista permanentemente. Não é possível desfazer.</div>
+    <div class="modal-btns">
+      <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button type="button" class="btn-confirmar" onclick="limparTodos()">Sim, Limpar Tudo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO EXCLUIR UM -->
+<div class="modal-overlay" id="modal-excluir">
+  <div class="modal-box">
+    <div class="modal-icone">🗑️</div>
+    <div class="modal-titulo">Excluir este Pedido?</div>
+    <div class="modal-desc" id="modal-excluir-desc">Tem certeza que deseja remover este pedido?</div>
+    <div class="modal-btns">
+      <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button type="button" class="btn-confirmar" onclick="confirmarExcluirUm()">Sim, Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+let filtroAtual = 'todos';
+let indiceParaExcluir = -1;
+
+// ── CARREGAR E RENDERIZAR ──
+function getPedidos() {
+  try { return JSON.parse(localStorage.getItem('itap_pedidos') || '[]'); } catch(e) { return []; }
+}
+function salvarPedidos(lista) {
+  localStorage.setItem('itap_pedidos', JSON.stringify(lista));
+}
+
+function render() {
+  const todos = getPedidos();
+  const lista = filtroAtual === 'todos' ? todos : todos.filter(p => (p.status || 'novo') === filtroAtual);
+
+  // Atualizar contador
+  document.getElementById('total-contador').textContent = todos.length;
+  const btnLimpar = document.getElementById('btn-limpar-todos');
+  btnLimpar.disabled = todos.length === 0;
+
+  const container = document.getElementById('lista-pedidos');
+
+  if (lista.length === 0) {
+    container.innerHTML = `
+      <div class="vazio">
+        <div class="vazio-icone">📭</div>
+        <div class="vazio-txt">${filtroAtual === 'todos' ? 'Nenhum pedido ainda' : 'Nenhum pedido com este status'}</div>
+        <div class="vazio-sub">Os pedidos aparecem aqui assim que o cliente finaliza no site.</div>
+      </div>`;
+    return;
+  }
+
+  // Ordenar: mais recentes primeiro (pelo índice original)
+  const comIndice = lista.map((p, _) => {
+    const idx = todos.indexOf(p);
+    return { p, idx };
+  }).reverse();
+
+  container.innerHTML = comIndice.map(({ p, idx }) => {
+    const status = p.status || 'novo';
+    const labels = { novo: '🆕 NOVO', visto: '👀 VISTO', concluido: '✅ CONCLUÍDO' };
+    const itensHtml = (p.itens || []).map(it => {
+      const sabores = it.sabores && it.sabores.length > 0
+        ? `<div class="item-sabores">${it.sabores.map(s => '• ' + s).join('  ')}</div>` : '';
+      return `<div class="item-linha">▶ <strong>${it.nome}</strong> × ${it.qtd} — R$ ${(it.preco * it.qtd).toFixed(2).replace('.', ',')}${sabores}</div>`;
+    }).join('');
+
+    const enderecoHtml = p.endereco ? `<div style="font-size:12px;color:#374151;margin-top:2px">📍 ${p.endereco}</div>` : '';
+
+    return `
+    <div class="card ${status}" id="card-${idx}">
+      <div class="card-header">
+        <div>
+          <div class="card-nome">${p.nome || '—'} <span class="card-tel">${p.tel || ''}</span></div>
+          ${enderecoHtml}
+          <div class="card-meta">📅 ${p.data || '—'} · Nº ${p.num || '—'}</div>
+        </div>
+        <span class="badge ${status}">${labels[status]}</span>
+      </div>
+      <div class="card-itens">${itensHtml}</div>
+      <div class="card-total">💰 Total: R$ ${(p.total || 0).toFixed(2).replace('.', ',')}</div>
+      <div class="card-acoes">
+        <a class="btn-wpp" href="https://wa.me/55${(p.tel || '').replace(/\D/g,'')}" target="_blank" rel="noopener">📲 WhatsApp</a>
+        <select class="btn-status" onchange="atualizarStatus(${idx}, this.value)" title="Alterar status">
+          <option value="novo" ${status==='novo'?'selected':''}>🆕 Novo</option>
+          <option value="visto" ${status==='visto'?'selected':''}>👀 Visto</option>
+          <option value="concluido" ${status==='concluido'?'selected':''}>✅ Concluído</option>
+        </select>
+        <button type="button" class="btn-excluir" onclick="pedirExcluirUm(${idx}, '${(p.nome||'').replace(/'/g,"\\'")}')">🗑️ Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── FILTRO ──
+function filtrar(f) {
+  filtroAtual = f;
+  document.querySelectorAll('.btn-filtro').forEach(b => {
+    b.classList.toggle('ativo', b.dataset.filtro === f);
+  });
+  render();
+}
+
+// ── STATUS ──
+function atualizarStatus(idx, status) {
+  const pedidos = getPedidos();
+  if (pedidos[idx]) {
+    pedidos[idx].status = status;
+    salvarPedidos(pedidos);
+    render();
+    toast('Status atualizado!');
+  }
+}
+
+// ── EXCLUIR UM ──
+function pedirExcluirUm(idx, nome) {
+  indiceParaExcluir = idx;
+  document.getElementById('modal-excluir-desc').innerHTML = `Deseja remover o pedido de <strong>${nome}</strong>? Esta ação não pode ser desfeita.`;
+  document.getElementById('modal-excluir').classList.add('aberto');
+}
+function confirmarExcluirUm() {
+  if (indiceParaExcluir < 0) return;
+  const pedidos = getPedidos();
+  pedidos.splice(indiceParaExcluir, 1);
+  salvarPedidos(pedidos);
+  fecharModal();
+  render();
+  toast('Pedido excluído!');
+  indiceParaExcluir = -1;
+}
+
+// ── LIMPAR TODOS ──
+function confirmarLimparTodos() {
+  if (getPedidos().length === 0) return;
+  document.getElementById('modal-limpar').classList.add('aberto');
+}
+function limparTodos() {
+  salvarPedidos([]);
+  fecharModal();
+  render();
+  toast('Todos os pedidos foram removidos!');
+}
+
+// ── MODAL ──
+function fecharModal() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('aberto'));
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) fecharModal(); });
+});
+
+// ── TOAST ──
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('visivel');
+  setTimeout(() => el.classList.remove('visivel'), 2500);
+}
+
+// ── ATUALIZAÇÃO AUTOMÁTICA A CADA 30s ──
+render();
+setInterval(render, 30000);
+</script>
+</body>
+</html>
