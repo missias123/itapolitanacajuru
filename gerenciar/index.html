@@ -932,9 +932,11 @@ async function desativarPromocao() {
 // Chamada automaticamente sempre que qualquer publicação for feita no admin.
 // Remove TODOS os caches antigos para garantir que o site exiba dados frescos.
 function limparTodosCaches() {
+  // Todas as chaves de cache usadas no site — nenhuma fica para trás
   const chaves = [
     'itap_promo_cache',
     'itap_promo_local',
+    'itap_promo',
     'itap_banner_cache',
     'itap_banner',
     'itap_produtos_nuvem',
@@ -942,10 +944,17 @@ function limparTodosCaches() {
     'itap_sabores',
     'itap_caixas_enc',
     'itap_complementos',
-    'itap_tortas_enc'
+    'itap_tortas_enc',
+    'itap_acrescimos',
+    'itap_pedidos',
+    'itap_seq_pedido',
+    'pwa_dispensado'
   ];
-  chaves.forEach(k => localStorage.removeItem(k));
-  console.log('[Admin] Caches antigos limpos:', chaves.join(', '));
+  chaves.forEach(k => {
+    try { localStorage.removeItem(k); } catch(e) {}
+    try { sessionStorage.removeItem(k); } catch(e) {}
+  });
+  console.log('[Admin] Todos os caches limpos:', chaves.join(', '));
 }
 
 function salvarTudo() {
