@@ -779,24 +779,23 @@ img{max-width:100%;display:block}
   <div style="text-align:right;margin-bottom:6px;">
     <a href="/gerenciar/" style="font-size:10px;color:rgba(21,101,192,.35);text-decoration:none;background:rgba(21,101,192,.08);border-radius:4px;padding:2px 8px;letter-spacing:.3px;" title="Área Administrativa">⚙ Admin</a>
   </div>
-  <!-- INFO RODAPÉ CENTRALIZADO -->
-  <div style="display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;box-sizing:border-box;margin-bottom:16px;">
+  <!-- INFO RODAPÉ DUAS COLUNAS -->
+  <div style="display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:0;width:100%;box-sizing:border-box;margin-bottom:10px;">
     <!-- ONDE ESTAMOS -->
-    <div style="text-align:center;font-size:13px;line-height:1.9;">
-      <div style="font-weight:900;color:#0D47A1;font-size:15px;margin-bottom:6px;letter-spacing:.3px;">📍 Onde Estamos</div>
+    <div style="flex:1;text-align:center;font-size:11px;line-height:1.7;padding:0 8px;border-right:1px solid rgba(21,101,192,.2);">
+      <div style="font-weight:900;color:#0D47A1;font-size:12px;margin-bottom:4px;letter-spacing:.3px;">📍 Onde Estamos</div>
       <div style="color:#1565C0;font-weight:700;">R. Cel. Manoel Caetano, 311</div>
       <div style="color:#1565C0;font-weight:600;">Pça Largo São Bento – Centro</div>
       <div style="color:#1565C0;font-weight:600;">Cajuru/SP – CEP 14780-000</div>
-      <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:12px;color:#1976D2;font-weight:700;text-decoration:none;background:rgba(21,101,192,.1);border-radius:6px;padding:4px 12px;">🗺️ Ver no Google Maps</a>
+      <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" rel="noopener" style="display:inline-block;margin-top:5px;font-size:10px;color:#1976D2;font-weight:700;text-decoration:none;background:rgba(21,101,192,.1);border-radius:6px;padding:3px 10px;">🗺️ Ver no Google Maps</a>
     </div>
-    <!-- DIVISOR -->
-    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,#1565C0,transparent);border-radius:2px;"></div>
     <!-- CONTATO -->
-    <div style="text-align:center;font-size:13px;line-height:1.9;">
-      <div style="font-weight:900;color:#0D47A1;font-size:15px;margin-bottom:6px;letter-spacing:.3px;">📞 Contato</div>
+    <div style="flex:1;text-align:center;font-size:11px;line-height:1.7;padding:0 8px;">
+      <div style="font-weight:900;color:#0D47A1;font-size:12px;margin-bottom:4px;letter-spacing:.3px;">📞 Contato</div>
       <div style="color:#1565C0;font-weight:700;">(16) 99147-2045</div>
-      <div style="color:#1565C0;font-weight:600;">⏰ 10h às 22h · Segunda a Domingo</div>
-      <a href="https://wa.me/5516991472045" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:12px;color:#fff;font-weight:700;text-decoration:none;background:#25D366;border-radius:6px;padding:4px 14px;">💬 WhatsApp</a>
+      <div style="color:#1565C0;font-weight:600;">⏰ 10h às 22h</div>
+      <div style="color:#1565C0;font-weight:600;">Segunda a Domingo</div>
+      <a href="https://wa.me/5516991472045" target="_blank" rel="noopener" style="display:inline-block;margin-top:5px;font-size:10px;color:#fff;font-weight:700;text-decoration:none;background:#25D366;border-radius:6px;padding:3px 12px;">💬 WhatsApp</a>
     </div>
   </div>
   <div style="padding-top:12px;border-top:1px solid rgba(21,101,192,.2);text-align:center;">
@@ -1115,10 +1114,10 @@ function abrirComplementos(){
 // ── PROMOÇÃO ──
 let promoInt=null;
 // ── BARRA DE PROMOÇÃO NO TOPO ──
-function carregarBarraPromo(){
-  const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+async function carregarBarraPromo(){
+  const d=await _buscarDadosPromo();
   const fechada=sessionStorage.getItem('promo_bar_fechada');
-  if(!d.ativa&&d.ativa!==undefined){return;} // promoção desativada
+  if(d.ativo===false){return;} // promoção desativada pelo admin
   if(fechada){return;} // usuário fechou nesta sessão
   const bar=document.getElementById('promo-top-bar');
   if(!bar)return;
@@ -1133,8 +1132,21 @@ function fecharBarraPromo(){
 }
 
 // ── PROMOÇÃO DINÂMICA ──
-function carregarPromo(){
-  const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+let _dadosPromoCache=null;
+async function _buscarDadosPromo(){
+  if(_dadosPromoCache)return _dadosPromoCache;
+  try{
+    const resp=await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now());
+    if(resp.ok){
+      _dadosPromoCache=await resp.json();
+      localStorage.setItem('itap_promo_cache',JSON.stringify(_dadosPromoCache));
+      return _dadosPromoCache;
+    }
+  }catch(e){}
+  try{return JSON.parse(localStorage.getItem('itap_promo_cache')||'{}');}catch(e){return {};}
+}
+async function carregarPromo(){
+  const d=await _buscarDadosPromo();
   if(d.titulo){document.getElementById('promo-title').textContent=d.titulo;}
   if(d.descricao){document.getElementById('promo-desc').textContent=d.descricao;}
   if(d.imagem){
@@ -1142,31 +1154,42 @@ function carregarPromo(){
     img.src=d.imagem;img.style.display='block';
     document.getElementById('promo-icon').style.display='none';
   }
-  if(d.link){
+  if(d.btnTexto){
     const btn=document.getElementById('promo-btn');
-    btn.textContent=d.btnTexto||'🔗 Ver Promoção';
+    btn.textContent=d.btnTexto;
   }
 }
-function abrirLinkPromo(){
-  const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
+async function abrirLinkPromo(){
+  const d=await _buscarDadosPromo();
   const url=d.link||'https://wa.me/5516991472045';
   window.open(url,'_blank');
 }
-function abrirPromo(){carregarPromo();abrirModal('promo-overlay');iniciarTimer();}
-function iniciarTimer(){
-  // Usa data/hora salva pelo admin, ou hoje às 22h como padrão
+async function abrirPromo(){await carregarPromo();abrirModal('promo-overlay');iniciarTimer();}
+async function iniciarTimer(){
+  // ── Busca data/hora do Gist (configurada pelo admin) ──
   let fim;
   try{
-    const d=JSON.parse(localStorage.getItem('itap_promo')||'{}');
-    if(d.dataFim&&d.horaFim){
-      fim=new Date(d.dataFim+'T'+d.horaFim+':00');
+    const resp=await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now());
+    if(resp.ok){
+      const d=await resp.json();
+      localStorage.setItem('itap_promo_cache',JSON.stringify(d));
+      if(d.dataFim&&d.horaFim){
+        fim=new Date(d.dataFim+'T'+d.horaFim+':00');
+      }
     }
-  }catch(e){}
-  if(!fim||isNaN(fim)){
-    // Padrão: 1 de abril de 2026 às 22h
-    fim=new Date('2026-04-01T22:00:00');
+  }catch(e){
+    // Fallback: cache local
+    try{
+      const d=JSON.parse(localStorage.getItem('itap_promo_cache')||'{}');
+      if(d.dataFim&&d.horaFim){fim=new Date(d.dataFim+'T'+d.horaFim+':00');}
+    }catch(e2){}
   }
-  // Se já passou, não exibe
+  // Sem data configurada: não exibe timer
+  if(!fim||isNaN(fim)){
+    document.getElementById('promo-timer').textContent='--:--:--:--';
+    return;
+  }
+  // Se já passou, exibe zerado
   if(fim<=new Date()){
     document.getElementById('promo-timer').textContent='00:00:00:00';
     return;
@@ -1284,12 +1307,26 @@ function renderComplementosCardapio() {
 
 // ── BANNER CARDÁPIO ──
 // Se houver banner personalizado no admin, sobrepõe o padrão
-function carregarBanner(){
+async function carregarBanner(){
+  // Tenta carregar banner do Gist (sincronizado pelo admin)
   try{
-    const dados=JSON.parse(localStorage.getItem('itap_banner')||'{}');
-    if(dados.img){
+    const resp=await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now());
+    if(resp.ok){
+      const d=await resp.json();
+      if(d.bannerImg){
+        const img=document.getElementById('cardapio-banner-img');
+        if(img){img.src=d.bannerImg;img.onerror=()=>{img.src='images/banner-cardapio.png';};}
+        localStorage.setItem('itap_banner_cache',d.bannerImg);
+        return;
+      }
+    }
+  }catch(e){}
+  // Fallback: cache local
+  try{
+    const cached=localStorage.getItem('itap_banner_cache');
+    if(cached){
       const img=document.getElementById('cardapio-banner-img');
-      if(img) img.src=dados.img;
+      if(img)img.src=cached;
     }
   }catch(e){}
 }
