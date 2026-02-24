@@ -1,4 +1,4 @@
-<!-- cache-bust: 1771886300 -->
+<!-- cache-bust: 1771942035 -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -151,6 +151,9 @@ function blocoFoto(chave) {
   return `
     <div class="foto-bloco" id="foto-bloco-${chave}">
       <div class="foto-bloco-label">📷 Foto do Produto</div>
+      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:7px;padding:7px 10px;margin-bottom:6px;font-size:11px;color:#166534;font-weight:700;line-height:1.5">
+        📐 Ideal: 400×220 px · JPG/PNG · máx. 300 KB
+      </div>
       <div class="foto-area ${temFoto ? 'tem-foto' : ''}" onclick="document.getElementById('foto-input-${chave}').click()">
         ${temFoto
           ? `<img src="${imgSrc}" alt="Foto" id="foto-img-${chave}">`
@@ -288,6 +291,12 @@ function renderAdmin() {
       <div id="promo-foto-preview" style="border-radius:10px;overflow:hidden;margin-bottom:8px;${_pf ? '' : 'display:none'}">
         <img src="${_pf}" style="width:100%;max-height:180px;object-fit:cover;display:block" id="promo-foto-img">
       </div>
+      <div style="background:#FEF9C3;border:1px solid #FDE68A;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:#92400E;font-weight:700;line-height:1.6">
+        📐 <strong>Tamanho ideal:</strong> 800 × 400 px (paisagem)<br>
+        📱 Exibida no modal de promoção com altura máx. 200 px<br>
+        🌍 Na página /promoção.html: 1200 × 520 px (hero grande)<br>
+        ✅ Formatos: JPG, PNG, WEBP — máx. recomendado: 800 KB
+      </div>
       <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#FEF3C7;color:#92400E;border:2px dashed #F59E0B;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;box-sizing:border-box">
         📷 ${_pf ? 'Trocar Foto' : 'Adicionar Foto'}
         <input type="file" accept="image/*" style="display:none" onchange="onPromoFotoChange(this)">
@@ -352,6 +361,11 @@ function renderAdmin() {
     </div>
     <div id="banner-preview-area" style="margin-bottom:14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.12)">
       <img loading="lazy" src="${bannerSrc}" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.style.display='none'">
+    </div>
+    <div style="background:#EDE9FE;border:1px solid #C4B5FD;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#5B21B6;font-weight:700;line-height:1.6">
+      📐 <strong>Tamanho ideal:</strong> 1200 × 240 px (paisagem larga)<br>
+      📱 Aparece no topo do cardápio com altura máxima de 240 px<br>
+      ✅ Formatos aceitos: JPG, PNG, WEBP — máx. recomendado: 500 KB
     </div>
     <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#6A0DAD,#9C27B0);color:#fff;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(106,13,173,.4);margin-bottom:8px">
       📷 Substituir Banner do Site
