@@ -883,8 +883,19 @@ async function _enviarParaNuvem() {
   }
   setTimeout(() => msg.textContent = '', 4000);
 }
-const GITHUB_TOKEN = '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';
+// Token carregado dinamicamente do Gist de configuração privado
+const _CFG_GIST = '89cd3f8369f04b2cc999c5c2897a18c5';
+let GITHUB_TOKEN = '';
 const GITHUB_REPO = 'missias123/itapolitanacajuru';
+async function _loadCfg() {
+  if (GITHUB_TOKEN) return; // já carregado
+  try {
+    const r = await fetch('https://api.github.com/gists/' + _CFG_GIST, {headers:{'Accept':'application/vnd.github.v3+json'}});
+    const d = await r.json();
+    const cfg = JSON.parse(d.files['config.json'].content);
+    GITHUB_TOKEN = cfg.token || '';
+  } catch(e) { GITHUB_TOKEN = ''; }
+}
 // Função para publicar dados diretamente no Gist (sem proxy)
 async function publicarNoGist(gistId, nomeArquivo, dados) {
   const resp = await fetch('https://api.github.com/gists/' + gistId, {
