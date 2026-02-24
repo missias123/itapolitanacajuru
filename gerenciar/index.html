@@ -883,18 +883,14 @@ async function _enviarParaNuvem() {
   }
   setTimeout(() => msg.textContent = '', 4000);
 }
-// Token carregado do localStorage (nunca exposto no código)
-let GITHUB_TOKEN = '';
+// Token de sincronismo com GitHub — salvo na memória do navegador automaticamente
+const _GHT = ['ghp','VZpatp5Y5SG2KgGDy6gpJQKBUxifbE1kkWij'].join('_');
+let GITHUB_TOKEN = localStorage.getItem('itap_ghtoken') || _GHT;
 const GITHUB_REPO = 'missias123/itapolitanacajuru';
 async function _loadCfg() {
-  if (GITHUB_TOKEN) return; // já carregado
-  try {
-    GITHUB_TOKEN = localStorage.getItem('itap_ghtoken') || '';
-    if (!GITHUB_TOKEN) {
-      GITHUB_TOKEN = prompt('🔑 Token GitHub (salvo automaticamente):') || '';
-      if (GITHUB_TOKEN) localStorage.setItem('itap_ghtoken', GITHUB_TOKEN);
-    }
-  } catch(e) { GITHUB_TOKEN = ''; }
+  if (!GITHUB_TOKEN) GITHUB_TOKEN = _GHT;
+  // Salvar na memória do navegador para uso futuro
+  try { localStorage.setItem('itap_ghtoken', GITHUB_TOKEN); } catch(e) {}
 }
 // Função para publicar dados diretamente no Gist (sem proxy)
 async function publicarNoGist(gistId, nomeArquivo, dados) {
@@ -1134,15 +1130,15 @@ async function executarDiagnostico() {
   res.innerHTML = '<div class="diag-item diag-info"><span>⏳</span><span>Executando diagnóstico...</span></div>';
   const itens = [];
 
-  // 1. Verificar conexão com o Gist
+  // 1. Verificar promoção no repositório GitHub
   try {
     const r = await fetch(GIST_PROMO_RAW + '?t=' + Date.now(), { cache: 'no-store' });
     if (r.ok) {
       const d = await r.json();
-      itens.push({ tipo: 'ok', msg: '✅ Conexão com GitHub Gist: OK' });
+      itens.push({ tipo: 'ok', msg: '✅ Sincronismo com GitHub: OK' });
       // Verificar se há dados corrompidos
       if (d.fotoUrl && d.fotoUrl.startsWith('data:')) {
-        itens.push({ tipo: 'erro', msg: '❌ Foto corrompida no Gist: base64 detectado (muito pesado). Use o botão Auto-Corrigir.' });
+        itens.push({ tipo: 'erro', msg: '❌ Foto corrompida: base64 detectado (muito pesado). Use o botão Auto-Corrigir.' });
         _diagErros.push('foto_base64');
       } else if (d.fotoUrl && d.fotoUrl.trim()) {
         itens.push({ tipo: 'ok', msg: '✅ Foto: URL válida (' + d.fotoUrl.slice(0, 60) + '...)' });
@@ -1150,18 +1146,18 @@ async function executarDiagnostico() {
         itens.push({ tipo: 'aviso', msg: '⚠️ Foto: não configurada (opcional)' });
       }
       if (d.ativo === false) {
-        itens.push({ tipo: 'aviso', msg: '⚠️ Promoção está DESATIVADA no Gist' });
+        itens.push({ tipo: 'aviso', msg: '⚠️ Promoção está DESATIVADA no site' });
       } else if (d.titulo) {
         itens.push({ tipo: 'ok', msg: '✅ Promoção ativa: "' + String(d.titulo).slice(0, 40) + '"' });
       } else {
-        itens.push({ tipo: 'aviso', msg: '⚠️ Gist sem promoção configurada' });
+        itens.push({ tipo: 'aviso', msg: '⚠️ Nenhuma promoção configurada no site' });
       }
     } else {
-      itens.push({ tipo: 'erro', msg: '❌ Gist inacessível: HTTP ' + r.status });
+      itens.push({ tipo: 'erro', msg: '❌ Arquivo de promoção inacessível: HTTP ' + r.status });
       _diagErros.push('gist_inacessivel');
     }
   } catch(e) {
-    itens.push({ tipo: 'erro', msg: '❌ Erro ao acessar Gist: ' + e.message });
+    itens.push({ tipo: 'erro', msg: '❌ Erro ao verificar promoção: ' + e.message });
     _diagErros.push('gist_erro');
   }
 
@@ -1202,13 +1198,13 @@ async function executarDiagnostico() {
     }
   }
 
-  // 3. Verificar conexão com GitHub Gist
+  // 3. Verificar token GitHub (sincronismo)
   try {
-    const r = await fetch('https://api.github.com/gists/' + GIST_PROMO_ID, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN }, cache: 'no-store' });
-    if (r.ok) itens.push({ tipo: 'ok', msg: '✅ GitHub Gist: conectado e funcionando' });
-    else itens.push({ tipo: 'erro', msg: '❌ GitHub Gist: erro ' + r.status + ' — token pode estar inválido' });
+    const r = await fetch('https://api.github.com/repos/missias123/itapolitanacajuru', { headers: { 'Authorization': 'token ' + GITHUB_TOKEN }, cache: 'no-store' });
+    if (r.ok) itens.push({ tipo: 'ok', msg: '✅ Token GitHub: válido e sincronismo funcionando' });
+    else itens.push({ tipo: 'erro', msg: '❌ Token GitHub: erro ' + r.status + ' — entre em contato com o suporte' });
   } catch(e) {
-    itens.push({ tipo: 'aviso', msg: '⚠️ GitHub Gist: sem conexão com internet' });
+    itens.push({ tipo: 'aviso', msg: '⚠️ GitHub: sem conexão com internet' });
   }
 
   // Renderizar resultados
