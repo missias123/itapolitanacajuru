@@ -883,15 +883,18 @@ async function _enviarParaNuvem() {
   }
   setTimeout(() => msg.textContent = '', 4000);
 }
-// Token de acesso (sem expiração)
-const _T = atob('REMOVED_B64');
+// Token carregado do localStorage (nunca exposto no código)
 let GITHUB_TOKEN = '';
 const GITHUB_REPO = 'missias123/itapolitanacajuru';
 async function _loadCfg() {
   if (GITHUB_TOKEN) return; // já carregado
   try {
-    GITHUB_TOKEN = _T;
-  } catch(e) { GITHUB_TOKEN = _T; }
+    GITHUB_TOKEN = localStorage.getItem('itap_ghtoken') || '';
+    if (!GITHUB_TOKEN) {
+      GITHUB_TOKEN = prompt('🔑 Token GitHub (salvo automaticamente):') || '';
+      if (GITHUB_TOKEN) localStorage.setItem('itap_ghtoken', GITHUB_TOKEN);
+    }
+  } catch(e) { GITHUB_TOKEN = ''; }
 }
 // Função para publicar dados diretamente no Gist (sem proxy)
 async function publicarNoGist(gistId, nomeArquivo, dados) {
