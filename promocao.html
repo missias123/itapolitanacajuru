@@ -110,7 +110,7 @@ footer strong{color:#fff}
 
   <!-- Botões -->
   <div class="promo-links">
-    <a class="promo-btn btn-principal" id="btn-principal" href="/promocao.html">🎉 Ver Promoção Completa</a>
+    <a class="promo-btn btn-principal" id="btn-principal" href="https://www.instagram.com/sorveteriaitapolitanacajuru" target="_blank" rel="noopener noreferrer">📸 Ver no Instagram</a>
     <a class="promo-btn btn-wpp" href="https://wa.me/5516991472045" target="_blank" rel="noopener noreferrer">📲 WhatsApp</a>
     <a class="promo-btn btn-encomenda" href="encomendas.html">📋 Fazer Encomenda</a>
     <a class="promo-btn btn-cardapio" href="index.html#cardapio">🍦 Ver Cardápio</a>
@@ -158,8 +158,12 @@ function _aplicarPromo(d) {
     if (ph) ph.style.display = 'none';
   }
   const btn = document.getElementById('btn-principal');
-  if (d.link) { btn.href = d.link; btn.removeAttribute('target'); }
-  if (d.btnTexto) btn.innerHTML = d.btnTexto;
+  // Botão principal sempre aponta para o Instagram
+  const INSTAGRAM = 'https://www.instagram.com/sorveteriaitapolitanacajuru';
+  btn.href = (d.link && d.link.includes('instagram')) ? d.link : INSTAGRAM;
+  btn.target = '_blank';
+  btn.rel = 'noopener noreferrer';
+  btn.innerHTML = d.btnTexto || '📸 Ver no Instagram';
   const txt = encodeURIComponent('🍦 ' + (d.titulo || 'Promoção Especial') + ' – Itapolitana Cajuru!\n' + window.location.href);
   document.getElementById('share-wpp').href = 'https://wa.me/?text=' + txt;
   iniciarCountdown(d.dataFim || '2026-04-01', d.horaFim || '22:00');
