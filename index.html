@@ -143,11 +143,13 @@ img{max-width:100%;display:block}
 .cardapio-banner img{width:100%;height:auto;display:block;max-height:240px;object-fit:cover}
 .cardapio-banner-vazio{width:100%;height:80px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC);border:2px dashed #FF6B35;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#FF6B35;font-weight:700;font-size:13px;margin-bottom:16px}
 /* INFO CARDS */
-.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;max-width:960px;margin:0 auto}
-.info-card{background:linear-gradient(135deg,#FFFDF9,#FFF8F0);border-radius:14px;padding:14px;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.15);isolation:isolate}
+.info-cards-wrapper{background:linear-gradient(135deg,#4A0080 0%,#7B2D8B 40%,#C2185B 75%,#FF6B35 100%);padding:22px 0 18px;border-top:3px solid rgba(255,213,79,.5);border-bottom:3px solid rgba(255,213,79,.5)}
+.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;max-width:960px;margin:0 auto}
+.info-card{background:rgba(255,255,255,.13);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:14px;padding:14px;box-shadow:0 0 0 1.5px rgba(255,255,255,.3),0 4px 16px rgba(0,0,0,.3);isolation:isolate;position:relative;z-index:1;transition:transform .2s,box-shadow .2s}
+.info-card:hover{transform:translateY(-2px);box-shadow:0 0 0 2px rgba(255,213,79,.8),0 8px 24px rgba(0,0,0,.35)}
 .info-icon{font-size:22px;margin-bottom:6px}
-.info-title{font-size:12px;font-weight:800;color:#1A0A00;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
-.info-text{font-size:11px;color:#7B2D8B;font-weight:700;line-height:1.4}
+.info-title{font-size:12px;font-weight:800;color:#FFD600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.info-text{font-size:11px;color:rgba(255,255,255,.95);font-weight:700;line-height:1.4;text-shadow:0 1px 3px rgba(0,0,0,.4)}
 
 /* CARDÁPIO */
 .cardapio{max-width:960px;margin:0 auto;padding:16px}
@@ -571,11 +573,13 @@ img{max-width:100%;display:block}
   </button>
 </section>
 
+<div class="info-cards-wrapper">
 <div class="info-cards">
-  <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" rel="noopener noreferrer" class="info-card" style="text-decoration:none;color:inherit;display:block" rel="noopener noreferrer"><div class="info-icon">📍</div><div class="info-title">Localização</div><div class="info-text" style="color:#4285F4;font-weight:700">R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Cajuru/SP 🗺️</div></a>
+  <a href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" rel="noopener noreferrer" class="info-card" style="text-decoration:none;color:inherit;display:block"><div class="info-icon">📍</div><div class="info-title">Localização</div><div class="info-text" style="color:#FFD600;font-weight:700">R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Cajuru/SP 🗺️</div></a>
   <div class="info-card"><div class="info-icon">⏰</div><div class="info-title">Horário</div><div class="info-text">Seg–Dom: 10h às 22h</div></div>
   <div class="info-card"><div class="info-icon">🏪</div><div class="info-title">Retirada</div><div class="info-text">Somente na loja</div></div>
   <div class="info-card"><div class="info-icon">📱</div><div class="info-title">Contato</div><div class="info-text">(16) 99147-2045</div></div>
+</div>
 </div>
 
 
