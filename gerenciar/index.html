@@ -298,11 +298,11 @@ function renderAdmin() {
     </div>
     <div style="margin-bottom:10px">
       <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔘 Nome do Botão Principal</div>
-      <input id="promo-btn-nome" type="text" value="${_ps.btnTexto||'💬 Falar com a Loja'}" placeholder="Ex: 🛒 Pedir Agora" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+      <input id="promo-btn-nome" type="text" value="${_ps.btnTexto||'🎉 Ver Promoção Completa'}" placeholder="Ex: 🛒 Pedir Agora" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
     </div>
     <div style="margin-bottom:10px">
       <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔗 Link do Botão</div>
-      <input id="promo-btn-link" type="url" value="${_ps.link||'https://wa.me/5516991472045'}" placeholder="https://wa.me/..." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+      <input id="promo-btn-link" type="url" value="${_ps.link||'/promocao.html'}" placeholder="https://... ou /promocao.html" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
     </div>
     <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
       <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
@@ -774,8 +774,8 @@ function salvarPromoLocal() {
   const d = {
     titulo: (document.getElementById('promo-titulo')||{}).value || '',
     descricao: (document.getElementById('promo-desc')||{}).value || '',
-    btnTexto: (document.getElementById('promo-btn-nome')||{}).value || '💬 Falar com a Loja',
-    link: (document.getElementById('promo-btn-link')||{}).value || 'https://wa.me/5516991472045',
+    btnTexto: (document.getElementById('promo-btn-nome')||{}).value || '🎉 Ver Promoção Completa',
+    link: (document.getElementById('promo-btn-link')||{}).value || '/promocao.html',
     dataFim: (document.getElementById('promo-data-fim')||{}).value || '',
     horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
     imagem: (JSON.parse(localStorage.getItem('itap_promo_local')||'{}')).imagem || ''
