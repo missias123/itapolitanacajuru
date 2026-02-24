@@ -1616,85 +1616,88 @@ document.addEventListener('DOMContentLoaded',()=>{
 })();
 </script>
 
-<!-- BOTÃO PROMOÇÃO AÇAÍ NATUREON -->
-<div id="promo-sorteio-btn" style="
-  position:fixed;
-  bottom:100px;
-  left:12px;
-  z-index:500;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:4px;
-  cursor:pointer;
-  text-decoration:none;
-  animation:bounce-promo 2s ease-in-out infinite;
-" onclick="window.open('https://www.instagram.com/p/DUKbpl7jXWp/','_blank')" title="Ver Sorteio no Instagram">
-  <div style="
-    background:linear-gradient(135deg,#7B1FA2,#4A148C);
-    border-radius:50%;
-    width:58px;height:58px;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 16px rgba(123,31,162,.7);
-    border:3px solid #FFD700;
-    overflow:hidden;
-    animation:pisca-promo 2.2s ease-in-out infinite;
-  ">
-    <img src="images/logo.png" alt="Promoção Itapolitana"
-      style="width:52px;height:52px;object-fit:contain;border-radius:50%;">
-  </div>
-  <div style="
-    background:#7B1FA2;
-    color:#FFD700;
-    font-size:8px;font-weight:900;
-    border-radius:8px;padding:2px 6px;
-    box-shadow:0 1px 4px rgba(0,0,0,.3);
-    white-space:nowrap;text-align:center;
-    max-width:70px;line-height:1.2;
-  ">🎉 SORTEIO</div>
-  <div id="promo-countdown" style="
-    background:rgba(74,20,140,.9);
-    color:#fff;
-    font-size:7px;font-weight:900;
-    border-radius:6px;padding:2px 5px;
-    box-shadow:0 1px 4px rgba(0,0,0,.3);
-    white-space:nowrap;text-align:center;
-    border:1px solid #FFD700;
-  ">⏳ --:--:--</div>
-</div>
-
+<!-- ═══════════════════════════════════════════════════════
+     BOTÃO FLUTUANTE DE PROMOÇÃO
+     Para desativar: mude PROMO_ATIVO para false
+     Para trocar data: mude PROMO_DATA_FIM
+     ═══════════════════════════════════════════════════════ -->
 <style>
-@keyframes bounce-promo{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes pisca-promo{0%,100%{box-shadow:0 4px 16px rgba(123,31,162,.7),0 0 0 0 rgba(255,215,0,.4)}50%{box-shadow:0 4px 16px rgba(123,31,162,.9),0 0 0 8px rgba(255,215,0,0)}}
+@keyframes promo-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.03)}}
+@keyframes promo-ring{0%{box-shadow:0 0 0 0 rgba(255,60,60,.7),0 6px 24px rgba(200,0,0,.5)}70%{box-shadow:0 0 0 14px rgba(255,60,60,0),0 6px 24px rgba(200,0,0,.5)}100%{box-shadow:0 0 0 0 rgba(255,60,60,0),0 6px 24px rgba(200,0,0,.5)}}
+@keyframes promo-shine{0%{left:-60%}100%{left:130%}}
+#promo-fab{
+  position:fixed;bottom:90px;right:14px;z-index:9999;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  cursor:pointer;text-decoration:none;
+  animation:promo-float 2.4s ease-in-out infinite;
+  filter:drop-shadow(0 8px 24px rgba(200,0,0,.6));
+}
+#promo-fab-inner{
+  background:linear-gradient(135deg,#E8000D 0%,#FF6B00 60%,#FFD600 100%);
+  border-radius:18px;
+  padding:10px 16px 10px 12px;
+  display:flex;align-items:center;gap:10px;
+  animation:promo-ring 2s ease-in-out infinite;
+  position:relative;overflow:hidden;
+  min-width:140px;
+}
+#promo-fab-inner::after{
+  content:'';
+  position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:promo-shine 2.2s ease-in-out infinite;
+}
+#promo-fab-logo{
+  width:38px;height:38px;border-radius:50%;object-fit:cover;
+  border:2px solid rgba(255,255,255,.8);flex-shrink:0;
+}
+#promo-fab-txt{display:flex;flex-direction:column;gap:1px}
+#promo-fab-label{font-size:13px;font-weight:900;color:#fff;line-height:1.1;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+#promo-fab-timer{font-size:10px;font-weight:800;color:rgba(255,255,255,.9);line-height:1}
+#promo-fab-arrow{
+  background:rgba(0,0,0,.25);color:#fff;
+  font-size:11px;font-weight:900;
+  border-radius:0 0 14px 14px;
+  padding:3px 16px;
+  text-align:center;width:100%;
+  letter-spacing:.5px;
+}
 </style>
+
+<a id="promo-fab" href="promocao.html" title="Ver Promoção do Mês">
+  <div id="promo-fab-inner">
+    <img id="promo-fab-logo" src="images/logo.png" alt="Itapolitana" onerror="this.style.display='none'">
+    <div id="promo-fab-txt">
+      <span id="promo-fab-label">🎉 SORTEIO!</span>
+      <span id="promo-fab-timer">⏳ carregando...</span>
+    </div>
+  </div>
+  <div id="promo-fab-arrow">▼ VER PROMOÇÃO</div>
+</a>
 
 <script>
 (function(){
-  // ✏️ EDITE AQUI: data e hora de encerramento da promoção
-  // Formato: 'AAAA-MM-DDTHH:MM:SS-03:00' (horário de Brasília)
-  var DATA_FIM_PROMO = '2026-02-28T23:59:00-03:00';
-  // =====================================================
-  var fim = new Date(DATA_FIM_PROMO).getTime();
-  function atualizar(){
-    var agora = Date.now();
-    var diff = fim - agora;
-    var el = document.getElementById('promo-countdown');
-    var btn = document.getElementById('promo-sorteio-btn');
-    if(!el || !btn) return;
-    if(diff <= 0){
-      btn.style.display = 'none';
-      return;
-    }
-    var d = Math.floor(diff/86400000);
-    var h = Math.floor((diff%86400000)/3600000);
-    var m = Math.floor((diff%3600000)/60000);
-    var s = Math.floor((diff%60000)/1000);
-    var txt = d>0 ? d+'d '+pad(h)+'h '+pad(m)+'m' : pad(h)+':'+pad(m)+':'+pad(s);
-    el.textContent = '⏳ '+txt;
-  }
+  // ✏️ EDITE AQUI PARA TROCAR A PROMOÇÃO
+  var PROMO_ATIVO   = true;                        // false = esconde o botão
+  var PROMO_DATA_FIM = '2026-02-28T23:59:00-03:00'; // data/hora de encerramento
+  // =========================================================
+  var fab = document.getElementById('promo-fab');
+  if(!PROMO_ATIVO){ fab.style.display='none'; return; }
+  var fim = new Date(PROMO_DATA_FIM).getTime();
   function pad(n){return n<10?'0'+n:n;}
-  atualizar();
-  setInterval(atualizar, 1000);
+  function tick(){
+    var diff = fim - Date.now();
+    var el = document.getElementById('promo-fab-timer');
+    if(!el) return;
+    if(diff <= 0){ fab.style.display='none'; return; }
+    var d=Math.floor(diff/86400000);
+    var h=Math.floor((diff%86400000)/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var s=Math.floor((diff%60000)/1000);
+    el.textContent = d>0 ? '⏳ '+d+'d '+pad(h)+'h '+pad(m)+'m' : '⏳ '+pad(h)+':'+pad(m)+':'+pad(s);
+  }
+  tick();
+  setInterval(tick,1000);
 })();
 </script>
 <!-- FIM BOTÃO PROMOÇÃO -->

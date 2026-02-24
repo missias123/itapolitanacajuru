@@ -4,21 +4,20 @@
   ║         SORVETERIA ITAPOLITANA CAJURU — SITE OFICIAL         ║
   ║──────────────────────────────────────────────────────────────║
   ║  Criado por: Sgt Missiascacarato                             ║
-  ║  Data de criação: Fevereiro de 2026                          ║
-  ║  Versão: 3.0 — Página de Promoção Redesenhada                ║
+  ║  Versão: 4.0 — Promoção Fixa no HTML (sem dependência)       ║
   ║  Tecnologia: HTML5 + CSS3 + JavaScript Vanilla               ║
   ║  Hospedagem: GitHub Pages                                    ║
   ║  Domínio: itapolitanacajuru.com.br                           ║
   ║──────────────────────────────────────────────────────────────║
-  ║  © 2026 Sorveteria Itapolitana Cajuru. Todos os direitos     ║
-  ║  reservados. Reprodução proibida sem autorização.            ║
+  ║  ✏️ PARA TROCAR A PROMOÇÃO: edite apenas o bloco             ║
+  ║     "CONFIGURAÇÃO DA PROMOÇÃO DO MÊS" abaixo                 ║
   ╚══════════════════════════════════════════════════════════════╝
 -->
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Promoção – Itapolitana Cajuru</title>
+<title>Promoção do Mês – Itapolitana Cajuru</title>
 <meta name="description" content="Promoção especial da Sorveteria Itapolitana Cajuru. Confira a oferta do mês!">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -33,39 +32,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0D0D0D;color:#fff;m
 .btn-voltar{background:linear-gradient(135deg,#F9A825,#FFD600);border:none;color:#1A0A00;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .btn-voltar:hover{opacity:.9;transform:translateY(-1px)}
 
-/* ── ESTADO: CARREGANDO ── */
-#estado-carregando{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;padding:40px 20px;text-align:center}
-.spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.15);border-top-color:#C62828;border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#estado-carregando p{font-size:14px;color:#9CA3AF;font-weight:600}
-
-/* ── ESTADO: SEM PROMOÇÃO ── */
-#estado-vazio{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:20px;padding:40px 20px;text-align:center}
-#estado-vazio .icone{font-size:72px;opacity:.6}
-#estado-vazio h2{font-size:22px;font-weight:900;color:#fff}
-#estado-vazio p{font-size:14px;color:#9CA3AF;font-weight:600;max-width:300px;line-height:1.6}
-.btn-instagram{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E1306C,#833AB4,#405DE6);color:#fff;border-radius:12px;padding:14px 24px;font-size:15px;font-weight:800;text-decoration:none;margin-top:8px}
-.btn-instagram:hover{opacity:.9;transform:translateY(-1px)}
-
-/* ── CONTEÚDO DA PROMOÇÃO ── */
-#conteudo-promo{display:none}
-
-/* FOTO — proporção 16:9 (1200×630px), aparece UMA VEZ, sem duplicação */
+/* ── FOTO ── */
 .foto-container{width:100%;background:#111;position:relative;overflow:hidden}
 .foto-container img{width:100%;aspect-ratio:1200/630;object-fit:cover;display:block;background:#111}
 .foto-badge{position:absolute;top:14px;left:14px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font-size:12px;font-weight:900;padding:6px 14px;border-radius:20px;letter-spacing:.5px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,0,13,.5)}50%{box-shadow:0 0 0 10px rgba(232,0,13,0)}}
 
-/* CORPO */
+/* ── CORPO ── */
 .corpo{max-width:680px;margin:0 auto;padding:28px 20px 56px}
-
-/* TÍTULO — máx 50 chars · 2 linhas desktop / 3 mobile */
 .promo-titulo{font-size:clamp(24px,6vw,42px);font-weight:900;line-height:1.15;color:#fff;margin-bottom:14px;word-break:break-word}
-
-/* DESCRIÇÃO — máx 150 chars · 3 linhas desktop / 5 mobile */
 .promo-desc{font-size:clamp(14px,3.5vw,18px);line-height:1.7;color:rgba(255,255,255,.85);background:rgba(255,255,255,.07);border-left:4px solid #C62828;border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:24px;word-break:break-word}
 
-/* RELÓGIO REGRESSIVO */
+/* ── RELÓGIO REGRESSIVO ── */
 .cd-section{background:linear-gradient(135deg,#1A0A00,#3E1A00);border-radius:14px;padding:24px 16px;text-align:center;margin-bottom:24px;border:1px solid rgba(255,213,79,.2)}
 .cd-lbl{font-size:12px;color:rgba(255,213,79,.8);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
 .cd-row{display:flex;justify-content:center;gap:clamp(6px,2.5vw,16px)}
@@ -74,33 +52,33 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0D0D0D;color:#fff;m
 .cd-unit{font-size:clamp(9px,2vw,11px);color:rgba(255,213,79,.7);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
 .cd-encerrado{font-size:clamp(16px,4.5vw,24px);font-weight:900;color:#EF4444;display:none;padding:10px}
 
-/* BOTÕES — botão principal máx 25 chars */
+/* ── BOTÕES ── */
 .promo-links{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
-.promo-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:17px 24px;border-radius:14px;font-size:clamp(14px,3.8vw,17px);font-weight:800;text-decoration:none;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.promo-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:17px 24px;border-radius:14px;font-size:clamp(14px,3.8vw,17px);font-weight:800;text-decoration:none;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;width:100%}
 .promo-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .btn-principal{background:linear-gradient(135deg,#FFD600,#FF8F00);color:#1A0A00}
 .btn-wpp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff}
 .btn-cardapio{background:linear-gradient(135deg,#6A0DAD,#9B30FF);color:#fff}
 .btn-encomenda{background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff}
 
-/* COMPARTILHAR */
+/* ── COMPARTILHAR ── */
 .share-section{text-align:center;padding:20px 0 0;border-top:1px solid rgba(255,255,255,.15)}
 .share-lbl{font-size:12px;color:#9CA3AF;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
 .share-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 .share-btn{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .share-btn:hover{background:rgba(255,255,255,.2)}
 
-/* FOOTER */
+/* ── FOOTER ── */
 footer{background:#111;border-top:1px solid rgba(255,255,255,.1);padding:20px;text-align:center;font-size:12px;color:#9CA3AF;line-height:1.8}
 footer strong{color:#fff}
 
-/* ANIMAÇÕES */
+/* ── ANIMAÇÕES ── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .fade1{animation:fadeUp .45s ease both}
 .fade2{animation:fadeUp .45s .1s ease both}
 .fade3{animation:fadeUp .45s .2s ease both}
 
-/* MOBILE */
+/* ── MOBILE ── */
 @media(max-width:480px){
   .topo{padding:10px 14px}
   .logo-nome{font-size:14px}
@@ -131,39 +109,47 @@ footer strong{color:#fff}
   <a href="index.html" class="btn-voltar">← Voltar</a>
 </header>
 
-<!-- ESTADO: CARREGANDO -->
-<div id="estado-carregando">
-  <div class="spinner"></div>
-  <p>Carregando promoção...</p>
+<!-- ═══════════════════════════════════════════════════════════════
+     ✏️ CONFIGURAÇÃO DA PROMOÇÃO DO MÊS
+     Para trocar a promoção, edite apenas as variáveis abaixo.
+     Não precisa mexer em mais nada!
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+var PROMO = {
+  ativo:    true,                          // true = mostra promoção | false = esconde
+  titulo:   "🎉 SORTEIO IMPERDÍVEL!",      // Título (máx 50 caracteres)
+  descricao:"Açaí Natureon 10L! Siga @sorveteriaitapolitanacajuru, marque 3 amigos e responda: qual o melhor açaí cremoso?", // Descrição (máx 150 chars)
+  foto:     "dados/promo_banner.jpg",      // Caminho da foto (coloque na pasta dados/)
+  btnTexto: "📸 Ver no Instagram",         // Texto do botão principal (máx 25 chars)
+  btnLink:  "https://www.instagram.com/p/DUKbpl7jXWp/", // Link do botão principal
+  dataFim:  "2026-02-28",                  // Data de encerramento (AAAA-MM-DD)
+  horaFim:  "23:59"                        // Hora de encerramento (HH:MM)
+};
+</script>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- FOTO -->
+<div class="foto-container fade1" id="foto-container" style="display:none">
+  <img id="promo-foto" src="" alt="Foto da Promoção" loading="lazy">
+  <div class="foto-badge">🔥 Promoção Ativa</div>
 </div>
 
 <!-- ESTADO: SEM PROMOÇÃO ATIVA -->
-<div id="estado-vazio">
-  <div class="icone">🍦</div>
-  <h2>Nenhuma promoção ativa</h2>
-  <p>No momento não há promoções ativas. Fique de olho nas nossas redes sociais para não perder nada!</p>
-  <a href="https://www.instagram.com/sorveteriaitapolitanacajuru" target="_blank" rel="noopener noreferrer" class="btn-instagram">📸 Ver no Instagram</a>
+<div id="estado-vazio" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:20px;padding:40px 20px;text-align:center">
+  <div style="font-size:72px;opacity:.6">🍦</div>
+  <h2 style="font-size:22px;font-weight:900">Nenhuma promoção ativa</h2>
+  <p style="font-size:14px;color:#9CA3AF;font-weight:600;max-width:300px;line-height:1.6">No momento não há promoções ativas. Fique de olho nas nossas redes sociais para não perder nada!</p>
+  <a href="https://www.instagram.com/sorveteriaitapolitanacajuru" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E1306C,#833AB4,#405DE6);color:#fff;border-radius:12px;padding:14px 24px;font-size:15px;font-weight:800;text-decoration:none;margin-top:8px">📸 Ver no Instagram</a>
   <a href="index.html" class="btn-voltar" style="margin-top:8px">← Voltar ao site</a>
 </div>
 
-<!-- CONTEÚDO DA PROMOÇÃO — só aparece quando há promoção ativa no Gist -->
-<div id="conteudo-promo">
-
-  <!-- FOTO 1200×630px — aparece UMA VEZ, sem duplicação -->
-  <div class="foto-container fade1" id="foto-container" style="display:none">
-    <img id="promo-foto" src="" alt="Foto da Promoção" loading="lazy">
-    <div class="foto-badge">🔥 Promoção Ativa</div>
-  </div>
-
+<!-- CONTEÚDO DA PROMOÇÃO -->
+<div id="conteudo-promo" style="display:none">
   <div class="corpo">
-
-    <!-- TÍTULO (máx 50 chars) -->
     <h1 class="promo-titulo fade1" id="promo-titulo"></h1>
-
-    <!-- DESCRIÇÃO (máx 150 chars) — só aparece se preenchida -->
     <p class="promo-desc fade2" id="promo-desc" style="display:none"></p>
 
-    <!-- RELÓGIO REGRESSIVO — só aparece se data preenchida -->
+    <!-- RELÓGIO REGRESSIVO -->
     <div class="cd-section fade2" id="cd-section" style="display:none">
       <div class="cd-lbl">⏳ Promoção encerra em</div>
       <div class="cd-row" id="cd-row">
@@ -177,9 +163,7 @@ footer strong{color:#fff}
 
     <!-- BOTÕES -->
     <div class="promo-links fade3">
-      <!-- Botão principal configurado pelo admin (máx 25 chars) -->
-      <a class="promo-btn btn-principal" id="btn-principal" href="https://www.instagram.com/sorveteriaitapolitanacajuru" target="_blank" rel="noopener noreferrer">📸 Ver no Instagram</a>
-      <!-- Botões fixos do site -->
+      <a class="promo-btn btn-principal" id="btn-principal" href="#" target="_blank" rel="noopener noreferrer">📸 Ver no Instagram</a>
       <a class="promo-btn btn-wpp" href="https://wa.me/5516991472045" target="_blank" rel="noopener noreferrer">📲 Pedir pelo WhatsApp</a>
       <a class="promo-btn btn-encomenda" href="encomendas.html">📋 Fazer Encomenda</a>
       <a class="promo-btn btn-cardapio" href="index.html#cardapio">🍦 Ver Cardápio Completo</a>
@@ -193,7 +177,6 @@ footer strong{color:#fff}
         <button type="button" class="share-btn" onclick="copiarLink()">🔗 Copiar Link</button>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -205,153 +188,71 @@ footer strong{color:#fff}
 </footer>
 
 <script>
-// ── CONFIGURAÇÃO ──────────────────────────────────────────────────────────────
-// Apenas o Gist é usado — proxy local não funciona no GitHub Pages
-const GIST_PROMO = 'https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json';
-
-// ── LIMITES DE CARACTERES (calculados pelo layout real) ───────────────────────
-// Título:    50 chars → 2 linhas desktop / 3 linhas mobile
-// Descrição: 150 chars → 3 linhas desktop / 5 linhas mobile
-// Botão:     25 chars → CTA curto e impactante
-// Foto:      1200×630px (16:9) · máx 2MB · JPG/PNG/WEBP
-const LIMITE = { titulo: 50, desc: 150, btn: 25 };
-
-// ── LIMPAR TODO CACHE ANTERIOR ────────────────────────────────────────────────
-function limparCacheAnterior() {
-  const chaves = [
-    'itap_promo_cache', 'itap_promo_local', 'itap_banner_cache',
-    'itap_banner', 'promo_bar_fechada', 'itap_promo_v1', 'itap_promo_v2'
-  ];
-  chaves.forEach(k => {
-    try { localStorage.removeItem(k); } catch(e) {}
-    try { sessionStorage.removeItem(k); } catch(e) {}
-  });
-}
-
-// ── CARREGAR PROMOÇÃO DO GIST ─────────────────────────────────────────────────
-async function carregarPromo() {
-  // Limpa TODOS os caches anteriores — dados antigos nunca aparecem
-  limparCacheAnterior();
-
-  try {
-    // Busca sempre direto do Gist com timestamp para evitar cache CDN
-    const resp = await fetch(GIST_PROMO + '?nocache=' + Date.now(), {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
-    });
-    if (resp.ok) {
-      const d = await resp.json();
-      aplicarPromo(d);
-      return;
-    }
-  } catch(e) {
-    console.warn('[Promo] Erro ao buscar Gist:', e.message);
-  }
-
-  // Se falhou completamente → mostra estado vazio
-  mostrarVazio();
-}
-
-// ── APLICAR DADOS DA PROMOÇÃO ─────────────────────────────────────────────────
-function aplicarPromo(d) {
-  // Sem dados, promoção desativada ou sem título → mostra vazio
-  if (!d || typeof d !== 'object' || d.ativo === false || !d.titulo || !d.titulo.trim()) {
-    mostrarVazio();
+// ── INICIAR PROMOÇÃO (sem fetch, sem dependência externa) ─────────────────────
+(function() {
+  if (!PROMO.ativo) {
+    document.getElementById('estado-vazio').style.display = 'flex';
     return;
   }
 
-  // TÍTULO (máx 50 chars)
-  const titulo = String(d.titulo).trim().slice(0, LIMITE.titulo);
-  document.getElementById('promo-titulo').textContent = titulo;
-  document.title = titulo + ' – Itapolitana Cajuru';
-
-  // DESCRIÇÃO (máx 150 chars) — só aparece se preenchida
-  if (d.descricao && d.descricao.trim()) {
-    const desc = String(d.descricao).trim().slice(0, LIMITE.desc);
-    const elDesc = document.getElementById('promo-desc');
-    elDesc.textContent = desc;
-    elDesc.style.display = 'block';
+  // FOTO
+  if (PROMO.foto) {
+    var fc = document.getElementById('foto-container');
+    var fi = document.getElementById('promo-foto');
+    fi.src = PROMO.foto;
+    fi.alt = PROMO.titulo;
+    fc.style.display = 'block';
   }
 
-  // FOTO (1200×630px) — aparece UMA VEZ, sem duplicação no hero
-  const fotoUrl = (d.fotoUrl || '').trim();
-  if (fotoUrl) {
-    const fotoContainer = document.getElementById('foto-container');
-    const fotoImg = document.getElementById('promo-foto');
-    fotoImg.src = fotoUrl;
-    fotoImg.alt = titulo;
-    fotoContainer.style.display = 'block';
+  // TÍTULO
+  document.getElementById('promo-titulo').textContent = PROMO.titulo;
+  document.title = PROMO.titulo + ' – Itapolitana Cajuru';
+
+  // DESCRIÇÃO
+  if (PROMO.descricao && PROMO.descricao.trim()) {
+    var el = document.getElementById('promo-desc');
+    el.textContent = PROMO.descricao;
+    el.style.display = 'block';
   }
 
-  // BOTÃO PRINCIPAL (máx 25 chars + link configurado pelo admin)
-  const btnEl = document.getElementById('btn-principal');
-  const btnTexto = String(d.btnTexto || '📸 Ver no Instagram').trim().slice(0, LIMITE.btn);
-  const btnLink = (d.link && d.link.trim()) ? d.link.trim() : 'https://www.instagram.com/sorveteriaitapolitanacajuru';
-  btnEl.textContent = btnTexto;
-  btnEl.href = btnLink;
-  // Se link interno, não abre nova aba
-  if (btnLink.startsWith('/') || btnLink.startsWith('./') || btnLink.includes('itapolitanacajuru')) {
-    btnEl.removeAttribute('target');
-    btnEl.removeAttribute('rel');
-  }
+  // BOTÃO PRINCIPAL
+  var btn = document.getElementById('btn-principal');
+  btn.textContent = PROMO.btnTexto || '📸 Ver no Instagram';
+  btn.href = PROMO.btnLink || 'https://www.instagram.com/sorveteriaitapolitanacajuru';
 
-  // COMPARTILHAR VIA WHATSAPP
-  const txtShare = encodeURIComponent('🍦 ' + titulo + ' – Itapolitana Cajuru!\n' + window.location.href);
+  // COMPARTILHAR
+  var txtShare = encodeURIComponent('🍦 ' + PROMO.titulo + ' – Itapolitana Cajuru!\n' + window.location.href);
   document.getElementById('share-wpp').href = 'https://wa.me/?text=' + txtShare;
 
-  // RELÓGIO REGRESSIVO — só aparece se data preenchida
-  if (d.dataFim && d.dataFim.trim()) {
+  // RELÓGIO REGRESSIVO
+  if (PROMO.dataFim) {
     document.getElementById('cd-section').style.display = 'block';
-    iniciarCountdown(d.dataFim, d.horaFim || '22:00');
-  }
-
-  // Exibe o conteúdo completo
-  mostrarConteudo();
-}
-
-// ── RELÓGIO REGRESSIVO ────────────────────────────────────────────────────────
-function iniciarCountdown(dataFim, horaFim) {
-  const fim = new Date(dataFim + 'T' + horaFim + ':00');
-  if (isNaN(fim.getTime())) return; // data inválida → não exibe
-
-  function tick() {
-    const diff = fim - new Date();
-    if (diff <= 0) {
-      document.getElementById('cd-row').style.display = 'none';
-      document.getElementById('cd-encerrado').style.display = 'block';
-      return;
+    var fim = new Date(PROMO.dataFim + 'T' + (PROMO.horaFim || '22:00') + ':00-03:00');
+    function tick() {
+      var diff = fim - new Date();
+      if (diff <= 0) {
+        document.getElementById('cd-row').style.display = 'none';
+        document.getElementById('cd-encerrado').style.display = 'block';
+        return;
+      }
+      document.getElementById('cd-d').textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
+      document.getElementById('cd-h').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+      document.getElementById('cd-m').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      document.getElementById('cd-s').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
     }
-    document.getElementById('cd-d').textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
-    document.getElementById('cd-h').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
-    document.getElementById('cd-m').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-    document.getElementById('cd-s').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+    tick();
+    setInterval(tick, 1000);
   }
-  tick();
-  setInterval(tick, 1000);
-}
 
-// ── ESTADOS DE EXIBIÇÃO ───────────────────────────────────────────────────────
-function mostrarConteudo() {
-  document.getElementById('estado-carregando').style.display = 'none';
-  document.getElementById('estado-vazio').style.display = 'none';
+  // MOSTRAR CONTEÚDO
   document.getElementById('conteudo-promo').style.display = 'block';
-}
+})();
 
-function mostrarVazio() {
-  document.getElementById('estado-carregando').style.display = 'none';
-  document.getElementById('conteudo-promo').style.display = 'none';
-  document.getElementById('estado-vazio').style.display = 'flex';
-}
-
-// ── COPIAR LINK ───────────────────────────────────────────────────────────────
 function copiarLink() {
   navigator.clipboard.writeText(window.location.href)
-    .then(() => alert('Link copiado! 😊'))
-    .catch(() => prompt('Copie o link:', window.location.href));
+    .then(function() { alert('Link copiado! 😊'); })
+    .catch(function() { prompt('Copie o link:', window.location.href); });
 }
-
-// ── INICIAR ───────────────────────────────────────────────────────────────────
-carregarPromo();
 </script>
 </body>
 </html>
