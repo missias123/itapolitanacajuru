@@ -132,7 +132,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 </head>
 <body>
 
-<!-- LOGIN -->
+
 <div class="login-wrap" id="login-section">
   <div class="login-box">
     <h2>📦 Estoque de Insumos</h2>
@@ -146,7 +146,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   </div>
 </div>
 
-<!-- PAINEL PRINCIPAL -->
+
 <div id="estoque-panel">
   <div class="header">
     <h1>📦 Estoque de Insumos – Itapolitana</h1>
@@ -157,14 +157,14 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   </div>
 
   <div class="body">
-    <!-- TOOLBAR -->
+    
     <div class="toolbar">
       <span class="toolbar-title">📦 Controle de Insumos</span>
       <input type="text" id="novo-item-nome" placeholder="Nome do produto (ex: Leite Integral 1L)..." onkeypress="if(event.key==='Enter')adicionarItem()">
       <button type="button" class="btn-add" onclick="adicionarItem()">➕ Adicionar Item</button>
     </div>
 
-    <!-- FILTROS -->
+    
     <div class="filtros">
       <button type="button" class="filtro-btn ativo" onclick="setFiltro('todos',this)">📋 Todos</button>
       <button type="button" class="filtro-btn alerta" onclick="setFiltro('baixo',this)">⚠️ Estoque Baixo</button>
@@ -172,14 +172,14 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
       <button type="button" class="filtro-btn" onclick="setFiltro('ok',this)" style="border-color:#10B981;color:#10B981">✅ Em Estoque</button>
     </div>
 
-    <!-- STATS -->
+    
     <div class="stats" id="stats-area"></div>
 
-    <!-- GRID DE ITENS -->
+    
     <div class="itens-grid" id="itens-grid"></div>
   </div>
 
-  <!-- BARRA DE EXPORTAÇÃO -->
+  
   <div class="export-bar">
     <span class="export-count" id="export-count">0 itens cadastrados</span>
     <button type="button" class="btn-copy" onclick="abrirListaCompleta()">📋 Ver Lista Completa</button>
@@ -187,7 +187,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
   </div>
 </div>
 
-<!-- MODAL LISTA -->
+
 <div class="modal-overlay" id="modal-lista">
   <div class="modal-box">
     <div class="modal-header">
@@ -208,8 +208,6 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 const ADMIN_PASS_EST = "itapolitana2007@";
 const STORAGE_KEY = "itap_estoque_insumos";
 let filtroAtual = 'todos';
-
-// ── AUTH ──
 function toggleSenhaEst() {
   const inp = document.getElementById('est-password');
   const btn = document.getElementById('btn-olho-est');
@@ -225,8 +223,6 @@ function checkLoginEstoque() {
   } else { alert('Senha incorreta!'); }
 }
 function logoutEstoque() { location.reload(); }
-
-// ── DADOS ──
 function getDados() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e){ return []; }
 }
@@ -234,8 +230,6 @@ function salvarDados(dados) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
 }
 function novoId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
-
-// ── ADICIONAR ITEM ──
 function adicionarItem() {
   const inp = document.getElementById('novo-item-nome');
   const nome = inp.value.trim();
@@ -248,8 +242,6 @@ function adicionarItem() {
   renderEstoque();
   inp.focus();
 }
-
-// ── ATUALIZAR QUANTIDADE ──
 function alterarQtd(id, delta) {
   const dados = getDados();
   const item = dados.find(i => i.id === id);
@@ -258,8 +250,6 @@ function alterarQtd(id, delta) {
   salvarDados(dados);
   renderEstoque();
 }
-
-// ── ATUALIZAR NOME ──
 function atualizarNome(id, nome) {
   const dados = getDados();
   const item = dados.find(i => i.id === id);
@@ -267,8 +257,6 @@ function atualizarNome(id, nome) {
   item.nome = nome;
   salvarDados(dados);
 }
-
-// ── ATUALIZAR UNIDADE ──
 function atualizarUnidade(id, unidade) {
   const dados = getDados();
   const item = dados.find(i => i.id === id);
@@ -276,16 +264,12 @@ function atualizarUnidade(id, unidade) {
   item.unidade = unidade;
   salvarDados(dados);
 }
-
-// ── EXCLUIR ITEM ──
 function excluirItem(id) {
   if (!confirm('Excluir este item do estoque?')) return;
   const dados = getDados().filter(i => i.id !== id);
   salvarDados(dados);
   renderEstoque();
 }
-
-// ── FOTO ──
 function onFotoItemChange(id, input) {
   const file = input.files[0];
   if (!file) return;
@@ -300,23 +284,17 @@ function onFotoItemChange(id, input) {
   };
   reader.readAsDataURL(file);
 }
-
-// ── FILTRO ──
 function setFiltro(filtro, btn) {
   filtroAtual = filtro;
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
   btn.classList.add('ativo');
   renderEstoque();
 }
-
-// ── STATUS DO ITEM ──
 function getStatus(qtd) {
   if (qtd === 0) return 'esgotado';
   if (qtd <= 3) return 'baixo';
   return 'ok';
 }
-
-// ── RENDER STATS ──
 function renderStats(dados) {
   const total = dados.length;
   const esgotados = dados.filter(i => i.qtd === 0).length;
@@ -330,8 +308,6 @@ function renderStats(dados) {
   `;
   document.getElementById('export-count').textContent = `${total}/300 itens cadastrados`;
 }
-
-// ── RENDER GRID ──
 function renderEstoque() {
   let dados = getDados();
   renderStats(dados);
@@ -384,8 +360,6 @@ function renderEstoque() {
     `;
   }).join('');
 }
-
-// ── LISTA COMPLETA ──
 function abrirListaCompleta() {
   const dados = getDados();
   const data = new Date().toLocaleDateString('pt-BR');
@@ -419,8 +393,6 @@ function abrirListaCompleta() {
   document.getElementById('modal-texto').value = texto;
   document.getElementById('modal-lista').classList.add('open');
 }
-
-// ── GERAR PEDIDO ──
 function gerarPedido() {
   const dados = getDados();
   const precisam = dados.filter(i => i.qtd <= 3);
@@ -452,8 +424,6 @@ function gerarPedido() {
   document.getElementById('modal-texto').value = texto;
   document.getElementById('modal-lista').classList.add('open');
 }
-
-// ── COPIAR LISTA ──
 function copiarLista() {
   const texto = document.getElementById('modal-texto').value;
   navigator.clipboard.writeText(texto).then(() => {
@@ -470,8 +440,6 @@ function copiarLista() {
     alert('Lista copiada!');
   });
 }
-
-// ── FECHAR MODAL ──
 function fecharModal() {
   document.getElementById('modal-lista').classList.remove('open');
 }

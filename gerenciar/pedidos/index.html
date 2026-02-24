@@ -81,13 +81,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#11182
 </head>
 <body>
 
-<!-- HEADER -->
+
 <header class="header">
   <h1>📋 Pedidos de Encomenda</h1>
   <a href="../" class="btn-voltar">← Admin</a>
 </header>
 
-<!-- BARRA DE AÇÕES -->
+
 <div class="barra-acoes">
   <div class="contador">Total: <span id="total-contador">0</span> pedido(s)</div>
   <button type="button" class="btn-limpar-todos" id="btn-limpar-todos" onclick="confirmarLimparTodos()">
@@ -95,7 +95,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#11182
   </button>
 </div>
 
-<!-- FILTROS -->
+
 <div class="filtros">
   <button type="button" class="btn-filtro ativo" data-filtro="todos" onclick="filtrar('todos')">📋 Todos</button>
   <button type="button" class="btn-filtro f-novo" data-filtro="novo" onclick="filtrar('novo')">🆕 Novos</button>
@@ -103,10 +103,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#11182
   <button type="button" class="btn-filtro f-concluido" data-filtro="concluido" onclick="filtrar('concluido')">✅ Concluídos</button>
 </div>
 
-<!-- LISTA DE PEDIDOS -->
+
 <div class="lista" id="lista-pedidos"></div>
 
-<!-- MODAL CONFIRMAÇÃO LIMPAR TODOS -->
+
 <div class="modal-overlay" id="modal-limpar">
   <div class="modal-box">
     <div class="modal-icone">🗑️</div>
@@ -119,7 +119,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#11182
   </div>
 </div>
 
-<!-- MODAL CONFIRMAÇÃO EXCLUIR UM -->
+
 <div class="modal-overlay" id="modal-excluir">
   <div class="modal-box">
     <div class="modal-icone">🗑️</div>
@@ -132,14 +132,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f8;color:#11182
   </div>
 </div>
 
-<!-- TOAST -->
+
 <div class="toast" id="toast"></div>
 
 <script>
 let filtroAtual = 'todos';
 let indiceParaExcluir = -1;
-
-// ── CARREGAR E RENDERIZAR ──
 function getPedidos() {
   try { return JSON.parse(localStorage.getItem('itap_pedidos') || '[]'); } catch(e) { return []; }
 }
@@ -209,8 +207,6 @@ function render() {
     </div>`;
   }).join('');
 }
-
-// ── FILTRO ──
 function filtrar(f) {
   filtroAtual = f;
   document.querySelectorAll('.btn-filtro').forEach(b => {
@@ -218,8 +214,6 @@ function filtrar(f) {
   });
   render();
 }
-
-// ── STATUS ──
 function atualizarStatus(idx, status) {
   const pedidos = getPedidos();
   if (pedidos[idx]) {
@@ -229,8 +223,6 @@ function atualizarStatus(idx, status) {
     toast('Status atualizado!');
   }
 }
-
-// ── EXCLUIR UM ──
 function pedirExcluirUm(idx, nome) {
   indiceParaExcluir = idx;
   document.getElementById('modal-excluir-desc').innerHTML = `Deseja remover o pedido de <strong>${nome}</strong>? Esta ação não pode ser desfeita.`;
@@ -246,8 +238,6 @@ function confirmarExcluirUm() {
   toast('Pedido excluído!');
   indiceParaExcluir = -1;
 }
-
-// ── LIMPAR TODOS ──
 function confirmarLimparTodos() {
   if (getPedidos().length === 0) return;
   document.getElementById('modal-limpar').classList.add('aberto');
@@ -258,24 +248,18 @@ function limparTodos() {
   render();
   toast('Todos os pedidos foram removidos!');
 }
-
-// ── MODAL ──
 function fecharModal() {
   document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('aberto'));
 }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) fecharModal(); });
 });
-
-// ── TOAST ──
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('visivel');
   setTimeout(() => el.classList.remove('visivel'), 2500);
 }
-
-// ── ATUALIZAÇÃO AUTOMÁTICA A CADA 30s ──
 render();
 setInterval(render, 30000);
 </script>

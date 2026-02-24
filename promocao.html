@@ -69,7 +69,7 @@ footer strong{color:#fff}
 </head>
 <body>
 
-<!-- TOPO -->
+
 <header class="topo">
   <a href="index.html" class="logo-area">
     <img src="images/logo.png" alt="Itapolitana" onerror="this.style.display='none'">
@@ -78,7 +78,7 @@ footer strong{color:#fff}
   <a href="index.html" class="btn-voltar">← Voltar</a>
 </header>
 
-<!-- FOTO GRANDE -->
+
 <section class="hero fade1">
   <div class="hero-placeholder" id="hero-placeholder">🍦</div>
   <img class="hero-img" id="hero-img" src="" alt="Promoção">
@@ -90,7 +90,7 @@ footer strong{color:#fff}
   </div>
 </section>
 
-<!-- RELÓGIO REGRESSIVO -->
+
 <div class="cd-section fade2">
   <div class="cd-lbl">⏳ Promoção encerra em</div>
   <div class="cd-row" id="cd-row">
@@ -102,7 +102,7 @@ footer strong{color:#fff}
   <div class="cd-encerrado" id="cd-encerrado">⏰ Promoção Encerrada</div>
 </div>
 
-<!-- CORPO -->
+
 <div class="corpo fade3">
 
   <!-- Texto detalhado -->
@@ -126,7 +126,7 @@ footer strong{color:#fff}
   </div>
 </div>
 
-<!-- FOOTER -->
+
 <footer>
   <strong>Sorveteria Itapolitana Cajuru</strong><br>
   R. Cel. Manoel Caetano, 311 – Praça Largo São Bento · Em frente à Igreja São Bento · Cajuru · SP<br>
@@ -135,39 +135,54 @@ footer strong{color:#fff}
 </footer>
 
 <script>
-function carregarPromo() {
-  const d = JSON.parse(localStorage.getItem('itap_promo') || '{}');
+const _GIST_PROMO = 'https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json';
 
+function _aplicarPromo(d) {
+  if (!d || typeof d !== 'object') return;
   if (d.titulo) {
     document.getElementById('hero-titulo').textContent = d.titulo;
     document.title = d.titulo + ' – Itapolitana Cajuru';
   }
   if (d.descricao) document.getElementById('hero-desc').textContent = d.descricao;
-
   if (d.textoExtra && d.textoExtra.trim()) {
     const el = document.getElementById('promo-texto');
     el.textContent = d.textoExtra;
     el.style.display = 'block';
   }
-
-  if (d.imagem) {
+  const imgSrc = d.imagem || d.bannerImg || '';
+  if (imgSrc) {
     const img = document.getElementById('hero-img');
-    img.src = d.imagem;
+    img.src = imgSrc;
     img.style.display = 'block';
-    document.getElementById('hero-placeholder').style.display = 'none';
+    const ph = document.getElementById('hero-placeholder');
+    if (ph) ph.style.display = 'none';
   }
-
   const btn = document.getElementById('btn-principal');
-  if (d.link) {
-    btn.href = d.link;
-    btn.removeAttribute('target');
-  }
+  if (d.link) { btn.href = d.link; btn.removeAttribute('target'); }
   if (d.btnTexto) btn.innerHTML = d.btnTexto;
-
   const txt = encodeURIComponent('🍦 ' + (d.titulo || 'Promoção Especial') + ' – Itapolitana Cajuru!\n' + window.location.href);
   document.getElementById('share-wpp').href = 'https://wa.me/?text=' + txt;
-
   iniciarCountdown(d.dataFim || '2026-04-01', d.horaFim || '22:00');
+}
+
+async function carregarPromo() {
+  // 1. Aplica cache local imediatamente (sem piscar)
+  try {
+    const cache = JSON.parse(localStorage.getItem('itap_promo_cache') || '{}');
+    if (cache.titulo) _aplicarPromo(cache);
+  } catch(e) {}
+
+  // 2. Busca dados frescos do Gist (fonte oficial)
+  try {
+    const resp = await fetch(_GIST_PROMO + '?t=' + Date.now());
+    if (resp.ok) {
+      const d = await resp.json();
+      localStorage.setItem('itap_promo_cache', JSON.stringify(d));
+      _aplicarPromo(d);
+    }
+  } catch(e) {
+    console.warn('Promo: usando cache local', e.message);
+  }
 }
 
 function iniciarCountdown(dataFim, horaFim) {

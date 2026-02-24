@@ -1,9 +1,6 @@
-// ============================================================
+
 // ENCOMENDAS.JS - Sorveteria Itapolitana Cajuru
 // Lógica completa do fluxo de encomendas
-// ============================================================
-
-// ── SINCRONIZAÇÃO DE PREÇOS DA NUVEM ──
 const GIST_ID_PRECO = '92bd9d1997c2fdd225ad3115c7028445';
 const GIST_RAW_PRECO = 'https://gist.githubusercontent.com/missias123/' + GIST_ID_PRECO + '/raw/itap-produtos.json';
 
@@ -669,8 +666,6 @@ function renderCarrinho() {
     </div>`;
   }).join('');
   if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
-
-  // ── REGRA: mínimo 100 picolés para atacado ──
   const totalPic = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   const temPicole = carrinho.some(i=>i.tipo==='picolé');
   const aviso = document.getElementById('aviso-min-carrinho');
@@ -708,7 +703,6 @@ function qtdCarrinho(i, delta) {
     return;
   }
   item.quantidade = nova;
-  // ── REGRA CRÍTICA: se picolés ficarem abaixo de 100, fechar carrinho e voltar para seção ──
   const totalPicAtual = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   const temPicole = carrinho.some(c=>c.tipo==='picolé');
   if (temPicole && totalPicAtual < 100 && delta < 0) {
@@ -761,7 +755,6 @@ function mostrarEtapa(etapa) {
 
 function irParaDados() {
   if (carrinho.length === 0) { showToast('Carrinho vazio!','alerta'); return; }
-  // ── REGRA CRÍTICA: verificar mínimo 100 picolés ──
   const totalPicoles = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   const temPicole = carrinho.some(i=>i.tipo==='picolé');
   if (temPicole && totalPicoles < 100) {
@@ -837,11 +830,8 @@ function verificarFormulario() {
 }
 
 function finalizarPedido() {
-  // ============================================================
   // CHECKOUT CORPORATIVO — Padrão de produção
   // Validação robusta + loading state + fallback garantido
-  // ============================================================
-  // ── VERIFICAÇÃO FINAL: mínimo 100 picolés (barreira de segurança) ──
   const _totalPicFinal = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   const _temPicoleFinal = carrinho.some(i=>i.tipo==='picolé');
   if (_temPicoleFinal && _totalPicFinal < 100) {
@@ -881,11 +871,9 @@ function finalizarPedido() {
     if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
     if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
   }
-  // ============================================================
   // SISTEMA DE NUMERAÇÃO DE PEDIDOS
   // Contador centralizado no servidor (CounterAPI)
   // Fallback automático para contador local se API indisponível
-  // ============================================================
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up', { signal: controller.signal })
@@ -956,12 +944,10 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   if (dataEl) dataEl.textContent = `📅 Data: ${dataFormatada}`;
 
   // Atualizar o href do link WhatsApp diretamente (evita bloqueio de popup)
-  // ============================================================
   // ESVAZIAR CARRINHO E REDUZIR ESTOQUE IMEDIATAMENTE
   // Feito aqui (antes de mostrar a tela de confirmação) para
   // garantir que o estoque e carrinho sejam atualizados mesmo
   // que o usuário saia da página ao abrir o WhatsApp
-  // ============================================================
   const caixas = getCaixasEncomenda();
   const tortas = getTortasEncomenda();
   carrinho.forEach(item => {
@@ -1060,7 +1046,6 @@ function toggleSecao(id) {
     }, 50);
   }
 }
-
 
 
 // ---- ACRÉSCIMOS (sincronizado com admin - itap_acrescimos) ----
