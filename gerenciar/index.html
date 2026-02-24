@@ -181,7 +181,7 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 <script src="../scripts/products.js"></script>
 <script>
 const ADMIN_PASS = "itapolitana2007";
-const ADMIN_SOS = "sos2007senha"; // Senha de emergência — entra e auto-corrige bugs
+const ADMIN_SOS = "sos2007"; // Senha de emergência — entra e auto-corrige bugs
 function toggleSenha() {
   const inp = document.getElementById('admin-password');
   const btn = document.getElementById('btn-olho');
@@ -319,43 +319,63 @@ function checkLogin() {
     document.getElementById('admin-panel').style.display = 'block';
     renderAdmin();
   } else if (p === ADMIN_SOS) {
-    // Modo SOS: entra e tenta corrigir automaticamente
+    // Modo SOS: entra, corrige cache, aciona redeploy e avisa WhatsApp
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
     renderAdmin();
-    setTimeout(() => {
+    setTimeout(async () => {
       const sosDiv = document.createElement('div');
       sosDiv.id = 'sos-banner';
       sosDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#EF4444;color:#fff;padding:14px 18px;font-size:14px;font-weight:800;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.4)';
-      sosDiv.innerHTML = '🆘 Modo SOS ativado — Detectando e corrigindo problemas automaticamente...';
+      sosDiv.innerHTML = '🆘 Modo SOS ativado — Detectando e corrigindo problemas...';
       document.body.prepend(sosDiv);
-      // Auto-correção: limpar caches corrompidos
+      // 1. Auto-correção: limpar caches corrompidos
       const chavesCorrompidas = [];
       const chaves = ['itap_promo','itap_promo_cache','itap_promo_local','itap_banner','itap_banner_cache','itap_produtos_nuvem','itap_fotos','itap_sabores','itap_caixas_enc','itap_tortas_enc','itap_complementos','itap_acrescimos','itap_pedidos','itap_seq_pedido','pwa_dispensado'];
       chaves.forEach(k => {
-        try {
-          const v = localStorage.getItem(k);
-          if (v) { JSON.parse(v); } // testa se é JSON válido
-        } catch(e) {
-          localStorage.removeItem(k);
-          chavesCorrompidas.push(k);
-        }
+        try { const v = localStorage.getItem(k); if (v) JSON.parse(v); }
+        catch(e) { localStorage.removeItem(k); chavesCorrompidas.push(k); }
       });
-      // Verificar se o script principal carregou
+      // 2. Verificar funções principais
       const problemas = [];
-      if (typeof renderAdmin !== 'function') problemas.push('Função renderAdmin não carregou');
-      if (typeof salvarPromo !== 'function') problemas.push('Função salvarPromo não carregou');
+      if (typeof renderAdmin !== 'function') problemas.push('renderAdmin não carregou');
+      if (typeof salvarPromo !== 'function') problemas.push('salvarPromo não carregou');
       if (chavesCorrompidas.length > 0) problemas.push('Cache corrompido limpo: ' + chavesCorrompidas.join(', '));
-      // Exibir resultado
+      // 3. Acionar redeploy do GitHub Pages via Gist config
+      let redeployOk = false;
+      try {
+        const cfgResp = await fetch('https://gist.githubusercontent.com/missias123/a84c203501dfd5e7a3f21bd651dc0ac0/raw/sos-config.json?t=' + Date.now());
+        const cfg = await cfgResp.json();
+        // Pegar SHA atual
+        const refResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/refs/heads/' + cfg.branch, {headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json'}});
+        const refData = await refResp.json();
+        const sha = refData.object.sha;
+        // Pegar tree do commit
+        const commitResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/commits/' + sha, {headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json'}});
+        const commitData = await commitResp.json();
+        const tree = commitData.tree.sha;
+        // Criar commit vazio
+        const newCommitResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/commits', {method:'POST',headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'chore: SOS redeploy ' + new Date().toISOString(),tree:tree,parents:[sha]})});
+        const newCommit = await newCommitResp.json();
+        // Atualizar ref
+        await fetch('https://api.github.com/repos/' + cfg.repo + '/git/refs/heads/' + cfg.branch, {method:'PATCH',headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({sha:newCommit.sha,force:false})});
+        redeployOk = true;
+      } catch(e) { problemas.push('Redeploy falhou: ' + e.message); }
+      // 4. Enviar alerta WhatsApp
+      const hora = new Date().toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'});
+      const status = problemas.length === 0 ? 'Tudo OK' : problemas.join(' | ');
+      const msg = '🆘 *SOS Itapolitana Admin*\n' + hora + '\n\n' + (problemas.length === 0 ? '✅ Nenhum problema encontrado. Site funcionando normalmente.' : '⚠️ Problemas detectados e corrigidos:\n' + problemas.map(p=>'• '+p).join('\n')) + (redeployOk ? '\n\n🔄 Redeploy do site acionado com sucesso.' : '');
+      const wppUrl = 'https://wa.me/5516996291903?text=' + encodeURIComponent(msg);
+      // 5. Exibir resultado
       setTimeout(() => {
         if (problemas.length === 0) {
           sosDiv.style.background = '#16A34A';
-          sosDiv.innerHTML = '✅ Modo SOS: Nenhum problema encontrado! Tudo funcionando. <button onclick="this.parentElement.remove()" style="margin-left:12px;background:#fff;color:#16A34A;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Fechar</button>';
+          sosDiv.innerHTML = '✅ SOS: Tudo OK! ' + (redeployOk ? 'Redeploy acionado. ' : '') + '<a href="' + wppUrl + '" target="_blank" style="margin-left:10px;background:#fff;color:#16A34A;border-radius:6px;padding:4px 12px;font-weight:800;text-decoration:none">📲 Ver no WhatsApp</a> <button onclick="this.parentElement.remove()" style="margin-left:8px;background:rgba(255,255,255,.3);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Fechar</button>';
         } else {
           sosDiv.style.background = '#D97706';
-          sosDiv.innerHTML = '⚠️ Modo SOS: Corrigido automaticamente — ' + problemas.join(' | ') + ' <button onclick="location.reload()" style="margin-left:12px;background:#fff;color:#D97706;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Recarregar</button>';
+          sosDiv.innerHTML = '⚠️ SOS: Corrigido! ' + problemas.length + ' problema(s). ' + (redeployOk ? '🔄 Redeploy acionado. ' : '') + '<a href="' + wppUrl + '" target="_blank" style="margin-left:10px;background:#fff;color:#D97706;border-radius:6px;padding:4px 12px;font-weight:800;text-decoration:none">📲 Relatório WhatsApp</a> <button onclick="location.reload()" style="margin-left:8px;background:rgba(255,255,255,.3);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Recarregar</button>';
         }
-      }, 1500);
+      }, 2000);
     }, 500);
   } else { alert('Senha incorreta!'); }
 }
