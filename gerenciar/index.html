@@ -80,6 +80,40 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 .foto-acoes{display:flex;gap:6px;margin-top:6px}
 .btn-trocar-foto{flex:1;padding:6px;background:#EDE9FE;color:#6A0DAD;border:1px solid #C4B5FD;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
 .btn-remover-foto{flex:1;padding:6px;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer}
+
+/* ── VALIDAÇÃO EM TEMPO REAL ── */
+.campo-valido{border-color:#10B981 !important;background:#F0FDF4 !important}
+.campo-invalido{border-color:#EF4444 !important;background:#FEF2F2 !important}
+.campo-aviso{border-color:#F59E0B !important;background:#FFFBEB !important}
+.contador-chars{font-size:11px;font-weight:700;text-align:right;margin-top:3px;transition:color .2s}
+.contador-ok{color:#10B981}
+.contador-aviso{color:#F59E0B}
+.contador-erro{color:#EF4444}
+.erro-inline{font-size:11px;font-weight:700;color:#EF4444;margin-top:3px;display:none}
+.erro-inline.visivel{display:block}
+
+/* ── PAINEL DE DIAGNÓSTICO ── */
+#painel-diagnostico{background:#fff;border-radius:14px;border:2px solid #3B82F6;padding:18px 20px;margin-bottom:16px;display:none}
+#painel-diagnostico.aberto{display:block}
+.diag-titulo{font-size:16px;font-weight:900;color:#1D4ED8;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.diag-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;font-weight:600}
+.diag-ok{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.diag-erro{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.diag-aviso{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.diag-info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.btn-diag{width:100%;background:linear-gradient(135deg,#3B82F6,#1D4ED8);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-diag:hover{background:linear-gradient(135deg,#2563EB,#1E40AF)}
+.btn-autocorrigir{width:100%;background:linear-gradient(135deg,#10B981,#059669);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:8px}
+.btn-autocorrigir:hover{background:linear-gradient(135deg,#059669,#047857)}
+
+/* ── CAMPO DE RELATO DE ERRO ── */
+#bloco-relato{background:#FFF7ED;border:2px solid #F59E0B;border-radius:12px;padding:16px;margin-top:12px}
+#bloco-relato h4{font-size:14px;font-weight:900;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+#campo-relato-erro{width:100%;padding:10px 12px;border:1.5px solid #FCD34D;border-radius:8px;font-size:13px;resize:vertical;min-height:80px;box-sizing:border-box;font-family:inherit}
+#campo-relato-erro:focus{outline:none;border-color:#F59E0B}
+.btn-enviar-relato{width:100%;background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px}
+.btn-enviar-relato:hover{background:linear-gradient(135deg,#D97706,#B45309)}
+#relato-status{font-size:12px;font-weight:700;color:#10B981;text-align:center;margin-top:8px;min-height:18px}
 </style>
 </head>
 <body>
@@ -98,7 +132,10 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 <div id="admin-panel">
   <div class="admin-header">
     <h1>⚙️ Gerenciamento – Itapolitana Cajuru</h1>
-    <button type="button" class="btn-logout" onclick="logout()">Sair</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button type="button" onclick="toggleDiagnostico()" id="btn-abrir-diag" style="background:#3B82F6;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">🔍 Diagnóstico</button>
+      <button type="button" class="btn-logout" onclick="logout()">Sair</button>
+    </div>
   </div>
   <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB">
     <a href="./cardapio/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(123,31,162,.35)">
@@ -121,6 +158,19 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
       <div><div style="font-size:15px;font-weight:800">Pedidos Recebidos</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Ver, atualizar e excluir pedidos de encomenda</div></div>
       <span style="margin-left:auto;font-size:18px">›</span>
     </a>
+  </div>
+  <!-- PAINEL DE DIAGNÓSTICO -->
+  <div id="painel-diagnostico">
+    <div class="diag-titulo">🔍 Diagnóstico do Sistema</div>
+    <div id="diag-resultados"><div class="diag-item diag-info"><span>⏳</span><span>Executando diagnóstico...</span></div></div>
+    <button type="button" class="btn-autocorrigir" onclick="autoCorrigir()" id="btn-autocorrigir" style="display:none">🔧 Auto-Corrigir Erros Detectados</button>
+    <div id="bloco-relato">
+      <h4>🚨 Descrever um Problema</h4>
+      <p style="font-size:12px;color:#92400E;margin-bottom:8px">Descreva o que está acontecendo de errado. O relato será enviado automaticamente com os dados técnicos do sistema.</p>
+      <textarea id="campo-relato-erro" placeholder="Ex: A foto da promoção não aparece no site, o título está errado, o botão não funciona..."></textarea>
+      <button type="button" class="btn-enviar-relato" onclick="enviarRelato()">📤 Enviar Relato via WhatsApp</button>
+      <div id="relato-status"></div>
+    </div>
   </div>
   <div class="admin-body" id="admin-body"></div>
   <div class="save-bar">
@@ -302,23 +352,30 @@ function renderAdmin() {
         📷 ${_fotoUrl ? 'Trocar Foto da Promoção' : 'Adicionar Foto da Promoção'}
         <input type="file" accept="image/*" style="display:none" onchange="onPromoFotoChange(this)">
       </label>
-      <div style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:4px">JPG/PNG/WEBP · máx 2MB · ideal 800×800px</div>
+      <div style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:4px">📍 <strong>Ideal: 1200 × 630 px</strong> (proporção 16:9) · JPG/PNG/WEBP · máx 2 MB</div>
     </div>
     <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📝 Título da Promoção</div>
-      <input id="promo-titulo" type="text" value="${_ps.titulo||''}" placeholder="Ex: 50% OFF em Picolés!" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📝 Título da Promoção <span style="color:#6B7280;font-weight:500">(máx. 50 caracteres)</span></div>
+      <input id="promo-titulo" type="text" maxlength="50" value="${_ps.titulo||\'\'}" placeholder="Ex: 50% OFF em Picolés!" oninput="validarCampoPromo(this,'promo-titulo',50,'titulo');salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+      <div class="contador-chars contador-ok" id="cont-titulo">0 / 50</div>
+      <div class="erro-inline" id="err-titulo">Campo obrigatório! Mínimo 3 caracteres.</div>
     </div>
     <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📄 Descrição</div>
-      <textarea id="promo-desc" rows="2" placeholder="Descreva a promoção..." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box">${_ps.descricao||''}</textarea>
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📄 Descrição <span style="color:#6B7280;font-weight:500">(máx. 150 caracteres)</span></div>
+      <textarea id="promo-desc" rows="3" maxlength="150" placeholder="Descreva a promoção..." oninput="validarCampoPromo(this,'promo-desc',150,'desc');salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box">${_ps.descricao||\'\'}</textarea>
+      <div class="contador-chars contador-ok" id="cont-desc">0 / 150</div>
+      <div class="erro-inline" id="err-desc"></div>
     </div>
     <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔘 Nome do Botão Principal</div>
-      <input id="promo-btn-nome" type="text" value="${_ps.btnTexto||'📸 Ver no Instagram'}" placeholder="Ex: 🛒 Pedir Agora" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔘 Nome do Botão Principal <span style="color:#6B7280;font-weight:500">(máx. 25 caracteres)</span></div>
+      <input id="promo-btn-nome" type="text" maxlength="25" value="${_ps.btnTexto||\'📸 Ver no Instagram\'}" placeholder="Ex: 🛒 Pedir Agora" oninput="validarCampoPromo(this,'promo-btn-nome',25,'btn');salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+      <div class="contador-chars contador-ok" id="cont-btn">0 / 25</div>
+      <div class="erro-inline" id="err-btn">Máximo de 25 caracteres atingido.</div>
     </div>
     <div style="margin-bottom:10px">
       <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔗 Link do Botão</div>
-      <input id="promo-btn-link" type="url" value="${_ps.link||'https://www.instagram.com/sorveteriaitapolitanacajuru'}" placeholder="https://... ou /promocao.html" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+      <input id="promo-btn-link" type="url" value="${_ps.link||\'https://www.instagram.com/sorveteriaitapolitanacajuru\'}" placeholder="https://... ou /promocao.html" oninput="validarLink(this);salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+      <div class="erro-inline" id="err-link">URL inválida. Deve começar com https:// ou /</div>
     </div>
     <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
       <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
@@ -339,6 +396,17 @@ function renderAdmin() {
     <div id="promo-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
   `;
   body.appendChild(promoCard);
+  // Inicializar contadores e validações com valores já salvos
+  setTimeout(() => {
+    const titulo = document.getElementById('promo-titulo');
+    const desc = document.getElementById('promo-desc');
+    const btn = document.getElementById('promo-btn-nome');
+    const link = document.getElementById('promo-btn-link');
+    if (titulo) validarCampoPromo(titulo, 'promo-titulo', 50, 'titulo');
+    if (desc) validarCampoPromo(desc, 'promo-desc', 150, 'desc');
+    if (btn) validarCampoPromo(btn, 'promo-btn-nome', 25, 'btn');
+    if (link) validarLink(link);
+  }, 100);
   const estoqueCard = document.createElement('div');
   estoqueCard.style.cssText = 'background:linear-gradient(135deg,#1F2937,#374151);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
   estoqueCard.innerHTML = '<div><div style="font-size:15px;font-weight:800">📦 Estoque de Insumos</div><div style="font-size:12px;opacity:.85;margin-top:3px">Controle ingredientes, embalagens e materiais (até 300 itens)</div></div><a href="estoque.html" style="background:#10B981;color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">📦 Abrir Estoque →</a>';
@@ -883,6 +951,246 @@ function limparTodosCaches() {
 function salvarTudo() {
   limparTodosCaches();
   _enviarParaNuvem();
+}
+
+// ── VALIDAÇÃO EM TEMPO REAL ────────────────────────────────────────────
+function validarCampoPromo(el, id, max, tipo) {
+  const val = el.value || '';
+  const len = val.length;
+  const contEl = document.getElementById('cont-' + tipo);
+  const errEl = document.getElementById('err-' + tipo);
+  // Atualiza contador
+  if (contEl) {
+    contEl.textContent = len + ' / ' + max;
+    contEl.className = 'contador-chars ' + (len === 0 ? 'contador-ok' : len > max * 0.85 ? (len >= max ? 'contador-erro' : 'contador-aviso') : 'contador-ok');
+  }
+  // Validação visual do campo
+  el.classList.remove('campo-valido', 'campo-invalido', 'campo-aviso');
+  if (tipo === 'titulo') {
+    if (len === 0) {
+      el.classList.add('campo-aviso');
+      if (errEl) { errEl.textContent = 'Campo obrigatório! Mínimo 3 caracteres.'; errEl.classList.add('visivel'); }
+    } else if (len < 3) {
+      el.classList.add('campo-invalido');
+      if (errEl) { errEl.textContent = 'Título muito curto. Mínimo 3 caracteres.'; errEl.classList.add('visivel'); }
+    } else {
+      el.classList.add('campo-valido');
+      if (errEl) errEl.classList.remove('visivel');
+    }
+  } else if (tipo === 'btn') {
+    if (len >= max) {
+      el.classList.add('campo-invalido');
+      if (errEl) { errEl.textContent = 'Limite de ' + max + ' caracteres atingido.'; errEl.classList.add('visivel'); }
+    } else if (len > 0) {
+      el.classList.add('campo-valido');
+      if (errEl) errEl.classList.remove('visivel');
+    }
+  } else {
+    if (len > 0) el.classList.add('campo-valido');
+    if (errEl) errEl.classList.remove('visivel');
+  }
+}
+
+function validarLink(el) {
+  const val = (el.value || '').trim();
+  const errEl = document.getElementById('err-link');
+  el.classList.remove('campo-valido', 'campo-invalido', 'campo-aviso');
+  if (!val) { return; }
+  const valido = val.startsWith('https://') || val.startsWith('http://') || val.startsWith('/');
+  if (valido) {
+    el.classList.add('campo-valido');
+    if (errEl) errEl.classList.remove('visivel');
+  } else {
+    el.classList.add('campo-invalido');
+    if (errEl) errEl.classList.add('visivel');
+  }
+}
+
+// ── DIAGNÓSTICO DO SISTEMA ──────────────────────────────────────────
+let _diagErros = [];
+
+function toggleDiagnostico() {
+  const painel = document.getElementById('painel-diagnostico');
+  if (painel.classList.contains('aberto')) {
+    painel.classList.remove('aberto');
+    document.getElementById('btn-abrir-diag').textContent = '🔍 Diagnóstico';
+  } else {
+    painel.classList.add('aberto');
+    document.getElementById('btn-abrir-diag').textContent = '❌ Fechar';
+    executarDiagnostico();
+  }
+}
+
+async function executarDiagnostico() {
+  _diagErros = [];
+  const res = document.getElementById('diag-resultados');
+  res.innerHTML = '<div class="diag-item diag-info"><span>⏳</span><span>Executando diagnóstico...</span></div>';
+  const itens = [];
+
+  // 1. Verificar conexão com o Gist
+  try {
+    const r = await fetch(GIST_PROMO_RAW + '?t=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) {
+      const d = await r.json();
+      itens.push({ tipo: 'ok', msg: '✅ Conexão com GitHub Gist: OK' });
+      // Verificar se há dados corrompidos
+      if (d.fotoUrl && d.fotoUrl.startsWith('data:')) {
+        itens.push({ tipo: 'erro', msg: '❌ Foto corrompida no Gist: base64 detectado (muito pesado). Use o botão Auto-Corrigir.' });
+        _diagErros.push('foto_base64');
+      } else if (d.fotoUrl && d.fotoUrl.trim()) {
+        itens.push({ tipo: 'ok', msg: '✅ Foto: URL válida (' + d.fotoUrl.slice(0, 60) + '...)' });
+      } else {
+        itens.push({ tipo: 'aviso', msg: '⚠️ Foto: não configurada (opcional)' });
+      }
+      if (d.ativo === false) {
+        itens.push({ tipo: 'aviso', msg: '⚠️ Promoção está DESATIVADA no Gist' });
+      } else if (d.titulo) {
+        itens.push({ tipo: 'ok', msg: '✅ Promoção ativa: "' + String(d.titulo).slice(0, 40) + '"' });
+      } else {
+        itens.push({ tipo: 'aviso', msg: '⚠️ Gist sem promoção configurada' });
+      }
+    } else {
+      itens.push({ tipo: 'erro', msg: '❌ Gist inacessível: HTTP ' + r.status });
+      _diagErros.push('gist_inacessivel');
+    }
+  } catch(e) {
+    itens.push({ tipo: 'erro', msg: '❌ Erro ao acessar Gist: ' + e.message });
+    _diagErros.push('gist_erro');
+  }
+
+  // 2. Verificar campos locais
+  const titulo = document.getElementById('promo-titulo');
+  const desc = document.getElementById('promo-desc');
+  const btnNome = document.getElementById('promo-btn-nome');
+  const btnLink = document.getElementById('promo-btn-link');
+
+  if (titulo) {
+    const v = titulo.value.trim();
+    if (!v) { itens.push({ tipo: 'aviso', msg: '⚠️ Título: não preenchido' }); _diagErros.push('titulo_vazio'); }
+    else if (v.length < 3) { itens.push({ tipo: 'erro', msg: '❌ Título muito curto (' + v.length + ' chars). Mínimo 3.' }); _diagErros.push('titulo_curto'); }
+    else if (v.length > 50) { itens.push({ tipo: 'erro', msg: '❌ Título longo demais (' + v.length + ' chars). Máx 50.' }); _diagErros.push('titulo_longo'); }
+    else itens.push({ tipo: 'ok', msg: '✅ Título: OK (' + v.length + '/50 chars)' });
+  }
+
+  if (desc) {
+    const v = desc.value.trim();
+    if (v.length > 150) { itens.push({ tipo: 'erro', msg: '❌ Descrição longa demais (' + v.length + ' chars). Máx 150.' }); _diagErros.push('desc_longa'); }
+    else if (v.length > 0) itens.push({ tipo: 'ok', msg: '✅ Descrição: OK (' + v.length + '/150 chars)' });
+    else itens.push({ tipo: 'info', msg: 'ℹ️ Descrição: não preenchida (opcional)' });
+  }
+
+  if (btnNome) {
+    const v = btnNome.value.trim();
+    if (v.length > 25) { itens.push({ tipo: 'erro', msg: '❌ Botão longo demais (' + v.length + ' chars). Máx 25.' }); _diagErros.push('btn_longo'); }
+    else if (v.length > 0) itens.push({ tipo: 'ok', msg: '✅ Botão: OK (' + v.length + '/25 chars)' });
+  }
+
+  if (btnLink) {
+    const v = btnLink.value.trim();
+    if (v && !v.startsWith('https://') && !v.startsWith('http://') && !v.startsWith('/')) {
+      itens.push({ tipo: 'erro', msg: '❌ Link inválido: deve começar com https:// ou /' });
+      _diagErros.push('link_invalido');
+    } else if (v) {
+      itens.push({ tipo: 'ok', msg: '✅ Link: OK' });
+    }
+  }
+
+  // 3. Verificar proxy
+  try {
+    const r = await fetch(PROXY_PROMO_URL.replace('/update-promo', '/health'), { cache: 'no-store' });
+    if (r.ok) itens.push({ tipo: 'ok', msg: '✅ Servidor proxy: online' });
+    else itens.push({ tipo: 'aviso', msg: '⚠️ Servidor proxy: offline (Gist ainda funciona)' });
+  } catch(e) {
+    itens.push({ tipo: 'aviso', msg: '⚠️ Servidor proxy: offline (Gist ainda funciona)' });
+  }
+
+  // Renderizar resultados
+  res.innerHTML = itens.map(i => `<div class="diag-item diag-${i.tipo}"><span>${i.tipo==='ok'?'✅':i.tipo==='erro'?'❌':i.tipo==='aviso'?'⚠️':'ℹ️'}</span><span>${i.msg}</span></div>`).join('');
+
+  // Mostrar botão de auto-correção se houver erros
+  const btnCorr = document.getElementById('btn-autocorrigir');
+  if (btnCorr) btnCorr.style.display = _diagErros.length > 0 ? 'block' : 'none';
+}
+
+async function autoCorrigir() {
+  const btn = document.getElementById('btn-autocorrigir');
+  btn.textContent = '⏳ Corrigindo...';
+  btn.disabled = true;
+
+  // Corrigir foto base64 no Gist
+  if (_diagErros.includes('foto_base64')) {
+    try {
+      const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
+      d.fotoUrl = ''; // Remove foto corrompida
+      localStorage.setItem('itap_promo_local', JSON.stringify(d));
+      await fetch(PROXY_PROMO_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
+        body: JSON.stringify({ ...d, fotoUrl: '' })
+      });
+    } catch(e) {}
+  }
+
+  // Truncar campos que excedem o limite
+  const titulo = document.getElementById('promo-titulo');
+  const desc = document.getElementById('promo-desc');
+  const btnNome = document.getElementById('promo-btn-nome');
+  if (titulo && titulo.value.length > 50) { titulo.value = titulo.value.slice(0, 50); validarCampoPromo(titulo,'promo-titulo',50,'titulo'); }
+  if (desc && desc.value.length > 150) { desc.value = desc.value.slice(0, 150); validarCampoPromo(desc,'promo-desc',150,'desc'); }
+  if (btnNome && btnNome.value.length > 25) { btnNome.value = btnNome.value.slice(0, 25); validarCampoPromo(btnNome,'promo-btn-nome',25,'btn'); }
+
+  // Limpar todos os caches
+  limparTodosCaches();
+  salvarPromoLocal();
+
+  btn.textContent = '✅ Corrigido!';
+  setTimeout(() => {
+    btn.textContent = '🔧 Auto-Corrigir Erros Detectados';
+    btn.disabled = false;
+    executarDiagnostico();
+  }, 2000);
+}
+
+// ── RELATO DE ERRO ──────────────────────────────────────────────────────
+function enviarRelato() {
+  const campo = document.getElementById('campo-relato-erro');
+  const status = document.getElementById('relato-status');
+  const texto = (campo.value || '').trim();
+  if (!texto) { status.textContent = '⚠️ Descreva o problema antes de enviar.'; return; }
+
+  // Coletar dados técnicos automáticos
+  const promo = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
+  const dadosTec = [
+    '--- RELATO DE ERRO ADMIN ---',
+    'Data: ' + new Date().toLocaleString('pt-BR'),
+    'Erro descrito: ' + texto,
+    '',
+    '--- DADOS TÉCNICOS ---',
+    'Erros detectados: ' + (_diagErros.length ? _diagErros.join(', ') : 'nenhum'),
+    'Título atual: ' + (promo.titulo || '(vazio)'),
+    'Descrição: ' + (promo.descricao ? promo.descricao.slice(0,50)+'...' : '(vazio)'),
+    'Foto URL: ' + (promo.fotoUrl ? (promo.fotoUrl.startsWith('data:') ? 'BASE64 CORROMPIDO' : promo.fotoUrl.slice(0,60)+'...') : '(sem foto)'),
+    'Botão: ' + (promo.btnTexto || '(vazio)'),
+    'Link: ' + (promo.link || '(vazio)'),
+    'Data fim: ' + (promo.dataFim || '(sem data)'),
+    'Ativo: ' + (promo.ativo !== undefined ? promo.ativo : 'não definido'),
+    'User Agent: ' + navigator.userAgent.slice(0, 80)
+  ].join('%0A');
+
+  // Enviar via WhatsApp
+  const wppUrl = 'https://wa.me/5516991472045?text=' + encodeURIComponent(
+    '🚨 RELATO DE ERRO — ADMIN ITAPOLITANA\n\n' +
+    'Erro: ' + texto + '\n\n' +
+    'Erros detectados: ' + (_diagErros.length ? _diagErros.join(', ') : 'nenhum') + '\n' +
+    'Título: ' + (promo.titulo || '(vazio)') + '\n' +
+    'Foto: ' + (promo.fotoUrl ? (promo.fotoUrl.startsWith('data:') ? 'BASE64 CORROMPIDO' : 'OK') : 'sem foto') + '\n' +
+    'Data: ' + new Date().toLocaleString('pt-BR')
+  );
+
+  window.open(wppUrl, '_blank');
+  status.textContent = '✅ Relato aberto no WhatsApp!';
+  campo.value = '';
+  setTimeout(() => status.textContent = '', 5000);
 }
 </script>
 <script src="../scripts/ortografia.js"></script>
