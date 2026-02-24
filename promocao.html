@@ -20,7 +20,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0D0D0D;color:#fff;m
 /* FOTO HERO */
 .hero{position:relative;width:100%;min-height:300px;max-height:520px;overflow:hidden;display:flex;align-items:flex-end}
 .hero-placeholder{position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,#1a0030,#6A0DAD,#9B30FF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}.hero-placeholder-icon{font-size:clamp(60px,15vw,100px);line-height:1}.hero-placeholder-txt{font-size:14px;color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.5px}
-.hero-img{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;display:none}
+.hero-img{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:contain;background:rgba(0,0,0,.6);display:none}
+/* SEÇÃO FOTO PRODUTO */
+.promo-foto-section{width:100%;background:#111;padding:0;display:none}
+.promo-foto-section.show{display:block}
+.promo-foto-section img{width:100%;max-height:480px;object-fit:contain;display:block;background:#111}
+.promo-foto-dica{text-align:center;font-size:11px;color:#6B7280;padding:8px 16px 12px;background:#111;font-weight:600}
+.promo-foto-placeholder{width:100%;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border:2px dashed rgba(155,48,255,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:32px 20px;text-align:center}
+.promo-foto-placeholder-icon{font-size:48px;opacity:.5}
+.promo-foto-placeholder-txt{font-size:13px;color:rgba(255,255,255,.4);font-weight:700}
+.promo-foto-placeholder-dica{font-size:11px;color:rgba(155,48,255,.6);font-weight:600;background:rgba(155,48,255,.08);border:1px solid rgba(155,48,255,.2);border-radius:8px;padding:6px 14px;margin-top:4px}
 .hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 60%,transparent 100%)}
 .hero-badge{position:absolute;top:14px;left:14px;z-index:3;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font-size:13px;font-weight:900;padding:7px 14px;border-radius:20px;letter-spacing:.5px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,0,13,.5)}50%{box-shadow:0 0 0 10px rgba(232,0,13,0)}}
@@ -122,6 +131,17 @@ footer strong{color:#fff}
   </div>
 </section>
 
+<!-- FOTO DO PRODUTO (aparece completa, sem corte) -->
+<div class="promo-foto-section" id="promo-foto-section">
+  <img id="promo-foto-img" src="" alt="Foto da Promoção" loading="lazy">
+  <div class="promo-foto-dica">📐 Tamanho ideal: 800 × 800 px ou 1080 × 1080 px · JPG/PNG · máx. 800 KB</div>
+</div>
+<div class="promo-foto-placeholder" id="promo-foto-placeholder">
+  <div class="promo-foto-placeholder-icon">📸</div>
+  <div class="promo-foto-placeholder-txt">Foto do produto aparece aqui</div>
+  <div class="promo-foto-placeholder-dica">📐 Ideal: 800 × 800 px ou 1080 × 1080 px · JPG/PNG · máx. 800 KB</div>
+</div>
+
 
 <div class="cd-section fade2">
   <div class="cd-lbl">⏳ Promoção encerra em</div>
@@ -183,11 +203,20 @@ function _aplicarPromo(d) {
   }
   const imgSrc = d.imagem || d.bannerImg || '';
   if (imgSrc) {
-    const img = document.getElementById('hero-img');
-    img.src = imgSrc;
-    img.style.display = 'block';
-    const ph = document.getElementById('hero-placeholder');
-    if (ph) ph.style.display = 'none';
+    // Exibe na seção separada (foto completa, sem corte)
+    const fotoImg = document.getElementById('promo-foto-img');
+    const fotoSection = document.getElementById('promo-foto-section');
+    const fotoPh = document.getElementById('promo-foto-placeholder');
+    if (fotoImg && fotoSection) {
+      fotoImg.src = imgSrc;
+      fotoSection.classList.add('show');
+      if (fotoPh) fotoPh.style.display = 'none';
+    }
+    // Também coloca como fundo do hero (com contain, sem corte)
+    const heroImg = document.getElementById('hero-img');
+    const heroPh = document.getElementById('hero-placeholder');
+    if (heroImg) { heroImg.src = imgSrc; heroImg.style.display = 'block'; }
+    if (heroPh) heroPh.style.display = 'none';
   }
   const btn = document.getElementById('btn-principal');
   // Botão principal sempre aponta para o Instagram
