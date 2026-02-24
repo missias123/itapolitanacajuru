@@ -202,18 +202,45 @@ function onBannerChange(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) {
-    localStorage.setItem('itap_banner', JSON.stringify({ img: e.target.result }));
+  reader.onload = async function(e) {
+    const imgBase64 = e.target.result;
     const preview = document.getElementById('banner-preview-area');
-    if (preview) preview.innerHTML = `<img src="${e.target.result}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
+    if (preview) preview.innerHTML = `<img src="${imgBase64}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
     const status = document.getElementById('banner-status');
-    if (status) { status.textContent = '✅ Banner salvo! Já visível no cardápio.'; setTimeout(() => status.textContent = '', 4000); }
-    setTimeout(() => renderAdmin(), 200);
+    if (status) status.textContent = '⏳ Publicando banner no site...';
+    try {
+      let dadosAtuais = {};
+      try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
+      dadosAtuais.bannerImg = imgBase64;
+      const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-691617.manus.computer/update-promo', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},
+        body: JSON.stringify(dadosAtuais)
+      });
+      const result = await resp.json();
+      if (result.status === 'ok') {
+        if (status) { status.textContent = '✅ Banner publicado no site para todos!'; setTimeout(() => status.textContent = '', 5000); }
+      } else {
+        if (status) status.textContent = '❌ Erro: ' + (result.error || 'desconhecido');
+      }
+    } catch(err) {
+      if (status) status.textContent = '❌ Erro de conexão: ' + err.message;
+    }
   };
   reader.readAsDataURL(file);
 }
+
 function removerBanner() {
-  localStorage.removeItem('itap_banner');
+  (async () => {
+    try {
+      let d = {};
+      try { const r = await fetch('https://gist.githubusercontent.com/missias123/f1b0cb83ecadc3c2e00da6f2d7aa3c42/raw/itap-promo.json?t='+Date.now()); if (r.ok) d = await r.json(); } catch(e) {}
+      delete d.bannerImg;
+      await fetch('https://5050-iws6e208zbbi8wf5hdl9t-691617.manus.computer/update-promo', {method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},body:JSON.stringify(d)});
+    } catch(e) {}
+  })();
+  // Limpa cache local também
+  localStorage.removeItem('itap_banner_cache');
   renderAdmin();
 }
 
@@ -238,9 +265,63 @@ function criarSecao(id, titulo, conteudo) {
 // ── RENDER ADMIN ──
 function renderAdmin() {
   const body = document.getElementById('admin-body'); body.innerHTML = '';
+  // ── CARD PROMOÇÃO COMPLETO ──
   const promoCard = document.createElement('div');
-  promoCard.style.cssText = 'background:linear-gradient(135deg,#1565C0,#D32F2F);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
-  promoCard.innerHTML = '<div><div style="font-size:15px;font-weight:800">🎉 Gerenciar Promoção</div><div style="font-size:12px;opacity:.85;margin-top:3px">Poste foto, texto e link da promoção do dia</div></div><a href="promocao.html" style="background:#F9A825;color:#111;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">Abrir →</a>';
+  promoCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
+  const _ps = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
+  const _pf = _ps.imagem || '';
+  promoCard.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:26px">🎉</span>
+      <div>
+        <div style="font-size:16px;font-weight:900;color:#E8000D">Gerenciar Promoção</div>
+        <div style="font-size:12px;color:#6B7280;margin-top:2px">Edite e clique em Postar para publicar no site</div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px">📷 Foto da Promoção</div>
+      <div id="promo-foto-preview" style="border-radius:10px;overflow:hidden;margin-bottom:8px;${_pf ? '' : 'display:none'}">
+        <img src="${_pf}" style="width:100%;max-height:180px;object-fit:cover;display:block" id="promo-foto-img">
+      </div>
+      <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#FEF3C7;color:#92400E;border:2px dashed #F59E0B;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;box-sizing:border-box">
+        📷 ${_pf ? 'Trocar Foto' : 'Adicionar Foto'}
+        <input type="file" accept="image/*" style="display:none" onchange="onPromoFotoChange(this)">
+      </label>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📝 Título da Promoção</div>
+      <input id="promo-titulo" type="text" value="${_ps.titulo||''}" placeholder="Ex: 50% OFF em Picolés!" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📄 Descrição</div>
+      <textarea id="promo-desc" rows="2" placeholder="Descreva a promoção..." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box">${_ps.descricao||''}</textarea>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔘 Nome do Botão Principal</div>
+      <input id="promo-btn-nome" type="text" value="${_ps.btnTexto||'💬 Falar com a Loja'}" placeholder="Ex: 🛒 Pedir Agora" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔗 Link do Botão</div>
+      <input id="promo-btn-link" type="url" value="${_ps.link||'https://wa.me/5516991472045'}" placeholder="https://wa.me/..." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">📅 Data de Término</div>
+          <input id="promo-data-fim" type="date" value="${_ps.dataFim||''}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">🕐 Hora de Término</div>
+          <input id="promo-hora-fim" type="time" value="${_ps.horaFim||'22:00'}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+        </div>
+      </div>
+    </div>
+    <button type="button" onclick="postarPromocao()" id="btn-postar-promo" style="width:100%;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(232,0,13,.4);margin-bottom:8px">📢 Postar Promoção no Site</button>
+    <button type="button" onclick="desativarPromocao()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1.5px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">🔕 Desativar Promoção</button>
+    <a href="../promocao.html" target="_blank" style="display:block;text-align:center;background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB;border-radius:10px;padding:10px;font-size:13px;font-weight:700;text-decoration:none">👁️ Ver Página da Promoção</a>
+    <div id="promo-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
+  `;
   body.appendChild(promoCard);
 
   // ── CARD ESTOQUE DE INSUMOS ──
@@ -682,6 +763,94 @@ async function _enviarParaNuvem() {
     msg.textContent = '⚠️ Sem conexão – salvo localmente';
   }
   setTimeout(() => msg.textContent = '', 4000);
+}
+
+// ── PROMOÇÃO: salvar local e postar na nuvem ──
+const PROXY_PROMO_URL = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo';
+const GIST_PROMO_ID = 'f1b0cb83ecadc3c2e00da6f2d7aa3c42';
+const GIST_PROMO_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_PROMO_ID + '/raw/itap-promo.json';
+
+function salvarPromoLocal() {
+  const d = {
+    titulo: (document.getElementById('promo-titulo')||{}).value || '',
+    descricao: (document.getElementById('promo-desc')||{}).value || '',
+    btnTexto: (document.getElementById('promo-btn-nome')||{}).value || '💬 Falar com a Loja',
+    link: (document.getElementById('promo-btn-link')||{}).value || 'https://wa.me/5516991472045',
+    dataFim: (document.getElementById('promo-data-fim')||{}).value || '',
+    horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
+    imagem: (JSON.parse(localStorage.getItem('itap_promo_local')||'{}')).imagem || ''
+  };
+  localStorage.setItem('itap_promo_local', JSON.stringify(d));
+}
+
+function onPromoFotoChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    const d = JSON.parse(localStorage.getItem('itap_promo_local') || '{}');
+    d.imagem = base64;
+    localStorage.setItem('itap_promo_local', JSON.stringify(d));
+    const preview = document.getElementById('promo-foto-preview');
+    if (preview) {
+      preview.style.display = 'block';
+      const img = document.getElementById('promo-foto-img');
+      if (img) img.src = base64;
+    }
+    const status = document.getElementById('promo-status');
+    if (status) { status.textContent = '📷 Foto carregada! Clique em Postar para publicar.'; setTimeout(() => status.textContent = '', 4000); }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function postarPromocao() {
+  salvarPromoLocal();
+  const d = JSON.parse(localStorage.getItem('itap_promo_local') || '{}');
+  if (!d.titulo) { alert('Preencha pelo menos o título da promoção!'); return; }
+  const btn = document.getElementById('btn-postar-promo');
+  const status = document.getElementById('promo-status');
+  btn.textContent = '⏳ Publicando...';
+  btn.disabled = true;
+  d.ativo = true;
+  try {
+    const resp = await fetch(PROXY_PROMO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
+      body: JSON.stringify(d)
+    });
+    if (resp.ok) {
+      status.textContent = '✅ Promoção publicada no site!';
+      btn.textContent = '✅ Publicado!';
+      setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
+    } else {
+      status.textContent = '⚠️ Erro ao publicar. Tente novamente.';
+      btn.textContent = '📢 Postar Promoção no Site';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    status.textContent = '⚠️ Sem conexão com o servidor.';
+    btn.textContent = '📢 Postar Promoção no Site';
+    btn.disabled = false;
+  }
+}
+
+async function desativarPromocao() {
+  const status = document.getElementById('promo-status');
+  status.textContent = '⏳ Desativando...';
+  try {
+    const resp = await fetch(PROXY_PROMO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': 'itap2007sync' },
+      body: JSON.stringify({ ativo: false })
+    });
+    if (resp.ok) {
+      status.textContent = '🔕 Promoção desativada no site!';
+      setTimeout(() => status.textContent = '', 4000);
+    }
+  } catch(e) {
+    status.textContent = '⚠️ Erro ao desativar.';
+  }
 }
 
 // ── SALVAR (botão manual) ──

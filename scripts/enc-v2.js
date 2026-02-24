@@ -670,24 +670,57 @@ function renderCarrinho() {
   }).join('');
   if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
 
-  // Verificar mínimo picolés
+  // ── REGRA: mínimo 100 picolés para atacado ──
   const totalPic = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicole = carrinho.some(i=>i.tipo==='picolé');
   const aviso = document.getElementById('aviso-min-carrinho');
   const btnNext = document.getElementById('btn-ir-dados');
-  if (totalPic > 0 && totalPic < 100) {
-    if (aviso) { aviso.style.display='block'; aviso.textContent=`⚠️ Mínimo 100 picolés para preço de atacado. Você tem ${totalPic}.`; }
+  if (temPicole && totalPic < 100) {
+    // Bloquear botão Prosseguir
+    if (aviso) {
+      aviso.style.display = 'block';
+      aviso.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center';
+      aviso.textContent = `🔒 Mínimo 100 picolés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.`;
+    }
+    if (btnNext) {
+      btnNext.disabled = true;
+      btnNext.style.opacity = '0.4';
+      btnNext.title = `Mínimo 100 picolés. Você tem ${totalPic}.`;
+    }
   } else {
-    if (aviso) aviso.style.display='none';
+    if (aviso) aviso.style.display = 'none';
+    if (btnNext) {
+      btnNext.disabled = false;
+      btnNext.style.opacity = '1';
+      btnNext.title = '';
+    }
   }
-  if (btnNext) btnNext.disabled = false;
 }
 
 function qtdCarrinho(i, delta) {
   if (!carrinho[i]) return;
-  const nova = carrinho[i].quantidade + delta;
+  const item = carrinho[i];
+  const nova = item.quantidade + delta;
   if (nova <= 0) { removerItem(i); return; }
-  if (nova > 100) return;
-  carrinho[i].quantidade = nova;
+  // Verificar limite máximo por tipo
+  if (item.tipo === 'picolé' && nova > MAX_PICOLES) {
+    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta');
+    return;
+  }
+  item.quantidade = nova;
+  // ── REGRA CRÍTICA: se picolés ficarem abaixo de 100, fechar carrinho e voltar para seção ──
+  const totalPicAtual = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicole = carrinho.some(c=>c.tipo==='picolé');
+  if (temPicole && totalPicAtual < 100 && delta < 0) {
+    renderCarrinho(); // atualiza visual com aviso
+    atualizarBotaoCarrinho();
+    // Se estiver na etapa de dados, voltar para revisão
+    const etapaDados = document.getElementById('etapa-dados');
+    if (etapaDados && etapaDados.classList.contains('ativa')) {
+      mostrarEtapa('revisao');
+    }
+    return;
+  }
   renderCarrinho();
   atualizarBotaoCarrinho();
 }
@@ -728,6 +761,13 @@ function mostrarEtapa(etapa) {
 
 function irParaDados() {
   if (carrinho.length === 0) { showToast('Carrinho vazio!','alerta'); return; }
+  // ── REGRA CRÍTICA: verificar mínimo 100 picolés ──
+  const totalPicoles = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicole = carrinho.some(i=>i.tipo==='picolé');
+  if (temPicole && totalPicoles < 100) {
+    showToast(`🔒 Mínimo 100 picolés para atacado. Você tem ${totalPicoles}. Faltam ${100-totalPicoles}.`, 'alerta');
+    return;
+  }
   renderResumoPedido();
   const etapaDados = document.getElementById('etapa-dados');
   if (!etapaDados) { showToast('Erro ao carregar formulário. Recarregue a página.','alerta'); return; }
@@ -801,6 +841,14 @@ function finalizarPedido() {
   // CHECKOUT CORPORATIVO — Padrão de produção
   // Validação robusta + loading state + fallback garantido
   // ============================================================
+  // ── VERIFICAÇÃO FINAL: mínimo 100 picolés (barreira de segurança) ──
+  const _totalPicFinal = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const _temPicoleFinal = carrinho.some(i=>i.tipo==='picolé');
+  if (_temPicoleFinal && _totalPicFinal < 100) {
+    showToast(`🔒 Pedido bloqueado: mínimo 100 picolés. Você tem ${_totalPicFinal}.`, 'alerta');
+    mostrarEtapa('revisao');
+    return;
+  }
   const nomeEl = document.getElementById('cliente-nome');
   const telEl  = document.getElementById('cliente-tel');
   const endEl  = document.getElementById('cliente-endereco');
