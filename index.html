@@ -562,14 +562,6 @@ img{max-width:100%;display:block}
   </div>
 </div>
 <section class="hero">
-  <!-- PATROCINADOR: exibido dinamicamente via promo.json -->
-  <div id="patrocinador-bloco" style="display:none;text-align:center;margin-bottom:18px;padding:12px 16px;background:rgba(255,255,255,0.7);border-radius:14px;border:1.5px solid rgba(255,107,53,0.18);box-shadow:0 2px 12px rgba(0,0,0,0.07);max-width:220px;margin-left:auto;margin-right:auto;">
-    <div style="font-size:10px;font-weight:800;color:#9CA3AF;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Patrocinadores</div>
-    <a id="patrocinador-link" href="#" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;">
-      <img id="patrocinador-logo" src="" alt="Patrocinador" style="max-width:180px;max-height:90px;object-fit:contain;border-radius:8px;" loading="lazy">
-    </a>
-    <div style="font-size:11px;font-weight:700;color:#6A0DAD;margin-top:5px;">Saiba mais</div>
-  </div>
   <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;">
     <div style="flex:1;min-width:240px;max-width:520px;">
       <div class="sabores-badge">✨ 36 sabores artesanais disponíveis hoje</div>
@@ -582,11 +574,11 @@ img{max-width:100%;display:block}
         🍦 Quero Ver os Sabores!
       </button>
     </div>
-    <div style="flex-shrink:0;text-align:center;">
+    <div style="flex-shrink:0;text-align:center;width:100%;max-width:200px;margin:0 auto;">
       <a href="https://wa.me/5516991472045?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20do%20carrinho%20de%20picol%C3%A9%20para%20evento." target="_blank" rel="noopener" style="text-decoration:none;display:inline-block;">
-        <img src="images/carrinho-picole.png" alt="Carrinho de Picolé para Eventos" loading="lazy" decoding="async" style="width:150px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
-        <div style="font-size:0.72rem;font-weight:800;color:#E65100;margin-top:6px;letter-spacing:.3px;">🛒 Carrinho para Eventos</div>
-        <div style="font-size:0.68rem;color:#5C2D6B;font-weight:700;">Toque para consultar</div>
+        <img src="images/carrinho-picole.png" alt="Carrinho de Picolé para Eventos" loading="lazy" decoding="async" style="width:190px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.22));transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+        <div style="font-size:0.78rem;font-weight:800;color:#E65100;margin-top:8px;letter-spacing:.3px;">🛒 Carrinho para Eventos</div>
+        <div style="font-size:0.72rem;color:#5C2D6B;font-weight:700;">Toque para consultar</div>
       </a>
     </div>
   </div>
@@ -1440,7 +1432,6 @@ function renderTudo() {
 }
 document.addEventListener('DOMContentLoaded',()=>{
   carregarBanner();
-  carregarPatrocinador();
   // Carregar preços da nuvem primeiro, depois renderizar
   carregarPrecosNuvemCardapio().then(() => {
     renderTudo();
@@ -1451,27 +1442,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   Object.keys(respostas).forEach(k=>{if(typeof respostas[k]==='function')respostas[k]=respostas[k]();});
 });
 
-// ── PATROCINADOR ─────────────────────────────────────────────────────────────
-async function carregarPatrocinador(){
-  try{
-    const resp=await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now(),{cache:'no-store'});
-    if(!resp.ok)return;
-    const d=await resp.json();
-    if(d.patrocinadorAtivo&&d.patrocinadorLogo){
-      const bloco=document.getElementById('patrocinador-bloco');
-      const logo=document.getElementById('patrocinador-logo');
-      const link=document.getElementById('patrocinador-link');
-      if(bloco&&logo&&link){
-        logo.src=d.patrocinadorLogo;
-        logo.alt=d.patrocinadorNome||'Patrocinador';
-        link.href=d.patrocinadorLink||'#';
-        bloco.style.display='block';
-      }
-    }
-  }catch(e){
-    console.warn('[Patrocinador] Erro ao carregar:',e);
-  }
-}
 </script>
 <script>
 // RELÓGIO DIGITAL
