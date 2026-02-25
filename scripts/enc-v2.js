@@ -641,7 +641,8 @@ function confirmarPickle() {
     if (qtd > 0) {
       addCarrinho({
         id: 'pic_' + sabor.replace(/\s+/g,'_'),
-        nome: `Picolé ${p.nome} (${sabor})`,
+        nome: `Picolé ${p.nome}`,
+        sabor: sabor,
         preco: p.precoAtacado,
         sabores: [sabor],
         quantidade: qtd,
@@ -715,7 +716,7 @@ function renderCarrinho() {
     <div class="cart-item" data-uid="${uid}">
       <div class="cart-item-info">
         <div class="cart-item-nome">${item.nome}</div>
-        <div class="cart-item-sabores">${item.sabores.join(' • ')}</div>
+        <div class="cart-item-sabores">${item.tipo === 'picolé' ? `Sabor: ${item.sabor}` : item.sabores.join(' • ')}</div>
         <div class="cart-item-preco-unit">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
       </div>
       <div class="cart-item-ctrl">
