@@ -282,7 +282,7 @@ function renderizarCaixas() {
         <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
         <div class="prod-estoque">${esgotado?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','caixas')" ${esgotado?'disabled':''}>
+      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','caixas',this)" ${esgotado?'disabled':''}>
         🍦 Escolher ${p.maxSabores} Sabores
       </button>
     </div>`;
@@ -300,7 +300,7 @@ function renderizarTortas() {
         <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
         <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','tortas')" ${p.estoque===0?'disabled':''}>
+      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','tortas',this)" ${p.estoque===0?'disabled':''}>
         🎂 Escolher ${p.maxSabores} Sabores
       </button>
     </div>`).join('');
@@ -320,14 +320,14 @@ function renderizarPicolés() {
         </div>
         <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores btn-picolé" onclick="abrirModalPicolé('${p.id}')" ${p.estoque===0?'disabled':''}>
+      <button class="btn-sabores btn-picolé" onclick="abrirModalPicolé('${p.id}',this)" ${p.estoque===0?'disabled':''}>
         🍭 Ver Sabores
       </button>
     </div>`).join('');
 }
 
 // ---- MODAL SABORES SORVETE ----
-function abrirSaboresSorvete(id, cat) {
+function abrirSaboresSorvete(id, cat, originEl) {
   const lista = PRODUTOS[cat];
   const p = lista.find(x => x.id === id);
   if (!p) return;
@@ -342,7 +342,7 @@ function abrirSaboresSorvete(id, cat) {
     <button class="sabor-item" onclick="toggleSabor('${s}',this)">${s}</button>`).join('');
 
   atualizarBtnConfirmar();
-  abrirModal('modal-sabores');
+  abrirModal('modal-sabores', originEl);
 }
 
 function toggleSabor(sabor, btn) {
@@ -448,7 +448,7 @@ function abrirTipoPicole(id) {
   abrirModalPicolé(id);
 }
 
-function abrirModalPicolé(id) {
+function abrirModalPicolé(id, originEl) {
   const p = PRODUTOS.picoles.find(x => x.id === id);
   if (!p) return;
    picoleAtual = p;
@@ -479,7 +479,7 @@ function abrirModalPicolé(id) {
   }).join('');
 
   atualizarTotalPickle();
-  abrirModal('modal-picolé');
+  abrirModal('modal-picolé', originEl);
 }
 
 function qtdPickle(sabor, delta) {
@@ -992,19 +992,34 @@ function novoPedido() {
 }
 
 // ---- UTILS ----
-function abrirModal(id) {
+let _encScrollY = 0;
+let _encOriginEl = null;
+function abrirModal(id, originEl) {
   const m = document.getElementById(id);
-  if (m) { m.classList.add('ativo'); document.body.style.overflow='hidden'; }
+  if (m) {
+    _encScrollY = window.scrollY;
+    _encOriginEl = originEl || null;
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + _encScrollY + 'px';
+    document.body.style.width = '100%';
+    m.classList.add('ativo');
+  }
 }
 function fecharModal(id) {
   const m = document.getElementById(id);
   if (m) { m.classList.remove('ativo'); }
-  // Verificar se ainda há algum modal aberto antes de restaurar o scroll
   const algumAberto = document.querySelectorAll('.modal-overlay.ativo').length > 0;
   if (!algumAberto) {
     document.body.style.overflow = '';
     document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
     document.documentElement.style.overflow = '';
+    window.scrollTo({ top: _encScrollY, behavior: 'instant' });
+    if (_encOriginEl) {
+      setTimeout(() => { _encOriginEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+    }
   }
 }
 function showToast(msg, tipo='sucesso') {

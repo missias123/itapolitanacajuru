@@ -613,7 +613,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="sorvetes-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍦 36 Sabores de Sorvete')">🍨 Ver os 36 Sabores</button>
+        <button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍦 36 Sabores de Sorvete',this)">🍨 Ver os 36 Sabores</button>
       </div>
     </div>
   </div>
@@ -662,7 +662,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="milk-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button type="button" class="btn-sabores" onclick="abrirMilkshakeSabores()">🥤 Ver Tamanhos e Preços</button>
+        <button type="button" class="btn-sabores" onclick="abrirMilkshakeSabores(this)">🥤 Ver Tamanhos e Preços</button>
       </div>
     </div>
   </div>
@@ -678,7 +678,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="tacas-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button type="button" class="btn-sabores" onclick="abrirTacasTradicionais()">🍧 Ver as 8 Taças</button>
+        <button type="button" class="btn-sabores" onclick="abrirTacasTradicionais(this)">🍧 Ver Sabores das Taças</button>
       </div>
     </div>
   </div>
@@ -694,7 +694,7 @@ img{max-width:100%;display:block}
     <div class="acc-body">
       <div id="tacas-p-grid" class="prod-grid"></div>
       <div style="text-align:center;margin-top:14px">
-        <button type="button" class="btn-sabores" onclick="abrirTacasSujas()">👑 Ver as 7 Taças Premium</button>
+        <button type="button" class="btn-sabores" onclick="abrirTacasSujas(this)">👑 Ver Sabores das Taças Premium</button>
       </div>
     </div>
   </div>
@@ -986,8 +986,26 @@ function toggleAcc(id){
   // Se estava fechado, abrir o clicado; se estava aberto, deixar fechado
   if(!isOpen) el.classList.add('open');
 }
-function fecharModal(id){document.getElementById(id).classList.remove('show')}
-function abrirModal(id){document.getElementById(id).classList.add('show')}
+let _modalScrollY=0;
+let _modalOriginEl=null;
+function fecharModal(id){
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow='';
+  document.body.style.position='';
+  document.body.style.top='';
+  document.body.style.width='';
+  window.scrollTo({top:_modalScrollY,behavior:'instant'});
+  if(_modalOriginEl){setTimeout(()=>{_modalOriginEl.scrollIntoView({behavior:'smooth',block:'center'});},50);}
+}
+function abrirModal(id,originEl){
+  _modalScrollY=window.scrollY;
+  _modalOriginEl=originEl||null;
+  document.body.style.overflow='hidden';
+  document.body.style.position='fixed';
+  document.body.style.top='-'+_modalScrollY+'px';
+  document.body.style.width='100%';
+  document.getElementById(id).classList.add('show');
+}
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
   const nomes={casquinha_copo:'Casquinha / Copo',copo_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha'};
@@ -1054,7 +1072,7 @@ function renderAcai(){
   if(produtos&&produtos.acai&&produtos.acai.copos){
     Object.entries(produtos.acai.copos).forEach(([tam,preco])=>{
       const d=document.createElement('div');d.className='acai-item';
-      d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${tam}</span><span class="acai-preco">R$ ${preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button type="button" class="btn-comp" onclick="abrirComplementos()">🍓 Ver Ingredientes Disponíveis</button>`;
+      d.innerHTML=`<div class="acai-row"><span class="acai-nome">🫐 Monte o Seu ${tam}</span><span class="acai-preco">R$ ${preco.toFixed(2).replace('.',',')}</span></div><div class="acai-desc">Todos ingredientes extras</div><button type="button" class="btn-comp" onclick="abrirComplementos(this)">🍓 Ver Ingredientes Disponíveis</button>`;
       b.appendChild(d);
     });
   }
@@ -1066,7 +1084,7 @@ function renderPicolés(){
     Object.entries(produtos.picoles).forEach(([key,p])=>{
       const d=document.createElement('div');d.className='picolé-item';
       const icon=iconesPicolé[key]||'🍭';
-      d.innerHTML=`<div class="picolé-row"><span class="picolé-nome">${icon} ${p.nome}</span><span class="picolé-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicolé('${key}','${p.nome}')">🍭 Ver Sabores Disponíveis</button>`;
+      d.innerHTML=`<div class="picolé-row"><span class="picolé-nome">${icon} ${p.nome}</span><span class="picolé-preco">R$ ${p.preco_varejo.toFixed(2).replace('.',',')}</span></div><button type="button" class="btn-sabores" onclick="abrirPicolé('${key}','${p.nome}',this)">🍭 Ver Sabores Disponíveis</button>`;
       b.appendChild(d);
     });
   }
@@ -1083,7 +1101,7 @@ function renderIso(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore')">🍨 Ver os 36 Sabores</button>`;
+    btn.innerHTML=`<button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore',this)">🍨 Ver os 36 Sabores</button>`;
     b.appendChild(btn);
   }
 }
@@ -1099,7 +1117,7 @@ function renderSobremesas(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas')">🍨 Ver os 36 Sabores</button>`;
+    btn.innerHTML=`<button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas',this)">🍨 Ver os 36 Sabores</button>`;
     b.appendChild(btn);
   }
 }
@@ -1110,14 +1128,14 @@ function getSaboresDisponiveis(){
   }catch(e){}
   return produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
 }
-function abrirSabores(tipo,titulo){
+function abrirSabores(tipo,titulo,el){
   document.getElementById('ms-titulo').textContent=titulo;
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const sabores=getSaboresDisponiveis();
   sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  abrirModal('modal-sabores');
+  abrirModal('modal-sabores',el);
 }
-function abrirMilkshakeSabores(){
+function abrirMilkshakeSabores(el){
   document.getElementById('ms-titulo').textContent='🥤 Milkshakes – Tamanhos e Preços';
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const m=produtos&&produtos.milkshake?produtos.milkshake:{};
@@ -1127,9 +1145,9 @@ function abrirMilkshakeSabores(){
   if(m.adicional_ovomaltine) opcoes.push(`+ Ovomaltine – R$ ${m.adicional_ovomaltine.toFixed(2).replace('.',',')}`);
   opcoes.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   document.getElementById('ms-sub').textContent='Escolha o tamanho ao fazer seu pedido na loja';
-  abrirModal('modal-sabores');
+  abrirModal('modal-sabores',el);
 }
-function abrirTacasTradicionais(){
+function abrirTacasTradicionais(el){
   document.getElementById('ms-titulo').textContent='🍨 Taças – 8 Opções';
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const t=produtos&&produtos.tacas&&produtos.tacas.tradicionais?produtos.tacas.tradicionais:{};
@@ -1138,9 +1156,9 @@ function abrirTacasTradicionais(){
     sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
   });
   document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
-  abrirModal('modal-sabores');
+  abrirModal('modal-sabores',el);
 }
-function abrirTacasSujas(){
+function abrirTacasSujas(el){
   document.getElementById('ms-titulo').textContent='🏆 Taças Premium (Sujas) – 7 Opções';
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const t=produtos&&produtos.tacas&&produtos.tacas.sujas?produtos.tacas.sujas:{};
@@ -1149,18 +1167,18 @@ function abrirTacasSujas(){
     sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
   });
   document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
-  abrirModal('modal-sabores');
+  abrirModal('modal-sabores',el);
 }
-function abrirPicolé(key,nome){
+function abrirPicolé(key,nome,el){
   document.getElementById('mp-titulo').textContent=`🍭 Sabores – ${nome}`;
   document.getElementById('mp-sub').textContent='Sabores disponíveis para este tipo de picolé';
   const chips=document.getElementById('mp-chips');chips.innerHTML='';
   const sabs=produtos&&produtos.picoles&&produtos.picoles[key]?produtos.picoles[key].sabores:[];
   sabs.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  abrirModal('modal-picolé');
+  abrirModal('modal-picolé',el);
 }
 const labelComp={frutas:'🍓 Frutas',cremes:'🍯 Cremes',guloseimas:'🍬 Guloseimas',chocolates:'🍫 Chocolates'};
-function abrirComplementos(){
+function abrirComplementos(el){
   const lista=document.getElementById('comp-lista');lista.innerHTML='';
   if(produtos&&produtos.acai&&produtos.acai.complementos){
     Object.entries(produtos.acai.complementos).forEach(([k,info])=>{
@@ -1169,7 +1187,7 @@ function abrirComplementos(){
       lista.appendChild(g);
     });
   }
-  abrirModal('modal-comp');
+  abrirModal('modal-comp',el);
 }
 let promoInt=null;
 async function carregarBarraPromo(){
