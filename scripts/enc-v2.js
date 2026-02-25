@@ -17,6 +17,19 @@ function sanitizeString(str) {
   return str.replace(reg, (match)=>(map[match]));
 }
 
+function memoize(func) {
+  const cache = {};
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache[key]) {
+      return cache[key];
+    }
+    const result = func.apply(this, args);
+    cache[key] = result;
+    return result;
+  };
+}
+
 // Função utilitária de debounce
 function debounce(func, delay) {
   let timeout;
@@ -345,13 +358,13 @@ function confirmarPickle() {
     if (qtd > 0) {
       addCarrinho({
         id: 'pic_' + sabor.replace(/\s+/g,'_'),
-        nome: `Picolé ${p.nome}`,
-        sabor: sabor,
+        nome: `Picolé ${sanitizeString(p.nome)}`,
+        sabor: sanitizeString(sabor),
         preco: p.precoAtacado,
-        sabores: [sabor],
+        sabores: [sanitizeString(sabor)],
         quantidade: qtd,
         tipo: 'picolé',
-        saborOriginal: sabor
+        saborOriginal: sanitizeString(sabor)
       });
       atualizarEstoquePickleLocal(sabor, -qtd);
     }
@@ -369,7 +382,7 @@ function addCarrinho(item) {
     const ex = carrinho.find(c => c.id===item.id && JSON.stringify(c.sabores)===JSON.stringify(item.sabores));
     if (ex) { ex.quantidade++; }
     else { item._uid = item.id + '_' + Date.now(); carrinho.push(item); }
-    showToast(`✅ ${item.nome} adicionado ao carrinho!`, 'sucesso');
+    showToast(`✅ ${sanitizeString(item.nome)} adicionado ao carrinho!`, 'sucesso');
   } else if (item.tipo === 'picolé') {
     const ex = carrinho.find(c => c.tipo === 'picolé' && c.id === item.id);
     if (ex) {
@@ -379,11 +392,11 @@ function addCarrinho(item) {
       item._uid = item.id + '_picole_' + Date.now();
       carrinho.push(item);
     }
-    showToast(`✅ ${item.nome} adicionado ao carrinho!`, 'sucesso');
+    showToast(`✅ ${sanitizeString(item.nome)} adicionado ao carrinho!`, 'sucesso');
   } else {
     item._uid = item.id + '_' + Date.now();
     carrinho.push(item);
-    showToast(`✅ ${item.nome} adicionado ao carrinho!`, 'sucesso');
+    showToast(`✅ ${sanitizeString(item.nome)} adicionado ao carrinho!`, 'sucesso');
   }
   atualizarBotaoCarrinhoDebounced();
 }
@@ -518,8 +531,8 @@ function irParaDados() {
   mostrarEtapa('dados');
 }
 
-function renderResumoPedido() {
-  const el = document.getElementById('resumo-pedido');
+const _renderResumoPedidoInterno = () => {
+  const el = document.getElementById("resumo-pedido");
   if (!el) return;
   let total = 0;
   el.innerHTML = `
@@ -545,7 +558,9 @@ function renderResumoPedido() {
       <span>Total do Pedido</span>
       <strong>R$ ${total.toFixed(2).replace('.',',')}</strong>
     </div>`;
-}
+};
+
+const renderResumoPedido = memoize(_renderResumoPedidoInterno);
 
 function verificarFormulario() {
   const nome = (document.getElementById('cliente-nome')?.value || '').trim();
@@ -615,23 +630,33 @@ async function finalizarPedido() {
     if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
   }
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-  fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up', { signal: controller.signal })
-    .then(r => r.json())
-    .then(data => {
-      clearTimeout(timeoutId);
-      const seq = (data && data.count) ? data.count : 1;
-      const numPedido = `${String(seq).padStart(4, '0')}/${mm}/${aaaa} ${hh}:${min}`;
-      _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
-    })
-    .catch(() => {
-      clearTimeout(timeoutId);
-      const seqLocal = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
-      localStorage.setItem('itap_seq_pedido', seqLocal.toString());
-      const numPedido = `L${String(seqLocal).padStart(3, '0')}/${mm}/${aaaa} ${hh}:${min}`;
-      _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
-    });
+  async function retryFetch(url, options, retries = 3, delay = 1000) {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise(res => setTimeout(res, delay));
+        return retryFetch(url, options, retries - 1, delay * 2);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  try {
+    const data = await retryFetch("https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up", { signal: AbortSignal.timeout(5000) });
+    const seq = (data && data.count) ? data.count : 1;
+    const numPedido = `${String(seq).padStart(4, "0")}/${mm}/${aaaa} ${hh}:${min}`;
+    _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
+  } catch (error) {
+    console.error("Erro ao obter número do pedido da API, usando fallback local:", error);
+    const seqLocal = parseInt(localStorage.getItem("itap_seq_pedido") || "0") + 1;
+    localStorage.setItem("itap_seq_pedido", seqLocal.toString());
+    const numPedido = `L${String(seqLocal).padStart(3, "0")}/${mm}/${aaaa} ${hh}:${min}`;
+    _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
+  }
 }
 
 function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
