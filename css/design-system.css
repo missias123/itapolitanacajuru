@@ -1,0 +1,104 @@
+/* 
+   🎨 DESIGN SYSTEM - SORVETERIA ITAPOLITANA 
+   Focado em: Legibilidade, Conversão e Mobile-First
+*/
+
+:root {
+  /* PALETA DE CORES (Baseada na Logomarca) */
+  --cor-primaria: #0D47A1;    /* Azul Royal (Confiança) */
+  --cor-secundaria: #1565C0;  /* Azul Médio (Ação) */
+  --cor-destaque: #FFC107;    /* Amarelo Ouro (Atenção/Sorteio) */
+  --cor-sucesso: #10B981;     /* Verde Esmeralda (Preços/Confirmar) */
+  --cor-erro: #EF4444;        /* Vermelho (Esgotado/Remover) */
+  --cor-fundo: #F5F5F8;       /* Cinza Muito Claro (Limpeza) */
+  --cor-texto: #111827;       /* Cinza Escuro (Leitura) */
+  --cor-texto-suave: #6B7280; /* Cinza Médio (Descrições) */
+  
+  /* TIPOGRAFIA */
+  --fonte-principal: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  /* ESPAÇAMENTO (Regra de 4px/8px) */
+  --espaco-xs: 4px;
+  --espaco-sm: 8px;
+  --espaco-md: 16px;
+  --espaco-lg: 24px;
+  --espaco-xl: 32px;
+  
+  /* BORDAS E SOMBRAS */
+  --raio-borda: 12px;
+  --sombra-suave: 0 2px 8px rgba(0,0,0,0.08);
+  --sombra-forte: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+/* ESTILOS GERAIS DE TEXTO */
+body {
+  font-family: var(--fonte-principal);
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+/* BOTÕES PROFISSIONAIS */
+.btn-padrao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: var(--raio-borda);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  gap: 8px;
+  min-height: 44px; /* Área de toque mínima Apple/Google */
+}
+
+.btn-primario {
+  background-color: var(--cor-primaria);
+  color: #fff;
+}
+
+.btn-primario:hover {
+  background-color: var(--cor-secundaria);
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-suave);
+}
+
+.btn-sucesso {
+  background-color: var(--cor-sucesso);
+  color: #fff;
+}
+
+/* CARDS DE PRODUTOS */
+.card-produto {
+  background: #fff;
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-md);
+  box-shadow: var(--sombra-suave);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.card-produto:active {
+  transform: scale(0.98);
+}
+
+/* AJUSTES DE ESPAÇAMENTO MOBILE */
+@media (max-width: 600px) {
+  .container {
+    padding-left: var(--espaco-md);
+    padding-right: var(--espaco-md);
+  }
+  
+  .secao-titulo {
+    font-size: 20px;
+    margin-bottom: var(--espaco-md);
+  }
+}
