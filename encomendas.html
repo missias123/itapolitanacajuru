@@ -9,30 +9,33 @@
     <link rel="stylesheet" href="css/estilo-encomendas.css">
     <style>
         .categoria-conteudo { display: none; padding: 20px; }
-        .produto-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .produto-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: white; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.ativo { display: flex; }
-        .modal-box { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-box { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .grid-sabores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .sabor-item { padding: 10px; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; text-align: center; }
-        .sabor-item.selecionado { background: #1565C0; color: white; border-color: #1565C0; }
-        .btn-add { background: #1565C0; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        .btn-carrinho-fixo { position: fixed; bottom: 20px; right: 20px; background: #2E7D32; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 900; }
-        .btn-carrinho-fixo:disabled { background: #ccc; cursor: not-allowed; }
+        .sabor-item { padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .sabor-item.selecionado { background: #1565C0; color: white; border-color: #1565C0; font-weight: bold; }
+        .btn-add { background: #1565C0; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-carrinho-fixo { position: fixed; bottom: 20px; right: 20px; background: #2E7D32; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 900; }
+        .btn-carrinho-fixo:disabled { background: #999; cursor: not-allowed; opacity: 0.7; }
+        .categoria-header { cursor:pointer; background:#f8f9fa; padding:18px; border-radius:10px; margin-bottom:12px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .categoria-header:hover { background: #f0f2f5; }
     </style>
 </head>
-<body>
-    <header class="header">
+<body style="background: #f0f2f5; font-family: sans-serif;">
+    <header style="background: #1565C0; color: white; padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <div class="container">
-            <h1>Itapolitana Cajuru - Encomendas</h1>
-            <a href="index.html" style="color: white;">← Voltar ao Cardápio</a>
+            <h1 style="margin: 0; font-size: 1.5rem;">Itapolitana Cajuru - Encomendas</h1>
+            <a href="index.html" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem;">← Voltar ao Cardápio</a>
         </div>
     </header>
 
-    <div class="container" style="margin-top: 20px;">
+    <div class="container" style="max-width: 800px; margin: 20px auto; padding: 0 15px;">
         <div class="categoria" id="caixas">
-            <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')" style="cursor:pointer; background:#f4f4f4; padding:15px; border-radius:8px; margin-bottom:10px;">
-                <h3>🍦 Sorvete em Caixa ▼</h3>
+            <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
+                <h3 style="margin: 0;">🍦 Sorvete em Caixa</h3>
+                <span>▼</span>
             </div>
             <div class="categoria-conteudo" id="conteudo-caixas">
                 <div id="lista-caixas"></div>
@@ -40,8 +43,9 @@
         </div>
 
         <div class="categoria" id="tortas">
-            <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')" style="cursor:pointer; background:#f4f4f4; padding:15px; border-radius:8px; margin-bottom:10px;">
-                <h3>🎂 Torta de Sorvete ▼</h3>
+            <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
+                <h3 style="margin: 0;">🎂 Torta de Sorvete</h3>
+                <span>▼</span>
             </div>
             <div class="categoria-conteudo" id="conteudo-tortas">
                 <div id="lista-tortas"></div>
@@ -56,16 +60,135 @@
     <!-- Modal de Sabores -->
     <div class="modal-overlay" id="modal-sabores">
         <div class="modal-box">
-            <h2 id="modal-sabores-titulo">Escolher Sabores</h2>
-            <p>Selecione os sabores desejados:</p>
+            <h2 id="modal-sabores-titulo" style="margin-top: 0;">Escolher Sabores</h2>
+            <p id="modal-subtitulo" style="color: #666;"></p>
             <div class="grid-sabores" id="lista-sabores-grid"></div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="confirmarSabores()" id="btn-confirmar-sabores" class="btn-add" style="flex: 1;" disabled>Confirmar Seleção</button>
-                <button onclick="fecharModal('modal-sabores')" style="padding: 10px;">Cancelar</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="confirmarSabores()" id="btn-confirmar-sabores" class="btn-add" style="flex: 2;" disabled>Confirmar Seleção</button>
+                <button onclick="fecharModal('modal-sabores')" style="flex: 1; padding: 10px; border: 1px solid #ccc; background: #eee; border-radius: 6px; cursor: pointer;">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <script src="scripts/enc-v3.js"></script>
+    <script>
+        // Variáveis globais
+        var carrinho = [];
+        var produtoSendoAdicionado = null;
+        var saboresSelecionados = [];
+
+        const PRODUTOS = {
+            caixas: [
+                { id:"cx5l_2s",  nome:"Caixa 5 Litros – 2 Sabores",  preco:100.00, maxSabores:2 },
+                { id:"cx5l_3s",  nome:"Caixa 5 Litros – 3 Sabores",  preco:115.00, maxSabores:3 },
+                { id:"cx10l_2s", nome:"Caixa 10 Litros – 2 Sabores", preco:150.00, maxSabores:2 },
+                { id:"cx10l_3s", nome:"Caixa 10 Litros – 3 Sabores", preco:165.00, maxSabores:3 }
+            ],
+            tortas: [
+                { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3 }
+            ]
+        };
+
+        const SABORES = [
+            "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce","Amarena","Ameixa",
+            "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
+            "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
+            "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
+            "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
+            "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
+            "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
+            "Pistache","Prestígio","Sensação","Torta de Chocolate"
+        ];
+
+        function toggleSecao(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const todas = ['conteudo-caixas', 'conteudo-tortas'];
+            todas.forEach(s => {
+                const secao = document.getElementById(s);
+                if (secao && s !== id) secao.style.display = 'none';
+            });
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function renderizarTudo() {
+            document.getElementById('lista-caixas').innerHTML = PRODUTOS.caixas.map(p => `
+                <div class="produto-card">
+                    <div>
+                        <h4 style="margin:0">${p.nome}</h4>
+                        <p style="margin:5px 0 0; color:#2E7D32; font-weight:bold">R$ ${p.preco.toFixed(2).replace('.',',')}</p>
+                    </div>
+                    <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('lista-tortas').innerHTML = PRODUTOS.tortas.map(p => `
+                <div class="produto-card">
+                    <div>
+                        <h4 style="margin:0">${p.nome}</h4>
+                        <p style="margin:5px 0 0; color:#2E7D32; font-weight:bold">R$ ${p.preco.toFixed(2).replace('.',',')}</p>
+                    </div>
+                    <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher</button>
+                </div>
+            `).join('');
+        }
+
+        function abrirModalSabores(id) {
+            const p = PRODUTOS.caixas.find(x => x.id === id) || PRODUTOS.tortas.find(x => x.id === id);
+            if (!p) return;
+            produtoSendoAdicionado = p;
+            saboresSelecionados = [];
+            
+            document.getElementById('modal-sabores-titulo').textContent = p.nome;
+            document.getElementById('modal-subtitulo').textContent = `Selecione até ${p.maxSabores} sabores`;
+            
+            const grid = document.getElementById('lista-sabores-grid');
+            grid.innerHTML = SABORES.map(s => `
+                <div class="sabor-item" onclick="toggleSabor(this, '${s}')">${s}</div>
+            `).join('');
+            
+            document.getElementById('modal-sabores').classList.add('ativo');
+            atualizarBotaoConfirmar();
+        }
+
+        function toggleSabor(el, sabor) {
+            const idx = saboresSelecionados.indexOf(sabor);
+            if (idx > -1) {
+                saboresSelecionados.splice(idx, 1);
+                el.classList.remove('selecionado');
+            } else {
+                if (saboresSelecionados.length < produtoSendoAdicionado.maxSabores) {
+                    saboresSelecionados.push(sabor);
+                    el.classList.add('selecionado');
+                } else {
+                    alert(`Você já selecionou o máximo de ${produtoSendoAdicionado.maxSabores} sabores.`);
+                }
+            }
+            atualizarBotaoConfirmar();
+        }
+
+        function atualizarBotaoConfirmar() {
+            const btn = document.getElementById('btn-confirmar-sabores');
+            btn.disabled = saboresSelecionados.length === 0;
+            btn.textContent = `Confirmar (${saboresSelecionados.length}/${produtoSendoAdicionado.maxSabores})`;
+        }
+
+        function confirmarSabores() {
+            carrinho.push({
+                nome: produtoSendoAdicionado.nome,
+                sabores: [...saboresSelecionados],
+                quantidade: 1
+            });
+            fecharModal('modal-sabores');
+            document.getElementById('carrinho-badge').textContent = carrinho.length;
+            document.getElementById('btn-carrinho').disabled = false;
+            alert('Adicionado ao carrinho!');
+        }
+
+        function fecharModal(id) {
+            document.getElementById(id).classList.remove('ativo');
+        }
+
+        window.onload = renderizarTudo;
+    </script>
 </body>
 </html>
