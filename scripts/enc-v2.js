@@ -51,6 +51,23 @@ async function carregarPrecosNuvem() {
   }
 }
 
+
+// ---- UTILITÁRIOS DE ESTOQUE DE PICOLÉS ----
+const STORAGE_PICOLES = 'itap_estoque_picoles';
+function getEstoquePickles() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_PICOLES) || '{}');
+  } catch(e) { return {}; }
+}
+function atualizarEstoquePickleLocal(sabor, delta) {
+  const estoque = getEstoquePickles();
+  const atual = estoque[sabor] || 0;
+  estoque[sabor] = Math.max(0, atual + delta);
+  localStorage.setItem(STORAGE_PICOLES, JSON.stringify(estoque));
+  // Disparar evento para atualizar outras abas se necessário
+  window.dispatchEvent(new Event('storage'));
+}
+
 // Variáveis globais
 var carrinho = [];
 var produtoAtual = null;
@@ -584,35 +601,33 @@ function atualizarTotalPickle() {
 
 function confirmarPickle() {
   const totalGlobal = totalPickleGlobal();
-  if (totalGlobal < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue comprando outros tipos!`, 'alerta'); return; }
-  if (totalGlobal > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); return; }
-  // Agrupar todos os picolés do global por tipo
-  const porTipo = {};
+  if (totalGlobal === 0) return;
+  
+  // Adicionar cada sabor como item individual no carrinho e descontar estoque
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
     const [tipoId, ...saborParts] = chave.split('::');
     const sabor = saborParts.join('::');
-    if (!porTipo[tipoId]) porTipo[tipoId] = { sabores: [], qtdTotal: 0 };
-    porTipo[tipoId].sabores.push(`${sabor}: ${qtd} un.`);
-    porTipo[tipoId].qtdTotal += qtd;
-  });
-  // Adicionar um item no carrinho por tipo de picolé
-  Object.entries(porTipo).forEach(([tipoId, dados]) => {
     const p = PRODUTOS.picoles.find(x => x.id === tipoId);
-    if (!p) return;
-    addCarrinho({
-      id: tipoId + '_picole',
-      nome: p.nome,
-      preco: p.precoAtacado,
-      sabores: dados.sabores,
-      quantidade: dados.qtdTotal,
-      tipo: 'picolé'
-    });
+    
+    if (qtd > 0) {
+      addCarrinho({
+        id: 'pic_' + sabor.replace(/\s+/g,'_'),
+        nome: `Picolé ${p.nome} (${sabor})`,
+        preco: p.precoAtacado,
+        sabores: [sabor],
+        quantidade: qtd,
+        tipo: 'picolé',
+        saborOriginal: sabor // para devolver ao estoque depois
+      });
+      // Descontar do estoque
+      atualizarEstoquePickleLocal(sabor, -qtd);
+    }
   });
-  // Limpar seleções globais
+
   selecoesPickleGlobal = {};
   selecoesPickle = {};
   fecharModal('modal-picolé');
-  showToast(`✅ ${totalGlobal} picolé(s) adicionado(s) ao carrinho!`, 'sucesso');
+  showToast(`✅ ${totalGlobal} picolé(s) adicionado(s)!`, 'sucesso');
 }
 
 // ---- CARRINHO ----
