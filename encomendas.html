@@ -1,351 +1,1385 @@
-
+<!-- cache-bust: 1771939682 -->
 <!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║         SORVETERIA ITAPOLITANA CAJURU — SITE OFICIAL         ║
+  ║──────────────────────────────────────────────────────────────║
+  ║  Criado por: Sgt Missiascacarato                             ║
+  ║  Data de criação: Fevereiro de 2026                          ║
+  ║  Versão: 2.0 — Sistema de Design Padronizado                 ║
+  ║  Tecnologia: HTML5 + CSS3 + JavaScript Vanilla               ║
+  ║  Hospedagem: GitHub Pages                                    ║
+  ║  Domínio: itapolitanacajuru.com.br                           ║
+  ║──────────────────────────────────────────────────────────────║
+  ║  © 2026 Sorveteria Itapolitana Cajuru. Todos os direitos     ║
+  ║  reservados. Reprodução proibida sem autorização.            ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encomendas – Sorveteria Itapolitana Cajuru</title>
-    <style>
-        :root { --primary: #1565C0; --secondary: #2E7D32; --bg: #f0f2f5; --text: #333; }
-        body { background: var(--bg); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: var(--text); }
-        header { background: var(--primary); color: white; padding: 20px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .categoria { margin-bottom: 15px; }
-        .categoria-header { cursor:pointer; background:#fff; padding:18px; border-radius:10px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .categoria-header:hover { background: #f8f9fa; transform: translateY(-2px); }
-        .categoria-conteudo { display: none; padding: 20px; background: #fff; border-radius: 0 0 10px 10px; border: 1px solid #eee; border-top: none; }
-        .produto-card { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
-        .produto-info h4 { margin: 0; color: var(--primary); }
-        .preco { margin: 5px 0 0; color: var(--secondary); font-weight: bold; }
-        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-add:hover { opacity: 0.9; }
-        .btn-carrinho-fixo { position: fixed; bottom: 20px; right: 20px; background: var(--secondary); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); z-index: 900; cursor: pointer; }
-        .btn-carrinho-fixo:disabled { background: #999; cursor: not-allowed; opacity: 0.7; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-overlay.ativo { display: flex; }
-        .modal-box { background: white; padding: 25px; border-radius: 15px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .grid-sabores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .sabor-item { padding: 12px; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; text-align: center; transition: 0.2s; font-size: 0.9rem; }
-        .sabor-item.selecionado { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
-        .item-carrinho { border-bottom: 1px solid #eee; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
-        .form-grupo { margin-bottom: 15px; }
-        .form-grupo label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-        .form-grupo input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        #itap-toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#333; color:white; padding:12px 25px; border-radius:30px; z-index:2000; display:none; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; bottom: 70px; } to { opacity: 1; bottom: 90px; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Encomende tortas de sorvete, caixas de sorvete, picolés e acréscimos para festas e eventos. Sorveteria Itapolitana Cajuru/SP. Pedidos via WhatsApp.">
+  <meta name="keywords" content="encomenda sorvete Cajuru, torta de sorvete Cajuru, caixa de sorvete Cajuru, picolé atacado Cajuru, festa sorvete Cajuru, Itapolitana encomendas">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://itapolitanacajuru.com.br/encomendas.html">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://itapolitanacajuru.com.br/encomendas.html">
+  <meta property="og:title" content="Encomendas – Tortas, Caixas e Picolés | Sorveteria Itapolitana Cajuru">
+  <meta property="og:description" content="Encomende tortas de sorvete, caixas de sorvete e picolés para festas e eventos. Pedidos via WhatsApp. Sorveteria Itapolitana Cajuru/SP.">
+  <meta property="og:image" content="https://itapolitanacajuru.com.br/images/logo.png">
+  <meta property="og:locale" content="pt_BR">
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="images/logo.png">
+  <title>Encomendas – Tortas, Caixas e Picolés | Sorveteria Itapolitana Cajuru</title>
+  <link rel="icon" href="images/logo.png">
+  <style>
+    :root {
+      --azul: #1565C0;
+      --azul-escuro: #0D47A1;
+      --vermelho: #D32F2F;
+      --amarelo: #F9A825;
+      --branco: #FFFFFF;
+      --cinza-claro: #F5F5F5;
+      --cinza: #9E9E9E;
+      --verde: #2E7D32;
+      --sombra: 0 2px 12px rgba(0,0,0,0.12);
+      --radius: 14px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--cinza-claro); color: #212121; }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .header-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .header-logo img{width:54px;height:54px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 14px rgba(0,0,0,.25);}
+    .header-logo-texto h1 { font-size:1rem; color:#E8000D; line-height:1.2; font-weight:900; }
+    .header-logo-texto p { font-size:0.7rem; color:#fff; font-weight: 600; }
+    .header-acoes { display:flex; gap:10px; align-items:center; }
+    .btn-voltar {
+      background: linear-gradient(135deg, #F9A825, #FFD600);
+      color: #1A0A00;
+      border: 2px solid #1A0A00;
+      box-shadow: 0 0 0 2px #FFD600, 0 2px 8px rgba(249,168,37,.5);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-voltar:hover { background: linear-gradient(135deg, #FFD600, #F9A825); transform: translateY(-1px); }
+
+    /* BOTÃO CARRINHO FIXO */
+    .btn-carrinho-fixo {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      background: var(--amarelo);
+      color: #212121;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 200;
+      transition: all 0.2s;
+    }
+    .btn-carrinho-fixo:disabled { background: var(--cinza); color: white; cursor: not-allowed; }
+    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    .btn-carrinho-fixo .badge {
+      background: var(--vermelho);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    /* BANNER INFO */
+    .banner-info {
+      background: linear-gradient(90deg, #C62828, #0D47A1);
+      color: #fff;
+      text-align: center;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(160deg, #0D47A1 0%, #1565C0 40%, #1976D2 70%, #0D47A1 100%);
+      background-size: 200% 200%;
+      animation: hero-gradiente 6s ease infinite;
+      color: white;
+      padding: 28px 20px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    @keyframes hero-gradiente {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero h2 { font-size: 1.6rem; margin-bottom: 8px; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    .hero h2 .destaque { color: var(--amarelo); }
+    .hero p { font-size: 0.9rem; color: #fff; line-height: 1.6; max-width: 480px; margin: 0 auto 12px; font-weight: 600; }
+    .hero-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .hero-badge {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      color: white;
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+
+    /* CONTAINER PRINCIPAL */
+    .container { max-width: 800px; margin: 0 auto; padding: 20px 16px 100px; }
+
+    /* SEÇÃO CATEGORIA */
+    .categoria {
+      background: white;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      box-shadow: var(--sombra);
+      overflow: hidden;
+    }
+    .categoria-header {
+      padding: 18px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+    .categoria-header:hover { opacity: 0.9; }
+    .categoria-header-left { display:flex; align-items:center; gap:14px; }
+    .categoria-emoji { font-size: 1.8rem; }
+    .categoria-info h3 { font-size: 1.1rem; color: white; }
+    .categoria-info p { font-size: 0.8rem; color: #fff; margin-top:2px; font-weight: 600; }
+    .toggle-icon { font-size: 1.2rem; color: white; transition: transform 0.3s; }
+    .categoria-conteudo { display: none; padding: 16px; border-top: 1px solid #eee; }
+    .categoria-conteudo.aberto { display: block; }
+
+    /* CORES DAS CATEGORIAS */
+    .cat-caixas .categoria-header { background: linear-gradient(135deg, #4A148C, #7B1FA2, #9C27B0); }
+    .cat-tortas .categoria-header { background: linear-gradient(135deg, #B71C1C, var(--vermelho), #E91E63); }
+    .cat-picoles .categoria-header { background: linear-gradient(135deg, #BF360C, #E65100, #FF9800); }
+    .cat-acrescimos .categoria-header { background: linear-gradient(135deg, #1B5E20, #2E7D32, #43A047); }
+    /* Sombra colorida por categoria */
+    .cat-caixas { box-shadow: 0 4px 20px rgba(123,31,162,.2); }
+    .cat-tortas { box-shadow: 0 4px 20px rgba(211,47,47,.2); }
+    .cat-picoles { box-shadow: 0 4px 20px rgba(230,81,0,.2); }
+    .cat-acrescimos { box-shadow: 0 4px 20px rgba(27,94,32,.2); }
+    /* Texto sensorial abaixo do título */
+    .categoria-info .frase-cat { font-size: 0.72rem; color: #fff; margin-top: 3px; font-style: italic; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+
+    /* CARDS DE PRODUTO */
+    .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    .prod-card {
+      border: 2px solid #eee;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: white;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .prod-card:hover:not(.esgotado) { transform: translateY(-4px); }
+    .prod-card-img { width: 100%; height: 130px; object-fit: cover; display: block; }
+    .prod-card-sem-foto { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; background: linear-gradient(135deg, #E3F2FD, #F3E5F5); }
+    .prod-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .prod-card:hover { border-color: var(--azul); box-shadow: 0 4px 16px rgba(21,101,192,0.15); }
+    .prod-card.esgotado { opacity: 0.6; pointer-events: none; }
+    .prod-nome { font-size: 1rem; font-weight: 800; color: #1A0A00; }
+    .prod-preco { font-size: 1.25rem; font-weight: 900; color: #0D47A1; }
+    .prod-precos-picolé { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; }
+    .prod-precos-picolé .destaque { color: var(--verde); font-weight: 700; }
+    .prod-estoque { font-size: 0.78rem; color: #5D4037; font-weight: 600; }
+    .tag-esgotado {
+      background: var(--vermelho);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .btn-sabores {
+      background: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-sabores:hover:not(:disabled) { background: var(--azul-escuro); transform: translateY(-1px); }
+    .btn-sabores:disabled { background: var(--cinza); cursor: not-allowed; }
+    .btn-picolé { background: #E65100; }
+    .btn-picolé:hover:not(:disabled) { background: #BF360C; }
+
+    /* MODAL BASE */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.ativo { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 92vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      position: relative;
+      z-index: 1001;
+      pointer-events: all !important;
+    }
+    .modal-overlay.ativo .modal-box { transform: translateY(0); }
+    .modal-header {
+      background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
+      color: white;
+      padding: 20px;
+      border-radius: 20px 20px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .modal-header-top { display:flex; justify-content:space-between; align-items:center; }
+    .modal-titulo { font-size: 1.1rem; font-weight: 700; }
+    .modal-subtitulo { font-size: 0.85rem; color: #fff; font-weight: 600; margin-top: 4px; }
+    .btn-fechar-modal {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .btn-fechar-modal:hover { background: rgba(255,255,255,0.35); }
+    .modal-body { padding: 20px; }
+
+    /* GRID SABORES */
+    .grid-sabores {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .sabor-item {
+      border: 2px solid #E0E0E0;
+      background: white;
+      border-radius: 10px;
+      padding: 10px 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .sabor-item:hover { border-color: var(--azul); color: var(--azul); }
+    .sabor-item.sel {
+      background: var(--azul);
+      border-color: var(--azul);
+      color: white;
+      font-weight: 700;
+    }
+    .btn-confirmar {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #E0E0E0;
+      color: #4A148C; font-weight: 800;
+      transition: all 0.2s;
+    }
+    .btn-confirmar.pronto { background: var(--verde); color: #fff; font-weight: 800; }
+    .btn-confirmar:disabled { cursor: not-allowed; }
+
+    /* COMPLEMENTOS SORVETE */
+    .comp-sorvete-titulo {
+      font-size: 1.05rem; font-weight: 900; color: #fff;
+      margin: 14px 0 12px; padding: 14px 18px;
+      background: linear-gradient(135deg,#B71C1C,#E53935,#FF5252);
+      border-radius: 14px;
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 16px rgba(183,28,28,0.35);
+      border: 2px solid rgba(255,255,255,0.25);
+      cursor: default;
+      display: block;
+      width: 100%;
+    }
+    .comp-sorvete-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: #FAFAFA;
+      border: 1px solid #E8E8E8; border-radius: 10px; margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .comp-sorvete-item.esgotado { opacity: 0.5; pointer-events: none; }
+    .comp-sorvete-item.ativo { border-color: #6A0DAD; background: #F3E5F5; }
+    .comp-sorvete-info { flex: 1; }
+    .comp-sorvete-nome { font-size: 0.9rem; font-weight: 700; color: #1A0A00; display: block; }
+    .comp-sorvete-preco { font-size: 0.82rem; color: #4A148C; font-weight: 700; }
+    .comp-sorvete-tag-esgotado { font-size: 0.72rem; background: #EF5350; color: white; border-radius: 4px; padding: 2px 6px; font-weight: 700; margin-left: 6px; }
+    .comp-sorvete-ctrl { display: flex; align-items: center; gap: 8px; }
+    .comp-btn {
+      width: 32px; height: 32px; border: none; border-radius: 8px;
+      font-size: 1.1rem; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .comp-btn-menos { background: #EF5350; color: white; }
+    .comp-btn-menos:hover { background: #C62828; }
+    .comp-btn-mais { background: #43A047; color: white; }
+    .comp-btn-mais:hover { background: #1B5E20; }
+    .comp-qtd { font-size: 1rem; font-weight: 800; min-width: 24px; text-align: center; color: #1A0A00; }
+
+    /* MODAL PICOLÉ */
+    .picolé-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #F5F5F5;
+    }
+    .picolé-sabor-nome { font-size: 0.9rem; font-weight: 500; flex: 1; }
+    .qty-ctrl { display:flex; align-items:center; gap:10px; }
+    .btn-qty {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--azul);
+      background: white;
+      color: var(--azul);
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-qty:hover { background: var(--azul); color: white; }
+    .qty-val { font-size: 1rem; font-weight: 700; min-width: 28px; text-align: center; }
+    .picolé-total-bar {
+      background: #F5F5F5;
+      border: 1px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .aviso-minimo {
+      background: #FFF3E0;
+      border: 2px solid #E65100;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: #BF360C;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .btn-add-picoles {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #E65100;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+     .btn-add-picoles:disabled { background: var(--cinza); cursor: not-allowed; }
+    .btn-add-picoles:not(:disabled):hover { background: #BF360C; }
+    .btn-continuar-picoles {
+      width: 100%;
+      padding: 18px 16px;
+      border: 3px solid #E65100;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+      color: #BF360C;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 10px rgba(230,81,0,0.2);
+      min-height: 56px;
+    }
+    .btn-continuar-picoles:hover { background: linear-gradient(135deg, #FFE0B2, #FFCC80); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(230,81,0,0.3); }
+    .btn-continuar-picoles:active { transform: translateY(0); }
+    /* TIPOS DE PICOLÉ */
+    .btn-tipo-picole {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E65100;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
+      color: #BF360C;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(230,81,0,0.15);
+    }
+    .btn-tipo-picole:hover { background: linear-gradient(135deg, #FFE0B2, #FFCC80); transform: translateY(-1px); }
+    .btn-tipo-picole.esgotado { opacity: 0.4; cursor: not-allowed; }
+    .btn-tipo-nome { flex: 1; text-align: left; }
+    .btn-tipo-qtd { background: #E65100; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.85rem; }
+    .btn-tipo-preco { font-size: 0.8rem; color: #795548; }
+    /* BARRA DE PROGRESSO PICOLÉS */
+    .picole-progress-bar {
+      background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+      border-top: 1px solid #FFCC80;
+      padding: 8px 16px 10px;
+    }
+    .picole-progress-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #BF360C;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .picole-progress-info strong {
+      font-size: 1.1rem;
+      color: #E65100;
+    }
+    .picole-progress-status {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #FFCCBC;
+      color: #BF360C;
+    }
+    .picole-progress-status.ok {
+      background: #C8E6C9;
+      color: #2E7D32;
+    }
+    .picole-progress-track {
+      height: 8px;
+      background: #FFCCBC;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .picole-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF7043, #E65100);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+    .picole-progress-fill.ok {
+      background: linear-gradient(90deg, #66BB6A, #2E7D32);
+    }
+    /* MODAL CARRINHO */
+    .steps-bar {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: #F5F5F5;
+      gap: 8px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--cinza);
+      flex: 1;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #E0E0E0;
+      color: #6A0DAD; font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .step.ativo .step-num { background: var(--azul); color: white; }
+    .step.completo .step-num { background: var(--verde); color: white; }
+    .step.ativo .step-label { color: var(--azul); font-weight: 600; }
+    .step-sep { color: #E0E0E0; font-size: 1.2rem; }
+    .etapa { display: none; padding: 20px; }
+    .etapa.ativa { display: block; }
+
+    /* CART ITEMS */
+    .cart-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #F0F0F0;
+      align-items: flex-start;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-nome { font-weight: 700; font-size: 0.95rem; }
+    .cart-item-sabores { font-size: 0.78rem; color: var(--cinza); margin: 4px 0; line-height: 1.5; }
+    .cart-item-preco-unit { font-size: 0.8rem; color: var(--azul); }
+    .cart-item-ctrl { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+    .cart-item-sub { font-weight: 700; font-size: 0.95rem; color: var(--azul); }
+    .btn-remover { background:none; border:none; cursor:pointer; font-size:1.1rem; padding:4px; }
+    .total-bar {
+      background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
+      color: white;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .aviso-min-carrinho {
+      background: #FFF3E0;
+      border: 1px solid #FFB300;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #E65100;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .btn-proxima-etapa {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--azul);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-proxima-etapa:disabled { background: var(--cinza); cursor: not-allowed; }
+    .btn-proxima-etapa:not(:disabled):hover { background: var(--azul-escuro); }
+    /* Barra de ação sticky no rodapé do modal */
+    .modal-action-bar {
+      position: sticky;
+      bottom: 0;
+      background: white;
+      padding: 14px 20px 20px;
+      border-top: 1px solid #F0F0F0;
+      z-index: 50;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    }
+    .modal-action-bar.hidden { display: none; }
+
+    /* RESUMO PEDIDO */
+    .resumo-titulo { font-size: 1rem; font-weight: 700; margin-bottom: 14px; color: var(--azul); }
+    .resumo-item {
+      border: 1px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .resumo-item-topo { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .qty-ctrl-mini { display:flex; align-items:center; gap:8px; }
+    .btn-qty-mini {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--azul);
+      background: white;
+      color: var(--azul);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-qty-mini:hover { background: var(--azul); color: white; }
+    .resumo-sabor { font-size: 0.8rem; color: #6A0DAD; font-weight: 700; margin: 2px 0; }
+    .resumo-sub { font-weight: 700; color: var(--azul); font-size: 0.9rem; margin-top: 8px; text-align: right; }
+    .resumo-total-final {
+      background: var(--azul);
+      color: white;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.05rem;
+      margin: 14px 0;
+    }
+    .aviso-prazo {
+      background: #E3F2FD;
+      border: 1px solid var(--azul);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: var(--azul-escuro);
+      margin: 14px 0;
+    }
+
+    /* FORMULÁRIO DADOS */
+    .form-grupo { margin-bottom: 16px; }
+    .form-grupo label { display:block; font-weight:600; font-size:0.88rem; margin-bottom:6px; color:#424242; }
+    .form-grupo input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-grupo input:focus { border-color: var(--azul); }
+    .botoes-etapa-dados {
+      background: white;
+      padding: 20px 0 8px;
+      border-top: 1px solid #E0E0E0;
+      margin-top: 12px;
+    }
+    .btn-finalizar {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--verde);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0;
+    }
+    .btn-finalizar:hover { background: #1B5E20; }
+    .btn-enviar-rapido {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: #D32F2F;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(211,47,47,0.4);
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-enviar-rapido:hover { background: #B71C1C; }
+    .btn-voltar-etapa {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--azul);
+      border-radius: 12px;
+      background: white;
+      color: var(--azul);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-continuar-comprando {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #D32F2F, #F44336);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(211,47,47,0.35);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-continuar-comprando:hover { background: linear-gradient(135deg,#B71C1C,#D32F2F); transform: translateY(-1px); }
+
+    /* CONFIRMAÇÃO */
+    .confirmacao-box { text-align: center; padding: 20px 0; }
+    .confirmacao-icon { font-size: 4rem; margin-bottom: 16px; }
+    .confirmacao-titulo { font-size: 1.4rem; font-weight: 800; color: var(--verde); margin-bottom: 8px; }
+    .confirmacao-num { font-size: 0.9rem; color: var(--cinza); margin-bottom: 20px; }
+    .btn-whatsapp-final {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #25D366;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn-whatsapp-final:hover { background: #128C7E; }
+    .btn-novo-pedido {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--azul);
+      border-radius: 12px;
+      background: white;
+      color: var(--azul);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .btn-voltar-cardapio {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--cinza-claro);
+      color: #424242;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #212121;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .toast.ativo { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.sucesso { background: var(--verde); }
+    .toast.alerta { background: var(--vermelho); }
+
+    /* RESPONSIVO */
+    @media (max-width: 480px) {
+      .prod-grid { grid-template-columns: 1fr; }
+      .grid-sabores { grid-template-columns: repeat(3, 1fr); }
+      .header-logo-texto h1 { font-size: 0.85rem; }
+
+      /* BOTÕES MOBILE - enquadramento perfeito */
+      .btn-sabores {
+        padding: 14px 10px;
+        font-size: 0.85rem;
+        border-radius: 10px;
+        min-height: 48px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .btn-proxima-etapa {
+        padding: 18px 16px;
+        font-size: 1rem;
+        border-radius: 14px;
+        min-height: 56px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        margin-top: 12px;
+      }
+      .btn-finalizar {
+        padding: 18px 16px;
+        font-size: 1rem;
+        border-radius: 14px;
+        min-height: 56px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .btn-continuar-comprando {
+        padding: 16px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+        min-height: 52px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .btn-voltar-etapa {
+        padding: 14px;
+        font-size: 0.88rem;
+        border-radius: 12px;
+        min-height: 48px;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+      }
+      .modal-box {
+        max-height: 88vh;
+        border-radius: 16px 16px 0 0;
+      }
+      .etapa { padding: 16px 14px; }
+      .lista-carrinho-item {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .form-grupo input {
+        font-size: 16px; /* evita zoom automático no iOS */
+        padding: 14px 12px;
+      }
+      .prod-card { padding: 14px 12px; }
+      .prod-nome { font-size: 0.92rem; }
+      .prod-preco { font-size: 1rem; }
+      .total-bar {
+        font-size: 1rem;
+        padding: 14px 16px;
+      }
+    }
+
+    /* TOUCH - todos os botões interativos */
+
+    /* Garantir que filhos dos botoes nao bloqueiem cliques */
+    .btn-finalizar *, .btn-whatsapp-final *, .btn-voltar-etapa *,
+    .btn-ir-dados *, .btn-proxima-etapa *, .btn-novo-pedido *,
+    .btn-voltar-cardapio * {
+      pointer-events: none;
+    }
+    button, .btn-sabores, .btn-proxima-etapa, .btn-finalizar,
+    .btn-continuar-comprando, .btn-voltar-etapa, .categoria-header {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* ===== BARRAS DE AÇÃO ===== */
+    .barra-acao {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 14px;
+      padding: 10px 16px;
+      margin: 8px 0;
+      min-height: 52px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: relative;
+      z-index: 1;
+    }
+    .barra-texto {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: white;
+      flex: 1;
+      text-align: center;
+      pointer-events: none;
+    }
+    /* Cores das barras */
+    .barra-verde  { background: linear-gradient(135deg, #1B5E20, #2E7D32, #43A047); }
+    .barra-azul   { background: linear-gradient(135deg, #0D47A1, #1565C0, #1976D2); }
+    .barra-wpp    { background: linear-gradient(135deg, #075E54, #128C7E, #25D366); }
+    .barra-cinza-claro { background: #F0F0F0; }
+    .barra-cinza-claro .barra-texto { color: #333; }
+
+    /* ===== BOTÕES REDONDOS ===== */
+    .btn-acao-redondo {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 50%;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+      z-index: 2;
+      position: relative;
+      pointer-events: all !important;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+      color: white;
+    }
+    .btn-acao-redondo:hover  { transform: scale(1.1); box-shadow: 0 5px 16px rgba(0,0,0,0.35); }
+    .btn-acao-redondo:active { transform: scale(0.95); }
+
+    /* Cores dos botões redondos */
+    .btn-vermelho    { background: linear-gradient(135deg, #B71C1C, #D32F2F); color: white; }
+    .btn-azul        { background: linear-gradient(135deg, #0D47A1, #1565C0); color: white; }
+    .btn-wpp         { background: linear-gradient(135deg, #075E54, #25D366); color: white; }
+    .btn-cinza       { background: linear-gradient(135deg, #616161, #9E9E9E); color: white; }
+    .btn-cinza-claro { background: white; color: #333; border: 2px solid #ccc; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+    /* Garantir cliques nos botões redondos */
+    .btn-acao-redondo * { pointer-events: none; }
+    /* BOTÃO VOLTAR PADRÃO - Amarelo vibrante, seta ← */
+    .btn-voltar-padrao {
+      background: linear-gradient(135deg, #F9A825, #FFD600) !important;
+      color: #1A0A00 !important;
+      border: 3px solid #1A0A00 !important;
+      box-shadow: 0 0 0 2px #FFD600, 0 4px 14px rgba(249,168,37,.5) !important;
+    }
+    /* Quando em barra cinza claro (fundo claro), borda amarela escura */
+    .barra-cinza-claro .btn-voltar-padrao {
+      border: 3px solid #E65100 !important;
+      box-shadow: 0 0 0 2px #FFD600, 0 4px 14px rgba(249,168,37,.6) !important;
+    }
+    /* Quando em barra azul (fundo azul escuro), borda branca bem visivel */
+    .barra-azul .btn-voltar-padrao {
+      border: 3px solid #fff !important;
+      box-shadow: 0 0 0 2px #1565C0, 0 4px 14px rgba(249,168,37,.7) !important;
+    }
+</style>
+<!-- v:1771806853-neuro -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FoodService",
+  "name": "Encomendas – Sorveteria Itapolitana Cajuru",
+  "description": "Encomende tortas de sorvete, caixas 5L e 10L, picolés no atacado e acréscimos. Retirada na loja em Cajuru/SP.",
+  "url": "https://itapolitanacajuru.com.br/encomendas.html",
+  "telephone": "+55-16-99147-2045",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "R. Cel. Manoel Caetano, 311",
+    "addressLocality": "Cajuru",
+    "addressRegion": "SP",
+    "addressCountry": "BR"
+  }
+}
+</script>
+<meta name="theme-color" content="#1565C0">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Encomendas – Sorveteria Itapolitana Cajuru">
+  <meta name="twitter:description" content="Encomende tortas, caixas de sorvete e picolés para festas. Retirada na loja em Cajuru/SP.">
+  <meta name="twitter:image" content="https://itapolitanacajuru.com.br/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1 style="margin: 0; font-size: 1.6rem;">Itapolitana Cajuru - Encomendas</h1>
-            <a href="index.html" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem;">← Voltar ao Cardápio</a>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="categoria">
-            <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
-                <h3 style="margin: 0;">🍦 Sorvete em Caixa</h3>
-                <span id="seta-caixas">▼</span>
-            </div>
-            <div class="categoria-conteudo" id="conteudo-caixas">
-                <div id="lista-caixas"></div>
-            </div>
-        </div>
 
-        <div class="categoria">
-            <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
-                <h3 style="margin: 0;">🎂 Torta de Sorvete</h3>
-                <span id="seta-tortas">▼</span>
-            </div>
-            <div class="categoria-conteudo" id="conteudo-tortas">
-                <div id="lista-tortas"></div>
-            </div>
+<header class="header">
+  <a href="index.html" class="header-logo">
+    <img loading="lazy" src="images/logo.png" alt="Itapolitana">
+    <div class="header-logo-texto">
+      <h1>Itapolitana Cajuru</h1>
+      <p>Encomendas</p>
+    </div>
+  </a>
+  <div class="header-acoes">
+    <a href="index.html" class="btn-voltar">← Cardápio</a>
+  </div>
+</header>
+
+
+<div class="banner-info">
+  📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança &nbsp;·&nbsp; 🏪 Retirada na loja &nbsp;·&nbsp; ✨ Sorvete artesanal desde 2007
+</div>
+
+
+<div class="hero">
+  <h2>🛒 Faça sua <span class="destaque">Encomenda</span></h2>
+  <p>Sorvetes cremosos em caixa, tortas irresistíveis, picolés gelados e acréscimos. Tudo artesanal, feito com amor desde 2007.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">✨ Artesanal</span>
+    <span class="hero-badge">🍦 36 Sabores</span>
+    <span class="hero-badge">🎂 Tortas Especiais</span>
+    <span class="hero-badge">📦 Caixas 5L e 10L</span>
+    <span class="hero-badge">🍭 Picolés Atacado</span>
+  </div>
+</div>
+
+
+<div class="container">
+
+  
+  <div class="categoria cat-caixas" id="caixas">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🍦</span>
+        <div class="categoria-info">
+          <h3>Sorvete em Caixa</h3>
+          <p>4 opções disponíveis</p>
+          <div class="frase-cat">✨ Cremoso, gelado e irresistível — perfeito para festas</div>
         </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-caixas">
+      <div class="prod-grid" id="lista-caixas"></div>
+    </div>
+  </div>
+
+  
+  <div class="categoria cat-tortas" id="tortas">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🎂</span>
+        <div class="categoria-info">
+          <h3>Torta de Sorvete</h3>
+          <p>Perfeita para festas</p>
+          <div class="frase-cat">🎂 Surpreenda quem você ama com uma torta gelada</div>
+        </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-tortas">
+      <div class="prod-grid" id="lista-tortas"></div>
+    </div>
+  </div>
+
+  
+  <div class="categoria cat-picoles" id="picoles">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-picoles')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🍭</span>
+        <div class="categoria-info">
+          <h3>Picolés (Atacado)</h3>
+          <p>Mínimo 100 unidades</p>
+          <div class="frase-cat">🍭 Gelados, recheados e cheios de sabor</div>
+        </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-picoles">
+      <div class="prod-grid" id="lista-picoles"></div>
+    </div>
+  </div>
+  
+  <div class="categoria cat-acrescimos" id="acrescimos">
+    <div class="categoria-header" onclick="toggleSecao('conteudo-acrescimos')">
+      <div class="categoria-header-left">
+        <span class="categoria-emoji">🍪</span>
+        <div class="categoria-info">
+          <h3>Acréscimos</h3>
+          <p>Canudinho, casquinha, cobertura e mais</p>
+          <div class="frase-cat">🍪 O toque final que faz toda a diferença</div>
+        </div>
+      </div>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="categoria-conteudo" id="conteudo-acrescimos">
+      <div id="lista-acrescimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
+    </div>
+  </div>
+
+</div>
+
+
+<button type="button" class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" disabled>
+  🛒 Ver Carrinho
+  <span class="badge" id="carrinho-badge">0</span>
+</button>
+
+
+<div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div>
+          <div class="modal-titulo">Escolher Sabores</div>
+          <div class="modal-subtitulo" id="modal-subtitulo-sabores"></div>
+        </div>
+        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-sabores')">✕</button>
+      </div>
+    </div>
+    <!-- 1. SABORES COM SCROLL PRÓPRIO -->
+    <div style="padding:16px 20px 0;overflow-y:auto;max-height:35vh">
+      <div class="grid-sabores" id="grid-sabores"></div>
+    </div>
+    
+    <div style="padding:12px 20px 20px">
+      <div class="barra-acao barra-azul">
+        <span class="barra-texto" id="txt-confirmar-sabores">Confirmar Seleção (0/0)</span>
+        <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-confirmar-sabores" onclick="confirmarSabores()" disabled title="Confirmar Sabores">✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-picolé" onclick="if(event.target===this)fecharModal('modal-picolé')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div>
+          <div class="modal-titulo" id="picolé-titulo"></div>
+          <div class="modal-subtitulo" id="picolé-precos"></div>
+        </div>
+        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
+      </div>
+      
+      <div class="picole-progress-bar">
+        <div class="picole-progress-info">
+          <span>🧳 Total selecionado:</span>
+          <strong id="picole-progress-num">0</strong>
+          <span>/ 250 picolés</span>
+          <span class="picole-progress-status" id="picole-progress-status">🔒 Faltam 100</span>
+        </div>
+        <div class="picole-progress-track">
+          <div class="picole-progress-fill" id="picole-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="picole-tela-tipos" style="display:none;padding:16px 20px 20px">
+      <p style="text-align:center;font-weight:700;color:#E65100;margin-bottom:12px">🍭 Escolha o tipo de picolé:</p>
+      <div id="picole-lista-tipos"></div>
+      <div class="picolé-total-bar" style="margin-top:12px">
+        <span>🧳 Total acumulado:</span>
+        <strong><span id="total-picoles-tipos">0</span> / 250 picolés</strong>
+      </div>
+      <button type="button" class="btn-add-picoles" id="btn-add-picoles-tipos" onclick="confirmarPickle()" disabled style="margin-top:10px">
+        🍭 Selecione ao menos 100 picolés para liberar
+      </button>
+    </div>
+    
+    <div class="modal-body" id="picole-tela-sabores">
+      <div id="lista-sabores-picolé"></div>
+      <div class="picolé-total-bar">
+        <span>🧳 Total geral (todos os tipos):</span>
+        <strong><span id="total-picoles">0</span> / 250 picolés</strong>
+      </div>
+      <div class="aviso-minimo" id="aviso-minimo-picolé"></div>
+      <button type="button" class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
+        🍭 Selecione ao menos 100 picolés no total
+      </button>
+      <button type="button" class="btn-continuar-picoles" id="btn-continuar-picoles" onclick="mostrarTelasTiposPicole()">
+        ← Comprar Outros Sabores
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-carrinho">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div class="modal-titulo">🛒 Meu Pedido</div>
+        <button type="button" class="btn-fechar-modal" onclick="fecharCarrinho()">✕</button>
+      </div>
     </div>
 
-    <button id="btn-carrinho" class="btn-carrinho-fixo" disabled onclick="abrirCarrinho()">
-        🛒 Ver Carrinho (<span id="carrinho-badge">0</span>)
-    </button>
-
-    <!-- Modal de Sabores -->
-    <div class="modal-overlay" id="modal-sabores">
-        <div class="modal-box">
-            <h2 id="modal-sabores-titulo" style="margin-top: 0; color: var(--primary);">Escolher Sabores</h2>
-            <p id="modal-subtitulo-sabores" style="color: #666; margin-bottom: 20px;"></p>
-            <div class="grid-sabores" id="grid-sabores"></div>
-            <div style="display: flex; gap: 10px; margin-top: 25px;">
-                <button onclick="confirmarSabores()" id="btn-confirmar-sabores" class="btn-add" style="flex: 2;" disabled>Confirmar Seleção</button>
-                <button onclick="fecharModal('modal-sabores')" style="flex: 1; padding: 10px; border: 1px solid #ccc; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold;">Cancelar</button>
-            </div>
-        </div>
+    
+    <div class="steps-bar">
+      <div class="step" id="step-revisao">
+        <div class="step-num">1</div>
+        <span class="step-label">Revisão</span>
+      </div>
+      <span class="step-sep">›</span>
+      <div class="step" id="step-dados">
+        <div class="step-num">2</div>
+        <span class="step-label">Seus Dados</span>
+      </div>
+      <span class="step-sep">›</span>
+      <div class="step" id="step-confirmacao">
+        <div class="step-num">3</div>
+        <span class="step-label">Confirmação</span>
+      </div>
     </div>
 
-    <!-- Modal do Carrinho -->
-    <div class="modal-overlay" id="modal-carrinho">
-        <div class="modal-box">
-            <h2 style="margin-top: 0; color: var(--secondary);">Seu Pedido</h2>
-            <div id="itens-carrinho" style="margin-bottom: 20px; max-height: 200px; overflow-y: auto;"></div>
-            <div style="border-top: 2px solid #eee; padding-top: 15px; margin-bottom: 20px;">
-                <h3 style="margin: 0; display: flex; justify-content: space-between;">
-                    <span>Total:</span>
-                    <span id="total-carrinho" style="color: var(--secondary);">R$ 0,00</span>
-                </h3>
-            </div>
-            
-            <div id="form-cliente">
-                <div class="form-grupo">
-                    <label>Seu Nome:</label>
-                    <input type="text" id="nome-cliente" placeholder="Digite seu nome completo">
-                </div>
-                <div class="form-grupo">
-                    <label>Telefone / WhatsApp:</label>
-                    <input type="tel" id="tel-cliente" placeholder="(00) 00000-0000">
-                </div>
-                <div class="form-grupo">
-                    <label>Endereço de Entrega:</label>
-                    <input type="text" id="end-cliente" placeholder="Rua, número, bairro">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 25px;">
-                <button onclick="finalizarPedido()" id="btn-finalizar" class="btn-add" style="flex: 2; background: var(--secondary);">Finalizar no WhatsApp</button>
-                <button onclick="fecharModal('modal-carrinho')" style="flex: 1; padding: 10px; border: 1px solid #ccc; background: #eee; border-radius: 8px; cursor: pointer; font-weight: bold;">Voltar</button>
-            </div>
+    <!-- ETAPA 1: REVISÃO -->
+    <div class="etapa" id="etapa-revisao">
+      <div id="lista-carrinho"></div>
+      <div class="total-bar">
+        <span>Total</span>
+        <span id="total-carrinho">R$ 0,00</span>
+      </div>
+      <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
+      <div style="padding:16px 0 24px;display:flex;flex-direction:column;gap:10px;">
+        <!-- BOTÃO PRINCIPAL: Avançar para preencher dados -->
+        <div class="barra-acao barra-verde">
+          <span style="width:44px;"></span>
+          <span class="barra-texto">✅ Preencher Dados e Confirmar</span>
+          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Preencher Dados e Confirmar">▶</button>
         </div>
+        <!-- BOTÃO SECUNDÁRIO: Continuar adicionando produtos -->
+        <div class="barra-acao barra-cinza-claro">
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-continuar-comprando" title="Continuar Comprando">←</button>
+          <span class="barra-texto" style="color:#333">← Continuar Adicionando Produtos</span>
+          <span style="width:44px;"></span>
+        </div>
+      </div>
     </div>
 
-    <div id="itap-toast"></div>
+    <!-- ETAPA 2: DADOS PESSOAIS -->
+    <div class="etapa" id="etapa-dados">
+      <div id="resumo-pedido"></div>
 
-    <script>
-        // --- MELHORIAS CORPORATIVAS ---
-        function sanitizeString(str) {
-            if (!str) return "";
-            return str.replace(/[&<>"'\/]/ig, "").trim();
-        }
+      <!-- Aviso de prazo -->
+      <div style="background:linear-gradient(135deg,#E65100,#FF6D00);color:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;">
+        <div style="font-size:1rem;font-weight:900;margin-bottom:6px;">⏰ IMPORTANTE — PRAZO DE PRODUÇÃO</div>
+        <div>Sua encomenda será <strong>produzida em até 3 dias úteis</strong> após a <strong>confirmação do pagamento</strong> via WhatsApp.</div>
+        <div style="margin-top:6px;font-size:0.8rem;opacity:0.9;">📲 Após enviar o pedido, aguarde o contato da sorveteria para confirmar e realizar o pagamento antecipado.</div>
+      </div>
 
-        const memoTotal = {};
-        function calcularTotalCarrinho(itens) {
-            const key = JSON.stringify(itens);
-            if (memoTotal[key]) return memoTotal[key];
-            const total = itens.reduce((acc, item) => acc + (item.preco * (item.quantidade || 1)), 0);
-            memoTotal[key] = total;
-            return total;
-        }
+      <div class="form-grupo">
+        <label>👤 Seu Nome Completo *</label>
+        <input type="text" id="cliente-nome" placeholder="Ex: João da Silva" autocomplete="name" oninput="_nomeCliente=this.value; verificarFormulario()">
+      </div>
+      <div class="form-grupo">
+        <label>📱 Seu WhatsApp *</label>
+        <input type="text" id="cliente-tel" placeholder="Ex: (16) 99999-9999" autocomplete="tel" inputmode="tel" oninput="_telCliente=this.value; verificarFormulario()">
+      </div>
+      <div class="form-grupo">
+        <label>📍 Endereço para Entrega *</label>
+        <input type="text" id="cliente-endereco" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" autocomplete="street-address" oninput="_enderecoCliente=this.value; verificarFormulario()">
+      </div>
+      <div class="botoes-etapa-dados">
+        <!-- BOTÃO PRINCIPAL: Gerar pedido e enviar -->
+        <div class="barra-acao barra-verde" id="barra-btn-finalizar">
+          <span style="width:44px;"></span>
+          <span class="barra-texto" id="texto-btn-finalizar">📲 Gerar Pedido e Enviar via WhatsApp</span>
+          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-finalizar" title="Gerar Pedido" disabled style="opacity:0.4;">✓</button>
+        </div>
+        <!-- DICA: campos obrigatórios -->
+        <div id="campos-obrigatorios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
+        <!-- BOTÃO VOLTAR: Revisar carrinho -->
+        <div class="barra-acao barra-azul">
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-etapa" title="Revisar Carrinho">←</button>
+          <span class="barra-texto">🛒 Revisar Carrinho</span>
+          <span style="width:44px;"></span>
+        </div>
+        <!-- BOTÃO CANCELAR: Fechar modal -->
+        <div class="barra-acao barra-cinza-claro">
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-sair-formulario" title="Cancelar">←</button>
+          <span class="barra-texto" style="color:#555">← Cancelar e Voltar às Encomendas</span>
+          <span style="width:44px;"></span>
+        </div>
+      </div>
+    </div>
 
-        let timeoutUI;
-        function atualizarBotaoCarrinho() {
-            clearTimeout(timeoutUI);
-            timeoutUI = setTimeout(() => {
-                const badge = document.getElementById('carrinho-badge');
-                const btn = document.getElementById('btn-carrinho');
-                if (badge) badge.textContent = carrinho.length;
-                if (btn) btn.disabled = carrinho.length === 0;
-            }, 150);
-        }
+    <!-- ETAPA 3: CONFIRMAÇÃO -->
+    <div class="etapa" id="etapa-confirmacao">
+      <div class="confirmacao-box">
+        <div class="confirmacao-icon">🎉</div>
+        <div class="confirmacao-titulo">Pedido Confirmado!</div>
+        <div class="confirmacao-num">Nº do Pedido: <strong id="num-pedido"></strong></div>
+        <div style="font-size:0.82rem;color:#555;margin-top:4px;" id="data-pedido"></div>
+        <p style="font-size:1.05rem;color:#DC2626;font-weight:900;margin:18px auto 22px;text-align:center;line-height:1.6;padding:14px 18px;background:#FEF2F2;border:2.5px solid #DC2626;border-radius:12px;max-width:480px;">
+          📢 Clique abaixo para enviar seu pedido via WhatsApp.<br>Nossa equipe entrará em contato para confirmar o pagamento.
+        </p>
+        <!-- BOTÃO PRINCIPAL: Enviar via WhatsApp -->
+        <a href="#" id="link-whatsapp-final" target="_blank" rel="noopener" style="text-decoration:none;display:block;margin-bottom:10px;">
+          <div class="barra-acao barra-wpp" style="cursor:pointer;">
+            <span style="font-size:1.4rem;">📲</span>
+            <span class="barra-texto" style="font-size:1rem;font-weight:900;letter-spacing:0.5px;">ENVIAR PEDIDO VIA WHATSAPP</span>
+            <span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final" style="font-size:1.3rem;">▶</span>
+          </div>
+        </a>
+        <!-- BOTÃO SECUNDÁRIO: Fazer novo pedido -->
+        <div class="barra-acao barra-azul" style="cursor:pointer;" onclick="novoPedido()">
+          <span style="font-size:1.2rem;">🛒</span>
+          <span class="barra-texto">Fazer Novo Pedido</span>
+          <button type="button" class="btn-acao-redondo btn-azul" title="Novo Pedido" style="background:linear-gradient(135deg,#0D47A1,#1565C0);font-size:1.3rem;">+</button>
+        </div>
+        <!-- BOTÃO TERCIÁRIO: Voltar sem enviar -->
+        <div class="barra-acao barra-cinza-claro" style="margin-top:6px;">
+          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-cardapio" title="Voltar">←</button>
+          <span class="barra-texto" style="color:#666;font-size:0.85rem;">← Voltar às Encomendas sem Enviar</span>
+          <span style="width:44px;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        // --- LÓGICA DO SITE ---
-        var carrinho = [];
-        var produtoSendoAdicionado = null;
-        var saboresSelecionados = [];
+<div class="toast" id="toast"></div>
 
-        const PRODUTOS = {
-            caixas: [
-                { id:"cx5l_2s",  nome:"Caixa 5 Litros – 2 Sabores",  preco:100.00, maxSabores:2 },
-                { id:"cx5l_3s",  nome:"Caixa 5 Litros – 3 Sabores",  preco:115.00, maxSabores:3 },
-                { id:"cx10l_2s", nome:"Caixa 10 Litros – 2 Sabores", preco:150.00, maxSabores:2 },
-                { id:"cx10l_3s", nome:"Caixa 10 Litros – 3 Sabores", preco:165.00, maxSabores:3 }
-            ],
-            tortas: [
-                { id:"torta1", nome:"Torta de Sorvete", preco:100.00, maxSabores:3 }
-            ]
-        };
+<script src="scripts/products.js"></script>
+<script src="scripts/enc-v2.js"></script>
 
-        const SABORES_SORVETE = [
-            "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce","Amarena","Ameixa",
-            "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
-            "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
-            "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-            "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
-            "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
-            "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
-            "Pistache","Prestígio","Sensação","Torta de Chocolate"
-        ];
-
-        function toggleSecao(id) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            const todas = ['conteudo-caixas', 'conteudo-tortas'];
-            todas.forEach(s => {
-                const secao = document.getElementById(s);
-                if (secao && s !== id) secao.style.display = 'none';
-            });
-            el.style.display = el.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function renderizarTudo() {
-            const listaCaixas = document.getElementById('lista-caixas');
-            if (listaCaixas) {
-                listaCaixas.innerHTML = PRODUTOS.caixas.map(p => `
-                    <div class="produto-card">
-                        <div class="produto-info">
-                            <h4>${p.nome}</h4>
-                            <p class="preco">R$ ${p.preco.toFixed(2).replace('.',',')}</p>
-                        </div>
-                        <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher</button>
-                    </div>
-                `).join('');
-            }
-            
-            const listaTortas = document.getElementById('lista-tortas');
-            if (listaTortas) {
-                listaTortas.innerHTML = PRODUTOS.tortas.map(p => `
-                    <div class="produto-card">
-                        <div class="produto-info">
-                            <h4>${p.nome}</h4>
-                            <p class="preco">R$ ${p.preco.toFixed(2).replace('.',',')}</p>
-                        </div>
-                        <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher</button>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function abrirModalSabores(id) {
-            const p = PRODUTOS.caixas.find(x => x.id === id) || PRODUTOS.tortas.find(x => x.id === id);
-            if (!p) return;
-            produtoSendoAdicionado = p;
-            saboresSelecionados = [];
-            
-            const modal = document.getElementById('modal-sabores');
-            const lista = document.getElementById('grid-sabores');
-            const titulo = document.getElementById('modal-sabores-titulo');
-            const subtitulo = document.getElementById('modal-subtitulo-sabores');
-            
-            if (titulo) titulo.textContent = p.nome;
-            if (subtitulo) subtitulo.textContent = `Selecione até ${p.maxSabores} sabores`;
-            if (lista) {
-                lista.innerHTML = SABORES_SORVETE.map(s => `
-                    <div class="sabor-item" onclick="toggleSabor(this, '${s}')">
-                        ${s}
-                    </div>
-                `).join('');
-            }
-            
-            if (modal) modal.classList.add('ativo');
-            atualizarContadorSabores();
-        }
-
-        function toggleSabor(el, sabor) {
-            const idx = saboresSelecionados.indexOf(sabor);
-            if (idx > -1) {
-                saboresSelecionados.splice(idx, 1);
-                el.classList.remove('selecionado');
-            } else {
-                if (saboresSelecionados.length < produtoSendoAdicionado.maxSabores) {
-                    saboresSelecionados.push(sabor);
-                    el.classList.add('selecionado');
-                } else {
-                    alert(`Máximo de ${produtoSendoAdicionado.maxSabores} sabores atingido.`);
-                }
-            }
-            atualizarContadorSabores();
-        }
-
-        function atualizarContadorSabores() {
-            const btn = document.getElementById('btn-confirmar-sabores');
-            if (btn) {
-                btn.textContent = `Confirmar (${saboresSelecionados.length}/${produtoSendoAdicionado.maxSabores})`;
-                btn.disabled = saboresSelecionados.length === 0;
-            }
-        }
-
-        function confirmarSabores() {
-            if (saboresSelecionados.length === 0) return;
-            carrinho.push({
-                nome: sanitizeString(produtoSendoAdicionado.nome),
-                preco: produtoSendoAdicionado.preco,
-                sabores: saboresSelecionados.map(s => sanitizeString(s)),
-                quantidade: 1,
-                _uid: Date.now().toString()
-            });
-            fecharModal('modal-sabores');
-            atualizarBotaoCarrinho();
-            showToast('Item adicionado ao carrinho!');
-        }
-
-        function abrirCarrinho() {
-            const modal = document.getElementById('modal-carrinho');
-            const lista = document.getElementById('itens-carrinho');
-            const totalTxt = document.getElementById('total-carrinho');
-            if (lista) {
-                lista.innerHTML = carrinho.map((item, idx) => `
-                    <div class="item-carrinho">
-                        <div>
-                            <strong style="display:block">${item.nome}</strong>
-                            <small style="color:#666">${item.sabores.join(', ')}</small>
-                        </div>
-                        <div style="text-align:right">
-                            <div style="font-weight:bold">R$ ${item.preco.toFixed(2).replace('.',',')}</div>
-                            <button onclick="removerItem(${idx})" style="color:red; border:none; background:none; cursor:pointer; font-size:0.8rem; padding:0">Remover</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            if (totalTxt) {
-                const total = calcularTotalCarrinho(carrinho);
-                totalTxt.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
-            }
-            if (modal) modal.classList.add('ativo');
-        }
-
-        function removerItem(idx) {
-            carrinho.splice(idx, 1);
-            abrirCarrinho();
-            atualizarBotaoCarrinho();
-        }
-
-        function finalizarPedido() {
-            const nome = sanitizeString(document.getElementById('nome-cliente').value);
-            const tel = sanitizeString(document.getElementById('tel-cliente').value);
-            const end = sanitizeString(document.getElementById('end-cliente').value);
-            if (!nome || !tel || !end) {
-                alert('Por favor, preencha todos os campos de entrega.');
-                return;
-            }
-            const total = calcularTotalCarrinho(carrinho);
-            let msg = `*NOVO PEDIDO - ITAPOLITANA CAJURU*\n\n`;
-            msg += `*Cliente:* ${nome}\n`;
-            msg += `*Tel:* ${tel}\n`;
-            msg += `*Endereço:* ${end}\n\n`;
-            msg += `*ITENS:*\n`;
-            carrinho.forEach(item => {
-                msg += `- ${item.nome}\n  Sabores: ${item.sabores.join(', ')}\n`;
-            });
-            msg += `\n*TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
-            const url = `https://api.whatsapp.com/send?phone=5516991234567&text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-        }
-
-        function fecharModal(id) {
-            const m = document.getElementById(id);
-            if (m) m.classList.remove('ativo');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('itap-toast');
-            if (t) {
-                t.textContent = msg;
-                t.style.display = 'block';
-                setTimeout(() => t.style.display = 'none', 3000);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderizarTudo();
-            atualizarBotaoCarrinho();
-        });
-    </script>
 </body>
 </html>
