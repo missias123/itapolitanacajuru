@@ -578,32 +578,34 @@ function confirmarPickle() {
   const totalGlobal = totalPickleGlobal();
   if (totalGlobal < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue comprando outros tipos!`, 'alerta'); return; }
   if (totalGlobal > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); return; }
-  // Agrupar todos os picolés do global por tipo
-  const porTipo = {};
+  // Adicionar um item por SABOR no carrinho (não por tipo)
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
+    if (qtd <= 0) return;
     const [tipoId, ...saborParts] = chave.split('::');
     const sabor = saborParts.join('::');
-    if (!porTipo[tipoId]) porTipo[tipoId] = { sabores: [], qtdTotal: 0 };
-    porTipo[tipoId].sabores.push(`${sabor}: ${qtd} un.`);
-    porTipo[tipoId].qtdTotal += qtd;
-  });
-  // Adicionar um item no carrinho por tipo de picolé
-  Object.entries(porTipo).forEach(([tipoId, dados]) => {
     const p = PRODUTOS.picoles.find(x => x.id === tipoId);
     if (!p) return;
-    addCarrinho({
-      id: tipoId + '_picole',
-      nome: p.nome,
-      preco: p.precoAtacado,
-      sabores: dados.sabores,
-      quantidade: dados.qtdTotal,
-      tipo: 'picolé'
-    });
+    const itemId = tipoId + '::' + sabor;
+    // Se já existe esse sabor no carrinho, atualizar quantidade
+    const ex = carrinho.find(c => c.tipo === 'picolé' && c.id === itemId);
+    if (ex) { ex.quantidade = qtd; }
+    else {
+      carrinho.push({
+        id: itemId,
+        nome: sabor,
+        nomeTipo: p.nome,
+        preco: p.precoAtacado,
+        sabores: [],
+        quantidade: qtd,
+        tipo: 'picolé'
+      });
+    }
   });
   // Limpar seleções globais
   selecoesPickleGlobal = {};
   selecoesPickle = {};
   fecharModal('modal-picolé');
+  atualizarBotaoCarrinho();
   showToast(`✅ ${totalGlobal} picolé(s) adicionado(s) ao carrinho!`, 'sucesso');
 }
 
@@ -647,6 +649,26 @@ function renderCarrinho() {
   lista.innerHTML = carrinho.map((item,i) => {
     const sub = item.preco * item.quantidade;
     total += sub;
+    if (item.tipo === 'picolé') {
+      // Picolé: exibe tipo acima, sabor em destaque, contador no sabor
+      return `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-tipo" style="font-size:11px;color:#888;font-weight:600;margin-bottom:2px">${item.nomeTipo || ''}</div>
+          <div class="cart-item-nome">${item.nome}</div>
+          <div class="cart-item-preco-unit">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
+        </div>
+        <div class="cart-item-ctrl">
+          <div class="qty-ctrl">
+            <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
+            <span class="qty-val">${item.quantidade}</span>
+            <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
+          </div>
+          <div class="cart-item-sub">R$ ${sub.toFixed(2).replace('.',',')}</div>
+          <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
+        </div>
+      </div>`;
+    }
     return `
     <div class="cart-item">
       <div class="cart-item-info">
