@@ -176,16 +176,12 @@ function render() {
     const status = p.status || 'novo';
     const labels = { novo: '🆕 NOVO', visto: '👀 VISTO', concluido: '✅ CONCLUÍDO' };
     const itensHtml = (p.itens || []).map(it => {
-      // Picolé: tipo no topo (pequeno/cinza), sabor em destaque
-      if (it.tipo === 'picolé' && it.nomeTipo) {
-        return `<div class="item-linha" style="flex-direction:column;align-items:flex-start;gap:1px">
-          <span style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.4px;text-transform:uppercase">${it.nomeTipo}</span>
-          <span>▶ <strong>${it.nome}</strong> × ${it.qtd} — R$ ${(it.preco * it.qtd).toFixed(2).replace('.', ',')}</span>
-        </div>`;
-      }
+      // Regra global: tipo no topo + sabores abaixo para todos os produtos
+      const tipoLabel = it.tipo === 'picolé' ? (it.nomeTipo || 'Picolé') : it.tipo === 'sorvete' ? 'Sorvete' : it.tipo === 'acrescimo' ? 'Acréscimo' : (it.tipo || '');
+      const tipoHtml = tipoLabel ? `<span style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:1px">${tipoLabel}</span>` : '';
       const sabores = it.sabores && it.sabores.length > 0
         ? `<div class="item-sabores">${it.sabores.map(s => '• ' + s).join('  ')}</div>` : '';
-      return `<div class="item-linha">▶ <strong>${it.nome}</strong> × ${it.qtd} — R$ ${(it.preco * it.qtd).toFixed(2).replace('.', ',')}${sabores}</div>`;
+      return `<div class="item-linha" style="flex-direction:column;align-items:flex-start;gap:1px">${tipoHtml}<span>▶ <strong>${it.nome}</strong> × ${it.qtd} — R$ ${(it.preco * it.qtd).toFixed(2).replace('.', ',')}</span>${sabores}</div>`;
     }).join('');
 
     const enderecoHtml = p.endereco ? `<div style="font-size:12px;color:#374151;margin-top:2px">📍 ${p.endereco}</div>` : '';
