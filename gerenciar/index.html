@@ -437,6 +437,11 @@ function renderAdmin() {
       <input id="promo-btn-link" type="url" value="${_ps.link||'https://www.instagram.com/sorveteriaitapolitanacajuru'}" placeholder="https://... ou /promocao.html" oninput="validarLink(this);salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
       <div class="erro-inline" id="err-link">URL inválida. Deve começar com https:// ou /</div>
     </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📋 Regulamento <span style="color:#6B7280;font-weight:500">(aparece no botão da página de promoção)</span></div>
+      <textarea id="promo-regulamento" rows="5" placeholder="Ex: 1. Siga nosso perfil no Instagram...&#10;2. Marque 3 amigos nos comentários...&#10;3. Resultado em 28/02/2026." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit">${_ps.regulamento||''}</textarea>
+      <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Deixe em branco para ocultar o botão de regulamento na página.</div>
+    </div>
     <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
       <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -963,36 +968,64 @@ function salvarPromoLocal() {
     link: (document.getElementById('promo-btn-link')||{}).value || 'https://www.instagram.com/sorveteriaitapolitanacajuru',
     dataFim: (document.getElementById('promo-data-fim')||{}).value || '',
     horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
-    fotoUrl:   atual.fotoUrl || ''
+    regulamento: (document.getElementById('promo-regulamento')||{}).value || '',
+    fotoUrl: atual.fotoUrl || ''
   };
   localStorage.setItem('itap_promo_local', JSON.stringify(d));
 }
 
+// ── COMPRESSÃO DE IMAGEM (canvas) ──────────────────────────────────────────
+// Redimensiona para máx 1200px de largura e comprime para JPEG 80%
+// Resultado: imagens de ~80-150 KB em vez de 2-5 MB
+function comprimirImagem(file, maxW, maxH, qualidade) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = function() {
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', qualidade));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 function onPromoFotoChange(input) {
   const file = input.files[0];
   if (!file) return;
   const fotoStatus = document.getElementById('promo-foto-status');
   const promoStatus = document.getElementById('promo-status');
-  if (fotoStatus) fotoStatus.textContent = '⏳ Enviando foto para o servidor...';
-  const reader = new FileReader();
-  reader.onload = async function(e) {
-    const base64 = e.target.result;
+  if (fotoStatus) fotoStatus.textContent = '⏳ Comprimindo imagem...';
+  comprimirImagem(file, 1200, 630, 0.82).then(async function(base64) {
     const preview = document.getElementById('promo-foto-preview');
     const img = document.getElementById('promo-foto-img');
     if (preview && img) { img.src = base64; preview.style.display = 'block'; }
+    const kbOriginal = Math.round(file.size / 1024);
+    const kbComprimido = Math.round(base64.length * 0.75 / 1024);
+    if (fotoStatus) fotoStatus.textContent = `⏳ Enviando (${kbOriginal}KB → ${kbComprimido}KB)...`;
     try {
       const url = await uploadFotoGitHub(base64);
       const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(ex){return {};}})();
       d.fotoUrl = url;
       localStorage.setItem('itap_promo_local', JSON.stringify(d));
       if (img) img.src = url;
-      if (fotoStatus) fotoStatus.textContent = '✅ Foto enviada! Clique em Postar para publicar.';
+      if (fotoStatus) fotoStatus.textContent = `✅ Foto enviada! (${kbComprimido}KB) Clique em Postar.`;
       if (promoStatus) { promoStatus.textContent = '📷 Foto pronta! Clique em Postar.'; setTimeout(() => promoStatus.textContent = '', 5000); }
     } catch(err) {
       if (fotoStatus) fotoStatus.textContent = '❌ Erro no upload: ' + err.message;
     }
-  };
-  reader.readAsDataURL(file);
+  }).catch(function(err) {
+    if (fotoStatus) fotoStatus.textContent = '❌ Erro ao processar imagem: ' + err.message;
+  });
 }
 
 async function postarPromocao() {
