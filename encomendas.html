@@ -30,7 +30,6 @@
   <meta property="og:description" content="Encomende tortas de sorvete, caixas de sorvete e picolés para festas e eventos. Pedidos via WhatsApp. Sorveteria Itapolitana Cajuru/SP.">
   <meta property="og:image" content="https://itapolitanacajuru.com.br/images/logo.png">
   <meta property="og:locale" content="pt_BR">
-  
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="images/logo.png">
   <title>Encomendas – Tortas, Caixas e Picolés | Sorveteria Itapolitana Cajuru</title>
@@ -38,7 +37,6 @@
     <link rel="stylesheet" href="css/design-system.css">
     <link rel="stylesheet" href="css/estilo-encomendas.css">
 <!-- v:1771806853-neuro -->
-
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -64,8 +62,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
 </head>
 <body>
-
-
 <header class="header">
   <a href="index.html" class="header-logo">
     <img loading="lazy" src="images/logo.png" alt="Itapolitana">
@@ -78,13 +74,9 @@
     <a href="index.html" class="btn-voltar">← Cardápio</a>
   </div>
 </header>
-
-
 <div class="banner-info">
   📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança &nbsp;·&nbsp; 🏪 Retirada na loja &nbsp;·&nbsp; ✨ Sorvete artesanal desde 2007
 </div>
-
-
 <div class="hero">
   <h2>🛒 Faça sua <span class="destaque">Encomenda</span></h2>
   <p>Sorvetes cremosos em caixa, tortas irresistíveis, picolés gelados e acréscimos. Tudo artesanal, feito com amor desde 2007.</p>
@@ -96,11 +88,7 @@
     <span class="hero-badge">🍭 Picolés Atacado</span>
   </div>
 </div>
-
-
 <div class="container">
-
-  
   <div class="categoria cat-caixas" id="caixas">
     <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
       <div class="categoria-header-left">
@@ -117,8 +105,6 @@
       <div class="prod-grid" id="lista-caixas"></div>
     </div>
   </div>
-
-  
   <div class="categoria cat-tortas" id="tortas">
     <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
       <div class="categoria-header-left">
@@ -135,8 +121,6 @@
       <div class="prod-grid" id="lista-tortas"></div>
     </div>
   </div>
-
-  
   <div class="categoria cat-picoles" id="picoles">
     <div class="categoria-header" onclick="toggleSecao('conteudo-picoles')">
       <div class="categoria-header-left">
@@ -153,7 +137,6 @@
       <div class="prod-grid" id="lista-picoles"></div>
     </div>
   </div>
-  
   <div class="categoria cat-acrescimos" id="acrescimos">
     <div class="categoria-header" onclick="toggleSecao('conteudo-acrescimos')">
       <div class="categoria-header-left">
@@ -170,16 +153,11 @@
       <div id="lista-acrescimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
     </div>
   </div>
-
 </div>
-
-
 <button type="button" class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" disabled>
   🛒 Ver Carrinho
   <span class="badge" id="carrinho-badge">0</span>
 </button>
-
-
 <div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
   <div class="modal-box">
     <div class="modal-header">
@@ -195,7 +173,6 @@
     <div style="padding:16px 20px 0;overflow-y:auto;max-height:35vh">
       <div class="grid-sabores" id="grid-sabores"></div>
     </div>
-    
     <div style="padding:12px 20px 20px">
       <div class="barra-acao barra-azul">
         <span class="barra-texto" id="txt-confirmar-sabores">Confirmar Seleção (0/0)</span>
@@ -204,8 +181,6 @@
     </div>
   </div>
 </div>
-
-
 <div class="modal-overlay" id="modal-picolé" onclick="if(event.target===this)fecharModal('modal-picolé')">
   <div class="modal-box">
     <div class="modal-header">
@@ -216,7 +191,6 @@
         </div>
         <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
       </div>
-      
       <div class="picole-progress-bar">
         <div class="picole-progress-info">
           <span>🧳 Total selecionado:</span>
@@ -229,7 +203,6 @@
         </div>
       </div>
     </div>
-    
     <div id="picole-tela-tipos" style="display:none;padding:16px 20px 20px">
       <p style="text-align:center;font-weight:700;color:#E65100;margin-bottom:12px">🍭 Escolha o tipo de picolé:</p>
       <div id="picole-lista-tipos"></div>
@@ -241,7 +214,6 @@
         🍭 Selecione ao menos 100 picolés para liberar
       </button>
     </div>
-    
     <div class="modal-body" id="picole-tela-sabores">
       <div id="lista-sabores-picolé"></div>
       <div class="picolé-total-bar">
@@ -258,7 +230,6 @@
     </div>
   </div>
 </div>
-
 <div class="modal-overlay" id="modal-carrinho">
   <div class="modal-box">
     <div class="modal-header">
@@ -267,8 +238,6 @@
         <button type="button" class="btn-fechar-modal" onclick="fecharCarrinho()">✕</button>
       </div>
     </div>
-
-    
     <div class="steps-bar">
       <div class="step" id="step-revisao">
         <div class="step-num">1</div>
@@ -285,7 +254,6 @@
         <span class="step-label">Confirmação</span>
       </div>
     </div>
-
     <!-- ETAPA 1: REVISÃO -->
     <div class="etapa" id="etapa-revisao">
       <div id="lista-carrinho"></div>
@@ -309,18 +277,15 @@
         </div>
       </div>
     </div>
-
     <!-- ETAPA 2: DADOS PESSOAIS -->
     <div class="etapa" id="etapa-dados">
       <div id="resumo-pedido"></div>
-
       <!-- Aviso de prazo -->
       <div style="background:linear-gradient(135deg,#E65100,#FF6D00);color:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;">
         <div style="font-size:1rem;font-weight:900;margin-bottom:6px;">⏰ IMPORTANTE — PRAZO DE PRODUÇÃO</div>
         <div>Sua encomenda será <strong>produzida em até 3 dias úteis</strong> após a <strong>confirmação do pagamento</strong> via WhatsApp.</div>
         <div style="margin-top:6px;font-size:0.8rem;opacity:0.9;">📲 Após enviar o pedido, aguarde o contato da sorveteria para confirmar e realizar o pagamento antecipado.</div>
       </div>
-
       <div class="form-grupo">
         <label>👤 Seu Nome Completo *</label>
         <input type="text" id="cliente-nome" placeholder="Ex: João da Silva" autocomplete="name" oninput="_nomeCliente=this.value; verificarFormulario()">
@@ -356,7 +321,6 @@
         </div>
       </div>
     </div>
-
     <!-- ETAPA 3: CONFIRMAÇÃO -->
     <div class="etapa" id="etapa-confirmacao">
       <div class="confirmacao-box">
@@ -391,11 +355,8 @@
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script src="scripts/products.js"></script>
 <script src="scripts/enc-v2.js"></script>
-
 </body>
 </html>
