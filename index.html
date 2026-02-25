@@ -272,11 +272,11 @@ img{max-width:100%;display:block}
 .promo-btn{background:linear-gradient(135deg,#FFD600,#FF8F00);color:#1A0A00;border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:800;width:100%;box-shadow:0 4px 12px rgba(255,214,0,.5)}
 
 /* CHATBOT */
-.chat-fab{display:flex;position:fixed;bottom:20px;left:16px;z-index:600;align-items:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,.5);animation:pulse-chat 2.5s infinite;letter-spacing:.3px}
+.chat-fab{display:flex;position:fixed;bottom:18px;left:8px;z-index:600;align-items:center;gap:6px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:10px 14px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,.5);animation:pulse-chat 2.5s infinite;letter-spacing:.3px;max-width:calc(33vw - 12px);white-space:nowrap;overflow:hidden}
 /* BOTAO FLUTUANTE CENTRAL: LOGO + TEXTO */
-#logo-fab{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:601;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;cursor:pointer;animation:logo-fab-float 3s ease-in-out infinite;filter:drop-shadow(0 4px 16px rgba(0,0,0,.45))}
+#logo-fab{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:601;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;cursor:pointer;animation:logo-fab-float 3s ease-in-out infinite;filter:drop-shadow(0 4px 16px rgba(0,0,0,.45));max-width:calc(33vw - 8px)}
 @keyframes logo-fab-float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-5px)}}
-#logo-fab-img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 0 0 3px #FBD100,0 0 0 6px #E8000D,0 0 0 9px #0D47A1,0 4px 16px rgba(0,0,0,.5)}
+#logo-fab-img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 0 0 3px #FBD100,0 0 0 6px #E8000D,0 0 0 9px #0D47A1,0 4px 16px rgba(0,0,0,.5)}
 #logo-fab-txt{background:linear-gradient(135deg,#E8000D,#C0001F);color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;border-radius:20px;padding:3px 10px;text-shadow:0 1px 3px rgba(0,0,0,.4);white-space:nowrap;box-shadow:0 2px 8px rgba(232,0,13,.5)}
 /* BOTÃO FALE CONOSCO HERO */
 @keyframes pulse-chat{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.7),0 4px 20px rgba(37,211,102,.4)}60%{box-shadow:0 0 0 14px rgba(37,211,102,0),0 4px 20px rgba(37,211,102,.4)}}
@@ -391,13 +391,13 @@ img{max-width:100%;display:block}
   .info-cards{grid-template-columns:repeat(2,1fr)}
   .acc-title{font-size:0.95rem}
   .promo-top-bar{flex-direction:column;gap:4px;text-align:center}
-  /* Promo-fab menor no mobile para não cobrir tanto */
-  #promo-fab{bottom:16px;right:10px}
-  #promo-fab-inner{min-width:120px;padding:8px 12px 8px 10px;gap:8px}
-  #promo-fab-logo{width:30px;height:30px}
-  #promo-fab-label{font-size:11px}
-  #promo-fab-timer{font-size:9px}
-  #promo-fab-arrow{font-size:10px;padding:2px 12px}
+  /* Promo-fab mobile: alinhado com os outros fabs */
+  #promo-fab{bottom:18px;right:8px}
+  #promo-fab-inner{min-width:0;padding:8px 10px 8px 8px;gap:6px}
+  #promo-fab-logo{width:28px;height:28px}
+  #promo-fab-label{font-size:10px}
+  #promo-fab-timer{font-size:8px}
+  #promo-fab-arrow{font-size:9px;padding:2px 8px}
 }
 /* TABLET (601px–900px) */
 @media(min-width:601px) and (max-width:900px){
@@ -1590,7 +1590,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 @keyframes promo-ring{0%{box-shadow:0 0 0 0 rgba(255,60,60,.7),0 6px 24px rgba(200,0,0,.5)}70%{box-shadow:0 0 0 14px rgba(255,60,60,0),0 6px 24px rgba(200,0,0,.5)}100%{box-shadow:0 0 0 0 rgba(255,60,60,0),0 6px 24px rgba(200,0,0,.5)}}
 @keyframes promo-shine{0%{left:-60%}100%{left:130%}}
 #promo-fab{
-  position:fixed;bottom:20px;right:14px;z-index:9999;
+  position:fixed;bottom:18px;right:8px;z-index:9999;
   display:flex;flex-direction:column;align-items:center;gap:0;
   cursor:pointer;text-decoration:none;
   animation:promo-float 2.4s ease-in-out infinite;
@@ -1603,7 +1603,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   display:flex;align-items:center;gap:10px;
   animation:promo-ring 2s ease-in-out infinite;
   position:relative;overflow:hidden;
-  min-width:140px;
+  min-width:0;max-width:calc(33vw - 12px);
 }
 #promo-fab-inner::after{
   content:'';
