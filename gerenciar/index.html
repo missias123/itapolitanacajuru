@@ -1,4 +1,4 @@
-<!-- cache-bust: 1771942035 -->
+<!-- cache-bust: 1772036242 -->
 <!--
   ╔══════════════════════════════════════════════════════════════╗
   ║         SORVETERIA ITAPOLITANA CAJURU — SITE OFICIAL         ║
@@ -317,6 +317,25 @@ function checkLogin() {
   if (p === ADMIN_PASS) {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
+    // Carregar dados remotos do promo.json para popular localStorage
+    (async () => {
+      try {
+        const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now());
+        if (r.ok) {
+          const d = await r.json();
+          const local = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
+          // Mesclar dados remotos com locais (remoto tem prioridade para campos de patrocinador)
+          const merged = Object.assign({}, local, {
+            patrocinadorNome: d.patrocinadorNome || local.patrocinadorNome || '',
+            patrocinadorLogo: d.patrocinadorLogo || local.patrocinadorLogo || '',
+            patrocinadorLink: d.patrocinadorLink || local.patrocinadorLink || '',
+            patrocinadorAtivo: d.patrocinadorAtivo !== undefined ? d.patrocinadorAtivo : (local.patrocinadorAtivo || false)
+          });
+          localStorage.setItem('itap_promo_local', JSON.stringify(merged));
+          renderAdmin();
+        }
+      } catch(e) {}
+    })();
     renderAdmin();
   } else if (p === ADMIN_SOS) {
     // Modo SOS: entra, corrige cache, aciona redeploy e avisa WhatsApp
@@ -446,6 +465,27 @@ function renderAdmin() {
       <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🏷️ Texto do Botão Flutuante <span style="color:#6B7280;font-weight:500">(aparece na página inicial)</span></div>
       <input id="promo-fab-label-input" type="text" maxlength="20" value="${_ps.fabLabel||'🎉 SORTEIO!'}" placeholder="Ex: 🎉 SORTEIO! ou 🔥 PROMOÇÃO!" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
       <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Máx. 20 caracteres. Aparece no botão flutuante da página inicial.</div>
+    </div>
+    <div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:10px;padding:12px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:800;color:#166534;margin-bottom:10px">🤝 Patrocinador <span style="font-size:11px;font-weight:600;color:#6B7280">(hero da página inicial)</span></div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">🏷️ Nome do Patrocinador</div>
+        <input id="promo-patrocinador-nome" type="text" placeholder="Ex: Supermercado Central" value="${_ps.patrocinadorNome||''}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">🖼️ URL do Logo</div>
+        <input id="promo-patrocinador-logo" type="url" placeholder="https://exemplo.com/logo.png" value="${_ps.patrocinadorLogo||''}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+        <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Recomendado: 200×120px, fundo branco ou transparente.</div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">🔗 Link do Patrocinador</div>
+        <input id="promo-patrocinador-link" type="url" placeholder="https://sitepatrocinador.com.br" value="${_ps.patrocinadorLink||''}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:#166534;padding:8px;background:#DCFCE7;border-radius:8px">
+        <input id="promo-patrocinador-ativo" type="checkbox" ${_ps.patrocinadorAtivo?"checked":""} onchange="salvarPromoLocal()" style="width:16px;height:16px;cursor:pointer;accent-color:#16A34A">
+        ✅ Exibir patrocinador na página inicial
+      </label>
+      <div style="font-size:11px;color:#6B7280;margin-top:4px">💡 Marque para exibir o bloco no hero. Desmarque para ocultar.</div>
     </div>
     <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
       <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
@@ -975,6 +1015,10 @@ function salvarPromoLocal() {
     horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
     regulamento: (document.getElementById('promo-regulamento')||{}).value || '',
     fabLabel: (document.getElementById('promo-fab-label-input')||{}).value || '🎉 SORTEIO!',
+    patrocinadorNome: (document.getElementById('promo-patrocinador-nome')||{}).value || '',
+    patrocinadorLogo: (document.getElementById('promo-patrocinador-logo')||{}).value || '',
+    patrocinadorLink: (document.getElementById('promo-patrocinador-link')||{}).value || '',
+    patrocinadorAtivo: !!(document.getElementById('promo-patrocinador-ativo')||{}).checked,
     fotoUrl: atual.fotoUrl || ''
   };
   localStorage.setItem('itap_promo_local', JSON.stringify(d));
