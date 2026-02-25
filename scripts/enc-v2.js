@@ -433,17 +433,20 @@ function mostrarTelasTiposPicole() {
   if (lista) {
     let html = '';
     PRODUTOS.picoles.forEach(p => {
-      html += `<div style="background:#f3f4f6;padding:8px 12px;font-weight:800;font-size:13px;color:#4b5563;margin-top:10px;border-radius:6px">${p.nome}</div>`;
+      html += `<div style="background:#6A0DAD;padding:10px 14px;font-weight:900;font-size:14px;color:#fff;margin-top:16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+                <span>🍭 ${p.nome}</span>
+                <span style="font-size:11px;opacity:0.9">Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}</span>
+              </div>`;
       p.sabores.forEach(s => {
         const chave = p.id + '::' + s;
         const qtdAtual = selecoesPickleGlobal[chave] || 0;
         html += `
-        <div class="picolé-row">
-          <span class="picolé-sabor-nome">${s}</span>
-          <div class="qty-ctrl">
-            <button class="btn-qty" onclick="qtdPickleGlobal('${p.id}', '${s}', -1)">−</button>
-            <span class="qty-val" id="pqty-${p.id}-${s.replace(/\s+/g,'_')}">${qtdAtual}</span>
-            <button class="btn-qty" onclick="qtdPickleGlobal('${p.id}', '${s}', 1)">+</button>
+        <div class="picolé-row" style="display:flex;justify-content:space-between;align-items:center;padding:12px 8px;border-bottom:1px solid #f3f4f6">
+          <span class="picolé-sabor-nome" style="font-size:14px;font-weight:700;color:#374151">${s}</span>
+          <div class="qty-ctrl" style="display:flex;align-items:center;gap:10px">
+            <button class="btn-qty" onclick="qtdPickleGlobal('${p.id}', '${s}', -1)" style="width:32px;height:32px;border-radius:8px;border:none;background:#FEE2E2;color:#EF4444;font-size:18px;font-weight:900;cursor:pointer">−</button>
+            <span class="qty-val" id="pqty-${p.id}-${s.replace(/\s+/g,'_')}" style="min-width:24px;text-align:center;font-size:16px;font-weight:800;color:#111827">${qtdAtual}</span>
+            <button class="btn-qty" onclick="qtdPickleGlobal('${p.id}', '${s}', 1)" style="width:32px;height:32px;border-radius:8px;border:none;background:#D1FAE5;color:#10B981;font-size:18px;font-weight:900;cursor:pointer">+</button>
           </div>
         </div>`;
       });
