@@ -671,21 +671,27 @@ function renderCarrinho() {
         <div style="text-align:right;font-weight:700;color:#1565C0;font-size:13px;margin-top:4px">R$ ${sub.toFixed(2).replace('.',',')}</div>
       </div>`;
     }
+    // Caixa / Torta: tipo no topo, sabores abaixo
+    const saboresHtml = item.sabores && item.sabores.length > 0
+      ? item.sabores.map(s => `<div style="font-size:12px;color:#6B7280;margin-top:2px">• ${s}</div>`).join('') : '';
     return `
-    <div class="cart-item">
-      <div class="cart-item-info">
-        <div class="cart-item-nome">${item.nome}</div>
-        <div class="cart-item-sabores">${item.sabores.join(' • ')}</div>
-        <div class="cart-item-preco-unit">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
-      </div>
-      <div class="cart-item-ctrl">
-        <div class="qty-ctrl">
-          <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
-          <span class="qty-val">${item.quantidade}</span>
-          <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
+    <div class="cart-item" style="flex-direction:column;align-items:stretch;padding:10px 14px;">
+      <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.tipo === 'sorvete' ? 'Sorvete' : item.tipo || ''}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div class="cart-item-nome" style="margin:0;font-size:15px;font-weight:800">${item.nome}</div>
+          ${saboresHtml}
+          <div class="cart-item-preco-unit" style="margin-top:3px">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
         </div>
-        <div class="cart-item-sub">R$ ${sub.toFixed(2).replace('.',',')}</div>
-        <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <div class="qty-ctrl">
+            <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
+            <span class="qty-val">${item.quantidade}</span>
+            <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
+          </div>
+          <div class="cart-item-sub" style="font-size:12px;font-weight:700;color:#1565C0">R$ ${sub.toFixed(2).replace('.',',')}</div>
+          <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -804,21 +810,21 @@ function renderResumoPedido() {
     ${carrinho.map((item,i) => {
       const sub = item.preco * item.quantidade;
       total += sub;
-      const tipoTopo = item.tipo === 'picolé' && item.nomeTipo
-        ? `<div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.nomeTipo}</div>` : '';
-      const nomeExibido = item.nome;
+      // Tipo no topo para todos os produtos
+      const tipoLabel = item.tipo === 'picolé' ? (item.nomeTipo || 'Picolé') : item.tipo === 'sorvete' ? 'Sorvete' : item.tipo === 'acrescimo' ? 'Acréscimo' : (item.tipo || '');
+      const tipoTopoHtml = tipoLabel ? `<div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${tipoLabel}</div>` : '';
       return `
       <div class="resumo-item">
-        ${tipoTopo}
+        ${tipoTopoHtml}
         <div class="resumo-item-topo">
-          <strong>${nomeExibido}</strong>
+          <strong>${item.nome}</strong>
           <div class="qty-ctrl-mini">
             <button class="btn-qty-mini" onclick="qtdCarrinho(${i},-1);renderResumoPedido()">−</button>
             <span>${item.quantidade}</span>
             <button class="btn-qty-mini" onclick="qtdCarrinho(${i},1);renderResumoPedido()">+</button>
           </div>
         </div>
-        ${item.sabores.map(s=>`<div class="resumo-sabor">• ${s}</div>`).join('')}
+        ${item.sabores && item.sabores.length > 0 ? item.sabores.map(s=>`<div class="resumo-sabor">• ${s}</div>`).join('') : ''}
         <div class="resumo-sub">R$ ${sub.toFixed(2).replace('.',',')}</div>
       </div>`;
     }).join('')}
@@ -925,9 +931,16 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   carrinho.forEach(item => {
     const sub = item.preco * item.quantidade;
     total += sub;
-    // Picolé: mostra tipo + sabor na mensagem WhatsApp
+    // Regra global: todo produto mostra tipo + nome + sabores
     if (item.tipo === 'picolé' && item.nomeTipo) {
       msg += `\n▶ *${item.nomeTipo} — ${item.nome}* (${item.quantidade} un.)\n`;
+    } else if (item.tipo === 'sorvete') {
+      msg += `\n▶ *Sorvete — ${item.nome}* (${item.quantidade} un.)\n`;
+      if (item.sabores && item.sabores.length > 0) {
+        item.sabores.forEach(s => msg += `   • ${s}\n`);
+      }
+    } else if (item.tipo === 'acrescimo') {
+      msg += `\n▶ *Acréscimo — ${item.nome}* (${item.quantidade} un.)\n`;
     } else {
       msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
       if (item.sabores && item.sabores.length > 0) {
