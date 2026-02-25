@@ -1237,3 +1237,65 @@ function alterarAcrescimo(id, delta) {
   }
   atualizarBotaoCarrinho();
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 🔍 SISTEMA DE FILTROS DE CATEGORIA
+// ═══════════════════════════════════════════════════════════════
+
+var categoriaAtiva = 'tudo';
+
+function filtrarCategoria(categoria) {
+  categoriaAtiva = categoria;
+  
+  // Atualizar botões de filtro
+  const botoes = document.querySelectorAll('.filtro-btn');
+  botoes.forEach(btn => {
+    btn.style.background = 'transparent';
+    btn.style.color = '#FFF';
+  });
+  
+  // Destacar botão ativo
+  event.target.style.background = '#FFF';
+  event.target.style.color = '#0D47A1';
+  
+  // Filtrar seções de produtos
+  const secoes = {
+    'sorvetes': 'conteudo-sorvetes',
+    'tortas': 'conteudo-tortas',
+    'picoles': 'conteudo-picoles',
+    'acrescimos': 'conteudo-acrescimos'
+  };
+  
+  // Mostrar/ocultar seções com transição suave
+  Object.entries(secoes).forEach(([cat, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    if (categoria === 'tudo' || categoria === cat) {
+      el.style.display = 'block';
+      el.style.opacity = '1';
+      el.style.transition = 'opacity 0.3s ease-in-out';
+    } else {
+      el.style.display = 'none';
+      el.style.opacity = '0';
+    }
+  });
+  
+  // Scroll suave para o topo da seção filtrada
+  setTimeout(() => {
+    const primeiraSecao = document.querySelector('[id^="conteudo-"]');
+    if (primeiraSecao && categoria !== 'tudo') {
+      primeiraSecao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+}
+
+// Inicializar filtros ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+  // Garantir que todas as seções estejam visíveis inicialmente
+  const secoes = document.querySelectorAll('[id^="conteudo-"]');
+  secoes.forEach(sec => {
+    sec.style.display = 'block';
+    sec.style.opacity = '1';
+  });
+});
