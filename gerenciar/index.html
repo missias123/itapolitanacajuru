@@ -442,6 +442,11 @@ function renderAdmin() {
       <textarea id="promo-regulamento" rows="5" placeholder="Ex: 1. Siga nosso perfil no Instagram...&#10;2. Marque 3 amigos nos comentários...&#10;3. Resultado em 28/02/2026." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit">${_ps.regulamento||''}</textarea>
       <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Deixe em branco para ocultar o botão de regulamento na página.</div>
     </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🏷️ Texto do Botão Flutuante <span style="color:#6B7280;font-weight:500">(aparece na página inicial)</span></div>
+      <input id="promo-fab-label-input" type="text" maxlength="20" value="${_ps.fabLabel||'🎉 SORTEIO!'}" placeholder="Ex: 🎉 SORTEIO! ou 🔥 PROMOÇÃO!" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
+      <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Máx. 20 caracteres. Aparece no botão flutuante da página inicial.</div>
+    </div>
     <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
       <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -969,6 +974,7 @@ function salvarPromoLocal() {
     dataFim: (document.getElementById('promo-data-fim')||{}).value || '',
     horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
     regulamento: (document.getElementById('promo-regulamento')||{}).value || '',
+    fabLabel: (document.getElementById('promo-fab-label-input')||{}).value || '🎉 SORTEIO!',
     fotoUrl: atual.fotoUrl || ''
   };
   localStorage.setItem('itap_promo_local', JSON.stringify(d));
