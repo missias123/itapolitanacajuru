@@ -650,13 +650,13 @@ function renderCarrinho() {
     const sub = item.preco * item.quantidade;
     total += sub;
     if (item.tipo === 'picolé') {
-      // Picolé: tipo acima, sabor + contador na mesma linha
+      // Picolé: tipo no topo (pequeno/cinza), sabor em destaque + contador embaixo
       return `
       <div class="cart-item" style="flex-direction:column;align-items:stretch;padding:10px 14px;">
-        <div style="font-size:11px;color:#888;font-weight:600;margin-bottom:4px">${item.nomeTipo || ''}</div>
+        <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.nomeTipo || ''}</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
           <div style="flex:1;min-width:0">
-            <div class="cart-item-nome" style="margin:0">${item.nome}</div>
+            <div class="cart-item-nome" style="margin:0;font-size:15px;font-weight:800">${item.nome}</div>
             <div class="cart-item-preco-unit" style="margin:0">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
@@ -804,10 +804,14 @@ function renderResumoPedido() {
     ${carrinho.map((item,i) => {
       const sub = item.preco * item.quantidade;
       total += sub;
+      const tipoTopo = item.tipo === 'picolé' && item.nomeTipo
+        ? `<div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.nomeTipo}</div>` : '';
+      const nomeExibido = item.nome;
       return `
       <div class="resumo-item">
+        ${tipoTopo}
         <div class="resumo-item-topo">
-          <strong>${item.nome}</strong>
+          <strong>${nomeExibido}</strong>
           <div class="qty-ctrl-mini">
             <button class="btn-qty-mini" onclick="qtdCarrinho(${i},-1);renderResumoPedido()">−</button>
             <span>${item.quantidade}</span>
@@ -921,9 +925,14 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   carrinho.forEach(item => {
     const sub = item.preco * item.quantidade;
     total += sub;
-    msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
-    if (item.sabores && item.sabores.length > 0) {
-      item.sabores.forEach(s => msg += `   • ${s}\n`);
+    // Picolé: mostra tipo + sabor na mensagem WhatsApp
+    if (item.tipo === 'picolé' && item.nomeTipo) {
+      msg += `\n▶ *${item.nomeTipo} — ${item.nome}* (${item.quantidade} un.)\n`;
+    } else {
+      msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
+      if (item.sabores && item.sabores.length > 0) {
+        item.sabores.forEach(s => msg += `   • ${s}\n`);
+      }
     }
     msg += `   Subtotal: R$ ${sub.toFixed(2).replace('.',',')}\n`;
   });
@@ -939,7 +948,7 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
       nome: nome,
       tel: tel,
       endereco: end,
-      itens: carrinho.map(i => ({ nome: i.nome, qtd: i.quantidade, sabores: i.sabores || [], preco: i.preco })),
+      itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preco: i.preco, tipo: i.tipo || 'sorvete' })),
       total: total,
       status: 'novo'
     });
