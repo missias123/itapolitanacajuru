@@ -650,23 +650,25 @@ function renderCarrinho() {
     const sub = item.preco * item.quantidade;
     total += sub;
     if (item.tipo === 'picolé') {
-      // Picolé: exibe tipo acima, sabor em destaque, contador no sabor
+      // Picolé: tipo acima, sabor + contador na mesma linha
       return `
-      <div class="cart-item">
-        <div class="cart-item-info">
-          <div class="cart-item-tipo" style="font-size:11px;color:#888;font-weight:600;margin-bottom:2px">${item.nomeTipo || ''}</div>
-          <div class="cart-item-nome">${item.nome}</div>
-          <div class="cart-item-preco-unit">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
-        </div>
-        <div class="cart-item-ctrl">
-          <div class="qty-ctrl">
-            <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
-            <span class="qty-val">${item.quantidade}</span>
-            <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
+      <div class="cart-item" style="flex-direction:column;align-items:stretch;padding:10px 14px;">
+        <div style="font-size:11px;color:#888;font-weight:600;margin-bottom:4px">${item.nomeTipo || ''}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="flex:1;min-width:0">
+            <div class="cart-item-nome" style="margin:0">${item.nome}</div>
+            <div class="cart-item-preco-unit" style="margin:0">R$ ${item.preco.toFixed(2).replace('.',',')} / un.</div>
           </div>
-          <div class="cart-item-sub">R$ ${sub.toFixed(2).replace('.',',')}</div>
-          <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+            <div class="qty-ctrl">
+              <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
+              <span class="qty-val">${item.quantidade}</span>
+              <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
+            </div>
+            <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
+          </div>
         </div>
+        <div style="text-align:right;font-weight:700;color:#1565C0;font-size:13px;margin-top:4px">R$ ${sub.toFixed(2).replace('.',',')}</div>
       </div>`;
     }
     return `
