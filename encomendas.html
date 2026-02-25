@@ -21,6 +21,10 @@
         .btn-carrinho-fixo:disabled { background: #999; cursor: not-allowed; opacity: 0.7; }
         .categoria-header { cursor:pointer; background:#f8f9fa; padding:18px; border-radius:10px; margin-bottom:12px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .categoria-header:hover { background: #f0f2f5; }
+        .item-carrinho { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        .form-grupo { margin-bottom: 15px; }
+        .form-grupo label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .form-grupo input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
     </style>
 </head>
 <body style="background: #f0f2f5; font-family: sans-serif;">
@@ -53,7 +57,7 @@
         </div>
     </div>
 
-    <button id="btn-carrinho" class="btn-carrinho-fixo" disabled onclick="alert('Carrinho em desenvolvimento nesta versão estável')">
+    <button id="btn-carrinho" class="btn-carrinho-fixo" disabled onclick="abrirCarrinho()">
         🛒 Ver Carrinho (<span id="carrinho-badge">0</span>)
     </button>
 
@@ -70,6 +74,40 @@
         </div>
     </div>
 
-    <script src="scripts/enc-v2.js?v=5.0.0"></script>
+    <!-- Modal do Carrinho -->
+    <div class="modal-overlay" id="modal-carrinho">
+        <div class="modal-box">
+            <h2 style="margin-top: 0;">Seu Pedido</h2>
+            <div id="itens-carrinho" style="margin-bottom: 20px;"></div>
+            <div style="border-top: 2px solid #eee; padding-top: 15px; margin-bottom: 20px;">
+                <h3 style="margin: 0; display: flex; justify-content: space-between;">
+                    <span>Total:</span>
+                    <span id="total-carrinho">R$ 0,00</span>
+                </h3>
+            </div>
+            
+            <div id="form-cliente">
+                <div class="form-grupo">
+                    <label>Seu Nome:</label>
+                    <input type="text" id="nome-cliente" placeholder="Digite seu nome completo">
+                </div>
+                <div class="form-grupo">
+                    <label>Telefone / WhatsApp:</label>
+                    <input type="tel" id="tel-cliente" placeholder="(00) 00000-0000">
+                </div>
+                <div class="form-grupo">
+                    <label>Endereço de Entrega:</label>
+                    <input type="text" id="end-cliente" placeholder="Rua, número, bairro">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="finalizarPedido()" id="btn-finalizar" class="btn-add" style="flex: 2; background: #2E7D32;">Finalizar no WhatsApp</button>
+                <button onclick="fecharModal('modal-carrinho')" style="flex: 1; padding: 10px; border: 1px solid #ccc; background: #eee; border-radius: 6px; cursor: pointer;">Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/enc-v2.js?v=6.0.0"></script>
 </body>
 </html>

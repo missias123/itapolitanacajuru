@@ -48,7 +48,7 @@ async function fetchWithRetry(url, options, retries = 3) {
   }
 }
 
-// --- LÓGICA DO SITE (MANTIDA ORIGINAL) ---
+// --- LÓGICA DO SITE ---
 
 var carrinho = [];
 var produtoSendoAdicionado = null;
@@ -67,7 +67,7 @@ const PRODUTOS = {
 };
 
 const SABORES_SORVETE = [
-  "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce","Amarena","Ameixa",
+  "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Docê","Amarena","Ameixa",
   "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
   "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
   "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
@@ -97,7 +97,7 @@ function renderizarTudo() {
           <h4 style="margin:0">${p.nome}</h4>
           <p style="margin:5px 0 0; color:#2E7D32; font-weight:bold">R$ ${p.preco.toFixed(2).replace('.',',')}</p>
         </div>
-        <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher Sabores</button>
+        <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher</button>
       </div>
     `).join('');
   }
@@ -110,7 +110,7 @@ function renderizarTudo() {
           <h4 style="margin:0">${p.nome}</h4>
           <p style="margin:5px 0 0; color:#2E7D32; font-weight:bold">R$ ${p.preco.toFixed(2).replace('.',',')}</p>
         </div>
-        <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher Sabores</button>
+        <button class="btn-add" onclick="abrirModalSabores('${p.id}')">Escolher</button>
       </div>
     `).join('');
   }
@@ -159,9 +159,10 @@ function toggleSabor(el, sabor) {
 
 function atualizarContadorSabores() {
   const btn = document.getElementById('btn-confirmar-sabores');
-  const txt = document.getElementById('txt-confirmar-sabores');
-  if (txt) txt.textContent = `Confirmar Seleção (${saboresSelecionados.length}/${produtoSendoAdicionado.maxSabores})`;
-  if (btn) btn.disabled = saboresSelecionados.length === 0;
+  if (btn) {
+    btn.textContent = `Confirmar (${saboresSelecionados.length}/${produtoSendoAdicionado.maxSabores})`;
+    btn.disabled = saboresSelecionados.length === 0;
+  }
 }
 
 function confirmarSabores() {
@@ -178,6 +179,67 @@ function confirmarSabores() {
   fecharModal('modal-sabores');
   atualizarBotaoCarrinho();
   showToast('Item adicionado ao carrinho!');
+}
+
+function abrirCarrinho() {
+  const modal = document.getElementById('modal-carrinho');
+  const lista = document.getElementById('itens-carrinho');
+  const totalTxt = document.getElementById('total-carrinho');
+  
+  if (lista) {
+    lista.innerHTML = carrinho.map((item, idx) => `
+      <div class="item-carrinho">
+        <div>
+          <strong style="display:block">${item.nome}</strong>
+          <small style="color:#666">${item.sabores.join(', ')}</small>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:bold">R$ ${item.preco.toFixed(2).replace('.',',')}</div>
+          <button onclick="removerItem(${idx})" style="color:red; border:none; background:none; cursor:pointer; font-size:0.8rem; padding:0">Remover</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  if (totalTxt) {
+    const total = calcularTotalCarrinho(carrinho);
+    totalTxt.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
+  }
+  
+  if (modal) modal.classList.add('ativo');
+}
+
+function removerItem(idx) {
+  carrinho.splice(idx, 1);
+  abrirCarrinho();
+  atualizarBotaoCarrinho();
+}
+
+function finalizarPedido() {
+  const nome = sanitizeString(document.getElementById('nome-cliente').value);
+  const tel = sanitizeString(document.getElementById('tel-cliente').value);
+  const end = sanitizeString(document.getElementById('end-cliente').value);
+  
+  if (!nome || !tel || !end) {
+    alert('Por favor, preencha todos os campos de entrega.');
+    return;
+  }
+  
+  const total = calcularTotalCarrinho(carrinho);
+  let msg = `*NOVO PEDIDO - ITAPOLITANA CAJURU*\n\n`;
+  msg += `*Cliente:* ${nome}\n`;
+  msg += `*Tel:* ${tel}\n`;
+  msg += `*Endereço:* ${end}\n\n`;
+  msg += `*ITENS:*\n`;
+  
+  carrinho.forEach(item => {
+    msg += `- ${item.nome}\n  Sabores: ${item.sabores.join(', ')}\n`;
+  });
+  
+  msg += `\n*TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
+  
+  const url = `https://api.whatsapp.com/send?phone=5516991234567&text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
 }
 
 function fecharModal(id) {
