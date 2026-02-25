@@ -432,10 +432,18 @@ function mostrarTelasTiposPicole() {
   const btnTipos = document.getElementById('btn-add-picoles-tipos');
   const totalGlobal = totalPickleGlobal();
   if (btnTipos) {
-    if (totalGlobal === 0) { btnTipos.disabled = true; btnTipos.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`; }
-    else if (totalGlobal < MIN_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`; }
-    else if (totalGlobal > MAX_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`; }
-    else { btnTipos.disabled = false; btnTipos.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`; }
+    if (totalGlobal < MIN_PICOLES) {
+      btnTipos.style.display = 'none';
+      btnTipos.disabled = true;
+    } else if (totalGlobal > MAX_PICOLES) {
+      btnTipos.style.display = 'block';
+      btnTipos.disabled = true;
+      btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`;
+    } else {
+      btnTipos.style.display = 'block';
+      btnTipos.disabled = false;
+      btnTipos.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`;
+    }
   }
 }
 
@@ -518,16 +526,16 @@ function atualizarTotalPickle() {
   const aviso = document.getElementById('aviso-minimo-picolé');
   // Regra: bloqueado 0-99, liberado 100-250, bloqueado 251+
   if (btn) {
-    if (totalGlobal === 0) {
+    if (totalGlobal < MIN_PICOLES) {
+      // Ocultar botão enquanto não atingir o mínimo
+      btn.style.display = 'none';
       btn.disabled = true;
-      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`;
-    } else if (totalGlobal < MIN_PICOLES) {
-      btn.disabled = true;
-      btn.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`;
     } else if (totalGlobal > MAX_PICOLES) {
+      btn.style.display = 'block';
       btn.disabled = true;
       btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`;
     } else {
+      btn.style.display = 'block';
       btn.disabled = false;
       btn.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`;
     }
@@ -612,8 +620,19 @@ function addCarrinho(item) {
   if (item.tipo === 'sorvete') {
     const ex = carrinho.find(c => c.id===item.id && JSON.stringify(c.sabores)===JSON.stringify(item.sabores));
     if (ex) { ex.quantidade++; }
-    else carrinho.push(item);
+    else { item._uid = item.id + '_' + Date.now(); carrinho.push(item); }
+  } else if (item.tipo === 'picolé') {
+    // Para picolés: atualizar item existente do mesmo tipo ou adicionar novo
+    const ex = carrinho.find(c => c.tipo === 'picolé' && c.id === item.id);
+    if (ex) {
+      ex.quantidade = item.quantidade;
+      ex.sabores = item.sabores;
+    } else {
+      item._uid = item.id + '_picole_' + Date.now();
+      carrinho.push(item);
+    }
   } else {
+    item._uid = item.id + '_' + Date.now();
     carrinho.push(item);
   }
   atualizarBotaoCarrinho();
@@ -647,8 +666,9 @@ function renderCarrinho() {
   lista.innerHTML = carrinho.map((item,i) => {
     const sub = item.preco * item.quantidade;
     total += sub;
+    const uid = item._uid || String(i);
     return `
-    <div class="cart-item">
+    <div class="cart-item" data-uid="${uid}">
       <div class="cart-item-info">
         <div class="cart-item-nome">${item.nome}</div>
         <div class="cart-item-sabores">${item.sabores.join(' • ')}</div>
@@ -656,12 +676,12 @@ function renderCarrinho() {
       </div>
       <div class="cart-item-ctrl">
         <div class="qty-ctrl">
-          <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
+          <button class="btn-qty" onclick="qtdCarrinhoPorUid('${uid}',-1)">−</button>
           <span class="qty-val">${item.quantidade}</span>
-          <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
+          <button class="btn-qty" onclick="qtdCarrinhoPorUid('${uid}',1)">+</button>
         </div>
         <div class="cart-item-sub">R$ ${sub.toFixed(2).replace('.',',')}</div>
-        <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
+        <button class="btn-remover" onclick="removerItemPorUid('${uid}')" title="Remover">🗑️</button>
       </div>
     </div>`;
   }).join('');
@@ -725,6 +745,38 @@ function removerItem(i) {
   renderCarrinho();
   atualizarBotaoCarrinho();
 }
+function removerItemPorUid(uid) {
+  const idx = carrinho.findIndex(c => (c._uid || '') === uid);
+  if (idx === -1) return;
+  carrinho.splice(idx, 1);
+  if (carrinho.length === 0) { fecharCarrinho(); atualizarBotaoCarrinho(); return; }
+  renderCarrinho();
+  atualizarBotaoCarrinho();
+}
+function qtdCarrinhoPorUid(uid, delta) {
+  const idx = carrinho.findIndex(c => (c._uid || '') === uid);
+  if (idx === -1) return;
+  const item = carrinho[idx];
+  const nova = item.quantidade + delta;
+  if (nova <= 0) { removerItemPorUid(uid); return; }
+  // Verificar limite máximo de picolés
+  if (item.tipo === 'picolé' && nova > MAX_PICOLES) {
+    showToast(\`⚠️ Máximo \${MAX_PICOLES} picolés no total.\`, 'alerta');
+    return;
+  }
+  item.quantidade = nova;
+  // Verificar se picolés ficaram abaixo de 100 após redução
+  const totalPicAtual = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicole = carrinho.some(c=>c.tipo==='picolé');
+  renderCarrinho();
+  atualizarBotaoCarrinho();
+  if (temPicole && totalPicAtual < 100 && delta < 0) {
+    const etapaDados = document.getElementById('etapa-dados');
+    if (etapaDados && etapaDados.classList.contains('ativa')) {
+      mostrarEtapa('revisao');
+    }
+  }
+}
 
 // ---- ETAPAS CHECKOUT ----
 function mostrarEtapa(etapa) {
@@ -785,9 +837,9 @@ function renderResumoPedido() {
         <div class="resumo-item-topo">
           <strong>${item.nome}</strong>
           <div class="qty-ctrl-mini">
-            <button class="btn-qty-mini" onclick="qtdCarrinho(${i},-1);renderResumoPedido()">−</button>
+            <button class="btn-qty-mini" onclick="qtdCarrinhoPorUid('${item._uid||String(i)}',-1);renderResumoPedido()">−</button>
             <span>${item.quantidade}</span>
-            <button class="btn-qty-mini" onclick="qtdCarrinho(${i},1);renderResumoPedido()">+</button>
+            <button class="btn-qty-mini" onclick="qtdCarrinhoPorUid('${item._uid||String(i)}',1);renderResumoPedido()">+</button>
           </div>
         </div>
         ${item.sabores.map(s=>`<div class="resumo-sabor">• ${s}</div>`).join('')}
