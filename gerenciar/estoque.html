@@ -165,6 +165,16 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
     </div>
 
     
+    
+    <!-- SEÇÃO DE PICOLÉS POR SABOR -->
+    <div style="margin-bottom:20px;background:#fff;border-radius:14px;border:1px solid #E5E7EB;padding:16px 20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h2 style="font-size:16px;font-weight:900;color:#111827">🍭 Picolés por Sabor</h2>
+        <button type="button" onclick="resetarEstoquePickles()" style="background:#EF4444;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">🔄 Resetar Tudo</button>
+      </div>
+      <div id="picoles-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px"></div>
+    </div>
+
     <div class="filtros">
       <button type="button" class="filtro-btn ativo" onclick="setFiltro('todos',this)">📋 Todos</button>
       <button type="button" class="filtro-btn alerta" onclick="setFiltro('baixo',this)">⚠️ Estoque Baixo</button>
@@ -495,6 +505,86 @@ document.getElementById('modal-lista').addEventListener('click', function(e) {
   if (e.target === this) fecharModal();
 });
 </script>
-<script src="../scripts/ortografia.js"></script>
+<script src="../scripts/ortografia.js">
+
+// ---- PICOLÉS POR SABOR ----
+const STORAGE_PICOLES = 'itap_estoque_picoles';
+const SABORES_PADRAO = [
+  'Abacaxi', 'Abacaxi ao Vinho', 'Abacaxi Suíço', 'Algodão Doce', 'Amarena',
+  'Ameixa', 'Banana com Nutella', 'Bis e Trufa', 'Cereja Trufada', 'Chocolate',
+  'Chocolate com Café', 'Coco Queimado', 'Creme Paris', 'Croquer', 'Doce de Leite',
+  'Ferrero Rocher', 'Flocos', 'Kinder Ovo', 'Leite Condensado', 'Leite Ninho',
+  'Leite Ninho Folheado', 'Leite Ninho com Oreo', 'Limão', 'Limão Suíço',
+  'Menta com Chocolate', 'Milho Verde', 'Morango Trufado', 'Mousse de Maracujá',
+  'Mousse de Uva', 'Nozes', 'Nutella', 'Ovomaltine', 'Pistache', 'Prestígio',
+  'Sensação', 'Torta de Chocolate'
+];
+
+function getEstoquePickles() {
+  try {
+    const dados = JSON.parse(localStorage.getItem(STORAGE_PICOLES) || '{}');
+    // Garantir que todos os sabores existem
+    SABORES_PADRAO.forEach(sabor => {
+      if (!(sabor in dados)) dados[sabor] = 0;
+    });
+    return dados;
+  } catch(e) {
+    const dados = {};
+    SABORES_PADRAO.forEach(sabor => dados[sabor] = 0);
+    return dados;
+  }
+}
+
+function salvarEstoquePickles(dados) {
+  localStorage.setItem(STORAGE_PICOLES, JSON.stringify(dados));
+  renderPicklesAdmin();
+}
+
+function renderPicklesAdmin() {
+  const grid = document.getElementById('picoles-grid');
+  if (!grid) return;
+  
+  const dados = getEstoquePickles();
+  grid.innerHTML = SABORES_PADRAO.map(sabor => {
+    const qtd = dados[sabor] || 0;
+    const esgotado = qtd === 0;
+    const baixo = qtd > 0 && qtd <= 20;
+    
+    return `
+    <div style="background:#fff;border-radius:12px;border:2px solid ${esgotado ? '#EF4444' : baixo ? '#F59E0B' : '#E5E7EB'};padding:12px;position:relative">
+      <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:8px;word-break:break-word">${sabor}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <button onclick="alterarEstoquePickle('${sabor}',-1)" style="width:32px;height:32px;border-radius:8px;border:none;background:#FEE2E2;color:#EF4444;font-size:18px;font-weight:900;cursor:pointer">−</button>
+        <span style="flex:1;text-align:center;font-size:20px;font-weight:900;color:${esgotado ? '#EF4444' : baixo ? '#F59E0B' : '#111827'}">${qtd}</span>
+        <button onclick="alterarEstoquePickle('${sabor}',1)" style="width:32px;height:32px;border-radius:8px;border:none;background:#D1FAE5;color:#10B981;font-size:18px;font-weight:900;cursor:pointer">+</button>
+      </div>
+      ${esgotado ? '<span style="display:block;background:#FEE2E2;color:#EF4444;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;text-align:center">ESGOTADO</span>' : baixo ? '<span style="display:block;background:#FEF3C7;color:#F59E0B;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;text-align:center">BAIXO</span>' : '<span style="display:block;background:#D1FAE5;color:#10B981;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;text-align:center">OK</span>'}
+    </div>
+    `;
+  }).join('');
+}
+
+function alterarEstoquePickle(sabor, delta) {
+  const dados = getEstoquePickles();
+  let qtd = dados[sabor] || 0;
+  qtd = Math.max(0, Math.min(200, qtd + delta));
+  dados[sabor] = qtd;
+  salvarEstoquePickles(dados);
+}
+
+function resetarEstoquePickles() {
+  if (!confirm('Tem certeza que quer resetar o estoque de TODOS os picolés para 0?')) return;
+  const dados = {};
+  SABORES_PADRAO.forEach(sabor => dados[sabor] = 0);
+  salvarEstoquePickles(dados);
+}
+
+// Renderizar picolés ao carregar a página
+setTimeout(() => {
+  if (document.getElementById('picoles-grid')) {
+    renderPicklesAdmin();
+  }
+}, 100);
+</script>
 </body>
 </html>
