@@ -16,8 +16,22 @@
 -->
 <html lang="pt-BR">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="preload" href="css/design-system.css" as="style">
+    <link rel="preload" href="css/estilo-encomendas.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" as="style">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:">
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://github.com">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preload" href="css/design-system.css" as="style">
+    <link rel="preload" href="css/estilo-encomendas.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" as="style">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Sorveteria Itapolitana em Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros. Sorvetes artesanais, picolés e açaí desde 2007.">
 <meta name="theme-color" content="#1565C0">
 <meta name="keywords" content="sorveteria Cajuru, sorvete artesanal Cajuru, açaí Cajuru, picolé Cajuru, torta de sorvete Cajuru, sorveteria Santa Cruz da Esperança, sorveteria Cássia dos Coqueiros, Itapolitana, milkshake Cajuru">
@@ -486,7 +500,7 @@ img{max-width:100%;display:block}
 <header class="header">
   <div class="header-inner">
     <div class="brand">
-      <div class="brand-icon"><img loading="lazy" src="images/logo.png" alt="Logo Itapolitana"></div>
+      <div class="brand-icon"><img decoding="async" loading="lazy" loading="lazy" src="images/logo.png" alt="Logo Itapolitana"></div>
       <div style="display:flex;flex-direction:column;justify-content:center;padding:8px 0">
         <div class="brand-name">ITAPOLITANA CAJURU</div>
         <div class="brand-sub">Açaiteria &amp; Sorveteria · Desde 2007</div>
@@ -573,7 +587,7 @@ img{max-width:100%;display:block}
     <div style="font-size:13px;color:#7B2D8B;font-weight:600;margin-top:4px;">Toque numa categoria e descubra sabores irresistíveis</div>
   </div>
   <div class="cardapio-banner show" id="cardapio-banner">
-    <img loading="lazy" id="cardapio-banner-img" src="images/banner-cardapio.png" alt="Sorveteria Itapolitana Cajuru">
+    <img decoding="async" loading="lazy" loading="lazy" id="cardapio-banner-img" src="images/banner-cardapio.png" alt="Sorveteria Itapolitana Cajuru">
   </div>
   <div class="acc" id="acc-sorvetes">
     <div class="acc-header" onclick="toggleAcc('acc-sorvetes')">
@@ -736,14 +750,14 @@ img{max-width:100%;display:block}
   </div>
 </section>
 <a class="gatilho-flutuante" id="gatilho-flutuante" href="encomendas.html" aria-label="Ir para Encomendas" style="display:none;text-decoration:none;">
-  <img src="images/sorvete-icon.png" alt="🍦 Encomendar sorvete">
+  <img decoding="async" loading="lazy" src="images/sorvete-icon.png" alt="🍦 Encomendar sorvete">
   <span class="gatilho-label">🛒 Encomendar</span>
 </a>
 <footer class="footer">
   <div style="text-align:center;padding:24px 16px 28px;">
     <!-- LOGO CENTRALIZADA -->
     <div style="margin-bottom:14px;">
-      <img src="images/logo.png" alt="Sorveteria Itapolitana Cajuru"
+      <img decoding="async" loading="lazy" src="images/logo.png" alt="Sorveteria Itapolitana Cajuru"
            style="width:90px;height:90px;border-radius:50%;object-fit:cover;
                   box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 0 0 14px #0D47A1,0 4px 20px rgba(0,0,0,.6);
                   display:block;margin:0 auto;">
@@ -793,7 +807,7 @@ img{max-width:100%;display:block}
   <div class="promo-box">
     <button type="button" class="promo-close" onclick="fecharModal('promo-overlay')">✕</button>
     <div class="promo-icon" id="promo-icon">🎉</div>
-    <img loading="lazy" id="promo-img" src="" alt="Promoção" style="display:none;width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover">
+    <img decoding="async" loading="lazy" loading="lazy" id="promo-img" src="" alt="Promoção" style="display:none;width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover">
     <div class="promo-title" id="promo-title">Promoção Especial!</div>
     <div class="promo-desc" id="promo-desc">Confira nossas promoções especiais de hoje. Aproveite enquanto durar!</div>
     <div class="promo-timer-box">
@@ -855,7 +869,7 @@ img{max-width:100%;display:block}
 function getFotos(){try{return JSON.parse(localStorage.getItem('itap_fotos')||'{}');}catch(e){return {};}}
 function imgCard(chave,emoji){
   const f=getFotos()[chave];
-  if(f) return `<img loading="lazy" class="prod-card-img" src="${f}" alt="foto">`;
+  if(f) return `<img decoding="async" loading="lazy" loading="lazy" class="prod-card-img" src="${f}" alt="foto">`;
   return `<div class="prod-card-sem-foto">${emoji||'🍦'}</div>`;
 }
 function toggleAcc(id){
@@ -1271,7 +1285,7 @@ function renderComplementosCardapio() {
         const esgotado = c.estoque <= 0;
         const foto = fotos['comp_enc_'+c.id] || '';
         const fotoHtml = foto
-          ? `<img loading="lazy" src="${foto}" style="width:50px;height:50px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
+          ? `<img decoding="async" loading="lazy" loading="lazy" src="${foto}" style="width:50px;height:50px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
           : `<div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
         return `<div style="display:flex;align-items:center;background:${esgotado?'#FFF3F3':'#FAFAFA'};border:1.5px solid ${esgotado?'#FFCDD2':'#E0E0E0'};border-radius:12px;padding:12px;margin-bottom:10px;${esgotado?'opacity:0.6;':''}">
           ${fotoHtml}
