@@ -437,7 +437,6 @@ function mostrarTelasTiposPicole() {
       return `
         <button class="btn-tipo-picole ${esgotado ? 'esgotado' : ''}" onclick="abrirTipoPicole('${p.id}')" ${esgotado ? 'disabled' : ''}>
           <span class="btn-tipo-nome">${p.nome}</span>
-          ${totalTipo > 0 ? `<span class="btn-tipo-qtd">${totalTipo} un.</span>` : ''}
           <span class="btn-tipo-preco">Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}</span>
         </button>`;
     }).join('');
@@ -511,6 +510,15 @@ function qtdPickle(sabor, delta) {
   if (!selecoesPickle[sabor]) selecoesPickle[sabor] = 0;
   const nova = selecoesPickle[sabor] + delta;
   if (nova < 0) return;
+
+  // VALIDAR ESTOQUE POR SABOR
+  const estoque = getEstoquePickles();
+  const disponivel = estoque[sabor] || 0;
+  if (delta > 0 && nova > disponivel) {
+    showToast(`⚠️ Estoque insuficiente para ${sabor}. Disponível: ${disponivel}`, 'alerta');
+    return;
+  }
+
   // Verificar limite global de 250
   const totalGlobal = totalPickleGlobal();
   const diff = nova - (selecoesPickle[sabor] || 0);
@@ -518,11 +526,12 @@ function qtdPickle(sabor, delta) {
     showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalGlobal}.`, 'alerta');
     return;
   }
+
   selecoesPickle[sabor] = nova;
-  // Atualizar o global
   const chave = picoleAtual.id + '::' + sabor;
   if (nova === 0) { delete selecoesPickleGlobal[chave]; }
   else { selecoesPickleGlobal[chave] = nova; }
+  
   const el = document.getElementById(`pqty-${sabor.replace(/\s+/g,'_')}`);
   if (el) el.textContent = nova;
   atualizarTotalPickle();
