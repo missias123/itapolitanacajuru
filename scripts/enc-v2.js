@@ -894,36 +894,20 @@ function finalizarPedido() {
     if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
   }
   // SISTEMA DE NUMERAÇÃO DE PEDIDOS
-  // Contador centralizado no servidor (CounterAPI)
-  // Fallback automático para contador local se API indisponível
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-  fetch('https://api.counterapi.dev/v1/itap-cajuru-prod/pedido-seq/up', { signal: controller.signal })
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(data => {
-      clearTimeout(timeoutId);
-      const seq = (data && data.count) ? data.count : 1;
-      const seqStr = String(seq).padStart(4, '0');
-      const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
-      _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
-    })
-    .catch(() => {
-      clearTimeout(timeoutId);
-      // Fallback robusto: contador local com prefixo 'L'
-      try {
-        const seqLocal = parseInt(localStorage.getItem('itap_seq_pedido') || '0') + 1;
-        localStorage.setItem('itap_seq_pedido', seqLocal.toString());
-        const seqStr = 'L' + String(seqLocal).padStart(3, '0');
-        const numPedido = `${seqStr}/${mm}/${aaaa} ${hh}:${min}`;
-        _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
-      } catch(e) {
-        _resetBtnFinalizar();
-        showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
-      }
-    });
+  // Formato: ITA-001-250225 (prefixo + sequência diária + data compacta)
+  // Sequência reinicia todo dia — armazenada no localStorage por data
+  try {
+    const dataChave = `${dd}${mm}${String(aaaa).slice(2)}`; // ex: 250225
+    const chaveSeq = `itap_seq_${dataChave}`;
+    const seq = parseInt(localStorage.getItem(chaveSeq) || '0') + 1;
+    localStorage.setItem(chaveSeq, seq.toString());
+    const seqStr = String(seq).padStart(3, '0');
+    const numPedido = `ITA-${seqStr}-${dataChave}`;
+    _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
+  } catch(e) {
+    _resetBtnFinalizar();
+    showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
+  }
 }
 function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   try {
