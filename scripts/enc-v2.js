@@ -416,51 +416,71 @@ function confirmarSabores() {
 
 // ---- MODAL PICOLÉS ----
 function mostrarTelasTiposPicole() {
-  // Mostra a tela de seleção de tipos dentro do modal
+  // Pular a tela de tipos e abrir todos os sabores diretamente
   const telaTipos = document.getElementById('picole-tela-tipos');
   const telaSabores = document.getElementById('picole-tela-sabores');
-  if (telaTipos) telaTipos.style.display = 'block';
-  if (telaSabores) telaSabores.style.display = 'none';
+  if (telaTipos) telaTipos.style.display = 'none';
+  if (telaSabores) telaSabores.style.display = 'block';
+  
   // Atualizar título
   const titulo = document.getElementById('picolé-titulo');
-  if (titulo) titulo.textContent = 'Picolés — Escolha o Tipo';
+  if (titulo) titulo.textContent = 'Picolés (Atacado)';
   const precos = document.getElementById('picolé-precos');
-  if (precos) precos.textContent = 'Toque em um tipo para ver os sabores';
-  // Renderizar botões dos tipos
-  const lista = document.getElementById('picole-lista-tipos');
+  if (precos) precos.textContent = 'Escolha seus sabores favoritos (Mínimo 100 unidades)';
+
+  // Renderizar TODOS os sabores de TODOS os tipos em uma única lista
+  const lista = document.getElementById('lista-sabores-picolé');
   if (lista) {
-    lista.innerHTML = PRODUTOS.picoles.map(p => {
-      const totalTipo = Object.entries(selecoesPickleGlobal)
-        .filter(([k]) => k.startsWith(p.id + '::'))
-        .reduce((a,[,v]) => a + v, 0);
-      const esgotado = p.estoque === 0;
-      return `
-        <button class="btn-tipo-picole ${esgotado ? 'esgotado' : ''}" onclick="abrirTipoPicole('${p.id}')" ${esgotado ? 'disabled' : ''}>
-          <span class="btn-tipo-nome">${p.nome}</span>
-          <span class="btn-tipo-preco">Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}</span>
-        </button>`;
-    }).join('');
+    let html = '';
+    PRODUTOS.picoles.forEach(p => {
+      html += `<div style="background:#f3f4f6;padding:8px 12px;font-weight:800;font-size:13px;color:#4b5563;margin-top:10px;border-radius:6px">${p.nome}</div>`;
+      p.sabores.forEach(s => {
+        const chave = p.id + '::' + s;
+        const qtdAtual = selecoesPickleGlobal[chave] || 0;
+        html += `
+        <div class="picolé-row">
+          <span class="picolé-sabor-nome">${s}</span>
+          <div class="qty-ctrl">
+            <button class="btn-qty" onclick="qtdPickleGlobal('${p.id}', '${s}', -1)">−</button>
+            <span class="qty-val" id="pqty-${p.id}-${s.replace(/\s+/g,'_')}">${qtdAtual}</span>
+            <button class="btn-qty" onclick="qtdPickleGlobal('${p.id}', '${s}', 1)">+</button>
+          </div>
+        </div>`;
+      });
+    });
+    lista.innerHTML = html;
   }
-  // Atualizar total na tela de tipos
-  const elTipos = document.getElementById('total-picoles-tipos');
-  if (elTipos) elTipos.textContent = totalPickleGlobal();
-  // Atualizar botão na tela de tipos
-  const btnTipos = document.getElementById('btn-add-picoles-tipos');
+  
+  atualizarTotalPickle();
+}
+
+function qtdPickleGlobal(tipoId, sabor, delta) {
+  const chave = tipoId + '::' + sabor;
+  const atual = selecoesPickleGlobal[chave] || 0;
+  const nova = atual + delta;
+  if (nova < 0) return;
+
+  // VALIDAR ESTOQUE POR SABOR
+  const estoque = getEstoquePickles();
+  const disponivel = estoque[sabor] || 0;
+  if (delta > 0 && nova > disponivel) {
+    showToast(`⚠️ Estoque insuficiente para ${sabor}. Disponível: ${disponivel}`, 'alerta');
+    return;
+  }
+
+  // Verificar limite global de 250
   const totalGlobal = totalPickleGlobal();
-  if (btnTipos) {
-    if (totalGlobal < MIN_PICOLES) {
-      btnTipos.style.display = 'none';
-      btnTipos.disabled = true;
-    } else if (totalGlobal > MAX_PICOLES) {
-      btnTipos.style.display = 'block';
-      btnTipos.disabled = true;
-      btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`;
-    } else {
-      btnTipos.style.display = 'block';
-      btnTipos.disabled = false;
-      btnTipos.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`;
-    }
+  if (delta > 0 && totalGlobal + 1 > MAX_PICOLES) {
+    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta');
+    return;
   }
+
+  if (nova === 0) { delete selecoesPickleGlobal[chave]; }
+  else { selecoesPickleGlobal[chave] = nova; }
+  
+  const el = document.getElementById(`pqty-${tipoId}-${sabor.replace(/\s+/g,'_')}`);
+  if (el) el.textContent = nova;
+  atualizarTotalPickle();
 }
 
 function abrirTipoPicole(id) {
