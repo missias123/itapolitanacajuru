@@ -1,379 +1,71 @@
-<!-- cache-bust: 1771939682 -->
+
 <!DOCTYPE html>
-<!--
-  ╔══════════════════════════════════════════════════════════════╗
-  ║         SORVETERIA ITAPOLITANA CAJURU — SITE OFICIAL         ║
-  ║──────────────────────────────────────────────────────────────║
-  ║  Criado por: Sgt Missiascacarato                             ║
-  ║  Data de criação: Fevereiro de 2026                          ║
-  ║  Versão: 2.0 — Sistema de Design Padronizado                 ║
-  ║  Tecnologia: HTML5 + CSS3 + JavaScript Vanilla               ║
-  ║  Hospedagem: GitHub Pages                                    ║
-  ║  Domínio: itapolitanacajuru.com.br                           ║
-  ║──────────────────────────────────────────────────────────────║
-  ║  © 2026 Sorveteria Itapolitana Cajuru. Todos os direitos     ║
-  ║  reservados. Reprodução proibida sem autorização.            ║
-  ╚══════════════════════════════════════════════════════════════╝
--->
 <html lang="pt-BR">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="preload" href="css/design-system.css" as="style">
-    <link rel="preload" href="css/estilo-encomendas.css" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" as="style">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link rel="dns-prefetch" href="https://github.com">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
-  <meta charset="UTF-8">
-      <link rel="preload" href="css/design-system.css" as="style">
-    <link rel="preload" href="css/estilo-encomendas.css" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" as="style">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Encomende tortas de sorvete, caixas de sorvete, picolés e acréscimos para festas e eventos. Sorveteria Itapolitana Cajuru/SP. Pedidos via WhatsApp.">
-  <meta name="keywords" content="encomenda sorvete Cajuru, torta de sorvete Cajuru, caixa de sorvete Cajuru, picolé atacado Cajuru, festa sorvete Cajuru, Itapolitana encomendas">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://itapolitanacajuru.com.br/encomendas.html">
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://itapolitanacajuru.com.br/encomendas.html">
-  <meta property="og:title" content="Encomendas – Tortas, Caixas e Picolés | Sorveteria Itapolitana Cajuru">
-  <meta property="og:description" content="Encomende tortas de sorvete, caixas de sorvete e picolés para festas e eventos. Pedidos via WhatsApp. Sorveteria Itapolitana Cajuru/SP.">
-  <meta property="og:image" content="https://itapolitanacajuru.com.br/images/logo.png">
-  <meta property="og:locale" content="pt_BR">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="apple-touch-icon" href="images/logo.png">
-  <title>Encomendas – Tortas, Caixas e Picolés | Sorveteria Itapolitana Cajuru</title>
-  <link rel="icon" href="images/logo.png">
+    <title>Encomendas – Sorveteria Itapolitana Cajuru</title>
     <link rel="stylesheet" href="css/design-system.css">
     <link rel="stylesheet" href="css/estilo-encomendas.css">
-<!-- v:1771806853-neuro -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FoodService",
-  "name": "Encomendas – Sorveteria Itapolitana Cajuru",
-  "description": "Encomende tortas de sorvete, caixas 5L e 10L, picolés no atacado e acréscimos. Retirada na loja em Cajuru/SP.",
-  "url": "https://itapolitanacajuru.com.br/encomendas.html",
-  "telephone": "+55-16-99147-2045",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "R. Cel. Manoel Caetano, 311",
-    "addressLocality": "Cajuru",
-    "addressRegion": "SP",
-    "addressCountry": "BR"
-  }
-}
-</script>
-<meta name="theme-color" content="#1565C0">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Encomendas – Sorveteria Itapolitana Cajuru">
-  <meta name="twitter:description" content="Encomende tortas, caixas de sorvete e picolés para festas. Retirada na loja em Cajuru/SP.">
-  <meta name="twitter:image" content="https://itapolitanacajuru.com.br/images/logo.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <style>
+        .categoria-conteudo { display: none; padding: 20px; }
+        .produto-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.ativo { display: flex; }
+        .modal-box { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .grid-sabores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .sabor-item { padding: 10px; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; text-align: center; }
+        .sabor-item.selecionado { background: #1565C0; color: white; border-color: #1565C0; }
+        .btn-add { background: #1565C0; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .btn-carrinho-fixo { position: fixed; bottom: 20px; right: 20px; background: #2E7D32; color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 900; }
+        .btn-carrinho-fixo:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
 </head>
 <body>
-<header class="header">
-  <a href="index.html" class="header-logo">
-    <img decoding="async" loading="lazy" loading="lazy" src="images/logo.png" alt="Itapolitana">
-    <div class="header-logo-texto">
-      <h1>Itapolitana Cajuru</h1>
-      <p>Encomendas</p>
-    </div>
-  </a>
-  <div class="header-acoes">
-    <a href="index.html" class="btn-voltar">← Cardápio</a>
-  </div>
-</header>
-<div class="banner-info">
-  📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança &nbsp;·&nbsp; 🏪 Retirada na loja &nbsp;·&nbsp; ✨ Sorvete artesanal desde 2007
-</div>
-<div class="hero">
-  <h2>🛒 Faça sua <span class="destaque">Encomenda</span></h2>
-  <p>Sorvetes cremosos em caixa, tortas irresistíveis, picolés gelados e acréscimos. Tudo artesanal, feito com amor desde 2007.</p>
-  <div class="hero-badges">
-    <span class="hero-badge">✨ Artesanal</span>
-    <span class="hero-badge">🍦 36 Sabores</span>
-    <span class="hero-badge">🎂 Tortas Especiais</span>
-    <span class="hero-badge">📦 Caixas 5L e 10L</span>
-    <span class="hero-badge">🍭 Picolés Atacado</span>
-  </div>
-</div>
-<div class="container">
-  <div class="categoria cat-caixas" id="caixas">
-    <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
-      <div class="categoria-header-left">
-        <span class="categoria-emoji">🍦</span>
-        <div class="categoria-info">
-          <h3>Sorvete em Caixa</h3>
-          <p>4 opções disponíveis</p>
-          <div class="frase-cat">✨ Cremoso, gelado e irresistível — perfeito para festas</div>
+    <header class="header">
+        <div class="container">
+            <h1>Itapolitana Cajuru - Encomendas</h1>
+            <a href="index.html" style="color: white;">← Voltar ao Cardápio</a>
         </div>
-      </div>
-      <span class="toggle-icon">▼</span>
-    </div>
-    <div class="categoria-conteudo" id="conteudo-caixas">
-      <div class="prod-grid" id="lista-caixas"></div>
-    </div>
-  </div>
-  <div class="categoria cat-tortas" id="tortas">
-    <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
-      <div class="categoria-header-left">
-        <span class="categoria-emoji">🎂</span>
-        <div class="categoria-info">
-          <h3>Torta de Sorvete</h3>
-          <p>Perfeita para festas</p>
-          <div class="frase-cat">🎂 Surpreenda quem você ama com uma torta gelada</div>
+    </header>
+
+    <div class="container" style="margin-top: 20px;">
+        <div class="categoria" id="caixas">
+            <div class="categoria-header" onclick="toggleSecao('conteudo-caixas')" style="cursor:pointer; background:#f4f4f4; padding:15px; border-radius:8px; margin-bottom:10px;">
+                <h3>🍦 Sorvete em Caixa ▼</h3>
+            </div>
+            <div class="categoria-conteudo" id="conteudo-caixas">
+                <div id="lista-caixas"></div>
+            </div>
         </div>
-      </div>
-      <span class="toggle-icon">▼</span>
-    </div>
-    <div class="categoria-conteudo" id="conteudo-tortas">
-      <div class="prod-grid" id="lista-tortas"></div>
-    </div>
-  </div>
-  <div class="categoria cat-picoles" id="picoles">
-    <div class="categoria-header" onclick="toggleSecao('conteudo-picoles')">
-      <div class="categoria-header-left">
-        <span class="categoria-emoji">🍭</span>
-        <div class="categoria-info">
-          <h3>Picolés (Atacado)</h3>
-          <p>Mínimo 100 unidades</p>
-          <div class="frase-cat">🍭 Gelados, recheados e cheios de sabor</div>
+
+        <div class="categoria" id="tortas">
+            <div class="categoria-header" onclick="toggleSecao('conteudo-tortas')" style="cursor:pointer; background:#f4f4f4; padding:15px; border-radius:8px; margin-bottom:10px;">
+                <h3>🎂 Torta de Sorvete ▼</h3>
+            </div>
+            <div class="categoria-conteudo" id="conteudo-tortas">
+                <div id="lista-tortas"></div>
+            </div>
         </div>
-      </div>
-      <span class="toggle-icon">▼</span>
     </div>
-    <div class="categoria-conteudo" id="conteudo-picoles">
-      <div class="prod-grid" id="lista-picoles"></div>
-    </div>
-  </div>
-  <div class="categoria cat-acrescimos" id="acrescimos">
-    <div class="categoria-header" onclick="toggleSecao('conteudo-acrescimos')">
-      <div class="categoria-header-left">
-        <span class="categoria-emoji">🍪</span>
-        <div class="categoria-info">
-          <h3>Acréscimos</h3>
-          <p>Canudinho, casquinha, cobertura e mais</p>
-          <div class="frase-cat">🍪 O toque final que faz toda a diferença</div>
+
+    <button id="btn-carrinho" class="btn-carrinho-fixo" disabled onclick="alert('Carrinho em desenvolvimento nesta versão estável')">
+        🛒 Ver Carrinho (<span id="carrinho-badge">0</span>)
+    </button>
+
+    <!-- Modal de Sabores -->
+    <div class="modal-overlay" id="modal-sabores">
+        <div class="modal-box">
+            <h2 id="modal-sabores-titulo">Escolher Sabores</h2>
+            <p>Selecione os sabores desejados:</p>
+            <div class="grid-sabores" id="lista-sabores-grid"></div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="confirmarSabores()" id="btn-confirmar-sabores" class="btn-add" style="flex: 1;" disabled>Confirmar Seleção</button>
+                <button onclick="fecharModal('modal-sabores')" style="padding: 10px;">Cancelar</button>
+            </div>
         </div>
-      </div>
-      <span class="toggle-icon">▼</span>
     </div>
-    <div class="categoria-conteudo" id="conteudo-acrescimos">
-      <div id="lista-acrescimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
-    </div>
-  </div>
-</div>
-<button type="button" class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" disabled>
-  🛒 Ver Carrinho
-  <span class="badge" id="carrinho-badge">0</span>
-</button>
-<div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-header-top">
-        <div>
-          <div class="modal-titulo">Escolher Sabores</div>
-          <div class="modal-subtitulo" id="modal-subtitulo-sabores"></div>
-        </div>
-        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-sabores')">✕</button>
-      </div>
-    </div>
-    <!-- 1. SABORES COM SCROLL PRÓPRIO -->
-    <div style="padding:16px 20px 0;overflow-y:auto;max-height:35vh">
-      <div class="grid-sabores" id="grid-sabores"></div>
-    </div>
-    <div style="padding:12px 20px 20px">
-      <div class="barra-acao barra-azul">
-        <span class="barra-texto" id="txt-confirmar-sabores">Confirmar Seleção (0/0)</span>
-        <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-confirmar-sabores" onclick="confirmarSabores()" disabled title="Confirmar Sabores">✓</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal-overlay" id="modal-picolé" onclick="if(event.target===this)fecharModal('modal-picolé')">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-header-top">
-        <div>
-          <div class="modal-titulo" id="picolé-titulo"></div>
-          <div class="modal-subtitulo" id="picolé-precos"></div>
-        </div>
-        <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-picolé')">✕</button>
-      </div>
-      <div class="picole-progress-bar">
-        <div class="picole-progress-info">
-          <span>🧳 Total selecionado:</span>
-          <strong id="picole-progress-num">0</strong>
-          <span>/ 250 picolés</span>
-          <span class="picole-progress-status" id="picole-progress-status">🔒 Faltam 100</span>
-        </div>
-        <div class="picole-progress-track">
-          <div class="picole-progress-fill" id="picole-progress-fill" style="width:0%"></div>
-        </div>
-      </div>
-    </div>
-    <div id="picole-tela-tipos" style="display:none;padding:16px 20px 20px">
-      <p style="text-align:center;font-weight:700;color:#E65100;margin-bottom:12px">🍭 Escolha o tipo de picolé:</p>
-      <div id="picole-lista-tipos"></div>
-      <div class="picolé-total-bar" style="margin-top:12px">
-        <span>🧳 Total acumulado:</span>
-        <strong><span id="total-picoles-tipos">0</span> / 250 picolés</strong>
-      </div>
-      <button type="button" class="btn-add-picoles" id="btn-add-picoles-tipos" onclick="confirmarPickle()" disabled style="margin-top:10px">
-        🍭 Selecione ao menos 100 picolés para liberar
-      </button>
-    </div>
-    <div class="modal-body" id="picole-tela-sabores">
-      <div id="lista-sabores-picolé"></div>
-      <div class="picolé-total-bar">
-        <span>🧳 Total geral (todos os tipos):</span>
-        <strong><span id="total-picoles">0</span> / 250 picolés</strong>
-      </div>
-      <div class="aviso-minimo" id="aviso-minimo-picolé"></div>
-      <button type="button" class="btn-add-picoles" id="btn-add-picoles" onclick="confirmarPickle()" disabled>
-        🍭 Selecione ao menos 100 picolés no total
-      </button>
-      <button type="button" class="btn-continuar-picoles" id="btn-continuar-picoles" onclick="mostrarTelasTiposPicole()">
-        ← Comprar Outros Sabores
-      </button>
-    </div>
-  </div>
-</div>
-<div class="modal-overlay" id="modal-carrinho">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div class="modal-header-top">
-        <div class="modal-titulo">🛒 Meu Pedido</div>
-        <button type="button" class="btn-fechar-modal" onclick="fecharCarrinho()">✕</button>
-      </div>
-    </div>
-    <div class="steps-bar">
-      <div class="step" id="step-revisao">
-        <div class="step-num">1</div>
-        <span class="step-label">Revisão</span>
-      </div>
-      <span class="step-sep">›</span>
-      <div class="step" id="step-dados">
-        <div class="step-num">2</div>
-        <span class="step-label">Seus Dados</span>
-      </div>
-      <span class="step-sep">›</span>
-      <div class="step" id="step-confirmacao">
-        <div class="step-num">3</div>
-        <span class="step-label">Confirmação</span>
-      </div>
-    </div>
-    <!-- ETAPA 1: REVISÃO -->
-    <div class="etapa" id="etapa-revisao">
-      <div id="lista-carrinho"></div>
-      <div class="total-bar">
-        <span>Total</span>
-        <span id="total-carrinho">R$ 0,00</span>
-      </div>
-      <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
-      <div style="padding:16px 0 24px;display:flex;flex-direction:column;gap:10px;">
-        <!-- BOTÃO PRINCIPAL: Avançar para preencher dados -->
-        <div class="barra-acao barra-verde">
-          <span style="width:44px;"></span>
-          <span class="barra-texto">✅ Preencher Dados e Confirmar</span>
-          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Preencher Dados e Confirmar">▶</button>
-        </div>
-        <!-- BOTÃO SECUNDÁRIO: Continuar adicionando produtos -->
-        <div class="barra-acao barra-cinza-claro">
-          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-continuar-comprando" title="Continuar Comprando">←</button>
-          <span class="barra-texto" style="color:#333">← Continuar Adicionando Produtos</span>
-          <span style="width:44px;"></span>
-        </div>
-      </div>
-    </div>
-    <!-- ETAPA 2: DADOS PESSOAIS -->
-    <div class="etapa" id="etapa-dados">
-      <div id="resumo-pedido"></div>
-      <!-- Aviso de prazo -->
-      <div style="background:linear-gradient(135deg,#E65100,#FF6D00);color:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;">
-        <div style="font-size:1rem;font-weight:900;margin-bottom:6px;">⏰ IMPORTANTE — PRAZO DE PRODUÇÃO</div>
-        <div>Sua encomenda será <strong>produzida em até 3 dias úteis</strong> após a <strong>confirmação do pagamento</strong> via WhatsApp.</div>
-        <div style="margin-top:6px;font-size:0.8rem;opacity:0.9;">📲 Após enviar o pedido, aguarde o contato da sorveteria para confirmar e realizar o pagamento antecipado.</div>
-      </div>
-      <div class="form-grupo">
-        <label>👤 Seu Nome Completo *</label>
-        <input type="text" id="cliente-nome" placeholder="Ex: João da Silva" autocomplete="name" oninput="_nomeCliente=this.value; verificarFormulario()">
-      </div>
-      <div class="form-grupo">
-        <label>📱 Seu WhatsApp *</label>
-        <input type="text" id="cliente-tel" placeholder="Ex: (16) 99999-9999" autocomplete="tel" inputmode="tel" oninput="_telCliente=this.value; verificarFormulario()">
-      </div>
-      <div class="form-grupo">
-        <label>📍 Endereço para Entrega *</label>
-        <input type="text" id="cliente-endereco" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" autocomplete="street-address" oninput="_enderecoCliente=this.value; verificarFormulario()">
-      </div>
-      <div class="botoes-etapa-dados">
-        <!-- BOTÃO PRINCIPAL: Gerar pedido e enviar -->
-        <div class="barra-acao barra-verde" id="barra-btn-finalizar">
-          <span style="width:44px;"></span>
-          <span class="barra-texto" id="texto-btn-finalizar">📲 Gerar Pedido e Enviar via WhatsApp</span>
-          <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-finalizar" title="Gerar Pedido" disabled style="opacity:0.4;">✓</button>
-        </div>
-        <!-- DICA: campos obrigatórios -->
-        <div id="campos-obrigatorios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
-        <!-- BOTÃO VOLTAR: Revisar carrinho -->
-        <div class="barra-acao barra-azul">
-          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-etapa" title="Revisar Carrinho">←</button>
-          <span class="barra-texto">🛒 Revisar Carrinho</span>
-          <span style="width:44px;"></span>
-        </div>
-        <!-- BOTÃO CANCELAR: Fechar modal -->
-        <div class="barra-acao barra-cinza-claro">
-          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-sair-formulario" title="Cancelar">←</button>
-          <span class="barra-texto" style="color:#555">← Cancelar e Voltar às Encomendas</span>
-          <span style="width:44px;"></span>
-        </div>
-      </div>
-    </div>
-    <!-- ETAPA 3: CONFIRMAÇÃO -->
-    <div class="etapa" id="etapa-confirmacao">
-      <div class="confirmacao-box">
-        <div class="confirmacao-icon">🎉</div>
-        <div class="confirmacao-titulo">Pedido Confirmado!</div>
-        <div class="confirmacao-num">Nº do Pedido: <strong id="num-pedido"></strong></div>
-        <div style="font-size:0.82rem;color:#555;margin-top:4px;" id="data-pedido"></div>
-        <p style="font-size:1.05rem;color:#DC2626;font-weight:900;margin:18px auto 22px;text-align:center;line-height:1.6;padding:14px 18px;background:#FEF2F2;border:2.5px solid #DC2626;border-radius:12px;max-width:480px;">
-          📢 Clique abaixo para enviar seu pedido via WhatsApp.<br>Nossa equipe entrará em contato para confirmar o pagamento.
-        </p>
-        <!-- BOTÃO PRINCIPAL: Enviar via WhatsApp -->
-        <a href="#" id="link-whatsapp-final" target="_blank" rel="noopener" style="text-decoration:none;display:block;margin-bottom:10px;">
-          <div class="barra-acao barra-wpp" style="cursor:pointer;">
-            <span style="font-size:1.4rem;">📲</span>
-            <span class="barra-texto" style="font-size:1rem;font-weight:900;letter-spacing:0.5px;">ENVIAR PEDIDO VIA WHATSAPP</span>
-            <span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final" style="font-size:1.3rem;">▶</span>
-          </div>
-        </a>
-        <!-- BOTÃO SECUNDÁRIO: Fazer novo pedido -->
-        <div class="barra-acao barra-azul" style="cursor:pointer;" onclick="novoPedido()">
-          <span style="font-size:1.2rem;">🛒</span>
-          <span class="barra-texto">Fazer Novo Pedido</span>
-          <button type="button" class="btn-acao-redondo btn-azul" title="Novo Pedido" style="background:linear-gradient(135deg,#0D47A1,#1565C0);font-size:1.3rem;">+</button>
-        </div>
-        <!-- BOTÃO TERCIÁRIO: Voltar sem enviar -->
-        <div class="barra-acao barra-cinza-claro" style="margin-top:6px;">
-          <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-cardapio" title="Voltar">←</button>
-          <span class="barra-texto" style="color:#666;font-size:0.85rem;">← Voltar às Encomendas sem Enviar</span>
-          <span style="width:44px;"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="toast" id="toast"></div>
-<script src="scripts/products.js"></script>
-<script src="scripts/enc-v3.js"></script>
+
+    <script src="scripts/enc-v3.js"></script>
 </body>
 </html>
