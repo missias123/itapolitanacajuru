@@ -1038,40 +1038,41 @@ function abrirSabores(tipo,titulo,el){
   const sabores=getSaboresDisponiveis();
   sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   abrirModal('modal-sabores',el);
-}
-function abrirMilkshakeSabores(el){
-  document.getElementById('ms-titulo').textContent='🥤 Milkshakes – Tamanhos e Preços';
-  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+}function abrirMilkshakeSabores(el){
+  const container=el.closest('.acc-body');
+  let saboresDiv=container.querySelector('.sabores-expandidos');
+  if(saboresDiv){saboresDiv.remove();return;}
+  saboresDiv=document.createElement('div');saboresDiv.className='sabores-expandidos';
   const m=produtos&&produtos.milkshake?produtos.milkshake:{};
   const opcoes=[];
-  if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,p])=>opcoes.push(`Tradicional ${tam} – R$ ${p.toFixed(2).replace('.',',')}`))
-  if(m.top) Object.entries(m.top).forEach(([tam,p])=>opcoes.push(`Top ${tam} – R$ ${p.toFixed(2).replace('.',',')}`))
-  if(m.adicional_ovomaltine) opcoes.push(`+ Ovomaltine – R$ ${m.adicional_ovomaltine.toFixed(2).replace('.',',')}`);
-  opcoes.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  document.getElementById('ms-sub').textContent='Escolha o tamanho ao fazer seu pedido na loja';
-  abrirModal('modal-sabores',el);
+  if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,p])=>opcoes.push(`Tradicional ${tam} – R$ ${p.toFixed(2).replace('.',',')}`));
+  if(m.top) Object.entries(m.top).forEach(([tam,p])=>opcoes.push(`Top ${tam} – R$ ${p.toFixed(2).replace('.',',')}`));
+  if(m.adicional_ovomaltine) opcoes.push(`+ Ovomaltine – R$ ${m.adicional_ovomaltine.toFixed(2).replace('.',',')}`);  opcoes.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;saboresDiv.appendChild(sp);});
+  container.appendChild(saboresDiv);
 }
 function abrirTacasTradicionais(el){
-  document.getElementById('ms-titulo').textContent='🍨 Taças – 8 Opções';
-  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+  const container=el.closest('.acc-body');
+  let saboresDiv=container.querySelector('.sabores-expandidos');
+  if(saboresDiv){saboresDiv.remove();return;}
+  saboresDiv=document.createElement('div');saboresDiv.className='sabores-expandidos';
   const t=produtos&&produtos.tacas&&produtos.tacas.tradicionais?produtos.tacas.tradicionais:{};
   Object.entries(t).forEach(([nome,p])=>{
     const sp=document.createElement('span');sp.className='chip-sabor';
-    sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
+    sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;saboresDiv.appendChild(sp);
   });
-  document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
-  abrirModal('modal-sabores',el);
+  container.appendChild(saboresDiv);
 }
 function abrirTacasSujas(el){
-  document.getElementById('ms-titulo').textContent='🏆 Taças Premium (Sujas) – 7 Opções';
-  const chips=document.getElementById('ms-chips');chips.innerHTML='';
+  const container=el.closest('.acc-body');
+  let saboresDiv=container.querySelector('.sabores-expandidos');
+  if(saboresDiv){saboresDiv.remove();return;}
+  saboresDiv=document.createElement('div');saboresDiv.className='sabores-expandidos';
   const t=produtos&&produtos.tacas&&produtos.tacas.sujas?produtos.tacas.sujas:{};
   Object.entries(t).forEach(([nome,p])=>{
     const sp=document.createElement('span');sp.className='chip-sabor';
-    sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
+    sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;saboresDiv.appendChild(sp);
   });
-  document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
-  abrirModal('modal-sabores',el);
+  container.appendChild(saboresDiv);
 }
 function abrirPicolé(key,nome,el){
   document.getElementById('mp-titulo').textContent=`🍭 Sabores – ${nome}`;
