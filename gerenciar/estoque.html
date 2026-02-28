@@ -724,7 +724,8 @@ function renderPicklesAdmin() {
 function alterarEstoquePickle(sabor, delta) {
   const dados = getEstoquePickles();
   let qtd = dados[sabor] || 0;
-  qtd = Math.max(0, Math.min(200, qtd + delta));
+  // TRAVA ADMIN: Estoque máximo de 100 unidades
+  qtd = Math.max(0, Math.min(100, qtd + delta));
   dados[sabor] = qtd;
   salvarEstoquePickles(dados);
 }

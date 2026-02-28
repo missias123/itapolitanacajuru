@@ -486,13 +486,26 @@ function qtdPickle(sabor, delta) {
   if (!selecoesPickle[sabor]) selecoesPickle[sabor] = 0;
   const nova = selecoesPickle[sabor] + delta;
   if (nova < 0) return;
-  // Verificar limite global de 250
+
+  // TRAVA 1: Limite de 25 unidades por sabor
+  if (delta > 0 && nova > 25) {
+    showToast(`⚠️ Limite excedido de sabores!`, 'alerta');
+    // Forçar o valor a 25 caso algo tenha passado
+    selecoesPickle[sabor] = 25;
+    const elFix = document.getElementById(`pqty-${sabor.replace(/\s+/g,'_')}`);
+    if (elFix) elFix.textContent = 25;
+    atualizarTotalPickle();
+    return;
+  }
+
+  // TRAVA 2: Verificar limite global de 250
   const totalGlobal = totalPickleGlobal();
   const diff = nova - (selecoesPickle[sabor] || 0);
   if (totalGlobal + diff > MAX_PICOLES) {
     showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalGlobal}.`, 'alerta');
     return;
   }
+
   selecoesPickle[sabor] = nova;
   // Atualizar o global
   const chave = picoleAtual.id + '::' + sabor;
@@ -980,14 +993,29 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   // que o usuário saia da página ao abrir o WhatsApp
   const caixas = getCaixasEncomenda();
   const tortas = getTortasEncomenda();
+  const estoquePicoles = typeof getEstoquePickles === 'function' ? getEstoquePickles() : JSON.parse(localStorage.getItem('itap_estoque_picoles') || '{}');
+
   carrinho.forEach(item => {
+    // Baixa de Caixas
     const cx = caixas.find(c => c.id === item.id);
     if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
+    
+    // Baixa de Tortas
     const tr = tortas.find(t => t.id === item.id);
     if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
+
+    // BAIXA DE PICOLÉS (POR SABOR)
+    if (item.tipo === 'picolé') {
+      const sabor = item.nome; // O nome do item no carrinho de picolé é o sabor
+      if (estoquePicoles[sabor] !== undefined) {
+        estoquePicoles[sabor] = Math.max(0, estoquePicoles[sabor] - item.quantidade);
+      }
+    }
   });
+
   localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
   localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
+  localStorage.setItem('itap_estoque_picoles', JSON.stringify(estoquePicoles));
   // Esvaziar carrinho imediatamente
   carrinho.length = 0;
   atualizarBotaoCarrinho();
