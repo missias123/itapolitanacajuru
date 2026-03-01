@@ -286,10 +286,21 @@ function carregarFoto(input) {
   if (file.size > 5 * 1024 * 1024) { alert('Foto muito grande! Máximo 5MB.'); return; }
   const reader = new FileReader();
   reader.onload = e => {
-    document.getElementById('foto-preview').src = e.target.result;
-    document.getElementById('preview-wrap').style.display = 'block';
-    document.getElementById('upload-area').style.display = 'none';
-    atualizarPreview();
+    // Converter para WebP automaticamente
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 630;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 1200, 630);
+      const webpData = canvas.toDataURL('image/webp', 0.8);
+      document.getElementById('foto-preview').src = webpData;
+      document.getElementById('preview-wrap').style.display = 'block';
+      document.getElementById('upload-area').style.display = 'none';
+      atualizarPreview();
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
