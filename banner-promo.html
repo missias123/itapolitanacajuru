@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banner Promo - Picolé Azul</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .banner-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .popsicle-banner {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            border-radius: 40px 40px 20px 20px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 102, 255, 0.8),
+                        0 0 60px rgba(0, 102, 255, 0.5),
+                        0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .popsicle-banner:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Olhos */
+        .eye {
+            position: absolute;
+            width: 12px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 30px;
+        }
+
+        .eye-left {
+            left: 18px;
+            animation: blink 3s ease-in-out infinite;
+        }
+
+        .eye-right {
+            right: 18px;
+            animation: blink 3s ease-in-out infinite 0.5s;
+        }
+
+        .pupil {
+            width: 6px;
+            height: 8px;
+            background: #0066ff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Boca */
+        .mouth {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid white;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            animation: smile 2s ease-in-out infinite;
+        }
+
+        /* Palito */
+        .stick {
+            position: absolute;
+            width: 12px;
+            height: 30px;
+            background: linear-gradient(90deg, #d4a574 0%, #c19a6b 50%, #d4a574 100%);
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 6px;
+            box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Texto PROMO */
+        .promo-text {
+            position: absolute;
+            bottom: -55px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-weight: 900;
+            font-size: 12px;
+            color: #0066ff;
+            text-shadow: 0 0 10px rgba(0, 102, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        /* Animações */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 30px rgba(0, 102, 255, 0.8),
+                            0 0 60px rgba(0, 102, 255, 0.5),
+                            0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(0, 102, 255, 1),
+                            0 0 80px rgba(0, 102, 255, 0.7),
+                            0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% {
+                height: 16px;
+            }
+            95% {
+                height: 2px;
+            }
+        }
+
+        @keyframes smile {
+            0%, 100% {
+                border-radius: 0 0 20px 20px;
+                height: 10px;
+            }
+            50% {
+                border-radius: 0 0 25px 25px;
+                height: 12px;
+            }
+        }
+
+        /* Responsivo para celular */
+        @media (max-width: 768px) {
+            .banner-container {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .popsicle-banner {
+                width: 70px;
+                height: 105px;
+            }
+
+            .eye {
+                width: 10px;
+                height: 14px;
+                top: 25px;
+            }
+
+            .eye-left {
+                left: 15px;
+            }
+
+            .eye-right {
+                right: 15px;
+            }
+
+            .mouth {
+                width: 18px;
+                height: 8px;
+                bottom: 20px;
+            }
+
+            .promo-text {
+                font-size: 10px;
+                bottom: -50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .banner-container {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .popsicle-banner {
+                width: 60px;
+                height: 90px;
+            }
+
+            .eye {
+                width: 8px;
+                height: 12px;
+                top: 20px;
+            }
+
+            .eye-left {
+                left: 12px;
+            }
+
+            .eye-right {
+                right: 12px;
+            }
+
+            .mouth {
+                width: 15px;
+                height: 7px;
+                bottom: 18px;
+            }
+
+            .promo-text {
+                font-size: 9px;
+                bottom: -45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="popsicle-banner" onclick="window.location.href='https://itapolitanacajuru.com.br/promocao.html'">
+            <div class="eye eye-left">
+                <div class="pupil"></div>
+            </div>
+            <div class="eye eye-right">
+                <div class="pupil"></div>
+            </div>
+            <div class="mouth"></div>
+            <div class="stick"></div>
+            <div class="promo-text">PROMO</div>
+        </div>
+    </div>
+</body>
+</html>
