@@ -84,5 +84,76 @@ function esgotarSabor(categoria, sabor, elemento) {
         produtos[categoria].sabores.splice(index, 1);
     }
     elemento.parentElement.style.display = 'none';
+
+// Sincronização Automática com GitHub
+async function sincronizarComGitHub() {
+  const token = localStorage.getItem('github_token');
+  const owner = 'missias123';
+  const repo = 'itapolitanacajuru';
+  const branch = 'main';
+  
+  // Converter dados para JSON
+  const conteudo = JSON.stringify(produtos, null, 2);
+  const contentBase64 = btoa(conteudo);
+  
+  try {
+    // Obter SHA do arquivo atual
+    const resGet = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/dados/produtos.json?ref=${branch}`,
+      { headers: { 'Authorization': `token ${token}` } }
+    );
+    const fileData = await resGet.json();
+    
+    // Fazer commit com os novos dados
+    const resCommit = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/dados/produtos.json`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Admin: Atualização automática de preços e estoque',
+          content: contentBase64,
+          sha: fileData.sha,
+          branch: branch
+        })
+      }
+    );
+    
+    if (resCommit.ok) {
+      console.log('✅ Sincronização com GitHub realizada com sucesso!');
+      // Limpar cache do site para atualização instantânea
+      fetch('/', { cache: 'no-store' });
+      return true;
+    } else {
+      console.error('❌ Erro ao sincronizar:', resCommit.statusText);
+      return false;
+    }
+  } catch (erro) {
+    console.error('❌ Erro na sincronização:', erro);
+    return false;
+  }
+}
+
+// Modificar função salvarProduto para incluir sincronização
+function salvarProdutoComSync(categoria, produto, elemento) {
+  const card = elemento.parentElement;
+  const preco = card.querySelector("input[type=\"number\"]").value;
+  const estoque = card.querySelector("input[type=\"number\"]").value;
+  
+  produtos[categoria][produto].preco = parseFloat(preco);
+  produtos[categoria][produto].estoque = parseInt(estoque);
+  
+  // Sincronizar com GitHub
+  sincronizarComGitHub().then(sucesso => {
+    if (sucesso) {
+      alert(`✅ ${produto.replace(/_/g, ' ')} salvo e sincronizado!`);
+    } else {
+      alert(`⚠️ ${produto.replace(/_/g, ' ')} salvo localmente, mas falhou sincronização.`);
+    }
+  });
+}
     alert(`Sabor ${sabor} esgotado!`);
 }
