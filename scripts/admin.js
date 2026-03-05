@@ -23,7 +23,7 @@ function initializeDatabase() {
             settings: {
                 storeName: 'Sorveteria Itapolitana',
                 address: 'Pça Lgo São Bento, 311 - Centro, Cajuru/SP',
-                phone: '(16) 99147-2045',
+                phone: '(16) 99606-2046',
                 hours: 'Seg-Dom: 10h às 22h',
                 regions: masterConfig ? masterConfig.seo.cities : ['Cajuru', 'Santa Cruz da Esperança', 'Cássia dos Coqueiros'],
                 pickupDays: 'Após 3 dias úteis',
