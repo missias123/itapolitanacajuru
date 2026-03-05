@@ -129,7 +129,7 @@ function checkLogin(){
       }catch(e){problemas.push('Redeploy falhou: '+e.message);}
       const hora=new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
       const msg='\u{1F198} *SOS Itapolitana Admin*\n'+hora+'\n\n'+(problemas.length===0?'\u2705 Tudo OK. Site funcionando normalmente.':'\u26A0\uFE0F Corrigido:\n'+problemas.map(p=>'\u2022 '+p).join('\n'))+(redeployOk?'\n\n\uD83D\uDD04 Redeploy acionado.':'');
-      const wppUrl='https://wa.me/5516996291903?text='+encodeURIComponent(msg);
+      const wppUrl='https://wa.me/5516996062046?text='+encodeURIComponent(msg);
       setTimeout(()=>{
         d.style.background=problemas.length?'#D97706':'#16A34A';
         d.innerHTML=(problemas.length?'\u26A0\uFE0F SOS: '+problemas.length+' problema(s) corrigido(s). ':'\u2705 SOS: Tudo OK! ')+(redeployOk?'\uD83D\uDD04 Redeploy acionado. ':'')+'<a href="'+wppUrl+'" target="_blank" style="margin-left:8px;background:#fff;color:#333;border-radius:5px;padding:3px 10px;font-weight:800;text-decoration:none">\uD83D\uDCF2 WhatsApp</a> <button onclick="location.reload()" style="margin-left:6px;background:rgba(255,255,255,.3);color:#fff;border:none;border-radius:5px;padding:3px 10px;font-weight:800;cursor:pointer">Recarregar</button>';

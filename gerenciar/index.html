@@ -377,7 +377,7 @@ function checkLogin() {
       const hora = new Date().toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'});
       const status = problemas.length === 0 ? 'Tudo OK' : problemas.join(' | ');
       const msg = '🆘 *SOS Itapolitana Admin*\n' + hora + '\n\n' + (problemas.length === 0 ? '✅ Nenhum problema encontrado. Site funcionando normalmente.' : '⚠️ Problemas detectados e corrigidos:\n' + problemas.map(p=>'• '+p).join('\n')) + (redeployOk ? '\n\n🔄 Redeploy do site acionado com sucesso.' : '');
-      const wppUrl = 'https://wa.me/5516996291903?text=' + encodeURIComponent(msg);
+      const wppUrl = 'https://wa.me/5516996062046?text=' + encodeURIComponent(msg);
       // 5. Exibir resultado
       setTimeout(() => {
         if (problemas.length === 0) {
@@ -1329,7 +1329,7 @@ function enviarRelato() {
   ].join('%0A');
 
   // Enviar via WhatsApp
-  const wppUrl = 'https://wa.me/5516991472045?text=' + encodeURIComponent(
+  const wppUrl = 'https://wa.me/5516996062046?text=' + encodeURIComponent(
     '🚨 RELATO DE ERRO — ADMIN ITAPOLITANA\n\n' +
     'Erro: ' + texto + '\n\n' +
     'Erros detectados: ' + (_diagErros.length ? _diagErros.join(', ') : 'nenhum') + '\n' +

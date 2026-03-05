@@ -1023,7 +1023,7 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   // Atualizar o link WhatsApp (apenas o href, sem onclick)
   const linkWpp = document.getElementById('link-whatsapp-final');
   if (linkWpp) {
-    linkWpp.href = `https://wa.me/5516991472045?text=${encodeURIComponent(msg)}`;
+    linkWpp.href = `https://wa.me/5516996062046?text=${encodeURIComponent(msg)}`;
   }
   mostrarEtapa('confirmacao');
   } catch(e) {
