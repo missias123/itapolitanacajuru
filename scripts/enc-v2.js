@@ -921,123 +921,123 @@ function finalizarPedido() {
   // SISTEMA DE NUMERAÇÃO DE PEDIDOS
   // Formato: ITA-001-250225 (prefixo + sequência diária + data compacta)
   // Sequência reinicia todo dia — armazenada no localStorage por data
+  let numPedido = `ITA-${Date.now().toString().slice(-6)}-${dd}${mm}${String(aaaa).slice(2)}`;
   try {
     const dataChave = `${dd}${mm}${String(aaaa).slice(2)}`; // ex: 250225
     const chaveSeq = `itap_seq_${dataChave}`;
     const seq = parseInt(localStorage.getItem(chaveSeq) || '0') + 1;
     localStorage.setItem(chaveSeq, seq.toString());
     const seqStr = String(seq).padStart(3, '0');
-    const numPedido = `ITA-${seqStr}-${dataChave}`;
-    _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
+    numPedido = `ITA-${seqStr}-${dataChave}`;
   } catch(e) {
+    console.warn('[ITAP] Erro ao gerar sequência, usando fallback temporal:', e);
+  }
+  
+  // EXECUTAR CONCLUSÃO COM PROTEÇÃO GLOBAL
+  try {
+    _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
+  } catch(err) {
+    console.error('[ITAP] Erro crítico na conclusão:', err);
     _resetBtnFinalizar();
-    showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
+    showToast('⚠️ Erro ao processar pedido. Tente novamente.', 'alerta');
   }
 }
 function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
   try {
-  let total = 0;
-  let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
-  msg += `🔢 *Pedido Nº:* ${numPedido}\n📅 *Data:* ${dataFormatada}\n\n`;
-  msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n📍 *Endereço:* ${end}\n\n`;
-  msg += `📦 *ITENS:*\n`;
-  carrinho.forEach(item => {
-    const sub = item.preco * item.quantidade;
-    total += sub;
-    // Regra global: todo produto mostra tipo + nome + sabores
-    if (item.tipo === 'picolé' && item.nomeTipo) {
-      msg += `\n▶ *${item.nomeTipo} — ${item.nome}* (${item.quantidade} un.)\n`;
-    } else if (item.tipo === 'sorvete') {
-      msg += `\n▶ *Sorvete — ${item.nome}* (${item.quantidade} un.)\n`;
-      if (item.sabores && item.sabores.length > 0) {
-        item.sabores.forEach(s => msg += `   • ${s}\n`);
-      }
-    } else if (item.tipo === 'acrescimo') {
-      msg += `\n▶ *Acréscimo — ${item.nome}* (${item.quantidade} un.)\n`;
-    } else {
-      msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
-      if (item.sabores && item.sabores.length > 0) {
-        item.sabores.forEach(s => msg += `   • ${s}\n`);
-      }
-    }
-    msg += `   Subtotal: R$ ${sub.toFixed(2).replace('.',',')}\n`;
-  });
-  msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
-  msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
-  msg += `📍 Retirada na loja em Cajuru/SP`;
-  // Salvar pedido no localStorage para o Admin visualizar
-  try {
-    const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
-    pedidos.unshift({
-      num: numPedido,
-      data: new Date().toLocaleString('pt-BR'),
-      nome: nome,
-      tel: tel,
-      endereco: end,
-      itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preco: i.preco, tipo: i.tipo || 'sorvete' })),
-      total: total,
-      status: 'novo'
-    });
-    if (pedidos.length > 50) pedidos.length = 50;
-    localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
-  } catch(e) { console.warn('Erro ao salvar pedido:', e); }
-  const numEl = document.getElementById('num-pedido');
-  if (numEl) numEl.textContent = numPedido;
-  const dataEl = document.getElementById('data-pedido');
-  if (dataEl) dataEl.textContent = `📅 Data: ${dataFormatada}`;
-
-  // Atualizar o href do link WhatsApp diretamente (evita bloqueio de popup)
-  // ESVAZIAR CARRINHO E REDUZIR ESTOQUE IMEDIATAMENTE
-  // Feito aqui (antes de mostrar a tela de confirmação) para
-  // garantir que o estoque e carrinho sejam atualizados mesmo
-  // que o usuário saia da página ao abrir o WhatsApp
-  const caixas = getCaixasEncomenda();
-  const tortas = getTortasEncomenda();
-  const estoquePicoles = typeof getEstoquePickles === 'function' ? getEstoquePickles() : JSON.parse(localStorage.getItem('itap_estoque_picoles') || '{}');
-
-  carrinho.forEach(item => {
-    // Baixa de Caixas
-    const cx = caixas.find(c => c.id === item.id);
-    if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
+    let total = 0;
+    let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
+    msg += `🔢 *Pedido Nº:* ${numPedido}\n📅 *Data:* ${dataFormatada}\n\n`;
+    msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n📍 *Endereço:* ${end}\n\n`;
+    msg += `📦 *ITENS:*\n`;
     
-    // Baixa de Tortas
-    const tr = tortas.find(t => t.id === item.id);
-    if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
-
-    // BAIXA DE PICOLÉS (POR SABOR)
-    if (item.tipo === 'picolé') {
-      const sabor = item.nome; // O nome do item no carrinho de picolé é o sabor
-      if (estoquePicoles[sabor] !== undefined) {
-        estoquePicoles[sabor] = Math.max(0, estoquePicoles[sabor] - item.quantidade);
+    carrinho.forEach(item => {
+      const sub = item.preco * item.quantidade;
+      total += sub;
+      if (item.tipo === 'picolé' && item.nomeTipo) {
+        msg += `\n▶ *${item.nomeTipo} — ${item.nome}* (${item.quantidade} un.)\n`;
+      } else if (item.tipo === 'sorvete') {
+        msg += `\n▶ *Sorvete — ${item.nome}* (${item.quantidade} un.)\n`;
+        if (item.sabores && item.sabores.length > 0) {
+          item.sabores.forEach(s => msg += `   • ${s}\n`);
+        }
+      } else if (item.tipo === 'acrescimo') {
+        msg += `\n▶ *Acréscimo — ${item.nome}* (${item.quantidade} un.)\n`;
+      } else {
+        msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
+        if (item.sabores && item.sabores.length > 0) {
+          item.sabores.forEach(s => msg += `   • ${s}\n`);
+        }
       }
-    }
-  });
+      msg += `   Subtotal: R$ ${sub.toFixed(2).replace('.',',')}\n`;
+    });
+    
+    msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
+    msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
+    msg += `📍 Retirada na loja em Cajuru/SP`;
 
-  localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
-  localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
-  localStorage.setItem('itap_estoque_picoles', JSON.stringify(estoquePicoles));
-  // Esvaziar carrinho imediatamente
-  carrinho.length = 0;
-  atualizarBotaoCarrinho();
+    // Salvar pedido no localStorage com proteção extra
+    try {
+      const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
+      pedidos.unshift({
+        num: numPedido,
+        data: new Date().toLocaleString('pt-BR'),
+        nome: nome,
+        tel: tel,
+        endereco: end,
+        itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preco: i.preco, tipo: i.tipo || 'sorvete' })),
+        total: total,
+        status: 'novo'
+      });
+      if (pedidos.length > 50) pedidos.length = 50;
+      localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
+    } catch(e) { console.warn('[ITAP] Erro ao salvar histórico:', e); }
 
-  // Atualizar o link WhatsApp (apenas o href, sem onclick)
-  const linkWpp = document.getElementById('link-whatsapp-final');
-  if (linkWpp) {
-    linkWpp.href = `https://wa.me/5516996062046?text=${encodeURIComponent(msg)}`;
-  }
-  mostrarEtapa('confirmacao');
-  } catch(e) {
-    console.error('[ITAP] Erro ao concluir pedido:', e);
+    const numEl = document.getElementById('num-pedido');
+    if (numEl) numEl.textContent = numPedido;
+    const dataEl = document.getElementById('data-pedido');
+    if (dataEl) dataEl.textContent = `📅 Data: ${dataFormatada}`;
+
+    // BAIXA DE ESTOQUE COM PROTEÇÃO
+    try {
+      const caixas = getCaixasEncomenda();
+      const tortas = getTortasEncomenda();
+      const estoquePicoles = typeof getEstoquePickles === 'function' ? getEstoquePickles() : JSON.parse(localStorage.getItem('itap_estoque_picoles') || '{}');
+      
+      carrinho.forEach(item => {
+        const cx = caixas.find(c => c.id === item.id);
+        if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
+        const tr = tortas.find(t => t.id === item.id);
+        if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
+        if (item.tipo === 'picolé') {
+          const sabor = item.nome;
+          if (estoquePicoles[sabor] !== undefined) {
+            estoquePicoles[sabor] = Math.max(0, estoquePicoles[sabor] - item.quantidade);
+          }
+        }
+      });
+      
+      localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
+      localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
+      localStorage.setItem('itap_estoque_picoles', JSON.stringify(estoquePicoles));
+    } catch(e) { console.warn('[ITAP] Erro ao atualizar estoque:', e); }
+
+    // Esvaziar carrinho e resetar botões
+    carrinho.length = 0;
+    atualizarBotaoCarrinho();
+    
+    // Reset visual do botão de finalizar (Garantia de reset)
     if (typeof _resetBtn === 'function') _resetBtn();
-    else {
-      const btnFin = document.getElementById('btn-finalizar');
-      if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
-      const textoBtn = document.getElementById('texto-btn-finalizar');
-      if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
-      const barra = document.getElementById('barra-btn-finalizar');
-      if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
+
+    const linkWpp = document.getElementById('link-whatsapp-final');
+    if (linkWpp) {
+      linkWpp.href = `https://wa.me/5516996062046?text=${encodeURIComponent(msg)}`;
     }
-    showToast('⚠️ Erro ao gerar pedido. Tente novamente.', 'alerta');
+    
+    mostrarEtapa('confirmacao');
+  } catch(e) {
+    console.error('[ITAP] Erro crítico na conclusão:', e);
+    if (typeof _resetBtn === 'function') _resetBtn();
+    showToast('⚠️ Erro ao finalizar pedido. Tente novamente.', 'alerta');
   }
 }
 
