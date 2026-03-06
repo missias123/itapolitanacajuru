@@ -1045,6 +1045,15 @@ function novoPedido() {
   carrinho = [];
   fecharCarrinho();
   atualizarBotaoCarrinho();
+  
+  // RESET TÉCNICO DO BOTÃO DE FINALIZAR (Correção para múltiplos pedidos)
+  const btnFin = document.getElementById('btn-finalizar');
+  const textoBtn = document.getElementById('texto-btn-finalizar');
+  const barra = document.getElementById('barra-btn-finalizar');
+  if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
+  if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
+  if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
+  
   window.scrollTo({ top: 0, behavior: 'smooth' });
   showToast('✅ Novo pedido iniciado! Carrinho limpo.','sucesso');
 }
