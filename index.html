@@ -58,7 +58,11 @@
 <html lang="pt-BR">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="preload" href="css/design-system.css" as="style">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <link rel="preload" href="css/design-system.css" as="style">
     <link rel="preload" href="css/estilo-encomendas.css" as="style">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" as="style">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -1556,8 +1560,14 @@ document.addEventListener('DOMContentLoaded',()=>{
         document.getElementById('clima-rodape').style.display='flex';
       })
       .catch(()=>{
-        document.getElementById('clima-loading').textContent='🌤️ Clima indisponível no momento';
-      });
+	        const loadingEl = document.getElementById('clima-loading');
+	        if (loadingEl) {
+	          loadingEl.innerHTML = '🌤️ <strong>Clima de Cajuru</strong><br><small>Indisponível no momento</small>';
+	          loadingEl.style.padding = '15px';
+	          loadingEl.style.background = 'rgba(255,255,255,0.1)';
+	          loadingEl.style.borderRadius = '12px';
+	        }
+	      });
   }
   carregarClima();
   setInterval(carregarClima, 600000); // atualiza a cada 10 min
@@ -1613,7 +1623,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div id="promo-fab-inner">
     <div id="promo-fab-txt">
       <span id="promo-fab-label">🎉 SORTEIO!</span>
-      <span id="promo-fab-timer">⏳ carregando...</span>
+	      <span id="promo-fab-timer">⏳ Ver detalhes</span>
     </div>
   </div>
   <div id="promo-fab-arrow">▼ VER PROMOÇÃO</div>
@@ -1631,8 +1641,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   function tick(){
     var diff = fim - Date.now();
     var el = document.getElementById('promo-fab-timer');
-    if(!el) return;
-    if(diff <= 0){ fab.style.display='none'; return; }
+	    if(!el) return;
+	    if(isNaN(fim) || diff <= 0){ fab.style.display='none'; return; }
     var d=Math.floor(diff/86400000);
     var h=Math.floor((diff%86400000)/3600000);
     var m=Math.floor((diff%3600000)/60000);
