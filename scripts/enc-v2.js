@@ -897,6 +897,11 @@ function finalizarPedido() {
   if (!tel  || tel.length  < 8) { showToast('⚠️ Preencha seu WhatsApp com DDD.', 'alerta'); return; }
   if (!end  || end.length  < 5) { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
   if (carrinho.length === 0)    { showToast('⚠️ Carrinho vazio! Adicione produtos.', 'alerta'); return; }
+  // Validação de prazo mínimo (72 horas = 3 dias úteis)
+  const agoraValidacao = new Date();
+  const prazMinimo = new Date(agoraValidacao.getTime() + 72 * 60 * 60 * 1000);
+  const prazMinimoFormatado = prazMinimo.toLocaleDateString('pt-BR');
+  showToast(`⏰ Encomenda será produzida a partir de ${prazMinimoFormatado}`, 'info');
   // === LOADING STATE: bloquear duplo clique e mostrar progresso ===
   const btnFin = document.getElementById('btn-finalizar');
   const textoBtn = document.getElementById('texto-btn-finalizar');
@@ -973,7 +978,29 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     
     msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
     msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
-    msg += `📍 Retirada na loja em Cajuru/SP`;
+    msg += `📍 Retirada na loja em Cajuru/SP\n\n`;
+    msg += `🔗 Acesse: https://itapolitanacajuru.com.br/encomendas.html`;
+    
+    // ENVIO DE E-MAIL INTERNO (Fallback quando WhatsApp não funcionar)
+    const emailPayload = {
+      _subject: `[ITAPOLITANA] Novo Pedido - ${numPedido}`,
+      _from_name: nome,
+      _from_email: 'pedidos@itapolitanacajuru.com.br',
+      pedido_numero: numPedido,
+      cliente_nome: nome,
+      cliente_whatsapp: tel,
+      cliente_endereco: end,
+      data_pedido: dataFormatada,
+      total: total.toFixed(2),
+      mensagem_resumo: msg
+    };
+    
+    // Tentar enviar e-mail (não bloqueia o fluxo WhatsApp)
+    fetch('https://formspree.io/f/xyzabc123', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(emailPayload)
+    }).catch(e => console.warn('[ITAP] E-mail interno não enviado (fallback WhatsApp ativo):', e));
 
     // Salvar pedido no localStorage com proteção extra
     try {
