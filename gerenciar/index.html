@@ -298,10 +298,10 @@ function onBannerChange(input) {
     
     // Usar SmartCrop para sugerir o melhor enquadramento automaticamente
     image.onload = () => {
-      smartcrop.crop(image, { width: 1200, height: 240 }).then(function(result) {
+      smartcrop.crop(image, { width: 1200, height: 450 }).then(function(result) {
         const crop = result.topCrop;
         cropper = new Cropper(image, {
-          aspectRatio: 1200 / 240,
+          aspectRatio: 1200 / 450,
           viewMode: 1,
           responsive: true,
           ready() {
@@ -326,7 +326,7 @@ function onBannerChange(input) {
     document.getElementById('btn-confirm-crop').onclick = async () => {
       const canvas = cropper.getCroppedCanvas({
         width: 1200,
-        height: 240,
+        height: 450,
         imageSmoothingEnabled: true,
         imageSmoothingQuality: 'high'
       });
@@ -579,8 +579,8 @@ function renderAdmin() {
       <img loading="lazy" src="${bannerSrc}" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.style.display='none'">
     </div>
     <div style="background:#EDE9FE;border:1px solid #C4B5FD;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#5B21B6;font-weight:700;line-height:1.6">
-      📐 <strong>Tamanho ideal:</strong> 1200 × 240 px (paisagem larga)<br>
-      📱 Aparece no topo do cardápio com altura máxima de 240 px<br>
+      📐 <strong>Tamanho ideal:</strong> 1200 × 450 px (promocional)<br>
+      📱 Aparece no topo do cardápio com altura de até 450 px<br>
       ✅ <strong>Formatos aceitos:</strong> WEBP (recomendado), JPG ou PNG<br>
       ⚖️ <strong>Peso máximo:</strong> 500 KB (para não travar o site)
     </div>
