@@ -19,6 +19,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin – Itapolitana Cajuru</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
@@ -266,36 +268,85 @@ function onRemoverFoto(chave) {
   const acoes = document.getElementById('foto-acoes-' + chave);
   acoes.style.display = 'none';
 }
+let cropper = null;
+
 function onBannerChange(input) {
   const file = input.files[0];
   if (!file) return;
+  
   const reader = new FileReader();
-  reader.onload = async function(e) {
-    const imgBase64 = e.target.result;
-    const preview = document.getElementById('banner-preview-area');
-    if (preview) preview.innerHTML = `<img src="${imgBase64}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
-    const status = document.getElementById('banner-status');
-    if (status) status.textContent = '⏳ Publicando banner no site...';
-    // Limpa caches antigos antes de publicar novo banner
-    limparTodosCaches();
-    try {
-      let dadosAtuais = {};
-      try { const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
-      dadosAtuais.bannerImg = imgBase64;
-      const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},
-        body: JSON.stringify(dadosAtuais)
+  reader.onload = function(e) {
+    const modal = document.createElement('div');
+    modal.id = 'cropper-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:20px;width:100%;max-width:800px;text-align:center">
+        <h3 style="margin-bottom:15px;color:#6A0DAD">Ajuste o Enquadramento do Banner</h3>
+        <div style="max-height:60vh;overflow:hidden;margin-bottom:20px">
+          <img id="cropper-image" src="${e.target.result}" style="max-width:100%">
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <button type="button" id="btn-cancel-crop" style="padding:12px 24px;background:#F3F4F6;color:#374151;border:none;border-radius:10px;font-weight:700;cursor:pointer">Cancelar</button>
+          <button type="button" id="btn-confirm-crop" style="padding:12px 24px;background:#6A0DAD;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer">Confirmar e Publicar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const image = document.getElementById('cropper-image');
+    cropper = new Cropper(image, {
+      aspectRatio: 1200 / 240,
+      viewMode: 1,
+      autoCropArea: 1,
+      responsive: true
+    });
+
+    document.getElementById('btn-cancel-crop').onclick = () => {
+      modal.remove();
+      cropper.destroy();
+      input.value = '';
+    };
+
+    document.getElementById('btn-confirm-crop').onclick = async () => {
+      const canvas = cropper.getCroppedCanvas({
+        width: 1200,
+        height: 240,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
       });
-      const result = await resp.json();
-      if (result.status === 'ok') {
-        if (status) { status.textContent = '✅ Banner publicado no site para todos!'; setTimeout(() => status.textContent = '', 5000); }
-      } else {
-        if (status) status.textContent = '❌ Erro: ' + (result.error || 'desconhecido');
+
+      // Converter para WebP (ou PNG se não suportado)
+      const imgBase64 = canvas.toDataURL('image/webp', 0.9);
+      modal.remove();
+      cropper.destroy();
+
+      const preview = document.getElementById('banner-preview-area');
+      if (preview) preview.innerHTML = `<img src="${imgBase64}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
+      
+      const status = document.getElementById('banner-status');
+      if (status) status.textContent = '⏳ Publicando banner no site...';
+      
+      try {
+        let dadosAtuais = {};
+        try { const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
+        dadosAtuais.bannerImg = imgBase64;
+        
+        const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},
+          body: JSON.stringify(dadosAtuais)
+        });
+        
+        const result = await resp.json();
+        if (result.status === 'ok') {
+          if (status) { status.textContent = '✅ Banner publicado com sucesso!'; setTimeout(() => status.textContent = '', 5000); }
+        } else {
+          if (status) status.textContent = '❌ Erro: ' + (result.error || 'desconhecido');
+        }
+      } catch(err) {
+        if (status) status.textContent = '❌ Erro de conexão: ' + err.message;
       }
-    } catch(err) {
-      if (status) status.textContent = '❌ Erro de conexão: ' + err.message;
-    }
+    };
   };
   reader.readAsDataURL(file);
 }
