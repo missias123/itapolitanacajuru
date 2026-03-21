@@ -110,7 +110,15 @@
 <!-- PWA Manifest -->
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="images/logo.webp">
-<title>Sorveteria Itapolitana – Cajuru/SP | Sorvete Artesanal, Açaí e Encomendas</title>
+<title>Sorveteria Itapolitana – Cajuru/SP | 36 Sabores Artesanais</title>
+<meta name="description" content="Sorveteria Itapolitana em Cajuru/SP. 36 sabores artesanais, açaí, picolés e sobremesas geladas desde 2007. O sorvete mais cremoso da região!">
+<meta name="keywords" content="sorveteria cajuru, sorvete cajuru sp, açaí cajuru, itapolitana, sorvete artesanal cajuru, picolé atacado cajuru">
+<meta property="og:title" content="Sorveteria Itapolitana – Cajuru/SP">
+<meta property="og:description" content="O sorvete mais cremoso de Cajuru! 36 sabores artesanais desde 2007.">
+<meta property="og:image" content="https://itapolitanacajuru.com.br/images/banner-cardapio.webp">
+<meta property="og:url" content="https://itapolitanacajuru.com.br">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://itapolitanacajuru.com.br">te Artesanal, Açaí e Encomendas</title>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -676,7 +684,7 @@ img{max-width:100%;display:block}
       <p>Feito com ingredientes selecionados, cremoso na medida certa, gelado do jeito que você ama. Cada colherada é uma viagem de volta à infância. Desde 2007 fazendo sorrisos em Cajuru e região.</p>
       <button type="button" class="hero-chat-btn" onclick="abrirFaleConosco()">💬 Fale Conosco</button>
       <br>
-      <button type="button" class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})">
+      <button type="button" class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})" aria-label="Ver sabores de sorvete artesanal">
         🍦 Quero Ver os Sabores!
       </button>
     </div>
@@ -1577,18 +1585,22 @@ document.addEventListener('DOMContentLoaded',()=>{
 (function(){
   function atualizarRelogio(){
     const agora = new Date();
-    const h = String(agora.getHours()).padStart(2,'0');
-    const m = String(agora.getMinutes()).padStart(2,'0');
-    const s = String(agora.getSeconds()).padStart(2,'0');
+    const options = { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const horaSP = agora.toLocaleTimeString('pt-BR', options);
+    
     const diasSemana = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
     const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-    const dia = diasSemana[agora.getDay()];
-    const d = String(agora.getDate()).padStart(2,'0');
-    const mes = meses[agora.getMonth()];
-    const ano = agora.getFullYear();
+    
+    // Ajustar data para o fuso de SP
+    const dataSP = new Date(agora.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    const dia = diasSemana[dataSP.getDay()];
+    const d = String(dataSP.getDate()).padStart(2,'0');
+    const mes = meses[dataSP.getMonth()];
+    const ano = dataSP.getFullYear();
+    
     const elHora = document.getElementById('relogio-hora');
     const elData = document.getElementById('relogio-data');
-    if(elHora) elHora.textContent = h+':'+m+':'+s;
+    if(elHora) elHora.textContent = horaSP;
     if(elData) elData.textContent = dia+', '+d+' de '+mes+' de '+ano;
   }
   atualizarRelogio();
@@ -1689,7 +1701,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 </style>
 <!-- LOGO FIXA CENTRAL -->
 <!-- BOTAO ADMIN FLUTUANTE -->
-<a id="admin-fab" href="/gerenciar/" title="Área Administrativa">⚙ Admin</a>
+<a id="admin-fab" href="/gerenciar/" title="Área Administrativa" style="display:none">⚙ Admin</a>
+<script>
+  // Só exibe o botão de admin se estiver logado (simulação simples baseada em sessionStorage)
+  if (sessionStorage.getItem('itap_admin_logged') === 'true') {
+    document.getElementById('admin-fab').style.display = 'flex';
+  }
+</script>
 <a id="promo-fab" href="promocao.html" title="Ver Promoção do Mês">
   <div id="promo-fab-inner">
     <div id="promo-fab-txt">
@@ -1703,7 +1721,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 (function(){
   // ✏️ EDITE AQUI PARA TROCAR A PROMOÇÃO
   var PROMO_ATIVO   = true;                        // false = esconde o botão
-  var PROMO_DATA_FIM = '2026-02-28T23:59:00-03:00'; // data/hora de encerramento
+  var PROMO_DATA_FIM = '2026-03-31T23:59:59-03:00'; // data/hora de encerramento
   // =========================================================
   var fab = document.getElementById('promo-fab');
   if(!PROMO_ATIVO){ fab.style.display='none'; return; }
