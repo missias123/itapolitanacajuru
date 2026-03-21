@@ -1,0 +1,23 @@
+
+# admin/.htaccess
+Options -Indexes
+
+# Proteção de arquivos sensíveis
+<FilesMatch "\.(json|sql|log|env|ini|sh|bak)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Configurações de PHP
+<IfModule mod_php.c>
+    php_flag display_errors Off
+    php_value max_execution_time 300
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+</IfModule>
+
+# Roteamento para a API
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)$ api/index.php [QSA,L]
