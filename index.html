@@ -1163,10 +1163,20 @@ function abrirSabores(tipo,titulo,el){
   sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   abrirModal('modal-sabores',el);
 }function abrirMilkshakeSabores(el){
-  document.getElementById('ms-titulo').textContent='🥤 Milkshakes – 36 Sabores';
+  const sabores = getSaboresDisponiveis();
+  const total = sabores.length || 36;
+  document.getElementById('ms-titulo').textContent=`🥤 Milkshakes – ${total} Sabores`;
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
-  const saboresMilk=['Chocolate','Morango','Baunilha','Pistache','Café','Amendoim','Caramelo','Doce de Leite','Goiaba','Caju','Açaí','Mirtilo','Framboesa','Maracujá','Abacaxi','Banana','Melancia','Melão','Coco','Leite Ninho','Ovomaltine','Nutella','Kinder','Sonho de Valsa','Prestígio','Bis','Negresco','Paçoca','Brigadeiro','Beijinho','Romeu e Julieta','Torta de Chocolate','Torta de Morango','Mousse de Chocolate','Pavê','Tiramisu'];
-  saboresMilk.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  
+  // Sincronizado: Usa os mesmos sabores das caixas de sorvete
+  if(sabores.length > 0) {
+    sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  } else {
+    // Fallback caso a lista esteja vazia
+    const fallback=['Chocolate','Morango','Creme','Flocos','Leite Ninho','Ovomaltine','Nutella','Sensação','Prestígio','Milho Verde','Coco','Abacaxi'];
+    fallback.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  }
+  
   document.getElementById('ms-sub').textContent='Informe o sabor desejado ao fazer seu pedido na loja';
   abrirModal('modal-sabores',el);
 }
