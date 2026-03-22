@@ -205,14 +205,14 @@
     
     // Alvo: Dia 01 do próximo mês às 00:01
     // Se já passou das 00:01 do dia 01 atual, pula para o próximo mês
-    if (agora.getDate() > 1 || (agora.getDate() === 1 && (agora.getHours() > 0 || (agora.getHours() === 0 && agora.getMinutes() >= 1)))) {
+    if (agora.getDate() > 1 || (agora.getDate() === 1 && (agora.getHours() > 1 || (agora.getHours() === 1 && agora.getMinutes() >= 1)))) {
       mes++;
       if (mes > 11) { mes = 0; ano++; }
     }
     
-    // Limite final: 01/01/2027 às 01:01
+    // Limite final: 01/01/2030 às 01:01
     const limiteFinal = new Date(2030, 0, 1, 1, 1, 0);
-    const proximoAlvo = new Date(ano, mes, 1, 0, 1, 0);
+    const proximoAlvo = new Date(ano, mes, 1, 1, 1, 0);
     
     return proximoAlvo > limiteFinal ? limiteFinal : proximoAlvo;
   }
@@ -223,13 +223,13 @@
     const agora = new Date();
     const diff = dataAlvo - agora;
 
-    // Se estiver entre 00:01 e 00:02 do dia 01
+    // Se estiver entre 01:01 e 01:02 do dia 01
     if (diff <= 0) {
       document.getElementById('cd-row').style.display = 'none';
       document.getElementById('cd-encerrado').style.display = 'block';
       
-      // Reinicia às 00:02
-      if (agora.getMinutes() >= 2 || agora.getHours() > 0 || agora.getDate() > 1) {
+      // Reinicia às 01:02
+      if (agora.getMinutes() >= 2 || agora.getHours() > 1 || agora.getDate() > 1) {
         dataAlvo = calcularProximoFim();
         document.getElementById('cd-row').style.display = 'flex';
         document.getElementById('cd-encerrado').style.display = 'none';
