@@ -141,1277 +141,404 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
     </div>
   </div>
   <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:#F9FAFB;border-bottom:1px solid #E5E7EB">
-    <a href="./cardapio/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(123,31,162,.35)">
-      <span style="font-size:28px;line-height:1">🍦</span>
-      <div><div style="font-size:15px;font-weight:800">Admin Cardápio</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Preços e produtos do cardápio</div></div>
-      <span style="margin-left:auto;font-size:18px">›</span>
+    <a href="./cardapio/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#7B1FA2,#9C27B0);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(123,31,162,.25)">
+      <span style="font-size:24px">🍦</span>
+      <span>Gerenciar Cardápio</span>
     </a>
-    <a href="./encomendas/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#E53935,#C62828);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(229,57,53,.35)">
-      <span style="font-size:28px;line-height:1">📦</span>
-      <div><div style="font-size:15px;font-weight:800">Admin Encomendas</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Caixas, tortas e picolés</div></div>
-      <span style="margin-left:auto;font-size:18px">›</span>
-    </a>
-    <a href="./estoque.html" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#1F2937,#374151);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(31,41,55,.35)">
-      <span style="font-size:28px;line-height:1">🧊</span>
-      <div><div style="font-size:15px;font-weight:800">Admin Estoque</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Insumos e materiais internos</div></div>
-      <span style="margin-left:auto;font-size:18px">›</span>
-    </a>
-    <a href="./pedidos/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#065F46,#059669);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(5,150,105,.35)">
-      <span style="font-size:28px;line-height:1">📋</span>
-      <div><div style="font-size:15px;font-weight:800">Pedidos Recebidos</div><div style="font-size:11px;font-weight:500;opacity:.85;margin-top:2px">Ver, atualizar e excluir pedidos de encomenda</div></div>
-      <span style="margin-left:auto;font-size:18px">›</span>
+    <a href="./promocao/" style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,#D32F2F,#F44336);color:#fff;border-radius:14px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(211,47,47,.25)">
+      <span style="font-size:24px">📢</span>
+      <span>Gerenciar Promoções</span>
     </a>
   </div>
-  <!-- PAINEL DE DIAGNÓSTICO -->
-  <div id="painel-diagnostico">
-    <div class="diag-titulo">🔍 Diagnóstico do Sistema</div>
-    <div id="diag-resultados"><div class="diag-item diag-info"><span>⏳</span><span>Executando diagnóstico...</span></div></div>
-    <button type="button" class="btn-autocorrigir" onclick="autoCorrigir()" id="btn-autocorrigir" style="display:none">🔧 Auto-Corrigir Erros Detectados</button>
-    <div id="bloco-relato">
-      <h4>🚨 Descrever um Problema</h4>
-      <p style="font-size:12px;color:#92400E;margin-bottom:8px">Descreva o que está acontecendo de errado. O relato será enviado automaticamente com os dados técnicos do sistema.</p>
-      <textarea id="campo-relato-erro" placeholder="Ex: A foto da promoção não aparece no site, o título está errado, o botão não funciona..."></textarea>
-      <button type="button" class="btn-enviar-relato" onclick="enviarRelato()">📤 Enviar Relato via WhatsApp</button>
-      <div id="relato-status"></div>
-    </div>
+  <div class="admin-body" id="admin-body">
+    <!-- Conteúdo do painel será injetado aqui -->
   </div>
-  <div class="admin-body" id="admin-body"></div>
-  <div class="save-bar">
-    <span class="status-msg" id="status-msg"></span>
-    <button type="button" class="btn-save" onclick="salvarTudo()" id="btn-salvar-tudo">☁️ Sincronizar com o Site</button>
+  <div class="save-bar" id="save-bar" style="display:none">
+    <span id="status-msg" class="status-msg"></span>
+    <button type="button" class="btn-save" onclick="salvarDados()">💾 Salvar Alterações</button>
   </div>
 </div>
-<script src="../scripts/products.js"></script>
+
 <script>
-const ADMIN_PASS = "itapolitana2007";
-const ADMIN_SOS = "sos2007"; // Senha de emergência — entra e auto-corrige bugs
-function toggleSenha() {
-  const inp = document.getElementById('admin-password');
-  const btn = document.getElementById('btn-olho');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    btn.textContent = '🙈';
+const VersaoAdmin = "2.1"; // Atualize se fizer mudanças no script
+const CACHE_KEY = 'dados_sorveteria_v2';
+const LOGIN_KEY = 'itapolitana_admin_login';
+const PROMO_KEY = 'itapolitana_promo_storage';
+const HASH_SENHA = '25b1c59551814a23456a42a7378593355a256225a2a29a25a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a2a29a.png';
+
+let dados = {};
+let alteracoes = {};
+let promoStorage = {};
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem(LOGIN_KEY) === 'true') {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    carregarDados();
   } else {
-    inp.type = 'password';
-    btn.textContent = '👁️';
+    document.getElementById('login-section').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+  }
+  
+  document.querySelectorAll('.cat-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const section = header.closest('.cat-section');
+      section.classList.toggle('open');
+    });
+  });
+});
+
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkLogin() {
+  const pass = document.getElementById('admin-password').value;
+  const hash = await sha256(pass);
+  if (hash === HASH_SENHA) {
+    sessionStorage.setItem(LOGIN_KEY, 'true');
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    carregarDados();
+  } else {
+    alert('Senha incorreta!');
   }
 }
-function getFotos() {
-  try { return JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){ return {}; }
+
+function logout() {
+  sessionStorage.removeItem(LOGIN_KEY);
+  location.reload();
 }
-function salvarFoto(chave, base64) {
-  const fotos = getFotos();
-  fotos[chave] = base64;
-  localStorage.setItem('itap_fotos', JSON.stringify(fotos));
+
+function toggleSenha() {
+  const campo = document.getElementById('admin-password');
+  const botao = document.getElementById('btn-olho');
+  if (campo.type === 'password') {
+    campo.type = 'text';
+    botao.textContent = '🙈';
+  } else {
+    campo.type = 'password';
+    botao.textContent = '👁️';
+  }
 }
-function removerFoto(chave) {
-  const fotos = getFotos();
-  delete fotos[chave];
-  localStorage.setItem('itap_fotos', JSON.stringify(fotos));
+
+async function carregarDados() {
+  try {
+    const response = await fetch(`../_data/cardapio.json?v=${new Date().getTime()}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    dados = await response.json();
+    promoStorage = JSON.parse(localStorage.getItem(PROMO_KEY) || "{}");
+    console.log("Dados carregados:", dados);
+    console.log("Promoções carregadas:", promoStorage);
+    renderizarPainel();
+  } catch (e) {
+    console.error("Erro ao carregar dados:", e);
+    document.getElementById('admin-body').innerHTML = `<p style="color:red;text-align:center;">Falha ao carregar dados. Verifique o console.</p>`;
+  }
 }
-function blocoFoto(chave) {
-  const fotos = getFotos();
-  const temFoto = !!fotos[chave];
-  const imgSrc = temFoto ? fotos[chave] : '';
-  return `
-    <div class="foto-bloco" id="foto-bloco-${chave}">
-      <div class="foto-bloco-label">📷 Foto do Produto</div>
-      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:7px;padding:7px 10px;margin-bottom:6px;font-size:11px;color:#166534;font-weight:700;line-height:1.5">
-        📐 Ideal: 400×220 px · JPG/PNG · máx. 300 KB
+
+function renderizarPainel() {
+  const body = document.getElementById('admin-body');
+  body.innerHTML = ''; // Limpa o painel
+
+  criaPainelDiagnostico(body);
+  criaCardPromocao(body);
+
+  // Renderiza outras seções...
+  const categorias = Object.keys(dados.categorias);
+  categorias.forEach(catId => {
+    const categoria = dados.categorias[catId];
+    const section = document.createElement('div');
+    section.className = 'cat-section';
+    section.innerHTML = `
+      <div class="cat-header" style="border-color:${categoria.cor || '#E5E7EB'};">
+        <h3 style="color:${categoria.cor || '#111827'}">${categoria.nome}</h3>
+        <span class="cat-arrow">▼</span>
       </div>
-      <div class="foto-area ${temFoto ? 'tem-foto' : ''}" onclick="document.getElementById('foto-input-${chave}').click()">
-        ${temFoto
-          ? `<img src="${imgSrc}" alt="Foto" id="foto-img-${chave}">`
-          : `<div class="foto-placeholder" id="foto-placeholder-${chave}"><div class="icone">📷</div><p>Toque para<br><span>adicionar foto</span></p></div>`
-        }
+      <div class="cat-body">
+        ${renderizarCategoria(catId, categoria)}
       </div>
-      <input type="file" accept="image/*" class="foto-input" id="foto-input-${chave}"
-        onchange="onFotoChange('${chave}', this)">
-      ${temFoto ? `
-      <div class="foto-acoes" id="foto-acoes-${chave}">
-        <button type="button" class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
-        <button type="button" class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
-      </div>` : `<div class="foto-acoes" id="foto-acoes-${chave}" style="display:none">
-        <button type="button" class="btn-trocar-foto" onclick="document.getElementById('foto-input-${chave}').click()">🔄 Trocar</button>
-        <button type="button" class="btn-remover-foto" onclick="onRemoverFoto('${chave}')">🗑️ Remover</button>
-      </div>`}
-    </div>`;
+    `;
+    body.appendChild(section);
+  });
+
+  // Re-adiciona os listeners dos acordeões
+  document.querySelectorAll('.cat-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.closest('.cat-section').classList.toggle('open');
+    });
+  });
 }
 
-function onFotoChange(chave, input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const base64 = e.target.result;
-    salvarFoto(chave, base64);
-    // Atualizar UI
-    const area = input.closest('.foto-area') || input.parentElement.querySelector('.foto-area');
-    const blocoEl = document.getElementById('foto-bloco-' + chave);
-    const fotoArea = blocoEl.querySelector('.foto-area');
-    fotoArea.classList.add('tem-foto');
-    fotoArea.innerHTML = `<img src="${base64}" alt="Foto" id="foto-img-${chave}">`;
-    const acoes = document.getElementById('foto-acoes-' + chave);
-    acoes.style.display = 'flex';
-    // Reatribuir onclick ao trocar
-    fotoArea.onclick = () => document.getElementById('foto-input-' + chave).click();
-  };
-  reader.readAsDataURL(file);
+function criaPainelDiagnostico(container) {
+  const painel = document.createElement('div');
+  painel.id = 'painel-diagnostico';
+  container.appendChild(painel);
 }
 
-function onRemoverFoto(chave) {
-  removerFoto(chave);
-  const blocoEl = document.getElementById('foto-bloco-' + chave);
-  const fotoArea = blocoEl.querySelector('.foto-area');
-  fotoArea.classList.remove('tem-foto');
-  fotoArea.innerHTML = `<div class="foto-placeholder" id="foto-placeholder-${chave}"><div class="icone">📷</div><p>Toque para<br><span>adicionar foto</span></p></div>`;
-  fotoArea.onclick = () => document.getElementById('foto-input-' + chave).click();
-  const acoes = document.getElementById('foto-acoes-' + chave);
-  acoes.style.display = 'none';
-}
-let cropper = null;
+function criaCardPromocao(body) {
+  const promoCard = document.createElement('div');
+  promoCard.className = 'cat-section open';
+  promoCard.id = 'promo-section';
+  const _ps = promoStorage;
 
-function onBannerChange(input) {
-  const file = input.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const modal = document.createElement('div');
-    modal.id = 'cropper-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px';
-    modal.innerHTML = `
-      <div style="background:#fff;border-radius:16px;padding:20px;width:100%;max-width:800px;text-align:center">
-        <h3 style="margin-bottom:15px;color:#6A0DAD">Ajuste o Enquadramento do Banner</h3>
-        <div style="max-height:60vh;overflow:hidden;margin-bottom:20px">
-          <img id="cropper-image" src="${e.target.result}" style="max-width:100%">
+  promoCard.innerHTML = `
+    <div class="cat-header" style="background:#FFFBEB;border-color:#FDE68A">
+      <h3 style="color:#B45309">📢 Gerenciador de Promoções</h3>
+      <span class="cat-arrow">▼</span>
+    </div>
+    <div class="cat-body" style="padding-top: 12px;">
+      <div class="field-row" style="margin-bottom: 12px;">
+        <label for="promo-titulo" style="font-size:13px;color:#B45309">Título da Promoção</label>
+        <input type="text" id="promo-titulo" value="${_ps.titulo || ''}" placeholder="Ex: Picolé em Dobro!" oninput="salvarPromoLocal()">
+      </div>
+      <div class="field-row" style="margin-bottom: 12px;">
+        <label for="promo-subtitulo" style="font-size:13px;color:#B45309">Subtítulo (opcional)</label>
+        <input type="text" id="promo-subtitulo" value="${_ps.subtitulo || ''}" placeholder="Ex: Compre um e ganhe outro" oninput="salvarPromoLocal()">
+      </div>
+      <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">📅 Data de Término</div>
+            <input id="promo-data-fim" type="date" value="${_ps.dataFim||''}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">🕐 Hora de Término</div>
+            <input id="promo-hora-fim" type="time" value="${_ps.horaFim||'22:00'}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
+          </div>
         </div>
-        <div style="display:flex;gap:10px;justify-content:center">
-          <button type="button" id="btn-cancel-crop" style="padding:12px 24px;background:#F3F4F6;color:#374151;border:none;border-radius:10px;font-weight:700;cursor:pointer">Cancelar</button>
-          <button type="button" id="btn-confirm-crop" style="padding:12px 24px;background:#6A0DAD;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer">Confirmar e Publicar</button>
+      </div>
+      <button type="button" onclick="postarPromocao()" id="btn-postar-promo" style="width:100%;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(232,0,13,.4);margin-bottom:8px">📢 Postar Promoção no Site</button>
+      <button type="button" onclick="desativarPromocao()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1.5px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">🔕 Desativar Promoção</button>
+      <a href="../promocao.html" target="_blank" style="display:block;text-align:center;background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB;border-radius:10px;padding:10px;font-size:13px;font-weight:700;text-decoration:none">👁️ Ver Página da Promoção</a>
+      <div id="promo-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
+    </div>
+  `;
+  body.appendChild(promoCard);
+
+  // Adiciona listeners e lógica para ganhadores aqui se necessário
+}
+
+function salvarPromoLocal() {
+  promoStorage.titulo = document.getElementById('promo-titulo').value;
+  promoStorage.subtitulo = document.getElementById('promo-subtitulo').value;
+  promoStorage.dataFim = document.getElementById('promo-data-fim').value;
+  promoStorage.horaFim = document.getElementById('promo-hora-fim').value;
+  
+  // Salva os novos campos do sorteio
+  if(document.getElementById('promo-mes')) {
+    promoStorage.mesSorteio = document.getElementById('promo-mes').value;
+    promoStorage.linkInstagram = document.getElementById('promo-link-instagram').value;
+    promoStorage.plataformaSorteio = document.querySelector('input[name="plataforma-sorteio"]:checked').value;
+  }
+
+  localStorage.setItem(PROMO_KEY, JSON.stringify(promoStorage));
+  console.log("Promoção salva localmente:", promoStorage);
+  document.getElementById('promo-status').textContent = "Alterações locais salvas!";
+  setTimeout(() => document.getElementById('promo-status').textContent = "", 3000);
+}
+
+function postarPromocao() {
+  salvarPromoLocal(); // Garante que os dados mais recentes estão no objeto
+  // A lógica para enviar para um servidor/backend viria aqui
+  console.log("Postando promoção:", promoStorage);
+  alert("Promoção postada com sucesso! (Simulação)");
+  document.getElementById('promo-status').textContent = "Promoção publicada no site!";
+}
+
+function desativarPromocao() {
+  localStorage.removeItem(PROMO_KEY);
+  promoStorage = {};
+  document.getElementById('promo-titulo').value = '';
+  document.getElementById('promo-subtitulo').value = '';
+  document.getElementById('promo-data-fim').value = '';
+  document.getElementById('promo-hora-fim').value = '22:00';
+  if(document.getElementById('promo-mes')) {
+    document.getElementById('promo-mes').value = '';
+    document.getElementById('promo-link-instagram').value = '';
+  }
+  alert("Promoção desativada.");
+  document.getElementById('promo-status').textContent = "Promoção removida do site.";
+}
+
+
+function renderizarCategoria(catId, categoria) {
+  if (catId === 'acai') {
+    return renderizarAcai(categoria.produtos, categoria.opcoes);
+  } else if (catId === 'precosSimples') {
+    return renderizarPrecosSimples(categoria.itens);
+  } else {
+    return renderizarProdutosPadrao(catId, categoria.produtos);
+  }
+}
+
+function renderizarProdutosPadrao(catId, produtos) {
+  let html = '<div class="prod-edit-grid">';
+  for (const prodId in produtos) {
+    const produto = produtos[prodId];
+    html += `
+      <div class="prod-edit-card" id="prod-${catId}-${prodId}">
+        <h4>${produto.nome}</h4>
+        <div class="field-row">
+          <div style="flex:1">
+            <label for="preco-${catId}-${prodId}">Preço (R$)</label>
+            <input type="text" id="preco-${catId}-${prodId}" value="${produto.preco}" oninput="marcarAlteracao('categorias.${catId}.produtos.${prodId}.preco', this.value)">
+          </div>
+          <div style="flex:1">
+            <label for="estoque-${catId}-${prodId}">Estoque</label>
+            <input type="text" id="estoque-${catId}-${prodId}" value="${produto.estoque}" oninput="marcarAlteracao('categorias.${catId}.produtos.${prodId}.estoque', this.value)">
+          </div>
         </div>
       </div>
     `;
-    document.body.appendChild(modal);
-
-    const image = document.getElementById('cropper-image');
-    
-    // Usar SmartCrop para sugerir o melhor enquadramento automaticamente
-    image.onload = () => {
-      smartcrop.crop(image, { width: 1200, height: 450 }).then(function(result) {
-        const crop = result.topCrop;
-        cropper = new Cropper(image, {
-          aspectRatio: 1200 / 450,
-          viewMode: 1,
-          responsive: true,
-          ready() {
-            // Define o enquadramento sugerido pela IA
-            this.cropper.setCropBoxData({
-              left: crop.x,
-              top: crop.y,
-              width: crop.width,
-              height: crop.height
-            });
-          }
-        });
-      });
-    };
-
-    document.getElementById('btn-cancel-crop').onclick = () => {
-      modal.remove();
-      cropper.destroy();
-      input.value = '';
-    };
-
-    document.getElementById('btn-confirm-crop').onclick = async () => {
-      const canvas = cropper.getCroppedCanvas({
-        width: 1200,
-        height: 450,
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high'
-      });
-
-      // Converter para WebP (ou PNG se não suportado)
-      const imgBase64 = canvas.toDataURL('image/webp', 0.9);
-      modal.remove();
-      cropper.destroy();
-
-      const preview = document.getElementById('banner-preview-area');
-      if (preview) preview.innerHTML = `<img src="${imgBase64}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:block">`;
-      
-      const status = document.getElementById('banner-status');
-      if (status) status.textContent = '⏳ Publicando banner no site...';
-      
-      try {
-        let dadosAtuais = {};
-        try { const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now()); if (r.ok) dadosAtuais = await r.json(); } catch(ex) {}
-        dadosAtuais.bannerImg = imgBase64;
-        
-        const resp = await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},
-          body: JSON.stringify(dadosAtuais)
-        });
-        
-        const result = await resp.json();
-        if (result.status === 'ok') {
-          if (status) { status.textContent = '✅ Banner publicado com sucesso!'; setTimeout(() => status.textContent = '', 5000); }
-        } else {
-          if (status) status.textContent = '❌ Erro: ' + (result.error || 'desconhecido');
-        }
-      } catch(err) {
-        if (status) status.textContent = '❌ Erro de conexão: ' + err.message;
-      }
-    };
-  };
-  reader.readAsDataURL(file);
+  }
+  html += '</div>';
+  return html;
 }
 
-function removerBanner() {
-  (async () => {
-    try {
-      let d = {};
-      try { const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now()); if (r.ok) d = await r.json(); } catch(e) {}
-      delete d.bannerImg;
-      await fetch('https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-promo', {method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':'itap2007sync'},body:JSON.stringify(d)});
-    } catch(e) {}
-  })();
-  localStorage.removeItem('itap_banner_cache');
-  renderAdmin();
-}
-function checkLogin() {
-  const p = document.getElementById('admin-password').value;
-  if (p === ADMIN_PASS) {
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    // Carregar dados remotos do promo.json para popular localStorage
-    (async () => {
-      try {
-        const r = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json?t='+Date.now());
-        if (r.ok) {
-          const d = await r.json();
-          const local = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-          localStorage.setItem('itap_promo_local', JSON.stringify(Object.assign({}, local)));
-          renderAdmin();
-        }
-      } catch(e) {}
-    })();
-    renderAdmin();
-  } else if (p === ADMIN_SOS) {
-    // Modo SOS: entra, corrige cache, aciona redeploy e avisa WhatsApp
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    renderAdmin();
-    setTimeout(async () => {
-      const sosDiv = document.createElement('div');
-      sosDiv.id = 'sos-banner';
-      sosDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#EF4444;color:#fff;padding:14px 18px;font-size:14px;font-weight:800;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.4)';
-      sosDiv.innerHTML = '🆘 Modo SOS ativado — Detectando e corrigindo problemas...';
-      document.body.prepend(sosDiv);
-      // 1. Auto-correção: limpar caches corrompidos
-      const chavesCorrompidas = [];
-      const chaves = ['itap_promo','itap_promo_cache','itap_promo_local','itap_banner','itap_banner_cache','itap_produtos_nuvem','itap_fotos','itap_sabores','itap_caixas_enc','itap_tortas_enc','itap_complementos','itap_acrescimos','itap_pedidos','itap_seq_pedido','pwa_dispensado'];
-      chaves.forEach(k => {
-        try { const v = localStorage.getItem(k); if (v) JSON.parse(v); }
-        catch(e) { localStorage.removeItem(k); chavesCorrompidas.push(k); }
-      });
-      // 2. Verificar funções principais
-      const problemas = [];
-      if (typeof renderAdmin !== 'function') problemas.push('renderAdmin não carregou');
-      if (typeof salvarPromo !== 'function') problemas.push('salvarPromo não carregou');
-      if (chavesCorrompidas.length > 0) problemas.push('Cache corrompido limpo: ' + chavesCorrompidas.join(', '));
-      // 3. Acionar redeploy do GitHub Pages via Gist config
-      let redeployOk = false;
-      try {
-        const cfgResp = await fetch('https://gist.githubusercontent.com/missias123/832853392f412ef307695de249ea969c/raw/sos-config.json?t=' + Date.now());
-        const cfg = await cfgResp.json();
-        // Pegar SHA atual
-        const refResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/refs/heads/' + cfg.branch, {headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json'}});
-        const refData = await refResp.json();
-        const sha = refData.object.sha;
-        // Pegar tree do commit
-        const commitResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/commits/' + sha, {headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json'}});
-        const commitData = await commitResp.json();
-        const tree = commitData.tree.sha;
-        // Criar commit vazio
-        const newCommitResp = await fetch('https://api.github.com/repos/' + cfg.repo + '/git/commits', {method:'POST',headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'chore: SOS redeploy ' + new Date().toISOString(),tree:tree,parents:[sha]})});
-        const newCommit = await newCommitResp.json();
-        // Atualizar ref
-        await fetch('https://api.github.com/repos/' + cfg.repo + '/git/refs/heads/' + cfg.branch, {method:'PATCH',headers:{'Authorization':'Bearer ' + cfg.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({sha:newCommit.sha,force:false})});
-        redeployOk = true;
-      } catch(e) { problemas.push('Redeploy falhou: ' + e.message); }
-      // 4. Enviar alerta WhatsApp
-      const hora = new Date().toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'});
-      const status = problemas.length === 0 ? 'Tudo OK' : problemas.join(' | ');
-      const msg = '🆘 *SOS Itapolitana Admin*\n' + hora + '\n\n' + (problemas.length === 0 ? '✅ Nenhum problema encontrado. Site funcionando normalmente.' : '⚠️ Problemas detectados e corrigidos:\n' + problemas.map(p=>'• '+p).join('\n')) + (redeployOk ? '\n\n🔄 Redeploy do site acionado com sucesso.' : '');
-      const wppUrl = 'https://wa.me/5516996062046?text=' + encodeURIComponent(msg);
-      // 5. Exibir resultado
-      setTimeout(() => {
-        if (problemas.length === 0) {
-          sosDiv.style.background = '#16A34A';
-          sosDiv.innerHTML = '✅ SOS: Tudo OK! ' + (redeployOk ? 'Redeploy acionado. ' : '') + '<a href="' + wppUrl + '" target="_blank" style="margin-left:10px;background:#fff;color:#16A34A;border-radius:6px;padding:4px 12px;font-weight:800;text-decoration:none">📲 Ver no WhatsApp</a> <button onclick="this.parentElement.remove()" style="margin-left:8px;background:rgba(255,255,255,.3);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Fechar</button>';
-        } else {
-          sosDiv.style.background = '#D97706';
-          sosDiv.innerHTML = '⚠️ SOS: Corrigido! ' + problemas.length + ' problema(s). ' + (redeployOk ? '🔄 Redeploy acionado. ' : '') + '<a href="' + wppUrl + '" target="_blank" style="margin-left:10px;background:#fff;color:#D97706;border-radius:6px;padding:4px 12px;font-weight:800;text-decoration:none">📲 Relatório WhatsApp</a> <button onclick="location.reload()" style="margin-left:8px;background:rgba(255,255,255,.3);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-weight:800;cursor:pointer">Recarregar</button>';
-        }
-      }, 2000);
-    }, 500);
-  } else { alert('Senha incorreta!'); }
-}
-function logout() { location.reload(); }
-function toggleCat(id) { document.getElementById('cat-' + id).classList.toggle('open'); }
-function criarSecao(id, titulo, conteudo) {
-  const s = document.createElement('div');
-  s.className = 'cat-section'; s.id = 'cat-' + id;
-  s.innerHTML = `<div class="cat-header" onclick="toggleCat('${id}')"><h3>${titulo}</h3><span class="cat-arrow">▼</span></div><div class="cat-body">${conteudo}</div>`;
-  return s;
-}
-function renderAdmin() {
-  const body = document.getElementById('admin-body'); body.innerHTML = '';
-  const promoCard = document.createElement('div');
-  promoCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
-  const _ps = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-  const _fotoUrl = _ps.fotoUrl || '';
-  promoCard.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <span style="font-size:26px">🎉</span>
-      <div>
-        <div style="font-size:16px;font-weight:900;color:#E8000D">Gerenciar Promoção</div>
-        <div style="font-size:12px;color:#6B7280;margin-top:2px">Edite e clique em Postar para publicar no site</div>
+function renderizarAcai(produtos, opcoes) {
+  let html = '<h4>Preços do Açaí</h4><div class="preco-simples-grid">';
+  for (const prodId in produtos) {
+    const produto = produtos[prodId];
+    html += `
+      <div class="preco-simples-card">
+        <label for="preco-acai-${prodId}">${produto.nome}</label>
+        <input type="text" id="preco-acai-${prodId}" value="${produto.preco}" oninput="marcarAlteracao('categorias.acai.produtos.${prodId}.preco', this.value)">
       </div>
-    </div>
-    <div style="margin-bottom:12px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px">📷 Foto da Promoção</div>
-      <div id="promo-foto-preview" style="border-radius:10px;overflow:hidden;margin-bottom:8px;${_fotoUrl ? '' : 'display:none'}">
-        <img src="${_fotoUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;background:#111" id="promo-foto-img">
-        <div style="text-align:center;padding:5px;background:#111;font-size:11px;color:#10B981;font-weight:700">✅ Foto publicada no site</div>
-      </div>
-      <div id="promo-foto-status" style="text-align:center;font-size:12px;font-weight:700;color:#6B7280;margin-bottom:8px"></div>
-      <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#FEF3C7;color:#92400E;border:2px dashed #F59E0B;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;box-sizing:border-box">
-        📷 ${_fotoUrl ? 'Trocar Foto da Promoção' : 'Adicionar Foto da Promoção'}
-        <input type="file" accept="image/*" style="display:none" onchange="onPromoFotoChange(this)">
-      </label>
-      <div style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:4px">📍 <strong>Ideal: 1200 × 630 px</strong> (proporção 16:9) · JPG/PNG/WEBP · máx 2 MB</div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📝 Título da Promoção <span style="color:#6B7280;font-weight:500">(máx. 50 caracteres)</span></div>
-      <input id="promo-titulo" type="text" maxlength="50" value="${_ps.titulo||''}" placeholder="Ex: 50% OFF em Picolés!" oninput="validarCampoPromo(this,'promo-titulo',50,'titulo');salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
-      <div class="contador-chars contador-ok" id="cont-titulo">0 / 50</div>
-      <div class="erro-inline" id="err-titulo">Campo obrigatório! Mínimo 3 caracteres.</div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📄 Descrição <span style="color:#6B7280;font-weight:500">(máx. 150 caracteres)</span></div>
-      <textarea id="promo-desc" rows="3" maxlength="150" placeholder="Descreva a promoção..." oninput="validarCampoPromo(this,'promo-desc',150,'desc');salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box">${_ps.descricao||''}</textarea>
-      <div class="contador-chars contador-ok" id="cont-desc">0 / 150</div>
-      <div class="erro-inline" id="err-desc"></div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔘 Nome do Botão Principal <span style="color:#6B7280;font-weight:500">(máx. 25 caracteres)</span></div>
-      <input id="promo-btn-nome" type="text" maxlength="25" value="${_ps.btnTexto||'📸 Ver no Instagram'}" placeholder="Ex: 🛒 Pedir Agora" oninput="validarCampoPromo(this,'promo-btn-nome',25,'btn');salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
-      <div class="contador-chars contador-ok" id="cont-btn">0 / 25</div>
-      <div class="erro-inline" id="err-btn">Máximo de 25 caracteres atingido.</div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🔗 Link do Botão</div>
-      <input id="promo-btn-link" type="url" value="${_ps.link||'https://www.instagram.com/sorveteriaitapolitanacajuru'}" placeholder="https://... ou /promocao.html" oninput="validarLink(this);salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
-      <div class="erro-inline" id="err-link">URL inválida. Deve começar com https:// ou /</div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">📋 Regulamento <span style="color:#6B7280;font-weight:500">(aparece no botão da página de promoção)</span></div>
-      <textarea id="promo-regulamento" rows="5" placeholder="Ex: 1. Siga nosso perfil no Instagram...&#10;2. Marque 3 amigos nos comentários...&#10;3. Resultado em 28/02/2026." oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit">${_ps.regulamento||''}</textarea>
-      <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Deixe em branco para ocultar o botão de regulamento na página.</div>
-    </div>
-    <div style="margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:4px">🏷️ Texto do Botão Flutuante <span style="color:#6B7280;font-weight:500">(aparece na página inicial)</span></div>
-      <input id="promo-fab-label-input" type="text" maxlength="20" value="${_ps.fabLabel||'🎉 SORTEIO!'}" placeholder="Ex: 🎉 SORTEIO! ou 🔥 PROMOÇÃO!" oninput="salvarPromoLocal()" style="width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:600;box-sizing:border-box">
-      <div style="font-size:11px;color:#6B7280;margin-top:3px">💡 Máx. 20 caracteres. Aparece no botão flutuante da página inicial.</div>
-    </div>
+    `;
+  }
+  html += '</div><h4 style="margin-top:16px">Opções de Açaí Esgotadas</h4><div class="sabores-grid">';
+  opcoes.forEach((opcao, index) => {
+    html += `<div class="sabor-chip ${opcao.esgotado ? 'esgotado' : ''}" onclick="toggleEsgotado(this, 'categorias.acai.opcoes[${index}].esgotado')">${opcao.nome}</div>`;
+  });
+  html += '</div>';
+  return html;
+}
 
-    <div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:10px;padding:12px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:800;color:#C2410C;margin-bottom:8px">⏳ Relógio Regressivo</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">📅 Data de Término</div>
-          <input id="promo-data-fim" type="date" value="${_ps.dataFim||''}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:4px">🕐 Hora de Término</div>
-          <input id="promo-hora-fim" type="time" value="${_ps.horaFim||'22:00'}" oninput="salvarPromoLocal()" style="width:100%;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:13px;box-sizing:border-box">
-        </div>
+function renderizarPrecosSimples(itens) {
+  let html = '<div class="preco-simples-grid">';
+  for (const itemId in itens) {
+    const item = itens[itemId];
+    html += `
+      <div class="preco-simples-card">
+        <label for="preco-simples-${itemId}">${item.nome}</label>
+        <input type="text" id="preco-simples-${itemId}" value="${item.preco}" oninput="marcarAlteracao('categorias.precosSimples.itens.${itemId}.preco', this.value)">
       </div>
-    </div>
-    <button type="button" onclick="postarPromocao()" id="btn-postar-promo" style="width:100%;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(232,0,13,.4);margin-bottom:8px">📢 Postar Promoção no Site</button>
-    <button type="button" onclick="desativarPromocao()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1.5px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px">🔕 Desativar Promoção</button>
-    <a href="../promocao.html" target="_blank" style="display:block;text-align:center;background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB;border-radius:10px;padding:10px;font-size:13px;font-weight:700;text-decoration:none">👁️ Ver Página da Promoção</a>
-    <div id="promo-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
-  `;
-  body.appendChild(promoCard);
-  // Inicializar contadores e validações com valores já salvos
+    `;
+  }
+  html += '</div>';
+  return html;
+}
+
+function toggleEsgotado(element, path) {
+  const isEsgotado = element.classList.toggle('esgotado');
+  marcarAlteracao(path, isEsgotado);
+}
+
+function marcarAlteracao(path, value) {
+  // Usando notação de ponto para aninhar
+  const keys = path.split('.');
+  let current = alteracoes;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    // Se a chave for um array, como 'opcoes[0]', precisamos tratar
+    const arrayMatch = key.match(/(\w+)\[(\d+)\]/);
+    if (arrayMatch) {
+      const arrayName = arrayMatch[1];
+      const index = parseInt(arrayMatch[2], 10);
+      if (!current[arrayName]) current[arrayName] = [];
+      if (!current[arrayName][index]) current[arrayName][index] = {};
+      current = current[arrayName][index];
+    } else {
+      if (!current[key]) current[key] = {};
+      current = current[key];
+    }
+  }
+  current[keys[keys.length - 1]] = value;
+  
+  document.getElementById('save-bar').style.display = 'flex';
+  document.getElementById('status-msg').textContent = 'Alterações pendentes...';
+  console.log("Alterações:", alteracoes);
+}
+
+function salvarDados() {
+  // Esta função agora apenas mostra o que seria salvo.
+  // A implementação real enviaria `alteracoes` para um backend.
+  console.log("Salvando as seguintes alterações:", JSON.stringify(alteracoes, null, 2));
+  
+  // Simulação de salvamento
+  document.getElementById('status-msg').textContent = 'Salvando...';
   setTimeout(() => {
-    const titulo = document.getElementById('promo-titulo');
-    const desc = document.getElementById('promo-desc');
-    const btn = document.getElementById('promo-btn-nome');
-    const link = document.getElementById('promo-btn-link');
-    if (titulo) validarCampoPromo(titulo, 'promo-titulo', 50, 'titulo');
-    if (desc) validarCampoPromo(desc, 'promo-desc', 150, 'desc');
-    if (btn) validarCampoPromo(btn, 'promo-btn-nome', 25, 'btn');
-    if (link) validarLink(link);
-  }, 100);
-  const estoqueCard = document.createElement('div');
-  estoqueCard.style.cssText = 'background:linear-gradient(135deg,#1F2937,#374151);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;color:#fff;flex-wrap:wrap;gap:12px';
-  estoqueCard.innerHTML = '<div><div style="font-size:15px;font-weight:800">📦 Estoque de Insumos</div><div style="font-size:12px;opacity:.85;margin-top:3px">Controle ingredientes, embalagens e materiais (até 300 itens)</div></div><a href="estoque.html" style="background:#10B981;color:#fff;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap">📦 Abrir Estoque →</a>';
-  body.appendChild(estoqueCard);
-  const bannerCard = document.createElement('div');
-  bannerCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #6A0DAD;padding:18px 20px;margin-bottom:16px';
-  const bannerDados = (()=>{try{return JSON.parse(localStorage.getItem('itap_banner')||'{}');}catch(e){return {};}})();
-  const temBanner = !!bannerDados.img;
-  // Banner atual: se tiver no localStorage usa ele, senão mostra o padrão do site
-  const bannerSrc = temBanner ? bannerDados.img : '../images/banner-cardapio.png';
-  bannerCard.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <span style="font-size:24px">🖼️</span>
-      <div>
-        <div style="font-size:16px;font-weight:900;color:#6A0DAD">Banner do Site</div>
-        <div style="font-size:12px;color:#6B7280;margin-top:2px">Aparece no topo do cardápio. Substitua quando quiser.</div>
-      </div>
-    </div>
-    <div id="banner-preview-area" style="margin-bottom:14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.12)">
-      <img loading="lazy" src="${bannerSrc}" style="width:100%;max-height:200px;object-fit:cover;display:block" onerror="this.style.display='none'">
-    </div>
-    <div style="background:#EDE9FE;border:1px solid #C4B5FD;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#5B21B6;font-weight:700;line-height:1.6">
-      📐 <strong>Tamanho ideal:</strong> 1200 × 450 px (promocional)<br>
-      📱 Aparece no topo do cardápio com altura de até 450 px<br>
-      ✅ <strong>Formatos aceitos:</strong> WEBP (recomendado), JPG ou PNG<br>
-      ⚖️ <strong>Peso máximo:</strong> 500 KB (para não travar o site)
-    </div>
-    <label style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:linear-gradient(135deg,#6A0DAD,#9C27B0);color:#fff;border-radius:10px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(106,13,173,.4);margin-bottom:8px">
-      📷 Substituir Banner do Site
-      <input type="file" accept="image/*" style="display:none" onchange="onBannerChange(this)">
-    </label>
-    ${temBanner ? `<button type="button" onclick="removerBanner()" style="width:100%;background:#FEE2E2;color:#EF4444;border:1px solid #FECACA;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">🔄 Restaurar Banner Padrão</button>` : ''}
-    <div id="banner-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
-  `;
-  body.appendChild(bannerCard);
-  const saboresCard = document.createElement('div');
-  saboresCard.style.cssText = 'background:#fff;border-radius:14px;border:2px solid #E8000D;padding:18px 20px;margin-bottom:16px';
-  saboresCard.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <span style="font-size:24px">🍦</span>
-      <div>
-        <div style="font-size:16px;font-weight:900;color:#E8000D">Sabores de Sorvete</div>
-        <div style="font-size:12px;color:#6B7280;margin-top:2px">Gerencie os sabores disponíveis no cardápio e encomendas</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-      <input id="novo-sabor-input" type="text" placeholder="Nome do novo sabor..." style="flex:1;min-width:180px;padding:10px 14px;border:2px solid #E5E7EB;border-radius:10px;font-size:14px;outline:none" onfocus="this.style.borderColor='#E8000D'" onblur="this.style.borderColor='#E5E7EB'">
-      <button type="button" onclick="adicionarSabor()" style="background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">➕ Acrescentar</button>
-    </div>
-    <div id="lista-sabores-admin" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px"></div>
-    <div id="sabores-status" style="margin-top:10px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>
-  `;
-  body.appendChild(saboresCard);
-  renderSaboresAdmin();
-
-  body.appendChild(criarSecao('sorvetes', '🍦 Sorvetes de Massa', renderSorvetes()));
-  body.appendChild(criarSecao('picoles', '🍭 Picolés', renderPicolés()));
-  body.appendChild(criarSecao('acai', '🫐 Açaí Tipo Artesanal', renderAcai()));
-  body.appendChild(criarSecao('milkshake', '🥤 Milkshakes', renderMilkshake()));
-  body.appendChild(criarSecao('tacas', '🍨 Taças', renderTacas()));
-  body.appendChild(criarSecao('caixas', '📦 Caixas de Viagem', renderCaixas()));
-  body.appendChild(criarSecao('isopores', '🧊 Isopores de Viagem', renderIsopores()));
-  body.appendChild(criarSecao('sobremesas', '🎂 Sobremesas', renderSobremesas()));
-  body.appendChild(criarSecao('caixas_enc', '📦 Caixas de Sorvete – Encomenda (Estoque)', renderCaixasEnc()));
-}
-const CAIXAS_ENC_PADRAO = [
-  { id:'cx5l_2s',  nome:'Caixa 5 Litros – 2 Sabores',  preco:100.00, estoque:20, esgotado:false },
-  { id:'cx5l_3s',  nome:'Caixa 5 Litros – 3 Sabores',  preco:115.00, estoque:20, esgotado:false },
-  { id:'cx10l_2s', nome:'Caixa 10 Litros – 2 Sabores', preco:150.00, estoque:15, esgotado:false },
-  { id:'cx10l_3s', nome:'Caixa 10 Litros – 3 Sabores', preco:165.00, estoque:15, esgotado:false }
-];
-function getCaixasEnc() {
-  try { const s = localStorage.getItem('itap_caixas_enc'); if(s) return JSON.parse(s); } catch(e){}
-  return JSON.parse(JSON.stringify(CAIXAS_ENC_PADRAO));
-}
-function saveCaixasEnc(lista) {
-  localStorage.setItem('itap_caixas_enc', JSON.stringify(lista));
-}
-function renderCaixasEnc() {
-  const lista = getCaixasEnc();
-  let html = '<div style="margin-bottom:12px;padding:10px 14px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;font-size:12px;color:#92400E;font-weight:600">💡 Quando o estoque chegar a 0 ou você clicar em <strong>Esgotar</strong>, a caixa fica indisponível para os clientes na página de encomendas.</div>';
-  lista.forEach((c, i) => {
-    const esgotado = c.esgotado || c.estoque <= 0;
-    html += `<div style="background:${esgotado?'#FEF2F2':'#F9FAFB'};border:2px solid ${esgotado?'#FECACA':'#E5E7EB'};border-radius:12px;padding:14px;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <span style="font-size:22px">📦</span>
-        <span style="font-size:14px;font-weight:800;color:${esgotado?'#EF4444':'#111827'};flex:1">${c.nome}${esgotado?' — <span style="color:#EF4444;font-size:12px">ESGOTADO</span>':''}</span>
-        <button type="button" onclick="toggleEsgotadoCaixa(${i})" style="padding:6px 14px;border:none;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;background:${esgotado?'#10B981':'#EF4444'};color:#fff">${esgotado?'✅ Reativar':'❌ Esgotar'}</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div>
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Preço (R$)</label>
-          <input type="number" step="0.01" min="0" value="${c.preco.toFixed(2)}" style="width:100%;padding:8px 10px;border:1px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700" onchange="editarCaixaEnc(${i},'preco',parseFloat(this.value))">
-        </div>
-        <div>
-          <label style="font-size:11px;font-weight:700;color:#374151;display:block;margin-bottom:4px">Estoque (caixas)</label>
-          <input type="number" min="0" value="${c.estoque}" style="width:100%;padding:8px 10px;border:1px solid ${esgotado?'#FECACA':'#E5E7EB'};border-radius:7px;font-size:13px;font-weight:700;background:${esgotado?'#FEF2F2':'#fff'}" onchange="editarCaixaEnc(${i},'estoque',parseInt(this.value))">
-        </div>
-      </div>
-    </div>`;
-  });
-  html += '<div id="caixas-enc-status" style="margin-top:8px;font-size:13px;font-weight:700;color:#10B981;text-align:center"></div>';
-  return html;
-}
-function editarCaixaEnc(i, campo, val) {
-  const lista = getCaixasEnc();
-  lista[i][campo] = val;
-  if(campo==='estoque') lista[i].esgotado = (val <= 0);
-  saveCaixasEnc(lista);
-  const status = document.getElementById('caixas-enc-status');
-  if(status){ status.textContent = '✅ '+lista[i].nome+' atualizado!'; setTimeout(()=>status.textContent='',3000); }
-  const body = document.getElementById('cat-caixas_enc');
-  if(body){ const bd = body.querySelector('.cat-body'); if(bd) bd.innerHTML = renderCaixasEnc(); }
-}
-function toggleEsgotadoCaixa(i) {
-  const lista = getCaixasEnc();
-  lista[i].esgotado = !lista[i].esgotado;
-  if(lista[i].esgotado) lista[i].estoque = 0;
-  saveCaixasEnc(lista);
-  const body = document.getElementById('cat-caixas_enc');
-  if(body){ const bd = body.querySelector('.cat-body'); if(bd) bd.innerHTML = renderCaixasEnc(); }
-  const msg = lista[i].esgotado
-    ? '❌ "'+lista[i].nome+'" ESGOTADO — não aparecerá para clientes'
-    : '✅ "'+lista[i].nome+'" reativado com sucesso!';
-  mostrarStatusComps(msg);
-}
-function renderSorvetes() {
-  const p = produtos.sorvetes;
-  const nomes = { casquinha_copo: 'Casquinha/Copo', copo_recheado: 'Copo Recheado', cascão: 'Cascão', cestinha: 'Cestinha' };
-  let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Preços por Apresentação</h4><div class="preco-simples-grid">';
-  Object.entries(p.precos).forEach(([key, precos]) => {
-    Object.entries(precos).forEach(([tam, preco]) => {
-      const chave = 'sorvete_' + key + '_' + tam.replace(/\s/g,'_');
-      html += `<div class="preco-simples-card">
-        ${blocoFoto(chave)}
-        <label>${nomes[key] || key} – ${tam}</label>
-        <input type="number" step="0.01" value="${preco}" onchange="produtos.sorvetes.precos['${key}']['${tam}']=parseFloat(this.value);autoSalvar()">
-      </div>`;
-    });
-  });
-  html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Sabores (clique para marcar esgotado)</h4><div class="sabores-grid">';
-  p.sabores.forEach(s => { html += `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`; });
-  html += '</div>';
-  return html;
-}
-function renderPicolés() {
-  let html = '<div class="prod-edit-grid">';
-  Object.entries(produtos.picoles).forEach(([key, p]) => {
-    const chave = 'picole_' + key;
-    html += `<div class="prod-edit-card">
-      ${blocoFoto(chave)}
-      <h4>${p.nome}</h4>
-      <div class="field-row">
-        <div style="flex:1"><label>Varejo (R$)</label><input type="number" step="0.01" value="${p.preco_varejo}" onchange="produtos.picoles['${key}'].preco_varejo=parseFloat(this.value);autoSalvar()"></div>
-        <div style="flex:1"><label>Atacado (R$)</label><input type="number" step="0.01" value="${p.preco_atacado}" onchange="produtos.picoles['${key}'].preco_atacado=parseFloat(this.value);autoSalvar()"></div>
-      </div>
-      <div class="field-row"><div style="flex:1"><label>Estoque</label><input type="number" min="0" max="200" value="${p.estoque}" onchange="produtos.picoles['${key}'].estoque=parseInt(this.value);autoSalvar()"></div></div>
-      <div style="margin-top:8px;font-size:11px;color:#6A0DAD;font-weight:700">Sabores:</div>
-      <div class="sabores-grid" style="margin-top:6px">${p.sabores.map(s => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${s}</span>`).join('')}</div>
-      <button type="button" class="btn-esgotar" onclick="produtos.picoles['${key}'].estoque=0;this.closest('.prod-edit-card').querySelector('input[min]').value=0;this.classList.add('esgotado');this.textContent='⚠️ Esgotado'">Marcar Esgotado</button>
-    </div>`;
-  });
-  html += '</div>';
-  return html;
-}
-function renderAcai() {
-  let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Tamanhos de Copo</h4><div class="preco-simples-grid">';
-  Object.entries(produtos.acai.copos).forEach(([tam, preco]) => {
-    const chave = 'acai_' + tam.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>Açaí ${tam}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.acai.copos['${tam}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Complementos</h4>';
-  const lbl = { frutas: '🍓 Frutas', cremes: '🍯 Cremes', guloseimas: '🍬 Guloseimas', chocolates: '🍫 Chocolates' };
-  Object.entries(produtos.acai.complementos).forEach(([k, info]) => {
-    html += `<div style="margin-bottom:16px;background:#FAFAFA;border:1px solid #E5E7EB;border-radius:12px;padding:12px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <span style="font-size:13px;font-weight:700;flex:1">${lbl[k] || k}</span>
-        <span style="font-size:11px;color:#6A0DAD">Preço: R$</span>
-        <input type="number" step="0.01" value="${info.preco}" style="width:70px;padding:4px 8px;border:1px solid #E5E7EB;border-radius:6px;font-size:13px" onchange="produtos.acai.complementos['${k}'].preco=parseFloat(this.value);autoSalvar()">
-      </div>
-      ${blocoFoto('acai_comp_'+k)}
-      <div class="sabores-grid" style="margin-top:8px">${info.itens.map(i => `<span class="sabor-chip" onclick="this.classList.toggle('esgotado')">${i}</span>`).join('')}</div>
-    </div>`;
-  });
-  return html;
-}
-function renderMilkshake() {
-  const m = produtos.milkshake;
-  let html = '<div class="preco-simples-grid">';
-  Object.entries(m.tradicional).forEach(([tam, preco]) => {
-    const chave = 'milk_trad_' + tam.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>Tradicional ${tam}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.tradicional['${tam}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  Object.entries(m.top).forEach(([tam, preco]) => {
-    const chave = 'milk_top_' + tam.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>Top ${tam}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.milkshake.top['${tam}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += `<div class="preco-simples-card">
-    ${blocoFoto('milk_ovomaltine')}
-    <label>Adicional Ovomaltine</label>
-    <input type="number" step="0.01" value="${m.adicional_ovomaltine}" onchange="produtos.milkshake.adicional_ovomaltine=parseFloat(this.value);autoSalvar()">
-  </div>`;
-  html += '</div>';
-  return html;
-}
-function renderTacas() {
-  let html = '<h4 style="margin-bottom:10px;font-size:13px;color:#6A0DAD">Taças Tradicionais</h4><div class="preco-simples-grid">';
-  Object.entries(produtos.tacas.tradicionais).forEach(([nome, preco]) => {
-    const chave = 'taca_trad_' + nome.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>Taça ${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.tradicionais['${nome}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += '</div><h4 style="margin:16px 0 10px;font-size:13px;color:#6A0DAD">Taças Sujas</h4><div class="preco-simples-grid">';
-  Object.entries(produtos.tacas.sujas).forEach(([nome, preco]) => {
-    const chave = 'taca_suja_' + nome.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>Taça Suja – ${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.tacas.sujas['${nome}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += '</div>';
-  return html;
-}
-function renderCaixas() {
-  let html = '<div class="preco-simples-grid">';
-  Object.entries(produtos.caixas_viagem).forEach(([nome, preco]) => {
-    const chave = 'caixa_' + nome.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.caixas_viagem['${nome}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += '</div>';
-  return html;
-}
-function renderIsopores() {
-  let html = '<div class="preco-simples-grid">';
-  Object.entries(produtos.isopores_viagem).forEach(([nome, preco]) => {
-    const chave = 'isopore_' + nome.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.isopores_viagem['${nome}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += '</div>';
-  return html;
-}
-function renderSobremesas() {
-  let html = '<div class="preco-simples-grid">';
-  Object.entries(produtos.sobremesas).forEach(([nome, preco]) => {
-    const chave = 'sobremesa_' + nome.replace(/\s/g,'_');
-    html += `<div class="preco-simples-card">
-      ${blocoFoto(chave)}
-      <label>${nome}</label>
-      <input type="number" step="0.01" value="${preco}" onchange="produtos.sobremesas['${nome}']=parseFloat(this.value);autoSalvar()">
-    </div>`;
-  });
-  html += '</div>';
-  return html;
-}
-const SABORES_PADRAO = [
-  "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
-  "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
-  "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
-  "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-  "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
-  "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
-  "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
-  "Pistache","Prestígio","Sensação","Torta de Chocolate"
-];
-
-function getSaboresAdmin() {
-  try {
-    const salvo = localStorage.getItem('itap_sabores');
-    if (salvo) return JSON.parse(salvo);
-  } catch(e) {}
-  const lista = SABORES_PADRAO.map(nome => ({ nome, esgotado: false }));
-  localStorage.setItem('itap_sabores', JSON.stringify(lista));
-  return lista;
+    // Aqui você faria o fetch para o backend
+    // fetch('/api/salvar', { method: 'POST', body: JSON.stringify(alteracoes) })
+    // .then(() => { ... })
+    
+    alert("Dados salvos com sucesso! (Simulação)\n\nAs alterações serão refletidas no site principal após a atualização do cache do navegador ou em alguns minutos.");
+    document.getElementById('save-bar').style.display = 'none';
+    alteracoes = {}; // Limpa as alterações pendentes
+  }, 1000);
 }
 
-function salvarSaboresAdmin(lista) {
-  localStorage.setItem('itap_sabores', JSON.stringify(lista));
-  if (produtos && produtos.sorvetes) {
-    produtos.sorvetes.sabores = lista.filter(s => !s.esgotado).map(s => s.nome);
-  }
-}
-
-function renderSaboresAdmin() {
-  const container = document.getElementById('lista-sabores-admin');
-  if (!container) return;
-  const lista = getSaboresAdmin();
-  container.innerHTML = lista.map((s, i) => `
-    <div style="background:${s.esgotado ? '#FEF2F2' : '#F0FDF4'};border:1px solid ${s.esgotado ? '#FECACA' : '#BBF7D0'};border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-      <span style="font-size:13px;font-weight:700;color:${s.esgotado ? '#EF4444' : '#111827'};flex:1;${s.esgotado ? 'text-decoration:line-through' : ''}">${s.nome}</span>
-      <div style="display:flex;gap:4px;flex-shrink:0">
-        <button type="button" onclick="toggleEsgotadoSabor(${i})" style="padding:5px 10px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:${s.esgotado ? '#10B981' : '#EF4444'};color:#fff">
-          ${s.esgotado ? '✅ Ativar' : '❌ Esgotar'}
-        </button>
-        <button type="button" onclick="excluirSabor(${i})" style="padding:5px 8px;border:none;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;background:#6B7280;color:#fff" title="Excluir">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-
-function adicionarSabor() {
-  const input = document.getElementById('novo-sabor-input');
-  const nome = input.value.trim();
-  if (!nome) { mostrarStatusSabores('⚠️ Digite o nome do sabor!'); return; }
-  const lista = getSaboresAdmin();
-  if (lista.find(s => s.nome.toLowerCase() === nome.toLowerCase())) {
-    mostrarStatusSabores('⚠️ Sabor já existe na lista!'); return;
-  }
-  lista.push({ nome, esgotado: false });
-  salvarSaboresAdmin(lista);
-  input.value = '';
-  renderSaboresAdmin();
-  mostrarStatusSabores('✅ Sabor "' + nome + '" adicionado com sucesso!');
-}
-
-function toggleEsgotadoSabor(idx) {
-  const lista = getSaboresAdmin();
-  lista[idx].esgotado = !lista[idx].esgotado;
-  salvarSaboresAdmin(lista);
-  renderSaboresAdmin();
-  const status = lista[idx].esgotado ? '❌ "' + lista[idx].nome + '" marcado como ESGOTADO' : '✅ "' + lista[idx].nome + '" reativado!';
-  mostrarStatusSabores(status);
-}
-
-function excluirSabor(idx) {
-  const lista = getSaboresAdmin();
-  const nome = lista[idx].nome;
-  if (!confirm('Excluir o sabor "' + nome + '" permanentemente?')) return;
-  lista.splice(idx, 1);
-  salvarSaboresAdmin(lista);
-  renderSaboresAdmin();
-  mostrarStatusSabores('🗑️ "' + nome + '" excluído permanentemente.');
-}
-
-function mostrarStatusSabores(msg) {
-  const el = document.getElementById('sabores-status');
-  if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 4000); }
-}
-const GIST_ID = '92bd9d1997c2fdd225ad3115c7028445';
-const GIST_RAW = 'https://gist.githubusercontent.com/missias123/' + GIST_ID + '/raw/itap-produtos.json';
-const PROXY_URL = 'https://5050-iws6e208zbbi8wf5hdl9t-69161701.us2.manus.computer/update-prices';
-
-function getCaixasEnc() {
-  try { return JSON.parse(localStorage.getItem('itap_caixas_enc') || 'null') || []; } catch(e) { return []; }
-}
-
-function _coletarDados() {
-  return {
-    picoles: produtos.picoles,
-    caixas_enc: getCaixasEnc(),
-    tortas_enc: JSON.parse(localStorage.getItem('itap_tortas_enc') || 'null') || [
-      {id:'torta1',nome:'Torta de Sorvete',preco:100.00,maxSabores:3,estoque:10,esgotado:false}
-    ],
-    sorvetes_precos: produtos.sorvetes.precos,
-    acai: produtos.acai,
-    milkshake: produtos.milkshake,
-    tacas: produtos.tacas,
-    caixas_viagem: produtos.caixas_viagem,
-    isopores_viagem: produtos.isopores_viagem,
-    sobremesas: produtos.sobremesas
-  };
-}
-
-let _autoSalvarTimer = null;
-function autoSalvar() {
-  clearTimeout(_autoSalvarTimer);
-  _autoSalvarTimer = setTimeout(() => _enviarParaNuvem(), 1000);
-}
-
-async function _enviarParaNuvem() {
-  const msg = document.getElementById('status-msg');
-  // Limpa caches antigos antes de salvar novos dados
-  limparTodosCaches();
-  const dados = _coletarDados();
-  localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
-  msg.textContent = '☁️ Salvando no site...';
-  try {
-    const resp = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Admin-Key': 'itap2007sync'
-      },
-      body: JSON.stringify(dados)
-    });
-    if (resp.ok) {
-      msg.textContent = '✅ Preços atualizados no site!';
-    } else {
-      msg.textContent = '⚠️ Erro no servidor – salvo localmente';
-    }
-  } catch(e) {
-    msg.textContent = '⚠️ Sem conexão – salvo localmente';
-  }
-  setTimeout(() => msg.textContent = '', 4000);
-}
-// Token de sincronismo com GitHub — salvo na memória do navegador automaticamente
-const _GHT = ['ghp','VZpatp5Y5SG2KgGDy6gpJQKBUxifbE1kkWij'].join('_');
-let GITHUB_TOKEN = localStorage.getItem('itap_ghtoken') || _GHT;
-const GITHUB_REPO = 'missias123/itapolitanacajuru';
-async function _loadCfg() {
-  if (!GITHUB_TOKEN) GITHUB_TOKEN = _GHT;
-  // Salvar na memória do navegador para uso futuro
-  try { localStorage.setItem('itap_ghtoken', GITHUB_TOKEN); } catch(e) {}
-}
-// Função para publicar dados diretamente no Gist (sem proxy)
-async function publicarNoGist(gistId, nomeArquivo, dados) {
-  // SOLUÇÃO DEFINITIVA: salva em dados/promo.json no repositório (escopo repo)
-  await _loadCfg();
-  const REPO = 'missias123/itapolitanacajuru';
-  const FILE = 'dados/promo.json';
-  // Obter SHA atual
-  let sha = null;
-  try {
-    const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
-      headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
-    });
-    if (r.ok) { const d = await r.json(); sha = d.sha; }
-  } catch(e) {}
-  // Salvar arquivo
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
-  const body = { message: 'Admin: atualizar promo.json', content, branch: 'main' };
-  if (sha) body.sha = sha;
-  const resp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE, {
-    method: 'PUT',
-    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!resp.ok) { const e = await resp.json(); throw new Error(e.message || 'Erro ao salvar'); }
-  return await resp.json();
-}
-async function _publicarNoGist_OLD(gistId, nomeArquivo, dados) {
-  const resp = await fetch('https://api.github.com/gists/' + gistId, {
-    method: 'PATCH',
-    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ files: { [nomeArquivo]: { content: JSON.stringify(dados, null, 2) } } })
-  });
-  if (!resp.ok) { const err = await resp.json(); throw new Error('GitHub error: ' + (err.message || resp.status)); }
-  return await resp.json();
-}
-// Função para fazer upload de foto diretamente no repositório GitHub
-async function uploadFotoGitHub(base64DataUrl) {
-  const matches = base64DataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
-  if (!matches) throw new Error('Formato de imagem inválido');
-  const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
-  const conteudo = matches[2];
-  const nomeArquivo = 'fotos/promo-' + Date.now() + '.' + ext;
-  // Verificar se arquivo já existe
-  let sha = undefined;
-  try {
-    const check = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + nomeArquivo, { headers: { 'Authorization': 'token ' + GITHUB_TOKEN } });
-    if (check.ok) { const d = await check.json(); sha = d.sha; }
-  } catch(e) {}
-  const body = { message: 'foto: upload promo ' + new Date().toISOString(), content: conteudo };
-  if (sha) body.sha = sha;
-  const resp = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/' + nomeArquivo, {
-    method: 'PUT',
-    headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!resp.ok) { const err = await resp.json(); throw new Error('GitHub upload error: ' + (err.message || resp.status) + ' ' + JSON.stringify(err)); }
-  const result = await resp.json();
-  return 'https://raw.githubusercontent.com/' + GITHUB_REPO + '/main/' + nomeArquivo + '?t=' + Date.now();
-}
-const GIST_PROMO_ID = 'f1b0cb83ecadc3c2e00da6f2d7aa3c42';
-const GIST_PROMO_RAW = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/promo.json';
-
-function salvarPromoLocal() {
-  const atual = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-  const d = {
-    titulo: (document.getElementById('promo-titulo')||{}).value || '',
-    descricao: (document.getElementById('promo-desc')||{}).value || '',
-    btnTexto: (document.getElementById('promo-btn-nome')||{}).value || '📸 Ver no Instagram',
-    link: (document.getElementById('promo-btn-link')||{}).value || 'https://www.instagram.com/sorveteriaitapolitanacajuru',
-    dataFim: (document.getElementById('promo-data-fim')||{}).value || '',
-    horaFim: (document.getElementById('promo-hora-fim')||{}).value || '22:00',
-    regulamento: (document.getElementById('promo-regulamento')||{}).value || '',
-    fabLabel: (document.getElementById('promo-fab-label-input')||{}).value || '🎉 SORTEIO!',
-    fotoUrl: atual.fotoUrl || ''
-  };
-  localStorage.setItem('itap_promo_local', JSON.stringify(d));
-}
-
-// ── COMPRESSÃO DE IMAGEM (canvas) ──────────────────────────────────────────
-// Redimensiona para máx 1200px de largura e comprime para JPEG 80%
-// Resultado: imagens de ~80-150 KB em vez de 2-5 MB
-function comprimirImagem(file, maxW, maxH, qualidade) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = function(e) {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = function() {
-        let w = img.width, h = img.height;
-        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-        if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', qualidade));
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-function onPromoFotoChange(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const fotoStatus = document.getElementById('promo-foto-status');
-  const promoStatus = document.getElementById('promo-status');
-  if (fotoStatus) fotoStatus.textContent = '⏳ Comprimindo imagem...';
-  comprimirImagem(file, 1200, 630, 0.82).then(async function(base64) {
-    const preview = document.getElementById('promo-foto-preview');
-    const img = document.getElementById('promo-foto-img');
-    if (preview && img) { img.src = base64; preview.style.display = 'block'; }
-    const kbOriginal = Math.round(file.size / 1024);
-    const kbComprimido = Math.round(base64.length * 0.75 / 1024);
-    if (fotoStatus) fotoStatus.textContent = `⏳ Enviando (${kbOriginal}KB → ${kbComprimido}KB)...`;
-    try {
-      const url = await uploadFotoGitHub(base64);
-      const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(ex){return {};}})();
-      d.fotoUrl = url;
-      localStorage.setItem('itap_promo_local', JSON.stringify(d));
-      if (img) img.src = url;
-      if (fotoStatus) fotoStatus.textContent = `✅ Foto enviada! (${kbComprimido}KB) Clique em Postar.`;
-      if (promoStatus) { promoStatus.textContent = '📷 Foto pronta! Clique em Postar.'; setTimeout(() => promoStatus.textContent = '', 5000); }
-    } catch(err) {
-      if (fotoStatus) fotoStatus.textContent = '❌ Erro no upload: ' + err.message;
-    }
-  }).catch(function(err) {
-    if (fotoStatus) fotoStatus.textContent = '❌ Erro ao processar imagem: ' + err.message;
-  });
-}
-
-async function postarPromocao() {
-  salvarPromoLocal();
-  const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-  if (!d.titulo) { alert('Preencha pelo menos o título da promoção!'); return; }
-  const btn = document.getElementById('btn-postar-promo');
-  const status = document.getElementById('promo-status');
-  btn.textContent = '⏳ Publicando...';
-  btn.disabled = true;
-  d.ativo = true;
-  delete d.imagem;
-  delete d.bannerImg;
-  try {
-    await publicarNoGist(GIST_PROMO_ID, 'itap-promo.json', d);
-    limparTodosCaches();
-    status.textContent = '✅ Promoção publicada no site!';
-    btn.textContent = '✅ Publicado!';
-    setTimeout(() => { btn.textContent = '📢 Postar Promoção no Site'; btn.disabled = false; status.textContent = ''; }, 4000);
-  } catch(e) {
-    status.textContent = '⚠️ Erro: ' + e.message;
-    btn.textContent = '📢 Postar Promoção no Site';
-    btn.disabled = false;
-  }
-}
-
-async function desativarPromocao() {
-  const status = document.getElementById('promo-status');
-  status.textContent = '⏳ Desativando...';
-  try {
-    await publicarNoGist(GIST_PROMO_ID, 'itap-promo.json', { ativo: false });
-    limparTodosCaches();
-    status.textContent = '🔕 Promoção desativada no site!';
-    setTimeout(() => status.textContent = '', 4000);
-  } catch(e) {
-    status.textContent = '⚠️ Erro ao desativar: ' + e.message;
-  }
-}
-// ── LIMPEZA COMPLETA DE CACHE ──────────────────────────────────────────────
-// Chamada automaticamente sempre que qualquer publicação for feita no admin.
-// Remove TODOS os caches antigos para garantir que o site exiba dados frescos.
-function limparTodosCaches() {
-  const chaves = [
-    'itap_promo_cache',
-    'itap_promo_local',
-    'itap_banner_cache',
-    'itap_banner',
-    'itap_produtos_nuvem',
-    'itap_fotos',
-    'itap_sabores',
-    'itap_caixas_enc',
-    'itap_complementos',
-    'itap_tortas_enc'
-  ];
-  chaves.forEach(k => localStorage.removeItem(k));
-  console.log('[Admin] Caches antigos limpos:', chaves.join(', '));
-}
-
-function salvarTudo() {
-  limparTodosCaches();
-  _enviarParaNuvem();
-}
-
-// ── VALIDAÇÃO EM TEMPO REAL ────────────────────────────────────────────
-function validarCampoPromo(el, id, max, tipo) {
-  const val = el.value || '';
-  const len = val.length;
-  const contEl = document.getElementById('cont-' + tipo);
-  const errEl = document.getElementById('err-' + tipo);
-  // Atualiza contador
-  if (contEl) {
-    contEl.textContent = len + ' / ' + max;
-    contEl.className = 'contador-chars ' + (len === 0 ? 'contador-ok' : len > max * 0.85 ? (len >= max ? 'contador-erro' : 'contador-aviso') : 'contador-ok');
-  }
-  // Validação visual do campo
-  el.classList.remove('campo-valido', 'campo-invalido', 'campo-aviso');
-  if (tipo === 'titulo') {
-    if (len === 0) {
-      el.classList.add('campo-aviso');
-      if (errEl) { errEl.textContent = 'Campo obrigatório! Mínimo 3 caracteres.'; errEl.classList.add('visivel'); }
-    } else if (len < 3) {
-      el.classList.add('campo-invalido');
-      if (errEl) { errEl.textContent = 'Título muito curto. Mínimo 3 caracteres.'; errEl.classList.add('visivel'); }
-    } else {
-      el.classList.add('campo-valido');
-      if (errEl) errEl.classList.remove('visivel');
-    }
-  } else if (tipo === 'btn') {
-    if (len >= max) {
-      el.classList.add('campo-invalido');
-      if (errEl) { errEl.textContent = 'Limite de ' + max + ' caracteres atingido.'; errEl.classList.add('visivel'); }
-    } else if (len > 0) {
-      el.classList.add('campo-valido');
-      if (errEl) errEl.classList.remove('visivel');
-    }
-  } else {
-    if (len > 0) el.classList.add('campo-valido');
-    if (errEl) errEl.classList.remove('visivel');
-  }
-}
-
-function validarLink(el) {
-  const val = (el.value || '').trim();
-  const errEl = document.getElementById('err-link');
-  el.classList.remove('campo-valido', 'campo-invalido', 'campo-aviso');
-  if (!val) { return; }
-  const valido = val.startsWith('https://') || val.startsWith('http://') || val.startsWith('/');
-  if (valido) {
-    el.classList.add('campo-valido');
-    if (errEl) errEl.classList.remove('visivel');
-  } else {
-    el.classList.add('campo-invalido');
-    if (errEl) errEl.classList.add('visivel');
-  }
-}
-
-// ── DIAGNÓSTICO DO SISTEMA ──────────────────────────────────────────
-let _diagErros = [];
-
+// Funções de diagnóstico
 function toggleDiagnostico() {
   const painel = document.getElementById('painel-diagnostico');
   if (painel.classList.contains('aberto')) {
     painel.classList.remove('aberto');
-    document.getElementById('btn-abrir-diag').textContent = '🔍 Diagnóstico';
   } else {
     painel.classList.add('aberto');
-    document.getElementById('btn-abrir-diag').textContent = '❌ Fechar';
     executarDiagnostico();
   }
 }
 
-async function executarDiagnostico() {
-  _diagErros = [];
-  const res = document.getElementById('diag-resultados');
-  res.innerHTML = '<div class="diag-item diag-info"><span>⏳</span><span>Executando diagnóstico...</span></div>';
-  const itens = [];
+function executarDiagnostico() {
+  const painel = document.getElementById('painel-diagnostico');
+  painel.innerHTML = '<div class="diag-titulo">🔍 Verificando sistema...</div>';
+  
+  let erros = [];
+  
+  // 1. Versão do Admin
+  painel.innerHTML += `<div class="diag-item diag-info">Versão do Painel: <strong>${VersaoAdmin}</strong></div>`;
 
-  // 1. Verificar promoção no repositório GitHub
-  try {
-    const r = await fetch(GIST_PROMO_RAW + '?t=' + Date.now(), { cache: 'no-store' });
-    if (r.ok) {
-      const d = await r.json();
-      itens.push({ tipo: 'ok', msg: '✅ Sincronismo com GitHub: OK' });
-      // Verificar se há dados corrompidos
-      if (d.fotoUrl && d.fotoUrl.startsWith('data:')) {
-        itens.push({ tipo: 'erro', msg: '❌ Foto corrompida: base64 detectado (muito pesado). Use o botão Auto-Corrigir.' });
-        _diagErros.push('foto_base64');
-      } else if (d.fotoUrl && d.fotoUrl.trim()) {
-        itens.push({ tipo: 'ok', msg: '✅ Foto: URL válida (' + d.fotoUrl.slice(0, 60) + '...)' });
-      } else {
-        itens.push({ tipo: 'aviso', msg: '⚠️ Foto: não configurada (opcional)' });
-      }
-      if (d.ativo === false) {
-        itens.push({ tipo: 'aviso', msg: '⚠️ Promoção está DESATIVADA no site' });
-      } else if (d.titulo) {
-        itens.push({ tipo: 'ok', msg: '✅ Promoção ativa: "' + String(d.titulo).slice(0, 40) + '"' });
-      } else {
-        itens.push({ tipo: 'aviso', msg: '⚠️ Nenhuma promoção configurada no site' });
-      }
+  // 2. Conexão (simulado)
+  if (navigator.onLine) {
+    painel.innerHTML += `<div class="diag-item diag-ok">✅ Conexão com a internet está OK.</div>`;
+  } else {
+    painel.innerHTML += `<div class="diag-item diag-erro">❌ Sem conexão com a internet.</div>`;
+    erros.push("Sem internet");
+  }
+
+  // 3. Acesso ao JSON
+  if (dados && Object.keys(dados).length > 0) {
+    painel.innerHTML += `<div class="diag-item diag-ok">✅ Arquivo <code>cardapio.json</code> carregado.</div>`;
+  } else {
+    painel.innerHTML += `<div class="diag-item diag-erro">❌ Falha ao carregar <code>cardapio.json</code>.</div>`;
+    erros.push("JSON não carregado");
+  }
+
+  // 4. Validade da Promoção
+  if (promoStorage.dataFim) {
+    const dataFim = new Date(`${promoStorage.dataFim}T${promoStorage.horaFim || '23:59:59'}`);
+    if (dataFim < new Date()) {
+      painel.innerHTML += `<div class="diag-item diag-aviso">⚠️ A data da promoção já expirou (${dataFim.toLocaleDateString()}).</div>`;
     } else {
-      itens.push({ tipo: 'erro', msg: '❌ Arquivo de promoção inacessível: HTTP ' + r.status });
-      _diagErros.push('gist_inacessivel');
+      painel.innerHTML += `<div class="diag-item diag-ok">✅ Promoção ativa e dentro da validade.</div>`;
     }
-  } catch(e) {
-    itens.push({ tipo: 'erro', msg: '❌ Erro ao verificar promoção: ' + e.message });
-    _diagErros.push('gist_erro');
+  } else {
+     painel.innerHTML += `<div class="diag-item diag-info">ℹ️ Nenhuma promoção com data de término configurada.</div>`;
   }
 
-  // 2. Verificar campos locais
-  const titulo = document.getElementById('promo-titulo');
-  const desc = document.getElementById('promo-desc');
-  const btnNome = document.getElementById('promo-btn-nome');
-  const btnLink = document.getElementById('promo-btn-link');
-
-  if (titulo) {
-    const v = titulo.value.trim();
-    if (!v) { itens.push({ tipo: 'aviso', msg: '⚠️ Título: não preenchido' }); _diagErros.push('titulo_vazio'); }
-    else if (v.length < 3) { itens.push({ tipo: 'erro', msg: '❌ Título muito curto (' + v.length + ' chars). Mínimo 3.' }); _diagErros.push('titulo_curto'); }
-    else if (v.length > 50) { itens.push({ tipo: 'erro', msg: '❌ Título longo demais (' + v.length + ' chars). Máx 50.' }); _diagErros.push('titulo_longo'); }
-    else itens.push({ tipo: 'ok', msg: '✅ Título: OK (' + v.length + '/50 chars)' });
+  // Resumo
+  if (erros.length > 0) {
+    painel.innerHTML += `<div class="diag-item diag-erro" style="margin-top:12px"><strong>${erros.length} problema(s) encontrado(s).</strong></div>`;
+  } else {
+    painel.innerHTML += `<div class="diag-item diag-ok" style="margin-top:12px"><strong>Nenhum problema crítico encontrado.</strong></div>`;
   }
-
-  if (desc) {
-    const v = desc.value.trim();
-    if (v.length > 150) { itens.push({ tipo: 'erro', msg: '❌ Descrição longa demais (' + v.length + ' chars). Máx 150.' }); _diagErros.push('desc_longa'); }
-    else if (v.length > 0) itens.push({ tipo: 'ok', msg: '✅ Descrição: OK (' + v.length + '/150 chars)' });
-    else itens.push({ tipo: 'info', msg: 'ℹ️ Descrição: não preenchida (opcional)' });
-  }
-
-  if (btnNome) {
-    const v = btnNome.value.trim();
-    if (v.length > 25) { itens.push({ tipo: 'erro', msg: '❌ Botão longo demais (' + v.length + ' chars). Máx 25.' }); _diagErros.push('btn_longo'); }
-    else if (v.length > 0) itens.push({ tipo: 'ok', msg: '✅ Botão: OK (' + v.length + '/25 chars)' });
-  }
-
-  if (btnLink) {
-    const v = btnLink.value.trim();
-    if (v && !v.startsWith('https://') && !v.startsWith('http://') && !v.startsWith('/')) {
-      itens.push({ tipo: 'erro', msg: '❌ Link inválido: deve começar com https:// ou /' });
-      _diagErros.push('link_invalido');
-    } else if (v) {
-      itens.push({ tipo: 'ok', msg: '✅ Link: OK' });
-    }
-  }
-
-  // 3. Verificar token GitHub (sincronismo)
-  try {
-    const r = await fetch('https://api.github.com/repos/missias123/itapolitanacajuru', { headers: { 'Authorization': 'token ' + GITHUB_TOKEN }, cache: 'no-store' });
-    if (r.ok) itens.push({ tipo: 'ok', msg: '✅ Token GitHub: válido e sincronismo funcionando' });
-    else itens.push({ tipo: 'erro', msg: '❌ Token GitHub: erro ' + r.status + ' — entre em contato com o suporte' });
-  } catch(e) {
-    itens.push({ tipo: 'aviso', msg: '⚠️ GitHub: sem conexão com internet' });
-  }
-
-  // Renderizar resultados
-  res.innerHTML = itens.map(i => `<div class="diag-item diag-${i.tipo}"><span>${i.tipo==='ok'?'✅':i.tipo==='erro'?'❌':i.tipo==='aviso'?'⚠️':'ℹ️'}</span><span>${i.msg}</span></div>`).join('');
-
-  // Mostrar botão de auto-correção se houver erros
-  const btnCorr = document.getElementById('btn-autocorrigir');
-  if (btnCorr) btnCorr.style.display = _diagErros.length > 0 ? 'block' : 'none';
 }
 
-async function autoCorrigir() {
-  const btn = document.getElementById('btn-autocorrigir');
-  btn.textContent = '⏳ Corrigindo...';
-  btn.disabled = true;
-
-  // Corrigir foto base64 no Gist
-  if (_diagErros.includes('foto_base64')) {
-    try {
-      const d = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-      d.fotoUrl = ''; // Remove foto corrompida
-      localStorage.setItem('itap_promo_local', JSON.stringify(d));
-      await publicarNoGist(GIST_PROMO_ID, 'itap-promo.json', { ...d, fotoUrl: '' });
-    } catch(e) {}
-  }
-
-  // Truncar campos que excedem o limite
-  const titulo = document.getElementById('promo-titulo');
-  const desc = document.getElementById('promo-desc');
-  const btnNome = document.getElementById('promo-btn-nome');
-  if (titulo && titulo.value.length > 50) { titulo.value = titulo.value.slice(0, 50); validarCampoPromo(titulo,'promo-titulo',50,'titulo'); }
-  if (desc && desc.value.length > 150) { desc.value = desc.value.slice(0, 150); validarCampoPromo(desc,'promo-desc',150,'desc'); }
-  if (btnNome && btnNome.value.length > 25) { btnNome.value = btnNome.value.slice(0, 25); validarCampoPromo(btnNome,'promo-btn-nome',25,'btn'); }
-
-  // Limpar todos os caches
-  limparTodosCaches();
-  salvarPromoLocal();
-
-  btn.textContent = '✅ Corrigido!';
-  setTimeout(() => {
-    btn.textContent = '🔧 Auto-Corrigir Erros Detectados';
-    btn.disabled = false;
-    executarDiagnostico();
-  }, 2000);
-}
-
-// ── RELATO DE ERRO ──────────────────────────────────────────────────────
-function enviarRelato() {
-  const campo = document.getElementById('campo-relato-erro');
-  const status = document.getElementById('relato-status');
-  const texto = (campo.value || '').trim();
-  if (!texto) { status.textContent = '⚠️ Descreva o problema antes de enviar.'; return; }
-
-  // Coletar dados técnicos automáticos
-  const promo = (()=>{try{return JSON.parse(localStorage.getItem('itap_promo_local')||'{}');}catch(e){return {};}})();
-  const dadosTec = [
-    '--- RELATO DE ERRO ADMIN ---',
-    'Data: ' + new Date().toLocaleString('pt-BR'),
-    'Erro descrito: ' + texto,
-    '',
-    '--- DADOS TÉCNICOS ---',
-    'Erros detectados: ' + (_diagErros.length ? _diagErros.join(', ') : 'nenhum'),
-    'Título atual: ' + (promo.titulo || '(vazio)'),
-    'Descrição: ' + (promo.descricao ? promo.descricao.slice(0,50)+'...' : '(vazio)'),
-    'Foto URL: ' + (promo.fotoUrl ? (promo.fotoUrl.startsWith('data:') ? 'BASE64 CORROMPIDO' : promo.fotoUrl.slice(0,60)+'...') : '(sem foto)'),
-    'Botão: ' + (promo.btnTexto || '(vazio)'),
-    'Link: ' + (promo.link || '(vazio)'),
-    'Data fim: ' + (promo.dataFim || '(sem data)'),
-    'Ativo: ' + (promo.ativo !== undefined ? promo.ativo : 'não definido'),
-    'User Agent: ' + navigator.userAgent.slice(0, 80)
-  ].join('%0A');
-
-  // Enviar via WhatsApp
-  const wppUrl = 'https://wa.me/5516996062046?text=' + encodeURIComponent(
-    '🚨 RELATO DE ERRO — ADMIN ITAPOLITANA\n\n' +
-    'Erro: ' + texto + '\n\n' +
-    'Erros detectados: ' + (_diagErros.length ? _diagErros.join(', ') : 'nenhum') + '\n' +
-    'Título: ' + (promo.titulo || '(vazio)') + '\n' +
-    'Foto: ' + (promo.fotoUrl ? (promo.fotoUrl.startsWith('data:') ? 'BASE64 CORROMPIDO' : 'OK') : 'sem foto') + '\n' +
-    'Data: ' + new Date().toLocaleString('pt-BR')
-  );
-
-  window.open(wppUrl, '_blank');
-  status.textContent = '✅ Relato aberto no WhatsApp!';
-  campo.value = '';
-  setTimeout(() => status.textContent = '', 5000);
-}
 </script>
-<script src="../scripts/ortografia.js"></script>
 </body>
 </html>

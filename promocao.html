@@ -77,14 +77,21 @@ footer{background:#111;padding:15px;text-align:center;font-size:10px;color:#888;
 </header>
 
 <div id="conteudo-promo">
-  <div class="foto-container">
-    <img src="imagens/promo_10_caixas_sorvete.webp?v=20260228" alt="Sorteio de 10 Caixas de Sorvete">
-    <div class="foto-badge">🔥 Promoção Ativa</div>
-  </div>
+  <section class="hero-promo">
+    <div class="hero-background"></div>
+    <div class="hero-content">
+        <div class="trophy-animation">🏆</div>
+        <div class="badge-animation">🔴 SORTEIO MENSAL OFICIAL</div>
+        <h1 class="hero-title">SORTEIO DO MÊS DE <span id="mes-atual"></span></h1>
+        <p class="hero-subtitle">Concorra a uma Caixa de Sorvete 5 Litros!</p>
+        <div class="prize-card">
+            🍦 Caixa de Sorvete 5 Litros<br>
+            Tipo Artesanal · Sabor a sua escolha
+        </div>
+    </div>
+    <div class="confetti-animation"></div>
+</section>
 
-  <div class="corpo">
-    <h1 class="promo-titulo">Sorteio de 10 Caixas de Sorvete! 🍨🎉</h1>
-    <p class="promo-desc">Siga @sorveteriaitapolitanacajuru, comente PROMO e concorra a 1 caixa de 5L todo mês! 🍨🎉</p>
 
     <div class="cd-section" id="cd-section">
       <div class="cd-lbl">⏳ Encerra em</div>
@@ -95,56 +102,1123 @@ footer{background:#111;padding:15px;text-align:center;font-size:10px;color:#888;
         <div class="cd-box"><div class="cd-num" id="cd-s">00</div><div class="cd-unit">Seg</div></div>
       </div>
       <div class="cd-encerrado" id="cd-encerrado">⏰ Promoção Encerrada</div>
-    </div>
-
     <div class="promo-links">
       <a class="promo-btn btn-principal" href="https://www.instagram.com/p/DVUhhwSCby4/" target="_blank" rel="noopener noreferrer">📸 Participar no Instagram! 🍦</a>
-      <button type="button" class="promo-btn btn-regulamento" onclick="abrirRegulamento()">📋 REGRAS OFICIAIS</button>
+      <button
+  type="button"
+  onclick="abrirRegulamento()"
+  id="btn-regulamento-oficial"
+  style="
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:16px 20px;
+    background:linear-gradient(
+      135deg,
+      #1A237E,
+      #283593,
+      #1A237E
+    );
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    font-family:inherit;
+    box-shadow:0 4px 16px
+      rgba(26,35,126,0.4);
+    letter-spacing:0.3px;
+    position:relative;
+    overflow:hidden;
+    transition:all .2s ease">
+  <span style="font-size:20px">📋</span>
+  <div style="text-align:left">
+    <div style="font-size:14px;
+      font-weight:900;line-height:1.2">
+      Regulamento Oficial Completo
+    </div>
+    <div style="font-size:11px;
+      opacity:0.85;font-weight:600;
+      margin-top:2px">
+      12 cláusulas · LGPD · CDC ·
+      Todas as regras
+    </div>
+  </div>
+  <span style="margin-left:auto;
+    font-size:18px;opacity:0.8">›</span>
+</button>
       <a class="promo-btn btn-encomenda" href="encomendas.html">📦 Fazer Encomenda</a>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modal-regulamento" onclick="fecharRegulamento(event)">
-  <div class="modal-box">
-    <div class="modal-titulo">📋 Regulamento da Promoção</div>
-    <button type="button" class="modal-close" onclick="fecharRegulamento()">✕</button>
-    <div class="modal-texto">📜 REGULAMENTO OFICIAL DA PROMOÇÃO
-“PROMOÇÃO SORVETERIA ITAPOLITANA CAJURU”
+  
+  <div style="background:#000; color:#fff; border: 2px solid #fff; padding: 10px; margin-bottom: 20px; text-align:center; font-family: monospace;">
+    <p>REGULAMENTO OFICIAL DE PROMOÇÃO COMERCIAL</p>
+    <p>"SORTEIO MENSAL ITAPOLITANA 2026"</p>
+    <p>&nbsp;</p>
+    <p>Sorveteria Itapolitana Cajuru — CNPJ: 08.922.044/0001-80</p>
+    <p>Versão: 1.0 — Vigência: 01/03/2026 a 01/01/2027</p>
+  </div>
 
-1. PROMOTORA
-A promoção é realizada pela Sorveteria Itapolitana Cajuru, com sede em Cajuru/SP.
 
-2. PERÍODO DA PROMOÇÃO
-Válida até 31 de dezembro, com sorteios mensais todo dia 01.
+  <!-- PREÂMBULO -->
+  <div style="background:#FFF3E0; border-left:4px solid #E65100; border-radius:0 10px 10px 0; padding:12px 14px; margin-bottom:16px; font-size:12px; font-weight:700; color:#BF360C">
+    ⚖️ A presente promoção é realizada em caráter<br>GRATUITO, sem exigência de compra ou pagamento<br>de qualquer natureza, sendo vedada qualquer<br>cobrança para participação, nos termos do<br>Art. 39, inciso I do Código de Defesa do<br>Consumidor (Lei nº 8.078/1990).<br><br>A participação implica ACEITAÇÃO INTEGRAL,<br>IRRESTRITA e IRREVOGÁVEL de todos os termos<br>deste regulamento.
+  </div>
 
-3. QUEM PODE PARTICIPAR
-Pessoas físicas com 18 anos ou mais, perfil público no Instagram e residentes no Brasil.
 
-4. COMO PARTICIPAR
-- Seguir @sorveteriaitapolitanacajuru
-- Digitar PROMO na publicação oficial
-- Realizar o cadastro mensal quando solicitado
+  <!-- SEÇÃO 1 -->
+  <div id="reg-s1" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 1 — DA PROMOTORA
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      1.1 Razão Social:<br>Sorveteria Itapolitana Cajuru<br><br>1.2 Endereço:<br>R. Cel. Manoel Caetano, 311<br>Pça Largo São Bento — Cajuru/SP<br>CEP: 14240-000<br><br>1.3 Contato oficial:<br>WhatsApp: (16) 99606-2046<br>Instagram: @sorveteriaitapolitanacajuru<br>Site: itapolitanacajuru.com.br<br><br>1.4 Horário de atendimento para<br>questões relacionadas à promoção:<br>Segunda a Sábado, das 10h às 20h<br>(horário de Brasília)
+    </div>
+  </div>
 
-5. DO PRÊMIO
-10 caixas de sorvete de 5 litros (01 por mês).
 
-6. SORTEIO E DIVULGAÇÃO
-Todo dia 01 de cada mês no Instagram oficial.
+  <!-- SEÇÃO 2 -->
+  <div id="reg-s2" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 2 — DO PERÍODO E ABRANGÊNCIA
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      2.1 Período total da promoção:<br>01 de março de 2026 a 01 de janeiro de 2027<br><br>2.2 Abrangência territorial:<br>Esta promoção é válida para residentes<br>dos seguintes municípios do estado de São Paulo:<br><br><b>✅ Cajuru/SP</b><br><b>✅ Santa Cruz da Esperança/SP</b><br><b>✅ Cássia dos Coqueiros/SP</b><br><br>Participantes residentes em outros<br>municípios poderão comentar e se<br>cadastrar, porém o prêmio é de<br>retirada PRESENCIAL na loja da promotora<br>em Cajuru/SP. O deslocamento para<br>retirada é de responsabilidade<br>exclusiva do ganhador, sem qualquer<br>ressarcimento de custos de transporte<br>pela promotora.<br><br>2.3 A promoção consiste em 10 (dez) sorteios<br>mensais independentes entre si, realizados<br>sempre no dia 01 de cada mês às 00:01<br>(horário oficial de Brasília — UTC-3).<br><br>2.4 Cada ciclo mensal de participação é independente.<br>A participação em um mês NÃO garante,<br>NÃO acumula e NÃO transfere direitos<br>para meses subsequentes.<br><br>2.5 O encerramento de cada ciclo mensal<br>ocorre impreterivelmente no dia 01 do<br>mês seguinte às 00:01 (horário de Brasília),<br>sendo VEDADA qualquer participação<br>após este prazo, sem exceções.
+    </div>
+  </div>
 
-7. ENTREGA DO PRÊMIO
-Retirada presencial na unidade Itapolitana Cajuru.
 
-8. DESCLASSIFICAÇÃO
-Descumprimento de regras ou fraude.
+  <!-- SEÇÃO 3 -->
+  <div id="reg-s3" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 3 — DOS REQUISITOS DE PARTICIPAÇÃO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      3.1 Poderá participar qualquer pessoa que<br>cumulativamente atenda a TODOS os<br>requisitos abaixo:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;a) Ser pessoa física;<br>&nbsp;&nbsp;&nbsp;&nbsp;b) Ter idade mínima de 18 (dezoito) anos<br>completos na data de participação;<br>&nbsp;&nbsp;&nbsp;&nbsp;c) Possuir perfil PÚBLICO e ATIVO<br>no Instagram durante todo o período<br>de participação até a data do sorteio;<br>&nbsp;&nbsp;&nbsp;&nbsp;d) Residir em um dos municípios<br>abrangidos pela promoção (Cláusula 2.2);<br>&nbsp;&nbsp;&nbsp;&nbsp;e) Possuir acesso ao Direct (mensagens<br>diretas) do Instagram desbloqueado<br>para recebimento do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;f) Seguir o perfil oficial<br>@sorveteriaitapolitanacajuru<br>e mantê-lo seguido até a data<br>do sorteio do respectivo mês.<br><br>3.2 Estão EXPRESSAMENTE IMPEDIDOS<br>de participar:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;a) Funcionários, colaboradores,<br>prestadores de serviço e estagiários<br>da Sorveteria Itapolitana Cajuru;<br>&nbsp;&nbsp;&nbsp;&nbsp;b) Cônjuges, companheiros(as) e parentes<br>de primeiro e segundo grau dos<br>impedidos pela alínea "a";<br>&nbsp;&nbsp;&nbsp;&nbsp;c) Pessoas jurídicas de qualquer natureza;<br>&nbsp;&nbsp;&nbsp;&nbsp;d) Menores de 18 anos, ainda que<br>emancipados;<br>&nbsp;&nbsp;&nbsp;&nbsp;e) Perfis falsos, automatizados (bots),<br>duplicados ou suspeitos de fraude,<br>a exclusivo critério da promotora;<br>&nbsp;&nbsp;&nbsp;&nbsp;f) Pessoas que tenham sido desclassificadas<br>em edições anteriores por infração<br>a este regulamento.<br><br>3.3 A promotora reserva-se o direito de<br>verificar a elegibilidade de qualquer<br>participante a qualquer momento,<br>inclusive após o sorteio, podendo<br>desclassificar retroativamente em<br>caso de irregularidade comprovada.
+    </div>
+  </div>
 
-9. USO DE IMAGEM
-Autorização gratuita para divulgação do resultado.
 
-10. DISPOSIÇÕES GERAIS
-Promoção não associada ao Instagram. Casos omissos resolvidos pela promotora.
+  <!-- SEÇÃO 4 -->
+  <div id="reg-s4" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 4 — DO MECANISMO DE PARTICIPAÇÃO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      4.1 A participação ocorre exclusivamente<br>pela plataforma Instagram e é composta<br>pelas seguintes etapas OBRIGATÓRIAS<br>e CUMULATIVAS:<br><br><div style="font-family: monospace; text-align: center; margin: 5px 0;">┌─────────────────────────────────────┐</div><br>│ ETAPA 1 — SEGUIR O PERFIL OFICIAL  │<br><div style="font-family: monospace; text-align: center; margin: 5px 0;">└─────────────────────────────────────┘</div><br>Seguir o perfil @sorveteriaitapolitanacajuru<br>no Instagram. O perfil deve permanecer<br>seguido até a data e hora do sorteio.<br>Deixar de seguir antes do sorteio<br>implica desclassificação automática<br>e imediata, sem aviso prévio.<br><br><div style="font-family: monospace; text-align: center; margin: 5px 0;">┌─────────────────────────────────────┐</div><br>│ ETAPA 2 — COMENTAR A PALAVRA-CHAVE │<br><div style="font-family: monospace; text-align: center; margin: 5px 0;">└─────────────────────────────────────┘</div><br>Comentar EXATAMENTE a palavra:<br><br><div style="text-align:center; font-weight:bold; margin:10px 0; font-size: 1.2em;">➤ PROMO ◀</div><br><br>Em qualquer publicação oficial do<br>perfil @sorveteriaitapolitanacajuru.<br>O comentário deve conter SOMENTE<br>a palavra PROMO, sem espaços adicionais,<br>caracteres especiais, emojis ou<br>outras palavras, pois o sistema<br>ManyChat é sensível ao conteúdo exato.<br><br><div style="font-family: monospace; text-align: center; margin: 5px 0;">┌─────────────────────────────────────┐</div><br>│ ETAPA 3 — CONFIRMAR VIA MANYCHAT   │<br><div style="font-family: monospace; text-align: center; margin: 5px 0;">└─────────────────────────────────────┘</div><br>Após o comentário, o sistema ManyChat<br>enviará mensagem automática no Direct<br>do Instagram. O participante DEVE:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Responder à mensagem do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Seguir TODAS as instruções enviadas;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Concluir o cadastro integralmente.<br><br><br><b>⚠️ SEM A CONFIRMAÇÃO VIA MANYCHAT,</b><br>O CADASTRO NÃO É EFETIVADO E A<br>PARTICIPAÇÃO NÃO É VÁLIDA, MESMO<br>QUE O COMENTÁRIO TENHA SIDO FEITO.<br><br>4.2 Limite de participação:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ 1 (uma) participação válida<br>por pessoa por mês<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Comentários adicionais no mesmo<br>mês NÃO geram participações extras<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Perfis duplicados ou múltiplas<br>contas do mesmo titular resultam<br>em desclassificação de TODAS<br>as participações vinculadas.<br><br>4.3 A promotora NÃO se responsabiliza por:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Comentários não reconhecidos pelo<br>ManyChat por erro de digitação;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Direct bloqueado impedindo o<br>recebimento do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Falhas técnicas do Instagram<br>ou do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Perda de acesso ao perfil do<br>participante após o comentário;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Conexão de internet instável<br>do participante.<br><br>4.4 Em caso de falha técnica comprovada<br>do sistema ManyChat que impeça o<br>cadastro de participantes elegíveis,<br>a promotora poderá, a seu exclusivo<br>critério, estabelecer canal alternativo<br>de cadastro, comunicando no Instagram<br>oficial com antecedência mínima de<br>24 (vinte e quatro) horas.
+    </div>
+  </div>
 
-📍 Sorveteria Itapolitana Cajuru – Cajuru/SP</div>
+
+  <!-- SEÇÃO 5 -->
+  <div id="reg-s5" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 5 — DO PRÊMIO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      5.1 Prêmio mensal:<br>1 (uma) Caixa de Sorvete tipo<br>artesanal de 5 (cinco) litros.<br><br>5.2 Escolha do sabor:<br>O ganhador poderá escolher livremente<br>dentre os sabores disponíveis no<br>catálogo da sorveteria NA DATA<br>da retirada, sujeito à disponibilidade<br>de estoque naquele momento.<br><br><br><b>⚠️ A promotora NÃO se compromete</b><br>a disponibilizar sabor específico<br>que não esteja em produção na<br>data da retirada.<br><br>5.3 O prêmio é:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ PESSOAL e INTRANSFERÍVEL;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Não conversível em dinheiro,<br>crédito ou outros produtos;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Não acumulável para meses<br>subsequentes;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Não fracionável.<br><br>5.4 Total de prêmios da promoção:<br>10 (dez) caixas de sorvete,<br>sendo 1 (uma) por mês.<br><br>5.5 Valor unitário aproximado do prêmio:<br>R$ 80,00 (oitenta reais) a R$ 120,00 (cento e vinte reais),<br>a depender do sabor e disponibilidade.<br><br>5.6 Em caso de desclassificação do<br>ganhador sorteado, será realizado<br>novo sorteio entre os participantes<br>elegíveis remanescentes do mesmo mês,<br>até que um ganhador válido seja<br>identificado ou se esgote a lista<br>de participantes.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 6 -->
+  <div id="reg-s6" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 6 — DO SORTEIO E TRANSPARÊNCIA
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      6.1 Plataforma oficial de sorteio:<br>INNER — Plataforma de Inteligência<br>Artificial para sorteios.<br><br>6.2 O sorteio é realizado de forma:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ 100% aleatória e automatizada;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Sem interferência humana<br>no resultado;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Imparcial e auditável.<br><br>6.3 Data e horário:<br>Todo dia 01 de cada mês<br>às 00:01 (horário de Brasília).<br><br>6.4 O resultado será divulgado no<br>perfil oficial do Instagram<br>@sorveteriaitapolitanacajuru<br>em até 24 (vinte e quatro) horas<br>após a realização do sorteio.<br><br>6.5 O ganhador será contatado via<br>Direct do Instagram pela promotora<br>em até 24 (vinte e quatro) horas<br>após a divulgação do resultado.<br><br>6.6 O comprovante do sorteio (registro<br>da plataforma INNER) será arquivado<br>pela promotora e poderá ser<br>solicitado para consulta em caso<br>de contestação formal.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 7 -->
+  <div id="reg-s7" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 7 — DA NOTIFICAÇÃO E CONFIRMAÇÃO DO GANHADOR
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      7.1 O ganhador será notificado via<br>Direct do Instagram. É de<br>responsabilidade do participante<br>manter seu Direct desbloqueado<br>e verificar as mensagens.<br><br>7.2 O ganhador terá o prazo<br>IMPRORROGÁVEL de 24 (vinte e quatro)<br>horas, contadas a partir do envio<br>da primeira mensagem de notificação<br>pela promotora, para responder e<br>confirmar seus dados.<br><br>7.3 A falta de resposta ou a não<br>confirmação dos dados no prazo<br>estabelecido na Cláusula 7.2<br>implicará na desclassificação<br>automática do ganhador, sem<br>direito a qualquer indenização<br>ou prêmio.<br><br>7.4 Em caso de desclassificação,<br>um novo sorteio será realizado<br>imediatamente entre os demais<br>participantes elegíveis do mesmo<br>mês, seguindo o mesmo procedimento<br>de notificação e prazo.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 8 -->
+  <div id="reg-s8" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 8 — DA RETIRADA DO PRÊMIO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      8.1 O prêmio deverá ser retirado<br>EXCLUSIVAMENTE de forma PRESENCIAL<br>na Sorveteria Itapolitana Cajuru,<br>localizada na R. Cel. Manoel Caetano,<br>311, Pça Largo São Bento,<br>Cajuru/SP, CEP: 14240-000.<br><br>8.2 O prazo máximo para retirada<br>do prêmio é de 30 (trinta) dias<br>corridos, contados a partir da<br>data de divulgação do resultado<br>no Instagram.<br><br>8.3 No ato da retirada, o ganhador<br>deverá apresentar:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Documento de identificação<br>original com foto (RG ou CNH);<br>&nbsp;&nbsp;&nbsp;&nbsp;→ O perfil do Instagram no celular,<br>comprovando ser o titular da<br>conta que participou e foi sorteada.<br><br>8.4 O horário de retirada é de<br>Segunda a Sábado, das 10h às 20h,<br>mediante agendamento prévio<br>via WhatsApp (16) 99606-2046.<br><br>8.5 A não retirada do prêmio no<br>prazo estabelecido na Cláusula 8.2<br>implicará na perda do direito ao<br>prêmio, sem qualquer indenização<br>ou ressarcimento. O prêmio será<br>considerado não reclamado e<br>revertido em doação para uma<br>instituição de caridade local, a<br>critério da promotora.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 9 -->
+  <div id="reg-s9" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 9 — DAS DISPOSIÇÕES GERAIS
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      9.1 A participação nesta promoção<br>implica na aceitação total e<br>irrestrita de todos os itens<br>deste regulamento.<br><br>9.2 O participante autoriza, sem<br>ônus, o uso de seu nome, imagem<br>e voz para divulgação do resultado<br>da promoção em qualquer mídia, a<br>critério da promotora, pelo prazo<br>de 1 (um) ano a contar da data<br>do sorteio.<br><br>9.3 As dúvidas e omissões não<br>previstas neste regulamento serão<br>dirimidas por uma comissão julgadora<br>composta por representantes da<br>promotora, cuja decisão será<br>soberana e irrecorrível.<br><br>9.4 Fica eleito o foro da Comarca<br>de Cajuru/SP para dirimir quaisquer<br>questões oriundas desta promoção.<br><br>9.5 Este regulamento pode ser alterado<br>a qualquer momento, sem aviso prévio,<br>a exclusivo critério da promotora.<br>A versão mais atualizada estará<br>sempre disponível no site oficial<br>itapolitanacajuru.com.br/promocao.<br><br>9.6 A promotora não se responsabiliza<br>por fraudes, plágios ou qualquer<br>violação de direitos autorais<br>cometida pelos participantes.<br><br>9.7 A simples participação nesta<br>promoção constitui conhecimento<br>e concordância com todas as<br>disposições deste regulamento.
+    </div>
+  </div>
+
+</div>
+
+
+  <div style="background:#000; color:#fff; border: 2px solid #fff; padding: 10px; margin-bottom: 20px; text-align:center; font-family: monospace;">
+    <p>REGULAMENTO OFICIAL DE PROMOÇÃO COMERCIAL</p>
+    <p>"SORTEIO MENSAL ITAPOLITANA 2026"</p>
+    <p>&nbsp;</p>
+    <p>Sorveteria Itapolitana Cajuru — CNPJ: 08.922.044/0001-80</p>
+    <p>Versão: 1.0 — Vigência: 01/03/2026 a 01/01/2027</p>
+  </div>
+
+
+  <!-- PREÂMBULO -->
+  <div style="background:#FFF3E0; border-left:4px solid #E65100; border-radius:0 10px 10px 0; padding:12px 14px; margin-bottom:16px; font-size:12px; font-weight:700; color:#BF360C">
+    ⚖️ A presente promoção é realizada em caráter<br>GRATUITO, sem exigência de compra ou pagamento<br>de qualquer natureza, sendo vedada qualquer<br>cobrança para participação, nos termos do<br>Art. 39, inciso I do Código de Defesa do<br>Consumidor (Lei nº 8.078/1990).<br><br>A participação implica ACEITAÇÃO INTEGRAL,<br>IRRESTRITA e IRREVOGÁVEL de todos os termos<br>deste regulamento.
+  </div>
+
+
+  <!-- SEÇÃO 1 -->
+  <div id="reg-s1" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 1 — DA PROMOTORA
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      1.1 Razão Social:<br>Sorveteria Itapolitana Cajuru<br><br>1.2 Endereço:<br>R. Cel. Manoel Caetano, 311<br>Pça Largo São Bento — Cajuru/SP<br>CEP: 14240-000<br><br>1.3 Contato oficial:<br>WhatsApp: (16) 99606-2046<br>Instagram: @sorveteriaitapolitanacajuru<br>Site: itapolitanacajuru.com.br<br><br>1.4 Horário de atendimento para<br>questões relacionadas à promoção:<br>Segunda a Sábado, das 10h às 20h<br>(horário de Brasília)
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 2 -->
+  <div id="reg-s2" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 2 — DO PERÍODO E ABRANGÊNCIA
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      2.1 Período total da promoção:<br>01 de março de 2026 a 01 de janeiro de 2027<br><br>2.2 Abrangência territorial:<br>Esta promoção é válida para residentes<br>dos seguintes municípios do estado de São Paulo:<br><br><b>✅ Cajuru/SP</b><br><b>✅ Santa Cruz da Esperança/SP</b><br><b>✅ Cássia dos Coqueiros/SP</b><br><br>Participantes residentes em outros<br>municípios poderão comentar e se<br>cadastrar, porém o prêmio é de<br>retirada PRESENCIAL na loja da promotora<br>em Cajuru/SP. O deslocamento para<br>retirada é de responsabilidade<br>exclusiva do ganhador, sem qualquer<br>ressarcimento de custos de transporte<br>pela promotora.<br><br>2.3 A promoção consiste em 10 (dez) sorteios<br>mensais independentes entre si, realizados<br>sempre no dia 01 de cada mês às 00:01<br>(horário oficial de Brasília — UTC-3).<br><br>2.4 Cada ciclo mensal de participação é independente.<br>A participação em um mês NÃO garante,<br>NÃO acumula e NÃO transfere direitos<br>para meses subsequentes.<br><br>2.5 O encerramento de cada ciclo mensal<br>ocorre impreterivelmente no dia 01 do<br>mês seguinte às 00:01 (horário de Brasília),<br>sendo VEDADA qualquer participação<br>após este prazo, sem exceções.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 3 -->
+  <div id="reg-s3" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 3 — DOS REQUISITOS DE PARTICIPAÇÃO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      3.1 Poderá participar qualquer pessoa que<br>cumulativamente atenda a TODOS os<br>requisitos abaixo:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;a) Ser pessoa física;<br>&nbsp;&nbsp;&nbsp;&nbsp;b) Ter idade mínima de 18 (dezoito) anos<br>completos na data de participação;<br>&nbsp;&nbsp;&nbsp;&nbsp;c) Possuir perfil PÚBLICO e ATIVO<br>no Instagram durante todo o período<br>de participação até a data do sorteio;<br>&nbsp;&nbsp;&nbsp;&nbsp;d) Residir em um dos municípios<br>abrangidos pela promoção (Cláusula 2.2);<br>&nbsp;&nbsp;&nbsp;&nbsp;e) Possuir acesso ao Direct (mensagens<br>diretas) do Instagram desbloqueado<br>para recebimento do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;f) Seguir o perfil oficial<br>@sorveteriaitapolitanacajuru<br>e mantê-lo seguido até a data<br>do sorteio do respectivo mês.<br><br>3.2 Estão EXPRESSAMENTE IMPEDIDOS<br>de participar:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;a) Funcionários, colaboradores,<br>prestadores de serviço e estagiários<br>da Sorveteria Itapolitana Cajuru;<br>&nbsp;&nbsp;&nbsp;&nbsp;b) Cônjuges, companheiros(as) e parentes<br>de primeiro e segundo grau dos<br>impedidos pela alínea "a";<br>&nbsp;&nbsp;&nbsp;&nbsp;c) Pessoas jurídicas de qualquer natureza;<br>&nbsp;&nbsp;&nbsp;&nbsp;d) Menores de 18 anos, ainda que<br>emancipados;<br>&nbsp;&nbsp;&nbsp;&nbsp;e) Perfis falsos, automatizados (bots),<br>duplicados ou suspeitos de fraude,<br>a exclusivo critério da promotora;<br>&nbsp;&nbsp;&nbsp;&nbsp;f) Pessoas que tenham sido desclassificadas<br>em edições anteriores por infração<br>a este regulamento.<br><br>3.3 A promotora reserva-se o direito de<br>verificar a elegibilidade de qualquer<br>participante a qualquer momento,<br>inclusive após o sorteio, podendo<br>desclassificar retroativamente em<br>caso de irregularidade comprovada.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 4 -->
+  <div id="reg-s4" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 4 — DO MECANISMO DE PARTICIPAÇÃO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      4.1 A participação ocorre exclusivamente<br>pela plataforma Instagram e é composta<br>pelas seguintes etapas OBRIGATÓRIAS<br>e CUMULATIVAS:<br><br><div style="font-family: monospace; text-align: center; margin: 5px 0;">┌─────────────────────────────────────┐</div><br>│ ETAPA 1 — SEGUIR O PERFIL OFICIAL  │<br><div style="font-family: monospace; text-align: center; margin: 5px 0;">└─────────────────────────────────────┘</div><br>Seguir o perfil @sorveteriaitapolitanacajuru<br>no Instagram. O perfil deve permanecer<br>seguido até a data e hora do sorteio.<br>Deixar de seguir antes do sorteio<br>implica desclassificação automática<br>e imediata, sem aviso prévio.<br><br><div style="font-family: monospace; text-align: center; margin: 5px 0;">┌─────────────────────────────────────┐</div><br>│ ETAPA 2 — COMENTAR A PALAVRA-CHAVE │<br><div style="font-family: monospace; text-align: center; margin: 5px 0;">└─────────────────────────────────────┘</div><br>Comentar EXATAMENTE a palavra:<br><br><div style="text-align:center; font-weight:bold; margin:10px 0; font-size: 1.2em;">➤ PROMO ◀</div><br><br>Em qualquer publicação oficial do<br>perfil @sorveteriaitapolitanacajuru.<br>O comentário deve conter SOMENTE<br>a palavra PROMO, sem espaços adicionais,<br>caracteres especiais, emojis ou<br>outras palavras, pois o sistema<br>ManyChat é sensível ao conteúdo exato.<br><br><div style="font-family: monospace; text-align: center; margin: 5px 0;">┌─────────────────────────────────────┐</div><br>│ ETAPA 3 — CONFIRMAR VIA MANYCHAT   │<br><div style="font-family: monospace; text-align: center; margin: 5px 0;">└─────────────────────────────────────┘</div><br>Após o comentário, o sistema ManyChat<br>enviará mensagem automática no Direct<br>do Instagram. O participante DEVE:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Responder à mensagem do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Seguir TODAS as instruções enviadas;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Concluir o cadastro integralmente.<br><br><br><b>⚠️ SEM A CONFIRMAÇÃO VIA MANYCHAT,</b><br>O CADASTRO NÃO É EFETIVADO E A<br>PARTICIPAÇÃO NÃO É VÁLIDA, MESMO<br>QUE O COMENTÁRIO TENHA SIDO FEITO.<br><br>4.2 Limite de participação:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ 1 (uma) participação válida<br>por pessoa por mês<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Comentários adicionais no mesmo<br>mês NÃO geram participações extras<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Perfis duplicados ou múltiplas<br>contas do mesmo titular resultam<br>em desclassificação de TODAS<br>as participações vinculadas.<br><br>4.3 A promotora NÃO se responsabiliza por:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Comentários não reconhecidos pelo<br>ManyChat por erro de digitação;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Direct bloqueado impedindo o<br>recebimento do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Falhas técnicas do Instagram<br>ou do ManyChat;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Perda de acesso ao perfil do<br>participante após o comentário;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Conexão de internet instável<br>do participante.<br><br>4.4 Em caso de falha técnica comprovada<br>do sistema ManyChat que impeça o<br>cadastro de participantes elegíveis,<br>a promotora poderá, a seu exclusivo<br>critério, estabelecer canal alternativo<br>de cadastro, comunicando no Instagram<br>oficial com antecedência mínima de<br>24 (vinte e quatro) horas.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 5 -->
+  <div id="reg-s5" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 5 — DO PRÊMIO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      5.1 Prêmio mensal:<br>1 (uma) Caixa de Sorvete tipo<br>artesanal de 5 (cinco) litros.<br><br>5.2 Escolha do sabor:<br>O ganhador poderá escolher livremente<br>dentre os sabores disponíveis no<br>catálogo da sorveteria NA DATA<br>da retirada, sujeito à disponibilidade<br>de estoque naquele momento.<br><br><br><b>⚠️ A promotora NÃO se compromete</b><br>a disponibilizar sabor específico<br>que não esteja em produção na<br>data da retirada.<br><br>5.3 O prêmio é:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ PESSOAL e INTRANSFERÍVEL;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Não conversível em dinheiro,<br>crédito ou outros produtos;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Não acumulável para meses<br>subsequentes;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Não fracionável.<br><br>5.4 Total de prêmios da promoção:<br>10 (dez) caixas de sorvete,<br>sendo 1 (uma) por mês.<br><br>5.5 Valor unitário aproximado do prêmio:<br>R$ 80,00 (oitenta reais) a R$ 120,00 (cento e vinte reais),<br>a depender do sabor e disponibilidade.<br><br>5.6 Em caso de desclassificação do<br>ganhador sorteado, será realizado<br>novo sorteio entre os participantes<br>elegíveis remanescentes do mesmo mês,<br>até que um ganhador válido seja<br>identificado ou se esgote a lista<br>de participantes.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 6 -->
+  <div id="reg-s6" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 6 — DO SORTEIO E TRANSPARÊNCIA
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      6.1 Plataforma oficial de sorteio:<br>INNER — Plataforma de Inteligência<br>Artificial para sorteios.<br><br>6.2 O sorteio é realizado de forma:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ 100% aleatória e automatizada;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Sem interferência humana<br>no resultado;<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Imparcial e auditável.<br><br>6.3 Data e horário:<br>Todo dia 01 de cada mês<br>às 00:01 (horário de Brasília).<br><br>6.4 O resultado será divulgado no<br>perfil oficial do Instagram<br>@sorveteriaitapolitanacajuru<br>em até 24 (vinte e quatro) horas<br>após a realização do sorteio.<br><br>6.5 O ganhador será contatado via<br>Direct do Instagram pela promotora<br>em até 24 (vinte e quatro) horas<br>após a divulgação do resultado.<br><br>6.6 O comprovante do sorteio (registro<br>da plataforma INNER) será arquivado<br>pela promotora e poderá ser<br>solicitado para consulta em caso<br>de contestação formal.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 7 -->
+  <div id="reg-s7" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 7 — DA NOTIFICAÇÃO E CONFIRMAÇÃO DO GANHADOR
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      7.1 O ganhador será notificado via<br>Direct do Instagram. É de<br>responsabilidade do participante<br>manter seu Direct desbloqueado<br>e verificar as mensagens.<br><br>7.2 O ganhador terá o prazo<br>IMPRORROGÁVEL de 24 (vinte e quatro)<br>horas, contadas a partir do envio<br>da primeira mensagem de notificação<br>pela promotora, para responder e<br>confirmar seus dados.<br><br>7.3 A falta de resposta ou a não<br>confirmação dos dados no prazo<br>estabelecido na Cláusula 7.2<br>implicará na desclassificação<br>automática do ganhador, sem<br>direito a qualquer indenização<br>ou prêmio.<br><br>7.4 Em caso de desclassificação,<br>um novo sorteio será realizado<br>imediatamente entre os demais<br>participantes elegíveis do mesmo<br>mês, seguindo o mesmo procedimento<br>de notificação e prazo.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 8 -->
+  <div id="reg-s8" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 8 — DA RETIRADA DO PRÊMIO
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      8.1 O prêmio deverá ser retirado<br>EXCLUSIVAMENTE de forma PRESENCIAL<br>na Sorveteria Itapolitana Cajuru,<br>localizada na R. Cel. Manoel Caetano,<br>311, Pça Largo São Bento,<br>Cajuru/SP, CEP: 14240-000.<br><br>8.2 O prazo máximo para retirada<br>do prêmio é de 30 (trinta) dias<br>corridos, contados a partir da<br>data de divulgação do resultado<br>no Instagram.<br><br>8.3 No ato da retirada, o ganhador<br>deverá apresentar:<br>&nbsp;&nbsp;&nbsp;&nbsp;→ Documento de identificação<br>original com foto (RG ou CNH);<br>&nbsp;&nbsp;&nbsp;&nbsp;→ O perfil do Instagram no celular,<br>comprovando ser o titular da<br>conta que participou e foi sorteada.<br><br>8.4 O horário de retirada é de<br>Segunda a Sábado, das 10h às 20h,<br>mediante agendamento prévio<br>via WhatsApp (16) 99606-2046.<br><br>8.5 A não retirada do prêmio no<br>prazo estabelecido na Cláusula 8.2<br>implicará na perda do direito ao<br>prêmio, sem qualquer indenização<br>ou ressarcimento. O prêmio será<br>considerado não reclamado e<br>revertido em doação para uma<br>instituição de caridade local, a<br>critério da promotora.
+    </div>
+  </div>
+
+
+  <!-- SEÇÃO 9 -->
+  <div id="reg-s9" style="margin-bottom:20px;">
+    <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px;">
+      CLÁUSULA 9 — DAS DISPOSIÇÕES GERAIS
+    </div>
+    <div style="padding:0 4px; line-height: 1.6;">
+      9.1 A participação nesta promoção<br>implica na aceitação total e<br>irrestrita de todos os itens<br>deste regulamento.<br><br>9.2 O participante autoriza, sem<br>ônus, o uso de seu nome, imagem<br>e voz para divulgação do resultado<br>da promoção em qualquer mídia, a<br>critério da promotora, pelo prazo<br>de 1 (um) ano a contar da data<br>do sorteio.<br><br>9.3 As dúvidas e omissões não<br>previstas neste regulamento serão<br>dirimidas por uma comissão julgadora<br>composta por representantes da<br>promotora, cuja decisão será<br>soberana e irrecorrível.<br><br>9.4 Fica eleito o foro da Comarca<br>de Cajuru/SP para dirimir quaisquer<br>questões oriundas desta promoção.<br><br>9.5 Este regulamento pode ser alterado<br>a qualquer momento, sem aviso prévio,<br>a exclusivo critério da promotora.<br>A versão mais atualizada estará<br>sempre disponível no site oficial<br>itapolitanacajuru.com.br/promocao.<br><br>9.6 A promotora não se responsabiliza<br>por fraudes, plágios ou qualquer<br>violação de direitos autorais<br>cometida pelos participantes.<br><br>9.7 A simples participação nesta<br>promoção constitui conhecimento<br>e concordância com todas as<br>disposições deste regulamento.
+    </div>
+  </div>
+
+</div>
+<!-- HEADER DO MODAL -->
+	<div style="
+	  background:linear-gradient(
+	    135deg,#1A237E,#283593
+	  );
+	  padding:16px 18px;
+	  border-radius:14px 14px 0 0;
+	  position:sticky;
+	  top:0;
+	  z-index:10">
+
+	  <div style="display:flex;
+	    align-items:center;
+	    justify-content:space-between;
+	    margin-bottom:10px">
+	    <div>
+	      <div style="font-size:15px;
+	        font-weight:900;color:#fff">
+	        📋 Regulamento Oficial
+	      </div>
+	      <div style="font-size:11px;
+	        color:rgba(255,255,255,0.8);
+	        font-weight:600;margin-top:2px">
+	        Sorteio Mensal Itapolitana 2026
+	      </div>
+	    </div>
+	    <button
+	      type="button"
+	      onclick="fecharRegulamento()"
+	      style="background:rgba(255,255,255,0.2);
+	        border:none;border-radius:50%;
+	        width:32px;height:32px;
+	        color:#fff;font-size:16px;
+	        font-weight:900;cursor:pointer;
+	        display:flex;align-items:center;
+	        justify-content:center;
+	        flex-shrink:0">
+	      ✕
+	    </button>
+	  </div>
+
+	  <!-- ÍNDICE CLICÁVEL -->
+	  <div style="display:flex;
+	    gap:6px;flex-wrap:wrap">
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s1\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      1.Promotora
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s2\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      2.Período
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s3\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      3.Quem Pode
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s4\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      4.Como Part.
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s5\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      5.Prêmio
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s6\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      6.Sorteio
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s9\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      7.Retirada
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s11\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      8.LGPD
+	    </button>
+	  </div>
+	</div>
+
+	<!-- CORPO COM REGULAMENTO -->
+	<div style="padding:16px 18px 24px;
+	  overflow-y:auto;
+	  font-size:13px;
+	  line-height:1.7;
+	  color:#1A0A00;
+	  font-family:inherit">
+
+	  <!-- PREÂMBULO -->
+	  <div style="background:#FFF3E0;
+	    border-left:4px solid #E65100;
+	    border-radius:0 10px 10px 0;
+	    padding:12px 14px;
+	    margin-bottom:16px;
+	    font-size:12px;
+	    font-weight:700;
+	    color:#BF360C">
+	    ⚖️ Esta promoção é gratuita, sem
+	    exigência de compra ou pagamento,
+	    nos termos do Art. 39 do CDC
+	    (Lei 8.078/1990). A participação
+	    implica aceitação integral
+	    deste regulamento.
+	  </div>
+
+	  <!-- SEÇÃO 1 -->
+	  <div id="reg-s1"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      1. PROMOTORA
+	    </div>
+	    <div style="padding:0 4px">
+	      <b>Sorveteria Itapolitana Cajuru</b><br>
+	      📍 R. Cel. Manoel Caetano, 311<br>
+	      Pça Largo São Bento — Cajuru/SP<br>
+	      CEP: 14240-000<br><br>
+	      📱 WhatsApp: (16) 99606-2046<br>
+	      📸 @sorveteriaitapolitanacajuru<br>
+	      🌐 itapolitanacajuru.com.br<br>
+	      ⏰ Atendimento: Seg–Sáb 10h–20h
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 2 -->
+	  <div id="reg-s2"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      2. PERÍODO E ABRANGÊNCIA
+	    </div>
+	    <div style="padding:0 4px">
+	      📅 <b>Vigência:</b>
+	      01/03/2026 a 01/01/2027<br><br>
+	      📍 <b>Municípios participantes:</b><br>
+	      <div style="background:#E8F5E9;
+	        border-radius:10px;
+	        padding:10px 14px;
+	        margin:8px 0;
+	        border:1px solid #A5D6A7">
+	        ✅ Cajuru/SP<br>
+	        ✅ Santa Cruz da Esperança/SP<br>
+	        ✅ Cássia dos Coqueiros/SP
+	      </div>
+	      ⚠️ Participantes de outras cidades
+	      podem se cadastrar, porém a retirada
+		      é <b>presencial em Cajuru/SP</b>,
+		      sem ressarcimento de transporte.<br><br>
+		      🔄 São 10 sorteios mensais
+		      independentes. Cada mês é um
+		      sorteio novo — participações
+		      NÃO acumulam.
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 3 -->
+		  <div id="reg-s3"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      3. QUEM PODE PARTICIPAR
+		    </div>
+		    <div style="padding:0 4px">
+		      <b>✅ Pode participar quem:</b>
+		      <div style="background:#E8F5E9;
+		        border-radius:10px;
+		        padding:10px 14px;margin:8px 0;
+		        border:1px solid #A5D6A7">
+		        • Pessoa física, 18+ anos<br>
+		        • Perfil PÚBLICO no Instagram<br>
+		        • Direct desbloqueado<br>
+		        • Seguir @sorveteriaitapolitanacajuru
+		      </div>
+		      <b>❌ NÃO pode participar:</b>
+		      <div style="background:#FFEBEE;
+		        border-radius:10px;
+		        padding:10px 14px;margin:8px 0;
+		        border:1px solid #FFCDD2">
+		        • Funcionários e familiares
+		          da sorveteria (1º e 2º grau)<br>
+		        • Menores de 18 anos<br>
+		        • Perfis falsos ou bots<br>
+		        • Perfis privados<br>
+		        • Pessoas jurídicas<br>
+		        • Desclassificados anteriormente
+		      </div>
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 4 -->
+		  <div id="reg-s4"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      4. COMO PARTICIPAR
+		    </div>
+		    <div style="padding:0 4px">
+		      <div style="display:flex;
+		        flex-direction:column;gap:8px">
+		        <div style="background:#F3E5F5;
+		          border-radius:10px;
+		          padding:10px 14px;
+		          border-left:4px solid #7B2D8B">
+		          <b>PASSO 1 — Seguir</b><br>
+		          Seguir @sorveteriaitapolitanacajuru
+		          e manter seguido até o sorteio
+		        </div>
+		        <div style="background:#E3F2FD;
+		          border-radius:10px;
+		          padding:10px 14px;
+		          border-left:4px solid #1565C0">
+		          <b>PASSO 2 — Comentar</b><br>
+		          Comentar exatamente:<br>
+		          <span style="background:#1565C0;
+		            color:#fff;border-radius:6px;
+		            padding:2px 10px;
+		            font-weight:900;
+		            font-size:15px;
+		            display:inline-block;
+		            margin-top:4px">
+		            PROMO
+		          </span><br>
+		          <small>Sem emojis, espaços ou
+		          outras palavras</small>
+		        </div>
+		        <div style="background:#E8F5E9;
+		          border-radius:10px;
+		          padding:10px 14px;
+		          border-left:4px solid #2E7D32">
+		          <b>PASSO 3 — ManyChat</b><br>
+		          Responder o robô no Direct
+		          e concluir o cadastro.<br>
+		          <b>⚠️ Sem resposta = sem
+		          cadastro = fora do sorteio</b>
+		        </div>
+		        <div style="background:#FFF8E1;
+		          border-radius:10px;
+		          padding:10px 14px;
+		          border-left:4px solid #F9A825">
+		          <b>PASSO 4 — Aguardar</b><br>
+		          Sorteio todo dia 01 às 00:01
+		          via plataforma INNER (IA).
+		          Resultado no Instagram oficial.
+		        </div>
+		      </div>
+		      <div style="background:#FFEBEE;
+		        border-radius:10px;padding:10px 14px;
+		        margin-top:10px;font-size:12px;
+		        border:1px solid #FFCDD2">
+		        ⚠️ Limite: 1 participação por
+		        pessoa por mês. Múltiplas contas
+		        = desclassificação de todas.
+		      </div>
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 5 -->
+		  <div id="reg-s5"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      5. DO PRÊMIO
+		    </div>
+		    <div style="padding:0 4px">
+		      <div style="background:#E0F7FA;
+		        border-radius:10px;
+		        padding:10px 14px;
+		        margin-bottom:8px;
+		        border:1px solid #80DEEA">
+		        🎁 <b>1 (UMA) CAIXA DE SORVETE
+		        DE 5 LITROS</b><br>
+		        Tipo Artesanal — Sabor à escolha
+		        do ganhador, mediante estoque.
+		      </div>
+		      <div style="background:#FFF3E0;
+		        border-radius:10px;
+		        padding:10px 14px;
+		        border-left:4px solid #E65100;
+		        font-size:12px;
+		        font-weight:700;
+		        color:#BF360C">
+		        ⚠️ O prêmio não poderá ser
+		        convertido em dinheiro ou trocado
+		        por outros produtos.
+		      </div>
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 6 -->
+		  <div id="reg-s6"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      6. SORTEIO E DIVULGAÇÃO
+		    </div>
+		    <div style="padding:0 4px">
+		      🗓️ O sorteio será realizado
+		      mensalmente, todo <b>dia 01</b>,
+		      às <b>00:01 (meia-noite e um minuto)</b>,
+		      utilizando a plataforma INNER (IA).
+		      <br><br>
+		      📣 O resultado será divulgado
+		      no perfil oficial do Instagram
+		      @sorveteriaitapolitanacajuru
+		      e o ganhador será contatado via Direct.
+		      <br><br>
+		      ⏳ O ganhador terá <b>24 horas</b>
+		      para responder ao contato e
+		      confirmar seus dados. Caso contrário,
+		      um novo sorteio será realizado.
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 7 -->
+		  <div id="reg-s9"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      7. RETIRADA DO PRÊMIO
+		    </div>
+		    <div style="padding:0 4px">
+		      📍 A retirada do prêmio é
+		      <b>EXCLUSIVAMENTE PRESENCIAL</b>
+		      na Sorveteria Itapolitana Cajuru,
+		      localizada na R. Cel. Manoel Caetano,
+		      311, Pça Largo São Bento,
+		      Cajuru/SP, CEP: 14240-000.
+		      <br><br>
+		      🆔 O ganhador deverá apresentar
+		      documento de identificação com foto.
+		      <br><br>
+		      ⏰ Horário de retirada: Seg–Sáb
+		      das 10h às 20h.
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 8 -->
+		  <div id="reg-s11"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      8. LGPD E USO DE IMAGEM
+		    </div>
+		    <div style="padding:0 4px">
+		      🔒 Ao participar, você concorda
+		      com o uso dos seus dados para
+		      fins de contato e divulgação
+		      do resultado, em conformidade
+		      com a Lei Geral de Proteção
+		      de Dados (LGPD).
+		      <br><br>
+		      📸 O ganhador autoriza o uso
+		      de sua imagem, nome e voz em
+		      materiais de divulgação da
+		      promoção, sem ônus para a
+		      promotora.
+		    </div>
+		  </div>
+
+		  <!-- SEÇÃO 9 -->
+		  <div id="reg-s12"
+		    style="margin-bottom:20px">
+		    <div style="background:#1A237E;
+		      color:#fff;border-radius:10px;
+		      padding:8px 14px;font-size:13px;
+		      font-weight:900;margin-bottom:10px">
+		      9. DISPOSIÇÕES GERAIS
+		    </div>
+		    <div style="padding:0 4px">
+		      🚫 Esta promoção não é de
+		      forma alguma patrocinada,
+		      administrada ou associada ao
+		      Instagram, Facebook ou Meta.
+		      <br><br>
+		      ⚖️ Quaisquer dúvidas ou casos
+		      omissos serão resolvidos pela
+		      equipe da Sorveteria Itapolitana
+		      Cajuru, de forma soberana e
+		      irrecorrível.
+		      <br><br>
+		      🔄 Este regulamento pode ser
+		      alterado a qualquer momento,
+		      sem aviso prévio, sendo a versão
+		      mais recente sempre a válida.
+		    </div>
+		  </div>
+	</div>
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s2\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      2.Período
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s3\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      3.Quem Pode
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s4\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      4.Como Part.
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s5\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      5.Prêmio
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s6\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      6.Sorteio
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s9\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      7.Retirada
+	    </button>
+	    <button type="button"
+	      onclick="irParaSecao(\'reg-s11\')"
+	      style="background:rgba(255,255,255,0.15);
+	        border:none;border-radius:20px;
+	        padding:4px 10px;color:#fff;
+	        font-size:10px;font-weight:800;
+	        cursor:pointer">
+	      8.LGPD
+	    </button>
+	  </div>
+	</div>
+
+	<!-- CORPO COM REGULAMENTO -->
+	<div style="padding:16px 18px 24px;
+	  overflow-y:auto;
+	  font-size:13px;
+	  line-height:1.7;
+	  color:#1A0A00;
+	  font-family:inherit">
+
+	  <!-- PREÂMBULO -->
+	  <div style="background:#FFF3E0;
+	    border-left:4px solid #E65100;
+	    border-radius:0 10px 10px 0;
+	    padding:12px 14px;
+	    margin-bottom:16px;
+	    font-size:12px;
+	    font-weight:700;
+	    color:#BF360C">
+	    ⚖️ Esta promoção é gratuita, sem
+	    exigência de compra ou pagamento,
+	    nos termos do Art. 39 do CDC
+	    (Lei 8.078/1990). A participação
+	    implica aceitação integral
+	    deste regulamento.
+	  </div>
+
+	  <!-- SEÇÃO 1 -->
+	  <div id="reg-s1"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      1. PROMOTORA
+	    </div>
+	    <div style="padding:0 4px">
+	      <b>Sorveteria Itapolitana Cajuru</b><br>
+	      📍 R. Cel. Manoel Caetano, 311<br>
+	      Pça Largo São Bento — Cajuru/SP<br>
+	      CEP: 14240-000<br><br>
+	      📱 WhatsApp: (16) 99606-2046<br>
+	      📸 @sorveteriaitapolitanacajuru<br>
+	      🌐 itapolitanacajuru.com.br<br>
+	      ⏰ Atendimento: Seg–Sáb 10h–20h
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 2 -->
+	  <div id="reg-s2"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      2. PERÍODO E ABRANGÊNCIA
+	    </div>
+	    <div style="padding:0 4px">
+	      📅 <b>Vigência:</b>
+	      01/03/2026 a 01/01/2027<br><br>
+	      📍 <b>Municípios participantes:</b><br>
+	      <div style="background:#E8F5E9;
+	        border-radius:10px;
+	        padding:10px 14px;
+	        margin:8px 0;
+	        border:1px solid #A5D6A7">
+	        ✅ Cajuru/SP<br>
+	        ✅ Santa Cruz da Esperança/SP<br>
+	        ✅ Cássia dos Coqueiros/SP
+	      </div>
+	      ⚠️ Participantes de outras cidades
+	      podem se cadastrar, porém a retirada
+	      é <b>presencial em Cajuru/SP</b>,
+	      sem ressarcimento de transporte.<br><br>
+	      🔄 São 10 sorteios mensais
+	      independentes. Cada mês é um
+	      sorteio novo — participações
+	      NÃO acumulam.
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 3 -->
+	  <div id="reg-s3"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      3. QUEM PODE PARTICIPAR
+	    </div>
+	    <div style="padding:0 4px">
+	      <b>✅ Pode participar quem:</b>
+	      <div style="background:#E8F5E9;
+	        border-radius:10px;
+	        padding:10px 14px;margin:8px 0;
+	        border:1px solid #A5D6A7">
+	        • Pessoa física, 18+ anos<br>
+	        • Perfil PÚBLICO no Instagram<br>
+	        • Direct desbloqueado<br>
+	        • Seguir @sorveteriaitapolitanacajuru
+	      </div>
+	      <b>❌ NÃO pode participar:</b>
+	      <div style="background:#FFEBEE;
+	        border-radius:10px;
+	        padding:10px 14px;margin:8px 0;
+	        border:1px solid #FFCDD2">
+	        • Funcionários e familiares
+	          da sorveteria (1º e 2º grau)<br>
+	        • Menores de 18 anos<br>
+	        • Perfis falsos ou bots<br>
+	        • Perfis privados<br>
+	        • Pessoas jurídicas<br>
+	        • Desclassificados anteriormente
+	      </div>
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 4 -->
+	  <div id="reg-s4"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      4. COMO PARTICIPAR
+	    </div>
+	    <div style="padding:0 4px">
+	      <div style="display:flex;
+	        flex-direction:column;gap:8px">
+	        <div style="background:#F3E5F5;
+	          border-radius:10px;
+	          padding:10px 14px;
+	          border-left:4px solid #7B2D8B">
+	          <b>PASSO 1 — Seguir</b><br>
+	          Seguir @sorveteriaitapolitanacajuru
+	          e manter seguido até o sorteio
+	        </div>
+	        <div style="background:#E3F2FD;
+	          border-radius:10px;
+	          padding:10px 14px;
+	          border-left:4px solid #1565C0">
+	          <b>PASSO 2 — Comentar</b><br>
+	          Comentar exatamente:<br>
+	          <span style="background:#1565C0;
+	            color:#fff;border-radius:6px;
+	            padding:2px 10px;
+	            font-weight:900;
+	            font-size:15px;
+	            display:inline-block;
+	            margin-top:4px">
+	            PROMO
+	          </span><br>
+	          <small>Sem emojis, espaços ou
+	          outras palavras</small>
+	        </div>
+	        <div style="background:#E8F5E9;
+	          border-radius:10px;
+	          padding:10px 14px;
+	          border-left:4px solid #2E7D32">
+	          <b>PASSO 3 — ManyChat</b><br>
+	          Responder o robô no Direct
+	          e concluir o cadastro.<br>
+	          <b>⚠️ Sem resposta = sem
+	          cadastro = fora do sorteio</b>
+	        </div>
+	        <div style="background:#FFF8E1;
+	          border-radius:10px;
+	          padding:10px 14px;
+	          border-left:4px solid #F9A825">
+	          <b>PASSO 4 — Aguardar</b><br>
+	          Sorteio todo dia 01 às 00:01
+	          via plataforma INNER (IA).
+	          Resultado no Instagram oficial.
+	        </div>
+	      </div>
+	      <div style="background:#FFEBEE;
+	        border-radius:10px;padding:10px 14px;
+	        margin-top:10px;font-size:12px;
+	        border:1px solid #FFCDD2">
+	        ⚠️ Limite: 1 participação por
+	        pessoa por mês. Múltiplas contas
+	        = desclassificação de todas.
+	      </div>
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 5 -->
+	  <div id="reg-s5"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      5. DO PRÊMIO
+	    </div>
+	    <div style="padding:0 4px">
+	      <div style="background:#E0F7FA;
+	        border-radius:10px;
+	        padding:10px 14px;
+	        margin-bottom:8px;
+	        border:1px solid #80DEEA">
+	        🎁 <b>1 (UMA) CAIXA DE SORVETE
+	        DE 5 LITROS</b><br>
+	        Tipo Artesanal — Sabor à escolha
+	        do ganhador, mediante estoque.
+	      </div>
+	      <div style="background:#FFF3E0;
+	        border-radius:10px;
+	        padding:10px 14px;
+	        border-left:4px solid #E65100;
+	        font-size:12px;
+	        font-weight:700;
+	        color:#BF360C">
+	        ⚠️ O prêmio não poderá ser
+	        convertido em dinheiro ou trocado
+	        por outros produtos.
+	      </div>
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 6 -->
+	  <div id="reg-s6"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      6. SORTEIO E DIVULGAÇÃO
+	    </div>
+	    <div style="padding:0 4px">
+	      🗓️ O sorteio será realizado
+	      mensalmente, todo <b>dia 01</b>,
+	      às <b>00:01 (meia-noite e um minuto)</b>,
+	      utilizando a plataforma INNER (IA).
+	      <br><br>
+	      📣 O resultado será divulgado
+	      no perfil oficial do Instagram
+	      @sorveteriaitapolitanacajuru
+	      e o ganhador será contatado via Direct.
+	      <br><br>
+	      ⏳ O ganhador terá <b>24 horas</b>
+	      para responder ao contato e
+	      confirmar seus dados. Caso contrário,
+	      um novo sorteio será realizado.
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 7 -->
+	  <div id="reg-s9"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      7. RETIRADA DO PRÊMIO
+	    </div>
+	    <div style="padding:0 4px">
+	      📍 A retirada do prêmio é
+	      <b>EXCLUSIVAMENTE PRESENCIAL</b>
+	      na Sorveteria Itapolitana Cajuru,
+	      localizada na R. Cel. Manoel Caetano,
+	      311, Pça Largo São Bento,
+	      Cajuru/SP, CEP: 14240-000.
+	      <br><br>
+	      🆔 O ganhador deverá apresentar
+	      documento de identificação com foto.
+	      <br><br>
+	      ⏰ Horário de retirada: Seg–Sáb
+	      das 10h às 20h.
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 8 -->
+	  <div id="reg-s11"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      8. LGPD E USO DE IMAGEM
+	    </div>
+	    <div style="padding:0 4px">
+	      🔒 Ao participar, você concorda
+	      com o uso dos seus dados para
+	      fins de contato e divulgação
+	      do resultado, em conformidade
+	      com a Lei Geral de Proteção
+	      de Dados (LGPD).
+	      <br><br>
+	      📸 O ganhador autoriza o uso
+	      de sua imagem, nome e voz em
+	      materiais de divulgação da
+	      promoção, sem ônus para a
+	      promotora.
+	    </div>
+	  </div>
+
+	  <!-- SEÇÃO 9 -->
+	  <div id="reg-s12"
+	    style="margin-bottom:20px">
+	    <div style="background:#1A237E;
+	      color:#fff;border-radius:10px;
+	      padding:8px 14px;font-size:13px;
+	      font-weight:900;margin-bottom:10px">
+	      9. DISPOSIÇÕES GERAIS
+	    </div>
+	    <div style="padding:0 4px">
+	      🚫 Esta promoção não é de
+	      forma alguma patrocinada,
+	      administrada ou associada ao
+	      Instagram, Facebook ou Meta.
+	      <br><br>
+	      ⚖️ Quaisquer dúvidas ou casos
+	      omissos serão resolvidos pela
+	      equipe da Sorveteria Itapolitana
+	      Cajuru, de forma soberana e
+	      irrecorrível.
+	      <br><br>
+	      🔄 Este regulamento pode ser
+	      alterado a qualquer momento,
+	      sem aviso prévio, sendo a versão
+	      mais recente sempre a válida.
+	    </div>
+	  </div>
+	</div>
   </div>
 </div>
 
@@ -155,19 +1229,44 @@ Promoção não associada ao Instagram. Casos omissos resolvidos pela promotora.
 </footer>
 
 <script>
-var fim = new Date("2026-04-01T23:59:00-03:00");
+function calcularProximoFim() {
+  const agora = new Date();
+  let ano = agora.getFullYear();
+  let mes = agora.getMonth(); // 0-11
+
+  // Se já passou do dia 1 do mês atual às 00:01, define para o próximo mês
+  if (agora.getDate() > 1 || (agora.getDate() === 1 && (agora.getHours() > 0 || (agora.getHours() === 0 && agora.getMinutes() >= 1)))) {
+    mes++; // Avança para o próximo mês
+    if (mes > 11) { // Se for dezembro, vai para janeiro do próximo ano
+      mes = 0;
+      ano++;
+    }
+  }
+  return new Date(ano, mes, 1, 0, 1, 0); // Dia 1 do mês (mes), às 00:01
+}
+
+var fim = calcularProximoFim();
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
 function tick() {
   var diff = fim - new Date();
-  if (diff <= 0) {
-    document.getElementById('cd-row').style.display = 'none';
-    document.getElementById('cd-encerrado').style.display = 'block';
+ if (diff <= 0) {
+    // A promoção atual encerrou. Exibe a mensagem de encerrado.
+    document.getElementById(\'cd-row\').style.display = \'none\';
+    document.getElementById(\'cd-encerrado\').style.display = \'block\';
+
+    // Recalcula o \'fim\' para o próximo ciclo, mas só atualiza a exibição após um minuto (00:02)
+    // Isso simula o início da próxima promoção um minuto depois.
+    setTimeout(() => {
+      fim = calcularProximoFim();
+      document.getElementById(\'cd-row\').style.display = \'flex\'; // Mostra o contador novamente
+      document.getElementById(\'cd-encerrado\').style.display = \'none\'; // Esconde a mensagem de encerrado
+    }, 60 * 1000); // Espera 1 minuto para simular o início da próxima promoção
     return;
   }
-  document.getElementById('cd-d').textContent = pad(Math.floor(diff / 86400000));
-  document.getElementById('cd-h').textContent = pad(Math.floor((diff % 86400000) / 3600000));
-  document.getElementById('cd-m').textContent = pad(Math.floor((diff % 3600000) / 60000));
-  document.getElementById('cd-s').textContent = pad(Math.floor((diff % 60000) / 1000));
+  document.getElementById(\'cd-d\').textContent = pad(Math.floor(diff / 86400000));
+  document.getElementById(\'cd-h\').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+  document.getElementById(\'cd-m\').textContent = pad(Math.floor((diff % 3600000) / 60000));
+  document.getElementById(\'cd-s\').textContent = pad(Math.floor((diff % 60000) / 1000));
 }
 setInterval(tick, 1000);
 tick();
@@ -177,9 +1276,36 @@ function abrirRegulamento() {
   document.body.style.overflow = 'hidden';
 }
 function fecharRegulamento(e) {
-  if (e && e.target !== document.getElementById('modal-regulamento')) return;
-  document.getElementById('modal-regulamento').classList.remove('aberto');
-  document.body.style.overflow = '';
+  if (e && e.target !== document.getElementById(\'modal-regulamento\')) return;
+  document.getElementById(\'modal-regulamento\').classList.remove(\'aberto\');
+  document.body.style.overflow = \'\';
+}
+
+function irParaSecao(id) {
+  const secao = document.getElementById(id);
+  if (secao) {
+    secao.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  nction irParaSecao(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  // Encontra o modal-box para rolar apenas o conteúdo do modal
+  var modalBox = el.closest('.modal-box');
+  if (modalBox) {
+    var offset = el.offsetTop - modalBox.offsetTop; // Posição relativa ao scroll do modal
+    modalBox.scrollTo({
+      top: offset,
+      behavior: 'smooth'
+    });
+  } else {
+    // Fallback caso não encontre o modalBox (menos provável)
+    el.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
 }
 </script>
 </body>
