@@ -31,6 +31,7 @@
     }
     .header h1 { font-size: 24px; font-weight: 900; margin-bottom: 5px; }
     .header p { font-size: 14px; opacity: 0.9; font-weight: 600; }
+    .since-badge { font-size: 11px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 50px; margin-top: 8px; display: inline-block; }
 
     .container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
 
@@ -85,23 +86,49 @@
     .btn:active { transform: scale(0.97); }
     .btn-primary { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; box-shadow: 0 8px 20px rgba(37,211,102,0.3); }
     .btn-outline { background: #F5F5F5; color: #444; border: 1px solid #ddd; }
-    .btn-regulamento {
-      background: #f8f9fa;
-      border: 2px dashed #ccc;
-      color: #666;
-      padding: 12px;
-      font-size: 13px;
+    
+    .btn-back-home {
+      background: linear-gradient(135deg, #F9A825, #FFD600);
+      color: #1A0A00;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-top: 20px;
+      width: 100%;
     }
 
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.aberto { display: flex; }
+    .modal-box {
+      background: #fff;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      border-radius: 20px;
+      overflow-y: auto;
+      position: relative;
+    }
 
     @media (max-width: 360px) {
       .cd-item { min-width: 55px; padding: 8px; }
       .cd-num { font-size: 20px; }
       .cd-lab { font-size: 9px; }
-      .modal-header h2 { font-size: 16px; }
-      .nav-item { padding: 5px 10px; font-size: 10px; }
-      .modal-body { font-size: 13px; padding: 15px; }
-      .reg-title { font-size: 12px; padding: 7px 12px; }
     }
 </style>
 </head>
@@ -110,6 +137,7 @@
 <header class="header">
   <h1>🎉 Promoção do Mês</h1>
   <p>Sorveteria Itapolitana Cajuru</p>
+  <span class="since-badge">✨ Desde 2007</span>
 </header>
 
 <div class="container">
@@ -143,30 +171,50 @@
       </div>
     </div>
   </div>
+
+  <a href="index.html" class="btn-back-home">🏠 Voltar à Página Principal</a>
 </div>
 
-<!-- MODAL REGULAMENTO -->
+<div id="modal-regulamento" class="modal-overlay" onclick="fecharRegulamento(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div style="background:linear-gradient(135deg,#1A237E,#283593); padding:16px; color:#fff; position:sticky; top:0; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-weight:900;">📋 Regulamento Oficial</span>
+      <button onclick="fecharRegulamento()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:20px; font-size:14px; color:#333;">
+      <p><strong>1. PROMOTORA:</strong> Sorveteria Itapolitana Cajuru (Desde 2007).</p>
+      <p style="margin-top:10px;"><strong>2. SORTEIO:</strong> Realizado todo dia 01 de cada mês às 00:01.</p>
+      <p style="margin-top:10px;"><strong>3. PRÊMIO:</strong> 1 Caixa de Sorvete de 5 Litros.</p>
+      <p style="margin-top:10px;"><strong>4. REGRAS:</strong> Seguir o perfil oficial, curtir a foto e marcar 3 amigos.</p>
+      <p style="margin-top:20px; font-size:12px; color:#666; text-align:center;">Consulte o Instagram para o regulamento completo detalhado.</p>
+    </div>
+  </div>
+</div>
 
-<footer>
+<footer style="text-align:center; padding:20px; font-size:12px; color:#666;">
   <strong>Sorveteria Itapolitana Cajuru</strong><br>
   CNPJ: 08.922.044/0001-80<br>
   Desenvolvido por SgtMissiasCaçaRato
-
-
-</div>
+</footer>
 
 <script>
-  // CONTADOR DINÂMICO
   function calcularProximoFim() {
     const agora = new Date();
     let ano = agora.getFullYear();
     let mes = agora.getMonth();
+    
     // Alvo: Dia 01 do próximo mês às 00:01
+    // Se já passou das 00:01 do dia 01 atual, pula para o próximo mês
     if (agora.getDate() > 1 || (agora.getDate() === 1 && (agora.getHours() > 0 || (agora.getHours() === 0 && agora.getMinutes() >= 1)))) {
       mes++;
       if (mes > 11) { mes = 0; ano++; }
     }
-    return new Date(ano, mes, 1, 0, 1, 0);
+    
+    // Limite final: 01/01/2027 às 01:01
+    const limiteFinal = new Date(2027, 0, 1, 1, 1, 0);
+    const proximoAlvo = new Date(ano, mes, 1, 0, 1, 0);
+    
+    return proximoAlvo > limiteFinal ? limiteFinal : proximoAlvo;
   }
 
   let dataAlvo = calcularProximoFim();
@@ -175,15 +223,17 @@
     const agora = new Date();
     const diff = dataAlvo - agora;
 
+    // Se estiver entre 00:01 e 00:02 do dia 01
     if (diff <= 0) {
       document.getElementById('cd-row').style.display = 'none';
       document.getElementById('cd-encerrado').style.display = 'block';
-      // Reinicia após 1 minuto (00:02)
-      setTimeout(() => {
+      
+      // Reinicia às 00:02
+      if (agora.getMinutes() >= 2 || agora.getHours() > 0 || agora.getDate() > 1) {
         dataAlvo = calcularProximoFim();
         document.getElementById('cd-row').style.display = 'flex';
         document.getElementById('cd-encerrado').style.display = 'none';
-      }, 60000);
+      }
       return;
     }
 
@@ -201,7 +251,6 @@
   setInterval(tick, 1000);
   tick();
 
-  // MODAL FUNCTIONS
   function abrirRegulamento() {
     document.getElementById('modal-regulamento').classList.add('aberto');
     document.body.style.overflow = 'hidden';
@@ -211,444 +260,6 @@
     document.getElementById('modal-regulamento').classList.remove('aberto');
     document.body.style.overflow = '';
   }
-    function irParaSecao(id) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      var modalBox = el.closest(\.modal-box\');
-      if (modalBox) {
-        var offset = el.offsetTop - modalBox.offsetTop;
-        modalBox.scrollTo({
-          top: offset,
-          behavior: \'smooth\'
-        });
-      } else {
-        el.scrollIntoView({
-          behavior: \'smooth\',
-          block: \'start\'
-        });
-      }
-    }
 </script>
-
-    <a href="index.html" class="btn-back-home" style="
-      background: linear-gradient(135deg, #F9A825, #FFD600);
-      color: #1A0A00;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 800;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: all 0.2s ease;
-    ">🏠 Voltar à Página Principal</a>
-  </div>
-</div>
-
-<div id="modal-regulamento" class="modal-overlay" onclick="fecharRegulamento(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <!-- NOVO CONTEÚDO INTERNO DA .modal-box -->
-    <!-- HEADER DO MODAL -->
-    <div style="
-      background:linear-gradient(
-        135deg,#1A237E,#283593
-      );
-      padding:16px 18px;
-      border-radius:14px 14px 0 0;
-      position:sticky;
-      top:0;
-      z-index:10">
-
-      <div style="display:flex;
-        align-items:center;
-        justify-content:space-between;
-        margin-bottom:10px">
-        <div>
-          <div style="font-size:15px;
-            font-weight:900;color:#fff">
-            📋 Regulamento Oficial
-          </div>
-          <div style="font-size:11px;
-            color:rgba(255,255,255,0.8);
-            font-weight:600;margin-top:2px">
-            Sorteio Mensal Itapolitana 2026
-          </div>
-        </div>
-        <button
-          type="button"
-          onclick="fecharRegulamento()"
-          style="background:rgba(255,255,255,0.2);
-            border:none;border-radius:50%;
-            width:32px;height:32px;
-            color:#fff;font-size:16px;
-            font-weight:900;cursor:pointer;
-            display:flex;align-items:center;
-            justify-content:center;
-            flex-shrink:0">
-          ✕
-        </button>
-      </div>
-
-      <!-- ÍNDICE CLICÁVEL -->
-      <div style="display:flex;
-        gap:6px;flex-wrap:wrap">
-        <button type="button"
-          onclick="irParaSecao(\'reg-s1\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          1.Promotora
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s2\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          2.Período
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s3\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          3.Quem Pode
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s4\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          4.Como Part.
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s5\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          5.Prêmio
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s6\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          6.Sorteio
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s9\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          7.Retirada
-        </button>
-        <button type="button"
-          onclick="irParaSecao(\'reg-s11\')"
-          style="background:rgba(255,255,255,0.15);
-            border:none;border-radius:20px;
-            padding:4px 10px;color:#fff;
-            font-size:10px;font-weight:800;
-            cursor:pointer">
-          8.LGPD
-        </button>
-      </div>
-    </div>
-
-    <!-- CORPO COM REGULAMENTO -->
-    <div style="padding:16px 18px 24px;
-      overflow-y:auto;
-      font-size:13px;
-      line-height:1.7;
-      color:#1A0A00;
-      font-family:inherit">
-
-      <!-- PREÂMBULO -->
-      <div style="background:#FFF3E0;
-        border-left:4px solid #E65100;
-        border-radius:0 10px 10px 0;
-        padding:12px 14px;
-        margin-bottom:16px;
-        font-size:12px;
-        font-weight:700;
-        color:#BF360C">
-        ⚠️ Esta promoção é GRATUITA, sem
-        compra obrigatória. A participação
-        implica aceitação total deste
-        regulamento.
-      </div>
-
-      <!-- SEÇÃO 1 -->
-      <div id="reg-s1"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          1. PROMOTORA
-        </div>
-        <div style="padding:0 4px">
-          <b>Sorveteria Itapolitana Cajuru</b><br>
-          R. Cel. Manoel Caetano, 311<br>
-          Pça Largo São Bento — Cajuru/SP<br>
-          (16) 99606-2046 (WhatsApp)<br>
-          @sorveteriaitapolitanacajuru
-        </div>
-      </div>
-
-      <!-- SEÇÃO 2 -->
-      <div id="reg-s2"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          2. PERÍODO E ABRANGÊNCIA
-        </div>
-        <div style="padding:0 4px">
-          🗓️ <b>Período:</b> 01/03/2026 a 01/01/2027<br><br>
-          📍 <b>Cidades Válidas:</b>
-          <div style="background:#E8F5E9;
-            border-radius:10px;
-            padding:10px 14px;margin:8px 0;
-            border:1px solid #A5D6A7">
-            ✅ Cajuru/SP<br>
-            ✅ Santa Cruz da Esperança/SP<br>
-            ✅ Cássia dos Coqueiros/SP
-          </div>
-          ⚠️ Residentes de outras cidades podem
-          participar, mas a retirada é
-          PRESENCIAL em Cajuru/SP.
-          Deslocamento por conta do ganhador.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 3 -->
-      <div id="reg-s3"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          3. QUEM PODE PARTICIPAR
-        </div>
-        <div style="padding:0 4px">
-          ✅ <b>Pode participar:</b>
-          <div style="background:#E8F5E9;
-            border-radius:10px;
-            padding:10px 14px;margin:8px 0;
-            border:1px solid #A5D6A7">
-            • Pessoas físicas com 18+ anos<br>
-            • Perfil PÚBLICO no Instagram<br>
-            • Residente nas cidades válidas<br>
-            • Seguir @sorveteriaitapolitanacajuru
-          </div>
-          <b>❌ NÃO pode participar:</b>
-          <div style="background:#FFEBEE;
-            border-radius:10px;
-            padding:10px 14px;margin:8px 0;
-            border:1px solid #FFCDD2">
-            • Funcionários e familiares
-              da sorveteria (1º e 2º grau)<br>
-            • Menores de 18 anos<br>
-            • Perfis FAKES ou criados apenas
-              para sorteios<br>
-            • Perfis de empresas ou figuras
-              públicas
-          </div>
-        </div>
-      </div>
-
-      <!-- SEÇÃO 4 -->
-      <div id="reg-s4"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          4. COMO PARTICIPAR
-        </div>
-        <div style="padding:0 4px">
-          1.  Siga o perfil oficial
-              <a href="https://www.instagram.com/sorveteriaitapolitanacajuru/"
-                target="_blank"
-                style="color:#1A237E;text-decoration:underline;
-                  font-weight:600">@sorveteriaitapolitanacajuru</a>
-              no Instagram.
-          2.  Curta a foto oficial da promoção.
-          3.  Marque 3 amigos nos comentários (não
-              valem perfis fakes, de famosos ou
-              empresas).
-          4.  Compartilhe a foto oficial nos seus
-              Stories e marque nosso perfil.
-          5.  Deixe o perfil PÚBLICO no dia do
-              sorteio para verificação.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 5 -->
-      <div id="reg-s5"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          5. PRÊMIO
-        </div>
-        <div style="padding:0 4px">
-          🎁 <b>1 Caixa de Sorvete de 5 Litros</b>
-          (sabor à escolha do ganhador, sujeito
-          à disponibilidade).
-        </div>
-      </div>
-
-      <!-- SEÇÃO 6 -->
-      <div id="reg-s6"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          6. SORTEIO
-        </div>
-        <div style="padding:0 4px">
-          🗓️ O sorteio será realizado no dia <b>01
-          de cada mês</b>, às <b>00:01</b> (horário
-          de Brasília), via live no Instagram
-          ou ferramenta de sorteio online.
-          O ganhador será anunciado nos Stories
-          e no feed.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 7 -->
-      <div id="reg-s7"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          7. NOTIFICAÇÃO E VALIDAÇÃO
-        </div>
-        <div style="padding:0 4px">
-          O ganhador será contatado via
-          mensagem direta (DM) no Instagram.
-          Terá 24 horas para responder e
-          validar a participação (seguir todas
-          as regras). Caso contrário, um novo
-          sorteio será realizado.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 8 -->
-      <div id="reg-s8"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          8. DESCLASSIFICAÇÃO
-        </div>
-        <div style="padding:0 4px">
-          Serão desclassificados participantes
-          que não cumprirem as regras, usarem
-          perfis falsos, ou agirem de má-fé.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 9 -->
-      <div id="reg-s9"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          9. RETIRADA DO PRÊMIO
-        </div>
-        <div style="padding:0 4px">
-          O prêmio deverá ser retirado
-          PRESENCIALMENTE na Sorveteria
-          Itapolitana Cajuru em até 7 dias
-          úteis após a validação. É necessário
-          apresentar documento com foto.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 10 -->
-      <div id="reg-s10"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          10. DISPOSIÇÕES GERAIS
-        </div>
-        <div style="padding:0 4px">
-          A Sorveteria Itapolitana Cajuru não
-          se responsabiliza por problemas
-          técnicos de conexão, falhas de
-          comunicação ou quaisquer outros
-          fatores que impossibilitem a
-          participação. O regulamento pode ser
-          alterado sem aviso prévio.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 11 -->
-      <div id="reg-s11"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          11. LGPD E PRIVACIDADE
-        </div>
-        <div style="padding:0 4px">
-          Ao participar, você autoriza o uso de
-          seu nome de usuário do Instagram e
-          imagem (caso apareça na live) para
-          divulgação do resultado, sem ônus.
-          Seus dados serão tratados conforme a
-          LGPD.
-        </div>
-      </div>
-
-      <!-- SEÇÃO 12 -->
-      <div id="reg-s12"
-        style="margin-bottom:20px">
-        <div style="background:#1A237E;
-          color:#fff;border-radius:10px;
-          padding:8px 14px;font-size:13px;
-          font-weight:900;margin-bottom:10px">
-          12. CONTATO
-        </div>
-        <div style="padding:0 4px">
-          Dúvidas? Entre em contato via DM no
-          Instagram
-          <a href="https://www.instagram.com/sorveteriaitapolitanacajuru/"
-            target="_blank"
-            style="color:#1A237E;text-decoration:underline;
-              font-weight:600">@sorveteriaitapolitanacajuru</a>.
-        </div>
-      </div>
-
-    </div>
-    <!-- FIM DO NOVO CONTEÚDO INTERNO DA .modal-box -->
-  </div>
-</div>
 </body>
 </html>
