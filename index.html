@@ -896,8 +896,8 @@ img{max-width:100%;display:block}
       <span class="info-contato-icon">⏰</span>
       <h3 class="info-contato-titulo">HORÁRIO</h3>
       <p class="info-contato-texto">
-        Seg–Sex: 10h às 22h<br>
-        Sáb–Dom: 10h às 23h
+        Todos os dias: 10h às 22h<br>
+        Segunda a Domingo
       </p>
       <div class="info-contato-status">
         <span class="status-dot"></span>
@@ -1899,21 +1899,12 @@ function atualizarStatusHorario() {
   let aberto = false;
   let fechaEm = '';
 
-  // Horários: Seg-Sex: 10h às 22h | Sáb-Dom: 10h às 23h
-  if (diaSemana >= 1 && diaSemana <= 5) { // Segunda a Sexta
-    if (horaAtual >= 10 && horaAtual < 22) {
-      aberto = true;
-      fechaEm = `Fecha às 22h`;
-    } else {
-      fechaEm = `Abre às 10h`;
-    }
-  } else if (diaSemana === 0 || diaSemana === 6) { // Sábado e Domingo
-    if (horaAtual >= 10 && horaAtual < 23) {
-      aberto = true;
-      fechaEm = `Fecha às 23h`;
-    } else {
-      fechaEm = `Abre às 10h`;
-    }
+  // Horários: Todos os dias: 10h às 22h
+  if (horaAtual >= 10 && horaAtual < 22) {
+    aberto = true;
+    fechaEm = `Fecha às 22h`;
+  } else {
+    fechaEm = `Abre às 10h`;
   }
 
   if (aberto) {
@@ -2223,21 +2214,12 @@ function atualizarStatusHorario() {
   let aberto = false;
   let fechaEm = '';
 
-  // Horários: Seg-Sex: 10h às 22h | Sáb-Dom: 10h às 23h
-  if (diaSemana >= 1 && diaSemana <= 5) { // Segunda a Sexta
-    if (horaAtual >= 10 && horaAtual < 22) {
-      aberto = true;
-      fechaEm = `Fecha às 22h`;
-    } else {
-      fechaEm = `Abre às 10h`;
-    }
-  } else if (diaSemana === 0 || diaSemana === 6) { // Sábado e Domingo
-    if (horaAtual >= 10 && horaAtual < 23) {
-      aberto = true;
-      fechaEm = `Fecha às 23h`;
-    } else {
-      fechaEm = `Abre às 10h`;
-    }
+  // Horários: Todos os dias: 10h às 22h
+  if (horaAtual >= 10 && horaAtual < 22) {
+    aberto = true;
+    fechaEm = `Fecha às 22h`;
+  } else {
+    fechaEm = `Abre às 10h`;
   }
 
   if (aberto) {
