@@ -156,7 +156,7 @@
     </div>
     <div id="cd-encerrado">SORTEIO EM ANDAMENTO! 🎰</div>
     <div style="margin-top: 15px; font-size: 12px; font-weight: 800; color: #E8000D; background: #FFEBEE; padding: 8px; border-radius: 10px; border: 1px dashed #E8000D;">
-      📢 PRÓXIMO SORTEIO: DIA 01 ÀS 01:01h
+      📢 PRÓXIMO SORTEIO: DIA 01/04/26 ÀS 10:00h
     </div>
   </div>
 
@@ -230,7 +230,7 @@
       </div>
       <div id="reg-s6" style="margin-bottom:20px">
         <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px">6. SORTEIO E DIVULGAÇÃO</div>
-        <div style="padding:0 4px">🗓️ O sorteio será realizado mensalmente, todo <b>dia 01</b>, às <b>01:01 (uma hora e um minuto)</b>, utilizando a plataforma INNER (IA).<br><br>📣 O resultado será divulgado no perfil oficial do Instagram @sorveteriaitapolitanacajuru e o ganhador será contatado via Direct.<br><br>⏳ O ganhador terá <b>24 horas</b> para responder ao contato e confirmar seus dados. Caso contrário, um novo sorteio será realizado.</div>
+        <div style="padding:0 4px">🗓️ O sorteio será realizado mensalmente, todo <b>dia 01</b>, às <b>10:00 (dez horas da manhã)</b>, utilizando a plataforma INNER (IA).<br><br>📣 O resultado será divulgado no perfil oficial do Instagram @sorveteriaitapolitanacajuru e o ganhador será contatado via Direct.<br><br>⏳ O ganhador terá <b>24 horas</b> para responder ao contato e confirmar seus dados. Caso contrário, um novo sorteio será realizado.</div>
       </div>
       <div id="reg-s9" style="margin-bottom:20px">
         <div style="background:#1A237E; color:#fff; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:900; margin-bottom:10px">7. RETIRADA DO PRÊMIO</div>
@@ -257,13 +257,13 @@
     let ano = agora.getFullYear();
     let mes = agora.getMonth();
     
-    if (agora.getDate() > 1 || (agora.getDate() === 1 && (agora.getHours() > 1 || (agora.getHours() === 1 && agora.getMinutes() >= 1)))) {
+    if (agora.getDate() > 1 || (agora.getDate() === 1 && agora.getHours() >= 10)) {
       mes++;
       if (mes > 11) { mes = 0; ano++; }
     }
     
     const limiteFinal = new Date(2030, 0, 1, 1, 1, 0);
-    const proximoAlvo = new Date(ano, mes, 1, 1, 1, 0);
+    const proximoAlvo = new Date(ano, mes, 1, 10, 0, 0);
     
     return proximoAlvo > limiteFinal ? limiteFinal : proximoAlvo;
   }
@@ -278,7 +278,7 @@
       document.getElementById('cd-row').style.display = 'none';
       document.getElementById('cd-encerrado').style.display = 'block';
       
-      if (agora.getMinutes() >= 2 || agora.getHours() > 1 || agora.getDate() > 1) {
+      if (agora.getMinutes() >= 1 || agora.getHours() > 10 || agora.getDate() > 1) {
         dataAlvo = calcularProximoFim();
         document.getElementById('cd-row').style.display = 'flex';
         document.getElementById('cd-encerrado').style.display = 'none';
