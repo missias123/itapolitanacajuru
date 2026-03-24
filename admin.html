@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Sorveteria Itapolitana</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #E8000D 0%, #FF6B35 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #0D47A1;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0D47A1;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0D47A1;
+            box-shadow: 0 0 5px rgba(13, 71, 161, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #E8000D 0%, #FF6B35 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(232, 0, 13, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .dicas-list {
+            margin-top: 30px;
+        }
+        
+        .dica-item {
+            background: #f9f9f9;
+            border-left: 4px solid #0D47A1;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+        
+        .dica-content {
+            flex: 1;
+        }
+        
+        .dica-titulo {
+            font-weight: 600;
+            color: #0D47A1;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .dica-texto {
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+        
+        .dica-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #0D47A1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0D47A1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍦 Painel de Administração</h1>
+            <p>Sorveteria Itapolitana Cajuru - Gerenciamento de Dicas</p>
+        </div>
+        
+        <div class="content">
+            <div id="message" class="message"></div>
+            
+            <div class="info-box">
+                ℹ️ <strong>Bem-vindo ao painel de administração!</strong> Aqui você pode adicionar, editar e remover dicas para seus clientes. Todas as mudanças serão refletidas automaticamente no site.
+            </div>
+            
+            <div class="section">
+                <h2>➕ Adicionar Nova Dica</h2>
+                <form id="dicaForm">
+                    <div class="form-group">
+                        <label for="titulo">Título da Dica *</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ex: Como Calcular Sorvete para sua Festa" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="conteudo">Conteúdo da Dica *</label>
+                        <textarea id="conteudo" name="conteudo" placeholder="Ex: Planejando um evento em Cajuru? Calcule em média 200g de sorvete por pessoa..." required></textarea>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">💾 Salvar Dica</button>
+                        <button type="reset" class="btn-secondary">🔄 Limpar Formulário</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>📋 Dicas Existentes</h2>
+                <div id="dicasList" class="dicas-list">
+                    <p style="color: #999; text-align: center;">Carregando dicas...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // URL da API (será ajustada conforme necessário)
+        const API_URL = '/api/dicas';
+        
+        // Carregar dicas ao abrir a página
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarDicas();
+            
+            // Adicionar evento ao formulário
+            document.getElementById('dicaForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                adicionarDica();
+            });
+        });
+        
+        // Função para carregar todas as dicas
+        async function carregarDicas() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const dicasList = document.getElementById('dicasList');
+                
+                if (data.dicas && data.dicas.length > 0) {
+                    dicasList.innerHTML = '';
+                    data.dicas.forEach(dica => {
+                        dicasList.innerHTML += `
+                            <div class="dica-item">
+                                <div class="dica-content">
+                                    <div class="dica-titulo">${dica.titulo}</div>
+                                    <div class="dica-texto">${dica.conteudo}</div>
+                                </div>
+                                <div class="dica-actions">
+                                    <button class="btn-secondary btn-small" onclick="editarDica(${dica.id})">✏️ Editar</button>
+                                    <button class="btn-danger btn-small" onclick="removerDica(${dica.id})">🗑️ Remover</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    dicasList.innerHTML = '<p style="color: #999; text-align: center;">Nenhuma dica cadastrada ainda.</p>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dicas:', error);
+                mostrarMensagem('Erro ao carregar dicas. Tente novamente.', 'error');
+            }
+        }
+        
+        // Função para adicionar nova dica
+        async function adicionarDica() {
+            const titulo = document.getElementById('titulo').value;
+            const conteudo = document.getElementById('conteudo').value;
+            
+            if (!titulo || !conteudo) {
+                mostrarMensagem('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ titulo, conteudo })
+                });
+                
+                if (response.ok) {
+                    mostrarMensagem('✅ Dica adicionada com sucesso!', 'success');
+                    document.getElementById('dicaForm').reset();
+                    carregarDicas();
+                } else {
+                    mostrarMensagem('Erro ao adicionar dica. Tente novamente.', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao adicionar dica:', error);
+                mostrarMensagem('Erro ao adicionar dica. Tente novamente.', 'error');
+            }
+        }
+        
+        // Função para remover dica
+        async function removerDica(id) {
+            if (!confirm('Tem certeza que deseja remover esta dica?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    mostrarMensagem('✅ Dica removida com sucesso!', 'success');
+                    carregarDicas();
+                } else {
+                    mostrarMensagem('Erro ao remover dica. Tente novamente.', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao remover dica:', error);
+                mostrarMensagem('Erro ao remover dica. Tente novamente.', 'error');
+            }
+        }
+        
+        // Função para editar dica (placeholder)
+        function editarDica(id) {
+            alert('Funcionalidade de edição será implementada em breve. Por enquanto, remova e adicione novamente.');
+        }
+        
+        // Função para mostrar mensagens
+        function mostrarMensagem(texto, tipo) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = texto;
+            messageDiv.className = `message ${tipo}`;
+            
+            setTimeout(() => {
+                messageDiv.className = 'message';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
