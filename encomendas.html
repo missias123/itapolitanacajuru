@@ -1,20 +1,5 @@
-<!-- cache-bust: 1772030114 -->
 <!DOCTYPE html>
-<!--
-  ╔══════════════════════════════════════════════════════════════╗
-  ║         SORVETERIA ITAPOLITANA CAJURU — SITE OFICIAL         ║
-  ║──────────────────────────────────────────────────────────────║
-  ║  Criado por: Sgt Missiascacarato                             ║
-  ║  Data de criação: Fevereiro de 2026                          ║
-  ║  Versão: 2.0 — Sistema de Design Padronizado                 ║
-  ║  Tecnologia: HTML5 + CSS3 + JavaScript Vanilla               ║
-  ║  Hospedagem: GitHub Pages                                    ║
-  ║  Domínio: itapolitanacajuru.com.br                           ║
-  ║──────────────────────────────────────────────────────────────║
-  ║  © 2026 Sorveteria Itapolitana Cajuru. Todos os direitos     ║
-  ║  reservados. Reprodução proibida sem autorização.            ║
-  ╚══════════════════════════════════════════════════════════════╝
--->
+
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -23,7 +8,7 @@
   <meta name="keywords" content="encomenda sorvete Cajuru, torta de sorvete Cajuru, caixa de sorvete Cajuru, picolé atacado Cajuru, festa sorvete Cajuru, Itapolitana encomendas">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://itapolitanacajuru.com.br/encomendas.html">
-  <!-- Open Graph -->
+  
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://itapolitanacajuru.com.br/encomendas.html">
   <meta property="og:title" content="Encomendas – Tortas, Caixas e Picolés | Sorveteria Itapolitana Cajuru">
@@ -1021,8 +1006,29 @@
       border: 3px solid #fff !important;
       box-shadow: 0 0 0 2px #1565C0, 0 4px 14px rgba(249,168,37,.7) !important;
     }
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/fundo-itapolitana.png');
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    opacity: 0.08; /* Efeito marca d'água sutil */
+    pointer-events: none;
+    z-index: -1;
+}
+body {
+    position: relative;
+    z-index: 0;
+    background-color: #FFF8F0; /* Cor de fundo base */
+}
+
 </style>
-<!-- v:1771806853-neuro -->
+
 
 <script type="application/ld+json">
 {
@@ -1185,7 +1191,7 @@
         <button type="button" class="btn-fechar-modal" onclick="fecharModal('modal-sabores')">✕</button>
       </div>
     </div>
-    <!-- 1. SABORES COM SCROLL PRÓPRIO -->
+    
     <div style="padding:16px 20px 0;overflow-y:auto;max-height:35vh">
       <div class="grid-sabores" id="grid-sabores"></div>
     </div>
@@ -1280,7 +1286,7 @@
       </div>
     </div>
 
-    <!-- ETAPA 1: REVISÃO -->
+    
     <div class="etapa" id="etapa-revisao">
       <div id="lista-carrinho"></div>
       <div class="total-bar">
@@ -1289,13 +1295,13 @@
       </div>
       <div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
       <div style="padding:16px 0 24px;display:flex;flex-direction:column;gap:10px;">
-        <!-- BOTÃO PRINCIPAL: Avançar para preencher dados -->
+        
         <div class="barra-acao barra-verde">
           <span style="width:44px;"></span>
           <span class="barra-texto">✅ Preencher Dados e Confirmar</span>
           <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Preencher Dados e Confirmar">▶</button>
         </div>
-        <!-- BOTÃO SECUNDÁRIO: Continuar adicionando produtos -->
+        
         <div class="barra-acao barra-cinza-claro">
           <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-continuar-comprando" title="Continuar Comprando">←</button>
           <span class="barra-texto" style="color:#333">← Continuar Adicionando Produtos</span>
@@ -1304,11 +1310,11 @@
       </div>
     </div>
 
-    <!-- ETAPA 2: DADOS PESSOAIS -->
+    
     <div class="etapa" id="etapa-dados">
       <div id="resumo-pedido"></div>
 
-      <!-- Aviso de prazo -->
+      
       <div style="background:linear-gradient(135deg,#E65100,#FF6D00);color:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;">
         <div style="font-size:1rem;font-weight:900;margin-bottom:6px;">⏰ IMPORTANTE — PRAZO DE PRODUÇÃO</div>
         <div>Sua encomenda será <strong>produzida em até 3 dias úteis</strong> após a <strong>confirmação do pagamento</strong> via WhatsApp.</div>
@@ -1328,21 +1334,21 @@
         <input type="text" id="cliente-endereco" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" autocomplete="street-address" oninput="_enderecoCliente=this.value; verificarFormulario()">
       </div>
       <div class="botoes-etapa-dados">
-        <!-- BOTÃO PRINCIPAL: Gerar pedido e enviar -->
+        
         <div class="barra-acao barra-verde" id="barra-btn-finalizar">
           <span style="width:44px;"></span>
           <span class="barra-texto" id="texto-btn-finalizar">📲 Gerar Pedido e Enviar via WhatsApp</span>
           <button type="button" class="btn-acao-redondo btn-vermelho" id="btn-finalizar" title="Gerar Pedido" disabled style="opacity:0.4;">✓</button>
         </div>
-        <!-- DICA: campos obrigatórios -->
+        
         <div id="campos-obrigatorios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
-        <!-- BOTÃO VOLTAR: Revisar carrinho -->
+        
         <div class="barra-acao barra-azul">
           <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-etapa" title="Revisar Carrinho">←</button>
           <span class="barra-texto">🛒 Revisar Carrinho</span>
           <span style="width:44px;"></span>
         </div>
-        <!-- BOTÃO CANCELAR: Fechar modal -->
+        
         <div class="barra-acao barra-cinza-claro">
           <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-sair-formulario" title="Cancelar">←</button>
           <span class="barra-texto" style="color:#555">← Cancelar e Voltar às Encomendas</span>
@@ -1351,7 +1357,7 @@
       </div>
     </div>
 
-    <!-- ETAPA 3: CONFIRMAÇÃO -->
+    
     <div class="etapa" id="etapa-confirmacao">
       <div class="confirmacao-box">
         <div class="confirmacao-icon">🎉</div>
@@ -1361,7 +1367,7 @@
         <p style="font-size:1.05rem;color:#DC2626;font-weight:900;margin:18px auto 22px;text-align:center;line-height:1.6;padding:14px 18px;background:#FEF2F2;border:2.5px solid #DC2626;border-radius:12px;max-width:480px;">
           📢 Clique abaixo para enviar seu pedido via WhatsApp.<br>Nossa equipe entrará em contato para confirmar o pagamento.
         </p>
-        <!-- BOTÃO PRINCIPAL: Enviar via WhatsApp -->
+        
         <a href="#" id="link-whatsapp-final" target="_blank" rel="noopener" style="text-decoration:none;display:block;margin-bottom:10px;">
           <div class="barra-acao barra-wpp" style="cursor:pointer;">
             <span style="font-size:1.4rem;">📲</span>
@@ -1369,19 +1375,19 @@
             <span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final" style="font-size:1.3rem;">▶</span>
           </div>
         </a>
-        <!-- BOTÃO SECUNDÁRIO: Fazer novo pedido -->
+        
         <div class="barra-acao barra-azul" style="cursor:pointer;" onclick="novoPedido()">
           <span style="font-size:1.2rem;">🛒</span>
           <span class="barra-texto">Fazer Novo Pedido</span>
           <button type="button" class="btn-acao-redondo btn-azul" title="Novo Pedido" style="background:linear-gradient(135deg,#0D47A1,#1565C0);font-size:1.3rem;">+</button>
         </div>
-        <!-- BOTÃO TERCIÁRIO: Voltar sem enviar -->
+        
         <div class="barra-acao barra-cinza-claro" style="margin-top:6px;">
           <button type="button" class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-cardapio" title="Voltar">←</button>
           <span class="barra-texto" style="color:#666;font-size:0.85rem;">← Voltar às Encomendas sem Enviar</span>
           <span style="width:44px;"></span>
         </div>
-        <!-- FRASE MOTIVACIONAL NO RODAPÉ DO PEDIDO -->
+        
         <div style="margin-top:28px;padding:16px 20px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;border-left:4px solid #1565C0;text-align:center;">
           <div style="font-size:1.4rem;margin-bottom:6px;">2️⃣</div>
           <p style="font-size:0.92rem;color:#1A237E;font-weight:700;font-style:italic;line-height:1.6;margin:0;">&ldquo;Não deixe para amanhã: viva hoje como se fosse o último dia da sua vida.&rdquo;</p>
