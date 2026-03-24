@@ -54,11 +54,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .preco-card label{font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:6px}
 .preco-card input{width:100%;padding:8px 10px;border:2px solid #E5E7EB;border-radius:8px;font-size:14px;font-weight:700;outline:none}
 .preco-card input:focus{border-color:#7B1FA2}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../images/fundo-itapolitana.png');
+    background-repeat: repeat;
+    background-size: 150px 150px;
+    opacity: 0.08; /* Efeito marca d'água sutil */
+    pointer-events: none;
+    z-index: -1;
+}
+body {
+    position: relative;
+    z-index: 0;
+    background-color: #FFF8F0; /* Cor de fundo base */
+}
+
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+
 <div class="login-wrap" id="login-section">
   <div class="login-box">
     <h2>🍦 Admin Cardápio</h2>
@@ -73,7 +94,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- PAINEL -->
+
 <div id="admin-panel">
   <div class="adm-header">
     <h1>🍦 Admin Cardápio – Itapolitana Cajuru</h1>
