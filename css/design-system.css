@@ -102,3 +102,80 @@ h1, h2, h3, h4 {
     margin-bottom: var(--espaco-md);
   }
 }
+
+
+/* SEÇÃO DE DICAS */
+.section {
+    padding: 40px 20px;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.section-inner {
+    text-align: center;
+}
+
+.section-title {
+    font-size: clamp(28px, 5vw, 38px);
+    font-weight: 900;
+    color: var(--cor-primaria);
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.dicas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.dica-card {
+    background: #fff;
+    border-radius: var(--raio-borda);
+    box-shadow: var(--sombra-suave);
+    padding: 20px;
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.dica-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-forte);
+}
+
+.dica-card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.dica-card-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--cor-secundaria);
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.dica-card-text {
+    font-size: 15px;
+    color: var(--cor-texto-suave);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: 30px 15px;
+    }
+    .section-title {
+        font-size: 24px;
+    }
+    .dicas-grid {
+        grid-template-columns: 1fr;
+    }
+}
