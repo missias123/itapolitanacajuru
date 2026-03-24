@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Administração - Sorveteria Itapolitana</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Painel de Administração - Sorveteria Itapolitana</title>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -342,162 +343,148 @@
             }
         }
     </style>
+<style>
+.security-seals-title { font-size:12px;color:rgba(255,255,255,.7);text-align:center;margin-bottom:12px;font-weight:600; }
+.security-seals-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 700px; margin: 0 auto; padding: 0 12px; }
+.security-seal-item { flex: 1 1 auto; min-width: 100px; max-width: 110px; text-decoration: none; cursor: pointer; }
+.security-seal-content { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; background: rgba(255,255,255,.05); transition: all 0.3s; }
+.security-seal-content:hover { background: rgba(255,255,255,.15); }
+.security-seal-icon { font-size: 32px; line-height: 1; }
+.security-seal-text { font-size: 9px; color: #FBD100; font-weight: 700; text-align: center; line-height: 1.2; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🍦 Painel de Administração</h1>
-            <p>Sorveteria Itapolitana Cajuru - Gerenciamento Completo</p>
-        </div>
-        
-        <div class="content">
-            <div id="message" class="message"></div>
-            
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('promocoes')">🎉 Promoções</button>
-                <button class="tab-btn" onclick="switchTab('pagina-principal')">🏠 Página Principal</button>
-                <button class="tab-btn" onclick="switchTab('configuracoes')">⚙️ Configurações</button>
-            </div>
-            
-            <!-- ABA: PROMOÇÕES -->
-            <div id="promocoes" class="tab-content active">
-                <div class="section">
-                    <h2>➕ Adicionar Nova Promoção</h2>
-                    
-                    <div class="info-box">
+<div class="container">
+<div class="header">
+<h1>🍦 Painel de Administração</h1>
+<p>Sorveteria Itapolitana Cajuru - Gerenciamento Completo</p>
+</div>
+<div class="content">
+<div class="message" id="message"></div>
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('promocoes')">🎉 Promoções</button>
+<button class="tab-btn" onclick="switchTab('pagina-principal')">🏠 Página Principal</button>
+<button class="tab-btn" onclick="switchTab('configuracoes')">⚙️ Configurações</button>
+</div>
+<!-- ABA: PROMOÇÕES -->
+<div class="tab-content active" id="promocoes">
+<div class="section">
+<h2>➕ Adicionar Nova Promoção</h2>
+<div class="info-box">
                         ℹ️ <strong>Como adicionar uma promoção:</strong> Preencha o título, descrição e faça upload da foto. A imagem será automaticamente comprimida e redimensionada para não deixar o site lento.
                     </div>
-                    
-                    <form id="promocaoForm">
-                        <div class="form-group">
-                            <label for="promo-titulo">Título da Promoção *</label>
-                            <input type="text" id="promo-titulo" placeholder="Ex: Sorvete em Promoção" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="promo-descricao">Descrição da Promoção *</label>
-                            <textarea id="promo-descricao" placeholder="Ex: Aproveite 30% de desconto em todos os sorvetes tipo artesanal..." required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="promo-foto">Foto da Promoção *</label>
-                            <div class="image-upload-area" id="promo-upload-area" onclick="document.getElementById('promo-foto').click()">
+<form id="promocaoForm">
+<div class="form-group">
+<label for="promo-titulo">Título da Promoção *</label>
+<input id="promo-titulo" placeholder="Ex: Sorvete em Promoção" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="promo-descricao">Descrição da Promoção *</label>
+<textarea id="promo-descricao" placeholder="Ex: Aproveite 30% de desconto em todos os sorvetes tipo artesanal..." required=""></textarea>
+</div>
+<div class="form-group">
+<label for="promo-foto">Foto da Promoção *</label>
+<div class="image-upload-area" id="promo-upload-area" onclick="document.getElementById('promo-foto').click()">
                                 📤 Clique para selecionar ou arraste a imagem aqui
                             </div>
-                            <input type="file" id="promo-foto" accept="image/*" style="display: none;" required>
-                            <div class="image-preview" id="promo-preview"></div>
-                            <div class="image-info">
-                                <strong>📋 Instruções para a foto:</strong>
-                                ✓ Tamanho recomendado: 800x600px ou 1200x800px<br>
-                                ✓ Formato: JPG, PNG ou WebP<br>
-                                ✓ Tamanho máximo: 5MB (será comprimido automaticamente)<br>
+<input accept="image/*" id="promo-foto" required="" style="display: none;" type="file"/>
+<div class="image-preview" id="promo-preview"></div>
+<div class="image-info">
+<strong>📋 Instruções para a foto:</strong>
+                                ✓ Tamanho recomendado: 800x600px ou 1200x800px<br/>
+                                ✓ Formato: JPG, PNG ou WebP<br/>
+                                ✓ Tamanho máximo: 5MB (será comprimido automaticamente)<br/>
                                 ✓ Proporção: Paisagem (16:9 ou 4:3)
                             </div>
-                        </div>
-                        
-                        <div class="button-group">
-                            <button type="submit" class="btn-primary">💾 Salvar Promoção</button>
-                            <button type="reset" class="btn-secondary">🔄 Limpar Formulário</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="section">
-                    <h2>📋 Promoções Ativas</h2>
-                    <div id="promocoes-list" class="item-list">
-                        <p style="color: #999; text-align: center;">Carregando promoções...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- ABA: PÁGINA PRINCIPAL -->
-            <div id="pagina-principal" class="tab-content">
-                <div class="section">
-                    <h2>🏠 Gerenciar Foto da Página Principal</h2>
-                    
-                    <div class="info-box">
+</div>
+<div class="button-group">
+<button class="btn-primary" type="submit">💾 Salvar Promoção</button>
+<button class="btn-secondary" type="reset">🔄 Limpar Formulário</button>
+</div>
+</form>
+</div>
+<div class="section">
+<h2>📋 Promoções Ativas</h2>
+<div class="item-list" id="promocoes-list">
+<p style="color: #999; text-align: center;">Carregando promoções...</p>
+</div>
+</div>
+</div>
+<!-- ABA: PÁGINA PRINCIPAL -->
+<div class="tab-content" id="pagina-principal">
+<div class="section">
+<h2>🏠 Gerenciar Foto da Página Principal</h2>
+<div class="info-box">
                         ℹ️ <strong>Foto do banner principal:</strong> Esta imagem aparecerá no topo da página inicial do site. Será automaticamente adaptada para todos os dispositivos.
                     </div>
-                    
-                    <form id="paginaPrincipalForm">
-                        <div class="form-group">
-                            <label for="banner-foto">Foto do Banner Principal *</label>
-                            <div class="image-upload-area" id="banner-upload-area" onclick="document.getElementById('banner-foto').click()">
+<form id="paginaPrincipalForm">
+<div class="form-group">
+<label for="banner-foto">Foto do Banner Principal *</label>
+<div class="image-upload-area" id="banner-upload-area" onclick="document.getElementById('banner-foto').click()">
                                 📤 Clique para selecionar ou arraste a imagem aqui
                             </div>
-                            <input type="file" id="banner-foto" accept="image/*" style="display: none;" required>
-                            <div class="image-preview" id="banner-preview"></div>
-                            <div class="image-info">
-                                <strong>📋 Instruções para o banner:</strong>
-                                ✓ Tamanho recomendado: 1920x1080px ou 1600x900px<br>
-                                ✓ Formato: JPG, PNG ou WebP<br>
-                                ✓ Tamanho máximo: 10MB (será comprimido automaticamente)<br>
-                                ✓ Proporção: Paisagem (16:9)<br>
+<input accept="image/*" id="banner-foto" required="" style="display: none;" type="file"/>
+<div class="image-preview" id="banner-preview"></div>
+<div class="image-info">
+<strong>📋 Instruções para o banner:</strong>
+                                ✓ Tamanho recomendado: 1920x1080px ou 1600x900px<br/>
+                                ✓ Formato: JPG, PNG ou WebP<br/>
+                                ✓ Tamanho máximo: 10MB (será comprimido automaticamente)<br/>
+                                ✓ Proporção: Paisagem (16:9)<br/>
                                 ✓ Dica: Use imagens com alto contraste para melhor legibilidade
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="banner-titulo">Título do Banner (Opcional)</label>
-                            <input type="text" id="banner-titulo" placeholder="Ex: Bem-vindo à Sorveteria Itapolitana">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="banner-subtitulo">Subtítulo do Banner (Opcional)</label>
-                            <input type="text" id="banner-subtitulo" placeholder="Ex: Os melhores sorvetes artesanais de Cajuru">
-                        </div>
-                        
-                        <div class="button-group">
-                            <button type="submit" class="btn-primary">💾 Salvar Banner</button>
-                            <button type="reset" class="btn-secondary">🔄 Limpar Formulário</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="section">
-                    <h2>👁️ Pré-visualização Atual</h2>
-                    <div id="banner-preview-atual" style="background: #f0f0f0; padding: 20px; border-radius: 8px; text-align: center; color: #999;">
+</div>
+<div class="form-group">
+<label for="banner-titulo">Título do Banner (Opcional)</label>
+<input id="banner-titulo" placeholder="Ex: Bem-vindo à Sorveteria Itapolitana" type="text"/>
+</div>
+<div class="form-group">
+<label for="banner-subtitulo">Subtítulo do Banner (Opcional)</label>
+<input id="banner-subtitulo" placeholder="Ex: Os melhores sorvetes artesanais de Cajuru" type="text"/>
+</div>
+<div class="button-group">
+<button class="btn-primary" type="submit">💾 Salvar Banner</button>
+<button class="btn-secondary" type="reset">🔄 Limpar Formulário</button>
+</div>
+</form>
+</div>
+<div class="section">
+<h2>👁️ Pré-visualização Atual</h2>
+<div id="banner-preview-atual" style="background: #f0f0f0; padding: 20px; border-radius: 8px; text-align: center; color: #999;">
                         Nenhuma imagem definida ainda
                     </div>
-                </div>
-            </div>
-            
-            <!-- ABA: CONFIGURAÇÕES -->
-            <div id="configuracoes" class="tab-content">
-                <div class="section">
-                    <h2>⚙️ Configurações da Loja</h2>
-                    
-                    <form id="configForm">
-                        <div class="form-group">
-                            <label for="config-nome">Nome da Loja</label>
-                            <input type="text" id="config-nome" placeholder="Sorveteria Itapolitana">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="config-telefone">Telefone</label>
-                            <input type="text" id="config-telefone" placeholder="(16) 99606-2046">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="config-endereco">Endereço</label>
-                            <input type="text" id="config-endereco" placeholder="Pça Lgo São Bento, 311 - Centro, Cajuru/SP">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="config-horario">Horário de Funcionamento</label>
-                            <input type="text" id="config-horario" placeholder="Seg-Dom: 10h às 22h">
-                        </div>
-                        
-                        <div class="button-group">
-                            <button type="submit" class="btn-primary">💾 Salvar Configurações</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
+</div>
+</div>
+<!-- ABA: CONFIGURAÇÕES -->
+<div class="tab-content" id="configuracoes">
+<div class="section">
+<h2>⚙️ Configurações da Loja</h2>
+<form id="configForm">
+<div class="form-group">
+<label for="config-nome">Nome da Loja</label>
+<input id="config-nome" placeholder="Sorveteria Itapolitana" type="text"/>
+</div>
+<div class="form-group">
+<label for="config-telefone">Telefone</label>
+<input id="config-telefone" placeholder="(16) 99606-2046" type="text"/>
+</div>
+<div class="form-group">
+<label for="config-endereco">Endereço</label>
+<input id="config-endereco" placeholder="Pça Lgo São Bento, 311 - Centro, Cajuru/SP" type="text"/>
+</div>
+<div class="form-group">
+<label for="config-horario">Horário de Funcionamento</label>
+<input id="config-horario" placeholder="Seg-Dom: 10h às 22h" type="text"/>
+</div>
+<div class="button-group">
+<button class="btn-primary" type="submit">💾 Salvar Configurações</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<script>
         // ===== GERENCIAMENTO DE ABAS =====
         function switchTab(tabName) {
             // Ocultar todas as abas
@@ -698,42 +685,48 @@
             setTimeout(() => msg.className = 'message', 5000);
         }
     </script>
-
 <!-- CERTIFICAÇÕES E SEGURANÇA -->
 <div style="background:linear-gradient(135deg,#0D47A1,#1565C0);padding:24px 16px;margin-top:32px;text-align:center;">
-  <div style="font-size:12px;color:rgba(255,255,255,.7);text-align:center;margin-bottom:12px;font-weight:600;">Certificações e Segurança</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:12px;max-width:100%;margin:0 auto;justify-items:center;padding:0 12px;">
-    <a href="https://www.ssllabs.com/ssltest/analyze.html?d=itapolitanacajuru.com.br" target="_blank" rel="noopener noreferrer" title="Verificar Certificado SSL" style="text-decoration:none;cursor:pointer;width:100%;">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);transition:all 0.3s;">
-        <div style="font-size:32px;line-height:1;">🔒</div>
-        <div style="font-size:9px;color:#FBD100;font-weight:700;text-align:center;line-height:1.2;">HTTPS<br>Seguro</div>
-      </div>
-    </a>
-    <a href="https://www.ssllabs.com/ssltest/analyze.html?d=itapolitanacajuru.com.br" target="_blank" rel="noopener noreferrer" title="Certificado SSL Ativo" style="text-decoration:none;cursor:pointer;width:100%;">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);transition:all 0.3s;">
-        <div style="font-size:32px;line-height:1;">✅</div>
-        <div style="font-size:9px;color:#FBD100;font-weight:700;text-align:center;line-height:1.2;">SSL<br>Certificado</div>
-      </div>
-    </a>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);transition:all 0.3s;" title="Seus dados estão protegidos com criptografia">
-      <div style="font-size:32px;line-height:1;">🛡️</div>
-      <div style="font-size:9px;color:#FBD100;font-weight:700;text-align:center;line-height:1.2;">Dados<br>Protegidos</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);transition:all 0.3s;" title="Site otimizado para dispositivos móveis">
-      <div style="font-size:32px;line-height:1;">📱</div>
-      <div style="font-size:9px;color:#FBD100;font-weight:700;text-align:center;line-height:1.2;">Mobile<br>Friendly</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);transition:all 0.3s;" title="Performance otimizada para carregamento rápido">
-      <div style="font-size:32px;line-height:1;">⚡</div>
-      <div style="font-size:9px;color:#FBD100;font-weight:700;text-align:center;line-height:1.2;">Performance<br>Otimizada</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.05);transition:all 0.3s;" title="Otimizado para mecanismos de busca">
-      <div style="font-size:32px;line-height:1;">🌐</div>
-      <div style="font-size:9px;color:#FBD100;font-weight:700;text-align:center;line-height:1.2;">SEO<br>Otimizado</div>
-    </div>
-  </div>
+<div class="security-seals-title">Certificações e Segurança</div>
+<div class="security-seals-container">
+<a class="security-seal-item" href="https://www.ssllabs.com/ssltest/analyze.html?d=itapolitanacajuru.com.br" rel="noopener noreferrer" target="_blank" title="Verificar Certificado SSL">
+<div class="security-seal-content">
+<div class="security-seal-icon">🔒</div>
+<div class="security-seal-text">HTTPS<br/>Seguro</div>
+</div>
+</a>
+<a class="security-seal-item" href="https://www.ssllabs.com/ssltest/analyze.html?d=itapolitanacajuru.com.br" rel="noopener noreferrer" target="_blank" title="Certificado SSL Ativo">
+<div class="security-seal-content">
+<div class="security-seal-icon">✅</div>
+<div class="security-seal-text">SSL<br/>Certificado</div>
+</div>
+</a>
+<div class="security-seal-item" title="Seus dados estão protegidos com criptografia">
+<div class="security-seal-content">
+<div class="security-seal-icon">🛡️</div>
+<div class="security-seal-text">Dados<br/>Protegidos</div>
+</div>
+</div>
+<div class="security-seal-item" title="Site otimizado para dispositivos móveis">
+<div class="security-seal-content">
+<div class="security-seal-icon">📱</div>
+<div class="security-seal-text">Mobile<br/>Friendly</div>
+</div>
+</div>
+<div class="security-seal-item" title="Performance otimizada para carregamento rápido">
+<div class="security-seal-content">
+<div class="security-seal-icon">⚡</div>
+<div class="security-seal-text">Performance<br/>Otimizada</div>
+</div>
+</div>
+<div class="security-seal-item" title="Otimizado para mecanismos de busca">
+<div class="security-seal-content">
+<div class="security-seal-icon">🌐</div>
+<div class="security-seal-text">SEO<br/>Otimizado</div>
+</div>
+</div>
+</div>
 </div>
 <!-- FIM CERTIFICAÇÕES E SEGURANÇA -->
-
 </body>
 </html>
