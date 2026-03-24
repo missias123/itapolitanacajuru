@@ -23,7 +23,7 @@ O site da Sorveteria Itapolitana Cajuru foi completamente otimizado para **SEO**
 
 ### Schema Markup Implementado
 - ✅ **IceCreamShop** - Informações da sorveteria
-- ✅ **Product** - Sorvete Artesanal (36 sabores)
+- ✅ **Product** - Sorvete tipo artesanal (36 sabores)
 - ✅ **Product** - Picolé de Leite Ninho
 - ✅ **Product** - Açaí na Tigela
 - ✅ **AggregateRating** - Avaliações dos produtos

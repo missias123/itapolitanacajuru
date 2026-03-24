@@ -46,13 +46,13 @@ tips_html = """
         
         <div class="tip-box" style="margin-bottom: 35px; padding: 25px; border-left: 6px solid #1565C0; background: #f0f7ff; border-radius: 0 15px 15px 0;">
             <h3 style="color: #0D47A1; margin-bottom: 15px; font-size: 1.4rem;">Escolha Inteligente: Qualidade Acima de Tudo</h3>
-            <p style="line-height: 1.6; color: #333;">Não se deixe levar apenas por embalagens bonitas ou preços baixos. Em Cajuru, a verdadeira qualidade do sorvete se revela no <strong>sabor, na cremosidade e na validade</strong> do produto. Evite sorvetes industrializados de má qualidade para sua festa; eles podem não agradar seus convidados e até mesmo sobrar. Escolha a <strong>qualidade artesanal da Itapolitana Cajuru</strong> e garanta elogios!</p>
+            <p style="line-height: 1.6; color: #333;">Não se deixe levar apenas por embalagens bonitas ou preços baixos. Em Cajuru, a verdadeira qualidade do sorvete se revela no <strong>sabor, na cremosidade e na validade</strong> do produto. Evite sorvetes industrializados de má qualidade para sua festa; eles podem não agradar seus convidados e até mesmo sobrar. Escolha a <strong>qualidade tipo artesanal da Itapolitana Cajuru</strong> e garanta elogios!</p>
         </div>
 
         <div class="tip-box" style="margin-bottom: 35px; padding: 25px; border-left: 6px solid #F9A825; background: #fffdf0; border-radius: 0 15px 15px 0;">
             <h3 style="color: #E65100; margin-bottom: 15px; font-size: 1.4rem;">Dicas Diretas para Sua Escolha Perfeita</h3>
             <ul style="list-style: none; padding: 0;">
-                <li style="margin-bottom: 12px; padding-left: 25px; position: relative;"><span style="position: absolute; left: 0; color: #F9A825;">✔</span> <strong>Prove antes de comprar:</strong> A melhor forma de avaliar é degustar. A textura e a cremosidade são indicativos da real qualidade do sorvete artesanal.</li>
+                <li style="margin-bottom: 12px; padding-left: 25px; position: relative;"><span style="position: absolute; left: 0; color: #F9A825;">✔</span> <strong>Prove antes de comprar:</strong> A melhor forma de avaliar é degustar. A textura e a cremosidade são indicativos da real qualidade do sorvete tipo artesanal.</li>
                 <li style="margin-bottom: 12px; padding-left: 25px; position: relative;"><span style="position: absolute; left: 0; color: #F9A825;">✔</span> <strong>Compare além do preço:</strong> Faça pelo menos 3 orçamentos. Além do valor, avalie os ingredientes, a textura e o prazo de validade.</li>
                 <li style="margin-bottom: 12px; padding-left: 25px; position: relative;"><span style="position: absolute; left: 0; color: #F9A825;">✔</span> <strong>Peça com antecedência:</strong> Para eventos, garanta a disponibilidade dos seus sabores favoritos, especialmente em datas de alta demanda.</li>
             </ul>
@@ -61,7 +61,7 @@ tips_html = """
         <div class="tip-box" style="margin-bottom: 35px; padding: 25px; border-left: 6px solid #2E7D32; background: #f1f8f1; border-radius: 0 15px 15px 0;">
             <h3 style="color: #1B5E20; margin-bottom: 15px; font-size: 1.4rem;">Por Que Escolher a Sorveteria Itapolitana Cajuru?</h3>
             <ul style="list-style: none; padding: 0;">
-                <li style="margin-bottom: 10px;">⭐ <strong>Tradição e Qualidade:</strong> Produção artesanal desde 2007, com receitas que priorizam sabor e cremosidade inigualáveis.</li>
+                <li style="margin-bottom: 10px;">⭐ <strong>Tradição e Qualidade:</strong> Produção tipo artesanal desde 2007, com receitas que priorizam sabor e cremosidade inigualáveis.</li>
                 <li style="margin-bottom: 10px;">⭐ <strong>Textura Superior:</strong> Mais sabor e menos “gelo” – nossa textura é superior aos produtos industrializados.</li>
                 <li style="margin-bottom: 10px;">⭐ <strong>Suporte para Eventos:</strong> Ajudamos no cálculo e conservação para que seu evento seja um sucesso total.</li>
             </ul>
