@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Sorveteria Itapolitana</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #E8000D 0%, #FF6B35 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            color: #E8000D;
+            border-bottom-color: #E8000D;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #0D47A1;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0D47A1;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #0D47A1;
+            box-shadow: 0 0 5px rgba(13, 71, 161, 0.2);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Upload de Imagem */
+        .image-upload-area {
+            border: 2px dashed #0D47A1;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .image-upload-area:hover {
+            background: #f0f0f0;
+            border-color: #E8000D;
+        }
+        
+        .image-upload-area.dragover {
+            background: #e3f2fd;
+            border-color: #E8000D;
+        }
+        
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .image-info {
+            background: #e3f2fd;
+            border-left: 4px solid #0D47A1;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #0D47A1;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .image-info strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #E8000D 0%, #FF6B35 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(232, 0, 13, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #0D47A1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0D47A1;
+        }
+        
+        .item-list {
+            margin-top: 30px;
+        }
+        
+        .item-card {
+            background: #f9f9f9;
+            border-left: 4px solid #0D47A1;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .item-image {
+            flex-shrink: 0;
+        }
+        
+        .item-image img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .item-content {
+            flex: 1;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            color: #0D47A1;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .item-desc {
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #E8000D;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .item-card {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍦 Painel de Administração</h1>
+            <p>Sorveteria Itapolitana Cajuru - Gerenciamento Completo</p>
+        </div>
+        
+        <div class="content">
+            <div id="message" class="message"></div>
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('promocoes')">🎉 Promoções</button>
+                <button class="tab-btn" onclick="switchTab('pagina-principal')">🏠 Página Principal</button>
+                <button class="tab-btn" onclick="switchTab('configuracoes')">⚙️ Configurações</button>
+            </div>
+            
+            <!-- ABA: PROMOÇÕES -->
+            <div id="promocoes" class="tab-content active">
+                <div class="section">
+                    <h2>➕ Adicionar Nova Promoção</h2>
+                    
+                    <div class="info-box">
+                        ℹ️ <strong>Como adicionar uma promoção:</strong> Preencha o título, descrição e faça upload da foto. A imagem será automaticamente comprimida e redimensionada para não deixar o site lento.
+                    </div>
+                    
+                    <form id="promocaoForm">
+                        <div class="form-group">
+                            <label for="promo-titulo">Título da Promoção *</label>
+                            <input type="text" id="promo-titulo" placeholder="Ex: Sorvete em Promoção" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="promo-descricao">Descrição da Promoção *</label>
+                            <textarea id="promo-descricao" placeholder="Ex: Aproveite 30% de desconto em todos os sorvetes tipo artesanal..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="promo-foto">Foto da Promoção *</label>
+                            <div class="image-upload-area" id="promo-upload-area" onclick="document.getElementById('promo-foto').click()">
+                                📤 Clique para selecionar ou arraste a imagem aqui
+                            </div>
+                            <input type="file" id="promo-foto" accept="image/*" style="display: none;" required>
+                            <div class="image-preview" id="promo-preview"></div>
+                            <div class="image-info">
+                                <strong>📋 Instruções para a foto:</strong>
+                                ✓ Tamanho recomendado: 800x600px ou 1200x800px<br>
+                                ✓ Formato: JPG, PNG ou WebP<br>
+                                ✓ Tamanho máximo: 5MB (será comprimido automaticamente)<br>
+                                ✓ Proporção: Paisagem (16:9 ou 4:3)
+                            </div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">💾 Salvar Promoção</button>
+                            <button type="reset" class="btn-secondary">🔄 Limpar Formulário</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="section">
+                    <h2>📋 Promoções Ativas</h2>
+                    <div id="promocoes-list" class="item-list">
+                        <p style="color: #999; text-align: center;">Carregando promoções...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ABA: PÁGINA PRINCIPAL -->
+            <div id="pagina-principal" class="tab-content">
+                <div class="section">
+                    <h2>🏠 Gerenciar Foto da Página Principal</h2>
+                    
+                    <div class="info-box">
+                        ℹ️ <strong>Foto do banner principal:</strong> Esta imagem aparecerá no topo da página inicial do site. Será automaticamente adaptada para todos os dispositivos.
+                    </div>
+                    
+                    <form id="paginaPrincipalForm">
+                        <div class="form-group">
+                            <label for="banner-foto">Foto do Banner Principal *</label>
+                            <div class="image-upload-area" id="banner-upload-area" onclick="document.getElementById('banner-foto').click()">
+                                📤 Clique para selecionar ou arraste a imagem aqui
+                            </div>
+                            <input type="file" id="banner-foto" accept="image/*" style="display: none;" required>
+                            <div class="image-preview" id="banner-preview"></div>
+                            <div class="image-info">
+                                <strong>📋 Instruções para o banner:</strong>
+                                ✓ Tamanho recomendado: 1920x1080px ou 1600x900px<br>
+                                ✓ Formato: JPG, PNG ou WebP<br>
+                                ✓ Tamanho máximo: 10MB (será comprimido automaticamente)<br>
+                                ✓ Proporção: Paisagem (16:9)<br>
+                                ✓ Dica: Use imagens com alto contraste para melhor legibilidade
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="banner-titulo">Título do Banner (Opcional)</label>
+                            <input type="text" id="banner-titulo" placeholder="Ex: Bem-vindo à Sorveteria Itapolitana">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="banner-subtitulo">Subtítulo do Banner (Opcional)</label>
+                            <input type="text" id="banner-subtitulo" placeholder="Ex: Os melhores sorvetes artesanais de Cajuru">
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">💾 Salvar Banner</button>
+                            <button type="reset" class="btn-secondary">🔄 Limpar Formulário</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="section">
+                    <h2>👁️ Pré-visualização Atual</h2>
+                    <div id="banner-preview-atual" style="background: #f0f0f0; padding: 20px; border-radius: 8px; text-align: center; color: #999;">
+                        Nenhuma imagem definida ainda
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ABA: CONFIGURAÇÕES -->
+            <div id="configuracoes" class="tab-content">
+                <div class="section">
+                    <h2>⚙️ Configurações da Loja</h2>
+                    
+                    <form id="configForm">
+                        <div class="form-group">
+                            <label for="config-nome">Nome da Loja</label>
+                            <input type="text" id="config-nome" placeholder="Sorveteria Itapolitana">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="config-telefone">Telefone</label>
+                            <input type="text" id="config-telefone" placeholder="(16) 99606-2046">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="config-endereco">Endereço</label>
+                            <input type="text" id="config-endereco" placeholder="Pça Lgo São Bento, 311 - Centro, Cajuru/SP">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="config-horario">Horário de Funcionamento</label>
+                            <input type="text" id="config-horario" placeholder="Seg-Dom: 10h às 22h">
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="btn-primary">💾 Salvar Configurações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ===== GERENCIAMENTO DE ABAS =====
+        function switchTab(tabName) {
+            // Ocultar todas as abas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar aba selecionada
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // ===== COMPRESSÃO E REDIMENSIONAMENTO DE IMAGENS =====
+        class ImageCompressor {
+            static async compress(file, maxWidth = 1200, maxHeight = 800, quality = 0.8) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            // Redimensionar mantendo proporção
+                            if (width > height) {
+                                if (width > maxWidth) {
+                                    height = Math.round((height * maxWidth) / width);
+                                    width = maxWidth;
+                                }
+                            } else {
+                                if (height > maxHeight) {
+                                    width = Math.round((width * maxHeight) / height);
+                                    height = maxHeight;
+                                }
+                            }
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            canvas.toBlob(
+                                (blob) => {
+                                    resolve({
+                                        blob,
+                                        dataUrl: canvas.toDataURL('image/webp', quality),
+                                        size: blob.size,
+                                        width,
+                                        height
+                                    });
+                                },
+                                'image/webp',
+                                quality
+                            );
+                        };
+                        img.onerror = () => reject(new Error('Erro ao carregar imagem'));
+                        img.src = e.target.result;
+                    };
+                    
+                    reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+        
+        // ===== UPLOAD DE PROMOÇÃO =====
+        document.getElementById('promo-foto').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            try {
+                const compressed = await ImageCompressor.compress(file, 1200, 800, 0.85);
+                const preview = document.getElementById('promo-preview');
+                preview.innerHTML = `
+                    <img src="${compressed.dataUrl}" alt="Prévia">
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        ✅ Imagem comprimida: ${(compressed.size / 1024).toFixed(2)} KB
+                    </p>
+                `;
+                
+                // Armazenar dados comprimidos
+                document.getElementById('promo-foto').dataset.compressed = compressed.dataUrl;
+            } catch (error) {
+                showMessage('Erro ao processar imagem: ' + error.message, 'error');
+            }
+        });
+        
+        // ===== UPLOAD DO BANNER =====
+        document.getElementById('banner-foto').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            try {
+                const compressed = await ImageCompressor.compress(file, 1920, 1080, 0.85);
+                const preview = document.getElementById('banner-preview');
+                preview.innerHTML = `
+                    <img src="${compressed.dataUrl}" alt="Prévia">
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        ✅ Imagem comprimida: ${(compressed.size / 1024).toFixed(2)} KB
+                    </p>
+                `;
+                
+                // Atualizar pré-visualização
+                const previewAtual = document.getElementById('banner-preview-atual');
+                previewAtual.innerHTML = `<img src="${compressed.dataUrl}" alt="Banner" style="max-width: 100%; border-radius: 8px;">`;
+                
+                // Armazenar dados comprimidos
+                document.getElementById('banner-foto').dataset.compressed = compressed.dataUrl;
+            } catch (error) {
+                showMessage('Erro ao processar imagem: ' + error.message, 'error');
+            }
+        });
+        
+        // ===== DRAG AND DROP =====
+        ['promo-upload-area', 'banner-upload-area'].forEach(id => {
+            const area = document.getElementById(id);
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                area.addEventListener(eventName, () => area.classList.add('dragover'));
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, () => area.classList.remove('dragover'));
+            });
+            
+            area.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (id === 'promo-upload-area') {
+                    document.getElementById('promo-foto').files = files;
+                    document.getElementById('promo-foto').dispatchEvent(new Event('change'));
+                } else {
+                    document.getElementById('banner-foto').files = files;
+                    document.getElementById('banner-foto').dispatchEvent(new Event('change'));
+                }
+            });
+        });
+        
+        // ===== ENVIO DE FORMULÁRIOS =====
+        document.getElementById('promocaoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const titulo = document.getElementById('promo-titulo').value;
+            const descricao = document.getElementById('promo-descricao').value;
+            const fotoComprimida = document.getElementById('promo-foto').dataset.compressed;
+            
+            if (!fotoComprimida) {
+                showMessage('Por favor, selecione uma imagem', 'error');
+                return;
+            }
+            
+            // Aqui você enviaria os dados para o servidor de sincronização
+            console.log('Promoção a salvar:', { titulo, descricao, foto: fotoComprimida });
+            showMessage('✅ Promoção salva com sucesso!', 'success');
+            document.getElementById('promocaoForm').reset();
+            document.getElementById('promo-preview').innerHTML = '';
+        });
+        
+        document.getElementById('paginaPrincipalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fotoComprimida = document.getElementById('banner-foto').dataset.compressed;
+            const titulo = document.getElementById('banner-titulo').value;
+            const subtitulo = document.getElementById('banner-subtitulo').value;
+            
+            if (!fotoComprimida) {
+                showMessage('Por favor, selecione uma imagem', 'error');
+                return;
+            }
+            
+            // Aqui você enviaria os dados para o servidor de sincronização
+            console.log('Banner a salvar:', { foto: fotoComprimida, titulo, subtitulo });
+            showMessage('✅ Banner salvo com sucesso!', 'success');
+            document.getElementById('paginaPrincipalForm').reset();
+        });
+        
+        // ===== MENSAGENS =====
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            setTimeout(() => msg.className = 'message', 5000);
+        }
+    </script>
+</body>
+</html>
