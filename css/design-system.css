@@ -113,11 +113,15 @@ h1, h2, h3, h4 {
     border-radius: var(--raio-borda); /* Borda arredondada para a seção */
     box-shadow: var(--sombra-suave); /* Sombra suave para a seção */
     margin-bottom: 40px; /* Espaçamento inferior */
+    text-align: center; /* Centraliza o texto da seção */
 }
 
 .section-inner {
     text-align: center;
     padding: 20px; /* Adiciona padding interno para a seção */
+    display: flex; /* Adiciona flexbox para centralizar o conteúdo */
+    flex-direction: column;
+    align-items: center;
 }
 
 .section-title {
@@ -131,25 +135,20 @@ h1, h2, h3, h4 {
 
 .dicas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    justify-items: center;
     margin-top: 20px;
-    justify-items: center; /* Centraliza os cards na grid */
 }
 
 .dica-card {
-    background: #fff;
-    border-radius: var(--raio-borda);
-    box-shadow: var(--sombra-suave);
+    background-color: #fff;
     padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    width: 100%; /* Garante que o card ocupe a largura total da coluna */
+    max-width: 450px; /* Limita a largura máxima para desktop */
     text-align: left;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.08);
-    display: flex; /* Adiciona flexbox para melhor alinhamento */
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 10px;
 }
 
 .dica-card:hover {
