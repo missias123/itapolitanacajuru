@@ -1410,47 +1410,49 @@
 
 <!-- ===== BOTÃO FIXO "VER NOSSO CARDÁPIO" ===== -->
 <style>
-.btn-cardapio-fixo{
+.btn-cardapio-fixo-bar{
   position:fixed;
-  bottom:22px;
-  left:50%;
-  transform:translateX(-50%);
+  bottom:0;
+  left:0;
+  width:100%;
   z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(90deg,#E65100,#FF6D00,#E53935);
+  padding:10px 16px;
+  box-shadow:0 -3px 18px rgba(230,81,0,.45);
+}
+.btn-cardapio-fixo{
   display:inline-flex;
   align-items:center;
-  gap:10px;
-  background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);
+  gap:8px;
   color:#fff;
   font-family:'Poppins','Inter',sans-serif;
-  font-size:1rem;
+  font-size:.95rem;
   font-weight:900;
-  padding:14px 32px;
-  border-radius:50px;
   text-decoration:none;
-  box-shadow:0 4px 22px rgba(230,81,0,.55);
   letter-spacing:.4px;
-  transition:transform .2s,box-shadow .2s;
   white-space:nowrap;
 }
 .btn-cardapio-fixo:hover,.btn-cardapio-fixo:focus{
-  transform:translateX(-50%) translateY(-3px);
-  box-shadow:0 8px 30px rgba(230,81,0,.7);
+  opacity:.9;
   outline:none;
 }
-.btn-cardapio-fixo:active{
-  transform:translateX(-50%) translateY(0);
-}
 @media(max-width:480px){
+  .btn-cardapio-fixo-bar{
+    padding:8px 12px;
+  }
   .btn-cardapio-fixo{
     font-size:.88rem;
-    padding:12px 22px;
-    bottom:16px;
   }
 }
 </style>
-<a class="btn-cardapio-fixo" href="https://itapolitanacajuru.com.br/#cardapio" aria-label="Ver nosso Cardápio na página inicial">
-  🍦 Ver nosso Cardápio
-</a>
+<div class="btn-cardapio-fixo-bar">
+  <a class="btn-cardapio-fixo" href="https://itapolitanacajuru.com.br/#cardapio" aria-label="Ver nosso Cardápio na página inicial">
+    🍦 Ver nosso Cardápio
+  </a>
+</div>
 <!-- ===== FIM BOTÃO FIXO ===== -->
 
 </body>
