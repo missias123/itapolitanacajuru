@@ -775,6 +775,31 @@ img{max-width:100%;display:block}
     font-size: 13px;
   }
 }
+
+/* === BOTÃO VER NOSSO CARDÁPIO === */
+.ver-cardapio-wrap{width:100%;background:linear-gradient(135deg,#1A1A2E,#2D1B69);padding:18px 16px;text-align:center;}
+.ver-cardapio-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#7B2D8B,#E040FB);color:#fff;font-size:1.1rem;font-weight:900;padding:14px 32px;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(224,64,251,.4);transition:transform .2s,box-shadow .2s;letter-spacing:.5px;}
+.ver-cardapio-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(224,64,251,.6);}
+.ver-cardapio-btn:active{transform:translateY(0);}
+.ver-cardapio-seta{display:inline-block;transition:transform .35s;font-style:normal;}
+.ver-cardapio-btn.aberto .ver-cardapio-seta{transform:rotate(180deg);}
+.ver-cardapio-lista{max-height:0;overflow:hidden;transition:max-height .5s ease,opacity .4s ease;opacity:0;background:linear-gradient(135deg,#1A1A2E,#2D1B69);padding:0 16px;}
+.ver-cardapio-lista.aberto{max-height:1200px;opacity:1;padding:0 16px 18px;}
+.vc-item{background:linear-gradient(135deg,rgba(123,45,139,.25),rgba(224,64,251,.15));border:1px solid rgba(224,64,251,.3);border-radius:16px;margin-bottom:10px;overflow:hidden;}
+.vc-item-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;gap:12px;}
+.vc-item-header:hover{background:rgba(224,64,251,.1);}
+.vc-item-esq{display:flex;align-items:center;gap:12px;}
+.vc-item-icone{font-size:1.8rem;line-height:1;}
+.vc-item-titulo{font-size:1rem;font-weight:900;color:#fff;letter-spacing:.3px;}
+.vc-item-sub{font-size:.78rem;color:#CE93D8;font-weight:600;margin-top:2px;}
+.vc-item-seta{font-size:.9rem;color:#E040FB;transition:transform .3s;display:inline-block;}
+.vc-item.aberto .vc-item-seta{transform:rotate(180deg);}
+.vc-item-body{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s ease;opacity:0;padding:0 18px;}
+.vc-item.aberto .vc-item-body{max-height:400px;opacity:1;padding:0 18px 16px;}
+.vc-item-detalhe{font-size:.85rem;color:#E1BEE7;line-height:1.6;margin-bottom:10px;}
+.vc-ver-mais{display:inline-block;margin-top:6px;padding:8px 20px;background:linear-gradient(135deg,#7B2D8B,#E040FB);color:#fff;font-weight:800;font-size:.82rem;border-radius:30px;text-decoration:none;transition:transform .2s;}
+.vc-ver-mais:hover{transform:translateY(-2px);}
+@media(max-width:480px){.ver-cardapio-btn{font-size:.95rem;padding:12px 22px;}.vc-item-titulo{font-size:.9rem;}}
 </style>
 <script type="application/ld+json">
 {
@@ -849,6 +874,118 @@ img{max-width:100%;display:block}
 <div class="strip-sensorial" id="strip-sensorial">
   🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 36 Sabores · Desde 2007 · tipo artesanal · 🍦
 </div>
+
+<!-- BOTÃO VER NOSSO CARDÁPIO -->
+<div class="ver-cardapio-wrap" id="ver-cardapio-wrap">
+  <button class="ver-cardapio-btn" id="ver-cardapio-btn" onclick="toggleVerCardapio()" aria-label="Ver nosso Cardápio" type="button">
+    🍦 Ver nosso Cardápio <i class="ver-cardapio-seta">▼</i>
+  </button>
+  <div class="ver-cardapio-lista" id="ver-cardapio-lista">
+    <!-- Item 1: Sorvetes de Massa -->
+    <div class="vc-item" id="vc-sorvetes">
+      <div class="vc-item-header" onclick="toggleVcItem('vc-sorvetes')">
+        <div class="vc-item-esq">
+          <span class="vc-item-icone">🍨</span>
+          <div>
+            <div class="vc-item-titulo">Sorvetes de Massa</div>
+            <div class="vc-item-sub">Cremoso, gelado, irresistível · 36 sabores pra você escolher</div>
+          </div>
+        </div>
+        <span class="vc-item-seta">▼</span>
+      </div>
+      <div class="vc-item-body">
+        <p class="vc-item-detalhe">36 sabores tipo artesanal disponíveis. Potes de 1, 2, 3 e 4 bolas. Casquinha, cascão, cestinha e copo.</p>
+        <a class="vc-ver-mais" href="#cardapio" onclick="setTimeout(()=>toggleAcc('acc-sorvetes'),300)">▼ Ver todos os sabores</a>
+      </div>
+    </div>
+    <!-- Item 2: Picolés -->
+    <div class="vc-item" id="vc-picoles">
+      <div class="vc-item-header" onclick="toggleVcItem('vc-picoles')">
+        <div class="vc-item-esq">
+          <span class="vc-item-icone">🧊</span>
+          <div>
+            <div class="vc-item-titulo">Picolés</div>
+            <div class="vc-item-sub">Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó</div>
+          </div>
+        </div>
+        <span class="vc-item-seta">▼</span>
+      </div>
+      <div class="vc-item-body">
+        <p class="vc-item-detalhe">Picolés de frutas, leite, recheados, Leite Ninho e Esquimó. Disponíveis na loja e para encomenda (mín. 100 unidades).</p>
+        <a class="vc-ver-mais" href="#cardapio" onclick="setTimeout(()=>toggleAcc('acc-picoles'),300)">▼ Ver picolés</a>
+      </div>
+    </div>
+    <!-- Item 3: Açaí em Promoção -->
+    <div class="vc-item" id="vc-acai-promo">
+      <div class="vc-item-header" onclick="toggleVcItem('vc-acai-promo')">
+        <div class="vc-item-esq">
+          <span class="vc-item-icone">🫐</span>
+          <div>
+            <div class="vc-item-titulo">🔥 Açaí em Promoção</div>
+            <div class="vc-item-sub">Aproveite agora! 8 combos irresistíveis · 400ml a 700ml</div>
+          </div>
+        </div>
+        <span class="vc-item-seta">▼</span>
+      </div>
+      <div class="vc-item-body">
+        <p class="vc-item-detalhe">8 combos especiais com açaí tipo artesanal, do 400ml ao 700ml. Preços promocionais por tempo limitado!</p>
+        <a class="vc-ver-mais" href="#cardapio" onclick="setTimeout(()=>toggleAcc('acc-acai-promo'),300)">▼ Ver promoção</a>
+      </div>
+    </div>
+    <!-- Item 4: Açaí tipo artesanal -->
+    <div class="vc-item" id="vc-acai">
+      <div class="vc-item-header" onclick="toggleVcItem('vc-acai')">
+        <div class="vc-item-esq">
+          <span class="vc-item-icone">🍇</span>
+          <div>
+            <div class="vc-item-titulo">Açaí tipo artesanal</div>
+            <div class="vc-item-sub">Do jeito que você ama · Monte o seu · 300ml a 600ml</div>
+          </div>
+        </div>
+        <span class="vc-item-seta">▼</span>
+      </div>
+      <div class="vc-item-body">
+        <p class="vc-item-detalhe">Açaí tipo artesanal cremoso, do 300ml ao 600ml. Monte do seu jeito com os complementos que você preferir.</p>
+        <a class="vc-ver-mais" href="#cardapio" onclick="setTimeout(()=>toggleAcc('acc-acai'),300)">▼ Ver açaí</a>
+      </div>
+    </div>
+    <!-- Item 5: Milkshakes -->
+    <div class="vc-item" id="vc-milk">
+      <div class="vc-item-header" onclick="toggleVcItem('vc-milk')">
+        <div class="vc-item-esq">
+          <span class="vc-item-icone">🥤</span>
+          <div>
+            <div class="vc-item-titulo">Milkshakes</div>
+            <div class="vc-item-sub">Cremoso e gelado · Tradicional e Top · 36 sabores</div>
+          </div>
+        </div>
+        <span class="vc-item-seta">▼</span>
+      </div>
+      <div class="vc-item-body">
+        <p class="vc-item-detalhe">Milkshakes nas versões Tradicional e Top, com 36 sabores disponíveis. Servidos em copo transparente com tampa bolha.</p>
+        <a class="vc-ver-mais" href="#cardapio" onclick="setTimeout(()=>toggleAcc('acc-milk'),300)">▼ Ver milkshakes</a>
+      </div>
+    </div>
+    <!-- Item 6: Taças -->
+    <div class="vc-item" id="vc-tacas">
+      <div class="vc-item-header" onclick="toggleVcItem('vc-tacas')">
+        <div class="vc-item-esq">
+          <span class="vc-item-icone">🍧</span>
+          <div>
+            <div class="vc-item-titulo">Taças</div>
+            <div class="vc-item-sub">Uma experiência única · Colegial, Sundae, Banana Split e mais</div>
+          </div>
+        </div>
+        <span class="vc-item-seta">▼</span>
+      </div>
+      <div class="vc-item-body">
+        <p class="vc-item-detalhe">Taças tradicionais: Colegial, Sundae, Banana Split, Universitário, Morango Split, Vaca Preta, Sundae com Nutella e Ula-Ula.</p>
+        <a class="vc-ver-mais" href="#cardapio" onclick="setTimeout(()=>toggleAcc('acc-tacas'),300)">▼ Ver taças</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <section class="hero">
 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;">
 <div style="width:100%;max-width:520px;">
@@ -2193,5 +2330,34 @@ function atualizarStatusHorario() {
 document.addEventListener('DOMContentLoaded', atualizarStatusHorario);
 setInterval(atualizarStatusHorario, 60 * 1000); // Atualiza a cada minuto
 </script>
+
+<script>
+// === VER NOSSO CARDÁPIO ===
+function toggleVerCardapio(){
+  const btn = document.getElementById('ver-cardapio-btn');
+  const lista = document.getElementById('ver-cardapio-lista');
+  const aberto = lista.classList.contains('aberto');
+  btn.classList.toggle('aberto', !aberto);
+  lista.classList.toggle('aberto', !aberto);
+}
+function toggleVcItem(id){
+  const item = document.getElementById(id);
+  const jaAberto = item.classList.contains('aberto');
+  // Fechar todos os itens (acordeão)
+  document.querySelectorAll('.vc-item').forEach(el => el.classList.remove('aberto'));
+  // Abrir o clicado se estava fechado
+  if(!jaAberto) item.classList.add('aberto');
+}
+// Fechar ao clicar fora
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('ver-cardapio-wrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('ver-cardapio-btn').classList.remove('aberto');
+    document.getElementById('ver-cardapio-lista').classList.remove('aberto');
+    document.querySelectorAll('.vc-item').forEach(el => el.classList.remove('aberto'));
+  }
+});
+</script>
+
 </body>
 </html>
