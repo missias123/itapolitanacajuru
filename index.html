@@ -317,6 +317,9 @@ img{max-width:100%;display:block}
 .acc{border-radius:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.15);isolation:isolate;transition:transform .2s,box-shadow .2s}.acc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
 .acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s}
 .acc-header:hover{filter:brightness(1.08)}
+.acc-header:focus{outline:3px solid rgba(255,255,255,.7);outline-offset:2px;}
+.acc-header:focus:not(:focus-visible){outline:none;}
+.acc-header:focus-visible{outline:3px solid rgba(255,255,255,.8);outline-offset:2px;}
 .acc-left{display:flex;align-items:center;gap:12px}
 .acc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 .acc-title{font-size:16px;font-weight:900;color:#fff;letter-spacing:.2px}
@@ -954,7 +957,7 @@ img{max-width:100%;display:block}
   </button>
   <div class="vc-container" id="vc-container">
 <div class="acc" id="acc-sorvetes">
-<div class="acc-header" onclick="toggleAcc('acc-sorvetes')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-sorvetes-body" onclick="toggleAcc('acc-sorvetes')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sorvetes');}">
 <div class="acc-left">
 <span class="acc-icon">🍨</span>
 <div><div class="acc-title">Sorvetes de Massa</div><div class="acc-sub">Cremoso, gelado, irresistível · 36 sabores pra você escolher</div></div>
@@ -969,7 +972,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-picoles">
-<div class="acc-header" onclick="toggleAcc('acc-picoles')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-picoles-body" onclick="toggleAcc('acc-picoles')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-picoles');}">
 <div class="acc-left">
 <span class="acc-icon">🧊</span>
 <div><div class="acc-title">Picolés</div><div class="acc-sub">Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó</div></div>
@@ -979,7 +982,7 @@ img{max-width:100%;display:block}
 <div class="acc-body" id="picoles-body"></div>
 </div>
 <div class="acc" id="acc-acai-promo">
-<div class="acc-header" onclick="toggleAcc('acc-acai-promo')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-acai-promo-body" onclick="toggleAcc('acc-acai-promo')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-acai-promo');}">
 <div class="acc-left">
 <span class="acc-icon">🫐</span>
 <div><div class="acc-title">🔥 Açaí em Promoção</div><div class="acc-sub">Aproveite agora! 8 combos irresistíveis · 400ml a 700ml</div></div>
@@ -989,7 +992,7 @@ img{max-width:100%;display:block}
 <div class="acc-body" id="acai-promo-body"></div>
 </div>
 <div class="acc" id="acc-acai">
-<div class="acc-header" onclick="toggleAcc('acc-acai')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-acai-body" onclick="toggleAcc('acc-acai')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-acai');}">
 <div class="acc-left">
 <span class="acc-icon">🍇</span>
 <div><div class="acc-title">Açaí tipo artesanal</div><div class="acc-sub">Do jeito que você ama · Monte o seu · 300ml a 600ml</div></div>
@@ -999,7 +1002,7 @@ img{max-width:100%;display:block}
 <div class="acc-body" id="acai-body"></div>
 </div>
 <div class="acc" id="acc-milk">
-<div class="acc-header" onclick="toggleAcc('acc-milk')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-milk-body" onclick="toggleAcc('acc-milk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-milk');}">
 <div class="acc-left">
 <span class="acc-icon">🥤</span>
 <div><div class="acc-title">Milkshakes</div><div class="acc-sub">Cremoso e gelado · Tradicional e Top · 36 sabores</div></div>
@@ -1014,7 +1017,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-tacas">
-<div class="acc-header" onclick="toggleAcc('acc-tacas')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-tacas-body" onclick="toggleAcc('acc-tacas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas');}">
 <div class="acc-left">
 <span class="acc-icon">🍧</span>
 <div><div class="acc-title">Taças</div><div class="acc-sub">Uma experiência única · Colegial, Sundae, Banana Split e mais</div></div>
@@ -1029,7 +1032,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-tacas-p">
-<div class="acc-header" onclick="toggleAcc('acc-tacas-p')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-tacas-p-body" onclick="toggleAcc('acc-tacas-p')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas-p');}">
 <div class="acc-left">
 <span class="acc-icon">👑</span>
 <div><div class="acc-title">Taças Premium (Taças Sujas)</div><div class="acc-sub">O melhor da sorveteria · Prestígio, Kit Kat, Unicórnio e mais</div></div>
@@ -1044,7 +1047,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-iso">
-<div class="acc-header" onclick="toggleAcc('acc-iso')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-iso-body" onclick="toggleAcc('acc-iso')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-iso');}">
 <div class="acc-left">
 <span class="acc-icon">🧊</span>
 <div><div class="acc-title">Isopores de Viagem</div><div class="acc-sub">Leve o prazer para casa · 4 tamanhos disponíveis</div></div>
@@ -1054,7 +1057,7 @@ img{max-width:100%;display:block}
 <div class="acc-body" id="iso-body"></div>
 </div>
 <div class="acc" id="acc-sobremesas">
-<div class="acc-header" onclick="toggleAcc('acc-sobremesas')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
 <div class="acc-left">
 <span class="acc-icon">🍨</span>
 <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau e mais</div></div>
@@ -1067,7 +1070,7 @@ img{max-width:100%;display:block}
 </div>
 <!-- VER NOSSO CARDÁPIO - FIM -->
 <div class="acc" id="acc-enc-caixas">
-<div class="acc-header" onclick="toggleAcc('acc-enc-caixas')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-caixas-body" onclick="toggleAcc('acc-enc-caixas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-caixas');}">
 <div class="acc-left">
 <span class="acc-icon">📦</span>
 <div><div class="acc-title">Sorvetes em Caixa 5 e 10 Litros</div><div class="acc-sub">Ideal para festas e eventos · 2 ou 3 sabores à escolha</div></div>
@@ -1079,7 +1082,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-enc-tortas">
-<div class="acc-header" onclick="toggleAcc('acc-enc-tortas')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-tortas-body" onclick="toggleAcc('acc-enc-tortas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-tortas');}">
 <div class="acc-left">
 <span class="acc-icon">🎂</span>
 <div><div class="acc-title">Tortas de Sorvete</div><div class="acc-sub">Faça a festa! 3 sabores · Encomende com 3 dias de antecedência</div></div>
@@ -1091,7 +1094,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-enc-picoles">
-<div class="acc-header" onclick="toggleAcc('acc-enc-picoles')">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-picoles-body" onclick="toggleAcc('acc-enc-picoles')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-picoles');}">
 <div class="acc-left">
 <span class="acc-icon">❄️</span>
 <div><div class="acc-title">Picolés para Encomenda</div><div class="acc-sub">Preço especial de atacado · 5 tipos · Mín. 100 unidades</div></div>
@@ -1103,7 +1106,7 @@ img{max-width:100%;display:block}
 </div>
 </div>
 <div class="acc" id="acc-complementos">
-<div class="acc-header" onclick="toggleAcc('acc-complementos')" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-complementos-body" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
 <div class="acc-left">
 <span class="acc-icon">🍫</span>
 <div><div class="acc-title" style="color:#fff">Complementos para Sorvetes</div><div class="acc-sub" style="color:rgba(255,255,255,0.85)">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div></div>
@@ -1288,10 +1291,18 @@ function imgCard(chave,emoji){
 function toggleAcc(id){
   const el=document.getElementById(id);
   const isOpen=el.classList.contains('open');
-  // Fechar todos os accordions
-  document.querySelectorAll('.acc.open').forEach(a=>a.classList.remove('open'));
-  // Se estava fechado, abrir o clicado; se estava aberto, deixar fechado
-  if(!isOpen) el.classList.add('open');
+  // Fechar todos os accordions e resetar aria-expanded
+  document.querySelectorAll('.acc.open').forEach(a=>{
+    a.classList.remove('open');
+    const h=a.querySelector('.acc-header');
+    if(h) h.setAttribute('aria-expanded','false');
+  });
+  // Se estava fechado, abrir o clicado
+  if(!isOpen){
+    el.classList.add('open');
+    const h=el.querySelector('.acc-header');
+    if(h) h.setAttribute('aria-expanded','true');
+  }
 }
 let _modalScrollY=0;
 let _modalOriginEl=null;
