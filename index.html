@@ -1494,7 +1494,9 @@ function abrirComplementos(el){
   if(produtos&&produtos.acai&&produtos.acai.complementos){
     Object.entries(produtos.acai.complementos).forEach(([k,info])=>{
       const g=document.createElement('div');g.className='comp-group';
-      g.innerHTML=`<div class="comp-group-h">${labelComp[k]||k}<span class="comp-preco">+ R$ ${info.preco.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${info.itens.map(i=>`<span class="chip-comp">${i}</span>`).join('')}</div>`;
+      const getNome=i=>typeof i==='object'&&i!==null?i.nome:i;
+      const isEsg=i=>typeof i==='object'&&i!==null&&(i.esgotado||i.estoque<=0);
+      g.innerHTML=`<div class="comp-group-h">${labelComp[k]||k}<span class="comp-preco">+ R$ ${info.preco.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${info.itens.map(i=>`<span class="chip-comp" style="${isEsg(i)?'opacity:.45;text-decoration:line-through;':''}">  ${getNome(i)}${isEsg(i)?' ✕':''}</span>`).join('')}</div>`;
       lista.appendChild(g);
     });
   }
