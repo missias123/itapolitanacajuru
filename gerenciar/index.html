@@ -14,7 +14,10 @@ body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:
 .login-box{background:#fff;border-radius:16px;padding:32px 24px;max-width:360px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}
 .login-box h2{font-size:20px;font-weight:900;margin-bottom:8px}
 .login-box p{font-size:13px;color:#6A0DAD;font-weight:700;margin-bottom:24px}
-.login-box input{width:100%;padding:12px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none}
+.login-box input{width:100%;padding:12px 44px 12px 14px;border:1px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none}
+.senha-wrap{position:relative;margin-bottom:12px;}
+.senha-wrap input{width:100%;}
+.olho-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#6A0DAD;padding:0;line-height:1;user-select:none;}
 .login-box input:focus{border-color:#6A0DAD}
 .btn-login{width:100%;padding:13px;background:#6A0DAD;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer}
 .btn-login:hover{background:#5a0b9d}
@@ -66,7 +69,10 @@ body {
   <div class="login-box">
     <h2>⚙️ Painel Admin</h2>
     <p>Sorveteria Itapolitana Cajuru</p>
-    <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
+    <div class="senha-wrap">
+      <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
+      <button type="button" class="olho-btn" onclick="toggleSenha()" title="Mostrar/ocultar senha" aria-label="Mostrar ou ocultar senha">&#128065;</button>
+    </div>
     <button type="button" class="btn-login" onclick="checkLogin()">Entrar</button>
     <a href="../index.html" class="back-link">← Voltar ao site</a>
   </div>
@@ -127,12 +133,24 @@ const PROMO_KEY = 'itapolitana_promo_data';
 
 function checkLogin() {
   const pass = document.getElementById('admin-password').value;
-  if (pass === 'admin123') { // Senha padrão para teste
+  if (pass === 'itapolitana2007@') {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
     carregarDados();
   } else {
     alert('Senha incorreta!');
+  }
+}
+
+function toggleSenha() {
+  const inp = document.getElementById('admin-password');
+  const btn = inp.parentElement.querySelector('.olho-btn');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.innerHTML = '&#128064;';
+  } else {
+    inp.type = 'password';
+    btn.innerHTML = '&#128065;';
   }
 }
 
