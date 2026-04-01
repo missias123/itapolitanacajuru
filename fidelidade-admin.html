@@ -127,6 +127,30 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
       </div>
     </div>
 
+    <!-- CONFIGURAÇÃO DO PRÊMIO -->
+    <div class="card" id="card-premio">
+      <div class="card-header"><h3>🎁 Configuração do Prêmio</h3></div>
+      <div class="card-body">
+        <div class="token-wrap">
+          <label>Nome do Prêmio (aparece na página do cliente)</label>
+          <input type="text" id="premio-nome" placeholder="Ex: Milkshake 300ml, Sundae 2 Bolas, Açaí 300ml..." style="width:100%;padding:12px;border:1.5px solid #86EFAC;border-radius:8px;font-size:15px;font-weight:700;outline:none;background:#fff;" oninput="atualizarPreviewPremio()">
+        </div>
+        <div class="token-wrap" style="margin-top:12px">
+          <label>Pontos necessários para resgatar</label>
+          <input type="number" id="premio-pontos" min="1" max="100" value="10" style="width:160px;padding:12px;border:1.5px solid #86EFAC;border-radius:8px;font-size:15px;font-weight:700;outline:none;background:#fff;" oninput="atualizarPreviewPremio()">
+        </div>
+        <div id="preview-premio" style="margin:16px 0;padding:18px;background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-radius:14px;border:2px solid #F97316;text-align:center;">
+          <span style="font-size:32px">🥤</span><br>
+          <strong style="font-size:20px;color:#EA580C" id="prev-nome">Milkshake 300ml</strong> <span style="color:#EA580C;font-weight:800">GRÁTIS</span><br>
+          <small style="color:#9CA3AF;font-size:13px">ao acumular <strong id="prev-pontos">10</strong> pontos</small>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-laranja" onclick="salvarConfigPremio()">💾 Salvar no GitHub</button>
+        </div>
+        <div class="alerta" id="alerta-premio"></div>
+      </div>
+    </div>
+
     <!-- STATS -->
     <div class="stats-row">
       <div class="stat-box"><div class="num" id="stat-liberados">0</div><div class="label">Códigos Liberados</div></div>
@@ -308,6 +332,7 @@ async function carregarDoGitHub(){
     db._sha = fd.sha;
     setSyncBadge('synced');
     renderTudo();
+    carregarConfigPremio();
   } catch(e){
     setSyncBadge('offline');
     mostrarAlerta('alerta-gerador','❌ Erro ao carregar: '+e.message,'erro');
@@ -536,6 +561,39 @@ function renderFraudes(){
       <div style="font-size:11px;color:#EF4444;font-weight:700">FRAUDE</div>
     </div>
   `).join('');
+}
+
+// =====================================================
+// CONFIGURAÇÃO DO PRÊMIO
+// =====================================================
+function atualizarPreviewPremio(){
+  const nome = document.getElementById('premio-nome').value || 'Milkshake 300ml';
+  const pontos = document.getElementById('premio-pontos').value || '10';
+  document.getElementById('prev-nome').textContent = nome;
+  document.getElementById('prev-pontos').textContent = pontos;
+}
+
+async function salvarConfigPremio(){
+  const nome = (document.getElementById('premio-nome').value || '').trim();
+  const pontos = parseInt(document.getElementById('premio-pontos').value) || 10;
+  if(!nome){ mostrarAlerta('alerta-premio','⚠️ Digite o nome do prêmio.','erro'); return; }
+  if(!db){ mostrarAlerta('alerta-premio','⚠️ Carregue os dados do GitHub primeiro.','erro'); return; }
+  db.config = db.config || {};
+  db.config.premioNome = nome;
+  db.config.premioPontos = pontos;
+  const ok = await salvarNoGitHub(`Admin: Prêmio atualizado para "${nome}" (${pontos} pts)`);
+  if(ok !== false){
+    mostrarAlerta('alerta-premio',`✅ Prêmio atualizado: "${nome}" com ${pontos} pontos!`,'ok');
+  }
+}
+
+function carregarConfigPremio(){
+  if(!db || !db.config) return;
+  const nome = db.config.premioNome || 'Milkshake 300ml';
+  const pontos = db.config.premioPontos || 10;
+  document.getElementById('premio-nome').value = nome;
+  document.getElementById('premio-pontos').value = pontos;
+  atualizarPreviewPremio();
 }
 
 // =====================================================

@@ -316,17 +316,37 @@ function hideLoading(){ document.getElementById('loading-overlay').classList.rem
 // =====================================================
 // GITHUB — buscar dados (somente leitura pelo cliente)
 // =====================================================
+let META_PONTOS = 10;
+let NOME_PREMIO = 'Milkshake 300ml';
+
 async function buscarGitHub(){
   try {
     const r = await fetch(GH_RAW_URL + '?_=' + Date.now());
     if(!r.ok) throw new Error('HTTP '+r.status);
     ghData = await r.json();
+    aplicarConfigPremio();
     return true;
   } catch(e){
     console.warn('GitHub offline:', e.message);
     ghData = null;
     return false;
   }
+}
+
+function aplicarConfigPremio(){
+  if(!ghData || !ghData.config) return;
+  const nome   = ghData.config.premioNome   || 'Milkshake 300ml';
+  const pontos = parseInt(ghData.config.premioPontos) || 10;
+  META_PONTOS  = pontos;
+  NOME_PREMIO  = nome;
+  // Hero
+  const heroStrong = document.querySelector('.hero-premio-txt strong');
+  if(heroStrong) heroStrong.textContent = nome + ' GRÁTIS';
+  const heroSpan = document.querySelector('.hero-premio-txt span');
+  if(heroSpan) heroSpan.textContent = 'ao acumular ' + pontos + ' pontos';
+  // Passo 5
+  const passo5 = document.querySelector('.passo-5 p');
+  if(passo5) passo5.textContent = 'Com ' + pontos + ' pontos, resgate seu 🥤 ' + nome + ' GRÁTIS via WhatsApp';
 }
 
 // =====================================================
@@ -566,8 +586,8 @@ async function inserirCodigo(){
   btn.disabled = false; btn.textContent = '✅ Validar Código';
 
   const novosPontos = clienteAtual.pontos;
-  if(novosPontos >= 10){
-    mostrarMsg('msg-codigo','🎉 PARABÉNS! Código válido! Você atingiu 10 pontos e ganhou um Milkshake 300ml GRÁTIS!','ok');
+  if(novosPontos >= META_PONTOS){
+    mostrarMsg('msg-codigo',`🎉 PARABÉNS! Código válido! Você atingiu ${META_PONTOS} pontos e ganhou um 🥤 ${NOME_PREMIO} GRÁTIS!`,'ok');
   } else {
     mostrarMsg('msg-codigo',`✅ Código válido! +1 ponto adicionado. Você tem ${novosPontos} ponto${novosPontos>1?'s':''}.`,'ok');
   }
@@ -580,7 +600,7 @@ async function inserirCodigo(){
 function resgatarPremio(){
   const nome = clienteAtual.nome;
   const cel  = clienteAtual.cel;
-  const msg  = encodeURIComponent(`Olá! Sou ${nome}, celular ${cel}. Acumulei 10 pontos no Clube de Fidelidade da Sorveteria Itapolitana e gostaria de resgatar meu prêmio: 🥤 Milkshake 300ml GRÁTIS! 🎉`);
+  const msg  = encodeURIComponent(`Olá! Sou ${nome}, celular ${cel}. Acumulei ${META_PONTOS} pontos no Clube de Fidelidade da Sorveteria Itapolitana e gostaria de resgatar meu prêmio: 🥤 ${NOME_PREMIO} GRÁTIS! 🎉`);
   window.open(`https://wa.me/5516996062046?text=${msg}`, '_blank');
 }
 
