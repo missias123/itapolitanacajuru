@@ -211,6 +211,35 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
       </div>
     </div>
 
+    <!-- RESET DO SISTEMA -->
+    <div class="card" style="border:2px solid #EF4444">
+      <div class="card-header" style="background:#FEE2E2;border-bottom:1px solid #FECACA">
+        <h3 style="color:#991B1B">🔄 Resetar Sistema Completo</h3>
+      </div>
+      <div class="card-body">
+        <div style="background:#FFF1F2;border:1px solid #FECACA;border-radius:10px;padding:14px;margin-bottom:16px">
+          <p style="color:#991B1B;font-weight:700;margin:0 0 6px">⚠️ ATENÇÃO — AÇÃO IRREVERSÍVEL</p>
+          <p style="color:#B91C1C;font-size:13px;margin:0 0 6px">Esta ação irá apagar <strong>TODOS</strong> os dados do sistema:</p>
+          <ul style="color:#B91C1C;font-size:13px;margin:0 0 0 16px;padding:0;line-height:1.8">
+            <li>Todos os clientes cadastrados (nome, celular, pontos, histórico)</li>
+            <li>Todos os códigos liberados e usados</li>
+            <li>Contador volta para <strong>0/100.000</strong></li>
+          </ul>
+          <p style="color:#991B1B;font-size:12px;margin:8px 0 0;font-weight:700">✅ As configurações do prêmio e o token GitHub são mantidos.</p>
+        </div>
+        <div id="reset-confirmacao" style="display:none;margin-bottom:12px;background:#FFF1F2;border:1px solid #FECACA;border-radius:10px;padding:14px">
+          <label style="color:#991B1B;font-size:13px;font-weight:700;display:block;margin-bottom:8px">🔐 Digite <strong>CONFIRMAR</strong> para prosseguir:</label>
+          <input type="text" id="reset-input" placeholder="Digite: CONFIRMAR" autocomplete="off" style="width:100%;padding:12px;border:2px solid #FECACA;border-radius:8px;font-size:15px;font-weight:700;outline:none;background:#fff;letter-spacing:2px" oninput="verificarConfirmacaoReset()">
+          <div class="btn-row" style="margin-top:12px">
+            <button onclick="executarReset()" id="btn-confirmar-reset" disabled class="btn" style="flex:1;background:#6B7280;color:#fff;cursor:not-allowed">✅ Confirmar Reset</button>
+            <button onclick="cancelarReset()" class="btn" style="flex:1;background:#E5E7EB;color:#374151">❌ Cancelar</button>
+          </div>
+        </div>
+        <button onclick="mostrarConfirmacaoReset()" id="btn-resetar" class="btn btn-vermelho" style="width:100%;padding:14px;font-size:15px">🔄 Resetar Sistema</button>
+        <div class="alerta" id="alerta-reset" style="margin-top:12px"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -665,6 +694,97 @@ function mostrarAlerta(id,msg,tipo){
 // =====================================================
 // INIT
 // =====================================================
+// =====================================================
+// RESET DO SISTEMA
+// =====================================================
+function mostrarConfirmacaoReset(){
+  document.getElementById('reset-confirmacao').style.display = 'block';
+  document.getElementById('btn-resetar').style.display = 'none';
+  document.getElementById('reset-input').value = '';
+  document.getElementById('reset-input').focus();
+  mostrarAlerta('alerta-reset','','info');
+}
+
+function cancelarReset(){
+  document.getElementById('reset-confirmacao').style.display = 'none';
+  document.getElementById('btn-resetar').style.display = 'block';
+  document.getElementById('reset-input').value = '';
+}
+
+function verificarConfirmacaoReset(){
+  const val = document.getElementById('reset-input').value.trim().toUpperCase();
+  const btn = document.getElementById('btn-confirmar-reset');
+  if(val === 'CONFIRMAR'){
+    btn.disabled = false;
+    btn.style.background = 'linear-gradient(135deg,#DC2626,#EF4444)';
+    btn.style.cursor = 'pointer';
+    btn.style.boxShadow = '0 4px 16px rgba(220,38,38,.35)';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '#6B7280';
+    btn.style.cursor = 'not-allowed';
+    btn.style.boxShadow = 'none';
+  }
+}
+
+async function executarReset(){
+  const val = document.getElementById('reset-input').value.trim().toUpperCase();
+  if(val !== 'CONFIRMAR') return;
+  const token = getToken();
+  if(!token){ mostrarAlerta('alerta-reset','⚠️ Configure o Token GitHub antes de resetar.','erro'); return; }
+  mostrarAlerta('alerta-reset','⏳ Resetando sistema...','info');
+  document.getElementById('btn-confirmar-reset').disabled = true;
+  // Preservar configurações do prêmio
+  const configAtual = (db && db.config) ? db.config : {};
+  // Novo JSON zerado
+  const novoFidelidade = {
+    codigos: {},
+    liberados: 0,
+    usados: 0,
+    config: configAtual,
+    ultimoReset: new Date().toISOString()
+  };
+  const novoClientes = { clientes: {} };
+  // Salvar fidelidade.json zerado
+  const okFid = await salvarArquivoGitHub('dados/fidelidade.json', JSON.stringify(novoFidelidade, null, 2), 'Reset do sistema: fidelidade.json zerado');
+  // Salvar clientes.json zerado
+  const okCli = await salvarArquivoGitHub('dados/clientes.json', JSON.stringify(novoClientes, null, 2), 'Reset do sistema: clientes.json zerado');
+  if(okFid && okCli){
+    db = novoFidelidade;
+    renderTudo();
+    cancelarReset();
+    mostrarAlerta('alerta-reset','✅ Sistema resetado com sucesso! Contador: 0/100.000. Todos os clientes e códigos foram apagados.','ok');
+  } else {
+    mostrarAlerta('alerta-reset','❌ Erro ao resetar. Verifique o token GitHub e tente novamente.','erro');
+    document.getElementById('btn-confirmar-reset').disabled = false;
+  }
+}
+
+async function salvarArquivoGitHub(path, content, msg){
+  const token = getToken();
+  const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
+  // Obter SHA atual
+  let sha = null;
+  try {
+    const r = await fetch(apiUrl, { headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'} });
+    if(r.ok){ const d = await r.json(); sha = d.sha; }
+  } catch(e){}
+  // Codificar para base64
+  const bytes = new TextEncoder().encode(content);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  const b64 = btoa(bin);
+  const body = { message: msg, content: b64, branch: GH_BRANCH };
+  if(sha) body.sha = sha;
+  try {
+    const r = await fetch(apiUrl, {
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    return r.ok;
+  } catch(e){ return false; }
+}
+
 window.onload = function(){ carregarToken(); };
 </script>
 </body>
