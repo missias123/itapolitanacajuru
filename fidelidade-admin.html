@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Fidelidade – Itapolitana Cajuru</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('images/fundo-itapolitana.png');background-repeat:repeat;background-size:150px 150px;opacity:.08;pointer-events:none;z-index:-1}
+
+/* LOGIN */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:#fff;border-radius:18px;padding:36px 28px;max-width:380px;width:100%;box-shadow:0 4px 28px rgba(0,0,0,.1);text-align:center}
+.login-box h2{font-size:22px;font-weight:900;margin-bottom:6px}
+.login-box p{font-size:13px;color:#E65100;font-weight:700;margin-bottom:24px}
+.senha-wrap{position:relative;margin-bottom:14px}
+.senha-wrap input{width:100%;padding:13px 44px 13px 16px;border:1.5px solid #E5E7EB;border-radius:11px;font-size:15px;outline:none}
+.senha-wrap input:focus{border-color:#E65100}
+.olho-btn{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#E65100;padding:0;line-height:1}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer}
+.btn-login:hover{opacity:.9}
+.back-link{display:block;margin-top:16px;font-size:13px;color:#E65100;text-decoration:none}
+
+/* HEADER */
+#admin-panel{display:none}
+.admin-header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(230,81,0,.4)}
+.admin-header h1{font-size:16px;font-weight:800}
+.btn-logout{background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+
+/* BODY */
+.admin-body{max-width:960px;margin:0 auto;padding:20px 16px 100px}
+
+/* CARDS */
+.card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;margin-bottom:20px;overflow:hidden}
+.card-header{padding:16px 20px;background:#FFF3E0;border-bottom:1px solid #FFE0B2;display:flex;align-items:center;gap:10px}
+.card-header h3{font-size:15px;font-weight:800;flex:1;color:#E65100}
+.card-body{padding:20px}
+
+/* BOTÕES */
+.btn{padding:13px 24px;border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;letter-spacing:.3px}
+.btn:active{transform:scale(.97)}
+.btn-laranja{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;box-shadow:0 4px 16px rgba(230,81,0,.4)}
+.btn-laranja:hover{box-shadow:0 6px 22px rgba(230,81,0,.55)}
+.btn-verde{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+.btn-verde:hover{box-shadow:0 6px 22px rgba(37,211,102,.5)}
+.btn-roxo{background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.35)}
+.btn-cinza{background:#F3F4F6;color:#374151}
+.btn-cinza:hover{background:#E5E7EB}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+/* CONTADOR */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-box{background:#fff;border-radius:14px;padding:16px;text-align:center;border:1px solid #E5E7EB}
+.stat-box .num{font-size:28px;font-weight:900;color:#E65100}
+.stat-box .label{font-size:11px;color:#6B7280;font-weight:600;margin-top:2px}
+
+/* GRADE DE CÓDIGOS */
+.codigos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+@media(max-width:600px){.codigos-grid{grid-template-columns:repeat(2,1fr)}}
+.codigo-chip{background:#FFF3E0;border:1px solid #FFD0A0;border-radius:8px;padding:8px 6px;text-align:center;font-family:monospace;font-size:12px;font-weight:700;color:#E65100;letter-spacing:1px;word-break:break-all}
+.codigo-chip.usado{background:#FEE2E2;border-color:#FECACA;color:#991B1B;text-decoration:line-through;opacity:.7}
+
+/* CLIENTES */
+.cliente-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
+.cliente-row:last-child{border-bottom:none}
+.cliente-nome{font-weight:700;color:#1F2937}
+.cliente-cel{color:#6B7280;font-size:12px}
+.cliente-pts{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800}
+.cliente-pts.premio{background:linear-gradient(135deg,#F59E0B,#EF4444);animation:blink .8s ease-in-out infinite alternate}
+@keyframes blink{0%{opacity:1}100%{opacity:.7}}
+
+/* MSG */
+.msg{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:700;margin-top:12px;display:none}
+.msg.show{display:block}
+.msg-ok{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}
+.msg-erro{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+
+/* LOADING */
+.loading{display:none;text-align:center;padding:20px;color:#E65100;font-weight:700}
+.loading.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-section">
+  <div class="login-box">
+    <h2>🍦 Admin Fidelidade</h2>
+    <p>Sorveteria Itapolitana Cajuru</p>
+    <div class="senha-wrap">
+      <input type="password" id="admin-password" placeholder="Senha administrativa" onkeypress="if(event.key==='Enter')checkLogin()">
+      <button type="button" class="olho-btn" onclick="toggleSenha()" title="Mostrar/ocultar senha">&#128065;</button>
+    </div>
+    <button type="button" class="btn-login" onclick="checkLogin()">Entrar</button>
+    <a href="fidelidade.html" class="back-link">← Página do Cliente</a>
+    <a href="index.html" class="back-link">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="admin-panel">
+  <div class="admin-header">
+    <h1>⚙️ Admin Fidelidade – Itapolitana</h1>
+    <button type="button" class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="num" id="stat-total-codigos">0</div><div class="label">Códigos Gerados</div></div>
+      <div class="stat-box"><div class="num" id="stat-usados">0</div><div class="label">Códigos Usados</div></div>
+      <div class="stat-box"><div class="num" id="stat-clientes">0</div><div class="label">Clientes</div></div>
+    </div>
+
+    <!-- GERADOR -->
+    <div class="card">
+      <div class="card-header"><h3>🎟️ Gerador de Códigos</h3></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:#6B7280;margin-bottom:16px">Cada clique gera <strong>500 novos códigos únicos e indecifrávies</strong>. Os códigos são acumulados a cada geração. Após gerar, baixe o PDF e envie para o WhatsApp da sorveteria.</p>
+        <div class="btn-row">
+          <button class="btn btn-laranja" onclick="gerarCodigos()">🎲 Gerar 500 Códigos</button>
+          <button class="btn btn-roxo" id="btn-pdf" onclick="gerarPDF()" style="display:none">📄 Baixar PDF</button>
+          <button class="btn btn-verde" id="btn-wpp" onclick="enviarWhatsApp()" style="display:none">📲 Enviar para WhatsApp</button>
+        </div>
+        <div class="loading" id="loading-gerar">⏳ Gerando 500 códigos únicos...</div>
+        <div class="msg" id="msg-gerar"></div>
+        <div id="codigos-novos-wrap" style="display:none;margin-top:16px">
+          <p style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px">Últimos 500 códigos gerados:</p>
+          <div class="codigos-grid" id="codigos-novos-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="card">
+      <div class="card-header">
+        <h3>👥 Clientes (por pontos)</h3>
+        <button class="btn btn-cinza" style="padding:6px 14px;font-size:12px" onclick="carregarClientes()">↻ Atualizar</button>
+      </div>
+      <div class="card-body">
+        <div id="lista-clientes"><p style="font-size:13px;color:#9CA3AF">Nenhum cliente cadastrado ainda.</p></div>
+      </div>
+    </div>
+
+    <!-- TODOS OS CÓDIGOS -->
+    <div class="card">
+      <div class="card-header">
+        <h3>📋 Todos os Códigos</h3>
+        <span id="stat-label-codigos" style="font-size:12px;color:#6B7280;font-weight:600"></span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <button class="btn btn-cinza" style="padding:7px 14px;font-size:12px" onclick="filtrarCodigos('todos')">Todos</button>
+          <button class="btn btn-cinza" style="padding:7px 14px;font-size:12px" onclick="filtrarCodigos('livres')">Disponíveis</button>
+          <button class="btn btn-cinza" style="padding:7px 14px;font-size:12px" onclick="filtrarCodigos('usados')">Usados</button>
+        </div>
+        <div class="codigos-grid" id="todos-codigos-grid"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── CONSTANTES ───────────────────────────────────────────────────────────────
+const SENHA_ADMIN   = 'itapolitana2007@';
+const WPP_NUM       = '5516996062046';
+const DB_CODIGOS    = 'itap_fidelidade_codigos';
+const DB_CLIENTES   = 'itap_fidelidade_clientes';
+const DB_LOTE       = 'itap_fidelidade_ultimo_lote';
+
+// ─── GERADOR DE CÓDIGOS INDECIFRÁVIES ─────────────────────────────────────────
+// Formato: 4 letras + 3 números + 2 especiais = 9 chars
+// Sem '0', 'O', 'I', '1', 'L' para evitar confusão
+const LETRAS   = 'ABCDEFGHJKMNPQRSTUVWXYZ';
+const NUMEROS  = '23456789';
+const ESPECIAIS= '#@$%&*!?';
+
+function gerarCodigoUnico(existentes){
+  let tentativas = 0;
+  while(tentativas < 1000){
+    tentativas++;
+    let cod = '';
+    // 4 letras aleatórias
+    for(let i=0;i<4;i++) cod += LETRAS[Math.floor(Math.random()*LETRAS.length)];
+    // embaralha posição
+    const posNum = [Math.floor(Math.random()*8), Math.floor(Math.random()*8)];
+    const posEsp = [Math.floor(Math.random()*8), Math.floor(Math.random()*8)];
+    // 3 números
+    let nums = '';
+    for(let i=0;i<3;i++) nums += NUMEROS[Math.floor(Math.random()*NUMEROS.length)];
+    // 2 especiais
+    let esps = '';
+    for(let i=0;i<2;i++) esps += ESPECIAIS[Math.floor(Math.random()*ESPECIAIS.length)];
+    // Montar array de 9 chars: 4 letras + 3 nums + 2 especiais embaralhados
+    let arr = [...cod, ...nums, ...esps];
+    // Embaralhar Fisher-Yates
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    const final = arr.join('');
+    if(!existentes[final]) return final;
+  }
+  return null;
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function checkLogin(){
+  const pass = document.getElementById('admin-password').value;
+  if(pass === SENHA_ADMIN){
+    document.getElementById('login-section').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    carregarTudo();
+  } else {
+    alert('Senha incorreta!');
+  }
+}
+function toggleSenha(){
+  const inp=document.getElementById('admin-password');
+  const btn=inp.parentElement.querySelector('.olho-btn');
+  inp.type=inp.type==='password'?'text':'password';
+  btn.innerHTML=inp.type==='password'?'&#128065;':'&#128064;';
+}
+function logout(){ location.reload(); }
+
+// ─── CARREGAR TUDO ────────────────────────────────────────────────────────────
+function carregarTudo(){
+  atualizarStats();
+  carregarClientes();
+  carregarTodosCodigos('todos');
+  const lote = localStorage.getItem(DB_LOTE);
+  if(lote){
+    const arr = JSON.parse(lote);
+    mostrarLote(arr);
+  }
+}
+
+function getCodigos(){ try{ return JSON.parse(localStorage.getItem(DB_CODIGOS)||'{}'); }catch(e){return {};} }
+function getClientes(){ try{ return JSON.parse(localStorage.getItem(DB_CLIENTES)||'{}'); }catch(e){return {};} }
+function salvarCodigos(d){ localStorage.setItem(DB_CODIGOS,JSON.stringify(d)); }
+
+function atualizarStats(){
+  const codigos  = getCodigos();
+  const clientes = getClientes();
+  const total    = Object.keys(codigos).length;
+  const usados   = Object.values(codigos).filter(c=>c.usado).length;
+  document.getElementById('stat-total-codigos').textContent = total;
+  document.getElementById('stat-usados').textContent        = usados;
+  document.getElementById('stat-clientes').textContent      = Object.keys(clientes).length;
+  document.getElementById('stat-label-codigos').textContent = `${total} total · ${total-usados} disponíveis · ${usados} usados`;
+}
+
+// ─── GERAR 500 CÓDIGOS ────────────────────────────────────────────────────────
+function gerarCodigos(){
+  document.getElementById('loading-gerar').classList.add('show');
+  document.getElementById('codigos-novos-wrap').style.display='none';
+  document.getElementById('btn-pdf').style.display='none';
+  document.getElementById('btn-wpp').style.display='none';
+
+  setTimeout(()=>{
+    const codigos = getCodigos();
+    const novos   = [];
+    for(let i=0;i<500;i++){
+      const cod = gerarCodigoUnico(codigos);
+      if(cod){
+        codigos[cod] = { usado:false, geradoEm: new Date().toISOString() };
+        novos.push(cod);
+      }
+    }
+    salvarCodigos(codigos);
+    localStorage.setItem(DB_LOTE, JSON.stringify(novos));
+
+    document.getElementById('loading-gerar').classList.remove('show');
+    mostrarMsg('msg-gerar', `✅ ${novos.length} novos códigos gerados com sucesso!`, 'ok');
+    mostrarLote(novos);
+    atualizarStats();
+    carregarTodosCodigos('todos');
+  }, 300);
+}
+
+function mostrarLote(arr){
+  const grid = document.getElementById('codigos-novos-grid');
+  grid.innerHTML = arr.map(c=>`<div class="codigo-chip">${c}</div>`).join('');
+  document.getElementById('codigos-novos-wrap').style.display='block';
+  document.getElementById('btn-pdf').style.display='inline-flex';
+  document.getElementById('btn-wpp').style.display='inline-flex';
+}
+
+// ─── PDF ──────────────────────────────────────────────────────────────────────
+function gerarPDF(){
+  const lote = localStorage.getItem(DB_LOTE);
+  if(!lote){ alert('Gere os códigos primeiro.'); return; }
+  const arr = JSON.parse(lote);
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+  const pageW = 210, pageH = 297;
+  const marginX = 10, marginY = 18;
+  const cols = 4, rows = 10;
+  const cellW = (pageW - marginX*2) / cols;
+  const cellH = 22;
+  const codsPerPage = cols * rows;
+
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+  doc.text('Sorveteria Itapolitana Cajuru – Códigos de Fidelidade', pageW/2, 12, {align:'center'});
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')} · Total: ${arr.length} códigos`, pageW/2, 17, {align:'center'});
+
+  let page = 0;
+  arr.forEach((cod, idx)=>{
+    const posOnPage = idx % codsPerPage;
+    if(posOnPage === 0 && idx > 0){
+      doc.addPage();
+      page++;
+      doc.setFontSize(9);
+      doc.setFont('helvetica','normal');
+      doc.text(`Sorveteria Itapolitana – Códigos de Fidelidade (cont.)`, pageW/2, 10, {align:'center'});
+    }
+    const col = posOnPage % cols;
+    const row = Math.floor(posOnPage / cols);
+    const x = marginX + col * cellW;
+    const y = (page===0 ? marginY+2 : 14) + row * cellH;
+
+    // Borda do chip
+    doc.setDrawColor(230,81,0);
+    doc.setFillColor(255,243,224);
+    doc.roundedRect(x+1, y, cellW-2, cellH-2, 3, 3, 'FD');
+
+    // Código
+    doc.setFont('courier','bold');
+    doc.setFontSize(11);
+    doc.setTextColor(180,50,0);
+    doc.text(cod, x + cellW/2, y + cellH/2 + 1, {align:'center'});
+
+    // Linha pontilhada (para cortar)
+    doc.setDrawColor(200,200,200);
+    doc.setLineDashPattern([1,1],0);
+    if(col===cols-1 && idx<arr.length-1){
+      doc.line(marginX, y+cellH, pageW-marginX, y+cellH);
+    }
+    doc.setLineDashPattern([],0);
+  });
+
+  doc.save(`codigos-fidelidade-itapolitana-${Date.now()}.pdf`);
+  mostrarMsg('msg-gerar','📄 PDF gerado e baixado com sucesso!','ok');
+}
+
+// ─── ENVIAR WHATSAPP ──────────────────────────────────────────────────────────
+function enviarWhatsApp(){
+  const lote = localStorage.getItem(DB_LOTE);
+  if(!lote){ alert('Gere os códigos primeiro.'); return; }
+  const arr = JSON.parse(lote);
+  const total = arr.length;
+  const msg = encodeURIComponent(
+    `🍦 *Sorveteria Itapolitana – Códigos de Fidelidade*\n\n` +
+    `📅 Gerado em: ${new Date().toLocaleString('pt-BR')}\n` +
+    `🎟️ Total: ${total} novos códigos\n\n` +
+    `⚠️ O PDF com todos os códigos foi baixado no seu dispositivo.\n` +
+    `Acesse o painel admin para visualizar e imprimir os códigos.\n\n` +
+    `🔗 Admin: https://itapolitanacajuru.com.br/fidelidade-admin.html`
+  );
+  window.open(`https://wa.me/${WPP_NUM}?text=${msg}`, '_blank');
+}
+
+// ─── CLIENTES ─────────────────────────────────────────────────────────────────
+function carregarClientes(){
+  const clientes = getClientes();
+  const lista = document.getElementById('lista-clientes');
+  const arr = Object.values(clientes).sort((a,b)=>b.pontos-a.pontos);
+  if(arr.length===0){
+    lista.innerHTML='<p style="font-size:13px;color:#9CA3AF">Nenhum cliente cadastrado ainda.</p>';
+    return;
+  }
+  lista.innerHTML = arr.map((c,i)=>{
+    const insercoes = c.historico ? c.historico.length : 0;
+    return `
+    <div class="cliente-row">
+      <div>
+        <div class="cliente-nome">${i+1}. ${c.nome}</div>
+        <div class="cliente-cel">📱 ${c.cel} &nbsp;·&nbsp; 🎟️ ${insercoes} inserção${insercoes!==1?'es':''}</div>
+      </div>
+      <span class="cliente-pts ${c.pontos>=10?'premio':''}}">${c.pontos} pts${c.pontos>=10?' 🏆':''}</span>
+    </div>`;
+  }).join('');
+  atualizarStats();
+}
+
+// ─── TODOS OS CÓDIGOS ─────────────────────────────────────────────────────────
+function filtrarCodigos(filtro){ carregarTodosCodigos(filtro); }
+
+function carregarTodosCodigos(filtro){
+  const codigos = getCodigos();
+  const grid = document.getElementById('todos-codigos-grid');
+  let arr = Object.entries(codigos);
+  if(filtro==='livres') arr=arr.filter(([,v])=>!v.usado);
+  if(filtro==='usados') arr=arr.filter(([,v])=>v.usado);
+  if(arr.length===0){
+    grid.innerHTML='<p style="font-size:13px;color:#9CA3AF;grid-column:1/-1">Nenhum código encontrado.</p>';
+    return;
+  }
+  grid.innerHTML = arr.map(([cod,v])=>
+    `<div class="codigo-chip ${v.usado?'usado':''}">${cod}</div>`
+  ).join('');
+}
+
+// ─── MSG ──────────────────────────────────────────────────────────────────────
+function mostrarMsg(id, texto, tipo){
+  const el=document.getElementById(id);
+  el.textContent=texto;
+  el.className='msg show msg-'+tipo;
+  setTimeout(()=>el.classList.remove('show'),5000);
+}
+</script>
+</body>
+</html>

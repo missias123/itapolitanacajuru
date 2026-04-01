@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fidelidade – Sorveteria Itapolitana Cajuru</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#FFF8F0;color:#111827;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('images/fundo-itapolitana.png');background-repeat:repeat;background-size:150px 150px;opacity:.1;pointer-events:none;z-index:-1}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(230,81,0,.4)}
+.header-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.header-logo img{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.5)}
+.header-logo span{color:#fff;font-weight:900;font-size:15px;line-height:1.2}
+.header-logo small{display:block;font-size:11px;font-weight:600;opacity:.85}
+.btn-voltar{color:#fff;text-decoration:none;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);padding:8px 14px;border-radius:20px}
+
+/* CONTAINER */
+.container{max-width:480px;margin:0 auto;padding:24px 16px 80px}
+
+/* CARD */
+.card{background:#fff;border-radius:18px;padding:28px 22px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-bottom:20px}
+.card h2{font-size:18px;font-weight:900;margin-bottom:6px;color:#1F2937}
+.card p{font-size:13px;color:#6B7280;margin-bottom:20px}
+
+/* PONTOS */
+.pontos-display{background:linear-gradient(135deg,#E65100,#FF6D00);border-radius:16px;padding:20px;text-align:center;color:#fff;margin-bottom:20px}
+.pontos-display .num{font-size:52px;font-weight:900;line-height:1}
+.pontos-display .label{font-size:14px;font-weight:700;opacity:.9;margin-top:4px}
+.pontos-barra-wrap{background:rgba(255,255,255,.25);border-radius:20px;height:10px;margin-top:12px;overflow:hidden}
+.pontos-barra{background:#fff;height:100%;border-radius:20px;transition:width .5s ease}
+.pontos-meta{font-size:11px;opacity:.8;margin-top:6px}
+
+/* INPUTS */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:5px}
+.form-group input{width:100%;padding:12px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none;transition:border-color .2s;background:#FAFAFA}
+.form-group input:focus{border-color:#E65100;background:#fff}
+.form-group input.erro{border-color:#EF4444}
+.form-group input.sucesso{border-color:#10B981}
+
+/* BOTÕES */
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;letter-spacing:.3px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;box-shadow:0 4px 16px rgba(230,81,0,.4)}
+.btn-primary:hover{box-shadow:0 6px 22px rgba(230,81,0,.55)}
+.btn-whatsapp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.4);margin-top:10px}
+.btn-secondary{background:#F3F4F6;color:#374151;margin-top:8px}
+.btn-secondary:hover{background:#E5E7EB}
+
+/* MENSAGENS */
+.msg{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:700;margin-top:12px;display:none}
+.msg.show{display:block}
+.msg-ok{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}
+.msg-erro{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.msg-info{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE}
+
+/* HISTÓRICO */
+.historico-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
+.historico-item:last-child{border-bottom:none}
+.historico-codigo{font-family:monospace;font-weight:700;color:#E65100;letter-spacing:1px;font-size:12px}
+.historico-data{color:#9CA3AF;font-size:11px}
+
+/* PRÊMIO */
+.premio-banner{background:linear-gradient(135deg,#F59E0B,#EF4444);border-radius:16px;padding:20px;text-align:center;color:#fff;margin-bottom:20px;animation:premioGlow 1.5s ease-in-out infinite alternate}
+@keyframes premioGlow{0%{box-shadow:0 4px 20px rgba(245,158,11,.4)}100%{box-shadow:0 8px 36px rgba(239,68,68,.7)}}
+.premio-banner h3{font-size:20px;font-weight:900;margin-bottom:6px}
+.premio-banner p{font-size:13px;opacity:.9}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{flex:1;padding:10px;border:2px solid #E5E7EB;border-radius:10px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:#6B7280}
+.tab.ativo{border-color:#E65100;background:#FFF3E0;color:#E65100}
+
+/* CÓDIGO INPUT */
+.codigo-input-wrap{position:relative}
+.codigo-input-wrap input{text-transform:uppercase;letter-spacing:2px;font-family:monospace;font-size:16px;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="header-logo" href="index.html">
+    <img src="images/logo-itapolitana.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
+    <span>Itapolitana Cajuru<small>Programa de Fidelidade</small></span>
+  </a>
+  <a class="btn-voltar" href="index.html">← Voltar</a>
+</div>
+
+<div class="container">
+
+  <!-- SEÇÃO: LOGIN/CADASTRO -->
+  <div id="sec-login">
+    <div class="card">
+      <h2>🍦 Clube de Fidelidade</h2>
+      <p>Acumule pontos a cada visita e ganhe prêmios! Cadastre-se com seu celular.</p>
+
+      <div class="tabs">
+        <button class="tab ativo" onclick="setTab('cadastro')">Cadastrar</button>
+        <button class="tab" onclick="setTab('login')">Já tenho conta</button>
+      </div>
+
+      <div id="tab-cadastro">
+        <div class="form-group">
+          <label>Seu nome completo</label>
+          <input type="text" id="cad-nome" placeholder="Ex: Maria Silva" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label>Celular (WhatsApp)</label>
+          <input type="tel" id="cad-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)">
+        </div>
+        <button class="btn btn-primary" onclick="cadastrar()">Criar minha conta</button>
+      </div>
+
+      <div id="tab-login" style="display:none">
+        <div class="form-group">
+          <label>Celular (WhatsApp)</label>
+          <input type="tel" id="login-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)" onkeypress="if(event.key==='Enter')entrar()">
+        </div>
+        <button class="btn btn-primary" onclick="entrar()">Entrar</button>
+      </div>
+
+      <div class="msg msg-erro" id="msg-login"></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO: PAINEL DO CLIENTE -->
+  <div id="sec-painel" style="display:none">
+
+    <!-- PRÊMIO (aparece ao atingir 10 pontos) -->
+    <div class="premio-banner" id="banner-premio" style="display:none">
+      <h3>🎉 Parabéns! Você ganhou!</h3>
+      <p>Você acumulou 10 pontos. Resgate seu prêmio agora!</p>
+    </div>
+
+    <!-- PONTOS -->
+    <div class="pontos-display">
+      <div class="num" id="pontos-num">0</div>
+      <div class="label">pontos acumulados</div>
+      <div class="pontos-barra-wrap">
+        <div class="pontos-barra" id="pontos-barra" style="width:0%"></div>
+      </div>
+      <div class="pontos-meta" id="pontos-meta">Faltam 10 pontos para o prêmio</div>
+    </div>
+
+    <!-- INSERIR CÓDIGO -->
+    <div class="card">
+      <h2>🎟️ Inserir Código</h2>
+      <p>Digite o código que você recebeu na sorveteria.</p>
+      <div class="form-group">
+        <div class="codigo-input-wrap">
+          <input type="text" id="input-codigo" placeholder="Ex: KBX7#4MQ!" maxlength="12" oninput="this.value=this.value.toUpperCase()">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="inserirCodigo()">✅ Validar Código</button>
+      <div class="msg" id="msg-codigo"></div>
+
+      <!-- BOTÃO RESGATE (aparece com 10+ pontos) -->
+      <button class="btn btn-whatsapp" id="btn-resgatar" style="display:none" onclick="resgatarPremio()">
+        🏆 Resgatar Prêmio via WhatsApp
+      </button>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="card" id="card-historico">
+      <h2>📋 Histórico de Códigos</h2>
+      <div id="historico-lista"><p style="font-size:13px;color:#9CA3AF">Nenhum código inserido ainda.</p></div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="sair()">Sair da conta</button>
+  </div>
+
+</div>
+
+<script>
+// ─── UTILITÁRIOS ────────────────────────────────────────────────────────────
+const DB_CLIENTES = 'itap_fidelidade_clientes';
+const DB_CODIGOS  = 'itap_fidelidade_codigos';
+
+function getClientes(){ try{ return JSON.parse(localStorage.getItem(DB_CLIENTES)||'{}'); }catch(e){return {};} }
+function getCodigos(){  try{ return JSON.parse(localStorage.getItem(DB_CODIGOS)||'{}');  }catch(e){return {};} }
+function salvarClientes(d){ localStorage.setItem(DB_CLIENTES, JSON.stringify(d)); }
+function salvarCodigos(d){  localStorage.setItem(DB_CODIGOS,  JSON.stringify(d)); }
+
+function mascaraTel(el){
+  let v = el.value.replace(/\D/g,'');
+  if(v.length>11) v=v.slice(0,11);
+  if(v.length>6) v=v.replace(/^(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  else if(v.length>2) v=v.replace(/^(\d{2})(\d{0,5})/,'($1) $2');
+  else if(v.length>0) v=v.replace(/^(\d{0,2})/,'($1');
+  el.value=v;
+}
+
+function celLimpo(v){ return v.replace(/\D/g,''); }
+
+function mostrarMsg(id, texto, tipo){
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = 'msg show msg-'+tipo;
+  setTimeout(()=>{ el.classList.remove('show'); }, 4000);
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function setTab(t){
+  document.getElementById('tab-cadastro').style.display = t==='cadastro'?'block':'none';
+  document.getElementById('tab-login').style.display    = t==='login'?'block':'none';
+  document.querySelectorAll('.tab').forEach((el,i)=>{
+    el.classList.toggle('ativo', (i===0&&t==='cadastro')||(i===1&&t==='login'));
+  });
+}
+
+// ─── CADASTRO / LOGIN ────────────────────────────────────────────────────────
+function cadastrar(){
+  const nome = document.getElementById('cad-nome').value.trim();
+  const cel  = celLimpo(document.getElementById('cad-cel').value);
+  if(!nome){ mostrarMsg('msg-login','Digite seu nome.','erro'); return; }
+  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido.','erro'); return; }
+  const clientes = getClientes();
+  if(clientes[cel]){ mostrarMsg('msg-login','Celular já cadastrado. Use "Já tenho conta".','info'); return; }
+  clientes[cel] = { nome, cel, pontos:0, historico:[], cadastro: new Date().toISOString() };
+  salvarClientes(clientes);
+  abrirPainel(clientes[cel]);
+}
+
+function entrar(){
+  const cel = celLimpo(document.getElementById('login-cel').value);
+  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido.','erro'); return; }
+  const clientes = getClientes();
+  if(!clientes[cel]){ mostrarMsg('msg-login','Celular não encontrado. Cadastre-se primeiro.','erro'); return; }
+  abrirPainel(clientes[cel]);
+}
+
+let clienteAtual = null;
+
+function abrirPainel(cliente){
+  clienteAtual = cliente;
+  document.getElementById('sec-login').style.display  = 'none';
+  document.getElementById('sec-painel').style.display = 'block';
+  atualizarPainel();
+}
+
+function sair(){
+  clienteAtual = null;
+  document.getElementById('sec-login').style.display  = 'block';
+  document.getElementById('sec-painel').style.display = 'none';
+  document.getElementById('login-cel').value = '';
+  document.getElementById('cad-nome').value  = '';
+  document.getElementById('cad-cel').value   = '';
+}
+
+// ─── PAINEL ──────────────────────────────────────────────────────────────────
+function atualizarPainel(){
+  const p = clienteAtual.pontos;
+  document.getElementById('pontos-num').textContent = p;
+  const pct = Math.min(p/10*100,100);
+  document.getElementById('pontos-barra').style.width = pct+'%';
+  const faltam = Math.max(10-p,0);
+  document.getElementById('pontos-meta').textContent = faltam>0 ? `Faltam ${faltam} ponto${faltam>1?'s':''} para o prêmio` : '🎉 Prêmio disponível!';
+
+  const temPremio = p >= 10;
+  document.getElementById('banner-premio').style.display  = temPremio ? 'block' : 'none';
+  document.getElementById('btn-resgatar').style.display   = temPremio ? 'block' : 'none';
+
+  // Histórico
+  const lista = document.getElementById('historico-lista');
+  if(!clienteAtual.historico || clienteAtual.historico.length===0){
+    lista.innerHTML = '<p style="font-size:13px;color:#9CA3AF">Nenhum código inserido ainda.</p>';
+  } else {
+    lista.innerHTML = [...clienteAtual.historico].reverse().map(h=>`
+      <div class="historico-item">
+        <span class="historico-codigo">${h.codigo}</span>
+        <span class="historico-data">${new Date(h.data).toLocaleDateString('pt-BR')}</span>
+      </div>`).join('');
+  }
+}
+
+// ─── INSERIR CÓDIGO ──────────────────────────────────────────────────────────
+function inserirCodigo(){
+  const raw = document.getElementById('input-codigo').value.trim().toUpperCase();
+  if(!raw){ mostrarMsg('msg-codigo','Digite um código.','erro'); return; }
+
+  const codigos = getCodigos();
+
+  // Código não existe no sistema
+  if(!codigos[raw]){
+    mostrarMsg('msg-codigo','❌ Código inválido. Este código não existe no sistema.','erro');
+    return;
+  }
+
+  // Código já foi usado
+  if(codigos[raw].usado){
+    mostrarMsg('msg-codigo','⚠️ Este código já foi utilizado anteriormente.','erro');
+    return;
+  }
+
+  // Marcar como usado
+  codigos[raw].usado = true;
+  codigos[raw].usadoPor  = clienteAtual.cel;
+  codigos[raw].usadoEm   = new Date().toISOString();
+  salvarCodigos(codigos);
+
+  // Adicionar ponto ao cliente
+  const clientes = getClientes();
+  clientes[clienteAtual.cel].pontos = (clientes[clienteAtual.cel].pontos||0) + 1;
+  if(!clientes[clienteAtual.cel].historico) clientes[clienteAtual.cel].historico=[];
+  clientes[clienteAtual.cel].historico.push({ codigo:raw, data:new Date().toISOString() });
+  salvarClientes(clientes);
+  clienteAtual = clientes[clienteAtual.cel];
+
+  document.getElementById('input-codigo').value = '';
+  mostrarMsg('msg-codigo','✅ Código válido! +1 ponto adicionado.','ok');
+  atualizarPainel();
+}
+
+// ─── RESGATE ─────────────────────────────────────────────────────────────────
+function resgatarPremio(){
+  const nome = clienteAtual.nome;
+  const cel  = clienteAtual.cel;
+  const msg  = encodeURIComponent(`Olá! Sou ${nome}, celular ${cel}. Acumulei 10 pontos no Clube de Fidelidade da Sorveteria Itapolitana e gostaria de resgatar meu prêmio! 🍦🎉`);
+  window.open(`https://wa.me/5516996062046?text=${msg}`, '_blank');
+}
+</script>
+</body>
+</html>
