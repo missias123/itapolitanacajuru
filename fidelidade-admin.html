@@ -297,21 +297,26 @@ function gerarPDF(){
   const arr = JSON.parse(lote);
 
   const { jsPDF } = window.jspdf;
+  // Cada cupão: 4 colunas x 5 linhas = 20 cupões por página
+  // Cupão tem: logo/nome, instruções, código, prêmio
   const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
 
-  const pageW = 210, pageH = 297;
-  const marginX = 10, marginY = 18;
-  const cols = 4, rows = 10;
-  const cellW = (pageW - marginX*2) / cols;
-  const cellH = 22;
-  const codsPerPage = cols * rows;
+  const pageW = 210;
+  const marginX = 8, marginY = 12;
+  const cols = 4, rows = 5;
+  const cellW = (pageW - marginX*2) / cols;  // ~48.5mm
+  const cellH = 52;                           // altura do cupão
+  const codsPerPage = cols * rows;            // 20 por página
 
-  doc.setFontSize(13);
+  // Cabeçalho da 1ª página
+  doc.setFontSize(11);
   doc.setFont('helvetica','bold');
-  doc.text('Sorveteria Itapolitana Cajuru – Códigos de Fidelidade', pageW/2, 12, {align:'center'});
-  doc.setFontSize(9);
+  doc.setTextColor(180,50,0);
+  doc.text('Sorveteria Itapolitana Cajuru – Cupons de Fidelidade', pageW/2, 8, {align:'center'});
+  doc.setFontSize(7);
   doc.setFont('helvetica','normal');
-  doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')} · Total: ${arr.length} códigos`, pageW/2, 17, {align:'center'});
+  doc.setTextColor(100,100,100);
+  doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')} · ${arr.length} cupões`, pageW/2, 12, {align:'center'});
 
   let page = 0;
   arr.forEach((cod, idx)=>{
@@ -320,36 +325,77 @@ function gerarPDF(){
       doc.addPage();
       page++;
       doc.setFontSize(9);
-      doc.setFont('helvetica','normal');
-      doc.text(`Sorveteria Itapolitana – Códigos de Fidelidade (cont.)`, pageW/2, 10, {align:'center'});
+      doc.setFont('helvetica','bold');
+      doc.setTextColor(180,50,0);
+      doc.text('Sorveteria Itapolitana – Cupons de Fidelidade (cont.)', pageW/2, 8, {align:'center'});
     }
     const col = posOnPage % cols;
     const row = Math.floor(posOnPage / cols);
     const x = marginX + col * cellW;
-    const y = (page===0 ? marginY+2 : 14) + row * cellH;
+    const startY = (page===0 ? marginY+3 : 12);
+    const y = startY + row * cellH;
+    const cx = x + cellW/2; // centro horizontal do cupão
 
-    // Borda do chip
+    // ── Borda do cupão ──
     doc.setDrawColor(230,81,0);
-    doc.setFillColor(255,243,224);
+    doc.setFillColor(255,248,240);
     doc.roundedRect(x+1, y, cellW-2, cellH-2, 3, 3, 'FD');
 
-    // Código
-    doc.setFont('courier','bold');
-    doc.setFontSize(11);
-    doc.setTextColor(180,50,0);
-    doc.text(cod, x + cellW/2, y + cellH/2 + 1, {align:'center'});
+    // ── Linha superior laranja ──
+    doc.setFillColor(230,81,0);
+    doc.roundedRect(x+1, y, cellW-2, 7, 3, 3, 'F');
+    doc.setFillColor(255,248,240);
+    doc.rect(x+1, y+4, cellW-2, 3, 'F'); // cobrir cantos inferiores do arredondado
 
-    // Linha pontilhada (para cortar)
-    doc.setDrawColor(200,200,200);
-    doc.setLineDashPattern([1,1],0);
-    if(col===cols-1 && idx<arr.length-1){
-      doc.line(marginX, y+cellH, pageW-marginX, y+cellH);
+    // ── Nome da sorveteria (faixa laranja) ──
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(6.5);
+    doc.setTextColor(255,255,255);
+    doc.text('SORVETERIA ITAPOLITANA', cx, y+4.8, {align:'center'});
+
+    // ── Instruções ──
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(5.5);
+    doc.setTextColor(80,80,80);
+    doc.text('Acesse: itapolitanacajuru.com.br', cx, y+11, {align:'center'});
+    doc.text('Clique em FIDELIDADE no menu', cx, y+15, {align:'center'});
+    doc.text('Digite seu celular, nome e o código:', cx, y+19, {align:'center'});
+
+    // ── Código (destaque) ──
+    doc.setFillColor(255,237,213);
+    doc.roundedRect(x+4, y+21, cellW-10, 10, 2, 2, 'F');
+    doc.setDrawColor(230,81,0);
+    doc.roundedRect(x+4, y+21, cellW-10, 10, 2, 2, 'S');
+    doc.setFont('courier','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(180,50,0);
+    doc.text(cod, cx, y+27.5, {align:'center'});
+
+    // ── Prêmio ──
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(5.5);
+    doc.setTextColor(80,80,80);
+    doc.text('10 pontos =', cx, y+36, {align:'center'});
+    doc.setFontSize(7);
+    doc.setTextColor(180,50,0);
+    doc.text('SUNDAE 2 BOLAS GRATIS!', cx, y+41, {align:'center'});
+
+    // ── Linha de corte pontilhada ──
+    doc.setDrawColor(180,180,180);
+    doc.setLineDashPattern([1,1.5],0);
+    // Linha vertical entre colunas
+    if(col < cols-1){
+      doc.line(x+cellW, y+1, x+cellW, y+cellH-1);
+    }
+    // Linha horizontal entre linhas
+    if(row < rows-1 || (posOnPage < codsPerPage-1 && idx < arr.length-1)){
+      doc.line(x+1, y+cellH, x+cellW-1, y+cellH);
     }
     doc.setLineDashPattern([],0);
   });
 
-  doc.save(`codigos-fidelidade-itapolitana-${Date.now()}.pdf`);
-  mostrarMsg('msg-gerar','📄 PDF gerado e baixado com sucesso!','ok');
+  doc.save(`cupons-fidelidade-itapolitana-${Date.now()}.pdf`);
+  mostrarMsg('msg-gerar','📄 PDF com cupões completos gerado e baixado!','ok');
 }
 
 // ─── ENVIAR WHATSAPP ──────────────────────────────────────────────────────────
