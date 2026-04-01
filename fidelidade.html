@@ -138,12 +138,21 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 <!-- HERO -->
 <section class="hero">
   <h1>🎟️ CLUBE DE FIDELIDADE</h1>
-  <p>Compre, acumule pontos<br>e ganhe prêmios!</p>
-  <div class="hero-premio">
-    <span class="premio-icon">🥤</span>
-    <div class="hero-premio-txt">
-      <strong id="hero-premio-nome">Milkshake 300ml GRÁTIS</strong>
-      <span id="hero-premio-pontos">ao acumular 10 pontos</span>
+  <p>Compras acima de <strong>R$ 30,00</strong> ganham um cupom com código!<br>Acumule pontos e <strong>escolha seu prêmio</strong>.</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+    <div class="hero-premio">
+      <span class="premio-icon">🥤</span>
+      <div class="hero-premio-txt">
+        <strong>Milkshake 300ml GRÁTIS</strong>
+        <span>ao acumular 10 pontos</span>
+      </div>
+    </div>
+    <div class="hero-premio" style="background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.6)">
+      <span class="premio-icon">🍦</span>
+      <div class="hero-premio-txt">
+        <strong>Caixa 7 Bolas GRÁTIS</strong>
+        <span>ao acumular 20 pontos</span>
+      </div>
     </div>
   </div>
 </section>
@@ -156,7 +165,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <div class="passo-num">1</div>
       <div class="passo-icon">🛒</div>
       <h3>Compre e Ganhe Cupom</h3>
-      <p>Receba um cupom com código único a cada compra</p>
+      <p>Compras acima de <strong>R$ 30,00</strong> recebem um cupom com código</p>
     </div>
     <div class="passo-card">
       <div class="passo-num">2</div>
@@ -180,7 +189,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <div class="passo-num">5</div>
       <div class="passo-icon">🎁</div>
       <h3>Resgate seu Prêmio!</h3>
-      <p id="passo5-txt">Com 10 pontos, resgate seu 🥤 Milkshake 300ml GRÁTIS via WhatsApp</p>
+      <p>🥤 <strong>10 pontos</strong> = Milkshake 300ml GRÁTIS<br>🍦 <strong>20 pontos</strong> = Caixa 7 Bolas GRÁTIS</p>
     </div>
   </div>
 </section>
@@ -247,11 +256,24 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       </div>
       <div class="progress-label" id="progress-label">0% concluído</div>
 
-      <!-- Seção de resgate (aparece ao atingir meta) -->
+      <!-- Seção de resgate (aparece ao atingir 10 ou 20 pontos) -->
       <div class="resgate-section" id="resgate-section" style="display:none">
-        <h3>🎉 PARABÉNS! Você chegou lá!</h3>
-        <p id="resgate-txt">Você acumulou 10 pontos e ganhou um 🥤 Milkshake 300ml GRÁTIS! Clique abaixo para resgatar via WhatsApp.</p>
-        <button class="btn btn-whats" onclick="resgatarPremio()">🟢 Resgatar via WhatsApp</button>
+        <h3>🎉 PARABÉNS! Escolha seu prêmio!</h3>
+        <p id="resgate-txt">Você acumulou pontos suficientes. Escolha qual prêmio deseja resgatar:</p>
+        <!-- Card prêmio 10 pontos -->
+        <div id="card-premio-10" style="background:#fff;border:2px solid #25d366;border-radius:12px;padding:14px;margin-bottom:10px;display:none">
+          <div style="font-size:1.5rem;margin-bottom:4px">🥤</div>
+          <div style="font-weight:800;color:#27ae60;font-size:1rem">Milkshake 300ml GRÁTIS</div>
+          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 10 pontos</div>
+          <button class="btn btn-whats" style="font-size:.9rem;padding:11px" onclick="resgatarPremio('milkshake')">&#x1F7E2; Resgatar Milkshake via WhatsApp</button>
+        </div>
+        <!-- Card prêmio 20 pontos -->
+        <div id="card-premio-20" style="background:#fff;border:2px solid #f39c12;border-radius:12px;padding:14px;display:none">
+          <div style="font-size:1.5rem;margin-bottom:4px">🍦</div>
+          <div style="font-weight:800;color:#e67e22;font-size:1rem">Caixa 7 Bolas GRÁTIS</div>
+          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 20 pontos</div>
+          <button class="btn" style="background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;font-size:.9rem;padding:11px" onclick="resgatarPremio('caixa7bolas')">&#x1F7E0; Resgatar Caixa 7 Bolas via WhatsApp</button>
+        </div>
       </div>
 
       <button class="btn-sair" onclick="sair()">Sair da conta</button>
@@ -551,30 +573,58 @@ function atualizarUI() {
   document.getElementById('rodada-badge').textContent = 'Rodada ' + (r.num || 1);
   // Pontos
   document.getElementById('pontos-atual').textContent = pontos;
-  document.getElementById('pontos-meta').textContent = META_PONTOS;
-  const faltam = META_PONTOS - pontos;
-  document.getElementById('pontos-faltam').textContent = faltam > 0 ? 'Faltam ' + faltam + ' ponto' + (faltam>1?'s':'') + ' para o prêmio' : '🎉 Você atingiu a meta!';
-  // Ícones de sorvete
+  const META_MAX = 20; // meta máxima para Caixa 7 Bolas
+  document.getElementById('pontos-meta').textContent = META_MAX;
+  const faltam10 = 10 - pontos;
+  const faltam20 = 20 - pontos;
+  let faltamTxt;
+  if (pontos >= 20) faltamTxt = '🎉 Você pode resgatar qualquer prêmio!';
+  else if (pontos >= 10) faltamTxt = '🥤 Milkshake disponível! Faltam ' + faltam20 + ' para a Caixa 7 Bolas';
+  else faltamTxt = 'Faltam ' + faltam10 + ' ponto' + (faltam10>1?'s':'') + ' para o Milkshake';
+  document.getElementById('pontos-faltam').textContent = faltamTxt;
+  // Ícones de sorvete (20 no total)
   const grid = document.getElementById('sorvetes-grid');
   grid.innerHTML = '';
-  for (let i = 0; i < META_PONTOS; i++) {
+  for (let i = 0; i < 20; i++) {
     const span = document.createElement('span');
     span.className = 'sorvete-icon' + (i < pontos ? ' ativo' : '');
+    // Marca o 10º ícone com borda especial
+    if (i === 9) span.style.cssText = 'border-bottom:3px solid #27ae60;border-radius:4px;padding-bottom:2px';
+    if (i === 19) span.style.cssText = 'border-bottom:3px solid #e67e22;border-radius:4px;padding-bottom:2px';
     span.textContent = '🍦';
     grid.appendChild(span);
   }
-  // Barra de progresso
-  const pct = Math.min(100, Math.round((pontos / META_PONTOS) * 100));
+  // Barra de progresso (base 20)
+  const pct = Math.min(100, Math.round((pontos / 20) * 100));
   document.getElementById('progress-bar').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = pct + '% concluído';
-  // Resgate
+  // Cor da barra muda conforme nível
+  const bar = document.getElementById('progress-bar');
+  if (pontos >= 20) bar.style.background = 'linear-gradient(90deg,#e67e22,#f39c12)';
+  else if (pontos >= 10) bar.style.background = 'linear-gradient(90deg,#27ae60,#2ecc71)';
+  else bar.style.background = 'linear-gradient(90deg,#e8650a,#ff8c00)';
+  document.getElementById('progress-label').textContent = pct + '% — ' + pontos + '/20 pontos';
+  // Resgate — dois níveis: 10 pts = Milkshake, 20 pts = Caixa 7 Bolas
   const resgate = document.getElementById('resgate-section');
-  if (pontos >= META_PONTOS) {
+  const card10 = document.getElementById('card-premio-10');
+  const card20 = document.getElementById('card-premio-20');
+  if (pontos >= 10) {
     resgate.style.display = 'block';
-    document.getElementById('resgate-txt').textContent = 'Você acumulou ' + pontos + ' pontos e ganhou um 🥤 ' + NOME_PREMIO + ' GRÁTIS! Clique abaixo para resgatar via WhatsApp.';
-    document.getElementById('btn-validar').disabled = true;
+    // Card Milkshake (10 pts) — sempre visível quando tem 10+
+    card10.style.display = 'block';
+    // Card Caixa 7 Bolas (20 pts) — só visível quando tem 20+
+    card20.style.display = pontos >= 20 ? 'block' : 'none';
+    // Mensagem dinâmica
+    if (pontos >= 20) {
+      document.getElementById('resgate-txt').textContent = '🎉 Você tem ' + pontos + ' pontos! Escolha seu prêmio abaixo:';
+    } else {
+      document.getElementById('resgate-txt').textContent = '🎉 Você tem ' + pontos + ' pontos! Resgate o Milkshake agora ou continue acumulando para ganhar a Caixa 7 Bolas com 20 pontos!';
+    }
+    // Desabilitar validação apenas se já atingiu 20 pontos (meta máxima)
+    document.getElementById('btn-validar').disabled = pontos >= 20;
   } else {
     resgate.style.display = 'none';
+    card10.style.display = 'none';
+    card20.style.display = 'none';
     document.getElementById('btn-validar').disabled = false;
   }
   // Histórico
@@ -698,33 +748,47 @@ async function validarCodigo() {
 // ═══════════════════════════════════════════════════════════
 // RESGATAR PRÊMIO
 // ═══════════════════════════════════════════════════════════
-async function resgatarPremio() {
+async function resgatarPremio(tipo) {
   if (!clienteAtual) return;
   const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
   const pontos = r.pontos || 0;
-  if (pontos < META_PONTOS) { showMsg('msg-codigo','⚠️ Você ainda não atingiu ' + META_PONTOS + ' pontos.','aviso'); return; }
+  // Definir prêmio conforme tipo escolhido
+  let nomePremio, pontosNecessarios, emoji;
+  if (tipo === 'caixa7bolas') {
+    if (pontos < 20) { showMsg('msg-codigo','⚠️ Você precisa de 20 pontos para a Caixa 7 Bolas. Você tem ' + pontos + '.','aviso'); return; }
+    nomePremio = 'Caixa 7 Bolas de Sorvete';
+    pontosNecessarios = 20;
+    emoji = '🍦';
+  } else {
+    // milkshake (padrão)
+    if (pontos < 10) { showMsg('msg-codigo','⚠️ Você precisa de 10 pontos para o Milkshake. Você tem ' + pontos + '.','aviso'); return; }
+    nomePremio = 'Milkshake 300ml';
+    pontosNecessarios = 10;
+    emoji = '🥤';
+  }
   // Montar mensagem WhatsApp
-  const msg = '🍦 *RESGATE DE PRÊMIO — Programa de Fidelidade*\n\n' +
+  const msg = emoji + ' *RESGATE DE PRÊMIO — Programa de Fidelidade*\n\n' +
     '👤 *Nome:* ' + clienteAtual.nome + '\n' +
     '📱 *Celular:* ' + clienteAtual.cel + '\n' +
     '🏆 *Rodada:* ' + (r.num||1) + '\n' +
-    '🎁 *Prêmio:* ' + NOME_PREMIO + ' GRÁTIS\n' +
-    '📊 *Pontos acumulados:* ' + pontos + '/' + META_PONTOS + '\n\n' +
+    '🎁 *Prêmio:* ' + nomePremio + ' GRÁTIS\n' +
+    '📊 *Pontos acumulados:* ' + pontos + '\n' +
+    '📅 *Data:* ' + new Date().toLocaleDateString('pt-BR') + '\n\n' +
     'Olá! Gostaria de resgatar meu prêmio de fidelidade. 😊';
   const url = 'https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg);
   window.open(url, '_blank');
   // Registrar resgate e iniciar nova rodada
   setLoading('Registrando resgate...');
-  const rodadaFinalizada = { ...r, resgatado: new Date().toISOString() };
+  const rodadaFinalizada = { ...r, resgatado: new Date().toISOString(), premioResgatado: nomePremio, pontosUsados: pontosNecessarios };
   if (!clienteAtual.rodadas) clienteAtual.rodadas = [];
   clienteAtual.rodadas.push(rodadaFinalizada);
   clienteAtual.totalPremios = (clienteAtual.totalPremios || 0) + 1;
   clienteAtual.rodadaAtual = { num: (r.num||1) + 1, pontos: 0, codigos: [], inicio: new Date().toISOString() };
   ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-  const ok = await salvarClientes('Prêmio resgatado: ' + clienteAtual.nome + ' — Rodada ' + (r.num||1));
+  const ok = await salvarClientes('Prêmio resgatado: ' + clienteAtual.nome + ' — ' + nomePremio + ' — Rodada ' + (r.num||1));
   hideLoading();
   if (ok) {
-    showMsg('msg-codigo','🎉 Prêmio resgatado! Começando Rodada ' + clienteAtual.rodadaAtual.num + '...','ok');
+    showMsg('msg-codigo','🎉 ' + nomePremio + ' resgatado! Começando Rodada ' + clienteAtual.rodadaAtual.num + '...','ok');
     atualizarUI();
   }
 }
