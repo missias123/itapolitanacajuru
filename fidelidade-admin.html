@@ -22,7 +22,7 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 .back-link{display:block;margin-top:10px;font-size:13px;color:#E65100;text-decoration:none}
 #admin-panel{display:none}
 .admin-header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(230,81,0,.4)}
-.admin-header h1{font-size:16px;font-weight:800}
+.admin-header h1{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .btn-logout{background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
 .admin-body{max-width:960px;margin:0 auto;padding:20px 16px 100px}
 .card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;margin-bottom:20px;overflow:hidden}
@@ -31,10 +31,12 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 .card-body{padding:20px}
 .btn{padding:13px 24px;border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s}
 .btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-laranja{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;box-shadow:0 4px 16px rgba(230,81,0,.4)}
-.btn-laranja:hover{box-shadow:0 6px 22px rgba(230,81,0,.55)}
+.btn-laranja:hover:not(:disabled){box-shadow:0 6px 22px rgba(230,81,0,.55)}
 .btn-verde{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35)}
 .btn-vermelho{background:linear-gradient(135deg,#DC2626,#EF4444);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.35)}
+.btn-azul{background:linear-gradient(135deg,#2563EB,#3B82F6);color:#fff;box-shadow:0 4px 16px rgba(37,99,235,.35)}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
 .stat-box{background:#fff;border-radius:14px;padding:16px;text-align:center;border:1px solid #E5E7EB}
@@ -44,7 +46,7 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 .progresso-titulo{font-size:15px;font-weight:900;color:#E65100;margin-bottom:8px}
 .progresso-barra-bg{background:#FFE0B2;border-radius:20px;height:14px;overflow:hidden;margin-bottom:8px}
 .progresso-barra{background:linear-gradient(90deg,#E65100,#FF6D00);height:100%;border-radius:20px;transition:width .4s ease}
-.progresso-texto{font-size:13px;font-weight:700;color:#374151}
+.progresso-texto{font-size:16px;font-weight:900;color:#E65100;margin-top:4px}
 .codigos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
 @media(max-width:600px){.codigos-grid{grid-template-columns:repeat(2,1fr)}}
 .codigo-chip{background:#FFF3E0;border:1px solid #FFD0A0;border-radius:8px;padding:8px 6px;text-align:center;font-family:monospace;font-size:12px;font-weight:700;color:#E65100;letter-spacing:1px;word-break:break-all}
@@ -54,11 +56,26 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 .cliente-nome{font-weight:700;color:#1F2937}
 .cliente-cel{color:#6B7280;font-size:12px}
 .cliente-pts{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800}
+.cliente-pts.premio{background:linear-gradient(135deg,#F59E0B,#EF4444)}
 .alerta{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:700;margin-top:12px;display:none}
 .alerta.ok{background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7}
 .alerta.erro{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.alerta.info{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE}
 .info-box{background:#FFF3E0;border:1px solid #FFD0A0;border-radius:12px;padding:14px 16px;font-size:13px;color:#92400E;line-height:1.6;margin-bottom:16px}
 .lote-info{background:#E0F2FE;border:1px solid #BAE6FD;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:700;color:#0369A1;margin-top:12px;text-align:center}
+.token-wrap{background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.token-wrap label{display:block;font-size:12px;font-weight:700;color:#166534;margin-bottom:6px}
+.token-wrap input{width:100%;padding:10px 12px;border:1.5px solid #86EFAC;border-radius:8px;font-size:13px;font-family:monospace;outline:none;background:#fff}
+.token-wrap input:focus{border-color:#22C55E}
+.token-status{font-size:12px;font-weight:700;margin-top:6px}
+.token-status.ok{color:#166534}
+.token-status.erro{color:#991B1B}
+.sync-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.sync-badge.syncing{background:rgba(255,255,255,.2);color:#fff}
+.sync-badge.synced{background:rgba(255,255,255,.25);color:#fff}
+.sync-badge.offline{background:rgba(220,38,38,.3);color:#fff}
+.spinner{width:10px;height:10px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -81,10 +98,34 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 <!-- PAINEL ADMIN -->
 <div id="admin-panel">
   <div class="admin-header">
-    <h1>⚙️ Admin Fidelidade – Itapolitana</h1>
+    <h1>⚙️ Admin Fidelidade
+      <span class="sync-badge offline" id="sync-badge">● Offline</span>
+    </h1>
     <button class="btn-logout" onclick="sairAdmin()">Sair</button>
   </div>
   <div class="admin-body">
+
+    <!-- TOKEN GITHUB -->
+    <div class="card" id="card-token">
+      <div class="card-header"><h3>🔑 Token GitHub (configure uma vez)</h3></div>
+      <div class="card-body">
+        <div class="token-wrap">
+          <label>Personal Access Token do GitHub (com permissão "repo")</label>
+          <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="salvarToken(this.value)">
+          <div class="token-status erro" id="token-status">⚠️ Token não configurado</div>
+        </div>
+        <div class="info-box">
+          <strong>Como obter (uma única vez):</strong><br>
+          github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → marque <strong>repo</strong> → Generate → copie e cole acima.<br>
+          O token fica salvo no seu navegador. Após configurar, os lotes são salvos <strong>automaticamente</strong> no GitHub a cada clique.
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-azul" onclick="testarToken()">🔍 Testar Conexão</button>
+          <button class="btn btn-laranja" onclick="carregarDoGitHub()">☁️ Carregar Dados do GitHub</button>
+        </div>
+        <div class="alerta" id="alerta-token"></div>
+      </div>
+    </div>
 
     <!-- STATS -->
     <div class="stats-row">
@@ -95,16 +136,15 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 
     <!-- GERADOR -->
     <div class="card">
-      <div class="card-header"><h3>🎟️ Gerador de Códigos</h3></div>
+      <div class="card-header"><h3>🎟️ Gerador de Lotes de Códigos</h3></div>
       <div class="card-body">
         <div class="info-box">
-          O sistema possui um banco de <strong>100.000 códigos únicos e indecifrávies</strong>.<br>
-          A cada clique em <strong>"Liberar 100 Códigos"</strong>, os próximos 100 são ativados e exibidos.<br>
-          Apenas códigos liberados são aceitos pelo sistema — <strong>sem impressão = sem validade = sem fraude</strong>.<br>
-          O PDF é gerado automaticamente com os 100 cupons prontos para impressão e entrega.
+          Banco total: <strong>100.000 códigos únicos e indecifrávies</strong>.<br>
+          Cada clique em <strong>"Liberar 100 Códigos"</strong> gera o próximo lote e salva <strong>automaticamente no GitHub</strong>.<br>
+          O contador avança: <strong>100/100.000 → 200/100.000 → 300/100.000...</strong><br>
+          Apenas códigos liberados são aceitos pelos clientes — sem impressão = sem validade.
         </div>
 
-        <!-- PROGRESSO -->
         <div class="progresso-wrap">
           <div class="progresso-titulo">Progresso do Banco de Códigos</div>
           <div class="progresso-barra-bg"><div class="progresso-barra" id="prog-barra" style="width:0%"></div></div>
@@ -113,18 +153,16 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 
         <div class="btn-row">
           <button class="btn btn-laranja" onclick="liberarLote()" id="btn-liberar">🎲 Liberar 100 Códigos</button>
-          <button class="btn btn-vermelho" onclick="apagarCodigos()">🗑️ Apagar Todos os Códigos</button>
+          <button class="btn btn-vermelho" onclick="apagarTudo()">🗑️ Apagar Todos</button>
         </div>
-
         <div class="alerta" id="alerta-gerador"></div>
 
-        <!-- LOTE ATUAL -->
-        <div id="lote-wrap" style="display:none">
+        <div id="lote-wrap" style="display:none;margin-top:16px">
           <div class="lote-info" id="lote-info"></div>
           <div class="codigos-grid" id="codigos-grid"></div>
           <div class="btn-row" style="margin-top:16px">
             <button class="btn btn-laranja" onclick="gerarPDF()">📄 Baixar PDF (100 cupons)</button>
-            <button class="btn btn-verde" onclick="enviarWhatsApp()">📲 Enviar WhatsApp</button>
+            <button class="btn btn-verde" onclick="enviarWhatsApp()">📲 Notificar WhatsApp</button>
           </div>
         </div>
       </div>
@@ -134,24 +172,50 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
     <div class="card">
       <div class="card-header">
         <h3>👥 Clientes (por pontos)</h3>
-        <button class="btn btn-laranja" style="padding:8px 14px;font-size:12px" onclick="renderClientes()">↻ Atualizar</button>
+        <button class="btn btn-laranja" style="padding:8px 14px;font-size:12px" onclick="carregarDoGitHub()">↻ Atualizar</button>
       </div>
-      <div class="card-body" id="lista-clientes"><p style="color:#9CA3AF;font-size:13px">Nenhum cliente cadastrado.</p></div>
+      <div class="card-body" id="lista-clientes">
+        <p style="color:#9CA3AF;font-size:13px">Carregue os dados do GitHub para ver os clientes.</p>
+      </div>
+    </div>
+
+    <!-- FRAUDES -->
+    <div class="card">
+      <div class="card-header"><h3>🚨 Tentativas de Fraude</h3></div>
+      <div class="card-body" id="lista-fraudes">
+        <p style="color:#9CA3AF;font-size:13px">Nenhuma tentativa registrada.</p>
+      </div>
     </div>
 
   </div>
 </div>
 
 <script>
-// ==================== AUTENTICAÇÃO ====================
-const SENHA = 'itapolitana2007@';
+// =====================================================
+// CONFIGURAÇÕES
+// =====================================================
+const SENHA_ADMIN  = 'itapolitana2007@';
+const GH_OWNER     = 'missias123';
+const GH_REPO      = 'itapolitanacajuru';
+const GH_BRANCH    = 'main';
+const GH_FILE_PATH = 'dados/fidelidade.json';
+const TOTAL_BANCO  = 100000;
+const LOTE_SIZE    = 100;
+const SALT         = 'ITAP0L1T4N4#S3CR3T@2024!';
+const CHARS        = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+';
+
+// Cache local dos dados do GitHub
+let db = null;
+
+// =====================================================
+// AUTENTICAÇÃO
+// =====================================================
 function checkLogin(){
-  if(document.getElementById('admin-password').value === SENHA){
+  if(document.getElementById('admin-password').value === SENHA_ADMIN){
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
-    renderStats();
-    renderClientes();
-    renderProgresso();
+    carregarToken();
+    carregarDoGitHub();
   } else {
     alert('Senha incorreta!');
   }
@@ -162,149 +226,292 @@ function sairAdmin(){
   document.getElementById('admin-password').value = '';
 }
 function toggleSenha(){
-  const inp = document.getElementById('admin-password');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+  const i = document.getElementById('admin-password');
+  i.type = i.type === 'password' ? 'text' : 'password';
 }
 
-// ==================== GERADOR DE CÓDIGOS ====================
-// Banco de 100.000 códigos gerados deterministicamente por índice
-// Algoritmo: hash baseado em índice + salt secreto → caracteres indecifrávies
-const SALT = 'ITAP0L1T4N4#S3CR3T@2024!';
-const TOTAL_BANCO = 100000;
-const CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+';
-
-function gerarCodigoPorIndice(idx){
-  // Gera um código de 10 chars único e indecifrávelbaseado no índice
-  let seed = idx * 2654435761 + SALT.charCodeAt(idx % SALT.length) * 1000003;
-  let codigo = '';
-  for(let i = 0; i < 10; i++){
-    seed = ((seed ^ (seed >>> 15)) * 2246822519) >>> 0;
-    seed = ((seed ^ (seed >>> 13)) * 3266489917) >>> 0;
-    seed = (seed ^ (seed >>> 16)) >>> 0;
-    seed += SALT.charCodeAt((idx + i) % SALT.length) * 6364136223846793005n ? 0 : (idx * 31 + i * 7);
-    codigo += CHARS[seed % CHARS.length];
+// =====================================================
+// TOKEN GITHUB
+// =====================================================
+function carregarToken(){
+  const t = localStorage.getItem('itap_admin_gh_token') || '';
+  document.getElementById('github-token').value = t;
+  atualizarStatusToken(t);
+}
+function salvarToken(t){
+  t = t.trim();
+  localStorage.setItem('itap_admin_gh_token', t);
+  atualizarStatusToken(t);
+}
+function getToken(){ return localStorage.getItem('itap_admin_gh_token') || ''; }
+function atualizarStatusToken(t){
+  const el = document.getElementById('token-status');
+  if(t && t.length > 15){
+    el.textContent = '✅ Token configurado — sincronização automática ativa';
+    el.className = 'token-status ok';
+  } else {
+    el.textContent = '⚠️ Token não configurado — configure para salvar no GitHub';
+    el.className = 'token-status erro';
   }
-  return codigo;
+}
+async function testarToken(){
+  const token = getToken();
+  if(!token){ mostrarAlerta('alerta-token','⚠️ Configure o token primeiro.','erro'); return; }
+  mostrarAlerta('alerta-token','🔄 Testando...','info');
+  try {
+    const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
+      headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }
+    });
+    if(r.ok){
+      const d = await r.json();
+      mostrarAlerta('alerta-token',`✅ Conexão OK! Repo: ${d.full_name} | Push: ${d.permissions?.push?'Sim':'Não'}`,'ok');
+      setSyncBadge('synced');
+    } else {
+      mostrarAlerta('alerta-token',`❌ Erro ${r.status}: token inválido ou sem permissão.`,'erro');
+      setSyncBadge('offline');
+    }
+  } catch(e){
+    mostrarAlerta('alerta-token','❌ Erro de rede: '+e.message,'erro');
+  }
 }
 
-// Versão melhorada com mais entropia
+// =====================================================
+// SYNC BADGE
+// =====================================================
+function setSyncBadge(status){
+  const el = document.getElementById('sync-badge');
+  if(status==='syncing'){ el.className='sync-badge syncing'; el.innerHTML='<span class="spinner"></span> Salvando...'; }
+  else if(status==='synced'){ el.className='sync-badge synced'; el.innerHTML='● Online'; }
+  else { el.className='sync-badge offline'; el.innerHTML='● Offline'; }
+}
+
+// =====================================================
+// GITHUB API
+// =====================================================
+async function carregarDoGitHub(){
+  setSyncBadge('syncing');
+  try {
+    const token = getToken();
+    const headers = token ? { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' } : { Accept:'application/vnd.github.v3+json' };
+    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}&_=${Date.now()}`;
+    const r = await fetch(url, { headers });
+    if(r.status === 404){
+      db = { liberados:0, codigos:{}, clientes:{}, fraudes:[], _sha:null };
+      setSyncBadge('synced');
+      renderTudo();
+      return;
+    }
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const fd = await r.json();
+    const json = decodeURIComponent(escape(atob(fd.content.replace(/\n/g,''))));
+    db = JSON.parse(json);
+    db._sha = fd.sha;
+    setSyncBadge('synced');
+    renderTudo();
+  } catch(e){
+    setSyncBadge('offline');
+    mostrarAlerta('alerta-gerador','❌ Erro ao carregar: '+e.message,'erro');
+    if(!db) db = { liberados:0, codigos:{}, clientes:{}, fraudes:[], _sha:null };
+    renderTudo();
+  }
+}
+
+async function salvarNoGitHub(msg){
+  const token = getToken();
+  if(!token){
+    mostrarAlerta('alerta-gerador','⚠️ Token GitHub não configurado! Configure acima para salvar automaticamente.','erro');
+    return false;
+  }
+  setSyncBadge('syncing');
+  try {
+    // Atualizar SHA se necessário
+    if(!db._sha){
+      const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`,{
+        headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }
+      });
+      if(r.ok){ const d = await r.json(); db._sha = d.sha; }
+    }
+    const salvar = { ...db };
+    delete salvar._sha;
+    salvar.ultima_atualizacao = new Date().toISOString();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(salvar, null, 2))));
+    const body = { message: msg || 'Admin: Atualização fidelidade', content, branch: GH_BRANCH };
+    if(db._sha) body.sha = db._sha;
+    const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}`,{
+      method:'PUT',
+      headers:{ Authorization:`token ${token}`, 'Content-Type':'application/json', Accept:'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok){
+      const err = await r.json();
+      // SHA desatualizado: recarregar e tentar de novo
+      if(r.status === 409 || (err.message && err.message.includes('sha'))){
+        db._sha = null;
+        return await salvarNoGitHub(msg);
+      }
+      throw new Error(err.message || `HTTP ${r.status}`);
+    }
+    const d = await r.json();
+    db._sha = d.content.sha;
+    setSyncBadge('synced');
+    return true;
+  } catch(e){
+    setSyncBadge('offline');
+    mostrarAlerta('alerta-gerador','❌ Erro ao salvar no GitHub: '+e.message,'erro');
+    return false;
+  }
+}
+
+// =====================================================
+// GERADOR DE CÓDIGOS (determinístico por índice)
+// =====================================================
 function gerarCodigo(idx){
   const s = SALT;
-  let a = idx + 1;
-  let b = 0;
-  for(let i = 0; i < s.length; i++) b += s.charCodeAt(i);
-  // LCG com múltiplos passos
-  let x = (a * 1664525 + 1013904223) >>> 0;
-  x = (x ^ (x >>> 11)) >>> 0;
-  x = (x + (b * 22695477 + 1)) >>> 0;
-  x = (x ^ (x >>> 16)) >>> 0;
-  x = (x * 2246822519) >>> 0;
-  x = (x ^ (x >>> 13)) >>> 0;
-  x = (x * 3266489917) >>> 0;
-  x = (x ^ (x >>> 16)) >>> 0;
-
-  let codigo = '';
-  for(let i = 0; i < 10; i++){
-    x = (x * 1664525 + 1013904223 + i * 31 + a * 7) >>> 0;
-    x = (x ^ (x >>> 15)) >>> 0;
-    codigo += CHARS[x % CHARS.length];
+  let a = idx + 1, b = 0;
+  for(let i=0;i<s.length;i++) b += s.charCodeAt(i);
+  let x = (a*1664525+1013904223)>>>0;
+  x = (x^(x>>>11))>>>0;
+  x = (x+(b*22695477+1))>>>0;
+  x = (x^(x>>>16))>>>0;
+  x = (x*2246822519)>>>0;
+  x = (x^(x>>>13))>>>0;
+  x = (x*3266489917)>>>0;
+  x = (x^(x>>>16))>>>0;
+  let c='';
+  for(let i=0;i<10;i++){
+    x = (x*1664525+1013904223+i*31+a*7)>>>0;
+    x = (x^(x>>>15))>>>0;
+    c += CHARS[x%CHARS.length];
   }
-  return codigo;
+  return c;
 }
 
-// ==================== LOTE ====================
-function getLiberados(){
-  return parseInt(localStorage.getItem('fid_liberados') || '0');
-}
-function setLiberados(n){
-  localStorage.setItem('fid_liberados', n.toString());
-}
-
-function liberarLote(){
-  const atual = getLiberados();
+// =====================================================
+// LIBERAR LOTE
+// =====================================================
+async function liberarLote(){
+  if(!db) await carregarDoGitHub();
+  const atual = db.liberados || 0;
   if(atual >= TOTAL_BANCO){
-    mostrarAlerta('alerta-gerador', '⚠️ Todos os 100.000 códigos já foram liberados!', 'erro');
+    mostrarAlerta('alerta-gerador','⚠️ Todos os 100.000 códigos já foram liberados!','erro');
     return;
   }
+  const btn = document.getElementById('btn-liberar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;margin-right:6px"></span> Gerando e salvando no GitHub...';
+
   const inicio = atual;
-  const fim = Math.min(atual + 100, TOTAL_BANCO);
+  const fim = Math.min(atual + LOTE_SIZE, TOTAL_BANCO);
+  const loteNum = Math.ceil(fim / LOTE_SIZE);
   const novos = [];
-  for(let i = inicio; i < fim; i++){
-    novos.push(gerarCodigo(i));
-  }
-  // Salvar no banco de códigos válidos
-  let banco = JSON.parse(localStorage.getItem('fid_banco') || '{}');
-  novos.forEach(c => { banco[c] = {status:'disponivel', idx: inicio + novos.indexOf(c)}; });
-  localStorage.setItem('fid_banco', JSON.stringify(banco));
-  setLiberados(fim);
+  for(let i=inicio; i<fim; i++) novos.push(gerarCodigo(i));
 
-  // Salvar lote atual para exibição
-  localStorage.setItem('fid_lote_atual', JSON.stringify({inicio: inicio+1, fim: fim, codigos: novos}));
+  if(!db.codigos) db.codigos = {};
+  novos.forEach((c,i) => {
+    db.codigos[c] = { status:'disponivel', idx:inicio+i, lote:loteNum };
+  });
+  db.liberados = fim;
 
+  // Salvar lote para PDF (local)
+  localStorage.setItem('fid_lote_atual', JSON.stringify({ inicio:inicio+1, fim, codigos:novos, loteNum }));
+
+  // Salvar no GitHub automaticamente
+  const ok = await salvarNoGitHub(`Fidelidade: Lote ${loteNum} liberado — ${fim.toLocaleString('pt-BR')}/${TOTAL_BANCO.toLocaleString('pt-BR')} códigos`);
+
+  btn.disabled = false;
   renderProgresso();
   renderLoteAtual();
   renderStats();
-  mostrarAlerta('alerta-gerador', `✅ ${novos.length} códigos liberados! Lote ${Math.ceil(fim/100)} de ${TOTAL_BANCO/100}.`, 'ok');
+
+  if(ok){
+    mostrarAlerta('alerta-gerador',
+      `✅ Lote ${loteNum} liberado e salvo no GitHub! Contador: ${fim.toLocaleString('pt-BR')} / ${TOTAL_BANCO.toLocaleString('pt-BR')} códigos.`,
+      'ok');
+  } else {
+    mostrarAlerta('alerta-gerador',
+      `⚠️ Códigos gerados mas NÃO salvos no GitHub (configure o token acima!). Os clientes não conseguirão validar.`,
+      'erro');
+  }
 }
 
-function apagarCodigos(){
-  if(!confirm('Tem certeza? Isso apagará TODOS os códigos liberados. Clientes que já inseriram códigos não serão afetados.')) return;
-  localStorage.removeItem('fid_banco');
-  localStorage.removeItem('fid_liberados');
+async function apagarTudo(){
+  if(!confirm('Apagar TODOS os códigos liberados do GitHub? Clientes que já usaram códigos não são afetados.')) return;
+  db.codigos = {};
+  db.liberados = 0;
   localStorage.removeItem('fid_lote_atual');
+  const ok = await salvarNoGitHub('Fidelidade: Todos os códigos apagados pelo admin');
   document.getElementById('lote-wrap').style.display = 'none';
   renderProgresso();
   renderStats();
-  mostrarAlerta('alerta-gerador', '🗑️ Todos os códigos foram apagados.', 'ok');
+  if(ok) mostrarAlerta('alerta-gerador','🗑️ Todos os códigos apagados do GitHub.','ok');
+}
+
+// =====================================================
+// RENDER
+// =====================================================
+function renderTudo(){
+  renderProgresso();
+  renderStats();
+  renderClientes();
+  renderFraudes();
+  const lote = localStorage.getItem('fid_lote_atual');
+  if(lote) renderLoteAtual();
 }
 
 function renderProgresso(){
-  const n = getLiberados();
-  const pct = (n / TOTAL_BANCO * 100).toFixed(2);
-  document.getElementById('prog-barra').style.width = pct + '%';
-  document.getElementById('prog-texto').textContent = `${n.toLocaleString('pt-BR')} / ${TOTAL_BANCO.toLocaleString('pt-BR')} códigos liberados`;
+  const n = db ? (db.liberados||0) : 0;
+  const pct = (n/TOTAL_BANCO*100).toFixed(3);
+  document.getElementById('prog-barra').style.width = pct+'%';
+  document.getElementById('prog-texto').textContent =
+    `${n.toLocaleString('pt-BR')} / ${TOTAL_BANCO.toLocaleString('pt-BR')} códigos liberados`;
   document.getElementById('stat-liberados').textContent = n.toLocaleString('pt-BR');
   const restante = TOTAL_BANCO - n;
-  document.getElementById('btn-liberar').textContent = restante > 0 ? `🎲 Liberar 100 Códigos (${restante.toLocaleString('pt-BR')} restantes)` : '✅ Banco Esgotado';
-  document.getElementById('btn-liberar').disabled = restante <= 0;
+  const btn = document.getElementById('btn-liberar');
+  if(restante > 0){
+    btn.textContent = `🎲 Liberar 100 Códigos (${restante.toLocaleString('pt-BR')} restantes)`;
+    btn.disabled = false;
+  } else {
+    btn.textContent = '✅ Banco Esgotado (100.000/100.000)';
+    btn.disabled = true;
+  }
 }
 
 function renderLoteAtual(){
-  const lote = JSON.parse(localStorage.getItem('fid_lote_atual') || 'null');
+  const lote = JSON.parse(localStorage.getItem('fid_lote_atual')||'null');
   if(!lote) return;
   document.getElementById('lote-wrap').style.display = 'block';
-  document.getElementById('lote-info').textContent = `Lote atual: códigos ${lote.inicio} a ${lote.fim} de ${TOTAL_BANCO.toLocaleString('pt-BR')}`;
+  document.getElementById('lote-info').textContent =
+    `Lote ${lote.loteNum||'?'}: códigos ${lote.inicio} a ${lote.fim} de ${TOTAL_BANCO.toLocaleString('pt-BR')}`;
   const grid = document.getElementById('codigos-grid');
-  grid.innerHTML = '';
-  const banco = JSON.parse(localStorage.getItem('fid_banco') || '{}');
-  lote.codigos.forEach(c => {
-    const usado = banco[c] && banco[c].status === 'usado';
-    grid.innerHTML += `<div class="codigo-chip${usado?' usado':''}">${c}</div>`;
-  });
+  const codigos = db ? (db.codigos||{}) : {};
+  grid.innerHTML = lote.codigos.map(c => {
+    const usado = codigos[c] && codigos[c].status==='usado';
+    return `<div class="codigo-chip${usado?' usado':''}">${c}</div>`;
+  }).join('');
 }
 
-// ==================== STATS ====================
 function renderStats(){
-  const banco = JSON.parse(localStorage.getItem('fid_banco') || '{}');
-  const total = Object.keys(banco).length;
-  const usados = Object.values(banco).filter(v => v.status === 'usado').length;
-  document.getElementById('stat-liberados').textContent = getLiberados().toLocaleString('pt-BR');
+  if(!db) return;
+  const usados = Object.values(db.codigos||{}).filter(v=>v.status==='usado').length;
   document.getElementById('stat-usados').textContent = usados.toLocaleString('pt-BR');
-  const clientes = JSON.parse(localStorage.getItem('fid_clientes') || '{}');
-  document.getElementById('stat-clientes').textContent = Object.keys(clientes).length;
+  const clientes = Object.keys(db.clientes||{}).length;
+  document.getElementById('stat-clientes').textContent = clientes;
 }
 
-// ==================== CLIENTES ====================
 function renderClientes(){
-  const clientes = JSON.parse(localStorage.getItem('fid_clientes') || '{}');
+  if(!db) return;
+  const clientes = db.clientes || {};
   const lista = document.getElementById('lista-clientes');
-  const arr = Object.values(clientes).sort((a,b) => (b.pontos||0)-(a.pontos||0));
-  if(!arr.length){ lista.innerHTML = '<p style="color:#9CA3AF;font-size:13px">Nenhum cliente cadastrado.</p>'; return; }
+  const arr = Object.values(clientes).sort((a,b)=>(b.pontos||0)-(a.pontos||0));
+  if(!arr.length){
+    lista.innerHTML = '<p style="color:#9CA3AF;font-size:13px">Nenhum cliente cadastrado ainda.</p>';
+    return;
+  }
   lista.innerHTML = arr.map((c,i) => `
     <div class="cliente-row">
       <div>
         <div class="cliente-nome">${i+1}. ${c.nome}</div>
-        <div class="cliente-cel">📱 ${c.cel} &nbsp;·&nbsp; 🎟️ ${c.insercoes||0} inserção${(c.insercoes||0)!==1?'es':''}</div>
+        <div class="cliente-cel">📱 ${c.cel} &nbsp;·&nbsp; 🎟️ ${(c.historico||[]).length} código${(c.historico||[]).length!==1?'s':''} inserido${(c.historico||[]).length!==1?'s':''}</div>
       </div>
       <div class="cliente-pts${(c.pontos||0)>=10?' premio':''}">${c.pontos||0} pts</div>
     </div>
@@ -312,94 +519,95 @@ function renderClientes(){
   document.getElementById('stat-clientes').textContent = arr.length;
 }
 
-// ==================== PDF ====================
+function renderFraudes(){
+  if(!db) return;
+  const fraudes = db.fraudes || [];
+  const lista = document.getElementById('lista-fraudes');
+  if(!fraudes.length){
+    lista.innerHTML = '<p style="color:#9CA3AF;font-size:13px">Nenhuma tentativa registrada.</p>';
+    return;
+  }
+  lista.innerHTML = [...fraudes].reverse().slice(0,30).map(f => `
+    <div class="cliente-row">
+      <div>
+        <div class="cliente-nome">📱 ${f.cel||'Desconhecido'}</div>
+        <div class="cliente-cel">Código: <strong>${f.codigo}</strong> · ${new Date(f.data).toLocaleString('pt-BR')}</div>
+      </div>
+      <div style="font-size:11px;color:#EF4444;font-weight:700">FRAUDE</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// PDF
+// =====================================================
 function gerarPDF(){
-  const lote = JSON.parse(localStorage.getItem('fid_lote_atual') || 'null');
-  if(!lote || !lote.codigos.length){ alert('Nenhum lote gerado ainda.'); return; }
+  const lote = JSON.parse(localStorage.getItem('fid_lote_atual')||'null');
+  if(!lote||!lote.codigos.length){ alert('Nenhum lote gerado ainda.'); return; }
   const {jsPDF} = window.jspdf;
-  const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-  const pw = 210, ph = 297;
-  const cols = 4, rows = 5;
-  const cw = (pw - 20) / cols;
-  const ch = (ph - 20) / rows;
-  let idx = 0;
-  const totalPages = Math.ceil(lote.codigos.length / (cols * rows));
-  for(let pg = 0; pg < totalPages; pg++){
-    if(pg > 0) doc.addPage();
-    for(let r = 0; r < rows; r++){
-      for(let c = 0; c < cols; c++){
-        if(idx >= lote.codigos.length) break;
-        const x = 10 + c * cw;
-        const y = 10 + r * ch;
-        const codigo = lote.codigos[idx++];
-        // Borda do cupom
-        doc.setDrawColor(230,81,0);
-        doc.setLineWidth(0.4);
-        doc.roundedRect(x+1, y+1, cw-2, ch-2, 3, 3, 'S');
-        // Faixa laranja
+  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pw=210,ph=297,cols=4,rows=5;
+  const cw=(pw-20)/cols, ch=(ph-20)/rows;
+  let idx=0;
+  const totalPages = Math.ceil(lote.codigos.length/(cols*rows));
+  for(let pg=0;pg<totalPages;pg++){
+    if(pg>0) doc.addPage();
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        if(idx>=lote.codigos.length) break;
+        const x=10+c*cw, y=10+r*ch, codigo=lote.codigos[idx++];
+        doc.setDrawColor(230,81,0); doc.setLineWidth(0.4);
+        doc.roundedRect(x+1,y+1,cw-2,ch-2,3,3,'S');
         doc.setFillColor(230,81,0);
-        doc.roundedRect(x+1, y+1, cw-2, 8, 3, 3, 'F');
-        doc.setFillColor(230,81,0);
-        doc.rect(x+1, y+5, cw-2, 4, 'F');
-        // Título
-        doc.setTextColor(255,255,255);
-        doc.setFontSize(7);
-        doc.setFont(undefined,'bold');
-        doc.text('SORVETERIA ITAPOLITANA', x + cw/2, y+6, {align:'center'});
-        // Instruções
-        doc.setTextColor(80,40,0);
-        doc.setFontSize(5.5);
-        doc.setFont(undefined,'normal');
-        doc.text('Acesse: itapolitanacajuru.com.br', x + cw/2, y+13, {align:'center'});
-        doc.text('Clique em FIDELIDADE no menu', x + cw/2, y+17, {align:'center'});
-        doc.text('Digite seu celular, nome e o codigo:', x + cw/2, y+21, {align:'center'});
-        // Código em destaque
+        doc.roundedRect(x+1,y+1,cw-2,8,3,3,'F');
+        doc.rect(x+1,y+5,cw-2,4,'F');
+        doc.setTextColor(255,255,255); doc.setFontSize(7); doc.setFont(undefined,'bold');
+        doc.text('SORVETERIA ITAPOLITANA',x+cw/2,y+6,{align:'center'});
+        doc.setTextColor(80,40,0); doc.setFontSize(5.5); doc.setFont(undefined,'normal');
+        doc.text('Acesse: itapolitanacajuru.com.br',x+cw/2,y+13,{align:'center'});
+        doc.text('Clique em FIDELIDADE no menu',x+cw/2,y+17,{align:'center'});
+        doc.text('Digite seu celular, nome e o codigo:',x+cw/2,y+21,{align:'center'});
         doc.setFillColor(255,243,224);
-        doc.roundedRect(x+4, y+23, cw-10, 9, 2, 2, 'F');
-        doc.setTextColor(230,81,0);
-        doc.setFontSize(9);
-        doc.setFont(undefined,'bold');
-        doc.text(codigo, x + cw/2, y+29, {align:'center'});
-        // Prêmio
-        doc.setTextColor(80,40,0);
-        doc.setFontSize(5);
-        doc.setFont(undefined,'bold');
-        doc.text('10 pontos = MILKSHAKE 300ML GRATIS!', x + cw/2, y+35, {align:'center'});
-        // Linha pontilhada de corte
-        doc.setDrawColor(200,200,200);
-        doc.setLineDash([1,1]);
-        doc.line(x, y+ch, x+cw, y+ch);
-        doc.line(x+cw, y, x+cw, y+ch);
+        doc.roundedRect(x+4,y+23,cw-10,9,2,2,'F');
+        doc.setTextColor(230,81,0); doc.setFontSize(9); doc.setFont(undefined,'bold');
+        doc.text(codigo,x+cw/2,y+29,{align:'center'});
+        doc.setTextColor(80,40,0); doc.setFontSize(5); doc.setFont(undefined,'bold');
+        doc.text('10 pontos = MILKSHAKE 300ML GRATIS!',x+cw/2,y+35,{align:'center'});
+        doc.setDrawColor(200,200,200); doc.setLineDash([1,1]);
+        doc.line(x,y+ch,x+cw,y+ch); doc.line(x+cw,y,x+cw,y+ch);
         doc.setLineDash([]);
       }
     }
   }
-  doc.save(`cupons-itapolitana-lote${Math.ceil(lote.fim/100)}.pdf`);
+  doc.save(`cupons-itapolitana-lote${lote.loteNum||'?'}.pdf`);
 }
 
-// ==================== WHATSAPP ====================
+// =====================================================
+// WHATSAPP
+// =====================================================
 function enviarWhatsApp(){
-  const lote = JSON.parse(localStorage.getItem('fid_lote_atual') || 'null');
+  const lote = JSON.parse(localStorage.getItem('fid_lote_atual')||'null');
   const msg = lote
-    ? encodeURIComponent(`Ola! Segue o lote ${Math.ceil(lote.fim/100)} de cupons de fidelidade da Sorveteria Itapolitana (codigos ${lote.inicio} a ${lote.fim}). O PDF foi gerado e esta pronto para impressao e entrega aos clientes.`)
-    : encodeURIComponent('Ola! Novo lote de cupons de fidelidade gerado pela Sorveteria Itapolitana.');
-  window.open(`https://wa.me/5516996062046?text=${msg}`, '_blank');
+    ? encodeURIComponent(`Ola! Lote ${lote.loteNum} de cupons de fidelidade gerado (codigos ${lote.inicio} a ${lote.fim} de 100.000). PDF pronto para impressao e entrega.`)
+    : encodeURIComponent('Novo lote de cupons de fidelidade gerado pela Sorveteria Itapolitana.');
+  window.open(`https://wa.me/5516996062046?text=${msg}`,'_blank');
 }
 
-// ==================== ALERTA ====================
-function mostrarAlerta(id, msg, tipo){
+// =====================================================
+// ALERTA
+// =====================================================
+function mostrarAlerta(id,msg,tipo){
   const el = document.getElementById(id);
   el.textContent = msg;
   el.className = `alerta ${tipo}`;
   el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 4000);
+  setTimeout(()=>el.style.display='none', 7000);
 }
 
-// ==================== INIT ====================
-window.onload = function(){
-  const lote = localStorage.getItem('fid_lote_atual');
-  if(lote) renderLoteAtual();
-};
+// =====================================================
+// INIT
+// =====================================================
+window.onload = function(){ carregarToken(); };
 </script>
 </body>
 </html>

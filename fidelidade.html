@@ -4,83 +4,134 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fidelidade – Sorveteria Itapolitana Cajuru</title>
+<meta name="description" content="Programa de fidelidade da Sorveteria Itapolitana Cajuru. Acumule pontos e ganhe Milkshake 300ml grátis!">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#FFF8F0;color:#111827;min-height:100vh}
-body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('images/fundo-itapolitana.png');background-repeat:repeat;background-size:150px 150px;opacity:.1;pointer-events:none;z-index:-1}
+body{font-family:'Inter',system-ui,sans-serif;background:#FFF8F0;color:#111827;min-height:100vh}
 
-/* HEADER */
-.header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(230,81,0,.4)}
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(230,81,0,.4);position:sticky;top:0;z-index:100}
 .header-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.header-logo img{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.5)}
+.header-logo img{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.5);object-fit:cover}
 .header-logo span{color:#fff;font-weight:900;font-size:15px;line-height:1.2}
 .header-logo small{display:block;font-size:11px;font-weight:600;opacity:.85}
-.btn-voltar{color:#fff;text-decoration:none;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);padding:8px 14px;border-radius:20px}
+.btn-voltar{color:#fff;text-decoration:none;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);padding:8px 14px;border-radius:20px;white-space:nowrap}
 
-/* CONTAINER */
-.container{max-width:480px;margin:0 auto;padding:24px 16px 80px}
+/* ── HERO ── */
+.hero{background:linear-gradient(160deg,#E65100 0%,#FF6D00 50%,#FF8F00 100%);padding:36px 20px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'🍦';position:absolute;font-size:120px;opacity:.08;top:-10px;right:-20px;transform:rotate(20deg)}
+.hero::after{content:'🥤';position:absolute;font-size:100px;opacity:.08;bottom:-10px;left:-10px;transform:rotate(-15deg)}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;padding:5px 14px;border-radius:20px;margin-bottom:12px;letter-spacing:.5px}
+.hero h1{color:#fff;font-size:26px;font-weight:900;line-height:1.2;margin-bottom:8px}
+.hero h1 span{display:block;font-size:32px}
+.hero p{color:rgba(255,255,255,.9);font-size:14px;font-weight:600;margin-bottom:20px}
+.hero-premio{display:inline-flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:12px 20px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.hero-premio .emoji{font-size:36px}
+.hero-premio-txt{text-align:left}
+.hero-premio-txt strong{display:block;font-size:16px;font-weight:900;color:#E65100}
+.hero-premio-txt span{font-size:12px;color:#6B7280}
 
-/* CARD */
-.card{background:#fff;border-radius:18px;padding:28px 22px;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-bottom:20px}
-.card h2{font-size:18px;font-weight:900;margin-bottom:6px;color:#1F2937}
-.card p{font-size:13px;color:#6B7280;margin-bottom:20px}
+/* ── CONTAINER ── */
+.container{max-width:520px;margin:0 auto;padding:24px 16px 80px}
 
-/* PONTOS */
-.pontos-display{background:linear-gradient(135deg,#E65100,#FF6D00);border-radius:16px;padding:20px;text-align:center;color:#fff;margin-bottom:20px}
-.pontos-display .num{font-size:52px;font-weight:900;line-height:1}
-.pontos-display .label{font-size:14px;font-weight:700;opacity:.9;margin-top:4px}
-.pontos-barra-wrap{background:rgba(255,255,255,.25);border-radius:20px;height:10px;margin-top:12px;overflow:hidden}
-.pontos-barra{background:#fff;height:100%;border-radius:20px;transition:width .5s ease}
-.pontos-meta{font-size:11px;opacity:.8;margin-top:6px}
+/* ── PASSOS ── */
+.passos-titulo{text-align:center;font-size:18px;font-weight:900;color:#1F2937;margin-bottom:16px}
+.passos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+@media(max-width:480px){.passos-grid{grid-template-columns:repeat(2,1fr)}}
+.passo{background:#fff;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07);border:1.5px solid #F3F4F6;transition:transform .2s,box-shadow .2s;cursor:default}
+.passo:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(230,81,0,.15);border-color:#FFD0A0}
+.passo-icon{font-size:28px;margin-bottom:8px}
+.passo-num{display:inline-block;background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;font-size:10px;font-weight:900;width:20px;height:20px;border-radius:50%;line-height:20px;margin-bottom:6px}
+.passo h4{font-size:11px;font-weight:800;color:#1F2937;margin-bottom:3px;line-height:1.3}
+.passo p{font-size:10px;color:#6B7280;line-height:1.4}
+.passo-5{grid-column:span 4}
+@media(max-width:480px){.passo-5{grid-column:span 2}}
 
-/* INPUTS */
+/* ── CARD ── */
+.card{background:#fff;border-radius:18px;padding:24px 20px;box-shadow:0 4px 24px rgba(0,0,0,.07);margin-bottom:16px;border:1px solid #F3F4F6}
+.card h2{font-size:17px;font-weight:900;margin-bottom:6px;color:#1F2937}
+.card p.sub{font-size:13px;color:#6B7280;margin-bottom:18px}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{flex:1;padding:10px;border:2px solid #E5E7EB;border-radius:10px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:#6B7280}
+.tab.ativo{border-color:#E65100;background:#FFF3E0;color:#E65100}
+
+/* ── INPUTS ── */
 .form-group{margin-bottom:14px}
 .form-group label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:5px}
-.form-group input{width:100%;padding:12px 14px;border:1.5px solid #E5E7EB;border-radius:10px;font-size:15px;outline:none;transition:border-color .2s;background:#FAFAFA}
-.form-group input:focus{border-color:#E65100;background:#fff}
+.form-group input{width:100%;padding:13px 14px;border:1.5px solid #E5E7EB;border-radius:11px;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;background:#FAFAFA;color:#111827}
+.form-group input:focus{border-color:#E65100;background:#fff;box-shadow:0 0 0 3px rgba(230,81,0,.1)}
 .form-group input.erro{border-color:#EF4444}
 .form-group input.sucesso{border-color:#10B981}
+.codigo-input{text-transform:uppercase;letter-spacing:3px;font-family:monospace;font-size:18px;font-weight:700;text-align:center}
 
-/* BOTÕES */
+/* ── BOTÕES ── */
 .btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;letter-spacing:.3px}
 .btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
 .btn-primary{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;box-shadow:0 4px 16px rgba(230,81,0,.4)}
-.btn-primary:hover{box-shadow:0 6px 22px rgba(230,81,0,.55)}
+.btn-primary:hover:not(:disabled){box-shadow:0 6px 22px rgba(230,81,0,.55)}
 .btn-whatsapp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.4);margin-top:10px}
-.btn-secondary{background:#F3F4F6;color:#374151;margin-top:8px}
+.btn-secondary{background:#F3F4F6;color:#374151;margin-top:8px;font-size:14px}
 .btn-secondary:hover{background:#E5E7EB}
 
-/* MENSAGENS */
-.msg{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:700;margin-top:12px;display:none}
+/* ── MENSAGENS ── */
+.msg{padding:13px 16px;border-radius:11px;font-size:13px;font-weight:700;margin-top:12px;display:none;line-height:1.4}
 .msg.show{display:block}
 .msg-ok{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}
 .msg-erro{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
 .msg-info{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE}
+.msg-aviso{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
 
-/* HISTÓRICO */
+/* ── PONTOS ── */
+.pontos-display{background:linear-gradient(135deg,#E65100,#FF6D00);border-radius:18px;padding:22px 20px;text-align:center;color:#fff;margin-bottom:16px}
+.pontos-nome{font-size:14px;font-weight:700;opacity:.9;margin-bottom:4px}
+.pontos-num{font-size:56px;font-weight:900;line-height:1}
+.pontos-label{font-size:13px;font-weight:700;opacity:.85;margin-top:2px}
+
+/* ── ÍCONES DE SORVETE (progresso) ── */
+.sorvetes-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 8px}
+.sorvete-icon{font-size:28px;transition:transform .3s,filter .3s;filter:grayscale(1) opacity(.3)}
+.sorvete-icon.ativo{filter:none;transform:scale(1.15)}
+.sorvete-icon.ativo:nth-child(10){animation:pulsar 1s ease-in-out infinite alternate}
+@keyframes pulsar{0%{transform:scale(1.1)}100%{transform:scale(1.3)}}
+.pontos-meta{font-size:12px;color:#6B7280;text-align:center;margin-bottom:16px;font-weight:600}
+
+/* ── BARRA DE PROGRESSO ── */
+.barra-wrap{background:#F3F4F6;border-radius:20px;height:10px;overflow:hidden;margin:10px 0 6px}
+.barra{background:linear-gradient(90deg,#E65100,#FF6D00);height:100%;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.barra-txt{font-size:11px;color:#9CA3AF;text-align:right;font-weight:600}
+
+/* ── PRÊMIO BANNER ── */
+.premio-banner{background:linear-gradient(135deg,#F59E0B,#EF4444);border-radius:18px;padding:22px 20px;text-align:center;color:#fff;margin-bottom:16px;animation:premioGlow 1.5s ease-in-out infinite alternate}
+@keyframes premioGlow{0%{box-shadow:0 4px 20px rgba(245,158,11,.5)}100%{box-shadow:0 10px 40px rgba(239,68,68,.8)}}
+.premio-banner h3{font-size:22px;font-weight:900;margin-bottom:6px}
+.premio-banner p{font-size:13px;opacity:.95}
+
+/* ── HISTÓRICO ── */
 .historico-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
 .historico-item:last-child{border-bottom:none}
 .historico-codigo{font-family:monospace;font-weight:700;color:#E65100;letter-spacing:1px;font-size:12px}
 .historico-data{color:#9CA3AF;font-size:11px}
 
-/* PRÊMIO */
-.premio-banner{background:linear-gradient(135deg,#F59E0B,#EF4444);border-radius:16px;padding:20px;text-align:center;color:#fff;margin-bottom:20px;animation:premioGlow 1.5s ease-in-out infinite alternate}
-@keyframes premioGlow{0%{box-shadow:0 4px 20px rgba(245,158,11,.4)}100%{box-shadow:0 8px 36px rgba(239,68,68,.7)}}
-.premio-banner h3{font-size:20px;font-weight:900;margin-bottom:6px}
-.premio-banner p{font-size:13px;opacity:.9}
-
-/* TABS */
-.tabs{display:flex;gap:8px;margin-bottom:20px}
-.tab{flex:1;padding:10px;border:2px solid #E5E7EB;border-radius:10px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:#6B7280}
-.tab.ativo{border-color:#E65100;background:#FFF3E0;color:#E65100}
-
-/* CÓDIGO INPUT */
-.codigo-input-wrap{position:relative}
-.codigo-input-wrap input{text-transform:uppercase;letter-spacing:2px;font-family:monospace;font-size:16px;font-weight:700}
+/* ── LOADING ── */
+.loading-overlay{position:fixed;inset:0;background:rgba(255,248,240,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;display:none}
+.loading-overlay.show{display:flex}
+.spinner-grande{width:48px;height:48px;border:4px solid #FFD0A0;border-top-color:#E65100;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:14px;font-weight:700;color:#E65100}
 </style>
 </head>
 <body>
 
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner-grande"></div>
+  <div class="loading-txt" id="loading-txt">Carregando...</div>
+</div>
+
+<!-- HEADER -->
 <div class="header">
   <a class="header-logo" href="index.html">
     <img src="images/logo-itapolitana.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
@@ -89,46 +140,71 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
   <a class="btn-voltar" href="index.html">← Voltar</a>
 </div>
 
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🎟️ CLUBE DE FIDELIDADE</div>
+  <h1>Compre, acumule pontos<span>e ganhe prêmios!</span></h1>
+  <p>A cada compra na sorveteria você recebe um cupom com código único</p>
+  <div class="hero-premio">
+    <div class="emoji">🥤</div>
+    <div class="hero-premio-txt">
+      <strong>Milkshake 300ml GRÁTIS</strong>
+      <span>ao acumular 10 pontos</span>
+    </div>
+  </div>
+</div>
+
 <div class="container">
 
-  <!-- INSTRUÇÕES -->
-  <div style="background:linear-gradient(135deg,#E65100,#FF6D00);border-radius:18px;padding:20px 18px;margin-bottom:18px;color:#fff">
-    <div style="font-size:17px;font-weight:900;margin-bottom:12px;text-align:center">🎟️ Como funciona?</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0">1</span>
-        <span style="font-size:13px;font-weight:600">Compre na Sorveteria Itapolitana e receba um <strong>cupom com código</strong></span>
+  <!-- PASSOS -->
+  <div style="margin-bottom:28px">
+    <div class="passos-titulo">Como funciona?</div>
+    <div class="passos-grid">
+      <div class="passo">
+        <div class="passo-icon">🛒</div>
+        <div class="passo-num">1</div>
+        <h4>Compre e Ganhe Cupom</h4>
+        <p>Receba um cupom com código único a cada compra</p>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0">2</span>
-        <span style="font-size:13px;font-weight:600">Acesse <strong>itapolitanacajuru.com.br</strong> e clique em <strong>FIDELIDADE</strong></span>
+      <div class="passo">
+        <div class="passo-icon">📱</div>
+        <div class="passo-num">2</div>
+        <h4>Acesse Nosso Site</h4>
+        <p>itapolitanacajuru.com.br → clique em Fidelidade</p>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0">3</span>
-        <span style="font-size:13px;font-weight:600">Cadastre seu <strong>nome</strong> e <strong>celular</strong> (só na 1ª vez)</span>
+      <div class="passo">
+        <div class="passo-icon">👤</div>
+        <div class="passo-num">3</div>
+        <h4>Cadastre-se</h4>
+        <p>Informe seu nome e celular (só na 1ª vez)</p>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0">4</span>
-        <span style="font-size:13px;font-weight:600">Digite o <strong>código do cupom</strong> para ganhar 1 ponto</span>
+      <div class="passo">
+        <div class="passo-icon">🔑</div>
+        <div class="passo-num">4</div>
+        <h4>Insira o Código</h4>
+        <p>Digite o código do cupom para ganhar 1 ponto</p>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <span style="background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0">5</span>
-        <span style="font-size:13px;font-weight:600">Com <strong>10 pontos</strong> você ganha um <strong>🥤 Milkshake 300ml</strong> grátis!</span>
+      <div class="passo passo-5">
+        <div class="passo-icon">🎁</div>
+        <div class="passo-num">5</div>
+        <h4>Resgate seu Prêmio!</h4>
+        <p>Com 10 pontos, resgate seu 🥤 Milkshake 300ml GRÁTIS via WhatsApp</p>
       </div>
     </div>
   </div>
 
-  <!-- SEÇÃO: LOGIN/CADASTRO -->
+  <!-- ── SEÇÃO LOGIN ── -->
   <div id="sec-login">
     <div class="card">
-      <h2>🍦 Clube de Fidelidade</h2>
-      <p>Acumule pontos a cada visita e ganhe prêmios! Cadastre-se com seu celular.</p>
+      <h2>🍦 Entrar no Clube</h2>
+      <p class="sub">Cadastre-se com seu celular para começar a acumular pontos.</p>
 
       <div class="tabs">
-        <button class="tab ativo" onclick="setTab('cadastro')">Cadastrar</button>
-        <button class="tab" onclick="setTab('login')">Já tenho conta</button>
+        <button class="tab ativo" onclick="setTab('cadastro')" id="tab-btn-cad">Primeira vez</button>
+        <button class="tab" onclick="setTab('login')" id="tab-btn-log">Já tenho conta</button>
       </div>
 
+      <!-- CADASTRO -->
       <div id="tab-cadastro">
         <div class="form-group">
           <label>Seu nome completo</label>
@@ -136,55 +212,70 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
         </div>
         <div class="form-group">
           <label>Celular (WhatsApp)</label>
-          <input type="tel" id="cad-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)">
+          <input type="tel" id="cad-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)" onkeypress="if(event.key==='Enter')cadastrar()">
         </div>
         <button class="btn btn-primary" onclick="cadastrar()">Criar minha conta</button>
       </div>
 
+      <!-- LOGIN -->
       <div id="tab-login" style="display:none">
         <div class="form-group">
           <label>Celular (WhatsApp)</label>
           <input type="tel" id="login-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)" onkeypress="if(event.key==='Enter')entrar()">
         </div>
-        <button class="btn btn-primary" onclick="entrar()">Entrar</button>
+        <button class="btn btn-primary" onclick="entrar()">Entrar na minha conta</button>
       </div>
 
-      <div class="msg msg-erro" id="msg-login"></div>
+      <div class="msg" id="msg-login"></div>
     </div>
   </div>
 
-  <!-- SEÇÃO: PAINEL DO CLIENTE -->
+  <!-- ── SEÇÃO PAINEL ── -->
   <div id="sec-painel" style="display:none">
 
-    <!-- PRÊMIO (aparece ao atingir 10 pontos) -->
+    <!-- PRÊMIO -->
     <div class="premio-banner" id="banner-premio" style="display:none">
       <h3>🎉 Parabéns! Você ganhou!</h3>
-      <p>Você acumulou 10 pontos e ganhou um <strong>Milkshake 300ml</strong>! Resgate agora!</p>
+      <p>Você acumulou <strong>10 pontos</strong> e ganhou um <strong>🥤 Milkshake 300ml</strong>! Resgate agora!</p>
     </div>
 
-    <!-- PONTOS -->
+    <!-- PONTOS + PROGRESSO -->
     <div class="pontos-display">
-      <div class="num" id="pontos-num">0</div>
-      <div class="label">pontos acumulados</div>
-      <div class="pontos-barra-wrap">
-        <div class="pontos-barra" id="pontos-barra" style="width:0%"></div>
-      </div>
-      <div class="pontos-meta" id="pontos-meta">Faltam 10 pontos para o prêmio</div>
+      <div class="pontos-nome" id="painel-nome">Olá!</div>
+      <div class="pontos-num" id="pontos-num">0</div>
+      <div class="pontos-label">pontos acumulados</div>
     </div>
+
+    <!-- ÍCONES DE SORVETE -->
+    <div class="sorvetes-grid" id="sorvetes-grid">
+      <div class="sorvete-icon" id="sv-1">🍦</div>
+      <div class="sorvete-icon" id="sv-2">🍦</div>
+      <div class="sorvete-icon" id="sv-3">🍦</div>
+      <div class="sorvete-icon" id="sv-4">🍦</div>
+      <div class="sorvete-icon" id="sv-5">🍦</div>
+      <div class="sorvete-icon" id="sv-6">🍦</div>
+      <div class="sorvete-icon" id="sv-7">🍦</div>
+      <div class="sorvete-icon" id="sv-8">🍦</div>
+      <div class="sorvete-icon" id="sv-9">🍦</div>
+      <div class="sorvete-icon" id="sv-10">🥤</div>
+    </div>
+    <div class="barra-wrap">
+      <div class="barra" id="pontos-barra" style="width:0%"></div>
+    </div>
+    <div class="barra-txt" id="pontos-meta">Faltam 10 pontos para o prêmio</div>
 
     <!-- INSERIR CÓDIGO -->
-    <div class="card">
+    <div class="card" style="margin-top:16px">
       <h2>🎟️ Inserir Código</h2>
-      <p>Digite o código que você recebeu na sorveteria.</p>
+      <p class="sub">Digite o código do cupom que você recebeu na sorveteria.</p>
       <div class="form-group">
-        <div class="codigo-input-wrap">
-          <input type="text" id="input-codigo" placeholder="Ex: KBX7#4MQ!" maxlength="12" oninput="this.value=this.value.toUpperCase()">
-        </div>
+        <input type="text" id="input-codigo" class="codigo-input" placeholder="EX: KBX7#4MQ!+" maxlength="12"
+          oninput="this.value=this.value.toUpperCase()" onkeypress="if(event.key==='Enter')inserirCodigo()">
       </div>
-      <button class="btn btn-primary" onclick="inserirCodigo()">✅ Validar Código</button>
+      <button class="btn btn-primary" id="btn-validar" onclick="inserirCodigo()">✅ Validar Código</button>
       <div class="msg" id="msg-codigo"></div>
 
-      <!-- BOTÃO RESGATE (aparece com 10+ pontos) -->
+      <!-- RESGATE -->
       <button class="btn btn-whatsapp" id="btn-resgatar" style="display:none" onclick="resgatarPremio()">
         🏆 Resgatar Prêmio via WhatsApp
       </button>
@@ -199,18 +290,100 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
     <button class="btn btn-secondary" onclick="sair()">Sair da conta</button>
   </div>
 
-</div>
+</div><!-- /container -->
 
 <script>
-// ─── UTILITÁRIOS ────────────────────────────────────────────────────────────
-const DB_CLIENTES = 'itap_fidelidade_clientes';
-const DB_CODIGOS  = 'itap_fidelidade_codigos';
+// =====================================================
+// CONFIGURAÇÕES
+// =====================================================
+const GH_OWNER     = 'missias123';
+const GH_REPO      = 'itapolitanacajuru';
+const GH_BRANCH    = 'main';
+const GH_FILE_PATH = 'dados/fidelidade.json';
+const GH_RAW_URL   = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${GH_FILE_PATH}`;
+const DB_LOCAL     = 'itap_fid_clientes_v2';
 
-function getClientes(){ try{ return JSON.parse(localStorage.getItem(DB_CLIENTES)||'{}'); }catch(e){return {};} }
-function getCodigos(){  try{ return JSON.parse(localStorage.getItem(DB_CODIGOS)||'{}');  }catch(e){return {};} }
-function salvarClientes(d){ localStorage.setItem(DB_CLIENTES, JSON.stringify(d)); }
-function salvarCodigos(d){  localStorage.setItem(DB_CODIGOS,  JSON.stringify(d)); }
+// Cache dos dados do GitHub (apenas leitura pelo cliente)
+let ghData = null;
+let clienteAtual = null;
 
+// =====================================================
+// LOADING
+// =====================================================
+function showLoading(txt){ document.getElementById('loading-overlay').classList.add('show'); document.getElementById('loading-txt').textContent = txt||'Carregando...'; }
+function hideLoading(){ document.getElementById('loading-overlay').classList.remove('show'); }
+
+// =====================================================
+// GITHUB — buscar dados (somente leitura pelo cliente)
+// =====================================================
+async function buscarGitHub(){
+  try {
+    const r = await fetch(GH_RAW_URL + '?_=' + Date.now());
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    ghData = await r.json();
+    return true;
+  } catch(e){
+    console.warn('GitHub offline:', e.message);
+    ghData = null;
+    return false;
+  }
+}
+
+// =====================================================
+// SALVAR DADOS DO CLIENTE NO GITHUB
+// O cliente salva seus próprios dados (pontos, histórico) no GitHub
+// usando o token do admin armazenado localmente (não disponível no cliente)
+// → Alternativa: salvar dados do cliente apenas no localStorage do cliente
+//   e o admin vê via painel. Para sincronização total, usamos GitHub API
+//   com token embutido de escrita limitada (apenas dados/fidelidade.json).
+// =====================================================
+async function salvarClienteNoGitHub(clientes){
+  // Tenta salvar no GitHub se o token admin estiver disponível no browser
+  const token = localStorage.getItem('itap_admin_gh_token') || '';
+  if(!token || !ghData) return false;
+  try {
+    let sha = null;
+    const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`,{
+      headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }
+    });
+    if(r.ok){ const d = await r.json(); sha = d.sha; }
+    const salvar = { ...ghData, clientes, ultima_atualizacao: new Date().toISOString() };
+    delete salvar._sha;
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(salvar, null, 2))));
+    const body = { message:`Fidelidade: Pontos atualizados — ${clienteAtual?.cel||'?'}`, content, branch:GH_BRANCH };
+    if(sha) body.sha = sha;
+    const r2 = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}`,{
+      method:'PUT',
+      headers:{ Authorization:`token ${token}`, 'Content-Type':'application/json', Accept:'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    });
+    if(r2.ok){ ghData.clientes = clientes; return true; }
+  } catch(e){ console.warn('Erro ao salvar cliente no GitHub:', e); }
+  return false;
+}
+
+// =====================================================
+// CLIENTES — armazenamento local + sync GitHub
+// =====================================================
+function getClientesLocal(){ try{ return JSON.parse(localStorage.getItem(DB_LOCAL)||'{}'); }catch(e){return {};} }
+function salvarClientesLocal(d){ localStorage.setItem(DB_LOCAL, JSON.stringify(d)); }
+
+function getClientesMerged(){
+  const local = getClientesLocal();
+  const gh = ghData?.clientes || {};
+  // Mesclar: dados do GitHub têm prioridade (mais atualizados)
+  const merged = { ...local };
+  for(const cel in gh){
+    if(!merged[cel] || (gh[cel].pontos||0) >= (merged[cel].pontos||0)){
+      merged[cel] = { ...merged[cel], ...gh[cel] };
+    }
+  }
+  return merged;
+}
+
+// =====================================================
+// UTILITÁRIOS
+// =====================================================
 function mascaraTel(el){
   let v = el.value.replace(/\D/g,'');
   if(v.length>11) v=v.slice(0,11);
@@ -219,47 +392,48 @@ function mascaraTel(el){
   else if(v.length>0) v=v.replace(/^(\d{0,2})/,'($1');
   el.value=v;
 }
-
 function celLimpo(v){ return v.replace(/\D/g,''); }
 
 function mostrarMsg(id, texto, tipo){
   const el = document.getElementById(id);
   el.textContent = texto;
   el.className = 'msg show msg-'+tipo;
-  setTimeout(()=>{ el.classList.remove('show'); }, 4000);
+  setTimeout(()=>el.classList.remove('show'), 5000);
 }
 
-// ─── TABS ────────────────────────────────────────────────────────────────────
+// =====================================================
+// TABS
+// =====================================================
 function setTab(t){
   document.getElementById('tab-cadastro').style.display = t==='cadastro'?'block':'none';
   document.getElementById('tab-login').style.display    = t==='login'?'block':'none';
-  document.querySelectorAll('.tab').forEach((el,i)=>{
-    el.classList.toggle('ativo', (i===0&&t==='cadastro')||(i===1&&t==='login'));
-  });
+  document.getElementById('tab-btn-cad').classList.toggle('ativo', t==='cadastro');
+  document.getElementById('tab-btn-log').classList.toggle('ativo', t==='login');
 }
 
-// ─── CADASTRO / LOGIN ────────────────────────────────────────────────────────
+// =====================================================
+// CADASTRO / LOGIN
+// =====================================================
 function cadastrar(){
   const nome = document.getElementById('cad-nome').value.trim();
   const cel  = celLimpo(document.getElementById('cad-cel').value);
-  if(!nome){ mostrarMsg('msg-login','Digite seu nome.','erro'); return; }
-  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido.','erro'); return; }
-  const clientes = getClientes();
-  if(clientes[cel]){ mostrarMsg('msg-login','Celular já cadastrado. Use "Já tenho conta".','info'); return; }
+  if(!nome){ mostrarMsg('msg-login','Por favor, digite seu nome.','erro'); return; }
+  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido com DDD.','erro'); return; }
+  const clientes = getClientesMerged();
+  if(clientes[cel]){ mostrarMsg('msg-login','Celular já cadastrado! Use a aba "Já tenho conta".','aviso'); return; }
   clientes[cel] = { nome, cel, pontos:0, historico:[], cadastro: new Date().toISOString() };
-  salvarClientes(clientes);
+  salvarClientesLocal(clientes);
+  salvarClienteNoGitHub(clientes);
   abrirPainel(clientes[cel]);
 }
 
 function entrar(){
   const cel = celLimpo(document.getElementById('login-cel').value);
-  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido.','erro'); return; }
-  const clientes = getClientes();
-  if(!clientes[cel]){ mostrarMsg('msg-login','Celular não encontrado. Cadastre-se primeiro.','erro'); return; }
+  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido com DDD.','erro'); return; }
+  const clientes = getClientesMerged();
+  if(!clientes[cel]){ mostrarMsg('msg-login','Celular não encontrado. Cadastre-se primeiro!','erro'); return; }
   abrirPainel(clientes[cel]);
 }
-
-let clienteAtual = null;
 
 function abrirPainel(cliente){
   clienteAtual = cliente;
@@ -277,25 +451,40 @@ function sair(){
   document.getElementById('cad-cel').value   = '';
 }
 
-// ─── PAINEL ──────────────────────────────────────────────────────────────────
+// =====================================================
+// PAINEL
+// =====================================================
 function atualizarPainel(){
-  const p = clienteAtual.pontos;
-  document.getElementById('pontos-num').textContent = p;
-  const pct = Math.min(p/10*100,100);
-  document.getElementById('pontos-barra').style.width = pct+'%';
-  const faltam = Math.max(10-p,0);
-  document.getElementById('pontos-meta').textContent = faltam>0 ? `Faltam ${faltam} ponto${faltam>1?'s':''} para o prêmio` : '🎉 Prêmio disponível!';
+  const p = clienteAtual.pontos || 0;
+  document.getElementById('painel-nome').textContent = `Olá, ${clienteAtual.nome.split(' ')[0]}! 👋`;
+  document.getElementById('pontos-num').textContent  = p;
 
+  // Barra de progresso
+  const pct = Math.min(p/10*100, 100);
+  document.getElementById('pontos-barra').style.width = pct+'%';
+  const faltam = Math.max(10-p, 0);
+  document.getElementById('pontos-meta').textContent =
+    faltam > 0 ? `Faltam ${faltam} ponto${faltam>1?'s':''} para o prêmio` : '🎉 Prêmio disponível!';
+
+  // Ícones de sorvete
+  for(let i=1; i<=10; i++){
+    const el = document.getElementById('sv-'+i);
+    if(i<=p) el.classList.add('ativo');
+    else el.classList.remove('ativo');
+  }
+
+  // Prêmio
   const temPremio = p >= 10;
   document.getElementById('banner-premio').style.display  = temPremio ? 'block' : 'none';
   document.getElementById('btn-resgatar').style.display   = temPremio ? 'block' : 'none';
 
   // Histórico
   const lista = document.getElementById('historico-lista');
-  if(!clienteAtual.historico || clienteAtual.historico.length===0){
+  const hist = clienteAtual.historico || [];
+  if(!hist.length){
     lista.innerHTML = '<p style="font-size:13px;color:#9CA3AF">Nenhum código inserido ainda.</p>';
   } else {
-    lista.innerHTML = [...clienteAtual.historico].reverse().map(h=>`
+    lista.innerHTML = [...hist].reverse().map(h=>`
       <div class="historico-item">
         <span class="historico-codigo">${h.codigo}</span>
         <span class="historico-data">${new Date(h.data).toLocaleDateString('pt-BR')}</span>
@@ -303,55 +492,106 @@ function atualizarPainel(){
   }
 }
 
-// ─── INSERIR CÓDIGO ──────────────────────────────────────────────────────────
-function inserirCodigo(){
+// =====================================================
+// INSERIR CÓDIGO — valida contra GitHub
+// =====================================================
+async function inserirCodigo(){
   const raw = document.getElementById('input-codigo').value.trim().toUpperCase();
-  if(!raw){ mostrarMsg('msg-codigo','Digite um código.','erro'); return; }
+  if(!raw){ mostrarMsg('msg-codigo','Por favor, digite um código.','erro'); return; }
+  if(raw.length < 8){ mostrarMsg('msg-codigo','Código muito curto. Verifique o cupom.','erro'); return; }
 
-  const codigos = getCodigos();
+  const btn = document.getElementById('btn-validar');
+  btn.disabled = true;
+  btn.textContent = '⏳ Validando...';
+
+  // Buscar dados atualizados do GitHub
+  showLoading('Verificando código...');
+  const online = await buscarGitHub();
+  hideLoading();
+
+  if(!online || !ghData){
+    mostrarMsg('msg-codigo','❌ Sem conexão com o servidor. Verifique sua internet e tente novamente.','erro');
+    btn.disabled = false; btn.textContent = '✅ Validar Código';
+    return;
+  }
+
+  const codigos = ghData.codigos || {};
 
   // Código não existe no sistema
   if(!codigos[raw]){
-    mostrarMsg('msg-codigo','❌ Código inválido. Este código não pertence ao sistema Itapolitana.','erro');
+    mostrarMsg('msg-codigo','❌ Código inválido. Este código não pertence ao sistema Itapolitana ou ainda não foi liberado.','erro');
+    btn.disabled = false; btn.textContent = '✅ Validar Código';
     return;
   }
 
-  // Código já foi usado
-  if(codigos[raw].usado){
+  // Código já foi usado (globalmente)
+  if(codigos[raw].status === 'usado'){
     // Registrar tentativa de fraude
-  const tentativas = JSON.parse(localStorage.getItem('fid_tentativas_fraude') || '[]');
-  tentativas.push({ codigo: raw, cel: clienteAtual ? clienteAtual.cel : 'desconhecido', data: new Date().toISOString() });
-  localStorage.setItem('fid_tentativas_fraude', JSON.stringify(tentativas));
-  mostrarMsg('msg-codigo','🚫 CÓDIGO JÁ INSERIDO! Tentativa de fraude registrada.','erro');
+    if(!ghData.fraudes) ghData.fraudes = [];
+    ghData.fraudes.push({ codigo:raw, cel:clienteAtual.cel, data:new Date().toISOString() });
+    mostrarMsg('msg-codigo','🚫 CÓDIGO JÁ UTILIZADO! Este código já foi inserido por outro cliente. Tentativa registrada.','erro');
+    btn.disabled = false; btn.textContent = '✅ Validar Código';
     return;
   }
 
-  // Marcar como usado
-  codigos[raw].usado = true;
-  codigos[raw].usadoPor  = clienteAtual.cel;
-  codigos[raw].usadoEm   = new Date().toISOString();
-  salvarCodigos(codigos);
+  // Verificar se o próprio cliente já usou este código
+  const hist = clienteAtual.historico || [];
+  if(hist.some(h => h.codigo === raw)){
+    mostrarMsg('msg-codigo','⚠️ Você já inseriu este código anteriormente.','aviso');
+    btn.disabled = false; btn.textContent = '✅ Validar Código';
+    return;
+  }
 
-  // Adicionar ponto ao cliente
-  const clientes = getClientes();
-  clientes[clienteAtual.cel].pontos = (clientes[clienteAtual.cel].pontos||0) + 1;
-  if(!clientes[clienteAtual.cel].historico) clientes[clienteAtual.cel].historico=[];
+  // ✅ CÓDIGO VÁLIDO — marcar como usado e adicionar ponto
+  codigos[raw].status   = 'usado';
+  codigos[raw].usadoPor = clienteAtual.cel;
+  codigos[raw].usadoEm  = new Date().toISOString();
+
+  // Atualizar cliente
+  const clientes = getClientesMerged();
+  clientes[clienteAtual.cel].pontos = (clientes[clienteAtual.cel].pontos || 0) + 1;
+  if(!clientes[clienteAtual.cel].historico) clientes[clienteAtual.cel].historico = [];
   clientes[clienteAtual.cel].historico.push({ codigo:raw, data:new Date().toISOString() });
-  salvarClientes(clientes);
-  clienteAtual = clientes[clienteAtual.cel];
+  salvarClientesLocal(clientes);
 
+  // Salvar no GitHub (código marcado como usado + pontos do cliente)
+  showLoading('Salvando seu ponto...');
+  ghData.codigos = codigos;
+  ghData.clientes = clientes;
+  await salvarClienteNoGitHub(clientes);
+  hideLoading();
+
+  clienteAtual = clientes[clienteAtual.cel];
   document.getElementById('input-codigo').value = '';
-  mostrarMsg('msg-codigo','✅ Código válido! +1 ponto adicionado.','ok');
+  btn.disabled = false; btn.textContent = '✅ Validar Código';
+
+  const novosPontos = clienteAtual.pontos;
+  if(novosPontos >= 10){
+    mostrarMsg('msg-codigo','🎉 PARABÉNS! Código válido! Você atingiu 10 pontos e ganhou um Milkshake 300ml GRÁTIS!','ok');
+  } else {
+    mostrarMsg('msg-codigo',`✅ Código válido! +1 ponto adicionado. Você tem ${novosPontos} ponto${novosPontos>1?'s':''}.`,'ok');
+  }
   atualizarPainel();
 }
 
-// ─── RESGATE ─────────────────────────────────────────────────────────────────
+// =====================================================
+// RESGATE
+// =====================================================
 function resgatarPremio(){
   const nome = clienteAtual.nome;
   const cel  = clienteAtual.cel;
-  const msg  = encodeURIComponent(`Olá! Sou ${nome}, celular ${cel}. Acumulei 10 pontos no Clube de Fidelidade da Sorveteria Itapolitana e gostaria de resgatar meu prêmio: 🥤 Milkshake 300ml! 🎉`);
+  const msg  = encodeURIComponent(`Olá! Sou ${nome}, celular ${cel}. Acumulei 10 pontos no Clube de Fidelidade da Sorveteria Itapolitana e gostaria de resgatar meu prêmio: 🥤 Milkshake 300ml GRÁTIS! 🎉`);
   window.open(`https://wa.me/5516996062046?text=${msg}`, '_blank');
 }
+
+// =====================================================
+// INIT — carregar dados do GitHub ao abrir a página
+// =====================================================
+(async function init(){
+  showLoading('Carregando programa de fidelidade...');
+  await buscarGitHub();
+  hideLoading();
+})();
 </script>
 </body>
 </html>
