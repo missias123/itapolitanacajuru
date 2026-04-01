@@ -312,13 +312,17 @@ function inserirCodigo(){
 
   // Código não existe no sistema
   if(!codigos[raw]){
-    mostrarMsg('msg-codigo','❌ Código inválido. Este código não existe no sistema.','erro');
+    mostrarMsg('msg-codigo','❌ Código inválido. Este código não pertence ao sistema Itapolitana.','erro');
     return;
   }
 
   // Código já foi usado
   if(codigos[raw].usado){
-    mostrarMsg('msg-codigo','⚠️ Este código já foi utilizado anteriormente.','erro');
+    // Registrar tentativa de fraude
+  const tentativas = JSON.parse(localStorage.getItem('fid_tentativas_fraude') || '[]');
+  tentativas.push({ codigo: raw, cel: clienteAtual ? clienteAtual.cel : 'desconhecido', data: new Date().toISOString() });
+  localStorage.setItem('fid_tentativas_fraude', JSON.stringify(tentativas));
+  mostrarMsg('msg-codigo','🚫 CÓDIGO JÁ INSERIDO! Tentativa de fraude registrada.','erro');
     return;
   }
 
