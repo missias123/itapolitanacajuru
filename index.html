@@ -831,8 +831,26 @@ img{max-width:100%;display:block}
 
 /* === VER NOSSO CARDÁPIO === */
 .vc-wrap{width:100%;text-align:center;padding:10px 16px 0;}
-.vc-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);color:#fff;font-size:1.1rem;font-weight:900;padding:15px 36px;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 22px rgba(230,81,0,.45);transition:transform .2s,box-shadow .2s;letter-spacing:.5px;}
-.vc-btn:hover,.vc-btn:focus{transform:translateY(-3px);box-shadow:0 8px 30px rgba(230,81,0,.6);outline:none;}
+/* Animação pulsante do botão */
+@keyframes vcPulse{
+  0%,100%{transform:scale(1);box-shadow:0 4px 22px rgba(230,81,0,.45);}
+  50%{transform:scale(1.07);box-shadow:0 8px 36px rgba(230,81,0,.75),0 0 0 8px rgba(255,109,0,.18);}
+}
+/* Animação dos dedos */
+@keyframes dedoEsq{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(10px);}
+}
+@keyframes dedoDir{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(-10px);}
+}
+.vc-row{display:flex;align-items:center;justify-content:center;gap:10px;}
+.vc-dedo{font-size:2rem;line-height:1;display:inline-block;user-select:none;}
+.vc-dedo-esq{animation:dedoEsq 1s ease-in-out infinite;}
+.vc-dedo-dir{animation:dedoDir 1s ease-in-out infinite;}
+.vc-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);color:#fff;font-size:1.1rem;font-weight:900;padding:15px 36px;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 22px rgba(230,81,0,.45);letter-spacing:.5px;animation:vcPulse 1.4s ease-in-out infinite;}
+.vc-btn:hover,.vc-btn:focus{animation:none;transform:translateY(-3px);box-shadow:0 8px 30px rgba(230,81,0,.6);outline:none;}
 .vc-btn:active{transform:translateY(0);}
 .vc-seta{display:inline-block;transition:transform .35s;font-style:normal;}
 .vc-btn.aberto .vc-seta{transform:rotate(180deg);}
@@ -947,18 +965,18 @@ img{max-width:100%;display:block}
 <div class="cardapio-banner show" id="cardapio-banner">
 <img alt="Cardápio Completo - 36 Sabores Sorvete tipo artesanal, Açaí, Picolés e Milkshakes" decoding="async" id="cardapio-banner-img" loading="lazy" src="images/banner-cardapio.webp"/>
 </div>
-<!-- HERO IMAGE VER CARDÁPIO -->
-<div style="width:100%;max-width:860px;margin:0 auto 10px auto;border-radius:18px;overflow:hidden;box-shadow:0 6px 32px rgba(230,81,0,.25);">
-  <img src="img/hero-ver-cardapio.jpg" alt="Duas mãos apontando para o botão Ver nosso Cardápio da Sorveteria Itapolitana" style="width:100%;height:auto;display:block;" loading="lazy" decoding="async">
-</div>
 <!-- VER NOSSO CARDÁPIO - INÍCIO -->
 <div class="vc-wrap" id="vc-wrap" onmouseleave="fecharCardapio()">
-  <button class="vc-btn" id="vc-btn" type="button"
-    onclick="toggleCardapio()"
-    aria-label="Ver nosso Cardápio"
-    aria-expanded="false">
-    🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>
-  </button>
+  <div class="vc-row">
+    <span class="vc-dedo vc-dedo-esq" aria-hidden="true">👉</span>
+    <button class="vc-btn" id="vc-btn" type="button"
+      onclick="toggleCardapio()"
+      aria-label="Ver nosso Cardápio"
+      aria-expanded="false">
+      🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>
+    </button>
+    <span class="vc-dedo vc-dedo-dir" aria-hidden="true">👈</span>
+  </div>
   <div class="vc-container" id="vc-container">
 <div class="acc" id="acc-sorvetes">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-sorvetes-body" onclick="toggleAcc('acc-sorvetes')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sorvetes');}">
