@@ -4,614 +4,756 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fidelidade – Sorveteria Itapolitana Cajuru</title>
-<meta name="description" content="Programa de fidelidade da Sorveteria Itapolitana Cajuru. Acumule pontos e ganhe Milkshake 300ml grátis!">
+<meta name="description" content="Programa de Fidelidade da Sorveteria Itapolitana Cajuru. Acumule pontos e ganhe prêmios!">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,sans-serif;background:#FFF8F0;color:#111827;min-height:100vh}
-
-/* ── HEADER ── */
-.header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(230,81,0,.4);position:sticky;top:0;z-index:100}
-.header-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.header-logo img{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.5);object-fit:cover}
-.header-logo span{color:#fff;font-weight:900;font-size:15px;line-height:1.2}
-.header-logo small{display:block;font-size:11px;font-weight:600;opacity:.85}
-.btn-voltar{color:#fff;text-decoration:none;font-size:13px;font-weight:700;background:rgba(255,255,255,.2);padding:8px 14px;border-radius:20px;white-space:nowrap}
-
-/* ── HERO ── */
-.hero{background:linear-gradient(160deg,#E65100 0%,#FF6D00 50%,#FF8F00 100%);padding:36px 20px 40px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'🍦';position:absolute;font-size:120px;opacity:.08;top:-10px;right:-20px;transform:rotate(20deg)}
-.hero::after{content:'🥤';position:absolute;font-size:100px;opacity:.08;bottom:-10px;left:-10px;transform:rotate(-15deg)}
-.hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;padding:5px 14px;border-radius:20px;margin-bottom:12px;letter-spacing:.5px}
-.hero h1{color:#fff;font-size:26px;font-weight:900;line-height:1.2;margin-bottom:8px}
-.hero h1 span{display:block;font-size:32px}
-.hero p{color:rgba(255,255,255,.9);font-size:14px;font-weight:600;margin-bottom:20px}
-.hero-premio{display:inline-flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:12px 20px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
-.hero-premio .emoji{font-size:36px}
-.hero-premio-txt{text-align:left}
-.hero-premio-txt strong{display:block;font-size:16px;font-weight:900;color:#E65100}
-.hero-premio-txt span{font-size:12px;color:#6B7280}
-
-/* ── CONTAINER ── */
-.container{max-width:520px;margin:0 auto;padding:24px 16px 80px}
-
-/* ── PASSOS ── */
-.passos-titulo{text-align:center;font-size:18px;font-weight:900;color:#1F2937;margin-bottom:16px}
-.passos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
-@media(max-width:480px){.passos-grid{grid-template-columns:repeat(2,1fr)}}
-.passo{background:#fff;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.07);border:1.5px solid #F3F4F6;transition:transform .2s,box-shadow .2s;cursor:default}
-.passo:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(230,81,0,.15);border-color:#FFD0A0}
-.passo-icon{font-size:28px;margin-bottom:8px}
-.passo-num{display:inline-block;background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;font-size:10px;font-weight:900;width:20px;height:20px;border-radius:50%;line-height:20px;margin-bottom:6px}
-.passo h4{font-size:11px;font-weight:800;color:#1F2937;margin-bottom:3px;line-height:1.3}
-.passo p{font-size:10px;color:#6B7280;line-height:1.4}
-.passo-5{grid-column:span 4}
-@media(max-width:480px){.passo-5{grid-column:span 2}}
-
-/* ── CARD ── */
-.card{background:#fff;border-radius:18px;padding:24px 20px;box-shadow:0 4px 24px rgba(0,0,0,.07);margin-bottom:16px;border:1px solid #F3F4F6}
-.card h2{font-size:17px;font-weight:900;margin-bottom:6px;color:#1F2937}
-.card p.sub{font-size:13px;color:#6B7280;margin-bottom:18px}
-
-/* ── TABS ── */
-.tabs{display:flex;gap:8px;margin-bottom:18px}
-.tab{flex:1;padding:10px;border:2px solid #E5E7EB;border-radius:10px;background:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s;color:#6B7280}
-.tab.ativo{border-color:#E65100;background:#FFF3E0;color:#E65100}
-
-/* ── INPUTS ── */
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:5px}
-.form-group input{width:100%;padding:13px 14px;border:1.5px solid #E5E7EB;border-radius:11px;font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;background:#FAFAFA;color:#111827}
-.form-group input:focus{border-color:#E65100;background:#fff;box-shadow:0 0 0 3px rgba(230,81,0,.1)}
-.form-group input.erro{border-color:#EF4444}
-.form-group input.sucesso{border-color:#10B981}
-.codigo-input{text-transform:uppercase;letter-spacing:3px;font-family:monospace;font-size:18px;font-weight:700;text-align:center}
-
-/* ── BOTÕES ── */
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;letter-spacing:.3px}
-.btn:active{transform:scale(.98)}
-.btn:disabled{opacity:.6;cursor:not-allowed}
-.btn-primary{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;box-shadow:0 4px 16px rgba(230,81,0,.4)}
-.btn-primary:hover:not(:disabled){box-shadow:0 6px 22px rgba(230,81,0,.55)}
-.btn-whatsapp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.4);margin-top:10px}
-.btn-secondary{background:#F3F4F6;color:#374151;margin-top:8px;font-size:14px}
-.btn-secondary:hover{background:#E5E7EB}
-
-/* ── MENSAGENS ── */
-.msg{padding:13px 16px;border-radius:11px;font-size:13px;font-weight:700;margin-top:12px;display:none;line-height:1.4}
-.msg.show{display:block}
-.msg-ok{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}
-.msg-erro{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
-.msg-info{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE}
-.msg-aviso{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
-
-/* ── PONTOS ── */
-.pontos-display{background:linear-gradient(135deg,#E65100,#FF6D00);border-radius:18px;padding:22px 20px;text-align:center;color:#fff;margin-bottom:16px}
-.pontos-nome{font-size:14px;font-weight:700;opacity:.9;margin-bottom:4px}
-.pontos-num{font-size:56px;font-weight:900;line-height:1}
-.pontos-label{font-size:13px;font-weight:700;opacity:.85;margin-top:2px}
-
-/* ── ÍCONES DE SORVETE (progresso) ── */
-.sorvetes-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0 8px}
-.sorvete-icon{font-size:28px;transition:transform .3s,filter .3s;filter:grayscale(1) opacity(.3)}
-.sorvete-icon.ativo{filter:none;transform:scale(1.15)}
-.sorvete-icon.ativo:nth-child(10){animation:pulsar 1s ease-in-out infinite alternate}
-@keyframes pulsar{0%{transform:scale(1.1)}100%{transform:scale(1.3)}}
-.pontos-meta{font-size:12px;color:#6B7280;text-align:center;margin-bottom:16px;font-weight:600}
-
-/* ── BARRA DE PROGRESSO ── */
-.barra-wrap{background:#F3F4F6;border-radius:20px;height:10px;overflow:hidden;margin:10px 0 6px}
-.barra{background:linear-gradient(90deg,#E65100,#FF6D00);height:100%;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.barra-txt{font-size:11px;color:#9CA3AF;text-align:right;font-weight:600}
-
-/* ── PRÊMIO BANNER ── */
-.premio-banner{background:linear-gradient(135deg,#F59E0B,#EF4444);border-radius:18px;padding:22px 20px;text-align:center;color:#fff;margin-bottom:16px;animation:premioGlow 1.5s ease-in-out infinite alternate}
-@keyframes premioGlow{0%{box-shadow:0 4px 20px rgba(245,158,11,.5)}100%{box-shadow:0 10px 40px rgba(239,68,68,.8)}}
-.premio-banner h3{font-size:22px;font-weight:900;margin-bottom:6px}
-.premio-banner p{font-size:13px;opacity:.95}
-
-/* ── HISTÓRICO ── */
-.historico-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
-.historico-item:last-child{border-bottom:none}
-.historico-codigo{font-family:monospace;font-weight:700;color:#E65100;letter-spacing:1px;font-size:12px}
-.historico-data{color:#9CA3AF;font-size:11px}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-height:100vh}
 
 /* ── LOADING ── */
-.loading-overlay{position:fixed;inset:0;background:rgba(255,248,240,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;display:none}
-.loading-overlay.show{display:flex}
-.spinner-grande{width:48px;height:48px;border:4px solid #FFD0A0;border-top-color:#E65100;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+#loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loading-overlay.hide{opacity:0;pointer-events:none}
+.loading-spinner{width:50px;height:50px;border:5px solid #f3c47a;border-top-color:#e8650a;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-txt{font-size:14px;font-weight:700;color:#E65100}
+.loading-txt{color:#e8650a;font-weight:700;font-size:1.1rem}
+
+/* ── HEADER ── */
+.site-header{background:linear-gradient(135deg,#e8650a,#ff8c00);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.site-header .logo{color:#fff;font-size:1.1rem;font-weight:800;text-decoration:none}
+.site-header a.back{color:#fff;text-decoration:none;font-size:.9rem;opacity:.9}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 50%,#ff8c00 100%);color:#fff;text-align:center;padding:36px 20px 28px}
+.hero h1{font-size:1.7rem;font-weight:900;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.hero p{font-size:1rem;opacity:.92;margin-bottom:20px}
+.hero-premio{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.4);border-radius:16px;display:inline-flex;align-items:center;gap:14px;padding:14px 24px;backdrop-filter:blur(4px)}
+.hero-premio .premio-icon{font-size:2.4rem}
+.hero-premio-txt strong{display:block;font-size:1.2rem;font-weight:900;color:#fff}
+.hero-premio-txt span{font-size:.85rem;opacity:.88}
+
+/* ── PASSOS ── */
+.passos{background:#fff;padding:28px 16px}
+.passos h2{text-align:center;color:#e8650a;font-size:1.2rem;font-weight:800;margin-bottom:20px}
+.passos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:700px;margin:0 auto}
+@media(max-width:600px){.passos-grid{grid-template-columns:repeat(2,1fr)}}
+.passo-card{background:#fff8f0;border-radius:14px;padding:16px 10px;text-align:center;border:1.5px solid #ffe0c0}
+.passo-card .passo-num{background:#e8650a;color:#fff;width:26px;height:26px;border-radius:50%;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.passo-card .passo-icon{font-size:1.8rem;margin-bottom:6px}
+.passo-card h3{font-size:.8rem;font-weight:700;color:#e8650a;margin-bottom:4px}
+.passo-card p{font-size:.72rem;color:#666;line-height:1.4}
+
+/* ── PAINEL PRINCIPAL ── */
+.painel{max-width:480px;margin:0 auto;padding:20px 16px}
+
+/* ── CARD ── */
+.card{background:#fff;border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 3px 14px rgba(0,0,0,.08)}
+.card-title{font-size:1rem;font-weight:800;color:#e8650a;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* ── FORMULÁRIO ── */
+.form-tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab-btn{flex:1;padding:10px;border:2px solid #e8650a;background:#fff;color:#e8650a;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s}
+.tab-btn.active{background:#e8650a;color:#fff}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:.82rem;font-weight:700;color:#555;margin-bottom:5px}
+.form-group input{width:100%;padding:12px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.95rem;outline:none;transition:.2s}
+.form-group input:focus{border-color:#e8650a;box-shadow:0 0 0 3px rgba(232,101,10,.12)}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:800;cursor:pointer;transition:.2s;margin-top:4px}
+.btn:active{transform:scale(.97)}
+.btn-laranja{background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;box-shadow:0 4px 12px rgba(232,101,10,.3)}
+.btn-laranja:hover{background:linear-gradient(135deg,#d05a08,#e87800)}
+.btn-verde{background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;box-shadow:0 4px 12px rgba(39,174,96,.3)}
+.btn-verde:hover{background:linear-gradient(135deg,#219a52,#27ae60)}
+.btn-whats{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font-size:1.05rem;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+.btn-whats:hover{background:linear-gradient(135deg,#20b857,#0e7a6e)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── MENSAGENS ── */
+.msg{display:none;padding:12px 14px;border-radius:10px;font-size:.88rem;font-weight:600;margin-top:10px;line-height:1.4}
+.msg.show{display:block}
+.msg-ok{background:#d4edda;color:#155724;border:1.5px solid #c3e6cb}
+.msg-erro{background:#f8d7da;color:#721c24;border:1.5px solid #f5c6cb}
+.msg-aviso{background:#fff3cd;color:#856404;border:1.5px solid #ffeeba}
+.msg-info{background:#d1ecf1;color:#0c5460;border:1.5px solid #bee5eb}
+
+/* ── PAINEL DO CLIENTE ── */
+.cliente-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.cliente-avatar{width:48px;height:48px;background:linear-gradient(135deg,#e8650a,#ff8c00);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-weight:800;flex-shrink:0}
+.cliente-info h3{font-size:1rem;font-weight:800;color:#333}
+.cliente-info p{font-size:.82rem;color:#888}
+.rodada-badge{background:#e8650a;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:3px}
+
+/* ── CONTADOR DE PONTOS ── */
+.pontos-section{text-align:center;margin-bottom:18px}
+.pontos-titulo{font-size:.82rem;color:#888;margin-bottom:8px}
+.pontos-numero{font-size:3rem;font-weight:900;color:#e8650a;line-height:1}
+.pontos-meta{font-size:.82rem;color:#aaa;margin-top:2px}
+
+/* ── ÍCONES DE SORVETE ── */
+.sorvetes-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:14px 0}
+.sorvete-icon{font-size:1.8rem;opacity:.2;transition:all .4s;filter:grayscale(1)}
+.sorvete-icon.ativo{opacity:1;filter:none;animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
+
+/* ── BARRA DE PROGRESSO ── */
+.progress-wrap{background:#f0e8e0;border-radius:20px;height:14px;overflow:hidden;margin:10px 0}
+.progress-bar{height:100%;background:linear-gradient(90deg,#e8650a,#ff8c00);border-radius:20px;transition:width .6s ease;min-width:0}
+.progress-label{text-align:center;font-size:.78rem;color:#888;margin-top:4px}
+
+/* ── CÓDIGO ── */
+.codigo-input{width:100%;padding:14px;border:2.5px solid #e0d0c0;border-radius:12px;font-size:1.1rem;font-weight:700;text-align:center;letter-spacing:2px;text-transform:uppercase;outline:none;transition:.2s;font-family:monospace}
+.codigo-input:focus{border-color:#e8650a;box-shadow:0 0 0 3px rgba(232,101,10,.15)}
+
+/* ── RESGATE ── */
+.resgate-section{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px dashed #27ae60;border-radius:16px;padding:20px;text-align:center;margin-top:8px}
+.resgate-section h3{color:#27ae60;font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.resgate-section p{font-size:.85rem;color:#555;margin-bottom:14px}
+
+/* ── HISTÓRICO ── */
+.historico-list{list-style:none;max-height:220px;overflow-y:auto}
+.historico-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0e8e0;font-size:.82rem}
+.historico-item:last-child{border-bottom:none}
+.historico-item .cod{font-family:monospace;font-weight:700;color:#e8650a;font-size:.85rem}
+.historico-item .data{color:#aaa;font-size:.75rem}
+.rodada-header{background:#fff3e0;border-radius:8px;padding:6px 10px;margin:8px 0 4px;font-size:.78rem;font-weight:700;color:#e8650a}
+
+/* ── SAIR ── */
+.btn-sair{background:none;border:1.5px solid #ddd;color:#888;font-size:.82rem;padding:8px 16px;border-radius:8px;cursor:pointer;width:auto;margin-top:8px}
+.btn-sair:hover{border-color:#e8650a;color:#e8650a}
 </style>
 </head>
 <body>
 
 <!-- LOADING -->
-<div class="loading-overlay" id="loading-overlay">
-  <div class="spinner-grande"></div>
-  <div class="loading-txt" id="loading-txt">Carregando...</div>
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-txt" id="loading-txt">Carregando programa de fidelidade...</div>
 </div>
 
 <!-- HEADER -->
-<div class="header">
-  <a class="header-logo" href="index.html">
-    <img src="images/logo-itapolitana.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
-    <span>Itapolitana Cajuru<small>Programa de Fidelidade</small></span>
-  </a>
-  <a class="btn-voltar" href="index.html">← Voltar</a>
-</div>
+<header class="site-header">
+  <a class="logo" href="index.html">🍦 Itapolitana Cajuru</a>
+  <span style="color:#fff;font-weight:700;font-size:.95rem">Programa de Fidelidade</span>
+  <a class="back" href="index.html">← Voltar</a>
+</header>
 
 <!-- HERO -->
-<div class="hero">
-  <div class="hero-badge">🎟️ CLUBE DE FIDELIDADE</div>
-  <h1>Compre, acumule pontos<span>e ganhe prêmios!</span></h1>
-  <p>A cada compra na sorveteria você recebe um cupom com código único</p>
+<section class="hero">
+  <h1>🎟️ CLUBE DE FIDELIDADE</h1>
+  <p>Compre, acumule pontos<br>e ganhe prêmios!</p>
   <div class="hero-premio">
-    <div class="emoji">🥤</div>
+    <span class="premio-icon">🥤</span>
     <div class="hero-premio-txt">
-      <strong>Milkshake 300ml GRÁTIS</strong>
-      <span>ao acumular 10 pontos</span>
+      <strong id="hero-premio-nome">Milkshake 300ml GRÁTIS</strong>
+      <span id="hero-premio-pontos">ao acumular 10 pontos</span>
     </div>
   </div>
-</div>
+</section>
 
-<div class="container">
-
-  <!-- PASSOS -->
-  <div style="margin-bottom:28px">
-    <div class="passos-titulo">Como funciona?</div>
-    <div class="passos-grid">
-      <div class="passo">
-        <div class="passo-icon">🛒</div>
-        <div class="passo-num">1</div>
-        <h4>Compre e Ganhe Cupom</h4>
-        <p>Receba um cupom com código único a cada compra</p>
-      </div>
-      <div class="passo">
-        <div class="passo-icon">📱</div>
-        <div class="passo-num">2</div>
-        <h4>Acesse Nosso Site</h4>
-        <p>itapolitanacajuru.com.br → clique em Fidelidade</p>
-      </div>
-      <div class="passo">
-        <div class="passo-icon">👤</div>
-        <div class="passo-num">3</div>
-        <h4>Cadastre-se</h4>
-        <p>Informe seu nome e celular (só na 1ª vez)</p>
-      </div>
-      <div class="passo">
-        <div class="passo-icon">🔑</div>
-        <div class="passo-num">4</div>
-        <h4>Insira o Código</h4>
-        <p>Digite o código do cupom para ganhar 1 ponto</p>
-      </div>
-      <div class="passo passo-5">
-        <div class="passo-icon">🎁</div>
-        <div class="passo-num">5</div>
-        <h4>Resgate seu Prêmio!</h4>
-        <p>Com 10 pontos, resgate seu 🥤 Milkshake 300ml GRÁTIS via WhatsApp</p>
-      </div>
+<!-- PASSOS -->
+<section class="passos">
+  <h2>Como funciona?</h2>
+  <div class="passos-grid">
+    <div class="passo-card">
+      <div class="passo-num">1</div>
+      <div class="passo-icon">🛒</div>
+      <h3>Compre e Ganhe Cupom</h3>
+      <p>Receba um cupom com código único a cada compra</p>
+    </div>
+    <div class="passo-card">
+      <div class="passo-num">2</div>
+      <div class="passo-icon">📱</div>
+      <h3>Acesse Nosso Site</h3>
+      <p>itapolitanacajuru.com.br → clique em Fidelidade</p>
+    </div>
+    <div class="passo-card">
+      <div class="passo-num">3</div>
+      <div class="passo-icon">👤</div>
+      <h3>Cadastre-se</h3>
+      <p>Informe seu nome e celular (só na 1ª vez)</p>
+    </div>
+    <div class="passo-card">
+      <div class="passo-num">4</div>
+      <div class="passo-icon">🔑</div>
+      <h3>Insira o Código</h3>
+      <p>Digite o código do cupom para ganhar 1 ponto</p>
+    </div>
+    <div class="passo-card" style="grid-column:1/-1;max-width:340px;margin:0 auto">
+      <div class="passo-num">5</div>
+      <div class="passo-icon">🎁</div>
+      <h3>Resgate seu Prêmio!</h3>
+      <p id="passo5-txt">Com 10 pontos, resgate seu 🥤 Milkshake 300ml GRÁTIS via WhatsApp</p>
     </div>
   </div>
+</section>
 
-  <!-- ── SEÇÃO LOGIN ── -->
-  <div id="sec-login">
-    <div class="card">
-      <h2>🍦 Entrar no Clube</h2>
-      <p class="sub">Cadastre-se com seu celular para começar a acumular pontos.</p>
+<!-- PAINEL PRINCIPAL -->
+<div class="painel">
 
-      <div class="tabs">
-        <button class="tab ativo" onclick="setTab('cadastro')" id="tab-btn-cad">Primeira vez</button>
-        <button class="tab" onclick="setTab('login')" id="tab-btn-log">Já tenho conta</button>
-      </div>
-
-      <!-- CADASTRO -->
-      <div id="tab-cadastro">
-        <div class="form-group">
-          <label>Seu nome completo</label>
-          <input type="text" id="cad-nome" placeholder="Ex: Maria Silva" autocomplete="name">
-        </div>
-        <div class="form-group">
-          <label>Celular (WhatsApp)</label>
-          <input type="tel" id="cad-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)" onkeypress="if(event.key==='Enter')cadastrar()">
-        </div>
-        <button class="btn btn-primary" onclick="cadastrar()">Criar minha conta</button>
-      </div>
-
-      <!-- LOGIN -->
-      <div id="tab-login" style="display:none">
-        <div class="form-group">
-          <label>Celular (WhatsApp)</label>
-          <input type="tel" id="login-cel" placeholder="(16) 99999-9999" maxlength="15" oninput="mascaraTel(this)" onkeypress="if(event.key==='Enter')entrar()">
-        </div>
-        <button class="btn btn-primary" onclick="entrar()">Entrar na minha conta</button>
-      </div>
-
-      <div class="msg" id="msg-login"></div>
+  <!-- FORMULÁRIO DE ACESSO -->
+  <div class="card" id="card-acesso">
+    <div class="card-title">🍦 Entrar no Clube</div>
+    <p style="font-size:.85rem;color:#888;margin-bottom:14px">Cadastre-se com seu celular para começar a acumular pontos.</p>
+    <div class="form-tabs">
+      <button class="tab-btn active" onclick="setTab('novo')">Primeira vez</button>
+      <button class="tab-btn" onclick="setTab('login')">Já tenho conta</button>
     </div>
-  </div>
-
-  <!-- ── SEÇÃO PAINEL ── -->
-  <div id="sec-painel" style="display:none">
-
-    <!-- PRÊMIO -->
-    <div class="premio-banner" id="banner-premio" style="display:none">
-      <h3>🎉 Parabéns! Você ganhou!</h3>
-      <p>Você acumulou <strong>10 pontos</strong> e ganhou um <strong>🥤 Milkshake 300ml</strong>! Resgate agora!</p>
-    </div>
-
-    <!-- PONTOS + PROGRESSO -->
-    <div class="pontos-display">
-      <div class="pontos-nome" id="painel-nome">Olá!</div>
-      <div class="pontos-num" id="pontos-num">0</div>
-      <div class="pontos-label">pontos acumulados</div>
-    </div>
-
-    <!-- ÍCONES DE SORVETE -->
-    <div class="sorvetes-grid" id="sorvetes-grid">
-      <div class="sorvete-icon" id="sv-1">🍦</div>
-      <div class="sorvete-icon" id="sv-2">🍦</div>
-      <div class="sorvete-icon" id="sv-3">🍦</div>
-      <div class="sorvete-icon" id="sv-4">🍦</div>
-      <div class="sorvete-icon" id="sv-5">🍦</div>
-      <div class="sorvete-icon" id="sv-6">🍦</div>
-      <div class="sorvete-icon" id="sv-7">🍦</div>
-      <div class="sorvete-icon" id="sv-8">🍦</div>
-      <div class="sorvete-icon" id="sv-9">🍦</div>
-      <div class="sorvete-icon" id="sv-10">🥤</div>
-    </div>
-    <div class="barra-wrap">
-      <div class="barra" id="pontos-barra" style="width:0%"></div>
-    </div>
-    <div class="barra-txt" id="pontos-meta">Faltam 10 pontos para o prêmio</div>
-
-    <!-- INSERIR CÓDIGO -->
-    <div class="card" style="margin-top:16px">
-      <h2>🎟️ Inserir Código</h2>
-      <p class="sub">Digite o código do cupom que você recebeu na sorveteria.</p>
+    <div id="form-novo">
       <div class="form-group">
-        <input type="text" id="input-codigo" class="codigo-input" placeholder="EX: KBX7#4MQ!+" maxlength="12"
-          oninput="this.value=this.value.toUpperCase()" onkeypress="if(event.key==='Enter')inserirCodigo()">
+        <label>Seu nome completo</label>
+        <input type="text" id="inp-nome" placeholder="Ex: Maria Silva" autocomplete="name">
       </div>
-      <button class="btn btn-primary" id="btn-validar" onclick="inserirCodigo()">✅ Validar Código</button>
-      <div class="msg" id="msg-codigo"></div>
-
-      <!-- RESGATE -->
-      <button class="btn btn-whatsapp" id="btn-resgatar" style="display:none" onclick="resgatarPremio()">
-        🏆 Resgatar Prêmio via WhatsApp
-      </button>
+      <div class="form-group">
+        <label>Celular (WhatsApp)</label>
+        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+      </div>
+      <button class="btn btn-laranja" onclick="cadastrar()">Criar minha conta</button>
     </div>
-
-    <!-- HISTÓRICO -->
-    <div class="card" id="card-historico">
-      <h2>📋 Histórico de Códigos</h2>
-      <div id="historico-lista"><p style="font-size:13px;color:#9CA3AF">Nenhum código inserido ainda.</p></div>
+    <div id="form-login" style="display:none">
+      <div class="form-group">
+        <label>Celular (WhatsApp)</label>
+        <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+      </div>
+      <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
     </div>
-
-    <button class="btn btn-secondary" onclick="sair()">Sair da conta</button>
+    <div class="msg" id="msg-acesso"></div>
   </div>
 
-</div><!-- /container -->
+  <!-- PAINEL DO CLIENTE (oculto até login) -->
+  <div id="card-cliente" style="display:none">
+
+    <!-- Info do cliente -->
+    <div class="card">
+      <div class="cliente-header">
+        <div class="cliente-avatar" id="avatar-letra">?</div>
+        <div class="cliente-info">
+          <h3 id="cliente-nome">—</h3>
+          <p id="cliente-cel">—</p>
+          <span class="rodada-badge" id="rodada-badge">Rodada 1</span>
+        </div>
+      </div>
+
+      <!-- Contador de pontos -->
+      <div class="pontos-section">
+        <div class="pontos-titulo">Pontos acumulados nesta rodada</div>
+        <div class="pontos-numero"><span id="pontos-atual">0</span> / <span id="pontos-meta">10</span></div>
+        <div class="pontos-meta" id="pontos-faltam">Faltam 10 pontos para o prêmio</div>
+      </div>
+
+      <!-- Ícones de sorvete -->
+      <div class="sorvetes-grid" id="sorvetes-grid"></div>
+
+      <!-- Barra de progresso -->
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progress-label">0% concluído</div>
+
+      <!-- Seção de resgate (aparece ao atingir meta) -->
+      <div class="resgate-section" id="resgate-section" style="display:none">
+        <h3>🎉 PARABÉNS! Você chegou lá!</h3>
+        <p id="resgate-txt">Você acumulou 10 pontos e ganhou um 🥤 Milkshake 300ml GRÁTIS! Clique abaixo para resgatar via WhatsApp.</p>
+        <button class="btn btn-whats" onclick="resgatarPremio()">🟢 Resgatar via WhatsApp</button>
+      </div>
+
+      <button class="btn-sair" onclick="sair()">Sair da conta</button>
+    </div>
+
+    <!-- Inserir código -->
+    <div class="card">
+      <div class="card-title">🎫 Inserir Código</div>
+      <p style="font-size:.82rem;color:#888;margin-bottom:12px">Digite o código que você recebeu na sorveteria.</p>
+      <input type="text" id="input-codigo" class
+="codigo-input" placeholder="Ex: VH*BCCQFN%" maxlength="10" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn btn-laranja" id="btn-validar" onclick="validarCodigo()" style="margin-top:12px">✅ Validar Código</button>
+      <div class="msg" id="msg-codigo"></div>
+    </div>
+
+    <!-- Histórico -->
+    <div class="card" id="card-historico" style="display:none">
+      <div class="card-title">📋 Histórico de Códigos</div>
+      <ul class="historico-list" id="historico-list">
+        <li style="color:#aaa;font-size:.85rem;text-align:center;padding:12px 0">Nenhum código inserido ainda.</li>
+      </ul>
+    </div>
+
+  </div><!-- /card-cliente -->
+
+</div><!-- /painel -->
+
+<!-- RODAPÉ -->
+<footer style="background:#333;color:#aaa;text-align:center;padding:20px;font-size:.8rem;margin-top:20px">
+  <p>🍦 Sorveteria Itapolitana Cajuru — Programa de Fidelidade</p>
+  <p style="margin-top:4px">Dúvidas? <a href="https://wa.me/5516996062046" style="color:#ff8c00" target="_blank">Fale conosco no WhatsApp</a></p>
+</footer>
 
 <script>
-// =====================================================
+// ═══════════════════════════════════════════════════════════
 // CONFIGURAÇÕES
-// =====================================================
-const GH_OWNER     = 'missias123';
-const GH_REPO      = 'itapolitanacajuru';
-const GH_BRANCH    = 'main';
-const GH_FILE_PATH = 'dados/fidelidade.json';
-const GH_RAW_URL   = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${GH_FILE_PATH}`;
-const DB_LOCAL     = 'itap_fid_clientes_v2';
+// ═══════════════════════════════════════════════════════════
+const GH_TOKEN   = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+const GH_OWNER   = 'missias123';
+const GH_REPO    = 'itapolitanacajuru';
+const GH_BRANCH  = 'main';
+const FIDELIDADE_PATH = 'dados/fidelidade.json';
+const CLIENTES_PATH   = 'dados/clientes.json';
+const WHATS_SORVETERIA = '5516996062046';
+const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
+const GH_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 
-// Cache dos dados do GitHub (apenas leitura pelo cliente)
-let ghData = null;
-let clienteAtual = null;
-
-// =====================================================
-// LOADING
-// =====================================================
-function showLoading(txt){ document.getElementById('loading-overlay').classList.add('show'); document.getElementById('loading-txt').textContent = txt||'Carregando...'; }
-function hideLoading(){ document.getElementById('loading-overlay').classList.remove('show'); }
-
-// =====================================================
-// GITHUB — buscar dados (somente leitura pelo cliente)
-// =====================================================
+// ═══════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════
+let ghFidelidade = null;   // dados/fidelidade.json
+let ghFidelidadeSha = null;
+let ghClientes = null;     // dados/clientes.json
+let ghClientesSha = null;
+let clienteAtual = null;   // cliente logado
 let META_PONTOS = 10;
 let NOME_PREMIO = 'Milkshake 300ml';
 
-async function buscarGitHub(){
+// ═══════════════════════════════════════════════════════════
+// UTILITÁRIOS GITHUB
+// ═══════════════════════════════════════════════════════════
+async function ghGet(path) {
   try {
-    const r = await fetch(GH_RAW_URL + '?_=' + Date.now());
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    ghData = await r.json();
-    aplicarConfigPremio();
-    return true;
-  } catch(e){
-    console.warn('GitHub offline:', e.message);
-    ghData = null;
-    return false;
+    const r = await fetch(GH_API + path + '?t=' + Date.now(), {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (r.status === 404) return { content: null, sha: null };
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    // Decodifica base64 com suporte a UTF-8
+    const bin = atob(d.content.replace(/\n/g,''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const content = new TextDecoder('utf-8').decode(bytes);
+    return { content, sha: d.sha };
+  } catch(e) {
+    console.error('ghGet error', path, e);
+    return { content: null, sha: null };
   }
 }
 
-function aplicarConfigPremio(){
-  if(!ghData || !ghData.config) return;
-  const nome   = ghData.config.premioNome   || 'Milkshake 300ml';
-  const pontos = parseInt(ghData.config.premioPontos) || 10;
-  META_PONTOS  = pontos;
-  NOME_PREMIO  = nome;
-  // Hero
-  const heroStrong = document.querySelector('.hero-premio-txt strong');
-  if(heroStrong) heroStrong.textContent = nome + ' GRÁTIS';
-  const heroSpan = document.querySelector('.hero-premio-txt span');
-  if(heroSpan) heroSpan.textContent = 'ao acumular ' + pontos + ' pontos';
-  // Passo 5
-  const passo5 = document.querySelector('.passo-5 p');
-  if(passo5) passo5.textContent = 'Com ' + pontos + ' pontos, resgate seu 🥤 ' + nome + ' GRÁTIS via WhatsApp';
-}
-
-// =====================================================
-// SALVAR DADOS DO CLIENTE NO GITHUB
-// O cliente salva seus próprios dados (pontos, histórico) no GitHub
-// usando o token do admin armazenado localmente (não disponível no cliente)
-// → Alternativa: salvar dados do cliente apenas no localStorage do cliente
-//   e o admin vê via painel. Para sincronização total, usamos GitHub API
-//   com token embutido de escrita limitada (apenas dados/fidelidade.json).
-// =====================================================
-async function salvarClienteNoGitHub(clientes){
-  // Tenta salvar no GitHub se o token admin estiver disponível no browser
-  const token = localStorage.getItem('itap_admin_gh_token') || '';
-  if(!token || !ghData) return false;
+async function ghPut(path, content, message, sha) {
   try {
-    let sha = null;
-    const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`,{
-      headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }
-    });
-    if(r.ok){ const d = await r.json(); sha = d.sha; }
-    const salvar = { ...ghData, clientes, ultima_atualizacao: new Date().toISOString() };
-    delete salvar._sha;
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(salvar, null, 2))));
-    const body = { message:`Fidelidade: Pontos atualizados — ${clienteAtual?.cel||'?'}`, content, branch:GH_BRANCH };
-    if(sha) body.sha = sha;
-    const r2 = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}`,{
-      method:'PUT',
-      headers:{ Authorization:`token ${token}`, 'Content-Type':'application/json', Accept:'application/vnd.github.v3+json' },
+    // Codifica UTF-8 → base64
+    const bytes = new TextEncoder().encode(content);
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    const b64 = btoa(bin);
+    const body = { message, content: b64, branch: GH_BRANCH };
+    if (sha) body.sha = sha;
+    const r = await fetch(GH_API + path, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    if(r2.ok){ ghData.clientes = clientes; return true; }
-  } catch(e){ console.warn('Erro ao salvar cliente no GitHub:', e); }
-  return false;
-}
-
-// =====================================================
-// CLIENTES — armazenamento local + sync GitHub
-// =====================================================
-function getClientesLocal(){ try{ return JSON.parse(localStorage.getItem(DB_LOCAL)||'{}'); }catch(e){return {};} }
-function salvarClientesLocal(d){ localStorage.setItem(DB_LOCAL, JSON.stringify(d)); }
-
-function getClientesMerged(){
-  const local = getClientesLocal();
-  const gh = ghData?.clientes || {};
-  // Mesclar: dados do GitHub têm prioridade (mais atualizados)
-  const merged = { ...local };
-  for(const cel in gh){
-    if(!merged[cel] || (gh[cel].pontos||0) >= (merged[cel].pontos||0)){
-      merged[cel] = { ...merged[cel], ...gh[cel] };
-    }
+    if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+    const d = await r.json();
+    return { ok: true, sha: d.content.sha };
+  } catch(e) {
+    console.error('ghPut error', path, e);
+    return { ok: false, error: e.message };
   }
-  return merged;
 }
 
-// =====================================================
-// UTILITÁRIOS
-// =====================================================
-function mascaraTel(el){
-  let v = el.value.replace(/\D/g,'');
-  if(v.length>11) v=v.slice(0,11);
-  if(v.length>6) v=v.replace(/^(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
-  else if(v.length>2) v=v.replace(/^(\d{2})(\d{0,5})/,'($1) $2');
-  else if(v.length>0) v=v.replace(/^(\d{0,2})/,'($1');
-  el.value=v;
-}
-function celLimpo(v){ return v.replace(/\D/g,''); }
-
-function mostrarMsg(id, texto, tipo){
-  const el = document.getElementById(id);
-  el.textContent = texto;
-  el.className = 'msg show msg-'+tipo;
-  setTimeout(()=>el.classList.remove('show'), 5000);
-}
-
-// =====================================================
-// TABS
-// =====================================================
-function setTab(t){
-  document.getElementById('tab-cadastro').style.display = t==='cadastro'?'block':'none';
-  document.getElementById('tab-login').style.display    = t==='login'?'block':'none';
-  document.getElementById('tab-btn-cad').classList.toggle('ativo', t==='cadastro');
-  document.getElementById('tab-btn-log').classList.toggle('ativo', t==='login');
-}
-
-// =====================================================
-// CADASTRO / LOGIN
-// =====================================================
-function cadastrar(){
-  const nome = document.getElementById('cad-nome').value.trim();
-  const cel  = celLimpo(document.getElementById('cad-cel').value);
-  if(!nome){ mostrarMsg('msg-login','Por favor, digite seu nome.','erro'); return; }
-  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido com DDD.','erro'); return; }
-  const clientes = getClientesMerged();
-  if(clientes[cel]){ mostrarMsg('msg-login','Celular já cadastrado! Use a aba "Já tenho conta".','aviso'); return; }
-  clientes[cel] = { nome, cel, pontos:0, historico:[], cadastro: new Date().toISOString() };
-  salvarClientesLocal(clientes);
-  salvarClienteNoGitHub(clientes);
-  abrirPainel(clientes[cel]);
-}
-
-function entrar(){
-  const cel = celLimpo(document.getElementById('login-cel').value);
-  if(cel.length<10){ mostrarMsg('msg-login','Digite um celular válido com DDD.','erro'); return; }
-  const clientes = getClientesMerged();
-  if(!clientes[cel]){ mostrarMsg('msg-login','Celular não encontrado. Cadastre-se primeiro!','erro'); return; }
-  abrirPainel(clientes[cel]);
-}
-
-function abrirPainel(cliente){
-  clienteAtual = cliente;
-  document.getElementById('sec-login').style.display  = 'none';
-  document.getElementById('sec-painel').style.display = 'block';
-  atualizarPainel();
-}
-
-function sair(){
-  clienteAtual = null;
-  document.getElementById('sec-login').style.display  = 'block';
-  document.getElementById('sec-painel').style.display = 'none';
-  document.getElementById('login-cel').value = '';
-  document.getElementById('cad-nome').value  = '';
-  document.getElementById('cad-cel').value   = '';
-}
-
-// =====================================================
-// PAINEL
-// =====================================================
-function atualizarPainel(){
-  const p = clienteAtual.pontos || 0;
-  document.getElementById('painel-nome').textContent = `Olá, ${clienteAtual.nome.split(' ')[0]}! 👋`;
-  document.getElementById('pontos-num').textContent  = p;
-
-  // Barra de progresso
-  const pct = Math.min(p/10*100, 100);
-  document.getElementById('pontos-barra').style.width = pct+'%';
-  const faltam = Math.max(10-p, 0);
-  document.getElementById('pontos-meta').textContent =
-    faltam > 0 ? `Faltam ${faltam} ponto${faltam>1?'s':''} para o prêmio` : '🎉 Prêmio disponível!';
-
-  // Ícones de sorvete
-  for(let i=1; i<=10; i++){
-    const el = document.getElementById('sv-'+i);
-    if(i<=p) el.classList.add('ativo');
-    else el.classList.remove('ativo');
-  }
-
-  // Prêmio
-  const temPremio = p >= 10;
-  document.getElementById('banner-premio').style.display  = temPremio ? 'block' : 'none';
-  document.getElementById('btn-resgatar').style.display   = temPremio ? 'block' : 'none';
-
-  // Histórico
-  const lista = document.getElementById('historico-lista');
-  const hist = clienteAtual.historico || [];
-  if(!hist.length){
-    lista.innerHTML = '<p style="font-size:13px;color:#9CA3AF">Nenhum código inserido ainda.</p>';
+// ═══════════════════════════════════════════════════════════
+// CARREGAR DADOS DO GITHUB
+// ═══════════════════════════════════════════════════════════
+async function carregarDados() {
+  setLoading('Conectando ao servidor de fidelidade...');
+  // Carregar fidelidade.json (códigos)
+  const f = await ghGet(FIDELIDADE_PATH);
+  if (f.content) {
+    try { ghFidelidade = JSON.parse(f.content); ghFidelidadeSha = f.sha; }
+    catch(e) { ghFidelidade = { codigos:{}, liberados:0, config:{} }; }
   } else {
-    lista.innerHTML = [...hist].reverse().map(h=>`
-      <div class="historico-item">
-        <span class="historico-codigo">${h.codigo}</span>
-        <span class="historico-data">${new Date(h.data).toLocaleDateString('pt-BR')}</span>
-      </div>`).join('');
+    ghFidelidade = { codigos:{}, liberados:0, config:{} };
+  }
+  // Aplicar configuração do prêmio
+  if (ghFidelidade.config) {
+    if (ghFidelidade.config.premioNome) NOME_PREMIO = ghFidelidade.config.premioNome;
+    if (ghFidelidade.config.premioPontos) META_PONTOS = parseInt(ghFidelidade.config.premioPontos) || 10;
+  }
+  aplicarConfigPremio();
+  // Carregar clientes.json
+  setLoading('Carregando dados de clientes...');
+  const c = await ghGet(CLIENTES_PATH);
+  if (c.content) {
+    try { ghClientes = JSON.parse(c.content); ghClientesSha = c.sha; }
+    catch(e) { ghClientes = { clientes:{} }; }
+  } else {
+    ghClientes = { clientes:{} };
+    ghClientesSha = null;
+  }
+  hideLoading();
+  // Verificar login automático
+  const celSalvo = localStorage.getItem('itap_cel');
+  if (celSalvo && ghClientes.clientes[celSalvo]) {
+    clienteAtual = ghClientes.clientes[celSalvo];
+    mostrarPainelCliente();
   }
 }
 
-// =====================================================
-// INSERIR CÓDIGO — valida contra GitHub
-// =====================================================
-async function inserirCodigo(){
-  const raw = document.getElementById('input-codigo').value.trim().toUpperCase();
-  if(!raw){ mostrarMsg('msg-codigo','Por favor, digite um código.','erro'); return; }
-  if(raw.length < 8){ mostrarMsg('msg-codigo','Código muito curto. Verifique o cupom.','erro'); return; }
+async function salvarClientes(msg) {
+  const content = JSON.stringify(ghClientes, null, 2);
+  const r = await ghPut(CLIENTES_PATH, content, msg, ghClientesSha);
+  if (r.ok) ghClientesSha = r.sha;
+  return r.ok;
+}
 
+async function salvarFidelidade(msg) {
+  const content = JSON.stringify(ghFidelidade, null, 2);
+  const r = await ghPut(FIDELIDADE_PATH, content, msg, ghFidelidadeSha);
+  if (r.ok) ghFidelidadeSha = r.sha;
+  return r.ok;
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOADING
+// ═══════════════════════════════════════════════════════════
+function setLoading(txt) {
+  document.getElementById('loading-txt').textContent = txt || 'Carregando...';
+  document.getElementById('loading-overlay').classList.remove('hide');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.add('hide');
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONFIGURAÇÃO DO PRÊMIO
+// ═══════════════════════════════════════════════════════════
+function aplicarConfigPremio() {
+  const nomeCompleto = NOME_PREMIO + ' GRÁTIS';
+  const el = document.getElementById('hero-premio-nome');
+  if (el) el.textContent = nomeCompleto;
+  const ep = document.getElementById('hero-premio-pontos');
+  if (ep) ep.textContent = 'ao acumular ' + META_PONTOS + ' pontos';
+  const p5 = document.getElementById('passo5-txt');
+  if (p5) p5.textContent = 'Com ' + META_PONTOS + ' pontos, resgate seu 🥤 ' + NOME_PREMIO + ' GRÁTIS via WhatsApp';
+}
+
+// ═══════════════════════════════════════════════════════════
+// TABS DE ACESSO
+// ═══════════════════════════════════════════════════════════
+function setTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='novo')||(i===1&&tab==='login')));
+  document.getElementById('form-novo').style.display  = tab==='novo'  ? 'block' : 'none';
+  document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+// MÁSCARA DE TELEFONE
+// ═══════════════════════════════════════════════════════════
+function mascaraTel(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length > 11) v = v.slice(0,11);
+  if (v.length > 6) v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
+  else if (v.length > 2) v = '(' + v.slice(0,2) + ') ' + v.slice(2);
+  else if (v.length > 0) v = '(' + v;
+  el.value = v;
+}
+
+function limparTel(v) { return v.replace(/\D/g,''); }
+
+// ═══════════════════════════════════════════════════════════
+// MENSAGENS
+// ═══════════════════════════════════════════════════════════
+function showMsg(id, txt, tipo) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = txt;
+  el.className = 'msg show msg-' + tipo;
+  setTimeout(() => { if(el.textContent===txt) el.classList.remove('show'); }, 5000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// CADASTRO
+// ═══════════════════════════════════════════════════════════
+async function cadastrar() {
+  const nome = document.getElementById('inp-nome').value.trim();
+  const cel  = limparTel(document.getElementById('inp-cel-novo').value);
+  if (!nome || nome.length < 2) { showMsg('msg-acesso','⚠️ Informe seu nome completo.','aviso'); return; }
+  if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
+  // Verificar se já existe
+  if (ghClientes.clientes[cel]) {
+    clienteAtual = ghClientes.clientes[cel];
+    localStorage.setItem('itap_cel', cel);
+    showMsg('msg-acesso','✅ Conta encontrada! Entrando...','ok');
+    setTimeout(mostrarPainelCliente, 800);
+    return;
+  }
+  setLoading('Criando sua conta...');
+  const rodadaAtual = { num:1, pontos:0, codigos:[], inicio: new Date().toISOString() };
+  const novoCliente = {
+    nome, cel,
+    cadastro: new Date().toISOString(),
+    rodadaAtual,
+    rodadas: [],
+    totalPremios: 0,
+    totalCodigos: 0
+  };
+  ghClientes.clientes[cel] = novoCliente;
+  const ok = await salvarClientes('Novo cliente: ' + nome + ' (' + cel + ')');
+  hideLoading();
+  if (ok) {
+    clienteAtual = novoCliente;
+    localStorage.setItem('itap_cel', cel);
+    showMsg('msg-acesso','✅ Conta criada com sucesso! Bem-vindo(a), ' + nome + '!','ok');
+    setTimeout(mostrarPainelCliente, 800);
+  } else {
+    delete ghClientes.clientes[cel];
+    showMsg('msg-acesso','❌ Erro ao criar conta. Verifique sua conexão e tente novamente.','erro');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════
+async function entrar() {
+  const cel = limparTel(document.getElementById('inp-cel-login').value);
+  if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
+  setLoading('Buscando sua conta...');
+  // Recarregar dados frescos
+  const c = await ghGet(CLIENTES_PATH);
+  if (c.content) {
+    try { ghClientes = JSON.parse(c.content); ghClientesSha = c.sha; } catch(e) {}
+  }
+  hideLoading();
+  if (ghClientes.clientes[cel]) {
+    clienteAtual = ghClientes.clientes[cel];
+    localStorage.setItem('itap_cel', cel);
+    showMsg('msg-acesso','✅ Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
+    setTimeout(mostrarPainelCliente, 800);
+  } else {
+    showMsg('msg-acesso','❌ Celular não encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PAINEL DO CLIENTE
+// ═══════════════════════════════════════════════════════════
+function mostrarPainelCliente() {
+  document.getElementById('card-acesso').style.display = 'none';
+  document.getElementById('card-cliente').style.display = 'block';
+  document.getElementById('card-historico').style.display = 'block';
+  atualizarUI();
+}
+
+function atualizarUI() {
+  if (!clienteAtual) return;
+  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
+  const pontos = r.pontos || 0;
+  // Avatar
+  const letra = clienteAtual.nome ? clienteAtual.nome[0].toUpperCase() : '?';
+  document.getElementById('avatar-letra').textContent = letra;
+  document.getElementById('cliente-nome').textContent = clienteAtual.nome;
+  document.getElementById('cliente-cel').textContent = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
+  document.getElementById('rodada-badge').textContent = 'Rodada ' + (r.num || 1);
+  // Pontos
+  document.getElementById('pontos-atual').textContent = pontos;
+  document.getElementById('pontos-meta').textContent = META_PONTOS;
+  const faltam = META_PONTOS - pontos;
+  document.getElementById('pontos-faltam').textContent = faltam > 0 ? 'Faltam ' + faltam + ' ponto' + (faltam>1?'s':'') + ' para o prêmio' : '🎉 Você atingiu a meta!';
+  // Ícones de sorvete
+  const grid = document.getElementById('sorvetes-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < META_PONTOS; i++) {
+    const span = document.createElement('span');
+    span.className = 'sorvete-icon' + (i < pontos ? ' ativo' : '');
+    span.textContent = '🍦';
+    grid.appendChild(span);
+  }
+  // Barra de progresso
+  const pct = Math.min(100, Math.round((pontos / META_PONTOS) * 100));
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = pct + '% concluído';
+  // Resgate
+  const resgate = document.getElementById('resgate-section');
+  if (pontos >= META_PONTOS) {
+    resgate.style.display = 'block';
+    document.getElementById('resgate-txt').textContent = 'Você acumulou ' + pontos + ' pontos e ganhou um 🥤 ' + NOME_PREMIO + ' GRÁTIS! Clique abaixo para resgatar via WhatsApp.';
+    document.getElementById('btn-validar').disabled = true;
+  } else {
+    resgate.style.display = 'none';
+    document.getElementById('btn-validar').disabled = false;
+  }
+  // Histórico
+  renderHistorico();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HISTÓRICO
+// ═══════════════════════════════════════════════════════════
+function renderHistorico() {
+  const lista = document.getElementById('historico-list');
+  if (!clienteAtual) return;
+  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
+  const rodadasAnteriores = clienteAtual.rodadas || [];
+  let html = '';
+  // Rodadas anteriores (prêmios resgatados)
+  rodadasAnteriores.forEach(rod => {
+    html += '<li class="rodada-header">🏆 Rodada ' + rod.num + ' — Prêmio resgatado em ' + formatarData(rod.resgatado) + '</li>';
+    (rod.codigos || []).forEach(c => {
+      html += '<li class="historico-item"><span class="cod">' + c.codigo + '</span><span class="data">' + formatarData(c.data) + '</span></li>';
+    });
+  });
+  // Rodada atual
+  if (r.codigos && r.codigos.length > 0) {
+    html += '<li class="rodada-header">📍 Rodada ' + (r.num||1) + ' (atual)</li>';
+    r.codigos.forEach(c => {
+      html += '<li class="historico-item"><span class="cod">' + c.codigo + '</span><span class="data">' + formatarData(c.data) + '</span></li>';
+    });
+  }
+  if (!html) {
+    html = '<li style="color:#aaa;font-size:.85rem;text-align:center;padding:12px 0">Nenhum código inserido ainda.</li>';
+  }
+  lista.innerHTML = html;
+}
+
+function formatarData(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  } catch(e) { return iso; }
+}
+
+// ═══════════════════════════════════════════════════════════
+// VALIDAR CÓDIGO
+// ═══════════════════════════════════════════════════════════
+async function validarCodigo() {
+  if (!clienteAtual) { showMsg('msg-codigo','⚠️ Faça login primeiro.','aviso'); return; }
+  const codigo = document.getElementById('input-codigo').value.trim().toUpperCase();
+  if (!codigo || codigo.length < 8) { showMsg('msg-codigo','⚠️ Digite um código válido (mínimo 8 caracteres).','aviso'); return; }
   const btn = document.getElementById('btn-validar');
   btn.disabled = true;
   btn.textContent = '⏳ Validando...';
-
-  // Buscar dados atualizados do GitHub
-  showLoading('Verificando código...');
-  const online = await buscarGitHub();
+  showMsg('msg-codigo','🔄 Verificando código no servidor...','info');
+  // Recarregar dados frescos do GitHub
+  setLoading('Verificando código...');
+  const [fRes, cRes] = await Promise.all([ghGet(FIDELIDADE_PATH), ghGet(CLIENTES_PATH)]);
   hideLoading();
-
-  if(!online || !ghData){
-    mostrarMsg('msg-codigo','❌ Sem conexão com o servidor. Verifique sua internet e tente novamente.','erro');
-    btn.disabled = false; btn.textContent = '✅ Validar Código';
-    return;
+  if (fRes.content) {
+    try { ghFidelidade = JSON.parse(fRes.content); ghFidelidadeSha = fRes.sha; } catch(e) {}
   }
-
-  const codigos = ghData.codigos || {};
-
-  // Código não existe no sistema
-  if(!codigos[raw]){
-    mostrarMsg('msg-codigo','❌ Código inválido. Este código não pertence ao sistema Itapolitana ou ainda não foi liberado.','erro');
-    btn.disabled = false; btn.textContent = '✅ Validar Código';
-    return;
+  if (cRes.content) {
+    try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
   }
-
-  // Código já foi usado (globalmente)
-  if(codigos[raw].status === 'usado'){
-    // Registrar tentativa de fraude
-    if(!ghData.fraudes) ghData.fraudes = [];
-    ghData.fraudes.push({ codigo:raw, cel:clienteAtual.cel, data:new Date().toISOString() });
-    mostrarMsg('msg-codigo','🚫 CÓDIGO JÁ UTILIZADO! Este código já foi inserido por outro cliente. Tentativa registrada.','erro');
-    btn.disabled = false; btn.textContent = '✅ Validar Código';
-    return;
+  // Atualizar referência do cliente atual
+  if (ghClientes.clientes[clienteAtual.cel]) {
+    clienteAtual = ghClientes.clientes[clienteAtual.cel];
   }
-
+  // Verificar se código existe
+  const codigos = ghFidelidade.codigos || {};
+  if (!codigos[codigo]) {
+    showMsg('msg-codigo','❌ Código inválido. Verifique se digitou corretamente.','erro');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
+  }
+  // Verificar se já foi usado
+  if (codigos[codigo].status === 'usado') {
+    showMsg('msg-codigo','⚠️ Este código já foi utilizado anteriormente.','aviso');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
+  }
   // Verificar se o próprio cliente já usou este código
-  const hist = clienteAtual.historico || [];
-  if(hist.some(h => h.codigo === raw)){
-    mostrarMsg('msg-codigo','⚠️ Você já inseriu este código anteriormente.','aviso');
-    btn.disabled = false; btn.textContent = '✅ Validar Código';
-    return;
+  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
+  const todasRodadas = [...(clienteAtual.rodadas || []), r];
+  const jaUsou = todasRodadas.some(rod => (rod.codigos||[]).some(c => c.codigo === codigo));
+  if (jaUsou) {
+    showMsg('msg-codigo','⚠️ Você já usou este código.','aviso');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
   }
-
-  // ✅ CÓDIGO VÁLIDO — marcar como usado e adicionar ponto
-  codigos[raw].status   = 'usado';
-  codigos[raw].usadoPor = clienteAtual.cel;
-  codigos[raw].usadoEm  = new Date().toISOString();
-
-  // Atualizar cliente
-  const clientes = getClientesMerged();
-  clientes[clienteAtual.cel].pontos = (clientes[clienteAtual.cel].pontos || 0) + 1;
-  if(!clientes[clienteAtual.cel].historico) clientes[clienteAtual.cel].historico = [];
-  clientes[clienteAtual.cel].historico.push({ codigo:raw, data:new Date().toISOString() });
-  salvarClientesLocal(clientes);
-
-  // Salvar no GitHub (código marcado como usado + pontos do cliente)
-  showLoading('Salvando seu ponto...');
-  ghData.codigos = codigos;
-  ghData.clientes = clientes;
-  await salvarClienteNoGitHub(clientes);
+  // ✅ CÓDIGO VÁLIDO — dar baixa e adicionar ponto
+  setLoading('Registrando ponto...');
+  // Marcar código como usado no fidelidade.json
+  ghFidelidade.codigos[codigo].status = 'usado';
+  ghFidelidade.codigos[codigo].usadoPor = clienteAtual.cel;
+  ghFidelidade.codigos[codigo].usadoEm = new Date().toISOString();
+  if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
+  if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, codigos:0 };
+  ghFidelidade.clientes[clienteAtual.cel].codigos = (ghFidelidade.clientes[clienteAtual.cel].codigos||0) + 1;
+  // Adicionar ponto ao cliente
+  if (!clienteAtual.rodadaAtual) clienteAtual.rodadaAtual = { num:1, pontos:0, codigos:[] };
+  clienteAtual.rodadaAtual.pontos = (clienteAtual.rodadaAtual.pontos || 0) + 1;
+  if (!clienteAtual.rodadaAtual.codigos) clienteAtual.rodadaAtual.codigos = [];
+  clienteAtual.rodadaAtual.codigos.push({ codigo, data: new Date().toISOString() });
+  clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
+  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  // Salvar ambos no GitHub
+  const [okFid, okCli] = await Promise.all([
+    salvarFidelidade('Código ' + codigo + ' usado por ' + clienteAtual.nome),
+    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')')
+  ]);
   hideLoading();
-
-  clienteAtual = clientes[clienteAtual.cel];
-  document.getElementById('input-codigo').value = '';
-  btn.disabled = false; btn.textContent = '✅ Validar Código';
-
-  const novosPontos = clienteAtual.pontos;
-  if(novosPontos >= META_PONTOS){
-    mostrarMsg('msg-codigo',`🎉 PARABÉNS! Código válido! Você atingiu ${META_PONTOS} pontos e ganhou um 🥤 ${NOME_PREMIO} GRÁTIS!`,'ok');
+  if (okFid && okCli) {
+    document.getElementById('input-codigo').value = '';
+    showMsg('msg-codigo','🎉 +1 ponto! Você agora tem ' + clienteAtual.rodadaAtual.pontos + ' ponto' + (clienteAtual.rodadaAtual.pontos>1?'s':'') + '.','ok');
+    atualizarUI();
   } else {
-    mostrarMsg('msg-codigo',`✅ Código válido! +1 ponto adicionado. Você tem ${novosPontos} ponto${novosPontos>1?'s':''}.`,'ok');
+    showMsg('msg-codigo','⚠️ Ponto registrado localmente mas houve erro ao salvar. Tente novamente.','aviso');
+    atualizarUI();
   }
-  atualizarPainel();
+  btn.disabled = false; btn.textContent = '✅ Validar Código';
 }
 
-// =====================================================
-// RESGATE
-// =====================================================
-function resgatarPremio(){
-  const nome = clienteAtual.nome;
-  const cel  = clienteAtual.cel;
-  const msg  = encodeURIComponent(`Olá! Sou ${nome}, celular ${cel}. Acumulei ${META_PONTOS} pontos no Clube de Fidelidade da Sorveteria Itapolitana e gostaria de resgatar meu prêmio: 🥤 ${NOME_PREMIO} GRÁTIS! 🎉`);
-  window.open(`https://wa.me/5516996062046?text=${msg}`, '_blank');
-}
-
-// =====================================================
-// INIT — carregar dados do GitHub ao abrir a página
-// =====================================================
-(async function init(){
-  showLoading('Carregando programa de fidelidade...');
-  await buscarGitHub();
+// ═══════════════════════════════════════════════════════════
+// RESGATAR PRÊMIO
+// ═══════════════════════════════════════════════════════════
+async function resgatarPremio() {
+  if (!clienteAtual) return;
+  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
+  const pontos = r.pontos || 0;
+  if (pontos < META_PONTOS) { showMsg('msg-codigo','⚠️ Você ainda não atingiu ' + META_PONTOS + ' pontos.','aviso'); return; }
+  // Montar mensagem WhatsApp
+  const msg = '🍦 *RESGATE DE PRÊMIO — Programa de Fidelidade*\n\n' +
+    '👤 *Nome:* ' + clienteAtual.nome + '\n' +
+    '📱 *Celular:* ' + clienteAtual.cel + '\n' +
+    '🏆 *Rodada:* ' + (r.num||1) + '\n' +
+    '🎁 *Prêmio:* ' + NOME_PREMIO + ' GRÁTIS\n' +
+    '📊 *Pontos acumulados:* ' + pontos + '/' + META_PONTOS + '\n\n' +
+    'Olá! Gostaria de resgatar meu prêmio de fidelidade. 😊';
+  const url = 'https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+  // Registrar resgate e iniciar nova rodada
+  setLoading('Registrando resgate...');
+  const rodadaFinalizada = { ...r, resgatado: new Date().toISOString() };
+  if (!clienteAtual.rodadas) clienteAtual.rodadas = [];
+  clienteAtual.rodadas.push(rodadaFinalizada);
+  clienteAtual.totalPremios = (clienteAtual.totalPremios || 0) + 1;
+  clienteAtual.rodadaAtual = { num: (r.num||1) + 1, pontos: 0, codigos: [], inicio: new Date().toISOString() };
+  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  const ok = await salvarClientes('Prêmio resgatado: ' + clienteAtual.nome + ' — Rodada ' + (r.num||1));
   hideLoading();
-})();
+  if (ok) {
+    showMsg('msg-codigo','🎉 Prêmio resgatado! Começando Rodada ' + clienteAtual.rodadaAtual.num + '...','ok');
+    atualizarUI();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SAIR
+// ═══════════════════════════════════════════════════════════
+function sair() {
+  clienteAtual = null;
+  localStorage.removeItem('itap_cel');
+  document.getElementById('card-acesso').style.display = 'block';
+  document.getElementById('card-cliente').style.display = 'none';
+  document.getElementById('card-historico').style.display = 'none';
+  document.getElementById('inp-nome').value = '';
+  document.getElementById('inp-cel-novo').value = '';
+  document.getElementById('inp-cel-login').value = '';
+  setTab('novo');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  carregarDados();
+  // Enter no campo de código
+  document.getElementById('input-codigo').addEventListener('keydown', e => {
+    if (e.key === 'Enter') validarCodigo();
+  });
+});
 </script>
 </body>
 </html>
