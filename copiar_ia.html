@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Textos para IA do Instagram - Itapolitana</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+  h1 { text-align: center; color: #d62828; font-size: 20px; margin-bottom: 6px; }
+  p.sub { text-align: center; color: #555; font-size: 13px; margin-bottom: 24px; }
+  .card { background: #fff; border-radius: 14px; padding: 18px; margin-bottom: 20px;
+          box-shadow: 0 2px 8px rgba(0,0,0,.10); }
+  .card h2 { font-size: 14px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px; }
+  .card .label { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+  .card textarea { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px;
+    padding: 12px; font-size: 15px; color: #222; resize: none; background: #fafafa;
+    line-height: 1.6; }
+  .btn-copy { display: block; width: 100%; margin-top: 12px; padding: 14px;
+    background: #d62828; color: #fff; border: none; border-radius: 10px;
+    font-size: 16px; font-weight: bold; cursor: pointer; transition: background .2s; }
+  .btn-copy:active { background: #a01e1e; }
+  .btn-copy.copiado { background: #2e7d32; }
+  .instrucao { background: #fff8e1; border-left: 4px solid #ffc107;
+    border-radius: 8px; padding: 14px 16px; margin-bottom: 24px; font-size: 14px; color: #555; line-height: 1.6; }
+  .instrucao strong { color: #d62828; }
+</style>
+</head>
+<body>
+
+<h1>🍦 IA da Itapolitana</h1>
+<p class="sub">Textos prontos para criar a IA no Instagram</p>
+
+<div class="instrucao">
+  <strong>Como usar:</strong><br>
+  Toque em <strong>COPIAR</strong> em cada campo e cole no Instagram.<br>
+  Preencha na ordem: <strong>Nome → Mote → Descrição</strong>.
+</div>
+
+<!-- CAMPO 1: NOME -->
+<div class="card">
+  <h2>Campo 1 — Nome</h2>
+  <div class="label">Limite: 30 caracteres</div>
+  <textarea id="campo-nome" rows="2" readonly>Itapolitana Cajuru</textarea>
+  <button class="btn-copy" onclick="copiar('campo-nome', this)">📋 COPIAR NOME</button>
+</div>
+
+<!-- CAMPO 2: MOTE -->
+<div class="card">
+  <h2>Campo 2 — Mote</h2>
+  <div class="label">Limite: 200 caracteres</div>
+  <textarea id="campo-mote" rows="3" readonly>Sorvete cremoso e açaí desde 2007 em Cajuru/SP 🍦</textarea>
+  <button class="btn-copy" onclick="copiar('campo-mote', this)">📋 COPIAR MOTE</button>
+</div>
+
+<!-- CAMPO 3: DESCRIÇÃO -->
+<div class="card">
+  <h2>Campo 3 — Descreve a tua IA</h2>
+  <div class="label">Limite: 2000 caracteres</div>
+  <textarea id="campo-desc" rows="12" readonly>Sou a assistente da Sorveteria Itapolitana de Cajuru/SP, a sorveteria mais cremosa da cidade desde 2007! 🍦
+
+Posso te ajudar com:
+✅ 36 sabores de sorvete de massa
+✅ Açaí, milkshakes e taças
+✅ Encomendas de tortas e picolés
+✅ Carrinho de picolés para eventos
+✅ Clube Fidelidade Itapolitana
+✅ Horário e endereço
+
+📍 R. Cel. Manoel Caetano, 311 — Cajuru/SP
+⏰ Todos os dias: 10h às 22h
+📱 (16) 99606-2046</textarea>
+  <button class="btn-copy" onclick="copiar('campo-desc', this)">📋 COPIAR DESCRIÇÃO</button>
+</div>
+
+<script>
+function copiar(id, btn) {
+  var el = document.getElementById(id);
+  var texto = el.value;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(function() {
+      confirmar(btn);
+    }).catch(function() {
+      fallback(el, btn);
+    });
+  } else {
+    fallback(el, btn);
+  }
+}
+function fallback(el, btn) {
+  el.select();
+  el.setSelectionRange(0, 99999);
+  document.execCommand('copy');
+  confirmar(btn);
+}
+function confirmar(btn) {
+  var original = btn.innerHTML;
+  btn.innerHTML = '✅ COPIADO!';
+  btn.classList.add('copiado');
+  setTimeout(function() {
+    btn.innerHTML = original;
+    btn.classList.remove('copiado');
+  }, 2500);
+}
+</script>
+</body>
+</html>
