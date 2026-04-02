@@ -12,26 +12,22 @@
   />
 
   <style>
-    *, *::before, *::after {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
-    html, body {
-      width: 100%; height: 100%;
-      overflow: hidden; background: #000;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
 
     .itp-slider { width: 100%; height: 100%; position: relative; }
 
     .itp-slider .swiper-slide { overflow: hidden; }
 
+    /* object-fit: cover — preenche tudo sem distorção, centralizado */
     .itp-slider .swiper-slide img {
-      width: 100%; height: 100%;
-      object-fit: cover; object-position: center;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
       display: block;
-      transform: scale(1.04);
-      transition: transform 6s ease;
     }
-    .itp-slider .swiper-slide-active img { transform: scale(1); }
 
     /* Setas */
     .itp-slider .swiper-button-prev,
@@ -68,37 +64,37 @@
       <div class="swiper-slide">
         <img src="images/carrossel/b1_acai_do_seu_jeito.webp"
              alt="Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru"
-             loading="eager" decoding="async" width="1200" height="460"/>
+             loading="eager" decoding="async" width="1200" height="800"/>
       </div>
 
       <div class="swiper-slide">
         <img src="images/carrossel/b2_taca_unicornio.webp"
              alt="Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1200" height="460"/>
+             loading="lazy" decoding="async" width="1200" height="800"/>
       </div>
 
       <div class="swiper-slide">
         <img src="images/carrossel/b3_sobremesa_nutella.webp"
              alt="Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1200" height="460"/>
+             loading="lazy" decoding="async" width="1200" height="800"/>
       </div>
 
       <div class="swiper-slide">
         <img src="images/carrossel/b4_picole_ovomaltine.webp"
              alt="Picolé Ovomaltine Novo — Croquente por fora cremoso por dentro — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1200" height="460"/>
+             loading="lazy" decoding="async" width="1200" height="800"/>
       </div>
 
       <div class="swiper-slide">
         <img src="images/carrossel/b5_picoles_eventos.webp"
              alt="Picolés para Eventos — Surpreenda seus convidados — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1200" height="460"/>
+             loading="lazy" decoding="async" width="1200" height="800"/>
       </div>
 
       <div class="swiper-slide">
         <img src="images/carrossel/b6_picoles_eventos2.webp"
              alt="Picolés para Eventos — Peça Agora — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1200" height="460"/>
+             loading="lazy" decoding="async" width="1200" height="800"/>
       </div>
 
     </div>
@@ -125,10 +121,7 @@
         keyboard: { enabled: true, onlyInViewport: true },
         touchRatio: 1,
         touchAngle: 45,
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true
-        },
+        pagination: { el: '.swiper-pagination', clickable: true },
         navigation: {
           nextEl: '.swiper-button-next',
           prevEl: '.swiper-button-prev'
