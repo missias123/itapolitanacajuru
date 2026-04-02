@@ -223,8 +223,18 @@
             <div id="message" class="message"></div>
             
             <div class="info-box">
-                ℹ️ <strong>Bem-vindo ao painel de administração!</strong> Aqui você pode adicionar, editar e remover dicas para seus clientes. Todas as mudanças serão refletidas automaticamente no site.
+                ℹ️ <strong>Bem-vindo ao painel de administração!</strong> Aqui você pode gerenciar o carrossel de fotos e as dicas do site. Todas as mudanças serão refletidas automaticamente.
             </div>
+
+            <!-- ===== GERENCIADOR DO CARROSSEL ===== -->
+            <div class="section" id="itp-admin-carrossel-section">
+                <h2>🎠 Carrossel de Fotos — Página Inicial</h2>
+                <p style="color:#555;margin-bottom:16px;font-size:0.9em;">Gerencie as fotos do carrossel rotativo. Clique em <strong>Trocar Foto</strong> para substituir qualquer imagem. Tamanho recomendado: <strong>1200 x 500 px</strong> (proporção 12:5). Formato: JPG ou WebP. Máximo 500KB por foto.</p>
+                <div id="itp-crs-admin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:16px;"></div>
+                <div id="itp-crs-admin-msg" style="display:none;padding:12px 16px;border-radius:8px;font-weight:700;margin-bottom:8px;"></div>
+                <p style="color:#aaa;font-size:0.78em;">&#9432; As trocas de imagem são aplicadas localmente. Para salvar permanentemente, faça commit das imagens na pasta <code>images/carrossel/</code> do repositório GitHub.</p>
+            </div>
+            <!-- ===== FIM GERENCIADOR CARROSSEL ===== -->
             
             <div class="section">
                 <h2>➕ Adicionar Nova Dica</h2>
@@ -255,6 +265,69 @@
         </div>
     </div>
     
+    <!-- JS do Gerenciador do Carrossel (IIFE isolado) -->
+    <script>
+    (function(){
+      'use strict';
+      var slides=[
+        {file:'slide1_sorvete_maracuja.webp', label:'Slide 1 — Sorvete Maracujá Diet + Leite Ninho'},
+        {file:'slide2_acai_cremoso.webp',     label:'Slide 2 — Açaí Cremoso'},
+        {file:'slide3_petit_gateau.webp',     label:'Slide 3 — Petit Gateau'},
+        {file:'slide4_bolo_copo_creme.webp',  label:'Slide 4 — Bolo no Copo Creme'},
+        {file:'slide5_bolo_copo_nutella.webp',label:'Slide 5 — Bolo no Copo Nutella'},
+        {file:'slide6_acai_mosaico.webp',     label:'Slide 6 — Açaí Mosaico'},
+        {file:'slide7_picoles_leque.webp',    label:'Slide 7 — Picolés em Leque'}
+      ];
+      var BASE='images/carrossel/';
+      var grid=document.getElementById('itp-crs-admin-grid');
+      var msgBox=document.getElementById('itp-crs-admin-msg');
+      function showMsg(txt,ok){
+        msgBox.textContent=txt;
+        msgBox.style.display='block';
+        msgBox.style.background=ok?'#d4edda':'#f8d7da';
+        msgBox.style.color=ok?'#155724':'#721c24';
+        setTimeout(function(){msgBox.style.display='none';},5000);
+      }
+      function renderGrid(){
+        grid.innerHTML='';
+        slides.forEach(function(s,i){
+          var card=document.createElement('div');
+          card.style.cssText='background:#f9f9f9;border:2px solid #ddd;border-radius:10px;overflow:hidden;';
+          var ts=Date.now();
+          card.innerHTML=
+            '<img src="'+BASE+s.file+'?t='+ts+'" alt="'+s.label+'" '+
+            'style="width:100%;height:130px;object-fit:cover;display:block;" '+
+            'onerror="this.src=\'https://placehold.co/400x167/eee/999?text=Sem+Foto\'">'+
+            '<div style="padding:10px;">'+
+            '<p style="font-size:0.78em;color:#555;margin-bottom:8px;">'+s.label+'</p>'+
+            '<label style="display:inline-block;padding:8px 14px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border-radius:6px;cursor:pointer;font-size:0.82em;font-weight:700;">'+
+            '📷 Trocar Foto'+
+            '<input type="file" accept="image/*" data-idx="'+i+'" style="display:none;">'+
+            '</label>'+
+            '</div>';
+          grid.appendChild(card);
+        });
+        // Eventos de upload
+        grid.querySelectorAll('input[type="file"]').forEach(function(inp){
+          inp.addEventListener('change',function(){
+            var idx=parseInt(this.dataset.idx);
+            var file=this.files[0];
+            if(!file)return;
+            if(file.size>512000){showMsg('⚠️ Imagem muito grande! Máximo 500KB.',false);return;}
+            var reader=new FileReader();
+            var self=this;
+            reader.onload=function(e){
+              var img=self.closest('div').previousElementSibling;
+              img.src=e.target.result;
+              showMsg('✅ Foto do '+slides[idx].label+' atualizada no preview! Para salvar permanentemente, faça commit no GitHub.',true);
+            };
+            reader.readAsDataURL(file);
+          });
+        });
+      }
+      document.addEventListener('DOMContentLoaded',renderGrid);
+    })();
+    </script>
     <script>
         // URL da API (será ajustada conforme necessário)
         const API_URL = '/api/dicas';
