@@ -986,7 +986,7 @@ img{max-width:100%;display:block}
      Sem JS, sem conflito com o site
      ======================================== -->
 <style id="itp-crs-style">
-  /* Estilos exclusivos do carrossel — prefixo itp-crs- garante isolamento total */
+  /* Carrossel Itapolitana — isolado, sem conflito com o site */
   #itp-crs-wrap {
     width: 100%;
     margin: 0;
@@ -996,34 +996,39 @@ img{max-width:100%;display:block}
     background: #000;
     display: block;
   }
-  /* Computador: proporcao 3:2 — 800px para largura 1200px */
-  #itp-crs-wrap > iframe {
+  /* Altura inicial baseada na proporcao 3:2 das fotos */
+  #itp-crs-iframe {
     width: 100%;
-    height: 800px;
+    height: calc(100vw * 0.667); /* proporcao 3:2 automatica */
+    max-height: 800px;           /* limite no computador */
     border: none;
     display: block;
-  }
-  /* Tablet (max 900px): proporcao 3:2 — 600px */
-  @media screen and (max-width: 900px) {
-    #itp-crs-wrap > iframe { height: 600px; }
-  }
-  /* Celular (max 480px): proporcao 3:2 — 320px */
-  @media screen and (max-width: 480px) {
-    #itp-crs-wrap > iframe { height: 320px; }
+    transition: height 0.3s ease;
   }
 </style>
 <div id="itp-crs-wrap">
   <iframe
+    id="itp-crs-iframe"
     src="carrossel.html"
     title="Banners Sorveteria Itapolitana Cajuru"
     scrolling="no"
     loading="lazy"
     frameborder="0"
-    allowfullscreen="false"
     aria-label="Galeria de produtos Itapolitana"
   ></iframe>
 </div>
 <!-- FIM CARROSSEL ITAPOLITANA -->
+<script>
+(function(){
+  /* Recebe altura real do carrossel e ajusta o iframe automaticamente */
+  window.addEventListener('message', function(e){
+    if(e.data && e.data.itpCrsHeight){
+      var iframe = document.getElementById('itp-crs-iframe');
+      if(iframe) iframe.style.height = e.data.itpCrsHeight + 'px';
+    }
+  });
+}());
+</script>
 <!-- VER NOSSO CARDÁPIO - INÍCIO -->
 <div class="vc-wrap" id="vc-wrap" onmouseleave="fecharCardapio()">
   <div class="vc-row">
