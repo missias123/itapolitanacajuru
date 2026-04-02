@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carrossel – Sorveteria Itapolitana</title>
 
-  <!-- Swiper 11 — biblioteca usada por Globo, iFood, Mercado Livre -->
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
@@ -13,84 +12,51 @@
   />
 
   <style>
-    /* ── Reset total — sem vazamento para o site pai ── */
     *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      margin: 0; padding: 0; box-sizing: border-box;
     }
-
     html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: sans-serif;
+      width: 100%; height: 100%;
+      overflow: hidden; background: #000;
     }
 
-    /* ── Container principal ── */
-    .itp-slider {
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
+    .itp-slider { width: 100%; height: 100%; position: relative; }
 
-    /* ── Slides ── */
-    .itp-slider .swiper-slide {
-      overflow: hidden;
-    }
+    .itp-slider .swiper-slide { overflow: hidden; }
 
     .itp-slider .swiper-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
       display: block;
-      /* Animação sutil de zoom no slide ativo — padrão de agência */
       transform: scale(1.04);
       transition: transform 6s ease;
     }
+    .itp-slider .swiper-slide-active img { transform: scale(1); }
 
-    .itp-slider .swiper-slide-active img {
-      transform: scale(1);
-    }
-
-    /* ── Setas de navegação ── */
+    /* Setas */
     .itp-slider .swiper-button-prev,
     .itp-slider .swiper-button-next {
       --swiper-navigation-size: 18px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.45);
-      color: #ffffff;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(0,0,0,0.45); color: #fff;
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
-      transition: background 0.25s ease, transform 0.2s ease;
+      transition: background 0.25s, transform 0.2s;
     }
-
     .itp-slider .swiper-button-prev:hover,
     .itp-slider .swiper-button-next:hover {
-      background: rgba(0, 0, 0, 0.72);
-      transform: scale(1.1);
+      background: rgba(0,0,0,0.72); transform: scale(1.1);
     }
 
-    /* ── Dots ── */
-    .itp-slider .swiper-pagination {
-      bottom: 12px;
-    }
-
+    /* Dots */
+    .itp-slider .swiper-pagination { bottom: 12px; }
     .itp-slider .swiper-pagination-bullet {
-      width: 8px;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.50);
-      opacity: 1;
-      transition: transform 0.25s ease, background 0.25s ease;
+      width: 8px; height: 8px;
+      background: rgba(255,255,255,0.50); opacity: 1;
+      transition: transform 0.25s, background 0.25s;
     }
-
     .itp-slider .swiper-pagination-bullet-active {
-      background: #ffffff;
-      transform: scale(1.6);
+      background: #fff; transform: scale(1.6);
     }
   </style>
 </head>
@@ -100,133 +66,73 @@
     <div class="swiper-wrapper">
 
       <div class="swiper-slide">
-        <img
-          src="images/carrossel/banner1_acai_mais_pedido.webp"
-          alt="Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru"
-          loading="eager"
-          decoding="async"
-          width="1200"
-          height="460"
-        />
+        <img src="images/carrossel/b1_acai_do_seu_jeito.webp"
+             alt="Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru"
+             loading="eager" decoding="async" width="1200" height="460"/>
       </div>
 
       <div class="swiper-slide">
-        <img
-          src="images/carrossel/banner2_maracuja_diet.webp"
-          alt="Maracujá Diet + Leite Ninho — Venha Experimentar — Sorveteria Itapolitana Cajuru"
-          loading="lazy"
-          decoding="async"
-          width="1200"
-          height="460"
-        />
+        <img src="images/carrossel/b2_taca_unicornio.webp"
+             alt="Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru"
+             loading="lazy" decoding="async" width="1200" height="460"/>
       </div>
 
       <div class="swiper-slide">
-        <img
-          src="images/carrossel/banner3_monte_acai.webp"
-          alt="Monte seu Açaí como Quiser — Sorveteria Itapolitana Cajuru"
-          loading="lazy"
-          decoding="async"
-          width="1200"
-          height="460"
-        />
+        <img src="images/carrossel/b3_sobremesa_nutella.webp"
+             alt="Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru"
+             loading="lazy" decoding="async" width="1200" height="460"/>
       </div>
 
       <div class="swiper-slide">
-        <img
-          src="images/carrossel/banner4_nutella.webp"
-          alt="Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru"
-          loading="lazy"
-          decoding="async"
-          width="1200"
-          height="460"
-        />
+        <img src="images/carrossel/b4_picole_ovomaltine.webp"
+             alt="Picolé Ovomaltine Novo — Croquente por fora cremoso por dentro — Sorveteria Itapolitana Cajuru"
+             loading="lazy" decoding="async" width="1200" height="460"/>
       </div>
 
       <div class="swiper-slide">
-        <img
-          src="images/carrossel/banner5_picole_ovomaltine.webp"
-          alt="Picolé Ovomaltine — Croquente por fora, cremoso por dentro — Sorveteria Itapolitana Cajuru"
-          loading="lazy"
-          decoding="async"
-          width="1200"
-          height="460"
-        />
+        <img src="images/carrossel/b5_picoles_eventos.webp"
+             alt="Picolés para Eventos — Surpreenda seus convidados — Sorveteria Itapolitana Cajuru"
+             loading="lazy" decoding="async" width="1200" height="460"/>
       </div>
 
       <div class="swiper-slide">
-        <img
-          src="images/carrossel/banner6_picoles_eventos.webp"
-          alt="Picolés para Eventos — Surpreenda seus convidados — Sorveteria Itapolitana Cajuru"
-          loading="lazy"
-          decoding="async"
-          width="1200"
-          height="460"
-        />
+        <img src="images/carrossel/b6_picoles_eventos2.webp"
+             alt="Picolés para Eventos — Peça Agora — Sorveteria Itapolitana Cajuru"
+             loading="lazy" decoding="async" width="1200" height="460"/>
       </div>
 
-    </div><!-- /.swiper-wrapper -->
+    </div>
 
-    <!-- Navegação -->
     <div class="swiper-button-prev" aria-label="Banner anterior"></div>
     <div class="swiper-button-next" aria-label="Próximo banner"></div>
-
-    <!-- Paginação -->
     <div class="swiper-pagination" role="tablist" aria-label="Banners"></div>
-  </div><!-- /.itp-slider -->
+  </div>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
-    crossorigin="anonymous"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" crossorigin="anonymous"></script>
   <script>
     (function () {
       'use strict';
-
       new Swiper('.itp-slider', {
-        // Loop infinito
         loop: true,
-
-        // Auto-play a cada 3 segundos
         autoplay: {
           delay: 3000,
           disableOnInteraction: false,
           pauseOnMouseEnter: true
         },
-
-        // Velocidade da transição
         speed: 800,
-
-        // Efeito deslizante
         effect: 'slide',
-
-        // Cursor de arrastar
         grabCursor: true,
-
-        // Navegação por teclado
-        keyboard: {
-          enabled: true,
-          onlyInViewport: true
-        },
-
-        // Swipe por toque (celular)
+        keyboard: { enabled: true, onlyInViewport: true },
         touchRatio: 1,
         touchAngle: 45,
-
-        // Paginação (dots)
         pagination: {
           el: '.swiper-pagination',
-          clickable: true,
-          dynamicBullets: false
+          clickable: true
         },
-
-        // Setas
         navigation: {
           nextEl: '.swiper-button-next',
           prevEl: '.swiper-button-prev'
         },
-
-        // Acessibilidade
         a11y: {
           prevSlideMessage: 'Banner anterior',
           nextSlideMessage: 'Próximo banner'
