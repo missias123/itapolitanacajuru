@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrossel Itapolitana</title>
+
+<!-- Swiper.js CDN — biblioteca usada por milhões de sites -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .swiper {
+    width: 100%;
+    height: 100vh;
+  }
+
+  .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+  }
+
+  /* Setas */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #fff;
+    background: rgba(0,0,0,0.45);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    --swiper-navigation-size: 18px;
+  }
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background: rgba(0,0,0,0.75);
+  }
+
+  /* Dots */
+  .swiper-pagination-bullet {
+    background: rgba(255,255,255,0.55);
+    opacity: 1;
+    width: 9px;
+    height: 9px;
+  }
+  .swiper-pagination-bullet-active {
+    background: #fff;
+    transform: scale(1.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="swiper">
+  <div class="swiper-wrapper">
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide1_sorvete_maracuja.webp"
+           alt="Sorvete cremoso - Sorveteria Itapolitana Cajuru"
+           loading="eager"/>
+    </div>
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide2_acai_cremoso.webp"
+           alt="Acai cremoso com morango - Sorveteria Itapolitana Cajuru"
+           loading="lazy"/>
+    </div>
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide3_petit_gateau.webp"
+           alt="Petit gateau com sorvete - Sorveteria Itapolitana Cajuru"
+           loading="lazy"/>
+    </div>
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide4_bolo_copo_creme.webp"
+           alt="Sorvete com bolo no copo - Sorveteria Itapolitana Cajuru"
+           loading="lazy"/>
+    </div>
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide5_bolo_copo_nutella.webp"
+           alt="Sorvete com bolo no copo Nutella - Sorveteria Itapolitana Cajuru"
+           loading="lazy"/>
+    </div>
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide6_acai_mosaico.webp"
+           alt="Acai mosaico de sabores - Sorveteria Itapolitana Cajuru"
+           loading="lazy"/>
+    </div>
+
+    <div class="swiper-slide">
+      <img src="images/carrossel/slide7_picoles_leque.webp"
+           alt="Picoles para eventos - Sorveteria Itapolitana Cajuru"
+           loading="lazy"/>
+    </div>
+
+  </div>
+
+  <!-- Setas de navegação -->
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+
+  <!-- Dots indicadores -->
+  <div class="swiper-pagination"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  new Swiper('.swiper', {
+    loop: true,
+    autoplay: {
+      delay: 4500,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    },
+    speed: 600,
+    effect: 'slide',
+    grabCursor: true,
+    keyboard: { enabled: true },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev'
+    }
+  });
+</script>
+
+</body>
+</html>
