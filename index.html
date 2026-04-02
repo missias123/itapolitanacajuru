@@ -929,14 +929,54 @@ img{max-width:100%;display:block}
 <!-- ===== CARROSSEL DE PRODUTOS ITAPOLITANA ===== -->
 <section id="itp-carrossel-section" aria-label="Galeria de produtos Itapolitana">
 <style>
-  /* Estilos encapsulados — prefixo itp-crs para não conflitar */
+  /* Carrossel Itapolitana — prefixo itp-crs — responsivo 3 aparelhos */
   #itp-carrossel-section{width:100%;padding:0;margin:0;background:#111;overflow:hidden;line-height:0}
-  #itp-crs-wrapper{position:relative;width:100%;overflow:hidden;aspect-ratio:12/5;max-height:500px}
-  @media(max-width:768px){#itp-crs-wrapper{aspect-ratio:4/3;max-height:360px}}
-  @media(max-width:480px){#itp-crs-wrapper{aspect-ratio:3/2;max-height:280px}}
-  #itp-crs-track{display:flex;height:100%;will-change:transform;transition:transform .55s cubic-bezier(.4,0,.2,1)}
-  .itp-crs-slide{min-width:100%;height:100%;flex-shrink:0;overflow:hidden;background:#1a0a00}
-  .itp-crs-slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;border:0;margin:0;padding:0}
+  /* === WRAPPER === */
+  #itp-crs-wrapper{
+    position:relative;
+    width:100%;
+    overflow:hidden;
+    /* Desktop */
+    height:460px;
+  }
+  @media(max-width:900px){
+    #itp-crs-wrapper{height:320px;}
+  }
+  @media(max-width:480px){
+    #itp-crs-wrapper{height:220px;}
+  }
+  /* === TRACK: usa translateX em px calculado por JS === */
+  #itp-crs-track{
+    display:flex;
+    height:100%;
+    /* GPU acceleration — sem layout thrashing */
+    transform:translateX(0);
+    transition:transform 0.45s ease-in-out;
+    will-change:transform;
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+  }
+  /* === SLIDES === */
+  .itp-crs-slide{
+    /* largura definida por JS (= wrapper.offsetWidth) */
+    flex-shrink:0;
+    height:100%;
+    overflow:hidden;
+    background:#1a0a00;
+  }
+  .itp-crs-slide img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    display:block;
+    border:0;
+    margin:0;
+    padding:0;
+    /* evita blur no iOS */
+    -webkit-transform:translateZ(0);
+    transform:translateZ(0);
+  }
   #itp-crs-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;padding:5px 10px;background:rgba(0,0,0,.3);border-radius:20px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
   .itp-crs-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);border:none;cursor:pointer;transition:all .3s ease;padding:0;flex-shrink:0;display:block}
   .itp-crs-dot.itp-active{background:#fff;transform:scale(1.45)}
@@ -982,9 +1022,24 @@ img{max-width:100%;display:block}
     dotsBox.appendChild(d);
   }
   var dots=dotsBox.querySelectorAll('.itp-crs-dot');
+  // Calcula largura real do wrapper em px (evita travamento no celular)
+  var slideW=wrapper.offsetWidth||window.innerWidth;
+  // Atualiza largura de cada slide
+  function setSlideSizes(){
+    slideW=wrapper.offsetWidth||window.innerWidth;
+    slides.forEach(function(s){s.style.width=slideW+'px';});
+  }
+  setSlideSizes();
+  // Atualiza ao redimensionar (tablet/celular rotação)
+  if(window.ResizeObserver){
+    new ResizeObserver(function(){setSlideSizes();goTo(cur);}).observe(wrapper);
+  } else {
+    window.addEventListener('resize',function(){setSlideSizes();goTo(cur);});
+  }
   function goTo(n){
     cur=(n+total)%total;
-    track.style.transform='translateX(-'+cur*100+'%)';
+    // translateX em px — GPU nativo, sem jank
+    track.style.transform='translateX(-'+(cur*slideW)+'px)';
     dots.forEach(function(d,i){d.classList.toggle('itp-active',i===cur);});
   }
   function next(){goTo(cur+1);}
