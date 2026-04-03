@@ -442,6 +442,16 @@ async function carregarDados() {
 }
 
 async function salvarClientes(msg) {
+  // Buscar SHA atualizado para evitar conflito 409
+  try {
+    const fresh = await ghGet(CLIENTES_PATH);
+    if (fresh && fresh.sha) ghClientesSha = fresh.sha;
+    if (fresh && fresh.content) {
+      const freshData = JSON.parse(fresh.content);
+      // Mesclar: preservar outros clientes que possam ter sido cadastrados
+      ghClientes.clientes = Object.assign({}, freshData.clientes || {}, ghClientes.clientes);
+    }
+  } catch(e) {}
   const content = JSON.stringify(ghClientes, null, 2);
   const r = await ghPut(CLIENTES_PATH, content, msg, ghClientesSha);
   if (r.ok) ghClientesSha = r.sha;
@@ -571,21 +581,50 @@ async function entrar() {
     try { ghClientes = JSON.parse(c.content); ghClientesSha = c.sha; } catch(e) {}
   }
   hideLoading();
-  if (ghClientes.clientes[cel]) {
-    clienteAtual = ghClientes.clientes[cel];
-    // Validar data de nascimento
-    const dataCadastrada = clienteAtual.dataNasc || '';
-    const dataDigitada = ano + '-' + mes + '-' + dia;
-    if (dataCadastrada && dataCadastrada !== dataDigitada) {
-      showMsg('msg-acesso','❌ Data de nascimento incorreta. Verifique e tente novamente.','erro');
-      return;
-    }
-    localStorage.setItem('itap_cel', cel);
-    showMsg('msg-acesso','✅ Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
-    setTimeout(mostrarPainelCliente, 800);
-  } else {
+  if (!ghClientes.clientes[cel]) {
     showMsg('msg-acesso','❌ Celular não encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
+    return;
   }
+  clienteAtual = ghClientes.clientes[cel];
+  // Verificar se número está bloqueado
+  if (clienteAtual.bloqueado) {
+    showMsg('msg-acesso','🚫 NÚMERO BLOQUEADO — Este número foi bloqueado por tentativas inválidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
+    return;
+  }
+  // Validar data de nascimento
+  const dataCadastrada = clienteAtual.dataNasc || '';
+  const dataDigitada = ano + '-' + mes + '-' + dia;
+  if (dataCadastrada && dataCadastrada !== dataDigitada) {
+    // Incrementar tentativas
+    clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
+    const tentativas = clienteAtual.tentativasInvalidas;
+    // Registrar log de tentativa
+    if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
+    clienteAtual.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+    if (tentativas >= 4) {
+      // Bloquear o número na 4ª tentativa
+      clienteAtual.bloqueado = true;
+      clienteAtual.dataBloqueio = new Date().toISOString();
+      ghClientes.clientes[cel] = clienteAtual;
+      await salvarClientes('FRAUDE: bloqueio do número ' + cel + ' após ' + tentativas + ' tentativas');
+      showMsg('msg-acesso','🚫 TENTATIVA DE FRAUDE DETECTADA! Seu número foi BLOQUEADO após ' + tentativas + ' tentativas inválidas. Entre em contato com a sorveteria.','erro');
+    } else {
+      ghClientes.clientes[cel] = clienteAtual;
+      await salvarClientes('Tentativa inválida ' + tentativas + '/3 para ' + cel);
+      const restam = 3 - tentativas + 1;
+      showMsg('msg-acesso','⚠️ Data de nascimento incorreta. Tentativa ' + tentativas + ' de 3. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
+    }
+    return;
+  }
+  // Login bem-sucedido: zerar tentativas
+  if (clienteAtual.tentativasInvalidas > 0) {
+    clienteAtual.tentativasInvalidas = 0;
+    ghClientes.clientes[cel] = clienteAtual;
+    await salvarClientes('Login OK: tentativas zeradas para ' + cel);
+  }
+  localStorage.setItem('itap_cel', cel);
+  showMsg('msg-acesso','✅ Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
+  setTimeout(mostrarPainelCliente, 800);
 }
 
 // ═══════════════════════════════════════════════════════════
