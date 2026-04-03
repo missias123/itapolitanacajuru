@@ -207,12 +207,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
     </div>
     <div id="form-novo">
       <div class="form-group">
-        <label>Seu nome completo</label>
-        <input type="text" id="inp-nome" placeholder="Ex: Maria Silva" autocomplete="name">
+        <label>Seu nome completo <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento</span></label>
+        <input type="text" id="inp-nome" placeholder="Nome completo como no RG/CPF" autocomplete="name">
+        <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic;">&#9888;&#65039; Informe o nome exatamente como consta no seu documento de identidade.</div>
       </div>
       <div class="form-group">
-        <label>Data de nascimento</label>
+        <label>Data de nascimento <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento</span></label>
         <input type="date" id="inp-data-nasc" autocomplete="bday">
+        <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic;">&#9888;&#65039; Informe a data exatamente como consta no seu RG ou CPF.</div>
       </div>
       <div class="form-group">
         <label>Celular (WhatsApp)</label>
@@ -224,6 +226,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <div class="form-group">
         <label>Celular (WhatsApp)</label>
         <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <label>Data de nascimento (confirmação)</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="inp-login-dia" placeholder="Dia" min="1" max="31" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="number" id="inp-login-mes" placeholder="Mês" min="1" max="12" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="number" id="inp-login-ano" placeholder="Ano" min="1900" max="2020" inputmode="numeric" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+        </div>
       </div>
       <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
     </div>
@@ -550,9 +560,12 @@ async function cadastrar() {
 // ═══════════════════════════════════════════════════════════
 async function entrar() {
   const cel = limparTel(document.getElementById('inp-cel-login').value);
+  const dia = document.getElementById('inp-login-dia').value.padStart(2,'0');
+  const mes = document.getElementById('inp-login-mes').value.padStart(2,'0');
+  const ano = document.getElementById('inp-login-ano').value;
   if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
+  if (!dia || !mes || !ano || ano.length < 4) { showMsg('msg-acesso','⚠️ Informe sua data de nascimento completa (Dia, Mês e Ano).','aviso'); return; }
   setLoading('Buscando sua conta...');
-  // Recarregar dados frescos
   const c = await ghGet(CLIENTES_PATH);
   if (c.content) {
     try { ghClientes = JSON.parse(c.content); ghClientesSha = c.sha; } catch(e) {}
@@ -560,6 +573,13 @@ async function entrar() {
   hideLoading();
   if (ghClientes.clientes[cel]) {
     clienteAtual = ghClientes.clientes[cel];
+    // Validar data de nascimento
+    const dataCadastrada = clienteAtual.dataNasc || '';
+    const dataDigitada = ano + '-' + mes + '-' + dia;
+    if (dataCadastrada && dataCadastrada !== dataDigitada) {
+      showMsg('msg-acesso','❌ Data de nascimento incorreta. Verifique e tente novamente.','erro');
+      return;
+    }
     localStorage.setItem('itap_cel', cel);
     showMsg('msg-acesso','✅ Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
     setTimeout(mostrarPainelCliente, 800);
