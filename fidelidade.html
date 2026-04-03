@@ -211,6 +211,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
         <input type="text" id="inp-nome" placeholder="Ex: Maria Silva" autocomplete="name">
       </div>
       <div class="form-group">
+        <label>Data de nascimento</label>
+        <input type="date" id="inp-data-nasc" autocomplete="bday">
+      </div>
+      <div class="form-group">
         <label>Celular (WhatsApp)</label>
         <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
       </div>
@@ -224,6 +228,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
     </div>
     <div class="msg" id="msg-acesso"></div>
+    <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:10px;border-left:4px solid #FF9800;">
+      <div style="font-size:12px;font-weight:900;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">🎁 Sorteio Mensal</div>
+      <div style="font-size:12px;color:#5D4037;line-height:1.5;font-weight:600;">
+        A partir de <strong>1º de maio</strong>, moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> que se cadastrarem no Clube Fidelidade concorrerão a <strong>1 caixa de 5 litros de sorvete tipo artesanal</strong> por mês! ✨
+      </div>
+    </div>
   </div>
 
   <!-- PAINEL DO CLIENTE (oculto até login) -->
@@ -493,8 +503,10 @@ function showMsg(id, txt, tipo) {
 // ═══════════════════════════════════════════════════════════
 async function cadastrar() {
   const nome = document.getElementById('inp-nome').value.trim();
+  const dataNasc = document.getElementById('inp-data-nasc').value;
   const cel  = limparTel(document.getElementById('inp-cel-novo').value);
   if (!nome || nome.length < 2) { showMsg('msg-acesso','⚠️ Informe seu nome completo.','aviso'); return; }
+  if (!dataNasc) { showMsg('msg-acesso','⚠️ Informe sua data de nascimento.','aviso'); return; }
   if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
   // Verificar se já existe
   if (ghClientes.clientes[cel]) {
@@ -507,7 +519,7 @@ async function cadastrar() {
   setLoading('Criando sua conta...');
   const rodadaAtual = { num:1, pontos:0, codigos:[], inicio: new Date().toISOString() };
   const novoCliente = {
-    nome, cel,
+    nome, dataNasc, cel,
     cadastro: new Date().toISOString(),
     rodadaAtual,
     rodadas: [],
@@ -569,7 +581,13 @@ function atualizarUI() {
   const letra = clienteAtual.nome ? clienteAtual.nome[0].toUpperCase() : '?';
   document.getElementById('avatar-letra').textContent = letra;
   document.getElementById('cliente-nome').textContent = clienteAtual.nome;
-  document.getElementById('cliente-cel').textContent = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
+  let dataNascFormatada = '';
+  if (clienteAtual.dataNasc) {
+    const [ano, mes, dia] = clienteAtual.dataNasc.split('-');
+    dataNascFormatada = dia + '/' + mes + '/' + ano;
+  }
+  const celFormatado = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
+  document.getElementById('cliente-cel').textContent = celFormatado + (dataNascFormatada ? ' • ' + dataNascFormatada : '');
   document.getElementById('rodada-badge').textContent = 'Rodada ' + (r.num || 1);
   // Pontos
   document.getElementById('pontos-atual').textContent = pontos;
@@ -803,6 +821,7 @@ function sair() {
   document.getElementById('card-cliente').style.display = 'none';
   document.getElementById('card-historico').style.display = 'none';
   document.getElementById('inp-nome').value = '';
+  document.getElementById('inp-data-nasc').value = '';
   document.getElementById('inp-cel-novo').value = '';
   document.getElementById('inp-cel-login').value = '';
   setTab('novo');
