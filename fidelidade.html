@@ -283,7 +283,24 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
         <label>Celular (WhatsApp)</label>
         <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
       </div>
-      <!-- BLOCO SORTEIO MENSAL (dentro do cadastro) -->
+      <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px">🎉 Quero Receber Promoções!</button>
+    </div>
+    <div id="form-login" style="display:none">
+      <div class="form-group">
+        <label>Celular (WhatsApp)</label>
+        <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <label>Data de nascimento (confirmação)</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="inp-login-dia" placeholder="Dia" min="1" max="31" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="number" id="inp-login-mes" placeholder="Mês" min="1" max="12" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="number" id="inp-login-ano" placeholder="Ano" min="1900" max="2020" inputmode="numeric" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+        </div>
+      </div>
+      <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
+
+      <!-- BLOCO SORTEIO MENSAL (aba Já tenho conta) -->
       <div style="margin-top:14px;padding:12px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:10px;border-left:4px solid #FF9800;">
         <div style="font-size:12px;font-weight:900;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">🎁 Sorteio Mensal</div>
         <div style="font-size:12px;color:#5D4037;line-height:1.5;font-weight:600;">
@@ -291,7 +308,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
         </div>
       </div>
 
-      <!-- BLOCO: PARTICIPAR DOS SORTEIOS SEM PROPAGANDA (dentro do cadastro) -->
+      <!-- BLOCO: PARTICIPAR DOS SORTEIOS SEM PROPAGANDA (aba Já tenho conta) -->
       <div style="margin-top:12px;background:#e8f5e9;border:2px solid #a5d6a7;border-radius:14px;padding:14px;">
         <h3 style="font-size:clamp(.9rem,3vw,1rem);font-weight:900;color:#1b5e20;margin:0 0 7px">🎁 Quero participar de sorteios (sem propaganda)</h3>
         <p style="font-size:clamp(.75rem,2.2vw,.85rem);color:#2e7d32;margin:0 0 6px">
@@ -318,23 +335,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
           </a>
         </div>
       </div>
-
-      <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px">🎉 Quero Receber Promoções!</button>
-    </div>
-    <div id="form-login" style="display:none">
-      <div class="form-group">
-        <label>Celular (WhatsApp)</label>
-        <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
-      </div>
-      <div class="form-group">
-        <label>Data de nascimento (confirmação)</label>
-        <div style="display:flex;gap:8px;">
-          <input type="number" id="inp-login-dia" placeholder="Dia" min="1" max="31" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-          <input type="number" id="inp-login-mes" placeholder="Mês" min="1" max="12" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-          <input type="number" id="inp-login-ano" placeholder="Ano" min="1900" max="2020" inputmode="numeric" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-        </div>
-      </div>
-      <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
     </div>
     <div class="msg" id="msg-acesso"></div>
 
