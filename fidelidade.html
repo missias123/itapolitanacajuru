@@ -118,6 +118,64 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 /* ── SAIR ── */
 .btn-sair{background:none;border:1.5px solid #ddd;color:#888;font-size:.82rem;padding:8px 16px;border-radius:8px;cursor:pointer;width:auto;margin-top:8px}
 .btn-sair:hover{border-color:#e8650a;color:#e8650a}
+
+/* ── RESPONSIVO: CELULAR (até 480px) ── */
+@media(max-width:480px){
+  .hero{padding:24px 14px 20px}
+  .hero h1{font-size:1.35rem}
+  .hero p{font-size:.88rem}
+  .hero-premio{padding:10px 14px;gap:10px}
+  .hero-premio .premio-icon{font-size:1.8rem}
+  .hero-premio-txt strong{font-size:1rem}
+  .hero-premio-txt span{font-size:.78rem}
+  .passos{padding:20px 12px}
+  .passos-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .passo-card{padding:12px 8px}
+  .passo-card h3{font-size:.75rem}
+  .passo-card p{font-size:.68rem}
+  .painel{padding:14px 10px}
+  .card{padding:16px 14px;border-radius:14px}
+  .form-tabs{gap:6px}
+  .tab-btn{font-size:.78rem;padding:9px 6px}
+  .form-group label{font-size:.78rem}
+  .form-group input{font-size:.88rem;padding:11px 12px}
+  .btn{font-size:.92rem;padding:13px}
+  .pontos-numero{font-size:2.4rem}
+  .sorvete-icon{font-size:1.5rem}
+  .codigo-input{font-size:1rem;padding:12px}
+  .cliente-avatar{width:42px;height:42px;font-size:1.2rem}
+  .cliente-info h3{font-size:.92rem}
+  .cliente-info p{font-size:.76rem}
+  .resgate-section{padding:14px}
+  .resgate-section h3{font-size:.95rem}
+  .resgate-section p{font-size:.78rem}
+}
+
+/* ── RESPONSIVO: TABLET (481px – 768px) ── */
+@media(min-width:481px) and (max-width:768px){
+  .hero h1{font-size:1.6rem}
+  .passos-grid{grid-template-columns:repeat(4,1fr)}
+  .painel{max-width:520px;padding:18px 20px}
+  .card{padding:20px}
+  .pontos-numero{font-size:2.8rem}
+  .btn{font-size:.96rem}
+  .form-group input{font-size:.92rem}
+}
+
+/* ── RESPONSIVO: DESKTOP (acima de 768px) ── */
+@media(min-width:769px){
+  .hero h1{font-size:2rem}
+  .hero p{font-size:1.05rem}
+  .passos-grid{grid-template-columns:repeat(4,1fr);max-width:800px}
+  .painel{max-width:520px;padding:24px 20px}
+  .card{padding:26px}
+  .pontos-numero{font-size:3.2rem}
+  .btn{font-size:1.05rem;padding:15px}
+  .form-group input{font-size:1rem;padding:13px 16px}
+  .form-group label{font-size:.86rem}
+  .tab-btn{font-size:.9rem;padding:11px}
+  .codigo-input{font-size:1.15rem}
+}
 </style>
 </head>
 <body>
@@ -199,8 +257,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 
   <!-- FORMULÁRIO DE ACESSO -->
   <div class="card" id="card-acesso">
-    <div class="card-title">🍦 Entrar no Clube</div>
-    <p style="font-size:.85rem;color:#888;margin-bottom:14px">Cadastre-se com seu celular para começar a acumular pontos.</p>
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:clamp(1.1rem,4vw,1.35rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:6px">🍦 Entrar para o Clube</div>
+      <div style="font-size:clamp(.78rem,2.5vw,.92rem);font-weight:700;color:#27ae60;background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:10px;padding:6px 12px;display:inline-block">🎁 Participar dos Sorteios Mensais</div>
+      <p style="font-size:clamp(.78rem,2.2vw,.85rem);color:#888;margin-top:10px;margin-bottom:0">Cadastre seu celular para acumular pontos e concorrer a prêmios exclusivos.</p>
+    </div>
     <div class="form-tabs">
       <button class="tab-btn active" onclick="setTab('novo')">Primeira vez</button>
       <button class="tab-btn" onclick="setTab('login')">Já tenho conta</button>
