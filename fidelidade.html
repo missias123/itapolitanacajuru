@@ -337,9 +337,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <div class="form-group">
         <label>Data de nascimento (confirmação)</label>
         <div style="display:flex;gap:8px;">
-          <input type="number" id="inp-login-dia" placeholder="Dia" min="1" max="31" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-          <input type="number" id="inp-login-mes" placeholder="Mês" min="1" max="12" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-          <input type="number" id="inp-login-ano" placeholder="Ano" min="1900" max="2020" inputmode="numeric" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="text" id="inp-login-dia" placeholder="Dia" maxlength="2" inputmode="numeric" pattern="[0-9]{1,2}" autocomplete="off" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="text" id="inp-login-mes" placeholder="Mês" maxlength="2" inputmode="numeric" pattern="[0-9]{1,2}" autocomplete="off" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="text" id="inp-login-ano" placeholder="Ano" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
         </div>
       </div>
       <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
@@ -1412,10 +1412,35 @@ function copiarListaSorteio() {
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   carregarDados();
+
   // Enter no campo de código
   document.getElementById('input-codigo').addEventListener('keydown', e => {
     if (e.key === 'Enter') validarCodigo();
   });
+
+  // Bloqueio de dígitos extras nos campos de data de nascimento (login)
+  function bloquearDigitos(idCampo, max) {
+    const el = document.getElementById(idCampo);
+    if (!el) return;
+    el.addEventListener('input', function () {
+      // Mantém apenas números
+      this.value = this.value.replace(/\D/g, '');
+      // Limita ao máximo de dígitos
+      if (this.value.length > max) this.value = this.value.slice(0, max);
+    });
+    el.addEventListener('keydown', function (e) {
+      // Bloqueia qualquer tecla numérica se já atingiu o limite
+      const teclaNum = e.key >= '0' && e.key <= '9';
+      if (teclaNum && this.value.length >= max) e.preventDefault();
+      // Bloqueia letras e caracteres especiais
+      if (!/[0-9]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+  }
+  bloquearDigitos('inp-login-dia', 2);
+  bloquearDigitos('inp-login-mes', 2);
+  bloquearDigitos('inp-login-ano', 4);
 });
 </script>
 </body>
