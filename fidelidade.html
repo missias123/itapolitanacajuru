@@ -253,7 +253,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <span class="premio-icon">🍦</span>
       <div class="hero-premio-txt">
         <strong>Caixa 7 Bolas GRÁTIS</strong>
-        <span>ao acumular 20 pontos</span>
+        <span>ao acumular 30 pontos</span>
       </div>
     </div>
   </div>
@@ -319,7 +319,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
         <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic;">&#9888;&#65039; Informe o nome exatamente como consta no seu documento de identidade.</div>
       </div>
       <div class="form-group">
-        <label>Data de nascimento <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento</span></label>
+        <label>Data de nascimento <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento — mínimo 14 anos</span></label>
         <input type="date" id="inp-data-nasc" autocomplete="bday">
         <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic;">&#9888;&#65039; Informe a data exatamente como consta no seu RG ou CPF.</div>
       </div>
@@ -385,9 +385,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       </div>
       <div class="progress-label" id="progress-label">0% concluído</div>
 
-      <!-- Seção de resgate (aparece ao atingir 10 ou 20 pontos) -->
+      <!-- Seção de resgate (aparece ao atingir 10 ou 30 pontos) -->
       <div class="resgate-section" id="resgate-section" style="display:none">
-        <h3>🎉 PARABÉNS! Escolha seu prêmio!</h3>
+        <h3>🎉 PARABÉNS! Resgate seu prêmio!</h3>
         <p id="resgate-txt">Você acumulou pontos suficientes. Escolha qual prêmio deseja resgatar:</p>
         <!-- Card prêmio 10 pontos -->
         <div id="card-premio-10" style="background:#fff;border:2px solid #25d366;border-radius:12px;padding:14px;margin-bottom:10px;display:none">
@@ -396,12 +396,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
           <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 10 pontos</div>
           <button class="btn btn-whats" style="font-size:.9rem;padding:11px" onclick="resgatarPremio('milkshake')">&#x1F7E2; Resgatar Milkshake via WhatsApp</button>
         </div>
-        <!-- Card prêmio 20 pontos -->
+        <!-- Card prêmio 30 pontos -->
         <div id="card-premio-20" style="background:#fff;border:2px solid #f39c12;border-radius:12px;padding:14px;display:none">
           <div style="font-size:1.5rem;margin-bottom:4px">🍦</div>
           <div style="font-weight:800;color:#e67e22;font-size:1rem">Caixa 7 Bolas GRÁTIS</div>
-          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 20 pontos</div>
-          <button class="btn" style="background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;font-size:.9rem;padding:11px" onclick="resgatarPremio('caixa7bolas')">&#x1F7E0; Resgatar Caixa 7 Bolas via WhatsApp</button>
+          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 30 pontos</div>
+          <button class="btn" style="background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;font-size:.9rem;padding:11px" onclick="resgatarPremio('caixa7bolas')">🟠 Resgatar Caixa 7 Bolas via WhatsApp</button>
         </div>
       </div>
 
@@ -760,12 +760,27 @@ function showMsg(id, txt, tipo) {
 // CADASTRO
 // ═══════════════════════════════════════════════════════════
 async function cadastrar() {
-  const nome = document.getElementById('inp-nome').value.trim();
+  const nome     = document.getElementById('inp-nome').value.trim();
   const dataNasc = document.getElementById('inp-data-nasc').value;
-  const cel  = limparTel(document.getElementById('inp-cel-novo').value);
+  const cel      = limparTel(document.getElementById('inp-cel-novo').value);
+
   if (!nome || nome.length < 2) { showMsg('msg-acesso','⚠️ Informe seu nome completo.','aviso'); return; }
   if (!dataNasc) { showMsg('msg-acesso','⚠️ Informe sua data de nascimento.','aviso'); return; }
+
+  // Validação: mínimo 14 anos
+  const hoje     = new Date();
+  const nasc     = new Date(dataNasc);
+  let idade      = hoje.getFullYear() - nasc.getFullYear();
+  const mesAntes = hoje.getMonth() < nasc.getMonth() ||
+                   (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate());
+  if (mesAntes) idade--;
+  if (idade < 14) {
+    showMsg('msg-acesso','⚠️ É necessário ter no mínimo 14 anos para participar dos bônus e sorteios da Sorveteria Itapolitana.','aviso');
+    return;
+  }
+
   if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
+
   // Verificar se já existe
   if (ghClientes.clientes[cel]) {
     clienteAtual = ghClientes.clientes[cel];
@@ -774,13 +789,14 @@ async function cadastrar() {
     setTimeout(mostrarPainelCliente, 800);
     return;
   }
+
   setLoading('Criando sua conta...');
-  const rodadaAtual = { num:1, pontos:0, codigos:[], inicio: new Date().toISOString() };
   const novoCliente = {
     nome, dataNasc, cel,
-    cadastro: new Date().toISOString(),
-    rodadaAtual,
-    rodadas: [],
+    cadastro:     new Date().toISOString(),
+    saldoPontos:  0,          // saldo acumulado (nunca zera, só desconta ao resgatar)
+    codigosUsados: [],        // [{codigo, data}]
+    resgates:     [],         // [{premio, emoji, pontos, data}]
     totalPremios: 0,
     totalCodigos: 0
   };
@@ -790,7 +806,7 @@ async function cadastrar() {
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
-    showMsg('msg-acesso','✅ Conta criada com sucesso! Bem-vindo(a), ' + nome + '!','ok');
+    showMsg('msg-acesso','✅ Conta criada! Bem-vindo(a), ' + nome + '!','ok');
     setTimeout(mostrarPainelCliente, 800);
   } else {
     delete ghClientes.clientes[cel];
@@ -864,6 +880,16 @@ async function entrar() {
 // PAINEL DO CLIENTE
 // ═══════════════════════════════════════════════════════════
 function mostrarPainelCliente() {
+  // Migração automática: clientes antigos tinham rodadaAtual.pontos, agora usam saldoPontos
+  if (clienteAtual && typeof clienteAtual.saldoPontos === 'undefined') {
+    const pontosAntigos = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.pontos) || 0;
+    clienteAtual.saldoPontos   = pontosAntigos;
+    clienteAtual.codigosUsados = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.codigos) || [];
+    clienteAtual.resgates      = clienteAtual.resgates || [];
+    // Salvar migração silenciosamente
+    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    salvarClientes('Migração de dados: ' + clienteAtual.nome);
+  }
   document.getElementById('card-acesso').style.display = 'none';
   document.getElementById('card-cliente').style.display = 'block';
   document.getElementById('card-historico').style.display = 'block';
@@ -872,77 +898,74 @@ function mostrarPainelCliente() {
 
 function atualizarUI() {
   if (!clienteAtual) return;
-  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
-  const pontos = r.pontos || 0;
-  // Avatar
-  const letra = clienteAtual.nome ? clienteAtual.nome[0].toUpperCase() : '?';
-  document.getElementById('avatar-letra').textContent = letra;
+  // Saldo total de pontos acumulados (nunca zera, só desconta ao resgatar)
+  const pontos = clienteAtual.saldoPontos || 0;
+
+  // Avatar e info
+  document.getElementById('avatar-letra').textContent = clienteAtual.nome ? clienteAtual.nome[0].toUpperCase() : '?';
   document.getElementById('cliente-nome').textContent = clienteAtual.nome;
   let dataNascFormatada = '';
   if (clienteAtual.dataNasc) {
     const [ano, mes, dia] = clienteAtual.dataNasc.split('-');
     dataNascFormatada = dia + '/' + mes + '/' + ano;
   }
-  const celFormatado = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
-  document.getElementById('cliente-cel').textContent = celFormatado + (dataNascFormatada ? ' • ' + dataNascFormatada : '');
-  document.getElementById('rodada-badge').textContent = 'Rodada ' + (r.num || 1);
-  // Pontos
+  const celFmt = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
+  document.getElementById('cliente-cel').textContent = celFmt + (dataNascFormatada ? ' • ' + dataNascFormatada : '');
+  document.getElementById('rodada-badge').textContent = '🌟 ' + pontos + ' ponto' + (pontos !== 1 ? 's' : '') + ' no saldo';
+
+  // Contador de pontos
   document.getElementById('pontos-atual').textContent = pontos;
-  const META_MAX = 20; // meta máxima para Caixa 7 Bolas
-  document.getElementById('pontos-meta').textContent = META_MAX;
-  const faltam10 = 10 - pontos;
-  const faltam20 = 20 - pontos;
+  document.getElementById('pontos-meta').textContent = 30;
+
+  // Texto de status
   let faltamTxt;
-  if (pontos >= 20) faltamTxt = '🎉 Você pode resgatar qualquer prêmio!';
-  else if (pontos >= 10) faltamTxt = '🥤 Milkshake disponível! Faltam ' + faltam20 + ' para a Caixa 7 Bolas';
-  else faltamTxt = 'Faltam ' + faltam10 + ' ponto' + (faltam10>1?'s':'') + ' para o Milkshake';
+  if (pontos >= 30)      faltamTxt = '🎉 Você pode resgatar Milkshake e Caixa 7 Bolas!';
+  else if (pontos >= 10) faltamTxt = '🥤 Milkshake disponível! Faltam ' + (30 - pontos) + ' pontos para a Caixa 7 Bolas';
+  else                   faltamTxt = 'Faltam ' + (10 - pontos) + ' ponto' + ((10 - pontos) !== 1 ? 's' : '') + ' para o Milkshake';
   document.getElementById('pontos-faltam').textContent = faltamTxt;
-  // Ícones de sorvete (20 no total)
+
+  // Ícones de sorvete (30 no total, marcas em 10 e 30)
   const grid = document.getElementById('sorvetes-grid');
   grid.innerHTML = '';
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 30; i++) {
     const span = document.createElement('span');
     span.className = 'sorvete-icon' + (i < pontos ? ' ativo' : '');
-    // Marca o 10º ícone com borda especial
-    if (i === 9) span.style.cssText = 'border-bottom:3px solid #27ae60;border-radius:4px;padding-bottom:2px';
-    if (i === 19) span.style.cssText = 'border-bottom:3px solid #e67e22;border-radius:4px;padding-bottom:2px';
+    if (i === 9)  span.style.cssText = 'border-bottom:3px solid #27ae60;border-radius:4px;padding-bottom:2px';
+    if (i === 29) span.style.cssText = 'border-bottom:3px solid #e67e22;border-radius:4px;padding-bottom:2px';
     span.textContent = '🍦';
     grid.appendChild(span);
   }
-  // Barra de progresso (base 20)
-  const pct = Math.min(100, Math.round((pontos / 20) * 100));
-  document.getElementById('progress-bar').style.width = pct + '%';
-  // Cor da barra muda conforme nível
+
+  // Barra de progresso (base 30)
+  const pct = Math.min(100, Math.round((pontos / 30) * 100));
   const bar = document.getElementById('progress-bar');
-  if (pontos >= 20) bar.style.background = 'linear-gradient(90deg,#e67e22,#f39c12)';
+  bar.style.width = pct + '%';
+  if (pontos >= 30)      bar.style.background = 'linear-gradient(90deg,#e67e22,#f39c12)';
   else if (pontos >= 10) bar.style.background = 'linear-gradient(90deg,#27ae60,#2ecc71)';
-  else bar.style.background = 'linear-gradient(90deg,#e8650a,#ff8c00)';
-  document.getElementById('progress-label').textContent = pct + '% — ' + pontos + '/20 pontos';
-  // Resgate — dois níveis: 10 pts = Milkshake, 20 pts = Caixa 7 Bolas
+  else                   bar.style.background = 'linear-gradient(90deg,#e8650a,#ff8c00)';
+  document.getElementById('progress-label').textContent = pct + '% — ' + pontos + '/30 pontos';
+
+  // Seção de resgate
   const resgate = document.getElementById('resgate-section');
-  const card10 = document.getElementById('card-premio-10');
-  const card20 = document.getElementById('card-premio-20');
+  const card10  = document.getElementById('card-premio-10');
+  const card30  = document.getElementById('card-premio-20'); // mesmo id, agora é 30 pts
   if (pontos >= 10) {
     resgate.style.display = 'block';
-    // Card Milkshake (10 pts) — sempre visível quando tem 10+
-    card10.style.display = 'block';
-    // Card Caixa 7 Bolas (20 pts) — só visível quando tem 20+
-    card20.style.display = pontos >= 20 ? 'block' : 'none';
-    // Mensagem dinâmica
-    if (pontos >= 20) {
-      document.getElementById('resgate-txt').textContent = '🎉 Você tem ' + pontos + ' pontos! Escolha seu prêmio abaixo:';
+    card10.style.display  = 'block';
+    card30.style.display  = pontos >= 30 ? 'block' : 'none';
+    if (pontos >= 30) {
+      document.getElementById('resgate-txt').textContent = '🎉 Você tem ' + pontos + ' pontos! Escolha seu prêmio:';
     } else {
-      document.getElementById('resgate-txt').textContent = '🎉 Você tem ' + pontos + ' pontos! Resgate o Milkshake agora ou continue acumulando para ganhar a Caixa 7 Bolas com 20 pontos!';
+      document.getElementById('resgate-txt').textContent = '🥤 Você tem ' + pontos + ' pontos! Resgate o Milkshake ou continue acumulando para a Caixa 7 Bolas (30 pts).';
     }
-    // Desabilitar validação apenas se já atingiu 20 pontos (meta máxima)
-    document.getElementById('btn-validar').disabled = pontos >= 20;
+    document.getElementById('btn-validar').disabled = false; // sempre pode inserir mais códigos
   } else {
     resgate.style.display = 'none';
-    card10.style.display = 'none';
-    card20.style.display = 'none';
+    card10.style.display  = 'none';
+    card30.style.display  = 'none';
     document.getElementById('btn-validar').disabled = false;
   }
-  // Histórico
+
   renderHistorico();
 }
 
@@ -952,25 +975,36 @@ function atualizarUI() {
 function renderHistorico() {
   const lista = document.getElementById('historico-list');
   if (!clienteAtual) return;
-  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
-  const rodadasAnteriores = clienteAtual.rodadas || [];
+
+  const codigos   = clienteAtual.codigosUsados || [];
+  const resgates  = clienteAtual.resgates || [];
   let html = '';
-  // Rodadas anteriores (prêmios resgatados)
-  rodadasAnteriores.forEach(rod => {
-    html += '<li class="rodada-header">🏆 Rodada ' + rod.num + ' — Prêmio resgatado em ' + formatarData(rod.resgatado) + '</li>';
-    (rod.codigos || []).forEach(c => {
-      html += '<li class="historico-item"><span class="cod">' + c.codigo + '</span><span class="data">' + formatarData(c.data) + '</span></li>';
+
+  // Resgates realizados (com nome, produto e data)
+  if (resgates.length > 0) {
+    html += '<li class="rodada-header">🏆 Prêmios Resgatados</li>';
+    resgates.forEach(res => {
+      html += '<li class="historico-item">' +
+        '<span style="font-weight:700;color:#27ae60">' + res.emoji + ' ' + res.premio + '</span>' +
+        '<span class="data">' + formatarData(res.data) + ' — −' + (res.pontos || 10) + ' pts</span>' +
+        '</li>';
+      // Mostrar nome e produto de forma destacada
+      html += '<li style="padding:3px 0 6px;font-size:.78rem;color:#888;border-bottom:1px solid #f0e8e0">' +
+        '👤 ' + (clienteAtual.nome || '') + ' — ' + res.premio +
+        '</li>';
     });
-  });
-  // Rodada atual
-  if (r.codigos && r.codigos.length > 0) {
-    html += '<li class="rodada-header">📍 Rodada ' + (r.num||1) + ' (atual)</li>';
-    r.codigos.forEach(c => {
+  }
+
+  // Códigos inseridos
+  if (codigos.length > 0) {
+    html += '<li class="rodada-header">🎟️ Códigos Inseridos</li>';
+    codigos.slice().reverse().forEach(c => {
       html += '<li class="historico-item"><span class="cod">' + c.codigo + '</span><span class="data">' + formatarData(c.data) + '</span></li>';
     });
   }
+
   if (!html) {
-    html = '<li style="color:#aaa;font-size:.85rem;text-align:center;padding:12px 0">Nenhum código inserido ainda.</li>';
+    html = '<li style="color:#aaa;font-size:.85rem;text-align:center;padding:12px 0">Nenhuma movimentação ainda.</li>';
   }
   lista.innerHTML = html;
 }
@@ -1020,41 +1054,39 @@ async function validarCodigo() {
     btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
   }
   // Verificar se o próprio cliente já usou este código
-  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
-  const todasRodadas = [...(clienteAtual.rodadas || []), r];
-  const jaUsou = todasRodadas.some(rod => (rod.codigos||[]).some(c => c.codigo === codigo));
+  const jaUsou = (clienteAtual.codigosUsados || []).some(c => c.codigo === codigo);
   if (jaUsou) {
     showMsg('msg-codigo','⚠️ Você já usou este código.','aviso');
     btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
   }
-  // ✅ CÓDIGO VÁLIDO — dar baixa e adicionar ponto
+  // ✅ CÓDIGO VÁLIDO — dar baixa e adicionar ponto ao saldo
   setLoading('Registrando ponto...');
+  const agora = new Date().toISOString();
   // Marcar código como usado no fidelidade.json
-  ghFidelidade.codigos[codigo].status = 'usado';
+  ghFidelidade.codigos[codigo].status  = 'usado';
   ghFidelidade.codigos[codigo].usadoPor = clienteAtual.cel;
-  ghFidelidade.codigos[codigo].usadoEm = new Date().toISOString();
+  ghFidelidade.codigos[codigo].usadoEm  = agora;
   if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
   if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, codigos:0 };
   ghFidelidade.clientes[clienteAtual.cel].codigos = (ghFidelidade.clientes[clienteAtual.cel].codigos||0) + 1;
-  // Adicionar ponto ao cliente
-  if (!clienteAtual.rodadaAtual) clienteAtual.rodadaAtual = { num:1, pontos:0, codigos:[] };
-  clienteAtual.rodadaAtual.pontos = (clienteAtual.rodadaAtual.pontos || 0) + 1;
-  if (!clienteAtual.rodadaAtual.codigos) clienteAtual.rodadaAtual.codigos = [];
-  clienteAtual.rodadaAtual.codigos.push({ codigo, data: new Date().toISOString() });
+  // Adicionar ponto ao saldo do cliente
+  if (!clienteAtual.codigosUsados) clienteAtual.codigosUsados = [];
+  clienteAtual.codigosUsados.push({ codigo, data: agora });
+  clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
   clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
   ghClientes.clientes[clienteAtual.cel] = clienteAtual;
   // Salvar ambos no GitHub
   const [okFid, okCli] = await Promise.all([
     salvarFidelidade('Código ' + codigo + ' usado por ' + clienteAtual.nome),
-    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')')
+    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos)
   ]);
   hideLoading();
   if (okFid && okCli) {
     document.getElementById('input-codigo').value = '';
-    showMsg('msg-codigo','🎉 +1 ponto! Você agora tem ' + clienteAtual.rodadaAtual.pontos + ' ponto' + (clienteAtual.rodadaAtual.pontos>1?'s':'') + '.','ok');
+    showMsg('msg-codigo','🎉 +1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos>1?'s':'') + '.','ok');
     atualizarUI();
   } else {
-    showMsg('msg-codigo','⚠️ Ponto registrado localmente mas houve erro ao salvar. Tente novamente.','aviso');
+    showMsg('msg-codigo','⚠️ Ponto registrado mas houve erro ao salvar. Tente novamente.','aviso');
     atualizarUI();
   }
   btn.disabled = false; btn.textContent = '✅ Validar Código';
@@ -1065,45 +1097,66 @@ async function validarCodigo() {
 // ═══════════════════════════════════════════════════════════
 async function resgatarPremio(tipo) {
   if (!clienteAtual) return;
-  const r = clienteAtual.rodadaAtual || { num:1, pontos:0, codigos:[] };
-  const pontos = r.pontos || 0;
-  // Definir prêmio conforme tipo escolhido
-  let nomePremio, pontosNecessarios, emoji;
+  const saldo = clienteAtual.saldoPontos || 0;
+
+  // Definir prêmio conforme tipo
+  let nomePremio, pontosDesconto, emoji;
   if (tipo === 'caixa7bolas') {
-    if (pontos < 20) { showMsg('msg-codigo','⚠️ Você precisa de 20 pontos para a Caixa 7 Bolas. Você tem ' + pontos + '.','aviso'); return; }
-    nomePremio = 'Caixa 7 Bolas de Sorvete';
-    pontosNecessarios = 20;
-    emoji = '🍦';
+    if (saldo < 30) { showMsg('msg-codigo','⚠️ Você precisa de 30 pontos para a Caixa 7 Bolas. Saldo atual: ' + saldo + ' pontos.','aviso'); return; }
+    nomePremio     = 'Caixa 7 Bolas de Sorvete';
+    pontosDesconto = 30;
+    emoji          = '🍦';
   } else {
-    // milkshake (padrão)
-    if (pontos < 10) { showMsg('msg-codigo','⚠️ Você precisa de 10 pontos para o Milkshake. Você tem ' + pontos + '.','aviso'); return; }
-    nomePremio = 'Milkshake 300ml';
-    pontosNecessarios = 10;
-    emoji = '🥤';
+    if (saldo < 10) { showMsg('msg-codigo','⚠️ Você precisa de 10 pontos para o Milkshake. Saldo atual: ' + saldo + ' pontos.','aviso'); return; }
+    nomePremio     = 'Milkshake 300ml';
+    pontosDesconto = 10;
+    emoji          = '🥤';
   }
-  // Montar mensagem WhatsApp
-  const msg = emoji + ' *RESGATE DE PRÊMIO — Programa de Fidelidade*\n\n' +
-    '👤 *Nome:* ' + clienteAtual.nome + '\n' +
-    '📱 *Celular:* ' + clienteAtual.cel + '\n' +
-    '🏆 *Rodada:* ' + (r.num||1) + '\n' +
-    '🎁 *Prêmio:* ' + nomePremio + ' GRÁTIS\n' +
-    '📊 *Pontos acumulados:* ' + pontos + '\n' +
-    '📅 *Data:* ' + new Date().toLocaleDateString('pt-BR') + '\n\n' +
-    'Olá! Gostaria de resgatar meu prêmio de fidelidade. 😊';
+
+  // Mensagem WhatsApp com nome do cliente e produto (conforme solicitado)
+  const dataFmt = new Date().toLocaleDateString('pt-BR');
+  const msg = 'Meu nome é ' + clienteAtual.nome +
+    ', quero agendar dia para retirar meu bônus: ' +
+    emoji + ' ' + nomePremio +
+    ' (' + pontosDesconto + ' pontos) — Data: ' + dataFmt;
   const url = 'https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg);
   window.open(url, '_blank');
-  // Registrar resgate e iniciar nova rodada
+
+  // Descontar pontos do saldo e registrar resgate com data
   setLoading('Registrando resgate...');
-  const rodadaFinalizada = { ...r, resgatado: new Date().toISOString(), premioResgatado: nomePremio, pontosUsados: pontosNecessarios };
-  if (!clienteAtual.rodadas) clienteAtual.rodadas = [];
-  clienteAtual.rodadas.push(rodadaFinalizada);
+  const agora = new Date().toISOString();
+  const saldoAntes = saldo;
+  clienteAtual.saldoPontos = saldo - pontosDesconto;
+  if (!clienteAtual.resgates) clienteAtual.resgates = [];
+  clienteAtual.resgates.push({
+    premio:     nomePremio,
+    emoji,
+    pontos:     pontosDesconto,
+    saldoAntes,
+    saldoApos:  clienteAtual.saldoPontos,
+    data:       agora
+  });
   clienteAtual.totalPremios = (clienteAtual.totalPremios || 0) + 1;
-  clienteAtual.rodadaAtual = { num: (r.num||1) + 1, pontos: 0, codigos: [], inicio: new Date().toISOString() };
   ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-  const ok = await salvarClientes('Prêmio resgatado: ' + clienteAtual.nome + ' — ' + nomePremio + ' — Rodada ' + (r.num||1));
+
+  const ok = await salvarClientes(
+    'Resgate: ' + clienteAtual.nome + ' — ' + nomePremio +
+    ' (-' + pontosDesconto + ' pts) — saldo restante: ' + clienteAtual.saldoPontos
+  );
   hideLoading();
   if (ok) {
-    showMsg('msg-codigo','🎉 ' + nomePremio + ' resgatado! Começando Rodada ' + clienteAtual.rodadaAtual.num + '...','ok');
+    showMsg('msg-codigo',
+      emoji + ' ' + nomePremio + ' resgatado! Descontados ' + pontosDesconto +
+      ' pontos. Saldo restante: ' + clienteAtual.saldoPontos + ' ponto' +
+      (clienteAtual.saldoPontos !== 1 ? 's' : '') + '.', 'ok');
+    atualizarUI();
+  } else {
+    // Reverter em caso de erro
+    clienteAtual.saldoPontos = saldoAntes;
+    clienteAtual.resgates.pop();
+    clienteAtual.totalPremios--;
+    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    showMsg('msg-codigo','❌ Erro ao registrar resgate. Tente novamente.','erro');
     atualizarUI();
   }
 }
