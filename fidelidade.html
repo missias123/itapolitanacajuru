@@ -258,9 +258,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
   <!-- FORMULÁRIO DE ACESSO -->
   <div class="card" id="card-acesso">
     <div style="text-align:center;margin-bottom:14px">
-      <div style="font-size:clamp(1.1rem,4vw,1.35rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:6px">🍦 Entrar para o Clube</div>
-      <div style="font-size:clamp(.78rem,2.5vw,.92rem);font-weight:700;color:#27ae60;background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:10px;padding:6px 12px;display:inline-block">🎁 Participar dos Sorteios Mensais</div>
-      <p style="font-size:clamp(.78rem,2.2vw,.85rem);color:#888;margin-top:10px;margin-bottom:0">Cadastre seu celular para acumular pontos e concorrer a prêmios exclusivos.</p>
+      <div style="font-size:clamp(1.15rem,4vw,1.4rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:4px">🎉 Receba Promoções Exclusivas!</div>
+      <p style="font-size:clamp(.82rem,2.4vw,.92rem);color:#555;margin-top:6px;margin-bottom:8px">Cadastre seu WhatsApp para receber promoções, cupons e bonificações na Sorveteria Itapolitana.</p>
+      <div style="font-size:clamp(.75rem,2.2vw,.82rem);background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037;text-align:left;margin-bottom:4px">
+        ✅ <strong>Regras dos cupons de bonificação:</strong> válidos apenas para <strong>compras acima de R$ 30,00</strong> realizadas na sorveteria.
+      </div>
     </div>
     <div class="form-tabs">
       <button class="tab-btn active" onclick="setTab('novo')">Primeira vez</button>
@@ -281,7 +283,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
         <label>Celular (WhatsApp)</label>
         <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
       </div>
-      <button class="btn btn-laranja" onclick="cadastrar()">Criar minha conta</button>
+      <button class="btn btn-laranja" onclick="cadastrar()">🎉 Quero Receber Promoções!</button>
     </div>
     <div id="form-login" style="display:none">
       <div class="form-group">
@@ -299,12 +301,54 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
       <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
     </div>
     <div class="msg" id="msg-acesso"></div>
+
+    <!-- BLOCO SORTEIO MENSAL (sempre visível) -->
     <div style="margin-top:16px;padding:14px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:10px;border-left:4px solid #FF9800;">
       <div style="font-size:12px;font-weight:900;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">🎁 Sorteio Mensal</div>
       <div style="font-size:12px;color:#5D4037;line-height:1.5;font-weight:600;">
         A partir de <strong>1º de maio</strong>, moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> que se cadastrarem no Clube Fidelidade concorrerão a <strong>1 caixa de 5 litros de sorvete tipo artesanal</strong> por mês! ✨
       </div>
     </div>
+
+    <!-- BLOCO: PARTICIPAR DOS SORTEIOS SEM PROPAGANDA (após cadastro) -->
+    <div id="bloco-sorteio-whats" style="margin-top:16px;background:#e8f5e9;border:2px solid #a5d6a7;border-radius:14px;padding:16px;">
+      <h3 style="font-size:clamp(.95rem,3vw,1.05rem);font-weight:900;color:#1b5e20;margin:0 0 8px">🎁 Quero participar de sorteios (sem receber propaganda)</h3>
+      <p style="font-size:clamp(.78rem,2.2vw,.88rem);color:#2e7d32;margin:0 0 6px">
+        Além dos cupons e bonificações, você pode participar de <strong>sorteios mensais</strong> da Sorveteria Itapolitana.
+      </p>
+      <p style="font-size:clamp(.78rem,2.2vw,.88rem);color:#2e7d32;margin:0 0 10px">
+        <strong>Você não vai receber mensagens de propaganda no WhatsApp.</strong><br>
+        As promoções e os produtos da semana serão publicados nos <strong>Status da sorveteria</strong>. Você só vê se quiser, quando abrir os Status no seu WhatsApp.
+      </p>
+
+      <!-- Botão que expande as regras -->
+      <button onclick="toggleRegras()" id="btn-ver-regras" style="width:100%;padding:12px;background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;border:none;border-radius:10px;font-size:clamp(.85rem,2.5vw,.95rem);font-weight:800;cursor:pointer;margin-bottom:0">
+        🎯 Quero participar de sorteios SOMENTE
+      </button>
+
+      <!-- Regras (ocultas até clicar) -->
+      <div id="box-regras-sorteio" style="display:none;margin-top:12px;font-size:clamp(.78rem,2.2vw,.88rem);color:#1b5e20;background:#fff;border-radius:10px;padding:14px;border:1.5px solid #c8e6c9">
+        <p style="margin:0 0 8px">Para participar <strong>somente dos sorteios mensais</strong> e poder receber o prêmio, é obrigatório:</p>
+        <ul style="margin:0 0 10px;padding-left:18px;line-height:1.7">
+          <li>Ter seu <strong>WhatsApp cadastrado na agenda da sorveteria com seu nome</strong>.</li>
+          <li>Enviar uma solicitação pelo WhatsApp clicando no botão abaixo.</li>
+        </ul>
+        <p style="margin:0 0 8px">A sorveteria vai receber sua solicitação e cadastrar seu número nos contatos.<br>
+          <strong>Regra dos sorteios:</strong> se o seu número <strong>não estiver cadastrado com nome na agenda da sorveteria</strong> no momento do sorteio, você <strong>não recebe o prêmio</strong>.
+        </p>
+        <p style="margin:0 0 10px">Lembrando: você <strong>não receberá mensagens de propaganda</strong>. As promoções e produtos da semana serão mostrados apenas nos <strong>Status do WhatsApp</strong>. Você só vê se quiser, quando abrir os Status.</p>
+        <p style="margin:0 0 10px;font-weight:700">Quer participar somente dos sorteios?</p>
+        <p style="font-size:clamp(.72rem,2vw,.8rem);color:#555;margin:0 0 10px">
+          🔒 <strong>Importante:</strong> se, no momento do sorteio, seu número não estiver cadastrado na agenda da sorveteria, você perde o direito ao prêmio.
+        </p>
+        <a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C%20quero%20participar%20de%20sorteios%20mensais%20SOMENTE%20e%20ver%20os%20Status%20da%20Sorveteria%20Itapolitana.%20N%C3%A3o%20quero%20receber%20mensagens%20de%20propaganda%20no%20WhatsApp%2C%20SOMENTE%20NO%20STATUS."
+           target="_blank"
+           style="display:block;width:100%;padding:13px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:10px;font-size:clamp(.85rem,2.5vw,.95rem);font-weight:800;text-align:center;text-decoration:none;box-shadow:0 4px 12px rgba(37,211,102,.35);box-sizing:border-box">
+          📲 Enviar solicitação para participar dos sorteios
+        </a>
+      </div>
+    </div>
+
   </div>
 
   <!-- PAINEL DO CLIENTE (oculto até login) -->
@@ -557,6 +601,17 @@ function setTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='novo')||(i===1&&tab==='login')));
   document.getElementById('form-novo').style.display  = tab==='novo'  ? 'block' : 'none';
   document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOGGLE REGRAS SORTEIO
+// ═══════════════════════════════════════════════════════════
+function toggleRegras() {
+  const box = document.getElementById('box-regras-sorteio');
+  const btn = document.getElementById('btn-ver-regras');
+  const aberto = box.style.display !== 'none';
+  box.style.display = aberto ? 'none' : 'block';
+  btn.textContent = aberto ? '🎯 Quero participar de sorteios SOMENTE' : '✖️ Fechar regras';
 }
 
 // ═══════════════════════════════════════════════════════════
