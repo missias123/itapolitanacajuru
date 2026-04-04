@@ -6,12 +6,14 @@
 <meta name="robots" content="noindex,nofollow"/>
 <title>Admin – Sorveteria Itapolitana Cajuru</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e65100,#1565c0)}
-.login-card{background:#fff;border-radius:20px;padding:40px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e8650a 0%,#ff6b35 45%,#1565c0 100%)}
+.login-card{background:#fff;border-radius:24px;padding:40px 32px;width:100%;max-width:400px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3)}
 .login-card .logo{font-size:3rem;margin-bottom:12px}
-.login-card h1{font-size:1.4rem;font-weight:800;color:#333;margin-bottom:4px}
+.login-card .logo-img-admin{width:80px;height:80px;border-radius:50%;object-fit:cover;border:4px solid #e8650a;box-shadow:0 4px 20px rgba(232,101,10,.3);margin:0 auto 14px;display:block}
+.login-card h1{font-size:1.4rem;font-weight:900;color:#333;margin-bottom:4px;font-family:'Nunito',sans-serif}
 .login-card p{color:#888;font-size:.9rem;margin-bottom:24px}
 .inp-wrap{position:relative;margin-bottom:14px}
 .inp-wrap input{width:100%;padding:13px 44px 13px 16px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;outline:none;transition:.2s}
@@ -21,8 +23,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
 .btn-login:hover{opacity:.9}
 .login-erro{color:#c62828;font-size:.85rem;margin-top:10px;display:none}
 #admin-app{display:none;min-height:100vh}
-.admin-header{background:linear-gradient(135deg,#e65100,#1565c0);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
-.admin-header .título{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.admin-header{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 40%,#1565c0 100%);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 3px 16px rgba(0,0,0,.25)}
+.admin-header .título{font-size:1.1rem;font-weight:900;display:flex;align-items:center;gap:10px;font-family:'Nunito',sans-serif}
+.admin-header .logo-admin-header{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
 .btn-sair:hover{background:rgba(255,255,255,.35)}
 .admin-nav{background:#fff;border-bottom:2px solid #f0f2f5;padding:0 16px;display:flex;gap:4px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
@@ -403,8 +406,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
 <div class="toast" id="toast"></div>
 <div id="login-screen">
   <div class="login-card">
-    <div class="logo">&#x1F366;</div>
-    <h1>Painel Administrativo</h1>
+    <img class="logo-img-admin" src="images/logo.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
+    <h1>&#128737;&#65039; Painel Administrativo</h1>
     <p>Sorveteria Itapolitana Cajuru</p>
     <div class="inp-wrap">
       <input type="password" id="inp-senha" placeholder="Senha do administrador" onkeydown="if(event.key==='Enter')entrar()"/>
@@ -418,7 +421,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
 </div>
 <div id="admin-app">
   <div class="admin-header">
-    <div class="título"><span>&#x1F366;</span> Admin Itapolitana</div>
+    <div class="título"><img class="logo-admin-header" src="images/logo.png" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
     <div style="display:flex;gap:8px;align-items:center">
       <a href="index.html" target="_blank" class="btn-sair" style="text-decoration:none">&#x1F310; Ver Site</a>
       <button class="btn-sair" onclick="sair()">&#x1F6AA; Sair</button>

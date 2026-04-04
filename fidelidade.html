@@ -4,67 +4,142 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Programa de Fidelidade – Sorveteria Itapolitana Cajuru</title>
-<meta name="description" content="Acumule pontos e ganhe prêmios na Sorveteria Itapolitana de Cajuru/SP! Programa de fidelidade exclusivo para clientes de Cajuru, Ribeirão Preto e região."/>
+<meta name="description" content="Acumule pontos e ganhe premios na Sorveteria Itapolitana de Cajuru/SP! Programa de fidelidade exclusivo para clientes de Cajuru, Ribeirão Preto e regiao."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-height:100vh}
+body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:100vh}
 
 /* ── LOADING ── */
-#loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loading-overlay.hide{opacity:0;pointer-events:none}
 .loading-spinner{width:50px;height:50px;border:5px solid #f3c47a;border-top-color:#e8650a;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-txt{color:#e8650a;font-weight:700;font-size:1.1rem}
 
 /* ── HEADER ── */
-.site-header{background:linear-gradient(135deg,#e8650a,#ff8c00);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.site-header .logo{color:#fff;font-size:1.1rem;font-weight:800;text-decoration:none}
-.site-header a.back{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.25);color:#fff;text-decoration:none;font-size:.88rem;font-weight:800;padding:7px 14px;border-radius:20px;border:2px solid rgba(255,255,255,.5);transition:.2s;letter-spacing:.2px}
-.site-header a.back:hover{background:rgba(255,255,255,.4)}
+.site-header{background:linear-gradient(135deg,#e8650a,#ff8c00);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.2);position:sticky;top:0;z-index:100}
+.site-header .logo-wrap{display:flex;align-items:center;gap:10px;text-decoration:none}
+.site-header .logo-img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.6);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.site-header .logo-txt{color:#fff;font-size:1rem;font-weight:900;line-height:1.2}
+.site-header .logo-sub{color:rgba(255,255,255,.85);font-size:.72rem;font-weight:600}
+.site-header a.back{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.22);color:#fff;text-decoration:none;font-size:.82rem;font-weight:800;padding:7px 14px;border-radius:20px;border:2px solid rgba(255,255,255,.45);transition:.2s;white-space:nowrap}
+.site-header a.back:hover{background:rgba(255,255,255,.38)}
 
-/* ── HERO ── */
-.hero{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 50%,#ff8c00 100%);color:#fff;text-align:center;padding:36px 20px 28px}
-.hero h1{font-size:1.7rem;font-weight:900;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,.2)}
-.hero p{font-size:1rem;opacity:.92;margin-bottom:20px}
-.hero-prêmio{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.4);border-radius:16px;display:inline-flex;align-items:center;gap:14px;padding:14px 24px;backdrop-filter:blur(4px)}
-.hero-prêmio .prêmio-icon{font-size:2.4rem}
-.hero-prêmio-txt strong{display:block;font-size:1.2rem;font-weight:900;color:#fff}
-.hero-prêmio-txt span{font-size:.85rem;opacity:.88}
+/* ── HERO BANNER ── */
+.hero-banner{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 45%,#ff8c00 100%);color:#fff;text-align:center;padding:32px 20px 28px;position:relative;overflow:hidden}
+.hero-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.07);border-radius:50%}
+.hero-banner::after{content:'';position:absolute;bottom:-30px;left:-30px;width:130px;height:130px;background:rgba(255,255,255,.06);border-radius:50%}
+.hero-logo-circle{width:80px;height:80px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.7);box-shadow:0 4px 20px rgba(0,0,0,.25);margin:0 auto 14px;display:block;position:relative;z-index:1}
+.hero-banner h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;margin-bottom:8px;text-shadow:0 2px 6px rgba(0,0,0,.2);position:relative;z-index:1}
+.hero-banner p{font-size:clamp(.88rem,3vw,1rem);opacity:.93;margin-bottom:20px;position:relative;z-index:1}
+.hero-premios{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.hero-premio-chip{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.4);border-radius:40px;padding:10px 18px;display:inline-flex;align-items:center;gap:10px;backdrop-filter:blur(4px)}
+.hero-premio-chip .chip-icon{font-size:1.8rem}
+.hero-premio-chip strong{display:block;font-size:.95rem;font-weight:900}
+.hero-premio-chip span{font-size:.75rem;opacity:.9}
 
-/* ── PASSOS ── */
-.passos{background:#fff;padding:28px 16px}
-.passos h2{text-align:center;color:#e8650a;font-size:1.2rem;font-weight:800;margin-bottom:20px}
-.passos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:700px;margin:0 auto}
-@media(max-width:600px){.passos-grid{grid-template-columns:repeat(2,1fr)}}
-.passo-card{background:#fff8f0;border-radius:14px;padding:16px 10px;text-align:center;border:1.5px solid #ffe0c0}
-.passo-card .passo-num{background:#e8650a;color:#fff;width:26px;height:26px;border-radius:50%;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
-.passo-card .passo-icon{font-size:1.8rem;margin-bottom:6px}
-.passo-card h3{font-size:.8rem;font-weight:700;color:#e8650a;margin-bottom:4px}
-.passo-card p{font-size:.72rem;color:#666;line-height:1.4}
+/* ── SECAO PROGRAMAS (2 cards lado a lado) ── */
+.secao-programas{max-width:820px;margin:0 auto;padding:28px 16px}
+.programas-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.programas-grid{grid-template-columns:1fr}}
 
-/* ── PAINEL PRINCIPAL ── */
-.painel{max-width:480px;margin:0 auto;padding:20px 16px}
+/* ── CARD PROGRAMA ── */
+.card-programa{background:#fff;border-radius:22px;box-shadow:0 6px 30px rgba(0,0,0,.1);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.card-programa:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,0,0,.14)}
+.card-programa-header{padding:22px 20px 16px;text-align:center;position:relative}
+.card-programa-header.laranja{background:linear-gradient(135deg,#fff3e0,#ffe0b2)}
+.card-programa-header.verde{background:linear-gradient(135deg,#e8f5e9,#c8e6c9)}
+.card-programa-icon{font-size:3rem;margin-bottom:8px;display:block}
+.card-programa-titulo{font-size:1.05rem;font-weight:900;letter-spacing:.5px;margin-bottom:6px}
+.card-programa-titulo.laranja{color:#bf360c}
+.card-programa-titulo.verde{color:#1b5e20}
+.card-programa-desc{font-size:.82rem;color:#555;line-height:1.55}
+.card-programa-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column;gap:10px}
 
-/* ── CARD ── */
+/* ── PASSOS MINI ── */
+.passos-mini{display:flex;flex-direction:column;gap:8px}
+.passo-mini{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#444;line-height:1.45}
+.passo-mini-num{min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px}
+.passo-mini-num.laranja{background:#e8650a}
+.passo-mini-num.verde{background:#2e7d32}
+
+/* ── DESTAQUE PREMIO ── */
+.destaque-premio{border-radius:12px;padding:10px 14px;font-size:.8rem;font-weight:700;line-height:1.5;text-align:center}
+.destaque-premio.laranja{background:#fff3e0;border:1.5px solid #ffcc80;color:#bf360c}
+.destaque-premio.verde{background:#e8f5e9;border:1.5px solid #a5d6a7;color:#1b5e20}
+
+/* ── BOTAO PARTICIPAR ── */
+.btn-participar{width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;letter-spacing:.4px;transition:.2s;margin-top:auto}
+.btn-participar:active{transform:scale(.97)}
+.btn-participar.laranja{background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;box-shadow:0 4px 16px rgba(232,101,10,.35)}
+.btn-participar.laranja:hover{background:linear-gradient(135deg,#d05a08,#e87800)}
+.btn-participar.verde{background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;box-shadow:0 4px 16px rgba(46,125,50,.35)}
+.btn-participar.verde:hover{background:linear-gradient(135deg,#256427,#388e3c)}
+
+/* ── BLOCO REGULAMENTO INLINE ── */
+.bloco-regulamento{display:none;margin-top:16px;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.bloco-reg-header{padding:14px 18px;text-align:center}
+.bloco-reg-header.laranja{background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-bottom:2px solid #ffcc80}
+.bloco-reg-header.verde{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-bottom:2px solid #a5d6a7}
+.bloco-reg-header h3{font-size:.95rem;font-weight:900;margin-bottom:2px}
+.bloco-reg-header h3.laranja{color:#bf360c}
+.bloco-reg-header h3.verde{color:#1b5e20}
+.bloco-reg-header p{font-size:.75rem;color:#666}
+.bloco-reg-body{background:#fff;padding:16px 18px}
+.aviso-fraude-reg{background:linear-gradient(135deg,#b71c1c,#c62828);color:#fff;border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:center;font-size:.8rem;font-weight:700;line-height:1.55}
+.reg-texto{max-height:240px;overflow-y:auto;border-radius:10px;padding:12px 14px;font-size:clamp(.7rem,2vw,.79rem);color:#333;line-height:1.7;margin-bottom:14px}
+.reg-texto.laranja{background:#fff8f0;border:1.5px solid #ffcc80}
+.reg-texto.verde{background:#f1f8e9;border:1.5px solid #a5d6a7}
+.aceite-label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:.83rem;color:#333;margin-bottom:12px}
+.aceite-label input{width:18px;height:18px;margin-top:2px;flex-shrink:0}
+.btn-aceitar{width:100%;padding:13px;border:none;border-radius:12px;font-size:.95rem;font-weight:900;cursor:not-allowed;transition:.3s;color:#fff;background:#ccc}
+.btn-aceitar.laranja-ativo{background:linear-gradient(135deg,#e8650a,#ff8c00);cursor:pointer}
+.btn-aceitar.verde-ativo{background:linear-gradient(135deg,#2e7d32,#43a047);cursor:pointer}
+
+/* ── BLOCO FORMULARIO INLINE ── */
+.bloco-form{display:none;margin-top:14px;background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.bloco-form-header{text-align:center;margin-bottom:16px}
+.bloco-form-header .form-icon{font-size:2rem;margin-bottom:4px}
+.bloco-form-header h3{font-size:1rem;font-weight:900;margin-bottom:4px}
+.bloco-form-header p{font-size:.8rem;color:#666}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:.82rem;font-weight:700;color:#555;margin-bottom:5px}
+.form-group input{width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:.95rem;outline:none;transition:.2s;font-family:'Nunito',sans-serif}
+.form-group input:focus{border-color:#e8650a;box-shadow:0 0 0 3px rgba(232,101,10,.12)}
+.form-group input.verde:focus{border-color:#2e7d32;box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+.form-group .hint{font-size:.72rem;color:#888;margin-top:4px;font-style:italic}
+.form-group .hint.warn{color:#c62828;font-weight:700;background:#fff8e1;border-radius:6px;padding:5px 8px;border-left:3px solid #e65100;font-style:normal}
+
+/* ── AVISO ANTI-FRAUDE PULSANTE ── */
+@keyframes pulsarVermelho{
+  0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.55),0 4px 18px rgba(220,38,38,.25)}
+  50%{box-shadow:0 0 0 10px rgba(220,38,38,0),0 4px 24px rgba(220,38,38,.45)}
+}
+.aviso-fraude-pulsante{background:linear-gradient(135deg,#b91c1c,#dc2626);color:#fff;border:2.5px solid #7f1d1d;border-radius:16px;padding:16px 18px;text-align:center;animation:pulsarVermelho 1.8s ease-in-out infinite;position:relative;overflow:hidden;margin:0 auto;max-width:820px}
+.aviso-fraude-pulsante::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);pointer-events:none}
+
+/* ── PAINEL PRINCIPAL (login / cliente) ── */
+.painel{max-width:520px;margin:0 auto;padding:20px 16px}
+
+/* ── CARD GENERICO ── */
 .card{background:#fff;border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 3px 14px rgba(0,0,0,.08)}
 .card-title{font-size:1rem;font-weight:800;color:#e8650a;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
-/* ── FORMULÁRIO ── */
+/* ── TABS ── */
 .form-tabs{display:flex;gap:8px;margin-bottom:16px}
-.tab-btn{flex:1;padding:10px;border:2px solid #e8650a;background:#fff;color:#e8650a;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s}
+.tab-btn{flex:1;padding:10px;border:2px solid #e8650a;background:#fff;color:#e8650a;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;font-family:'Nunito',sans-serif}
 .tab-btn.active{background:#e8650a;color:#fff}
-.form-group{margin-bottom:12px}
-.form-group label{display:block;font-size:.82rem;font-weight:700;color:#555;margin-bottom:5px}
-.form-group input{width:100%;padding:12px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.95rem;outline:none;transition:.2s}
-.form-group input:focus{border-color:#e8650a;box-shadow:0 0 0 3px rgba(232,101,10,.12)}
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:800;cursor:pointer;transition:.2s;margin-top:4px}
+
+/* ── BOTOES GERAIS ── */
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:800;cursor:pointer;transition:.2s;margin-top:4px;font-family:'Nunito',sans-serif}
 .btn:active{transform:scale(.97)}
 .btn-laranja{background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;box-shadow:0 4px 12px rgba(232,101,10,.3)}
 .btn-laranja:hover{background:linear-gradient(135deg,#d05a08,#e87800)}
 .btn-verde{background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;box-shadow:0 4px 12px rgba(39,174,96,.3)}
-.btn-verde:hover{background:linear-gradient(135deg,#219a52,#27ae60)}
 .btn-whats{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font-size:1.05rem;box-shadow:0 4px 16px rgba(37,211,102,.35)}
-.btn-whats:hover{background:linear-gradient(135deg,#20b857,#0e7a6e)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
 /* ── MENSAGENS ── */
@@ -73,75 +148,51 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 .msg-ok{background:#d4edda;color:#155724;border:1.5px solid #c3e6cb}
 .msg-erro{background:#f8d7da;color:#721c24;border:1.5px solid #f5c6cb}
 .msg-aviso{background:#fff3cd;color:#856404;border:1.5px solid #ffeeba}
-
-/* AVISO ANTI-FRAUDE PULSANTE */
-@keyframes pulsarVermelho{
-  0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.55),0 4px 18px rgba(220,38,38,.25)}
-  50%{box-shadow:0 0 0 10px rgba(220,38,38,0),0 4px 24px rgba(220,38,38,.45)}
-}
-.aviso-fraude-pulsante{
-  background:linear-gradient(135deg,#b91c1c,#dc2626);
-  color:#fff;
-  border:2.5px solid #7f1d1d;
-  border-radius:14px;
-  padding:16px 18px;
-  text-align:center;
-  animation:pulsarVermelho 1.8s ease-in-out infinite;
-  position:relative;
-  overflow:hidden;
-}
-.aviso-fraude-pulsante::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);
-  pointer-events:none;
-}
 .msg-info{background:#d1ecf1;color:#0c5460;border:1.5px solid #bee5eb}
 
-/* ── PAINEL DO CLIENTE ── */
+/* ── PAINEL CLIENTE ── */
 .cliente-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.cliente-avatar{width:48px;height:48px;background:linear-gradient(135deg,#e8650a,#ff8c00);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-weight:800;flex-shrink:0}
+.cliente-avatar{width:52px;height:52px;background:linear-gradient(135deg,#e8650a,#ff8c00);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;font-weight:900;flex-shrink:0;box-shadow:0 3px 10px rgba(232,101,10,.3)}
 .cliente-info h3{font-size:1rem;font-weight:800;color:#333}
 .cliente-info p{font-size:.82rem;color:#888}
-.rodada-badge{background:#e8650a;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:3px}
+.rodada-badge{background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:4px;box-shadow:0 2px 6px rgba(232,101,10,.25)}
 
-/* ── CONTADOR DE PONTOS ── */
-.pontos-section{text-align:center;margin-bottom:18px}
-.pontos-título{font-size:.82rem;color:#888;margin-bottom:8px}
-.pontos-número{font-size:3rem;font-weight:900;color:#e8650a;line-height:1}
-.pontos-meta{font-size:.82rem;color:#açaía;margin-top:2px}
+/* ── PONTOS ── */
+.pontos-section{text-align:center;margin-bottom:18px;background:linear-gradient(135deg,#fff8f0,#fff3e0);border-radius:14px;padding:16px}
+.pontos-titulo{font-size:.8rem;color:#888;margin-bottom:6px;font-weight:600}
+.pontos-numero{font-size:3rem;font-weight:900;color:#e8650a;line-height:1}
+.pontos-meta-txt{font-size:.82rem;color:#666;margin-top:4px;font-weight:600}
 
-/* ── ÍCONES DE SORVETE ── */
-.sorvetes-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:14px 0}
-.sorvete-icon{font-size:1.8rem;opacity:.2;transition:all .4s;filter:grayscale(1)}
+/* ── SORVETES GRID ── */
+.sorvetes-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:12px 0}
+.sorvete-icon{font-size:1.7rem;opacity:.2;transition:all .4s;filter:grayscale(1)}
 .sorvete-icon.ativo{opacity:1;filter:none;animation:pop .4s ease}
 @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.35)}100%{transform:scale(1)}}
 
-/* ── BARRA DE PROGRESSO ── */
+/* ── BARRA PROGRESSO ── */
 .progress-wrap{background:#f0e8e0;border-radius:20px;height:14px;overflow:hidden;margin:10px 0}
 .progress-bar{height:100%;background:linear-gradient(90deg,#e8650a,#ff8c00);border-radius:20px;transition:width .6s ease;min-width:0}
-.progress-label{text-align:center;font-size:.78rem;color:#888;margin-top:4px}
+.progress-label{text-align:center;font-size:.78rem;color:#888;margin-top:4px;font-weight:600}
 
-/* ── CÓDIGO ── */
-.código-input{width:100%;padding:14px;border:2.5px solid #e0d0c0;border-radius:12px;font-size:1.1rem;font-weight:700;text-align:center;letter-spacing:2px;text-transform:uppercase;outline:none;transition:.2s;font-family:monospace}
-.código-input:focus{border-color:#e8650a;box-shadow:0 0 0 3px rgba(232,101,10,.15)}
+/* ── CODIGO INPUT ── */
+.codigo-input{width:100%;padding:14px;border:2.5px solid #e0d0c0;border-radius:12px;font-size:1.1rem;font-weight:700;text-align:center;letter-spacing:2px;text-transform:uppercase;outline:none;transition:.2s;font-family:monospace}
+.codigo-input:focus{border-color:#e8650a;box-shadow:0 0 0 3px rgba(232,101,10,.15)}
 
 /* ── RESGATE ── */
-.resgaté-section{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px dashed #27ae60;border-radius:16px;padding:20px;text-align:center;margin-top:8px}
-.resgaté-section h3{color:#27ae60;font-size:1.1rem;font-weight:800;margin-bottom:6px}
-.resgaté-section p{font-size:.85rem;color:#555;margin-bottom:14px}
+.resgatar-section{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px dashed #27ae60;border-radius:16px;padding:20px;text-align:center;margin-top:8px}
+.resgatar-section h3{color:#27ae60;font-size:1.1rem;font-weight:800;margin-bottom:6px}
+.resgatar-section p{font-size:.85rem;color:#555;margin-bottom:14px}
 
-/* ── HISTÓRICO ── */
+/* ── HISTORICO ── */
 .historico-list{list-style:none;max-height:220px;overflow-y:auto}
 .historico-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0e8e0;font-size:.82rem}
 .historico-item:last-child{border-bottom:none}
 .historico-item .cod{font-family:monospace;font-weight:700;color:#e8650a;font-size:.85rem}
-.historico-item .data{color:#açaía;font-size:.75rem}
+.historico-item .data{color:#999;font-size:.75rem}
 .rodada-header{background:#fff3e0;border-radius:8px;padding:6px 10px;margin:8px 0 4px;font-size:.78rem;font-weight:700;color:#e8650a}
 
 /* ── SAIR ── */
-.btn-sair{background:none;border:1.5px solid #ddd;color:#888;font-size:.82rem;padding:8px 16px;border-radius:8px;cursor:pointer;width:auto;margin-top:8px}
+.btn-sair{background:none;border:1.5px solid #ddd;color:#888;font-size:.82rem;padding:8px 16px;border-radius:8px;cursor:pointer;width:auto;margin-top:8px;font-family:'Nunito',sans-serif}
 .btn-sair:hover{border-color:#e8650a;color:#e8650a}
 
 /* ── PAINEL ADMIN ── */
@@ -150,14 +201,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 .admin-header h2{font-size:clamp(1rem,3.5vw,1.3rem);font-weight:900;margin:0}
 .admin-header p{font-size:.82rem;opacity:.8;margin:4px 0 0}
 .admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.stat-num{font-size:1.8rem;font-weight:900;line-height:1}
-.stat-label{font-size:.72rem;color:#888;margin-top:4px}
+.stat-card{background:#fff;border-radius:14px;padding:16px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.stat-num{font-size:2rem;font-weight:900;line-height:1}
+.stat-label{font-size:.72rem;color:#888;margin-top:4px;font-weight:600}
 .admin-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
-.admin-search{flex:1;min-width:180px;padding:10px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.88rem;outline:none}
+.admin-search{flex:1;min-width:180px;padding:10px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.88rem;outline:none;font-family:'Nunito',sans-serif}
 .admin-search:focus{border-color:#1a237e}
-.btn-admin{padding:10px 16px;border:none;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap}
-.btn-copiar-sorteio{background:linear-gradient(135deg,#6a1b9a,#8e24açaí);color:#fff;box-shadow:0 3px 10px rgba(106,27,154,.3)}
+.btn-admin{padding:10px 16px;border:none;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Nunito',sans-serif}
+.btn-copiar-sorteio{background:linear-gradient(135deg,#6a1b9a,#8e24aa);color:#fff;box-shadow:0 3px 10px rgba(106,27,154,.3)}
 .btn-copiar-sorteio:hover{background:linear-gradient(135deg,#5c1587,#7b1fa2)}
 .btn-sair-admin{background:#f5f5f5;color:#555;border:1.5px solid #ddd}
 .btn-sair-admin:hover{background:#eee}
@@ -179,75 +230,67 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 .btn-desbloquear{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:4px 10px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;margin-left:4px}
 .btn-desbloquear:hover{background:#c8e6c9}
 .admin-acoes{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.admin-empty{text-align:center;padding:30px;color:#açaía;font-size:.9rem}
+.admin-empty{text-align:center;padding:30px;color:#999;font-size:.9rem}
 .admin-login{max-width:360px;margin:60px auto;background:#fff;border-radius:18px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.12)}
 .admin-login h2{color:#1a237e;font-size:1.2rem;font-weight:900;margin-bottom:18px;text-align:center}
 .admin-paginacao{display:flex;justify-content:center;align-items:center;gap:8px;padding:14px;flex-wrap:wrap}
-.btn-pag{background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:.8rem;cursor:pointer;font-weight:600}
+.btn-pag{background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:.8rem;cursor:pointer;font-weight:600;font-family:'Nunito',sans-serif}
 .btn-pag.ativo{background:#1a237e;color:#fff;border-color:#1a237e}
 .btn-pag:hover:not(.ativo){background:#e8eaf6}
 .pag-info{font-size:.78rem;color:#888}
 
-/* ── RESPONSIVO: CELULAR (até 480px) ── */
+/* ── RESPONSIVO MOBILE ── */
 @media(max-width:480px){
-  .hero{padding:24px 14px 20px}
-  .hero h1{font-size:1.35rem}
-  .hero p{font-size:.88rem}
-  .hero-prêmio{padding:10px 14px;gap:10px}
-  .hero-prêmio .prêmio-icon{font-size:1.8rem}
-  .hero-prêmio-txt strong{font-size:1rem}
-  .hero-prêmio-txt span{font-size:.78rem}
-  .passos{padding:20px 12px}
-  .passos-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .passo-card{padding:12px 8px}
-  .passo-card h3{font-size:.75rem}
-  .passo-card p{font-size:.68rem}
+  .site-header{padding:8px 14px}
+  .site-header .logo-img{width:36px;height:36px}
+  .site-header .logo-txt{font-size:.88rem}
+  .site-header a.back{font-size:.75rem;padding:6px 10px}
+  .hero-banner{padding:22px 14px 20px}
+  .hero-logo-circle{width:64px;height:64px}
+  .hero-banner h1{font-size:1.3rem}
+  .hero-banner p{font-size:.85rem}
+  .hero-premios{gap:8px}
+  .hero-premio-chip{padding:8px 12px;gap:8px}
+  .hero-premio-chip .chip-icon{font-size:1.5rem}
+  .hero-premio-chip strong{font-size:.85rem}
+  .secao-programas{padding:18px 12px}
+  .card-programa-header{padding:16px 14px 12px}
+  .card-programa-icon{font-size:2.4rem}
+  .card-programa-titulo{font-size:.95rem}
+  .card-programa-body{padding:12px 14px 16px}
   .painel{padding:14px 10px}
   .card{padding:16px 14px;border-radius:14px}
-  .form-tabs{gap:6px}
-  .tab-btn{font-size:.78rem;padding:9px 6px}
-  .form-group label{font-size:.78rem}
-  .form-group input{font-size:.88rem;padding:11px 12px}
-  .btn{font-size:.92rem;padding:13px}
-  .pontos-número{font-size:2.4rem}
+  .pontos-numero{font-size:2.4rem}
   .sorvete-icon{font-size:1.5rem}
-  .código-input{font-size:1rem;padding:12px}
-  .cliente-avatar{width:42px;height:42px;font-size:1.2rem}
-  .cliente-info h3{font-size:.92rem}
-  .cliente-info p{font-size:.76rem}
-  .resgaté-section{padding:14px}
-  .resgaté-section h3{font-size:.95rem}
-  .resgaté-section p{font-size:.78rem}
+  .codigo-input{font-size:1rem;padding:12px}
+  .cliente-avatar{width:44px;height:44px;font-size:1.2rem}
 }
 
-/* ── RESPONSIVO: TABLET (481px – 768px) ── */
+/* ── RESPONSIVO TABLET ── */
 @media(min-width:481px) and (max-width:768px){
-  .hero h1{font-size:1.6rem}
-  .passos-grid{grid-template-columns:repeat(4,1fr)}
+  .hero-banner h1{font-size:1.6rem}
   .painel{max-width:520px;padding:18px 20px}
   .card{padding:20px}
-  .pontos-número{font-size:2.8rem}
-  .btn{font-size:.96rem}
-  .form-group input{font-size:.92rem}
+  .pontos-numero{font-size:2.8rem}
+  .secao-programas{padding:22px 16px}
 }
 
-/* ── RESPONSIVO: DESKTOP (acima de 768px) ── */
+/* ── RESPONSIVO DESKTOP ── */
 @media(min-width:769px){
-  .hero h1{font-size:2rem}
-  .hero p{font-size:1.05rem}
-  .passos-grid{grid-template-columns:repeat(4,1fr);max-width:800px}
+  .hero-banner h1{font-size:2rem}
+  .hero-banner p{font-size:1.05rem}
   .painel{max-width:520px;padding:24px 20px}
   .card{padding:26px}
-  .pontos-número{font-size:3.2rem}
+  .pontos-numero{font-size:3.2rem}
   .btn{font-size:1.05rem;padding:15px}
   .form-group input{font-size:1rem;padding:13px 16px}
   .form-group label{font-size:.86rem}
   .tab-btn{font-size:.9rem;padding:11px}
-  .código-input{font-size:1.15rem}
+  .codigo-input{font-size:1.15rem}
 }
 
-html { scroll-behavior: smooth; }
-::selection { background: #e85d04; color: #fff; }
+html{scroll-behavior:smooth}
+::selection{background:#e85d04;color:#fff}
 </style>
 </head>
 <body>
@@ -260,351 +303,278 @@ html { scroll-behavior: smooth; }
 
 <!-- HEADER -->
 <header class="site-header">
-  <a class="logo" href="index.html">🍦 Itapolitana Cajuru</a>
-  <span style="color:#fff;font-weight:700;font-size:.95rem">Programa de Fidelidade</span>
-  <a class="back" href="index.html">← Voltar ao Site</a>
+  <a class="logo-wrap" href="index.html">
+    <img class="logo-img" src="images/logo.png" alt="Itapolitana" onerror="this.style.display='none'">
+    <div>
+      <div class="logo-txt">Itapolitana Cajuru</div>
+      <div class="logo-sub">Sorveteria tipo Artesanal</div>
+    </div>
+  </a>
+  <a class="back" href="index.html">&#8592; Voltar</a>
 </header>
 
-<!-- COMO FUNCIONA (aparece primeiro) -->
-<section class="passos" id="sec-passos" style="padding-top:24px">
-  <h2>Como funciona?</h2>
-
-  <!-- CLUBE DE FIDELIDADE -->
-  <div style="max-width:700px;margin:0 auto 20px auto;background:#fff3e0;border:2px solid #ffcc80;border-radius:16px;padding:16px 18px">
-    <div style="font-size:1rem;font-weight:900;color:#e8650a;margin-bottom:12px;text-align:center">🎟️ CLUBE DE FIDELIDADE — Passo a Passo</div>
-    <div class="passos-grid" style="margin-bottom:0">
-      <div class="passo-card">
-        <div class="passo-num">1</div>
-        <div class="passo-icon">🛒</div>
-        <h3>Compre e Ganhe Cupóm</h3>
-        <p>Compras acima de <strong>R$ 30,00</strong> recebem um cupóm com código</p>
-      </div>
-      <div class="passo-card">
-        <div class="passo-num">2</div>
-        <div class="passo-icon">📱</div>
-        <h3>Acesse Nosso Site</h3>
-        <p>itapolitanacajuru.com.br → clique em <strong>Fidelidade</strong></p>
-      </div>
-      <div class="passo-card">
-        <div class="passo-num">3</div>
-        <div class="passo-icon">👤</div>
-        <h3>Cadastre-se</h3>
-        <p>Informe seu nome e celular (só na 1ª vez)</p>
-      </div>
-      <div class="passo-card">
-        <div class="passo-num">4</div>
-        <div class="passo-icon">🔑</div>
-        <h3>Insira o Código</h3>
-        <p>Digite o código do cupóm para ganhar 1 ponto</p>
-      </div>
-      <div class="passo-card" style="grid-column:1/-1;max-width:340px;margin:0 auto">
-        <div class="passo-num">5</div>
-        <div class="passo-icon">🎁</div>
-        <h3>Resgate seu Prêmio!</h3>
-        <p>🥤 <strong>10 pontos</strong> = Milkshake 300ml GRÁTIS<br>🍦 <strong>30 pontos</strong> = Caixa 7 Bolas GRÁTIS</p>
+<!-- HERO BANNER -->
+<section class="hero-banner">
+  <img class="hero-logo-circle" src="images/logo.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
+  <h1>&#127881; Programa de Fidelidade</h1>
+  <p>Acumule pontos e ganhe premios incriveis na sorveteria!</p>
+  <div class="hero-premios">
+    <div class="hero-premio-chip">
+      <span class="chip-icon">&#127834;</span>
+      <div>
+        <strong>10 pontos = Milkshake 300ml</strong>
+        <span>GRATIS para voce!</span>
       </div>
     </div>
-  </div>
-
-  <!-- SORTEIOS MENSAIS -->
-  <div style="max-width:700px;margin:0 auto;background:#e8f5e9;border:2px solid #a5d6a7;border-radius:16px;padding:16px 18px">
-    <div style="font-size:1rem;font-weight:900;color:#1b5e20;margin-bottom:12px;text-align:center">🎁 SORTEIOS MENSAIS — Passo a Passo</div>
-    <div class="passos-grid" style="margin-bottom:0">
-      <div class="passo-card">
-        <div class="passo-num">1</div>
-        <div class="passo-icon">📱</div>
-        <h3>Acesse o Site</h3>
-        <p>itapolitanacajuru.com.br → clique em <strong>Fidelidade</strong></p>
+    <div class="hero-premio-chip">
+      <span class="chip-icon">&#127846;</span>
+      <div>
+        <strong>30 pontos = Caixa 7 Bolas</strong>
+        <span>GRATIS para voce!</span>
       </div>
-      <div class="passo-card">
-        <div class="passo-num">2</div>
-        <div class="passo-icon">👤</div>
-        <h3>Cadastre-se</h3>
-        <p>Informe nome, celular e data de nascimento (só na 1ª vez)</p>
-      </div>
-      <div class="passo-card">
-        <div class="passo-num">3</div>
-        <div class="passo-icon">🔓</div>
-        <h3>Logue na Conta</h3>
-        <p>Após logar, clique em <strong>“Quero participar dos sorteios”</strong></p>
-      </div>
-      <div class="passo-card" style="grid-column:1/-1;max-width:340px;margin:0 auto">
-        <div class="passo-num">4</div>
-        <div class="passo-icon">📲</div>
-        <h3>Confirme pelo WhatsApp</h3>
-        <p>Você será redirecionado ao WhatsApp para enviar seu nome e confirmar o cadastro</p>
-      </div>
-    </div>
-    <div style="background:#fff;border-radius:8px;padding:8px 12px;font-size:.78rem;color:#1b5e20;font-weight:700;text-align:center;margin-top:10px">
-      🎠 Sorteio mensal — Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros — 1 caixa de 5 litros todo mês!
     </div>
   </div>
 </section>
 
-<!-- CARDS DOS DOIS PROGRAMAS -->
-<section id="sec-hero" style="background:#f8f8f8;padding:24px 12px 28px">
-  <div style="max-width:820px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<!-- SECAO DOS DOIS PROGRAMAS -->
+<section class="secao-programas">
+  <div class="programas-grid">
 
     <!-- CARD 1: CLUBE DE FIDELIDADE -->
-    <div style="background:#fff;border-radius:18px;border:2px solid #e8650a;padding:24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 4px 16px rgba(232,101,10,.12)">
-      <div style="font-size:2.4rem;margin-bottom:8px">🎟️</div>
-      <div style="font-size:1.1rem;font-weight:900;color:#e8650a;letter-spacing:.5px;margin-bottom:12px">CLUBE DE FIDELIDADE</div>
-      <div style="font-size:.88rem;color:#444;line-height:1.6;margin-bottom:16px">
-        🛒 Compras acima de <strong>R$ 30,00</strong> ganham um cupom com código.<br>
-        📱 Acesse o site, faça o cadastro e insira o código.<br>
-        🌟 Acumule pontos e escolha seu prêmio:<br>
-        🥤 <strong>10 pontos</strong> = Milkshake 300ml GRÁTIS<br>
-        🍦 <strong>30 pontos</strong> = Caixa 7 Bolas GRÁTIS
+    <div class="card-programa">
+      <div class="card-programa-header laranja">
+        <span class="card-programa-icon">&#127903;&#65039;</span>
+        <div class="card-programa-titulo laranja">CLUBE DE FIDELIDADE</div>
+        <div class="card-programa-desc">Compre, acumule pontos e troque por premios exclusivos!</div>
       </div>
-      <button onclick="mostrarRegrasF()" style="background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(232,101,10,.35);width:100%">🎟️ Quero Participar</button>
+      <div class="card-programa-body">
+        <div class="passos-mini">
+          <div class="passo-mini">
+            <span class="passo-mini-num laranja">1</span>
+            <span>Compre acima de <strong>R$ 30,00</strong> e receba um cupom com codigo</span>
+          </div>
+          <div class="passo-mini">
+            <span class="passo-mini-num laranja">2</span>
+            <span>Acesse o site e faca seu <strong>cadastro gratuito</strong></span>
+          </div>
+          <div class="passo-mini">
+            <span class="passo-mini-num laranja">3</span>
+            <span>Insira o codigo do cupom e <strong>ganhe 1 ponto</strong></span>
+          </div>
+          <div class="passo-mini">
+            <span class="passo-mini-num laranja">4</span>
+            <span>Acumule e <strong>resgate seu premio</strong> via WhatsApp</span>
+          </div>
+        </div>
+        <div class="destaque-premio laranja">
+          &#127834; <strong>10 pts</strong> = Milkshake 300ml GRATIS &nbsp;|&nbsp; &#127846; <strong>30 pts</strong> = Caixa 7 Bolas GRATIS
+        </div>
+        <button class="btn-participar laranja" onclick="abrirRegrasF()">&#127903;&#65039; Quero Participar</button>
+
+        <!-- REGULAMENTO FIDELIDADE INLINE -->
+        <div id="bloco-regras-fidelidade" class="bloco-regulamento">
+          <div class="bloco-reg-header laranja">
+            <h3 class="laranja">&#128220; REGULAMENTO — CLUBE DE FIDELIDADE</h3>
+            <p>Leia atentamente antes de se cadastrar</p>
+          </div>
+          <div class="bloco-reg-body">
+            <div class="aviso-fraude-reg">
+              &#9888;&#65039; <strong>ATENCAO: TENTATIVA DE FRAUDE = EXCLUSAO PERMANENTE</strong><br>
+              Numeros que tentarem usar codigos invalidos, codigos de terceiros ou burlar o sistema serao <strong>bloqueados e excluidos definitivamente</strong>, sem direito a recurso.
+            </div>
+            <div class="reg-texto laranja">
+              <strong>1. DO PROGRAMA</strong><br>
+              O Clube de Fidelidade e um programa de pontuacao gratuito oferecido pela Sorveteria Itapolitana Cajuru, destinado a clientes que realizem compras acima de <strong>R$ 30,00</strong> no estabelecimento.<br><br>
+              <strong>2. DA PARTICIPACAO</strong><br>
+              2.1. Podem participar pessoas com idade minima de <strong>14 (quatorze) anos</strong>.<br>
+              2.2. O cadastro e realizado exclusivamente pelo site oficial, mediante informacao de nome completo (conforme documento de identidade), data de nascimento e numero de celular com WhatsApp ativo.<br>
+              2.3. Cada pessoa pode ter apenas <strong>um unico cadastro</strong>. Cadastros duplicados serao cancelados sem aviso previo.<br><br>
+              <strong>3. DOS CUPONS E PONTOS</strong><br>
+              3.1. A cada compra acima de R$ 30,00, o cliente recebe um cupom fisico com codigo unico.<br>
+              3.2. O codigo deve ser inserido no site dentro do prazo de validade: <strong>60 dias</strong> para codigos emitidos antes de 01/05/2025 e <strong>30 dias</strong> para codigos emitidos a partir de 01/05/2025.<br>
+              3.3. Cada codigo valido equivale a <strong>1 (um) ponto</strong>. Os pontos sao intransferiveis e nao possuem valor monetario.<br><br>
+              <strong>4. DOS PREMIOS</strong><br>
+              4.1. <strong>10 pontos</strong>: 1 Milkshake 300ml GRATIS.<br>
+              4.2. <strong>30 pontos</strong>: 1 Caixa com 7 Bolas de Sorvete GRATIS.<br>
+              4.3. Para retirar o premio, o cliente devera comparecer pessoalmente com <strong>documento de identidade</strong> e o <strong>celular com o numero cadastrado</strong> no dia e horario agendados. Nao sera possivel retirar por terceiros.<br><br>
+              <strong>5. DAS PROIBICOES E FRAUDES</strong><br>
+              5.1. E expressamente proibido o uso de codigos de terceiros, codigos invalidos, falsificados ou obtidos de forma irregular.<br>
+              5.2. Tentativas de fraude implicarao no <strong>cancelamento imediato e permanente</strong> do cadastro, sem direito a recurso.<br><br>
+              <strong>6. DAS CRITICAS E CONDUTA</strong><br>
+              Criticas infundadas, ofensas ou conduta inadequada poderao resultar no <strong>bloqueio definitivo</strong> do nome e numero de telefone no sistema.<br><br>
+              <strong>7. DAS ALTERACOES</strong><br>
+              A sorveteria reserva-se o direito de alterar, suspender ou encerrar o programa a qualquer momento, mediante aviso no site e nas redes sociais.<br><br>
+              <strong>8. DO FORO</strong><br>
+              Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer duvidas ou litigios.
+            </div>
+            <label class="aceite-label">
+              <input type="checkbox" id="aceite-fidelidade-inline" onchange="verificarAceiteFidelidadeInline()" style="accent-color:#e8650a">
+              <span>Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru.</span>
+            </label>
+            <button id="btn-aceitar-fidelidade-inline" class="btn-aceitar" onclick="abrirFormFidelidade()" disabled>&#128221; Aceitar e Fazer Cadastro</button>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <!-- CARD 2: SORTEIOS MENSAIS -->
-    <div style="background:#fff;border-radius:18px;border:2px solid #2e7d32;padding:24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 4px 16px rgba(46,125,50,.12)">
-      <div style="font-size:2.4rem;margin-bottom:8px">🎁</div>
-      <div style="font-size:1.1rem;font-weight:900;color:#2e7d32;letter-spacing:.5px;margin-bottom:12px">SORTEIOS MENSAIS</div>
-      <div style="font-size:.88rem;color:#444;line-height:1.6;margin-bottom:16px">
-        📍 A partir de <strong>1º de maio</strong>, moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> concorrem a <strong>1 caixa de 5 litros</strong> de sorvete todo mês!<br><br>
-        ⚠️ Quem não tiver o <strong>número e nome cadastrado</strong> na agenda da sorveteria no dia do sorteio <strong>não terá direito ao prêmio</strong>.
+    <div class="card-programa">
+      <div class="card-programa-header verde">
+        <span class="card-programa-icon">&#127873;</span>
+        <div class="card-programa-titulo verde">SORTEIOS MENSAIS</div>
+        <div class="card-programa-desc">Cadastre-se e concorra todo mes a uma caixa de sorvete!</div>
       </div>
-      <button onclick="mostrarRegrasS()" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(46,125,50,.35);width:100%">🎁 Quero Participar</button>
+      <div class="card-programa-body">
+        <div class="passos-mini">
+          <div class="passo-mini">
+            <span class="passo-mini-num verde">1</span>
+            <span>Acesse o site e faca seu <strong>cadastro gratuito</strong></span>
+          </div>
+          <div class="passo-mini">
+            <span class="passo-mini-num verde">2</span>
+            <span>Confirme pelo <strong>WhatsApp</strong> da sorveteria</span>
+          </div>
+          <div class="passo-mini">
+            <span class="passo-mini-num verde">3</span>
+            <span>Aguarde o sorteio mensal e <strong>torca pelo seu numero!</strong></span>
+          </div>
+          <div class="passo-mini">
+            <span class="passo-mini-num verde">4</span>
+            <span>Ganhador retira o premio <strong>pessoalmente</strong> na sorveteria</span>
+          </div>
+        </div>
+        <div class="destaque-premio verde">
+          &#127873; Sorteio mensal — <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cassia dos Coqueiros</strong><br>
+          &#127846; Premio: <strong>1 caixa de 5 litros</strong> de sorvete tipo artesanal todo mes!
+        </div>
+        <button class="btn-participar verde" onclick="abrirRegrasS()">&#127873; Quero Participar</button>
+
+        <!-- REGULAMENTO SORTEIOS INLINE -->
+        <div id="bloco-regras-sorteio" class="bloco-regulamento">
+          <div class="bloco-reg-header verde">
+            <h3 class="verde">&#128220; REGULAMENTO — SORTEIOS MENSAIS</h3>
+            <p>Leia atentamente antes de se cadastrar</p>
+          </div>
+          <div class="bloco-reg-body">
+            <div class="aviso-fraude-reg">
+              &#9888;&#65039; <strong>ATENCAO: TENTATIVA DE FRAUDE = EXCLUSAO PERMANENTE</strong><br>
+              Numeros que tentarem usar dados falsos ou burlar o sistema serao <strong>bloqueados e excluidos definitivamente</strong>, sem direito a recurso.
+            </div>
+            <div class="reg-texto verde">
+              <strong>1. DO SORTEIO</strong><br>
+              O Sorteio Mensal e uma promocao gratuita realizada pela Sorveteria Itapolitana Cajuru, com frequencia mensal, a partir de <strong>1 de maio de 2025</strong>.<br><br>
+              <strong>2. DA PARTICIPACAO</strong><br>
+              2.1. Podem participar moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cassia dos Coqueiros</strong> — SP, com idade minima de <strong>14 (quatorze) anos</strong>.<br>
+              2.2. O cadastro e realizado pelo site, com envio de confirmacao pelo WhatsApp a sorveteria.<br>
+              2.3. Cada pessoa pode ter apenas <strong>um unico cadastro</strong>. Cadastros duplicados serao cancelados.<br><br>
+              <strong>3. DO PREMIO</strong><br>
+              3.1. O premio e <strong>1 (uma) caixa de 5 litros de sorvete tipo artesanal</strong> por sorteio.<br>
+              3.2. O sorteio sera realizado por <strong>Inteligencia Artificial</strong>, com gravacao em video, publicado nas redes sociais da sorveteria.<br>
+              3.3. Para retirar o premio, o ganhador devera comparecer pessoalmente com <strong>documento de identidade</strong> e o <strong>celular com o numero cadastrado</strong> no dia e horario agendados. Nao sera possivel retirar por terceiros.<br><br>
+              <strong>4. DA OBRIGATORIEDADE DO CADASTRO NA AGENDA</strong><br>
+              Quem nao tiver o <strong>numero e nome cadastrado</strong> na agenda da sorveteria ate a data do sorteio <strong>nao tera direito ao premio</strong>, mesmo que seja sorteado.<br><br>
+              <strong>5. DAS PROIBICOES</strong><br>
+              Fraudes ou tentativas de manipulacao resultarao em <strong>desclassificacao permanente</strong>.<br><br>
+              <strong>6. DAS CRITICAS E CONDUTA</strong><br>
+              Criticas infundadas, ofensas ou conduta inadequada poderao resultar no <strong>bloqueio definitivo</strong> do nome e numero de telefone no sistema.<br><br>
+              <strong>7. DAS ALTERACOES</strong><br>
+              A sorveteria reserva-se o direito de alterar, suspender ou encerrar o sorteio a qualquer momento.<br><br>
+              <strong>8. DO FORO</strong><br>
+              Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer duvidas ou litigios.
+            </div>
+            <label class="aceite-label">
+              <input type="checkbox" id="aceite-sorteio-inline" onchange="verificarAceiteSorteioInline()" style="accent-color:#2e7d32">
+              <span>Li e concordo com o <strong>Regulamento dos Sorteios Mensais</strong> da Sorveteria Itapolitana Cajuru.</span>
+            </label>
+            <button id="btn-aceitar-sorteio-inline" class="btn-aceitar" onclick="abrirFormSorteio()" disabled>&#128221; Aceitar e Fazer Cadastro</button>
+          </div>
+        </div>
+
+        <!-- FORMULARIO SORTEIO INLINE -->
+        <div id="form-sorteio-inline" class="bloco-form">
+          <div class="bloco-form-header">
+            <div class="form-icon">&#127873;</div>
+            <h3 style="color:#1b5e20">CADASTRO — SORTEIOS MENSAIS</h3>
+            <p>Preencha seus dados. Ao confirmar, voce sera redirecionado ao <strong>WhatsApp</strong>.</p>
+          </div>
+          <div class="form-group">
+            <label style="color:#1b5e20">Nome completo</label>
+            <input type="text" id="sort-nome" placeholder="Nome como no RG/CPF" autocomplete="name" class="verde">
+          </div>
+          <div class="form-group">
+            <label style="color:#1b5e20">Celular (WhatsApp) <span style="font-size:11px;color:#c62828">&#11088; numero que recebera o premio</span></label>
+            <input type="tel" id="sort-cel" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" class="verde">
+          </div>
+          <div class="form-group">
+            <label style="color:#1b5e20">Data de nascimento <span style="font-size:11px;color:#1b5e20">&#128203; igual no documento</span></label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="sort-dia" placeholder="Dia" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;font-family:'Nunito',sans-serif">
+              <input type="text" id="sort-mes" placeholder="Mes" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;font-family:'Nunito',sans-serif">
+              <input type="text" id="sort-ano" placeholder="Ano" maxlength="4" inputmode="numeric" style="width:34%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;font-family:'Nunito',sans-serif">
+            </div>
+          </div>
+          <div id="msg-sorteio-inline" class="msg" style="margin-bottom:10px"></div>
+          <button onclick="enviarSorteioWhatsApp()" style="width:100%;padding:13px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(37,211,102,.35);font-family:'Nunito',sans-serif">&#128242; Confirmar e Enviar pelo WhatsApp</button>
+          <p style="font-size:.75rem;color:#555;text-align:center;margin-top:8px">&#128274; As promocoes aparecem apenas nos <strong>Status do WhatsApp</strong>.</p>
+        </div>
+
+      </div>
     </div>
 
+  </div><!-- /programas-grid -->
+
+  <!-- AVISO ANTI-FRAUDE PULSANTE -->
+  <div style="margin-top:24px;padding:0 4px">
+    <div class="aviso-fraude-pulsante">
+      <div style="font-size:1.5rem;margin-bottom:4px">&#9888;&#65039;</div>
+      <div style="font-size:clamp(.88rem,2.8vw,1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">ATENCAO: TENTATIVA DE FRAUDE = EXCLUSAO PERMANENTE</div>
+      <div style="font-size:clamp(.78rem,2.4vw,.88rem);font-weight:600;line-height:1.55">
+        Numeros que tentarem usar codigos invalidos, codigos de terceiros ou burlar o sistema serao
+        <strong>bloqueados e excluidos definitivamente da promocao</strong>, sem direito a recurso.
+        O sistema registra automaticamente todas as tentativas suspeitas. &#128220;
+      </div>
+    </div>
   </div>
-  <style>
-    @media(max-width:600px){
-      #sec-hero > div { grid-template-columns:1fr !important; }
-    }
-  </style>
+
 </section>
 
-<!-- AVISO ANTI-FRAUDE -->
-<div style="max-width:700px;margin:0 auto 18px auto;padding:0 12px">
-  <div class="aviso-fraude-pulsante">
-    <div style="font-size:1.5rem;margin-bottom:4px">⚠️</div>
-    <div style="font-size:clamp(.88rem,2.8vw,1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">ATENÇÃO: TENTATIVA DE FRAUDE = EXCLUSÃO PERMANENTE</div>
-    <div style="font-size:clamp(.78rem,2.4vw,.88rem);font-weight:600;line-height:1.55">
-      Números que tentarem usar códigos inválidos, códigos de terceiros ou burlar o sistema serão
-      <strong>bloqueados e excluídos definitivamente da promoção</strong>, sem direito a recurso.
-      O sistema registra automaticamente todas as tentativas suspeitas.
-    </div>
-  </div>
-</div>
-
-<!-- FORMULÁRIO SORTEIOS MENSAIS -->
-<section id="sec-sorteio-form" style="background:#e8f5e9;padding:24px 12px;border-top:3px solid #a5d6a7;display:none">
-  <div style="max-width:480px;margin:0 auto">
-
-    <!-- REGULAMENTO SORTEIOS (aceite obrigatório) -->
-    <div id="card-regras-sorteio" style="background:#fff;border:2px solid #2e7d32;border-radius:14px;padding:18px 16px;margin-bottom:16px">
-      <!-- BOTÃO VER REGULAMENTO SORTEIOS (visível por padrão) -->
-      <div id="btn-ver-regras-sorteio" style="text-align:center;padding:8px 0">
-        <div style="font-size:1.3rem;margin-bottom:6px">📜</div>
-        <div style="font-size:.95rem;font-weight:900;color:#1b5e20;margin-bottom:8px">SORTEIOS MENSAIS</div>
-        <p style="font-size:.8rem;color:#666;margin-bottom:12px">Antes de se cadastrar, leia o regulamento do sorteio.</p>
-        <button onclick="mostrarRegrasS()" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(46,125,50,.4)">📜 Ver Regulamento</button>
-      </div>
-      <!-- CONTEÚDO DO REGULAMENTO SORTEIOS (oculto por padrão) -->
-      <div id="conteudo-regras-sorteio" style="display:none">
-      <div style="text-align:center;margin-bottom:10px">
-        <div style="font-size:1.4rem;margin-bottom:3px">📜</div>
-        <div style="font-size:.95rem;font-weight:900;color:#1b5e20">REGULAMENTO — SORTEIOS MENSAIS</div>
-        <div style="font-size:.72rem;color:#888;margin-top:2px">Leia atentamente antes de se cadastrar</div>
-      </div>
-      <div style="max-height:240px;overflow-y:auto;background:#f1f8e9;border:1.5px solid #a5d6a7;border-radius:10px;padding:12px 14px;font-size:clamp(.7rem,2vw,.79rem);color:#333;line-height:1.7">
-
-        <strong>1. DO SORTEIO</strong><br>
-        O Sorteio Mensal é uma promoção gratuita realizada pela Sorveteria Itapolitana Cajuru, com frequência mensal, a partir de <strong>1º de maio de 2025</strong>.
-        <br><br>
-
-        <strong>2. DA PARTICIPAÇÃO</strong><br>
-        2.1. Podem participar moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> — SP, com idade mínima de <strong>14 (quatorze) anos</strong>.<br>
-        2.2. O cadastro é realizado pelo site, com envio de confirmação pelo WhatsApp à sorveteria.<br>
-        2.3. Cada pessoa pode ter apenas <strong>um único cadastro</strong>. Cadastros duplicados serão cancelados.
-        <br><br>
-
-        <strong>3. DO PRÊMMIO</strong><br>
-        3.1. O prêmio é <strong>1 (uma) caixa de 5 litros de sorvete tipo artesanal</strong> por sorteio.<br>
-        3.2. O sorteio será realizado por <strong>Inteligência Artificial</strong>, com gravação em vídeo, publicado nas redes sociais da sorveteria para total transparência.<br>
-        3.3. O vencedor será notificado pelo WhatsApp cadastrado.<br>
-        3.4. Para retirar o prêmio, o ganhador deverá comparecer pessoalmente à sorveteria no dia e horário agendados, portando obrigatoriamente: <strong>documento de identidade com foto</strong> (RG, CNH ou equivalente) e o <strong>celular com o número cadastrado</strong>.<br>
-        3.5. Não será possível retirar o prêmio por terceiros.<br>
-        3.6. O prêmio não é convertível em dinheiro ou outros produtos.
-        <br><br>
-
-        <strong>4. DA OBRIGATORIEDADE DO CADASTRO NA AGENDA</strong><br>
-        Quem não tiver o <strong>número e nome cadastrado</strong> na agenda da sorveteria até a data do sorteio <strong>não terá direito ao prêmio</strong>, mesmo que seja sorteado.
-        <br><br>
-
-        <strong>5. DAS PROIBIÇÕES</strong><br>
-        5.1. É proibida a participação com dados falsos ou de terceiros.<br>
-        5.2. Fraudes ou tentativas de manipulação resultarão em <strong>desclassificação permanente</strong>.
-        <br><br>
-
-        <strong>6. DAS CRÍTICAS E CONDUTA</strong><br>
-        Críticas infundadas, ofensas ou conduta inadequada poderão resultar no <strong>bloqueio definitivo</strong> do nome e número de telefone no sistema, vedando a participação em qualquer programa da sorveteria.
-        <br><br>
-
-        <strong>7. DAS ALTERAÇÕES</strong><br>
-        A sorveteria reserva-se o direito de alterar, suspender ou encerrar o sorteio a qualquer momento, mediante aviso no site e nas redes sociais.
-        <br><br>
-
-        <strong>8. DO FORO</strong><br>
-        Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer dúvidas ou litígios.
-
-      </div>
-      <div style="margin-top:12px">
-        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:clamp(.74rem,2.1vw,.82rem);color:#333">
-          <input type="checkbox" id="aceite-sorteio" onchange="verificarAceiteSorteio()" style="width:18px;height:18px;margin-top:2px;accent-color:#2e7d32;flex-shrink:0">
-          <span>Li e concordo com o <strong>Regulamento dos Sorteios Mensais</strong> da Sorveteria Itapolitana Cajuru.</span>
-        </label>
-      </div>
-      <button id="btn-iniciar-sorteio" onclick="iniciarCadastroSorteio()" disabled style="width:100%;margin-top:12px;padding:13px;background:#ccc;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:not-allowed;transition:.3s">
-        📝 Aceitar e Preencher Cadastro
-      </button>
-      </div><!-- fecha conteudo-regras-sorteio -->
-    </div>
-
-    <!-- FORMULÁRIO (oculto até aceitar as regras) -->
-    <div id="form-sorteio-dados" style="display:none">
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:2rem;margin-bottom:4px">🎁</div>
-      <div style="font-size:1.1rem;font-weight:900;color:#1b5e20;margin-bottom:4px">CADASTRO — SORTEIOS MENSAIS</div>
-      <p style="font-size:.83rem;color:#2e7d32;margin:0">Preencha seus dados abaixo. Ao clicar em confirmar, você será redirecionado ao <strong>WhatsApp</strong> para enviar a solicitação à sorveteria.</p>
-    </div>
-    <div class="form-group">
-      <label style="font-size:.85rem;font-weight:700;color:#1b5e20">Nome completo</label>
-      <input type="text" id="sort-nome" placeholder="Nome como no documento" autocomplete="name" style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;border-radius:10px;font-size:.95rem;box-sizing:border-box;background:#fff">
-    </div>
-    <div class="form-group">
-      <label style="font-size:.85rem;font-weight:700;color:#1b5e20">Celular (WhatsApp)</label>
-      <input type="tel" id="sort-cel" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;border-radius:10px;font-size:.95rem;box-sizing:border-box;background:#fff">
-    </div>
-    <div class="form-group">
-      <label style="font-size:.85rem;font-weight:700;color:#1b5e20">Data de nascimento</label>
-      <div style="display:flex;gap:8px">
-        <input type="text" id="sort-dia" placeholder="Dia" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;background:#fff">
-        <input type="text" id="sort-mes" placeholder="Mês" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;background:#fff">
-        <input type="text" id="sort-ano" placeholder="Ano" maxlength="4" inputmode="numeric" style="width:34%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;background:#fff">
-      </div>
-    </div>
-    <div id="msg-sorteio" class="msg" style="margin-bottom:10px"></div>
-    <button onclick="enviarSorteioWhatsApp()" style="width:100%;padding:13px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(37,211,102,.35)">
-      📲 Confirmar e Enviar pelo WhatsApp
-    </button>
-    <p style="font-size:.75rem;color:#555;text-align:center;margin-top:8px">🔒 Você não receberá propaganda. As promoções aparecem apenas nos <strong>Status do WhatsApp</strong>.</p>
-    </div><!-- /form-sorteio-dados -->
-  </div>
-</section>
-
-<!-- PAINEL PRINCIPAL -->
+<!-- PAINEL PRINCIPAL (login / cliente logado) -->
 <div class="painel" id="painel">
 
-  <!-- REGRAS CLUBE DE FIDELIDADE (aceite obrigatório) -->
-  <div class="card" id="card-regras-fidelidade" style="border:2px solid #e8650a">
-    <!-- BOTÃO VER REGULAMENTO (visível por padrão) -->
-    <div id="btn-ver-regras-fidelidade" style="text-align:center;padding:8px 0">
-      <div style="font-size:1.3rem;margin-bottom:6px">📜</div>
-      <div style="font-size:.95rem;font-weight:900;color:#e8650a;margin-bottom:8px">CLUBE DE FIDELIDADE</div>
-      <p style="font-size:.8rem;color:#666;margin-bottom:12px">Antes de se cadastrar, leia o regulamento do programa.</p>
-      <button onclick="mostrarRegrasF()" style="background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(232,101,10,.4)">📜 Ver Regulamento</button>
-    </div>
-    <!-- CONTEÚDO DO REGULAMENTO (oculto por padrão) -->
-    <div id="conteudo-regras-fidelidade" style="display:none">
-    <div style="text-align:center;margin-bottom:12px">
-      <div style="font-size:1.5rem;margin-bottom:4px">📜</div>
-      <div style="font-size:1rem;font-weight:900;color:#e8650a">REGULAMENTO — CLUBE DE FIDELIDADE</div>
-      <div style="font-size:.75rem;color:#888;margin-top:2px">Leia atentamente antes de se cadastrar</div>
-    </div>
-    <div id="regras-fidelidade-texto" style="max-height:260px;overflow-y:auto;background:#fff8f0;border:1.5px solid #ffcc80;border-radius:10px;padding:12px 14px;font-size:clamp(.71rem,2.1vw,.8rem);color:#333;line-height:1.7">
-
-      <strong>1. DO PROGRAMA</strong><br>
-      O Clube de Fidelidade é um programa de pontuação gratuito oferecido pela Sorveteria Itapolitana Cajuru, destinado a clientes que realizem compras acima de <strong>R$ 30,00</strong> no estabelecimento.
-      <br><br>
-
-      <strong>2. DA PARTICIPAÇÃO</strong><br>
-      2.1. Podem participar pessoas com idade mínima de <strong>14 (quatorze) anos</strong>.<br>
-      2.2. O cadastro é realizado exclusivamente pelo site oficial da sorveteria, mediante informação de nome completo (conforme documento de identidade), data de nascimento e número de celular com WhatsApp ativo.<br>
-      2.3. Cada pessoa pode ter apenas <strong>um único cadastro</strong>. Cadastros duplicados serão cancelados sem aviso prévio.
-      <br><br>
-
-      <strong>3. DOS CUPONS E PONTOS</strong><br>
-      3.1. A cada compra acima de R$ 30,00, o cliente recebe um cupom físico com código único.<br>
-      3.2. O código deve ser inserido no site dentro do prazo de validade: <strong>60 dias</strong> para códigos emitidos antes de 01/05/2025 e <strong>30 dias</strong> para códigos emitidos a partir de 01/05/2025.<br>
-      3.3. Cada código válido equivale a <strong>1 (um) ponto</strong>.<br>
-      3.4. Os pontos são intransferíveis e não possuem valor monetário.
-      <br><br>
-
-      <strong>4. DOS PRÊMMIOS</strong><br>
-      4.1. <strong>10 pontos</strong>: 1 Milkshake 300ml GRÁTIS.<br>
-      4.2. <strong>30 pontos</strong>: 1 Caixa com 7 Bolas de Sorvete GRÁTIS.<br>
-      4.3. O resgate deve ser solicitado pelo site e agendado com a sorveteria via WhatsApp.<br>
-      4.4. Para retirar o prêmio, o cliente deverá comparecer pessoalmente à sorveteria no dia e horário agendados, portando obrigatoriamente: <strong>documento de identidade com foto</strong> (RG, CNH ou equivalente) e o <strong>celular com o número cadastrado</strong>, para confirmação da identidade.<br>
-      4.5. Não será possível retirar o prêmio por terceiros.
-      <br><br>
-
-      <strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>
-      5.1. É expressamente proibido o uso de códigos de terceiros, códigos inválidos, falsificados ou obtidos de forma irregular.<br>
-      5.2. Tentativas de fraude, manipulação do sistema ou uso indevido do programa implicarão no <strong>cancelamento imediato e permanente</strong> do cadastro, sem direito a recurso ou ressarcimento.<br>
-      5.3. O sistema registra automaticamente todas as tentativas suspeitas, incluindo dados do dispositivo e horário de acesso.
-      <br><br>
-
-      <strong>6. DAS CRÍTICAS E CONDUTA</strong><br>
-      6.1. Críticas infundadas, ofensas ou conduta inadequada direcionadas à sorveteria ou a seus funcionários poderão resultar no <strong>bloqueio definitivo</strong> do nome e número de telefone no sistema, vedando a participação em qualquer programa da sorveteria.
-      <br><br>
-
-      <strong>7. DAS ALTERAÇÕES</strong><br>
-      A Sorveteria Itapolitana Cajuru reserva-se o direito de alterar, suspender ou encerrar o programa a qualquer momento, mediante aviso no site e nas redes sociais.
-      <br><br>
-
-      <strong>8. DO FORO</strong><br>
-      Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer dúvidas ou litígios decorrentes deste regulamento.
-
-    </div>
-    <div style="margin-top:12px">
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:clamp(.75rem,2.2vw,.83rem);color:#333">
-        <input type="checkbox" id="aceite-fidelidade" onchange="verificarAceiteFidelidade()" style="width:18px;height:18px;margin-top:2px;accent-color:#e8650a;flex-shrink:0">
-        <span>Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru.</span>
-      </label>
-    </div>
-    <button id="btn-iniciar-cadastro" onclick="iniciarCadastroFidelidade()" disabled style="width:100%;margin-top:12px;padding:13px;background:#ccc;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:not-allowed;transition:.3s">
-      📝 Aceitar e Iniciar Cadastro
-    </button>
-    </div><!-- fecha conteudo-regras-fidelidade -->
-  </div>
-
-  <!-- FORMULÁRIO DE ACESSO (oculto até aceitar as regras) -->
+  <!-- FORMULARIO DE ACESSO -->
   <div class="card" id="card-acesso" style="display:none">
-    <div style="text-align:center;margin-bottom:14px">
-      <div style="font-size:clamp(1.15rem,4vw,1.4rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:4px">🎉 Receba Promoções Exclusivas!</div>
-      <p style="font-size:clamp(.82rem,2.4vw,.92rem);color:#555;margin-top:6px;margin-bottom:8px">Cadastre seu WhatsApp para receber promoções, cupons e bonificações na Sorveteria Itapolitana.</p>
-      <div style="font-size:clamp(.75rem,2.2vw,.82rem);background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037;text-align:left;margin-bottom:4px">
-        ✅ <strong>Regras dos cupons de bonificação:</strong> válidos apenas para <strong>compras acima de R$ 30,00</strong> realizadas na sorveteria.
+    <div style="text-align:center;margin-bottom:16px">
+      <img src="images/logo.png" alt="Logo" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #e8650a;box-shadow:0 3px 12px rgba(232,101,10,.25);margin-bottom:10px" onerror="this.style.display='none'">
+      <div style="font-size:clamp(1.1rem,4vw,1.3rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:4px">&#127881; Receba Promocoes Exclusivas!</div>
+      <p style="font-size:clamp(.82rem,2.4vw,.9rem);color:#555;margin-top:4px;margin-bottom:8px">Cadastre seu WhatsApp para receber promocoes, cupons e bonificacoes na Sorveteria Itapolitana.</p>
+      <div style="font-size:clamp(.75rem,2.2vw,.82rem);background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037;text-align:left">
+        &#9989; <strong>Regras dos cupons de bonificacao:</strong> validos apenas para <strong>compras acima de R$ 30,00</strong> realizadas na sorveteria.
       </div>
     </div>
     <div class="form-tabs">
       <button class="tab-btn active" onclick="setTab('novo')">Primeira vez</button>
-      <button class="tab-btn" onclick="setTab('login')">Já tenho conta</button>
+      <button class="tab-btn" onclick="setTab('login')">Ja tenho conta</button>
     </div>
     <div id="form-novo">
       <div class="form-group">
         <label>Seu nome completo <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento</span></label>
         <input type="text" id="inp-nome" placeholder="Nome completo como no RG/CPF" autocomplete="name">
-        <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic;">&#9888;&#65039; Informe o nome exatamente como consta no seu documento de identidade.</div>
+        <div class="hint">&#9888;&#65039; Informe o nome exatamente como consta no seu documento de identidade.</div>
       </div>
       <div class="form-group">
-        <label>Data de nascimento <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento — mínimo 14 anos</span></label>
-        <input type="daté" id="inp-data-nasc" autocomplete="bday">
-        <div style="font-size:11px;color:#888;margin-top:4px;font-style:italic;">&#9888;&#65039; Informe a data exatamente como consta no seu RG ou CPF.</div>
+        <label>Data de nascimento <span style="font-size:11px;color:#E65100;font-weight:700;">&#128203; igual no documento — minimo 14 anos</span></label>
+        <input type="date" id="inp-data-nasc" autocomplete="bday">
+        <div class="hint">&#9888;&#65039; Informe a data exatamente como consta no seu RG ou CPF.</div>
       </div>
       <div class="form-group">
-        <label>Celular (WhatsApp) <span style="font-size:11px;color:#E65100;font-weight:700;">📲 número ativo com WhatsApp</span></label>
+        <label>Celular (WhatsApp) <span style="font-size:11px;color:#E65100;font-weight:700;">&#128242; numero ativo com WhatsApp</span></label>
         <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
-        <div style="font-size:11px;color:#c62828;margin-top:4px;font-weight:700;background:#fff8e1;border-radius:6px;padding:5px 8px;border-left:3px solid #e65100">
-          🌟 <strong>IMPORTANTE:</strong> Este celular será usado para receber seu prêmio. Certifique-se de que o número está correto e com WhatsApp ativo.
+        <div class="hint warn">
+          &#11088; <strong>IMPORTANTE:</strong> Este celular sera usado para receber seu premio. Certifique-se de que o numero esta correto e com WhatsApp ativo.
         </div>
       </div>
-      <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px">🎉 Quero Receber Promoções!</button>
+      <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px">&#127881; Quero Receber Promocoes!</button>
     </div>
     <div id="form-login" style="display:none">
       <div class="form-group">
@@ -612,27 +582,23 @@ html { scroll-behavior: smooth; }
         <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
       </div>
       <div class="form-group">
-        <label>Data de nascimento (confirmação)</label>
+        <label>Data de nascimento (confirmacao)</label>
         <div style="display:flex;gap:8px;">
-          <input type="text" id="inp-login-dia" placeholder="Dia" maxlength="2" inputmode="numeric" pattern="[0-9]{1,2}" autocomplete="off" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-          <input type="text" id="inp-login-mes" placeholder="Mês" maxlength="2" inputmode="numeric" pattern="[0-9]{1,2}" autocomplete="off" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
-          <input type="text" id="inp-login-ano" placeholder="Ano" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;">
+          <input type="text" id="inp-login-dia" placeholder="Dia" maxlength="2" inputmode="numeric" pattern="[0-9]{1,2}" autocomplete="off" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif">
+          <input type="text" id="inp-login-mes" placeholder="Mes" maxlength="2" inputmode="numeric" pattern="[0-9]{1,2}" autocomplete="off" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif">
+          <input type="text" id="inp-login-ano" placeholder="Ano" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif">
         </div>
       </div>
       <button class="btn btn-laranja" onclick="entrar()">Entrar</button>
-
-
     </div>
     <div class="msg" id="msg-acesso"></div>
-
   </div>
 
-  <!-- PAINEL DO CLIENTE (oculto até login) -->
+  <!-- PAINEL DO CLIENTE -->
   <div id="card-cliente" style="display:none">
 
-    <!-- Botão Voltar ao início -->
     <div style="text-align:center;margin-bottom:12px;">
-      <button onclick="sair()" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#C62828;border:2px solid #C62828;border-radius:50px;padding:10px 22px;font-size:clamp(13px,3vw,15px);font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);letter-spacing:0.5px;">&#8592; Voltar à tela inicial</button>
+      <button onclick="sair()" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#C62828;border:2px solid #C62828;border-radius:50px;padding:10px 22px;font-size:clamp(13px,3vw,15px);font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);letter-spacing:0.5px;font-family:'Nunito',sans-serif">&#8592; Voltar a tela inicial</button>
     </div>
 
     <!-- Info do cliente -->
@@ -648,58 +614,55 @@ html { scroll-behavior: smooth; }
 
       <!-- Contador de pontos -->
       <div class="pontos-section">
-        <div class="pontos-título">Pontos acumulados nesta rodada</div>
-        <div class="pontos-número"><span id="pontos-atual">0</span> / <span id="pontos-meta">10</span></div>
-        <div class="pontos-meta" id="pontos-faltam">Faltam 10 pontos para o prêmio</div>
+        <div class="pontos-titulo">Pontos acumulados nesta rodada</div>
+        <div class="pontos-numero"><span id="pontos-atual">0</span> / <span id="pontos-meta">10</span></div>
+        <div class="pontos-meta-txt" id="pontos-faltam">Faltam 10 pontos para o premio</div>
       </div>
 
-      <!-- Ícones de sorvete -->
+      <!-- Icones de sorvete -->
       <div class="sorvetes-grid" id="sorvetes-grid"></div>
 
       <!-- Barra de progresso -->
       <div class="progress-wrap">
         <div class="progress-bar" id="progress-bar" style="width:0%"></div>
       </div>
-      <div class="progress-label" id="progress-label">0% concluído</div>
+      <div class="progress-label" id="progress-label">0% concluido</div>
 
-      <!-- Seção de resgaté (aparece ao atingir 10 ou 30 pontos) -->
-      <div class="resgaté-section" id="resgaté-section" style="display:none">
-        <h3>🎉 PARABÉNS! Resgaté seu prêmio!</h3>
-        <p id="resgaté-txt">Você acumulou pontos suficientes. Escolha qual prêmio deseja resgatar:</p>
-        <!-- Card prêmio 10 pontos -->
-        <div id="card-prêmio-10" style="background:#fff;border:2px solid #25d366;border-radius:12px;padding:14px;margin-bottom:10px;display:none">
-          <div style="font-size:1.5rem;margin-bottom:4px">🥤</div>
-          <div style="font-weight:800;color:#27ae60;font-size:1rem">Milkshake 300ml GRÁTIS</div>
-          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgaté com 10 pontos</div>
-          <button class="btn btn-whats" style="font-size:.9rem;padding:11px" onclick="resgatarPrêmio('milkshake')">&#x1F7E2; Resgatar Milkshake via WhatsApp</button>
+      <!-- Secao de resgate -->
+      <div class="resgatar-section" id="resgatar-section" style="display:none">
+        <h3>&#127881; PARABENS! Resgate seu premio!</h3>
+        <p id="resgatar-txt">Voce acumulou pontos suficientes. Escolha qual premio deseja resgatar:</p>
+        <div id="card-premio-10" style="background:#fff;border:2px solid #25d366;border-radius:12px;padding:14px;margin-bottom:10px;display:none">
+          <div style="font-size:1.5rem;margin-bottom:4px">&#127834;</div>
+          <div style="font-weight:800;color:#27ae60;font-size:1rem">Milkshake 300ml GRATIS</div>
+          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 10 pontos</div>
+          <button class="btn btn-whats" style="font-size:.9rem;padding:11px" onclick="resgatarPremio('milkshake')">&#129001; Resgatar Milkshake via WhatsApp</button>
         </div>
-        <!-- Card prêmio 30 pontos -->
-        <div id="card-prêmio-20" style="background:#fff;border:2px solid #f39c12;border-radius:12px;padding:14px;display:none">
-          <div style="font-size:1.5rem;margin-bottom:4px">🍦</div>
-          <div style="font-weight:800;color:#e67e22;font-size:1rem">Caixa 7 Bolas GRÁTIS</div>
-          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgaté com 30 pontos</div>
-          <button class="btn" style="background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;font-size:.9rem;padding:11px" onclick="resgatarPrêmio('caixa7bolas')">🟠 Resgatar Caixa 7 Bolas via WhatsApp</button>
+        <div id="card-premio-30" style="background:#fff;border:2px solid #f39c12;border-radius:12px;padding:14px;display:none">
+          <div style="font-size:1.5rem;margin-bottom:4px">&#127846;</div>
+          <div style="font-weight:800;color:#e67e22;font-size:1rem">Caixa 7 Bolas GRATIS</div>
+          <div style="font-size:.8rem;color:#888;margin:4px 0 10px">Resgate com 30 pontos</div>
+          <button class="btn" style="background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff;font-size:.9rem;padding:11px" onclick="resgatarPremio('caixa7bolas')">&#127834; Resgatar Caixa 7 Bolas via WhatsApp</button>
         </div>
       </div>
 
       <button class="btn-sair" onclick="sair()">Sair da conta</button>
     </div>
 
-    <!-- Inserir código -->
+    <!-- Inserir codigo -->
     <div class="card">
-      <div class="card-title">🎫 Inserir Código</div>
-      <p style="font-size:.82rem;color:#888;margin-bottom:12px">Digite o código que você recebeu na sorveteria.</p>
-      <input type="text" id="input-código" class
-="código-input" placeholder="Ex: VH*BCCQFN%" maxlength="10" oninput="this.value=this.value.toUpperCase()">
-      <button class="btn btn-laranja" id="btn-válidar" onclick="válidarCódigo()" style="margin-top:12px">✅ Válidar Código</button>
-      <div class="msg" id="msg-código"></div>
+      <div class="card-title">&#127903;&#65039; Inserir Codigo</div>
+      <p style="font-size:.82rem;color:#888;margin-bottom:12px">Digite o codigo que voce recebeu na sorveteria.</p>
+      <input type="text" id="input-codigo" class="codigo-input" placeholder="Ex: VH*BCCQFN%" maxlength="10" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn btn-laranja" id="btn-validar" onclick="validarCodigo()" style="margin-top:12px">&#9989; Validar Codigo</button>
+      <div class="msg" id="msg-codigo"></div>
     </div>
 
-    <!-- Histórico -->
+    <!-- Historico -->
     <div class="card" id="card-historico" style="display:none">
-      <div class="card-title">📋 Histórico de Códigos</div>
+      <div class="card-title">&#128203; Historico de Codigos</div>
       <ul class="historico-list" id="historico-list">
-        <li style="color:#açaía;font-size:.85rem;text-align:center;padding:12px 0">Nenhum código inserido ainda.</li>
+        <li style="color:#999;font-size:.85rem;text-align:center;padding:12px 0">Nenhum codigo inserido ainda.</li>
       </ul>
     </div>
 
@@ -712,20 +675,23 @@ html { scroll-behavior: smooth; }
 
   <!-- LOGIN ADMIN -->
   <div id="admin-login-box" class="admin-login">
-    <h2>🔐 Acesso Administrativo</h2>
+    <div style="text-align:center;margin-bottom:16px">
+      <img src="images/logo.png" alt="Logo" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid #1a237e;box-shadow:0 3px 12px rgba(26,35,126,.2)" onerror="this.style.display='none'">
+    </div>
+    <h2>&#128274; Acesso Administrativo</h2>
     <div class="form-group">
       <label>Senha do administrador</label>
       <div style="position:relative;display:flex;align-items:center;">
-        <input type="password" id="inp-admin-senha" placeholder="Digite a senha" style="width:100%;padding:12px 44px 12px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.95rem;outline:none" onkeydown="if(event.key==='Enter')adminLogin()">
+        <input type="password" id="inp-admin-senha" placeholder="Digite a senha" style="width:100%;padding:12px 44px 12px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.95rem;outline:none;font-family:'Nunito',sans-serif" onkeydown="if(event.key==='Enter')adminLogin()">
         <button type="button" onclick="toggleSenha('inp-admin-senha','olho-admin')" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;font-size:1.2rem;color:#888;padding:4px;" title="Ver/ocultar senha">
-          <span id="olho-admin">👁️</span>
+          <span id="olho-admin">&#128065;&#65039;</span>
         </button>
       </div>
     </div>
-    <button class="btn btn-laranja" onclick="adminLogin()" style="margin-top:8px">🔓 Entrar no Admin</button>
+    <button class="btn btn-laranja" onclick="adminLogin()" style="margin-top:8px">&#128275; Entrar no Admin</button>
     <div class="msg" id="msg-admin-login" style="margin-top:10px"></div>
     <div style="text-align:center;margin-top:14px">
-      <button onclick="fecharAdmin()" style="background:none;border:none;color:#888;font-size:.82rem;cursor:pointer;text-decoration:underline">← Voltar ao site</button>
+      <button onclick="fecharAdmin()" style="background:none;border:none;color:#888;font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:'Nunito',sans-serif">&#8592; Voltar ao site</button>
     </div>
   </div>
 
@@ -733,36 +699,39 @@ html { scroll-behavior: smooth; }
   <div id="admin-painel-box" style="display:none">
 
     <div class="admin-header">
-      <div>
-        <h2>🛡️ Painel Administrativo</h2>
-        <p>Sorveteria Itapolitana Cajuru — Programa de Fidelidade</p>
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="images/logo.png" alt="Logo" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5)" onerror="this.style.display='none'">
+        <div>
+          <h2>&#128737;&#65039; Painel Administrativo</h2>
+          <p>Sorveteria Itapolitana Cajuru — Programa de Fidelidade</p>
+        </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-admin btn-sair-admin" onclick="fecharAdmin()">← Voltar ao site</button>
-        <button class="btn-admin btn-sair-admin" onclick="adminLogout()">🚪 Sair do Admin</button>
+        <button class="btn-admin btn-sair-admin" onclick="fecharAdmin()">&#8592; Voltar ao site</button>
+        <button class="btn-admin btn-sair-admin" onclick="adminLogout()">&#128682; Sair do Admin</button>
       </div>
     </div>
 
-    <!-- ESTATÍSTICAS -->
+    <!-- ESTATISTICAS -->
     <div class="admin-stats">
       <div class="stat-card">
         <div class="stat-num" id="stat-total" style="color:#1a237e">0</div>
-        <div class="stat-label">👥 Total de Cadastros</div>
+        <div class="stat-label">&#128101; Total de Cadastros</div>
       </div>
       <div class="stat-card">
         <div class="stat-num" id="stat-ativos" style="color:#2e7d32">0</div>
-        <div class="stat-label">✅ Ativos (sorteio)</div>
+        <div class="stat-label">&#9989; Ativos (sorteio)</div>
       </div>
       <div class="stat-card">
         <div class="stat-num" id="stat-bloqueados" style="color:#c62828">0</div>
-        <div class="stat-label">🚫 Bloqueados</div>
+        <div class="stat-label">&#128683; Bloqueados</div>
       </div>
     </div>
 
     <!-- BARRA DE FERRAMENTAS -->
     <div class="admin-toolbar">
-      <input type="search" id="admin-busca" class="admin-search" placeholder="🔍 Buscar por nome ou WhatsApp..." oninput="adminBuscar()">
-      <button class="btn-admin btn-copiar-sorteio" onclick="copiarListaSorteio()">🎖️ Copiar Lista para Sorteio</button>
+      <input type="search" id="admin-busca" class="admin-search" placeholder="&#128269; Buscar por nome ou WhatsApp..." oninput="adminBuscar()">
+      <button class="btn-admin btn-copiar-sorteio" onclick="copiarListaSorteio()">&#127894; Copiar Lista para Sorteio</button>
     </div>
 
     <!-- TABELA DE CLIENTES -->
@@ -771,34 +740,40 @@ html { scroll-behavior: smooth; }
         <span>Nome</span>
         <span>WhatsApp</span>
         <span>Pts</span>
-        <span class="admin-col-data">Inscrição</span>
-        <span>Status / Ações</span>
+        <span class="admin-col-data">Inscricao</span>
+        <span>Status / Acoes</span>
       </div>
       <div id="admin-lista"></div>
     </div>
 
-    <!-- PAGINAÇÃO -->
+    <!-- PAGINACAO -->
     <div class="admin-paginacao" id="admin-paginacao"></div>
 
-    <div style="text-align:center;margin-top:8px;font-size:.75rem;color:#açaía">
+    <div style="text-align:center;margin-top:8px;font-size:.75rem;color:#999">
       Mostrando clientes em ordem de cadastro. Bloqueados por fraude aparecem em vermelho.
     </div>
 
   </div>
 </div>
 
-<!-- RODAPÉ -->
-<footer style="background:#333;color:#açaía;text-align:center;padding:20px;font-size:.8rem;margin-top:20px">
-  <p>🍦 Sorveteria Itapolitana Cajuru — Programa de Fidelidade</p>
-  <p style="margin-top:4px">Dúvidas? <a href="https://wa.me/5516996062046" style="color:#ff8c00" target="_blank">Fale conosco no WhatsApp</a></p>
+<!-- RODAPE -->
+<footer style="background:#222;color:#aaa;text-align:center;padding:24px 20px;font-size:.8rem;margin-top:20px">
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
+    <img src="images/logo.png" alt="Logo" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.2)" onerror="this.style.display='none'">
+    <div>
+      <div style="color:#fff;font-weight:800;font-size:.9rem">Sorveteria Itapolitana Cajuru</div>
+      <div style="font-size:.75rem">Programa de Fidelidade</div>
+    </div>
+  </div>
+  <p>Duvidas? <a href="https://wa.me/5516996062046" style="color:#ff8c00" target="_blank">Fale conosco no WhatsApp</a></p>
   <p style="margin-top:12px">
-    <button onclick="window.location.href='admin-painel.html'" style="background:none;border:none;color:rgba(255,255,255,0.15);font-size:1.1rem;cursor:pointer;padding:8px;line-height:1;" title="Admin">⚙️</button>
+    <button onclick="window.location.href='admin-painel.html'" style="background:none;border:none;color:rgba(255,255,255,0.12);font-size:1.1rem;cursor:pointer;padding:8px;line-height:1;" title="Admin">&#9881;&#65039;</button>
   </p>
 </footer>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// CONFIGURAÇÕES
+// CONFIGURACOES
 // ═══════════════════════════════════════════════════════════
 const GH_TOKEN   = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
 const GH_OWNER   = 'missias123';
@@ -813,16 +788,16 @@ const GH_RAW = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BR
 // ═══════════════════════════════════════════════════════════
 // ESTADO GLOBAL
 // ═══════════════════════════════════════════════════════════
-let ghFidelidade = null;   // dados/fidelidade.json
+let ghFidelidade = null;
 let ghFidelidadeSha = null;
-let ghClientes = null;     // dados/clientes.json
+let ghClientes = null;
 let ghClientesSha = null;
-let clienteAtual = null;   // cliente logado
+let clienteAtual = null;
 let META_PONTOS = 10;
 let NOME_PREMIO = 'Milkshake 300ml';
 
 // ═══════════════════════════════════════════════════════════
-// UTILITÁRIOS GITHUB
+// UTILITARIOS GITHUB
 // ═══════════════════════════════════════════════════════════
 async function ghGet(path) {
   try {
@@ -832,7 +807,6 @@ async function ghGet(path) {
     if (r.status === 404) return { content: null, sha: null };
     if (!r.ok) throw new Error(r.status);
     const d = await r.json();
-    // Decodifica base64 com suporte a UTF-8
     const bin = atob(d.content.replace(/\n/g,''));
     const bytes = new Uint8Array(bin.length);
     for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
@@ -846,7 +820,6 @@ async function ghGet(path) {
 
 async function ghPut(path, content, message, sha) {
   try {
-    // Codifica UTF-8 → base64
     const bytes = new TextEncoder().encode(content);
     let bin = '';
     bytes.forEach(b => bin += String.fromCharCode(b));
@@ -872,21 +845,18 @@ async function ghPut(path, content, message, sha) {
 // ═══════════════════════════════════════════════════════════
 async function carregarDados() {
   setLoading('Conectando ao servidor de fidelidade...');
-  // Carregar fidelidade.json (códigos)
   const f = await ghGet(FIDELIDADE_PATH);
   if (f.content) {
     try { ghFidelidade = JSON.parse(f.content); ghFidelidadeSha = f.sha; }
-    catch(e) { ghFidelidade = { códigos:{}, liberados:0, config:{} }; }
+    catch(e) { ghFidelidade = { codigos:{}, liberados:0, config:{} }; }
   } else {
-    ghFidelidade = { códigos:{}, liberados:0, config:{} };
+    ghFidelidade = { codigos:{}, liberados:0, config:{} };
   }
-  // Aplicar configuração do prêmio
   if (ghFidelidade.config) {
-    if (ghFidelidade.config.prêmioNome) NOME_PREMIO = ghFidelidade.config.prêmioNome;
-    if (ghFidelidade.config.prêmioPontos) META_PONTOS = parseInt(ghFidelidade.config.prêmioPontos) || 10;
+    if (ghFidelidade.config.premioNome) NOME_PREMIO = ghFidelidade.config.premioNome;
+    if (ghFidelidade.config.premioPontos) META_PONTOS = parseInt(ghFidelidade.config.premioPontos) || 10;
   }
-  aplicarConfigPrêmio();
-  // Carregar clientes.json
+  aplicarConfigPremio();
   setLoading('Carregando dados de clientes...');
   const c = await ghGet(CLIENTES_PATH);
   if (c.content) {
@@ -897,7 +867,6 @@ async function carregarDados() {
     ghClientesSha = null;
   }
   hideLoading();
-  // Verificar login automático
   const celSalvo = localStorage.getItem('itap_cel');
   if (celSalvo && ghClientes.clientes[celSalvo]) {
     clienteAtual = ghClientes.clientes[celSalvo];
@@ -906,13 +875,11 @@ async function carregarDados() {
 }
 
 async function salvarClientes(msg) {
-  // Buscar SHA atualizado para evitar conflito 409
   try {
     const fresh = await ghGet(CLIENTES_PATH);
     if (fresh && fresh.sha) ghClientesSha = fresh.sha;
     if (fresh && fresh.content) {
       const freshData = JSON.parse(fresh.content);
-      // Mesclar: preservar outros clientes que possam ter sido cadastrados
       ghClientes.clientes = Object.assign({}, freshData.clientes || {}, ghClientes.clientes);
     }
   } catch(e) {}
@@ -941,91 +908,75 @@ function hideLoading() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// CONFIGURAÇÃO DO PRÊMIO
+// CONFIGURACAO DO PREMIO
 // ═══════════════════════════════════════════════════════════
-function aplicarConfigPrêmio() {
-  const nomeCompleto = NOME_PREMIO + ' GRÁTIS';
-  const el = document.getElementById('hero-prêmio-nome');
+function aplicarConfigPremio() {
+  const nomeCompleto = NOME_PREMIO + ' GRATIS';
+  const el = document.getElementById('hero-premio-nome');
   if (el) el.textContent = nomeCompleto;
-  const ep = document.getElementById('hero-prêmio-pontos');
+  const ep = document.getElementById('hero-premio-pontos');
   if (ep) ep.textContent = 'ao acumular ' + META_PONTOS + ' pontos';
-  const p5 = document.getElementById('passo5-txt');
-  if (p5) p5.textContent = 'Com ' + META_PONTOS + ' pontos, resgaté seu 🥤 ' + NOME_PREMIO + ' GRÁTIS via WhatsApp';
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONTROLE INLINE — REGULAMENTOS E FORMULARIOS
+// ═══════════════════════════════════════════════════════════
+function abrirRegrasF() {
+  const bloco = document.getElementById('bloco-regras-fidelidade');
+  if (bloco) {
+    bloco.style.display = 'block';
+    setTimeout(() => bloco.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
+}
+function abrirRegrasS() {
+  const bloco = document.getElementById('bloco-regras-sorteio');
+  if (bloco) {
+    bloco.style.display = 'block';
+    setTimeout(() => bloco.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
+}
+function verificarAceiteFidelidadeInline() {
+  const cb = document.getElementById('aceite-fidelidade-inline');
+  const btn = document.getElementById('btn-aceitar-fidelidade-inline');
+  if (!cb || !btn) return;
+  if (cb.checked) {
+    btn.disabled = false;
+    btn.className = 'btn-aceitar laranja-ativo';
+  } else {
+    btn.disabled = true;
+    btn.className = 'btn-aceitar';
+  }
+}
+function verificarAceiteSorteioInline() {
+  const cb = document.getElementById('aceite-sorteio-inline');
+  const btn = document.getElementById('btn-aceitar-sorteio-inline');
+  if (!cb || !btn) return;
+  if (cb.checked) {
+    btn.disabled = false;
+    btn.className = 'btn-aceitar verde-ativo';
+  } else {
+    btn.disabled = true;
+    btn.className = 'btn-aceitar';
+  }
+}
+function abrirFormFidelidade() {
+  const card = document.getElementById('card-acesso');
+  if (card) {
+    card.style.display = 'block';
+    setTimeout(() => card.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
+}
+function abrirFormSorteio() {
+  const form = document.getElementById('form-sorteio-inline');
+  if (form) {
+    form.style.display = 'block';
+    setTimeout(() => form.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
 // TABS DE ACESSO
 // ═══════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════
-// ACEITE DE REGULAMENTO — CLUBE DE FIDELIDADE
-// ═══════════════════════════════════════════════════════════
-function mostrarRegrasF() {
-  document.getElementById('btn-ver-regras-fidelidade').style.display = 'none';
-  document.getElementById('conteudo-regras-fidelidade').style.display = 'block';
-}
-
-function mostrarRegrasS() {
-  document.getElementById('btn-ver-regras-sorteio').style.display = 'none';
-  document.getElementById('conteudo-regras-sorteio').style.display = 'block';
-}
-
-function verificarAceiteFidelidade() {
-  const aceite = document.getElementById('aceite-fidelidade').checked;
-  const btn    = document.getElementById('btn-iniciar-cadastro');
-  if (aceite) {
-    btn.disabled = false;
-    btn.style.background = 'linear-gradient(135deg,#e8650a,#ff8c00)';
-    btn.style.cursor = 'pointer';
-  } else {
-    btn.disabled = true;
-    btn.style.background = '#ccc';
-    btn.style.cursor = 'not-allowed';
-  }
-}
-
-function abrirSecaoSorteio() {
-  const sec = document.getElementById('sec-sorteio-form');
-  sec.style.display = 'block';
-  sec.scrollIntoView({behavior:'smooth'});
-}
-
-function verificarAceiteSorteio() {
-  const aceite = document.getElementById('aceite-sorteio').checked;
-  const btn    = document.getElementById('btn-iniciar-sorteio');
-  if (aceite) {
-    btn.disabled = false;
-    btn.style.background = 'linear-gradient(135deg,#1b5e20,#2e7d32)';
-    btn.style.cursor = 'pointer';
-  } else {
-    btn.disabled = true;
-    btn.style.background = '#ccc';
-    btn.style.cursor = 'not-allowed';
-  }
-}
-
-function iniciarCadastroSorteio() {
-  const aceite = document.getElementById('aceite-sorteio').checked;
-  if (!aceite) {
-    alert('⚠️ Você precisa ler e aceitar o Regulamento dos Sorteios para continuar.');
-    return;
-  }
-  document.getElementById('card-regras-sorteio').style.display = 'none';
-  document.getElementById('form-sorteio-dados').style.display = 'block';
-  document.getElementById('form-sorteio-dados').scrollIntoView({behavior:'smooth'});
-}
-
-function iniciarCadastroFidelidade() {
-  const aceite = document.getElementById('aceite-fidelidade').checked;
-  if (!aceite) {
-    alert('⚠️ Você precisa ler e aceitar o Regulamento para se cadastrar.');
-    return;
-  }
-  // Oculta o card de regras e exibe o formulário
-  document.getElementById('card-regras-fidelidade').style.display = 'none';
-  document.getElementById('card-acesso').style.display = 'block';
-  document.getElementById('card-acesso').scrollIntoView({behavior:'smooth'});
-}
-
 function setTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='novo')||(i===1&&tab==='login')));
   document.getElementById('form-novo').style.display  = tab==='novo'  ? 'block' : 'none';
@@ -1033,54 +984,7 @@ function setTab(tab) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// CADASTRO SORTEIO VIA WHATSAPP (formulário + envio pelo WhatsApp)
-function enviarSorteioWhatsApp() {
-  const nome = (document.getElementById('sort-nome').value || '').trim();
-  const cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
-  const dia  = (document.getElementById('sort-dia').value || '').trim();
-  const mes  = (document.getElementById('sort-mes').value || '').trim();
-  const ano  = (document.getElementById('sort-ano').value || '').trim();
-  const msgEl = document.getElementById('msg-sorteio');
-  // Validações
-  if (!nome || nome.length < 3) {
-    showMsg('msg-sorteio', '⚠️ Informe seu nome completo.', 'aviso'); return;
-  }
-  if (cel.length < 10) {
-    showMsg('msg-sorteio', '⚠️ Informe um celular válido com DDD.', 'aviso'); return;
-  }
-  if (!dia || !mes || !ano || ano.length < 4) {
-    showMsg('msg-sorteio', '⚠️ Informe sua data de nascimento completa (Dia, Mês e Ano).', 'aviso'); return;
-  }
-  const dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
-  const celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
-  const msg = 'Olá! Quero me cadastrar para participar dos *Sorteios Mensais* da Sorveteria Itapolitana Cajuru.\n\n' +
-    '*Nome:* ' + nome + '\n' +
-    '*Celular:* ' + celFmt + '\n' +
-    '*Data de nascimento:* ' + dataNasc + '\n\n' +
-    'Estou ciente de que não receberei mensagens de propaganda. As promoções aparecem apenas nos *Status do WhatsApp*.\n' +
-    'Confirmo que concordo com as regras de participação.';
-  window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
-  showMsg('msg-sorteio', '✅ Redirecionando para o WhatsApp... Envie a mensagem para confirmar seu cadastro!', 'ok');
-  // Limpar campos
-  document.getElementById('sort-nome').value = '';
-  document.getElementById('sort-cel').value = '';
-  document.getElementById('sort-dia').value = '';
-  document.getElementById('sort-mes').value = '';
-  document.getElementById('sort-ano').value = '';
-}
-
-// TOGGLE REGRAS SORTEIO
-// ═══════════════════════════════════════════════════════════
-function toggleRegras() {
-  const box = document.getElementById('box-regras-sorteio');
-  const btn = document.getElementById('btn-ver-regras');
-  const aberto = box.style.display !== 'none';
-  box.style.display = aberto ? 'none' : 'block';
-  btn.textContent = aberto ? '🎯 Quero participar de sorteios SOMENTE' : '✖️ Fechar regras';
-}
-
-// ═══════════════════════════════════════════════════════════
-// MÁSCARA DE TELEFONE
+// MASCARA DE TELEFONE
 // ═══════════════════════════════════════════════════════════
 function mascaraTel(el) {
   let v = el.value.replace(/\D/g,'');
@@ -1090,7 +994,6 @@ function mascaraTel(el) {
   else if (v.length > 0) v = '(' + v;
   el.value = v;
 }
-
 function limparTel(v) { return v.replace(/\D/g,''); }
 
 // ═══════════════════════════════════════════════════════════
@@ -1105,6 +1008,41 @@ function showMsg(id, txt, tipo) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// CADASTRO SORTEIO VIA WHATSAPP
+// ═══════════════════════════════════════════════════════════
+function enviarSorteioWhatsApp() {
+  const nome = (document.getElementById('sort-nome').value || '').trim();
+  const cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
+  const dia  = (document.getElementById('sort-dia').value || '').trim();
+  const mes  = (document.getElementById('sort-mes').value || '').trim();
+  const ano  = (document.getElementById('sort-ano').value || '').trim();
+  if (!nome || nome.length < 3) {
+    showMsg('msg-sorteio-inline', 'Informe seu nome completo.', 'aviso'); return;
+  }
+  if (cel.length < 10) {
+    showMsg('msg-sorteio-inline', 'Informe um celular valido com DDD.', 'aviso'); return;
+  }
+  if (!dia || !mes || !ano || ano.length < 4) {
+    showMsg('msg-sorteio-inline', 'Informe sua data de nascimento completa (Dia, Mes e Ano).', 'aviso'); return;
+  }
+  const dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
+  const celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
+  const msg = 'Ola! Quero me cadastrar para participar dos *Sorteios Mensais* da Sorveteria Itapolitana Cajuru.\n\n' +
+    '*Nome:* ' + nome + '\n' +
+    '*Celular:* ' + celFmt + '\n' +
+    '*Data de nascimento:* ' + dataNasc + '\n\n' +
+    'Estou ciente de que nao receberei mensagens de propaganda. As promocoes aparecem apenas nos *Status do WhatsApp*.\n' +
+    'Confirmo que concordo com as regras de participacao.';
+  window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+  showMsg('msg-sorteio-inline', 'Redirecionando para o WhatsApp... Envie a mensagem para confirmar seu cadastro!', 'ok');
+  document.getElementById('sort-nome').value = '';
+  document.getElementById('sort-cel').value = '';
+  document.getElementById('sort-dia').value = '';
+  document.getElementById('sort-mes').value = '';
+  document.getElementById('sort-ano').value = '';
+}
+
+// ═══════════════════════════════════════════════════════════
 // CADASTRO
 // ═══════════════════════════════════════════════════════════
 async function cadastrar() {
@@ -1112,10 +1050,9 @@ async function cadastrar() {
   const dataNasc = document.getElementById('inp-data-nasc').value;
   const cel      = limparTel(document.getElementById('inp-cel-novo').value);
 
-  if (!nome || nome.length < 2) { showMsg('msg-acesso','⚠️ Informe seu nome completo.','aviso'); return; }
-  if (!dataNasc) { showMsg('msg-acesso','⚠️ Informe sua data de nascimento.','aviso'); return; }
+  if (!nome || nome.length < 2) { showMsg('msg-acesso','Informe seu nome completo.','aviso'); return; }
+  if (!dataNasc) { showMsg('msg-acesso','Informe sua data de nascimento.','aviso'); return; }
 
-  // Válidação: mínimo 14 anos
   const hoje     = new Date();
   const nasc     = new Date(dataNasc);
   let idade      = hoje.getFullYear() - nasc.getFullYear();
@@ -1123,17 +1060,16 @@ async function cadastrar() {
                    (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate());
   if (mesAntes) idade--;
   if (idade < 14) {
-    showMsg('msg-acesso','⚠️ É necessário ter no mínimo 14 anos para participar dos bônus e sorteios da Sorveteria Itapolitana.','aviso');
+    showMsg('msg-acesso','E necessario ter no minimo 14 anos para participar dos bonus e sorteios da Sorveteria Itapolitana.','aviso');
     return;
   }
 
-  if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
+  if (cel.length < 10) { showMsg('msg-acesso','Informe um celular valido com DDD.','aviso'); return; }
 
-  // Verificar se já existe
   if (ghClientes.clientes[cel]) {
     clienteAtual = ghClientes.clientes[cel];
     localStorage.setItem('itap_cel', cel);
-    showMsg('msg-acesso','✅ Conta encontrada! Entrando...','ok');
+    showMsg('msg-acesso','Conta encontrada! Entrando...','ok');
     setTimeout(mostrarPainelCliente, 800);
     return;
   }
@@ -1142,11 +1078,11 @@ async function cadastrar() {
   const novoCliente = {
     nome, dataNasc, cel,
     cadastro:     new Date().toISOString(),
-    saldoPontos:  0,          // saldo acumulado (nunca zera, só desconta ao resgatar)
-    códigosUsados: [],        // [{código, data}]
-    resgatés:     [],         // [{prêmio, emoji, pontos, data}]
-    totalPrêmios: 0,
-    totalCódigos: 0
+    saldoPontos:  0,
+    codigosUsados: [],
+    resgates:     [],
+    totalPremios: 0,
+    totalCodigos: 0
   };
   ghClientes.clientes[cel] = novoCliente;
   const ok = await salvarClientes('Novo cliente: ' + nome + ' (' + cel + ')');
@@ -1154,11 +1090,11 @@ async function cadastrar() {
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
-    showMsg('msg-acesso','✅ Conta criada! Bem-vindo(a), ' + nome + '!','ok');
+    showMsg('msg-acesso','Conta criada! Bem-vindo(a), ' + nome + '!','ok');
     setTimeout(mostrarPainelCliente, 800);
   } else {
     delete ghClientes.clientes[cel];
-    showMsg('msg-acesso','❌ Erro ao criar conta. Verifique sua conexão e tente novamente.','erro');
+    showMsg('msg-acesso','Erro ao criar conta. Verifique sua conexao e tente novamente.','erro');
   }
 }
 
@@ -1170,8 +1106,8 @@ async function entrar() {
   const dia = document.getElementById('inp-login-dia').value.padStart(2,'0');
   const mes = document.getElementById('inp-login-mes').value.padStart(2,'0');
   const ano = document.getElementById('inp-login-ano').value;
-  if (cel.length < 10) { showMsg('msg-acesso','⚠️ Informe um celular válido com DDD.','aviso'); return; }
-  if (!dia || !mes || !ano || ano.length < 4) { showMsg('msg-acesso','⚠️ Informe sua data de nascimento completa (Dia, Mês e Ano).','aviso'); return; }
+  if (cel.length < 10) { showMsg('msg-acesso','Informe um celular valido com DDD.','aviso'); return; }
+  if (!dia || !mes || !ano || ano.length < 4) { showMsg('msg-acesso','Informe sua data de nascimento completa (Dia, Mes e Ano).','aviso'); return; }
   setLoading('Buscando sua conta...');
   const c = await ghGet(CLIENTES_PATH);
   if (c.content) {
@@ -1179,48 +1115,42 @@ async function entrar() {
   }
   hideLoading();
   if (!ghClientes.clientes[cel]) {
-    showMsg('msg-acesso','❌ Celular não encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
+    showMsg('msg-acesso','Celular nao encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
     return;
   }
   clienteAtual = ghClientes.clientes[cel];
-  // Verificar se número está bloqueado
   if (clienteAtual.bloqueado) {
-    showMsg('msg-acesso','🚫 NÚMERO BLOQUEADO — Este número foi bloqueado por tentativas inválidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
+    showMsg('msg-acesso','NUMERO BLOQUEADO — Este numero foi bloqueado por tentativas invalidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
     return;
   }
-  // Válidar data de nascimento
   const dataCadastrada = clienteAtual.dataNasc || '';
   const dataDigitada = ano + '-' + mes + '-' + dia;
   if (dataCadastrada && dataCadastrada !== dataDigitada) {
-    // Incrementar tentativas
-    clienteAtual.tentativasInválidas = (clienteAtual.tentativasInválidas || 0) + 1;
-    const tentativas = clienteAtual.tentativasInválidas;
-    // Registrar log de tentativa
+    clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
+    const tentativas = clienteAtual.tentativasInvalidas;
     if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
     clienteAtual.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
     if (tentativas >= 4) {
-      // Bloquear o número na 4ª tentativa
       clienteAtual.bloqueado = true;
       clienteAtual.dataBloqueio = new Date().toISOString();
       ghClientes.clientes[cel] = clienteAtual;
-      await salvarClientes('FRAUDE: bloqueio do número ' + cel + ' após ' + tentativas + ' tentativas');
-      showMsg('msg-acesso','🚫 TENTATIVA DE FRAUDE DETECTADA! Seu número foi BLOQUEADO após ' + tentativas + ' tentativas inválidas. Entre em contato com a sorveteria.','erro');
+      await salvarClientes('FRAUDE: bloqueio do numero ' + cel + ' apos ' + tentativas + ' tentativas');
+      showMsg('msg-acesso','TENTATIVA DE FRAUDE DETECTADA! Seu numero foi BLOQUEADO apos ' + tentativas + ' tentativas invalidas. Entre em contato com a sorveteria.','erro');
     } else {
       ghClientes.clientes[cel] = clienteAtual;
-      await salvarClientes('Tentativa inválida ' + tentativas + '/3 para ' + cel);
+      await salvarClientes('Tentativa invalida ' + tentativas + '/3 para ' + cel);
       const restam = 3 - tentativas + 1;
-      showMsg('msg-acesso','⚠️ Data de nascimento incorreta. Tentativa ' + tentativas + ' de 3. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
+      showMsg('msg-acesso','Data de nascimento incorreta. Tentativa ' + tentativas + ' de 3. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
     }
     return;
   }
-  // Login bem-sucedido: zerar tentativas
-  if (clienteAtual.tentativasInválidas > 0) {
-    clienteAtual.tentativasInválidas = 0;
+  if (clienteAtual.tentativasInvalidas > 0) {
+    clienteAtual.tentativasInvalidas = 0;
     ghClientes.clientes[cel] = clienteAtual;
     await salvarClientes('Login OK: tentativas zeradas para ' + cel);
   }
   localStorage.setItem('itap_cel', cel);
-  showMsg('msg-acesso','✅ Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
+  showMsg('msg-acesso','Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
   setTimeout(mostrarPainelCliente, 800);
 }
 
@@ -1228,15 +1158,13 @@ async function entrar() {
 // PAINEL DO CLIENTE
 // ═══════════════════════════════════════════════════════════
 function mostrarPainelCliente() {
-  // Migração automática: clientes antigos tinham rodadaAtual.pontos, agora usam saldoPontos
   if (clienteAtual && typeof clienteAtual.saldoPontos === 'undefined') {
     const pontosAntigos = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.pontos) || 0;
     clienteAtual.saldoPontos   = pontosAntigos;
-    clienteAtual.códigosUsados = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.códigos) || [];
-    clienteAtual.resgatés      = clienteAtual.resgatés || [];
-    // Salvar migração silenciosamente
+    clienteAtual.codigosUsados = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.codigos) || [];
+    clienteAtual.resgates      = clienteAtual.resgates || [];
     ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-    salvarClientes('Migração de dados: ' + clienteAtual.nome);
+    salvarClientes('Migracao de dados: ' + clienteAtual.nome);
   }
   document.getElementById('card-acesso').style.display = 'none';
   document.getElementById('card-cliente').style.display = 'block';
@@ -1246,10 +1174,8 @@ function mostrarPainelCliente() {
 
 function atualizarUI() {
   if (!clienteAtual) return;
-  // Saldo total de pontos acumulados (nunca zera, só desconta ao resgatar)
   const pontos = clienteAtual.saldoPontos || 0;
 
-  // Avatar e info
   document.getElementById('avatar-letra').textContent = clienteAtual.nome ? clienteAtual.nome[0].toUpperCase() : '?';
   document.getElementById('cliente-nome').textContent = clienteAtual.nome;
   let dataNascFormatada = '';
@@ -1261,18 +1187,15 @@ function atualizarUI() {
   document.getElementById('cliente-cel').textContent = celFmt + (dataNascFormatada ? ' • ' + dataNascFormatada : '');
   document.getElementById('rodada-badge').textContent = '🌟 ' + pontos + ' ponto' + (pontos !== 1 ? 's' : '') + ' no saldo';
 
-  // Contador de pontos
   document.getElementById('pontos-atual').textContent = pontos;
   document.getElementById('pontos-meta').textContent = 30;
 
-  // Texto de status
   let faltamTxt;
-  if (pontos >= 30)      faltamTxt = '🎉 Você pode resgatar Milkshake e Caixa 7 Bolas!';
-  else if (pontos >= 10) faltamTxt = '🥤 Milkshake disponível! Faltam ' + (30 - pontos) + ' pontos para a Caixa 7 Bolas';
+  if (pontos >= 30)      faltamTxt = 'Voce pode resgatar Milkshake e Caixa 7 Bolas!';
+  else if (pontos >= 10) faltamTxt = 'Milkshake disponivel! Faltam ' + (30 - pontos) + ' pontos para a Caixa 7 Bolas';
   else                   faltamTxt = 'Faltam ' + (10 - pontos) + ' ponto' + ((10 - pontos) !== 1 ? 's' : '') + ' para o Milkshake';
   document.getElementById('pontos-faltam').textContent = faltamTxt;
 
-  // Ícones de sorvete (30 no total, marcas em 10 e 30)
   const grid = document.getElementById('sorvetes-grid');
   grid.innerHTML = '';
   for (let i = 0; i < 30; i++) {
@@ -1284,7 +1207,6 @@ function atualizarUI() {
     grid.appendChild(span);
   }
 
-  // Barra de progresso (base 30)
   const pct = Math.min(100, Math.round((pontos / 30) * 100));
   const bar = document.getElementById('progress-bar');
   bar.style.width = pct + '%';
@@ -1293,66 +1215,59 @@ function atualizarUI() {
   else                   bar.style.background = 'linear-gradient(90deg,#e8650a,#ff8c00)';
   document.getElementById('progress-label').textContent = pct + '% — ' + pontos + '/30 pontos';
 
-  // Seção de resgaté
-  const resgaté = document.getElementById('resgaté-section');
-  const card10  = document.getElementById('card-prêmio-10');
-  const card30  = document.getElementById('card-prêmio-20'); // mesmo id, agora é 30 pts
+  const resgatar = document.getElementById('resgatar-section');
+  const card10  = document.getElementById('card-premio-10');
+  const card30  = document.getElementById('card-premio-30');
   if (pontos >= 10) {
-    resgaté.style.display = 'block';
+    resgatar.style.display = 'block';
     card10.style.display  = 'block';
     card30.style.display  = pontos >= 30 ? 'block' : 'none';
     if (pontos >= 30) {
-      document.getElementById('resgaté-txt').textContent = '🎉 Você tem ' + pontos + ' pontos! Escolha seu prêmio:';
+      document.getElementById('resgatar-txt').textContent = 'Voce tem ' + pontos + ' pontos! Escolha seu premio:';
     } else {
-      document.getElementById('resgaté-txt').textContent = '🥤 Você tem ' + pontos + ' pontos! Resgaté o Milkshake ou continue acumulando para a Caixa 7 Bolas (30 pts).';
+      document.getElementById('resgatar-txt').textContent = 'Voce tem ' + pontos + ' pontos! Resgate o Milkshake ou continue acumulando para a Caixa 7 Bolas (30 pts).';
     }
-    document.getElementById('btn-válidar').disabled = false; // sempre pode inserir mais códigos
+    document.getElementById('btn-validar').disabled = false;
   } else {
-    resgaté.style.display = 'none';
+    resgatar.style.display = 'none';
     card10.style.display  = 'none';
     card30.style.display  = 'none';
-    document.getElementById('btn-válidar').disabled = false;
+    document.getElementById('btn-validar').disabled = false;
   }
 
   renderHistorico();
 }
 
 // ═══════════════════════════════════════════════════════════
-// HISTÓRICO
+// HISTORICO
 // ═══════════════════════════════════════════════════════════
 function renderHistorico() {
   const lista = document.getElementById('historico-list');
   if (!clienteAtual) return;
 
-  const códigos   = clienteAtual.códigosUsados || [];
-  const resgatés  = clienteAtual.resgatés || [];
+  const codigos   = clienteAtual.codigosUsados || clienteAtual.codigosUsados || [];
+  const resgates  = clienteAtual.resgates || [];
   let html = '';
 
-  // Resgatés realizados (com nome, produto e data)
-  if (resgatés.length > 0) {
-    html += '<li class="rodada-header">🏆 Prêmios Resgatados</li>';
-    resgatés.forEach(res => {
+  if (resgates.length > 0) {
+    html += '<li class="rodada-header">🏆 Premios Resgatados</li>';
+    resgates.forEach(res => {
       html += '<li class="historico-item">' +
-        '<span style="font-weight:700;color:#27ae60">' + res.emoji + ' ' + res.prêmio + '</span>' +
-        '<span class="data">' + formatarData(res.data) + ' — −' + (res.pontos || 10) + ' pts</span>' +
-        '</li>';
-      // Mostrar nome e produto de forma destacada
-      html += '<li style="padding:3px 0 6px;font-size:.78rem;color:#888;border-bottom:1px solid #f0e8e0">' +
-        '👤 ' + (clienteAtual.nome || '') + ' — ' + res.prêmio +
+        '<span style="font-weight:700;color:#27ae60">' + (res.emoji || '🎁') + ' ' + (res.premio || res.premio || '') + '</span>' +
+        '<span class="data">' + formatarData(res.data) + ' — -' + (res.pontos || 10) + ' pts</span>' +
         '</li>';
     });
   }
 
-  // Códigos inseridos
-  if (códigos.length > 0) {
-    html += '<li class="rodada-header">🎟️ Códigos Inseridos</li>';
-    códigos.slice().reverse().forEach(c => {
-      html += '<li class="historico-item"><span class="cod">' + c.código + '</span><span class="data">' + formatarData(c.data) + '</span></li>';
+  if (codigos.length > 0) {
+    html += '<li class="rodada-header">🎟️ Codigos Inseridos</li>';
+    codigos.slice().reverse().forEach(c => {
+      html += '<li class="historico-item"><span class="cod">' + (c.codigo || c.codigo || '') + '</span><span class="data">' + formatarData(c.data) + '</span></li>';
     });
   }
 
   if (!html) {
-    html = '<li style="color:#açaía;font-size:.85rem;text-align:center;padding:12px 0">Nenhuma movimentação ainda.</li>';
+    html = '<li style="color:#999;font-size:.85rem;text-align:center;padding:12px 0">Nenhuma movimentacao ainda.</li>';
   }
   lista.innerHTML = html;
 }
@@ -1361,386 +1276,8 @@ function formatarData(iso) {
   if (!iso) return '';
   try {
     const d = new Date(iso);
-    return d.toLocaleDatéString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
   } catch(e) { return iso; }
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// REGRAS ANTI-FRAUDE (padrão grandes sites)
-// ═══════════════════════════════════════════════════════════
-
-// REGRA 1 — Rate Limiting: máximo 3 tentativas erradas em 10 minutos
-const LIMITE_TENTATIVAS = 3;
-const JANELA_TENTATIVAS_MS = 10 * 60 * 1000; // 10 minutos
-function registrarTentativaInvalida() {
-  const key = 'itap_fid_tentativas';
-  const agora = Date.now();
-  let dados = JSON.parse(localStorage.getItem(key) || '{"tentativas":[],"bloqueadoAte":0}');
-  if (dados.bloqueadoAte && agora < dados.bloqueadoAte) return false; // ainda bloqueado
-  dados.tentativas = dados.tentativas.filter(t => agora - t < JANELA_TENTATIVAS_MS);
-  dados.tentativas.push(agora);
-  if (dados.tentativas.length >= LIMITE_TENTATIVAS) {
-    dados.bloqueadoAte = agora + JANELA_TENTATIVAS_MS;
-    dados.tentativas = [];
-    localStorage.setItem(key, JSON.stringify(dados));
-    return false; // bloqueado agora
-  }
-  localStorage.setItem(key, JSON.stringify(dados));
-  return true; // ainda pode tentar
-}
-function verificarBloqueioTentativas() {
-  const key = 'itap_fid_tentativas';
-  const agora = Date.now();
-  const dados = JSON.parse(localStorage.getItem(key) || '{"tentativas":[],"bloqueadoAte":0}');
-  if (dados.bloqueadoAte && agora < dados.bloqueadoAte) {
-    const restam = Math.ceil((dados.bloqueadoAte - agora) / 60000);
-    return `Muitas tentativas inválidas. Aguarde ${restam} minuto(s).`;
-  }
-  return null;
-}
-function limparBloqueioTentativas() {
-  localStorage.removeItem('itap_fid_tentativas');
-}
-
-// REGRA 2 — Cooldown: mínimo 1 hora entre validações de código
-const COOLDOWN_VALIDACAO_MS = 60 * 60 * 1000; // 1 hora
-function verificarCooldown() {
-  const key = 'itap_fid_ultimo_uso';
-  const agora = Date.now();
-  const ultimo = parseInt(localStorage.getItem(key) || '0');
-  if (ultimo && agora - ultimo < COOLDOWN_VALIDACAO_MS) {
-    const restam = Math.ceil((COOLDOWN_VALIDACAO_MS - (agora - ultimo)) / 60000);
-    return `Aguarde ${restam} minuto(s) antes de usar outro código.`;
-  }
-  return null;
-}
-function registrarUsoValido() {
-  localStorage.setItem('itap_fid_ultimo_uso', Date.now().toString());
-}
-
-// REGRA 3 — Expiração de códigos
-// Códigos gerados ANTES de 01/05/2025 (Lote 1 já existente): validade de 60 dias
-// Códigos gerados A PARTIR de 01/05/2025: validade de 30 dias
-const EXPIRACAO_DIAS_NOVOS = 30;   // novos códigos (a partir de 01/05/2025)
-const EXPIRACAO_DIAS_ANTIGOS = 60; // códigos já gerados (Lote 1)
-const DATA_INICIO_PROMOCAO = new Date('2025-05-01T00:00:00-03:00').getTime();
-function codigoExpirado(dadosCodigo) {
-  if (!dadosCodigo.geradoEm) return false; // sem data = não expira (retrocompatível)
-  const gerado = new Date(dadosCodigo.geradoEm).getTime();
-  const diasPassados = (Date.now() - gerado) / (1000 * 60 * 60 * 24);
-  // Códigos gerados antes de 01/05/2025 (Lote 1): 60 dias de validade
-  if (gerado < DATA_INICIO_PROMOCAO) return diasPassados > EXPIRACAO_DIAS_ANTIGOS;
-  // Códigos novos (a partir de 01/05/2025): 30 dias de validade
-  return diasPassados > EXPIRACAO_DIAS_NOVOS;
-}
-
-// REGRA 4 — Log de tentativas inválidas no servidor (registra no fidelidade.json)
-function registrarFraudeServidor(codigo, motivo) {
-  if (!ghFidelidade.fraudes) ghFidelidade.fraudes = {};
-  const cel = clienteAtual ? clienteAtual.cel : 'desconhecido';
-  const chave = cel + '_' + Date.now();
-  ghFidelidade.fraudes[chave] = {
-    cel: cel,
-    nome: clienteAtual ? clienteAtual.nome : '?',
-    codigo: codigo,
-    motivo: motivo,
-    data: new Date().toISOString()
-  };
-}
-
-// REGRA 5 — Bloqueio automático: 5 tentativas inválidas = cliente bloqueado
-const MAX_FRAUDES_BLOQUEIO = 5;
-function verificarBloqueioCliente() {
-  if (!clienteAtual) return null;
-  if (clienteAtual.bloqueado) return 'Sua conta está bloqueada. Entre em contato com a sorveteria.';
-  const fraudes = ghFidelidade.fraudes || {};
-  const cel = clienteAtual.cel;
-  const fraudesCliente = Object.values(fraudes).filter(f => f.cel === cel).length;
-  if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
-    return `Conta bloqueada por excesso de tentativas inválidas (${fraudesCliente}). Contate a sorveteria.`;
-  }
-  return null;
-}
-
-// REGRA 6 — 1 código por IP por hora (via localStorage + fingerprint)
-const IP_COOLDOWN_MS = 60 * 60 * 1000; // 1 hora
-function getDeviceFingerprint() {
-  // Fingerprint simples baseado em características do dispositivo (sem IP real)
-  const ua = navigator.userAgent;
-  const lang = navigator.language;
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const screen = window.screen.width + 'x' + window.screen.height;
-  const raw = ua + lang + tz + screen;
-  // Hash simples
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
-    hash |= 0;
-  }
-  return 'fp_' + Math.abs(hash).toString(36);
-}
-function verificarLimiteDispositivo() {
-  const fp = getDeviceFingerprint();
-  const key = 'itap_fid_fp_' + fp;
-  const agora = Date.now();
-  const dados = JSON.parse(localStorage.getItem(key) || '{"usos":[]}');
-  dados.usos = dados.usos.filter(t => agora - t < IP_COOLDOWN_MS);
-  if (dados.usos.length >= 1) {
-    const restam = Math.ceil((IP_COOLDOWN_MS - (agora - dados.usos[0])) / 60000);
-    return `Este dispositivo já usou um código recentemente. Aguarde ${restam} minuto(s).`;
-  }
-  return null;
-}
-function registrarUsoDispositivo() {
-  const fp = getDeviceFingerprint();
-  const key = 'itap_fid_fp_' + fp;
-  const agora = Date.now();
-  const dados = JSON.parse(localStorage.getItem(key) || '{"usos":[]}');
-  dados.usos.push(agora);
-  localStorage.setItem(key, JSON.stringify(dados));
-}
-
-// REGRA 7 — Verificação de WhatsApp duplicado (mesmo número já cadastrado)
-function verificarWhatsAppDuplicado(cel) {
-  const clientes = ghClientes.clientes || {};
-  const celLimpo = cel.replace(/\D/g, '');
-  // Verificar se já existe cliente com este número
-  const existente = Object.values(clientes).find(c => c.cel === celLimpo);
-  if (existente && existente.cel !== (clienteAtual ? clienteAtual.cel : '')) {
-    return 'Este número de WhatsApp já está cadastrado com outro nome.';
-  }
-  return null;
-}
-
-// REGRA 8 — Log detalhado de tentativas inválidas (com timestamp e fingerprint)
-function registrarLogDetalhado(codigo, motivo) {
-  const fp = getDeviceFingerprint();
-  const cel = clienteAtual ? clienteAtual.cel : 'não-logado';
-  const key = 'itap_fid_log_' + cel;
-  const agora = Date.now();
-  const log = JSON.parse(localStorage.getItem(key) || '[]');
-  log.push({ ts: agora, codigo, motivo, fp });
-  // Manter apenas os últimos 20 registros
-  if (log.length > 20) log.splice(0, log.length - 20);
-  localStorage.setItem(key, JSON.stringify(log));
-}
-
-// REGRA 9 — Bloqueio automático no servidor após 5 fraudes (salva no clientes.json)
-async function bloquearClienteServidor(motivo) {
-  if (!clienteAtual) return;
-  clienteAtual.bloqueado = true;
-  clienteAtual.dataBloqueio = new Date().toISOString();
-  if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
-  clienteAtual.logFraude.push({ motivo, data: new Date().toISOString() });
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-  await salvarClientes('BLOQUEIO AUTOMÁTICO: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — ' + motivo);
-}
-
-// ═══════════════════════════════════════════════════════════
-// VALIDAR CÓDIGO
-// ═══════════════════════════════════════════════════════════
-async function válidarCódigo() {
-  if (!clienteAtual) { showMsg('msg-código','⚠️ Faça login primeiro.','aviso'); return; }
-
-  // REGRA 1 — Verificar bloqueio por tentativas
-  const msgBloqueio = verificarBloqueioTentativas();
-  if (msgBloqueio) { showMsg('msg-código','🚫 ' + msgBloqueio,'erro'); return; }
-
-  // REGRA 2 — Verificar cooldown entre validações
-  const msgCooldown = verificarCooldown();
-  if (msgCooldown) { showMsg('msg-código','⏳ ' + msgCooldown,'aviso'); return; }
-
-  // REGRA 6 — Verificar limite por dispositivo (1 uso por hora por dispositivo)
-  const msgDispositivo = verificarLimiteDispositivo();
-  if (msgDispositivo) { showMsg('msg-código','📱 ' + msgDispositivo,'aviso'); return; }
-
-  const código = document.getElementById('input-código').value.trim().toUpperCase();
-  if (!código || código.length < 8) { showMsg('msg-código','⚠️ Digite um código válido (mínimo 8 caracteres).','aviso'); return; }
-
-  const btn = document.getElementById('btn-válidar');
-  btn.disabled = true;
-  btn.textContent = '⏳ Validando...';
-  showMsg('msg-código','🔄 Verificando código no servidor...','info');
-
-  // Recarregar dados frescos do GitHub
-  setLoading('Verificando código...');
-  const [fRes, cRes] = await Promise.all([ghGet(FIDELIDADE_PATH), ghGet(CLIENTES_PATH)]);
-  hideLoading();
-  if (fRes.content) {
-    try { ghFidelidade = JSON.parse(fRes.content); ghFidelidadeSha = fRes.sha; } catch(e) {}
-  }
-  if (cRes.content) {
-    try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
-  }
-
-  // Atualizar referência do cliente atual
-  if (ghClientes.clientes && ghClientes.clientes[clienteAtual.cel]) {
-    clienteAtual = ghClientes.clientes[clienteAtual.cel];
-  }
-
-  // REGRA 5 — Verificar bloqueio do cliente no servidor
-  const msgBloqueioCliente = verificarBloqueioCliente();
-  if (msgBloqueioCliente) {
-    showMsg('msg-código','🚫 ' + msgBloqueioCliente,'erro');
-    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
-  }
-
-  // Verificar se código existe
-  const códigos = ghFidelidade.códigos || {};
-  if (!códigos[código]) {
-    registrarFraudeServidor(código, 'Código inexistente');
-    registrarLogDetalhado(código, 'Código inexistente');
-    const podetentar = registrarTentativaInvalida();
-    const tentativas = JSON.parse(localStorage.getItem('itap_fid_tentativas') || '{"tentativas":[]}');
-    const restam = LIMITE_TENTATIVAS - (tentativas.tentativas ? tentativas.tentativas.length : 0);
-    if (!podetentar) {
-      showMsg('msg-código','🚫 Muitas tentativas. Aguarde 10 minutos.','erro');
-      // REGRA 9 — Bloquear cliente no servidor após excesso de tentativas
-      const fraudesCliente = Object.values(ghFidelidade.fraudes || {}).filter(f => f.cel === (clienteAtual ? clienteAtual.cel : '')).length;
-      if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
-        await bloquearClienteServidor('Excesso de tentativas inválidas (' + fraudesCliente + ')');
-      }
-    } else {
-      showMsg('msg-código',`❌ Código inválido. Tentativas restantes: ${Math.max(0,restam)}.`,'erro');
-    }
-    await salvarFidelidade('Tentativa inválida: ' + (clienteAtual ? clienteAtual.nome : '?') + ' — código inexistente');
-    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
-  }
-
-  // REGRA 3 — Verificar expiração do código
-  if (codigoExpirado(códigos[código])) {
-    // Determinar validade exibida ao usuário
-    const geradoTs = new Date(códigos[código].geradoEm).getTime();
-    const validadeDias = geradoTs < DATA_INICIO_PROMOCAO ? EXPIRACAO_DIAS_ANTIGOS : EXPIRACAO_DIAS_NOVOS;
-    showMsg('msg-código',`⚠️ Este código expirou (validade de ${validadeDias} dias). Solicite um novo na sorveteria.`,'aviso');
-    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
-  }
-
-  // Verificar se já foi usado
-  if (códigos[código].status === 'usado') {
-    registrarFraudeServidor(código, 'Código já utilizado — tentativa de reutilização');
-    registrarLogDetalhado(código, 'Tentativa de reutilização de código já usado');
-    registrarTentativaInvalida();
-    await salvarFidelidade('Tentativa de reutilização: ' + (clienteAtual ? clienteAtual.nome : '?'));
-    showMsg('msg-código','⚠️ Este código já foi utilizado anteriormente.','aviso');
-    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
-  }
-
-  // Verificar se o próprio cliente já usou este código
-  const jaUsou = (clienteAtual.códigosUsados || []).some(c => c.código === código);
-  if (jaUsou) {
-    showMsg('msg-código','⚠️ Você já usou este código.','aviso');
-    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
-  }
-
-  // ✅ CÓDIGO VÁLIDO — dar baixa e adicionar ponto ao saldo
-  setLoading('Registrando ponto...');
-  const agora = new Date().toISOString();
-
-  // Marcar código como usado no fidelidade.json
-  ghFidelidade.códigos[código].status   = 'usado';
-  ghFidelidade.códigos[código].usadoPor = clienteAtual.cel;
-  ghFidelidade.códigos[código].usadoEm  = agora;
-  if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
-  if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, códigos: 0 };
-  ghFidelidade.clientes[clienteAtual.cel].códigos = (ghFidelidade.clientes[clienteAtual.cel].códigos || 0) + 1;
-
-  // Adicionar ponto ao saldo do cliente
-  if (!clienteAtual.códigosUsados) clienteAtual.códigosUsados = [];
-  clienteAtual.códigosUsados.push({ código, data: agora });
-  clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
-  clienteAtual.totalCódigos = (clienteAtual.totalCódigos || 0) + 1;
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-
-  // Limpar rate limiting após uso válido
-  limparBloqueioTentativas();
-  registrarUsoValido();
-
-  // Salvar ambos no GitHub
-  const [okFid, okCli] = await Promise.all([
-    salvarFidelidade('Código ' + código + ' usado por ' + clienteAtual.nome),
-    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos)
-  ]);
-  hideLoading();
-  if (okFid && okCli) {
-    document.getElementById('input-código').value = '';
-    showMsg('msg-código','🎉 +1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos > 1 ? 's' : '') + '.','ok');
-    atualizarUI();
-  } else {
-    showMsg('msg-código','⚠️ Ponto registrado mas houve erro ao salvar. Tente novamente.','aviso');
-    atualizarUI();
-  }
-  btn.disabled = false; btn.textContent = '✅ Validar Código';
-}
-
-// ═══════════════════════════════════════════════════════════
-// RESGATAR PRÊMIO
-// ═══════════════════════════════════════════════════════════
-async function resgatarPrêmio(tipo) {
-  if (!clienteAtual) return;
-  const saldo = clienteAtual.saldoPontos || 0;
-
-  // Definir prêmio conforme tipo
-  let nomePrêmio, pontosDesconto, emoji;
-  if (tipo === 'caixa7bolas') {
-    if (saldo < 30) { showMsg('msg-código','⚠️ Você precisa de 30 pontos para a Caixa 7 Bolas. Saldo atual: ' + saldo + ' pontos.','aviso'); return; }
-    nomePrêmio     = 'Caixa 7 Bolas de Sorvete';
-    pontosDesconto = 30;
-    emoji          = '🍦';
-  } else {
-    if (saldo < 10) { showMsg('msg-código','⚠️ Você precisa de 10 pontos para o Milkshake. Saldo atual: ' + saldo + ' pontos.','aviso'); return; }
-    nomePrêmio     = 'Milkshake 300ml';
-    pontosDesconto = 10;
-    emoji          = '🥤';
-  }
-
-  // Mensagem WhatsApp com nome do cliente e produto (conforme solicitado)
-  const dataFmt = new Date().toLocaleDatéString('pt-BR');
-  const msg = 'Meu nome é ' + clienteAtual.nome +
-    ', quero agendar dia para retirar meu bônus: ' +
-    emoji + ' ' + nomePrêmio +
-    ' (' + pontosDesconto + ' pontos) — Data: ' + dataFmt;
-  const url = 'https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg);
-  window.open(url, '_blank');
-
-  // Descontar pontos do saldo e registrar resgaté com data
-  setLoading('Registrando resgaté...');
-  const agora = new Date().toISOString();
-  const saldoAntes = saldo;
-  clienteAtual.saldoPontos = saldo - pontosDesconto;
-  if (!clienteAtual.resgatés) clienteAtual.resgatés = [];
-  clienteAtual.resgatés.push({
-    prêmio:     nomePrêmio,
-    emoji,
-    pontos:     pontosDesconto,
-    saldoAntes,
-    saldoApós:  clienteAtual.saldoPontos,
-    data:       agora
-  });
-  clienteAtual.totalPrêmios = (clienteAtual.totalPrêmios || 0) + 1;
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-
-  const ok = await salvarClientes(
-    'Resgaté: ' + clienteAtual.nome + ' — ' + nomePrêmio +
-    ' (-' + pontosDesconto + ' pts) — saldo restante: ' + clienteAtual.saldoPontos
-  );
-  hideLoading();
-  if (ok) {
-    showMsg('msg-código',
-      emoji + ' ' + nomePrêmio + ' resgatado! Descontados ' + pontosDesconto +
-      ' pontos. Saldo restante: ' + clienteAtual.saldoPontos + ' ponto' +
-      (clienteAtual.saldoPontos !== 1 ? 's' : '') + '.', 'ok');
-    atualizarUI();
-  } else {
-    // Reverter em caso de erro
-    clienteAtual.saldoPontos = saldoAntes;
-    clienteAtual.resgatés.pop();
-    clienteAtual.totalPrêmios--;
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-    showMsg('msg-código','❌ Erro ao registrar resgaté. Tente novamente.','erro');
-    atualizarUI();
-  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1760,15 +1297,336 @@ function sair() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// WhatsApp SORTEIO (com nome do cliente)
+// REGRAS ANTI-FRAUDE
 // ═══════════════════════════════════════════════════════════
-function enviarSolicitacaoSorteio() {
-  const nome = clienteAtual ? clienteAtual.nome : '';
-  const msg = 'Olá, meu nome é *' + nome + '*. ' +
-    'Solicito o cadastro do meu número na agenda da Sorveteria Itapolitana para participação nos sorteios mensais. ' +
-    'Estou ciente de que não receberei mensagens de propaganda, apenas visualizarei as promoções e produtos nos *Status do WhatsApp* quando desejar. ' +
-    'Confirmo que concordo com as regras de participação.';
-  window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+const LIMITE_TENTATIVAS = 3;
+const JANELA_TENTATIVAS_MS = 10 * 60 * 1000;
+function registrarTentativaInvalida() {
+  const key = 'itap_fid_tentativas';
+  const agora = Date.now();
+  let dados = JSON.parse(localStorage.getItem(key) || '{"tentativas":[],"bloqueadoAte":0}');
+  if (dados.bloqueadoAte && agora < dados.bloqueadoAte) return false;
+  dados.tentativas = dados.tentativas.filter(t => agora - t < JANELA_TENTATIVAS_MS);
+  dados.tentativas.push(agora);
+  if (dados.tentativas.length >= LIMITE_TENTATIVAS) {
+    dados.bloqueadoAte = agora + JANELA_TENTATIVAS_MS;
+    dados.tentativas = [];
+    localStorage.setItem(key, JSON.stringify(dados));
+    return false;
+  }
+  localStorage.setItem(key, JSON.stringify(dados));
+  return true;
+}
+function verificarBloqueioTentativas() {
+  const key = 'itap_fid_tentativas';
+  const agora = Date.now();
+  const dados = JSON.parse(localStorage.getItem(key) || '{"tentativas":[],"bloqueadoAte":0}');
+  if (dados.bloqueadoAte && agora < dados.bloqueadoAte) {
+    const restam = Math.ceil((dados.bloqueadoAte - agora) / 60000);
+    return `Muitas tentativas invalidas. Aguarde ${restam} minuto(s).`;
+  }
+  return null;
+}
+function limparBloqueioTentativas() {
+  localStorage.removeItem('itap_fid_tentativas');
+}
+
+const COOLDOWN_VALIDACAO_MS = 60 * 60 * 1000;
+function verificarCooldown() {
+  const key = 'itap_fid_ultimo_uso';
+  const agora = Date.now();
+  const ultimo = parseInt(localStorage.getItem(key) || '0');
+  if (ultimo && agora - ultimo < COOLDOWN_VALIDACAO_MS) {
+    const restam = Math.ceil((COOLDOWN_VALIDACAO_MS - (agora - ultimo)) / 60000);
+    return `Aguarde ${restam} minuto(s) antes de usar outro codigo.`;
+  }
+  return null;
+}
+function registrarUsoValido() {
+  localStorage.setItem('itap_fid_ultimo_uso', Date.now().toString());
+}
+
+const EXPIRACAO_DIAS_NOVOS = 30;
+const EXPIRACAO_DIAS_ANTIGOS = 60;
+const DATA_INICIO_PROMOCAO = new Date('2025-05-01T00:00:00-03:00').getTime();
+function codigoExpirado(dadosCodigo) {
+  if (!dadosCodigo.geradoEm) return false;
+  const gerado = new Date(dadosCodigo.geradoEm).getTime();
+  const diasPassados = (Date.now() - gerado) / (1000 * 60 * 60 * 24);
+  if (gerado < DATA_INICIO_PROMOCAO) return diasPassados > EXPIRACAO_DIAS_ANTIGOS;
+  return diasPassados > EXPIRACAO_DIAS_NOVOS;
+}
+
+function registrarFraudeServidor(codigo, motivo) {
+  if (!ghFidelidade.fraudes) ghFidelidade.fraudes = {};
+  const cel = clienteAtual ? clienteAtual.cel : 'desconhecido';
+  const chave = cel + '_' + Date.now();
+  ghFidelidade.fraudes[chave] = {
+    cel: cel,
+    nome: clienteAtual ? clienteAtual.nome : '?',
+    codigo: codigo,
+    motivo: motivo,
+    data: new Date().toISOString()
+  };
+}
+
+const MAX_FRAUDES_BLOQUEIO = 5;
+function verificarBloqueioCliente() {
+  if (!clienteAtual) return null;
+  if (clienteAtual.bloqueado) return 'Sua conta esta bloqueada. Entre em contato com a sorveteria.';
+  const fraudes = ghFidelidade.fraudes || {};
+  const cel = clienteAtual.cel;
+  const fraudesCliente = Object.values(fraudes).filter(f => f.cel === cel).length;
+  if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
+    return `Conta bloqueada por excesso de tentativas invalidas (${fraudesCliente}). Contate a sorveteria.`;
+  }
+  return null;
+}
+
+const IP_COOLDOWN_MS = 60 * 60 * 1000;
+function getDeviceFingerprint() {
+  const ua = navigator.userAgent;
+  const lang = navigator.language;
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const screen = window.screen.width + 'x' + window.screen.height;
+  const raw = ua + lang + tz + screen;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'fp_' + Math.abs(hash).toString(36);
+}
+function verificarLimiteDispositivo() {
+  const fp = getDeviceFingerprint();
+  const key = 'itap_fid_fp_' + fp;
+  const agora = Date.now();
+  const dados = JSON.parse(localStorage.getItem(key) || '{"usos":[]}');
+  dados.usos = dados.usos.filter(t => agora - t < IP_COOLDOWN_MS);
+  if (dados.usos.length >= 1) {
+    const restam = Math.ceil((IP_COOLDOWN_MS - (agora - dados.usos[0])) / 60000);
+    return `Este dispositivo ja usou um codigo recentemente. Aguarde ${restam} minuto(s).`;
+  }
+  return null;
+}
+function registrarUsoDispositivo() {
+  const fp = getDeviceFingerprint();
+  const key = 'itap_fid_fp_' + fp;
+  const agora = Date.now();
+  const dados = JSON.parse(localStorage.getItem(key) || '{"usos":[]}');
+  dados.usos.push(agora);
+  localStorage.setItem(key, JSON.stringify(dados));
+}
+
+function registrarLogDetalhado(codigo, motivo) {
+  const fp = getDeviceFingerprint();
+  const cel = clienteAtual ? clienteAtual.cel : 'nao-logado';
+  const key = 'itap_fid_log_' + cel;
+  const agora = Date.now();
+  const log = JSON.parse(localStorage.getItem(key) || '[]');
+  log.push({ ts: agora, codigo, motivo, fp });
+  if (log.length > 20) log.splice(0, log.length - 20);
+  localStorage.setItem(key, JSON.stringify(log));
+}
+
+async function bloquearClienteServidor(motivo) {
+  if (!clienteAtual) return;
+  clienteAtual.bloqueado = true;
+  clienteAtual.dataBloqueio = new Date().toISOString();
+  if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
+  clienteAtual.logFraude.push({ motivo, data: new Date().toISOString() });
+  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  await salvarClientes('BLOQUEIO AUTOMATICO: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — ' + motivo);
+}
+
+// ═══════════════════════════════════════════════════════════
+// VALIDAR CODIGO
+// ═══════════════════════════════════════════════════════════
+async function validarCodigo() {
+  if (!clienteAtual) { showMsg('msg-codigo','Faca login primeiro.','aviso'); return; }
+
+  const msgBloqueio = verificarBloqueioTentativas();
+  if (msgBloqueio) { showMsg('msg-codigo', msgBloqueio,'erro'); return; }
+
+  const msgCooldown = verificarCooldown();
+  if (msgCooldown) { showMsg('msg-codigo', msgCooldown,'aviso'); return; }
+
+  const msgDispositivo = verificarLimiteDispositivo();
+  if (msgDispositivo) { showMsg('msg-codigo', msgDispositivo,'aviso'); return; }
+
+  const codigo = document.getElementById('input-codigo').value.trim().toUpperCase();
+  if (!codigo || codigo.length < 8) { showMsg('msg-codigo','Digite um codigo valido (minimo 8 caracteres).','aviso'); return; }
+
+  const btn = document.getElementById('btn-validar');
+  btn.disabled = true;
+  btn.textContent = 'Validando...';
+  showMsg('msg-codigo','Verificando codigo no servidor...','info');
+
+  setLoading('Verificando codigo...');
+  const [fRes, cRes] = await Promise.all([ghGet(FIDELIDADE_PATH), ghGet(CLIENTES_PATH)]);
+  hideLoading();
+  if (fRes.content) {
+    try { ghFidelidade = JSON.parse(fRes.content); ghFidelidadeSha = fRes.sha; } catch(e) {}
+  }
+  if (cRes.content) {
+    try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
+  }
+
+  if (ghClientes.clientes && ghClientes.clientes[clienteAtual.cel]) {
+    clienteAtual = ghClientes.clientes[clienteAtual.cel];
+  }
+
+  const msgBloqueioCliente = verificarBloqueioCliente();
+  if (msgBloqueioCliente) {
+    showMsg('msg-codigo', msgBloqueioCliente,'erro');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  // Suporte a chave "codigos" ou "codigos" (compatibilidade)
+  const codigos = ghFidelidade.codigos || ghFidelidade.codigos || {};
+  if (!codigos[codigo]) {
+    registrarFraudeServidor(codigo, 'Codigo inexistente');
+    registrarLogDetalhado(codigo, 'Codigo inexistente');
+    const podeTentar = registrarTentativaInvalida();
+    const tentativas = JSON.parse(localStorage.getItem('itap_fid_tentativas') || '{"tentativas":[]}');
+    const restam = LIMITE_TENTATIVAS - (tentativas.tentativas ? tentativas.tentativas.length : 0);
+    if (!podeTentar) {
+      showMsg('msg-codigo','Muitas tentativas. Aguarde 10 minutos.','erro');
+      const fraudesCliente = Object.values(ghFidelidade.fraudes || {}).filter(f => f.cel === (clienteAtual ? clienteAtual.cel : '')).length;
+      if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
+        await bloquearClienteServidor('Excesso de tentativas invalidas (' + fraudesCliente + ')');
+      }
+    } else {
+      showMsg('msg-codigo',`Codigo invalido. Tentativas restantes: ${Math.max(0,restam)}.`,'erro');
+    }
+    await salvarFidelidade('Tentativa invalida: ' + (clienteAtual ? clienteAtual.nome : '?') + ' — codigo inexistente');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  if (codigoExpirado(codigos[codigo])) {
+    const geradoTs = new Date(codigos[codigo].geradoEm).getTime();
+    const validadeDias = geradoTs < DATA_INICIO_PROMOCAO ? EXPIRACAO_DIAS_ANTIGOS : EXPIRACAO_DIAS_NOVOS;
+    showMsg('msg-codigo',`Este codigo expirou (validade de ${validadeDias} dias). Solicite um novo na sorveteria.`,'aviso');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  if (codigos[codigo].status === 'usado') {
+    registrarFraudeServidor(codigo, 'Codigo ja utilizado — tentativa de reutilizacao');
+    registrarLogDetalhado(codigo, 'Tentativa de reutilizacao de codigo ja usado');
+    registrarTentativaInvalida();
+    await salvarFidelidade('Tentativa de reutilizacao: ' + (clienteAtual ? clienteAtual.nome : '?'));
+    showMsg('msg-codigo','Este codigo ja foi utilizado anteriormente.','aviso');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  const codigosUsados = clienteAtual.codigosUsados || clienteAtual.codigosUsados || [];
+  const jaUsou = codigosUsados.some(c => (c.codigo || c.codigo) === codigo);
+  if (jaUsou) {
+    showMsg('msg-codigo','Voce ja usou este codigo.','aviso');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  // CODIGO VALIDO
+  setLoading('Registrando ponto...');
+  const agora = new Date().toISOString();
+
+  const codigosObj = ghFidelidade.codigos || ghFidelidade.codigos;
+  codigosObj[codigo].status   = 'usado';
+  codigosObj[codigo].usadoPor = clienteAtual.cel;
+  codigosObj[codigo].usadoEm  = agora;
+  if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
+  if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, codigos: 0 };
+  ghFidelidade.clientes[clienteAtual.cel].codigos = (ghFidelidade.clientes[clienteAtual.cel].codigos || 0) + 1;
+
+  if (!clienteAtual.codigosUsados) clienteAtual.codigosUsados = [];
+  clienteAtual.codigosUsados.push({ codigo, data: agora });
+  clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
+  clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
+  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+
+  limparBloqueioTentativas();
+  registrarUsoValido();
+  registrarUsoDispositivo();
+
+  const [okFid, okCli] = await Promise.all([
+    salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome),
+    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos)
+  ]);
+  hideLoading();
+  if (okFid && okCli) {
+    document.getElementById('input-codigo').value = '';
+    showMsg('msg-codigo','+1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos > 1 ? 's' : '') + '.','ok');
+    atualizarUI();
+  } else {
+    showMsg('msg-codigo','Ponto registrado mas houve erro ao salvar. Tente novamente.','aviso');
+    atualizarUI();
+  }
+  btn.disabled = false; btn.textContent = 'Validar Codigo';
+}
+
+// ═══════════════════════════════════════════════════════════
+// RESGATAR PREMIO
+// ═══════════════════════════════════════════════════════════
+async function resgatarPremio(tipo) {
+  if (!clienteAtual) return;
+  const saldo = clienteAtual.saldoPontos || 0;
+
+  let nomePremio, pontosDesconto, emoji;
+  if (tipo === 'caixa7bolas') {
+    if (saldo < 30) { showMsg('msg-codigo','Voce precisa de 30 pontos para a Caixa 7 Bolas. Saldo atual: ' + saldo + ' pontos.','aviso'); return; }
+    nomePremio     = 'Caixa 7 Bolas de Sorvete';
+    pontosDesconto = 30;
+    emoji          = '🍦';
+  } else {
+    if (saldo < 10) { showMsg('msg-codigo','Voce precisa de 10 pontos para o Milkshake. Saldo atual: ' + saldo + ' pontos.','aviso'); return; }
+    nomePremio     = 'Milkshake 300ml';
+    pontosDesconto = 10;
+    emoji          = '🥤';
+  }
+
+  const dataFmt = new Date().toLocaleDateString('pt-BR');
+  const msg = 'Meu nome e ' + clienteAtual.nome +
+    ', quero agendar dia para retirar meu bonus: ' +
+    emoji + ' ' + nomePremio +
+    ' (' + pontosDesconto + ' pontos) — Data: ' + dataFmt;
+  const url = 'https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+
+  setLoading('Registrando resgate...');
+  const agora = new Date().toISOString();
+  const saldoAntes = saldo;
+  clienteAtual.saldoPontos = saldo - pontosDesconto;
+  if (!clienteAtual.resgates) clienteAtual.resgates = [];
+  clienteAtual.resgates.push({
+    premio:     nomePremio,
+    emoji,
+    pontos:     pontosDesconto,
+    saldoAntes,
+    saldoApos:  clienteAtual.saldoPontos,
+    data:       agora
+  });
+  clienteAtual.totalPremios = (clienteAtual.totalPremios || 0) + 1;
+  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+
+  const ok = await salvarClientes(
+    'Resgate: ' + clienteAtual.nome + ' — ' + nomePremio +
+    ' (-' + pontosDesconto + ' pts) — saldo restante: ' + clienteAtual.saldoPontos
+  );
+  hideLoading();
+  if (ok) {
+    showMsg('msg-codigo',
+      emoji + ' ' + nomePremio + ' resgatado! Descontados ' + pontosDesconto +
+      ' pontos. Saldo restante: ' + clienteAtual.saldoPontos + ' ponto' +
+      (clienteAtual.saldoPontos !== 1 ? 's' : '') + '.', 'ok');
+    atualizarUI();
+  } else {
+    clienteAtual.saldoPontos = saldoAntes;
+    clienteAtual.resgates.pop();
+    clienteAtual.totalPremios--;
+    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    showMsg('msg-codigo','Erro ao registrar resgate. Tente novamente.','erro');
+    atualizarUI();
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1780,8 +1638,7 @@ let adminPaginaAtual = 1;
 let adminClientesFiltrados = [];
 
 function abrirAdmin() {
-  document.getElementById('sec-hero').style.display = 'none';
-  document.getElementById('sec-passos').style.display = 'none';
+  document.getElementById('secao-programas') && (document.getElementById('secao-programas').style.display = 'none');
   document.getElementById('painel').style.display = 'none';
   document.getElementById('painel-admin').style.display = 'block';
   document.getElementById('admin-login-box').style.display = 'block';
@@ -1792,8 +1649,6 @@ function abrirAdmin() {
 
 function fecharAdmin() {
   document.getElementById('painel-admin').style.display = 'none';
-  document.getElementById('sec-hero').style.display = '';
-  document.getElementById('sec-passos').style.display = '';
   document.getElementById('painel').style.display = '';
   window.scrollTo(0, 0);
 }
@@ -1801,7 +1656,7 @@ function fecharAdmin() {
 function adminLogin() {
   const senha = document.getElementById('inp-admin-senha').value;
   if (senha !== ADMIN_SENHA) {
-    showMsg('msg-admin-login', '❌ Senha incorreta.', 'erro');
+    showMsg('msg-admin-login', 'Senha incorreta.', 'erro');
     return;
   }
   document.getElementById('admin-login-box').style.display = 'none';
@@ -1828,7 +1683,6 @@ async function adminCarregarClientes() {
 function adminBuscar() {
   const busca = (document.getElementById('admin-busca').value || '').toLowerCase().trim();
   const todos = Object.values(ghClientes.clientes || {});
-  // Ordenar por data de cadastro (mais antigo primeiro)
   todos.sort((a, b) => {
     const da = a.cadastro || '';
     const db = b.cadastro || '';
@@ -1854,7 +1708,6 @@ function adminRenderizar() {
   const fim = Math.min(inicio + ADMIN_POR_PAGINA, total);
   const pagina = lista.slice(inicio, fim);
 
-  // Estatísticas
   const todos = Object.values(ghClientes.clientes || {});
   const totalGeral = todos.length;
   const bloqueados = todos.filter(c => c.bloqueado).length;
@@ -1863,7 +1716,6 @@ function adminRenderizar() {
   document.getElementById('stat-ativos').textContent = ativos;
   document.getElementById('stat-bloqueados').textContent = bloqueados;
 
-  // Renderizar linhas
   const container = document.getElementById('admin-lista');
   if (pagina.length === 0) {
     container.innerHTML = '<div class="admin-empty">Nenhum cliente encontrado.</div>';
@@ -1871,18 +1723,18 @@ function adminRenderizar() {
     container.innerHTML = pagina.map((c, idx) => {
       const num = inicio + idx + 1;
       const celFmt = c.cel ? '(' + c.cel.slice(0,2) + ') ' + c.cel.slice(2,7) + '-' + c.cel.slice(7) : '—';
-      const pontos = (c.rodadaAtual && c.rodadaAtual.pontos) ? c.rodadaAtual.pontos : 0;
-      const dataInsc = c.cadastro ? new Date(c.cadastro).toLocaleDatéString('pt-BR') : '—';
+      const pontos = (c.rodadaAtual && c.rodadaAtual.pontos) ? c.rodadaAtual.pontos : (c.saldoPontos || 0);
+      const dataInsc = c.cadastro ? new Date(c.cadastro).toLocaleDateString('pt-BR') : '—';
       const bloqueado = c.bloqueado === true;
       const motivoBloqueio = bloqueado
-        ? (c.logFraude && c.logFraude.length >= 4 ? '🚨 BLOQUEADO POR FRAUDE' : '🚫 BLOQUEADO')
+        ? (c.logFraude && c.logFraude.length >= 4 ? 'BLOQUEADO POR FRAUDE' : 'BLOQUEADO')
         : '';
       const statusHtml = bloqueado
         ? '<span class="badge-bloqueado">' + motivoBloqueio + '</span>'
-        : '<span class="badge-ativo">✅ Ativo</span>';
+        : '<span class="badge-ativo">Ativo</span>';
       const btnAcao = bloqueado
-        ? '<button class="btn-desbloquear" onclick="adminToggleBloqueio(\'' + c.cel + '\', false)">🔓 Desbloquear</button>'
-        : '<button class="btn-bloquear" onclick="adminToggleBloqueio(\'' + c.cel + '\', true)">🔒 Bloquear</button>';
+        ? '<button class="btn-desbloquear" onclick="adminToggleBloqueio(\'' + c.cel + '\', false)">Desbloquear</button>'
+        : '<button class="btn-bloquear" onclick="adminToggleBloqueio(\'' + c.cel + '\', true)">Bloquear</button>';
       return '<div class="admin-row' + (bloqueado ? '" style="background:#fff5f5' : '') + '">' +
         '<div><div class="admin-nome">' + num + '. ' + (c.nome || '—') + '</div></div>' +
         '<div class="admin-cel">' + celFmt + '</div>' +
@@ -1893,18 +1745,16 @@ function adminRenderizar() {
     }).join('');
   }
 
-  // Paginação
   const pag = document.getElementById('admin-paginacao');
   if (totalPaginas <= 1) { pag.innerHTML = ''; return; }
-  let html = '<span class="pag-info">' + total + ' clientes — Pág. ' + adminPaginaAtual + '/' + totalPaginas + '</span>';
-  if (adminPaginaAtual > 1) html += '<button class="btn-pag" onclick="adminIrPagina(' + (adminPaginaAtual-1) + ')">‹ Anterior</button>';
-  // Mostrar até 5 páginas ao redor da atual
+  let html = '<span class="pag-info">' + total + ' clientes — Pag. ' + adminPaginaAtual + '/' + totalPaginas + '</span>';
+  if (adminPaginaAtual > 1) html += '<button class="btn-pag" onclick="adminIrPagina(' + (adminPaginaAtual-1) + ')">Anterior</button>';
   const pMin = Math.max(1, adminPaginaAtual - 2);
   const pMax = Math.min(totalPaginas, adminPaginaAtual + 2);
   for (let p = pMin; p <= pMax; p++) {
     html += '<button class="btn-pag' + (p === adminPaginaAtual ? ' ativo' : '') + '" onclick="adminIrPagina(' + p + ')">' + p + '</button>';
   }
-  if (adminPaginaAtual < totalPaginas) html += '<button class="btn-pag" onclick="adminIrPagina(' + (adminPaginaAtual+1) + ')">Próxima ›</button>';
+  if (adminPaginaAtual < totalPaginas) html += '<button class="btn-pag" onclick="adminIrPagina(' + (adminPaginaAtual+1) + ')">Proxima</button>';
   pag.innerHTML = html;
 }
 
@@ -1923,9 +1773,9 @@ async function adminToggleBloqueio(cel, bloquear) {
     c.dataBloqueio = new Date().toISOString();
     if (!c.logFraude) c.logFraude = [];
   } else {
-    if (!confirm('Desbloquear ' + c.nome + '? O histórico de tentativas será zerado.')) return;
+    if (!confirm('Desbloquear ' + c.nome + '? O historico de tentativas sera zerado.')) return;
     c.bloqueado = false;
-    c.tentativasInválidas = 0;
+    c.tentativasInvalidas = 0;
     c.logFraude = [];
     c.dataBloqueio = null;
   }
@@ -1937,7 +1787,6 @@ async function adminToggleBloqueio(cel, bloquear) {
     adminRenderizar();
   } else {
     alert('Erro ao salvar. Tente novamente.');
-    // Reverter
     c.bloqueado = !bloquear;
     ghClientes.clientes[cel] = c;
     adminRenderizar();
@@ -1946,7 +1795,6 @@ async function adminToggleBloqueio(cel, bloquear) {
 
 function copiarListaSorteio() {
   const todos = Object.values(ghClientes.clientes || {});
-  // Apenas ativos, ordenados por data de inscrição
   const ativos = todos
     .filter(c => !c.bloqueado)
     .sort((a, b) => (a.cadastro || '') < (b.cadastro || '') ? -1 : 1);
@@ -1956,27 +1804,26 @@ function copiarListaSorteio() {
     return;
   }
 
-  const dataHoje = new Date().toLocaleDatéString('pt-BR');
-  let texto = '🍦 SORTEIO MENSAL — SORVETERIA ITAPOLITANA CAJURU\n';
+  const dataHoje = new Date().toLocaleDateString('pt-BR');
+  let texto = 'SORTEIO MENSAL — SORVETERIA ITAPOLITANA CAJURU\n';
   texto += 'Data: ' + dataHoje + '\n';
   texto += 'Total de participantes ativos: ' + ativos.length + '\n';
-  texto += '═'.repeat(50) + '\n\n';
+  texto += '='.repeat(50) + '\n\n';
 
   ativos.forEach((c, i) => {
     const celFmt = c.cel ? '(' + c.cel.slice(0,2) + ') ' + c.cel.slice(2,7) + '-' + c.cel.slice(7) : c.cel;
-    const dataInsc = c.cadastro ? new Date(c.cadastro).toLocaleDatéString('pt-BR') : '—';
-    const pontos = (c.rodadaAtual && c.rodadaAtual.pontos) ? c.rodadaAtual.pontos : 0;
+    const dataInsc = c.cadastro ? new Date(c.cadastro).toLocaleDateString('pt-BR') : '—';
+    const pontos = (c.rodadaAtual && c.rodadaAtual.pontos) ? c.rodadaAtual.pontos : (c.saldoPontos || 0);
     texto += (i + 1) + '. ' + (c.nome || '—') + ' — ' + celFmt + ' — Inscrito em: ' + dataInsc + ' — Pontos: ' + pontos + '\n';
   });
 
-  texto += '\n' + '═'.repeat(50) + '\n';
+  texto += '\n' + '='.repeat(50) + '\n';
   texto += 'Lista gerada automaticamente pelo sistema de fidelidade.\n';
   texto += 'Sorveteria Itapolitana Cajuru — itapolitanacajuru.com.br';
 
   navigator.clipboard.writeText(texto).then(() => {
-    alert('✅ Lista copiada com sucesso!\n\n' + ativos.length + ' participantes ativos.\n\nCole em qualquer sorteador online ou no WhatsApp.');
+    alert('Lista copiada com sucesso!\n\n' + ativos.length + ' participantes ativos.\n\nCole em qualquer sorteador online ou no WhatsApp.');
   }).catch(() => {
-    // Fallback para navegadores sem clipboard API
     const ta = document.createElement('textarea');
     ta.value = texto;
     ta.style.position = 'fixed';
@@ -1985,12 +1832,12 @@ function copiarListaSorteio() {
     ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    alert('✅ Lista copiada! Cole em qualquer sorteador ou WhatsApp.');
+    alert('Lista copiada! Cole em qualquer sorteador ou WhatsApp.');
   });
 }
 
 // ═══════════════════════════════════════════════════════════
-// UTILITÁRIOS
+// UTILITARIOS
 // ═══════════════════════════════════════════════════════════
 function toggleSenha(idCampo, idOlho) {
   const campo = document.getElementById(idCampo);
@@ -2006,37 +1853,30 @@ function toggleSenha(idCampo, idOlho) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// INICIALIZAÇÃO
+// INICIALIZACAO
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   carregarDados();
 
-  // Abre Admin automaticamente se veio de outra página pelo botão ⚙️
   if (sessionStorage.getItem('itap_abrir_admin') === '1') {
     sessionStorage.removeItem('itap_abrir_admin');
     setTimeout(abrirAdmin, 300);
   }
 
-  // Enter no campo de código
-  document.getElementById('input-código').addEventListener('keydown', e => {
-    if (e.key === 'Enter') válidarCódigo();
+  document.getElementById('input-codigo').addEventListener('keydown', e => {
+    if (e.key === 'Enter') validarCodigo();
   });
 
-  // Bloqueio de dígitos extras nos campos de data de nascimento (login)
   function bloquearDigitos(idCampo, max) {
     const el = document.getElementById(idCampo);
     if (!el) return;
     el.addEventListener('input', function () {
-      // Mantém apenas números
       this.value = this.value.replace(/\D/g, '');
-      // Limita ao máximo de dígitos
       if (this.value.length > max) this.value = this.value.slice(0, max);
     });
     el.addEventListener('keydown', function (e) {
-      // Bloqueia qualquer tecla numérica se já atingiu o limite
       const teclaNum = e.key >= '0' && e.key <= '9';
       if (teclaNum && this.value.length >= max) e.preventDefault();
-      // Bloqueia letras e caracteres especiais
       if (!/[0-9]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key)) {
         e.preventDefault();
       }
