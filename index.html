@@ -1226,7 +1226,7 @@ html { scroll-behavior: smooth; }
 <p id="hero-descrição">Cremosidade real, sabores que encantam e um atendimento feito com carinho. Venha descobrir por que a Itapolitana é a sorveteria favorita de Cajuru e região há mais de 17 anos.</p>
 <button aria-label="Pedir agora pelo WhatsApp" class="hero-chat-btn" onclick="abrirFaleConosco()" type="button">💬 Pedir Agora pelo WhatsApp</button>
 <br/>
-<button id="hero-cta" aria-label="Ver cardápio completo de sorvetes" class="hero-cta" onclick="var c=document.getElementById('vc-container');var btn=document.getElementById('vc-btn');if(!c.classList.contains('aberto')){c.classList.add('aberto');btn.classList.add('aberto');btn.setAttribute('aria-expanded','true');btn.innerHTML='🍦 Esconder Cardápio <i class=\'vc-seta\' aria-hidden=\'true\'>▼</i>';}setTimeout(function(){var el=document.getElementById('vc-container');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},650);" type="button">
+<button id="hero-cta" aria-label="Ver cardápio completo de sorvetes" class="hero-cta" onclick="var c=document.getElementById('vc-container');var btn=document.getElementById('vc-btn');if(!c.classList.contains('aberto')){c.classList.add('aberto');btn.classList.add('aberto');btn.setAttribute('aria-expanded','true');btn.innerHTML='🍦 Esconder Cardápio <i class=\'vc-seta\' aria-hidden=\'true\'>▼</i>';}setTimeout(function(){var el=document.getElementById('vc-container');if(el){var rect=el.getBoundingClientRect();window.scrollBy({top:rect.top-80,behavior:'smooth'});}},700);" type="button">
         🍦 Ver Cardápio Completo
       </button>
 </div>
@@ -1689,14 +1689,10 @@ let _modalAtivo=null;
 
 function _travarPagina(){
   _modalScrollY=window.scrollY;
-  // Travar scroll da página sem mudar layout
-  document.body.style.overflowY='hidden';
-  document.body.style.paddingRight=(window.innerWidth-document.documentElement.clientWidth)+'px';
+  // Não faz nada — o modal-overlay com pointer-events:auto já bloqueia interações
 }
 function _liberarPagina(){
-  document.body.style.overflowY='';
-  document.body.style.paddingRight='';
-  window.scrollTo({top:_modalScrollY,behavior:'instant'});
+  // Não faz nada
 }
 function fecharModal(id){
   const el=document.getElementById(id);
@@ -1812,13 +1808,19 @@ const iconesPicolé={frutas_agua:'🍉',leite_sem_recheio:'🍦',leite_com_reche
 function renderPicolés(){
   const b=document.getElementById('picolés-body');b.innerHTML='';
   if(produtos&&produtos.picolés){
+    // Grade de cards de picolé
+    const grid=document.createElement('div');
+    grid.style='display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px';
     Object.entries(produtos.picolés).forEach(([key,p])=>{
-      const d=document.createElement('div');d.className='picolé-item';
       const icon=iconesPicolé[key]||'🍭';
       const temSabores=p.sabores&&p.sabores.length>0;
-      d.innerHTML=`<div class="picolé-row"><span class="picolé-nome">${icon} ${p.nome}</span><span class="picolé-preço">R$ ${p.preço_varejo.toFixed(2).replace('.',',')}</span></div><div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirPicolé('${key}','${p.nome}',this)">🍭 ${temSabores?'Ver '+p.sabores.length+' Sabores':'Ver Sabores'}</button></div>`;
-      b.appendChild(d);
+      const d=document.createElement('div');
+      d.className='picolé-item';
+      d.style='margin-bottom:0;cursor:pointer;text-align:center;padding:12px 8px';
+      d.innerHTML=`<div style="font-size:1.8rem;margin-bottom:4px">${icon}</div><div class="picolé-nome" style="font-size:12px;margin-bottom:6px">${p.nome}</div><div class="picolé-preço" style="font-size:12px;margin-bottom:8px">R$ ${p.preço_varejo.toFixed(2).replace('.',',')}</div><button type="button" class="btn-sabores" style="font-size:11px;padding:8px 12px;width:100%;margin-top:0" onclick="event.stopPropagation();abrirPicolé('${key}','${p.nome}',this)">🍭 ${temSabores?p.sabores.length+' Sabores':'Sabores'}</button>`;
+      grid.appendChild(d);
     });
+    b.appendChild(grid);
   }
 }
 function renderIso(){
