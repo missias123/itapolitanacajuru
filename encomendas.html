@@ -325,6 +325,87 @@
       gap: 8px;
       margin-bottom: 20px;
     }
+
+    /* ===== RISCO VERMELHO — PRODUTOS ESGOTADOS ===== */
+    /* Sabor esgotado no modal (sorvete, picolé) */
+    .sabor-item.sabor-esgotado {
+      border: 2px solid #ffcdd2 !important;
+      background: #fff8f8 !important;
+      color: #b71c1c !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+      position: relative;
+      opacity: 0.85;
+    }
+    .sabor-item.sabor-esgotado .sabor-nome {
+      text-decoration: line-through;
+      text-decoration-color: #e53935;
+      text-decoration-thickness: 2px;
+    }
+    /* Risco vermelho diagonal sobre o texto do sabor */
+    .sabor-item.sabor-esgotado::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 8%;
+      width: 84%;
+      height: 2.5px;
+      background: #e53935;
+      transform: translateY(-50%);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    /* Card de produto esgotado (caixas, tortas, picolés) */
+    .prod-card.esgotado {
+      opacity: 0.80;
+      position: relative;
+    }
+    .prod-card.esgotado .prod-nome {
+      text-decoration: line-through;
+      text-decoration-color: #e53935;
+      text-decoration-thickness: 2.5px;
+      color: #b71c1c;
+    }
+    .prod-card.esgotado .btn-sabores {
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+      background: #e0e0e0 !important;
+      color: #9e9e9e !important;
+      border: 2px solid #bdbdbd !important;
+    }
+    /* Linha vermelha sobre o nome do produto esgotado */
+    .prod-nome-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .prod-card.esgotado .prod-nome-wrap::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2.5px;
+      background: #e53935;
+      transform: translateY(-50%);
+      border-radius: 2px;
+    }
+    /* Acréscimo esgotado */
+    .acr-card.esgotado .acr-nome {
+      text-decoration: line-through;
+      text-decoration-color: #e53935;
+      text-decoration-thickness: 2px;
+      color: #b71c1c;
+    }
+    /* Animação de liberação quando produto volta ao estoque */
+    @keyframes liberado {
+      0%   { box-shadow: 0 0 0 0 rgba(46,125,50,0.5); }
+      70%  { box-shadow: 0 0 0 12px rgba(46,125,50,0); }
+      100% { box-shadow: 0 0 0 0 rgba(46,125,50,0); }
+    }
+    .produto-liberado {
+      animation: liberado 0.6s ease-out;
+    }
+
     .sabor-item {
       border: 2px solid #E0E0E0;
       background: white;

@@ -61,25 +61,67 @@ var _nomeCliente = '';
 var _telCliente = '';
 var _enderecoCliente = '';
 
-// Sabores carregados do admin (localStorage) ou lista padrão
-function getSaboresAtivos() {
-  const salvo = localStorage.getItem('itap_sabores');
-  if (salvo) {
-    const dados = JSON.parse(salvo);
-    return dados.filter(s => !s.esgotado).map(s => s.nome);
-  }
-  return [
-    "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
-    "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
-    "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
-    "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-    "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
-    "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
-    "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
-    "Pistache","Prestígio","Sensação","Torta de Chocolate"
-  ];
+// Lista padrão de sabores
+const SABORES_PADRAO = [
+  "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
+  "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
+  "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
+  "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
+  "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
+  "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
+  "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
+  "Pistache","Prestígio","Sensação","Torta de Chocolate"
+];
+// Retorna TODOS os sabores como objetos {nome, esgotado}
+function getTodosSabores() {
+  try {
+    const salvo = localStorage.getItem('itap_sabores');
+    if (salvo) {
+      const dados = JSON.parse(salvo);
+      if (Array.isArray(dados) && dados.length > 0) return dados;
+    }
+  } catch(e) {}
+  return SABORES_PADRAO.map(n => ({ nome: n, esgotado: false }));
 }
-const SABORES_SORVETE = getSaboresAtivos();
+// Compatibilidade — retorna só nomes ativos
+function getSaboresAtivos() {
+  return getTodosSabores().filter(s => !s.esgotado).map(s => s.nome);
+}
+// Variável global atualizada dinamicamente
+var SABORES_SORVETE = getTodosSabores();
+// Escutar mudanças do Admin via localStorage
+window.addEventListener('storage', function(e) {
+  if (e.key === 'itap_sabores') {
+    SABORES_SORVETE = getTodosSabores();
+    // Re-renderizar modal se estiver aberto
+    const grid = document.getElementById('grid-sabores');
+    if (grid && grid.children.length > 0) {
+      renderizarGridSabores(grid);
+    }
+  }
+  if (e.key === 'itap_caixas_enc' || e.key === 'itap_tortas_enc') {
+    renderizarCaixas();
+    renderizarTortas();
+  }
+  if (e.key === 'itap_acrescimos') {
+    renderizarAcrescimos();
+  }
+  if (e.key === 'itap_picoles_admin') {
+    renderizarPicolés();
+  }
+});
+// Renderizar grid de sabores com risco vermelho nos esgotados
+function renderizarGridSabores(grid) {
+  if (!grid) return;
+  grid.innerHTML = SABORES_SORVETE.map(s => {
+    const nome = s.nome;
+    const esg  = s.esgotado;
+    if (esg) {
+      return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado — indisponível no momento"><span class="sabor-nome">${nome}</span></button>`;
+    }
+    return `<button class="sabor-item" onclick="toggleSabor('${nome}',this)"><span class="sabor-nome">${nome}</span></button>`;
+  }).join('');
+}
 
 // Caixas de encomenda: carregadas do admin (localStorage) ou padrão
 function getCaixasEncomenda() {
@@ -278,12 +320,12 @@ function renderizarCaixas() {
     return `
     <div class="prod-card ${esgotado?'esgotado':''}">
       <div class="prod-body">
-        <div class="prod-nome">${p.nome}</div>
+        <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
         <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
         <div class="prod-estoque">${esgotado?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','caixas',this)" ${esgotado?'disabled':''}>
-        🍦 Escolher ${p.maxSabores} Sabores
+      <button class="btn-sabores" onclick="${esgotado?'':"abrirSaboresSorvete('"+p.id+"','caixas',this)"}" ${esgotado?'disabled style="cursor:not-allowed"':''}>
+        🍦 ${esgotado?'Esgotado':'Escolher '+p.maxSabores+' Sabores'}
       </button>
     </div>`;
   }).join('');
@@ -293,37 +335,43 @@ function renderizarCaixas() {
 function renderizarTortas() {
   const c = document.getElementById('lista-tortas');
   if (!c) return;
-  c.innerHTML = PRODUTOS.tortas.map(p => `
-    <div class="prod-card ${p.estoque===0?'esgotado':''}">
+  c.innerHTML = PRODUTOS.tortas.map(p => {
+    const esg = p.esgotado || p.estoque <= 0;
+    return `
+    <div class="prod-card ${esg?'esgotado':''}">
       <div class="prod-body">
-        <div class="prod-nome">${p.nome}</div>
+        <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
         <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
-        <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
+        <div class="prod-estoque">${esg?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores" onclick="abrirSaboresSorvete('${p.id}','tortas',this)" ${p.estoque===0?'disabled':''}>
-        🎂 Escolher ${p.maxSabores} Sabores
+      <button class="btn-sabores" onclick="${esg?'':"abrirSaboresSorvete('"+p.id+"','tortas',this)"}" ${esg?'disabled style="cursor:not-allowed"':''}>
+        🎂 ${esg?'Esgotado':'Escolher '+p.maxSabores+' Sabores'}
       </button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ---- RENDERIZAR PICOLÉS ----
 function renderizarPicolés() {
   const c = document.getElementById('lista-picoles');
   if (!c) return;
-  c.innerHTML = PRODUTOS.picoles.map(p => `
-    <div class="prod-card picolé ${p.estoque===0?'esgotado':''}">
+  c.innerHTML = PRODUTOS.picoles.map(p => {
+    const esg = p.esgotado || p.estoque <= 0;
+    return `
+    <div class="prod-card picolé ${esg?'esgotado':''}">
       <div class="prod-body">
-        <div class="prod-nome">${p.nome}</div>
+        <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
         <div class="prod-precos-picolé">
           <span>Varejo: R$ ${p.precoVarejo.toFixed(2).replace('.',',')}</span>
           <span class="destaque">Atacado: R$ ${p.precoAtacado.toFixed(2).replace('.',',')}</span>
         </div>
-        <div class="prod-estoque">${p.estoque===0?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
+        <div class="prod-estoque">${esg?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores btn-picolé" onclick="abrirModalPicolé('${p.id}',this)" ${p.estoque===0?'disabled':''}>
-        🍭 Ver Sabores
+      <button class="btn-sabores btn-picolé" onclick="${esg?'':"abrirModalPicolé('"+p.id+"',this)"}" ${esg?'disabled style="cursor:not-allowed"':''}>
+        🍭 ${esg?'Esgotado':'Ver Sabores'}
       </button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ---- MODAL SABORES SORVETE ----
@@ -1195,11 +1243,14 @@ function renderizarAcrescimos() {
     const item = carrinho.find(x => x.id === c.id);
     const qtd = item ? item.quantidade : 0;
     if (esgotado) {
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid #FECACA;margin-bottom:8px;opacity:0.6">
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff8f8;border-radius:12px;border:2px solid #FECACA;margin-bottom:8px;opacity:0.82;cursor:not-allowed">
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font-size:24px">🍪</span>
           <div>
-            <div style="font-weight:700;font-size:14px;color:#1a1a1a">${c.nome}</div>
+            <div style="font-weight:700;font-size:14px;color:#b71c1c;position:relative;display:inline-block">
+              ${c.nome}
+              <span style="position:absolute;top:50%;left:0;width:100%;height:2px;background:#e53935;transform:translateY(-50%);border-radius:2px;display:block"></span>
+            </div>
             <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preco.toFixed(2).replace('.',',')} / un.</div>
           </div>
         </div>
