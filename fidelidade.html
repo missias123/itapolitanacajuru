@@ -72,6 +72,30 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 .msg-ok{background:#d4edda;color:#155724;border:1.5px solid #c3e6cb}
 .msg-erro{background:#f8d7da;color:#721c24;border:1.5px solid #f5c6cb}
 .msg-aviso{background:#fff3cd;color:#856404;border:1.5px solid #ffeeba}
+
+/* AVISO ANTI-FRAUDE PULSANTE */
+@keyframes pulsarVermelho{
+  0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.55),0 4px 18px rgba(220,38,38,.25)}
+  50%{box-shadow:0 0 0 10px rgba(220,38,38,0),0 4px 24px rgba(220,38,38,.45)}
+}
+.aviso-fraude-pulsante{
+  background:linear-gradient(135deg,#b91c1c,#dc2626);
+  color:#fff;
+  border:2.5px solid #7f1d1d;
+  border-radius:14px;
+  padding:16px 18px;
+  text-align:center;
+  animation:pulsarVermelho 1.8s ease-in-out infinite;
+  position:relative;
+  overflow:hidden;
+}
+.aviso-fraude-pulsante::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);
+  pointer-events:none;
+}
 .msg-info{background:#d1ecf1;color:#0c5460;border:1.5px solid #bee5eb}
 
 /* ── PAINEL DO CLIENTE ── */
@@ -298,6 +322,19 @@ html { scroll-behavior: smooth; }
     </div>
   </div>
 </section>
+
+<!-- AVISO ANTI-FRAUDE -->
+<div style="max-width:700px;margin:0 auto 18px auto;padding:0 12px">
+  <div class="aviso-fraude-pulsante">
+    <div style="font-size:1.5rem;margin-bottom:4px">⚠️</div>
+    <div style="font-size:clamp(.88rem,2.8vw,1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">ATENÇÃO: TENTATIVA DE FRAUDE = EXCLUSÃO PERMANENTE</div>
+    <div style="font-size:clamp(.78rem,2.4vw,.88rem);font-weight:600;line-height:1.55">
+      Números que tentarem usar códigos inválidos, códigos de terceiros ou burlar o sistema serão
+      <strong>bloqueados e excluídos definitivamente da promoção</strong>, sem direito a recurso.
+      O sistema registra automaticamente todas as tentativas suspeitas.
+    </div>
+  </div>
+</div>
 
 <!-- PAINEL PRINCIPAL -->
 <div class="painel" id="painel">
@@ -1025,17 +1062,204 @@ function formatarData(iso) {
   } catch(e) { return iso; }
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// REGRAS ANTI-FRAUDE (padrão grandes sites)
+// ═══════════════════════════════════════════════════════════
+
+// REGRA 1 — Rate Limiting: máximo 3 tentativas erradas em 10 minutos
+const LIMITE_TENTATIVAS = 3;
+const JANELA_TENTATIVAS_MS = 10 * 60 * 1000; // 10 minutos
+function registrarTentativaInvalida() {
+  const key = 'itap_fid_tentativas';
+  const agora = Date.now();
+  let dados = JSON.parse(localStorage.getItem(key) || '{"tentativas":[],"bloqueadoAte":0}');
+  if (dados.bloqueadoAte && agora < dados.bloqueadoAte) return false; // ainda bloqueado
+  dados.tentativas = dados.tentativas.filter(t => agora - t < JANELA_TENTATIVAS_MS);
+  dados.tentativas.push(agora);
+  if (dados.tentativas.length >= LIMITE_TENTATIVAS) {
+    dados.bloqueadoAte = agora + JANELA_TENTATIVAS_MS;
+    dados.tentativas = [];
+    localStorage.setItem(key, JSON.stringify(dados));
+    return false; // bloqueado agora
+  }
+  localStorage.setItem(key, JSON.stringify(dados));
+  return true; // ainda pode tentar
+}
+function verificarBloqueioTentativas() {
+  const key = 'itap_fid_tentativas';
+  const agora = Date.now();
+  const dados = JSON.parse(localStorage.getItem(key) || '{"tentativas":[],"bloqueadoAte":0}');
+  if (dados.bloqueadoAte && agora < dados.bloqueadoAte) {
+    const restam = Math.ceil((dados.bloqueadoAte - agora) / 60000);
+    return `Muitas tentativas inválidas. Aguarde ${restam} minuto(s).`;
+  }
+  return null;
+}
+function limparBloqueioTentativas() {
+  localStorage.removeItem('itap_fid_tentativas');
+}
+
+// REGRA 2 — Cooldown: mínimo 1 hora entre validações de código
+const COOLDOWN_VALIDACAO_MS = 60 * 60 * 1000; // 1 hora
+function verificarCooldown() {
+  const key = 'itap_fid_ultimo_uso';
+  const agora = Date.now();
+  const ultimo = parseInt(localStorage.getItem(key) || '0');
+  if (ultimo && agora - ultimo < COOLDOWN_VALIDACAO_MS) {
+    const restam = Math.ceil((COOLDOWN_VALIDACAO_MS - (agora - ultimo)) / 60000);
+    return `Aguarde ${restam} minuto(s) antes de usar outro código.`;
+  }
+  return null;
+}
+function registrarUsoValido() {
+  localStorage.setItem('itap_fid_ultimo_uso', Date.now().toString());
+}
+
+// REGRA 3 — Expiração de códigos
+// Códigos gerados ANTES de 01/05/2025 (Lote 1 já existente): validade de 60 dias
+// Códigos gerados A PARTIR de 01/05/2025: validade de 30 dias
+const EXPIRACAO_DIAS_NOVOS = 30;   // novos códigos (a partir de 01/05/2025)
+const EXPIRACAO_DIAS_ANTIGOS = 60; // códigos já gerados (Lote 1)
+const DATA_INICIO_PROMOCAO = new Date('2025-05-01T00:00:00-03:00').getTime();
+function codigoExpirado(dadosCodigo) {
+  if (!dadosCodigo.geradoEm) return false; // sem data = não expira (retrocompatível)
+  const gerado = new Date(dadosCodigo.geradoEm).getTime();
+  const diasPassados = (Date.now() - gerado) / (1000 * 60 * 60 * 24);
+  // Códigos gerados antes de 01/05/2025 (Lote 1): 60 dias de validade
+  if (gerado < DATA_INICIO_PROMOCAO) return diasPassados > EXPIRACAO_DIAS_ANTIGOS;
+  // Códigos novos (a partir de 01/05/2025): 30 dias de validade
+  return diasPassados > EXPIRACAO_DIAS_NOVOS;
+}
+
+// REGRA 4 — Log de tentativas inválidas no servidor (registra no fidelidade.json)
+function registrarFraudeServidor(codigo, motivo) {
+  if (!ghFidelidade.fraudes) ghFidelidade.fraudes = {};
+  const cel = clienteAtual ? clienteAtual.cel : 'desconhecido';
+  const chave = cel + '_' + Date.now();
+  ghFidelidade.fraudes[chave] = {
+    cel: cel,
+    nome: clienteAtual ? clienteAtual.nome : '?',
+    codigo: codigo,
+    motivo: motivo,
+    data: new Date().toISOString()
+  };
+}
+
+// REGRA 5 — Bloqueio automático: 5 tentativas inválidas = cliente bloqueado
+const MAX_FRAUDES_BLOQUEIO = 5;
+function verificarBloqueioCliente() {
+  if (!clienteAtual) return null;
+  if (clienteAtual.bloqueado) return 'Sua conta está bloqueada. Entre em contato com a sorveteria.';
+  const fraudes = ghFidelidade.fraudes || {};
+  const cel = clienteAtual.cel;
+  const fraudesCliente = Object.values(fraudes).filter(f => f.cel === cel).length;
+  if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
+    return `Conta bloqueada por excesso de tentativas inválidas (${fraudesCliente}). Contate a sorveteria.`;
+  }
+  return null;
+}
+
+// REGRA 6 — 1 código por IP por hora (via localStorage + fingerprint)
+const IP_COOLDOWN_MS = 60 * 60 * 1000; // 1 hora
+function getDeviceFingerprint() {
+  // Fingerprint simples baseado em características do dispositivo (sem IP real)
+  const ua = navigator.userAgent;
+  const lang = navigator.language;
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const screen = window.screen.width + 'x' + window.screen.height;
+  const raw = ua + lang + tz + screen;
+  // Hash simples
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'fp_' + Math.abs(hash).toString(36);
+}
+function verificarLimiteDispositivo() {
+  const fp = getDeviceFingerprint();
+  const key = 'itap_fid_fp_' + fp;
+  const agora = Date.now();
+  const dados = JSON.parse(localStorage.getItem(key) || '{"usos":[]}');
+  dados.usos = dados.usos.filter(t => agora - t < IP_COOLDOWN_MS);
+  if (dados.usos.length >= 1) {
+    const restam = Math.ceil((IP_COOLDOWN_MS - (agora - dados.usos[0])) / 60000);
+    return `Este dispositivo já usou um código recentemente. Aguarde ${restam} minuto(s).`;
+  }
+  return null;
+}
+function registrarUsoDispositivo() {
+  const fp = getDeviceFingerprint();
+  const key = 'itap_fid_fp_' + fp;
+  const agora = Date.now();
+  const dados = JSON.parse(localStorage.getItem(key) || '{"usos":[]}');
+  dados.usos.push(agora);
+  localStorage.setItem(key, JSON.stringify(dados));
+}
+
+// REGRA 7 — Verificação de WhatsApp duplicado (mesmo número já cadastrado)
+function verificarWhatsAppDuplicado(cel) {
+  const clientes = ghClientes.clientes || {};
+  const celLimpo = cel.replace(/\D/g, '');
+  // Verificar se já existe cliente com este número
+  const existente = Object.values(clientes).find(c => c.cel === celLimpo);
+  if (existente && existente.cel !== (clienteAtual ? clienteAtual.cel : '')) {
+    return 'Este número de WhatsApp já está cadastrado com outro nome.';
+  }
+  return null;
+}
+
+// REGRA 8 — Log detalhado de tentativas inválidas (com timestamp e fingerprint)
+function registrarLogDetalhado(codigo, motivo) {
+  const fp = getDeviceFingerprint();
+  const cel = clienteAtual ? clienteAtual.cel : 'não-logado';
+  const key = 'itap_fid_log_' + cel;
+  const agora = Date.now();
+  const log = JSON.parse(localStorage.getItem(key) || '[]');
+  log.push({ ts: agora, codigo, motivo, fp });
+  // Manter apenas os últimos 20 registros
+  if (log.length > 20) log.splice(0, log.length - 20);
+  localStorage.setItem(key, JSON.stringify(log));
+}
+
+// REGRA 9 — Bloqueio automático no servidor após 5 fraudes (salva no clientes.json)
+async function bloquearClienteServidor(motivo) {
+  if (!clienteAtual) return;
+  clienteAtual.bloqueado = true;
+  clienteAtual.dataBloqueio = new Date().toISOString();
+  if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
+  clienteAtual.logFraude.push({ motivo, data: new Date().toISOString() });
+  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  await salvarClientes('BLOQUEIO AUTOMÁTICO: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — ' + motivo);
+}
+
 // ═══════════════════════════════════════════════════════════
 // VALIDAR CÓDIGO
 // ═══════════════════════════════════════════════════════════
 async function válidarCódigo() {
   if (!clienteAtual) { showMsg('msg-código','⚠️ Faça login primeiro.','aviso'); return; }
+
+  // REGRA 1 — Verificar bloqueio por tentativas
+  const msgBloqueio = verificarBloqueioTentativas();
+  if (msgBloqueio) { showMsg('msg-código','🚫 ' + msgBloqueio,'erro'); return; }
+
+  // REGRA 2 — Verificar cooldown entre validações
+  const msgCooldown = verificarCooldown();
+  if (msgCooldown) { showMsg('msg-código','⏳ ' + msgCooldown,'aviso'); return; }
+
+  // REGRA 6 — Verificar limite por dispositivo (1 uso por hora por dispositivo)
+  const msgDispositivo = verificarLimiteDispositivo();
+  if (msgDispositivo) { showMsg('msg-código','📱 ' + msgDispositivo,'aviso'); return; }
+
   const código = document.getElementById('input-código').value.trim().toUpperCase();
   if (!código || código.length < 8) { showMsg('msg-código','⚠️ Digite um código válido (mínimo 8 caracteres).','aviso'); return; }
+
   const btn = document.getElementById('btn-válidar');
   btn.disabled = true;
-  btn.textContent = '⏳ Válidando...';
+  btn.textContent = '⏳ Validando...';
   showMsg('msg-código','🔄 Verificando código no servidor...','info');
+
   // Recarregar dados frescos do GitHub
   setLoading('Verificando código...');
   const [fRes, cRes] = await Promise.all([ghGet(FIDELIDADE_PATH), ghGet(CLIENTES_PATH)]);
@@ -1046,43 +1270,90 @@ async function válidarCódigo() {
   if (cRes.content) {
     try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
   }
+
   // Atualizar referência do cliente atual
-  if (ghClientes.clientes[clienteAtual.cel]) {
+  if (ghClientes.clientes && ghClientes.clientes[clienteAtual.cel]) {
     clienteAtual = ghClientes.clientes[clienteAtual.cel];
   }
+
+  // REGRA 5 — Verificar bloqueio do cliente no servidor
+  const msgBloqueioCliente = verificarBloqueioCliente();
+  if (msgBloqueioCliente) {
+    showMsg('msg-código','🚫 ' + msgBloqueioCliente,'erro');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
+  }
+
   // Verificar se código existe
   const códigos = ghFidelidade.códigos || {};
   if (!códigos[código]) {
-    showMsg('msg-código','❌ Código inválido. Verifique se digitou corretamente.','erro');
-    btn.disabled = false; btn.textContent = '✅ Válidar Código'; return;
+    registrarFraudeServidor(código, 'Código inexistente');
+    registrarLogDetalhado(código, 'Código inexistente');
+    const podetentar = registrarTentativaInvalida();
+    const tentativas = JSON.parse(localStorage.getItem('itap_fid_tentativas') || '{"tentativas":[]}');
+    const restam = LIMITE_TENTATIVAS - (tentativas.tentativas ? tentativas.tentativas.length : 0);
+    if (!podetentar) {
+      showMsg('msg-código','🚫 Muitas tentativas. Aguarde 10 minutos.','erro');
+      // REGRA 9 — Bloquear cliente no servidor após excesso de tentativas
+      const fraudesCliente = Object.values(ghFidelidade.fraudes || {}).filter(f => f.cel === (clienteAtual ? clienteAtual.cel : '')).length;
+      if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
+        await bloquearClienteServidor('Excesso de tentativas inválidas (' + fraudesCliente + ')');
+      }
+    } else {
+      showMsg('msg-código',`❌ Código inválido. Tentativas restantes: ${Math.max(0,restam)}.`,'erro');
+    }
+    await salvarFidelidade('Tentativa inválida: ' + (clienteAtual ? clienteAtual.nome : '?') + ' — código inexistente');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
   }
+
+  // REGRA 3 — Verificar expiração do código
+  if (codigoExpirado(códigos[código])) {
+    // Determinar validade exibida ao usuário
+    const geradoTs = new Date(códigos[código].geradoEm).getTime();
+    const validadeDias = geradoTs < DATA_INICIO_PROMOCAO ? EXPIRACAO_DIAS_ANTIGOS : EXPIRACAO_DIAS_NOVOS;
+    showMsg('msg-código',`⚠️ Este código expirou (validade de ${validadeDias} dias). Solicite um novo na sorveteria.`,'aviso');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
+  }
+
   // Verificar se já foi usado
   if (códigos[código].status === 'usado') {
-    showMsg('msg-código','⚠️ Este código já foi útilizado anteriormente.','aviso');
-    btn.disabled = false; btn.textContent = '✅ Válidar Código'; return;
+    registrarFraudeServidor(código, 'Código já utilizado — tentativa de reutilização');
+    registrarLogDetalhado(código, 'Tentativa de reutilização de código já usado');
+    registrarTentativaInvalida();
+    await salvarFidelidade('Tentativa de reutilização: ' + (clienteAtual ? clienteAtual.nome : '?'));
+    showMsg('msg-código','⚠️ Este código já foi utilizado anteriormente.','aviso');
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
   }
+
   // Verificar se o próprio cliente já usou este código
   const jaUsou = (clienteAtual.códigosUsados || []).some(c => c.código === código);
   if (jaUsou) {
     showMsg('msg-código','⚠️ Você já usou este código.','aviso');
-    btn.disabled = false; btn.textContent = '✅ Válidar Código'; return;
+    btn.disabled = false; btn.textContent = '✅ Validar Código'; return;
   }
+
   // ✅ CÓDIGO VÁLIDO — dar baixa e adicionar ponto ao saldo
   setLoading('Registrando ponto...');
-  const agora = new Daté().toISOString();
+  const agora = new Date().toISOString();
+
   // Marcar código como usado no fidelidade.json
-  ghFidelidade.códigos[código].status  = 'usado';
+  ghFidelidade.códigos[código].status   = 'usado';
   ghFidelidade.códigos[código].usadoPor = clienteAtual.cel;
   ghFidelidade.códigos[código].usadoEm  = agora;
   if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
-  if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, códigos:0 };
-  ghFidelidade.clientes[clienteAtual.cel].códigos = (ghFidelidade.clientes[clienteAtual.cel].códigos||0) + 1;
+  if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, códigos: 0 };
+  ghFidelidade.clientes[clienteAtual.cel].códigos = (ghFidelidade.clientes[clienteAtual.cel].códigos || 0) + 1;
+
   // Adicionar ponto ao saldo do cliente
   if (!clienteAtual.códigosUsados) clienteAtual.códigosUsados = [];
   clienteAtual.códigosUsados.push({ código, data: agora });
   clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
   clienteAtual.totalCódigos = (clienteAtual.totalCódigos || 0) + 1;
   ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+
+  // Limpar rate limiting após uso válido
+  limparBloqueioTentativas();
+  registrarUsoValido();
+
   // Salvar ambos no GitHub
   const [okFid, okCli] = await Promise.all([
     salvarFidelidade('Código ' + código + ' usado por ' + clienteAtual.nome),
@@ -1091,13 +1362,13 @@ async function válidarCódigo() {
   hideLoading();
   if (okFid && okCli) {
     document.getElementById('input-código').value = '';
-    showMsg('msg-código','🎉 +1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos>1?'s':'') + '.','ok');
+    showMsg('msg-código','🎉 +1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos > 1 ? 's' : '') + '.','ok');
     atualizarUI();
   } else {
     showMsg('msg-código','⚠️ Ponto registrado mas houve erro ao salvar. Tente novamente.','aviso');
     atualizarUI();
   }
-  btn.disabled = false; btn.textContent = '✅ Válidar Código';
+  btn.disabled = false; btn.textContent = '✅ Validar Código';
 }
 
 // ═══════════════════════════════════════════════════════════
