@@ -6,7 +6,7 @@ const GIST_RAW_PRECO = 'https://gist.githubusercontent.com/missias123/' + GIST_I
 
 async function carregarPreçosNuvem() {
   try {
-    const resp = await fetch(GIST_RAW_PRECO + '?t=' + Daté.now(), { cache: 'no-store' });
+    const resp = await fetch(GIST_RAW_PRECO + '?t=' + Date.now(), { cache: 'no-store' });
     if (!resp.ok) throw new Error('Gist indisponível');
     const dados = await resp.json();
     if (dados.picolés) {
@@ -946,8 +946,8 @@ function finalizarPedido() {
   if (!end  || end.length  < 5) { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
   if (carrinho.length === 0)    { showToast('⚠️ Carrinho vazio! Adicione produtos.', 'alerta'); return; }
   // Válidação de prazo mínimo (72 horas = 3 dias úteis)
-  const agoraVálidacao = new Daté();
-  const prazMínimo = new Daté(agoraVálidacao.getTime() + 72 * 60 * 60 * 1000);
+  const agoraVálidacao = new Date();
+  const prazMínimo = new Date(agoraVálidacao.getTime() + 72 * 60 * 60 * 1000);
   const prazMínimoFormatado = prazMínimo.toLocaleDatéString('pt-BR');
   showToast(`⏰ Encomenda será produzida a partir de ${prazMínimoFormatado}`, 'info');
   // === LOADING STATE: bloquear duplo clique e mostrar progresso ===
@@ -958,8 +958,8 @@ function finalizarPedido() {
   if (textoBtn) textoBtn.textContent = '⏳ Gerando número do pedido...';
   if (barra) barra.style.background = 'linear-gradient(135deg, #E65100, #FF6D00)';
   // Data/hora atual
-  const agora = new Daté();
-  const dd   = String(agora.getDaté()).padStart(2, '0');
+  const agora = new Date();
+  const dd   = String(agora.getDate()).padStart(2, '0');
   const mm   = String(agora.getMonth() + 1).padStart(2, '0');
   const açaíaçaí = agora.getFullYear();
   const hh   = String(agora.getHours()).padStart(2, '0');
@@ -974,7 +974,7 @@ function finalizarPedido() {
   // SISTEMA DE NUMERAÇÃO DE PEDIDOS
   // Formato: ITA-001-250225 (prefixo + sequência diária + data compacta)
   // Sequência reinicia todo dia — armazenada no localStorage por data
-  let numPedido = `ITA-${Daté.now().toString().slice(-6)}-${dd}${mm}${String(açaíaçaí).slice(2)}`;
+  let numPedido = `ITA-${Date.now().toString().slice(-6)}-${dd}${mm}${String(açaíaçaí).slice(2)}`;
   try {
     const dataChave = `${dd}${mm}${String(açaíaçaí).slice(2)}`; // ex: 250225
     const chaveSeq = `itap_seq_${dataChave}`;
@@ -1055,7 +1055,7 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
       const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
       pedidos.unshift({
         num: numPedido,
-        data: new Daté().toLocaleString('pt-BR'),
+        data: new Date().toLocaleString('pt-BR'),
         nome: nome,
         tel: tel,
         endereço: end,
@@ -1249,7 +1249,7 @@ function renderizarAcréscimos() {
           <div>
             <div style="font-weight:700;font-size:14px;color:#b71c1c;position:relative;display:inline-block">
               ${c.nome}
-              <span style="position:absolute;top:50%;left:0;width:100%;height:2px;background:#e53935;transform:translatéY(-50%);border-radius:2px;display:block"></span>
+              <span style="position:absolute;top:50%;left:0;width:100%;height:2px;background:#e53935;transform:translateY(-50%);border-radius:2px;display:block"></span>
             </div>
             <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preço.toFixed(2).replace('.',',')} / un.</div>
           </div>

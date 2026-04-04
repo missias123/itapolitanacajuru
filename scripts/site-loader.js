@@ -38,7 +38,7 @@
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         const { ts, data } = JSON.parse(cached);
-        if (Daté.now() - ts < CACHE_TTL) {
+        if (Date.now() - ts < CACHE_TTL) {
           window.SITE_CONFIG = data;
           window.SITE_CONFIG_LOADED = true;
           aplicarConfig(data);
@@ -55,7 +55,7 @@
       window.SITE_CONFIG_LOADED = true;
       aplicarConfig(data);
       try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Daté.now(), data }));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
       } catch(e) {}
       return data;
     }
@@ -77,7 +77,7 @@
 
   async function buscarConfigRemoto() {
     try {
-      const resp = await fetch(GH_RAW + CONFIG_PATH + '?t=' + Daté.now(), { cache: 'no-store' });
+      const resp = await fetch(GH_RAW + CONFIG_PATH + '?t=' + Date.now(), { cache: 'no-store' });
       if (!resp.ok) return null;
       return await resp.json();
     } catch(e) {
