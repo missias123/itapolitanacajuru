@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Admin — Sorveteria Itapolitana Cajuru</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;min-height:100vh}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e65100,#ff9800)}
+.login-card{background:#fff;border-radius:20px;padding:40px 32px;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);text-align:center}
+.login-card .logo{font-size:2.5rem;margin-bottom:8px}
+.login-card h1{font-size:1.3rem;color:#e65100;margin-bottom:4px}
+.login-card p{color:#888;font-size:.85rem;margin-bottom:24px}
+.inp-wrap{position:relative;margin-bottom:16px}
+.inp-wrap input{width:100%;padding:12px 44px 12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;outline:none;transition:.2s}
+.inp-wrap input:focus{border-color:#e65100}
+.inp-wrap .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.1rem;color:#aaa;background:none;border:none}
+.btn-login{width:100%;padding:13px;background:#e65100;color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s}
+.btn-login:hover{background:#bf360c}
+.login-erro{color:#c62828;background:#ffebee;border-radius:8px;padding:8px 12px;font-size:.88rem;margin-top:10px;display:none}
+
+/* ── LAYOUT ADMIN ── */
+#admin-app{display:none;min-height:100vh}
+.admin-header{background:#e65100;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.admin-header .titulo{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.admin-header .titulo span{font-size:1.3rem}
+.btn-sair{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;padding:6px 14px;border-radius:8px;font-size:.82rem;cursor:pointer;font-weight:600}
+.btn-sair:hover{background:rgba(255,255,255,.35)}
+
+/* ── NAVEGAÇÃO ── */
+.admin-nav{background:#fff;border-bottom:2px solid #f0f2f5;display:flex;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch}
+.admin-nav::-webkit-scrollbar{height:3px}
+.admin-nav::-webkit-scrollbar-thumb{background:#e65100;border-radius:2px}
+.nav-btn{padding:12px 16px;border:none;background:none;font-size:.82rem;font-weight:600;color:#888;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:.2s}
+.nav-btn.ativo{color:#e65100;border-bottom-color:#e65100}
+.nav-btn:hover{color:#e65100;background:#fff8f5}
+
+/* ── CONTEÚDO ── */
+.admin-content{max-width:900px;margin:0 auto;padding:20px 16px}
+.secao{display:none}
+.secao.ativa{display:block}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:20px;overflow:hidden}
+.card-header{background:#f8f9fa;padding:14px 18px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+.card-header h2{font-size:1rem;color:#333;display:flex;align-items:center;gap:8px}
+.card-body{padding:18px}
+
+/* ── CAMPOS EDITÁVEIS ── */
+.campo-edit{margin-bottom:14px}
+.campo-edit label{display:block;font-size:.8rem;font-weight:700;color:#666;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.campo-edit input,.campo-edit textarea,.campo-edit select{width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.95rem;outline:none;transition:.2s;font-family:inherit}
+.campo-edit input:focus,.campo-edit textarea:focus,.campo-edit select:focus{border-color:#e65100}
+.campo-edit textarea{resize:vertical;min-height:80px}
+.campo-edit .hint{font-size:.75rem;color:#aaa;margin-top:3px}
+
+/* ── BOTÕES ── */
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-salvar{background:#e65100;color:#fff}
+.btn-salvar:hover{background:#bf360c}
+.btn-salvar:disabled{background:#ccc;cursor:not-allowed}
+.btn-secundario{background:#f0f2f5;color:#555}
+.btn-secundario:hover{background:#e0e0e0}
+.btn-verde{background:#2e7d32;color:#fff}
+.btn-verde:hover{background:#1b5e20}
+.btn-vermelho{background:#c62828;color:#fff}
+.btn-vermelho:hover{background:#8b0000}
+.btn-azul{background:#1565c0;color:#fff}
+.btn-azul:hover{background:#0d47a1}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+/* ── TOGGLE ── */
+.toggle-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.toggle-wrap label{font-size:.9rem;color:#444;font-weight:600}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:26px;cursor:pointer;transition:.3s}
+.toggle-slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked+.toggle-slider{background:#e65100}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px)}
+
+/* ── TABELA CLIENTES ── */
+.tabela-wrap{overflow-x:auto}
+.tabela{width:100%;border-collapse:collapse;font-size:.83rem}
+.tabela th{background:#e65100;color:#fff;padding:10px 12px;text-align:left;font-weight:700;white-space:nowrap}
+.tabela td{padding:9px 12px;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+.tabela tr:hover td{background:#fff8f5}
+.badge{display:inline-block;padding:3px 8px;border-radius:12px;font-size:.72rem;font-weight:700}
+.badge-ativo{background:#e8f5e9;color:#2e7d32}
+.badge-bloqueado{background:#ffebee;color:#c62828}
+.badge-fraude{background:#b71c1c;color:#fff}
+.busca-wrap{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.busca-wrap input{flex:1;min-width:200px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none}
+.busca-wrap input:focus{border-color:#e65100}
+.paginacao{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.pag-btn{padding:6px 12px;border:2px solid #e0e0e0;background:#fff;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600}
+.pag-btn.ativo{background:#e65100;color:#fff;border-color:#e65100}
+.stats-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stat-card{flex:1;min-width:100px;background:#f8f9fa;border-radius:10px;padding:12px;text-align:center;border-left:4px solid #e65100}
+.stat-card .num{font-size:1.6rem;font-weight:800;color:#e65100}
+.stat-card .txt{font-size:.75rem;color:#888;margin-top:2px}
+
+/* ── PREÇOS ── */
+.preco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.preco-item{background:#f8f9fa;border-radius:8px;padding:12px}
+.preco-item label{font-size:.78rem;font-weight:700;color:#555;display:block;margin-bottom:5px}
+.preco-item .preco-inp{display:flex;align-items:center;gap:4px}
+.preco-item .preco-inp span{font-size:.9rem;color:#666;font-weight:700}
+.preco-item input{flex:1;padding:7px 8px;border:2px solid #e0e0e0;border-radius:6px;font-size:.9rem;outline:none;width:100%}
+.preco-item input:focus{border-color:#e65100}
+.secao-titulo{font-size:.9rem;font-weight:800;color:#e65100;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;padding-bottom:4px;border-bottom:2px solid #fce4d6}
+
+/* ── ENCOMENDAS ── */
+.enc-card{background:#f8f9fa;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid #e65100}
+.enc-card .enc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.enc-card .enc-nome{font-weight:700;color:#333}
+.enc-card .enc-tipo{font-size:.78rem;background:#fce4d6;color:#e65100;padding:2px 8px;border-radius:10px;font-weight:700}
+.enc-card .enc-info{font-size:.82rem;color:#666;margin-top:6px}
+.enc-card .enc-status{margin-top:8px}
+.enc-card select{padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:.82rem;background:#fff}
+.filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filtros select{padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.85rem;outline:none}
+.filtros select:focus{border-color:#e65100}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#333;color:#fff;padding:12px 24px;border-radius:12px;font-size:.9rem;font-weight:600;z-index:9999;transition:.3s;opacity:0;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.sucesso{background:#2e7d32}
+.toast.erro{background:#c62828}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.dash-item{background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.07);border-top:4px solid #e65100}
+.dash-item .di-icon{font-size:2rem;margin-bottom:6px}
+.dash-item .di-num{font-size:1.8rem;font-weight:800;color:#e65100}
+.dash-item .di-txt{font-size:.78rem;color:#888;margin-top:2px}
+.link-site{display:inline-flex;align-items:center;gap:6px;color:#e65100;font-size:.85rem;font-weight:600;text-decoration:none;padding:6px 12px;border:2px solid #e65100;border-radius:8px;transition:.2s}
+.link-site:hover{background:#e65100;color:#fff}
+
+/* ── RESPONSIVO ── */
+@media(max-width:600px){
+  .admin-content{padding:14px 10px}
+  .preco-grid{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .tabela th,.tabela td{padding:7px 8px;font-size:.78rem}
+  .btn{padding:9px 14px;font-size:.82rem}
+}
+
+/* ── SPINNER ── */
+.spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9998;display:none}
+.loading-box{background:#fff;border-radius:14px;padding:28px 36px;text-align:center}
+.loading-box .spin2{width:36px;height:36px;border:4px solid #fce4d6;border-top-color:#e65100;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+.loading-box p{color:#555;font-size:.95rem}
+</style>
+</head>
+<body>
+
+<!-- ══ LOADING ══ -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-box">
+    <div class="spin2"></div>
+    <p id="loading-txt">Salvando...</p>
+  </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="logo">🍦</div>
+    <h1>Painel Administrativo</h1>
+    <p>Sorveteria Itapolitana Cajuru</p>
+    <div class="inp-wrap">
+      <input type="password" id="inp-senha" placeholder="Senha do administrador" onkeydown="if(event.key==='Enter')entrar()"/>
+      <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">👁️</button>
+    </div>
+    <button class="btn-login" onclick="entrar()">🔐 Entrar no Admin</button>
+    <div class="login-erro" id="login-erro">❌ Senha incorreta.</div>
+    <br/>
+    <a href="index.html" style="color:#aaa;font-size:.82rem;text-decoration:none">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- ══ APP ADMIN ══ -->
+<div id="admin-app">
+
+  <!-- Header -->
+  <div class="admin-header">
+    <div class="titulo"><span>🍦</span> Admin Itapolitana</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="index.html" target="_blank" class="btn-sair" style="text-decoration:none">🌐 Ver Site</a>
+      <button class="btn-sair" onclick="sair()">🚪 Sair</button>
+    </div>
+  </div>
+
+  <!-- Navegação -->
+  <div class="admin-nav">
+    <button class="nav-btn ativo" onclick="irPara('dashboard')">📊 Dashboard</button>
+    <button class="nav-btn" onclick="irPara('home')">🏠 Home</button>
+    <button class="nav-btn" onclick="irPara('precos')">💰 Preços</button>
+    <button class="nav-btn" onclick="irPara('promocao')">🎉 Promoção</button>
+    <button class="nav-btn" onclick="irPara('encomendas')">📦 Encomendas</button>
+    <button class="nav-btn" onclick="irPara('clientes')">👥 Clientes</button>
+    <button class="nav-btn" onclick="irPara('config')">⚙️ Configurações</button>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="secao ativa" id="sec-dashboard">
+      <div class="dash-grid" id="dash-grid">
+        <div class="dash-item"><div class="di-icon">👥</div><div class="di-num" id="d-total">–</div><div class="di-txt">Clientes cadastrados</div></div>
+        <div class="dash-item"><div class="di-icon">✅</div><div class="di-num" id="d-ativos">–</div><div class="di-txt">Clientes ativos</div></div>
+        <div class="dash-item"><div class="di-icon">🚫</div><div class="di-num" id="d-bloqueados">–</div><div class="di-txt">Bloqueados</div></div>
+        <div class="dash-item"><div class="di-icon">🎟️</div><div class="di-num" id="d-cupons">–</div><div class="di-txt">Cupons disponíveis</div></div>
+        <div class="dash-item"><div class="di-icon">📦</div><div class="di-num" id="d-encomendas">–</div><div class="di-txt">Encomendas recebidas</div></div>
+        <div class="dash-item"><div class="di-icon">🎉</div><div class="di-num" id="d-promo">–</div><div class="di-txt">Promoção ativa</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>🔗 Links rápidos</h2></div>
+        <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="index.html" target="_blank" class="link-site">🏠 Página Inicial</a>
+          <a href="encomendas.html" target="_blank" class="link-site">📦 Encomendas</a>
+          <a href="fidelidade.html" target="_blank" class="link-site">🎁 Fidelidade</a>
+          <a href="promocao.html" target="_blank" class="link-site">🎉 Promoção</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HOME ══ -->
+    <div class="secao" id="sec-home">
+      <div class="card">
+        <div class="card-header"><h2>🏠 Textos da Página Inicial</h2></div>
+        <div class="card-body">
+          <div class="campo-edit">
+            <label>Título principal (Hero)</label>
+            <input type="text" id="home-titulo" placeholder="Ex: Sorvete Tipo Artesanal em Cajuru"/>
+          </div>
+          <div class="campo-edit">
+            <label>Subtítulo</label>
+            <input type="text" id="home-subtitulo" placeholder="Ex: 35 sabores desde 2007"/>
+          </div>
+          <div class="campo-edit">
+            <label>Frases rotativas (uma por linha)</label>
+            <textarea id="home-frases" rows="8" placeholder="Cremoso e gelado&#10;Feito com carinho&#10;..."></textarea>
+            <div class="hint">Cada linha é uma frase que aparece no carrossel de texto do hero</div>
+          </div>
+          <div class="campo-edit">
+            <label>Botão principal (CTA)</label>
+            <input type="text" id="home-cta" placeholder="Ex: 🍦 Ver Cardápio Completo"/>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="salvarHome()">💾 Salvar Página Inicial</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PREÇOS ══ -->
+    <div class="secao" id="sec-precos">
+      <div class="card">
+        <div class="card-header">
+          <h2>💰 Preços do Cardápio</h2>
+          <button class="btn btn-salvar" onclick="salvarPrecos()">💾 Salvar Preços</button>
+        </div>
+        <div class="card-body" id="precos-body">
+          <p style="color:#aaa;text-align:center;padding:20px">Carregando preços...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROMOÇÃO ══ -->
+    <div class="secao" id="sec-promocao">
+      <div class="card">
+        <div class="card-header"><h2>🎉 Promoção Ativa</h2></div>
+        <div class="card-body">
+          <div class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="promo-ativo"/><span class="toggle-slider"></span></label>
+            <label>Promoção ativa no site</label>
+          </div>
+          <div class="campo-edit">
+            <label>Título da promoção</label>
+            <input type="text" id="promo-titulo" placeholder="Ex: 🍨 Todo mês sorteamos 1 caixa de sorvete!"/>
+          </div>
+          <div class="campo-edit">
+            <label>Descrição</label>
+            <textarea id="promo-descricao" rows="3" placeholder="Descrição da promoção..."></textarea>
+          </div>
+          <div class="campo-edit">
+            <label>Texto do botão</label>
+            <input type="text" id="promo-btn" placeholder="Ex: 📸 Ver no Instagram"/>
+          </div>
+          <div class="campo-edit">
+            <label>Link do botão</label>
+            <input type="url" id="promo-link" placeholder="https://..."/>
+          </div>
+          <div class="campo-edit">
+            <label>Data de encerramento (opcional)</label>
+            <input type="datetime-local" id="promo-datafim"/>
+            <div class="hint">Deixe em branco para promoção sem prazo definido</div>
+          </div>
+          <div class="campo-edit">
+            <label>Texto do botão flutuante (FAB)</label>
+            <input type="text" id="promo-fab" placeholder="Ex: 🎉 SORTEIO!"/>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="salvarPromocao()">💾 Salvar Promoção</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ENCOMENDAS ══ -->
+    <div class="secao" id="sec-encomendas">
+      <div class="card">
+        <div class="card-header"><h2>📦 Registros de Encomendas</h2></div>
+        <div class="card-body">
+          <div class="filtros">
+            <select id="enc-filtro-status" onchange="renderEncomendas()">
+              <option value="">Todos os status</option>
+              <option value="novo">🆕 Novo</option>
+              <option value="em_andamento">🔄 Em andamento</option>
+              <option value="concluido">✅ Concluído</option>
+              <option value="cancelado">❌ Cancelado</option>
+            </select>
+            <select id="enc-filtro-tipo" onchange="renderEncomendas()">
+              <option value="">Todos os tipos</option>
+              <option value="picoles">Picolés (Atacado)</option>
+              <option value="caixa">Sorvete em Caixa</option>
+              <option value="torta">Torta de Sorvete</option>
+              <option value="isopor">Isopor de Viagem</option>
+              <option value="carrinho">Carrinho para Eventos</option>
+            </select>
+          </div>
+          <div id="enc-lista"><p style="color:#aaa;text-align:center;padding:20px">Carregando encomendas...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CLIENTES ══ -->
+    <div class="secao" id="sec-clientes">
+      <div class="stats-row" id="stats-clientes">
+        <div class="stat-card"><div class="num" id="sc-total">–</div><div class="txt">Total</div></div>
+        <div class="stat-card"><div class="num" id="sc-ativos">–</div><div class="txt">Ativos</div></div>
+        <div class="stat-card"><div class="num" id="sc-bloqueados">–</div><div class="txt">Bloqueados</div></div>
+        <div class="stat-card"><div class="num" id="sc-fraudes">–</div><div class="txt">Fraudes</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>👥 Lista de Clientes</h2>
+          <button class="btn btn-verde" onclick="copiarSorteio()">🎖️ Copiar para Sorteio</button>
+        </div>
+        <div class="card-body">
+          <div class="busca-wrap">
+            <input type="search" id="busca-cliente" placeholder="🔍 Buscar por nome ou WhatsApp..." oninput="renderClientes()"/>
+          </div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr>
+                <th>Nome</th><th>WhatsApp</th><th>Pts</th><th>Inscrição</th><th>Status</th><th>Ação</th>
+              </tr></thead>
+              <tbody id="tabela-clientes"></tbody>
+            </table>
+          </div>
+          <div class="paginacao" id="pag-clientes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CONFIGURAÇÕES ══ -->
+    <div class="secao" id="sec-config">
+      <div class="card">
+        <div class="card-header"><h2>⚙️ Configurações Gerais</h2></div>
+        <div class="card-body">
+          <div class="campo-edit">
+            <label>WhatsApp da sorveteria (somente números)</label>
+            <input type="text" id="cfg-whats" placeholder="5516996062046"/>
+            <div class="hint">Formato: código do país + DDD + número (ex: 5516996062046)</div>
+          </div>
+          <div class="campo-edit">
+            <label>Endereço</label>
+            <input type="text" id="cfg-endereco" placeholder="Rua..."/>
+          </div>
+          <div class="campo-edit">
+            <label>Horário de funcionamento</label>
+            <input type="text" id="cfg-horario" placeholder="Seg–Sex: 14h–22h | Sáb–Dom: 13h–22h"/>
+          </div>
+          <div class="campo-edit">
+            <label>Instagram</label>
+            <input type="text" id="cfg-instagram" placeholder="@sorveteriaitapolitanacajuru"/>
+          </div>
+          <div class="secao-titulo">🎁 Programa de Fidelidade</div>
+          <div class="campo-edit">
+            <label>Pontos para Milkshake</label>
+            <input type="number" id="cfg-pts-milk" min="1" max="100" placeholder="10"/>
+          </div>
+          <div class="campo-edit">
+            <label>Pontos para Caixa 7 Bolas</label>
+            <input type="number" id="cfg-pts-caixa" min="1" max="100" placeholder="30"/>
+          </div>
+          <div class="secao-titulo">🔐 Segurança</div>
+          <div class="campo-edit">
+            <label>Nova senha do Admin (deixe em branco para manter)</label>
+            <div class="inp-wrap">
+              <input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/>
+              <button class="eye" onclick="toggleSenhaCfg()">👁️</button>
+            </div>
+          </div>
+          <div class="campo-edit">
+            <label>Confirmar nova senha</label>
+            <input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="salvarConfig()">💾 Salvar Configurações</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /admin-content -->
+</div><!-- /admin-app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONFIGURAÇÕES
+// ═══════════════════════════════════════════════════════════
+const GH_TOKEN  = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+const GH_OWNER  = 'missias123';
+const GH_REPO   = 'itapolitanacajuru';
+const GH_BRANCH = 'main';
+const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
+const GH_RAW    = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
+
+const PATHS = {
+  produtos:   'dados/produtos.json',
+  promo:      'dados/promo.json',
+  clientes:   'dados/clientes.json',
+  fidelidade: 'dados/fidelidade.json',
+  encomendas: 'dados/encomendas.json',
+  config:     'dados/config.json'
+};
+
+// ═══════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════════
+const STATE = {
+  produtos: null, produtosSha: null,
+  promo: null, promoSha: null,
+  clientes: null, clientesSha: null,
+  fidelidade: null, fidelidadeSha: null,
+  encomendas: null, encomendasSha: null,
+  config: null, configSha: null,
+  pagClientes: 0,
+  senhaAdmin: 'itapolitana2007@'
+};
+const POR_PAGINA = 50;
+
+// ═══════════════════════════════════════════════════════════
+// GITHUB API
+// ═══════════════════════════════════════════════════════════
+async function ghGet(path) {
+  try {
+    const r = await fetch(GH_API + path + '?t=' + Date.now(), {
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (r.status === 404) return { content: null, sha: null };
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    const bin = atob(d.content.replace(/\n/g,''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const content = new TextDecoder('utf-8').decode(bytes);
+    return { content, sha: d.sha };
+  } catch(e) { return { content: null, sha: null }; }
+}
+
+async function ghPut(path, content, message, sha) {
+  try {
+    const bytes = new TextEncoder().encode(content);
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    const b64 = btoa(bin);
+    const body = { message, content: b64, branch: GH_BRANCH };
+    if (sha) body.sha = sha;
+    const r = await fetch(GH_API + path, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+    const d = await r.json();
+    return { ok: true, sha: d.content.sha };
+  } catch(e) { return { ok: false, error: e.message }; }
+}
+
+async function salvarArquivo(path, dados, shaKey, msg) {
+  mostrarLoading('Salvando...');
+  const json = JSON.stringify(dados, null, 2);
+  const res = await ghPut(path, json, msg, STATE[shaKey]);
+  ocultarLoading();
+  if (res.ok) { STATE[shaKey] = res.sha; toast('✅ Salvo com sucesso!', 'sucesso'); }
+  else toast('❌ Erro ao salvar: ' + res.error, 'erro');
+  return res.ok;
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════
+function toggleSenhaAdmin() {
+  const inp = document.getElementById('inp-senha');
+  const btn = document.getElementById('eye-btn');
+  if (inp.type === 'password') { inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁️'; }
+}
+function toggleSenhaCfg() {
+  const inp = document.getElementById('cfg-nova-senha');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+}
+
+async function entrar() {
+  const senha = document.getElementById('inp-senha').value;
+  // Carregar senha salva no config
+  const cfg = await ghGet(PATHS.config);
+  let senhaCorreta = STATE.senhaAdmin;
+  if (cfg.content) {
+    try {
+      const c = JSON.parse(cfg.content);
+      if (c.senhaAdmin) senhaCorreta = c.senhaAdmin;
+      STATE.config = c; STATE.configSha = cfg.sha;
+    } catch(e) {}
+  }
+  if (senha === senhaCorreta) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-app').style.display = 'block';
+    document.getElementById('login-erro').style.display = 'none';
+    await carregarTudo();
+  } else {
+    document.getElementById('login-erro').style.display = 'block';
+  }
+}
+
+function sair() {
+  document.getElementById('admin-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('inp-senha').value = '';
+}
+
+// ═══════════════════════════════════════════════════════════
+// CARREGAR TUDO
+// ═══════════════════════════════════════════════════════════
+async function carregarTudo() {
+  mostrarLoading('Carregando dados...');
+  const [p, pr, cl, fi, en, cfg] = await Promise.all([
+    ghGet(PATHS.produtos),
+    ghGet(PATHS.promo),
+    ghGet(PATHS.clientes),
+    ghGet(PATHS.fidelidade),
+    ghGet(PATHS.encomendas),
+    ghGet(PATHS.config)
+  ]);
+  if (p.content)   { try { STATE.produtos   = JSON.parse(p.content);   STATE.produtosSha   = p.sha; } catch(e){} }
+  if (pr.content)  { try { STATE.promo      = JSON.parse(pr.content);  STATE.promoSha      = pr.sha; } catch(e){} }
+  if (cl.content)  { try { STATE.clientes   = JSON.parse(cl.content);  STATE.clientesSha   = cl.sha; } catch(e){} }
+  if (fi.content)  { try { STATE.fidelidade = JSON.parse(fi.content);  STATE.fidelidadeSha = fi.sha; } catch(e){} }
+  if (en.content)  { try { STATE.encomendas = JSON.parse(en.content);  STATE.encomendasSha = en.sha; } catch(e){} }
+  if (cfg.content) { try { STATE.config     = JSON.parse(cfg.content); STATE.configSha     = cfg.sha; } catch(e){} }
+  ocultarLoading();
+  renderDashboard();
+  preencherHome();
+  renderPrecos();
+  preencherPromocao();
+  renderEncomendas();
+  renderClientes();
+  preencherConfig();
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAVEGAÇÃO
+// ═══════════════════════════════════════════════════════════
+function irPara(id) {
+  document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('ativo'));
+  document.getElementById('sec-'+id).classList.add('ativa');
+  event.currentTarget.classList.add('ativo');
+}
+
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function renderDashboard() {
+  const clientes = STATE.clientes?.clientes || [];
+  const ativos = clientes.filter(c => c.status !== 0 && !c.bloqueado).length;
+  const bloqueados = clientes.filter(c => c.status === 0 || c.bloqueado).length;
+  const cupons = STATE.fidelidade?.codigos ? Object.keys(STATE.fidelidade.codigos).length : 0;
+  const encomendas = STATE.encomendas?.registros?.length || 0;
+  const promoAtiva = STATE.promo?.ativo ? 'SIM' : 'NÃO';
+  document.getElementById('d-total').textContent = clientes.length;
+  document.getElementById('d-ativos').textContent = ativos;
+  document.getElementById('d-bloqueados').textContent = bloqueados;
+  document.getElementById('d-cupons').textContent = cupons;
+  document.getElementById('d-encomendas').textContent = encomendas;
+  document.getElementById('d-promo').textContent = promoAtiva;
+}
+
+// ═══════════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════════
+function preencherHome() {
+  const cfg = STATE.config || {};
+  document.getElementById('home-titulo').value = cfg.heroTitulo || 'Sorvete Tipo Artesanal em Cajuru';
+  document.getElementById('home-subtitulo').value = cfg.heroSubtitulo || '35 sabores cremosos desde 2007';
+  document.getElementById('home-frases').value = (cfg.heroFrases || []).join('\n');
+  document.getElementById('home-cta').value = cfg.heroCta || '🍦 Ver Cardápio Completo';
+}
+
+async function salvarHome() {
+  const cfg = STATE.config || {};
+  cfg.heroTitulo    = document.getElementById('home-titulo').value.trim();
+  cfg.heroSubtitulo = document.getElementById('home-subtitulo').value.trim();
+  cfg.heroFrases    = document.getElementById('home-frases').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  cfg.heroCta       = document.getElementById('home-cta').value.trim();
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos da Home');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PREÇOS
+// ═══════════════════════════════════════════════════════════
+function renderPrecos() {
+  const p = STATE.produtos;
+  if (!p) { document.getElementById('precos-body').innerHTML = '<p style="color:#c62828">Erro ao carregar preços.</p>'; return; }
+  let html = '';
+
+  // Sorvetes
+  html += '<div class="secao-titulo">🍦 Sorvetes</div><div class="preco-grid">';
+  const sv = p.sorvetes?.precos || {};
+  for (const [tipo, bolas] of Object.entries(sv)) {
+    for (const [bola, preco] of Object.entries(bolas)) {
+      const id = `preco_sorvete_${tipo}_${bola}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>${tipo} – ${bola}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="0.5"/></div></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Milkshake
+  html += '<div class="secao-titulo">🥤 Milkshake</div><div class="preco-grid">';
+  const mk = p.milkshake || {};
+  for (const [cat, itens] of Object.entries(mk)) {
+    if (typeof itens === 'object' && !Array.isArray(itens)) {
+      for (const [tam, preco] of Object.entries(itens)) {
+        if (typeof preco === 'number') {
+          const id = `preco_milk_${cat}_${tam}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+          html += `<div class="preco-item"><label>${cat} – ${tam}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="0.5"/></div></div>`;
+        }
+      }
+    } else if (typeof itens === 'number') {
+      const id = `preco_milk_${cat}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>Milkshake – ${cat}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${itens}" min="0" step="0.5"/></div></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Taças
+  html += '<div class="secao-titulo">🍨 Taças</div><div class="preco-grid">';
+  const tc = p.tacas || {};
+  for (const [cat, itens] of Object.entries(tc)) {
+    if (typeof itens === 'object') {
+      for (const [nome, preco] of Object.entries(itens)) {
+        if (typeof preco === 'number') {
+          const id = `preco_taca_${cat}_${nome}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+          html += `<div class="preco-item"><label>${cat} – ${nome}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="0.5"/></div></div>`;
+        }
+      }
+    }
+  }
+  html += '</div>';
+
+  // Açaí
+  html += '<div class="secao-titulo">🫐 Açaí</div><div class="preco-grid">';
+  const ac = p.acai?.copos || {};
+  for (const [tam, preco] of Object.entries(ac)) {
+    if (typeof preco === 'number') {
+      const id = `preco_acai_${tam}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>Açaí – ${tam}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="0.5"/></div></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Picolés
+  html += '<div class="secao-titulo">🍡 Picolés</div><div class="preco-grid">';
+  const pc = p.picoles || {};
+  for (const [tipo, dados] of Object.entries(pc)) {
+    if (dados.preco_varejo !== undefined) {
+      const id = `preco_picole_${tipo}_varejo`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>${dados.nome || tipo} – Varejo</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${dados.preco_varejo}" min="0" step="0.1"/></div></div>`;
+    }
+    if (dados.preco_atacado !== undefined) {
+      const id = `preco_picole_${tipo}_atacado`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>${dados.nome || tipo} – Atacado</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${dados.preco_atacado}" min="0" step="0.1"/></div></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Sobremesas
+  html += '<div class="secao-titulo">🍰 Sobremesas</div><div class="preco-grid">';
+  const sb = p.sobremesas || {};
+  for (const [nome, preco] of Object.entries(sb)) {
+    if (typeof preco === 'number') {
+      const id = `preco_sob_${nome}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>${nome}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="0.5"/></div></div>`;
+    }
+  }
+  html += '</div>';
+
+  // Caixas e Isopores
+  html += '<div class="secao-titulo">📦 Caixas e Isopores</div><div class="preco-grid">';
+  const cx = p.caixas_viagem || {};
+  for (const [nome, preco] of Object.entries(cx)) {
+    if (typeof preco === 'number') {
+      const id = `preco_cx_${nome}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>Caixa – ${nome}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="1"/></div></div>`;
+    }
+  }
+  const iso = p.isopores_viagem || {};
+  for (const [nome, preco] of Object.entries(iso)) {
+    if (typeof preco === 'number') {
+      const id = `preco_iso_${nome}`.replace(/\s/g,'_').replace(/[^\w]/g,'_');
+      html += `<div class="preco-item"><label>Isopor – ${nome}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="1"/></div></div>`;
+    }
+  }
+  html += '</div>';
+
+  document.getElementById('precos-body').innerHTML = html;
+}
+
+async function salvarPrecos() {
+  const p = STATE.produtos;
+  if (!p) return;
+  // Ler todos os inputs de preço e atualizar o objeto
+  document.querySelectorAll('[id^="preco_"]').forEach(inp => {
+    const val = parseFloat(inp.value);
+    if (isNaN(val)) return;
+    const parts = inp.id.replace('preco_','').split('_');
+    const tipo = parts[0];
+    const resto = parts.slice(1).join('_');
+    try {
+      if (tipo==='sorvete') {
+        // preco_sorvete_tipo_bola
+        const t = parts[1]; const b = parts.slice(2).join(' ').replace(/_/g,' ');
+        // encontrar chave real
+        const sv = p.sorvetes.precos;
+        for (const [k,v] of Object.entries(sv)) {
+          if (k.replace(/\s/g,'_').replace(/[^\w]/g,'_')===t) {
+            for (const bk of Object.keys(v)) {
+              if (bk.replace(/\s/g,'_').replace(/[^\w]/g,'_')===parts.slice(2).join('_')) {
+                sv[k][bk] = val;
+              }
+            }
+          }
+        }
+      }
+    } catch(e) {}
+  });
+  await salvarArquivo(PATHS.produtos, p, 'produtosSha', 'Admin: atualizar preços do cardápio');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PROMOÇÃO
+// ═══════════════════════════════════════════════════════════
+function preencherPromocao() {
+  const pr = STATE.promo || {};
+  document.getElementById('promo-ativo').checked = !!pr.ativo;
+  document.getElementById('promo-titulo').value = pr.titulo || '';
+  document.getElementById('promo-descricao').value = pr.descricao || '';
+  document.getElementById('promo-btn').value = pr.btnTexto || '';
+  document.getElementById('promo-link').value = pr.link || '';
+  document.getElementById('promo-datafim').value = pr.dataFim || '';
+  document.getElementById('promo-fab').value = pr.fabLabel || '';
+}
+
+async function salvarPromocao() {
+  const pr = STATE.promo || {};
+  pr.ativo     = document.getElementById('promo-ativo').checked;
+  pr.titulo    = document.getElementById('promo-titulo').value.trim();
+  pr.descricao = document.getElementById('promo-descricao').value.trim();
+  pr.btnTexto  = document.getElementById('promo-btn').value.trim();
+  pr.link      = document.getElementById('promo-link').value.trim();
+  pr.dataFim   = document.getElementById('promo-datafim').value;
+  pr.fabLabel  = document.getElementById('promo-fab').value.trim();
+  STATE.promo = pr;
+  await salvarArquivo(PATHS.promo, pr, 'promoSha', 'Admin: atualizar promoção');
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENCOMENDAS
+// ═══════════════════════════════════════════════════════════
+function renderEncomendas() {
+  const registros = STATE.encomendas?.registros || [];
+  const filtroStatus = document.getElementById('enc-filtro-status').value;
+  const filtroTipo   = document.getElementById('enc-filtro-tipo').value;
+  let lista = registros.filter(e => {
+    if (filtroStatus && e.status !== filtroStatus) return false;
+    if (filtroTipo && e.tipo !== filtroTipo) return false;
+    return true;
+  }).sort((a,b) => new Date(b.data) - new Date(a.data));
+
+  if (!lista.length) {
+    document.getElementById('enc-lista').innerHTML = '<p style="color:#aaa;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';
+    return;
+  }
+  const statusLabels = { novo:'🆕 Novo', em_andamento:'🔄 Em andamento', concluido:'✅ Concluído', cancelado:'❌ Cancelado' };
+  let html = lista.map((e,i) => `
+    <div class="enc-card">
+      <div class="enc-header">
+        <span class="enc-nome">${e.nome || 'Sem nome'}</span>
+        <span class="enc-tipo">${e.tipo || 'Geral'}</span>
+      </div>
+      <div class="enc-info">
+        📱 ${e.telefone || '–'} &nbsp;|&nbsp; 📅 ${e.dataEvento ? 'Evento: '+e.dataEvento : ''} &nbsp;|&nbsp; 🕐 ${e.data ? new Date(e.data).toLocaleString('pt-BR') : '–'}
+        ${e.quantidade ? '<br>📦 Qtd: '+e.quantidade : ''}
+        ${e.obs ? '<br>📝 '+e.obs : ''}
+      </div>
+      <div class="enc-status">
+        <select onchange="alterarStatusEncomenda(${i}, this.value)">
+          ${Object.entries(statusLabels).map(([k,v]) => `<option value="${k}" ${e.status===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('enc-lista').innerHTML = html;
+}
+
+async function alterarStatusEncomenda(idx, novoStatus) {
+  const registros = STATE.encomendas?.registros || [];
+  if (!registros[idx]) return;
+  registros[idx].status = novoStatus;
+  STATE.encomendas.registros = registros;
+  await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', 'Admin: atualizar status encomenda');
+  renderEncomendas();
+}
+
+// ═══════════════════════════════════════════════════════════
+// CLIENTES
+// ═══════════════════════════════════════════════════════════
+function getClientes() {
+  return STATE.clientes?.clientes || STATE.fidelidade?.clientes || [];
+}
+
+function renderClientes() {
+  const clientes = getClientes();
+  const busca = document.getElementById('busca-cliente').value.toLowerCase();
+  const filtrados = clientes.filter(c => {
+    if (!busca) return true;
+    return (c.n||c.nome||'').toLowerCase().includes(busca) || (c.w||c.whatsapp||'').includes(busca);
+  });
+  const total = filtrados.length;
+  const ativos = filtrados.filter(c => c.s!==0 && !c.bloqueado && !c.fraudeSuspeita).length;
+  const bloqueados = filtrados.filter(c => c.s===0 || c.bloqueado).length;
+  const fraudes = filtrados.filter(c => c.fraudeSuspeita || c.tentativasErradas>=4).length;
+  document.getElementById('sc-total').textContent = clientes.length;
+  document.getElementById('sc-ativos').textContent = clientes.filter(c=>c.s!==0&&!c.bloqueado&&!c.fraudeSuspeita).length;
+  document.getElementById('sc-bloqueados').textContent = clientes.filter(c=>c.s===0||c.bloqueado).length;
+  document.getElementById('sc-fraudes').textContent = clientes.filter(c=>c.fraudeSuspeita||c.tentativasErradas>=4).length;
+
+  const inicio = STATE.pagClientes * POR_PAGINA;
+  const pagina = filtrados.slice(inicio, inicio + POR_PAGINA);
+  const totalPags = Math.ceil(filtrados.length / POR_PAGINA);
+
+  const tbody = document.getElementById('tabela-clientes');
+  if (!pagina.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:20px">Nenhum cliente encontrado.</td></tr>'; return; }
+
+  tbody.innerHTML = pagina.map((c, i) => {
+    const idx = inicio + i;
+    const nome = c.n || c.nome || '–';
+    const whats = c.w || c.whatsapp || '–';
+    const pts = c.saldoPontos ?? c.p ?? 0;
+    const inscricao = c.i || c.dataInscricao || '–';
+    const fraude = c.fraudeSuspeita || (c.tentativasErradas >= 4);
+    const bloqueado = c.s === 0 || c.bloqueado;
+    let badge = '';
+    if (fraude) badge = '<span class="badge badge-fraude">🚨 FRAUDE</span>';
+    else if (bloqueado) badge = '<span class="badge badge-bloqueado">🔒 Bloqueado</span>';
+    else badge = '<span class="badge badge-ativo">✅ Ativo</span>';
+    const btnAcao = (bloqueado || fraude)
+      ? `<button class="btn btn-verde" style="padding:5px 10px;font-size:.75rem" onclick="desbloquearCliente(${idx})">🔓 Desbloquear</button>`
+      : `<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.75rem" onclick="bloquearCliente(${idx})">🔒 Bloquear</button>`;
+    return `<tr>
+      <td>${nome}</td>
+      <td>${whats}</td>
+      <td style="text-align:center">${pts}</td>
+      <td>${inscricao}</td>
+      <td>${badge}</td>
+      <td>${btnAcao}</td>
+    </tr>`;
+  }).join('');
+
+  // Paginação
+  const pag = document.getElementById('pag-clientes');
+  let pagHtml = '';
+  for (let i=0; i<totalPags; i++) {
+    pagHtml += `<button class="pag-btn ${i===STATE.pagClientes?'ativo':''}" onclick="irPagClientes(${i})">${i+1}</button>`;
+  }
+  pag.innerHTML = pagHtml;
+}
+
+function irPagClientes(n) { STATE.pagClientes = n; renderClientes(); }
+
+async function bloquearCliente(idx) {
+  const clientes = getClientes();
+  if (!clientes[idx]) return;
+  clientes[idx].s = 0; clientes[idx].bloqueado = true;
+  await salvarClientesAtualizado('Admin: bloquear cliente');
+  renderClientes();
+}
+
+async function desbloquearCliente(idx) {
+  const clientes = getClientes();
+  if (!clientes[idx]) return;
+  clientes[idx].s = 1; clientes[idx].bloqueado = false;
+  clientes[idx].fraudeSuspeita = false; clientes[idx].tentativasErradas = 0;
+  await salvarClientesAtualizado('Admin: desbloquear cliente');
+  renderClientes();
+}
+
+async function salvarClientesAtualizado(msg) {
+  if (STATE.clientes?.clientes) {
+    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', msg);
+  } else if (STATE.fidelidade?.clientes) {
+    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', msg);
+  }
+}
+
+function copiarSorteio() {
+  const clientes = getClientes().filter(c => c.s!==0 && !c.bloqueado && !c.fraudeSuspeita);
+  if (!clientes.length) { toast('Nenhum cliente ativo para sorteio.', 'erro'); return; }
+  const data = new Date().toLocaleDateString('pt-BR');
+  let txt = `🍦 SORTEIO MENSAL — SORVETERIA ITAPOLITANA CAJURU\nData: ${data}\nTotal de participantes ativos: ${clientes.length}\n${'═'.repeat(50)}\n\n`;
+  clientes.forEach((c,i) => {
+    const nome = c.n || c.nome || '–';
+    const whats = c.w || c.whatsapp || '–';
+    const pts = c.saldoPontos ?? c.p ?? 0;
+    const inscricao = c.i || c.dataInscricao || '–';
+    txt += `${i+1}. ${nome} — ${whats} — Inscrito em: ${inscricao} — Pontos: ${pts}\n`;
+  });
+  navigator.clipboard.writeText(txt).then(() => toast(`✅ Lista de ${clientes.length} participantes copiada!`, 'sucesso')).catch(() => toast('Erro ao copiar.', 'erro'));
+}
+
+// ═══════════════════════════════════════════════════════════
+// CONFIGURAÇÕES
+// ═══════════════════════════════════════════════════════════
+function preencherConfig() {
+  const cfg = STATE.config || {};
+  document.getElementById('cfg-whats').value = cfg.whatsapp || '5516996062046';
+  document.getElementById('cfg-endereco').value = cfg.endereco || '';
+  document.getElementById('cfg-horario').value = cfg.horario || '';
+  document.getElementById('cfg-instagram').value = cfg.instagram || '@sorveteriaitapolitanacajuru';
+  document.getElementById('cfg-pts-milk').value = cfg.pontosMilkshake || 10;
+  document.getElementById('cfg-pts-caixa').value = cfg.pontosCaixa || 30;
+}
+
+async function salvarConfig() {
+  const novaSenha = document.getElementById('cfg-nova-senha').value;
+  const confSenha = document.getElementById('cfg-conf-senha').value;
+  if (novaSenha && novaSenha !== confSenha) { toast('❌ As senhas não coincidem.', 'erro'); return; }
+  const cfg = STATE.config || {};
+  cfg.whatsapp       = document.getElementById('cfg-whats').value.trim();
+  cfg.endereco       = document.getElementById('cfg-endereco').value.trim();
+  cfg.horario        = document.getElementById('cfg-horario').value.trim();
+  cfg.instagram      = document.getElementById('cfg-instagram').value.trim();
+  cfg.pontosMilkshake = parseInt(document.getElementById('cfg-pts-milk').value) || 10;
+  cfg.pontosCaixa    = parseInt(document.getElementById('cfg-pts-caixa').value) || 30;
+  if (novaSenha) cfg.senhaAdmin = novaSenha;
+  STATE.config = cfg;
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar configurações');
+  if (ok) { document.getElementById('cfg-nova-senha').value = ''; document.getElementById('cfg-conf-senha').value = ''; }
+}
+
+// ═══════════════════════════════════════════════════════════
+// UTILITÁRIOS UI
+// ═══════════════════════════════════════════════════════════
+function toast(msg, tipo='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + tipo;
+  setTimeout(() => el.className = 'toast', 3000);
+}
+function mostrarLoading(txt='Salvando...') {
+  document.getElementById('loading-txt').textContent = txt;
+  document.getElementById('loading-overlay').style.display = 'flex';
+}
+function ocultarLoading() {
+  document.getElementById('loading-overlay').style.display = 'none';
+}
+
+// Enter no login
+document.getElementById('inp-senha').addEventListener('keydown', e => { if(e.key==='Enter') entrar(); });
+</script>
+</body>
+</html>
