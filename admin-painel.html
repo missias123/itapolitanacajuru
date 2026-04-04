@@ -124,6 +124,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
   .tabela th,.tabela td{padding:7px 8px;font-size:.78rem}
   .btn{padding:9px 14px;font-size:.82rem}
 }
+
+.sabores-grid{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.sabor-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border:2px solid #e0e0e0;border-radius:10px;gap:10px}
+.sabor-item.esgotado{border-color:#FECACA;background:#fff5f5;opacity:.7}
+.sabor-nome{flex:1;font-weight:600;font-size:.88rem;color:#1a1a1a}
+.sabor-status{font-size:.75rem;font-weight:700;color:#2e7d32;min-width:70px;text-align:right}
+.sabor-status.esgotado{color:#c62828}
+.estoque-card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:14px}
+.estoque-card.esgotado{border-color:#FECACA;background:#fff5f5}
+.estoque-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f0f2f5;flex-wrap:wrap;gap:8px}
+.estoque-nome{font-weight:800;font-size:.95rem;color:#1a1a1a}
+.estoque-preco-badge{background:#e65100;color:#fff;padding:4px 12px;border-radius:20px;font-size:.82rem;font-weight:700}
+.estoque-campos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.btn-qty-est{width:38px;height:38px;border-radius:50%;border:2px solid #e65100;background:#fff;color:#e65100;font-size:22px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0}
+.btn-qty-est.btn-add{background:#e65100;color:#fff;border-color:#e65100}
+.btn-verde{background:#2e7d32;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
+@media(max-width:600px){.estoque-campos{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -160,6 +177,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
     <button class="nav-btn" onclick="irPara('precos',this)">&#x1F4B0; Preos</button>
     <button class="nav-btn" onclick="irPara('promocao',this)">&#x1F389; Promoo</button>
     <button class="nav-btn" onclick="irPara('encomendas',this)">&#x1F4E6; Encomendas</button>
+    <button class="nav-btn" onclick="irPara('sabores',this)">&#x1F366; Sabores</button>
+    <button class="nav-btn" onclick="irPara('estoque',this)">&#x1F4E6; Estoque</button>
     <button class="nav-btn" onclick="irPara('clientes',this)">&#x1F465; Clientes</button>
     <button class="nav-btn" onclick="irPara('fidelidade',this)">&#x1F381; Fidelidade</button>
     <button class="nav-btn" onclick="irPara('config',this)">&#x2699;&#xFE0F; Configuraes</button>
@@ -189,13 +208,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
     <div class="secao" id="sec-home">
       <div class="card">
         <div class="card-header"><h2>&#x1F3E0; Pgina Inicial - Clone Editvel</h2></div>
+        <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:12px 16px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+          ✅ <strong>Regra:</strong> Cada campo editado aqui atualiza o site imediatamente ao salvar. Nada pode estar diferente entre o Admin e o Site.
+        </div>
         <div class="card-body">
           <div class="secao-titulo">&#x1F3AF; Hero - Topo da Pgina</div>
-          <div class="campo-edit"><label>Badge do Hero (linha pequena acima do ttulo)</label><input type="text" id="home-badge" placeholder="35 sabores tipo artesanal"/></div>
-          <div class="campo-edit"><label>Ttulo principal (H1)</label><input type="text" id="home-titulo" placeholder="O Sorvete que Cajuru Ama de Verdade"/></div>
+          <div class="campo-edit"><label>Badge do Hero (linha pequena acima do ttulo)</label><input type="text" id="home-badge" maxlength="60" placeholder="35 sabores tipo artesanal"/><div class="hint">Max. 60 caracteres. Aparece em destaque acima do titulo principal.</div></div>
+          <div class="campo-edit"><label>Ttulo principal (H1)</label><input type="text" id="home-titulo" maxlength="80" placeholder="O Sorvete que Cajuru Ama de Verdade"/><div class="hint">Max. 80 caracteres. E o titulo H1 da pagina — impacta SEO. Use palavras-chave.</div></div>
           <div class="campo-edit"><label>Descrio do Hero</label><textarea id="home-descricao" rows="3" placeholder="Cremosidade real, sabores que encantam..."></textarea></div>
-          <div class="campo-edit"><label>Boto principal - Ver Cardpio</label><input type="text" id="home-cta" placeholder="Ver Cardpio Completo"/></div>
-          <div class="campo-edit"><label>Boto WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" placeholder="Pedir Agora pelo WhatsApp"/></div>
+          <div class="campo-edit"><label>Boto principal - Ver Cardpio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardpio Completo"/><div class="hint">Max. 40 caracteres. Texto do botao verde que rola ate o cardapio.</div></div>
+          <div class="campo-edit"><label>Boto WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botao laranja do WhatsApp.</div></div>
           <div class="campo-edit"><label>Frases rotativas do carrossel (uma por linha)</label><textarea id="home-frases" rows="10" placeholder="O sorvete mais cremoso de Cajuru, desde 2007!"></textarea><div class="hint">Cada linha e uma frase que aparece no carrossel de texto do hero</div></div>
           <div class="secao-titulo">&#x1F3AC; Strip Sensorial (faixa animada)</div>
           <div class="campo-edit"><label>Textos da faixa animada (um por linha)</label><textarea id="home-strip" rows="4" placeholder="Cremoso . Gelado . Irresistivel . Feito com Amor . 35 Sabores"></textarea><div class="hint">Cada linha e um texto da faixa animada colorida</div></div>
@@ -211,6 +233,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
     <div class="secao" id="sec-precos">
       <div class="card">
         <div class="card-header"><h2>&#x1F4B0; Preos do Cardpio</h2><button class="btn btn-salvar" onclick="salvarPrecos()">&#x1F4BE; Salvar Preos</button></div>
+        <div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin:0 0 4px;font-size:.82rem">
+          💰 <strong>Regra:</strong> Todos os precos sao em R$ com ate 2 casas decimais. Use ponto (.) como separador decimal. Salvar atualiza o site imediatamente. Minimo: R$ 0,00.
+        </div>
         <div class="card-body" id="precos-body"><p style="color:#aaa;text-align:center;padding:20px">Carregando preos...</p></div>
       </div>
     </div>
@@ -218,14 +243,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
     <div class="secao" id="sec-promocao">
       <div class="card">
         <div class="card-header"><h2>&#x1F389; Promoo Ativa</h2></div>
+        <div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin:0 0 4px;font-size:.82rem">
+          🎉 <strong>Regra:</strong> Quando ativada, a promocao aparece em destaque no site com o FAB flutuante. Desativar remove imediatamente do site.
+        </div>
         <div class="card-body">
           <div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="promo-ativo"/><span class="toggle-slider"></span></label><label>Promoo ativa no site</label></div>
-          <div class="campo-edit"><label>Ttulo da promoo</label><input type="text" id="promo-titulo" placeholder="Todo ms sorteamos 1 caixa de sorvete!"/></div>
+          <div class="campo-edit"><label>Ttulo da promocao</label><input type="text" id="promo-titulo" maxlength="80" placeholder="Todo ms sorteamos 1 caixa de sorvete!"/><div class="hint">Max. 80 caracteres. Titulo em destaque no banner da promocao.</div></div>
           <div class="campo-edit"><label>Descrio</label><textarea id="promo-descricao" rows="3" placeholder="Descrio da promoo..."></textarea></div>
           <div class="campo-edit"><label>Texto do boto</label><input type="text" id="promo-btn" placeholder="Ver no Instagram"/></div>
           <div class="campo-edit"><label>Link do boto</label><input type="url" id="promo-link" placeholder="https://..."/></div>
           <div class="campo-edit"><label>Data de encerramento (opcional)</label><input type="datetime-local" id="promo-datafim"/><div class="hint">Deixe em branco para promoo sem prazo</div></div>
-          <div class="campo-edit"><label>Texto do boto flutuante (FAB)</label><input type="text" id="promo-fab" placeholder="SORTEIO!"/></div>
+          <div class="campo-edit"><label>Texto do boto flutuante (FAB)</label><input type="text" id="promo-fab" maxlength="15" placeholder="SORTEIO!"/><div class="hint">Max. 15 caracteres. Texto curto e impactante. Aparece no canto inferior direito do site.</div></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromocao()">&#x1F4BE; Salvar Promoo</button></div>
         </div>
       </div>
@@ -253,6 +281,785 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
             </select>
           </div>
           <div id="enc-lista"><p style="color:#aaa;text-align:center;padding:20px">Carregando encomendas...</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SABORES -->
+    <div class="secao" id="sec-sabores">
+      <div class="card">
+        <div class="card-header"><h2>🍦 Sabores &amp; Complementos</h2><button class="btn btn-salvar" onclick="salvarSabores()">💾 Salvar Sabores</button></div>
+        <div class="card-body">
+          <div class="secao-titulo">🍦 35 Sabores de Sorvete (Caixas e Tortas)</div>
+          <div class="hint" style="margin-bottom:12px">⚠️ Desativar um sabor remove-o da lista de seleção nas Caixas e Tortas de encomenda. A caixa continua disponível com os outros sabores ativos.</div>
+          <div class="sabores-grid">
+          <div class="sabor-item" id="wrap_sab_Abacaxi_ao_Vinho">
+            <div class="sabor-nome">Abacaxi ao Vinho</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Abacaxi_ao_Vinho" checked onchange="toggleSabor('sab_Abacaxi_ao_Vinho')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Abacaxi_ao_Vinho">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Abacaxi_Suíço">
+            <div class="sabor-nome">Abacaxi Suíço</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Abacaxi_Suíço" checked onchange="toggleSabor('sab_Abacaxi_Suíço')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Abacaxi_Suíço">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Algodão_Doce_Blue_Ice">
+            <div class="sabor-nome">Algodão Doce (Blue Ice)</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Algodão_Doce_Blue_Ice" checked onchange="toggleSabor('sab_Algodão_Doce_Blue_Ice')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Algodão_Doce_Blue_Ice">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Amarena">
+            <div class="sabor-nome">Amarena</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Amarena" checked onchange="toggleSabor('sab_Amarena')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Amarena">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Ameixa">
+            <div class="sabor-nome">Ameixa</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Ameixa" checked onchange="toggleSabor('sab_Ameixa')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Ameixa">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Banana_com_Nutella">
+            <div class="sabor-nome">Banana com Nutella</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Banana_com_Nutella" checked onchange="toggleSabor('sab_Banana_com_Nutella')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Banana_com_Nutella">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Bis_e_Trufa">
+            <div class="sabor-nome">Bis e Trufa</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Bis_e_Trufa" checked onchange="toggleSabor('sab_Bis_e_Trufa')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Bis_e_Trufa">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Cereja_Trufada">
+            <div class="sabor-nome">Cereja Trufada</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Cereja_Trufada" checked onchange="toggleSabor('sab_Cereja_Trufada')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Cereja_Trufada">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Chocolate">
+            <div class="sabor-nome">Chocolate</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Chocolate" checked onchange="toggleSabor('sab_Chocolate')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Chocolate">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Chocolate_com_Café">
+            <div class="sabor-nome">Chocolate com Café</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Chocolate_com_Café" checked onchange="toggleSabor('sab_Chocolate_com_Café')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Chocolate_com_Café">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Coco_Queimado">
+            <div class="sabor-nome">Coco Queimado</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Coco_Queimado" checked onchange="toggleSabor('sab_Coco_Queimado')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Coco_Queimado">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Creme_Paris">
+            <div class="sabor-nome">Creme Paris</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Creme_Paris" checked onchange="toggleSabor('sab_Creme_Paris')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Creme_Paris">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Croquer">
+            <div class="sabor-nome">Croquer</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Croquer" checked onchange="toggleSabor('sab_Croquer')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Croquer">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Doce_de_Leite">
+            <div class="sabor-nome">Doce de Leite</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Doce_de_Leite" checked onchange="toggleSabor('sab_Doce_de_Leite')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Doce_de_Leite">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Ferrero_Rocher">
+            <div class="sabor-nome">Ferrero Rocher</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Ferrero_Rocher" checked onchange="toggleSabor('sab_Ferrero_Rocher')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Ferrero_Rocher">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Flocos">
+            <div class="sabor-nome">Flocos</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Flocos" checked onchange="toggleSabor('sab_Flocos')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Flocos">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Kinder_Ovo">
+            <div class="sabor-nome">Kinder Ovo</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Kinder_Ovo" checked onchange="toggleSabor('sab_Kinder_Ovo')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Kinder_Ovo">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Leite_Condensado">
+            <div class="sabor-nome">Leite Condensado</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Leite_Condensado" checked onchange="toggleSabor('sab_Leite_Condensado')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Leite_Condensado">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Leite_Ninho">
+            <div class="sabor-nome">Leite Ninho</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Leite_Ninho" checked onchange="toggleSabor('sab_Leite_Ninho')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Leite_Ninho">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Leite_Ninho_Folheado">
+            <div class="sabor-nome">Leite Ninho Folheado</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Leite_Ninho_Folheado" checked onchange="toggleSabor('sab_Leite_Ninho_Folheado')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Leite_Ninho_Folheado">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Leite_Ninho_com_Oreo">
+            <div class="sabor-nome">Leite Ninho com Oreo</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Leite_Ninho_com_Oreo" checked onchange="toggleSabor('sab_Leite_Ninho_com_Oreo')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Leite_Ninho_com_Oreo">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Limão">
+            <div class="sabor-nome">Limão</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Limão" checked onchange="toggleSabor('sab_Limão')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Limão">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Limão_Suíço">
+            <div class="sabor-nome">Limão Suíço</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Limão_Suíço" checked onchange="toggleSabor('sab_Limão_Suíço')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Limão_Suíço">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Menta_com_Chocolate">
+            <div class="sabor-nome">Menta com Chocolate</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Menta_com_Chocolate" checked onchange="toggleSabor('sab_Menta_com_Chocolate')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Menta_com_Chocolate">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Milho_Verde">
+            <div class="sabor-nome">Milho Verde</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Milho_Verde" checked onchange="toggleSabor('sab_Milho_Verde')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Milho_Verde">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Morango_Trufado">
+            <div class="sabor-nome">Morango Trufado</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Morango_Trufado" checked onchange="toggleSabor('sab_Morango_Trufado')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Morango_Trufado">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Mousse_de_Maracujá">
+            <div class="sabor-nome">Mousse de Maracujá</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Mousse_de_Maracujá" checked onchange="toggleSabor('sab_Mousse_de_Maracujá')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Mousse_de_Maracujá">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Mousse_de_Uva">
+            <div class="sabor-nome">Mousse de Uva</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Mousse_de_Uva" checked onchange="toggleSabor('sab_Mousse_de_Uva')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Mousse_de_Uva">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Nozes">
+            <div class="sabor-nome">Nozes</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Nozes" checked onchange="toggleSabor('sab_Nozes')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Nozes">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Nutella">
+            <div class="sabor-nome">Nutella</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Nutella" checked onchange="toggleSabor('sab_Nutella')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Nutella">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Ovomaltine">
+            <div class="sabor-nome">Ovomaltine</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Ovomaltine" checked onchange="toggleSabor('sab_Ovomaltine')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Ovomaltine">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Pistache">
+            <div class="sabor-nome">Pistache</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Pistache" checked onchange="toggleSabor('sab_Pistache')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Pistache">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Prestígio">
+            <div class="sabor-nome">Prestígio</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Prestígio" checked onchange="toggleSabor('sab_Prestígio')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Prestígio">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Sensação">
+            <div class="sabor-nome">Sensação</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Sensação" checked onchange="toggleSabor('sab_Sensação')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Sensação">Disponível</span>
+          </div>
+          <div class="sabor-item" id="wrap_sab_Torta_de_Chocolate">
+            <div class="sabor-nome">Torta de Chocolate</div>
+            <label class="toggle" title="Desativar = esgotado no site">
+              <input type="checkbox" id="sab_Torta_de_Chocolate" checked onchange="toggleSabor('sab_Torta_de_Chocolate')"/>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="sabor-status" id="status_sab_Torta_de_Chocolate">Disponível</span>
+          </div>
+          </div>
+          <div class="campo-edit" style="margin-top:14px">
+            <label>Adicionar novo sabor de sorvete</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sabor_sorvete" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborSorvete()">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 40 caracteres. Apenas letras, espaços e acentos. Aparece automaticamente nas opções de caixas e tortas.</div>
+          </div>
+          
+          <div class="secao-titulo">🍭 Picolé de Fruta/Água</div>
+          <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
+          <div class="sabores-grid">
+              <div class="sabor-item">
+                <span class="sabor-nome">Abacaxi</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Abacaxi" checked onchange="toggleSaborPicole('frutas_agua','Abacaxi',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Abacaxi">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Caju</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Caju" checked onchange="toggleSaborPicole('frutas_agua','Caju',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Caju">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Goiaba</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Goiaba" checked onchange="toggleSaborPicole('frutas_agua','Goiaba',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Goiaba">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Groselha</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Groselha" checked onchange="toggleSaborPicole('frutas_agua','Groselha',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Groselha">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Limão</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Limao" checked onchange="toggleSaborPicole('frutas_agua','Limão',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Limao">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Melância</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Melancia" checked onchange="toggleSaborPicole('frutas_agua','Melância',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Melancia">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Uva</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Uva" checked onchange="toggleSaborPicole('frutas_agua','Uva',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Uva">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Tamarindo</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_frutas_agua_Tamarindo" checked onchange="toggleSaborPicole('frutas_agua','Tamarindo',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_frutas_agua_Tamarindo">Disponível</span>
+              </div>
+          </div>
+          <div class="campo-edit" style="margin-top:10px">
+            <label>Adicionar novo sabor a esta categoria</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sab_frutas_agua" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborPicole('frutas_agua')">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
+          </div>
+          <div class="secao-titulo">🍭 Picolé de Leite sem Recheio</div>
+          <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
+          <div class="sabores-grid">
+              <div class="sabor-item">
+                <span class="sabor-nome">Coco Queimado</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_sem_recheio_Coco_Queimado" checked onchange="toggleSaborPicole('leite_sem_recheio','Coco Queimado',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_sem_recheio_Coco_Queimado">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Milho Verde</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_sem_recheio_Milho_Verde" checked onchange="toggleSaborPicole('leite_sem_recheio','Milho Verde',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_sem_recheio_Milho_Verde">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Amendoim</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_sem_recheio_Amendoim" checked onchange="toggleSaborPicole('leite_sem_recheio','Amendoim',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_sem_recheio_Amendoim">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Pistache</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_sem_recheio_Pistache" checked onchange="toggleSaborPicole('leite_sem_recheio','Pistache',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_sem_recheio_Pistache">Disponível</span>
+              </div>
+          </div>
+          <div class="campo-edit" style="margin-top:10px">
+            <label>Adicionar novo sabor a esta categoria</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sab_leite_sem_recheio" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborPicole('leite_sem_recheio')">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
+          </div>
+          <div class="secao-titulo">🍭 Picolé de Leite com Recheio</div>
+          <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
+          <div class="sabores-grid">
+              <div class="sabor-item">
+                <span class="sabor-nome">Açaí</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Açai" checked onchange="toggleSaborPicole('leite_com_recheio','Açaí',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Açai">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Blue Ice</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Blue_Ice" checked onchange="toggleSaborPicole('leite_com_recheio','Blue Ice',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Blue_Ice">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Caraxi</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Caraxi" checked onchange="toggleSaborPicole('leite_com_recheio','Caraxi',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Caraxi">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Coco Branco</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Coco_Branco" checked onchange="toggleSaborPicole('leite_com_recheio','Coco Branco',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Coco_Branco">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Chocolate</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Chocolate" checked onchange="toggleSaborPicole('leite_com_recheio','Chocolate',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Chocolate">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Amarena</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Amarena" checked onchange="toggleSaborPicole('leite_com_recheio','Amarena',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Amarena">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Leite Condensado</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Leite_Condensado" checked onchange="toggleSaborPicole('leite_com_recheio','Leite Condensado',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Leite_Condensado">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Mamão Papaia</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Mamao_Papaia" checked onchange="toggleSaborPicole('leite_com_recheio','Mamão Papaia',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Mamao_Papaia">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Maracujá</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Maracujá" checked onchange="toggleSaborPicole('leite_com_recheio','Maracujá',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Maracujá">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Morango</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Morango" checked onchange="toggleSaborPicole('leite_com_recheio','Morango',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Morango">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Menta com Chocolate</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Menta_com_Chocolate" checked onchange="toggleSaborPicole('leite_com_recheio','Menta com Chocolate',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Menta_com_Chocolate">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Nata com Goiaba</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_com_recheio_Nata_com_Goiaba" checked onchange="toggleSaborPicole('leite_com_recheio','Nata com Goiaba',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_com_recheio_Nata_com_Goiaba">Disponível</span>
+              </div>
+          </div>
+          <div class="campo-edit" style="margin-top:10px">
+            <label>Adicionar novo sabor a esta categoria</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sab_leite_com_recheio" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborPicole('leite_com_recheio')">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
+          </div>
+          <div class="secao-titulo">🍭 Picolé Leite Ninho</div>
+          <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
+          <div class="sabores-grid">
+              <div class="sabor-item">
+                <span class="sabor-nome">Leite Ninho</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_leite_ninho_Leite_Ninho" checked onchange="toggleSaborPicole('leite_ninho','Leite Ninho',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_leite_ninho_Leite_Ninho">Disponível</span>
+              </div>
+          </div>
+          <div class="campo-edit" style="margin-top:10px">
+            <label>Adicionar novo sabor a esta categoria</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sab_leite_ninho" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborPicole('leite_ninho')">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
+          </div>
+          <div class="secao-titulo">🍭 Picolé Esquimó</div>
+          <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
+          <div class="sabores-grid">
+              <div class="sabor-item">
+                <span class="sabor-nome">Bombom</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Bombom" checked onchange="toggleSaborPicole('esquimós','Bombom',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Bombom">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Nutella</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Nutella" checked onchange="toggleSaborPicole('esquimós','Nutella',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Nutella">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Ovomaltine</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Ovomaltine" checked onchange="toggleSaborPicole('esquimós','Ovomaltine',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Ovomaltine">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Leite Ninho</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Leite_Ninho" checked onchange="toggleSaborPicole('esquimós','Leite Ninho',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Leite_Ninho">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Nata</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Nata" checked onchange="toggleSaborPicole('esquimós','Nata',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Nata">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Morango</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Morango" checked onchange="toggleSaborPicole('esquimós','Morango',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Morango">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Brigadeiro</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Brigadeiro" checked onchange="toggleSaborPicole('esquimós','Brigadeiro',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Brigadeiro">Disponível</span>
+              </div>
+              <div class="sabor-item">
+                <span class="sabor-nome">Prestígio</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_esquimos_Prestigio" checked onchange="toggleSaborPicole('esquimós','Prestígio',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_esquimos_Prestigio">Disponível</span>
+              </div>
+          </div>
+          <div class="campo-edit" style="margin-top:10px">
+            <label>Adicionar novo sabor a esta categoria</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sab_esquimós" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborPicole('esquimós')">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
+          </div>
+          <div class="secao-titulo" style="margin-top:20px">🍨 Complementos do Açaí</div>
+          <div class="hint" style="margin-bottom:8px">Edite os itens de cada categoria de complemento. Salvar atualiza o site imediatamente.</div>
+          
+          <div class="secao-titulo">🍨 Complemento: Frutas (R$ 2,0)</div>
+          <div class="campo-edit">
+            <label>Itens de Frutas (um por linha)</label>
+            <textarea id="comp_frutas" rows="4" placeholder="Morango, Banana, Uva, Kiwi, Abacaxi, Cereja">Morango
+Banana
+Uva
+Kiwi
+Abacaxi
+Cereja</textarea>
+            <div class="hint">Um item por linha. Máx. 30 caracteres por item. Salvar atualiza o site imediatamente.</div>
+          </div>
+          <div class="campo-edit">
+            <label>Preço por complemento de Frutas</label>
+            <div class="preco-inp"><span>R$</span><input type="number" id="comp_preco_frutas" value="2.0" min="0" step="0.5"/></div>
+            <div class="hint">Preço cobrado por cada complemento desta categoria no açaí.</div>
+          </div>
+          <div class="secao-titulo">🍨 Complemento: Cremes (R$ 3,0)</div>
+          <div class="campo-edit">
+            <label>Itens de Cremes (um por linha)</label>
+            <textarea id="comp_cremes" rows="4" placeholder="Nutella, Creme de Ninho, Geleia de Morango, Creme de Amendoim, Goiabada, Creme de Pistache, Mel">Nutella
+Creme de Ninho
+Geleia de Morango
+Creme de Amendoim
+Goiabada
+Creme de Pistache
+Mel</textarea>
+            <div class="hint">Um item por linha. Máx. 30 caracteres por item. Salvar atualiza o site imediatamente.</div>
+          </div>
+          <div class="campo-edit">
+            <label>Preço por complemento de Cremes</label>
+            <div class="preco-inp"><span>R$</span><input type="number" id="comp_preco_cremes" value="3.0" min="0" step="0.5"/></div>
+            <div class="hint">Preço cobrado por cada complemento desta categoria no açaí.</div>
+          </div>
+          <div class="secao-titulo">🍨 Complemento: Guloseimas (R$ 2,0)</div>
+          <div class="campo-edit">
+            <label>Itens de Guloseimas (um por linha)</label>
+            <textarea id="comp_guloseimas" rows="4" placeholder="Granola, Paçoca, Leite em Pó, Ovomaltine, Confete, Chocoball, Chantilly, Granulado, Leite Condensado">Granola
+Paçoca
+Leite em Pó
+Ovomaltine
+Confete
+Chocoball
+Chantilly
+Granulado
+Leite Condensado</textarea>
+            <div class="hint">Um item por linha. Máx. 30 caracteres por item. Salvar atualiza o site imediatamente.</div>
+          </div>
+          <div class="campo-edit">
+            <label>Preço por complemento de Guloseimas</label>
+            <div class="preco-inp"><span>R$</span><input type="number" id="comp_preco_guloseimas" value="2.0" min="0" step="0.5"/></div>
+            <div class="hint">Preço cobrado por cada complemento desta categoria no açaí.</div>
+          </div>
+          <div class="secao-titulo">🍨 Complemento: Chocolates (R$ 4,0)</div>
+          <div class="campo-edit">
+            <label>Itens de Chocolates (um por linha)</label>
+            <textarea id="comp_chocolates" rows="4" placeholder="Sonho de Valsa/Ouro Branco, Prestígio, Charge, Kit Kat, Kinder Bueno, Lácta, Bis, Oreo, Gotas de Chocolate, Talento">Sonho de Valsa/Ouro Branco
+Prestígio
+Charge
+Kit Kat
+Kinder Bueno
+Lácta
+Bis
+Oreo
+Gotas de Chocolate
+Talento</textarea>
+            <div class="hint">Um item por linha. Máx. 30 caracteres por item. Salvar atualiza o site imediatamente.</div>
+          </div>
+          <div class="campo-edit">
+            <label>Preço por complemento de Chocolates</label>
+            <div class="preco-inp"><span>R$</span><input type="number" id="comp_preco_chocolates" value="4.0" min="0" step="0.5"/></div>
+            <div class="hint">Preço cobrado por cada complemento desta categoria no açaí.</div>
+          </div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarSabores()">💾 Salvar Todos os Sabores</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTOQUE ENCOMENDAS -->
+    <div class="secao" id="sec-estoque">
+      <div class="card">
+        <div class="card-header"><h2>📦 Estoque de Encomendas</h2><button class="btn btn-salvar" onclick="salvarEstoque()">💾 Salvar Estoque</button></div>
+        <div class="card-body">
+          <div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin-bottom:20px;font-size:.85rem">
+            ⚠️ <strong>Regra:</strong> Quando o estoque de um produto chega a 0, ele aparece como <strong>ESGOTADO</strong> no site e não pode ser comprado. Cada produto esgota dentro do seu próprio campo — não afeta outros produtos.
+          </div>
+
+          <!-- CAIXAS DE SORVETE -->
+          <div class="secao-titulo">📦 Caixas de Sorvete (4 produtos independentes)</div>
+          <div class="hint" style="margin-bottom:12px">Cada caixa é um produto separado. Quando uma caixa esgota, ela bloqueia no site mas as outras continuam disponíveis. Quando a caixa esgota, os sabores também aparecem como esgotados.</div>
+          <div id="estoque-caixas-body">
+            <div class="estoque-card">
+              <div class="estoque-header">
+                <span class="estoque-nome">📦 Caixa 5 Litros – 2 Sabores</span>
+                <span class="estoque-preco-badge">R$ <span id="cx5l_2s_preco_badge">100,00</span></span>
+              </div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preco-inp"><span>R$</span><input type="number" id="cx5l_2s_preco" value="100" min="0" step="5"/></div><div class="hint">Preço atual da caixa. Atualiza no site ao salvar.</div></div>
+                <div class="campo-edit"><label>Estoque (unidades)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx5l_2s',-1)">−</button><input type="number" id="cx5l_2s_estoque" value="20" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx5l_2s',1)">+</button></div><div class="hint">0 = Esgotado. Máx. 999 unidades.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx5l_2s_esgotado" onchange="toggleEsgotado('cx5l_2s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div><div class="hint">Ativa tarja ESGOTADO independente do estoque.</div></div>
+              </div>
+            </div>
+            <div class="estoque-card">
+              <div class="estoque-header"><span class="estoque-nome">📦 Caixa 5 Litros – 3 Sabores</span><span class="estoque-preco-badge">R$ <span id="cx5l_3s_preco_badge">115,00</span></span></div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preco-inp"><span>R$</span><input type="number" id="cx5l_3s_preco" value="115" min="0" step="5"/></div><div class="hint">Preço atual da caixa.</div></div>
+                <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx5l_3s',-1)">−</button><input type="number" id="cx5l_3s_estoque" value="20" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx5l_3s',1)">+</button></div><div class="hint">0 = Esgotado.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx5l_3s_esgotado" onchange="toggleEsgotado('cx5l_3s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+              </div>
+            </div>
+            <div class="estoque-card">
+              <div class="estoque-header"><span class="estoque-nome">📦 Caixa 10 Litros – 2 Sabores</span><span class="estoque-preco-badge">R$ <span id="cx10l_2s_preco_badge">150,00</span></span></div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preco-inp"><span>R$</span><input type="number" id="cx10l_2s_preco" value="150" min="0" step="5"/></div><div class="hint">Preço atual da caixa.</div></div>
+                <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx10l_2s',-1)">−</button><input type="number" id="cx10l_2s_estoque" value="15" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx10l_2s',1)">+</button></div><div class="hint">0 = Esgotado.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx10l_2s_esgotado" onchange="toggleEsgotado('cx10l_2s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+              </div>
+            </div>
+            <div class="estoque-card">
+              <div class="estoque-header"><span class="estoque-nome">📦 Caixa 10 Litros – 3 Sabores</span><span class="estoque-preco-badge">R$ <span id="cx10l_3s_preco_badge">165,00</span></span></div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preco-inp"><span>R$</span><input type="number" id="cx10l_3s_preco" value="165" min="0" step="5"/></div><div class="hint">Preço atual da caixa.</div></div>
+                <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx10l_3s',-1)">−</button><input type="number" id="cx10l_3s_estoque" value="15" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx10l_3s',1)">+</button></div><div class="hint">0 = Esgotado.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx10l_3s_esgotado" onchange="toggleEsgotado('cx10l_3s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TORTA DE SORVETE -->
+          <div class="secao-titulo" style="margin-top:20px">🎂 Torta de Sorvete</div>
+          <div class="hint" style="margin-bottom:12px">Permite seleção de até 3 sabores. Quando esgotada, bloqueia no site.</div>
+          <div class="estoque-card">
+            <div class="estoque-header"><span class="estoque-nome">🎂 Torta de Sorvete</span><span class="estoque-preco-badge">R$ <span id="torta1_preco_badge">100,00</span></span></div>
+            <div class="estoque-campos">
+              <div class="campo-edit"><label>Preço (R$)</label><div class="preco-inp"><span>R$</span><input type="number" id="torta1_preco" value="100" min="0" step="5"/></div><div class="hint">Preço da torta de sorvete. Atualiza no site ao salvar.</div></div>
+              <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('torta1',-1)">−</button><input type="number" id="torta1_estoque" value="10" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('torta1',1)">+</button></div><div class="hint">0 = Esgotado. Máx. 999.</div></div>
+              <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="torta1_esgotado" onchange="toggleEsgotado('torta1')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+            </div>
+          </div>
+
+          <!-- PICOLÉS -->
+          <div class="secao-titulo" style="margin-top:20px">🍭 Picolés (5 categorias — Varejo e Atacado)</div>
+          <div class="hint" style="margin-bottom:12px">Cada categoria tem preço de <strong>Varejo</strong> (cardápio) e <strong>Atacado</strong> (encomendas mín. 100 un.). Sabores esgotados por categoria ficam bloqueados no site.</div>
+          <div id="estoque-picoles-body"></div>
+
+          <!-- ACRÉSCIMOS -->
+          <div class="secao-titulo" style="margin-top:20px">🍪 Acréscimos</div>
+          <div class="hint" style="margin-bottom:12px">Canudinho, casquinha, cobertura e mais. Cada acréscimo tem preço e estoque independentes.</div>
+          <div id="estoque-acrescimos-body"></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEstoque()">💾 Salvar Todo o Estoque</button></div>
         </div>
       </div>
     </div>
@@ -339,12 +1146,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configuraes Gerais do Site</h2></div>
         <div class="card-body">
           <div class="secao-titulo">&#x1F4F1; Contato e Redes Sociais</div>
-          <div class="campo-edit"><label>WhatsApp (somente nmeros)</label><input type="text" id="cfg-whats" placeholder="5516996062046"/><div class="hint">Formato: cdigo do pas + DDD + nmero (ex: 5516996062046)</div></div>
-          <div class="campo-edit"><label>WhatsApp formatado (exibio)</label><input type="text" id="cfg-whats-fmt" placeholder="(16) 99606-2046"/></div>
-          <div class="campo-edit"><label>Instagram (arroba)</label><input type="text" id="cfg-instagram" placeholder="@sorveteriaitapolitanacajuru"/></div>
+          <div class="campo-edit"><label>WhatsApp (somente nmeros, sem espacos)</label><input type="text" id="cfg-whats" maxlength="15" pattern="[0-9]+" placeholder="5516996062046"/><div class="hint">⚠️ SOMENTE NUMEROS, sem espacos, traco ou parenteses. Formato: 55 + DDD + numero (ex: 5516996062046). Errar aqui quebra o WhatsApp do site inteiro.</div></div>
+          <div class="campo-edit"><label>WhatsApp formatado (exibicao no site)</label><input type="text" id="cfg-whats-fmt" maxlength="20" placeholder="(16) 99606-2046"/><div class="hint">Formato visual com parenteses e traco. Exemplo: (16) 99606-2046. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Instagram (com arroba)</label><input type="text" id="cfg-instagram" maxlength="50" placeholder="@sorveteriaitapolitanacajuru"/><div class="hint">Incluir o @ no inicio. Max. 50 caracteres. Exemplo: @sorveteriaitapolitanacajuru</div></div>
           <div class="campo-edit"><label>URL do Instagram</label><input type="url" id="cfg-instagram-url" placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/></div>
           <div class="secao-titulo">&#x1F4CD; Endereo e Localizao</div>
-          <div class="campo-edit"><label>Endereo curto</label><input type="text" id="cfg-endereco" placeholder="Cajuru - SP"/></div>
+          <div class="campo-edit"><label>Endereco curto (exibicao no hero)</label><input type="text" id="cfg-endereco" maxlength="40" placeholder="Cajuru - SP"/><div class="hint">Max. 40 caracteres. Aparece no topo do site. Exemplo: Cajuru - SP</div></div>
           <div class="campo-edit"><label>Endereo completo</label><input type="text" id="cfg-endereco-completo" placeholder="Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Link Google Maps</label><input type="url" id="cfg-maps" placeholder="https://www.google.com/maps/..."/></div>
           <div class="secao-titulo">&#x23F0; Horrio de Funcionamento</div>
@@ -358,8 +1165,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
           <div class="secao-titulo">&#x1F3E2; Dados da Empresa</div>
           <div class="campo-edit"><label>Nome da empresa</label><input type="text" id="cfg-nome-empresa" placeholder="Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Slogan</label><input type="text" id="cfg-slogan" placeholder="Sorvete Tipo Artesanal desde 2007"/></div>
-          <div class="campo-edit"><label>Ano de fundao</label><input type="text" id="cfg-fundacao" placeholder="2007"/></div>
-          <div class="campo-edit"><label>CNPJ</label><input type="text" id="cfg-cnpj" placeholder="08.922.044/0001-80"/></div>
+          <div class="campo-edit"><label>Ano de fundacao</label><input type="text" id="cfg-fundacao" maxlength="4" pattern="[0-9]{4}" placeholder="2007"/><div class="hint">4 digitos. Exemplo: 2007. Usado no copyright e no hero.</div></div>
+          <div class="campo-edit"><label>CNPJ (formato: XX.XXX.XXX/XXXX-XX)</label><input type="text" id="cfg-cnpj" maxlength="18" placeholder="08.922.044/0001-80"/><div class="hint">Formato: 08.922.044/0001-80. Max. 18 caracteres.</div></div>
           <div class="secao-titulo">&#x1F4C4; Rodap do Site</div>
           <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" placeholder="SgtMissiascacarato"/></div>
@@ -441,12 +1248,14 @@ async function carregarTudo(){
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   ocultarLoading();
-  renderDashboard();preencherHome();preencherPromocao();preencherConfig();preencherFidelidade();renderPrecos();
+  renderDashboard();preencherHome();preencherPromocao();preencherConfig();preencherFidelidade();renderPrecos();carregarEstoque();renderizarSaboresAdmin();
 }
 function irPara(secao,btn){
   document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativo'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
   document.getElementById('sec-'+secao).classList.add('ativo');
+  if(secao==='estoque')carregarEstoque();
+  if(secao==='sabores')renderizarSaboresAdmin();
   if(btn)btn.classList.add('ativo');
   if(secao==='encomendas')renderEncomendas();
   if(secao==='clientes')renderClientes();
@@ -518,8 +1327,20 @@ function renderPrecos(){
   for(const[tam,preco]of Object.entries(acp)){if(typeof preco==='number'){const id=`preco_acaip_${tam}`.replace(/[\s\W]/g,'_');html+=`<div class="preco-item"><label>Acai Promo - ${tam}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${preco}" min="0" step="0.5"/></div></div>`;}}
   html+='</div>';
   const pic=p.picoles||{};
-  html+='<div class="secao-titulo">Picoles</div><div class="preco-grid">';
-  for(const[cat,itens]of Object.entries(pic)){if(typeof itens==='object'&&itens.preco!==undefined){const id=`preco_pic_${cat}`.replace(/[\s\W]/g,'_');html+=`<div class="preco-item"><label>Picole - ${cat}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${itens.preco}" min="0" step="0.1"/></div></div>`;}else if(typeof itens==='number'){const id=`preco_pic_${cat}`.replace(/[\s\W]/g,'_');html+=`<div class="preco-item"><label>Picole - ${cat}</label><div class="preco-inp"><span>R$</span><input type="number" id="${id}" value="${itens}" min="0" step="0.1"/></div></div>`;}}
+  html+='<div class="secao-titulo">Picoles — Varejo (Cardapio) e Atacado (Encomendas)</div>';
+  html+='<div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:.82rem">🍭 <strong>Varejo</strong> = preco unitario no cardapio da loja. <strong>Atacado</strong> = preco por unidade em encomendas (min. 100 un.). Os dois campos sao independentes.</div>';
+  html+='<div class="preco-grid">';
+  for(const[cat,itens]of Object.entries(pic)){
+    if(typeof itens==='object'){
+      const nomecat=itens.nome||cat;
+      const varejo=itens.preco_varejo!==undefined?itens.preco_varejo:(itens.preco||0);
+      const atacado=itens.preco_atacado!==undefined?itens.preco_atacado:0;
+      const idV=`preco_pic_${cat}_varejo`.replace(/[\s\W]/g,'_');
+      const idA=`preco_pic_${cat}_atacado`.replace(/[\s\W]/g,'_');
+      html+=`<div class="preco-item" style="grid-column:span 1"><label>${nomecat} — Varejo</label><div class="preco-inp"><span>R$</span><input type="number" id="${idV}" value="${varejo}" min="0" step="0.1"/></div><div class="hint">Preco no cardapio da loja</div></div>`;
+      html+=`<div class="preco-item" style="grid-column:span 1"><label>${nomecat} — Atacado</label><div class="preco-inp"><span>R$</span><input type="number" id="${idA}" value="${atacado}" min="0" step="0.1"/></div><div class="hint">Preco em encomendas (min. 100)</div></div>`;
+    }
+  }
   html+='</div>';
   const cx=p.caixas_viagem||{};
   html+='<div class="secao-titulo">Caixas de Viagem</div><div class="preco-grid">';
@@ -549,7 +1370,16 @@ async function salvarPrecos(){
   const acp=p.acai_promocao||{};
   for(const tam of Object.keys(acp)){if(typeof acp[tam]==='number'){const id=`preco_acaip_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.acai_promocao[tam]=parseFloat(el.value)||0;}}
   const pic=p.picoles||{};
-  for(const[cat,itens]of Object.entries(pic)){if(typeof itens==='object'&&itens.preco!==undefined){const id=`preco_pic_${cat}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.picoles[cat].preco=parseFloat(el.value)||0;}else if(typeof itens==='number'){const id=`preco_pic_${cat}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.picoles[cat]=parseFloat(el.value)||0;}}
+  for(const[cat,itens]of Object.entries(pic)){
+    if(typeof itens==='object'){
+      const idV=`preco_pic_${cat}_varejo`.replace(/[\s\W]/g,'_');
+      const idA=`preco_pic_${cat}_atacado`.replace(/[\s\W]/g,'_');
+      const elV=document.getElementById(idV);
+      const elA=document.getElementById(idA);
+      if(elV)p.picoles[cat].preco_varejo=parseFloat(elV.value)||0;
+      if(elA)p.picoles[cat].preco_atacado=parseFloat(elA.value)||0;
+    }
+  }
   const cx=p.caixas_viagem||{};
   for(const nome of Object.keys(cx)){if(typeof cx[nome]==='number'){const id=`preco_cx_${nome}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.caixas_viagem[nome]=parseFloat(el.value)||0;}}
   const iso=p.isopores_viagem||{};
@@ -756,6 +1586,256 @@ async function salvarConfig(){
 function toast(msg,tipo=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+tipo;setTimeout(()=>el.className='toast',3000);}
 function mostrarLoading(txt='Salvando...'){document.getElementById('loading-txt').textContent=txt;document.getElementById('loading-overlay').style.display='flex';}
 function ocultarLoading(){document.getElementById('loading-overlay').style.display='none';}
+
+// =====================================================================
+// SABORES — gestão de sabores de sorvete e picolés
+// =====================================================================
+const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preco_varejo": 2.5, "preco_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preco_varejo": 2.5, "preco_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preco_varejo": 3.0, "preco_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Leite Ninho", "preco_varejo": 4.0, "preco_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolé Esquimó", "preco_varejo": 8.0, "preco_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
+
+function renderizarSaboresAdmin() {
+  const salvo = localStorage.getItem('itap_sabores');
+  if (salvo) {
+    try {
+      const dados = JSON.parse(salvo);
+      dados.forEach(s => {
+        const sid = 'sab_' + s.nome.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_');
+        const cb = document.getElementById(sid);
+        const st = document.getElementById('status_' + sid);
+        const wrap = document.getElementById('wrap_' + sid);
+        if (cb) cb.checked = !s.esgotado;
+        if (st) { st.textContent = s.esgotado ? 'Esgotado' : 'Disponivel'; st.className = 'sabor-status' + (s.esgotado ? ' esgotado' : ''); }
+        if (wrap) wrap.className = 'sabor-item' + (s.esgotado ? ' esgotado' : '');
+      });
+    } catch(e) {}
+  }
+  renderizarPicolesAdmin();
+  renderizarAcrescimosAdmin();
+}
+
+function toggleSabor(sid) {
+  const cb = document.getElementById(sid);
+  const st = document.getElementById('status_' + sid);
+  const wrap = document.getElementById('wrap_' + sid);
+  if (st) { st.textContent = cb.checked ? 'Disponivel' : 'Esgotado'; st.className = 'sabor-status' + (cb.checked ? '' : ' esgotado'); }
+  if (wrap) wrap.className = 'sabor-item' + (cb.checked ? '' : ' esgotado');
+}
+
+function toggleSaborPicole(cat, sabor, ativo) {
+  const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const sid = 'pic_' + norm(cat) + '_' + norm(sabor);
+  const st = document.getElementById('status_' + sid);
+  if (st) { st.textContent = ativo ? 'Disponivel' : 'Esgotado'; st.className = 'sabor-status' + (ativo ? '' : ' esgotado'); }
+}
+
+function adicionarSaborSorvete() {
+  const inp = document.getElementById('novo_sabor_sorvete');
+  const nome = inp.value.trim();
+  if (!nome) { toast('Digite o nome do sabor.', 'erro'); return; }
+  if (nome.length > 40) { toast('Max. 40 caracteres.', 'erro'); return; }
+  const sid = 'sab_' + nome.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_');
+  const grids = document.querySelectorAll('#sec-sabores .sabores-grid');
+  if (grids[0]) {
+    grids[0].insertAdjacentHTML('beforeend', '<div class="sabor-item" id="wrap_' + sid + '"><div class="sabor-nome">' + nome + '</div><label class="toggle"><input type="checkbox" id="' + sid + '" checked onchange="toggleSabor(\'' + sid + '\')"/><span class="toggle-slider"></span></label><span class="sabor-status" id="status_' + sid + '">Disponivel</span></div>');
+  }
+  inp.value = '';
+  toast('Sabor adicionado! Salve para confirmar.', 'sucesso');
+}
+
+function renderizarPicolesAdmin() {
+  const salvo = localStorage.getItem('itap_picoles_admin');
+  const dados = salvo ? JSON.parse(salvo) : PICOLES_PADRAO;
+  const body = document.getElementById('estoque-picoles-body');
+  if (!body) return;
+  const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let html = '';
+  for (const [cat, pp] of Object.entries(dados)) {
+    const saboresHtml = pp.sabores.map(s => {
+      const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
+      return '<div class="sabor-item ' + (s.esgotado ? 'esgotado' : '') + '"><span class="sabor-nome">' + s.nome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" ' + (s.esgotado ? '' : 'checked') + ' onchange="toggleSaborPicole(\'' + cat + '\',\'' + s.nome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status ' + (s.esgotado ? 'esgotado' : '') + '" id="status_' + sid + '">' + (s.esgotado ? 'Esgotado' : 'Disponivel') + '</span></div>';
+    }).join('');
+    html += '<div class="estoque-card ' + (pp.esgotado ? 'esgotado' : '') + '"><div class="estoque-header"><span class="estoque-nome">🍭 ' + pp.nome + '</span><span class="estoque-preco-badge">Varejo R$ ' + pp.preco_varejo.toFixed(2).replace('.',',') + ' | Atacado R$ ' + pp.preco_atacado.toFixed(2).replace('.',',') + '</span></div><div class="estoque-campos"><div class="campo-edit"><label>Preco Varejo (Cardapio)</label><div class="preco-inp"><span>R$</span><input type="number" id="pic_' + cat + '_varejo" value="' + pp.preco_varejo + '" min="0" step="0.1"/></div><div class="hint">Preco unitario no cardapio da loja.</div></div><div class="campo-edit"><label>Preco Atacado (Encomendas)</label><div class="preco-inp"><span>R$</span><input type="number" id="pic_' + cat + '_atacado" value="' + pp.preco_atacado + '" min="0" step="0.1"/></div><div class="hint">Preco por unidade em encomendas (min. 100 un.).</div></div><div class="campo-edit"><label>Estoque total (0 a 200)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoquePicole(\'' + cat + '\',-1)">-</button><input type="number" id="pic_' + cat + '_estoque" value="' + pp.estoque + '" min="0" max="200" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoquePicole(\'' + cat + '\',1)">+</button></div><div class="hint">0 = Esgotado. Max. 200.</div></div></div><div class="secao-titulo" style="font-size:.78rem;margin:12px 0 8px">Sabores desta categoria</div><div class="sabores-grid">' + saboresHtml + '</div></div>';
+  }
+  body.innerHTML = html;
+}
+
+function ajustarEstoquePicole(cat, delta) {
+  const inp = document.getElementById('pic_' + cat + '_estoque');
+  if (!inp) return;
+  let v = parseInt(inp.value) + delta;
+  v = Math.max(0, Math.min(200, v));
+  inp.value = v;
+}
+
+async function salvarSabores() {
+  mostrarLoading('Salvando sabores...');
+  try {
+    // Coletar sabores de sorvete
+    const saboresEls = document.querySelectorAll('#sec-sabores .sabores-grid:first-of-type .sabor-item');
+    const sabores = [];
+    saboresEls.forEach(el => {
+      const nome = el.querySelector('.sabor-nome') ? el.querySelector('.sabor-nome').textContent.trim() : '';
+      const cb = el.querySelector('input[type=checkbox]');
+      if (nome) sabores.push({ nome, esgotado: cb ? !cb.checked : false });
+    });
+    localStorage.setItem('itap_sabores', JSON.stringify(sabores));
+    // Coletar picoles
+    const picDados = JSON.parse(localStorage.getItem('itap_picoles_admin') || JSON.stringify(PICOLES_PADRAO));
+    const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    for (const cat of Object.keys(picDados)) {
+      const varejo = parseFloat(document.getElementById('pic_' + cat + '_varejo') ? document.getElementById('pic_' + cat + '_varejo').value : picDados[cat].preco_varejo) || picDados[cat].preco_varejo;
+      const atacado = parseFloat(document.getElementById('pic_' + cat + '_atacado') ? document.getElementById('pic_' + cat + '_atacado').value : picDados[cat].preco_atacado) || picDados[cat].preco_atacado;
+      const estoque = parseInt(document.getElementById('pic_' + cat + '_estoque') ? document.getElementById('pic_' + cat + '_estoque').value : picDados[cat].estoque);
+      picDados[cat].preco_varejo = varejo;
+      picDados[cat].preco_atacado = atacado;
+      picDados[cat].estoque = isNaN(estoque) ? picDados[cat].estoque : estoque;
+      picDados[cat].esgotado = picDados[cat].estoque === 0;
+      picDados[cat].sabores = picDados[cat].sabores.map(s => {
+        const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
+        const cb = document.getElementById(sid);
+        return { nome: s.nome, esgotado: cb ? !cb.checked : s.esgotado };
+      });
+    }
+    localStorage.setItem('itap_picoles_admin', JSON.stringify(picDados));
+    // Atualizar produtos.json
+    const prod = STATE.produtos;
+    if (prod) {
+      for (const [cat, dados] of Object.entries(picDados)) {
+        if (prod.picoles[cat]) {
+          prod.picoles[cat].preco_varejo = dados.preco_varejo;
+          prod.picoles[cat].preco_atacado = dados.preco_atacado;
+          prod.picoles[cat].estoque = dados.estoque;
+          prod.picoles[cat].sabores = dados.sabores.filter(s => !s.esgotado).map(s => s.nome);
+        }
+      }
+      prod.sorvetes.sabores = sabores.filter(s => !s.esgotado).map(s => s.nome);
+      STATE.produtos = prod;
+      await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e precos picoles');
+    }
+    toast('Sabores salvos!', 'sucesso');
+  } catch(e) { toast('Erro: ' + e.message, 'erro'); }
+  ocultarLoading();
+}
+
+// =====================================================================
+// ESTOQUE — gestao de estoque de encomendas
+// =====================================================================
+function carregarEstoque() {
+  const caixas = JSON.parse(localStorage.getItem('itap_caixas_enc') || '[]');
+  const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
+  const CAIXAS_PAD = [{preco:100,estoque:20},{preco:115,estoque:20},{preco:150,estoque:15},{preco:165,estoque:15}];
+  CAIXAS_IDS.forEach((id, i) => {
+    const d = caixas[i] || CAIXAS_PAD[i];
+    const pr = document.getElementById(id + '_preco'); if (pr) pr.value = d.preco || CAIXAS_PAD[i].preco;
+    const es = document.getElementById(id + '_estoque'); if (es) es.value = d.estoque != null ? d.estoque : CAIXAS_PAD[i].estoque;
+    const eg = document.getElementById(id + '_esgotado'); if (eg) eg.checked = !!d.esgotado;
+  });
+  const tortas = JSON.parse(localStorage.getItem('itap_tortas_enc') || '[]');
+  const torta = tortas[0] || {preco:100,estoque:10,esgotado:false};
+  const tp = document.getElementById('torta1_preco'); if (tp) tp.value = torta.preco || 100;
+  const te = document.getElementById('torta1_estoque'); if (te) te.value = torta.estoque != null ? torta.estoque : 10;
+  const teg = document.getElementById('torta1_esgotado'); if (teg) teg.checked = !!torta.esgotado;
+  renderizarPicolesAdmin();
+  renderizarAcrescimosAdmin();
+}
+
+function ajustarEstoque(id, delta) {
+  const inp = document.getElementById(id + '_estoque');
+  if (!inp) return;
+  let v = parseInt(inp.value) + delta;
+  v = Math.max(0, Math.min(999, v));
+  inp.value = v;
+  if (v === 0) { const eg = document.getElementById(id + '_esgotado'); if (eg) eg.checked = true; }
+}
+
+function toggleEsgotado(id) {
+  const eg = document.getElementById(id + '_esgotado');
+  const es = document.getElementById(id + '_estoque');
+  if (eg && eg.checked && es) es.value = 0;
+}
+
+function renderizarAcrescimosAdmin() {
+  const salvo = localStorage.getItem('itap_acrescimos');
+  const PADRAO = [
+    {id:'acr_canudinho',nome:'Canudinho Wafer',preco:0.25,estoque:100,esgotado:false},
+    {id:'acr_casquinha',nome:'Casquinhas',preco:0.25,estoque:100,esgotado:false},
+    {id:'acr_cascao',nome:'Cascao',preco:1.00,estoque:100,esgotado:false},
+    {id:'acr_cestinha',nome:'Cestinha',preco:1.00,estoque:100,esgotado:false},
+    {id:'acr_cobertura',nome:'Cobertura 1.3L',preco:40.00,estoque:100,esgotado:false}
+  ];
+  const dados = salvo ? JSON.parse(salvo) : PADRAO;
+  const body = document.getElementById('estoque-acrescimos-body');
+  if (!body) return;
+  let html = '';
+  dados.forEach((a, i) => {
+    html += '<div class="estoque-card ' + (a.esgotado ? 'esgotado' : '') + '"><div class="estoque-header"><span class="estoque-nome">🍪 ' + a.nome + '</span><span class="estoque-preco-badge">R$ ' + (a.preco||0).toFixed(2).replace('.',',') + '</span></div><div class="estoque-campos"><div class="campo-edit"><label>Nome do Acrescimo</label><input type="text" id="acr_' + i + '_nome" value="' + a.nome + '" maxlength="30"/><div class="hint">Max. 30 caracteres. Letras e espacos.</div></div><div class="campo-edit"><label>Preco (R$)</label><div class="preco-inp"><span>R$</span><input type="number" id="acr_' + i + '_preco" value="' + a.preco + '" min="0" step="0.05"/></div><div class="hint">Preco por unidade do acrescimo.</div></div><div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoqueAcr(' + i + ',-1)">-</button><input type="number" id="acr_' + i + '_estoque" value="' + a.estoque + '" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoqueAcr(' + i + ',1)">+</button></div><div class="hint">0 = Esgotado no site.</div></div></div></div>';
+  });
+  body.innerHTML = html;
+}
+
+function ajustarEstoqueAcr(i, delta) {
+  const inp = document.getElementById('acr_' + i + '_estoque');
+  if (!inp) return;
+  let v = parseInt(inp.value) + delta;
+  v = Math.max(0, Math.min(999, v));
+  inp.value = v;
+}
+
+async function salvarEstoque() {
+  mostrarLoading('Salvando estoque...');
+  try {
+    const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
+    const CAIXAS_NOMES = ['Caixa 5 Litros - 2 Sabores','Caixa 5 Litros - 3 Sabores','Caixa 10 Litros - 2 Sabores','Caixa 10 Litros - 3 Sabores'];
+    const CAIXAS_MAX = [2,3,2,3];
+    const caixas = CAIXAS_IDS.map((id, i) => {
+      const preco = parseFloat(document.getElementById(id + '_preco') ? document.getElementById(id + '_preco').value : 100) || 100;
+      const estoque = parseInt(document.getElementById(id + '_estoque') ? document.getElementById(id + '_estoque').value : 20);
+      const esgotado = (document.getElementById(id + '_esgotado') ? document.getElementById(id + '_esgotado').checked : false) || estoque === 0;
+      return { id, nome: CAIXAS_NOMES[i], preco, maxSabores: CAIXAS_MAX[i], estoque: isNaN(estoque) ? 20 : estoque, esgotado };
+    });
+    localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
+    const torta_preco = parseFloat(document.getElementById('torta1_preco') ? document.getElementById('torta1_preco').value : 100) || 100;
+    const torta_estoque = parseInt(document.getElementById('torta1_estoque') ? document.getElementById('torta1_estoque').value : 10);
+    const torta_esgotado = (document.getElementById('torta1_esgotado') ? document.getElementById('torta1_esgotado').checked : false) || torta_estoque === 0;
+    localStorage.setItem('itap_tortas_enc', JSON.stringify([{id:'torta1',nome:'Torta de Sorvete',preco:torta_preco,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}]));
+    const picDados = JSON.parse(localStorage.getItem('itap_picoles_admin') || JSON.stringify(PICOLES_PADRAO));
+    for (const cat of Object.keys(picDados)) {
+      const varejo = parseFloat(document.getElementById('pic_' + cat + '_varejo') ? document.getElementById('pic_' + cat + '_varejo').value : picDados[cat].preco_varejo) || picDados[cat].preco_varejo;
+      const atacado = parseFloat(document.getElementById('pic_' + cat + '_atacado') ? document.getElementById('pic_' + cat + '_atacado').value : picDados[cat].preco_atacado) || picDados[cat].preco_atacado;
+      const estoque = parseInt(document.getElementById('pic_' + cat + '_estoque') ? document.getElementById('pic_' + cat + '_estoque').value : picDados[cat].estoque);
+      picDados[cat].preco_varejo = varejo;
+      picDados[cat].preco_atacado = atacado;
+      picDados[cat].estoque = isNaN(estoque) ? picDados[cat].estoque : estoque;
+      picDados[cat].esgotado = picDados[cat].estoque === 0;
+    }
+    localStorage.setItem('itap_picoles_admin', JSON.stringify(picDados));
+    const acrescimos = [];
+    let i = 0;
+    while (document.getElementById('acr_' + i + '_nome')) {
+      const nome = document.getElementById('acr_' + i + '_nome').value.trim();
+      const preco = parseFloat(document.getElementById('acr_' + i + '_preco').value) || 0;
+      const estoque = parseInt(document.getElementById('acr_' + i + '_estoque').value);
+      const esgotado = isNaN(estoque) ? false : estoque === 0;
+      if (nome) acrescimos.push({ id: 'acr_' + i, nome, preco, estoque: isNaN(estoque) ? 100 : estoque, esgotado });
+      i++;
+    }
+    if (acrescimos.length) localStorage.setItem('itap_acrescimos', JSON.stringify(acrescimos));
+    const prod = STATE.produtos;
+    if (prod) {
+      for (const [cat, dados] of Object.entries(picDados)) {
+        if (prod.picoles[cat]) {
+          prod.picoles[cat].preco_varejo = dados.preco_varejo;
+          prod.picoles[cat].preco_atacado = dados.preco_atacado;
+          prod.picoles[cat].estoque = dados.estoque;
+        }
+      }
+      STATE.produtos = prod;
+      await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
+    }
+    toast('Estoque salvo!', 'sucesso');
+  } catch(e) { toast('Erro: ' + e.message, 'erro'); }
+  ocultarLoading();
+}
+
 document.getElementById('inp-senha').addEventListener('keydown',e=>{if(e.key==='Enter')entrar();});
 </script>
 </body>
