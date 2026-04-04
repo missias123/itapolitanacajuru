@@ -302,7 +302,7 @@ html { scroll-behavior: smooth; }
       <div style="background:rgba(255,255,255,.25);border-radius:8px;padding:7px 10px;font-size:clamp(.67rem,2vw,.75rem);font-weight:700;margin-bottom:10px;line-height:1.45">
         ⚠️ Quem não tiver o <strong>número e nome cadastrado</strong> na agenda da sorveteria no dia do sorteio <strong>não terá direito ao prêmio</strong>.
       </div>
-      <button onclick="document.getElementById('painel').scrollIntoView({behavior:'smooth'})" style="width:100%;padding:11px;background:#fff;color:#1b5e20;border:none;border-radius:10px;font-size:clamp(.8rem,2.5vw,.9rem);font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+      <button onclick="abrirSecaoSorteio()" style="width:100%;padding:11px;background:#fff;color:#1b5e20;border:none;border-radius:10px;font-size:clamp(.8rem,2.5vw,.9rem);font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.15)">
         🎁 Quero Participar
       </button>
     </div>
@@ -361,7 +361,7 @@ html { scroll-behavior: smooth; }
 </div>
 
 <!-- FORMULÁRIO SORTEIOS MENSAIS -->
-<section id="sec-sorteio-form" style="background:#e8f5e9;padding:24px 12px;border-top:3px solid #a5d6a7">
+<section id="sec-sorteio-form" style="background:#e8f5e9;padding:24px 12px;border-top:3px solid #a5d6a7;display:none">
   <div style="max-width:480px;margin:0 auto">
 
     <!-- REGULAMENTO SORTEIOS (aceite obrigatório) -->
@@ -920,6 +920,12 @@ function verificarAceiteFidelidade() {
     btn.style.background = '#ccc';
     btn.style.cursor = 'not-allowed';
   }
+}
+
+function abrirSecaoSorteio() {
+  const sec = document.getElementById('sec-sorteio-form');
+  sec.style.display = 'block';
+  sec.scrollIntoView({behavior:'smooth'});
 }
 
 function verificarAceiteSorteio() {
