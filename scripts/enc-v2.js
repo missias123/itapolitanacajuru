@@ -386,8 +386,12 @@ function abrirSaboresSorvete(id, cat, originEl) {
   document.getElementById('modal-subtítulo-sabores').textContent = `Selecione exatamente ${p.maxSabores} sabores`;
 
   const grid = document.getElementById('grid-sabores');
-  grid.innerHTML = SABORES_SORVETE.map(s => `
-    <button class="sabor-item" onclick="toggleSabor('${s}',this)">${s}</button>`).join('');
+  grid.innerHTML = SABORES_SORVETE.map(s => {
+    const nome = typeof s === 'object' ? s.nome : s;
+    const esg  = typeof s === 'object' ? s.esgotado : false;
+    if (esg) return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado">${nome}</button>`;
+    return `<button class="sabor-item" onclick="toggleSabor('${nome}',this)">${nome}</button>`;
+  }).join('');
 
   atualizarBtnConfirmar();
   abrirModal('modal-sabores', originEl);
