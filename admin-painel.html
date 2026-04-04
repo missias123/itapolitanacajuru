@@ -141,6 +141,259 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
 .btn-qty-est.btn-add{background:#e65100;color:#fff;border-color:#e65100}
 .btn-verde{background:#2e7d32;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
 @media(max-width:600px){.estoque-campos{grid-template-columns:1fr}}
+
+/* =====================================================
+   ADMIN — RESPONSIVIDADE 3 APARELHOS
+   ===================================================== */
+
+/* Mobile admin */
+@media (max-width: 480px) {
+  .admin-nav { 
+    overflow-x: auto !important; 
+    white-space: nowrap !important; 
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .admin-nav::-webkit-scrollbar { display: none; }
+  .nav-btn { 
+    font-size: 0.75rem !important; 
+    padding: 6px 10px !important;
+    min-width: auto !important;
+  }
+  .admin-header { 
+    flex-direction: column !important; 
+    gap: 8px !important;
+    padding: 10px 12px !important;
+  }
+  .admin-content, .sec-admin { padding: 12px !important; }
+  .campo-edit { margin-bottom: 14px !important; }
+  .campo-edit input, .campo-edit textarea, .campo-edit select {
+    font-size: 16px !important; /* evita zoom no iOS */
+  }
+  .estoque-campos { grid-template-columns: 1fr !important; }
+  .sabor-item { 
+    flex-direction: row !important; 
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  .btn-salvar, .btn-cancelar { 
+    width: 100% !important; 
+    margin: 4px 0 !important;
+  }
+  .dashboard-cards { 
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 10px !important;
+  }
+  .card-stat { padding: 12px !important; }
+  .card-stat .num { font-size: 1.8rem !important; }
+  .login-box { 
+    width: 92% !important; 
+    padding: 24px 16px !important;
+  }
+  .toast { 
+    bottom: 16px !important; 
+    left: 12px !important; 
+    right: 12px !important;
+    width: auto !important;
+  }
+}
+
+/* Tablet admin */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .admin-nav { overflow-x: auto; white-space: nowrap; }
+  .nav-btn { font-size: 0.82rem; padding: 7px 12px; }
+  .admin-content, .sec-admin { padding: 16px 20px; }
+  .dashboard-cards { grid-template-columns: repeat(3, 1fr); }
+  .estoque-campos { grid-template-columns: repeat(2, 1fr); }
+  .campo-edit input, .campo-edit textarea { font-size: 16px; }
+}
+
+/* Desktop admin */
+@media (min-width: 1025px) {
+  .admin-content, .sec-admin { padding: 24px 32px; max-width: 960px; margin: 0 auto; }
+  .dashboard-cards { grid-template-columns: repeat(5, 1fr); }
+  .estoque-campos { grid-template-columns: repeat(3, 1fr); }
+}
+
+
+/* =====================================================
+   VALIDAÇÃO PROFISSIONAL — PADRÃO GRANDES SITES
+   ===================================================== */
+.campo-edit { position: relative; margin-bottom: 18px; }
+.campo-edit label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #444;
+  margin-bottom: 5px;
+  letter-spacing: 0.01em;
+}
+.campo-edit input,
+.campo-edit textarea,
+.campo-edit select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  color: #222;
+}
+.campo-edit input:focus,
+.campo-edit textarea:focus {
+  border-color: #e85d04;
+  box-shadow: 0 0 0 3px rgba(232,93,4,0.12);
+  outline: none;
+}
+.campo-edit input.campo-ok { border-color: #22c55e; }
+.campo-edit input.campo-erro,
+.campo-edit textarea.campo-erro { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
+
+/* Contador de caracteres */
+.char-counter {
+  position: absolute;
+  right: 10px;
+  bottom: -18px;
+  font-size: 0.72rem;
+  color: #999;
+  transition: color 0.2s;
+}
+.char-counter.quase { color: #f59e0b; font-weight: 600; }
+.char-counter.limite { color: #ef4444; font-weight: 700; }
+
+/* Hint melhorado */
+.hint {
+  font-size: 0.78rem;
+  color: #777;
+  margin-top: 5px;
+  padding: 6px 10px;
+  background: #f8f9fa;
+  border-left: 3px solid #e85d04;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
+}
+.hint.hint-erro { background: #fff5f5; border-left-color: #ef4444; color: #c00; }
+.hint.hint-ok { background: #f0fdf4; border-left-color: #22c55e; color: #166534; }
+.hint.hint-aviso { background: #fffbeb; border-left-color: #f59e0b; color: #92400e; }
+
+/* Regra de campo */
+.regra-campo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 4px;
+}
+.regra-campo .tag {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #475569;
+}
+.regra-campo .tag.obrigatorio { background: #fef2f2; border-color: #fecaca; color: #dc2626; }
+.regra-campo .tag.opcional { background: #f0fdf4; border-color: #bbf7d0; color: #16a34a; }
+
+/* Upload de imagem */
+.upload-area {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fafafa;
+  position: relative;
+}
+.upload-area:hover { border-color: #e85d04; background: #fff8f0; }
+.upload-area.drag-over { border-color: #e85d04; background: #fff3e0; transform: scale(1.01); }
+.upload-area input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.upload-icon { font-size: 2rem; margin-bottom: 8px; }
+.upload-texto { font-size: 0.88rem; color: #666; }
+.upload-regras {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #999;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.upload-regras span {
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Preview de imagem */
+.img-preview-wrap {
+  margin-top: 12px;
+  display: none;
+}
+.img-preview-wrap.ativo { display: block; }
+.img-preview {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  object-fit: cover;
+}
+.img-preview-info {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.img-preview-info span { background: #f8f9fa; padding: 2px 8px; border-radius: 4px; }
+.img-preview-info .info-ok { color: #16a34a; background: #f0fdf4; }
+.img-preview-info .info-aviso { color: #92400e; background: #fffbeb; }
+.img-preview-info .info-erro { color: #dc2626; background: #fef2f2; }
+
+/* Barra de progresso de upload */
+.upload-progress {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin-top: 8px;
+  display: none;
+}
+.upload-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #e85d04, #ff8c42);
+  border-radius: 2px;
+  transition: width 0.3s;
+  width: 0%;
+}
+
+/* Erro de validação inline */
+.erro-inline {
+  display: none;
+  font-size: 0.78rem;
+  color: #dc2626;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: #fef2f2;
+  border-radius: 4px;
+}
+.erro-inline.ativo { display: block; }
+
+/* Badge de campo obrigatório */
+.label-obrigatorio::after {
+  content: " *";
+  color: #dc2626;
+  font-weight: 700;
+}
+
 </style>
 </head>
 <body>
@@ -257,7 +510,30 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
           <div class="campo-edit"><label>Link do boto</label><input type="url" id="promo-link" placeholder="https://..."/></div>
           <div class="campo-edit"><label>Data de encerramento (opcional)</label><input type="datetime-local" id="promo-datafim"/><div class="hint">Deixe em branco para promoo sem prazo</div></div>
           <div class="campo-edit"><label>Texto do boto flutuante (FAB)</label><input type="text" id="promo-fab" maxlength="15" placeholder="SORTEIO!"/><div class="hint">Max. 15 caracteres. Texto curto e impactante. Aparece no canto inferior direito do site.</div></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromocao()">&#x1F4BE; Salvar Promoo</button></div>
+          
+          <!-- CAMPO DE IMAGEM DA PROMOÇÃO -->
+          <div class="campo-edit" style="margin-top:16px">
+            <label>🖼️ Imagem da Promoção</label>
+            <div class="upload-area" id="promo-img-area">
+              <input type="file" accept="image/*" id="promo-img-input" onchange="processarUploadPromo(this.files[0])"/>
+              <div class="upload-icon">📷</div>
+              <div class="upload-texto">Clique ou arraste a imagem da promoção aqui</div>
+              <div class="upload-regras">
+                <span>📐 Máx. 800×600px</span>
+                <span>💾 Máx. 150KB</span>
+                <span>🖼️ JPG, PNG, WebP</span>
+                <span>⚡ Converte para WebP automaticamente</span>
+              </div>
+            </div>
+            <div class="img-preview-wrap" id="promo-img-preview-wrap">
+              <img class="img-preview" id="promo-img-preview" src="" alt="Preview promoção"/>
+              <div class="img-preview-info" id="promo-img-info"></div>
+            </div>
+            <div class="erro-inline" id="promo-img-erro"></div>
+            <div class="hint">Imagem exibida no banner da promoção. Será convertida automaticamente para WebP.</div>
+          </div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromocao()">&#x1F4BE; Salvar Promoção</button></div>
         </div>
       </div>
     </div>
@@ -1156,29 +1432,29 @@ Talento</textarea>
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configuraes Gerais do Site</h2></div>
         <div class="card-body">
           <div class="secao-titulo">&#x1F4F1; Contato e Redes Sociais</div>
-          <div class="campo-edit"><label>WhatsApp (somente nmeros, sem espacos)</label><input type="text" id="cfg-whats" maxlength="15" pattern="[0-9]+" placeholder="5516996062046"/><div class="hint">⚠️ SOMENTE NUMEROS, sem espacos, traco ou parenteses. Formato: 55 + DDD + numero (ex: 5516996062046). Errar aqui quebra o WhatsApp do site inteiro.</div></div>
+          <div class="campo-edit"><label class="label-obrigatorio">WhatsApp (somente números, sem espaços)</label><input type="text" id="cfg-whats" maxlength="15" inputmode="numeric" pattern="[0-9]+" pattern="[0-9]+" placeholder="5516996062046"/><div class="hint">⚠️ SOMENTE NUMEROS, sem espacos, traco ou parenteses. Formato: 55 + DDD + numero (ex: 5516996062046). Errar aqui quebra o WhatsApp do site inteiro.</div></div>
           <div class="campo-edit"><label>WhatsApp formatado (exibicao no site)</label><input type="text" id="cfg-whats-fmt" maxlength="20" placeholder="(16) 99606-2046"/><div class="hint">Formato visual com parenteses e traco. Exemplo: (16) 99606-2046. Max. 20 caracteres.</div></div>
           <div class="campo-edit"><label>Instagram (com arroba)</label><input type="text" id="cfg-instagram" maxlength="50" placeholder="@sorveteriaitapolitanacajuru"/><div class="hint">Incluir o @ no inicio. Max. 50 caracteres. Exemplo: @sorveteriaitapolitanacajuru</div></div>
-          <div class="campo-edit"><label>URL do Instagram</label><input type="url" id="cfg-instagram-url" placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/></div>
+          <div class="campo-edit"><label>URL do Instagram</label><input type="url" id="cfg-instagram-url" placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/><div class="hint hint-aviso">⚠️ Deve começar com https://. Exemplo: https://www.instagram.com/sorveteriaitapolitanacajuru</div placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/></div>
           <div class="secao-titulo">&#x1F4CD; Endereo e Localizao</div>
           <div class="campo-edit"><label>Endereco curto (exibicao no hero)</label><input type="text" id="cfg-endereco" maxlength="40" placeholder="Cajuru - SP"/><div class="hint">Max. 40 caracteres. Aparece no topo do site. Exemplo: Cajuru - SP</div></div>
-          <div class="campo-edit"><label>Endereo completo</label><input type="text" id="cfg-endereco-completo" placeholder="Sorveteria Itapolitana . Cajuru/SP"/></div>
+          <div class="campo-edit"><label>Endereço completo</label><input type="text" id="cfg-endereco-completo" maxlength="100" placeholder="Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Link Google Maps</label><input type="url" id="cfg-maps" placeholder="https://www.google.com/maps/..."/></div>
           <div class="secao-titulo">&#x23F0; Horrio de Funcionamento</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="campo-edit"><label>Horrio de abertura (hora)</label><input type="number" id="cfg-hora-abre" min="0" max="23" placeholder="10"/></div>
             <div class="campo-edit"><label>Horrio de fechamento (hora)</label><input type="number" id="cfg-hora-fecha" min="0" max="23" placeholder="22"/></div>
           </div>
-          <div class="campo-edit"><label>Horrio resumido (exibio no site)</label><input type="text" id="cfg-horario" placeholder="Todos os dias: 10h as 22h"/></div>
+          <div class="campo-edit"><label class="label-obrigatorio">Horário resumido (exibição no site)</label><input type="text" id="cfg-horario" maxlength="50" placeholder="Todos os dias: 10h as 22h"/></div>
           <div class="campo-edit"><label>Horrio detalhado</label><input type="text" id="cfg-horario-det" placeholder="Segunda a Domingo: 10h as 22h"/></div>
           <div class="campo-edit"><label>Horrio no rodap</label><textarea id="cfg-footer-horario" rows="2" placeholder="Todos os dias: 10h as 22h&#10;Segunda a Domingo"></textarea></div>
           <div class="secao-titulo">&#x1F3E2; Dados da Empresa</div>
-          <div class="campo-edit"><label>Nome da empresa</label><input type="text" id="cfg-nome-empresa" placeholder="Sorveteria Itapolitana Cajuru"/></div>
-          <div class="campo-edit"><label>Slogan</label><input type="text" id="cfg-slogan" placeholder="Sorvete Tipo Artesanal desde 2007"/></div>
+          <div class="campo-edit"><label class="label-obrigatorio">Nome da empresa</label><input type="text" id="cfg-nome-empresa" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Slogan</label><input type="text" id="cfg-slogan" maxlength="80" placeholder="Sorvete Tipo Artesanal desde 2007"/></div>
           <div class="campo-edit"><label>Ano de fundacao</label><input type="text" id="cfg-fundacao" maxlength="4" pattern="[0-9]{4}" placeholder="2007"/><div class="hint">4 digitos. Exemplo: 2007. Usado no copyright e no hero.</div></div>
           <div class="campo-edit"><label>CNPJ (formato: XX.XXX.XXX/XXXX-XX)</label><input type="text" id="cfg-cnpj" maxlength="18" placeholder="08.922.044/0001-80"/><div class="hint">Formato: 08.922.044/0001-80. Max. 18 caracteres.</div></div>
           <div class="secao-titulo">&#x1F4C4; Rodap do Site</div>
-          <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
+          <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" maxlength="80" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" placeholder="SgtMissiascacarato"/></div>
           <div class="secao-titulo">&#x1F512; Segurana</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
@@ -1847,6 +2123,289 @@ async function salvarEstoque() {
 }
 
 document.getElementById('inp-senha').addEventListener('keydown',e=>{if(e.key==='Enter')entrar();});
+</script>
+<script>
+/* =====================================================
+   VALIDAÇÃO PROFISSIONAL — JAVASCRIPT
+   ===================================================== */
+
+// Contador de caracteres em tempo real
+function initContadores() {
+  document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(el => {
+    const max = parseInt(el.getAttribute('maxlength'));
+    if (!max) return;
+    
+    // Criar contador
+    const counter = document.createElement('span');
+    counter.className = 'char-counter';
+    counter.textContent = `0/${max}`;
+    el.parentElement.style.position = 'relative';
+    el.parentElement.appendChild(counter);
+    
+    // Atualizar contador ao digitar
+    el.addEventListener('input', () => {
+      const len = el.value.length;
+      counter.textContent = `${len}/${max}`;
+      counter.className = 'char-counter';
+      if (len >= max) {
+        counter.classList.add('limite');
+        el.classList.add('campo-erro');
+      } else if (len >= max * 0.85) {
+        counter.classList.add('quase');
+        el.classList.remove('campo-erro');
+      } else {
+        el.classList.remove('campo-erro');
+        if (len > 0) el.classList.add('campo-ok');
+        else el.classList.remove('campo-ok');
+      }
+    });
+    
+    // Inicializar com valor atual
+    if (el.value.length > 0) {
+      el.dispatchEvent(new Event('input'));
+    }
+  });
+}
+
+// Validação de WhatsApp em tempo real
+function initValidacaoWhatsApp() {
+  const el = document.getElementById('cfg-whats');
+  if (!el) return;
+  
+  el.addEventListener('input', () => {
+    const val = el.value.replace(/\D/g, '');
+    el.value = val; // Remover não-números automaticamente
+    
+    const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
+    
+    if (val.length > 0 && (val.length < 12 || val.length > 13)) {
+      el.classList.add('campo-erro');
+      el.classList.remove('campo-ok');
+      erroEl.textContent = `⚠️ WhatsApp deve ter 12-13 dígitos (ex: 5516996062046). Atual: ${val.length} dígitos`;
+      erroEl.classList.add('ativo');
+    } else if (val.length >= 12) {
+      el.classList.remove('campo-erro');
+      el.classList.add('campo-ok');
+      erroEl.classList.remove('ativo');
+    }
+  });
+}
+
+// Validação de preço em tempo real
+function initValidacaoPrecos() {
+  document.querySelectorAll('input[type="number"][id*="preco"], input[type="number"][id*="valor"]').forEach(el => {
+    el.addEventListener('input', () => {
+      const val = parseFloat(el.value);
+      const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
+      
+      if (isNaN(val) || val < 0) {
+        el.classList.add('campo-erro');
+        erroEl.textContent = '⚠️ Preço deve ser um número positivo (ex: 15.00)';
+        erroEl.classList.add('ativo');
+      } else if (val > 999) {
+        el.classList.add('campo-erro');
+        erroEl.textContent = '⚠️ Preço acima de R$999? Verifique se está correto.';
+        erroEl.classList.add('ativo');
+      } else {
+        el.classList.remove('campo-erro');
+        el.classList.add('campo-ok');
+        erroEl.classList.remove('ativo');
+      }
+    });
+  });
+}
+
+// Criar elemento de erro inline
+function criarErroInline(el) {
+  const div = document.createElement('div');
+  div.className = 'erro-inline';
+  el.parentElement.appendChild(div);
+  return div;
+}
+
+// Conversão automática de imagem para WebP via Canvas API
+function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
+  if (!file || !file.type.startsWith('image/')) {
+    callback(null, 'Arquivo não é uma imagem válida');
+    return;
+  }
+  
+  // Verificar tamanho máximo (5MB antes de processar)
+  if (file.size > 5 * 1024 * 1024) {
+    callback(null, 'Imagem muito grande (máx. 5MB). Escolha uma imagem menor.');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      // Calcular dimensões mantendo proporção
+      let w = img.width;
+      let h = img.height;
+      
+      if (w > maxWidth) {
+        h = Math.round(h * maxWidth / w);
+        w = maxWidth;
+      }
+      if (h > maxHeight) {
+        w = Math.round(w * maxHeight / h);
+        h = maxHeight;
+      }
+      
+      // Desenhar no canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      
+      // Exportar como WebP
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          callback(null, 'Erro ao processar imagem');
+          return;
+        }
+        
+        const tamanhoKB = Math.round(blob.size / 1024);
+        const info = {
+          blob,
+          width: w,
+          height: h,
+          tamanhoKB,
+          formato: 'WebP',
+          reducao: Math.round((1 - blob.size / file.size) * 100)
+        };
+        callback(info, null);
+      }, 'image/webp', qualidade);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Criar campo de upload de imagem profissional
+function criarUploadImagem(containerId, opcoes) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  const {
+    label = 'Imagem',
+    maxWidth = 1200,
+    maxHeight = 630,
+    maxKB = 300,
+    qualidade = 0.82,
+    hint = '',
+    obrigatorio = false,
+    onProcessada = null
+  } = opcoes;
+  
+  container.innerHTML = `
+    <div class="campo-edit">
+      <label class="${obrigatorio ? 'label-obrigatorio' : ''}">${label}</label>
+      <div class="upload-area" id="${containerId}-area">
+        <input type="file" accept="image/*" id="${containerId}-input"/>
+        <div class="upload-icon">📷</div>
+        <div class="upload-texto">Clique ou arraste a imagem aqui</div>
+        <div class="upload-regras">
+          <span>📐 Máx. ${maxWidth}×${maxHeight}px</span>
+          <span>💾 Máx. ${maxKB}KB</span>
+          <span>🖼️ JPG, PNG, WebP</span>
+          <span>⚡ Converte para WebP automaticamente</span>
+        </div>
+      </div>
+      <div class="upload-progress"><div class="upload-progress-bar" id="${containerId}-prog"></div></div>
+      <div class="img-preview-wrap" id="${containerId}-preview-wrap">
+        <img class="img-preview" id="${containerId}-preview" src="" alt="Preview"/>
+        <div class="img-preview-info" id="${containerId}-info"></div>
+      </div>
+      <div class="erro-inline" id="${containerId}-erro"></div>
+      ${hint ? `<div class="hint">${hint}</div>` : ''}
+    </div>
+  `;
+  
+  const input = document.getElementById(`${containerId}-input`);
+  const previewWrap = document.getElementById(`${containerId}-preview-wrap`);
+  const previewImg = document.getElementById(`${containerId}-preview`);
+  const infoEl = document.getElementById(`${containerId}-info`);
+  const erroEl = document.getElementById(`${containerId}-erro`);
+  const progBar = document.getElementById(`${containerId}-prog`);
+  const area = document.getElementById(`${containerId}-area`);
+  
+  // Drag & Drop
+  area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
+  area.addEventListener('drop', (e) => {
+    e.preventDefault();
+    area.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) processarUpload(file);
+  });
+  
+  input.addEventListener('change', () => {
+    if (input.files[0]) processarUpload(input.files[0]);
+  });
+  
+  function processarUpload(file) {
+    erroEl.classList.remove('ativo');
+    progBar.parentElement.style.display = 'block';
+    progBar.style.width = '30%';
+    
+    processarImagem(file, maxWidth, maxHeight, qualidade, (info, erro) => {
+      progBar.style.width = '100%';
+      
+      setTimeout(() => {
+        progBar.parentElement.style.display = 'none';
+        progBar.style.width = '0%';
+      }, 500);
+      
+      if (erro) {
+        erroEl.textContent = '❌ ' + erro;
+        erroEl.classList.add('ativo');
+        previewWrap.classList.remove('ativo');
+        return;
+      }
+      
+      // Mostrar preview
+      const url = URL.createObjectURL(info.blob);
+      previewImg.src = url;
+      previewWrap.classList.add('ativo');
+      
+      // Mostrar informações
+      const statusKB = info.tamanhoKB <= maxKB ? 'info-ok' : 'info-aviso';
+      infoEl.innerHTML = `
+        <span class="info-ok">✅ WebP convertido</span>
+        <span>${info.width}×${info.height}px</span>
+        <span class="${statusKB}">${info.tamanhoKB}KB ${info.reducao > 0 ? `(${info.reducao}% menor)` : ''}</span>
+      `;
+      
+      if (info.tamanhoKB > maxKB) {
+        erroEl.textContent = `⚠️ Imagem ainda grande (${info.tamanhoKB}KB). Recomendado: máx. ${maxKB}KB. Tente uma imagem menor.`;
+        erroEl.classList.add('ativo');
+      }
+      
+      // Callback com o blob processado
+      if (onProcessada) onProcessada(info.blob, info);
+    });
+  }
+}
+
+// Inicializar tudo quando o admin carregar
+document.addEventListener('DOMContentLoaded', () => {
+  // Aguardar login
+  const observer = new MutationObserver(() => {
+    const painel = document.getElementById('painel');
+    if (painel && painel.style.display !== 'none') {
+      setTimeout(() => {
+        initContadores();
+        initValidacaoWhatsApp();
+        initValidacaoPrecos();
+      }, 300);
+      observer.disconnect();
+    }
+  });
+  observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['style'] });
+});
 </script>
 </body>
 </html>
