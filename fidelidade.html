@@ -266,23 +266,28 @@ html { scroll-behavior: smooth; }
 
 <!-- HERO -->
 <section class="hero" id="sec-hero">
-  <h1>🎟️ CLUBE DE FIDELIDADE</h1>
-  <p>Compras acima de <strong>R$ 30,00</strong> ganham um cupom com código!<br>Acumule pontos e <strong>escolha seu prêmio</strong>.</p>
-  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
-    <div class="hero-prêmio">
-      <span class="prêmio-icon">🥤</span>
-      <div class="hero-prêmio-txt">
-        <strong>Milkshake 300ml GRÁTIS</strong>
-        <span>ao acumular 10 pontos</span>
-      </div>
-    </div>
-    <div class="hero-prêmio" style="background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.6)">
-      <span class="prêmio-icon">🍦</span>
-      <div class="hero-prêmio-txt">
-        <strong>Caixa 7 Bolas GRÁTIS</strong>
-        <span>ao acumular 30 pontos</span>
-      </div>
-    </div>
+  <h1>🍦 Sorveteria Itapolitana Cajuru</h1>
+  <p>Escolha como você quer participar:</p>
+
+  <!-- DOIS BOTÕES PRINCIPAIS -->
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto">
+
+    <!-- BOTÃO 1: CLUBE DE FIDELIDADE -->
+    <button onclick="document.getElementById('painel').scrollIntoView({behavior:'smooth'})" style="flex:1;min-width:200px;max-width:260px;background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;border:none;border-radius:16px;padding:18px 14px;cursor:pointer;box-shadow:0 6px 20px rgba(232,101,10,.4);text-align:center;transition:transform .15s"  onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      <div style="font-size:1.8rem;margin-bottom:5px">🎟️</div>
+      <div style="font-size:clamp(.95rem,3vw,1.1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">CLUBE DE FIDELIDADE</div>
+      <div style="font-size:clamp(.72rem,2.2vw,.82rem);opacity:.92;line-height:1.4;margin-bottom:8px">Compras acima de <strong>R$ 30,00</strong> ganham cupom<br>🥤 10 pts = Milkshake GRÁTIS<br>🍦 30 pts = Caixa 7 Bolas GRÁTIS</div>
+      <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:7px 10px;font-size:clamp(.75rem,2.2vw,.85rem);font-weight:800">📱 Cadastrar pelo Site</div>
+    </button>
+
+    <!-- BOTÃO 2: SORTEIOS MENSAIS -->
+    <button onclick="cadastrarSorteioWhatsApp()" style="flex:1;min-width:200px;max-width:260px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:16px;padding:18px 14px;cursor:pointer;box-shadow:0 6px 20px rgba(27,94,32,.4);text-align:center;transition:transform .15s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      <div style="font-size:1.8rem;margin-bottom:5px">🎁</div>
+      <div style="font-size:clamp(.95rem,3vw,1.1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">SORTEIOS MENSAIS</div>
+      <div style="font-size:clamp(.72rem,2.2vw,.82rem);opacity:.92;line-height:1.4;margin-bottom:8px">A partir de <strong>1º de maio</strong><br>Cajuru, Santa Cruz da Esperança<br>e Cássia dos Coqueiros<br>🎁 <strong>1 caixa 5L</strong> sorteada todo mês!</div>
+      <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:7px 10px;font-size:clamp(.75rem,2.2vw,.85rem);font-weight:800">📲 Cadastrar pelo WhatsApp</div>
+    </button>
+
   </div>
 </section>
 
@@ -464,46 +469,6 @@ html { scroll-behavior: smooth; }
       <ul class="historico-list" id="historico-list">
         <li style="color:#açaía;font-size:.85rem;text-align:center;padding:12px 0">Nenhum código inserido ainda.</li>
       </ul>
-    </div>
-
-    <!-- BLOCO SORTEIO MENSAL -->
-    <div class="card">
-      <div style="padding:12px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:10px;border-left:4px solid #FF9800;margin-bottom:12px">
-        <div style="font-size:12px;font-weight:900;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">🎁 Sorteio Mensal</div>
-        <div style="font-size:12px;color:#5D4037;line-height:1.5;font-weight:600">
-          A partir de <strong>1º de maio</strong>, moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> que se cadastrarem concorrerão a <strong>1 caixa de 5 litros de sorvete tipo artesanal</strong> por mês! ✨
-        </div>
-      </div>
-
-      <!-- BLOCO: PARTICIPAR DOS SORTEIOS SEM PROPAGANDA -->
-      <div style="background:#e8f5e9;border:2px solid #a5d6a7;border-radius:14px;padding:14px">
-        <h3 style="font-size:clamp(.9rem,3vw,1rem);font-weight:900;color:#1b5e20;margin:0 0 7px">🎁 Quer participar de sorteios mensais (sem receber propaganda)?</h3>
-        <p style="font-size:clamp(.75rem,2.2vw,.85rem);color:#2e7d32;margin:0 0 5px">
-          Além dos cupons e bonificações, você também pode participar dos nossos <strong>sorteios mensais</strong> até o fim do ano.
-        </p>
-        <p style="font-size:clamp(.75rem,2.2vw,.85rem);color:#2e7d32;margin:0 0 8px">
-          <strong>Você não vai receber mensagens de propaganda no WhatsApp.</strong><br>
-          As promoções e os produtos da semana aparecem somente nos <strong>Status da sorveteria</strong>. Você só vê se quiser, quando abrir os Status no seu WhatsApp.
-        </p>
-        <button onclick="toggleRegras()" id="btn-ver-regras" style="width:100%;padding:11px;background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;border:none;border-radius:10px;font-size:clamp(.82rem,2.5vw,.92rem);font-weight:800;cursor:pointer">
-          🎯 Quero participar de sorteios SOMENTE
-        </button>
-        <div id="box-regras-sorteio" style="display:none;margin-top:11px;font-size:clamp(.75rem,2.2vw,.85rem);color:#1b5e20;background:#fff;border-radius:10px;padding:13px;border:1.5px solid #c8e6c9">
-          <p style="margin:0 0 7px">Para participar <strong>somente dos sorteios mensais</strong> e poder receber o prêmio, é obrigatório:</p>
-          <ul style="margin:0 0 9px;padding-left:18px;line-height:1.7">
-            <li>Ter seu <strong>WhatsApp cadastrado na agenda da sorveteria com seu nome</strong>.</li>
-            <li>Enviar uma solicitação pelo WhatsApp clicando no botão abaixo.</li>
-          </ul>
-          <p style="margin:0 0 7px">A sorveteria vai receber sua solicitação e cadastrar seu número nos contatos.<br>
-            <strong>Regra dos sorteios:</strong> se o seu número <strong>não estiver cadastrado com nome na agenda da sorveteria</strong> no momento do sorteio, você <strong>não recebe o prêmio</strong>.
-          </p>
-          <p style="margin:0 0 7px">🔒 Lembrando: você <strong>não receberá mensagens de propaganda</strong>. As promoções e produtos da semana serão mostrados apenas nos <strong>Status do WhatsApp</strong>. Você só vê se quiser, quando abrir os Status.</p>
-          <p style="margin:0 0 9px">Se você concorda com essas regras e quer participar somente dos sorteios, clique no botão abaixo. A sorveteria vai receber sua mensagem e cadastrar seu número direitinho:</p>
-          <button onclick="enviarSolicitacaoSorteio()" style="display:block;width:100%;padding:12px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:10px;font-size:clamp(.82rem,2.5vw,.92rem);font-weight:800;text-align:center;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.35);box-sizing:border-box">
-            📲 Enviar solicitação para participar dos sorteios
-          </button>
-        </div>
-      </div>
     </div>
 
   </div><!-- /card-cliente -->
@@ -766,6 +731,14 @@ function setTab(tab) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// CADASTRO SORTEIO VIA WHATSAPP (botão do topo)
+function cadastrarSorteioWhatsApp() {
+  const msg = 'Olá! Quero me cadastrar para participar dos *Sorteios Mensais* da Sorveteria Itapolitana Cajuru. ' +
+    'Estou ciente de que não receberei mensagens de propaganda, apenas visualizarei as promoções e produtos nos *Status do WhatsApp* quando desejar. ' +
+    'Confirmo que concordo com as regras de participação.';
+  window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
 // TOGGLE REGRAS SORTEIO
 // ═══════════════════════════════════════════════════════════
 function toggleRegras() {
