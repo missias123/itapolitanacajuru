@@ -9,8 +9,8 @@ const produtos = {
             "Banana com Nutella",
             "Bis e Trufa",
             "Cereja Trufada",
-            "Chocolaté",
-            "Chocolaté com Café",
+            "Chocolate",
+            "Chocolate com Café",
             "Coco Queimado",
             "Creme Paris",
             "Croquer",
@@ -24,7 +24,7 @@ const produtos = {
             "Leite Ninho com Oreo",
             "Limão",
             "Limão Suíço",
-            "Menta com Chocolaté",
+            "Menta com Chocolate",
             "Milho Verde",
             "Morango Trufado",
             "Mousse de Maracujá",
@@ -35,7 +35,7 @@ const produtos = {
             "Pistache",
             "Prestígio",
             "Sensação",
-            "Torta de Chocolaté"
+            "Torta de Chocolate"
         ],
         preços: {
             casquinha_copção: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
@@ -64,7 +64,7 @@ const produtos = {
             preço_varejo: 3.00,
             preço_atacado: 2.00,
             estoque: 200,
-            sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolaté", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolaté", "Nata com Goiaba"]
+            sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"]
         },
         leite_ninho: {
             nome: "Picolé Leite Ninho",
@@ -92,7 +92,7 @@ const produtos = {
         { nome: "Açaí Promocional 700ml", desc: "Açaí + Morango + Nutella", preço: 28.00 }
     ],
     açaí: {
-        copçãos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
+        copos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
         complementos: {
             frutas: {
                 preço: 2.00,
@@ -106,9 +106,9 @@ const produtos = {
                 preço: 2.00,
                 itens: ["Granola", "Paçoca", "Leite em Pó", "Ovomaltine", "Confete", "Chocoball", "Chantilly", "Granulado", "Leite Condensado"]
             },
-            chocolatés: {
+            chocolates: {
                 preço: 4.00,
-                itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Oreo", "Gotas de Chocolaté", "Talento"]
+                itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Oreo", "Gotas de Chocolate", "Talento"]
             }
         }
     },
@@ -153,7 +153,7 @@ const produtos = {
     sobremesas: {
         "Torta de Sorvete": 100.00,
         "Fondue": 25.00,
-        "Sorvete com Bolo no Pote": 25.00,
+        "Sorvete com Bolo no Copo 600ml": 25.00,
         "Petit Gâteau (1 bola)": 20.00,
         "Petit Gâteau (2 bolas)": 25.00,
         "Sorvete Diet (1 bola)": 10.00

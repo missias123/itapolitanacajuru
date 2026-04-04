@@ -228,7 +228,7 @@
 
   // ═══════════════════════════════════════════════
   // HELPER: acessar campo aninhado por string
-  // Ex: "açaí.copçãos.300ml" → cfg.açaí.copçãos["300ml"]
+  // Ex: "açaí.copos.300ml" → cfg.açaí.copos["300ml"]
   // ═══════════════════════════════════════════════
   function getValor(obj, caminho) {
     return caminho.split('.').reduce((acc, k) => {

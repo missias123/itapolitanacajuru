@@ -64,13 +64,13 @@ var _endereçoCliente = '';
 // Lista padrão de sabores
 const SABORES_PADRAO = [
   "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
-  "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolaté","Chocolaté com Café",
+  "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
   "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
   "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
   "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
-  "Limão Suíço","Menta com Chocolaté","Milho Verde","Morango Trufado",
+  "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
   "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
-  "Pistache","Prestígio","Sensação","Torta de Chocolaté"
+  "Pistache","Prestígio","Sensação","Torta de Chocolate"
 ];
 // Retorna TODOS os sabores como objetos {nome, esgotado}
 function getTodosSabores() {
