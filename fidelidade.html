@@ -265,28 +265,42 @@ html { scroll-behavior: smooth; }
 </header>
 
 <!-- HERO -->
-<section class="hero" id="sec-hero">
-  <h1>🍦 Sorveteria Itapolitana Cajuru</h1>
-  <p>Escolha como você quer participar:</p>
+<section class="hero" id="sec-hero" style="padding:20px 12px 24px">
+  <h1 style="margin-bottom:6px">🍦 Sorveteria Itapolitana Cajuru</h1>
+  <p style="margin-bottom:16px">Você pode participar dos <strong>dois programas</strong> ao mesmo tempo!</p>
 
-  <!-- DOIS BOTÕES PRINCIPAIS -->
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto">
+  <!-- DOIS CARDS LADO A LADO -->
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;max-width:640px;margin:0 auto">
 
-    <!-- BOTÃO 1: CLUBE DE FIDELIDADE -->
-    <button onclick="document.getElementById('painel').scrollIntoView({behavior:'smooth'})" style="flex:1;min-width:200px;max-width:260px;background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;border:none;border-radius:16px;padding:18px 14px;cursor:pointer;box-shadow:0 6px 20px rgba(232,101,10,.4);text-align:center;transition:transform .15s"  onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-      <div style="font-size:1.8rem;margin-bottom:5px">🎟️</div>
-      <div style="font-size:clamp(.95rem,3vw,1.1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">CLUBE DE FIDELIDADE</div>
-      <div style="font-size:clamp(.72rem,2.2vw,.82rem);opacity:.92;line-height:1.4;margin-bottom:8px">Compras acima de <strong>R$ 30,00</strong> ganham cupom<br>🥤 10 pts = Milkshake GRÁTIS<br>🍦 30 pts = Caixa 7 Bolas GRÁTIS</div>
-      <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:7px 10px;font-size:clamp(.75rem,2.2vw,.85rem);font-weight:800">📱 Cadastrar pelo Site</div>
-    </button>
+    <!-- CARD 1: CLUBE DE FIDELIDADE -->
+    <div style="flex:1;min-width:220px;max-width:290px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);border-radius:18px;padding:18px 14px;text-align:center">
+      <div style="font-size:2rem;margin-bottom:6px">🎟️</div>
+      <div style="font-size:clamp(.98rem,3.2vw,1.12rem);font-weight:900;letter-spacing:.3px;margin-bottom:8px">CLUBE DE FIDELIDADE</div>
+      <div style="font-size:clamp(.73rem,2.3vw,.83rem);line-height:1.6;margin-bottom:12px;opacity:.95">
+        Compras acima de <strong>R$ 30,00</strong> ganham um cupom com código.<br>
+        Acumule pontos e escolha seu prêmio:<br>
+        🥤 <strong>10 pontos</strong> = Milkshake 300ml GRÁTIS<br>
+        🍦 <strong>30 pontos</strong> = Caixa 7 Bolas GRÁTIS
+      </div>
+      <button onclick="document.getElementById('painel').scrollIntoView({behavior:'smooth'})" style="width:100%;padding:11px;background:#fff;color:#e8650a;border:none;border-radius:10px;font-size:clamp(.8rem,2.5vw,.9rem);font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+        📱 Fazer Cadastro no Site
+      </button>
+    </div>
 
-    <!-- BOTÃO 2: SORTEIOS MENSAIS -->
-    <button onclick="cadastrarSorteioWhatsApp()" style="flex:1;min-width:200px;max-width:260px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:16px;padding:18px 14px;cursor:pointer;box-shadow:0 6px 20px rgba(27,94,32,.4);text-align:center;transition:transform .15s" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-      <div style="font-size:1.8rem;margin-bottom:5px">🎁</div>
-      <div style="font-size:clamp(.95rem,3vw,1.1rem);font-weight:900;letter-spacing:.3px;margin-bottom:5px">SORTEIOS MENSAIS</div>
-      <div style="font-size:clamp(.72rem,2.2vw,.82rem);opacity:.92;line-height:1.4;margin-bottom:8px">A partir de <strong>1º de maio</strong><br>Cajuru, Santa Cruz da Esperança<br>e Cássia dos Coqueiros<br>🎁 <strong>1 caixa 5L</strong> sorteada todo mês!</div>
-      <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:7px 10px;font-size:clamp(.75rem,2.2vw,.85rem);font-weight:800">📲 Cadastrar pelo WhatsApp</div>
-    </button>
+    <!-- CARD 2: SORTEIOS MENSAIS -->
+    <div style="flex:1;min-width:220px;max-width:290px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);border-radius:18px;padding:18px 14px;text-align:center">
+      <div style="font-size:2rem;margin-bottom:6px">🎁</div>
+      <div style="font-size:clamp(.98rem,3.2vw,1.12rem);font-weight:900;letter-spacing:.3px;margin-bottom:8px">SORTEIOS MENSAIS</div>
+      <div style="font-size:clamp(.73rem,2.3vw,.83rem);line-height:1.6;margin-bottom:12px;opacity:.95">
+        A partir de <strong>1º de maio</strong>, moradores de<br>
+        <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong><br>
+        e <strong>Cássia dos Coqueiros</strong> concorrem a<br>
+        🎁 <strong>1 caixa de 5 litros</strong> de sorvete todo mês!
+      </div>
+      <button onclick="document.getElementById('sec-sorteio-form').scrollIntoView({behavior:'smooth'})" style="width:100%;padding:11px;background:#fff;color:#1b5e20;border:none;border-radius:10px;font-size:clamp(.8rem,2.5vw,.9rem);font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+        🎁 Fazer Cadastro para Sorteio
+      </button>
+    </div>
 
   </div>
 </section>
@@ -340,6 +354,38 @@ html { scroll-behavior: smooth; }
     </div>
   </div>
 </div>
+
+<!-- FORMULÁRIO SORTEIOS MENSAIS -->
+<section id="sec-sorteio-form" style="background:#e8f5e9;padding:24px 12px;border-top:3px solid #a5d6a7">
+  <div style="max-width:480px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:2rem;margin-bottom:4px">🎁</div>
+      <div style="font-size:1.1rem;font-weight:900;color:#1b5e20;margin-bottom:4px">CADASTRO — SORTEIOS MENSAIS</div>
+      <p style="font-size:.83rem;color:#2e7d32;margin:0">Preencha seus dados abaixo. Ao clicar em confirmar, você será redirecionado ao <strong>WhatsApp</strong> para enviar a solicitação à sorveteria.</p>
+    </div>
+    <div class="form-group">
+      <label style="font-size:.85rem;font-weight:700;color:#1b5e20">Nome completo</label>
+      <input type="text" id="sort-nome" placeholder="Nome como no documento" autocomplete="name" style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;border-radius:10px;font-size:.95rem;box-sizing:border-box;background:#fff">
+    </div>
+    <div class="form-group">
+      <label style="font-size:.85rem;font-weight:700;color:#1b5e20">Celular (WhatsApp)</label>
+      <input type="tel" id="sort-cel" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" style="width:100%;padding:11px 14px;border:2px solid #a5d6a7;border-radius:10px;font-size:.95rem;box-sizing:border-box;background:#fff">
+    </div>
+    <div class="form-group">
+      <label style="font-size:.85rem;font-weight:700;color:#1b5e20">Data de nascimento</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="sort-dia" placeholder="Dia" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;background:#fff">
+        <input type="text" id="sort-mes" placeholder="Mês" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;background:#fff">
+        <input type="text" id="sort-ano" placeholder="Ano" maxlength="4" inputmode="numeric" style="width:34%;text-align:center;padding:11px;border:2px solid #a5d6a7;border-radius:10px;font-size:1rem;font-weight:700;box-sizing:border-box;background:#fff">
+      </div>
+    </div>
+    <div id="msg-sorteio" class="msg" style="margin-bottom:10px"></div>
+    <button onclick="enviarSorteioWhatsApp()" style="width:100%;padding:13px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(37,211,102,.35)">
+      📲 Confirmar e Enviar pelo WhatsApp
+    </button>
+    <p style="font-size:.75rem;color:#555;text-align:center;margin-top:8px">🔒 Você não receberá propaganda. As promoções aparecem apenas nos <strong>Status do WhatsApp</strong>.</p>
+  </div>
+</section>
 
 <!-- PAINEL PRINCIPAL -->
 <div class="painel" id="painel">
@@ -731,12 +777,40 @@ function setTab(tab) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// CADASTRO SORTEIO VIA WHATSAPP (botão do topo)
-function cadastrarSorteioWhatsApp() {
-  const msg = 'Olá! Quero me cadastrar para participar dos *Sorteios Mensais* da Sorveteria Itapolitana Cajuru. ' +
-    'Estou ciente de que não receberei mensagens de propaganda, apenas visualizarei as promoções e produtos nos *Status do WhatsApp* quando desejar. ' +
+// CADASTRO SORTEIO VIA WHATSAPP (formulário + envio pelo WhatsApp)
+function enviarSorteioWhatsApp() {
+  const nome = (document.getElementById('sort-nome').value || '').trim();
+  const cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
+  const dia  = (document.getElementById('sort-dia').value || '').trim();
+  const mes  = (document.getElementById('sort-mes').value || '').trim();
+  const ano  = (document.getElementById('sort-ano').value || '').trim();
+  const msgEl = document.getElementById('msg-sorteio');
+  // Validações
+  if (!nome || nome.length < 3) {
+    showMsg('msg-sorteio', '⚠️ Informe seu nome completo.', 'aviso'); return;
+  }
+  if (cel.length < 10) {
+    showMsg('msg-sorteio', '⚠️ Informe um celular válido com DDD.', 'aviso'); return;
+  }
+  if (!dia || !mes || !ano || ano.length < 4) {
+    showMsg('msg-sorteio', '⚠️ Informe sua data de nascimento completa (Dia, Mês e Ano).', 'aviso'); return;
+  }
+  const dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
+  const celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
+  const msg = 'Olá! Quero me cadastrar para participar dos *Sorteios Mensais* da Sorveteria Itapolitana Cajuru.\n\n' +
+    '*Nome:* ' + nome + '\n' +
+    '*Celular:* ' + celFmt + '\n' +
+    '*Data de nascimento:* ' + dataNasc + '\n\n' +
+    'Estou ciente de que não receberei mensagens de propaganda. As promoções aparecem apenas nos *Status do WhatsApp*.\n' +
     'Confirmo que concordo com as regras de participação.';
   window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+  showMsg('msg-sorteio', '✅ Redirecionando para o WhatsApp... Envie a mensagem para confirmar seu cadastro!', 'ok');
+  // Limpar campos
+  document.getElementById('sort-nome').value = '';
+  document.getElementById('sort-cel').value = '';
+  document.getElementById('sort-dia').value = '';
+  document.getElementById('sort-mes').value = '';
+  document.getElementById('sort-ano').value = '';
 }
 
 // TOGGLE REGRAS SORTEIO
