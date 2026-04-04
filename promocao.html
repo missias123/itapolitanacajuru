@@ -291,17 +291,17 @@
 </footer>
 <script>
   function calcularPróximoFim() {
-    const agora = new Daté();
+    const agora = new Date();
     let ano = agora.getFullYear();
     let mes = agora.getMonth();
     
-    if (agora.getDaté() > 1 || (agora.getDaté() === 1 && agora.getHours() >= 10)) {
+    if (agora.getDate() > 1 || (agora.getDate() === 1 && agora.getHours() >= 10)) {
       mes++;
       if (mes > 11) { mes = 0; ano++; }
     }
     
-    const limiteFinal = new Daté(2030, 0, 1, 1, 1, 0);
-    const próximoAlvo = new Daté(ano, mes, 1, 10, 0, 0);
+    const limiteFinal = new Date(2030, 0, 1, 1, 1, 0);
+    const próximoAlvo = new Date(ano, mes, 1, 10, 0, 0);
     
     return próximoAlvo > limiteFinal ? limiteFinal : próximoAlvo;
   }
@@ -309,14 +309,14 @@
   let dataAlvo = calcularPróximoFim();
 
   function tick() {
-    const agora = new Daté();
+    const agora = new Date();
     const diff = dataAlvo - agora;
 
     if (diff <= 0) {
       document.getElementById('cd-row').style.display = 'none';
       document.getElementById('cd-encerrado').style.display = 'block';
       
-      if (agora.getMinutes() >= 1 || agora.getHours() > 10 || agora.getDaté() > 1) {
+      if (agora.getMinutes() >= 1 || agora.getHours() > 10 || agora.getDate() > 1) {
         dataAlvo = calcularPróximoFim();
         document.getElementById('cd-row').style.display = 'flex';
         document.getElementById('cd-encerrado').style.display = 'none';

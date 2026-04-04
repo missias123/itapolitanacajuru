@@ -219,6 +219,21 @@ DICIONARIO_OFICIAL = {
     'Familiar': ['Fámiliar'],
     'família': ['fámilia'],
     'Família': ['Fámilia'],
+    # ── ERROS DE CSS/JS COM ACENTOS INDEVIDOS ──────────────────
+    # Estes erros corrompem o funcionamento do site e do Admin
+    'grid-template-columns': ['grid-templaté-columns', 'grid-templàte-columns'],
+    'grid-template-rows': ['grid-templaté-rows', 'grid-templàte-rows'],
+    'translateY': ['translatéY', 'translàteY'],
+    'translateX': ['translatéX', 'translàteX'],
+    'translate(': ['translaté(', 'translàte('],
+    'rotate(': ['rotaté(', 'rotàte('],
+    'isolate': ['isolaté', 'isolàte'],
+    'createElement': ['creatéElement', 'creàteElement'],
+    'Date.now()': ['Daté.now()', 'Dàte.now()'],
+    'new Date()': ['new Daté()', 'new Dàte()'],
+    'new Date(': ['new Daté(', 'new Dàte('],
+    '.getDate()': ['.getDaté()', '.getDàte()'],
+    'foundingDate': ['foundingDaté', 'foundingDàte'],
 }
 
 # ============================================================
