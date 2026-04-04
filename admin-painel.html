@@ -744,31 +744,90 @@ function renderPrecos() {
 async function salvarPrecos() {
   const p = STATE.produtos;
   if (!p) return;
-  // Ler todos os inputs de preço e atualizar o objeto
+
+  // Função auxiliar: encontra chave real pelo ID sanitizado
+  function chaveReal(obj, idSanitizado) {
+    for (const k of Object.keys(obj)) {
+      if (k.replace(/\s/g,'_').replace(/[^\w]/g,'_') === idSanitizado) return k;
+    }
+    return null;
+  }
+
   document.querySelectorAll('[id^="preco_"]').forEach(inp => {
     const val = parseFloat(inp.value);
     if (isNaN(val)) return;
-    const parts = inp.id.replace('preco_','').split('_');
+    const raw = inp.id.replace('preco_','');
+    const parts = raw.split('_');
     const tipo = parts[0];
-    const resto = parts.slice(1).join('_');
     try {
-      if (tipo==='sorvete') {
-        // preco_sorvete_tipo_bola
-        const t = parts[1]; const b = parts.slice(2).join(' ').replace(/_/g,' ');
-        // encontrar chave real
-        const sv = p.sorvetes.precos;
-        for (const [k,v] of Object.entries(sv)) {
-          if (k.replace(/\s/g,'_').replace(/[^\w]/g,'_')===t) {
-            for (const bk of Object.keys(v)) {
-              if (bk.replace(/\s/g,'_').replace(/[^\w]/g,'_')===parts.slice(2).join('_')) {
-                sv[k][bk] = val;
-              }
-            }
+      // ── Sorvetes: preco_sorvete_{tipo}_{bola} ──
+      if (tipo === 'sorvete') {
+        const sv = p.sorvetes?.precos || {};
+        const tipoKey = chaveReal(sv, parts[1]);
+        if (tipoKey) {
+          const bolaKey = chaveReal(sv[tipoKey], parts.slice(2).join('_'));
+          if (bolaKey) sv[tipoKey][bolaKey] = val;
+        }
+      }
+      // ── Milkshake: preco_milk_{cat}_{tam} ou preco_milk_{cat} ──
+      else if (tipo === 'milk') {
+        const mk = p.milkshake || {};
+        const catKey = chaveReal(mk, parts[1]);
+        if (catKey !== null) {
+          if (parts.length >= 3 && typeof mk[catKey] === 'object') {
+            const tamKey = chaveReal(mk[catKey], parts.slice(2).join('_'));
+            if (tamKey) mk[catKey][tamKey] = val;
+          } else if (typeof mk[catKey] === 'number') {
+            mk[catKey] = val;
           }
         }
       }
-    } catch(e) {}
+      // ── Taças: preco_taca_{cat}_{nome} ──
+      else if (tipo === 'taca') {
+        const tc = p.tacas || {};
+        const catKey = chaveReal(tc, parts[1]);
+        if (catKey) {
+          const nomeKey = chaveReal(tc[catKey], parts.slice(2).join('_'));
+          if (nomeKey) tc[catKey][nomeKey] = val;
+        }
+      }
+      // ── Açaí: preco_acai_{tam} ──
+      else if (tipo === 'acai') {
+        const ac = p.acai?.copos || {};
+        const tamKey = chaveReal(ac, parts.slice(1).join('_'));
+        if (tamKey) p.acai.copos[tamKey] = val;
+      }
+      // ── Picolés: preco_picole_{tipo}_{varejo|atacado} ──
+      else if (tipo === 'picole') {
+        const pc = p.picoles || {};
+        const campo = parts[parts.length - 1]; // varejo ou atacado
+        const tipoKey = chaveReal(pc, parts.slice(1, parts.length - 1).join('_'));
+        if (tipoKey) {
+          if (campo === 'varejo') pc[tipoKey].preco_varejo = val;
+          else if (campo === 'atacado') pc[tipoKey].preco_atacado = val;
+        }
+      }
+      // ── Sobremesas: preco_sob_{nome} ──
+      else if (tipo === 'sob') {
+        const sb = p.sobremesas || {};
+        const nomeKey = chaveReal(sb, parts.slice(1).join('_'));
+        if (nomeKey) sb[nomeKey] = val;
+      }
+      // ── Caixas: preco_cx_{nome} ──
+      else if (tipo === 'cx') {
+        const cx = p.caixas_viagem || {};
+        const nomeKey = chaveReal(cx, parts.slice(1).join('_'));
+        if (nomeKey) cx[nomeKey] = val;
+      }
+      // ── Isopores: preco_iso_{nome} ──
+      else if (tipo === 'iso') {
+        const iso = p.isopores_viagem || {};
+        const nomeKey = chaveReal(iso, parts.slice(1).join('_'));
+        if (nomeKey) iso[nomeKey] = val;
+      }
+    } catch(e) { console.warn('Erro ao salvar preço:', inp.id, e); }
   });
+
   await salvarArquivo(PATHS.produtos, p, 'produtosSha', 'Admin: atualizar preços do cardápio');
 }
 
