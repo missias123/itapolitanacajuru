@@ -19,7 +19,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
 /* ── HEADER ── */
 .site-header{background:linear-gradient(135deg,#e8650a,#ff8c00);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .site-header .logo{color:#fff;font-size:1.1rem;font-weight:800;text-decoration:none}
-.site-header a.back{color:#fff;text-decoration:none;font-size:.9rem;opacity:.9}
+.site-header a.back{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.25);color:#fff;text-decoration:none;font-size:.88rem;font-weight:800;padding:7px 14px;border-radius:20px;border:2px solid rgba(255,255,255,.5);transition:.2s;letter-spacing:.2px}
+.site-header a.back:hover{background:rgba(255,255,255,.4)}
 
 /* ── HERO ── */
 .hero{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 50%,#ff8c00 100%);color:#fff;text-align:center;padding:36px 20px 28px}
@@ -261,7 +262,7 @@ html { scroll-behavior: smooth; }
 <header class="site-header">
   <a class="logo" href="index.html">🍦 Itapolitana Cajuru</a>
   <span style="color:#fff;font-weight:700;font-size:.95rem">Programa de Fidelidade</span>
-  <a class="back" href="index.html">← Voltar</a>
+  <a class="back" href="index.html">← Voltar ao Site</a>
 </header>
 
 <!-- COMO FUNCIONA (aparece primeiro) -->
@@ -399,6 +400,15 @@ html { scroll-behavior: smooth; }
 
     <!-- REGULAMENTO SORTEIOS (aceite obrigatório) -->
     <div id="card-regras-sorteio" style="background:#fff;border:2px solid #2e7d32;border-radius:14px;padding:18px 16px;margin-bottom:16px">
+      <!-- BOTÃO VER REGULAMENTO SORTEIOS (visível por padrão) -->
+      <div id="btn-ver-regras-sorteio" style="text-align:center;padding:8px 0">
+        <div style="font-size:1.3rem;margin-bottom:6px">📜</div>
+        <div style="font-size:.95rem;font-weight:900;color:#1b5e20;margin-bottom:8px">SORTEIOS MENSAIS</div>
+        <p style="font-size:.8rem;color:#666;margin-bottom:12px">Antes de se cadastrar, leia o regulamento do sorteio.</p>
+        <button onclick="mostrarRegrasS()" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(46,125,50,.4)">📜 Ver Regulamento</button>
+      </div>
+      <!-- CONTEÚDO DO REGULAMENTO SORTEIOS (oculto por padrão) -->
+      <div id="conteudo-regras-sorteio" style="display:none">
       <div style="text-align:center;margin-bottom:10px">
         <div style="font-size:1.4rem;margin-bottom:3px">📜</div>
         <div style="font-size:.95rem;font-weight:900;color:#1b5e20">REGULAMENTO — SORTEIOS MENSAIS</div>
@@ -455,6 +465,7 @@ html { scroll-behavior: smooth; }
       <button id="btn-iniciar-sorteio" onclick="iniciarCadastroSorteio()" disabled style="width:100%;margin-top:12px;padding:13px;background:#ccc;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:not-allowed;transition:.3s">
         📝 Aceitar e Preencher Cadastro
       </button>
+      </div><!-- fecha conteudo-regras-sorteio -->
     </div>
 
     <!-- FORMULÁRIO (oculto até aceitar as regras) -->
@@ -494,6 +505,15 @@ html { scroll-behavior: smooth; }
 
   <!-- REGRAS CLUBE DE FIDELIDADE (aceite obrigatório) -->
   <div class="card" id="card-regras-fidelidade" style="border:2px solid #e8650a">
+    <!-- BOTÃO VER REGULAMENTO (visível por padrão) -->
+    <div id="btn-ver-regras-fidelidade" style="text-align:center;padding:8px 0">
+      <div style="font-size:1.3rem;margin-bottom:6px">📜</div>
+      <div style="font-size:.95rem;font-weight:900;color:#e8650a;margin-bottom:8px">CLUBE DE FIDELIDADE</div>
+      <p style="font-size:.8rem;color:#666;margin-bottom:12px">Antes de se cadastrar, leia o regulamento do programa.</p>
+      <button onclick="mostrarRegrasF()" style="background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(232,101,10,.4)">📜 Ver Regulamento</button>
+    </div>
+    <!-- CONTEÚDO DO REGULAMENTO (oculto por padrão) -->
+    <div id="conteudo-regras-fidelidade" style="display:none">
     <div style="text-align:center;margin-bottom:12px">
       <div style="font-size:1.5rem;margin-bottom:4px">📜</div>
       <div style="font-size:1rem;font-weight:900;color:#e8650a">REGULAMENTO — CLUBE DE FIDELIDADE</div>
@@ -553,6 +573,7 @@ html { scroll-behavior: smooth; }
     <button id="btn-iniciar-cadastro" onclick="iniciarCadastroFidelidade()" disabled style="width:100%;margin-top:12px;padding:13px;background:#ccc;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:not-allowed;transition:.3s">
       📝 Aceitar e Iniciar Cadastro
     </button>
+    </div><!-- fecha conteudo-regras-fidelidade -->
   </div>
 
   <!-- FORMULÁRIO DE ACESSO (oculto até aceitar as regras) -->
@@ -941,6 +962,16 @@ function aplicarConfigPrêmio() {
 // ═══════════════════════════════════════════════════════════
 // ACEITE DE REGULAMENTO — CLUBE DE FIDELIDADE
 // ═══════════════════════════════════════════════════════════
+function mostrarRegrasF() {
+  document.getElementById('btn-ver-regras-fidelidade').style.display = 'none';
+  document.getElementById('conteudo-regras-fidelidade').style.display = 'block';
+}
+
+function mostrarRegrasS() {
+  document.getElementById('btn-ver-regras-sorteio').style.display = 'none';
+  document.getElementById('conteudo-regras-sorteio').style.display = 'block';
+}
+
 function verificarAceiteFidelidade() {
   const aceite = document.getElementById('aceite-fidelidade').checked;
   const btn    = document.getElementById('btn-iniciar-cadastro');
