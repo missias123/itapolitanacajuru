@@ -432,6 +432,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;m
     <button class="nav-btn" onclick="irPara('encomendas',this)">&#x1F4E6; Encomendas</button>
     <button class="nav-btn" onclick="irPara('sabores',this)">&#x1F366; Sabores</button>
     <button class="nav-btn" onclick="irPara('estoque',this)">&#x1F4E6; Estoque</button>
+    <button class="nav-btn" onclick="irPara('participantes',this)">👥 Participantes</button>
     <button class="nav-btn" onclick="irPara('clientes',this)">&#x1F465; Clientes</button>
     <button class="nav-btn" onclick="irPara('fidelidade',this)">&#x1F381; Fidelidade</button>
     <button class="nav-btn" onclick="irPara('config',this)">&#x2699;&#xFE0F; Configuraes</button>
@@ -1342,6 +1343,43 @@ Talento</textarea>
         </div>
       </div>
     </div>
+    <!-- PARTICIPANTES GERAL -->
+    <div class="seção" id="sec-participantes">
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="part-total">-</div><div class="txt">Total Geral</div></div>
+        <div class="stat-card"><div class="num" id="part-fidelidade" style="color:#e8650a">-</div><div class="txt">Clube Fidelidade</div></div>
+        <div class="stat-card"><div class="num" id="part-sorteio" style="color:#2e7d32">-</div><div class="txt">Sorteios Mensais</div></div>
+        <div class="stat-card"><div class="num" id="part-ambos" style="color:#7b1fa2">-</div><div class="txt">Ambos</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>👥 Todos os Participantes</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV</button>
+            <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Copiar Lista</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <input type="search" id="busca-participante" placeholder="🔍 Buscar por nome ou celular..." oninput="renderParticipantes()" style="flex:2;min-width:180px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
+            <select id="filtro-tipo-part" onchange="renderParticipantes()" style="flex:1;min-width:140px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem">
+              <option value="">Todos os tipos</option>
+              <option value="fidelidade">🎟️ Clube de Fidelidade</option>
+              <option value="sorteio">🎁 Sorteios Mensais</option>
+              <option value="ambos">⭐ Ambos</option>
+            </select>
+          </div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Nome</th><th>Celular</th><th>Tipo</th><th>Pontos</th><th>Cadastro</th><th>Status</th></tr></thead>
+              <tbody id="tabela-participantes"></tbody>
+            </table>
+          </div>
+          <div class="paginacao" id="pag-participantes"></div>
+          <div style="font-size:.75rem;color:#888;margin-top:8px;text-align:right" id="part-info-pag"></div>
+        </div>
+      </div>
+    </div>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
       <div class="stats-row">
@@ -1620,6 +1658,7 @@ function irPara(seção,btn){
   if(seção==='sabores')renderizarSaboresAdmin();
   if(btn)btn.classList.add('ativo');
   if(seção==='encomendas')renderEncomendas();
+  if(seção==='participantes')renderParticipantes();
   if(seção==='clientes')renderClientes();
   if(seção==='fidelidade')renderCódigos();
 }
@@ -1792,6 +1831,139 @@ async function alterarStatusEncomenda(idx,novoStatus){
   renderEncomendas();
 }
 function getClientes(){return Object.values(STATE.clientes?.clientes||STATE.fidelidade?.clientes||{});}
+// ═══════════════════════════════════════════════════════════
+// PARTICIPANTES GERAL (Clube de Fidelidade + Sorteios Mensais)
+// ═══════════════════════════════════════════════════════════
+const POR_PAG_PART = 50;
+if (!STATE.pagPart) STATE.pagPart = 0;
+
+function getParticipantesUnificados() {
+  // Clientes do Clube de Fidelidade
+  const cliFid = Object.values(STATE.fidelidade?.clientes || STATE.clientes?.clientes || {});
+  // Inscritos nos Sorteios Mensais
+  const insSorteio = STATE.fidelidade?.sorteioInscritos || [];
+
+  // Mapa por celular para unificar
+  const mapa = {};
+
+  cliFid.forEach(c => {
+    const cel = c.cel || '';
+    if (!cel) return;
+    mapa[cel] = {
+      nome: c.nome || '-',
+      cel: cel,
+      tipo: 'fidelidade',
+      pontos: c.saldoPontos || 0,
+      cadastro: c.cadastro || '',
+      status: c.bloqueado ? 'Bloqueado' : c.fraude ? 'Fraude' : 'Ativo'
+    };
+  });
+
+  insSorteio.forEach(c => {
+    const cel = c.cel || '';
+    if (!cel) return;
+    if (mapa[cel]) {
+      mapa[cel].tipo = 'ambos'; // já está nos dois
+    } else {
+      mapa[cel] = {
+        nome: c.nome || '-',
+        cel: cel,
+        tipo: 'sorteio',
+        pontos: 0,
+        cadastro: c.data || '',
+        status: 'Ativo'
+      };
+    }
+  });
+
+  return Object.values(mapa);
+}
+
+function renderParticipantes() {
+  const todos = getParticipantesUnificados();
+  const busca = (document.getElementById('busca-participante')?.value || '').toLowerCase();
+  const filtroTipo = document.getElementById('filtro-tipo-part')?.value || '';
+
+  const filtrados = todos.filter(p => {
+    const matchBusca = !busca || (p.nome||'').toLowerCase().includes(busca) || (p.cel||'').includes(busca);
+    const matchTipo  = !filtroTipo || p.tipo === filtroTipo;
+    return matchBusca && matchTipo;
+  }).sort((a,b) => (a.nome||'').localeCompare(b.nome||''));
+
+  // Contadores
+  const elTotal = document.getElementById('part-total');
+  const elFid   = document.getElementById('part-fidelidade');
+  const elSort  = document.getElementById('part-sorteio');
+  const elAmbos = document.getElementById('part-ambos');
+  if (elTotal) elTotal.textContent = todos.length;
+  if (elFid)   elFid.textContent   = todos.filter(p => p.tipo === 'fidelidade').length;
+  if (elSort)  elSort.textContent  = todos.filter(p => p.tipo === 'sorteio').length;
+  if (elAmbos) elAmbos.textContent = todos.filter(p => p.tipo === 'ambos').length;
+
+  const total   = filtrados.length;
+  const paginas = Math.ceil(total / POR_PAG_PART) || 1;
+  STATE.pagPart = Math.min(STATE.pagPart, paginas - 1);
+  const slice   = filtrados.slice(STATE.pagPart * POR_PAG_PART, (STATE.pagPart + 1) * POR_PAG_PART);
+
+  const tbody = document.getElementById('tabela-participantes');
+  if (!tbody) return;
+
+  const tipoLabel = { fidelidade: '🎟️ Fidelidade', sorteio: '🎁 Sorteio', ambos: '⭐ Ambos' };
+  const tipoCor   = { fidelidade: '#e8650a', sorteio: '#2e7d32', ambos: '#7b1fa2' };
+
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px">Nenhum participante encontrado.</td></tr>';
+  } else {
+    tbody.innerHTML = slice.map(p => `
+      <tr>
+        <td>${p.nome}</td>
+        <td><a href="https://wa.me/55${p.cel.replace(/\D/g,'')}" target="_blank" style="color:#e65100">${p.cel}</a></td>
+        <td><span style="background:${tipoCor[p.tipo]};color:#fff;border-radius:12px;padding:3px 10px;font-size:.75rem;font-weight:700">${tipoLabel[p.tipo]}</span></td>
+        <td style="font-weight:700;color:#e8650a">${p.pontos}</td>
+        <td style="font-size:.78rem">${p.cadastro ? (p.cadastro.includes('T') ? new Date(p.cadastro).toLocaleDateString('pt-BR') : p.cadastro) : '-'}</td>
+        <td style="color:${p.status==='Ativo'?'#2e7d32':p.status==='Bloqueado'?'#c62828':'#f57c00'};font-weight:700">${p.status}</td>
+      </tr>`).join('');
+  }
+
+  // Paginação
+  const pagDiv = document.getElementById('pag-participantes');
+  if (pagDiv) {
+    let html = '';
+    for (let i = 0; i < paginas; i++) {
+      html += `<button class="${i===STATE.pagPart?'ativo':''}" onclick="irPagPart(${i})">${i+1}</button>`;
+    }
+    pagDiv.innerHTML = html;
+  }
+
+  const info = document.getElementById('part-info-pag');
+  if (info) info.textContent = `Exibindo ${slice.length} de ${total} participantes (pág. ${STATE.pagPart+1}/${paginas})`;
+}
+
+function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
+
+function exportarParticipantesCSV() {
+  const todos = getParticipantesUnificados();
+  if (!todos.length) { toast('Nenhum participante para exportar.', 'aviso'); return; }
+  const header = 'Nome,Celular,Tipo,Pontos,Cadastro,Status';
+  const rows = todos.map(p => `"${p.nome}","${p.cel}","${p.tipo}",${p.pontos},"${p.cadastro}","${p.status}"`);
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `participantes_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast(`CSV com ${todos.length} participantes exportado!`, 'sucesso');
+}
+
+function copiarParticipantes() {
+  const todos = getParticipantesUnificados();
+  if (!todos.length) { toast('Nenhum participante para copiar.', 'aviso'); return; }
+  const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio', ambos: 'Ambos' };
+  const lista = todos.map((p, i) => `${i+1}. ${p.nome} — ${p.cel} [${tipoLabel[p.tipo]}]`).join('\n');
+  navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${todos.length} participantes copiada!`, 'sucesso'));
+}
+
+// ═══════════════════════════════════════════════════════════
 function renderClientes(){
   const clientes=getClientes();
   const busca=(document.getElementById('busca-cliente').value||'').toLowerCase();
