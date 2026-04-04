@@ -902,10 +902,10 @@ img{max-width:100%;display:block}
 <section class="hero">
 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;">
 <div style="width:100%;max-width:520px;">
-<div class="sabores-badge">✨ 35 sabores tipo artesanal — feitos com ingredientes selecionados</div>
+<div class="sabores-badge" id="hero-badge">✨ 35 sabores tipo artesanal — feitos com ingredientes selecionados</div>
 <div class="frase-sensorial" id="frase-rotativa">🍦 "O sorvete mais cremoso de Cajuru, desde 2007!"</div>
-<h1>O Sorvete que Cajuru <span class="destaque-texto">Ama de Verdade</span></h1>
-<p>Cremosidade real, sabores que encantam e um atendimento feito com carinho. Venha descobrir por que a Itapolitana é a sorveteria favorita de Cajuru e região há mais de 17 anos.</p>
+<h1 id="hero-titulo">O Sorvete que Cajuru <span class="destaque-texto">Ama de Verdade</span></h1>
+<p id="hero-descricao">Cremosidade real, sabores que encantam e um atendimento feito com carinho. Venha descobrir por que a Itapolitana é a sorveteria favorita de Cajuru e região há mais de 17 anos.</p>
 <button aria-label="Pedir agora pelo WhatsApp" class="hero-chat-btn" onclick="abrirFaleConosco()" type="button">💬 Pedir Agora pelo WhatsApp</button>
 <br/>
 <button aria-label="Ver cardápio completo de sorvetes" class="hero-cta" onclick="document.getElementById('cardapio').scrollIntoView({behavior:'smooth'})" type="button">
@@ -1094,7 +1094,7 @@ img{max-width:100%;display:block}
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
 <div class="acc-left">
 <span class="acc-icon">🍨</span>
-<div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau e mais</div></div>
+<div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
 </div>
 <span class="acc-arrow">▼</span>
 </div>
@@ -1479,8 +1479,11 @@ function renderSobremesas(){
     const grid=document.createElement('div');grid.className='prod-grid';
     Object.entries(produtos.sobremesas).forEach(([nome,preco])=>{
       const chave='sobremesa_'+nome.replace(/\s/g,'_');
+      const nomeLow=nome.toLowerCase();
+      const emoji=nomeLow.includes('brownie')?'🍫':nomeLow.includes('fondue')?'🫕':nomeLow.includes('diet')?'🥗':'🎂';
+      const emojiNome=nomeLow.includes('brownie')?'🍫':'🍨';
       const d=document.createElement('div');d.className='prod-card';
-      d.innerHTML=imgCard(chave,'🎂')+`<div class="prod-card-body"><div class="prod-nome">🍨 ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
+      d.innerHTML=imgCard(chave,emoji)+`<div class="prod-card-body"><div class="prod-nome">${emojiNome} ${nome}</div><div class="prod-preco">R$ ${preco.toFixed(2).replace('.',',')}</div></div>`;
       grid.appendChild(d);
     });
     b.appendChild(grid);
