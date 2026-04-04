@@ -341,44 +341,41 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 
-<!-- HERO (cards com botões de cadastro — aparecem após Como funciona) -->
-<section class="hero" id="sec-hero" style="padding:20px 12px 24px">
-  <h1 style="margin-bottom:6px">🍦 Sorveteria Itapolitana Cajuru</h1>
-  <p style="margin-bottom:16px">Um único cadastro — participe dos <strong>dois programas</strong> ao mesmo tempo!</p>
-
-  <!-- DOIS CARDS LADO A LADO -->
-  <div class="hero-cards-wrap">
+<!-- CARDS DOS DOIS PROGRAMAS -->
+<section id="sec-hero" style="background:#f8f8f8;padding:24px 12px 28px">
+  <div style="max-width:820px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px">
 
     <!-- CARD 1: CLUBE DE FIDELIDADE -->
-    <div class="hero-card">
-      <div class="hero-card-icon">🎟️</div>
-      <div class="hero-card-titulo">CLUBE DE FIDELIDADE</div>
-      <div class="hero-card-texto">
-        🛒 Compras acima de <strong>R$ 30,00</strong> ganham um cupóm com código.<br>
+    <div style="background:#fff;border-radius:18px;border:2px solid #e8650a;padding:24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 4px 16px rgba(232,101,10,.12)">
+      <div style="font-size:2.4rem;margin-bottom:8px">🎟️</div>
+      <div style="font-size:1.1rem;font-weight:900;color:#e8650a;letter-spacing:.5px;margin-bottom:12px">CLUBE DE FIDELIDADE</div>
+      <div style="font-size:.88rem;color:#444;line-height:1.6;margin-bottom:16px">
+        🛒 Compras acima de <strong>R$ 30,00</strong> ganham um cupom com código.<br>
         📱 Acesse o site, faça o cadastro e insira o código.<br>
         🌟 Acumule pontos e escolha seu prêmio:<br>
-        &nbsp;&nbsp;🥤 <strong>10 pontos</strong> = Milkshake 300ml GRÁTIS<br>
-        &nbsp;&nbsp;🍦 <strong>30 pontos</strong> = Caixa 7 Bolas GRÁTIS
+        🥤 <strong>10 pontos</strong> = Milkshake 300ml GRÁTIS<br>
+        🍦 <strong>30 pontos</strong> = Caixa 7 Bolas GRÁTIS
       </div>
-      <button class="hero-card-btn" style="color:#e8650a" onclick="document.getElementById('painel').scrollIntoView({behavior:'smooth'})">
-        📱 Fazer Cadastro no Site
-      </button>
+      <button onclick="mostrarRegrasF()" style="background:linear-gradient(135deg,#e8650a,#ff8c00);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(232,101,10,.35);width:100%">🎟️ Quero Participar</button>
     </div>
 
     <!-- CARD 2: SORTEIOS MENSAIS -->
-    <div class="hero-card">
-      <div class="hero-card-icon">🎁</div>
-      <div class="hero-card-titulo">SORTEIOS MENSAIS</div>
-      <div class="hero-card-texto">
+    <div style="background:#fff;border-radius:18px;border:2px solid #2e7d32;padding:24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 4px 16px rgba(46,125,50,.12)">
+      <div style="font-size:2.4rem;margin-bottom:8px">🎁</div>
+      <div style="font-size:1.1rem;font-weight:900;color:#2e7d32;letter-spacing:.5px;margin-bottom:12px">SORTEIOS MENSAIS</div>
+      <div style="font-size:.88rem;color:#444;line-height:1.6;margin-bottom:16px">
         📍 A partir de <strong>1º de maio</strong>, moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> concorrem a <strong>1 caixa de 5 litros</strong> de sorvete todo mês!<br><br>
         ⚠️ Quem não tiver o <strong>número e nome cadastrado</strong> na agenda da sorveteria no dia do sorteio <strong>não terá direito ao prêmio</strong>.
       </div>
-      <button class="hero-card-btn" style="color:#1b5e20" onclick="abrirSecaoSorteio()">
-        🎁 Quero Participar
-      </button>
+      <button onclick="mostrarRegrasS()" style="background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 12px rgba(46,125,50,.35);width:100%">🎁 Quero Participar</button>
     </div>
 
   </div>
+  <style>
+    @media(max-width:600px){
+      #sec-hero > div { grid-template-columns:1fr !important; }
+    }
+  </style>
 </section>
 
 <!-- AVISO ANTI-FRAUDE -->
