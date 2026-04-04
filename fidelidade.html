@@ -478,7 +478,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#333;min-h
     <h2>🔐 Acesso Administrativo</h2>
     <div class="form-group">
       <label>Senha do administrador</label>
-      <input type="password" id="inp-admin-senha" placeholder="Digite a senha" style="width:100%;padding:12px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.95rem;outline:none" onkeydown="if(event.key==='Enter')adminLogin()">
+      <div style="position:relative;display:flex;align-items:center;">
+        <input type="password" id="inp-admin-senha" placeholder="Digite a senha" style="width:100%;padding:12px 44px 12px 14px;border:2px solid #e0d0c0;border-radius:10px;font-size:.95rem;outline:none" onkeydown="if(event.key==='Enter')adminLogin()">
+        <button type="button" onclick="toggleSenha('inp-admin-senha','olho-admin')" style="position:absolute;right:10px;background:none;border:none;cursor:pointer;font-size:1.2rem;color:#888;padding:4px;" title="Ver/ocultar senha">
+          <span id="olho-admin">👁️</span>
+        </button>
+      </div>
     </div>
     <button class="btn btn-laranja" onclick="adminLogin()" style="margin-top:8px">🔓 Entrar no Admin</button>
     <div class="msg" id="msg-admin-login" style="margin-top:10px"></div>
@@ -1405,6 +1410,22 @@ function copiarListaSorteio() {
     document.body.removeChild(ta);
     alert('✅ Lista copiada! Cole em qualquer sorteador ou WhatsApp.');
   });
+}
+
+// ═══════════════════════════════════════════════════════════
+// UTILITÁRIOS
+// ═══════════════════════════════════════════════════════════
+function toggleSenha(idCampo, idOlho) {
+  const campo = document.getElementById(idCampo);
+  const olho = document.getElementById(idOlho);
+  if (!campo) return;
+  if (campo.type === 'password') {
+    campo.type = 'text';
+    if (olho) olho.textContent = '🙈';
+  } else {
+    campo.type = 'password';
+    if (olho) olho.textContent = '👁️';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
