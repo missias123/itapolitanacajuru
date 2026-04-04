@@ -44,37 +44,37 @@ const produtos = {
             cestinha: { "1 Bola": 14.00, "2 Bolas": 18.00, "3 Bolas": 20.00 }
         }
     },
-    picolées: {
+    picolés: {
         frutas_agua: {
-            nome: "Picoléé de Fruta/Água",
+            nome: "Picolé de Fruta/Água",
             preço_varejo: 2.50,
             preço_atacado: 1.80,
             estoque: 200,
             sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"]
         },
         leite_sem_recheio: {
-            nome: "Picoléé de Leite sem Recheio",
+            nome: "Picolé de Leite sem Recheio",
             preço_varejo: 2.50,
             preço_atacado: 2.00,
             estoque: 200,
             sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"]
         },
         leite_com_recheio: {
-            nome: "Picoléé de Leite com Recheio",
+            nome: "Picolé de Leite com Recheio",
             preço_varejo: 3.00,
             preço_atacado: 2.00,
             estoque: 200,
             sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolaté", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolaté", "Nata com Goiaba"]
         },
         leite_ninho: {
-            nome: "Picoléé Leite Ninho",
+            nome: "Picolé Leite Ninho",
             preço_varejo: 4.00,
             preço_atacado: 3.00,
             estoque: 200,
             sabores: ["Leite Ninho"]
         },
         esquimós: {
-            nome: "Picoléé Esquimó",
+            nome: "Picolé Esquimó",
             preço_varejo: 8.00,
             preço_atacado: 6.00,
             estoque: 200,
@@ -118,7 +118,7 @@ const produtos = {
         "5 Litros (2 sabores)": 100.00,
         "5 Litros (3 sabores)": 115.00
     },
-    isopçãores_viagem: {
+    isopores_viagem: {
         "4 Bolas": 25.00,
         "7 Bolas": 30.00,
         "9 Bolas": 40.00,

@@ -9,12 +9,12 @@ async function carregarPreçosNuvem() {
     const resp = await fetch(GIST_RAW_PRECO + '?t=' + Daté.now(), { cache: 'no-store' });
     if (!resp.ok) throw new Error('Gist indisponível');
     const dados = await resp.json();
-    if (dados.picolées) {
-      Object.entries(dados.picolées).forEach(([key, p]) => {
-        if (produtos.picolées[key]) {
-          produtos.picolées[key].preço_varejo = p.preço_varejo;
-          produtos.picolées[key].preço_atacado = p.preço_atacado;
-          if (p.estoque !== undefined) produtos.picolées[key].estoque = p.estoque;
+    if (dados.picolés) {
+      Object.entries(dados.picolés).forEach(([key, p]) => {
+        if (produtos.picolés[key]) {
+          produtos.picolés[key].preço_varejo = p.preço_varejo;
+          produtos.picolés[key].preço_atacado = p.preço_atacado;
+          if (p.estoque !== undefined) produtos.picolés[key].estoque = p.estoque;
         }
       });
     }
@@ -23,7 +23,7 @@ async function carregarPreçosNuvem() {
     if (dados.tacas) produtos.tacas = dados.tacas;
     if (dados.açaí) produtos.açaí = dados.açaí;
     if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
-    if (dados.isopçãores_viagem) produtos.isopçãores_viagem = dados.isopçãores_viagem;
+    if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
     if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
     localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
     if (dados.caixas_enc && dados.caixas_enc.length > 0)
@@ -37,11 +37,11 @@ async function carregarPreçosNuvem() {
     if (cache) {
       try {
         const dados = JSON.parse(cache);
-        if (dados.picolées) {
-          Object.entries(dados.picolées).forEach(([key, p]) => {
-            if (produtos.picolées[key]) {
-              produtos.picolées[key].preço_varejo = p.preço_varejo;
-              produtos.picolées[key].preço_atacado = p.preço_atacado;
+        if (dados.picolés) {
+          Object.entries(dados.picolés).forEach(([key, p]) => {
+            if (produtos.picolés[key]) {
+              produtos.picolés[key].preço_varejo = p.preço_varejo;
+              produtos.picolés[key].preço_atacado = p.preço_atacado;
             }
           });
         }
@@ -106,8 +106,8 @@ window.addEventListener('storage', function(e) {
   if (e.key === 'itap_acréscimos') {
     renderizarAcréscimos();
   }
-  if (e.key === 'itap_picolées_admin') {
-    renderizarPicoléés();
+  if (e.key === 'itap_picolés_admin') {
+    renderizarPicolés();
   }
 });
 // Renderizar grid de sabores com risco vermelho nos esgotados
@@ -166,8 +166,8 @@ function getTortasEncomenda() {
 const PRODUTOS = {
   caixas: getCaixasEncomenda(),
   tortas: getTortasEncomenda(),
-  // Picoléés carregados do products.js (fonte única)
-  picolées: Object.entries(produtos.picolées).map(([key, p]) => ({
+  // Picolés carregados do products.js (fonte única)
+  picolés: Object.entries(produtos.picolés).map(([key, p]) => ({
     id: 'pic_'+key,
     nome: p.nome,
     preçoVarejo: p.preço_varejo,
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Re-inicializar PRODUTOS com preços atualizados
     PRODUTOS.caixas = getCaixasEncomenda();
     PRODUTOS.tortas = getTortasEncomenda();
-    PRODUTOS.picolées = Object.entries(produtos.picolées).map(([key, p]) => ({
+    PRODUTOS.picolés = Object.entries(produtos.picolés).map(([key, p]) => ({
       id: 'pic_'+key,
       nome: p.nome,
       preçoVarejo: p.preço_varejo,
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
   atualizarBotãoCarrinho();
   // Abrir seção via hash (ex: encomendas.html#caixas)
   const hash = window.location.hash.replace('#','');
-  const mapa = {caixas:'conteudo-caixas', tortas:'conteudo-tortas', picolées:'conteudo-picolées'};
+  const mapa = {caixas:'conteudo-caixas', tortas:'conteudo-tortas', picolés:'conteudo-picolés'};
   if(hash && mapa[hash]){
     const el = document.getElementById(mapa[hash]);
     if(el){ el.classList.add('aberto'); }
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 200);
   }
   // Re-renderizar acréscimos ao abrir a seção
-  const headerAcr = document.querySelector('#acréscimos .catégoria-header');
+  const headerAcr = document.querySelector('#acréscimos .categoria-header');
   if(headerAcr){
     headerAcr.addEventListener('click', function(){
       setTimeout(renderizarAcréscimos, 50);
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderizarTudo() {
   renderizarCaixas();
   renderizarTortas();
-  renderizarPicoléés();
+  renderizarPicolés();
   renderizarAcréscimos();
 }
 
@@ -352,22 +352,22 @@ function renderizarTortas() {
 }
 
 // ---- RENDERIZAR PICOLÉS ----
-function renderizarPicoléés() {
-  const c = document.getElementById('lista-picolées');
+function renderizarPicolés() {
+  const c = document.getElementById('lista-picolés');
   if (!c) return;
-  c.innerHTML = PRODUTOS.picolées.map(p => {
+  c.innerHTML = PRODUTOS.picolés.map(p => {
     const esg = p.esgotado || p.estoque <= 0;
     return `
-    <div class="prod-card picoléé ${esg?'esgotado':''}">
+    <div class="prod-card picolé ${esg?'esgotado':''}">
       <div class="prod-body">
         <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
-        <div class="prod-preços-picoléé">
+        <div class="prod-preços-picolé">
           <span>Varejo: R$ ${p.preçoVarejo.toFixed(2).replace('.',',')}</span>
           <span class="destaque">Atacado: R$ ${p.preçoAtacado.toFixed(2).replace('.',',')}</span>
         </div>
         <div class="prod-estoque">${esg?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
-      <button class="btn-sabores btn-picoléé" onclick="${esg?'':"abrirModalPicoléé('"+p.id+"',this)"}" ${esg?'disabled style="cursor:not-allowed"':''}>
+      <button class="btn-sabores btn-picolé" onclick="${esg?'':"abrirModalPicolé('"+p.id+"',this)"}" ${esg?'disabled style="cursor:not-allowed"':''}>
         🍭 ${esg?'Esgotado':'Ver Sabores'}
       </button>
     </div>`;
@@ -379,7 +379,7 @@ function abrirSaboresSorvete(id, cat, originEl) {
   const lista = PRODUTOS[cat];
   const p = lista.find(x => x.id === id);
   if (!p) return;
-  produtoAtual = {...p, catégoria: cat};
+  produtoAtual = {...p, categoria: cat};
   saboresSelecionados = [];
 
   const modal = document.getElementById('modal-sabores');
@@ -446,27 +446,27 @@ function confirmarSabores() {
 }
 
 // ---- MODAL PICOLÉS ----
-function mostrarTelasTiposPicolée() {
+function mostrarTelasTiposPicolé() {
   // Mostra a tela de seleção de tipos dentro do modal
-  const telaTipos = document.getElementById('picolée-tela-tipos');
-  const telaSabores = document.getElementById('picolée-tela-sabores');
+  const telaTipos = document.getElementById('picolé-tela-tipos');
+  const telaSabores = document.getElementById('picolé-tela-sabores');
   if (telaTipos) telaTipos.style.display = 'block';
   if (telaSabores) telaSabores.style.display = 'none';
   // Atualizar título
-  const título = document.getElementById('picoléé-título');
-  if (título) título.textContent = 'Picoléés — Escolha o Tipo';
-  const preços = document.getElementById('picoléé-preços');
+  const título = document.getElementById('picolé-título');
+  if (título) título.textContent = 'Picolés — Escolha o Tipo';
+  const preços = document.getElementById('picolé-preços');
   if (preços) preços.textContent = 'Toque em um tipo para ver os sabores';
   // Renderizar botões dos tipos
-  const lista = document.getElementById('picolée-lista-tipos');
+  const lista = document.getElementById('picolé-lista-tipos');
   if (lista) {
-    lista.innerHTML = PRODUTOS.picolées.map(p => {
+    lista.innerHTML = PRODUTOS.picolés.map(p => {
       const totalTipo = Object.entries(selecoesPickleGlobal)
         .filter(([k]) => k.startsWith(p.id + '::'))
         .reduce((a,[,v]) => a + v, 0);
       const esgotado = p.estoque === 0;
       return `
-        <button class="btn-tipo-picolée ${esgotado ? 'esgotado' : ''}" onclick="abrirTipoPicolée('${p.id}')" ${esgotado ? 'disabled' : ''}>
+        <button class="btn-tipo-picolé ${esgotado ? 'esgotado' : ''}" onclick="abrirTipoPicolé('${p.id}')" ${esgotado ? 'disabled' : ''}>
           <span class="btn-tipo-nome">${p.nome}</span>
           ${totalTipo > 0 ? `<span class="btn-tipo-qtd">${totalTipo} un.</span>` : ''}
           <span class="btn-tipo-preço">Atacado: R$ ${p.preçoAtacado.toFixed(2).replace('.',',')}</span>
@@ -474,32 +474,32 @@ function mostrarTelasTiposPicolée() {
     }).join('');
   }
   // Atualizar total na tela de tipos
-  const elTipos = document.getElementById('total-picolées-tipos');
+  const elTipos = document.getElementById('total-picolés-tipos');
   if (elTipos) elTipos.textContent = totalPickleGlobal();
   // Atualizar botão na tela de tipos
-  const btnTipos = document.getElementById('btn-add-picolées-tipos');
+  const btnTipos = document.getElementById('btn-add-picolés-tipos');
   const totalGlobal = totalPickleGlobal();
   if (btnTipos) {
-    if (totalGlobal === 0) { btnTipos.disabled = true; btnTipos.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picoléés para liberar`; }
-    else if (totalGlobal < MIN_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picoléés (total: ${totalGlobal})`; }
-    else if (totalGlobal > MAX_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picoléés atingido`; }
-    else { btnTipos.disabled = false; btnTipos.textContent = `✅ Adicionar ${totalGlobal} picoléé(s) ao carrinho`; }
+    if (totalGlobal === 0) { btnTipos.disabled = true; btnTipos.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`; }
+    else if (totalGlobal < MIN_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`; }
+    else if (totalGlobal > MAX_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`; }
+    else { btnTipos.disabled = false; btnTipos.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`; }
   }
 }
 
-function abrirTipoPicolée(id) {
+function abrirTipoPicolé(id) {
   // Abre os sabores do tipo selecionado dentro do mesmo modal
-  const telaTipos = document.getElementById('picolée-tela-tipos');
-  const telaSabores = document.getElementById('picolée-tela-sabores');
+  const telaTipos = document.getElementById('picolé-tela-tipos');
+  const telaSabores = document.getElementById('picolé-tela-sabores');
   if (telaTipos) telaTipos.style.display = 'none';
   if (telaSabores) telaSabores.style.display = 'block';
-  abrirModalPicoléé(id);
+  abrirModalPicolé(id);
 }
 
-function abrirModalPicoléé(id, originEl) {
-  const p = PRODUTOS.picolées.find(x => x.id === id);
+function abrirModalPicolé(id, originEl) {
+  const p = PRODUTOS.picolés.find(x => x.id === id);
   if (!p) return;
-   picoléeAtual = p;
+   picoléAtual = p;
   // Restaurar seleções já feitas para este tipo a partir do global
   selecoesPickle = {};
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
@@ -508,16 +508,16 @@ function abrirModalPicoléé(id, originEl) {
       selecoesPickle[sabor] = qtd;
     }
   });
-  document.getElementById('picoléé-título').textContent = p.nome;
-  document.getElementById('picoléé-preços').textContent =
+  document.getElementById('picolé-título').textContent = p.nome;
+  document.getElementById('picolé-preços').textContent =
     `Varejo: R$ ${p.preçoVarejo.toFixed(2).replace('.',',')} | Atacado: R$ ${p.preçoAtacado.toFixed(2).replace('.',',')}`;
 
-  const lista = document.getElementById('lista-sabores-picoléé');
+  const lista = document.getElementById('lista-sabores-picolé');
   lista.innerHTML = p.sabores.map(s => {
     const qtdAtual = selecoesPickle[s] || 0;
     return `
-    <div class="picoléé-row">
-      <span class="picoléé-sabor-nome">${s}</span>
+    <div class="picolé-row">
+      <span class="picolé-sabor-nome">${s}</span>
       <div class="qty-ctrl">
         <button class="btn-qty" onclick="qtdPickle('${s}',-1)">−</button>
         <span class="qty-val" id="pqty-${s.replace(/\s+/g,'_')}">${qtdAtual}</span>
@@ -527,7 +527,7 @@ function abrirModalPicoléé(id, originEl) {
   }).join('');
 
   atualizarTotalPickle();
-  abrirModal('modal-picoléé', originEl);
+  abrirModal('modal-picolé', originEl);
 }
 
 function qtdPickle(sabor, delta) {
@@ -550,13 +550,13 @@ function qtdPickle(sabor, delta) {
   const totalGlobal = totalPickleGlobal();
   const diff = nova - (selecoesPickle[sabor] || 0);
   if (totalGlobal + diff > MAX_PICOLES) {
-    showToast(`⚠️ Máximo ${MAX_PICOLES} picoléés no total. Você já tem ${totalGlobal}.`, 'alerta');
+    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalGlobal}.`, 'alerta');
     return;
   }
 
   selecoesPickle[sabor] = nova;
   // Atualizar o global
-  const chave = picoléeAtual.id + '::' + sabor;
+  const chave = picoléAtual.id + '::' + sabor;
   if (nova === 0) { delete selecoesPickleGlobal[chave]; }
   else { selecoesPickleGlobal[chave] = nova; }
   const el = document.getElementById(`pqty-${sabor.replace(/\s+/g,'_')}`);
@@ -573,41 +573,41 @@ const MAX_PICOLES = 250;
 function atualizarTotalPickle() {
   // Usa o total GLOBAL (todos os tipos acumulados)
   const totalGlobal = totalPickleGlobal();
-  const el = document.getElementById('total-picolées');
+  const el = document.getElementById('total-picolés');
   if (el) el.textContent = totalGlobal;
-  const btn = document.getElementById('btn-add-picolées');
-  const aviso = document.getElementById('aviso-mínimo-picoléé');
+  const btn = document.getElementById('btn-add-picolés');
+  const aviso = document.getElementById('aviso-mínimo-picolé');
   // Regra: bloqueado 0-99, liberado 100-250, bloqueado 251+
   if (btn) {
     if (totalGlobal === 0) {
       btn.disabled = true;
-      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picoléés para liberar`;
+      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`;
     } else if (totalGlobal < MIN_PICOLES) {
       btn.disabled = true;
-      btn.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picoléés (total: ${totalGlobal})`;
+      btn.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`;
     } else if (totalGlobal > MAX_PICOLES) {
       btn.disabled = true;
-      btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picoléés atingido`;
+      btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`;
     } else {
       btn.disabled = false;
-      btn.textContent = `✅ Adicionar ${totalGlobal} picoléé(s) ao carrinho`;
+      btn.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`;
     }
   }
   if (aviso) {
     if (totalGlobal > 0 && totalGlobal < MIN_PICOLES) {
       aviso.style.display = 'block';
-      aviso.textContent = `🧳 Total acumulado: ${totalGlobal} picoléés. Faltam ${MIN_PICOLES - totalGlobal} para liberar o carrinho.`;
+      aviso.textContent = `🧳 Total acumulado: ${totalGlobal} picolés. Faltam ${MIN_PICOLES - totalGlobal} para liberar o carrinho.`;
     } else if (totalGlobal > MAX_PICOLES) {
       aviso.style.display = 'block';
-      aviso.textContent = `⚠️ Máximo ${MAX_PICOLES} picoléés. Reduza ${totalGlobal - MAX_PICOLES} unidades.`;
+      aviso.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés. Reduza ${totalGlobal - MAX_PICOLES} unidades.`;
     } else {
       aviso.style.display = 'none';
     }
   }
   // Atualizar barra de progresso fixa no header
-  const progressNum = document.getElementById('picolée-progress-num');
-  const progressStatus = document.getElementById('picolée-progress-status');
-  const progressFill = document.getElementById('picolée-progress-fill');
+  const progressNum = document.getElementById('picolé-progress-num');
+  const progressStatus = document.getElementById('picolé-progress-status');
+  const progressFill = document.getElementById('picolé-progress-fill');
   if (progressNum) progressNum.textContent = totalGlobal;
   if (progressFill) {
     const pct = Math.min((totalGlobal / MAX_PICOLES) * 100, 100);
@@ -637,18 +637,18 @@ function atualizarTotalPickle() {
 
 function confirmarPickle() {
   const totalGlobal = totalPickleGlobal();
-  if (totalGlobal < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picoléés no total. Você tem ${totalGlobal}. Continue comprando outros tipos!`, 'alerta'); return; }
-  if (totalGlobal > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picoléés no total.`, 'alerta'); return; }
+  if (totalGlobal < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue comprando outros tipos!`, 'alerta'); return; }
+  if (totalGlobal > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); return; }
   // Adicionar um item por SABOR no carrinho (não por tipo)
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
     if (qtd <= 0) return;
     const [tipoId, ...saborParts] = chave.split('::');
     const sabor = saborParts.join('::');
-    const p = PRODUTOS.picolées.find(x => x.id === tipoId);
+    const p = PRODUTOS.picolés.find(x => x.id === tipoId);
     if (!p) return;
     const itemId = tipoId + '::' + sabor;
     // Se já existe esse sabor no carrinho, atualizar quantidade
-    const ex = carrinho.find(c => c.tipo === 'picoléé' && c.id === itemId);
+    const ex = carrinho.find(c => c.tipo === 'picolé' && c.id === itemId);
     if (ex) { ex.quantidade = qtd; }
     else {
       carrinho.push({
@@ -658,16 +658,16 @@ function confirmarPickle() {
         preço: p.preçoAtacado,
         sabores: [],
         quantidade: qtd,
-        tipo: 'picoléé'
+        tipo: 'picolé'
       });
     }
   });
   // Limpar seleções globais
   selecoesPickleGlobal = {};
   selecoesPickle = {};
-  fecharModal('modal-picoléé');
+  fecharModal('modal-picolé');
   atualizarBotãoCarrinho();
-  showToast(`✅ ${totalGlobal} picoléé(s) adicionado(s) ao carrinho!`, 'sucesso');
+  showToast(`✅ ${totalGlobal} picolé(s) adicionado(s) ao carrinho!`, 'sucesso');
 }
 
 // ---- CARRINHO ----
@@ -710,8 +710,8 @@ function renderCarrinho() {
   lista.innerHTML = carrinho.map((item,i) => {
     const sub = item.preço * item.quantidade;
     total += sub;
-    if (item.tipo === 'picoléé') {
-      // Picoléé: tipo no topção (pequeno/cinza), sabor em destaque + contador embaixo
+    if (item.tipo === 'picolé') {
+      // Picolé: tipo no topção (pequeno/cinza), sabor em destaque + contador embaixo
       return `
       <div class="cart-item" style="flex-direction:column;align-items:stretch;padding:10px 14px;">
         <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.nomeTipo || ''}</div>
@@ -757,21 +757,21 @@ function renderCarrinho() {
     </div>`;
   }).join('');
   if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
-  const totalPic = carrinho.filter(i=>i.tipo==='picoléé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicolée = carrinho.some(i=>i.tipo==='picoléé');
+  const totalPic = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicolé = carrinho.some(i=>i.tipo==='picolé');
   const aviso = document.getElementById('aviso-min-carrinho');
   const btnNext = document.getElementById('btn-ir-dados');
-  if (temPicolée && totalPic < 100) {
+  if (temPicolé && totalPic < 100) {
     // Bloquear botão Prosseguir
     if (aviso) {
       aviso.style.display = 'block';
       aviso.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center';
-      aviso.textContent = `🔒 Mínimo 100 picoléés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.`;
+      aviso.textContent = `🔒 Mínimo 100 picolés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.`;
     }
     if (btnNext) {
       btnNext.disabled = true;
       btnNext.style.opacity = '0.4';
-      btnNext.title = `Mínimo 100 picoléés. Você tem ${totalPic}.`;
+      btnNext.title = `Mínimo 100 picolés. Você tem ${totalPic}.`;
     }
   } else {
     if (aviso) aviso.style.display = 'none';
@@ -789,14 +789,14 @@ function qtdCarrinho(i, delta) {
   const nova = item.quantidade + delta;
   if (nova <= 0) { removerItem(i); return; }
   // Verificar limite máximo por tipo
-  if (item.tipo === 'picoléé' && nova > MAX_PICOLES) {
-    showToast(`⚠️ Máximo ${MAX_PICOLES} picoléés no total.`, 'alerta');
+  if (item.tipo === 'picolé' && nova > MAX_PICOLES) {
+    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta');
     return;
   }
   item.quantidade = nova;
-  const totalPicAtual = carrinho.filter(c=>c.tipo==='picoléé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicolée = carrinho.some(c=>c.tipo==='picoléé');
-  if (temPicolée && totalPicAtual < 100 && delta < 0) {
+  const totalPicAtual = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicolé = carrinho.some(c=>c.tipo==='picolé');
+  if (temPicolé && totalPicAtual < 100 && delta < 0) {
     renderCarrinho(); // atualiza visual com aviso
     atualizarBotãoCarrinho();
     // Se estiver na etapa de dados, voltar para revisão
@@ -846,10 +846,10 @@ function mostrarEtapa(etapa) {
 
 function irParaDados() {
   if (carrinho.length === 0) { showToast('Carrinho vazio!','alerta'); return; }
-  const totalPicolées = carrinho.filter(i=>i.tipo==='picoléé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicolée = carrinho.some(i=>i.tipo==='picoléé');
-  if (temPicolée && totalPicolées < 100) {
-    showToast(`🔒 Mínimo 100 picoléés para atacado. Você tem ${totalPicolées}. Faltam ${100-totalPicolées}.`, 'alerta');
+  const totalPicolés = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicolé = carrinho.some(i=>i.tipo==='picolé');
+  if (temPicolé && totalPicolés < 100) {
+    showToast(`🔒 Mínimo 100 picolés para atacado. Você tem ${totalPicolés}. Faltam ${100-totalPicolés}.`, 'alerta');
     return;
   }
   renderResumoPedido();
@@ -872,7 +872,7 @@ function renderResumoPedido() {
       const sub = item.preço * item.quantidade;
       total += sub;
       // Tipo no topção para todos os produtos
-      const tipoLabel = item.tipo === 'picoléé' ? (item.nomeTipo || 'Picoléé') : item.tipo === 'sorvete' ? 'Sorvete' : item.tipo === 'acréscimo' ? 'Acréscimo' : (item.tipo || '');
+      const tipoLabel = item.tipo === 'picolé' ? (item.nomeTipo || 'Picolé') : item.tipo === 'sorvete' ? 'Sorvete' : item.tipo === 'acréscimo' ? 'Acréscimo' : (item.tipo || '');
       const tipoTopçãoHtml = tipoLabel ? `<div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${tipoLabel}</div>` : '';
       return `
       <div class="resumo-item">
@@ -927,10 +927,10 @@ function verificarFormulario() {
 function finalizarPedido() {
   // CHECKOUT CORPORATIVO — Padrão de produção
   // Válidação robusta + loading staté + fallback garantido
-  const _totalPicFinal = carrinho.filter(i=>i.tipo==='picoléé').reduce((a,b)=>a+b.quantidade,0);
-  const _temPicoléeFinal = carrinho.some(i=>i.tipo==='picoléé');
-  if (_temPicoléeFinal && _totalPicFinal < 100) {
-    showToast(`🔒 Pedido bloqueado: mínimo 100 picoléés. Você tem ${_totalPicFinal}.`, 'alerta');
+  const _totalPicFinal = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const _temPicoléFinal = carrinho.some(i=>i.tipo==='picolé');
+  if (_temPicoléFinal && _totalPicFinal < 100) {
+    showToast(`🔒 Pedido bloqueado: mínimo 100 picolés. Você tem ${_totalPicFinal}.`, 'alerta');
     mostrarEtapa('revisao');
     return;
   }
@@ -1006,7 +1006,7 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     carrinho.forEach(item => {
       const sub = item.preço * item.quantidade;
       total += sub;
-      if (item.tipo === 'picoléé' && item.nomeTipo) {
+      if (item.tipo === 'picolé' && item.nomeTipo) {
         msg += `\n▶ *${item.nomeTipo} — ${item.nome}* (${item.quantidade} un.)\n`;
       } else if (item.tipo === 'sorvete') {
         msg += `\n▶ *Sorvete — ${item.nome}* (${item.quantidade} un.)\n`;
@@ -1076,24 +1076,24 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     try {
       const caixas = getCaixasEncomenda();
       const tortas = getTortasEncomenda();
-      const estoquePicolées = typeof getEstoquePickles === 'function' ? getEstoquePickles() : JSON.parse(localStorage.getItem('itap_estoque_picolées') || '{}');
+      const estoquePicolés = typeof getEstoquePickles === 'function' ? getEstoquePickles() : JSON.parse(localStorage.getItem('itap_estoque_picolés') || '{}');
       
       carrinho.forEach(item => {
         const cx = caixas.find(c => c.id === item.id);
         if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
         const tr = tortas.find(t => t.id === item.id);
         if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
-        if (item.tipo === 'picoléé') {
+        if (item.tipo === 'picolé') {
           const sabor = item.nome;
-          if (estoquePicolées[sabor] !== undefined) {
-            estoquePicolées[sabor] = Math.max(0, estoquePicolées[sabor] - item.quantidade);
+          if (estoquePicolés[sabor] !== undefined) {
+            estoquePicolés[sabor] = Math.max(0, estoquePicolés[sabor] - item.quantidade);
           }
         }
       });
       
       localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
       localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
-      localStorage.setItem('itap_estoque_picolées', JSON.stringify(estoquePicolées));
+      localStorage.setItem('itap_estoque_picolés', JSON.stringify(estoquePicolés));
     } catch(e) { console.warn('[ITAP] Erro ao atualizar estoque:', e); }
 
     // Esvaziar carrinho e resetar botões
@@ -1177,7 +1177,7 @@ function toggleSeção(id) {
   const jaAberto = el.classList.contains('aberto');
 
   // Fechar TODAS as seções abertas (accordion exclusivo)
-  const todasSeções = ['conteudo-caixas', 'conteudo-tortas', 'conteudo-picolées', 'conteudo-acréscimos'];
+  const todasSeções = ['conteudo-caixas', 'conteudo-tortas', 'conteudo-picolés', 'conteudo-acréscimos'];
   todasSeções.forEach(secId => {
     const secEl = document.getElementById(secId);
     if (secEl && secEl.classList.contains('aberto')) {
@@ -1196,8 +1196,8 @@ function toggleSeção(id) {
     if (id === 'conteudo-acréscimos') {
       setTimeout(renderizarAcréscimos, 10);
     }
-    if (id === 'conteudo-picolées') {
-      setTimeout(renderizarPicoléés, 10);
+    if (id === 'conteudo-picolés') {
+      setTimeout(renderizarPicolés, 10);
     }
     if (id === 'conteudo-caixas') {
       setTimeout(renderizarCaixas, 10);
@@ -1207,7 +1207,7 @@ function toggleSeção(id) {
     }
     // Scroll suave até a seção
     setTimeout(() => {
-      const pai = el.closest('.catégoria');
+      const pai = el.closest('.categoria');
       if (pai) pai.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
   }

@@ -92,7 +92,7 @@
     if (!cfg) return;
 
     // ── Atributos data-config ──────────────────
-    // Qualquer elemento com data-config="campo" recebe o valor automáticamente
+    // Qualquer elemento com data-config="campo" recebe o valor automaticamente
     document.querySelectorAll('[data-config]').forEach(el => {
       const campo = el.getAttribute('data-config');
       const valor = getValor(cfg, campo);
@@ -211,15 +211,15 @@
       });
     }
 
-    // ── Encomenda: aviso e mínimo picoléés ──────
+    // ── Encomenda: aviso e mínimo picolés ──────
     if (cfg.encomendaAviso) {
       window._ENCOMENDA_AVISO = cfg.encomendaAviso;
       document.querySelectorAll('[data-encomenda-aviso]').forEach(el => {
         el.textContent = cfg.encomendaAviso;
       });
     }
-    if (cfg.encomendaMinPicolées !== undefined) {
-      window._MIN_PICOLES = cfg.encomendaMinPicolées;
+    if (cfg.encomendaMinPicolés !== undefined) {
+      window._MIN_PICOLES = cfg.encomendaMinPicolés;
     }
 
     // ── Disparar evento para outros scripts ────
