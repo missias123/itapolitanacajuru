@@ -1419,6 +1419,82 @@ Talento</textarea>
         </div>
       </div>
     </div>
+      <!-- SORTEIOS MENSAIS -->
+      <div class="card" style="border-left:4px solid #2e7d32">
+        <div class="card-header"><h2>🎁 Sorteios Mensais</h2><button class="btn btn-salvar" onclick="salvarSorteio()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div class="seção-título">📍 Configuração do Sorteio</div>
+          <div style="display:grid;grid-templaté-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Data do próximo sorteio</label><input type="date" id="sort-data-prox"/></div>
+            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" placeholder="1 caixa de 5 litros de sorvete artesanal"/></div>
+          </div>
+          <div style="display:grid;grid-templaté-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Status do sorteio</label>
+              <select id="sort-status">
+                <option value="ativo">Ativo (aceitando inscrições)</option>
+                <option value="encerrado">Encerrado (inscrições fechadas)</option>
+                <option value="realizado">Realizado (vencedor definido)</option>
+              </select>
+            </div>
+            <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" placeholder="Nome do vencedor"/></div>
+          </div>
+          <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" placeholder="Notas internas sobre o sorteio..."></textarea></div>
+          <div id="sort-msg" style="font-size:.85rem;font-weight:600;margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- LISTA DE INSCRITOS NO SORTEIO -->
+      <div class="card" style="border-left:4px solid #2e7d32">
+        <div class="card-header">
+          <h2>📝 Inscritos nos Sorteios Mensais</h2>
+          <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">📲 Copiar Lista</button>
+        </div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:10px">⚠️ Estes são os clientes que enviaram solicitação de inscrição pelo WhatsApp. Confirme manualmente na agenda antes do sorteio.</div>
+          <div id="sort-inscritos-lista" style="font-size:.82rem;color:#555;padding:10px;background:#f1f8e9;border-radius:8px;min-height:60px">
+            <em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <input type="text" id="sort-add-nome" placeholder="Nome do inscrito" style="flex:2;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
+            <input type="tel" id="sort-add-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" maxlength="15" style="flex:1.5;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
+            <button onclick="adicionarInscritoSorteio()" style="padding:9px 16px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">➕ Adicionar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGULAMENTOS -->
+      <div class="card" style="border-left:4px solid #7b1fa2">
+        <div class="card-header"><h2>📜 Regulamentos</h2></div>
+        <div class="card-body">
+          <div class="seção-título">🎟️ Regulamento — Clube de Fidelidade</div>
+          <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de cadastro do Clube de Fidelidade. O cliente precisa aceitar para prosseguir.</div>
+          <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
+            <strong>Versão atual ativa no site:</strong><br>
+            1. Do Programa — Compras acima de R$ 30,00 ganham cupom<br>
+            2. Da Participação — Mínimo 14 anos, cadastro único<br>
+            3. Dos Cupons — Validade 60/30 dias, 1 ponto por código<br>
+            4. Dos Prêmios — 10pts Milkshake / 30pts Caixa 7 Bolas<br>
+            5. Das Proibições — Fraude = cancelamento permanente<br>
+            6. Das Críticas — Críticas infundadas = bloqueio definitivo<br>
+            7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
+            8. Do Foro — Comarca de Cajuru — SP
+          </div>
+          <div class="seção-título" style="margin-top:16px">🎁 Regulamento — Sorteios Mensais</div>
+          <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de inscrição nos Sorteios Mensais.</div>
+          <div style="background:#f1f8e9;border:1.5px solid #a5d6a7;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
+            <strong>Versão atual ativa no site:</strong><br>
+            1. Do Sorteio — Mensal, a partir de 1º de maio de 2025<br>
+            2. Da Participação — Cajuru/Santa Cruz/Cássia, mín. 14 anos<br>
+            3. Do Prêmio — 1 caixa 5L, sorteio por IA com vídeo publicado<br>
+            4. Da Agenda — Número e nome devem estar cadastrados até o dia<br>
+            5. Das Proibições — Dados falsos = desclassificação permanente<br>
+            6. Das Críticas — Críticas infundadas = bloqueio definitivo<br>
+            7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
+            8. Do Foro — Comarca de Cajuru — SP
+          </div>
+        </div>
+      </div>
+
     <div class="seção-título">⚙️ Configurações de Encomendas</div>
           <div class="campo-edit"><label>Aviso de prazo das encomendas</label>
             <textarea id="enc-aviso" rows="3" placeholder="Prazo mínimo de 03 dias úteis...">Encomendas para entrega têm prazo mínimo de 03 dias úteis após confirmação via WhatsApp e mediante pagamento antecipado.</textarea>
@@ -1534,7 +1610,7 @@ async function carregarTudo(){
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   ocultarLoading();
-  renderDashboard();preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();renderPreços();carregarEstoque();renderizarSaboresAdmin();
+  renderDashboard();preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();renderPreços();carregarEstoque();renderizarSaboresAdmin();
 }
 function irPara(seção,btn){
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
@@ -1746,6 +1822,83 @@ async function toggleBloqueio(cel,bloquear){
   else{STATE.fidelidade.clientes=clientes;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: ${bloquear?'bloquear':'desbloquear'} ${cel}`);}
   renderClientes();
 }
+// ═══════════════════════════════════════════════════════════
+// SORTEIOS MENSAIS — ADMIN
+// ═══════════════════════════════════════════════════════════
+function renderInscritosSorteio() {
+  const inscritos = STATE.fidelidade?.sorteioInscritos || [];
+  const el = document.getElementById('sort-inscritos-lista');
+  if (!el) return;
+  if (inscritos.length === 0) {
+    el.innerHTML = '<em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>';
+    return;
+  }
+  el.innerHTML = inscritos.map((c, i) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #c8e6c9">
+      <span><strong>${i+1}.</strong> ${c.nome} — ${c.cel}</span>
+      <button onclick="removerInscritoSorteio(${i})" style="background:none;border:none;color:#c62828;font-size:1rem;cursor:pointer" title="Remover">✕</button>
+    </div>`
+  ).join('');
+}
+
+function adicionarInscritoSorteio() {
+  const nome = (document.getElementById('sort-add-nome').value || '').trim();
+  const cel  = (document.getElementById('sort-add-cel').value || '').trim();
+  if (!nome || cel.length < 14) { toast('Informe nome e celular válido.', 'erro'); return; }
+  if (!STATE.fidelidade) STATE.fidelidade = {};
+  if (!STATE.fidelidade.sorteioInscritos) STATE.fidelidade.sorteioInscritos = [];
+  STATE.fidelidade.sorteioInscritos.push({ nome, cel, data: new Date().toLocaleDateString('pt-BR') });
+  document.getElementById('sort-add-nome').value = '';
+  document.getElementById('sort-add-cel').value = '';
+  renderInscritosSorteio();
+  toast(`${nome} adicionado(a) aos inscritos!`, 'sucesso');
+}
+
+function removerInscritoSorteio(idx) {
+  if (!confirm('Remover este inscrito?')) return;
+  STATE.fidelidade.sorteioInscritos.splice(idx, 1);
+  renderInscritosSorteio();
+  toast('Inscrito removido.', 'ok');
+}
+
+function copiarInscritosSorteio() {
+  const inscritos = STATE.fidelidade?.sorteioInscritos || [];
+  if (inscritos.length === 0) { toast('Nenhum inscrito para copiar.', 'aviso'); return; }
+  const lista = inscritos.map((c, i) => `${i+1}. ${c.nome} — ${c.cel}`).join('\n');
+  navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${inscritos.length} inscritos copiada!`, 'sucesso'));
+}
+
+async function salvarSorteio() {
+  const data   = document.getElementById('sort-data-prox').value;
+  const premio = document.getElementById('sort-premio').value.trim();
+  const status = document.getElementById('sort-status').value;
+  const venc   = document.getElementById('sort-vencedor').value.trim();
+  const obs    = document.getElementById('sort-obs').value.trim();
+  if (!STATE.fidelidade) STATE.fidelidade = {};
+  STATE.fidelidade.sorteio = { dataProx: data, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
+  await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
+  const msg = document.getElementById('sort-msg');
+  if (msg) { msg.textContent = '✅ Sorteio salvo com sucesso!'; msg.style.color = '#2e7d32'; setTimeout(() => msg.textContent = '', 3000); }
+  toast('Configuração do sorteio salva!', 'sucesso');
+}
+
+function preencherSorteio() {
+  const s = STATE.fidelidade?.sorteio || {};
+  const dp = document.getElementById('sort-data-prox'); if (dp) dp.value = s.dataProx || '';
+  const sp = document.getElementById('sort-premio');    if (sp) sp.value = s.premio || '1 caixa de 5 litros de sorvete artesanal';
+  const ss = document.getElementById('sort-status');    if (ss) ss.value = s.status || 'ativo';
+  const sv = document.getElementById('sort-vencedor');  if (sv) sv.value = s.vencedor || '';
+  const so = document.getElementById('sort-obs');       if (so) so.value = s.obs || '';
+  renderInscritosSorteio();
+}
+
+function mascaraTelAdmin(el) {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length <= 10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');
+  else v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  el.value = v;
+}
+
 function copiarSorteio(){
   const clientes=getClientes().filter(c=>!c.bloqueado&&!c.fraude);
   const lista=clientes.map((c,i)=>`${i+1}. ${c.nome||'-'} - ${c.cel||'-'}`).join('\n');
