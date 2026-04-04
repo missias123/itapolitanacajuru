@@ -1683,28 +1683,28 @@ function renderDashboard(){
 function preencherHome(){
   const cfg=STATE.config||{};
   document.getElementById('home-badge').value=cfg.heroBadge||'';
-  document.getElementById('home-título').value=cfg.heroTítulo||'';
-  document.getElementById('home-descrição').value=cfg.heroDescrição||'';
+  document.getElementById('home-título').value=cfg.heroTitulo||'';
+  document.getElementById('home-descrição').value=cfg.heroDescricao||'';
   document.getElementById('home-cta').value=cfg.heroCta||'Ver Cardápio Completo';
   document.getElementById('home-cta-whats').value=cfg.heroCtaWhats||'Pedir Agora pelo WhatsApp';
   document.getElementById('home-frases').value=(cfg.heroFrases||[]).join('\n');
   document.getElementById('home-strip').value=(cfg.stripSensorial||[]).join('\n');
-  document.getElementById('home-cardápio-título').value=cfg.cardápioTítulo||'';
-  document.getElementById('home-cardápio-sub').value=cfg.cardápioSubtítulo||'';
-  document.getElementById('home-cardápio-badge').value=cfg.cardápioBadge||'';
+  document.getElementById('home-cardápio-título').value=cfg.cardapioTitulo||'';
+  document.getElementById('home-cardápio-sub').value=cfg.cardapioSubtitulo||'';
+  document.getElementById('home-cardápio-badge').value=cfg.cardapioBadge||'';
 }
 async function salvarHome(){
   const cfg=STATE.config||{};
   cfg.heroBadge=document.getElementById('home-badge').value.trim();
-  cfg.heroTítulo=document.getElementById('home-título').value.trim();
-  cfg.heroDescrição=document.getElementById('home-descrição').value.trim();
+  cfg.heroTitulo=document.getElementById('home-título').value.trim();
+  cfg.heroDescricao=document.getElementById('home-descrição').value.trim();
   cfg.heroCta=document.getElementById('home-cta').value.trim();
   cfg.heroCtaWhats=document.getElementById('home-cta-whats').value.trim();
   cfg.heroFrases=document.getElementById('home-frases').value.split('\n').map(l=>l.trim()).filter(Boolean);
   cfg.stripSensorial=document.getElementById('home-strip').value.split('\n').map(l=>l.trim()).filter(Boolean);
-  cfg.cardápioTítulo=document.getElementById('home-cardápio-título').value.trim();
-  cfg.cardápioSubtítulo=document.getElementById('home-cardápio-sub').value.trim();
-  cfg.cardápioBadge=document.getElementById('home-cardápio-badge').value.trim();
+  cfg.cardapioTitulo=document.getElementById('home-cardápio-título').value.trim();
+  cfg.cardapioSubtitulo=document.getElementById('home-cardápio-sub').value.trim();
+  cfg.cardapioBadge=document.getElementById('home-cardápio-badge').value.trim();
   STATE.config=cfg;
   await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
 }
@@ -2081,12 +2081,12 @@ function copiarSorteio(){
 }
 function preencherFidelidade(){
   const cfg=STATE.config||{};
-  document.getElementById('fid-prêmio-milk-nome').value=cfg.prêmioMilkshake||'Milkshake 300ml';
+  document.getElementById('fid-prêmio-milk-nome').value=cfg.premioMilkshake||'Milkshake 300ml';
   document.getElementById('fid-pts-milk').value=cfg.pontosMilkshake||10;
-  document.getElementById('fid-prêmio-caixa-nome').value=cfg.prêmioCaixa||'Caixa 7 Bolas';
+  document.getElementById('fid-prêmio-caixa-nome').value=cfg.premioCaixa||'Caixa 7 Bolas';
   document.getElementById('fid-pts-caixa').value=cfg.pontosCaixa||30;
-  document.getElementById('fid-título').value=cfg.fidelidadeTítulo||'Programa de Fidelidade';
-  document.getElementById('fid-descrição').value=cfg.fidelidadeDescrição||'Acumule pontos e ganhe prêmios incriveis!';
+  document.getElementById('fid-título').value=cfg.fidelidadeTitulo||'Programa de Fidelidade';
+  document.getElementById('fid-descrição').value=cfg.fidelidadeDescricao||'Acumule pontos e ganhe prêmios incriveis!';
   atualizarStatsCódigos();
 }
 function atualizarStatsCódigos(){
@@ -2132,14 +2132,14 @@ function gerarCódigos(){
 }
 async function salvarConfigFidelidade(){
   const cfg=STATE.config||{};
-  cfg.prêmioMilkshake=document.getElementById('fid-prêmio-milk-nome').value.trim();
+  cfg.premioMilkshake=document.getElementById('fid-prêmio-milk-nome').value.trim();
   cfg.pontosMilkshake=parseInt(document.getElementById('fid-pts-milk').value)||10;
-  cfg.prêmioCaixa=document.getElementById('fid-prêmio-caixa-nome').value.trim();
+  cfg.premioCaixa=document.getElementById('fid-prêmio-caixa-nome').value.trim();
   cfg.pontosCaixa=parseInt(document.getElementById('fid-pts-caixa').value)||30;
-  cfg.fidelidadeTítulo=document.getElementById('fid-título').value.trim();
-  cfg.fidelidadeDescrição=document.getElementById('fid-descrição').value.trim();
+  cfg.fidelidadeTitulo=document.getElementById('fid-título').value.trim();
+  cfg.fidelidadeDescricao=document.getElementById('fid-descrição').value.trim();
   STATE.config=cfg;
-  if(STATE.fidelidade){if(!STATE.fidelidade.config)STATE.fidelidade.config={};STATE.fidelidade.config.prêmioNome=cfg.prêmioMilkshake;STATE.fidelidade.config.prêmioPontos=cfg.pontosMilkshake;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha','Admin: atualizar config fidelidade');}
+  if(STATE.fidelidade){if(!STATE.fidelidade.config)STATE.fidelidade.config={};STATE.fidelidade.config.prêmioNome=cfg.premioMilkshake;STATE.fidelidade.config.prêmioPontos=cfg.pontosMilkshake;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha','Admin: atualizar config fidelidade');}
   await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configuração dos prêmios');
 }
 function copiarCódigosDisponíveis(){
@@ -2154,18 +2154,18 @@ function preencherConfig(){
   document.getElementById('cfg-whats-fmt').value=cfg.whatsappFormatado||'(16) 99606-2046';
   document.getElementById('cfg-instagram').value=cfg.instagram||'@sorveteriaitapolitanacajuru';
   document.getElementById('cfg-instagram-url').value=cfg.instagramUrl||'';
-  document.getElementById('cfg-endereço').value=cfg.endereço||'';
-  document.getElementById('cfg-endereço-completo').value=cfg.endereçoCompleto||'';
+  document.getElementById('cfg-endereço').value=cfg.endereco||'';
+  document.getElementById('cfg-endereço-completo').value=cfg.enderecoCompleto||'';
   document.getElementById('cfg-maps').value=cfg.googleMaps||'';
-  document.getElementById('cfg-hora-abre').value=cfg.horárioAbre??10;
-  document.getElementById('cfg-hora-fecha').value=cfg.horárioFecha??22;
-  document.getElementById('cfg-horário').value=cfg.horário||'';
-  document.getElementById('cfg-horário-det').value=cfg.horárioDetalhado||'';
-  document.getElementById('cfg-footer-horário').value=cfg.footerHorário||'';
+  document.getElementById('cfg-hora-abre').value=cfg.horarioAbre??10;
+  document.getElementById('cfg-hora-fecha').value=cfg.horarioFecha??22;
+  document.getElementById('cfg-horário').value=cfg.horario||'';
+  document.getElementById('cfg-horário-det').value=cfg.horarioDetalhado||'';
+  document.getElementById('cfg-footer-horário').value=cfg.footerHorario||'';
   document.getElementById('cfg-nome-empresa').value=cfg.nomeEmpresa||'';
   document.getElementById('cfg-slogan').value=cfg.slogan||'';
-  document.getElementById('cfg-fundação').value=cfg.fundação||'2007';
-  document.getElementById('cfg-CNPJ').value=cfg.CNPJ||'';
+  document.getElementById('cfg-fundação').value=cfg.fundacao||'2007';
+  document.getElementById('cfg-CNPJ').value=cfg.cnpj||'';
   document.getElementById('cfg-footer-copy').value=cfg.footerCopy||'';
   document.getElementById('cfg-footer-dev').value=cfg.footerDev||'';
 }
@@ -2178,18 +2178,18 @@ async function salvarConfig(){
   cfg.whatsappFormatado=document.getElementById('cfg-whats-fmt').value.trim();
   cfg.instagram=document.getElementById('cfg-instagram').value.trim();
   cfg.instagramUrl=document.getElementById('cfg-instagram-url').value.trim();
-  cfg.endereço=document.getElementById('cfg-endereço').value.trim();
-  cfg.endereçoCompleto=document.getElementById('cfg-endereço-completo').value.trim();
+  cfg.endereco=document.getElementById('cfg-endereço').value.trim();
+  cfg.enderecoCompleto=document.getElementById('cfg-endereço-completo').value.trim();
   cfg.googleMaps=document.getElementById('cfg-maps').value.trim();
-  cfg.horárioAbre=parseInt(document.getElementById('cfg-hora-abre').value)||10;
-  cfg.horárioFecha=parseInt(document.getElementById('cfg-hora-fecha').value)||22;
-  cfg.horário=document.getElementById('cfg-horário').value.trim();
-  cfg.horárioDetalhado=document.getElementById('cfg-horário-det').value.trim();
-  cfg.footerHorário=document.getElementById('cfg-footer-horário').value.trim();
+  cfg.horarioAbre=parseInt(document.getElementById('cfg-hora-abre').value)||10;
+  cfg.horarioFecha=parseInt(document.getElementById('cfg-hora-fecha').value)||22;
+  cfg.horario=document.getElementById('cfg-horário').value.trim();
+  cfg.horarioDetalhado=document.getElementById('cfg-horário-det').value.trim();
+  cfg.footerHorario=document.getElementById('cfg-footer-horário').value.trim();
   cfg.nomeEmpresa=document.getElementById('cfg-nome-empresa').value.trim();
   cfg.slogan=document.getElementById('cfg-slogan').value.trim();
-  cfg.fundação=document.getElementById('cfg-fundação').value.trim();
-  cfg.CNPJ=document.getElementById('cfg-CNPJ').value.trim();
+  cfg.fundacao=document.getElementById('cfg-fundação').value.trim();
+  cfg.cnpj=document.getElementById('cfg-CNPJ').value.trim();
   cfg.footerCopy=document.getElementById('cfg-footer-copy').value.trim();
   cfg.footerDev=document.getElementById('cfg-footer-dev').value.trim();
   if(novaSenha)cfg.senhaAdmin=novaSenha;
