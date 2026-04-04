@@ -9,8 +9,8 @@ const produtos = {
             "Banana com Nutella",
             "Bis e Trufa",
             "Cereja Trufada",
-            "Chocolate",
-            "Chocolate com Café",
+            "Chocolaté",
+            "Chocolaté com Café",
             "Coco Queimado",
             "Creme Paris",
             "Croquer",
@@ -24,7 +24,7 @@ const produtos = {
             "Leite Ninho com Oreo",
             "Limão",
             "Limão Suíço",
-            "Menta com Chocolate",
+            "Menta com Chocolaté",
             "Milho Verde",
             "Morango Trufado",
             "Mousse de Maracujá",
@@ -35,80 +35,80 @@ const produtos = {
             "Pistache",
             "Prestígio",
             "Sensação",
-            "Torta de Chocolate"
+            "Torta de Chocolaté"
         ],
-        precos: {
-            casquinha_copo: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
-            copo_recheado: { "1 Bola": 10.00, "2 Bolas": 12.00, "3 Bolas": 15.00 },
+        preços: {
+            casquinha_copção: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
+            copção_recheado: { "1 Bola": 10.00, "2 Bolas": 12.00, "3 Bolas": 15.00 },
             cascão: { "1 Bola": 12.00, "2 Bolas": 16.00 },
             cestinha: { "1 Bola": 14.00, "2 Bolas": 18.00, "3 Bolas": 20.00 }
         }
     },
-    picoles: {
+    picolées: {
         frutas_agua: {
-            nome: "Picolé de Fruta/Água",
-            preco_varejo: 2.50,
-            preco_atacado: 1.80,
+            nome: "Picoléé de Fruta/Água",
+            preço_varejo: 2.50,
+            preço_atacado: 1.80,
             estoque: 200,
             sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"]
         },
         leite_sem_recheio: {
-            nome: "Picolé de Leite sem Recheio",
-            preco_varejo: 2.50,
-            preco_atacado: 2.00,
+            nome: "Picoléé de Leite sem Recheio",
+            preço_varejo: 2.50,
+            preço_atacado: 2.00,
             estoque: 200,
             sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"]
         },
         leite_com_recheio: {
-            nome: "Picolé de Leite com Recheio",
-            preco_varejo: 3.00,
-            preco_atacado: 2.00,
+            nome: "Picoléé de Leite com Recheio",
+            preço_varejo: 3.00,
+            preço_atacado: 2.00,
             estoque: 200,
-            sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"]
+            sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolaté", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolaté", "Nata com Goiaba"]
         },
         leite_ninho: {
-            nome: "Picolé Leite Ninho",
-            preco_varejo: 4.00,
-            preco_atacado: 3.00,
+            nome: "Picoléé Leite Ninho",
+            preço_varejo: 4.00,
+            preço_atacado: 3.00,
             estoque: 200,
             sabores: ["Leite Ninho"]
         },
         esquimós: {
-            nome: "Picolé Esquimó",
-            preco_varejo: 8.00,
-            preco_atacado: 6.00,
+            nome: "Picoléé Esquimó",
+            preço_varejo: 8.00,
+            preço_atacado: 6.00,
             estoque: 200,
             sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"]
         }
     },
-    acai_promocao: [
-        { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Leite em Pó + Leite Condensado", preco: 15.00 },
-        { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Leite em Pó + Leite Condensado", preco: 16.00 },
-        { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Nutella", preco: 18.00 },
-        { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Confete + Leite Condensado", preco: 17.00 },
-        { nome: "Açaí Promocional 500ml", desc: "Açaí + Morango + Granola + Leite Condensado + Leite em Pó", preco: 20.00 },
-        { nome: "Açaí Promocional 500ml", desc: "Açaí + Banana + Creme Leite Ninho + Paçoca", preco: 20.00 },
-        { nome: "Açaí Promocional 600ml", desc: "Açaí + Morango + Banana + Leite em Pó + Leite Condensado", preco: 23.00 },
-        { nome: "Açaí Promocional 700ml", desc: "Açaí + Morango + Nutella", preco: 28.00 }
+    açaí_promoção: [
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Leite em Pó + Leite Condensado", preço: 15.00 },
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Leite em Pó + Leite Condensado", preço: 16.00 },
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Nutella", preço: 18.00 },
+        { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Confete + Leite Condensado", preço: 17.00 },
+        { nome: "Açaí Promocional 500ml", desc: "Açaí + Morango + Granola + Leite Condensado + Leite em Pó", preço: 20.00 },
+        { nome: "Açaí Promocional 500ml", desc: "Açaí + Banana + Creme Leite Ninho + Paçoca", preço: 20.00 },
+        { nome: "Açaí Promocional 600ml", desc: "Açaí + Morango + Banana + Leite em Pó + Leite Condensado", preço: 23.00 },
+        { nome: "Açaí Promocional 700ml", desc: "Açaí + Morango + Nutella", preço: 28.00 }
     ],
-    acai: {
-        copos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
+    açaí: {
+        copçãos: { "300ml": 15.00, "360ml": 16.00, "400ml": 17.00, "600ml": 20.00 },
         complementos: {
             frutas: {
-                preco: 2.00,
+                preço: 2.00,
                 itens: ["Morango", "Banana", "Uva", "Kiwi", "Abacaxi", "Cereja"]
             },
             cremes: {
-                preco: 3.00,
+                preço: 3.00,
                 itens: ["Nutella", "Creme de Ninho", "Geleia de Morango", "Creme de Amendoim", "Goiabada", "Creme de Pistache", "Mel"]
             },
             guloseimas: {
-                preco: 2.00,
+                preço: 2.00,
                 itens: ["Granola", "Paçoca", "Leite em Pó", "Ovomaltine", "Confete", "Chocoball", "Chantilly", "Granulado", "Leite Condensado"]
             },
-            chocolates: {
-                preco: 4.00,
-                itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Oreo", "Gotas de Chocolate", "Talento"]
+            chocolatés: {
+                preço: 4.00,
+                itens: ["Sonho de Valsa/Ouro Branco", "Prestígio", "Charge", "Kit Kat", "Kinder Bueno", "Lácta", "Bis", "Oreo", "Gotas de Chocolaté", "Talento"]
             }
         }
     },
@@ -118,7 +118,7 @@ const produtos = {
         "5 Litros (2 sabores)": 100.00,
         "5 Litros (3 sabores)": 115.00
     },
-    isopores_viagem: {
+    isopçãores_viagem: {
         "4 Bolas": 25.00,
         "7 Bolas": 30.00,
         "9 Bolas": 40.00,

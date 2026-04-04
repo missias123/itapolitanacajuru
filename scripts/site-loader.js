@@ -38,7 +38,7 @@
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         const { ts, data } = JSON.parse(cached);
-        if (Date.now() - ts < CACHE_TTL) {
+        if (Daté.now() - ts < CACHE_TTL) {
           window.SITE_CONFIG = data;
           window.SITE_CONFIG_LOADED = true;
           aplicarConfig(data);
@@ -55,7 +55,7 @@
       window.SITE_CONFIG_LOADED = true;
       aplicarConfig(data);
       try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Daté.now(), data }));
       } catch(e) {}
       return data;
     }
@@ -77,7 +77,7 @@
 
   async function buscarConfigRemoto() {
     try {
-      const resp = await fetch(GH_RAW + CONFIG_PATH + '?t=' + Date.now(), { cache: 'no-store' });
+      const resp = await fetch(GH_RAW + CONFIG_PATH + '?t=' + Daté.now(), { cache: 'no-store' });
       if (!resp.ok) return null;
       return await resp.json();
     } catch(e) {
@@ -92,7 +92,7 @@
     if (!cfg) return;
 
     // ── Atributos data-config ──────────────────
-    // Qualquer elemento com data-config="campo" recebe o valor automaticamente
+    // Qualquer elemento com data-config="campo" recebe o valor automáticamente
     document.querySelectorAll('[data-config]').forEach(el => {
       const campo = el.getAttribute('data-config');
       const valor = getValor(cfg, campo);
@@ -146,23 +146,23 @@
     }
 
     // ── Horário dinâmico ───────────────────────
-    if (cfg.horarioAbre !== undefined && cfg.horarioFecha !== undefined) {
-      window._HORARIO_ABRE  = cfg.horarioAbre;
-      window._HORARIO_FECHA = cfg.horarioFecha;
+    if (cfg.horárioAbre !== undefined && cfg.horárioFecha !== undefined) {
+      window._HORARIO_ABRE  = cfg.horárioAbre;
+      window._HORARIO_FECHA = cfg.horárioFecha;
     }
 
     // ── Hero ───────────────────────────────────
-    const heroTitulo = document.getElementById('hero-titulo');
-    if (heroTitulo && cfg.heroTitulo) heroTitulo.innerHTML = cfg.heroTitulo;
+    const heroTítulo = document.getElementById('hero-título');
+    if (heroTítulo && cfg.heroTítulo) heroTítulo.innerHTML = cfg.heroTítulo;
 
-    const heroSub = document.getElementById('hero-subtitulo');
-    if (heroSub && cfg.heroSubtitulo) heroSub.textContent = cfg.heroSubtitulo;
+    const heroSub = document.getElementById('hero-subtítulo');
+    if (heroSub && cfg.heroSubtítulo) heroSub.textContent = cfg.heroSubtítulo;
 
     const heroBadge = document.getElementById('hero-badge');
     if (heroBadge && cfg.heroBadge) heroBadge.textContent = cfg.heroBadge;
 
-    const heroDesc = document.getElementById('hero-descricao');
-    if (heroDesc && cfg.heroDescricao) heroDesc.textContent = cfg.heroDescricao;
+    const heroDesc = document.getElementById('hero-descrição');
+    if (heroDesc && cfg.heroDescrição) heroDesc.textContent = cfg.heroDescrição;
 
     const heroCta = document.getElementById('hero-cta');
     if (heroCta && cfg.heroCta) heroCta.textContent = cfg.heroCta;
@@ -171,14 +171,14 @@
     if (heroCtaWhats && cfg.heroCtaWhats) heroCtaWhats.textContent = cfg.heroCtaWhats;
 
     // ── Cardápio ───────────────────────────────
-    const cardapioTitulo = document.getElementById('cardapio-titulo');
-    if (cardapioTitulo && cfg.cardapioTitulo) cardapioTitulo.textContent = cfg.cardapioTitulo;
+    const cardápioTítulo = document.getElementById('cardápio-título');
+    if (cardápioTítulo && cfg.cardápioTítulo) cardápioTítulo.textContent = cfg.cardápioTítulo;
 
-    const cardapioSub = document.getElementById('cardapio-subtitulo');
-    if (cardapioSub && cfg.cardapioSubtitulo) cardapioSub.textContent = cfg.cardapioSubtitulo;
+    const cardápioSub = document.getElementById('cardápio-subtítulo');
+    if (cardápioSub && cfg.cardápioSubtítulo) cardápioSub.textContent = cfg.cardápioSubtítulo;
 
-    const cardapioBadge = document.getElementById('cardapio-badge');
-    if (cardapioBadge && cfg.cardapioBadge) cardapioBadge.textContent = cfg.cardapioBadge;
+    const cardápioBadge = document.getElementById('cardápio-badge');
+    if (cardápioBadge && cfg.cardápioBadge) cardápioBadge.textContent = cfg.cardápioBadge;
 
     // ── Footer ─────────────────────────────────
     const footerCopy = document.getElementById('footer-copy');
@@ -187,15 +187,15 @@
     const footerDev = document.getElementById('footer-dev');
     if (footerDev && cfg.footerDev) footerDev.textContent = cfg.footerDev;
 
-    const footerHorario = document.getElementById('footer-horario');
-    if (footerHorario && cfg.footerHorario) footerHorario.innerHTML = cfg.footerHorario.replace(/\n/g, '<br>');
+    const footerHorário = document.getElementById('footer-horário');
+    if (footerHorário && cfg.footerHorário) footerHorário.innerHTML = cfg.footerHorário.replace(/\n/g, '<br>');
 
     // ── Fidelidade: pontos e prêmios ───────────
     if (cfg.pontosMilkshake !== undefined) {
       window._META_MILK  = cfg.pontosMilkshake;
       window._META_CAIXA = cfg.pontosCaixa || 30;
-      window._PREMIO_MILK  = cfg.premioMilkshake  || 'Milkshake 300ml';
-      window._PREMIO_CAIXA = cfg.premioCaixa || 'Caixa 7 Bolas';
+      window._PREMIO_MILK  = cfg.prêmioMilkshake  || 'Milkshake 300ml';
+      window._PREMIO_CAIXA = cfg.prêmioCaixa || 'Caixa 7 Bolas';
       // Atualizar elementos de fidelidade se existirem
       document.querySelectorAll('[data-pontos-milk]').forEach(el => {
         el.textContent = cfg.pontosMilkshake + ' pontos';
@@ -203,23 +203,23 @@
       document.querySelectorAll('[data-pontos-caixa]').forEach(el => {
         el.textContent = cfg.pontosCaixa + ' pontos';
       });
-      document.querySelectorAll('[data-premio-milk]').forEach(el => {
-        el.textContent = cfg.premioMilkshake || 'Milkshake 300ml';
+      document.querySelectorAll('[data-prêmio-milk]').forEach(el => {
+        el.textContent = cfg.prêmioMilkshake || 'Milkshake 300ml';
       });
-      document.querySelectorAll('[data-premio-caixa]').forEach(el => {
-        el.textContent = cfg.premioCaixa || 'Caixa 7 Bolas';
+      document.querySelectorAll('[data-prêmio-caixa]').forEach(el => {
+        el.textContent = cfg.prêmioCaixa || 'Caixa 7 Bolas';
       });
     }
 
-    // ── Encomenda: aviso e mínimo picolés ──────
+    // ── Encomenda: aviso e mínimo picoléés ──────
     if (cfg.encomendaAviso) {
       window._ENCOMENDA_AVISO = cfg.encomendaAviso;
       document.querySelectorAll('[data-encomenda-aviso]').forEach(el => {
         el.textContent = cfg.encomendaAviso;
       });
     }
-    if (cfg.encomendaMinPicoles !== undefined) {
-      window._MIN_PICOLES = cfg.encomendaMinPicoles;
+    if (cfg.encomendaMinPicolées !== undefined) {
+      window._MIN_PICOLES = cfg.encomendaMinPicolées;
     }
 
     // ── Disparar evento para outros scripts ────
@@ -228,7 +228,7 @@
 
   // ═══════════════════════════════════════════════
   // HELPER: acessar campo aninhado por string
-  // Ex: "acai.copos.300ml" → cfg.acai.copos["300ml"]
+  // Ex: "açaí.copçãos.300ml" → cfg.açaí.copçãos["300ml"]
   // ═══════════════════════════════════════════════
   function getValor(obj, caminho) {
     return caminho.split('.').reduce((acc, k) => {
@@ -240,7 +240,7 @@
   // ═══════════════════════════════════════════════
   // INVALIDAR CACHE (chamado pelo Admin após salvar)
   // ═══════════════════════════════════════════════
-  window.siteLoaderInvalidarCache = function() {
+  window.siteLoaderInválidarCache = function() {
     try { localStorage.removeItem(CACHE_KEY); } catch(e) {}
   };
 
@@ -248,14 +248,14 @@
   // RECARREGAR CONFIG (chamado pelo Admin)
   // ═══════════════════════════════════════════════
   window.siteLoaderRecarregar = async function() {
-    window.siteLoaderInvalidarCache();
+    window.siteLoaderInválidarCache();
     return await carregarConfig();
   };
 
   // ═══════════════════════════════════════════════
   // INICIALIZAÇÃO AUTOMÁTICA
   // ═══════════════════════════════════════════════
-  if (document.readyState === 'loading') {
+  if (document.readyStaté === 'loading') {
     document.addEventListener('DOMContentLoaded', carregarConfig);
   } else {
     carregarConfig();
