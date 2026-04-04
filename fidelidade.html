@@ -363,6 +363,69 @@ html { scroll-behavior: smooth; }
 <!-- FORMULÁRIO SORTEIOS MENSAIS -->
 <section id="sec-sorteio-form" style="background:#e8f5e9;padding:24px 12px;border-top:3px solid #a5d6a7">
   <div style="max-width:480px;margin:0 auto">
+
+    <!-- REGULAMENTO SORTEIOS (aceite obrigatório) -->
+    <div id="card-regras-sorteio" style="background:#fff;border:2px solid #2e7d32;border-radius:14px;padding:18px 16px;margin-bottom:16px">
+      <div style="text-align:center;margin-bottom:10px">
+        <div style="font-size:1.4rem;margin-bottom:3px">📜</div>
+        <div style="font-size:.95rem;font-weight:900;color:#1b5e20">REGULAMENTO — SORTEIOS MENSAIS</div>
+        <div style="font-size:.72rem;color:#888;margin-top:2px">Leia atentamente antes de se cadastrar</div>
+      </div>
+      <div style="max-height:240px;overflow-y:auto;background:#f1f8e9;border:1.5px solid #a5d6a7;border-radius:10px;padding:12px 14px;font-size:clamp(.7rem,2vw,.79rem);color:#333;line-height:1.7">
+
+        <strong>1. DO SORTEIO</strong><br>
+        O Sorteio Mensal é uma promoção gratuita realizada pela Sorveteria Itapolitana Cajuru, com frequência mensal, a partir de <strong>1º de maio de 2025</strong>.
+        <br><br>
+
+        <strong>2. DA PARTICIPAÇÃO</strong><br>
+        2.1. Podem participar moradores de <strong>Cajuru</strong>, <strong>Santa Cruz da Esperança</strong> e <strong>Cássia dos Coqueiros</strong> — SP, com idade mínima de <strong>14 (quatorze) anos</strong>.<br>
+        2.2. O cadastro é realizado pelo site, com envio de confirmação pelo WhatsApp à sorveteria.<br>
+        2.3. Cada pessoa pode ter apenas <strong>um único cadastro</strong>. Cadastros duplicados serão cancelados.
+        <br><br>
+
+        <strong>3. DO PRÊMMIO</strong><br>
+        3.1. O prêmio é <strong>1 (uma) caixa de 5 litros de sorvete artesanal</strong> por sorteio.<br>
+        3.2. O sorteio será realizado por <strong>Inteligência Artificial</strong>, com gravação em vídeo, publicado nas redes sociais da sorveteria para total transparência.<br>
+        3.3. O vencedor será notificado pelo WhatsApp cadastrado.<br>
+        3.4. Para retirar o prêmio, o ganhador deverá comparecer pessoalmente à sorveteria no dia e horário agendados, portando obrigatoriamente: <strong>documento de identidade com foto</strong> (RG, CNH ou equivalente) e o <strong>celular com o número cadastrado</strong>.<br>
+        3.5. Não será possível retirar o prêmio por terceiros.<br>
+        3.6. O prêmio não é convertível em dinheiro ou outros produtos.
+        <br><br>
+
+        <strong>4. DA OBRIGATORIEDADE DO CADASTRO NA AGENDA</strong><br>
+        Quem não tiver o <strong>número e nome cadastrado</strong> na agenda da sorveteria até a data do sorteio <strong>não terá direito ao prêmio</strong>, mesmo que seja sorteado.
+        <br><br>
+
+        <strong>5. DAS PROIBIÇÕES</strong><br>
+        5.1. É proibida a participação com dados falsos ou de terceiros.<br>
+        5.2. Fraudes ou tentativas de manipulação resultarão em <strong>desclassificação permanente</strong>.
+        <br><br>
+
+        <strong>6. DAS CRÍTICAS E CONDUTA</strong><br>
+        Críticas infundadas, ofensas ou conduta inadequada poderão resultar no <strong>bloqueio definitivo</strong> do nome e número de telefone no sistema, vedando a participação em qualquer programa da sorveteria.
+        <br><br>
+
+        <strong>7. DAS ALTERAÇÕES</strong><br>
+        A sorveteria reserva-se o direito de alterar, suspender ou encerrar o sorteio a qualquer momento, mediante aviso no site e nas redes sociais.
+        <br><br>
+
+        <strong>8. DO FORO</strong><br>
+        Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer dúvidas ou litígios.
+
+      </div>
+      <div style="margin-top:12px">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:clamp(.74rem,2.1vw,.82rem);color:#333">
+          <input type="checkbox" id="aceite-sorteio" onchange="verificarAceiteSorteio()" style="width:18px;height:18px;margin-top:2px;accent-color:#2e7d32;flex-shrink:0">
+          <span>Li e concordo com o <strong>Regulamento dos Sorteios Mensais</strong> da Sorveteria Itapolitana Cajuru.</span>
+        </label>
+      </div>
+      <button id="btn-iniciar-sorteio" onclick="iniciarCadastroSorteio()" disabled style="width:100%;margin-top:12px;padding:13px;background:#ccc;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:not-allowed;transition:.3s">
+        📝 Aceitar e Preencher Cadastro
+      </button>
+    </div>
+
+    <!-- FORMULÁRIO (oculto até aceitar as regras) -->
+    <div id="form-sorteio-dados" style="display:none">
     <div style="text-align:center;margin-bottom:16px">
       <div style="font-size:2rem;margin-bottom:4px">🎁</div>
       <div style="font-size:1.1rem;font-weight:900;color:#1b5e20;margin-bottom:4px">CADASTRO — SORTEIOS MENSAIS</div>
@@ -389,14 +452,78 @@ html { scroll-behavior: smooth; }
       📲 Confirmar e Enviar pelo WhatsApp
     </button>
     <p style="font-size:.75rem;color:#555;text-align:center;margin-top:8px">🔒 Você não receberá propaganda. As promoções aparecem apenas nos <strong>Status do WhatsApp</strong>.</p>
+    </div><!-- /form-sorteio-dados -->
   </div>
 </section>
 
 <!-- PAINEL PRINCIPAL -->
 <div class="painel" id="painel">
 
-  <!-- FORMULÁRIO DE ACESSO -->
-  <div class="card" id="card-acesso">
+  <!-- REGRAS CLUBE DE FIDELIDADE (aceite obrigatório) -->
+  <div class="card" id="card-regras-fidelidade" style="border:2px solid #e8650a">
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-size:1.5rem;margin-bottom:4px">📜</div>
+      <div style="font-size:1rem;font-weight:900;color:#e8650a">REGULAMENTO — CLUBE DE FIDELIDADE</div>
+      <div style="font-size:.75rem;color:#888;margin-top:2px">Leia atentamente antes de se cadastrar</div>
+    </div>
+    <div id="regras-fidelidade-texto" style="max-height:260px;overflow-y:auto;background:#fff8f0;border:1.5px solid #ffcc80;border-radius:10px;padding:12px 14px;font-size:clamp(.71rem,2.1vw,.8rem);color:#333;line-height:1.7">
+
+      <strong>1. DO PROGRAMA</strong><br>
+      O Clube de Fidelidade é um programa de pontuação gratuito oferecido pela Sorveteria Itapolitana Cajuru, destinado a clientes que realizem compras acima de <strong>R$ 30,00</strong> no estabelecimento.
+      <br><br>
+
+      <strong>2. DA PARTICIPAÇÃO</strong><br>
+      2.1. Podem participar pessoas com idade mínima de <strong>14 (quatorze) anos</strong>.<br>
+      2.2. O cadastro é realizado exclusivamente pelo site oficial da sorveteria, mediante informação de nome completo (conforme documento de identidade), data de nascimento e número de celular com WhatsApp ativo.<br>
+      2.3. Cada pessoa pode ter apenas <strong>um único cadastro</strong>. Cadastros duplicados serão cancelados sem aviso prévio.
+      <br><br>
+
+      <strong>3. DOS CUPONS E PONTOS</strong><br>
+      3.1. A cada compra acima de R$ 30,00, o cliente recebe um cupom físico com código único.<br>
+      3.2. O código deve ser inserido no site dentro do prazo de validade: <strong>60 dias</strong> para códigos emitidos antes de 01/05/2025 e <strong>30 dias</strong> para códigos emitidos a partir de 01/05/2025.<br>
+      3.3. Cada código válido equivale a <strong>1 (um) ponto</strong>.<br>
+      3.4. Os pontos são intransferíveis e não possuem valor monetário.
+      <br><br>
+
+      <strong>4. DOS PRÊMMIOS</strong><br>
+      4.1. <strong>10 pontos</strong>: 1 Milkshake 300ml GRÁTIS.<br>
+      4.2. <strong>30 pontos</strong>: 1 Caixa com 7 Bolas de Sorvete GRÁTIS.<br>
+      4.3. O resgate deve ser solicitado pelo site e agendado com a sorveteria via WhatsApp.<br>
+      4.4. Para retirar o prêmio, o cliente deverá comparecer pessoalmente à sorveteria no dia e horário agendados, portando obrigatoriamente: <strong>documento de identidade com foto</strong> (RG, CNH ou equivalente) e o <strong>celular com o número cadastrado</strong>, para confirmação da identidade.<br>
+      4.5. Não será possível retirar o prêmio por terceiros.
+      <br><br>
+
+      <strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>
+      5.1. É expressamente proibido o uso de códigos de terceiros, códigos inválidos, falsificados ou obtidos de forma irregular.<br>
+      5.2. Tentativas de fraude, manipulação do sistema ou uso indevido do programa implicarão no <strong>cancelamento imediato e permanente</strong> do cadastro, sem direito a recurso ou ressarcimento.<br>
+      5.3. O sistema registra automaticamente todas as tentativas suspeitas, incluindo dados do dispositivo e horário de acesso.
+      <br><br>
+
+      <strong>6. DAS CRÍTICAS E CONDUTA</strong><br>
+      6.1. Críticas infundadas, ofensas ou conduta inadequada direcionadas à sorveteria ou a seus funcionários poderão resultar no <strong>bloqueio definitivo</strong> do nome e número de telefone no sistema, vedando a participação em qualquer programa da sorveteria.
+      <br><br>
+
+      <strong>7. DAS ALTERAÇÕES</strong><br>
+      A Sorveteria Itapolitana Cajuru reserva-se o direito de alterar, suspender ou encerrar o programa a qualquer momento, mediante aviso no site e nas redes sociais.
+      <br><br>
+
+      <strong>8. DO FORO</strong><br>
+      Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer dúvidas ou litígios decorrentes deste regulamento.
+
+    </div>
+    <div style="margin-top:12px">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:clamp(.75rem,2.2vw,.83rem);color:#333">
+        <input type="checkbox" id="aceite-fidelidade" onchange="verificarAceiteFidelidade()" style="width:18px;height:18px;margin-top:2px;accent-color:#e8650a;flex-shrink:0">
+        <span>Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru.</span>
+      </label>
+    </div>
+    <button id="btn-iniciar-cadastro" onclick="iniciarCadastroFidelidade()" disabled style="width:100%;margin-top:12px;padding:13px;background:#ccc;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:900;cursor:not-allowed;transition:.3s">
+      📝 Aceitar e Iniciar Cadastro
+    </button>
+  </div>
+
+  <!-- FORMULÁRIO DE ACESSO (oculto até aceitar as regras) -->
+  <div class="card" id="card-acesso" style="display:none">
     <div style="text-align:center;margin-bottom:14px">
       <div style="font-size:clamp(1.15rem,4vw,1.4rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:4px">🎉 Receba Promoções Exclusivas!</div>
       <p style="font-size:clamp(.82rem,2.4vw,.92rem);color:#555;margin-top:6px;margin-bottom:8px">Cadastre seu WhatsApp para receber promoções, cupons e bonificações na Sorveteria Itapolitana.</p>
@@ -778,6 +905,60 @@ function aplicarConfigPrêmio() {
 // ═══════════════════════════════════════════════════════════
 // TABS DE ACESSO
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// ACEITE DE REGULAMENTO — CLUBE DE FIDELIDADE
+// ═══════════════════════════════════════════════════════════
+function verificarAceiteFidelidade() {
+  const aceite = document.getElementById('aceite-fidelidade').checked;
+  const btn    = document.getElementById('btn-iniciar-cadastro');
+  if (aceite) {
+    btn.disabled = false;
+    btn.style.background = 'linear-gradient(135deg,#e8650a,#ff8c00)';
+    btn.style.cursor = 'pointer';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '#ccc';
+    btn.style.cursor = 'not-allowed';
+  }
+}
+
+function verificarAceiteSorteio() {
+  const aceite = document.getElementById('aceite-sorteio').checked;
+  const btn    = document.getElementById('btn-iniciar-sorteio');
+  if (aceite) {
+    btn.disabled = false;
+    btn.style.background = 'linear-gradient(135deg,#1b5e20,#2e7d32)';
+    btn.style.cursor = 'pointer';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '#ccc';
+    btn.style.cursor = 'not-allowed';
+  }
+}
+
+function iniciarCadastroSorteio() {
+  const aceite = document.getElementById('aceite-sorteio').checked;
+  if (!aceite) {
+    alert('⚠️ Você precisa ler e aceitar o Regulamento dos Sorteios para continuar.');
+    return;
+  }
+  document.getElementById('card-regras-sorteio').style.display = 'none';
+  document.getElementById('form-sorteio-dados').style.display = 'block';
+  document.getElementById('form-sorteio-dados').scrollIntoView({behavior:'smooth'});
+}
+
+function iniciarCadastroFidelidade() {
+  const aceite = document.getElementById('aceite-fidelidade').checked;
+  if (!aceite) {
+    alert('⚠️ Você precisa ler e aceitar o Regulamento para se cadastrar.');
+    return;
+  }
+  // Oculta o card de regras e exibe o formulário
+  document.getElementById('card-regras-fidelidade').style.display = 'none';
+  document.getElementById('card-acesso').style.display = 'block';
+  document.getElementById('card-acesso').scrollIntoView({behavior:'smooth'});
+}
+
 function setTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='novo')||(i===1&&tab==='login')));
   document.getElementById('form-novo').style.display  = tab==='novo'  ? 'block' : 'none';
