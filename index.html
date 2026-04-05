@@ -1548,8 +1548,14 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 <div class="modal-box">
 <div class="modal-handle"></div>
 <button class="modal-close" onclick="fecharModal('modal-sabores')" type="button">✕</button>
-<div class="modal-title" id="ms-título">Sabores Disponíveis</div>
-<div class="modal-sub" id="ms-sub">Informe o sabor desejado ao fazer seu pedido na loja</div><script>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+  <button class="modal-nav-btn" id="ms-prev" onclick="navProdutoAnterior()" type="button" style="padding:8px 12px;background:#FF6D00;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">← Anterior</button>
+  <div>
+    <div class="modal-title" id="ms-título">Sabores Disponíveis</div>
+    <div class="modal-sub" id="ms-sub">Informe o sabor desejado ao fazer seu pedido na loja</div>
+  </div>
+  <button class="modal-nav-btn" id="ms-next" onclick="navProdutoProximo()" type="button" style="padding:8px 12px;background:#FF6D00;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">Próximo →</button>
+</div><script>
   // Script de Gestão Automática de Domínios
   // Se o acesso for pelo domínio desatualizado (.site), bloqueia e redireciona
   if (window.location.hostname.includes('itapolitanacajuru.site')) {
@@ -1916,6 +1922,15 @@ function abrirTacasSujas(el){
   abrirModal('modal-sabores',el);
 }
 function abrirPicolé(key,nome,el){
+  _produtoAtualKey=key;
+  _produtoAtualNome=nome;
+  _produtoAtualTipo='picolé';
+  _produtoAtualEl=el;
+  // Montar lista de picolés para navegação
+  if(produtos&&produtos.picolés){
+    _produtoLista=Object.entries(produtos.picolés).map(([k,v])=>({key:k,nome:v.nome||k}));
+    _produtoIndiceAtual=_produtoLista.findIndex(p=>p.key===key);
+  }
   document.getElementById('mp-título').textContent=`🍭 Sabores – ${nome}`;
   document.getElementById('mp-sub').textContent='Sabores disponíveis para este tipo de picolé';
   const chips=document.getElementById('mp-chips');chips.innerHTML='';
@@ -1937,6 +1952,38 @@ function abrirComplementos(el){
   }
   abrirModal('modal-comp',el);
 }
+// Variáveis para navegação entre produtos
+let _produtoAtualKey=null;
+let _produtoAtualNome=null;
+let _produtoAtualTipo=null;
+let _produtoAtualEl=null;
+let _produtoLista=[];
+let _produtoIndiceAtual=0;
+
+function navProdutoAnterior(){
+  if(_produtoLista.length===0)return;
+  _produtoIndiceAtual=(_produtoIndiceAtual-1+_produtoLista.length)%_produtoLista.length;
+  const p=_produtoLista[_produtoIndiceAtual];
+  if(_produtoAtualTipo==='picolé'){abrirPicolé(p.key,p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sorvete'){abrirSabores('sorvete',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='taça'){abrirSabores('taça',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='milkshake'){abrirSabores('milkshake',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='isopor'){abrirSabores('isopor',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sobremesa'){abrirSabores('sobremesa',p.nome,_produtoAtualEl);}
+}
+
+function navProdutoProximo(){
+  if(_produtoLista.length===0)return;
+  _produtoIndiceAtual=(_produtoIndiceAtual+1)%_produtoLista.length;
+  const p=_produtoLista[_produtoIndiceAtual];
+  if(_produtoAtualTipo==='picolé'){abrirPicolé(p.key,p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sorvete'){abrirSabores('sorvete',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='taça'){abrirSabores('taça',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='milkshake'){abrirSabores('milkshake',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='isopor'){abrirSabores('isopor',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sobremesa'){abrirSabores('sobremesa',p.nome,_produtoAtualEl);}
+}
+
 let promoInt=null;
 async function carregarBarraPromo(){
   const d=await _buscarDadosPromo();
