@@ -1692,7 +1692,11 @@ function _travarPagina(){
   // Não faz nada — o modal-overlay com pointer-events:auto já bloqueia interações
 }
 function _liberarPagina(){
-  // Não faz nada
+  // Restaurar posição de scroll anterior
+  if(_modalScrollY!==undefined){
+    window.scrollTo({top:_modalScrollY,behavior:'instant'});
+    _modalScrollY=undefined;
+  }
 }
 function fecharModal(id){
   const el=document.getElementById(id);
