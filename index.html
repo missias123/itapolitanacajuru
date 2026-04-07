@@ -1694,12 +1694,14 @@ let _modalScrollY=0;
 let _modalAtivo=null;
 
 function _travarPagina(){
-  _modalScrollY=window.scrollY;
-  // Não faz nada — o modal-overlay com pointer-events:auto já bloqueia interações
+  // Só grava se ainda não houver um valor (evita sobrescrever na navegação entre produtos)
+  if(_modalScrollY===undefined || _modalScrollY===0){
+    _modalScrollY=window.scrollY;
+  }
 }
 function _liberarPagina(){
   // Restaurar posição de scroll anterior
-  if(_modalScrollY!==undefined){
+  if(_modalScrollY!==undefined && _modalScrollY!==0){
     window.scrollTo({top:_modalScrollY,behavior:'instant'});
     _modalScrollY=undefined;
   }
