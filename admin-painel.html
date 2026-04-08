@@ -559,6 +559,69 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoção()">&#x1F4BE; Salvar Promoção</button></div>
         </div>
       </div>
+
+      <!-- SORTEIOS MENSAIS -->
+      <div class="card" style="border-left:4px solid #2e7d32">
+        <div class="card-header"><h2>&#x1F381; Sorteios Mensais</h2><button class="btn btn-salvar" onclick="salvarSorteio()">&#x1F4BE; Salvar</button></div>
+        <div class="card-body">
+          <div class="seção-título">&#x1F4CD; Configuração do Sorteio</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Data do próximo sorteio</label><input type="date" id="sort-data-prox"/></div>
+            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" placeholder="1 caixa de 5 litros de sorvete tipo artesanal"/></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Status do sorteio</label>
+              <select id="sort-status">
+                <option value="ativo">Ativo (aceitando inscrições)</option>
+                <option value="encerrado">Encerrado (inscrições fechadas)</option>
+                <option value="realizado">Realizado (vencedor definido)</option>
+              </select>
+            </div>
+            <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" placeholder="Nome do vencedor"/></div>
+          </div>
+          <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" placeholder="Notas internas sobre o sorteio..."></textarea></div>
+          <div id="sort-msg" style="font-size:.85rem;font-weight:600;margin-top:8px"></div>
+        </div>
+      </div>
+
+      <!-- LISTA DE INSCRITOS NO SORTEIO -->
+      <div class="card" style="border-left:4px solid #2e7d32">
+        <div class="card-header">
+          <h2>&#x1F4DD; Inscritos nos Sorteios Mensais</h2>
+          <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">&#x1F4F2; Copiar Lista</button>
+        </div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:10px">&#x26A0;&#xFE0F; Estes são os clientes que enviaram solicitação de inscrição pelo WhatsApp. Confirme manualmente na agenda antes do sorteio.</div>
+          <div id="sort-inscritos-lista" style="font-size:.82rem;color:#555;padding:10px;background:#f1f8e9;border-radius:8px;min-height:60px">
+            <em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <input type="text" id="sort-add-nome" placeholder="Nome do inscrito" style="flex:2;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
+            <input type="tel" id="sort-add-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" maxlength="15" style="flex:1.5;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
+            <button onclick="adicionarInscritoSorteio()" style="padding:9px 16px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">&#x2795; Adicionar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGULAMENTO DO SORTEIO -->
+      <div class="card" style="border-left:4px solid #7b1fa2">
+        <div class="card-header"><h2>&#x1F4DC; Regulamento — Sorteios Mensais</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de inscrição nos Sorteios Mensais.</div>
+          <div style="background:#f1f8e9;border:1.5px solid #a5d6a7;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
+            <strong>Versão atual ativa no site:</strong><br>
+            1. Do Sorteio — Mensal, a partir de 1º de maio de 2025<br>
+            2. Da Participação — Cajuru/Santa Cruz/Cássia, mín. 14 anos<br>
+            3. Do Prêmio — 1 caixa 5L, sorteio por IA com vídeo publicado<br>
+            4. Da Agenda — Número e nome devem estar cadastrados até o dia<br>
+            5. Das Proibições — Dados falsos = desclassificação permanente<br>
+            6. Das Críticas — Críticas infundadas = bloqueio definitivo<br>
+            7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
+            8. Do Foro — Comarca de Cajuru — SP
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- CARDÁPIO TÍTULOS -->
@@ -1625,55 +1688,11 @@ Talento</textarea>
           <div style="padding:12px 16px;font-size:.78rem;color:#888" id="fid-pag-info"></div>
         </div>
       </div>
-    </div>
-      <!-- SORTEIOS MENSAIS -->
-      <div class="card" style="border-left:4px solid #2e7d32">
-        <div class="card-header"><h2>🎁 Sorteios Mensais</h2><button class="btn btn-salvar" onclick="salvarSorteio()">💾 Salvar</button></div>
-        <div class="card-body">
-          <div class="seção-título">📍 Configuração do Sorteio</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit"><label>Data do próximo sorteio</label><input type="date" id="sort-data-prox"/></div>
-            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" placeholder="1 caixa de 5 litros de sorvete tipo artesanal"/></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit"><label>Status do sorteio</label>
-              <select id="sort-status">
-                <option value="ativo">Ativo (aceitando inscrições)</option>
-                <option value="encerrado">Encerrado (inscrições fechadas)</option>
-                <option value="realizado">Realizado (vencedor definido)</option>
-              </select>
-            </div>
-            <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" placeholder="Nome do vencedor"/></div>
-          </div>
-          <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" placeholder="Notas internas sobre o sorteio..."></textarea></div>
-          <div id="sort-msg" style="font-size:.85rem;font-weight:600;margin-top:8px"></div>
-        </div>
-      </div>
 
-      <!-- LISTA DE INSCRITOS NO SORTEIO -->
-      <div class="card" style="border-left:4px solid #2e7d32">
-        <div class="card-header">
-          <h2>📝 Inscritos nos Sorteios Mensais</h2>
-          <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">📲 Copiar Lista</button>
-        </div>
+      <!-- REGULAMENTO DO CLUBE DE FIDELIDADE -->
+      <div class="card" style="border-left:4px solid #e65100">
+        <div class="card-header"><h2>&#x1F4DC; Regulamento — Clube de Fidelidade</h2></div>
         <div class="card-body">
-          <div class="hint" style="margin-bottom:10px">⚠️ Estes são os clientes que enviaram solicitação de inscrição pelo WhatsApp. Confirme manualmente na agenda antes do sorteio.</div>
-          <div id="sort-inscritos-lista" style="font-size:.82rem;color:#555;padding:10px;background:#f1f8e9;border-radius:8px;min-height:60px">
-            <em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <input type="text" id="sort-add-nome" placeholder="Nome do inscrito" style="flex:2;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
-            <input type="tel" id="sort-add-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" maxlength="15" style="flex:1.5;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
-            <button onclick="adicionarInscritoSorteio()" style="padding:9px 16px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">➕ Adicionar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- REGULAMENTOS -->
-      <div class="card" style="border-left:4px solid #7b1fa2">
-        <div class="card-header"><h2>📜 Regulamentos</h2></div>
-        <div class="card-body">
-          <div class="seção-título">🎟️ Regulamento — Clube de Fidelidade</div>
           <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de cadastro do Clube de Fidelidade. O cliente precisa aceitar para prosseguir.</div>
           <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
             <strong>Versão atual ativa no site:</strong><br>
@@ -1686,22 +1705,10 @@ Talento</textarea>
             7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
             8. Do Foro — Comarca de Cajuru — SP
           </div>
-          <div class="seção-título" style="margin-top:16px">🎁 Regulamento — Sorteios Mensais</div>
-          <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de inscrição nos Sorteios Mensais.</div>
-          <div style="background:#f1f8e9;border:1.5px solid #a5d6a7;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
-            <strong>Versão atual ativa no site:</strong><br>
-            1. Do Sorteio — Mensal, a partir de 1º de maio de 2025<br>
-            2. Da Participação — Cajuru/Santa Cruz/Cássia, mín. 14 anos<br>
-            3. Do Prêmio — 1 caixa 5L, sorteio por IA com vídeo publicado<br>
-            4. Da Agenda — Número e nome devem estar cadastrados até o dia<br>
-            5. Das Proibições — Dados falsos = desclassificação permanente<br>
-            6. Das Críticas — Críticas infundadas = bloqueio definitivo<br>
-            7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
-            8. Do Foro — Comarca de Cajuru — SP
-          </div>
         </div>
       </div>
 
+    </div>
     <!-- CONFIG -->
     <div class="seção" id="sec-config">
       <div class="card">
