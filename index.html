@@ -330,8 +330,8 @@ img{max-width:100%;display:block}
 .cardápio{max-width:960px;margin:0 auto;padding:16px}
 .cardápio-h{font-size:22px;font-weight:900;text-align:center;margin-bottom:20px;letter-spacing:-.5px;color:#1A0A00;font-family:"Poppins",sans-serif;padding:0 16px}
 /* ACCORDION */
-.acc{border-radius:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.15);isolation:isolate;transition:transform .2s,box-shadow .2s}.acc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
-.acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s}
+.acc{border-radius:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(0,0,0,.15);isolation:isolate;transition:transform .2s,box-shadow .2s;scroll-margin-top:80px}.acc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s;scroll-margin-top:80px}
 .acc-header:hover{filter:brightness(1.08)}
 .acc-header:focus{outline:3px solid rgba(255,255,255,.7);outline-offset:2px;}
 .acc-header:focus:not(:focus-visible){outline:none;}
@@ -388,6 +388,8 @@ img{max-width:100%;display:block}
 .btn-sabores:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 18px rgba(236,72,153,.45)}
 .btn-comp{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:12px 20px;min-height:44px;background:linear-gradient(135deg,#34D399,#059669);color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:800;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 3px 12px rgba(5,150,105,.35);letter-spacing:.2px}
 .btn-comp:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 18px rgba(5,150,105,.45)}
+.btn-voltar-inicio{display:inline-flex;align-items:center;gap:6px;margin:12px auto 4px;padding:11px 24px;min-height:44px;background:linear-gradient(135deg,#FF6B35,#FF4081);color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:800;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 3px 12px rgba(255,107,53,.35);letter-spacing:.2px;cursor:pointer;width:auto}
+.btn-voltar-inicio:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 18px rgba(255,107,53,.45)}
 /* AÇAÍ CARD */
 .açaí-item{background:#FFFDF9;border:1px solid #E8D8F8;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 0 0 2px #7B2D8B,0 4px 12px rgba(123,45,139,.12)}
 .açaí-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
@@ -1805,6 +1807,10 @@ function renderSorvetes(){
       g.appendChild(c);
     });
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-sorvetes\');document.getElementById(\'acc-sorvetes\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  g.parentElement.appendChild(_vb);
 }
 function renderMilk(){
   const g=document.getElementById('milk-grid');
@@ -1819,6 +1825,10 @@ function renderMilk(){
       g.appendChild(c);
     });
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-milk\');document.getElementById(\'acc-milk\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  g.parentElement.appendChild(_vb);
 }
 function renderTacas(){
   const g=document.getElementById('tacas-grid');
@@ -1830,6 +1840,10 @@ function renderTacas(){
       g.appendChild(c);
     });
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-tacas\');document.getElementById(\'acc-tacas\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  g.parentElement.appendChild(_vb);
 }
 function renderTacasP(){
   const g=document.getElementById('tacas-p-grid');
@@ -1841,6 +1855,10 @@ function renderTacasP(){
       g.appendChild(c);
     });
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-tacas-p\');document.getElementById(\'acc-tacas-p\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  g.parentElement.appendChild(_vb);
 }
 function renderAçaíPromo(){
   const b=document.getElementById('açaí-promo-body');if(!b)return;b.innerHTML='';
@@ -1851,6 +1869,10 @@ function renderAçaíPromo(){
       b.appendChild(d);
     });
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-açaí-promo\');document.getElementById(\'acc-açaí-promo\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  b.appendChild(_vb);
 }
 function renderAçaí(){
   const b=document.getElementById('açaí-body');b.innerHTML='';
@@ -1861,6 +1883,10 @@ function renderAçaí(){
       b.appendChild(d);
     });
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-açaí\');document.getElementById(\'acc-açaí\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  b.appendChild(_vb);
 }
 const iconesPicolé={frutas_agua:'🍉',leite_sem_recheio:'🍦',leite_com_recheio:'🍫',leite_ninho:'⭐',esquimós:'🍬'};
 function renderPicolés(){
@@ -1880,6 +1906,10 @@ function renderPicolés(){
     });
     b.appendChild(grid);
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-picolés\');document.getElementById(\'acc-picolés\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  b.appendChild(_vb);
 }
 function renderIso(){
   const b=document.getElementById('iso-body');if(!b)return;b.innerHTML='';
@@ -1896,6 +1926,10 @@ function renderIso(){
     btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore',this)">🧊 Ver os 35 Sabores</button></div>`;
     b.appendChild(btn);
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-iso\');document.getElementById(\'acc-iso\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  b.appendChild(_vb);
 }
 function renderSobremesas(){
   const b=document.getElementById('sobremesas-body');if(!b)return;b.innerHTML='';
@@ -1915,6 +1949,10 @@ function renderSobremesas(){
     btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas',this)">🍨 Ver os 35 Sabores</button></div>`;
     b.appendChild(btn);
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="toggleAcc(\'acc-sobremesas\');document.getElementById(\'acc-sobremesas\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">← Voltar ao Início do Cardápio</button>';
+  b.appendChild(_vb);
 }
 function getSaboresDisponíveis(){
   try{
