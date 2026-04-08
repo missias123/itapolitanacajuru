@@ -345,8 +345,8 @@ img{max-width:100%;display:block}
 .acc-sub{font-size:12px;color:#fff;font-weight:600;margin-top:2px;letter-spacing:.1px;font-family:"Inter",sans-serif}
 .acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
 .acc.open .acc-arrow{transform:rotate(180deg)}
-.acc-body{display:none;padding:20px 16px;background:#FFFDF9;border:2px solid transparent;animation:slideDown .25s ease}.acc-body.open{display:block}@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.acc.open .acc-body{display:block}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .35s ease,padding .35s ease;opacity:0;padding:0 16px;background:#FFFDF9;border:2px solid transparent;border-top:none;}
+.acc.open .acc-body{max-height:5000px;opacity:1;padding:20px 16px;}
 /* Cores por categoria */
 #acc-sorvetes>.acc-header{background:linear-gradient(135deg,#7B1FA2,#E040FB,#FF4081)}
 #acc-sorvetes>.acc-body{border-color:#CE93D8}
@@ -1568,6 +1568,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <div class="acc-body">
 <div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><a href="encomendas.html" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a></div>
+<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-caixas')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
 <div class="acc" id="acc-enc-tortas">
@@ -1580,6 +1581,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <div class="acc-body">
 <a class="enc-link-btn" href="encomendas.html#tortas">🎂 Ver Tortas de Sorvete e Encomendar →</a>
+<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-tortas')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
 <div class="acc" id="acc-enc-picolés">
@@ -1592,6 +1594,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <div class="acc-body" id="picolés-enc-body">
 <a class="enc-link-btn" href="encomendas.html#picolés">🍭 Ver Picolés e Encomendar →</a>
+<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-picolés')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
 <div class="acc" id="acc-complementos">
@@ -1602,7 +1605,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <span class="acc-arrow" style="color:#fff">▼</span>
 </div>
-<div class="acc-body" id="acc-body-complementos"></div>
+<div class="acc-body" id="acc-body-complementos"><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-complementos')">← Voltar ao Início do Cardápio</button></div>
 </div>
 	</section>
 
@@ -1786,27 +1789,50 @@ function imgCard(chave,emoji){
   return `<div class="prod-card-sem-foto">${emoji||'🍦'}</div>`;
 }
 // ── Accordion do Cardápio ──────────────────────────────────────────
-// Volta ao topo do cardapio SEM fechar o accordion
-function voltarCardapio(accId) {
-  var el = document.getElementById('cardápio');
-  if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
-}
+// ── ACCORDION CASCATA PROFISSIONAL ──────────────────────────────
+// Técnica: max-height animado — sem display:none, sem pulo de tela
+// Clica → abre suavemente | Clica de novo → fecha
+// Dedo/mouse fica no mesmo lugar — tela não se move
+// ────────────────────────────────────────────────────────────────
 function toggleAcc(id) {
-  const el = document.getElementById(id);
+  var el = document.getElementById(id);
   if (!el) return;
-
-  const isOpen = el.classList.contains('open');
-
+  var isOpen = el.classList.contains('open');
+  // Fecha todos os outros accordions abertos
+  document.querySelectorAll('.acc.open').forEach(function(acc) {
+    if (acc.id !== id) {
+      acc.classList.remove('open');
+      var h = acc.querySelector('.acc-header');
+      if (h) h.setAttribute('aria-expanded', 'false');
+    }
+  });
+  // Abre ou fecha o clicado
   if (isOpen) {
     el.classList.remove('open');
-    const h = el.querySelector('.acc-header');
+    var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'false');
   } else {
     el.classList.add('open');
-    const h = el.querySelector('.acc-header');
+    var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'true');
-    // SEM scroll automático — página fica estática ao abrir
+    // SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
   }
+}
+
+// Volta ao topo do cardápio E fecha o accordion atual
+function voltarCardapio(accId) {
+  // Fecha o accordion
+  if (accId) {
+    var el = document.getElementById(accId);
+    if (el) {
+      el.classList.remove('open');
+      var h = el.querySelector('.acc-header');
+      if (h) h.setAttribute('aria-expanded', 'false');
+    }
+  }
+  // Rola suavemente ao topo do cardápio
+  var topo = document.getElementById('cardápio');
+  if (topo) topo.scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 /* =====================================================
    SISTEMA UNIFICADO DE MODAL — PADRÃO PROFISSIONAL
