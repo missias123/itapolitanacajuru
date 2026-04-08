@@ -2825,6 +2825,37 @@ function aplicarConfig(c) {
   try { localStorage.setItem('itap_config_cache', JSON.stringify(c)); } catch(e) {}
 }
 
+// ── APLICAR TÍTULOS DOS ACCORDIONS SALVOS NO ADMIN ──────────────────────
+function aplicarTitulosCardapio() {
+  try {
+    var cfg = JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
+    if (!cfg || !Object.keys(cfg).length) return;
+    var mapa = [
+      ['acc-sorvetes-titulo','acc-sorvetes-sub','acc-sorvetes'],
+      ['acc-picoles-titulo','acc-picoles-sub','acc-picolés'],
+      ['acc-açaí-promo-titulo','acc-açaí-promo-sub','acc-açaí-promo'],
+      ['acc-açaí-titulo','acc-açaí-sub','acc-açaí'],
+      ['acc-milk-titulo','acc-milk-sub','acc-milk'],
+      ['acc-tacas-titulo','acc-tacas-sub','acc-tacas'],
+      ['acc-tacas-p-titulo','acc-tacas-p-sub','acc-tacas-premium'],
+      ['acc-iso-titulo','acc-iso-sub','acc-iso'],
+      ['acc-sobremesas-titulo','acc-sobremesas-sub','acc-sobremesas'],
+      ['acc-caixas-titulo','acc-caixas-sub','acc-enc-caixas'],
+      ['acc-torta-titulo','acc-torta-sub','acc-enc-tortas'],
+      ['acc-enc-picoles-titulo','acc-enc-picoles-sub','acc-enc-picolés'],
+      ['acc-complementos-titulo','acc-complementos-sub','acc-complementos']
+    ];
+    mapa.forEach(function(m) {
+      var accEl = document.getElementById(m[2]);
+      if (!accEl) return;
+      var tEl = accEl.querySelector('.acc-title');
+      var sEl = accEl.querySelector('.acc-sub');
+      if (tEl && cfg[m[0]]) tEl.textContent = cfg[m[0]];
+      if (sEl && cfg[m[1]]) sEl.textContent = cfg[m[1]];
+    });
+  } catch(e) { console.warn('[Itap] Títulos cardápio:', e); }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 async function carregarConfig() {
   try {
     const resp = await fetch(ITAP_CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' });
@@ -2857,6 +2888,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Carregar config (textos, hero, footer, strip)
   carregarConfig();
+
+  // 2b. Aplicar títulos dos accordions salvos no admin
+  aplicarTitulosCardapio();
 
   // 3. Carregar banner
   carregarBanner();

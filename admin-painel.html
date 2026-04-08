@@ -621,6 +621,10 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
           <div class="campo-edit"><label>Título</label><input type="text" id="acc-enc-picoles-titulo" maxlength="60" placeholder="Picolés para Encomenda"/></div>
           <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-enc-picoles-sub" maxlength="100" placeholder="Preço especial de atacado · 5 tipos · Mín. 100 unidades"/></div>
 
+          <div class="seção-título" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🍫 Complementos para Sorvetes</div>
+          <div class="campo-edit"><label>Título</label><input type="text" id="acc-complementos-titulo" maxlength="60" placeholder="Complementos para Sorvetes"/><div class="hint">Título do accordion de complementos no cardápio. Atualiza o site ao salvar.</div></div>
+          <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-complementos-sub" maxlength="100" placeholder="Canudinho, Casquinha, Cascão, Cestinha, Cobertura"/><div class="hint">Descrição dos complementos disponíveis.</div></div>
+
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarTitulosCardapio()">💾 Salvar Títulos do Cardápio</button></div>
         </div>
       </div>
@@ -3294,7 +3298,9 @@ function carregarTitulosCardapio() {
     ['acc-torta-titulo','Tortas de Sorvete'],
     ['acc-torta-sub','Faça a festa! 3 sabores · Encomende com 3 dias de antecedência'],
     ['acc-enc-picoles-titulo','Picolés para Encomenda'],
-    ['acc-enc-picoles-sub','Preço especial de atacado · 5 tipos · Mín. 100 unidades']
+    ['acc-enc-picoles-sub','Preço especial de atacado · 5 tipos · Mín. 100 unidades'],
+    ['acc-complementos-titulo','Complementos para Sorvetes'],
+    ['acc-complementos-sub','Canudinho, Casquinha, Cascão, Cestinha, Cobertura']
   ];
   campos.forEach(function(c) {
     var el = document.getElementById(c[0]);
@@ -3308,7 +3314,8 @@ function salvarTitulosCardapio() {
     'acc-milk-titulo','acc-milk-sub','acc-tacas-titulo','acc-tacas-sub',
     'acc-tacas-p-titulo','acc-tacas-p-sub','acc-iso-titulo','acc-iso-sub',
     'acc-sobremesas-titulo','acc-sobremesas-sub','acc-caixas-titulo','acc-caixas-sub',
-    'acc-torta-titulo','acc-torta-sub','acc-enc-picoles-titulo','acc-enc-picoles-sub'];
+    'acc-torta-titulo','acc-torta-sub','acc-enc-picoles-titulo','acc-enc-picoles-sub',
+    'acc-complementos-titulo','acc-complementos-sub'];
   var cfg = {};
   campos.forEach(function(id) {
     var el = document.getElementById(id);
@@ -3361,5 +3368,6 @@ function salvarEstoqueCaixas() {
 }
 
 </script>
+</div><!-- /admin-app -->
 </body>
 </html>
