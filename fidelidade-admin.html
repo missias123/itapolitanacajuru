@@ -255,7 +255,15 @@ const GH_FILE_PATH = 'dados/fidelidade.json';
 const TOTAL_BANCO  = 100000;
 const LOTE_SIZE    = 100;
 const SALT         = 'ITAP0L1T4N4#S3CR3T@2024!';
-const CHARS        = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+';
+// REGRA DOS CARACTERES PERMITIDOS NOS CUPONS:
+// Removidos para evitar confusao visual ao digitar o cupom fisico:
+//   Letra O  → parece numero 0
+//   Letra I  → parece numero 1 ou letra L
+//   Letra L  → parece numero 1 ou letra I
+//   Numero 0 → parece letra O
+//   Numero 1 → parece letra I ou letra L
+// Caracteres especiais mantidos para aumentar entropia e dificultar fraude.
+const CHARS        = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
 
 // Cache local dos dados do GitHub
 let db = null;

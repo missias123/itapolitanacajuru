@@ -2499,7 +2499,10 @@ function renderCódigos(){
 const FID_TOTAL_BANCO = 100000;
 const FID_LOTE_SIZE   = 100;
 const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
-const FID_CHARS       = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+';
+// REGRA DOS CARACTERES PERMITIDOS NOS CUPONS (sem O,I,L,0,1 para evitar confusao visual):
+// Letra O=parece 0 | Letra I=parece 1/L | Letra L=parece 1/I | Num 0=parece O | Num 1=parece I/L
+// Especiais mantidos para aumentar entropia e dificultar fraude.
+const FID_CHARS       = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
 function fidGerarCodigo(idx){
   const s=FID_SALT;
   let a=idx+1,b=0;
