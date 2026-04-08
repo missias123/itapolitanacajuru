@@ -1043,6 +1043,16 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   .badge-conf { font-size: 0.75rem; padding: 5px 10px; }
 }
 
+
+/* ── PAINEL INLINE DE SABORES (Nível 3) ── */
+.sabores-inline{padding:4px 0 8px;animation:slideDown .2s ease}
+.sabores-inline-titulo{font-size:16px;font-weight:900;color:#7B2D8B;margin-bottom:6px;padding-bottom:6px;border-bottom:2px solid #F3E8FF}
+.sabores-inline-sub{font-size:12px;color:#9333EA;margin-bottom:12px;font-weight:600}
+.chips-inline{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip-inline{background:#FFF0F9;border:1.5px solid #F9A8D4;border-radius:50px;padding:6px 14px;font-size:13px;font-weight:700;color:#BE185D;cursor:default;transition:background .15s}
+.chip-inline:hover{background:#FCE7F3}
+.btn-voltar-nivel{display:inline-flex;align-items:center;gap:6px;margin:8px 0 4px;padding:10px 20px;min-height:44px;background:linear-gradient(135deg,#7B2D8B,#9333EA);color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(123,45,139,.3);transition:all .2s}
+.btn-voltar-nivel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(123,45,139,.4)}
 </style>
 <script type="application/ld+json">
 {
@@ -1331,7 +1341,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <div class="acc-body">
 <div class="prod-grid" id="sorvetes-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
-<button aria-label="Ver 35 sabores de sorvete tipo artesanal" class="btn-sabores" onclick="abrirSabores('sorvetes','🍦 35 Sabores de Sorvete',this)" type="button">🍦 Ver 35 Sabores</button>
+<button aria-label="Ver 35 sabores de sorvete tipo artesanal" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','🍦 35 Sabores de Sorvete',this)" type="button">🍦 Ver 35 Sabores</button>
 </div>
 </div>
 </div>
@@ -1376,7 +1386,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <div class="acc-body">
 <div class="prod-grid" id="milk-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
-<button aria-label="Ver sabores de milkshake" class="btn-sabores" onclick="abrirMilkshakeSabores(this)" type="button">🥤 Ver Sabores do Milkshake</button>
+<button aria-label="Ver sabores de milkshake" class="btn-sabores" onclick="abrirMilkshakeSaboresInline(this)" type="button">🥤 Ver Sabores do Milkshake</button>
 </div>
 </div>
 </div>
@@ -1391,7 +1401,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <div class="acc-body">
 <div class="prod-grid" id="tacas-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
-<button class="btn-sabores" onclick="abrirTacasTradicionais(this)" type="button">🍧 Ver Sabores das Taças</button>
+<button class="btn-sabores" onclick="abrirTacasTradicionaisInline(this)" type="button">🍧 Ver Sabores das Taças</button>
 </div>
 </div>
 </div>
@@ -1406,7 +1416,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <div class="acc-body">
 <div class="prod-grid" id="tacas-p-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
-<button class="btn-sabores" onclick="abrirTacasSujas(this)" type="button">👑 Ver Taças Premium</button>
+<button class="btn-sabores" onclick="abrirTacasSujasInline(this)" type="button">👑 Ver Taças Premium</button>
 </div>
 </div>
 </div>
@@ -1928,7 +1938,7 @@ function renderIso(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🧊 Sabores para Isopore',this)">🧊 Ver os 35 Sabores</button></div>`;
+    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','🧊 Sabores para Isopore',this)">🧊 Ver os 35 Sabores</button></div>`;
     b.appendChild(btn);
   }
 
@@ -3144,6 +3154,72 @@ function atualizarStatusLoja() {
 })();
 
 // [atualizarStatusLoja fundida no DOMContentLoaded principal]
+
+// ── NAVEGAÇÃO INLINE EM 3 NÍVEIS ─────────────────────────────────────────────
+// Guarda o HTML original do acc-body para restaurar ao clicar Voltar
+var _nivelAnterior = {};
+
+function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
+  // Salva o conteúdo atual do acc-body (Nível 2)
+  var accId = accBodyEl.closest('.acc') ? accBodyEl.closest('.acc').id : null;
+  if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
+
+  // Monta o HTML do Nível 3 (sabores inline)
+  var chipsHtml = chips.map(function(s) {
+    return '<span class="chip-inline">' + s + '</span>';
+  }).join('');
+
+  accBodyEl.innerHTML =
+    '<div class="sabores-inline">' +
+      '<div class="sabores-inline-titulo">' + titulo + '</div>' +
+      '<div class="sabores-inline-sub">' + sub + '</div>' +
+      '<div class="chips-inline">' + chipsHtml + '</div>' +
+      '<button type="button" class="btn-voltar-nivel" onclick="voltarNivel(this)">← Voltar</button>' +
+    '</div>';
+}
+
+function voltarNivel(btn) {
+  var accBody = btn.closest('.acc-body') || btn.closest('.acc-body-inner') || btn.parentElement.parentElement;
+  var acc = accBody ? accBody.closest('.acc') : null;
+  var accId = acc ? acc.id : null;
+  if (accId && _nivelAnterior[accId]) {
+    accBody.innerHTML = _nivelAnterior[accId];
+    delete _nivelAnterior[accId];
+  }
+}
+
+// ── Substitui abrirSabores para usar inline ──────────────────────────────────
+function abrirSaboresInline(tipo, titulo, el) {
+  var accBody = el.closest('.acc-body');
+  if (!accBody) { abrirSabores(tipo, titulo, el); return; }
+  var sabores = getSaboresDisponíveis();
+  mostrarSaboresInline(accBody, titulo, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
+}
+
+function abrirMilkshakeSaboresInline(el) {
+  var accBody = el.closest('.acc-body');
+  if (!accBody) { abrirMilkshakeSabores(el); return; }
+  var sabores = getSaboresDisponíveis();
+  var titulo = '🥤 Milkshakes – ' + (sabores.length || 36) + ' Sabores';
+  mostrarSaboresInline(accBody, titulo, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
+}
+
+function abrirTacasTradicionaisInline(el) {
+  var accBody = el.closest('.acc-body');
+  if (!accBody) { abrirTacasTradicionais(el); return; }
+  var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
+  var chips = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+  mostrarSaboresInline(accBody, '🍨 Taças – ' + chips.length + ' Opções', 'Informe a taça desejada ao fazer seu pedido na loja', chips);
+}
+
+function abrirTacasSujasInline(el) {
+  var accBody = el.closest('.acc-body');
+  if (!accBody) { abrirTacasSujas(el); return; }
+  var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
+  var chips = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+  mostrarSaboresInline(accBody, '👑 Taças Premium – ' + chips.length + ' Opções', 'Informe a taça desejada ao fazer seu pedido na loja', chips);
+}
+
 </script>
 </body>
 </html>
