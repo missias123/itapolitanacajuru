@@ -2,6 +2,16 @@
 
 <html lang="pt-BR">
 <head>
+<!-- ══ REDIRECIONAMENTO DE DOMÍNIO DESATUALIZADO ══ -->
+<script>
+  // Bloqueia acesso pelo domínio antigo (.site) e redireciona para o oficial
+  (function() {
+    if (window.location.hostname.includes('itapolitanacajuru.site')) {
+      document.documentElement.innerHTML = '<div style="font-family:sans-serif;text-align:center;padding:50px"><h1>Acesso Negado</h1><p>Este domínio (.site) está desatualizado e foi desativado.</p><p>Use o site oficial: <a href="https://itapolitanacajuru.com.br" style="color:#1565C0;font-weight:bold">itapolitanacajuru.com.br</a></p></div>';
+      window.stop();
+    }
+  })();
+</script>
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -1430,7 +1440,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <span class="acc-arrow">▼</span>
 </div>
 <div class="acc-body">
-<div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer" type="button">⬆️ Ir ao topção → Encomendas</button></div>
+<div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><a href="encomendas.html" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a></div>
 </div>
 </div>
 <div class="acc" id="acc-enc-tortas">
@@ -1542,7 +1552,6 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 <div style="margin-top:10px;text-align:center;">
   <a href="admin-painel.html" style="display:inline-block;background:none;border:none;color:rgba(255,255,255,0.15);font-size:1.1rem;cursor:pointer;padding:8px;text-decoration:none;line-height:1;" title="Admin">⚙️</a>
 </div>
-</div>
 </footer>
 <div class="modal-overlay" id="modal-sabores">
 <div class="modal-box">
@@ -1555,23 +1564,7 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
     <div class="modal-sub" id="ms-sub">Informe o sabor desejado ao fazer seu pedido na loja</div>
   </div>
   <button class="modal-nav-btn" id="ms-next" onclick="navProdutoProximo()" type="button" style="padding:8px 12px;background:#FF6D00;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">Próximo →</button>
-</div><script>
-  // Script de Gestão Automática de Domínios
-  // Se o acesso for pelo domínio desatualizado (.site), bloqueia e redireciona
-  if (window.location.hostname.includes('itapolitanacajuru.site')) {
-    document.documentElement.innerHTML = `
-      <div style="font-family:sans-serif; text-align:center; padding:50px;">
-        <h1>Acesso Negado</h1>
-        <p>Este domínio (.site) está desatualizado e foi desativado automaticamente.</p>
-        <p>Por favor, útilize o site oficial: 
-           <a href="https://itapolitanacajuru.com.br" style="color:#1565C0; font-weight:bold;">
-             itapolitanacajuru.com.br
-           </a>
-        </p>
-      </div>`;
-    window.stop();
-  }
-</script>
+</div>
 <div class="chips" id="ms-chips"></div>
 </div>
 </div>
@@ -2290,7 +2283,7 @@ function renderComplementosCardápio() {
       }).join('')}
       <div style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:4px">
         <div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">🛒 Para encomendar complementos, acesse a página de Encomendas no menu acima</div>
-        <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topção → Encomendas</button>
+        <a href="encomendas.html" style="display:inline-block;background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a>
       </div>
     </div>`;
 }
