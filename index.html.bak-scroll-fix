@@ -2,6 +2,16 @@
 
 <html lang="pt-BR">
 <head>
+<!-- ══ REDIRECIONAMENTO DE DOMÍNIO DESATUALIZADO ══ -->
+<script>
+  // Bloqueia acesso pelo domínio antigo (.site) e redireciona para o oficial
+  (function() {
+    if (window.location.hostname.includes('itapolitanacajuru.site')) {
+      document.documentElement.innerHTML = '<div style="font-family:sans-serif;text-align:center;padding:50px"><h1>Acesso Negado</h1><p>Este domínio (.site) está desatualizado e foi desativado.</p><p>Use o site oficial: <a href="https://itapolitanacajuru.com.br" style="color:#1565C0;font-weight:bold">itapolitanacajuru.com.br</a></p></div>';
+      window.stop();
+    }
+  })();
+</script>
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -1430,7 +1440,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <span class="acc-arrow">▼</span>
 </div>
 <div class="acc-body">
-<div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer" type="button">⬆️ Ir ao topção → Encomendas</button></div>
+<div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><a href="encomendas.html" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a></div>
 </div>
 </div>
 <div class="acc" id="acc-enc-tortas">
@@ -1542,7 +1552,6 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 <div style="margin-top:10px;text-align:center;">
   <a href="admin-painel.html" style="display:inline-block;background:none;border:none;color:rgba(255,255,255,0.15);font-size:1.1rem;cursor:pointer;padding:8px;text-decoration:none;line-height:1;" title="Admin">⚙️</a>
 </div>
-</div>
 </footer>
 <div class="modal-overlay" id="modal-sabores">
 <div class="modal-box">
@@ -1555,23 +1564,7 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
     <div class="modal-sub" id="ms-sub">Informe o sabor desejado ao fazer seu pedido na loja</div>
   </div>
   <button class="modal-nav-btn" id="ms-next" onclick="navProdutoProximo()" type="button" style="padding:8px 12px;background:#FF6D00;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">Próximo →</button>
-</div><script>
-  // Script de Gestão Automática de Domínios
-  // Se o acesso for pelo domínio desatualizado (.site), bloqueia e redireciona
-  if (window.location.hostname.includes('itapolitanacajuru.site')) {
-    document.documentElement.innerHTML = `
-      <div style="font-family:sans-serif; text-align:center; padding:50px;">
-        <h1>Acesso Negado</h1>
-        <p>Este domínio (.site) está desatualizado e foi desativado automaticamente.</p>
-        <p>Por favor, útilize o site oficial: 
-           <a href="https://itapolitanacajuru.com.br" style="color:#1565C0; font-weight:bold;">
-             itapolitanacajuru.com.br
-           </a>
-        </p>
-      </div>`;
-    window.stop();
-  }
-</script>
+</div>
 <div class="chips" id="ms-chips"></div>
 </div>
 </div>
@@ -2290,7 +2283,7 @@ function renderComplementosCardápio() {
       }).join('')}
       <div style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:4px">
         <div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">🛒 Para encomendar complementos, acesse a página de Encomendas no menu acima</div>
-        <button type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer">⬆️ Ir ao topção → Encomendas</button>
+        <a href="encomendas.html" style="display:inline-block;background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a>
       </div>
     </div>`;
 }
@@ -2412,15 +2405,166 @@ function renderTudo() {
   const tp=document.getElementById('torta-preço');
   if(tp&&produtos&&produtos.sobremesas)tp.textContent='R$ '+produtos.sobremesas['Torta de Sorvete'].toFixed(2).replace('.',',');
 }
+/* ============================================================
+   SINCRONISMO TOTAL — SINGLE SOURCE OF TRUTH
+   Padrão: iFood / Nubank / Shopify
+   Fonte: dados/config.json (GitHub Raw)
+   Aplica em todos os elementos do site ao carregar
+   Fallback: localStorage para offline/falha de rede
+   ============================================================ */
+const ITAP_CONFIG_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/config.json';
+
+function aplicarConfig(c) {
+  if (!c) return;
+
+  // --- HERO ---
+  const heroBadge = document.getElementById('hero-badge');
+  if (heroBadge && c.heroBadge) heroBadge.textContent = c.heroBadge;
+
+  const heroTitulo = document.querySelector('.hero h2');
+  if (heroTitulo && c.heroTitulo) {
+    heroTitulo.innerHTML = c.heroTitulo.replace(
+      /(Cajuru|Itapolitana|sorvete|açaí|picolé|cremoso)/gi,
+      '<span class="destaque-texto">$1</span>'
+    );
+  }
+
+  const heroDesc = document.querySelector('.hero p');
+  if (heroDesc && c.heroDescricao) heroDesc.textContent = c.heroDescricao;
+
+  const heroCtaBtn = document.getElementById('hero-cta');
+  if (heroCtaBtn && c.heroCta) heroCtaBtn.childNodes[heroCtaBtn.childNodes.length - 1].textContent = ' ' + c.heroCta;
+
+  const heroCtaWhats = document.querySelector('.btn-whatsapp-hero, [data-id="hero-cta-whats"]');
+  if (heroCtaWhats && c.heroCtaWhats) heroCtaWhats.textContent = c.heroCtaWhats;
+
+  // --- FRASES ROTATIVAS ---
+  if (c.heroFrases && Array.isArray(c.heroFrases) && c.heroFrases.length > 0) {
+    window.FRASES_HERO = c.heroFrases;
+    const fraseEl = document.getElementById('frase-rotativa');
+    if (fraseEl) fraseEl.textContent = c.heroFrases[0];
+  }
+
+  // --- STRIP SENSORIAL ---
+  if (c.stripSensorial && Array.isArray(c.stripSensorial) && c.stripSensorial.length > 0) {
+    window.STRIPS = c.stripSensorial;
+    const stripEl = document.getElementById('strip-sensorial');
+    if (stripEl) stripEl.textContent = c.stripSensorial[0];
+  }
+
+  // --- CARDÁPIO TÍTULO ---
+  const cardH = document.querySelector('.cardápio-h, #cardapio-titulo');
+  if (cardH && c.cardapioTitulo) cardH.textContent = c.cardapioTitulo;
+
+  // --- BOTÕES DE NAVEGAÇÃO (menu do site) ---
+  const navEncomendas = document.querySelector('a[href="encomendas.html"] .nav-label');
+  if (navEncomendas && c.navEncomendas) navEncomendas.textContent = c.navEncomendas;
+
+  const navPromocao = document.querySelector('a[href="promocao.html"] .nav-label');
+  if (navPromocao && c.navPromocao) navPromocao.textContent = c.navPromocao;
+
+  const navDicas = document.querySelector('a[href="dicas.html"] .nav-label');
+  if (navDicas && c.navDicas) navDicas.textContent = c.navDicas;
+
+  const navFidelidade = document.querySelector('a[href="fidelidade.html"] .nav-label');
+  if (navFidelidade && c.navFidelidade) navFidelidade.textContent = c.navFidelidade;
+
+  // --- BRAND ---
+  const brandName = document.querySelector('.brand-name');
+  if (brandName && c.nomeEmpresa) brandName.textContent = c.nomeEmpresa;
+
+  const brandSub = document.querySelector('.brand-sub');
+  if (brandSub && c.slogan) brandSub.textContent = c.slogan;
+
+  // --- INFO CARDS (horário, endereço, WhatsApp) ---
+  const infoHorario = document.querySelector('[data-info="horario"]');
+  if (infoHorario && c.horario) infoHorario.textContent = c.horario;
+
+  const infoEndereco = document.querySelector('[data-info="endereco"]');
+  if (infoEndereco && c.enderecoCompleto) infoEndereco.textContent = c.enderecoCompleto;
+
+  const infoWhats = document.querySelector('[data-info="whatsapp"]');
+  if (infoWhats && c.whatsappFormatado) infoWhats.textContent = c.whatsappFormatado;
+
+  // --- FOOTER ---
+  const footerHorario = document.getElementById('footer-horário');
+  if (footerHorario && c.footerHorario) footerHorario.innerHTML = c.footerHorario.replace(/\n/g, '<br/>');
+
+  const footerCopy = document.getElementById('footer-copy');
+  if (footerCopy && c.footerCopy) footerCopy.textContent = c.footerCopy;
+
+  const footerDev = document.getElementById('footer-dev');
+  if (footerDev && c.footerDev) footerDev.textContent = 'Desenvolvido por ' + c.footerDev;
+
+  // --- WHATSAPP LINKS ---
+  if (c.whatsapp) {
+    document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+      const url = new URL(a.href);
+      a.href = 'https://wa.me/' + c.whatsapp + (url.search || '');
+    });
+  }
+
+  // --- HORÁRIO DINÂMICO ---
+  if (c.horarioAbre !== undefined) window.ITAP_HORA_ABRE = c.horarioAbre;
+  if (c.horarioFecha !== undefined) window.ITAP_HORA_FECHA = c.horarioFecha;
+
+  // --- PROMOÇÃO TOP BAR ---
+  const promoBar = document.getElementById('promo-top-bar');
+  if (promoBar) {
+    if (c.promocaoAtiva) {
+      promoBar.classList.add('show');
+      const ptbTitulo = document.getElementById('ptb-título');
+      if (ptbTitulo && c.promocaoTitulo) ptbTitulo.textContent = c.promocaoTitulo;
+      const ptbSub = document.getElementById('ptb-sub');
+      if (ptbSub && c.promocaoDescricao) ptbSub.textContent = c.promocaoDescricao;
+    } else {
+      promoBar.classList.remove('show');
+    }
+  }
+
+  // --- FAB PROMOÇÃO ---
+  const fabBtn = document.getElementById('promo-fab-btn');
+  if (fabBtn && c.promocaoFab) fabBtn.textContent = c.promocaoFab;
+
+  // Salvar no localStorage como fallback
+  try { localStorage.setItem('itap_config_cache', JSON.stringify(c)); } catch(e) {}
+}
+
+async function carregarConfig() {
+  try {
+    const resp = await fetch(ITAP_CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error('Config indisponível');
+    const cfg = await resp.json();
+    aplicarConfig(cfg);
+    console.log('[Itap] Config sincronizado ✅');
+  } catch(e) {
+    // Fallback: usar cache do localStorage
+    try {
+      const cache = localStorage.getItem('itap_config_cache');
+      if (cache) {
+        aplicarConfig(JSON.parse(cache));
+        console.log('[Itap] Config do cache local ⚡');
+      }
+    } catch(e2) {}
+    console.warn('[Itap] Config offline:', e.message);
+  }
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
+  // 1. Carregar config (textos, hero, footer, strip)
+  carregarConfig();
+
+  // 2. Carregar banner
   carregarBanner();
-  // Carregar preços da nuvem primeiro, depois renderizar
+
+  // 3. Carregar preços da nuvem primeiro, depois renderizar
   carregarPreçosNuvemCardápio().then(() => {
     renderTudo();
   }).catch(() => {
     renderTudo();
   });
-  // Corrigir chatbot: resolver funções
+
+  // 4. Corrigir chatbot: resolver funções
   Object.keys(respostas).forEach(k=>{if(typeof respostas[k]==='function')respostas[k]=respostas[k]();});
 });
 
@@ -2442,12 +2586,14 @@ function atualizarStatusHorário() {
   let aberto = false;
   let fechaEm = '';
 
-  // Horários: Todos os dias: 10h às 22h
-  if (horaAtual >= 10 && horaAtual < 22) {
+  // Horários dinâmicos via config.json
+  const hAbre = window.ITAP_HORA_ABRE !== undefined ? window.ITAP_HORA_ABRE : 10;
+  const hFecha = window.ITAP_HORA_FECHA !== undefined ? window.ITAP_HORA_FECHA : 22;
+  if (horaAtual >= hAbre && horaAtual < hFecha) {
     aberto = true;
-    fechaEm = `Fecha às 22h`;
+    fechaEm = `Fecha às ${hFecha}h`;
   } else {
-    fechaEm = `Abre às 10h`;
+    fechaEm = `Abre às ${hAbre}h`;
   }
 
   if (aberto) {
