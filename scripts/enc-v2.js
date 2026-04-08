@@ -1,13 +1,16 @@
 
 // ENCOMENDAS.JS - Sorveteria Itapolitana Cajuru
 // Lógica completa do fluxo de encomendas
-const GIST_ID_PRECO = '92bd9d1997c2fdd225ad3115c7028445';
-const GIST_RAW_PRECO = 'https://gist.githubusercontent.com/missias123/' + GIST_ID_PRECO + '/raw/itap-produtos.json';
+// =====================================================
+// SINGLE SOURCE OF TRUTH — dados/produtos.json
+// Admin salva → produtos.json → site lê (padrão profissional)
+// =====================================================
+const ITAP_PRODUTOS_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json';
 
 async function carregarPreçosNuvem() {
   try {
-    const resp = await fetch(GIST_RAW_PRECO + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!resp.ok) throw new Error('Gist indisponível');
+    const resp = await fetch(ITAP_PRODUTOS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error('produtos.json indisponível');
     const dados = await resp.json();
     if (dados.picolés) {
       Object.entries(dados.picolés).forEach(([key, p]) => {
