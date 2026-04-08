@@ -975,8 +975,8 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
 }
 
-/* Scroll suave global */
-html { scroll-behavior: smooth; }
+/* scroll-behavior: smooth REMOVIDO — interfere com restauração de posição do modal */
+/* html { scroll-behavior: smooth; } */
 
 /* Seleção de texto com cor da marca */
 ::selection { background: #e85d04; color: #fff; }
@@ -1665,92 +1665,139 @@ function imgCard(chave,emoji){
   if(f) return `<img decoding="async" loading="lazy" class="prod-card-img" src="${f}" alt="Sorvete tipo artesanal - Sorveteria Itapolitana Cajuru">`;
   return `<div class="prod-card-sem-foto">${emoji||'🍦'}</div>`;
 }
-function toggleAcc(id){
-  const el=document.getElementById(id);
-  if(!el)return;
-  const isOpen=el.classList.contains('open');
-  if(isOpen){
-    // Fechar este accordion
+// ── Accordion do Cardápio ──────────────────────────────────────────
+function toggleAcc(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const isOpen = el.classList.contains('open');
+
+  if (isOpen) {
     el.classList.remove('open');
-    const h=el.querySelector('.acc-header');
-    if(h)h.setAttribute('aria-expanded','false');
+    const h = el.querySelector('.acc-header');
+    if (h) h.setAttribute('aria-expanded', 'false');
   } else {
-    // Abrir este accordion sem fechar os outros
     el.classList.add('open');
-    const h=el.querySelector('.acc-header');
-    if(h)h.setAttribute('aria-expanded','true');
-    // Sem scroll automático — página fica estática ao abrir
+    const h = el.querySelector('.acc-header');
+    if (h) h.setAttribute('aria-expanded', 'true');
+    // SEM scroll automático — página fica estática ao abrir
   }
 }
 /* =====================================================
-   SISTEMA UNIFICADO DE MODAL — UMA REGRA PARA TODOS
+   SISTEMA UNIFICADO DE MODAL — PADRÃO PROFISSIONAL
+   Técnica usada por iFood, Nubank, Apple, Rappi
    • Abre centralizado e estático no aparelho
-   • Fundo cinza semitransparente, página visível atrás
-   • Fecha ao clicar fora OU no X
-   • Volta exatamente onde estava na página
+   • Fundo semitransparente, página visível atrás
+   • Fecha ao clicar fora OU no X OU tecla ESC
+   • Volta EXATAMENTE onde estava — sem pulo
    • Mesmo botão substitui painel aberto (não empilha)
+   • position:fixed no body — padrão da indústria
    ===================================================== */
-let _modalScrollY=0;
-let _modalAtivo=null;
-let _botaoAtivo=null; // Rastreia qual botão está ativo
 
-function _travarPagina(){
-  // Só grava se ainda não houver um valor (evita sobrescrever na navegação entre produtos)
-  if(_modalScrollY===undefined || _modalScrollY===0){
-    _modalScrollY=window.scrollY;
+// ── Variáveis de estado do modal ──────────────────────
+let _scrollY    = 0;     // posição salva antes de travar
+let _modalAtivo = null;  // id do modal aberto no momento
+let _botaoAtivo = null;  // botão que abriu o modal atual
+
+
+// ── Trava a página sem mover o scroll ─────────────────
+// Técnica: body position:fixed + top negativo
+// Resultado: página congela exatamente onde está
+function _travarPagina() {
+  if (document.body.style.position === 'fixed') return; // já travada
+  _scrollY = window.scrollY;
+  document.body.style.position   = 'fixed';
+  document.body.style.top        = '-' + _scrollY + 'px';
+  document.body.style.width      = '100%';
+  document.body.style.overflowY  = 'scroll'; // evita pulo de layout
+}
+
+
+// ── Libera a página e restaura posição exata ──────────
+function _liberarPagina() {
+  if (document.body.style.position !== 'fixed') return; // já livre
+  document.body.style.position  = '';
+  document.body.style.top       = '';
+  document.body.style.width     = '';
+  document.body.style.overflowY = '';
+  window.scrollTo(0, _scrollY); // restaura posição exata — sem animação
+}
+
+
+// ── Fecha o modal pelo id ──────────────────────────────
+function fecharModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  // Remove destaque do botão que abriu
+  if (_botaoAtivo) {
+    _botaoAtivo.classList.remove('btn-ativo');
+    _botaoAtivo = null;
   }
-}
-function _liberarPagina(){
-  // NÃO restaurar scroll — deixar a página onde está naturalmente
-  // Isso evita o pulo indesejado para o rodapé
-  _modalScrollY=undefined;
-}
-function fecharModal(id){
-  const el=document.getElementById(id);
-  if(!el)return;
-  // Remover destaque do botão
-  if(_botaoAtivo)_botaoAtivo.classList.remove('btn-ativo');
-  _botaoAtivo=null;
+
   // Animação de saída
-  el.style.animation='fadeOutOverlay .15s ease forwards';
-  setTimeout(()=>{
+  el.style.animation = 'fadeOutOverlay .15s ease forwards';
+
+  setTimeout(() => {
     el.classList.remove('show');
-    el.style.animation='';
-    if(_modalAtivo===id)_modalAtivo=null;
-    // Só libera a página se não houver outro modal aberto
-    if(!document.querySelector('.modal-overlay.show, #fale-overlay.show, .chat-overlay.show, .promo-overlay.show')){
-      _liberarPagina();
-    }
-  },140);
+    el.style.animation = '';
+
+    if (_modalAtivo === id) _modalAtivo = null;
+
+    // Libera a página apenas se nenhum outro modal estiver aberto
+    const aindaAberto = document.querySelector(
+      '.modal-overlay.show, #fale-overlay.show, .chat-overlay.show, .promo-overlay.show'
+    );
+    if (!aindaAberto) _liberarPagina();
+
+  }, 140);
 }
-function abrirModal(id,originEl){
-  // Remover destaque do botão anterior
-  if(_botaoAtivo)_botaoAtivo.classList.remove('btn-ativo');
-  // Fechar modal anterior da mesma categoria sem animação (substitui)
-  if(_modalAtivo && _modalAtivo!==id){
-    const anterior=document.getElementById(_modalAtivo);
-    if(anterior){anterior.classList.remove('show');anterior.style.animation='';}
+
+
+// ── Abre o modal pelo id ───────────────────────────────
+function abrirModal(id, originEl) {
+  // Remove destaque do botão anterior
+  if (_botaoAtivo) {
+    _botaoAtivo.classList.remove('btn-ativo');
   }
-  // Travar página apenas na primeira abertura
-  if(!_modalAtivo){
+
+  // Substitui modal anterior (mesma categoria) sem animação
+  if (_modalAtivo && _modalAtivo !== id) {
+    const anterior = document.getElementById(_modalAtivo);
+    if (anterior) {
+      anterior.classList.remove('show');
+      anterior.style.animation = '';
+    }
+  }
+
+  // Trava a página apenas na primeira abertura
+  if (!_modalAtivo) {
     _travarPagina();
   }
-  _modalAtivo=id;
-  _botaoAtivo=originEl; // Gravar o botão ativo
-  if(_botaoAtivo)_botaoAtivo.classList.add('btn-ativo'); // Destacar o botão
-  const el=document.getElementById(id);
-  if(!el)return;
+
+  // Registra estado atual
+  _modalAtivo = id;
+  _botaoAtivo = originEl || null;
+  if (_botaoAtivo) _botaoAtivo.classList.add('btn-ativo');
+
+  // Exibe o modal
+  const el = document.getElementById(id);
+  if (!el) return;
   el.classList.add('show');
-  // Fechar ao clicar no fundo (fora do painel)
-  el._fecharFundo=function(e){
-    if(e.target===el)fecharModal(id);
+
+  // Fecha ao clicar no fundo (fora do painel)
+  // Remove listener antigo antes de adicionar novo — evita duplicatas
+  if (el._fecharFundo) el.removeEventListener('click', el._fecharFundo);
+  el._fecharFundo = function (e) {
+    if (e.target === el) fecharModal(id);
   };
-  el.removeEventListener('click',el._fecharFundo);
-  el.addEventListener('click',el._fecharFundo);
+  el.addEventListener('click', el._fecharFundo);
 }
-// Fechar com tecla ESC
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'&&_modalAtivo)fecharModal(_modalAtivo);
+
+
+// ── Fecha com tecla ESC ────────────────────────────────
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && _modalAtivo) fecharModal(_modalAtivo);
 });
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
@@ -1888,8 +1935,12 @@ function abrirSabores(tipo,título,el){
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const sabores=getSaboresDisponíveis();
   sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  abrirModal('modal-sabores',el);
-}function abrirMilkshakeSabores(el){
+  abrirModal('modal-sabores', el);
+}
+
+
+// ── Milkshakes ───────────────────────────────────────────────
+function abrirMilkshakeSabores(el) {
   const sabores = getSaboresDisponíveis();
   const total = sabores.length || 36;
   document.getElementById('ms-título').textContent=`🥤 Milkshakes – ${total} Sabores`;
@@ -1904,10 +1955,13 @@ function abrirSabores(tipo,título,el){
     fallback.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   }
   
-  document.getElementById('ms-sub').textContent='Informe o sabor desejado ao fazer seu pedido na loja';
-  abrirModal('modal-sabores',el);
+  document.getElementById('ms-sub').textContent = 'Informe o sabor desejado ao fazer seu pedido na loja';
+  abrirModal('modal-sabores', el);
 }
-function abrirTacasTradicionais(el){
+
+
+// ── Taças Tradicionais ──────────────────────────────────────────
+function abrirTacasTradicionais(el) {
   document.getElementById('ms-título').textContent='🍨 Taças – 8 Opções';
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const t=produtos&&produtos.tacas&&produtos.tacas.tradicionais?produtos.tacas.tradicionais:{};
@@ -1915,10 +1969,13 @@ function abrirTacasTradicionais(el){
     const sp=document.createElement('span');sp.className='chip-sabor';
     sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
   });
-  document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
-  abrirModal('modal-sabores',el);
+  document.getElementById('ms-sub').textContent = 'Informe a taça desejada ao fazer seu pedido na loja';
+  abrirModal('modal-sabores', el);
 }
-function abrirTacasSujas(el){
+
+
+// ── Taças Premium (Sujas) ────────────────────────────────────
+function abrirTacasSujas(el) {
   document.getElementById('ms-título').textContent='🏆 Taças Premium (Sujas) – 7 Opções';
   const chips=document.getElementById('ms-chips');chips.innerHTML='';
   const t=produtos&&produtos.tacas&&produtos.tacas.sujas?produtos.tacas.sujas:{};
@@ -1926,10 +1983,13 @@ function abrirTacasSujas(el){
     const sp=document.createElement('span');sp.className='chip-sabor';
     sp.textContent=`${nome} – R$ ${p.toFixed(2).replace('.',',')}`;chips.appendChild(sp);
   });
-  document.getElementById('ms-sub').textContent='Informe a taça desejada ao fazer seu pedido na loja';
-  abrirModal('modal-sabores',el);
+  document.getElementById('ms-sub').textContent = 'Informe a taça desejada ao fazer seu pedido na loja';
+  abrirModal('modal-sabores', el);
 }
-function abrirPicolé(key,nome,el){
+
+
+// ── Picolés ──────────────────────────────────────────────────────
+function abrirPicolé(key, nome, el) {
   _produtoAtualKey=key;
   _produtoAtualNome=nome;
   _produtoAtualTipo='picolé';
@@ -1944,8 +2004,11 @@ function abrirPicolé(key,nome,el){
   const chips=document.getElementById('mp-chips');chips.innerHTML='';
   const sabs=produtos&&produtos.picolés&&produtos.picolés[key]?produtos.picolés[key].sabores:[];
   sabs.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  abrirModal('modal-picolé',el);
+  abrirModal('modal-picolé', el);
 }
+
+
+// ── Complementos do Açaí ────────────────────────────────────────
 const labelComp={frutas:'🍓 Frutas',cremes:'🍯 Cremes',guloseimas:'🍬 Guloseimas',chocolates:'🍫 Chocolates'};
 function abrirComplementos(el){
   const lista=document.getElementById('comp-lista');lista.innerHTML='';
@@ -1958,9 +2021,12 @@ function abrirComplementos(el){
       lista.appendChild(g);
     });
   }
-  abrirModal('modal-comp',el);
+  abrirModal('modal-comp', el);
 }
-// Variáveis para navegação entre produtos
+
+
+// ── Navegação entre produtos (Anterior / Próximo) ────────────────
+// Variáveis de estado da navegação
 let _produtoAtualKey=null;
 let _produtoAtualNome=null;
 let _produtoAtualTipo=null;
@@ -2110,8 +2176,11 @@ const RESPOSTAS={
   'cajuru':'Estamos em Cajuru/SP desde 2007! Aténdemos também Santa Cruz da Esperança e Cássia dos Coqueiros. 📍',
   'default':'Posso te ajudar com: horários, endereço, preços, sabores, encomendas ou picolés. O que deseja saber? 😊'
 };
-function abrirChat(){abrirModal('chat-overlay');}
-function abrirFaleConosco(){abrirModal('fale-overlay');}
+// ── Chat e Fale Conosco ─────────────────────────────────────────────
+function abrirChat() { abrirModal('chat-overlay'); }
+
+
+function abrirFaleConosco() { abrirModal('fale-overlay'); }
 function enviarFaleConosco(){
   const nome=(document.getElementById('fale-nome').value||'').trim();
   const msg=(document.getElementById('fale-msg').value||'').trim();
@@ -2120,10 +2189,13 @@ function enviarFaleConosco(){
   const url='https://wa.me/5516996062046?text='+encodeURIComponent(texto);
   window.open(url,'_blank');
   fecharModal('fale-overlay');
-  document.getElementById('fale-nome').value='';
-  document.getElementById('fale-msg').value='';
+  document.getElementById('fale-nome').value = '';
+  document.getElementById('fale-msg').value  = '';
 }
-let deferredPrompt=null;
+
+
+// ── PWA — Instalação do App ──────────────────────────────────────
+let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredPrompt=e;
@@ -2148,8 +2220,14 @@ function dispensarPWA(){
   const banner=document.getElementById('pwa-banner');
   if(banner)banner.classList.remove('show');
 }
-function enviarSug(btn){document.getElementById('chat-inp').value=btn.textContent;enviarChat();}
-function enviarChat(){
+// ── Chatbot ──────────────────────────────────────────────────────
+function enviarSug(btn) {
+  document.getElementById('chat-inp').value = btn.textContent;
+  enviarChat();
+}
+
+
+function enviarChat() {
   const inp=document.getElementById('chat-inp');
   const msg=inp.value.trim();if(!msg)return;
   inp.value='';
@@ -2157,12 +2235,17 @@ function enviarChat(){
   const t=document.getElementById('chat-typing');t.classList.add('show');
   setTimeout(()=>{t.classList.remove('show');addMsg('bot',getResp(msg));},700+Math.random()*500);
 }
-function addMsg(tipo,txt){
-  const m=document.getElementById('chat-msgs');
-  const d=document.createElement('div');d.className=`msg ${tipo}`;d.textContent=txt;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+function addMsg(tipo, txt) {
+  const m = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = `msg ${tipo}`;
+  d.textContent = txt;
+  m.appendChild(d);
+  m.scrollTop = m.scrollHeight;
 }
-function getResp(msg){
+
+
+function getResp(msg) {
   const l=msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   for(const[k,r]of Object.entries(RESPOSTAS)){
     if(k!=='default'&&l.includes(k)){
@@ -2668,74 +2751,52 @@ setInterval(atualizarStatusHorário, 60 * 1000); // Atualiza a cada minuto
   }
 }
 </style>
-<script>
-// === HORÁRIO DINÂMICO ===
-function atualizarStatusHorário() {
-  const statusTexto = document.getElementById('horário-status-texto');
-  const statusDot = document.querySelector('.status-dot');
-  if (!statusTexto || !statusDot) return;
-
-  const agora = new Date();
-  const diaSemana = agora.getDay(); // 0 = Domingo, 1 = Segunda...
-  const horaAtual = agora.getHours() + agora.getMinutes() / 60;
-
-  let aberto = false;
-  let fechaEm = '';
-
-  // Horários: Todos os dias: 10h às 22h
-  if (horaAtual >= 10 && horaAtual < 22) {
-    aberto = true;
-    fechaEm = `Fecha às 22h`;
-  } else {
-    fechaEm = `Abre às 10h`;
-  }
-
-  if (aberto) {
-    statusTexto.textContent = `Aberto agora - ${fechaEm}`;
-    statusTexto.style.color = '#4CAF50'; // Verde claro para fundo escuro
-    statusDot.style.backgroundColor = '#4CAF50';
-  } else {
-    statusTexto.textContent = `Fechado - ${fechaEm}`;
-    statusTexto.style.color = '#FF5252'; // Vermelho claro para fundo escuro
-    statusDot.style.backgroundColor = '#FF5252';
-    statusDot.style.animation = 'none';
-  }
-}
-
-// Chamar a função ao carregar a página e a cada minuto
-document.addEventListener('DOMContentLoaded', atualizarStatusHorário);
-setInterval(atualizarStatusHorário, 60 * 1000); // Atualiza a cada minuto
-</script>
+<!-- Função atualizarStatusHorário já declarada acima — duplicata removida -->
 
 
 <script>
-/* === VER NOSSO CARDÁPIO === */
-function toggleCardápio(){
-  var btn=document.getElementById("vc-btn");
-  var c=document.getElementById("vc-container");
-  var ab=c.classList.contains("aberto");
-  if(ab){
-    c.classList.remove("aberto");btn.classList.remove("aberto");
-    btn.setAttribute("aria-expanded","false");
-    btn.innerHTML="🍦 Ver nosso Cardápio <i class=\"vc-seta\" aria-hidden=\"true\">▼</i>";
+/* =====================================================
+   VER NOSSO CARDÁPIO — Toggle do painel de cardápio
+   ===================================================== */
+
+
+// ── Abre/fecha o painel de cardápio ───────────────────────────
+function toggleCardápio() {
+  var btn = document.getElementById('vc-btn');
+  var c   = document.getElementById('vc-container');
+  var ab  = c.classList.contains('aberto');
+
+  if (ab) {
+    c.classList.remove('aberto');
+    btn.classList.remove('aberto');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
   } else {
-    c.classList.add("aberto");btn.classList.add("aberto");
-    btn.setAttribute("aria-expanded","true");
-    btn.innerHTML="🍦 Esconder Cardápio <i class=\"vc-seta\" aria-hidden=\"true\">▼</i>";
+    c.classList.add('aberto');
+    btn.classList.add('aberto');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.innerHTML = '🍦 Esconder Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
   }
 }
-function fecharCardápio(){
-  var btn=document.getElementById("vc-btn");
-  var c=document.getElementById("vc-container");
-  if(c&&c.classList.contains("aberto")){
-    c.classList.remove("aberto");btn.classList.remove("aberto");
-    btn.setAttribute("aria-expanded","false");
-    btn.innerHTML="🍦 Ver nosso Cardápio <i class=\"vc-seta\" aria-hidden=\"true\">▼</i>";
+
+
+// ── Fecha o painel de cardápio ───────────────────────────────
+function fecharCardápio() {
+  var btn = document.getElementById('vc-btn');
+  var c   = document.getElementById('vc-container');
+  if (c && c.classList.contains('aberto')) {
+    c.classList.remove('aberto');
+    btn.classList.remove('aberto');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
   }
 }
-// Cardápio não fecha ao clicar fora — só pelo botão
-document.addEventListener("keydown",function(e){
-  if(e.key==="Escape") fecharCardápio();
+
+
+// Cardápio fecha com ESC — não fecha ao clicar fora (só pelo botão)
+// NOTA: Este listener é separado do ESC dos modais — sem conflito
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') fecharCardápio();
 });
 </script>
 <script>
