@@ -1692,6 +1692,7 @@ function toggleAcc(id){
    ===================================================== */
 let _modalScrollY=0;
 let _modalAtivo=null;
+let _botaoAtivo=null; // Rastreia qual botão está ativo
 
 function _travarPagina(){
   // Só grava se ainda não houver um valor (evita sobrescrever na navegação entre produtos)
@@ -1700,15 +1701,16 @@ function _travarPagina(){
   }
 }
 function _liberarPagina(){
-  // Restaurar posição de scroll anterior
-  if(_modalScrollY!==undefined && _modalScrollY!==0){
-    window.scrollTo({top:_modalScrollY,behavior:'instant'});
-    _modalScrollY=undefined;
-  }
+  // NÃO restaurar scroll — deixar a página onde está naturalmente
+  // Isso evita o pulo indesejado para o rodapé
+  _modalScrollY=undefined;
 }
 function fecharModal(id){
   const el=document.getElementById(id);
   if(!el)return;
+  // Remover destaque do botão
+  if(_botaoAtivo)_botaoAtivo.classList.remove('btn-ativo');
+  _botaoAtivo=null;
   // Animação de saída
   el.style.animation='fadeOutOverlay .15s ease forwards';
   setTimeout(()=>{
@@ -1722,6 +1724,8 @@ function fecharModal(id){
   },140);
 }
 function abrirModal(id,originEl){
+  // Remover destaque do botão anterior
+  if(_botaoAtivo)_botaoAtivo.classList.remove('btn-ativo');
   // Fechar modal anterior da mesma categoria sem animação (substitui)
   if(_modalAtivo && _modalAtivo!==id){
     const anterior=document.getElementById(_modalAtivo);
@@ -1732,6 +1736,8 @@ function abrirModal(id,originEl){
     _travarPagina();
   }
   _modalAtivo=id;
+  _botaoAtivo=originEl; // Gravar o botão ativo
+  if(_botaoAtivo)_botaoAtivo.classList.add('btn-ativo'); // Destacar o botão
   const el=document.getElementById(id);
   if(!el)return;
   el.classList.add('show');
