@@ -3193,24 +3193,26 @@ function sincronizarCardapioMap() {
       bodyId: 'tacas-body',
       titulo: function() {
         var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
-        return '🍨 Taças – ' + Object.keys(t).length + ' Opções';
+        return '🍨 Taças – ' + Object.keys(t).length + ' Opções + 35 Sabores';
       },
-      sub: 'Informe a taça desejada ao fazer seu pedido na loja',
+      sub: 'Escolha a taça e o sabor desejado ao fazer seu pedido na loja',
       getSabores: function() {
         var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
-        return Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+        var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+        return opcoes.concat(['───────────────']).concat(getSaboresDisponíveis());
       }
     },
     'acc-tacas-p': {
       bodyId: 'tacas-p-body',
       titulo: function() {
         var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
-        return '👑 Taças Premium – ' + Object.keys(t).length + ' Opções';
+        return '👑 Taças Premium – ' + Object.keys(t).length + ' Opções + 35 Sabores';
       },
-      sub: 'Informe a taça desejada ao fazer seu pedido na loja',
+      sub: 'Escolha a taça e o sabor desejado ao fazer seu pedido na loja',
       getSabores: function() {
         var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
-        return Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+        var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+        return opcoes.concat(['───────────────']).concat(getSaboresDisponíveis());
       }
     },
     'acc-açaí-promo': {
@@ -3316,6 +3318,7 @@ function voltarNivel(btn) {
 }
 
 
+
 // ── FUNÇÕES INLINE — usam CARDAPIO_MAP para localizar o container correto ────
 
 function abrirSaboresInline(tipo, titulo, el) {
@@ -3340,16 +3343,25 @@ function abrirTacasTradicionaisInline(el) {
   var accBody = _getAccBody(el, 'tacas-body');
   if (!accBody) return;
   var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
-  var chips = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
-  mostrarSaboresInline(accBody, '🍨 Taças – ' + chips.length + ' Opções', 'Informe a taça desejada ao fazer seu pedido na loja', chips);
+  var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+  var sabores = getSaboresDisponíveis();
+  // Mostra: seção de opções de taças + seção dos 35 sabores
+  mostrarDuasSecoes(accBody,
+    '🍨 Taças – ' + opcoes.length + ' Opções', 'Escolha a taça desejada ao fazer seu pedido na loja', opcoes,
+    '🍦 ' + sabores.length + ' Sabores Disponíveis', 'Informe o sabor desejado ao fazer seu pedido na loja', sabores
+  );
 }
 
 function abrirTacasSujasInline(el) {
   var accBody = _getAccBody(el, 'tacas-p-body');
   if (!accBody) return;
   var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
-  var chips = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
-  mostrarSaboresInline(accBody, '👑 Taças Premium – ' + chips.length + ' Opções', 'Informe a taça desejada ao fazer seu pedido na loja', chips);
+  var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+  var sabores = getSaboresDisponíveis();
+  mostrarDuasSecoes(accBody,
+    '👑 Taças Premium – ' + opcoes.length + ' Opções', 'Escolha a taça desejada ao fazer seu pedido na loja', opcoes,
+    '🍦 ' + sabores.length + ' Sabores Disponíveis', 'Informe o sabor desejado ao fazer seu pedido na loja', sabores
+  );
 }
 
 function abrirPicoléInline(key, nome, el) {
@@ -3396,6 +3408,31 @@ function abrirComplementosInline(el) {
   html += '</div>';
   accBody.innerHTML = html;
 }
+
+// Mostra duas seções (opções + sabores) dentro do acc-body
+function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chips2) {
+  if (!accBodyEl) return;
+  var acc = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc') : null;
+  var accId = acc ? acc.id : accBodyEl.id;
+  if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
+
+  var chips1Html = chips1.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
+  var chips2Html = chips2.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
+
+  accBodyEl.innerHTML =
+    '<div class="sabores-inline">' +
+      '<div class="sabores-inline-titulo">' + titulo1 + '</div>' +
+      '<div class="sabores-inline-sub">' + sub1 + '</div>' +
+      '<div class="chips-inline">' + chips1Html + '</div>' +
+      '<div style="height:1px;background:linear-gradient(90deg,transparent,#E040FB,transparent);margin:14px 0"></div>' +
+      '<div class="sabores-inline-titulo">' + titulo2 + '</div>' +
+      '<div class="sabores-inline-sub">' + sub2 + '</div>' +
+      '<div class="chips-inline">' + chips2Html + '</div>' +
+      '<button type="button" class="btn-voltar-nivel" onclick="voltarNivel(this)">← Voltar</button>' +
+    '</div>';
+}
+
+
 
 
 
