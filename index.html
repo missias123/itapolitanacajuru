@@ -402,7 +402,7 @@ img{max-width:100%;display:block}
 .picolé-nome{font-size:14px;font-weight:700}
 .picolé-preço{font-size:16px;font-weight:900;color:#E8000D}
 /* TRAVA GLOBAL DA PÁGINA — PADRÃO GRANDES APPS */
-body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!important;touch-action:none}
+/* body.modal-aberto — position:fixed removido: usa _travarPagina() com top:-scrollY */
 /* MODAL CENTRALIZADO — PADRÃO GRANDES APPS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 .modal-overlay.show{display:flex;animation:fadeInOverlay .18s ease}
@@ -1711,11 +1711,13 @@ function _travarPagina() {
 // ── Libera a página e restaura posição exata ──────────
 function _liberarPagina() {
   if (document.body.style.position !== 'fixed') return; // já livre
+  // Lê o top atual do body para garantir posição correta (padrão React/Next.js)
+  const scrollY = Math.abs(parseInt(document.body.style.top || '0', 10));
   document.body.style.position  = '';
   document.body.style.top       = '';
   document.body.style.width     = '';
   document.body.style.overflowY = '';
-  window.scrollTo(0, _scrollY); // restaura posição exata — sem animação
+  window.scrollTo(0, scrollY); // restaura posição exata — sem animação
 }
 
 
