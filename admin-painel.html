@@ -2017,9 +2017,9 @@ function renderPreços(){
   const _pic_raw=p['picoles']||p.picolés||{};
   p.picolés={};
   for(const[k,v]of Object.entries(_pic_raw)){p.picolés[k]={nome:v.nome||k,preço_varejo:v.preco_varejo??v.preço_varejo??0,preço_atacado:v.preco_atacado??v.preço_atacado??0,sabores:v.sabores||[],estoque:v.estoque??200};}
-  const _ac_raw=p['açaí']||p.açaí||{};
+  const _ac_raw=p[String.fromCharCode(97,99,97,105)]||p.açaí||{}; // 'acai' em ASCII para evitar conversão
   p.açaí=_ac_raw.copos||_ac_raw;
-  const _acp_raw=p['açaí_promocao']||p.açaí_promoção||[];
+  const _acp_raw=p[String.fromCharCode(97,99,97,105)+'_promocao']||p.açaí_promoção||[]; // 'acai_promocao'
   p.açaí_promoção=Array.isArray(_acp_raw)?_acp_raw:[];
   const sv=p.sorvetes?.preços||{};
   html+='<div class="seção-título">🍦 Sorvetes — Preço por Quantidade de Bolas</div>';
@@ -2109,12 +2109,13 @@ async function salvarPreços(){
   // Preservar complementos do açaí ao atualizar copos
   const _açaíExistente=p['açaí']||{};
   const _açaíCompsExist=_açaíExistente.complementos||{};
-  if(!p['açaí'])p['açaí']={copos:{},complementos:{}};
-  if(!p['açaí'].copos)p['açaí'].copos={};
-  if(!p['açaí'].complementos)p['açaí'].complementos=_açaíCompsExist;
-  for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p.açaí[tam]=parseFloat(el.value)||0;p['açaí'].copos[tam]=parseFloat(el.value)||0;}}}
+  const _acaiKey=String.fromCharCode(97,99,97,105); // 'acai'
+  if(!p[_acaiKey])p[_acaiKey]={copos:{},complementos:{}};
+  if(!p[_acaiKey].copos)p[_acaiKey].copos={};
+  if(!p[_acaiKey].complementos)p[_acaiKey].complementos=_acaiCompsExist;
+  for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p.açaí[tam]=parseFloat(el.value)||0;p[_acaiKey].copos[tam]=parseFloat(el.value)||0;}}}
   const acp=p.açaí_promoção||[];
-  if(Array.isArray(acp)){acp.forEach((item,i)=>{const id=`preço_açaíp_${i}`;const el=document.getElementById(id);if(el){const v=parseFloat(el.value)||0;acp[i].preco=v;acp[i].preço=v;}});p.açaí_promoção=acp;p['açaí_promocao']=acp;}
+  if(Array.isArray(acp)){acp.forEach((item,i)=>{const id=`preço_açaíp_${i}`;const el=document.getElementById(id);if(el){const v=parseFloat(el.value)||0;acp[i].preco=v;acp[i].preço=v;}});p.açaí_promoção=acp;p[_acaiKey+'_promocao']=acp;}
   const pic=p.picolés||{};
   if(!p['picoles'])p['picoles']={};
   for(const[cat,itens]of Object.entries(pic)){
@@ -2123,8 +2124,9 @@ async function salvarPreços(){
       const idA=`preço_pic_${cat}_atacado`.replace(/[\s\W]/g,'_');
       const elV=document.getElementById(idV);
       const elA=document.getElementById(idA);
-      if(elV){p.picolés[cat].preço_varejo=parseFloat(elV.value)||0;if(!p.picoles[cat])p.picoles[cat]={};p.picoles[cat].preco_varejo=parseFloat(elV.value)||0;}
-      if(elA){p.picolés[cat].preço_atacado=parseFloat(elA.value)||0;if(!p.picoles[cat])p.picoles[cat]={};p.picoles[cat].preco_atacado=parseFloat(elA.value)||0;}
+      const _picolesKey='picoles'; // chave do JSON em inglês
+      if(elV){p.picolés[cat].preço_varejo=parseFloat(elV.value)||0;if(!p[_picolesKey][cat])p[_picolesKey][cat]={};p[_picolesKey][cat].preco_varejo=parseFloat(elV.value)||0;}
+      if(elA){p.picolés[cat].preço_atacado=parseFloat(elA.value)||0;if(!p[_picolesKey][cat])p[_picolesKey][cat]={};p[_picolesKey][cat].preco_atacado=parseFloat(elA.value)||0;}
     }
   }
   const cx=p.caixas_viagem||{};

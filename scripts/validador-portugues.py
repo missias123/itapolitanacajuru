@@ -250,6 +250,38 @@ ARQUIVOS = [
     'scripts/site-loader.js',
 ]
 
+# Padrões que NÃO devem ser substituídos (chaves de JSON/JS)
+PROTEGIDOS = [
+    # Chaves do JSON produtos.json em inglês
+    "'acai'", '"acai"', "p['acai']", 'p["acai"]', "dados['acai']", 'dados["acai"]',
+    "'acai_promocao'", '"acai_promocao"', "p['acai_promocao']", 'p["acai_promocao"]',
+    "'picoles'", '"picoles"', "p['picoles']", 'p["picoles"]', "dados['picoles']", 'dados["picoles"]',
+    'p.picoles', 'dados.picoles', 'p.acai', 'dados.acai',
+    'acai_promocao', 'acai.copos', 'acai.complementos',
+    # Variáveis internas do admin
+    '_acaiKey', '_acaiComps', '_acaiExist', 'acaiKey', 'acaiComps', 'acaiExist',
+    # Comentários com acai
+    "// 'acai'", "// 'acai_promocao'", '// acai', '// acai_promocao',
+    # ASCII encoding
+    'fromCharCode(97,99,97,105)', "+'_promocao'",
+]
+
+def proteger_contexto(content):
+    """Substitui temporariamente padrões protegidos por placeholders."""
+    placeholders = {}
+    for i, padrao in enumerate(PROTEGIDOS):
+        if padrao in content:
+            ph = f'__PROTEGIDO_{i}__'
+            placeholders[ph] = padrao
+            content = content.replace(padrao, ph)
+    return content, placeholders
+
+def restaurar_contexto(content, placeholders):
+    """Restaura os placeholders para os padrões originais."""
+    for ph, original in placeholders.items():
+        content = content.replace(ph, original)
+    return content
+
 def validar_e_corrigir(apenas_verificar=False):
     """Valida e corrige erros de português em todos os arquivos do site."""
     total_erros = 0
@@ -265,18 +297,25 @@ def validar_e_corrigir(apenas_verificar=False):
         original = content
         erros_arquivo = []
 
+        # Proteger chaves de JSON/JS antes de substituir
+        content_protegido, placeholders = proteger_contexto(content)
+
         for correto, errados in DICIONARIO_OFICIAL.items():
             for errado in errados:
-                if errado in content:
-                    ocorrencias = content.count(errado)
+                if errado in content_protegido:
+                    ocorrencias = content_protegido.count(errado)
                     erros_arquivo.append({
                         'errado': errado,
                         'correto': correto,
                         'ocorrencias': ocorrencias
                     })
                     if not apenas_verificar:
-                        content = content.replace(errado, correto)
+                        content_protegido = content_protegido.replace(errado, correto)
                     total_erros += ocorrencias
+
+        # Restaurar padrões protegidos
+        if not apenas_verificar:
+            content = restaurar_contexto(content_protegido, placeholders)
 
         if erros_arquivo:
             relatorio.append({
