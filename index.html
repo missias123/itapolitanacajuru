@@ -1218,7 +1218,80 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .security-seal-text { font-size: 9px; color: #FBD100; font-weight: 700; text-align: center; line-height: 1.2; }
 
 /* === VER NOSSO CARDÁPIO === */
-.vc-wrap{width:100%;text-align:center;padding:10px 16px 0;}
+/* BANNER DO CARDÁPIO — divisor visual profissional */
+.vc-wrap{
+  width:100%;
+  text-align:center;
+  padding:0;
+  margin:0;
+  position:relative;
+  overflow:hidden;
+}
+.vc-banner{
+  width:100%;
+  background:linear-gradient(135deg,#4A148C 0%,#7B1FA2 25%,#E65100 55%,#FF6D00 75%,#E53935 100%);
+  padding:28px 20px 24px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 4px 24px rgba(0,0,0,.22);
+  overflow:hidden;
+}
+/* Efeito de brilho animado no banner */
+.vc-banner::before{
+  content:'';
+  position:absolute;
+  top:-50%;
+  left:-60%;
+  width:60%;
+  height:200%;
+  background:rgba(255,255,255,.08);
+  transform:skewX(-20deg);
+  animation:bannerShine 3.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes bannerShine{
+  0%{left:-60%}
+  60%{left:120%}
+  100%{left:120%}
+}
+/* Ícones decorativos flutuando */
+.vc-banner-icons{
+  display:flex;
+  gap:14px;
+  font-size:1.6rem;
+  opacity:.85;
+  margin-bottom:2px;
+  animation:iconFloat 2s ease-in-out infinite alternate;
+}
+@keyframes iconFloat{
+  from{transform:translateY(0)}
+  to{transform:translateY(-5px)}
+}
+.vc-banner-titulo{
+  font-size:1.05rem;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:.8px;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.vc-banner-sub{
+  font-size:.82rem;
+  color:rgba(255,255,255,.88);
+  font-weight:600;
+  margin-bottom:8px;
+  letter-spacing:.3px;
+}
+@media(max-width:600px){
+  .vc-banner{padding:22px 16px 20px;}
+  .vc-banner-titulo{font-size:.95rem;}
+  .vc-banner-icons{font-size:1.3rem;gap:10px;}
+}
 /* Animação pulsante do botão */
 @keyframes vcPulse{
   0%,100%{transform:scale(1);box-shadow:0 4px 22px rgba(230,81,0,.45);}
@@ -1432,17 +1505,22 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   });
 }());
 </script>
-<!-- VER NOSSO CARDÁPIO - INÍCIO -->
+<!-- VER NOSSO CARDÁPIO - BANNER DIVISOR PROFISSIONAL -->
 <div class="vc-wrap" id="vc-wrap" onmouseleave="fecharCardápio()">
-  <div class="vc-row">
-    <span class="vc-dedo vc-dedo-esq" aria-hidden="true">👉</span>
-    <button class="vc-btn" id="vc-btn" type="button"
-      onclick="toggleCardápio()"
-      aria-label="Ver nosso Cardápio"
-      aria-expanded="false">
-      🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>
-    </button>
-    <span class="vc-dedo vc-dedo-dir" aria-hidden="true">👈</span>
+  <div class="vc-banner">
+    <div class="vc-banner-icons" aria-hidden="true">🍦 🍧 🍨 🧃 🍦</div>
+    <div class="vc-banner-titulo">Nosso Cardápio Completo</div>
+    <div class="vc-banner-sub">35 sabores · Sorvetes · Picolés · Açaí · Milkshakes · Taças · Sobremesas</div>
+    <div class="vc-row">
+      <span class="vc-dedo vc-dedo-esq" aria-hidden="true">👉</span>
+      <button class="vc-btn" id="vc-btn" type="button"
+        onclick="toggleCardápio()"
+        aria-label="Ver nosso Cardápio"
+        aria-expanded="false">
+        🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>
+      </button>
+      <span class="vc-dedo vc-dedo-dir" aria-hidden="true">👈</span>
+    </div>
   </div>
   <div class="vc-container" id="vc-container">
 <div class="acc" id="acc-sorvetes">
