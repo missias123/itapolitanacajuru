@@ -2008,13 +2008,26 @@ function renderPreços(){
   html+='Salvar atualiza o site imediatamente. Mínimo: R$ 0,00. Não use vírgula.';
   html+='</div>';
 
+  // Normalizar chaves do JSON (inglês→português)
+  const _sv_raw=p.sorvetes?.precos||p.sorvetes?.preços||{};
+  if(!p.sorvetes)p.sorvetes={};
+  p.sorvetes.preços={};
+  const _svMap={casquinha_copo:'Casquinha/Copo',casquinha_copção:'Casquinha/Copo',copo_recheado:'Copo Recheado',copção_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha'};
+  for(const[k,v]of Object.entries(_sv_raw)){p.sorvetes.preços[k]=v;}
+  const _pic_raw=p.picoles||p.picolés||{};
+  p.picolés={};
+  for(const[k,v]of Object.entries(_pic_raw)){p.picolés[k]={nome:v.nome||k,preço_varejo:v.preco_varejo??v.preço_varejo??0,preço_atacado:v.preco_atacado??v.preço_atacado??0,sabores:v.sabores||[],estoque:v.estoque??200};}
+  const _ac_raw=p.açaí||p.açaí||{};
+  p.açaí=_ac_raw.copos||_ac_raw;
+  const _acp_raw=p.açaí_promocao||p.açaí_promoção||[];
+  p.açaí_promoção=Array.isArray(_acp_raw)?_acp_raw:[];
   const sv=p.sorvetes?.preços||{};
   html+='<div class="seção-título">🍦 Sorvetes — Preço por Quantidade de Bolas</div>';
   html+='<div style="background:#fff3e0;border-left:3px solid #e65100;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:.78rem">';
-  html+='⚠️ Preço varia por tipo (Simples, Especial) e quantidade de bolas (1, 2, 3...). Alterar aqui muda o cardápio do site imediatamente.';
+  html+='⚠️ Preço varia por tipo (Casquinha/Copo, Copo Recheado, Cascão, Cestinha) e quantidade de bolas. Alterar aqui muda o cardápio do site imediatamente.';
   html+='</div>';
   html+='<div class="preço-grid">';
-  for(const[tipo,bolas]of Object.entries(sv)){for(const[bola,preço]of Object.entries(bolas)){const id=`preço_sorvete_${tipo}_${bola}`.replace(/[\s\W]/g,'_');html+=`<div class="preço-item"><label>${tipo} — ${bola}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Preço do sorvete ${tipo} com ${bola}"/></div><div class="hint">Ex: 8.50 — use ponto, não vírgula</div></div>`;}}
+  for(const[tipo,bolas]of Object.entries(sv)){if(typeof bolas==='object'){for(const[bola,preço]of Object.entries(bolas)){if(typeof preço==='number'){const id=`preço_sorvete_${tipo}_${bola}`.replace(/[\s\W]/g,'_');const label=(_svMap[tipo]||tipo)+' — '+bola;html+=`<div class="preço-item"><label>${label}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Preço do sorvete ${tipo} com ${bola}"/></div><div class="hint">Ex: 8.50 — use ponto, não vírgula</div></div>`;}}}}
   html+='</div>';
 
   const mk=p.milkshake||{};
@@ -2036,17 +2049,25 @@ function renderPreços(){
   html+='</div>';
 
   const ac=p.açaí||{};
-  html+='<div class="seção-título">🍋 Açaí — Preço por Tamanho</div>';
+  html+='<div class="seção-título">🫐 Açaí — Preço por Tamanho (Copos)</div>';
   html+='<div style="background:#fff3e0;border-left:3px solid #e65100;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:.78rem">';
-  html+='🍋 Preço normal e preço promoção são independentes. Promoção só aparece quando a promoção estiver ativa.';
+  html+='🫐 Preços dos copos de açaí tipo artesanal. Alterar aqui muda o cardápio imediatamente.';
   html+='</div>';
   html+='<div class="preço-grid">';
-  for(const[tam,preço]of Object.entries(ac)){if(typeof preço==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');html+=`<div class="preço-item"><label>Açaí — ${tam}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Açaí tamanho ${tam}"/></div><div class="hint">Ex: 12.00</div></div>`;}}
-  const acp=p.açaí_promoção||{};
-  for(const[tam,preço]of Object.entries(acp)){if(typeof preço==='number'){const id=`preço_açaíp_${tam}`.replace(/[\s\W]/g,'_');html+=`<div class="preço-item"><label>Açaí Promoção — ${tam}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Açaí promoção tamanho ${tam}"/></div><div class="hint">Preço especial de promoção</div></div>`;}}
+  for(const[tam,preço]of Object.entries(ac)){if(typeof preço==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');html+=`<div class="preço-item"><label>Açaí — ${tam}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Açaí tamanho ${tam}"/></div><div class="hint">Ex: 15.00</div></div>`;}}
+  const acp=p.açaí_promoção||[];
+  if(Array.isArray(acp)&&acp.length>0){
+    html+='<div class="seção-título">🔥 Açaí em Promoção — Preços</div>';
+    html+='<div class="preço-grid">';
+    acp.forEach((item,i)=>{
+      const id=`preço_açaíp_${i}`;
+      html+=`<div class="preço-item"><label>${item.nome||('Promoção '+(i+1))}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${item.preco||item.preço||0}" min="0" step="0.5"/></div><div class="hint">${item.desc||''}</div></div>`;
+    });
+    html+='</div>';
+  }
   html+='</div>';
   const pic=p.picolés||{};
-  html+='<div class="seção-título">Picolés — Varejo (Cardápio) e Atacado (Encomendas)</div>';
+  html+='<div class="seção-título">🍭 Picolés — Varejo (Cardápio) e Atacado (Encomendas)</div>';
   html+='<div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:.82rem">🍭 <strong>Varejo</strong> = preço unitário no cardápio da loja. <strong>Atacado</strong> = preço por unidade em encomendas (min. 100 un.). Os dois campos são independentes.</div>';
   html+='<div class="preço-grid">';
   for(const[cat,itens]of Object.entries(pic)){
@@ -2079,24 +2100,30 @@ async function salvarPreços(){
   const p=STATE.produtos;
   if(!p){toast('Produtos não carregados.','erro');return;}
   const sv=p.sorvetes?.preços||{};
-  for(const[tipo,bolas]of Object.entries(sv)){for(const bola of Object.keys(bolas)){const id=`preço_sorvete_${tipo}_${bola}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.sorvetes.preços[tipo][bola]=parseFloat(el.value)||0;}}
+  for(const[tipo,bolas]of Object.entries(sv)){if(typeof bolas==='object'){for(const bola of Object.keys(bolas)){if(typeof bolas[bola]==='number'){const id=`preço_sorvete_${tipo}_${bola}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p.sorvetes.preços[tipo][bola]=parseFloat(el.value)||0;if(!p.sorvetes.precos)p.sorvetes.precos={};if(!p.sorvetes.precos[tipo])p.sorvetes.precos[tipo]={};p.sorvetes.precos[tipo][bola]=parseFloat(el.value)||0;}}}}}
   const mk=p.milkshake||{};
   for(const[cat,itens]of Object.entries(mk)){if(typeof itens==='object'&&!Array.isArray(itens)){for(const tam of Object.keys(itens)){if(typeof itens[tam]==='number'){const id=`preço_milk_${cat}_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.milkshake[cat][tam]=parseFloat(el.value)||0;}}}else if(typeof itens==='number'){const id=`preço_milk_${cat}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.milkshake[cat]=parseFloat(el.value)||0;}}
   const tc=p.tacas||{};
   for(const[cat,itens]of Object.entries(tc)){if(typeof itens==='object'){for(const nome of Object.keys(itens)){if(typeof itens[nome]==='number'){const id=`preço_taca_${cat}_${nome}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.tacas[cat][nome]=parseFloat(el.value)||0;}}}}
   const ac=p.açaí||{};
-  for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.açaí[tam]=parseFloat(el.value)||0;}}
-  const acp=p.açaí_promoção||{};
-  for(const tam of Object.keys(acp)){if(typeof acp[tam]==='number'){const id=`preço_açaíp_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.açaí_promoção[tam]=parseFloat(el.value)||0;}}
+  if(!p.açaí)p.açaí={copos:{},complementos:{}};
+  else if(!p.açaí.complementos)p.açaí.complementos={};
+  // Preservar complementos do açaí ao atualizar copos
+  const _açaíComps=p.açaí.complementos;
+  if(!p.açaí.copos)p.açaí.copos={};
+  for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p.açaí[tam]=parseFloat(el.value)||0;p.açaí.copos[tam]=parseFloat(el.value)||0;}}}
+  const acp=p.açaí_promoção||[];
+  if(Array.isArray(acp)){acp.forEach((item,i)=>{const id=`preço_açaíp_${i}`;const el=document.getElementById(id);if(el){const v=parseFloat(el.value)||0;acp[i].preco=v;acp[i].preço=v;}});p.açaí_promoção=acp;p.açaí_promocao=acp;}
   const pic=p.picolés||{};
+  if(!p.picoles)p.picoles={};
   for(const[cat,itens]of Object.entries(pic)){
     if(typeof itens==='object'){
       const idV=`preço_pic_${cat}_varejo`.replace(/[\s\W]/g,'_');
       const idA=`preço_pic_${cat}_atacado`.replace(/[\s\W]/g,'_');
       const elV=document.getElementById(idV);
       const elA=document.getElementById(idA);
-      if(elV)p.picolés[cat].preço_varejo=parseFloat(elV.value)||0;
-      if(elA)p.picolés[cat].preço_atacado=parseFloat(elA.value)||0;
+      if(elV){p.picolés[cat].preço_varejo=parseFloat(elV.value)||0;if(!p.picoles[cat])p.picoles[cat]={};p.picoles[cat].preco_varejo=parseFloat(elV.value)||0;}
+      if(elA){p.picolés[cat].preço_atacado=parseFloat(elA.value)||0;if(!p.picoles[cat])p.picoles[cat]={};p.picoles[cat].preco_atacado=parseFloat(elA.value)||0;}
     }
   }
   const cx=p.caixas_viagem||{};
