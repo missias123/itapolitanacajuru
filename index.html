@@ -1056,6 +1056,117 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .chip-inline:hover{background:#FCE7F3}
 .btn-voltar-nivel{display:inline-flex;align-items:center;gap:6px;margin:8px 0 4px;padding:10px 20px;min-height:44px;background:linear-gradient(135deg,#7B2D8B,#9333EA);color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(123,45,139,.3);transition:all .2s}
 .btn-voltar-nivel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(123,45,139,.4)}
+
+/* ===== RESPONSIVIDADE — ELEMENTOS ADICIONADOS ===== */
+
+/* Botão Voltar ao Início do Cardápio */
+.btn-voltar-inicio {
+  display: block;
+  width: calc(100% - 32px);
+  max-width: 480px;
+  margin: 16px auto 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #FF6B35, #FF4081);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: clamp(13px, 3.5vw, 15px);
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255,107,53,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-voltar-inicio:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255,107,53,0.45);
+}
+.btn-voltar-inicio:active {
+  transform: translateY(0);
+}
+
+/* Container de sabores inline */
+.sabores-inline-container {
+  width: 100%;
+  padding: 12px 8px 16px;
+  box-sizing: border-box;
+}
+.sabores-inline-titulo {
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 12px;
+  color: #1A0A00;
+}
+.sabores-inline-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 0 4px;
+}
+.sabor-tag {
+  background: #FFF3E0;
+  border: 1.5px solid #FF6B35;
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 700;
+  color: #BF360C;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* Grid de produtos — responsivo */
+.prod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 12px 8px;
+}
+
+@media (max-width: 480px) {
+  .prod-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px 4px;
+  }
+  .btn-voltar-inicio {
+    width: calc(100% - 16px);
+    font-size: 13px;
+    padding: 11px 16px;
+  }
+  .sabores-inline-grid {
+    gap: 6px;
+  }
+  .sabor-tag {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .prod-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .btn-voltar-inicio {
+    max-width: 380px;
+  }
+}
+
+@media (min-width: 769px) {
+  .prod-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .btn-voltar-inicio {
+    max-width: 400px;
+  }
+  .sabores-inline-grid {
+    gap: 10px;
+  }
+}
+/* ===== FIM RESPONSIVIDADE ===== */
 </style>
 <script type="application/ld+json">
 {
