@@ -402,7 +402,7 @@ img{max-width:100%;display:block}
 .picolé-nome{font-size:14px;font-weight:700}
 .picolé-preço{font-size:16px;font-weight:900;color:#E8000D}
 /* TRAVA GLOBAL DA PÁGINA — PADRÃO GRANDES APPS */
-/* body.modal-aberto — position:fixed removido: usa _travarPagina() com top:-scrollY */
+body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!important;touch-action:none}
 /* MODAL CENTRALIZADO — PADRÃO GRANDES APPS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 .modal-overlay.show{display:flex;animation:fadeInOverlay .18s ease}
@@ -1661,6 +1661,11 @@ function imgCard(chave,emoji){
   return `<div class="prod-card-sem-foto">${emoji||'🍦'}</div>`;
 }
 // ── Accordion do Cardápio ──────────────────────────────────────────
+// Volta ao topo do cardapio SEM fechar o accordion
+function voltarCardapio(accId) {
+  var el = document.getElementById('cardápio');
+  if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
 function toggleAcc(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -1711,13 +1716,11 @@ function _travarPagina() {
 // ── Libera a página e restaura posição exata ──────────
 function _liberarPagina() {
   if (document.body.style.position !== 'fixed') return; // já livre
-  // Lê o top atual do body para garantir posição correta (padrão React/Next.js)
-  const scrollY = Math.abs(parseInt(document.body.style.top || '0', 10));
   document.body.style.position  = '';
   document.body.style.top       = '';
   document.body.style.width     = '';
   document.body.style.overflowY = '';
-  window.scrollTo(0, scrollY); // restaura posição exata — sem animação
+  window.scrollTo(0, _scrollY); // restaura posição exata — sem animação
 }
 
 
@@ -1811,7 +1814,7 @@ function renderSorvetes(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-sorvetes\')">← Voltar ao Início do Cardápio</button>';
   g.parentElement.appendChild(_vb);
 }
 function renderMilk(){
@@ -1829,7 +1832,7 @@ function renderMilk(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-milk\')">← Voltar ao Início do Cardápio</button>';
   g.parentElement.appendChild(_vb);
 }
 function renderTacas(){
@@ -1844,7 +1847,7 @@ function renderTacas(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-tacas\')">← Voltar ao Início do Cardápio</button>';
   g.parentElement.appendChild(_vb);
 }
 function renderTacasP(){
@@ -1859,7 +1862,7 @@ function renderTacasP(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-tacas-p\')">← Voltar ao Início do Cardápio</button>';
   g.parentElement.appendChild(_vb);
 }
 function renderAçaíPromo(){
@@ -1873,7 +1876,7 @@ function renderAçaíPromo(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-açaí-promo\')">← Voltar ao Início do Cardápio</button>';
   b.appendChild(_vb);
 }
 function renderAçaí(){
@@ -1887,7 +1890,7 @@ function renderAçaí(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-açaí\')">← Voltar ao Início do Cardápio</button>';
   b.appendChild(_vb);
 }
 const iconesPicolé={frutas_agua:'🍉',leite_sem_recheio:'🍦',leite_com_recheio:'🍫',leite_ninho:'⭐',esquimós:'🍬'};
@@ -1910,7 +1913,7 @@ function renderPicolés(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-picolés\')">← Voltar ao Início do Cardápio</button>';
   b.appendChild(_vb);
 }
 function renderIso(){
@@ -1930,7 +1933,7 @@ function renderIso(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-iso\')">← Voltar ao Início do Cardápio</button>';
   b.appendChild(_vb);
 }
 function renderSobremesas(){
@@ -1953,7 +1956,7 @@ function renderSobremesas(){
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
-  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick=\"document.getElementById('cardápio')?.scrollIntoView({behavior:'smooth',block:'start'})\">← Voltar ao Início do Cardápio</button>';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-sobremesas\')">← Voltar ao Início do Cardápio</button>';
   b.appendChild(_vb);
 }
 function getSaboresDisponíveis(){
