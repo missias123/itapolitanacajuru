@@ -1338,7 +1338,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <span class="acc-arrow">▼</span>
 </div>
-<div class="acc-body">
+<div class="acc-body" id="sorvetes-body">
 <div class="prod-grid" id="sorvetes-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
 <button aria-label="Ver 35 sabores de sorvete tipo artesanal" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','🍦 35 Sabores de Sorvete',this)" type="button">🍦 Ver 35 Sabores</button>
@@ -1383,7 +1383,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <span class="acc-arrow">▼</span>
 </div>
-<div class="acc-body">
+<div class="acc-body" id="milk-body">
 <div class="prod-grid" id="milk-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
 <button aria-label="Ver sabores de milkshake" class="btn-sabores" onclick="abrirMilkshakeSaboresInline(this)" type="button">🥤 Ver Sabores do Milkshake</button>
@@ -1398,7 +1398,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <span class="acc-arrow">▼</span>
 </div>
-<div class="acc-body">
+<div class="acc-body" id="tacas-body">
 <div class="prod-grid" id="tacas-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
 <button class="btn-sabores" onclick="abrirTacasTradicionaisInline(this)" type="button">🍧 Ver Sabores das Taças</button>
@@ -1413,7 +1413,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 </div>
 <span class="acc-arrow">▼</span>
 </div>
-<div class="acc-body">
+<div class="acc-body" id="tacas-p-body">
 <div class="prod-grid" id="tacas-p-grid"></div>
 <div class="btn-row-grid" style="margin-top:14px">
 <button class="btn-sabores" onclick="abrirTacasSujasInline(this)" type="button">👑 Ver Taças Premium</button>
@@ -2687,7 +2687,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 4. Carregar preços da nuvem primeiro, depois renderizar
   carregarPreçosNuvemCardápio().then(() => {
-    renderTudo();
+    renderTudo(); sincronizarCardapioMap();
   }).catch(() => {
     renderTudo();
   });
@@ -3159,12 +3159,130 @@ function atualizarStatusLoja() {
 // Guarda o HTML original do acc-body para restaurar ao clicar Voltar
 var _nivelAnterior = {};
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SISTEMA INLINE — NAVEGAÇÃO ESTÁTICA EM 3 NÍVEIS (sem modal, sem scroll)
+// Regra: ao clicar em qualquer botão do cardápio, a página NÃO se move.
+// Botão ← Voltar retorna ao nível anterior dentro do mesmo accordion.
+// ═══════════════════════════════════════════════════════════════════════════
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CARDAPIO_MAP — Tabela Mestre do Cardápio
+// Sincronizada automaticamente com dados/produtos.json via Admin
+// Estrutura: accId → { bodyId, titulo, tipo, getSabores() }
+// ═══════════════════════════════════════════════════════════════════════════
+
+var CARDAPIO_MAP = {};
+
+function sincronizarCardapioMap() {
+  CARDAPIO_MAP = {
+    'acc-sorvetes': {
+      bodyId: 'sorvetes-body',
+      titulo: function() { var s = getSaboresDisponíveis(); return '🍦 ' + s.length + ' Sabores de Sorvete'; },
+      sub: 'Informe o sabor desejado ao fazer seu pedido na loja',
+      getSabores: function() { return getSaboresDisponíveis(); }
+    },
+    'acc-milk': {
+      bodyId: 'milk-body',
+      titulo: function() { var s = getSaboresDisponíveis(); return '🥤 Milkshakes – ' + s.length + ' Sabores'; },
+      sub: 'Informe o sabor desejado ao fazer seu pedido na loja',
+      getSabores: function() { return getSaboresDisponíveis(); }
+    },
+    'acc-tacas': {
+      bodyId: 'tacas-body',
+      titulo: function() {
+        var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
+        return '🍨 Taças – ' + Object.keys(t).length + ' Opções';
+      },
+      sub: 'Informe a taça desejada ao fazer seu pedido na loja',
+      getSabores: function() {
+        var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
+        return Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+      }
+    },
+    'acc-tacas-p': {
+      bodyId: 'tacas-p-body',
+      titulo: function() {
+        var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
+        return '👑 Taças Premium – ' + Object.keys(t).length + ' Opções';
+      },
+      sub: 'Informe a taça desejada ao fazer seu pedido na loja',
+      getSabores: function() {
+        var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
+        return Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+      }
+    },
+    'acc-açaí-promo': {
+      bodyId: 'açaí-promo-body',
+      titulo: function() { return '🫐 Açaí Promoção'; },
+      sub: 'Escolha a opção desejada ao fazer seu pedido na loja',
+      getSabores: function() {
+        var p = produtos && produtos.açaí_promocao ? produtos.açaí_promocao : [];
+        return p.map(function(a) { return a.nome + ' – ' + a.desc + ' – R$ ' + a.preco.toFixed(2).replace('.',','); });
+      }
+    },
+    'acc-açaí': {
+      bodyId: 'açaí-body',
+      titulo: function() { return '🫐 Monte o Seu Açaí'; },
+      sub: 'Escolha os ingredientes ao fazer seu pedido na loja',
+      getSabores: function() {
+        var copos = produtos && produtos.açaí && produtos.açaí.copos ? produtos.açaí.copos : {};
+        return Object.entries(copos).map(function(e) { return 'Copo ' + e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+      }
+    },
+    'acc-picolés': {
+      bodyId: 'picolés-body',
+      titulo: function() { return '🍭 Picolés'; },
+      sub: 'Sabores disponíveis para este tipo de picolé',
+      getSabores: function() { return getSaboresDisponíveis(); }
+    },
+    'acc-iso': {
+      bodyId: 'iso-body',
+      titulo: function() { return '🧊 Isopores de Viagem'; },
+      sub: 'Informe o sabor desejado ao fazer seu pedido na loja',
+      getSabores: function() { return getSaboresDisponíveis(); }
+    },
+    'acc-sobremesas': {
+      bodyId: 'sobremesas-body',
+      titulo: function() { return '🍰 Sobremesas'; },
+      sub: 'Informe a sobremesa desejada ao fazer seu pedido na loja',
+      getSabores: function() {
+        var s = produtos && produtos.sobremesas ? produtos.sobremesas : {};
+        return Object.entries(s).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
+      }
+    }
+  };
+}
+
+// Obtém o acc-body correto usando CARDAPIO_MAP ou closest
+function _getAccBody(el, bodyIdHint) {
+  // 1. Tenta closest direto
+  var found = el.closest ? el.closest('.acc-body') : null;
+  if (found) return found;
+  // 2. Sobe manualmente até 10 níveis
+  var cur = el.parentElement;
+  for (var i = 0; i < 10; i++) {
+    if (!cur) break;
+    if (cur.classList && cur.classList.contains('acc-body')) return cur;
+    cur = cur.parentElement;
+  }
+  // 3. Usa bodyIdHint ou CARDAPIO_MAP
+  if (bodyIdHint) return document.getElementById(bodyIdHint);
+  // 4. Tenta encontrar pelo acc pai
+  var acc = el.closest ? el.closest('.acc') : null;
+  if (acc && CARDAPIO_MAP[acc.id]) return document.getElementById(CARDAPIO_MAP[acc.id].bodyId);
+  return null;
+}
+
+
+
+// Mostra sabores/itens inline dentro do acc-body (substitui o conteúdo atual)
 function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
-  // Salva o conteúdo atual do acc-body (Nível 2)
-  var accId = accBodyEl.closest('.acc') ? accBodyEl.closest('.acc').id : null;
+  if (!accBodyEl) return;
+  var accId = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc').id : accBodyEl.id;
   if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
 
-  // Monta o HTML do Nível 3 (sabores inline)
   var chipsHtml = chips.map(function(s) {
     return '<span class="chip-inline">' + s + '</span>';
   }).join('');
@@ -3179,66 +3297,76 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
 }
 
 function voltarNivel(btn) {
-  var accBody = btn.closest('.acc-body') || btn.closest('.acc-body-inner') || btn.parentElement.parentElement;
-  var acc = accBody ? accBody.closest('.acc') : null;
-  var accId = acc ? acc.id : null;
+  var accBody = btn.closest('.acc-body');
+  if (!accBody) {
+    var cur = btn.parentElement;
+    for (var i = 0; i < 8; i++) {
+      if (!cur) break;
+      if (cur.classList && cur.classList.contains('acc-body')) { accBody = cur; break; }
+      cur = cur.parentElement;
+    }
+  }
+  if (!accBody) return;
+  var acc = accBody.closest ? accBody.closest('.acc') : null;
+  var accId = acc ? acc.id : accBody.id;
   if (accId && _nivelAnterior[accId]) {
     accBody.innerHTML = _nivelAnterior[accId];
     delete _nivelAnterior[accId];
   }
 }
 
-// ── Substitui abrirSabores para usar inline ──────────────────────────────────
+
+// ── FUNÇÕES INLINE — usam CARDAPIO_MAP para localizar o container correto ────
+
 function abrirSaboresInline(tipo, titulo, el) {
-  var accBody = el.closest('.acc-body');
-  if (!accBody) { abrirSabores(tipo, titulo, el); return; }
+  var bodyId = tipo === 'sorvetes' ? 'sorvetes-body' :
+               tipo === 'milkshakes' ? 'milk-body' :
+               tipo === 'iso' ? 'iso-body' :
+               tipo === 'sobremesas' ? 'sobremesas-body' : null;
+  var accBody = _getAccBody(el, bodyId);
+  if (!accBody) return;
   var sabores = getSaboresDisponíveis();
   mostrarSaboresInline(accBody, titulo, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
 }
 
 function abrirMilkshakeSaboresInline(el) {
-  var accBody = el.closest('.acc-body');
-  if (!accBody) { abrirMilkshakeSabores(el); return; }
+  var accBody = _getAccBody(el, 'milk-body');
+  if (!accBody) return;
   var sabores = getSaboresDisponíveis();
-  var titulo = '🥤 Milkshakes – ' + (sabores.length || 36) + ' Sabores';
-  mostrarSaboresInline(accBody, titulo, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
+  mostrarSaboresInline(accBody, '🥤 Milkshakes – ' + sabores.length + ' Sabores', 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
 }
 
 function abrirTacasTradicionaisInline(el) {
-  var accBody = el.closest('.acc-body');
-  if (!accBody) { abrirTacasTradicionais(el); return; }
+  var accBody = _getAccBody(el, 'tacas-body');
+  if (!accBody) return;
   var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
   var chips = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
   mostrarSaboresInline(accBody, '🍨 Taças – ' + chips.length + ' Opções', 'Informe a taça desejada ao fazer seu pedido na loja', chips);
 }
 
 function abrirTacasSujasInline(el) {
-  var accBody = el.closest('.acc-body');
-  if (!accBody) { abrirTacasSujas(el); return; }
+  var accBody = _getAccBody(el, 'tacas-p-body');
+  if (!accBody) return;
   var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
   var chips = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
   mostrarSaboresInline(accBody, '👑 Taças Premium – ' + chips.length + ' Opções', 'Informe a taça desejada ao fazer seu pedido na loja', chips);
 }
 
-
-// ── PICOLÉ INLINE ────────────────────────────────────────────────────────────
 function abrirPicoléInline(key, nome, el) {
-  // Sobe até o acc-body
-  var accBody = el.closest('.acc-body') || el.closest('[id$="-body"]');
-  if (!accBody) { abrirPicolé(key, nome, el); return; }
-
-  var sabs = produtos && produtos.picolés && produtos.picolés[key] ? produtos.picolés[key].sabores : [];
-  var chips = sabs.length > 0 ? sabs : ['Consulte na loja'];
+  var accBody = _getAccBody(el, 'picolés-body');
+  if (!accBody) return;
+  var sabs = produtos && produtos.picolés && produtos.picolés[key] && produtos.picolés[key].sabores ? produtos.picolés[key].sabores : [];
+  var chips = sabs.length > 0 ? sabs : getSaboresDisponíveis();
   mostrarSaboresInline(accBody, '🍭 Sabores – ' + nome, 'Sabores disponíveis para este tipo de picolé', chips);
 }
 
-// ── COMPLEMENTOS DO AÇAÍ INLINE ──────────────────────────────────────────────
 function abrirComplementosInline(el) {
-  var accBody = el.closest('.acc-body') || el.closest('[id$="-body"]');
-  if (!accBody) { abrirComplementos(el); return; }
+  var accBody = _getAccBody(el, 'açaí-body');
+  if (!accBody) accBody = _getAccBody(el, 'açaí-promo-body');
+  if (!accBody) return;
 
-  var acc = accBody.closest('.acc');
-  var accId = acc ? acc.id : null;
+  var acc = accBody.closest ? accBody.closest('.acc') : null;
+  var accId = acc ? acc.id : accBody.id;
   if (accId) _nivelAnterior[accId] = accBody.innerHTML;
 
   var labelComp = {frutas:'🍓 Frutas', cremes:'🍯 Cremes', guloseimas:'🍬 Guloseimas', chocolates:'🍫 Chocolates'};
@@ -3252,7 +3380,7 @@ function abrirComplementosInline(el) {
       var getNome = function(i) { return typeof i === 'object' && i !== null ? i.nome : i; };
       var isEsg = function(i) { return typeof i === 'object' && i !== null && (i.esgotado || i.estoque <= 0); };
       html += '<div style="margin-bottom:12px">';
-      html += '<div style="font-size:13px;font-weight:900;color:#7B2D8B;margin-bottom:6px;">' + (labelComp[k] || k) + ' <span style="font-size:11px;color:#9333EA;font-weight:700">+ R$ ' + info.preço.toFixed(2).replace('.',',') + ' cada</span></div>';
+      html += '<div style="font-size:13px;font-weight:900;color:#7B2D8B;margin-bottom:6px;">' + (labelComp[k] || k) + ' <span style="font-size:11px;color:#9333EA;font-weight:700">+ R$ ' + info.preco.toFixed(2).replace('.',',') + ' cada</span></div>';
       html += '<div class="chips-inline">';
       info.itens.forEach(function(i) {
         var esg = isEsg(i);
@@ -3260,12 +3388,18 @@ function abrirComplementosInline(el) {
       });
       html += '</div></div>';
     });
+  } else {
+    html += '<div style="text-align:center;color:#555;padding:12px">Consulte os ingredientes disponíveis na loja</div>';
   }
 
   html += '<button type="button" class="btn-voltar-nivel" onclick="voltarNivel(this)">← Voltar</button>';
   html += '</div>';
   accBody.innerHTML = html;
 }
+
+
+
+
 
 </script>
 </body>
