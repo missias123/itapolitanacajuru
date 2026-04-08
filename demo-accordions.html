@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍦 Demo Accordions — Sorveteria Itapolitana</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #FFF8F0; color: #333; }
+
+  /* ── CABEÇALHO ── */
+  .demo-header {
+    background: linear-gradient(135deg, #E91E63, #FF5722);
+    color: #fff;
+    text-align: center;
+    padding: 24px 16px 20px;
+  }
+  .demo-header h1 { font-size: 1.4rem; font-weight: 900; }
+  .demo-header p  { font-size: 0.85rem; margin-top: 6px; opacity: .9; }
+
+  /* ── LEGENDA ── */
+  .legenda {
+    background: #fff;
+    border: 2px solid #E91E63;
+    border-radius: 12px;
+    margin: 16px;
+    padding: 14px 16px;
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+  .legenda strong { color: #E91E63; }
+
+  /* ── SEÇÃO ── */
+  .secao-titulo {
+    background: #333;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    margin-top: 12px;
+  }
+
+  /* ── ACCORDION ── */
+  .acc {
+    margin: 8px 12px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 3px 14px rgba(0,0,0,.15);
+    transition: transform .25s, box-shadow .25s;
+  }
+  .acc:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.22); }
+
+  .acc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .acc-left { display: flex; align-items: center; gap: 12px; }
+  .acc-icon {
+    font-size: 24px;
+    background: rgba(255,255,255,.2);
+    border: 2px solid rgba(255,255,255,.4);
+    border-radius: 50%;
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .acc-title { font-size: 15px; font-weight: 900; color: #fff; }
+  .acc-sub   { font-size: 11px; color: rgba(255,255,255,.9); margin-top: 2px; }
+  .acc-arrow {
+    font-size: 13px; color: #fff; font-weight: 900;
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    flex-shrink: 0;
+  }
+  .acc.open .acc-arrow { transform: rotate(180deg); }
+
+  /* ── CORPO DO ACCORDION — max-height animado ── */
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+    opacity: 0;
+    background: #FFFDF9;
+    border-top: 0px solid transparent;
+  }
+  .acc.open .acc-body {
+    max-height: 600px;
+    opacity: 1;
+    border-top: 2px solid rgba(0,0,0,.08);
+  }
+  .acc-body-inner { padding: 16px; }
+
+  /* ── CORES POR CATEGORIA ── */
+  #d-sorvetes    .acc-header { background: linear-gradient(135deg,#7B1FA2,#E040FB,#FF4081); }
+  #d-picoles     .acc-header { background: linear-gradient(135deg,#FF6F00,#FF8F00,#FFA000); }
+  #d-acai-promo  .acc-header { background: linear-gradient(135deg,#4A148C,#7B1FA2,#E040FB); }
+  #d-acai        .acc-header { background: linear-gradient(135deg,#311B92,#512DA8,#7C4DFF); }
+  #d-milk        .acc-header { background: linear-gradient(135deg,#0277BD,#0288D1,#00ACC1); }
+  #d-tacas       .acc-header { background: linear-gradient(135deg,#AD1457,#E91E63,#F48FB1); }
+  #d-tacas-p     .acc-header { background: linear-gradient(135deg,#BF360C,#E64A19,#FF6D00); }
+  #d-iso         .acc-header { background: linear-gradient(135deg,#00695C,#00897B,#26A69A); }
+  #d-sobremesas  .acc-header { background: linear-gradient(135deg,#1A237E,#283593,#3949AB); }
+
+  /* 4 cards de encomendas — cor diferente */
+  #d-caixas      .acc-header { background: linear-gradient(135deg,#6A1B9A,#8E24AA,#AB47BC); }
+  #d-tortas      .acc-header { background: linear-gradient(135deg,#B71C1C,#C62828,#E53935); }
+  #d-enc-picoles .acc-header { background: linear-gradient(135deg,#E65100,#F57C00,#FFB300); }
+  #d-complementos .acc-header { background: linear-gradient(135deg,#4E342E,#6D4C41,#8D6E63); }
+
+  /* ── CONTEÚDO INTERNO ── */
+  .grid-precos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .preco-card {
+    background: #fff;
+    border: 2px solid #E91E63;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+  .preco-card .nome  { font-size: 12px; font-weight: 700; color: #333; }
+  .preco-card .desc  { font-size: 10px; color: #777; margin: 2px 0; }
+  .preco-card .valor { font-size: 14px; font-weight: 900; color: #E91E63; }
+
+  .btn-sabores {
+    display: block; width: 100%;
+    background: linear-gradient(135deg,#E91E63,#FF5722);
+    color: #fff; border: none; border-radius: 10px;
+    padding: 12px; font-size: 14px; font-weight: 800;
+    cursor: pointer; margin-top: 8px;
+  }
+  .btn-voltar {
+    display: block; width: 100%;
+    background: linear-gradient(135deg,#FF9800,#FF5722);
+    color: #fff; border: none; border-radius: 10px;
+    padding: 10px; font-size: 13px; font-weight: 700;
+    cursor: pointer; margin-top: 8px;
+  }
+
+  /* Botão de redirecionamento para encomendas */
+  .redirect-box {
+    background: linear-gradient(135deg,#1A237E,#283593);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    color: #fff;
+  }
+  .redirect-box p { font-size: 12px; margin-bottom: 10px; opacity: .9; }
+  .btn-ir-enc {
+    display: inline-block;
+    background: linear-gradient(135deg,#4CAF50,#2E7D32);
+    color: #fff; border: none; border-radius: 10px;
+    padding: 12px 24px; font-size: 14px; font-weight: 800;
+    cursor: pointer; text-decoration: none;
+  }
+
+  /* ── BADGE DE COMPORTAMENTO ── */
+  .badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .badge-acc  { background: #E3F2FD; color: #1565C0; }
+  .badge-enc  { background: #E8F5E9; color: #2E7D32; }
+
+  /* ── RODAPÉ ── */
+  .demo-footer {
+    background: #333; color: #fff;
+    text-align: center; padding: 20px 16px;
+    margin-top: 24px; font-size: 12px;
+  }
+  .btn-aprovar {
+    display: block; width: calc(100% - 32px); margin: 16px auto 0;
+    background: linear-gradient(135deg,#4CAF50,#2E7D32);
+    color: #fff; border: none; border-radius: 12px;
+    padding: 16px; font-size: 16px; font-weight: 900;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(76,175,80,.4);
+  }
+
+  @media(min-width:600px){
+    .acc { margin: 8px auto; max-width: 560px; }
+    .grid-precos { grid-template-columns: repeat(4,1fr); }
+    .legenda, .btn-aprovar { max-width: 560px; margin-left: auto; margin-right: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-header">
+  <h1>🍦 Demonstração Visual — Cardápio</h1>
+  <p>Como cada accordion vai funcionar no site.<br>Clique para testar antes de publicar.</p>
+</div>
+
+<div class="legenda">
+  <strong>🔵 Accordions do Cardápio</strong> — Clica → abre mostrando preços e botão de sabores. Clica de novo → fecha. Tela não se move.<br><br>
+  <strong>🟢 Cards de Encomendas (4 abaixo)</strong> — Clica → abre mostrando botão "Ir para Encomendas". Clica de novo → fecha. Simples e direto.<br><br>
+  <strong>✅ Comportamento:</strong> Abre suavemente com animação. Dedo/mouse fica no mesmo lugar. Sem pulo de tela.
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<div class="secao-titulo">🍦 CARDÁPIO PRINCIPAL — 9 Accordions</div>
+
+<!-- 1. Sorvetes de Massa -->
+<div class="acc" id="d-sorvetes">
+  <div class="acc-header" onclick="toggleAcc('d-sorvetes')">
+    <div class="acc-left">
+      <div class="acc-icon">🍨</div>
+      <div>
+        <div class="acc-title">Sorvetes de Massa <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Cremoso, gelado, irresistível · 35 sabores pra você escolher</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">Casquinha/Copção</div><div class="desc">1 bola</div><div class="valor">R$ 8,00</div></div>
+        <div class="preco-card"><div class="nome">Copção Recheado</div><div class="desc">1 bola + recheio</div><div class="valor">R$ 10,00</div></div>
+        <div class="preco-card"><div class="nome">Cascão</div><div class="desc">Casquinha grande</div><div class="valor">R$ 12,00</div></div>
+        <div class="preco-card"><div class="nome">Cestinha</div><div class="desc">Cestinha crocante</div><div class="valor">R$ 14,00</div></div>
+      </div>
+      <button class="btn-sabores">🍦 Ver 35 Sabores</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Picolés -->
+<div class="acc" id="d-picoles">
+  <div class="acc-header" onclick="toggleAcc('d-picoles')">
+    <div class="acc-left">
+      <div class="acc-icon">🧊</div>
+      <div>
+        <div class="acc-title">Picolés <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">Picolé de Frutas</div><div class="desc">Sem lactose</div><div class="valor">R$ 2,50</div></div>
+        <div class="preco-card"><div class="nome">Picolé de Leite</div><div class="desc">Cremoso</div><div class="valor">R$ 2,50</div></div>
+        <div class="preco-card"><div class="nome">Picolé Recheado</div><div class="desc">Com recheio</div><div class="valor">R$ 3,00</div></div>
+        <div class="preco-card"><div class="nome">Leite Ninho</div><div class="desc">Especial</div><div class="valor">R$ 4,00</div></div>
+      </div>
+      <button class="btn-sabores">🍭 Ver Sabores de Picolé</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Açaí em Promoção -->
+<div class="acc" id="d-acai-promo">
+  <div class="acc-header" onclick="toggleAcc('d-acai-promo')">
+    <div class="acc-left">
+      <div class="acc-icon">🫐</div>
+      <div>
+        <div class="acc-title">🔥 Açaí em Promoção <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Aproveite agora! 8 combos irresistíveis · 400ml a 700ml</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">400ml</div><div class="desc">Combo Promo</div><div class="valor">R$ 14,00</div></div>
+        <div class="preco-card"><div class="nome">500ml</div><div class="desc">Combo Promo</div><div class="valor">R$ 17,00</div></div>
+        <div class="preco-card"><div class="nome">600ml</div><div class="desc">Combo Promo</div><div class="valor">R$ 20,00</div></div>
+        <div class="preco-card"><div class="nome">700ml</div><div class="desc">Combo Promo</div><div class="valor">R$ 23,00</div></div>
+      </div>
+      <button class="btn-sabores">🫐 Ver 8 Combos</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Açaí tipo artesanal -->
+<div class="acc" id="d-acai">
+  <div class="acc-header" onclick="toggleAcc('d-acai')">
+    <div class="acc-left">
+      <div class="acc-icon">🍇</div>
+      <div>
+        <div class="acc-title">Açaí tipo artesanal <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Do jeito que você ama · Monte o seu · 300ml a 600ml</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">300ml</div><div class="desc">Monte o seu</div><div class="valor">R$ 12,00</div></div>
+        <div class="preco-card"><div class="nome">400ml</div><div class="desc">Monte o seu</div><div class="valor">R$ 16,00</div></div>
+        <div class="preco-card"><div class="nome">500ml</div><div class="desc">Monte o seu</div><div class="valor">R$ 20,00</div></div>
+        <div class="preco-card"><div class="nome">600ml</div><div class="desc">Monte o seu</div><div class="valor">R$ 24,00</div></div>
+      </div>
+      <button class="btn-sabores">🍇 Ver Complementos</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Milkshakes -->
+<div class="acc" id="d-milk">
+  <div class="acc-header" onclick="toggleAcc('d-milk')">
+    <div class="acc-left">
+      <div class="acc-icon">🥤</div>
+      <div>
+        <div class="acc-title">Milkshakes <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Cremoso e gelado · Tradicional e Top · 35 sabores</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">Tradicional 400ml</div><div class="desc">35 sabores</div><div class="valor">R$ 14,00</div></div>
+        <div class="preco-card"><div class="nome">Top 500ml</div><div class="desc">Com cobertura</div><div class="valor">R$ 18,00</div></div>
+      </div>
+      <button class="btn-sabores">🥤 Ver Sabores</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Taças -->
+<div class="acc" id="d-tacas">
+  <div class="acc-header" onclick="toggleAcc('d-tacas')">
+    <div class="acc-left">
+      <div class="acc-icon">🍧</div>
+      <div>
+        <div class="acc-title">Taças <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Uma experiência única · Colegial, Sundae, Banana Split e mais</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">Colegial</div><div class="desc">2 bolas</div><div class="valor">R$ 16,00</div></div>
+        <div class="preco-card"><div class="nome">Sundae</div><div class="desc">3 bolas</div><div class="valor">R$ 22,00</div></div>
+        <div class="preco-card"><div class="nome">Banana Split</div><div class="desc">Especial</div><div class="valor">R$ 28,00</div></div>
+      </div>
+      <button class="btn-sabores">🍧 Ver Todas as Taças</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Taças Premium -->
+<div class="acc" id="d-tacas-p">
+  <div class="acc-header" onclick="toggleAcc('d-tacas-p')">
+    <div class="acc-left">
+      <div class="acc-icon">👑</div>
+      <div>
+        <div class="acc-title">Taças Premium (Taças Sujas) <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">O melhor da sorveteria · Prestígio, Kit Kat, Unicórnio e mais</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">Prestígio</div><div class="desc">Premium</div><div class="valor">R$ 32,00</div></div>
+        <div class="preco-card"><div class="nome">Kit Kat</div><div class="desc">Premium</div><div class="valor">R$ 34,00</div></div>
+        <div class="preco-card"><div class="nome">Unicórnio</div><div class="desc">Premium</div><div class="valor">R$ 36,00</div></div>
+      </div>
+      <button class="btn-sabores">👑 Ver Taças Premium</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 8. Isopores de Viagem -->
+<div class="acc" id="d-iso">
+  <div class="acc-header" onclick="toggleAcc('d-iso')">
+    <div class="acc-left">
+      <div class="acc-icon">🧊</div>
+      <div>
+        <div class="acc-title">Isopores de Viagem <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Leve o prazer para casa · 4 tamanhos disponíveis</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">2 Litros</div><div class="desc">Viagem</div><div class="valor">R$ 28,00</div></div>
+        <div class="preco-card"><div class="nome">5 Litros</div><div class="desc">Viagem</div><div class="valor">R$ 55,00</div></div>
+        <div class="preco-card"><div class="nome">10 Litros</div><div class="desc">Viagem</div><div class="valor">R$ 95,00</div></div>
+      </div>
+      <button class="btn-sabores">🧊 Ver Tamanhos</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 9. Sobremesas Geladas -->
+<div class="acc" id="d-sobremesas">
+  <div class="acc-header" onclick="toggleAcc('d-sobremesas')">
+    <div class="acc-left">
+      <div class="acc-icon">🍨</div>
+      <div>
+        <div class="acc-title">Sobremesas Geladas <span class="badge badge-acc">ACCORDION</span></div>
+        <div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="grid-precos">
+        <div class="preco-card"><div class="nome">Fondue</div><div class="desc">Especial</div><div class="valor">R$ 38,00</div></div>
+        <div class="preco-card"><div class="nome">Petit Gâteau</div><div class="desc">Especial</div><div class="valor">R$ 32,00</div></div>
+        <div class="preco-card"><div class="nome">Brownie</div><div class="desc">Especial</div><div class="valor">R$ 28,00</div></div>
+      </div>
+      <button class="btn-sabores">🍨 Ver Sobremesas</button>
+      <button class="btn-voltar">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<div class="secao-titulo">📦 4 CARDS DE ENCOMENDAS — Redirecionamento Simples</div>
+
+<!-- 10. Sorvetes em Caixa -->
+<div class="acc" id="d-caixas">
+  <div class="acc-header" onclick="toggleAcc('d-caixas')">
+    <div class="acc-left">
+      <div class="acc-icon">📦</div>
+      <div>
+        <div class="acc-title">Sorvetes em Caixa 5 e 10 Litros <span class="badge badge-enc">ENCOMENDA</span></div>
+        <div class="acc-sub">Ideal para festas e eventos · 2 ou 3 sabores à escolha</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="redirect-box">
+        <p>📦 Para encomendar, acesse a página de Encomendas no menu acima</p>
+        <a class="btn-ir-enc" href="encomendas.html">📦 Ir para Encomendas</a>
+      </div>
+      <button class="btn-voltar" style="margin-top:10px">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 11. Tortas de Sorvete -->
+<div class="acc" id="d-tortas">
+  <div class="acc-header" onclick="toggleAcc('d-tortas')">
+    <div class="acc-left">
+      <div class="acc-icon">🎂</div>
+      <div>
+        <div class="acc-title">Tortas de Sorvete <span class="badge badge-enc">ENCOMENDA</span></div>
+        <div class="acc-sub">Faça a festa! 3 sabores · Encomende com 3 dias de antecedência</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="redirect-box">
+        <p>🎂 Para encomendar sua torta, acesse a página de Encomendas</p>
+        <a class="btn-ir-enc" href="encomendas.html">🎂 Ir para Encomendas</a>
+      </div>
+      <button class="btn-voltar" style="margin-top:10px">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 12. Picolés para Encomenda -->
+<div class="acc" id="d-enc-picoles">
+  <div class="acc-header" onclick="toggleAcc('d-enc-picoles')">
+    <div class="acc-left">
+      <div class="acc-icon">❄️</div>
+      <div>
+        <div class="acc-title">Picolés para Encomenda <span class="badge badge-enc">ENCOMENDA</span></div>
+        <div class="acc-sub">Preço especial de atacado · 5 tipos · Mín. 100 unidades</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="redirect-box">
+        <p>❄️ Para encomendar picolés no atacado, acesse a página de Encomendas</p>
+        <a class="btn-ir-enc" href="encomendas.html">❄️ Ir para Encomendas</a>
+      </div>
+      <button class="btn-voltar" style="margin-top:10px">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<!-- 13. Complementos -->
+<div class="acc" id="d-complementos">
+  <div class="acc-header" onclick="toggleAcc('d-complementos')">
+    <div class="acc-left">
+      <div class="acc-icon">🍫</div>
+      <div>
+        <div class="acc-title">Complementos para Sorvetes <span class="badge badge-enc">ENCOMENDA</span></div>
+        <div class="acc-sub">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div>
+      </div>
+    </div>
+    <div class="acc-arrow">▼</div>
+  </div>
+  <div class="acc-body">
+    <div class="acc-body-inner">
+      <div class="redirect-box">
+        <p>🍫 Para encomendar complementos, acesse a página de Encomendas</p>
+        <a class="btn-ir-enc" href="encomendas.html">🍫 Ir para Encomendas</a>
+      </div>
+      <button class="btn-voltar" style="margin-top:10px">← Voltar ao Início do Cardápio</button>
+    </div>
+  </div>
+</div>
+
+<div class="demo-footer">
+  <p>✅ Todos os 13 accordions funcionando com comportamento cascata profissional</p>
+  <p style="margin-top:6px;opacity:.7">Clica → abre · Clica de novo → fecha · Tela não se move</p>
+</div>
+
+<script>
+// ── ACCORDION CASCATA PROFISSIONAL ──────────────────────────────
+// Técnica: max-height animado — sem display:none, sem pulo de tela
+// Comportamento: clica abre, clica de novo fecha
+// NÃO fecha os outros ao abrir um (modo cascata independente)
+// ────────────────────────────────────────────────────────────────
+function toggleAcc(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('open');
+  var h = el.querySelector('.acc-header');
+  if (h) h.setAttribute('aria-expanded', el.classList.contains('open') ? 'true' : 'false');
+  // SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
+}
+
+// ── FECHAR AO CLICAR FORA ───────────────────────────────────────
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.acc')) {
+    document.querySelectorAll('.acc.open').forEach(function(acc) {
+      acc.classList.remove('open');
+      var h = acc.querySelector('.acc-header');
+      if (h) h.setAttribute('aria-expanded', 'false');
+    });
+  }
+});
+</script>
+
+</body>
+</html>
