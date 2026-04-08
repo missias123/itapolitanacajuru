@@ -2495,16 +2495,16 @@ function copiarCódigosDisponíveis(){
 }
 function preencherConfig(){
   const cfg=STATE.config||{};
-  document.getElementById('cfg-whats').value=cfg.whatsapp||'5516996062046';
+  document.getElementById('cfg-whatsapp').value=cfg.whatsapp||'5516996062046';
   document.getElementById('cfg-whats-fmt').value=cfg.whatsappFormatado||'(16) 99606-2046';
   document.getElementById('cfg-instagram').value=cfg.instagram||'@sorveteriaitapolitanacajuru';
   document.getElementById('cfg-instagram-url').value=cfg.instagramUrl||'';
-  document.getElementById('cfg-endereço').value=cfg.endereco||'';
+  document.getElementById('cfg-endereco').value=cfg.endereco||'';
   document.getElementById('cfg-endereço-completo').value=cfg.enderecoCompleto||'';
   document.getElementById('cfg-maps').value=cfg.googleMaps||'';
   document.getElementById('cfg-hora-abre').value=cfg.horarioAbre??10;
   document.getElementById('cfg-hora-fecha').value=cfg.horarioFecha??22;
-  document.getElementById('cfg-horário').value=cfg.horario||'';
+  document.getElementById('cfg-horario').value=cfg.horario||'';
   document.getElementById('cfg-horário-det').value=cfg.horarioDetalhado||'';
   document.getElementById('cfg-footer-horário').value=cfg.footerHorario||'';
   document.getElementById('cfg-nome-empresa').value=cfg.nomeEmpresa||'';
@@ -2519,16 +2519,16 @@ async function salvarConfig(){
   const confSenha=document.getElementById('cfg-conf-senha').value;
   if(novaSenha&&novaSenha!==confSenha){toast('As senhas não coincidem.','erro');return;}
   const cfg=STATE.config||{};
-  cfg.whatsapp=document.getElementById('cfg-whats').value.trim();
+  cfg.whatsapp=document.getElementById('cfg-whatsapp').value.trim();
   cfg.whatsappFormatado=document.getElementById('cfg-whats-fmt').value.trim();
   cfg.instagram=document.getElementById('cfg-instagram').value.trim();
   cfg.instagramUrl=document.getElementById('cfg-instagram-url').value.trim();
-  cfg.endereco=document.getElementById('cfg-endereço').value.trim();
+  cfg.endereco=document.getElementById('cfg-endereco').value.trim();
   cfg.enderecoCompleto=document.getElementById('cfg-endereço-completo').value.trim();
   cfg.googleMaps=document.getElementById('cfg-maps').value.trim();
   cfg.horarioAbre=parseInt(document.getElementById('cfg-hora-abre').value)||10;
   cfg.horarioFecha=parseInt(document.getElementById('cfg-hora-fecha').value)||22;
-  cfg.horario=document.getElementById('cfg-horário').value.trim();
+  cfg.horario=document.getElementById('cfg-horario').value.trim();
   cfg.horarioDetalhado=document.getElementById('cfg-horário-det').value.trim();
   cfg.footerHorario=document.getElementById('cfg-footer-horário').value.trim();
   cfg.nomeEmpresa=document.getElementById('cfg-nome-empresa').value.trim();
@@ -2886,7 +2886,7 @@ function initContadores() {
 
 // Válidação de WhatsApp em tempo real
 function initVálidacaoWhatsApp() {
-  const el = document.getElementById('cfg-whats');
+  const el = document.getElementById('cfg-whatsapp');
   if (!el) return;
   
   el.addEventListener('input', () => {
