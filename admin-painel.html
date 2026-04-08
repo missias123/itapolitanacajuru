@@ -44,7 +44,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .campo-edit input,.campo-edit textarea,.campo-edit select{width:100%;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none;transition:.2s;font-family:inherit}
 .campo-edit input:focus,.campo-edit textarea:focus{border-color:#e65100}
 .campo-edit textarea{resize:vertical;min-height:80px}
-.hint{font-size:.75rem;color:#açaía;margin-top:4px}
+.hint{font-size:.75rem;color:#888;margin-top:4px}
 .seção-título{font-size:.85rem;font-weight:800;color:#e65100;text-transform:uppercase;letter-spacing:.5px;margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid #fce4d6}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .btn{padding:10px 20px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
@@ -134,6 +134,8 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .sabor-nome{flex:1;font-weight:600;font-size:.88rem;color:#1a1a1a}
 .sabor-status{font-size:.75rem;font-weight:700;color:#2e7d32;min-width:70px;text-align:right}
 .sabor-status.esgotado{color:#c62828}
+.btn-remover-sabor{background:none;border:none;color:#c62828;cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;transition:.2s;margin-left:4px}
+.btn-remover-sabor:hover{background:#ffebee;color:#b71c1c}
 .estoque-card{background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:16px;margin-bottom:14px}
 .estoque-card.esgotado{border-color:#FECACA;background:#fff5f5}
 .estoque-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #f0f2f5;flex-wrap:wrap;gap:8px}
@@ -416,7 +418,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Senha incorreta.</div>
     <br/>
-    <a href="index.html" style="color:#açaía;font-size:.82rem;text-decoration:none">&#x2190; Voltar ao site</a>
+    <a href="index.html" style="color:#888;font-size:.82rem;text-decoration:none">&#x2190; Voltar ao site</a>
   </div>
 </div>
 <div id="admin-app">
@@ -428,7 +430,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
     </div>
   </div>
   <div class="admin-nav">
-    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">&#x1F4CA; Dashboard</button>
+    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">&#x1F4CA; Painel</button>
     <button class="nav-btn" onclick="irPara('home',this)">&#x1F3E0; Home</button>
     <button class="nav-btn" onclick="irPara('preços',this)">&#x1F4B0; Preços</button>
     <button class="nav-btn" onclick="irPara('promoção',this)">&#x1F389; Promoção</button>
@@ -438,7 +440,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
     <button class="nav-btn" onclick="irPara('participantes',this)">👥 Participantes</button>
     <button class="nav-btn" onclick="irPara('clientes',this)">&#x1F465; Clientes</button>
     <button class="nav-btn" onclick="irPara('fidelidade',this)">&#x1F381; Fidelidade</button>
-    <button class="nav-btn" onclick="irPara('config',this)">&#x2699;&#xFE0F; Configuraes</button>
+    <button class="nav-btn" onclick="irPara('config',this)">&#x2699;&#xFE0F; Configurações</button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -452,9 +454,9 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
         <div class="dash-item"><div class="di-icon">&#x1F389;</div><div class="di-num" id="d-promo">-</div><div class="di-txt">Promoção</div></div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F517; Acesso Rpido ao Site</h2></div>
+        <div class="card-header"><h2>&#x1F517; Acesso Rápido ao Site</h2></div>
         <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
-          <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Pgina Inicial</a>
+          <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
           <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
           <a href="fidelidade.html" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
@@ -464,14 +466,14 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
     <!-- HOME -->
     <div class="seção" id="sec-home">
       <div class="card">
-        <div class="card-header"><h2>&#x1F3E0; Pgina Inicial - Clone Editvel</h2></div>
+        <div class="card-header"><h2>&#x1F3E0; Página Inicial - Clone Editável</h2></div>
         <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:12px 16px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
           ✅ <strong>Regra:</strong> Cada campo editado aqui atualiza o site imediatamente ao salvar. Nada pode estar diferente entre o Admin e o Site.
         </div>
         <div class="card-body">
-          <div class="seção-título">&#x1F3AF; Hero - Topção da Pgina</div>
+          <div class="seção-título">&#x1F3AF; Hero - Topção da Página</div>
           <div class="campo-edit"><label>Badge do Hero (linha pequena acima do título)</label><input type="text" id="home-badge" maxlength="60" placeholder="35 sabores tipo artesanal"/><div class="hint">Max. 60 caracteres. Aparece em destaque acima do título principal.</div></div>
-          <div class="campo-edit"><label>Título principal (H1)</label><input type="text" id="home-titulo" maxlength="80" placeholder="O Sorvete que Cajuru Ama de Verdade"/><div class="hint">Max. 80 caracteres. E o título H1 da pagina — impacta SEO. Use palavras-chave.</div></div>
+          <div class="campo-edit"><label>Título principal (H1)</label><input type="text" id="home-titulo" maxlength="80" placeholder="O Sorvete que Cajuru Ama de Verdade"/><div class="hint">Max. 80 caracteres. É o título H1 da página — impacta SEO. Use palavras-chave.</div></div>
           <div class="campo-edit"><label>Descrição do Hero</label><textarea id="home-descricao" rows="3" placeholder="Cremosidade real, sabores que encantam..."></textarea></div>
           <div class="campo-edit"><label>Botão principal - Ver Cardápio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardápio Completo"/><div class="hint">Max. 40 caracteres. Texto do botão verde que rola até o cardápio.</div></div>
           <div class="campo-edit"><label>Botão WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botão laranja do WhatsApp.</div></div>
@@ -482,10 +484,20 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
           <div class="seção-título">&#x1F3AC; Strip Sensorial (faixa animada)</div>
           <div class="campo-edit"><label>Textos da faixa animada (um por linha)</label><textarea id="home-strip" rows="4" placeholder="Cremoso . Gelado . Irresistivel . Feito com Amor . 35 Sabores"></textarea><div class="hint">Cada linha e um texto da faixa animada colorida</div></div>
           <div class="seção-título">&#x1F366; Cardápio</div>
-          <div class="campo-edit"><label>Título da SEO Cardápio</label><input type="text" id="home-cardápio-título" placeholder="Escolha sua Felicidade Hoje"/></div>
-          <div class="campo-edit"><label>Subtítulo do Cardápio</label><input type="text" id="home-cardápio-sub" placeholder="Toque numa categoria e descubra sabores irresistveis"/></div>
-          <div class="campo-edit"><label>Badge do Cardápio</label><input type="text" id="home-cardápio-badge" placeholder="Feito com amor desde 2007"/></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarHome()">&#x1F4BE; Salvar Pgina Inicial</button></div>
+          <div class="campo-edit"><label>Título do Cardápio</label><input type="text" id="home-cardápio-título" maxlength="60" placeholder="🍦 Escolha sua Felicidade Hoje"/><div class="hint">Aparece como título da seção de cardápio no site. Max. 60 caracteres.</div></div>
+          <div class="campo-edit"><label>Subtítulo do Cardápio</label><input type="text" id="home-cardápio-sub" maxlength="80" placeholder="Toque numa categoria e descubra sabores irresistíveis"/></div>
+          <div class="campo-edit"><label>Badge do Cardápio</label><input type="text" id="home-cardápio-badge" maxlength="50" placeholder="✨ Feito com amor desde 2007"/></div>
+
+          <div class="seção-título">🔗 Botões de Navegação (Menu do Site)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>Sincronismo:</strong> Alterar aqui muda o texto dos botões do menu do site imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Botão Encomendas — Texto</label><input type="text" id="home-nav-encomendas" maxlength="20" placeholder="ENCOMENDAS"/><div class="hint">Texto do botão azul 🛒 no menu. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Botão Promoção — Texto</label><input type="text" id="home-nav-promocao" maxlength="20" placeholder="PROMOÇÃO"/><div class="hint">Texto do botão vermelho 🎉 no menu. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Botão Dicas/Depoimentos — Texto</label><input type="text" id="home-nav-dicas" maxlength="20" placeholder="DICAS/DEPOIMENTOS"/><div class="hint">Texto do botão verde ⭐ no menu. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Botão Fidelidade — Texto</label><input type="text" id="home-nav-fidelidade" maxlength="20" placeholder="FIDELIDADE"/><div class="hint">Texto do botão laranja 🎟️ no menu. Max. 20 caracteres.</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarHome()">&#x1F4BE; Salvar Página Inicial</button></div>
         </div>
       </div>
     </div>
@@ -494,9 +506,9 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
       <div class="card">
         <div class="card-header"><h2>&#x1F4B0; Preços do Cardápio</h2><button class="btn btn-salvar" onclick="salvarPreços()">&#x1F4BE; Salvar Preços</button></div>
         <div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin:0 0 4px;font-size:.82rem">
-          💰 <strong>Regra:</strong> Todos os preços sao em R$ com até 2 casas decimais. Use ponto (.) como separador decimal. Salvar atualiza o site imediatamente. Mínimo: R$ 0,00.
+          💰 <strong>Regra:</strong> Todos os preços são em R$ com até 2 casas decimais. Use ponto (.) como separador decimal. Salvar atualiza o site imediatamente. Mínimo: R$ 0,00.
         </div>
-        <div class="card-body" id="preços-body"><p style="color:#açaía;text-align:center;padding:20px">Carregando preços...</p></div>
+        <div class="card-body" id="preços-body"><p style="color:#999;text-align:center;padding:20px">Carregando preços...</p></div>
       </div>
     </div>
     <!-- PROMOCAO -->
@@ -563,7 +575,25 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
               <option value="carrinho">Carrinho para Eventos</option>
             </select>
           </div>
-          <div id="enc-lista"><p style="color:#açaía;text-align:center;padding:20px">Carregando encomendas...</p></div>
+          <div id="enc-lista"><p style="color:#999;text-align:center;padding:20px">Carregando encomendas...</p></div>
+        </div>
+      </div>
+
+      <!-- CONFIGURAÇÕES DE ENCOMENDAS -->
+      <div class="card" style="border-left:4px solid #e65100;margin-top:16px">
+        <div class="card-header"><h2>⚙️ Configurações de Encomendas</h2></div>
+        <div class="card-body">
+          <div class="campo-edit">
+            <label>Aviso de prazo das encomendas</label>
+            <textarea id="enc-aviso" rows="3" placeholder="Prazo mínimo de 03 dias úteis..."></textarea>
+            <div class="hint">Mensagem exibida ao cliente ao abrir o campo de encomendas. Max. 300 caracteres.</div>
+          </div>
+          <div class="campo-edit">
+            <label>Mínimo de picolés por encomenda</label>
+            <input type="number" id="enc-min-picolés" value="100" min="1" max="1000" placeholder="100"/>
+            <div class="hint">Quantidade mínima de picolés para fechar um pedido. Padrão: 100 unidades.</div>
+          </div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações de Encomendas</button></div>
         </div>
       </div>
     </div>
@@ -573,9 +603,9 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
       <div class="card">
         <div class="card-header"><h2>🍦 Sabores &amp; Complementos</h2><button class="btn btn-salvar" onclick="salvarSabores()">💾 Salvar Sabores</button></div>
         <div class="card-body">
-          <div class="seção-título">🍦 35 Sabores de Sorvete (Caixas e Tortas)</div>
-          <div class="hint" style="margin-bottom:12px">⚠️ Desativar um sabor remove-o da lista de seleção nas Caixas e Tortas de encomenda. A caixa continua disponível com os outros sabores ativos.</div>
-          <div class="sabores-grid">
+          <div class="seção-título">🍦 Sabores de Sorvete (Caixas e Tortas)</div>
+          <div class="hint" style="margin-bottom:12px">⚠️ Desativar um sabor remove-o da lista de seleção nas Caixas e Tortas de encomenda. A caixa continua disponível com os outros sabores ativos. Novos sabores adicionados aparecem automaticamente no site.</div>
+          <div class="sabores-grid" id="sabores-sorvete-grid">
           <div class="sabor-item" id="wrap_sab_Abacaxi_ao_Vinho">
             <div class="sabor-nome">Abacaxi ao Vinho</div>
             <label class="toggle" title="Desativar = esgotado no site">
@@ -1419,15 +1449,15 @@ Talento</textarea>
           <div class="seção-título">&#x1F964; Prêmio 1 - Milkshake</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="campo-edit"><label>Nome do Prêmio</label><input type="text" id="fid-prêmio-milk-nome" placeholder="Milkshake 300ml"/></div>
-            <div class="campo-edit"><label>Pontos necessrios</label><input type="number" id="fid-pts-milk" min="1" max="100" placeholder="10"/></div>
+            <div class="campo-edit"><label>Pontos necessários</label><input type="number" id="fid-pts-milk" min="1" max="100" placeholder="10"/></div>
           </div>
           <div class="seção-título">&#x1F366; Prêmio 2 - Caixa de Sorvete</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="campo-edit"><label>Nome do Prêmio</label><input type="text" id="fid-prêmio-caixa-nome" placeholder="Caixa 7 Bolas"/></div>
-            <div class="campo-edit"><label>Pontos necessrios</label><input type="number" id="fid-pts-caixa" min="1" max="100" placeholder="30"/></div>
+            <div class="campo-edit"><label>Pontos necessários</label><input type="number" id="fid-pts-caixa" min="1" max="100" placeholder="30"/></div>
           </div>
-          <div class="campo-edit"><label>Título da pgina Fidelidade</label><input type="text" id="fid-título" placeholder="Programa de Fidelidade"/></div>
-          <div class="campo-edit"><label>Descrição da pgina Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incrvies!"/></div>
+          <div class="campo-edit"><label>Título da página Fidelidade</label><input type="text" id="fid-título" placeholder="Programa de Fidelidade"/></div>
+          <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
         </div>
       </div>
@@ -1455,8 +1485,8 @@ Talento</textarea>
           </div>
         </div>
         <div class="card-body" style="padding:0">
-          <div class="códigos-lista" id="códigos-lista"><p style="color:#açaía;text-align:center;padding:20px">Carregando códigos...</p></div>
-          <div style="padding:12px 16px;font-size:.78rem;color:#açaía" id="fid-pag-info"></div>
+          <div class="códigos-lista" id="códigos-lista"><p style="color:#999;text-align:center;padding:20px">Carregando códigos...</p></div>
+          <div style="padding:12px 16px;font-size:.78rem;color:#888" id="fid-pag-info"></div>
         </div>
       </div>
     </div>
@@ -1536,25 +1566,18 @@ Talento</textarea>
         </div>
       </div>
 
-    <div class="seção-título">⚙️ Configurações de Encomendas</div>
-          <div class="campo-edit"><label>Aviso de prazo das encomendas</label>
-            <textarea id="enc-aviso" rows="3" placeholder="Prazo mínimo de 03 dias úteis...">Encomendas para entrega têm prazo mínimo de 03 dias úteis após confirmação via WhatsApp e mediante pagamento antecipado.</textarea>
-            <div class="hint">Mensagem exibida ao cliente ao abrir o campo de encomendas. Max. 300 caracteres.</div></div>
-          <div class="campo-edit"><label>Mínimo de picolés por encomenda</label>
-            <input type="number" id="enc-min-picolés" value="100" min="1" max="1000" placeholder="100"/>
-            <div class="hint">Quantidade mínima de picolés para fechar um pedido. Padrão: 100 unidades.</div></div>
     <!-- CONFIG -->
     <div class="seção" id="sec-config">
       <div class="card">
-        <div class="card-header"><h2>&#x2699;&#xFE0F; Configuraes Gerais do Site</h2></div>
+        <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
         <div class="card-body">
           <div class="seção-título">&#x1F4F1; Contato e Redes Sociais</div>
-          <div class="campo-edit"><label class="label-obrigatório">WhatsApp (somente números, sem espaços)</label><input type="text" id="cfg-whatsapp" maxlength="15" inputmode="numeric" pattern="[0-9]+" pattern="[0-9]+" placeholder="5516996062046"/><div class="hint">⚠️ SOMENTE NUMEROS, sem espacos, traco ou parenteses. Formato: 55 + DDD + número (ex: 5516996062046). Errar aqui quebra o WhatsApp do site inteiro.</div></div>
-          <div class="campo-edit"><label>WhatsApp formatado (exibição no site)</label><input type="text" id="cfg-whats-fmt" maxlength="20" placeholder="(16) 99606-2046"/><div class="hint">Formato visual com parenteses e traco. Exemplo: (16) 99606-2046. Max. 20 caracteres.</div></div>
-          <div class="campo-edit"><label>Instagram (com arroba)</label><input type="text" id="cfg-instagram" maxlength="50" placeholder="@sorveteriaitapolitanacajuru"/><div class="hint">Incluir o @ no inicio. Max. 50 caracteres. Exemplo: @sorveteriaitapolitanacajuru</div></div>
+          <div class="campo-edit"><label class="label-obrigatório">WhatsApp (somente números, sem espaços)</label><input type="text" id="cfg-whatsapp" maxlength="15" inputmode="numeric" pattern="[0-9]+" pattern="[0-9]+" placeholder="5516996062046"/><div class="hint">⚠️ SOMENTE NÚMEROS, sem espaços, traço ou parênteses. Formato: 55 + DDD + número (ex: 5516996062046). Errar aqui quebra o WhatsApp do site inteiro.</div></div>
+          <div class="campo-edit"><label>WhatsApp formatado (exibição no site)</label><input type="text" id="cfg-whats-fmt" maxlength="20" placeholder="(16) 99606-2046"/><div class="hint">Formato visual com parênteses e traço. Exemplo: (16) 99606-2046. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Instagram (com arroba)</label><input type="text" id="cfg-instagram" maxlength="50" placeholder="@sorveteriaitapolitanacajuru"/><div class="hint">Incluir o @ no início. Max. 50 caracteres. Exemplo: @sorveteriaitapolitanacajuru</div></div>
           <div class="campo-edit"><label>URL do Instagram</label><input type="url" id="cfg-instagram-url" placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/><div class="hint hint-aviso">⚠️ Deve começar com https://. Exemplo: https://www.instagram.com/sorveteriaitapolitanacajuru</div placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/></div>
-          <div class="seção-título">&#x1F4CD; Endereço e Localizao</div>
-          <div class="campo-edit"><label>Endereço curto (exibicao no hero)</label><input type="text" id="cfg-endereco" maxlength="40" placeholder="Cajuru - SP"/><div class="hint">Max. 40 caracteres. Aparece no topção do site. Exemplo: Cajuru - SP</div></div>
+          <div class="seção-título">&#x1F4CD; Endereço e Localização</div>
+          <div class="campo-edit"><label>Endereço curto (exibição no hero)</label><input type="text" id="cfg-endereco" maxlength="40" placeholder="Cajuru - SP"/><div class="hint">Max. 40 caracteres. Aparece no topção do site. Exemplo: Cajuru - SP</div></div>
           <div class="campo-edit"><label>Endereço completo</label><input type="text" id="cfg-endereço-completo" maxlength="100" placeholder="Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Link Google Maps</label><input type="url" id="cfg-maps" placeholder="https://www.google.com/maps/..."/></div>
           <div class="seção-título">&#x23F0; Horário de Funcionamento</div>
@@ -1576,7 +1599,7 @@ Talento</textarea>
           <div class="seção-título">&#x1F512; Segurana</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configuraes</button></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações</button></div>
         </div>
       </div>
     </div>
@@ -1693,6 +1716,11 @@ function preencherHome(){
   document.getElementById('home-cardápio-título').value=cfg.cardapioTitulo||'';
   document.getElementById('home-cardápio-sub').value=cfg.cardapioSubtitulo||'';
   document.getElementById('home-cardápio-badge').value=cfg.cardapioBadge||'';
+  // Botões de navegação
+  document.getElementById('home-nav-encomendas').value=cfg.navEncomendas||'ENCOMENDAS';
+  document.getElementById('home-nav-promocao').value=cfg.navPromocao||'PROMOÇÃO';
+  document.getElementById('home-nav-dicas').value=cfg.navDicas||'DICAS/DEPOIMENTOS';
+  document.getElementById('home-nav-fidelidade').value=cfg.navFidelidade||'FIDELIDADE';
 }
 async function salvarHome(){
   const cfg=STATE.config||{};
@@ -1707,6 +1735,11 @@ async function salvarHome(){
   cfg.cardapioTitulo=document.getElementById('home-cardápio-título').value.trim();
   cfg.cardapioSubtitulo=document.getElementById('home-cardápio-sub').value.trim();
   cfg.cardapioBadge=document.getElementById('home-cardápio-badge').value.trim();
+  // Botões de navegação
+  cfg.navEncomendas=document.getElementById('home-nav-encomendas').value.trim()||'ENCOMENDAS';
+  cfg.navPromocao=document.getElementById('home-nav-promocao').value.trim()||'PROMOÇÃO';
+  cfg.navDicas=document.getElementById('home-nav-dicas').value.trim()||'DICAS/DEPOIMENTOS';
+  cfg.navFidelidade=document.getElementById('home-nav-fidelidade').value.trim()||'FIDELIDADE';
   STATE.config=cfg;
   await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
 }
@@ -1734,7 +1767,7 @@ function renderPreços(){
   html+='</div>';
   const pic=p.picolés||{};
   html+='<div class="seção-título">Picolés — Varejo (Cardápio) e Atacado (Encomendas)</div>';
-  html+='<div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:.82rem">🍭 <strong>Varejo</strong> = preço unitario no cardápio da loja. <strong>Atacado</strong> = preço por unidade em encomendas (min. 100 un.). Os dois campos sao independentes.</div>';
+  html+='<div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:.82rem">🍭 <strong>Varejo</strong> = preço unitário no cardápio da loja. <strong>Atacado</strong> = preço por unidade em encomendas (min. 100 un.). Os dois campos são independentes.</div>';
   html+='<div class="preço-grid">';
   for(const[cat,itens]of Object.entries(pic)){
     if(typeof itens==='object'){
@@ -1822,7 +1855,7 @@ function renderEncomendas(){
   const filtroStatus=document.getElementById('enc-filtro-status').value;
   const filtroTipo=document.getElementById('enc-filtro-tipo').value;
   let lista=registros.filter(e=>{if(filtroStatus&&e.status!==filtroStatus)return false;if(filtroTipo&&e.tipo!==filtroTipo)return false;return true;}).sort((a,b)=>new Date(b.data)-new Date(a.data));
-  if(!lista.length){document.getElementById('enc-lista').innerHTML='<p style="color:#açaía;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';return;}
+  if(!lista.length){document.getElementById('enc-lista').innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';return;}
   const statusLabels={novo:'Novo',em_andamento:'Em andamento',concluído:'Concluído',cancelado:'Cancelado'};
   let html=lista.map((e)=>`<div class="enc-card"><div class="enc-header"><span class="enc-nome">${e.nome||'Sem nome'}</span><span class="enc-tipo">${e.tipo||'Geral'}</span></div><div class="enc-info">Tel: ${e.telefone||'-'} | ${e.dataEvento?'Evento: '+e.dataEvento:''} | ${e.data?new Date(e.data).toLocaleString('pt-BR'):'-'}${e.quantidade?'<br>Qtd: '+e.quantidade:''}${e.obs?'<br>Obs: '+e.obs:''}</div><div class="enc-status"><select onchange="alterarStatusEncomenda(${registros.indexOf(e)},this.value)">${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${e.status===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`).join('');
   document.getElementById('enc-lista').innerHTML=html;
@@ -1983,7 +2016,7 @@ function renderClientes(){
   STATE.pagClientes=pag;
   const slice=filtrados.slice(pag*POR_PAGINA,(pag+1)*POR_PAGINA);
   const tbody=document.getElementById('tabela-clientes');
-  if(!slice.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#açaía;padding:20px">Nenhum cliente encontrado.</td></tr>';}
+  if(!slice.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">Nenhum cliente encontrado.</td></tr>';}
   else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}"><td>${c.nome||'-'}</td><td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td><td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td><td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDatéString('pt-BR'):'-'}</td><td>${c.bloqueado?'Bloqueado':c.fraude?'Fraude':'Ativo'}</td><td>${c.bloqueado?`<button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',false)">Desbloquear</button>`:`<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',true)">Bloquear</button>`}</td></tr>`).join('');}
   const pagDiv=document.getElementById('pag-clientes');
   let pagHtml='';
@@ -2108,7 +2141,7 @@ function renderCódigos(){
   let lista=Object.entries(códigos);
   if(filtro)lista=lista.filter(([,v])=>v.status===filtro);
   lista.sort((a,b)=>(a[1].idx||0)-(b[1].idx||0));
-  if(!lista.length){document.getElementById('códigos-lista').innerHTML='<p style="color:#açaía;text-align:center;padding:20px">Nenhum código encontrado.</p>';document.getElementById('fid-pag-info').textContent='';return;}
+  if(!lista.length){document.getElementById('códigos-lista').innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhum código encontrado.</p>';document.getElementById('fid-pag-info').textContent='';return;}
   const max=200;
   const exibir=lista.slice(0,max);
   let html=exibir.map(([cod,v])=>{const statusClass=v.status==='disponível'?'cod-status-ok':'cod-status-usado';const statusTxt=v.status==='disponível'?'Disponível':'Usado';const info=v.usadoPor?`por ${v.usadoPor}`:`lote ${v.lote||1}`;return`<div class="cod-item"><span class="cod-code">${cod}</span><span class="${statusClass}">${statusTxt}</span><span class="cod-info">${info}</span></div>`;}).join('');
@@ -2208,24 +2241,58 @@ function ocultarLoading(){document.getElementById('loading-overlay').style.displ
 // =====================================================================
 const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Leite Ninho", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolé Esquimó", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
 
+// =====================================================================
+// SABORES — renderização dinâmica a partir do produtos.json (Single Source of Truth)
+// =====================================================================
 function renderizarSaboresAdmin() {
-  const salvo = localStorage.getItem('itap_sabores');
-  if (salvo) {
-    try {
-      const dados = JSON.parse(salvo);
-      dados.forEach(s => {
-        const sid = 'sab_' + s.nome.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_');
-        const cb = document.getElementById(sid);
-        const st = document.getElementById('status_' + sid);
-        const wrap = document.getElementById('wrap_' + sid);
-        if (cb) cb.checked = !s.esgotado;
-        if (st) { st.textContent = s.esgotado ? 'Esgotado' : 'Disponível'; st.className = 'sabor-status' + (s.esgotado ? ' esgotado' : ''); }
-        if (wrap) wrap.className = 'sabor-item' + (s.esgotado ? ' esgotado' : '');
-      });
-    } catch(e) {}
+  const prod = STATE.produtos;
+  if (!prod) { renderizarPicolésAdmin(); renderizarAcréscimosAdmin(); return; }
+
+  // Sabores de sorvete — renderizar dinamicamente a partir do JSON
+  const container = document.getElementById('sabores-sorvete-grid');
+  if (container && prod.sorvetes && prod.sorvetes.sabores) {
+    const saboresAtivos = new Set(prod.sorvetes.sabores);
+    const todosOsSabores = prod.sorvetes.todos_sabores || prod.sorvetes.sabores;
+    container.innerHTML = todosOsSabores.map(nome => {
+      const sid = 'sab_' + nome.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      const ativo = saboresAtivos.has(nome);
+      return `<div class="sabor-item${ativo ? '' : ' esgotado'}" id="wrap_${sid}">
+        <div class="sabor-nome">${nome}</div>
+        <label class="toggle" title="Desativar = esgotado no site">
+          <input type="checkbox" id="${sid}" ${ativo ? 'checked' : ''} onchange="toggleSabor('${sid}', '${nome.replace(/'/g, "\\'")}')"/>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="sabor-status${ativo ? '' : ' esgotado'}" id="status_${sid}">${ativo ? 'Disponível' : 'Esgotado'}</span>
+        <button class="btn-remover-sabor" onclick="removerSaborSorvete('${nome.replace(/'/g, "\\'")}')"
+          title="Remover sabor permanentemente">&#x1F5D1;</button>
+      </div>`;
+    }).join('');
   }
+
   renderizarPicolésAdmin();
   renderizarAcréscimosAdmin();
+}
+
+function toggleSaborSorvete(sid, nome) {
+  const cb = document.getElementById(sid);
+  const st = document.getElementById('status_' + sid);
+  const wrap = document.getElementById('wrap_' + sid);
+  const ativo = cb ? cb.checked : true;
+  if (st) { st.textContent = ativo ? 'Disponível' : 'Esgotado'; st.className = 'sabor-status' + (ativo ? '' : ' esgotado'); }
+  if (wrap) wrap.className = 'sabor-item' + (ativo ? '' : ' esgotado');
+}
+
+function removerSaborSorvete(nome) {
+  if (!confirm(`Remover o sabor "${nome}" permanentemente?`)) return;
+  const prod = STATE.produtos;
+  if (!prod || !prod.sorvetes) return;
+  prod.sorvetes.sabores = (prod.sorvetes.sabores || []).filter(s => s !== nome);
+  if (prod.sorvetes.todos_sabores) {
+    prod.sorvetes.todos_sabores = prod.sorvetes.todos_sabores.filter(s => s !== nome);
+  }
+  STATE.produtos = prod;
+  renderizarSaboresAdmin();
+  toast(`Sabor "${nome}" removido. Salve para confirmar.`, 'aviso');
 }
 
 function toggleSabor(sid) {
@@ -2247,19 +2314,28 @@ function adicionarSaborSorvete() {
   const inp = document.getElementById('novo_sabor_sorvete');
   const nome = inp.value.trim();
   if (!nome) { toast('Digite o nome do sabor.', 'erro'); return; }
-  if (nome.length > 40) { toast('Max. 40 caracteres.', 'erro'); return; }
-  const sid = 'sab_' + nome.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_');
-  const grids = document.querySelectorAll('#sec-sabores .sabores-grid');
-  if (grids[0]) {
-    grids[0].insertAdjacentHTML('beforeend', '<div class="sabor-item" id="wrap_' + sid + '"><div class="sabor-nome">' + nome + '</div><label class="toggle"><input type="checkbox" id="' + sid + '" checked onchange="toggleSabor(\'' + sid + '\')"/><span class="toggle-slider"></span></label><span class="sabor-status" id="status_' + sid + '">Disponível</span></div>');
+  if (nome.length > 40) { toast('Máx. 40 caracteres.', 'erro'); return; }
+  const prod = STATE.produtos;
+  if (!prod || !prod.sorvetes) { toast('Dados não carregados. Aguarde.', 'erro'); return; }
+  // Verificar duplicata
+  const todosOsSabores = prod.sorvetes.todos_sabores || prod.sorvetes.sabores || [];
+  if (todosOsSabores.some(s => s.toLowerCase() === nome.toLowerCase())) {
+    toast('Este sabor já existe!', 'erro'); return;
   }
+  // Adicionar ao JSON em memória
+  if (!prod.sorvetes.todos_sabores) prod.sorvetes.todos_sabores = [...prod.sorvetes.sabores];
+  prod.sorvetes.todos_sabores.push(nome);
+  prod.sorvetes.sabores.push(nome); // ativo por padrão
+  STATE.produtos = prod;
   inp.value = '';
-  toast('Sabor adicionado! Salve para confirmar.', 'sucesso');
+  renderizarSaboresAdmin();
+  toast(`Sabor "${nome}" adicionado! Salve para publicar no site.`, 'sucesso');
 }
 
 function renderizarPicolésAdmin() {
-  const salvo = localStorage.getItem('itap_picolés_admin');
-  const dados = salvo ? JSON.parse(salvo) : PICOLES_PADRAO;
+  // Usar STATE.produtos como fonte de verdade (sincronizado com produtos.json)
+  const prod = STATE.produtos;
+  const dados = (prod && prod.picoles) ? prod.picoles : PICOLES_PADRAO;
   const body = document.getElementById('estoque-picolés-body');
   if (!body) return;
   const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -2285,49 +2361,50 @@ function ajustarEstoquePicolé(cat, delta) {
 async function salvarSabores() {
   mostrarLoading('Salvando sabores...');
   try {
-    // Coletar sabores de sorvete
-    const saboresEls = document.querySelectorAll('#sec-sabores .sabores-grid:first-of-type .sabor-item');
+    const prod = STATE.produtos;
+    if (!prod) { toast('Dados não carregados. Tente novamente.', 'erro'); ocultarLoading(); return; }
+
+    // Coletar sabores de sorvete a partir do grid dinâmico
+    const saboresEls = document.querySelectorAll('#sabores-sorvete-grid .sabor-item');
     const sabores = [];
     saboresEls.forEach(el => {
       const nome = el.querySelector('.sabor-nome') ? el.querySelector('.sabor-nome').textContent.trim() : '';
       const cb = el.querySelector('input[type=checkbox]');
       if (nome) sabores.push({ nome, esgotado: cb ? !cb.checked : false });
     });
-    localStorage.setItem('itap_sabores', JSON.stringify(sabores));
-    // Coletar picolés
-    const picDados = JSON.parse(localStorage.getItem('itap_picolés_admin') || JSON.stringify(PICOLES_PADRAO));
+
+    // Atualizar sorvetes no STATE.produtos (Single Source of Truth)
+    prod.sorvetes.sabores = sabores.filter(s => !s.esgotado).map(s => s.nome);
+    if (prod.sorvetes.todos_sabores) {
+      prod.sorvetes.todos_sabores = sabores.map(s => s.nome);
+    }
+
+    // Coletar picolés diretamente do STATE.produtos
     const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    for (const cat of Object.keys(picDados)) {
-      const varejo = parseFloat(document.getElementById('pic_' + cat + '_varejo') ? document.getElementById('pic_' + cat + '_varejo').value : picDados[cat].preço_varejo) || picDados[cat].preço_varejo;
-      const atacado = parseFloat(document.getElementById('pic_' + cat + '_atacado') ? document.getElementById('pic_' + cat + '_atacado').value : picDados[cat].preço_atacado) || picDados[cat].preço_atacado;
-      const estoque = parseInt(document.getElementById('pic_' + cat + '_estoque') ? document.getElementById('pic_' + cat + '_estoque').value : picDados[cat].estoque);
-      picDados[cat].preço_varejo = varejo;
-      picDados[cat].preço_atacado = atacado;
-      picDados[cat].estoque = isNaN(estoque) ? picDados[cat].estoque : estoque;
-      picDados[cat].esgotado = picDados[cat].estoque === 0;
-      picDados[cat].sabores = picDados[cat].sabores.map(s => {
-        const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
-        const cb = document.getElementById(sid);
-        return { nome: s.nome, esgotado: cb ? !cb.checked : s.esgotado };
-      });
-    }
-    localStorage.setItem('itap_picolés_admin', JSON.stringify(picDados));
-    // Atualizar produtos.json
-    const prod = STATE.produtos;
-    if (prod) {
-      for (const [cat, dados] of Object.entries(picDados)) {
-        if (prod.picolés[cat]) {
-          prod.picolés[cat].preço_varejo = dados.preço_varejo;
-          prod.picolés[cat].preço_atacado = dados.preço_atacado;
-          prod.picolés[cat].estoque = dados.estoque;
-          prod.picolés[cat].sabores = dados.sabores.filter(s => !s.esgotado).map(s => s.nome);
-        }
+    const picoles = prod.picoles || {};
+    for (const cat of Object.keys(picoles)) {
+      const varejo = parseFloat(document.getElementById('pic_' + cat + '_varejo')?.value) || picoles[cat].preco_varejo || picoles[cat].preço_varejo || 0;
+      const atacado = parseFloat(document.getElementById('pic_' + cat + '_atacado')?.value) || picoles[cat].preco_atacado || picoles[cat].preço_atacado || 0;
+      const estoque = parseInt(document.getElementById('pic_' + cat + '_estoque')?.value);
+      if (!isNaN(varejo)) { picoles[cat].preco_varejo = varejo; picoles[cat].preço_varejo = varejo; }
+      if (!isNaN(atacado)) { picoles[cat].preco_atacado = atacado; picoles[cat].preço_atacado = atacado; }
+      if (!isNaN(estoque)) { picoles[cat].estoque = estoque; picoles[cat].esgotado = estoque === 0; }
+      // Atualizar sabores de cada categoria de picolé
+      const saboresCat = picoles[cat].sabores || [];
+      if (Array.isArray(saboresCat) && saboresCat.length > 0 && typeof saboresCat[0] === 'object') {
+        picoles[cat].sabores = saboresCat.map(s => {
+          const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
+          const cb = document.getElementById(sid);
+          return { nome: s.nome, esgotado: cb ? !cb.checked : s.esgotado };
+        });
       }
-      prod.sorvetes.sabores = sabores.filter(s => !s.esgotado).map(s => s.nome);
-      STATE.produtos = prod;
-      await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e preços picolés');
     }
-    toast('Sabores salvos!', 'sucesso');
+    prod.picoles = picoles;
+    STATE.produtos = prod;
+
+    // Salvar no GitHub (produtos.json)
+    await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e preços');
+    toast('Sabores salvos e publicados no site!', 'sucesso');
   } catch(e) { toast('Erro: ' + e.message, 'erro'); }
   ocultarLoading();
 }
@@ -2736,6 +2813,184 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['style'] });
 });
+
+// =====================================================================
+// SISTEMA DE PORTUGUÊS PERFEITO — Padrão grandes sites (iFood, Nubank)
+// Camada 1: spellcheck nativo do navegador em todos os campos de texto
+// Camada 2: autocorreção automática de erros comuns
+// Camada 3: validação antes de salvar que avisa sobre erros
+// =====================================================================
+(function ativarPortuguesPerfeito() {
+
+  // --- CAMADA 1: spellcheck nativo em todos os campos ---
+  function aplicarSpellcheck() {
+    document.querySelectorAll('input[type="text"], input[type="search"], textarea').forEach(el => {
+      el.setAttribute('spellcheck', 'true');
+      el.setAttribute('lang', 'pt-BR');
+      el.setAttribute('autocomplete', 'off');
+    });
+  }
+
+  // --- CAMADA 2: dicionário de autocorreção automática ---
+  const AUTOCORRECOES = {
+    // Erros de acento comuns
+    'voce': 'você', 'Voce': 'Você', 'VOCE': 'VOCÊ',
+    'nao': 'não', 'Nao': 'Não',
+    'sao': 'são', 'Sao': 'São',
+    'tambem': 'também', 'Tambem': 'Também',
+    'ate': 'até', 'Ate': 'Até',
+    'so': 'só', 'So': 'Só',
+    'la': 'lá', 'La': 'Lá',
+    'ja': 'já', 'Ja': 'Já',
+    'ola': 'olá', 'Ola': 'Olá',
+    'obrigado': 'obrigado', // correto
+    'pagina': 'página', 'Pagina': 'Página',
+    'cardapio': 'cardápio', 'Cardapio': 'Cardápio',
+    'promocao': 'promoção', 'Promocao': 'Promoção',
+    'configuracao': 'configuração', 'Configuracao': 'Configuração',
+    'configuracoes': 'configurações', 'Configuracoes': 'Configurações',
+    'encomenda': 'encomenda', // correto
+    'fidelidade': 'fidelidade', // correto
+    'sorvete': 'sorvete', // correto
+    'açaí': 'açaí', 'Açaí': 'Açaí',
+    'picole': 'picolé', 'Picole': 'Picolé',
+    'milkshake': 'milkshake', // correto
+    'preco': 'preço', 'Preco': 'Preço',
+    'precos': 'preços', 'Precos': 'Preços',
+    'sabor': 'sabor', // correto
+    'sabores': 'sabores', // correto
+    'estoque': 'estoque', // correto
+    'esgotado': 'esgotado', // correto
+    'disponivel': 'disponível', 'Disponivel': 'Disponível',
+    'disponiveis': 'disponíveis', 'Disponiveis': 'Disponíveis',
+    'necessario': 'necessário', 'Necessario': 'Necessário',
+    'necessarios': 'necessários', 'Necessarios': 'Necessários',
+    'unitario': 'unitário', 'Unitario': 'Unitário',
+    'localizacao': 'localização', 'Localizacao': 'Localização',
+    'exibicao': 'exibição', 'Exibicao': 'Exibição',
+    'endereco': 'endereço', 'Endereco': 'Endereço',
+    'telefone': 'telefone', // correto
+    'numero': 'número', 'Numero': 'Número',
+    'numeros': 'números', 'Numeros': 'Números',
+    'titulo': 'título', 'Titulo': 'Título',
+    'subtitulo': 'subtítulo', 'Subtitulo': 'Subtítulo',
+    'descricao': 'descrição', 'Descricao': 'Descrição',
+    'horario': 'horário', 'Horario': 'Horário',
+    'horarios': 'horários', 'Horarios': 'Horários',
+    'categoria': 'categoria', // correto
+    'categorias': 'categorias', // correto
+    'adicionar': 'adicionar', // correto
+    'remover': 'remover', // correto
+    'salvar': 'salvar', // correto
+    'cancelar': 'cancelar', // correto
+    'confirmar': 'confirmar', // correto
+    'atualizar': 'atualizar', // correto
+    'excluir': 'excluir', // correto
+    'editar': 'editar', // correto
+    'visualizar': 'visualizar', // correto
+    'imagem': 'imagem', // correto
+    'imagens': 'imagens', // correto
+    'produto': 'produto', // correto
+    'produtos': 'produtos', // correto
+    'pedido': 'pedido', // correto
+    'pedidos': 'pedidos', // correto
+    'cliente': 'cliente', // correto
+    'clientes': 'clientes', // correto
+    'premio': 'prêmio', 'Premio': 'Prêmio',
+    'premios': 'prêmios', 'Premios': 'Prêmios',
+    'codigo': 'código', 'Codigo': 'Código',
+    'codigos': 'códigos', 'Codigos': 'Códigos',
+    'pontos': 'pontos', // correto
+    'sorteio': 'sorteio', // correto
+    'sorteios': 'sorteios', // correto
+    'participante': 'participante', // correto
+    'participantes': 'participantes', // correto
+    'inscricao': 'inscrição', 'Inscricao': 'Inscrição',
+    'inscricoes': 'inscrições', 'Inscricoes': 'Inscrições',
+    'whatsapp': 'WhatsApp',
+    'instagram': 'Instagram',
+    'facebook': 'Facebook',
+  };
+
+  function autocorrigirTexto(texto) {
+    // Corrigir palavra por palavra
+    return texto.replace(/\b(\w+)\b/g, (palavra) => {
+      return AUTOCORRECOES[palavra] || palavra;
+    });
+  }
+
+  // Aplicar autocorreção ao sair do campo (blur)
+  function aplicarAutocorrecao() {
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+      el.addEventListener('blur', function() {
+        const corrigido = autocorrigirTexto(this.value);
+        if (corrigido !== this.value) {
+          this.value = corrigido;
+          this.style.borderColor = '#2e7d32';
+          setTimeout(() => { this.style.borderColor = ''; }, 1500);
+        }
+      });
+    });
+  }
+
+  // --- CAMADA 3: validação antes de salvar ---
+  const PALAVRAS_SUSPEITAS = [
+    /\b[A-Z]{5,}\b/,  // palavras todas em maiúsculo (grito)
+    /[a-z]{3,}ao\b/,  // palavras terminando em 'ao' sem til (ex: configuracao)
+    /[a-z]{3,}oes\b/, // palavras terminando em 'oes' sem til (ex: configuracoes)
+    /[a-z]{3,}e\b(?!s)/, // palavras terminando em 'e' que deveriam ter acento
+  ];
+
+  // Interceptar funções de salvar para validar português
+  const fnsSalvar = ['salvarHome', 'salvarPreços', 'salvarPromoção', 'salvarConfig',
+                     'salvarConfigFidelidade', 'salvarSabores', 'salvarEstoque'];
+
+  fnsSalvar.forEach(nome => {
+    const original = window[nome];
+    if (typeof original === 'function') {
+      window[nome] = async function(...args) {
+        // Verificar todos os campos de texto visíveis
+        const campos = document.querySelectorAll('.seção.ativo input[type="text"], .seção.ativo textarea');
+        let avisos = [];
+        campos.forEach(el => {
+          const val = el.value.trim();
+          if (!val) return;
+          // Verificar erros comuns
+          if (/[a-z]{4,}ao\b/.test(val) && !/[\u00e3\u00e2]/.test(val)) {
+            const label = el.closest('.campo-edit')?.querySelector('label')?.textContent || el.id;
+            avisos.push(`"${label}": verifique acentuação (ex: configuração, não, são)`);
+          }
+        });
+        if (avisos.length > 0) {
+          const ok = confirm(
+            '⚠️ Possíveis erros de português detectados:\n\n' +
+            avisos.slice(0, 3).join('\n') +
+            '\n\nDeseja salvar mesmo assim?'
+          );
+          if (!ok) return;
+        }
+        return original.apply(this, args);
+      };
+    }
+  });
+
+  // Aplicar ao carregar e quando novas seções forem exibidas
+  document.addEventListener('DOMContentLoaded', () => {
+    aplicarSpellcheck();
+    aplicarAutocorrecao();
+  });
+
+  // Reaplicar quando o usuário navegar entre seções
+  const origIrPara = window.irPara;
+  if (typeof origIrPara === 'function') {
+    window.irPara = function(...args) {
+      const r = origIrPara.apply(this, args);
+      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); }, 300);
+      return r;
+    };
+  }
+
+})();
 </script>
 </body>
 </html>
