@@ -3530,6 +3530,212 @@ function salvarEstoqueCaixas() {
   mostrarToast('✅ Estoque de caixas salvo! O site reflete imediatamente.');
 }
 
+// ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
+function preencherCardapio() {
+  const p = STATE.produtos;
+  if (!p) return;
+
+  // Sorvetes
+  if (p.sorvetes && p.sorvetes.sabores) {
+    document.getElementById('card-sorvetes-sabores').value = p.sorvetes.sabores.join('\n');
+  }
+
+  // Picolés
+  if (p.picoles) {
+    if (p.picoles.frutas_agua) document.getElementById('card-picoles-fruta').value = (p.picoles.frutas_agua.sabores || []).join('\n');
+    if (p.picoles.leite_sem_recheio) document.getElementById('card-picoles-leite').value = (p.picoles.leite_sem_recheio.sabores || []).join('\n');
+    if (p.picoles.leite_com_recheio) document.getElementById('card-picoles-recheado').value = (p.picoles.leite_com_recheio.sabores || []).join('\n');
+    if (p.picoles.leite_ninho) document.getElementById('card-picoles-ninho').value = (p.picoles.leite_ninho.sabores || []).join('\n');
+    if (p.picoles.esquimós) document.getElementById('card-picoles-esquimo').value = (p.picoles.esquimós.sabores || []).join('\n');
+  }
+
+  // Açaí Promoção
+  if (p.acai_promocao) {
+    document.getElementById('card-açaí-promo-combos').value = p.acai_promocao.map(i => `${i.nome} - ${i.desc} - R$ ${i.preco.toFixed(2).replace('.',',')}`).join('\n');
+  }
+
+  // Açaí Artesanal
+  if (p.acai) {
+    if (p.acai.copos) {
+      document.getElementById('card-açaí-tamanhos').value = Object.entries(p.acai.copos).map(([tam, preco]) => `${tam} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
+    }
+    if (p.acai.complementos) {
+      let comps = [];
+      Object.entries(p.acai.complementos).forEach(([cat, dados]) => {
+        comps.push(`--- ${cat.toUpperCase()} (R$ ${dados.preco.toFixed(2).replace('.',',')}) ---`);
+        comps = comps.concat(dados.itens);
+      });
+      document.getElementById('card-açaí-complementos').value = comps.join('\n');
+    }
+  }
+
+  // Milkshakes
+  if (p.milkshake) {
+    if (p.milkshake.tradicional) {
+      document.getElementById('card-milk-tamanhos').value = Object.entries(p.milkshake.tradicional).map(([tam, preco]) => `Tradicional ${tam} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
+    }
+  }
+
+  // Taças
+  if (p.tacas) {
+    if (p.tacas.tradicionais) {
+      document.getElementById('card-tacas-lista').value = Object.entries(p.tacas.tradicionais).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
+    }
+    if (p.tacas.sujas) {
+      document.getElementById('card-tacas-p-lista').value = Object.entries(p.tacas.sujas).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
+    }
+  }
+
+  // Isopores
+  if (p.isopores_viagem) {
+    document.getElementById('card-iso-lista').value = Object.entries(p.isopores_viagem).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
+  }
+
+  // Sobremesas
+  if (p.sobremesas) {
+    document.getElementById('card-sobremesas-lista').value = Object.entries(p.sobremesas).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
+  }
+
+  // Títulos e Botões (do config.json)
+  const c = STATE.config || {};
+  document.getElementById('card-sorvetes-btn').value = c.cardSorvetesBtn || '🍦 Ver 35 Sabores';
+  document.getElementById('card-sorvetes-desc').value = c.cardSorvetesDesc || 'Cremoso, gelado, irresistível · 35 sabores pra você escolher';
+  document.getElementById('card-picoles-btn').value = c.cardPicolesBtn || '🧊 Ver Sabores de Picolés';
+  document.getElementById('card-açaí-promo-btn').value = c.cardAçaíPromoBtn || '🫐 Ver Combos em Promoção';
+  document.getElementById('card-açaí-btn').value = c.cardAçaíBtn || '🍇 Montar Meu Açaí';
+  document.getElementById('card-milk-btn').value = c.cardMilkBtn || '🥤 Ver Milkshakes';
+  document.getElementById('card-tacas-btn').value = c.cardTacasBtn || '🍧 Ver Taças';
+  document.getElementById('card-tacas-p-btn').value = c.cardTacasPBtn || '👑 Ver Taças Premium';
+  document.getElementById('card-iso-btn').value = c.cardIsoBtn || '🧊 Ver Isopores';
+  document.getElementById('card-sobremesas-btn').value = c.cardSobremesasBtn || '🍨 Ver Sobremesas';
+}
+
+async function salvarCardápio() {
+  const p = STATE.produtos;
+  const c = STATE.config;
+  if (!p || !c) return;
+
+  // Atualizar Sabores de Sorvete
+  p.sorvetes.sabores = document.getElementById('card-sorvetes-sabores').value.split('\n').map(s => s.trim()).filter(s => s);
+
+  // Atualizar Picolés
+  if (p.picoles) {
+    if (p.picoles.frutas_agua) p.picoles.frutas_agua.sabores = document.getElementById('card-picoles-fruta').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (p.picoles.leite_sem_recheio) p.picoles.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (p.picoles.leite_com_recheio) p.picoles.leite_com_recheio.sabores = document.getElementById('card-picoles-recheado').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (p.picoles.leite_ninho) p.picoles.leite_ninho.sabores = document.getElementById('card-picoles-ninho').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s => s.trim()).filter(s => s);
+  }
+
+  // Atualizar Títulos e Botões no Config
+  c.cardSorvetesBtn = document.getElementById('card-sorvetes-btn').value.trim();
+  c.cardSorvetesDesc = document.getElementById('card-sorvetes-desc').value.trim();
+  c.cardPicolesBtn = document.getElementById('card-picoles-btn').value.trim();
+  c.cardAçaíPromoBtn = document.getElementById('card-açaí-promo-btn').value.trim();
+  c.cardAçaíBtn = document.getElementById('card-açaí-btn').value.trim();
+  c.cardMilkBtn = document.getElementById('card-milk-btn').value.trim();
+  c.cardTacasBtn = document.getElementById('card-tacas-btn').value.trim();
+  c.cardTacasPBtn = document.getElementById('card-tacas-p-btn').value.trim();
+  c.cardIsoBtn = document.getElementById('card-iso-btn').value.trim();
+  c.cardSobremesasBtn = document.getElementById('card-sobremesas-btn').value.trim();
+
+  mostrarLoading('Salvando Cardápio...');
+  const ok1 = await salvarArquivo(PATHS.produtos, p, 'produtosSha', 'Admin: atualizar sabores do cardápio');
+  const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar botões do cardápio');
+  ocultarLoading();
+
+  if (ok1 && ok2) toast('✅ Cardápio completo atualizado!', 'sucesso');
+}
+
+// ── DEPOIMENTOS ─────────────────────────────────────────────────────────────
+function preencherDepoimentos() {
+  const c = STATE.config || {};
+  document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
+  document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
+  document.getElementById('dep-dicas').value = (c.depDicas || []).join('\n');
+  
+  const lista = c.depoimentos || [];
+  const container = document.getElementById('dep-lista');
+  if (!container) return;
+  
+  container.innerHTML = lista.map((d, i) => `
+    <div class="dep-item card" style="margin-bottom:15px; padding:15px; border:1px solid #eee">
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+        <strong>Depoimento #${i+1}</strong>
+        <button class="btn btn-erro btn-sm" onclick="removerDepoimento(${i})">🗑️ Remover</button>
+      </div>
+      <div class="campo-edit"><label>Nome do Cliente</label><input type="text" id="dep-nome-${i}" value="${d.nome}" placeholder="Ex: João Silva"/></div>
+      <div class="campo-edit"><label>Texto do Depoimento</label><textarea id="dep-texto-${i}" rows="3">${d.texto}</textarea></div>
+      <div class="campo-edit"><label>Estrelas (1-5)</label><input type="number" id="dep-estrelas-${i}" value="${d.estrelas}" min="1" max="5"/></div>
+    </div>
+  `).join('');
+}
+
+function adicionarDepoimento() {
+  if (!STATE.config.depoimentos) STATE.config.depoimentos = [];
+  STATE.config.depoimentos.push({nome: '', texto: '', estrelas: 5});
+  preencherDepoimentos();
+}
+
+function removerDepoimento(i) {
+  if (confirm('Deseja remover este depoimento?')) {
+    STATE.config.depoimentos.splice(i, 1);
+    preencherDepoimentos();
+  }
+}
+
+async function salvarDepoimentos() {
+  const c = STATE.config;
+  c.depTitulo = document.getElementById('dep-titulo').value.trim();
+  c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
+  c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
+  
+  const lista = [];
+  const container = document.getElementById('dep-lista');
+  const itens = container.querySelectorAll('.dep-item');
+  itens.forEach((item, i) => {
+    lista.push({
+      nome: document.getElementById(`dep-nome-${i}`).value.trim(),
+      texto: document.getElementById(`dep-texto-${i}`).value.trim(),
+      estrelas: parseInt(document.getElementById(`dep-estrelas-${i}`).value) || 5
+    });
+  });
+  c.depoimentos = lista;
+  
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
+}
+
+// ── FALE CONOSCO ────────────────────────────────────────────────────────────
+function preencherFaleConosco() {
+  const c = STATE.config || {};
+  document.getElementById('fc-titulo').value = c.fcTitulo || 'Fale com a Itapolitana';
+  document.getElementById('fc-subtitulo').value = c.fcSubtitulo || 'Manda uma mensagem, a gente responde rapidinho!';
+  document.getElementById('fc-msg-sucesso').value = c.fcMsgSucesso || 'Mensagem enviada! Retornaremos em breve.';
+  document.getElementById('fc-whatsapp').value = c.fcWhatsapp || c.whatsapp || '';
+  document.getElementById('fc-email').value = c.fcEmail || '';
+  document.getElementById('fc-endereco').value = c.fcEndereco || c.enderecoCompleto || '';
+  document.getElementById('fc-horario').value = c.fcHorario || c.horario || '';
+  document.getElementById('fc-chat-inicio').value = c.fcChatInicio || 'Olá! Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?';
+  document.getElementById('fc-chat-opcoes').value = (c.fcChatOpcoes || []).join('\n');
+  document.getElementById('fc-chat-fora').value = c.fcChatFora || 'Estamos fechados agora. Retornaremos em breve!';
+}
+
+async function salvarFaleConosco() {
+  const c = STATE.config;
+  c.fcTitulo = document.getElementById('fc-titulo').value.trim();
+  c.fcSubtitulo = document.getElementById('fc-subtitulo').value.trim();
+  c.fcMsgSucesso = document.getElementById('fc-msg-sucesso').value.trim();
+  c.fcWhatsapp = document.getElementById('fc-whatsapp').value.trim();
+  c.fcEmail = document.getElementById('fc-email').value.trim();
+  c.fcEndereco = document.getElementById('fc-endereco').value.trim();
+  c.fcHorario = document.getElementById('fc-horario').value.trim();
+  c.fcChatInicio = document.getElementById('fc-chat-inicio').value.trim();
+  c.fcChatOpcoes = document.getElementById('fc-chat-opcoes').value.split('\n').map(s => s.trim()).filter(s => s);
+  c.fcChatFora = document.getElementById('fc-chat-fora').value.trim();
+  
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco e chatbot');
+}
+
 </script>
 </div><!-- /admin-app -->
 </body>
