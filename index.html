@@ -1971,6 +1971,9 @@ function toggleAcc(id) {
     el.classList.add('open');
     var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'true');
+    // Re-renderiza ao abrir para garantir dados carregados
+    if (id === 'acc-iso') renderIso();
+    if (id === 'acc-sobremesas') renderSobremesas();
     // SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
   }
 }
