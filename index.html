@@ -3744,7 +3744,9 @@ function abrirComplementosInline(el) {
       var getNome = function(i) { return typeof i === 'object' && i !== null ? i.nome : i; };
       var isEsg = function(i) { return typeof i === 'object' && i !== null && (i.esgotado || i.estoque <= 0); };
       html += '<div style="margin-bottom:12px">';
-      html += '<div style="font-size:13px;font-weight:900;color:#7B2D8B;margin-bottom:6px;">' + (labelComp[k] || k) + ' <span style="font-size:11px;color:#9333EA;font-weight:700">+ R$ ' + info.preco.toFixed(2).replace('.',',') + ' cada</span></div>';
+      var precoVal = (info.preco !== undefined ? info.preco : (info['pre\u00e7o'] !== undefined ? info['pre\u00e7o'] : null));
+      var precoStr = precoVal !== null ? '+ R$ ' + Number(precoVal).toFixed(2).replace('.',',') + ' cada' : '';
+      html += '<div style="font-size:13px;font-weight:900;color:#7B2D8B;margin-bottom:6px;">' + (labelComp[k] || k) + (precoStr ? ' <span style="font-size:11px;color:#9333EA;font-weight:700">' + precoStr + '</span>' : '') + '</div>';
       html += '<div class="chips-inline">';
       info.itens.forEach(function(i) {
         var esg = isEsg(i);
