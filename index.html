@@ -2003,16 +2003,8 @@ function voltarCardapio(accId) {
     vcBtn.classList.add('aberto');
     vcBtn.setAttribute('aria-expanded', 'true');
   }
-  // 3. Rola suavemente ao topo do banner do cardápio (vc-wrap)
-  // Usa vc-wrap em vez de #cardápio para evitar pulo para o carrossel
-  var topo = document.getElementById('vc-wrap') || document.getElementById('cardápio');
-  if (topo) {
-    var header = document.querySelector('.header');
-    var headerH = header ? header.getBoundingClientRect().height : 0;
-    var topoY = topo.getBoundingClientRect().top + window.scrollY - headerH - 8;
-    window.scrollTo({ top: topoY, behavior: 'smooth' });
-  }
-}
+  // 3. SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
+  // (mesma regra dos botões de sabores inline)
 /* =====================================================
    SISTEMA UNIFICADO DE MODAL — PADRÃO PROFISSIONAL
    Técnica usada por iFood, Nubank, Apple, Rappi
@@ -2342,7 +2334,7 @@ function renderSobremesas(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSabores('sorvetes','🍨 Sabores para Sobremesas',this)">🍨 Ver os 35 Sabores</button></div>`;
+    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','🍨 Sabores para Sobremesas',this)">🍨 Ver os 35 Sabores</button></div>`;
     b.appendChild(btn);
   }
 
@@ -2358,11 +2350,13 @@ function getSaboresDisponíveis(){
   return produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
 }
 function abrirSabores(tipo,título,el){
-  document.getElementById('ms-título').textContent=título;
-  const chips=document.getElementById('ms-chips');chips.innerHTML='';
-  const sabores=getSaboresDisponíveis();
-  sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
-  abrirModal('modal-sabores', el);
+  // Convertido para inline — sem modal, sem scroll
+  var accBody = _getAccBody(el, null);
+  if (!accBody) { accBody = el ? el.closest ? el.closest('.acc-body') : null : null; }
+  var sabores = getSaboresDisponíveis();
+  if (accBody) {
+    mostrarSaboresInline(accBody, título, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
+  }
 }
 
 
@@ -2465,24 +2459,24 @@ function navProdutoAnterior(){
   if(_produtoLista.length===0)return;
   _produtoIndiceAtual=(_produtoIndiceAtual-1+_produtoLista.length)%_produtoLista.length;
   const p=_produtoLista[_produtoIndiceAtual];
-  if(_produtoAtualTipo==='picolé'){abrirPicolé(p.key,p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='sorvete'){abrirSabores('sorvete',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='taça'){abrirSabores('taça',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='milkshake'){abrirSabores('milkshake',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='isopor'){abrirSabores('isopor',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='sobremesa'){abrirSabores('sobremesa',p.nome,_produtoAtualEl);}
+  if(_produtoAtualTipo==='picolé'){abrirPicoléInline(p.key,p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sorvete'){abrirSaboresInline('sorvete',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='taça'){abrirSaboresInline('taça',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='milkshake'){abrirMilkshakeSaboresInline(_produtoAtualEl);}
+  else if(_produtoAtualTipo==='isopor'){abrirSaboresInline('isopor',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sobremesa'){abrirSaboresInline('sobremesa',p.nome,_produtoAtualEl);}
 }
 
 function navProdutoProximo(){
   if(_produtoLista.length===0)return;
   _produtoIndiceAtual=(_produtoIndiceAtual+1)%_produtoLista.length;
   const p=_produtoLista[_produtoIndiceAtual];
-  if(_produtoAtualTipo==='picolé'){abrirPicolé(p.key,p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='sorvete'){abrirSabores('sorvete',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='taça'){abrirSabores('taça',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='milkshake'){abrirSabores('milkshake',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='isopor'){abrirSabores('isopor',p.nome,_produtoAtualEl);}
-  else if(_produtoAtualTipo==='sobremesa'){abrirSabores('sobremesa',p.nome,_produtoAtualEl);}
+  if(_produtoAtualTipo==='picolé'){abrirPicoléInline(p.key,p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sorvete'){abrirSaboresInline('sorvete',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='taça'){abrirSaboresInline('taça',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='milkshake'){abrirMilkshakeSaboresInline(_produtoAtualEl);}
+  else if(_produtoAtualTipo==='isopor'){abrirSaboresInline('isopor',p.nome,_produtoAtualEl);}
+  else if(_produtoAtualTipo==='sobremesa'){abrirSaboresInline('sobremesa',p.nome,_produtoAtualEl);}
 }
 
 let promoInt=null;
