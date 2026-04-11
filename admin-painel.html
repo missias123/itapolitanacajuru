@@ -2427,11 +2427,75 @@ function renderEncomendas(){
   const registros=STATE.encomendas?.registros||[];
   const filtroStatus=document.getElementById('enc-filtro-status').value;
   const filtroTipo=document.getElementById('enc-filtro-tipo').value;
-  let lista=registros.filter(e=>{if(filtroStatus&&e.status!==filtroStatus)return false;if(filtroTipo&&e.tipo!==filtroTipo)return false;return true;}).sort((a,b)=>new Date(b.data)-new Date(a.data));
+  let lista=registros.filter(e=>{
+    if(filtroStatus&&e.status!==filtroStatus)return false;
+    if(filtroTipo&&e.tipo!==filtroTipo)return false;
+    return true;
+  }).sort((a,b)=>new Date(b.data)-new Date(a.data));
   if(!lista.length){document.getElementById('enc-lista').innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';return;}
-  const statusLabels={novo:'Novo',em_andamento:'Em andamento',concluído:'Concluído',cancelado:'Cancelado'};
-  let html=lista.map((e)=>`<div class="enc-card"><div class="enc-header"><span class="enc-nome">${e.nome||'Sem nome'}</span><span class="enc-tipo">${e.tipo||'Geral'}</span></div><div class="enc-info">Tel: ${e.telefone||'-'} | ${e.dataEvento?'Evento: '+e.dataEvento:''} | ${e.data?new Date(e.data).toLocaleString('pt-BR'):'-'}${e.quantidade?'<br>Qtd: '+e.quantidade:''}${e.obs?'<br>Obs: '+e.obs:''}</div><div class="enc-status"><select onchange="alterarStatusEncomenda(${registros.indexOf(e)},this.value)">${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${e.status===k?'selected':''}>${v}</option>`).join('')}</select></div></div>`).join('');
-  document.getElementById('enc-lista').innerHTML=html;
+  const statusLabels={novo:'Novo 🔴',em_andamento:'Em andamento 🟡',concluído:'Concluído 🟢',cancelado:'Cancelado ⚫'};
+  const statusCores={novo:'#FFEBEE',em_andamento:'#FFF8E1',concluído:'#E8F5E9',cancelado:'#FAFAFA'};
+  const statusBorda={novo:'#D32F2F',em_andamento:'#F9A825',concluído:'#2E7D32',cancelado:'#9E9E9E'};
+  let html=lista.map((e)=>{
+    const idx=registros.indexOf(e);
+    const cor=statusCores[e.status]||'#fff';
+    const borda=statusBorda[e.status]||'#e65100';
+    const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleString('pt-BR'):'-');
+    let itensHtml='';
+    if(e.itens&&e.itens.length>0){
+      itensHtml='<div style="margin:8px 0 4px;font-size:.82rem;color:#333;background:#f9f9f9;border-radius:8px;padding:8px 10px">';
+      e.itens.forEach(it=>{
+        const sub=(it.preço||0)*(it.qtd||1);
+        itensHtml+=`<div>▶ <strong>${it.nome}</strong> ×${it.qtd} — R$ ${sub.toFixed(2).replace('.',',')}`;
+        if(it.sabores&&it.sabores.length>0)itensHtml+=` <span style="color:#666">(${it.sabores.join(', ')})</span>`;
+        itensHtml+='</div>';
+      });
+      itensHtml+='</div>';
+    }
+    const totalStr=e.total?`R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}`:'-';
+    return `<div style="background:${cor};border-left:5px solid ${borda};margin-bottom:14px;border-radius:10px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
+        <div>
+          <div style="font-weight:900;font-size:1rem;color:#1A0A00">${e.nome||'Sem nome'}</div>
+          <div style="font-size:.8rem;color:#555">📱 ${e.telefone||e.tel||'-'} &nbsp;|  📅 ${dataStr}</div>
+          ${e.endereço?`<div style="font-size:.8rem;color:#555">📍 ${e.endereço}</div>`:''}
+          <div style="font-size:.78rem;color:#888">🔢 <strong>${e.num||'-'}</strong></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:1.1rem;font-weight:900;color:#0D47A1">${totalStr}</div>
+          <span style="background:#E3F2FD;color:#0D47A1;border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700">${e.tipo||'Geral'}</span>
+        </div>
+      </div>
+      ${itensHtml}
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+        <select onchange="alterarStatusEncomenda(${idx},this.value)" style="border-radius:8px;padding:5px 8px;font-size:.82rem;border:1px solid #ddd;flex:1;min-width:160px">
+          ${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${e.status===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+        <button onclick="copiarPedidoAdmin('${e.num}')" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">📲 Copiar WhatsApp</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('enc-lista').innerHTML=`<div style="font-size:.82rem;color:#666;margin-bottom:10px">${lista.length} encomenda(s)</div>`+html;
+}
+function copiarPedidoAdmin(numPedido){
+  const registros=STATE.encomendas?.registros||[];
+  const e=registros.find(r=>r.num===numPedido);
+  if(!e){toast('Pedido não encontrado','erro');return;}
+  let txt=`🍦 PEDIDO - Sorveteria Itapolitana Cajuru\n\n`;
+  txt+=`🔢 Pedido Nº: ${e.num}\n📅 Data: ${e.dataFormatada||e.data}\n\n`;
+  txt+=`👤 Cliente: ${e.nome}\n📱 WhatsApp: ${e.telefone||e.tel}\n📍 Endereço: ${e.endereço||'-'}\n\n`;
+  if(e.itens&&e.itens.length>0){
+    txt+=`📦 ITENS:\n`;
+    e.itens.forEach(it=>{
+      const sub=(it.preço||0)*(it.qtd||1);
+      txt+=`\n▶ ${it.nome} ×${it.qtd} — R$ ${sub.toFixed(2).replace('.',',')}\n`;
+      if(it.sabores&&it.sabores.length>0)it.sabores.forEach(s=>txt+=`   • ${s}\n`);
+    });
+  }
+  if(e.total)txt+=`\n💰 TOTAL: R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}\n`;
+  txt+=`\n⏰ Produzido em até 3 dias úteis após confirmação do pagamento.\n`;
+  txt+=`💳 Pagamento antecipado obrigatório.`;
+  navigator.clipboard.writeText(txt).then(()=>toast('✅ Pedido copiado!','sucesso')).catch(()=>toast('Erro ao copiar','erro'));
 }
 async function alterarStatusEncomenda(idx,novoStatus){
   const registros=STATE.encomendas?.registros||[];

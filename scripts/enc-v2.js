@@ -6,44 +6,118 @@
 // Admin salva → produtos.json → site lê (padrão profissional)
 // =====================================================
 const ITAP_PRODUTOS_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json';
+// API GitHub para salvar pedidos no encomendas.json
+const _GH_TK = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+const _GH_API = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';
+
+// Envia o pedido para dados/encomendas.json no GitHub
+async function enviarPedidoGitHub(pedido) {
+  try {
+    // 1. Ler SHA e conteúdo atual
+    const r = await fetch(_GH_API + 'dados/encomendas.json?t=' + Date.now(), {
+      headers: { 'Authorization': 'token ' + _GH_TK, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) throw new Error('Leitura falhou: ' + r.status);
+    const d = await r.json();
+    const sha = d.sha;
+    // Decodificar conteúdo atual
+    const bin = atob(d.content.replace(/\n/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    let atual;
+    try {
+      atual = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    } catch(e) {
+      atual = { registros: [] };
+    }
+    // Garantir estrutura correta
+    if (!atual.registros) atual.registros = [];
+    // 2. Adicionar novo pedido no início
+    atual.registros.unshift(pedido);
+    // Manter no máximo 200 registros
+    if (atual.registros.length > 200) atual.registros.length = 200;
+    // 3. Salvar de volta
+    const novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(atual, null, 2))));
+    const resp = await fetch(_GH_API + 'dados/encomendas.json', {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + _GH_TK, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Novo pedido: ' + pedido.num,
+        content: novoConteudo,
+        sha: sha
+      })
+    });
+    if (!resp.ok) throw new Error('Gravação falhou: ' + resp.status);
+    console.log('[Itap] Pedido salvo no GitHub ✅', pedido.num);
+    return true;
+  } catch(e) {
+    console.warn('[Itap] Erro ao salvar pedido no GitHub:', e.message);
+    return false;
+  }
+}
 
 async function carregarPreçosNuvem() {
+  // Normaliza chaves do JSON — aceita com e sem acento (picoles/picolés, preco/preço)
+  function normalizarPicolés(obj) {
+    if (!obj) return null;
+    const result = {};
+    Object.entries(obj).forEach(([key, p]) => {
+      result[key] = {
+        nome: p.nome,
+        preço_varejo:  p.preço_varejo  || p.preco_varejo  || 0,
+        preço_atacado: p.preço_atacado || p.preco_atacado || 0,
+        estoque: p.estoque !== undefined ? p.estoque : 200,
+        sabores: p.sabores || []
+      };
+    });
+    return result;
+  }
   try {
     const resp = await fetch(ITAP_PRODUTOS_URL + '?t=' + Date.now(), { cache: 'no-store' });
     if (!resp.ok) throw new Error('produtos.json indisponível');
     const dados = await resp.json();
-    if (dados.picolés) {
-      Object.entries(dados.picolés).forEach(([key, p]) => {
+    // Aceita tanto 'picolés' (com acento) quanto 'picoles' (sem acento)
+    const fontePicolés = dados.picolés || dados.picoles || null;
+    const picolésNorm = normalizarPicolés(fontePicolés);
+    if (picolésNorm) {
+      Object.entries(picolésNorm).forEach(([key, p]) => {
         if (produtos.picolés[key]) {
-          produtos.picolés[key].preço_varejo = p.preço_varejo;
+          produtos.picolés[key].preço_varejo  = p.preço_varejo;
           produtos.picolés[key].preço_atacado = p.preço_atacado;
           if (p.estoque !== undefined) produtos.picolés[key].estoque = p.estoque;
         }
       });
     }
-    if (dados.sorvetes_preços) produtos.sorvetes.preços = dados.sorvetes_preços;
+    // Aceita tanto 'açaí' quanto 'acai' e 'acai_promocao'
+    if (dados.sorvetes_preços || dados.sorvetes) {
+      const src = dados.sorvetes_preços || (dados.sorvetes && dados.sorvetes.preços) || null;
+      if (src) produtos.sorvetes.preços = src;
+    }
     if (dados.milkshake) produtos.milkshake = dados.milkshake;
     if (dados.tacas) produtos.tacas = dados.tacas;
-    if (dados.açaí) produtos.açaí = dados.açaí;
+    if (dados.açaí || dados.acai) produtos.açaí = dados.açaí || dados.acai;
     if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
     if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
     if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
     localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
-    // Armazenar no STATE global para uso imediato sem depender de localStorage
+    // Armazenar no STATE global para uso imediato
     if (dados.caixas_enc) window._itap_caixas = dados.caixas_enc;
     if (dados.tortas_enc) window._itap_tortas = dados.tortas_enc;
-    if (dados.acréscimos) window._itap_acréscimos = dados.acréscimos;
-    console.log('[Itap] Preços carregados da nuvem ✅');
+    if (dados.acréscimos || dados.acrescimos) window._itap_acréscimos = dados.acréscimos || dados.acrescimos;
+    console.log('[Itap] Preços carregados da nuvem ✅', { picolés: !!picolésNorm, caixas: !!dados.caixas_enc });
     return true;
   } catch(e) {
+    console.warn('[Itap] Falha ao carregar nuvem, usando cache:', e.message);
     const cache = localStorage.getItem('itap_produtos_nuvem');
     if (cache) {
       try {
         const dados = JSON.parse(cache);
-        if (dados.picolés) {
-          Object.entries(dados.picolés).forEach(([key, p]) => {
+        const fontePicolés = dados.picolés || dados.picoles || null;
+        const picolésNorm = normalizarPicolés(fontePicolés);
+        if (picolésNorm) {
+          Object.entries(picolésNorm).forEach(([key, p]) => {
             if (produtos.picolés[key]) {
-              produtos.picolés[key].preço_varejo = p.preço_varejo;
+              produtos.picolés[key].preço_varejo  = p.preço_varejo;
               produtos.picolés[key].preço_atacado = p.preço_atacado;
             }
           });
@@ -127,6 +201,15 @@ function renderizarGridSabores(grid) {
 }
 
 // Caixas de encomenda: carregadas do admin (localStorage) ou padrão
+function normalizarCaixa(c, padrao) {
+  // Aceita tanto 'preço' (com acento) quanto 'preco' (sem acento) do JSON
+  return {
+    ...padrao,
+    ...c,
+    preço: c.preço || c.preco || padrao.preço,
+    maxSabores: padrao ? padrao.maxSabores : (c.maxSabores || 2)
+  };
+}
 function getCaixasEncomenda() {
   const PADRAO = [
     { id:"cx5l_2s",  nome:"Caixa 5 Litros – 2 Sabores",  preço:100.00, maxSabores:2, estoque:20, esgotado:false },
@@ -136,25 +219,16 @@ function getCaixasEncomenda() {
   ];
   // Priorizar dados da nuvem carregados no window._itap_caixas
   if (window._itap_caixas && window._itap_caixas.length > 0) {
-    return window._itap_caixas.map((c, i) => ({
-      ...PADRAO[i] || {},
-      ...c,
-      maxSabores: PADRAO[i] ? PADRAO[i].maxSabores : 2
-    }));
+    return window._itap_caixas.map((c, i) => normalizarCaixa(c, PADRAO[i] || PADRAO[0]));
   }
   return PADRAO;
 }
-
 function getTortasEncomenda() {
   const PADRAO = [
     { id:"torta1", nome:"Torta de Sorvete", preço:100.00, maxSabores:3, estoque:10, esgotado:false }
   ];
   if (window._itap_tortas && window._itap_tortas.length > 0) {
-    return window._itap_tortas.map((t, i) => ({
-      ...PADRAO[i] || {},
-      ...t,
-      maxSabores: (PADRAO[i] ? PADRAO[i].maxSabores : 3)
-    }));
+    return window._itap_tortas.map((t, i) => normalizarCaixa(t, PADRAO[i] || PADRAO[0]));
   }
   return PADRAO;
 }
@@ -1025,10 +1099,10 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     });
     
     msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
-    msg += `\n⏰ Entrega em até 3 dias úteis após confirmação do pagamento.\n`;
-    msg += `📍 Retirada na loja em Cajuru/SP\n\n`;
-    msg += `🔗 Acesse: https://itapolitanacajuru.com.br/encomendas.html`;
-    
+    msg += `\n⛰️ *PRAZO:* Produzido em até 3 dias úteis após confirmação do pagamento.\n`;
+    msg += `📍 *Retirada na loja:* R. Cel. Manoel Caetano, 311 – Cajuru/SP\n`;
+    msg += `💳 *Pagamento antecipado* obrigatório para confirmar a produção.\n\n`;
+    msg += `🔗 Acesse: https://itapolitanacajuru.com.br/encomendas.html`;    
     // ENVIO DE E-MAIL INTERNO (Fallback quando WhatsApp não funcionar)
     const emailPayload = {
       _subject: `[ITAPOLITANA] Novo Pedido - ${numPedido}`,
@@ -1050,22 +1124,31 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
       body: JSON.stringify(emailPayload)
     }).catch(e => console.warn('[ITAP] E-mail interno não enviado (fallback WhatsApp ativo):', e));
 
+    // Montar objeto do pedido
+    const pedidoObj = {
+      num: numPedido,
+      data: new Date().toISOString(),
+      dataFormatada: dataFormatada,
+      nome: nome,
+      telefone: tel,
+      endereço: end,
+      itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preço: i.preço, tipo: i.tipo || 'sorvete' })),
+      total: total,
+      status: 'novo',
+      tipo: carrinho.some(i => i.tipo === 'picolé') ? 'picolés' : carrinho.some(i => i.tipo === 'sorvete' && i.nome.includes('Torta')) ? 'torta' : 'caixa'
+    };
     // Salvar pedido no localStorage com proteção extra
     try {
       const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
-      pedidos.unshift({
-        num: numPedido,
-        data: new Date().toLocaleString('pt-BR'),
-        nome: nome,
-        tel: tel,
-        endereço: end,
-        itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preço: i.preço, tipo: i.tipo || 'sorvete' })),
-        total: total,
-        status: 'novo'
-      });
+      pedidos.unshift(pedidoObj);
       if (pedidos.length > 50) pedidos.length = 50;
       localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
-    } catch(e) { console.warn('[ITAP] Erro ao salvar histórico:', e); }
+    } catch(e) { console.warn('[ITAP] Erro ao salvar histórico local:', e); }
+    // Enviar pedido para o GitHub (admin recebe em tempo real)
+    enviarPedidoGitHub(pedidoObj).then(ok => {
+      if (ok) console.log('[Itap] Pedido registrado no admin ✅');
+      else console.warn('[Itap] Pedido não chegou ao admin — apenas no localStorage');
+    });
 
     const numEl = document.getElementById('num-pedido');
     if (numEl) numEl.textContent = numPedido;

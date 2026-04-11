@@ -1426,15 +1426,15 @@ html { scroll-behavior: smooth; }
 </div>
 <div class="form-grupo">
 <label>👤 Seu Nome Completo *</label>
-<input autocomplete="name" id="cliente-nome" oninput="_nomeCliente=this.value; verificarFormulario()" placeholder="Ex: João da Silva" type="text"/>
+<input autocomplete="name" id="cliente-nome" maxlength="80" oninput="_nomeCliente=this.value; verificarFormulario()" placeholder="Ex: João da Silva" type="text"/>
 </div>
 <div class="form-grupo">
 <label>📱 Seu WhatsApp *</label>
-<input autocomplete="tel" id="cliente-tel" inputmode="tel" oninput="_telCliente=this.value; verificarFormulario()" placeholder="Ex: (16) 99999-9999" type="text"/>
+<input autocomplete="tel" id="cliente-tel" inputmode="tel" maxlength="15" oninput="var v=this.value.replace(/\D/g,''); if(v.length<=11) this.value=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3').replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3'); _telCliente=this.value; verificarFormulario()" placeholder="Ex: (16) 99999-9999" type="text"/>
 </div>
 <div class="form-grupo">
 <label>📍 Endereço para Entrega *</label>
-<input autocomplete="street-address" id="cliente-endereço" oninput="_endereçoCliente=this.value; verificarFormulario()" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" type="text"/>
+<input autocomplete="street-address" id="cliente-endereço" maxlength="150" oninput="_endereçoCliente=this.value; verificarFormulario()" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" type="text"/>
 </div>
 <div class="botãoes-etapa-dados">
 <div class="barra-acao barra-verde" id="barra-btn-finalizar">
