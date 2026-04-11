@@ -29,10 +29,10 @@ async function carregarPreçosNuvem() {
     if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
     if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
     localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
-    if (dados.caixas_enc && dados.caixas_enc.length > 0)
-      localStorage.setItem('itap_caixas_enc', JSON.stringify(dados.caixas_enc));
-    if (dados.tortas_enc && dados.tortas_enc.length > 0)
-      localStorage.setItem('itap_tortas_enc', JSON.stringify(dados.tortas_enc));
+    // Armazenar no STATE global para uso imediato sem depender de localStorage
+    if (dados.caixas_enc) window._itap_caixas = dados.caixas_enc;
+    if (dados.tortas_enc) window._itap_tortas = dados.tortas_enc;
+    if (dados.acréscimos) window._itap_acréscimos = dados.acréscimos;
     console.log('[Itap] Preços carregados da nuvem ✅');
     return true;
   } catch(e) {
@@ -134,17 +134,14 @@ function getCaixasEncomenda() {
     { id:"cx10l_2s", nome:"Caixa 10 Litros – 2 Sabores", preço:150.00, maxSabores:2, estoque:15, esgotado:false },
     { id:"cx10l_3s", nome:"Caixa 10 Litros – 3 Sabores", preço:165.00, maxSabores:3, estoque:15, esgotado:false }
   ];
-  try {
-    const salvo = localStorage.getItem('itap_caixas_enc');
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      return dados.map((c, i) => ({
-        ...PADRAO[i] || {},
-        ...c,
-        maxSabores: PADRAO[i] ? PADRAO[i].maxSabores : 2
-      }));
-    }
-  } catch(e) {}
+  // Priorizar dados da nuvem carregados no window._itap_caixas
+  if (window._itap_caixas && window._itap_caixas.length > 0) {
+    return window._itap_caixas.map((c, i) => ({
+      ...PADRAO[i] || {},
+      ...c,
+      maxSabores: PADRAO[i] ? PADRAO[i].maxSabores : 2
+    }));
+  }
   return PADRAO;
 }
 
@@ -152,17 +149,13 @@ function getTortasEncomenda() {
   const PADRAO = [
     { id:"torta1", nome:"Torta de Sorvete", preço:100.00, maxSabores:3, estoque:10, esgotado:false }
   ];
-  try {
-    const salvo = localStorage.getItem('itap_tortas_enc');
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      return dados.map((t, i) => ({
-        ...PADRAO[i] || {},
-        ...t,
-        maxSabores: (PADRAO[i] ? PADRAO[i].maxSabores : 3)
-      }));
-    }
-  } catch(e) {}
+  if (window._itap_tortas && window._itap_tortas.length > 0) {
+    return window._itap_tortas.map((t, i) => ({
+      ...PADRAO[i] || {},
+      ...t,
+      maxSabores: (PADRAO[i] ? PADRAO[i].maxSabores : 3)
+    }));
+  }
   return PADRAO;
 }
 
@@ -1112,7 +1105,9 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
 
     const linkWpp = document.getElementById('link-whatsapp-final');
     if (linkWpp) {
-      linkWpp.href = `https://wa.me/5516996062046?text=${encodeURIComponent(msg)}`;
+      // Garantir que o número do WhatsApp venha do config se disponível
+      const whatsappNum = (window._itap_config && window._itap_config.whatsapp) || '5516996062046';
+      linkWpp.href = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
     }
     
     mostrarEtapa('confirmação');

@@ -2502,7 +2502,8 @@ const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
 // REGRA DOS CARACTERES PERMITIDOS NOS CUPONS (sem O,I,L,0,1 para evitar confusao visual):
 // Letra O=parece 0 | Letra I=parece 1/L | Letra L=parece 1/I | Num 0=parece O | Num 1=parece I/L
 // Especiais mantidos para aumentar entropia e dificultar fraude.
-const FID_CHARS       = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
+  // @validador-ignore-next-line
+  const FID_CHARS       = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
 function fidGerarCodigo(idx){
   const s=FID_SALT;
   let a=idx+1,b=0;
@@ -2601,17 +2602,41 @@ function gerarPDFLote(){
   win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cupons Fidelidade — Lote ${lote.loteNum}</title><style>body{font-family:Arial,sans-serif;padding:20px}h1{color:#E65100;text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th{background:#E65100;color:#fff;padding:10px}td{padding:8px 12px;border:1px solid #ddd;text-align:center}tr:nth-child(even){background:#FFF3E0}@media print{button{display:none}}</style></head><body><h1>&#x1F3AB; Cupons de Fidelidade — Lote ${lote.loteNum}</h1><p style="text-align:center;color:#666">Códigos ${lote.inicio} a ${lote.fim} de ${FID_TOTAL_BANCO.toLocaleString('pt-BR')}</p><button onclick="window.print()" style="display:block;margin:10px auto;padding:10px 24px;background:#E65100;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer">🖨️ Imprimir / Salvar PDF</button><table><thead><tr><th>#</th><th>Código</th><th>Estabelecimento</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
   win.document.close();
 }
-async function salvarConfigFidelidade(){
-  const cfg=STATE.config||{};
-  cfg.premioMilkshake=document.getElementById('fid-prêmio-milk-nome').value.trim();
-  cfg.pontosMilkshake=parseInt(document.getElementById('fid-pts-milk').value)||10;
-  cfg.premioCaixa=document.getElementById('fid-prêmio-caixa-nome').value.trim();
-  cfg.pontosCaixa=parseInt(document.getElementById('fid-pts-caixa').value)||30;
-  cfg.fidelidadeTitulo=document.getElementById('fid-título').value.trim();
-  cfg.fidelidadeDescricao=document.getElementById('fid-descrição').value.trim();
-  STATE.config=cfg;
-  if(STATE.fidelidade){if(!STATE.fidelidade.config)STATE.fidelidade.config={};STATE.fidelidade.config.prêmioNome=cfg.premioMilkshake;STATE.fidelidade.config.prêmioPontos=cfg.pontosMilkshake;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha','Admin: atualizar config fidelidade');}
-  await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configuração dos prêmios');
+async function salvarConfigFidelidade() {
+  if (!STATE.config) STATE.config = {};
+  const c = STATE.config;
+  
+  // Capturar valores dos campos
+  c.premioMilkshake = document.getElementById('fid-prêmio-milk-nome').value.trim();
+  c.pontosMilkshake = parseInt(document.getElementById('fid-pts-milk').value) || 10;
+  c.premioCaixa = document.getElementById('fid-prêmio-caixa-nome').value.trim();
+  c.pontosCaixa = parseInt(document.getElementById('fid-pts-caixa').value) || 30;
+  c.fidelidadeTitulo = document.getElementById('fid-título').value.trim();
+  c.fidelidadeDescricao = document.getElementById('fid-descrição').value.trim();
+  
+  mostrarLoading('Salvando...');
+  
+  // Sincronizar com o STATE.fidelidade se necessário (para o site ler de um lugar só)
+  let ok1 = true;
+  if (STATE.fidelidade) {
+    if (!STATE.fidelidade.config) STATE.fidelidade.config = {};
+    STATE.fidelidade.config.premioMilkshake = c.premioMilkshake;
+    STATE.fidelidade.config.pontosMilkshake = c.pontosMilkshake;
+    STATE.fidelidade.config.premioCaixa = c.premioCaixa;
+    STATE.fidelidade.config.pontosCaixa = c.pontosCaixa;
+    STATE.fidelidade.config.titulo = c.fidelidadeTitulo;
+    STATE.fidelidade.config.descricao = c.fidelidadeDescricao;
+    
+    ok1 = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: sincronizar textos da fidelidade');
+  }
+  
+  // Salvar no config.json (fonte principal do admin)
+  const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar configuração de prêmios e textos da fidelidade');
+  
+  ocultarLoading();
+  if (ok1 && ok2) {
+    toast('Configurações de fidelidade salvas e sincronizadas!', 'sucesso');
+  }
 }
 function copiarCódigosDisponíveis(){
   const códigos=STATE.fidelidade?.códigos||{};
