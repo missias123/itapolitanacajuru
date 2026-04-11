@@ -561,6 +561,15 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
           <div class="campo-edit"><label>Botão Dicas/Depoimentos — Texto</label><input type="text" id="home-nav-dicas" maxlength="20" placeholder="DICAS/DEPOIMENTOS"/><div class="hint">Texto do botão verde ⭐ no menu. Max. 20 caracteres.</div></div>
           <div class="campo-edit"><label>Botão Fidelidade — Texto</label><input type="text" id="home-nav-fidelidade" maxlength="20" placeholder="FIDELIDADE"/><div class="hint">Texto do botão laranja 🎟️ no menu. Max. 20 caracteres.</div></div>
 
+          <div class="seção-título">🛒 Carrinho para Eventos</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>carrinho-label1</code> e <code>carrinho-label2</code>. Alterar aqui muda os textos do cartão do carrinho na página inicial imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Label 1 — Título do Cartão (ID: carrinho-label1)</label><input type="text" id="home-carrinho-label1" maxlength="40" placeholder="🛒 Carrinho para Eventos"/><div class="hint">Texto em destaque laranja no card do carrinho. Max. 40 caracteres. Ex: 🛒 Carrinho para Eventos</div></div>
+          <div class="campo-edit"><label>Label 2 — Subtexto do Cartão (ID: carrinho-label2)</label><input type="text" id="home-carrinho-label2" maxlength="40" placeholder="Toque para consultar"/><div class="hint">Texto menor abaixo do título. Max. 40 caracteres. Ex: Toque para consultar</div></div>
+          <div class="campo-edit"><label>Link do WhatsApp — Mensagem pré-preenchida</label><input type="text" id="home-carrinho-whats" maxlength="200" placeholder="Olá! Gostaria de consultar a disponibilidade do carrinho..."/><div class="hint">Mensagem que abre no WhatsApp ao clicar no cartão. Será codificada automaticamente.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarCarrinhoEvento()">&#x1F4BE; Salvar Carrinho para Eventos</button></div>
+
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarHome()">&#x1F4BE; Salvar Página Inicial</button></div>
         </div>
       </div>
@@ -1871,7 +1880,25 @@ Talento</textarea>
           <div class="campo-edit"><label class="label-obrigatório">Título da página (aparece na aba do navegador e no Google)</label><input type="text" id="cfg-seo-titulo" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru — Sorvete Artesanal, Açaí e Picolés"/><div class="hint">&#x26A0;&#xFE0F; Máximo 60 caracteres. Inclua o nome da cidade. Exemplo: <em>Sorveteria Itapolitana Cajuru — Sorvete Artesanal, Açaí e Picolés</em></div></div>
           <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete tipo artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
           <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
-          <div class="seção-título">&#x1F512; Segurana</div>
+          <div class="seção-título">🎟️ Página de Fidelidade — Hero Banner</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>fid-hero-titulo</code> e <code>fid-hero-desc</code> (fidelidade.html). Alterar aqui muda o banner da página de fidelidade imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Título do Hero Fidelidade (ID: fid-hero-titulo)</label><input type="text" id="cfg-fid-hero-titulo" maxlength="80" placeholder="🎟️ Clube de Fidelidade Itapolitana"/><div class="hint">Título principal do banner da página de fidelidade. Max. 80 caracteres.</div></div>
+          <div class="campo-edit"><label>Descrição do Hero Fidelidade (ID: fid-hero-desc)</label><textarea id="cfg-fid-hero-desc" rows="2" maxlength="160" placeholder="Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru."></textarea><div class="hint">Descrição abaixo do título no banner de fidelidade. Max. 160 caracteres.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidHero()">&#x1F4BE; Salvar Hero Fidelidade</button></div>
+
+          <div class="seção-título">🎉 Página de Promoção — Textos</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>promo-h1</code>, <code>promo-badge-el</code>, <code>promo-titulo-el</code>, <code>promo-desc-el</code> (promocao.html). Alterar aqui muda os textos da página de promoção imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Título H1 da Promoção (ID: promo-h1)</label><input type="text" id="cfg-promo-h1" maxlength="80" placeholder="🎉 Grande Sorteio Mensal"/><div class="hint">Título principal da página de promoção. Max. 80 caracteres.</div></div>
+          <div class="campo-edit"><label>Badge da Promoção (ID: promo-badge-el)</label><input type="text" id="cfg-promo-badge" maxlength="40" placeholder="🎁 Sorteio Mensal"/><div class="hint">Etiqueta verde de destaque. Max. 40 caracteres.</div></div>
+          <div class="campo-edit"><label>Título da Promoção (ID: promo-titulo-el)</label><input type="text" id="cfg-promo-titulo-el" maxlength="100" placeholder="Sua Chance de Ganhar 5 Litros de Pura Felicidade!"/><div class="hint">Título do card de promoção. Max. 100 caracteres.</div></div>
+          <div class="campo-edit"><label>Descrição da Promoção (ID: promo-desc-el)</label><textarea id="cfg-promo-desc-el" rows="3" maxlength="300" placeholder="Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru."></textarea><div class="hint">Descrição do card de promoção. Max. 300 caracteres.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoTextos()">&#x1F4BE; Salvar Textos da Promoção</button></div>
+
+          <div class="seção-título">&#x1F512; Segurança</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações</button></div>
@@ -1969,14 +1996,57 @@ Talento</textarea>
           <div class="campo-edit"><label>WhatsApp de atendimento (somente números)</label><input type="text" id="fc-whatsapp" maxlength="15" inputmode="numeric" placeholder="5516996062046"/></div>
           <div class="campo-edit"><label>E-mail de contato</label><input type="email" id="fc-email" placeholder="contato@itapolitanacajuru.com.br"/></div>
           <div class="campo-edit"><label>Endereço completo</label><input type="text" id="fc-endereco" maxlength="120" placeholder="Rua Exemplo, 123 — Centro — Cajuru/SP"/></div>
-          <div class="campo-edit"><label>Horário de atendimento</label><input type="text" id="fc-horario" maxlength="80" placeholder="Todos os dias: 10h às 22h"/></div>
+          <div class="campo-edit"><label>Horário de atendimento</label><input type="text" id="fc-horario" maxlength="80" placeholder="Todos os dias: 10h às 22h"/><div class="hint">Exibido na seção de contato. Ex: Todos os dias: 10h às 22h</div></div>
 
-          <div class="seção-título" style="margin-top:20px">🤖 Assistente de Chat (Chatbot)</div>
-          <div class="campo-edit"><label>Mensagem inicial do assistente</label><input type="text" id="fc-chat-inicio" maxlength="120" placeholder="Olá! Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?"/></div>
-          <div class="campo-edit"><label>Opções rápidas do chat (uma por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário de funcionamento&#10;Como fazer uma encomenda&#10;Sabores disponíveis&#10;Preços&#10;Localização&#10;Picolés"></textarea></div>
-          <div class="campo-edit"><label>Mensagem fora do horário</label><input type="text" id="fc-chat-fora" maxlength="120" placeholder="Estamos fechados agora. Retornaremos em breve!"/></div>
+          <div class="seção-título" style="margin-top:20px">📦 Modal Fale Conosco (Formulário)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>fale-modal-titulo</code>, <code>fale-modal-sub</code>, <code>fale-label-nome</code>, <code>fale-label-msg</code>, <code>fale-btn-texto</code>. Alterar aqui muda o modal de contato imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Título do Modal (ID: fale-modal-titulo)</label><input type="text" id="fc-modal-titulo" maxlength="60" placeholder="📩 Fale Conosco"/><div class="hint">Texto do cabeçalho do modal de contato. Ex: 📩 Fale Conosco</div></div>
+          <div class="campo-edit"><label>Subtexto do Modal (ID: fale-modal-sub)</label><input type="text" id="fc-modal-sub" maxlength="80" placeholder="Envie sua mensagem via WhatsApp"/><div class="hint">Linha de apoio abaixo do título do modal.</div></div>
+          <div class="campo-edit"><label>Label do campo Nome (ID: fale-label-nome)</label><input type="text" id="fc-label-nome" maxlength="40" placeholder="Seu nome"/><div class="hint">Texto do rótulo do campo nome no formulário.</div></div>
+          <div class="campo-edit"><label>Label do campo Mensagem (ID: fale-label-msg)</label><input type="text" id="fc-label-msg" maxlength="40" placeholder="Sua mensagem"/><div class="hint">Texto do rótulo do campo mensagem no formulário.</div></div>
+          <div class="campo-edit"><label>Texto do botão Enviar (ID: fale-btn-texto)</label><input type="text" id="fc-btn-texto" maxlength="50" placeholder="💬 Enviar via WhatsApp"/><div class="hint">Texto do botão de envio do formulário.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarModalFaleConosco()">&#x1F4BE; Salvar Modal Fale Conosco</button></div>
 
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFaleConosco()">💾 Salvar Fale Conosco</button></div>
+          <div class="seção-título" style="margin-top:20px">🤖 Chat — Botão Flutuante e Assistente</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>chat-fab-texto</code>, <code>chat-hdr-titulo</code>, <code>chat-hdr-sub</code>, <code>chat-msg-inicio</code>, <code>chat-sug-1</code> a <code>chat-sug-6</code>. Alterar aqui muda o chat imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Texto do botão flutuante Chat (ID: chat-fab-texto)</label><input type="text" id="fc-chat-fab" maxlength="30" placeholder="💬 Fale Conosco"/><div class="hint">Texto do botão verde fixo no canto inferior esquerdo.</div></div>
+          <div class="campo-edit"><label>Título do Chat (ID: chat-hdr-titulo)</label><input type="text" id="fc-chat-hdr-titulo" maxlength="40" placeholder="💬 Fale Conosco"/><div class="hint">Título exibido no cabeçalho do chat.</div></div>
+          <div class="campo-edit"><label>Subtexto do Chat (ID: chat-hdr-sub)</label><input type="text" id="fc-chat-hdr-sub" maxlength="60" placeholder="Assistente Itapolitana · Responde na hora"/><div class="hint">Linha de apoio no cabeçalho do chat.</div></div>
+          <div class="campo-edit"><label>Mensagem inicial do assistente (ID: chat-msg-inicio)</label><input type="text" id="fc-chat-inicio" maxlength="120" placeholder="Olá! 👋 Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?"/><div class="hint">Primeira mensagem que aparece ao abrir o chat.</div></div>
+          <div class="campo-edit"><label>Sugestões rápidas — 6 botões (IDs: chat-sug-1 a chat-sug-6, um por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário&#10;Como encomendar&#10;Sabores&#10;Preços&#10;Localização&#10;Picolés"></textarea><div class="hint">Exatamente 6 linhas. Cada linha = 1 botão de sugestão no chat.</div></div>
+          <div class="campo-edit"><label>Mensagem fora do horário</label><input type="text" id="fc-chat-fora" maxlength="120" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar fora do horário de funcionamento.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarChat()">&#x1F4BE; Salvar Chat</button></div>
+
+          <div class="seção-título" style="margin-top:20px">🍦 Botão Clube de Fidelidade (FAB)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>ID no site:</strong> <code>clube-fab-texto</code>. Botão fixo no canto inferior direito que leva à página de fidelidade.
+          </div>
+          <div class="campo-edit"><label>Texto do botão Clube (ID: clube-fab-texto)</label><input type="text" id="fc-clube-fab" maxlength="30" placeholder="🍦 Clube Itapolitana"/><div class="hint">Texto do botão laranja fixo no canto inferior direito.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarClubeFab()">&#x1F4BE; Salvar Botão Clube</button></div>
+
+          <div class="seção-título" style="margin-top:20px">📢 Botão Promoção (FAB)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>ID no site:</strong> <code>promo-fab-label</code>. Botão flutuante de promoção no topo da página.
+          </div>
+          <div class="campo-edit"><label>Label do FAB Promoção (ID: promo-fab-label)</label><input type="text" id="fc-promo-fab-label" maxlength="30" placeholder="🎉 SORTEIO!"/><div class="hint">Texto principal do botão flutuante de promoção.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoFab()">&#x1F4BE; Salvar FAB Promoção</button></div>
+
+          <div class="seção-título" style="margin-top:20px">💬 Modais do Cardápio</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>ms-título</code>, <code>ms-sub</code> (sorvetes), <code>mp-título</code> (picolé), <code>modal-comp-titulo</code>, <code>modal-comp-sub</code> (açaí). Alterar aqui muda os títulos dos modais do cardápio.
+          </div>
+          <div class="campo-edit"><label>Título Modal Sorvetes (ID: ms-título)</label><input type="text" id="fc-modal-sorvetes-titulo" maxlength="50" placeholder="Sabores Disponíveis"/><div class="hint">Título do modal que abre ao clicar em Ver Sabores.</div></div>
+          <div class="campo-edit"><label>Subtexto Modal Sorvetes (ID: ms-sub)</label><input type="text" id="fc-modal-sorvetes-sub" maxlength="80" placeholder="Informe o sabor desejado ao fazer seu pedido na loja"/><div class="hint">Instrução exibida no modal de sabores.</div></div>
+          <div class="campo-edit"><label>Título Modal Picolé (ID: mp-título)</label><input type="text" id="fc-modal-picole-titulo" maxlength="50" placeholder="Sabores do Picolé"/><div class="hint">Título do modal de sabores de picolé.</div></div>
+          <div class="campo-edit"><label>Título Modal Açaí (ID: modal-comp-titulo)</label><input type="text" id="fc-modal-açaí-titulo" maxlength="50" placeholder="🫐 Complementos do Açaí"/><div class="hint">Título do modal de complementos do açaí.</div></div>
+          <div class="campo-edit"><label>Subtexto Modal Açaí (ID: modal-comp-sub)</label><input type="text" id="fc-modal-açaí-sub" maxlength="80" placeholder="Disponíveis para o Açaí Personalizado"/><div class="hint">Instrução exibida no modal de complementos do açaí.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarModaisCardapio()">&#x1F4BE; Salvar Modais do Cardápio</button></div>
+
+          <div class="btn-row" style="margin-top:24px"><button class="btn btn-salvar" onclick="salvarFaleConosco()">&#x1F4BE; Salvar Fale Conosco (Geral)</button></div>
         </div>
       </div>
     </div>
@@ -2107,6 +2177,10 @@ function preencherHome(){
   document.getElementById('home-nav-promocao').value=cfg.navPromocao||'PROMOÇÃO';
   document.getElementById('home-nav-dicas').value=cfg.navDicas||'DICAS/DEPOIMENTOS';
   document.getElementById('home-nav-fidelidade').value=cfg.navFidelidade||'FIDELIDADE';
+  // Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
+  document.getElementById('home-carrinho-label1').value=cfg.carrinhoLabel1||'🛒 Carrinho para Eventos';
+  document.getElementById('home-carrinho-label2').value=cfg.carrinhoLabel2||'Toque para consultar';
+  document.getElementById('home-carrinho-whats').value=cfg.carrinhoWhatsMsg||'Olá! Gostaria de consultar a disponibilidade do carrinho para eventos.';
 }
 async function salvarHome(){
   const cfg=STATE.config||{};
@@ -2126,6 +2200,10 @@ async function salvarHome(){
   cfg.navPromocao=document.getElementById('home-nav-promocao').value.trim()||'PROMOÇÃO';
   cfg.navDicas=document.getElementById('home-nav-dicas').value.trim()||'DICAS/DEPOIMENTOS';
   cfg.navFidelidade=document.getElementById('home-nav-fidelidade').value.trim()||'FIDELIDADE';
+  // Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
+  cfg.carrinhoLabel1=document.getElementById('home-carrinho-label1').value.trim()||'🛒 Carrinho para Eventos';
+  cfg.carrinhoLabel2=document.getElementById('home-carrinho-label2').value.trim()||'Toque para consultar';
+  cfg.carrinhoWhatsMsg=document.getElementById('home-carrinho-whats').value.trim();
   STATE.config=cfg;
   await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
 }
@@ -3148,6 +3226,14 @@ function preencherConfig(){
   const seoTit=document.getElementById('cfg-seo-titulo'); if(seoTit) seoTit.value=cfg.seoTitulo||'';
   const seoDes=document.getElementById('cfg-seo-descricao'); if(seoDes) seoDes.value=cfg.seoDescricao||'';
   const seoPal=document.getElementById('cfg-seo-palavras'); if(seoPal) seoPal.value=cfg.seoPalavrasChave||'';
+  // Fidelidade Hero (IDs: fid-hero-titulo, fid-hero-desc)
+  const fidHT=document.getElementById('cfg-fid-hero-titulo'); if(fidHT) fidHT.value=cfg.fidHeroTitulo||'🎟️ Clube de Fidelidade Itapolitana';
+  const fidHD=document.getElementById('cfg-fid-hero-desc'); if(fidHD) fidHD.value=cfg.fidHeroDesc||'Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru.';
+  // Promoção Textos (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
+  const promoH1El=document.getElementById('cfg-promo-h1'); if(promoH1El) promoH1El.value=cfg.promoH1||'🎉 Grande Sorteio Mensal';
+  const promoBadgeEl=document.getElementById('cfg-promo-badge'); if(promoBadgeEl) promoBadgeEl.value=cfg.promoBadge||'🎁 Sorteio Mensal';
+  const promoTitEl=document.getElementById('cfg-promo-titulo-el'); if(promoTitEl) promoTitEl.value=cfg.promoTituloEl||'Sua Chance de Ganhar 5 Litros de Pura Felicidade!';
+  const promoDescElEl=document.getElementById('cfg-promo-desc-el'); if(promoDescElEl) promoDescElEl.value=cfg.promoDescEl||'Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru.';
 }
 async function salvarConfig(){
   const novaSenha=document.getElementById('cfg-nova-senha').value;
@@ -3180,6 +3266,26 @@ async function salvarConfig(){
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
   if(ok){document.getElementById('cfg-nova-senha').value='';document.getElementById('cfg-conf-senha').value='';if(novaSenha)STATE.senhaAdmin=novaSenha;}
+}
+
+// Salvar Hero Fidelidade (IDs: fid-hero-titulo, fid-hero-desc)
+async function salvarFidHero() {
+  const cfg = STATE.config || {};
+  cfg.fidHeroTitulo = document.getElementById('cfg-fid-hero-titulo').value.trim();
+  cfg.fidHeroDesc = document.getElementById('cfg-fid-hero-desc').value.trim();
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
+}
+
+// Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
+async function salvarPromoTextos() {
+  const cfg = STATE.config || {};
+  cfg.promoH1 = document.getElementById('cfg-promo-h1').value.trim();
+  cfg.promoBadge = document.getElementById('cfg-promo-badge').value.trim();
+  cfg.promoTituloEl = document.getElementById('cfg-promo-titulo-el').value.trim();
+  cfg.promoDescEl = document.getElementById('cfg-promo-desc-el').value.trim();
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos promocao');
 }
 function toast(msg,tipo=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+tipo;setTimeout(()=>el.className='toast',3000);}
 function mostrarLoading(txt='Salvando...'){document.getElementById('loading-txt').textContent=txt;document.getElementById('loading-overlay').style.display='flex';}
@@ -4297,6 +4403,7 @@ async function salvarDepoimentos() {
 // ── FALE CONOSCO ────────────────────────────────────────────────────────────
 function preencherFaleConosco() {
   const c = STATE.config || {};
+  // --- Contato geral ---
   document.getElementById('fc-titulo').value = c.fcTitulo || 'Fale com a Itapolitana';
   document.getElementById('fc-subtitulo').value = c.fcSubtitulo || 'Manda uma mensagem, a gente responde rapidinho!';
   document.getElementById('fc-msg-sucesso').value = c.fcMsgSucesso || 'Mensagem enviada! Retornaremos em breve.';
@@ -4304,13 +4411,36 @@ function preencherFaleConosco() {
   document.getElementById('fc-email').value = c.fcEmail || '';
   document.getElementById('fc-endereco').value = c.fcEndereco || c.enderecoCompleto || '';
   document.getElementById('fc-horario').value = c.fcHorario || c.horario || '';
-  document.getElementById('fc-chat-inicio').value = c.fcChatInicio || 'Olá! Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?';
-  document.getElementById('fc-chat-opcoes').value = (c.fcChatOpcoes || []).join('\n');
+  // --- Modal Fale Conosco (IDs: fale-modal-titulo, fale-modal-sub, fale-label-nome, fale-label-msg, fale-btn-texto) ---
+  document.getElementById('fc-modal-titulo').value = c.faleModalTitulo || '📩 Fale Conosco';
+  document.getElementById('fc-modal-sub').value = c.faleModalSub || 'Envie sua mensagem via WhatsApp';
+  document.getElementById('fc-label-nome').value = c.faleLabelNome || 'Seu nome';
+  document.getElementById('fc-label-msg').value = c.faleLabelMsg || 'Sua mensagem';
+  document.getElementById('fc-btn-texto').value = c.faleBtnTexto || '💬 Enviar via WhatsApp';
+  // --- Chat FAB e Header (IDs: chat-fab-texto, chat-hdr-titulo, chat-hdr-sub, chat-msg-inicio) ---
+  document.getElementById('fc-chat-fab').value = c.chatFabTexto || '💬 Fale Conosco';
+  document.getElementById('fc-chat-hdr-titulo').value = c.chatHdrTitulo || '💬 Fale Conosco';
+  document.getElementById('fc-chat-hdr-sub').value = c.chatHdrSub || 'Assistente Itapolitana · Responde na hora';
+  document.getElementById('fc-chat-inicio').value = c.chatMsgInicio || c.fcChatInicio || 'Olá! 👋 Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?';
+  // --- Chat Sugestões (IDs: chat-sug-1 a chat-sug-6) ---
+  const sugs = c.chatSugestoes || c.fcChatOpcoes || ['Horário','Como encomendar','Sabores','Preços','Localização','Picolés'];
+  document.getElementById('fc-chat-opcoes').value = sugs.join('\n');
   document.getElementById('fc-chat-fora').value = c.fcChatFora || 'Estamos fechados agora. Retornaremos em breve!';
+  // --- Clube FAB (ID: clube-fab-texto) ---
+  document.getElementById('fc-clube-fab').value = c.clubeFabTexto || '🍦 Clube Itapolitana';
+  // --- Promo FAB (ID: promo-fab-label) ---
+  document.getElementById('fc-promo-fab-label').value = c.promoFabLabel || '🎉 SORTEIO!';
+  // --- Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub) ---
+  document.getElementById('fc-modal-sorvetes-titulo').value = c.modalSaboresTitulo || 'Sabores Disponíveis';
+  document.getElementById('fc-modal-sorvetes-sub').value = c.modalSaboresSub || 'Informe o sabor desejado ao fazer seu pedido na loja';
+  document.getElementById('fc-modal-picole-titulo').value = c.modalPicoleTitulo || 'Sabores do Picolé';
+  document.getElementById('fc-modal-açaí-titulo').value = c.modalAçaíTitulo || '🫐 Complementos do Açaí';
+  document.getElementById('fc-modal-açaí-sub').value = c.modalAçaíSub || 'Disponíveis para o Açaí Personalizado';
 }
 
 async function salvarFaleConosco() {
   const c = STATE.config;
+  // --- Contato geral ---
   c.fcTitulo = document.getElementById('fc-titulo').value.trim();
   c.fcSubtitulo = document.getElementById('fc-subtitulo').value.trim();
   c.fcMsgSucesso = document.getElementById('fc-msg-sucesso').value.trim();
@@ -4318,11 +4448,65 @@ async function salvarFaleConosco() {
   c.fcEmail = document.getElementById('fc-email').value.trim();
   c.fcEndereco = document.getElementById('fc-endereco').value.trim();
   c.fcHorario = document.getElementById('fc-horario').value.trim();
-  c.fcChatInicio = document.getElementById('fc-chat-inicio').value.trim();
-  c.fcChatOpcoes = document.getElementById('fc-chat-opcoes').value.split('\n').map(s => s.trim()).filter(s => s);
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco geral');
+}
+
+// Salvar Modal Fale Conosco (IDs: fale-modal-titulo, fale-modal-sub, fale-label-nome, fale-label-msg, fale-btn-texto)
+async function salvarModalFaleConosco() {
+  const c = STATE.config;
+  c.faleModalTitulo = document.getElementById('fc-modal-titulo').value.trim();
+  c.faleModalSub = document.getElementById('fc-modal-sub').value.trim();
+  c.faleLabelNome = document.getElementById('fc-label-nome').value.trim();
+  c.faleLabelMsg = document.getElementById('fc-label-msg').value.trim();
+  c.faleBtnTexto = document.getElementById('fc-btn-texto').value.trim();
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modal fale conosco');
+}
+
+// Salvar Chat (IDs: chat-fab-texto, chat-hdr-titulo, chat-hdr-sub, chat-msg-inicio, chat-sug-1..6)
+async function salvarChat() {
+  const c = STATE.config;
+  c.chatFabTexto = document.getElementById('fc-chat-fab').value.trim();
+  c.chatHdrTitulo = document.getElementById('fc-chat-hdr-titulo').value.trim();
+  c.chatHdrSub = document.getElementById('fc-chat-hdr-sub').value.trim();
+  c.chatMsgInicio = document.getElementById('fc-chat-inicio').value.trim();
+  c.chatSugestoes = document.getElementById('fc-chat-opcoes').value.split('\n').map(s => s.trim()).filter(s => s);
+  c.fcChatOpcoes = c.chatSugestoes; // compatibilidade retroativa
   c.fcChatFora = document.getElementById('fc-chat-fora').value.trim();
-  
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco e chatbot');
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar chat e sugestoes');
+}
+
+// Salvar Clube FAB (ID: clube-fab-texto)
+async function salvarClubeFab() {
+  const c = STATE.config;
+  c.clubeFabTexto = document.getElementById('fc-clube-fab').value.trim();
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
+}
+
+// Salvar Promo FAB (ID: promo-fab-label)
+async function salvarPromoFab() {
+  const c = STATE.config;
+  c.promoFabLabel = document.getElementById('fc-promo-fab-label').value.trim();
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar promo fab');
+}
+
+// Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
+async function salvarModaisCardapio() {
+  const c = STATE.config;
+  c.modalSaboresTitulo = document.getElementById('fc-modal-sorvetes-titulo').value.trim();
+  c.modalSaboresSub = document.getElementById('fc-modal-sorvetes-sub').value.trim();
+  c.modalPicoleTitulo = document.getElementById('fc-modal-picole-titulo').value.trim();
+  c.modalAçaíTitulo = document.getElementById('fc-modal-açaí-titulo').value.trim();
+  c.modalAçaíSub = document.getElementById('fc-modal-açaí-sub').value.trim();
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
+}
+
+// Salvar Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
+async function salvarCarrinhoEvento() {
+  const c = STATE.config;
+  c.carrinhoLabel1 = document.getElementById('home-carrinho-label1').value.trim();
+  c.carrinhoLabel2 = document.getElementById('home-carrinho-label2').value.trim();
+  c.carrinhoWhatsMsg = document.getElementById('home-carrinho-whats').value.trim();
+  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar carrinho para eventos');
 }
 
 
