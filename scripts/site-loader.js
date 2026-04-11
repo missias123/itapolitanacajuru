@@ -194,8 +194,8 @@
     if (cfg.pontosMilkshake !== undefined) {
       window._META_MILK  = cfg.pontosMilkshake;
       window._META_CAIXA = cfg.pontosCaixa || 30;
-      window._PREMIO_MILK  = cfg.prêmioMilkshake  || 'Milkshake 300ml';
-      window._PREMIO_CAIXA = cfg.prêmioCaixa || 'Caixa 7 Bolas';
+      window._PREMIO_MILK  = cfg.premioMilkshake || cfg.prêmioMilkshake || 'Milkshake 300ml';
+      window._PREMIO_CAIXA = cfg.premioCaixa || cfg.prêmioCaixa || 'Caixa 7 Bolas';
       // Atualizar elementos de fidelidade se existirem
       document.querySelectorAll('[data-pontos-milk]').forEach(el => {
         el.textContent = cfg.pontosMilkshake + ' pontos';
@@ -204,10 +204,10 @@
         el.textContent = cfg.pontosCaixa + ' pontos';
       });
       document.querySelectorAll('[data-prêmio-milk]').forEach(el => {
-        el.textContent = cfg.prêmioMilkshake || 'Milkshake 300ml';
+        el.textContent = cfg.premioMilkshake || cfg.prêmioMilkshake || 'Milkshake 300ml';
       });
       document.querySelectorAll('[data-prêmio-caixa]').forEach(el => {
-        el.textContent = cfg.prêmioCaixa || 'Caixa 7 Bolas';
+        el.textContent = cfg.premioCaixa || cfg.prêmioCaixa || 'Caixa 7 Bolas';
       });
     }
 

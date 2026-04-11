@@ -820,8 +820,12 @@ async function carregarDados() {
     ghFidelidade = { codigos:{}, liberados:0, config:{} };
   }
   if (ghFidelidade.config) {
-    if (ghFidelidade.config.premioNome) NOME_PREMIO = ghFidelidade.config.premioNome;
-    if (ghFidelidade.config.premioPontos) META_PONTOS = parseInt(ghFidelidade.config.premioPontos) || 10;
+    // Leitura defensiva: suporta chaves antigas (premioNome/prêmioNome) e novas do admin (premioMilkshake)
+    var cfgFid = ghFidelidade.config;
+    var nomePremioPrincipal = cfgFid.premioNome || cfgFid['prêmioNome'] || cfgFid.premioMilkshake || null;
+    var pontosPremioPrincipal = cfgFid.premioPontos || cfgFid['prêmioPontos'] || cfgFid.pontosMilkshake || null;
+    if (nomePremioPrincipal) NOME_PREMIO = nomePremioPrincipal;
+    if (pontosPremioPrincipal) META_PONTOS = parseInt(pontosPremioPrincipal) || 10;
   }
   aplicarConfigPremio();
   // Aplicar titulo e descricao do admin no hero banner
