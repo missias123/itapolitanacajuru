@@ -38,8 +38,8 @@ const produtos = {
             "Torta de Chocolate"
         ],
         preços: {
-            casquinha_copção: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
-            copção_recheado: { "1 Bola": 10.00, "2 Bolas": 12.00, "3 Bolas": 15.00 },
+            casquinha_copão: { "1 Bola": 8.00, "2 Bolas": 10.00, "3 Bolas": 12.00 },
+            copão_recheado: { "1 Bola": 10.00, "2 Bolas": 12.00, "3 Bolas": 15.00 },
             cascão: { "1 Bola": 12.00, "2 Bolas": 16.00 },
             cestinha: { "1 Bola": 14.00, "2 Bolas": 18.00, "3 Bolas": 20.00 }
         }
