@@ -2215,6 +2215,65 @@ function preencherPromoção(){
   document.getElementById('promo-datafim').value=pr.dataFim||'';
   document.getElementById('promo-fab').value=pr.fabLabel||'';
 }
+// Upload de imagem binária para o GitHub (converte Blob para base64)
+async function ghPutImagem(path, blob, msg) {
+  try {
+    // Converter Blob para base64
+    const arrayBuf = await blob.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuf);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    const base64 = btoa(bin);
+    // Buscar SHA atual do arquivo (se já existir)
+    let sha = null;
+    try {
+      const r = await fetch(GH_API + path, { headers: { 'Authorization': 'token ' + GH_TOKEN } });
+      if (r.ok) { const d = await r.json(); sha = d.sha; }
+    } catch(e) {}
+    const body = { message: msg, content: base64 };
+    if (sha) body.sha = sha;
+    const r = await fetch(GH_API + path, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.message); }
+    const d = await r.json();
+    return { ok: true, url: d.content.download_url };
+  } catch(e) {
+    return { ok: false, erro: e.message };
+  }
+}
+
+// Variável global para guardar o blob da imagem da promoção
+let _promoBlobPendente = null;
+let _promoImgInfo = null;
+
+function processarUploadPromo(file) {
+  const erroEl = document.getElementById('promo-img-erro');
+  const previewWrap = document.getElementById('promo-img-preview-wrap');
+  const previewImg = document.getElementById('promo-img-preview');
+  const infoEl = document.getElementById('promo-img-info');
+  if (erroEl) erroEl.textContent = '';
+  if (!file) return;
+  processarImagem(file, 800, 600, 0.82, (info, erro) => {
+    if (erro) {
+      if (erroEl) { erroEl.textContent = '❌ ' + erro; erroEl.classList.add('ativo'); }
+      return;
+    }
+    // Guardar blob para upload ao salvar
+    _promoBlobPendente = info.blob;
+    _promoImgInfo = info;
+    // Mostrar preview
+    const url = URL.createObjectURL(info.blob);
+    if (previewImg) previewImg.src = url;
+    if (previewWrap) previewWrap.classList.add('ativo');
+    if (infoEl) infoEl.innerHTML = `<span style="color:#2e7d32">✅ WebP convertido</span> <span>${info.width}×${info.height}px</span> <span>${info.tamanhoKB}KB</span>`;
+    if (erroEl) erroEl.classList.remove('ativo');
+    toast('Imagem processada! Clique em Salvar Promoção para publicar.', 'info');
+  });
+}
+
 async function salvarPromoção(){
   const pr=STATE.promo||{};
   pr.ativo=document.getElementById('promo-ativo').checked;
@@ -2230,6 +2289,23 @@ async function salvarPromoção(){
   pr.dataFim=document.getElementById('promo-datafim').value;
   pr.fabLabel=document.getElementById('promo-fab').value.trim();
   STATE.promo=pr;
+  // Upload de imagem se houver blob pendente
+  if (_promoBlobPendente) {
+    mostrarLoading('Enviando imagem...');
+    const imgPath = 'images/banner-promo.webp';
+    const imgResult = await ghPutImagem(imgPath, _promoBlobPendente, 'Admin: atualizar banner da promoção');
+    ocultarLoading();
+    if (imgResult.ok) {
+      pr.fotoUrl = 'images/banner-promo.webp';
+      STATE.promo = pr;
+      _promoBlobPendente = null;
+      _promoImgInfo = null;
+      toast('Imagem enviada com sucesso!', 'sucesso');
+    } else {
+      toast('Erro ao enviar imagem: ' + imgResult.erro, 'erro');
+      // Continua salvando o JSON mesmo sem a imagem
+    }
+  }
   await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
 }
 function renderEncomendas(){
@@ -2468,7 +2544,7 @@ function renderClientes(){
   const slice=filtrados.slice(pag*POR_PAGINA,(pag+1)*POR_PAGINA);
   const tbody=document.getElementById('tabela-clientes');
   if(!slice.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">Nenhum cliente encontrado.</td></tr>';}
-  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}"><td>${c.nome||'-'}</td><td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td><td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td><td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDatéString('pt-BR'):'-'}</td><td>${c.bloqueado?'Bloqueado':c.fraude?'Fraude':'Ativo'}</td><td>${c.bloqueado?`<button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',false)">Desbloquear</button>`:`<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',true)">Bloquear</button>`}</td></tr>`).join('');}
+  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}"><td>${c.nome||'-'}</td><td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td><td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td><td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDateString('pt-BR'):'-'}</td><td>${c.bloqueado?'Bloqueado':c.fraude?'Fraude':'Ativo'}</td><td>${c.bloqueado?`<button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',false)">Desbloquear</button>`:`<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',true)">Bloquear</button>`}</td></tr>`).join('');}
   const pagDiv=document.getElementById('pag-clientes');
   let pagHtml='';
   for(let i=0;i<paginas;i++)pagHtml+=`<button class="${i===pag?'ativo':''}" onclick="irPagClientes(${i})">${i+1}</button>`;
@@ -3342,7 +3418,7 @@ function criarUploadImagem(containerId, opções) {
       }
       
       // Mostrar preview
-      const url = URL.creatéObjectURL(info.blob);
+      const url = URL.createObjectURL(info.blob);
       previewImg.src = url;
       previewWrap.classList.add('ativo');
       

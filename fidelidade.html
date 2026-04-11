@@ -339,20 +339,20 @@ html{scroll-behavior:smooth}
 <!-- HERO BANNER -->
 <section class="hero-banner">
   <img class="hero-logo-circle" src="images/logo.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
-  <h1>&#127881; Programa de Fidelidade</h1>
-  <p>Acumule pontos e ganhe premios incriveis na sorveteria!</p>
+  <h1 id="fid-hero-titulo">&#127881; Programa de Fidelidade</h1>
+  <p id="fid-hero-desc">Acumule pontos e ganhe premios incriveis na sorveteria!</p>
   <div class="hero-premios">
     <div class="hero-premio-chip">
       <span class="chip-icon">&#127834;</span>
       <div>
-        <strong>10 pontos = Milkshake 300ml</strong>
+        <strong id="fid-chip-milk">10 pontos = Milkshake 300ml</strong>
         <span>GRATIS para voce!</span>
       </div>
     </div>
     <div class="hero-premio-chip">
       <span class="chip-icon">&#127846;</span>
       <div>
-        <strong>30 pontos = Caixa 7 Bolas</strong>
+        <strong id="fid-chip-caixa">30 pontos = Caixa 7 Bolas</strong>
         <span>GRATIS para voce!</span>
       </div>
     </div>
@@ -777,6 +777,23 @@ async function carregarDados() {
     if (ghFidelidade.config.premioPontos) META_PONTOS = parseInt(ghFidelidade.config.premioPontos) || 10;
   }
   aplicarConfigPremio();
+  // Aplicar titulo e descricao do admin no hero banner
+  if (ghFidelidade.config) {
+    const cfg = ghFidelidade.config;
+    const h1 = document.getElementById('fid-hero-titulo');
+    if (h1 && cfg.titulo) h1.textContent = cfg.titulo;
+    const desc = document.getElementById('fid-hero-desc');
+    if (desc && cfg.descricao) desc.textContent = cfg.descricao;
+    // Atualizar chips de premio com pontos e nomes do admin
+    const chipMilk = document.getElementById('fid-chip-milk');
+    if (chipMilk && cfg.pontosMilkshake && cfg.premioMilkshake) {
+      chipMilk.textContent = cfg.pontosMilkshake + ' pontos = ' + cfg.premioMilkshake;
+    }
+    const chipCaixa = document.getElementById('fid-chip-caixa');
+    if (chipCaixa && cfg.pontosCaixa && cfg.premioCaixa) {
+      chipCaixa.textContent = cfg.pontosCaixa + ' pontos = ' + cfg.premioCaixa;
+    }
+  }
   setLoading('Carregando dados de clientes...');
   const c = await ghGet(CLIENTES_PATH);
   if (c.content) {
@@ -836,6 +853,11 @@ function aplicarConfigPremio() {
   if (el) el.textContent = nomeCompleto;
   const ep = document.getElementById('hero-premio-pontos');
   if (ep) ep.textContent = 'ao acumular ' + META_PONTOS + ' pontos';
+  // Atualizar chip de milkshake com META_PONTOS se nao tiver config especifica
+  const chipMilk = document.getElementById('fid-chip-milk');
+  if (chipMilk && !chipMilk._atualizado) {
+    chipMilk.textContent = META_PONTOS + ' pontos = ' + NOME_PREMIO;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════

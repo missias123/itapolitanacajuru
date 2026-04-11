@@ -948,7 +948,7 @@ function finalizarPedido() {
   // Válidação de prazo mínimo (72 horas = 3 dias úteis)
   const agoraVálidacao = new Date();
   const prazMínimo = new Date(agoraVálidacao.getTime() + 72 * 60 * 60 * 1000);
-  const prazMínimoFormatado = prazMínimo.toLocaleDatéString('pt-BR');
+  const prazMínimoFormatado = prazMínimo.toLocaleDateString('pt-BR');
   showToast(`⏰ Encomenda será produzida a partir de ${prazMínimoFormatado}`, 'info');
   // === LOADING STATE: bloquear duplo clique e mostrar progresso ===
   const btnFin = document.getElementById('btn-finalizar');
@@ -961,10 +961,10 @@ function finalizarPedido() {
   const agora = new Date();
   const dd   = String(agora.getDate()).padStart(2, '0');
   const mm   = String(agora.getMonth() + 1).padStart(2, '0');
-  const açaíaçaí = agora.getFullYear();
+  const aaaa = agora.getFullYear();
   const hh   = String(agora.getHours()).padStart(2, '0');
   const min  = String(agora.getMinutes()).padStart(2, '0');
-  const dataFormatada = `${dd}/${mm}/${açaíaçaí} ${hh}:${min}`;
+  const dataFormatada = `${dd}/${mm}/${aaaa} ${hh}:${min}`;
   // Função de reset do botão em caso de erro
   function _resetBtnFinalizar() {
     if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
@@ -974,9 +974,9 @@ function finalizarPedido() {
   // SISTEMA DE NUMERAÇÃO DE PEDIDOS
   // Formato: ITA-001-250225 (prefixo + sequência diária + data compacta)
   // Sequência reinicia todo dia — armazenada no localStorage por data
-  let numPedido = `ITA-${Date.now().toString().slice(-6)}-${dd}${mm}${String(açaíaçaí).slice(2)}`;
+  let numPedido = `ITA-${Date.now().toString().slice(-6)}-${dd}${mm}${String(aaaa).slice(2)}`;
   try {
-    const dataChave = `${dd}${mm}${String(açaíaçaí).slice(2)}`; // ex: 250225
+    const dataChave = `${dd}${mm}${String(aaaa).slice(2)}`; // ex: 250225
     const chaveSeq = `itap_seq_${dataChave}`;
     const seq = parseInt(localStorage.getItem(chaveSeq) || '0') + 1;
     localStorage.setItem(chaveSeq, seq.toString());

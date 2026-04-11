@@ -182,7 +182,7 @@
 </head>
 <body>
 <header class="header">
-<h1>🎉 Grande Sorteio Mensal</h1>
+<h1 id="promo-h1">🎉 Grande Sorteio Mensal</h1>
 <p>Sorveteria Itapolitana Cajuru</p>
 <span class="since-badge">✨ Desde 2007</span>
 </header>
@@ -200,15 +200,15 @@
 </div>
 <div class="promo-card">
 <div style="background:linear-gradient(135deg,#E8000D,#FF6D00);text-align:center;padding:11px 16px;border-radius:0;">
-  <p style="margin:0;color:#fff;font-size:clamp(13px,3.5vw,17px);font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,0.3);">
+  <p id="promo-banner-p" style="margin:0;color:#fff;font-size:clamp(13px,3.5vw,17px);font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,0.3);">
     🎉 Sorteios Mensais todo dia 01 🎉
   </p>
 </div>
-<img alt="Promoção" class="promo-img" src="images/banner-cardapio.webp"/>
+<img id="promo-img-banner" alt="Promoção" class="promo-img" src="images/banner-cardapio.webp"/>
 <div class="promo-content">
-<span class="promo-badge">🎁 Sorteio Mensal</span>
-<h2 class="promo-title">Sua Chance de Ganhar 5 Litros de Pura Felicidade!</h2>
-<p class="promo-desc">Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru. É rápido, fácil e 100% gratuito!</p>
+<span id="promo-badge-el" class="promo-badge">🎁 Sorteio Mensal</span>
+<h2 id="promo-titulo-el" class="promo-title">Sua Chance de Ganhar 5 Litros de Pura Felicidade!</h2>
+<p id="promo-desc-el" class="promo-desc">Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru. É rápido, fácil e 100% gratuito!</p>
 
 </div>
 </div>
@@ -476,6 +476,55 @@
       });
     }
   }
+
+  // ═══ CARREGAMENTO DINÂMICO DO PROMO.JSON ═══
+  // Atualiza os campos da página com os dados salvos pelo admin
+  (function carregarPromoJson() {
+    var PROMO_URL = 'dados/promo.json?v=' + Date.now();
+    fetch(PROMO_URL)
+      .then(function(r) { return r.json(); })
+      .catch(function() { return null; })
+      .then(function(pr) {
+        if (!pr) return; // fallback: mantém hardcoded
+
+        // Título do header (h1)
+        var h1 = document.getElementById('promo-h1');
+        if (h1 && pr.headerTitulo) h1.textContent = pr.headerTitulo;
+
+        // Frase do banner laranja
+        var bannerP = document.getElementById('promo-banner-p');
+        if (bannerP && pr.bannerFrase) bannerP.textContent = pr.bannerFrase;
+
+        // Badge verde
+        var badge = document.getElementById('promo-badge-el');
+        if (badge && pr.badge) badge.textContent = pr.badge;
+
+        // Título da promoção
+        var titulo = document.getElementById('promo-titulo-el');
+        if (titulo && (pr.título || pr.titulo)) titulo.textContent = pr.título || pr.titulo;
+
+        // Descrição
+        var desc = document.getElementById('promo-desc-el');
+        if (desc && (pr.descrição || pr.descricao)) desc.textContent = pr.descrição || pr.descricao;
+
+        // Data de encerramento para o contador
+        if (pr.dataFim) {
+          try {
+            var novaData = new Date(pr.dataFim);
+            if (!isNaN(novaData.getTime())) dataAlvo = novaData;
+          } catch(e) {}
+        }
+
+        // Imagem do banner (se o admin fez upload)
+        var imgBanner = document.getElementById('promo-img-banner');
+        if (imgBanner && pr.fotoUrl) {
+          imgBanner.src = pr.fotoUrl + '?v=' + Date.now();
+        }
+
+        // WhatsApp do botão de contato (se configurado no config.json)
+        // Não altera WHATS_SORVETERIA aqui pois já está correto
+      });
+  })();
 </script>
 <!-- CERTIFICAÇÕES E SEGURANÇA -->
 <div style="background:linear-gradient(135deg,#0D47A1,#1565C0);padding:24px 16px;margin-top:32px;text-align:center;">
