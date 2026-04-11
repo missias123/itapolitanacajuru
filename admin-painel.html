@@ -58,6 +58,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .btn-cinza{background:#757575;color:#fff}
 .btn-vermelho{background:#c62828;color:#fff}
 .btn-amarelo{background:#f57f17;color:#fff}
+.btn-copiar-sorteio{background:linear-gradient(135deg,#6a1b9a,#8e24aa);color:#fff}
 .preço-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:10px}
 .preço-item{background:#f8f9fa;border-radius:8px;padding:10px 12px}
 .preço-item label{display:block;font-size:.78rem;font-weight:700;color:#666;margin-bottom:6px}
@@ -544,6 +545,15 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
         </div>
         <div class="card-body">
           <div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="promo-ativo"/><span class="toggle-slider"></span></label><label>Promoção ativa no site</label></div>
+
+          <!-- CAMPOS DO HEADER DA PÁGINA PROMOÇÃO.HTML -->
+          <div class="seção-título">🏷️ Header da Página de Promoção</div>
+          <div class="campo-edit"><label>Título do header</label><input type="text" id="promo-header-titulo" maxlength="60" placeholder="🎉 Grande Sorteio Mensal"/><div class="hint">Título principal no topo da página de Promoção (tag &lt;h1&gt;).</div></div>
+          <div class="campo-edit"><label>Frase do banner laranja (acima da imagem)</label><input type="text" id="promo-banner-frase" maxlength="60" placeholder="🎉 Sorteios Mensais todo dia 01 🎉"/><div class="hint">Frase exibida na faixa laranja acima da imagem do card principal.</div></div>
+          <div class="campo-edit"><label>Badge do card (texto verde acima do título)</label><input type="text" id="promo-badge" maxlength="40" placeholder="🎁 Sorteio Mensal"/><div class="hint">Texto do badge verde exibido acima do título no card principal.</div></div>
+
+          <!-- CAMPOS DO CARD PRINCIPAL -->
+          <div class="seção-título">📝 Card Principal da Promoção</div>
           <div class="campo-edit"><label>Título da promoção</label><input type="text" id="promo-título" maxlength="80" placeholder="Todo mês sorteamos 1 caixa de sorvete!"/><div class="hint">Max. 80 caracteres. Título em destaque no banner da promoção.</div></div>
           <div class="campo-edit"><label>Descrição</label><textarea id="promo-descrição" rows="3" placeholder="Descrição da promoção..."></textarea></div>
           <div class="campo-edit"><label>Texto do botão</label><input type="text" id="promo-btn" placeholder="Ver no Instagram"/></div>
@@ -1600,12 +1610,30 @@ Talento</textarea>
         <div class="stat-card"><div class="num" id="part-sorteio" style="color:#2e7d32">-</div><div class="txt">Sorteios Mensais</div></div>
         <div class="stat-card"><div class="num" id="part-ambos" style="color:#7b1fa2">-</div><div class="txt">Ambos</div></div>
       </div>
+      <div class="card" style="border-top:4px solid #2e7d32;margin-bottom:12px">
+        <div class="card-body" style="padding:14px 20px">
+          <div style="font-size:.8rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📋 Ações Rápidas de Cópia</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" style="background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff" onclick="copiarTodosDados()">📋 Copiar Todos os Dados</button>
+            <button class="btn" style="background:linear-gradient(135deg,#2e7d32,#388e3c);color:#fff" onclick="copiarApenassorteio()">🎁 Copiar Só Sorteio</button>
+            <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Lista Simples</button>
+            <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV (Excel)</button>
+          </div>
+          <div style="font-size:.75rem;color:#888;margin-top:8px">
+            • <strong>Copiar Todos os Dados</strong>: formato completo com nº, nome, WhatsApp, data, tipo, pontos e status<br>
+            • <strong>Copiar Só Sorteio</strong>: apenas inscritos no sorteio mensal, numerados sequencialmente para sortear<br>
+            • <strong>Exportar CSV</strong>: planilha para Excel/Google Sheets com todos os campos
+          </div>
+        </div>
+      </div>
       <div class="card">
         <div class="card-header">
           <h2>👥 Todos os Participantes</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV</button>
             <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Copiar Lista</button>
+            <button class="btn" style="background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff" onclick="copiarTodosDados()">📋 Copiar Todos os Dados</button>
+            <button class="btn" style="background:linear-gradient(135deg,#2e7d32,#388e3c);color:#fff" onclick="copiarApenassorteio()">🎁 Copiar Só Sorteio</button>
           </div>
         </div>
         <div class="card-body">
@@ -2175,6 +2203,11 @@ async function salvarPreços(){
 function preencherPromoção(){
   const pr=STATE.promo||{};
   document.getElementById('promo-ativo').checked=!!pr.ativo;
+  // Campos do header da página promoção.html
+  const pht=document.getElementById('promo-header-titulo'); if(pht) pht.value=pr.headerTitulo||'';
+  const pbf=document.getElementById('promo-banner-frase'); if(pbf) pbf.value=pr.bannerFrase||'';
+  const pbg=document.getElementById('promo-badge'); if(pbg) pbg.value=pr.badge||'';
+  // Campos do card principal
   document.getElementById('promo-título').value=pr.título||'';
   document.getElementById('promo-descrição').value=pr.descrição||'';
   document.getElementById('promo-btn').value=pr.btnTexto||'';
@@ -2185,6 +2218,11 @@ function preencherPromoção(){
 async function salvarPromoção(){
   const pr=STATE.promo||{};
   pr.ativo=document.getElementById('promo-ativo').checked;
+  // Campos do header da página promoção.html
+  const pht=document.getElementById('promo-header-titulo'); if(pht) pr.headerTitulo=pht.value.trim();
+  const pbf=document.getElementById('promo-banner-frase'); if(pbf) pr.bannerFrase=pbf.value.trim();
+  const pbg=document.getElementById('promo-badge'); if(pbg) pr.badge=pbg.value.trim();
+  // Campos do card principal
   pr.título=document.getElementById('promo-título').value.trim();
   pr.descrição=document.getElementById('promo-descrição').value.trim();
   pr.btnTexto=document.getElementById('promo-btn').value.trim();
@@ -2326,13 +2364,24 @@ function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
 function exportarParticipantesCSV() {
   const todos = getParticipantesUnificados();
   if (!todos.length) { toast('Nenhum participante para exportar.', 'aviso'); return; }
-  const header = 'Nome,Celular,Tipo,Pontos,Cadastro,Status';
-  const rows = todos.map(p => `"${p.nome}","${p.cel}","${p.tipo}",${p.pontos},"${p.cadastro}","${p.status}"`);
-  const csv = [header, ...rows].join('\n');
+  const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio Mensal', ambos: 'Fidelidade + Sorteio' };
+  const formatarData = (d) => {
+    if (!d) return '-';
+    if (d.includes('T')) return new Date(d).toLocaleDateString('pt-BR');
+    return d;
+  };
+  // BOM para Excel reconhecer UTF-8
+  const BOM = '\uFEFF';
+  const header = 'N\u00ba,Nome,WhatsApp,Tipo,Pontos,Data de Cadastro,Status';
+  const rows = todos.map((p, i) =>
+    `${i+1},"${(p.nome||'-').replace(/"/g,'""')}","${p.cel||'-'}","${tipoLabel[p.tipo]||p.tipo}",${p.pontos||0},"${formatarData(p.cadastro)}","${p.status||'Ativo'}"`
+  );
+  const csv = BOM + [header, ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `participantes_${new Date().toISOString().slice(0,10)}.csv`;
+  const dataHoje = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `participantes_itapolitana_${dataHoje}.csv`;
   a.click(); URL.revokeObjectURL(url);
   toast(`CSV com ${todos.length} participantes exportado!`, 'sucesso');
 }
@@ -2343,6 +2392,64 @@ function copiarParticipantes() {
   const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio', ambos: 'Ambos' };
   const lista = todos.map((p, i) => `${i+1}. ${p.nome} — ${p.cel} [${tipoLabel[p.tipo]}]`).join('\n');
   navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${todos.length} participantes copiada!`, 'sucesso'));
+}
+
+// ─── COPIAR TODOS OS DADOS (formato completo: nº, nome, WhatsApp, data, tipo, pontos, status) ───
+function copiarTodosDados() {
+  const todos = getParticipantesUnificados();
+  if (!todos.length) { toast('Nenhum participante para copiar.', 'aviso'); return; }
+  const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio', ambos: 'Ambos' };
+  const formatarData = (d) => {
+    if (!d) return '-';
+    if (d.includes('T')) return new Date(d).toLocaleDateString('pt-BR');
+    return d;
+  };
+  const cabecalho = 'Nº | Nome | WhatsApp | Data de Cadastro | Tipo | Pontos | Status';
+  const separador = '─'.repeat(70);
+  const linhas = todos.map((p, i) =>
+    `${String(i+1).padStart(3,'0')} | ${(p.nome||'-').padEnd(25)} | ${p.cel||'-'} | ${formatarData(p.cadastro)} | ${tipoLabel[p.tipo]||p.tipo} | ${p.pontos||0} pts | ${p.status||'Ativo'}`
+  );
+  const texto = [
+    `LISTA DE PARTICIPANTES — Sorveteria Itapolitana Cajuru`,
+    `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+    `Total: ${todos.length} participante(s)`,
+    separador,
+    cabecalho,
+    separador,
+    ...linhas,
+    separador
+  ].join('\n');
+  navigator.clipboard.writeText(texto).then(() => toast(`Dados completos de ${todos.length} participantes copiados!`, 'sucesso'));
+}
+
+// ─── COPIAR SÓ SORTEIO (apenas inscritos no sorteio mensal, numerados para sorteio) ───
+function copiarApenassorteio() {
+  const todos = getParticipantesUnificados();
+  const sorteio = todos.filter(p => p.tipo === 'sorteio' || p.tipo === 'ambos');
+  if (!sorteio.length) { toast('Nenhum inscrito no sorteio para copiar.', 'aviso'); return; }
+  const formatarData = (d) => {
+    if (!d) return '-';
+    if (d.includes('T')) return new Date(d).toLocaleDateString('pt-BR');
+    return d;
+  };
+  const cabecalho = 'Nº SORTEIO | Nome | WhatsApp | Data de Inscrição';
+  const separador = '─'.repeat(60);
+  const linhas = sorteio.map((p, i) =>
+    `${String(i+1).padStart(3,'0')} | ${(p.nome||'-').padEnd(25)} | ${p.cel||'-'} | ${formatarData(p.cadastro)}`
+  );
+  const texto = [
+    `INSCRITOS NO SORTEIO MENSAL — Sorveteria Itapolitana Cajuru`,
+    `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+    `Total de inscritos: ${sorteio.length}`,
+    separador,
+    cabecalho,
+    separador,
+    ...linhas,
+    separador,
+    ``,
+    `Para sortear: escolha um número entre 001 e ${String(sorteio.length).padStart(3,'0')}`
+  ].join('\n');
+  navigator.clipboard.writeText(texto).then(() => toast(`Lista de ${sorteio.length} inscritos no sorteio copiada!`, 'sucesso'));
 }
 
 // ═══════════════════════════════════════════════════════════
