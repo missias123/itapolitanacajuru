@@ -1955,9 +1955,14 @@ function voltarCardapio(accId) {
       if (h) h.setAttribute('aria-expanded', 'false');
     }
   }
-  // Rola suavemente ao topo do cardápio
-  var topo = document.getElementById('cardápio');
-  if (topo) topo.scrollIntoView({behavior: 'smooth', block: 'start'});
+  // Rola suavemente ao topo do cardápio — com offset do header sticky
+  var topo = document.getElementById('card\u00e1pio');
+  if (topo) {
+    var header = document.querySelector('.header');
+    var headerH = header ? header.getBoundingClientRect().height : 0;
+    var topoY = topo.getBoundingClientRect().top + window.scrollY - headerH - 8;
+    window.scrollTo({ top: topoY, behavior: 'smooth' });
+  }
 }
 /* =====================================================
    SISTEMA UNIFICADO DE MODAL — PADRÃO PROFISSIONAL
