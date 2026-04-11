@@ -77,11 +77,17 @@
 
   async function buscarConfigRemoto() {
     try {
-      const resp = await fetch(GH_RAW + CONFIG_PATH + '?t=' + Date.now(), { cache: 'no-store' });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000); // timeout 3s
+      const resp = await fetch(GH_RAW + CONFIG_PATH + '?t=' + Date.now(), {
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
       if (!resp.ok) return null;
       return await resp.json();
     } catch(e) {
-      return null;
+      return null; // timeout ou erro — usa cache local imediatamente
     }
   }
 
