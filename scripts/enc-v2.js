@@ -1222,7 +1222,7 @@ function getAcréscimosEnc() {
     { id:'acr_canudinho', nome:'Canudinho Wafer', preço:0.25,  estoque:100, esgotado:false },
     { id:'acr_casquinha', nome:'Casquinhas',      preço:0.25,  estoque:100, esgotado:false },
     { id:'acr_cascão',    nome:'Cascão',          preço:1.00,  estoque:100, esgotado:false },
-    { id:'acr_cestinha',  nome:'Cestinha',        preço:1.00,  estoque:100, esgotado:false },
+    { id:'acr_cestinha',  nome:'Cestinha Recheada',        preço:1.00,  estoque:100, esgotado:false },
     { id:'acr_cobertura', nome:'Cobertura 1.3L',  preço:40.00, estoque:100, esgotado:false }
   ];
   try {

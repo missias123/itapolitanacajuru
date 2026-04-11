@@ -61,7 +61,7 @@ Atuar como **Engenheiro de Software Sênior e Arquiteto de Soluções** com as s
 ## 3. REGRAS ESPECÍFICAS DO PROJETO
 
 ### 3.1 Cardápio e Produtos
-- Nomenclatura correta: **Copão** (não "Copção"), **Copo Recheado**, **Cascão**, **Cestinha**.
+- Nomenclatura correta: **Casquinha / Copo**, **Copo Recheado**, **Cascão**, **Cestinha Recheada**. Não existe "Copão" no cardápio.
 - Sorvetes são vendidos em bolas redondas — nunca descrever como "espiral" ou "máquina".
 - Taça Suja de Kinder Ovo: **REMOVIDA** do cardápio (não exibir).
 - Cardápio ordenado: preços menores primeiro, maiores por último.
