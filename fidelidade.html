@@ -531,6 +531,16 @@ html{scroll-behavior:smooth}
           &#11088; <strong>IMPORTANTE:</strong> Este celular sera usado para receber seu premio. Certifique-se de que o numero esta correto e com WhatsApp ativo.
         </div>
       </div>
+      <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:10px;padding:10px 14px;margin-top:12px;font-size:.82rem;color:#4e342e">
+        <strong>&#128203; ATENCAO — RETIRADA DE PREMIOS:</strong><br>
+        Para retirar qualquer premio, voce devera comparecer pessoalmente com:
+        <ul style="margin:6px 0 0 16px;padding:0">
+          <li><strong>Documento oficial com foto</strong> (RG, CNH ou Passaporte)</li>
+          <li>O nome no documento deve ser <strong>identico</strong> ao cadastro</li>
+          <li>O <strong>celular cadastrado</strong> com WhatsApp ativo</li>
+        </ul>
+        <span style="color:#c62828;font-weight:700">Nao sera permitida a retirada por terceiros.</span>
+      </div>
       <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px">&#127881; Quero Receber Promocoes!</button>
     </div>
     <div id="form-login" style="display:none">
@@ -1045,14 +1055,62 @@ async function cadastrar() {
 
   if (cel.length < 10) { showMsg('msg-acesso','Informe um celular valido com DDD.','aviso'); return; }
 
+  // ── VALIDACAO DE UNICIDADE ──────────────────────────────────
+  // Normaliza nome para comparacao (minusculas, sem espacos extras)
+  const nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
+
+  // PASSO 1: Verificar por Nome + Data de Nascimento
+  const registrosMesmoNomeData = Object.values(ghClientes.clientes).filter(c => {
+    const cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
+    return cNome === nomeNorm && c.dataNasc === dataNasc;
+  });
+
+  if (registrosMesmoNomeData.length > 0) {
+    // Verifica se o celular fornecido e igual a algum ja cadastrado
+    const mesmoCel = registrosMesmoNomeData.find(c => c.cel === cel);
+    if (mesmoCel) {
+      // Caso 1: Nome + Data + Celular iguais — ja cadastrado
+      clienteAtual = mesmoCel;
+      localStorage.setItem('itap_cel', cel);
+      showMsg('msg-acesso',
+        'Ola ' + nome.split(' ')[0] + '! Voce ja possui um cadastro em nosso programa de fidelidade com este telefone. Entrando na sua conta...','ok');
+      setTimeout(mostrarPainelCliente, 1200);
+      return;
+    } else {
+      // Caso 2: Nome + Data iguais mas celular DIFERENTE — potencial duplicidade
+      setLoading('Verificando dados...');
+      // Marca o registro existente como potencial duplicidade
+      const regExistente = registrosMesmoNomeData[0];
+      if (!regExistente.potencialDuplicidade) {
+        regExistente.potencialDuplicidade = [];
+      }
+      regExistente.potencialDuplicidade.push({
+        data: new Date().toISOString(),
+        celTentativa: cel,
+        status: 'Pendente revisao admin'
+      });
+      await salvarClientes('DUPLICIDADE: ' + nome + ' tentou cadastrar com cel ' + cel + ' (ja tem cadastro com outro cel)');
+      hideLoading();
+      showMsg('msg-acesso',
+        'Ola ' + nome.split(' ')[0] + '! Parece que voce ja possui um cadastro em nosso programa de fidelidade com este nome e data de nascimento, mas com um numero de telefone diferente. Para evitar duplicidades, entre em contato conosco para atualizarmos seu cadastro. Isso garante que voce aproveite todos os seus beneficios!',
+        'aviso');
+      return;
+    }
+  }
+
+  // PASSO 2: Verificar por Celular (se Passo 1 nao encontrou duplicidade)
   if (ghClientes.clientes[cel]) {
-    clienteAtual = ghClientes.clientes[cel];
+    const regCel = ghClientes.clientes[cel];
+    // Celular ja cadastrado com outro nome — entra na conta existente
+    clienteAtual = regCel;
     localStorage.setItem('itap_cel', cel);
-    showMsg('msg-acesso','Conta encontrada! Entrando...','ok');
-    setTimeout(mostrarPainelCliente, 800);
+    showMsg('msg-acesso',
+      'Ola! Este numero de telefone ja esta cadastrado em nosso programa de fidelidade. Entrando na sua conta...','ok');
+    setTimeout(mostrarPainelCliente, 1200);
     return;
   }
 
+  // ── NOVO CADASTRO (sem duplicidade) ────────────────────────
   setLoading('Criando sua conta...');
   const novoCliente = {
     nome, dataNasc, cel,
@@ -1069,8 +1127,10 @@ async function cadastrar() {
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
-    showMsg('msg-acesso','Conta criada! Bem-vindo(a), ' + nome + '!','ok');
-    setTimeout(mostrarPainelCliente, 800);
+    showMsg('msg-acesso',
+      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro no programa de fidelidade da Sorveteria Itapolitana Cajuru foi realizado com sucesso! Bem-vindo(a)!',
+      'ok');
+    setTimeout(mostrarPainelCliente, 1500);
   } else {
     delete ghClientes.clientes[cel];
     showMsg('msg-acesso','Erro ao criar conta. Verifique sua conexao e tente novamente.','erro');
@@ -1564,10 +1624,25 @@ async function resgatarPremio(tipo) {
   }
 
   const dataFmt = new Date().toLocaleDateString('pt-BR');
-  const msg = 'Meu nome e ' + clienteAtual.nome +
-    ', quero agendar dia para retirar meu bonus: ' +
-    emoji + ' ' + nomePremio +
-    ' (' + pontosDesconto + ' pontos) — Data: ' + dataFmt;
+  const celFmt = clienteAtual.cel
+    ? '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7)
+    : '-';
+  const nascFmt = clienteAtual.dataNasc
+    ? clienteAtual.dataNasc.split('-').reverse().join('/')
+    : '-';
+  const msg =
+    'Ola! Quero agendar a retirada do meu premio no Clube de Fidelidade da Sorveteria Itapolitana Cajuru.\n\n' +
+    '*Premio:* ' + emoji + ' ' + nomePremio + ' (' + pontosDesconto + ' pontos)\n' +
+    '*Nome:* ' + clienteAtual.nome + '\n' +
+    '*Celular cadastrado:* ' + celFmt + '\n' +
+    '*Data de nascimento:* ' + nascFmt + '\n' +
+    '*Data da solicitacao:* ' + dataFmt + '\n\n' +
+    '⚠️ *ATENCAO — REGRAS PARA RETIRADA DO PREMIO:*\n' +
+    '1. Apresentar *documento oficial com foto* (RG, CNH ou Passaporte)\n' +
+    '2. O nome no documento deve ser *identico* ao cadastro: *' + clienteAtual.nome + '*\n' +
+    '3. Estar com o *celular cadastrado* (' + celFmt + ') no momento da retirada\n' +
+    '4. Nao e permitida a retirada por terceiros\n\n' +
+    'Aguardo confirmacao do dia e horario para retirada. Obrigado!';
   const url = 'https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg);
   window.open(url, '_blank');
 

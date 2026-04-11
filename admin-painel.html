@@ -1726,6 +1726,22 @@ Talento</textarea>
         </div>
       </div>
     </div>
+
+    <!-- POTENCIAL DUPLICIDADE -->
+    <div class="card" id="card-duplicidades" style="display:none">
+      <div class="card-header" style="background:linear-gradient(135deg,#b71c1c,#c62828)">
+        <h2>&#x26A0;&#xFE0F; Potencial Duplicidade — Revisão Necessária</h2>
+        <span id="badge-duplicidades" style="background:#fff;color:#b71c1c;border-radius:20px;padding:3px 12px;font-weight:900;font-size:.9rem">0</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:.85rem;color:#555;margin-bottom:14px">
+          Estes clientes tentaram se cadastrar com o mesmo nome e data de nascimento, mas com um celular diferente do já cadastrado.
+          Revise cada caso e decida: <strong>atualizar o celular</strong> do cadastro original, <strong>ignorar</strong> (manter como está) ou <strong>bloquear</strong> a tentativa.
+        </p>
+        <div id="lista-duplicidades"></div>
+      </div>
+    </div>
+
     <!-- FIDELIDADE -->
     <div class="seção" id="sec-fidelidade">
       <div class="códigos-stats">
@@ -2045,7 +2061,7 @@ function irPara(seção,btn){
   if(btn)btn.classList.add('ativo');
   if(seção==='encomendas')renderEncomendas();
   if(seção==='participantes')renderParticipantes();
-  if(seção==='clientes')renderClientes();
+  if(seção==='clientes'){renderClientes();renderDuplicidades();}
   if(seção==='fidelidade'){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();}
   if(seção==='cardápio')preencherCardapio();
   if(seção==='depoimentos')preencherDepoimentos();
@@ -2730,6 +2746,73 @@ function renderClientes(){
   pagDiv.innerHTML=pagHtml;
 }
 function irPagClientes(p){STATE.pagClientes=p;renderClientes();}
+
+// ═══════════════════════════════════════════════════════════
+// PAINEL DE POTENCIAL DUPLICIDADE
+// ═══════════════════════════════════════════════════════════
+function renderDuplicidades() {
+  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
+  const comDup = Object.values(clientes).filter(c => c.potencialDuplicidade && c.potencialDuplicidade.length > 0);
+  const card = document.getElementById('card-duplicidades');
+  const badge = document.getElementById('badge-duplicidades');
+  const lista = document.getElementById('lista-duplicidades');
+  if (!card || !lista) return;
+  if (comDup.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  if (badge) badge.textContent = comDup.length + ' caso' + (comDup.length > 1 ? 's' : '');
+  lista.innerHTML = comDup.map(c => {
+    const nascFmt = c.dataNasc ? c.dataNasc.split('-').reverse().join('/') : '-';
+    const cadFmt  = c.cadastro ? new Date(c.cadastro).toLocaleDateString('pt-BR') : '-';
+    const tentativas = c.potencialDuplicidade.map((t, i) => `
+      <div style="background:#fff;border:1px solid #ffcdd2;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:.82rem">
+        <strong>Tentativa ${i+1}:</strong> Celular tentado: <code>${t.celTentativa}</code> &mdash; ${new Date(t.data).toLocaleDateString('pt-BR')} &mdash;
+        <span style="color:${t.status==='Resolvido'?'#2e7d32':t.status==='Ignorado'?'#888':'#b71c1c'};font-weight:700">${t.status}</span>
+        ${t.status==='Pendente revisao admin' ? `
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'atualizar','${t.celTentativa}')">Atualizar celular para ${t.celTentativa}</button>
+            <button class="btn" style="background:#607d8b;color:#fff;padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'ignorar','')">Ignorar (manter celular atual)</button>
+            <button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'bloquear','')">Bloquear tentativa</button>
+          </div>` : ''}
+      </div>`).join('');
+    return `<div style="background:#ffebee;border:1.5px solid #ef9a9a;border-radius:12px;padding:12px 14px;margin-bottom:12px">
+      <div style="font-weight:900;font-size:.9rem;color:#b71c1c">&#9888;&#65039; ${c.nome}</div>
+      <div style="font-size:.8rem;color:#555;margin-top:2px">Celular cadastrado: <strong>${c.cel}</strong> &mdash; Nasc.: ${nascFmt} &mdash; Cadastro: ${cadFmt}</div>
+      ${tentativas}
+    </div>`;
+  }).join('');
+}
+
+async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
+  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
+  const c = clientes[celOriginal];
+  if (!c || !c.potencialDuplicidade) return;
+  if (acao === 'atualizar' && celNovo) {
+    // Move o registro para a nova chave de celular
+    const novoReg = Object.assign({}, c, { cel: celNovo });
+    novoReg.potencialDuplicidade[idxTentativa].status = 'Resolvido — celular atualizado para ' + celNovo;
+    delete clientes[celOriginal];
+    clientes[celNovo] = novoReg;
+    toast('Celular atualizado: ' + celOriginal + ' → ' + celNovo, 'sucesso');
+  } else if (acao === 'ignorar') {
+    c.potencialDuplicidade[idxTentativa].status = 'Ignorado';
+    toast('Tentativa marcada como ignorada.', 'ok');
+  } else if (acao === 'bloquear') {
+    c.potencialDuplicidade[idxTentativa].status = 'Bloqueado pelo admin';
+    toast('Tentativa bloqueada.', 'ok');
+  }
+  if (STATE.clientes?.clientes) {
+    STATE.clientes.clientes = clientes;
+    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: resolver duplicidade ' + celOriginal);
+  } else {
+    STATE.fidelidade.clientes = clientes;
+    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: resolver duplicidade ' + celOriginal);
+  }
+  renderClientes();
+  renderDuplicidades();
+}
 async function toggleBloqueio(cel,bloquear){
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   if(!clientes[cel])return;
