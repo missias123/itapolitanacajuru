@@ -1959,17 +1959,32 @@ function toggleAcc(id) {
 
 // Volta ao topo do cardápio E fecha o accordion atual
 function voltarCardapio(accId) {
-  // Fecha o accordion
+  // 1. Fecha o accordion clicado
   if (accId) {
     var el = document.getElementById(accId);
     if (el) {
       el.classList.remove('open');
       var h = el.querySelector('.acc-header');
       if (h) h.setAttribute('aria-expanded', 'false');
+      var body = el.querySelector('.acc-body');
+      if (body) body.style.maxHeight = '0';
     }
   }
-  // Rola suavemente ao topo do cardápio — com offset do header sticky
-  var topo = document.getElementById('card\u00e1pio');
+  // 2. Garante que o vc-container permanece aberto (não fecha o cardápio)
+  var vcContainer = document.getElementById('vc-container');
+  var vcBtn = document.getElementById('vc-btn');
+  if (vcContainer) {
+    vcContainer.classList.add('aberto');
+    vcContainer.style.maxHeight = '9999px';
+    vcContainer.style.opacity = '1';
+  }
+  if (vcBtn) {
+    vcBtn.classList.add('aberto');
+    vcBtn.setAttribute('aria-expanded', 'true');
+  }
+  // 3. Rola suavemente ao topo do banner do cardápio (vc-wrap)
+  // Usa vc-wrap em vez de #cardápio para evitar pulo para o carrossel
+  var topo = document.getElementById('vc-wrap') || document.getElementById('cardápio');
   if (topo) {
     var header = document.querySelector('.header');
     var headerH = header ? header.getBoundingClientRect().height : 0;
