@@ -430,7 +430,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 <div class="toast" id="toast"></div>
 <div id="login-screen">
   <div class="login-card">
-    <img class="logo-img-admin" src="images/logo.png" alt="Logo Itapolitana" onerror="this.style.display='none'">
+    <img class="logo-img-admin" src="images/logo.webp" alt="Logo Itapolitana" onerror="this.style.display='none'">
     <h1>&#128737;&#65039; Painel Administrativo</h1>
     <p>Sorveteria Itapolitana Cajuru</p>
     <div class="inp-wrap">
@@ -445,7 +445,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 </div>
 <div id="admin-app">
   <div class="admin-header">
-    <div class="título"><img class="logo-admin-header" src="images/logo.png" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
+    <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
     <div style="display:flex;gap:8px;align-items:center">
       <a href="index.html" target="_blank" class="btn-sair" style="text-decoration:none">&#x1F310; Ver Site</a>
       <button class="btn-sair" onclick="sair()">&#x1F6AA; Sair</button>
@@ -506,7 +506,46 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
             <input type="text" id="home-subtitulo" value="35 sabores tipo artesanal — feitos com ingredientes selecionados" maxlength="100" placeholder="Sorvete tipo artesanal em Cajuru/SP"/>
             <div class="hint">Max. 100 caracteres. Linha de apoio abaixo do título principal.</div></div>
           <div class="campo-edit"><label>Frases rotativas do carrossel (uma por linha)</label><textarea id="home-frases" rows="10" placeholder="O sorvete mais cremoso de Cajuru, desde 2007!"></textarea><div class="hint">Cada linha é uma frase que aparece no carrossel de texto do hero</div></div>
-          <div class="seção-título">&#x1F3AC; Strip Sensorial (faixa animada)</div>
+
+          <div class="seção-título">🖼️ Imagens do Carrossel (Banners)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>Regra:</strong> Adicione até 12 banners no carrossel. A primeira imagem carrega imediatamente (LCP), as demais são carregadas sob demanda. Toda imagem é convertida para WebP automaticamente.
+          </div>
+          <div class="campo-edit">
+            <label>🖼️ Novo Banner para o Carrossel</label>
+            <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
+              <strong>📋 Especificações obrigatórias:</strong><br>
+              📐 <strong>Dimensões ideais:</strong> 1536 × 1024 px (proporção 3:2) — redimensionado automaticamente se maior<br>
+              💾 <strong>Tamanho máximo:</strong> 250 KB após conversão — use foto de alta qualidade mas compacta<br>
+              🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
+              ⚡ <strong>Conversão automática:</strong> toda imagem é convertida para WebP antes de salvar<br>
+              📱 <strong>Uso:</strong> Aparece no carrossel principal da página inicial — foto do produto em destaque
+            </div>
+            <div class="upload-area" id="home-banner-area">
+              <input type="file" accept="image/*" id="home-banner-input" onchange="processarUploadBanner(this.files[0])"/>
+              <div class="upload-icon">📷</div>
+              <div class="upload-texto">Clique ou arraste o banner aqui</div>
+              <div class="upload-regras">
+                <span>📐 1536×1024px</span>
+                <span>💾 Máx. 250KB</span>
+                <span>🖼️ JPG · PNG · WebP</span>
+                <span>⚡ → WebP automático</span>
+              </div>
+            </div>
+            <div class="img-preview-wrap" id="home-banner-preview-wrap">
+              <img class="img-preview" id="home-banner-preview" src="" alt="Preview banner"/>
+              <div class="img-preview-info" id="home-banner-info"></div>
+            </div>
+            <div class="erro-inline" id="home-banner-erro"></div>
+            <div class="campo-edit" style="margin-top:10px">
+              <label>Texto alternativo (alt) do banner</label>
+              <input type="text" id="home-banner-alt" maxlength="120" placeholder="Ex: Taça Unicórnio — Sorveteria Itapolitana Cajuru"/>
+              <div class="hint">Descreva o que aparece na foto. Importante para SEO e acessibilidade. Max. 120 caracteres.</div>
+            </div>
+            <div class="btn-row"><button class="btn btn-salvar" onclick="adicionarBannerCarrossel()">&#x2795; Adicionar ao Carrossel</button></div>
+          </div>
+
+          <div class="seção-título">🔄 Strip Sensorial (faixa animada)</div>
           <div class="campo-edit"><label>Textos da faixa animada (um por linha)</label><textarea id="home-strip" rows="4" placeholder="Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores"></textarea><div class="hint">Cada linha é um texto da faixa animada colorida</div></div>
           <div class="seção-título">&#x1F366; Cardápio</div>
           <div class="campo-edit"><label>Título do Cardápio</label><input type="text" id="home-cardápio-título" maxlength="60" placeholder="🍦 Escolha sua Felicidade Hoje"/><div class="hint">Aparece como título da seção de cardápio no site. Max. 60 caracteres.</div></div>
@@ -564,15 +603,23 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
           <!-- CAMPO DE IMAGEM DA PROMOÇÃO -->
           <div class="campo-edit" style="margin-top:16px">
             <label>🖼️ Imagem da Promoção</label>
+            <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
+              <strong>📋 Especificações obrigatórias:</strong><br>
+              📐 <strong>Dimensões:</strong> 800 × 600 px (proporção 4:3) — redimensionado automaticamente se maior<br>
+              💾 <strong>Tamanho máximo:</strong> 150 KB após conversão — use imagem nítida mas compacta<br>
+              🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
+              ⚡ <strong>Conversão automática:</strong> toda imagem é convertida para WebP antes de salvar<br>
+              📱 <strong>Uso:</strong> Banner principal do card de promoção — visível em celular e desktop
+            </div>
             <div class="upload-area" id="promo-img-area">
               <input type="file" accept="image/*" id="promo-img-input" onchange="processarUploadPromo(this.files[0])"/>
               <div class="upload-icon">📷</div>
-              <div class="upload-texto">Clique ou arraste a imagem da promoção aqui</div>
+              <div class="upload-texto">Clique ou arraste a imagem aqui</div>
               <div class="upload-regras">
-                <span>📐 Máx. 800×600px</span>
+                <span>📐 800×600px</span>
                 <span>💾 Máx. 150KB</span>
-                <span>🖼️ JPG, PNG, WebP</span>
-                <span>⚡ Converte para WebP automaticamente</span>
+                <span>🖼️ JPG · PNG · WebP</span>
+                <span>⚡ → WebP automático</span>
               </div>
             </div>
             <div class="img-preview-wrap" id="promo-img-preview-wrap">
@@ -580,7 +627,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
               <div class="img-preview-info" id="promo-img-info"></div>
             </div>
             <div class="erro-inline" id="promo-img-erro"></div>
-            <div class="hint">Imagem exibida no banner da promoção. Será convertida automaticamente para WebP.</div>
+            <div class="hint">✅ Imagem convertida para WebP e salva em <code>images/banner-promo.webp</code> no GitHub.</div>
           </div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoção()">&#x1F4BE; Salvar Promoção</button></div>
@@ -2274,6 +2321,74 @@ function processarUploadPromo(file) {
   });
 }
 
+// ── BANNER CARROSSEL ────────────────────────────────────────────────────────
+let _bannerBlobPendente = null;
+let _bannerInfoPendente = null;
+
+function processarUploadBanner(file) {
+  const erroEl = document.getElementById('home-banner-erro');
+  const previewWrap = document.getElementById('home-banner-preview-wrap');
+  const previewImg = document.getElementById('home-banner-preview');
+  const infoEl = document.getElementById('home-banner-info');
+  if (erroEl) erroEl.textContent = '';
+  if (!file) return;
+  processarImagem(file, 1536, 1024, 0.82, (info, erro) => {
+    if (erro) {
+      if (erroEl) { erroEl.textContent = '❌ ' + erro; erroEl.classList.add('ativo'); }
+      return;
+    }
+    _bannerBlobPendente = info.blob;
+    _bannerInfoPendente = info;
+    const url = URL.createObjectURL(info.blob);
+    if (previewImg) previewImg.src = url;
+    if (previewWrap) previewWrap.classList.add('ativo');
+    if (infoEl) infoEl.innerHTML = `<span style="color:#2e7d32">✅ WebP convertido</span> <span>${info.width}×${info.height}px</span> <span>${info.tamanhoKB}KB</span>`;
+    if (erroEl) erroEl.classList.remove('ativo');
+    toast('Imagem processada! Clique em Adicionar ao Carrossel para publicar.', 'info');
+  });
+}
+
+async function adicionarBannerCarrossel() {
+  if (!_bannerBlobPendente) {
+    toast('Selecione uma imagem primeiro.', 'erro');
+    return;
+  }
+  const altText = document.getElementById('home-banner-alt')?.value.trim() || 'Banner Sorveteria Itapolitana Cajuru';
+  // Gerar nome sequencial baseado no timestamp
+  const ts = Date.now();
+  const nomeArq = `images/carrossel/banner-${ts}.webp`;
+  mostrarLoading('Enviando banner para o carrossel...');
+  try {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const b64 = e.target.result.split(',')[1];
+      const result = await ghPutImagem(nomeArq, b64, 'Admin: adicionar banner ao carrossel');
+      ocultarLoading();
+      if (result.ok) {
+        // Adicionar ao carrossel.html via atualização do JSON de banners
+        if (!STATE.config.banners) STATE.config.banners = [];
+        STATE.config.banners.push({ src: nomeArq, alt: altText, ts });
+        await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
+        toast('✅ Banner adicionado ao carrossel!', 'ok');
+        _bannerBlobPendente = null;
+        _bannerInfoPendente = null;
+        const previewWrap = document.getElementById('home-banner-preview-wrap');
+        if (previewWrap) previewWrap.classList.remove('ativo');
+        const altInput = document.getElementById('home-banner-alt');
+        if (altInput) altInput.value = '';
+        const fileInput = document.getElementById('home-banner-input');
+        if (fileInput) fileInput.value = '';
+      } else {
+        toast('❌ Erro ao enviar banner: ' + (result.erro || 'falha'), 'erro');
+      }
+    };
+    reader.readAsDataURL(_bannerBlobPendente);
+  } catch(e) {
+    ocultarLoading();
+    toast('❌ Erro ao enviar banner: ' + e.message, 'erro');
+  }
+}
+
 async function salvarPromoção(){
   const pr=STATE.promo||{};
   pr.ativo=document.getElementById('promo-ativo').checked;
@@ -3354,15 +3469,22 @@ function criarUploadImagem(containerId, opções) {
   container.innerHTML = `
     <div class="campo-edit">
       <label class="${obrigatório ? 'label-obrigatório' : ''}">${label}</label>
+      <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
+        <strong>📋 Especificações da imagem:</strong><br>
+        📐 <strong>Dimensões:</strong> até ${maxWidth} × ${maxHeight} px — redimensionado automaticamente se maior<br>
+        💾 <strong>Tamanho máximo:</strong> ${maxKB} KB após conversão<br>
+        🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
+        ⚡ <strong>Conversão automática:</strong> toda imagem é salva como WebP no GitHub
+      </div>
       <div class="upload-area" id="${containerId}-area">
         <input type="file" accept="image/*" id="${containerId}-input"/>
         <div class="upload-icon">📷</div>
         <div class="upload-texto">Clique ou arraste a imagem aqui</div>
         <div class="upload-regras">
-          <span>📐 Máx. ${maxWidth}×${maxHeight}px</span>
+          <span>📐 ${maxWidth}×${maxHeight}px</span>
           <span>💾 Máx. ${maxKB}KB</span>
-          <span>🖼️ JPG, PNG, WebP</span>
-          <span>⚡ Converte para WebP automaticamente</span>
+          <span>🖼️ JPG · PNG · WebP</span>
+          <span>⚡ → WebP automático</span>
         </div>
       </div>
       <div class="upload-progress"><div class="upload-progress-bar" id="${containerId}-prog"></div></div>
@@ -3875,6 +3997,32 @@ function preencherDepoimentos() {
       <div class="campo-edit"><label>Nome do Cliente</label><input type="text" id="dep-nome-${i}" value="${d.nome}" placeholder="Ex: João Silva"/></div>
       <div class="campo-edit"><label>Texto do Depoimento</label><textarea id="dep-texto-${i}" rows="3">${d.texto}</textarea></div>
       <div class="campo-edit"><label>Estrelas (1-5)</label><input type="number" id="dep-estrelas-${i}" value="${d.estrelas}" min="1" max="5"/></div>
+      <div class="campo-edit">
+        <label>📸 Foto do Cliente (opcional)</label>
+        <div style="background:#f3e5f5;border:1.5px solid #ce93d8;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:.78rem;color:#6a1b9a;line-height:1.7">
+          📐 <strong>Dimensões:</strong> 200 × 200 px (quadrado) — redimensionado automaticamente<br>
+          💾 <strong>Tamanho máximo:</strong> 50 KB após conversão<br>
+          🖼️ <strong>Formatos aceitos:</strong> JPG, PNG, WebP<br>
+          ⚡ <strong>Conversão automática:</strong> salva como WebP no GitHub
+        </div>
+        <div class="upload-area" id="dep-foto-area-${i}" style="padding:12px">
+          <input type="file" accept="image/*" id="dep-foto-input-${i}" onchange="processarFotoDepoimento(this.files[0], ${i})"/>
+          <div class="upload-icon" style="font-size:1.4rem">👤</div>
+          <div class="upload-texto" style="font-size:.82rem">Clique para adicionar foto do cliente</div>
+          <div class="upload-regras">
+            <span>📐 200×200px</span>
+            <span>💾 Máx. 50KB</span>
+            <span>⚡ → WebP</span>
+          </div>
+        </div>
+        ${d.foto ? `<div class="img-preview-wrap" style="display:block"><img class="img-preview" src="${d.foto}" alt="Foto ${d.nome}" style="width:80px;height:80px;border-radius:50%;object-fit:cover"/><div class="img-preview-info">Foto atual</div></div>` : ''}
+        <div class="img-preview-wrap" id="dep-foto-preview-wrap-${i}" style="display:none">
+          <img class="img-preview" id="dep-foto-preview-${i}" src="" alt="Preview foto" style="width:80px;height:80px;border-radius:50%;object-fit:cover"/>
+          <div class="img-preview-info" id="dep-foto-info-${i}"></div>
+        </div>
+        <div class="erro-inline" id="dep-foto-erro-${i}"></div>
+        <div class="hint">✅ Foto circular exibida ao lado do nome no depoimento. Deixe em branco para usar avatar padrão.</div>
+      </div>
     </div>
   `).join('');
 }
@@ -3892,6 +4040,29 @@ function removerDepoimento(i) {
   }
 }
 
+// Armazena fotos de depoimentos pendentes de upload (base64 WebP)
+const _depFotosPendentes = {};
+
+function processarFotoDepoimento(file, idx) {
+  if (!file) return;
+  const erroEl = document.getElementById(`dep-foto-erro-${idx}`);
+  const previewWrap = document.getElementById(`dep-foto-preview-wrap-${idx}`);
+  const previewImg = document.getElementById(`dep-foto-preview-${idx}`);
+  const infoEl = document.getElementById(`dep-foto-info-${idx}`);
+  if (erroEl) { erroEl.textContent = ''; erroEl.classList.remove('ativo'); }
+
+  processarImagem(file, 200, 200, 0.82, (info, erro) => {
+    if (erro) {
+      if (erroEl) { erroEl.textContent = erro; erroEl.classList.add('ativo'); }
+      return;
+    }
+    _depFotosPendentes[idx] = info.base64;
+    if (previewImg) previewImg.src = info.base64;
+    if (previewWrap) previewWrap.style.display = 'block';
+    if (infoEl) infoEl.textContent = `${info.largura}×${info.altura}px — ${(info.tamanho/1024).toFixed(1)} KB`;
+  });
+}
+
 async function salvarDepoimentos() {
   const c = STATE.config;
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
@@ -3901,13 +4072,27 @@ async function salvarDepoimentos() {
   const lista = [];
   const container = document.getElementById('dep-lista');
   const itens = container.querySelectorAll('.dep-item');
-  itens.forEach((item, i) => {
-    lista.push({
-      nome: document.getElementById(`dep-nome-${i}`).value.trim(),
-      texto: document.getElementById(`dep-texto-${i}`).value.trim(),
-      estrelas: parseInt(document.getElementById(`dep-estrelas-${i}`).value) || 5
-    });
-  });
+
+  // Upload de fotos pendentes
+  for (let i = 0; i < itens.length; i++) {
+    const dep = c.depoimentos && c.depoimentos[i] ? { ...c.depoimentos[i] } : {};
+    dep.nome = document.getElementById(`dep-nome-${i}`)?.value.trim() || '';
+    dep.texto = document.getElementById(`dep-texto-${i}`)?.value.trim() || '';
+    dep.estrelas = parseInt(document.getElementById(`dep-estrelas-${i}`)?.value) || 5;
+    // Se há foto nova pendente, fazer upload
+    if (_depFotosPendentes[i]) {
+      try {
+        const nomeArq = `images/depoimentos/dep-foto-${i}.webp`;
+        const b64 = _depFotosPendentes[i].split(',')[1];
+        await ghPutImagem(nomeArq, b64);
+        dep.foto = nomeArq + '?v=' + Date.now();
+        delete _depFotosPendentes[i];
+      } catch(e) {
+        console.warn('Erro ao fazer upload da foto do depoimento:', e);
+      }
+    }
+    lista.push(dep);
+  }
   c.depoimentos = lista;
   
   await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
