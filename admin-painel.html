@@ -2488,6 +2488,7 @@ function renderEncomendas(){
           ${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${e.status===k?'selected':''}>${v}</option>`).join('')}
         </select>
         <button onclick="copiarPedidoAdmin('${e.num}')" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">📲 Copiar WhatsApp</button>
+        <button onclick="excluirEncomenda('${e.num}')" style="background:#c62828;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">🗑️ Excluir</button>
       </div>
     </div>`;
   }).join('');
@@ -2739,7 +2740,7 @@ function renderClientes(){
   const slice=filtrados.slice(pag*POR_PAGINA,(pag+1)*POR_PAGINA);
   const tbody=document.getElementById('tabela-clientes');
   if(!slice.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">Nenhum cliente encontrado.</td></tr>';}
-  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}"><td>${c.nome||'-'}</td><td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td><td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td><td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDateString('pt-BR'):'-'}</td><td>${c.bloqueado?'Bloqueado':c.fraude?'Fraude':'Ativo'}</td><td>${c.bloqueado?`<button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',false)">Desbloquear</button>`:`<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',true)">Bloquear</button>`}</td></tr>`).join('');}
+  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}"><td>${c.nome||'-'}</td><td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td><td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td><td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDateString('pt-BR'):'-'}</td><td>${c.bloqueado?'Bloqueado':c.fraude?'Fraude':'Ativo'}</td><td style="display:flex;gap:6px;flex-wrap:wrap">${c.bloqueado?`<button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',false)">Desbloquear</button>`:`<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',true)">Bloquear</button>`}<button class="btn" style="background:#c62828;color:#fff;padding:5px 10px;font-size:.78rem" onclick="excluirCliente('${c.cel}')">🗑️ Excluir</button></td></tr>`).join('');}
   const pagDiv=document.getElementById('pag-clientes');
   let pagHtml='';
   for(let i=0;i<paginas;i++)pagHtml+=`<button class="${i===pag?'ativo':''}" onclick="irPagClientes(${i})">${i+1}</button>`;
@@ -2835,7 +2836,7 @@ function renderInscritosSorteio() {
   el.innerHTML = inscritos.map((c, i) =>
     `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #c8e6c9">
       <span><strong>${i+1}.</strong> ${c.nome} — ${c.cel}</span>
-      <button onclick="removerInscritoSorteio(${i})" style="background:none;border:none;color:#c62828;font-size:1rem;cursor:pointer" title="Remover">✕</button>
+      <button onclick="removerInscritoSorteioComConfirm(${i})" style="background:none;border:none;color:#c62828;font-size:1rem;cursor:pointer" title="Remover">✕</button>
     </div>`
   ).join('');
 }
@@ -3032,20 +3033,26 @@ async function liberarLoteFidelidade(){
   if(ok){fidMostrarAlerta(`✅ Lote ${loteNum} liberado e salvo! Contador: ${fim.toLocaleString('pt-BR')} / ${FID_TOTAL_BANCO.toLocaleString('pt-BR')} códigos.`,'ok');}
   else{fidMostrarAlerta('⚠️ Códigos gerados mas NÃO salvos no GitHub. Verifique a conexão.','erro');}
 }
-async function apagarTodosCodigos(){
-  if(!confirm('Apagar TODOS os códigos liberados? Esta ação é irreversível!'))return;
-  if(!STATE.fidelidade)STATE.fidelidade={liberados:0,códigos:{},clientes:{},fraudes:{}};
-  STATE.fidelidade.códigos={};
-  STATE.fidelidade.liberados=0;
-  STATE.fidelidade.última_atualização=new Date().toISOString();
-  localStorage.removeItem('fid_lote_admin');
-  const wrap=document.getElementById('fid-lote-wrap');
-  if(wrap)wrap.style.display='none';
-  const ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha','Fidelidade: todos os códigos apagados pelo admin');
-  fidRenderProgresso();
-  atualizarStatsCódigos();
-  renderCódigos();
-  if(ok)fidMostrarAlerta('🗑️ Todos os códigos apagados do GitHub.','ok');
+function apagarTodosCodigos(){
+  confirmarAcao(
+    'Apagar Todos os Códigos',
+    'Tem certeza que deseja apagar <strong>TODOS</strong> os códigos liberados?<br><br><span style="color:#c62828;font-weight:700">Esta ação é irreversível!</span>',
+    'Sim, apagar todos',
+    async () => {
+      if(!STATE.fidelidade)STATE.fidelidade={liberados:0,códigos:{},clientes:{},fraudes:{}};
+      STATE.fidelidade.códigos={};
+      STATE.fidelidade.liberados=0;
+      STATE.fidelidade.última_atualização=new Date().toISOString();
+      localStorage.removeItem('fid_lote_admin');
+      const wrap=document.getElementById('fid-lote-wrap');
+      if(wrap)wrap.style.display='none';
+      const ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha','Fidelidade: todos os códigos apagados pelo admin');
+      fidRenderProgresso();
+      atualizarStatsCódigos();
+      renderCódigos();
+      if(ok)fidMostrarAlerta('🗑️ Todos os códigos apagados do GitHub.','ok');
+    }
+  );
 }
 function gerarPDFLote(){
   const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
@@ -3197,7 +3204,15 @@ function toggleSaborSorvete(sid, nome) {
 }
 
 function removerSaborSorvete(nome) {
-  if (!confirm(`Remover o sabor "${nome}" permanentemente?`)) return;
+  confirmarAcao(
+    'Remover Sabor',
+    `Remover o sabor <strong>${nome}</strong> permanentemente?`,
+    'Sim, remover sabor',
+    () => _removerSaborSorveteConfirmado(nome),
+    'aviso'
+  );
+}
+function _removerSaborSorveteConfirmado(nome) {
   const prod = STATE.produtos;
   if (!prod || !prod.sorvetes) return;
   prod.sorvetes.sabores = (prod.sorvetes.sabores || []).filter(s => s !== nome);
@@ -4146,9 +4161,7 @@ function preencherDepoimentos() {
   container.innerHTML = lista.map((d, i) => `
     <div class="dep-item card" style="margin-bottom:15px; padding:15px; border:1px solid #eee">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-        <strong>Depoimento #${i+1}</strong>
-        <button class="btn btn-erro btn-sm" onclick="removerDepoimento(${i})">🗑️ Remover</button>
-      </div>
+        <strong>Depoimento #${i+1}</s          <button class="btn btn-erro btn-sm" onclick="removerDepoimentoComConfirm(${i})">&#128465;&#65039; Remover</button>iv>
       <div class="campo-edit"><label>Nome do Cliente</label><input type="text" id="dep-nome-${i}" value="${d.nome}" placeholder="Ex: João Silva"/></div>
       <div class="campo-edit"><label>Texto do Depoimento</label><textarea id="dep-texto-${i}" rows="3">${d.texto}</textarea></div>
       <div class="campo-edit"><label>Estrelas (1-5)</label><input type="number" id="dep-estrelas-${i}" value="${d.estrelas}" min="1" max="5"/></div>
@@ -4284,7 +4297,144 @@ async function salvarFaleConosco() {
   await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco e chatbot');
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// MODAL DE CONFIRMACAO CENTRALIZADO
+// ═══════════════════════════════════════════════════════════
+let _confirmarCallback = null;
+function confirmarAcao(titulo, mensagem, labelConfirmar, callback, tipo) {
+  tipo = tipo || 'perigo'; // 'perigo' = vermelho, 'aviso' = laranja
+  const cor = tipo === 'aviso' ? '#E65100' : '#c62828';
+  const corBtn = tipo === 'aviso' ? '#E65100' : '#c62828';
+  document.getElementById('modal-confirmar-titulo').textContent = titulo;
+  document.getElementById('modal-confirmar-msg').innerHTML = mensagem;
+  document.getElementById('modal-confirmar-btn').textContent = labelConfirmar;
+  document.getElementById('modal-confirmar-btn').style.background = corBtn;
+  document.getElementById('modal-confirmar-icone').textContent = tipo === 'aviso' ? '⚠️' : '🗑️';
+  _confirmarCallback = callback;
+  document.getElementById('modal-confirmar').style.display = 'flex';
+}
+function _confirmarOk() {
+  document.getElementById('modal-confirmar').style.display = 'none';
+  if (typeof _confirmarCallback === 'function') _confirmarCallback();
+  _confirmarCallback = null;
+}
+function _confirmarCancelar() {
+  document.getElementById('modal-confirmar').style.display = 'none';
+  _confirmarCallback = null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXCLUIR ENCOMENDA
+// ═══════════════════════════════════════════════════════════
+function excluirEncomenda(numPedido) {
+  const registros = STATE.encomendas?.registros || [];
+  const enc = registros.find(r => r.num === numPedido);
+  if (!enc) return;
+  confirmarAcao(
+    'Excluir Pedido',
+    `Tem certeza que deseja excluir o pedido <strong>${numPedido}</strong> de <strong>${enc.nome || 'cliente'}</strong>?<br><br><span style="color:#c62828;font-weight:700">Esta acao nao pode ser desfeita.</span>`,
+    'Sim, excluir pedido',
+    async () => {
+      const idx = STATE.encomendas.registros.findIndex(r => r.num === numPedido);
+      if (idx > -1) STATE.encomendas.registros.splice(idx, 1);
+      await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', 'Admin: excluir pedido ' + numPedido);
+      toast('Pedido ' + numPedido + ' excluido.', 'ok');
+      renderEncomendas();
+    }
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXCLUIR CLIENTE
+// ═══════════════════════════════════════════════════════════
+function excluirCliente(cel) {
+  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
+  const c = clientes[cel];
+  if (!c) return;
+  confirmarAcao(
+    'Excluir Cliente',
+    `Tem certeza que deseja excluir o cadastro de <strong>${c.nome || cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">Todos os pontos e historico serao perdidos. Esta acao nao pode ser desfeita.</span>`,
+    'Sim, excluir cliente',
+    async () => {
+      if (STATE.clientes?.clientes) {
+        delete STATE.clientes.clientes[cel];
+        await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + cel);
+      } else {
+        delete STATE.fidelidade.clientes[cel];
+        await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + cel);
+      }
+      toast('Cliente ' + (c.nome || cel) + ' excluido.', 'ok');
+      renderClientes();
+      renderDuplicidades();
+    }
+  );
+}
+
+// Substituir confirm() nativo por confirmarAcao() em todas as exclusoes existentes
+// Inscrito do sorteio
+function removerInscritoSorteioComConfirm(idx) {
+  const ins = STATE.fidelidade?.sorteioInscritos?.[idx];
+  if (!ins) return;
+  confirmarAcao(
+    'Remover Inscrito',
+    `Remover <strong>${ins.nome || 'inscrito'}</strong> do sorteio?`,
+    'Sim, remover',
+    () => {
+      STATE.fidelidade.sorteioInscritos.splice(idx, 1);
+      salvarSorteio();
+    },
+    'aviso'
+  );
+}
+// Remover depoimento
+function removerDepoimentoComConfirm(i) {
+  const dep = STATE.config?.depoimentos?.[i];
+  confirmarAcao(
+    'Remover Depoimento',
+    `Remover o depoimento de <strong>${dep?.nome || 'cliente'}</strong>?`,
+    'Sim, remover',
+    () => {
+      STATE.config.depoimentos.splice(i, 1);
+      salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: remover depoimento');
+      preencherDepoimentos();
+    },
+    'aviso'
+  );
+}
+// Remover sabor
+function removerSaborComConfirm(nome, tipo) {
+  confirmarAcao(
+    'Remover Sabor',
+    `Remover o sabor <strong>${nome}</strong> permanentemente?`,
+    'Sim, remover sabor',
+    () => {
+      const idx = STATE.produtos?.[tipo]?.findIndex(s => s.nome === nome);
+      if (idx > -1) {
+        STATE.produtos[tipo].splice(idx, 1);
+        salvarArquivo(PATHS.produtos, STATE.produtos, 'produtosSha', 'Admin: remover sabor ' + nome);
+        renderizarSaboresAdmin();
+      }
+    },
+    'aviso'
+  );
+}
+
 </script>
+
+<!-- MODAL DE CONFIRMACAO CENTRALIZADO -->
+<div id="modal-confirmar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:16px;max-width:420px;width:100%;padding:28px 24px;box-shadow:0 8px 40px rgba(0,0,0,.25);text-align:center">
+    <div id="modal-confirmar-icone" style="font-size:2.5rem;margin-bottom:10px">🗑️</div>
+    <div id="modal-confirmar-titulo" style="font-size:1.2rem;font-weight:900;color:#1A0A00;margin-bottom:10px">Confirmar</div>
+    <div id="modal-confirmar-msg" style="font-size:.9rem;color:#444;margin-bottom:22px;line-height:1.5"></div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="_confirmarCancelar()" style="background:#f5f5f5;color:#333;border:2px solid #ddd;border-radius:10px;padding:10px 24px;font-size:.95rem;font-weight:700;cursor:pointer;min-width:120px">❌ Cancelar</button>
+      <button id="modal-confirmar-btn" onclick="_confirmarOk()" style="background:#c62828;color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:.95rem;font-weight:700;cursor:pointer;min-width:120px">✅ Confirmar</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /admin-app -->
 </body>
 </html>
