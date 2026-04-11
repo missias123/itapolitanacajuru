@@ -304,8 +304,7 @@ img{max-width:100%;display:block}
 .hero h2{font-size:clamp(22px,5.5vw,30px);font-weight:800;margin-bottom:10px;line-height:1.2;letter-spacing:-.3px;color:#1A0A00;text-shadow:0 1px 3px rgba(0,0,0,.08);font-family:"Poppins",sans-serif}
 .hero h2 .destaque-texto{background:linear-gradient(135deg,#E8000D,#FF6B35,#FF8F00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero p{font-size:14px;color:#5C2D6B;font-weight:600;max-width:480px;margin:0 auto 18px;line-height:1.7;letter-spacing:.1px}
-.hero-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FB923C,#F97316,#EF4444);color:#fff;padding:15px 36px;border-radius:50px;font-size:15px;font-weight:700;box-shadow:0 6px 24px rgba(249,115,22,.5),0 2px 8px rgba(0,0,0,.12);letter-spacing:.5px;text-transform:uppercase;transition:all .25s cubic-bezier(.34,1.56,.64,1);font-family:"Poppins",sans-serif}
-.hero-cta:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 12px 32px rgba(249,115,22,.6)}
+
 /* FRASE SENSORIAL ROTATIVA */
 .frase-sensorial{background:linear-gradient(135deg,#FFF3E0,#FFCCBC);border:2px solid #E64A19;border-radius:50px;padding:8px 20px;display:inline-block;margin-bottom:16px;font-size:13px;font-weight:800;color:#BF360C;letter-spacing:.3px;animation:pulse-frase 3s ease-in-out infinite}
 @keyframes pulse-frase{0%,100%{transform:scale(1);box-shadow:0 2px 8px rgba(255,107,53,.2)}50%{transform:scale(1.03);box-shadow:0 4px 16px rgba(255,107,53,.4)}}
@@ -568,7 +567,6 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   
   
   .hero h2{font-size:clamp(18px,6vw,26px)}
-  .hero-cta{padding:13px 24px;font-size:14px}
   .info-cards{grid-template-columns:repeat(2,1fr)}
   .acc-title{font-size:0.95rem}
   .promo-top-bar{flex-direction:column;gap:4px;text-align:center}
@@ -1319,6 +1317,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .vc-container{max-height:0;overflow:hidden;transition:max-height .55s ease,opacity .4s ease;opacity:0;}
 .vc-container.aberto{max-height:4000px;opacity:1;}
 @media(max-width:600px){.vc-btn{font-size:.97rem;padding:13px 24px;}}
+
 </style>
 
 <script type="application/ld+json">
@@ -1456,14 +1455,11 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <h1 id="hero-título">O Sorvete que Cajuru <span class="destaque-texto">Ama de Verdade</span></h1>
 <p id="hero-descrição">Cremosidade real, sabores que encantam e um atendimento feito com carinho. Venha descobrir por que a Itapolitana é a sorveteria favorita de Cajuru e região há mais de 17 anos.</p>
 <button aria-label="Pedir agora pelo WhatsApp" class="hero-chat-btn" onclick="abrirFaleConosco()" type="button">💬 Pedir Agora pelo WhatsApp</button>
-<br/>
-<button id="hero-cta" aria-label="Ver cardápio completo de sorvetes" class="hero-cta" onclick="var c=document.getElementById('vc-container');var btn=document.getElementById('vc-btn');if(!c.classList.contains('aberto')){c.classList.add('aberto');btn.classList.add('aberto');btn.setAttribute('aria-expanded','true');btn.innerHTML='🍦 Esconder Cardápio <i class=\'vc-seta\' aria-hidden=\'true\'>▼</i>';}" type="button">
-        🍦 Ver Cardápio Completo
-      </button>
+
 </div>
 <div style="text-align:center;">
 <a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20do%20carrinho%20de%20picolé%C3%A9%20para%20evento." rel="noopener" style="text-decoration:none;display:inline-block;" target="_blank">
-<img alt="Carrinho de Picolé Gourmet para Eventos em Cajuru - Sorveteria Itapolitana" decoding="async" loading="lazy" onmouSEOut="this.style.transform=\'scale(1)\'" onmouSEOver="this.style.transform=\'scale(1.06)\'" src="images/carrinho-picole.webp" style="width:220px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.22));transition:transform 0.2s;"/>
+<img alt="Carrinho de Picolé Gourmet para Eventos em Cajuru - Sorveteria Itapolitana" decoding="async" loading="lazy" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp" style="width:220px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.22));transition:transform 0.2s;"/>
 <div style="font-size:0.82rem;font-weight:800;color:#E65100;margin-top:8px;letter-spacing:.3px;">🛒 Carrinho para Eventos</div>
 <div style="font-size:0.75rem;color:#5C2D6B;font-weight:700;">Toque para consultar</div>
 </a>
@@ -2841,15 +2837,6 @@ function aplicarConfig(c) {
   // hero-descrição: usa ID direto
   const heroDescEl = document.getElementById('hero-descrição');
   if (heroDescEl && c.heroDescricao) heroDescEl.textContent = c.heroDescricao;
-
-  // hero-cta: botão principal do hero
-  const heroCtaBtn = document.getElementById('hero-cta');
-  if (heroCtaBtn && c.heroCta) {
-    // Preserva ícone, substitui apenas o texto
-    const lastNode = heroCtaBtn.lastChild;
-    if (lastNode && lastNode.nodeType === 3) lastNode.textContent = ' ' + c.heroCta;
-    else heroCtaBtn.appendChild(document.createTextNode(' ' + c.heroCta));
-  }
 
   // hero-cta-whats: botão WhatsApp do hero
   const heroCtaWhats = document.querySelector('.hero-chat-btn');
