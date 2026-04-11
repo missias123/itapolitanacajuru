@@ -2763,11 +2763,19 @@ function adicionarInscritoSorteio() {
   if (!nome || cel.length < 14) { toast('Informe nome e celular válido.', 'erro'); return; }
   if (!STATE.fidelidade) STATE.fidelidade = {};
   if (!STATE.fidelidade.sorteioInscritos) STATE.fidelidade.sorteioInscritos = [];
+  // Verificar duplicata por celular
+  const celLimpo = cel.replace(/\D/g,'');
+  const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
+  if (jaExiste) {
+    const numExistente = STATE.fidelidade.sorteioInscritos.indexOf(jaExiste) + 1;
+    toast(`❌ ${jaExiste.nome} já está inscrito(a) — Nº ${String(numExistente).padStart(3,'0')}`, 'erro');
+    return;
+  }
   STATE.fidelidade.sorteioInscritos.push({ nome, cel, data: new Date().toLocaleDateString('pt-BR') });
   document.getElementById('sort-add-nome').value = '';
   document.getElementById('sort-add-cel').value = '';
   renderInscritosSorteio();
-  toast(`${nome} adicionado(a) aos inscritos!`, 'sucesso');
+  toast(`${nome} adicionado(a) como inscrito Nº ${String(STATE.fidelidade.sorteioInscritos.length).padStart(3,'0')}!`, 'sucesso');
 }
 
 function removerInscritoSorteio(idx) {
