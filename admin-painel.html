@@ -1864,6 +1864,13 @@ Talento</textarea>
           <div class="seção-título">&#x1F4C4; Rodapé do Site</div>
           <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" maxlength="80" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" placeholder="SgtMissiascacarato"/></div>
+          <div class="seção-título">&#x1F50D; SEO — Visibilidade no Google</div>
+          <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            &#x1F4CC; <strong>O que é SEO?</strong> São os textos que aparecem no Google quando alguém pesquisa sua sorveteria. Preencher corretamente aumenta as visitas ao site.
+          </div>
+          <div class="campo-edit"><label class="label-obrigatório">Título da página (aparece na aba do navegador e no Google)</label><input type="text" id="cfg-seo-titulo" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru — Sorvete Artesanal, Açaí e Picolés"/><div class="hint">&#x26A0;&#xFE0F; Máximo 60 caracteres. Inclua o nome da cidade. Exemplo: <em>Sorveteria Itapolitana Cajuru — Sorvete Artesanal, Açaí e Picolés</em></div></div>
+          <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete tipo artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
+          <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
           <div class="seção-título">&#x1F512; Segurana</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
@@ -2437,7 +2444,20 @@ async function salvarPromoção(){
       // Continua salvando o JSON mesmo sem a imagem
     }
   }
-  await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
+  const okPromo = await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
+  // Sincronizar config.json com os campos que o index.html lê para o FAB e barra de promoção
+  if(okPromo){
+    const cfg=STATE.config||{};
+    cfg.promocaoAtiva=pr.ativo;
+    cfg.promocaoTitulo=pr.título||'';
+    cfg.promocaoDescricao=pr.descrição||'';
+    cfg.promocaoBotao=pr.btnTexto||'';
+    cfg.promocaoLink=pr.link||'';
+    cfg.promocaoDataFim=pr.dataFim||'';
+    cfg.promocaoFab=pr.fabLabel||'';
+    STATE.config=cfg;
+    await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
+  }
 }
 function renderEncomendas(){
   const registros=STATE.encomendas?.registros||[];
@@ -3124,6 +3144,10 @@ function preencherConfig(){
   document.getElementById('cfg-CNPJ').value=cfg.cnpj||'';
   document.getElementById('cfg-footer-copy').value=cfg.footerCopy||'';
   document.getElementById('cfg-footer-dev').value=cfg.footerDev||'';
+  // SEO
+  const seoTit=document.getElementById('cfg-seo-titulo'); if(seoTit) seoTit.value=cfg.seoTitulo||'';
+  const seoDes=document.getElementById('cfg-seo-descricao'); if(seoDes) seoDes.value=cfg.seoDescricao||'';
+  const seoPal=document.getElementById('cfg-seo-palavras'); if(seoPal) seoPal.value=cfg.seoPalavrasChave||'';
 }
 async function salvarConfig(){
   const novaSenha=document.getElementById('cfg-nova-senha').value;
@@ -3148,6 +3172,10 @@ async function salvarConfig(){
   cfg.cnpj=document.getElementById('cfg-CNPJ').value.trim();
   cfg.footerCopy=document.getElementById('cfg-footer-copy').value.trim();
   cfg.footerDev=document.getElementById('cfg-footer-dev').value.trim();
+  // SEO
+  const seoTitEl=document.getElementById('cfg-seo-titulo'); if(seoTitEl) cfg.seoTitulo=seoTitEl.value.trim();
+  const seoDesEl=document.getElementById('cfg-seo-descricao'); if(seoDesEl) cfg.seoDescricao=seoDesEl.value.trim();
+  const seoPalEl=document.getElementById('cfg-seo-palavras'); if(seoPalEl) cfg.seoPalavrasChave=seoPalEl.value.trim();
   if(novaSenha)cfg.senhaAdmin=novaSenha;
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
