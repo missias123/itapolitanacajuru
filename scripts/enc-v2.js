@@ -861,22 +861,34 @@ function qtdCarrinho(i, delta) {
   if (!carrinho[i]) return;
   const item = carrinho[i];
   const nova = item.quantidade + delta;
+  // Remover se chegar a zero
   if (nova <= 0) { removerItem(i); return; }
-  // Verificar limite máximo por tipo
-  if (item.tipo === 'picolé' && nova > MAX_PICOLES) {
-    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta');
-    return;
+  if (item.tipo === 'picolé') {
+    // TRAVA 1: máximo 25 unidades por sabor/item
+    if (delta > 0 && nova > 25) {
+      showToast(`⚠️ Máximo 25 unidades por sabor. Adicione outro sabor.`, 'alerta');
+      return;
+    }
+    // TRAVA 2: máximo 250 picolés no total do carrinho
+    const totalPicAtualSemEste = carrinho.filter((c,idx)=>c.tipo==='picolé'&&idx!==i).reduce((a,b)=>a+b.quantidade,0);
+    if (delta > 0 && totalPicAtualSemEste + nova > MAX_PICOLES) {
+      showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalPicAtualSemEste + item.quantidade}.`, 'alerta');
+      return;
+    }
   }
+  // Aplicar a alteração
   item.quantidade = nova;
   const totalPicAtual = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
   const temPicolé = carrinho.some(c=>c.tipo==='picolé');
-  if (temPicolé && totalPicAtual < 100 && delta < 0) {
-    renderCarrinho(); // atualiza visual com aviso
+  // TRAVA 3: se picolés caírem abaixo de 100, bloquear avanço e voltar para revisão
+  if (temPicolé && totalPicAtual < MIN_PICOLES) {
+    renderCarrinho();
     atualizarBotãoCarrinho();
-    // Se estiver na etapa de dados, voltar para revisão
+    // Forçar volta para etapa de revisão se estiver na etapa de dados
     const etapaDados = document.getElementById('etapa-dados');
     if (etapaDados && etapaDados.classList.contains('ativa')) {
       mostrarEtapa('revisao');
+      showToast(`🔒 Voltou para revisão: mínimo ${MIN_PICOLES} picolés. Faltam ${MIN_PICOLES - totalPicAtual}.`, 'alerta');
     }
     return;
   }
@@ -885,8 +897,24 @@ function qtdCarrinho(i, delta) {
 }
 
 function removerItem(i) {
+  const itemRemovido = carrinho[i];
   carrinho.splice(i,1);
   if (carrinho.length === 0) { fecharCarrinho(); atualizarBotãoCarrinho(); return; }
+  // Após remover, verificar se picolés ficaram abaixo do mínimo
+  if (itemRemovido && itemRemovido.tipo === 'picolé') {
+    const totalPicRestante = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+    const temPicolé = carrinho.some(c=>c.tipo==='picolé');
+    if (temPicolé && totalPicRestante < MIN_PICOLES) {
+      renderCarrinho();
+      atualizarBotãoCarrinho();
+      const etapaDados = document.getElementById('etapa-dados');
+      if (etapaDados && etapaDados.classList.contains('ativa')) {
+        mostrarEtapa('revisao');
+        showToast(`🔒 Mínimo ${MIN_PICOLES} picolés. Você tem ${totalPicRestante}. Faltam ${MIN_PICOLES - totalPicRestante}.`, 'alerta');
+      }
+      return;
+    }
+  }
   renderCarrinho();
   atualizarBotãoCarrinho();
 }
@@ -970,6 +998,23 @@ function renderResumoPedido() {
     <div class="aviso-prazo">
       ⏰ <strong>Prazo:</strong> Entrega em até <strong>3 dias úteis</strong> após confirmação do pagamento.
     </div>`;
+  // Verificar regras de picolés após renderizar
+  const totalPicResumo = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
+  const temPicoléResumo = carrinho.some(c=>c.tipo==='picolé');
+  const btnIrDadosResumo = document.getElementById('btn-ir-dados');
+  const avisoResumo = document.getElementById('aviso-min-carrinho');
+  if (temPicoléResumo) {
+    if (totalPicResumo < MIN_PICOLES) {
+      if (btnIrDadosResumo) { btnIrDadosResumo.disabled = true; btnIrDadosResumo.style.opacity = '0.4'; }
+      if (avisoResumo) { avisoResumo.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center'; avisoResumo.textContent = `🔒 Mínimo ${MIN_PICOLES} picolés. Você tem ${totalPicResumo}. Faltam ${MIN_PICOLES - totalPicResumo}.`; }
+    } else if (totalPicResumo > MAX_PICOLES) {
+      if (btnIrDadosResumo) { btnIrDadosResumo.disabled = true; btnIrDadosResumo.style.opacity = '0.4'; }
+      if (avisoResumo) { avisoResumo.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center'; avisoResumo.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés. Reduza ${totalPicResumo - MAX_PICOLES} unidades.`; }
+    } else {
+      if (btnIrDadosResumo) { btnIrDadosResumo.disabled = false; btnIrDadosResumo.style.opacity = '1'; }
+      if (avisoResumo) avisoResumo.style.display = 'none';
+    }
+  }
 }
 
 function verificarFormulario() {
