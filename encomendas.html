@@ -119,7 +119,9 @@
       z-index: 200;
       transition: all 0.2s;
     }
-    .btn-carrinho-fixo:disabled { background: var(--cinza); color: white; cursor: not-allowed; }
+    .btn-carrinho-fixo:disabled { opacity: 0; pointer-events: none; transform: scale(0.7) translateY(20px); }
+    .btn-carrinho-fixo.ativo { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
+    @keyframes popIn { from { opacity:0; transform:scale(0.7) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
     .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
     .btn-carrinho-fixo .badge {
       background: var(--vermelho);
