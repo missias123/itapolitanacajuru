@@ -268,7 +268,9 @@
             /* ---- FASE 6: Volta correndo da ESQUERDA para a DIREITA ---- */
             /* Ele entra pela esquerda e corre até o lado direito — VISÍVEL NA TELA */
             setTimeout(function () {
-              /* Restaura transição de corrida */
+              /* Restaura transição de corrida — agora de frente (voltando) */
+              wrap.classList.remove('ita-correndo');
+              wrap.classList.add('ita-voltando');
               wrap.style.transition = 'left 1.8s linear';
               /* Corre até o lado direito */
               wrap.style.left = (window.innerWidth - 160) + 'px';
@@ -284,7 +286,7 @@
 
               /* ---- FASE 8: Para no lado direito com poeira ---- */
               setTimeout(function () {
-                wrap.classList.remove('ita-correndo');
+                wrap.classList.remove('ita-correndo', 'ita-voltando');
 
                 /* Restaura posicionamento para right:12px */
                 wrap.style.transition = 'none';

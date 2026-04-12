@@ -50,9 +50,15 @@
   transform: scale(1.08) rotate(-3deg);
 }
 
-/* Correndo: espelhado + bob */
+/* Correndo para a ESQUERDA: espelhado (de costas) */
 #ita-mascote.ita-correndo img {
-  animation: ita-correr 0.14s steps(2) infinite !important;
+  animation: ita-correr-esq 0.14s steps(2) infinite !important;
+  cursor: default;
+}
+
+/* Correndo para a DIREITA: normal (de frente) */
+#ita-mascote.ita-voltando img {
+  animation: ita-correr-dir 0.14s steps(2) infinite !important;
   cursor: default;
 }
 
@@ -63,10 +69,16 @@
   70%      { transform: translateY(-15px) rotate(-1.5deg); }
 }
 
-@keyframes ita-correr {
+@keyframes ita-correr-esq {
   0%   { transform: scaleX(-1) translateY(0px); }
   50%  { transform: scaleX(-1) translateY(-12px) rotate(2deg); }
   100% { transform: scaleX(-1) translateY(0px); }
+}
+
+@keyframes ita-correr-dir {
+  0%   { transform: scaleX(1) translateY(0px); }
+  50%  { transform: scaleX(1) translateY(-12px) rotate(-2deg); }
+  100% { transform: scaleX(1) translateY(0px); }
 }
 
 /* ---- Balão de fala ---- */
