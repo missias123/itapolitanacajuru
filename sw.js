@@ -5,8 +5,8 @@ const ASSETS_CACHE = 'assets-v2';
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
-  '/css/design-system.css',
-  '/css/estilo-encomendas.css',
+  '/css/design-system.min.css',
+  '/css/estilo-encomendas.min.css',
   '/images/banner-cardapio.webp',
   '/images/logo.webp',
   '/offline.html'
