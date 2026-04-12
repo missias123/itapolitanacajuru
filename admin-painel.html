@@ -467,15 +467,16 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('preços',this)">&#x1F4B0; Preços</button>
     <button class="nav-btn" onclick="irPara('promoção',this)">&#x1F389; Promoção</button>
     <button class="nav-btn" onclick="irPara('encomendas',this)">&#x1F4E6; Encomendas</button>
-    <button class="nav-btn" onclick="irPara('sabores',this)">&#x1F366; Sabores</button>
-    <button class="nav-btn" onclick="irPara('estoque',this)">&#x1F4E6; Estoque</button>
+    <button class="nav-btn" onclick="irPara('sabores',this)">🎨 Sabores</button>
+    <button class="nav-btn" onclick="irPara('estoque',this)">🗃️ Estoque</button>
     <button class="nav-btn" onclick="irPara('participantes',this)">👥 Participantes</button>
-    <button class="nav-btn" onclick="irPara('clientes',this)">&#x1F465; Clientes</button>
+    <button class="nav-btn" onclick="irPara('clientes',this)">👤 Clientes</button>
     <button class="nav-btn" onclick="irPara('fidelidade',this)">&#x1F381; Fidelidade</button>
     <button class="nav-btn" onclick="irPara('cardápio',this)">🍦 Cardápio</button>
     <button class="nav-btn" onclick="irPara('depoimentos',this)">⭐ Depoimentos</button>
     <button class="nav-btn" onclick="irPara('fale-conosco',this)">💬 Fale Conosco</button>
     <button class="nav-btn" onclick="irPara('config',this)">&#x2699;&#xFE0F; Configurações</button>
+    <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -495,6 +496,7 @@ body { overflow-x: hidden; }
           <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
           <a href="fidelidade.html" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
+          <button onclick="irPara('qualidade',null)" class="link-site" style="border:none;cursor:pointer;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff">📊 Qualidade</button>
         </div>
       </div>
     </div>
@@ -1854,6 +1856,51 @@ Talento</textarea>
 
     </div>
     <!-- CONFIG -->
+
+    <!-- QUALIDADE -->
+    <div class="seção" id="sec-qualidade">
+      <div class="card">
+        <div class="card-header">
+          <h2>📊 Painel de Qualidade — Métricas do Site</h2>
+          <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none">🔗 Abrir em Nova Aba</a>
+        </div>
+        <div class="card-body" style="padding:0">
+          <!-- Scores resumidos -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 20px;background:#0d1117;border-radius:8px;margin-bottom:0">
+            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
+              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-perf">98</div>
+              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
+              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-acess">96</div>
+              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
+              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-bp">96</div>
+              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
+              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-seo">100</div>
+              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Perfeito</div>
+            </div>
+          </div>
+          <!-- Iframe do painel completo -->
+          <div style="position:relative;width:100%;padding-bottom:0">
+            <iframe
+              src="painel-qualidade.html"
+              style="width:100%;height:700px;border:none;border-radius:0 0 8px 8px;display:block"
+              title="Painel de Qualidade"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="seção" id="sec-config">
       <div class="card">
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
@@ -2153,8 +2200,21 @@ function irPara(seção,btn){
   if(seção==='fidelidade'){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();}
   if(seção==='cardápio')preencherCardapio();
   if(seção==='depoimentos')preencherDepoimentos();
+  if(seção==='qualidade')atualizarScoresQualidade();
   if(seção==='fale-conosco')preencherFaleConosco();
 }
+
+function atualizarScoresQualidade(){
+  // Ler scores do localStorage (gravados pelo quality-guard.js)
+  try {
+    const dados = JSON.parse(localStorage.getItem('qualidade_scores') || '{}');
+    if(dados.performance) document.getElementById('adm-score-perf').textContent = dados.performance;
+    if(dados.acessibilidade) document.getElementById('adm-score-acess').textContent = dados.acessibilidade;
+    if(dados.boasPraticas) document.getElementById('adm-score-bp').textContent = dados.boasPraticas;
+    if(dados.seo) document.getElementById('adm-score-seo').textContent = dados.seo;
+  } catch(e) {}
+}
+
 function renderDashboard(){
   const clientes=Object.values(STATE.clientes?.clientes||{});
   const ativos=clientes.filter(c=>!c.bloqueado).length;
