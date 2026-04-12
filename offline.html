@@ -1,58 +1,105 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-S6TCMLQLQF');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Você está offline – Sorveteria Itapolitana</title>
+    <title>Sorveteria Itapolitana - Modo Offline</title>
     <style>
-        body { font-family: 'Poppins', sans-serif; text-align: center; padding: 50px; background-color: #FFF8F0; color: #1A0A00; }
-        .container { max-width: 400px; margin: 0 auto; }
-        img { width: 150px; margin-bottom: 20px; }
-        h1 { color: #1565C0; }
-        p { font-size: 1.1rem; line-height: 1.6; }
-        .btn { display: inline-block; padding: 12px 24px; background-color: #1565C0; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px; font-weight: bold; }
-    
-
-
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('images/fundo-itapolitana.webp');
-    background-repeat: repeat;
-    background-size: 150px 150px;
-    opacity: 0.15; /* Aumentado para maior visibilidade */
-    pointer-events: none;
-    z-index: -1;
-}
-body {
-    position: relative;
-    z-index: 0;
-    background-color: #FFF8F0;
-}
-
-</style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFE8F0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .offline-container {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        .offline-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #EF0129;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .cached-pages {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .cached-pages h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .cached-pages ul {
+            list-style: none;
+        }
+        .cached-pages li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .cached-pages li:last-child {
+            border-bottom: none;
+        }
+        .cached-pages a {
+            color: #0D47A1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .cached-pages a:hover {
+            text-decoration: underline;
+        }
+        .retry-btn {
+            background: linear-gradient(135deg, #EF0129, #C62828);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+        .retry-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <img src="images/logo.webp" alt="Logo Itapolitana">
-        <h1>Ops! Você está offline</h1>
-        <p>Parece que sua conexão com a internet caiu. Mas não se preocupe, o sorvete continua gelado!</p>
-        <p>Tente recarregar a página assim que estiver online novamente.</p>
-        <a href="/" class="btn">Tentar Novamente</a>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>Você está offline</h1>
+        <p>Não conseguimos conectar à internet, mas você pode acessar as páginas que já foram carregadas:</p>
+        
+        <div class="cached-pages">
+            <h3>📄 Páginas em Cache</h3>
+            <ul>
+                <li><a href="/">🍦 Página Principal</a></li>
+                <li><a href="/encomendas.html">🛒 Encomendas</a></li>
+                <li><a href="/fidelidade.html">⭐ Fidelidade</a></li>
+            </ul>
+        </div>
+        
+        <p style="font-size: 14px; color: #999;">Verifique sua conexão com a internet e tente novamente.</p>
+        <button class="retry-btn" onclick="location.reload()">🔄 Tentar Novamente</button>
     </div>
-<script src="scripts/auto-healer.js" defer></script>
 </body>
 </html>

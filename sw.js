@@ -1,85 +1,115 @@
 
-const CACHE_NAME = 'itapolitana-v2';
-const ASSETS_CACHE = 'assets-v2';
+// PHASE 4: ENHANCED SERVICE WORKER WITH INTELLIGENT CACHING
+// Sorveteria Itapolitana Cajuru - PWA Benchmark
 
+const CACHE_NAME = 'itapolitana-v1';
+const RUNTIME_CACHE = 'itapolitana-runtime-v1';
 const CRITICAL_ASSETS = [
-  '/',
-  '/index.html',
-  '/css/design-system.min.css',
-  '/css/estilo-encomendas.min.css',
-  '/images/banner-cardapio.webp',
-  '/images/logo.webp',
-  '/offline.html'
+    '/',
+    '/index.html',
+    '/css/design-system.min.css',
+    '/css/estilo-encomendas.min.css',
+    '/mascote.min.js',
+    '/images/logo.webp',
+    '/images/banner-cardapio.webp'
 ];
 
-// Install — cache crítico
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(CRITICAL_ASSETS))
-      .then(() => self.skipWaiting())
-  );
-});
-
-// Activate — limpar caches antigos
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME && key !== ASSETS_CACHE)
-          .map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
-  );
-});
-
-// Fetch — estratégia Cache First para assets, Network First para HTML
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // API calls — Network Only
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(request).catch(() => 
-        new Response(JSON.stringify({ erro: 'Offline' }), {
-          headers: { 'Content-Type': 'application/json' }
+// 1. INSTALL EVENT: Cache critical assets
+self.addEventListener('install', event => {
+    console.log('[SW] Installing Service Worker...');
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('[SW] Caching critical assets...');
+            return cache.addAll(CRITICAL_ASSETS);
+        }).then(() => {
+            console.log('[SW] Service Worker installed successfully!');
+            return self.skipWaiting();
         })
-      )
     );
-    return;
-  }
-
-  // Assets estáticos — Cache First
-  if (request.destination === 'image' || 
-      request.destination === 'style' || 
-      request.destination === 'script' ||
-      request.destination === 'font') {
-    event.respondWith(
-      caches.match(request).then(cached => 
-        cached || fetch(request).then(response => {
-          const clone = response.clone();
-          caches.open(ASSETS_CACHE)
-            .then(cache => cache.put(request, clone));
-          return response;
-        })
-      )
-    );
-    return;
-  }
-
-  // HTML — Network First com fallback offline
-  event.respondWith(
-    fetch(request)
-      .then(response => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME)
-          .then(cache => cache.put(request, clone));
-        return response;
-      })
-      .catch(() => 
-        caches.match(request) || caches.match('/offline.html')
-      )
-  );
 });
+
+// 2. ACTIVATE EVENT: Clean up old caches
+self.addEventListener('activate', event => {
+    console.log('[SW] Activating Service Worker...');
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+                        console.log('[SW] Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        }).then(() => self.clients.claim())
+    );
+});
+
+// 3. FETCH EVENT: Intelligent caching strategy
+self.addEventListener('fetch', event => {
+    const { request } = event;
+    const url = new URL(request.url);
+
+    // Skip non-GET requests
+    if (request.method !== 'GET') {
+        return;
+    }
+
+    // Skip cross-origin requests
+    if (url.origin !== location.origin) {
+        return;
+    }
+
+    // Strategy: Cache First for static assets, Network First for dynamic content
+    if (request.destination === 'image' || request.destination === 'font' || request.destination === 'style' || request.destination === 'script') {
+        // Cache First Strategy
+        event.respondWith(
+            caches.match(request).then(response => {
+                return response || fetch(request).then(response => {
+                    if (!response || response.status !== 200 || response.type === 'error') {
+                        return response;
+                    }
+                    const responseClone = response.clone();
+                    caches.open(RUNTIME_CACHE).then(cache => {
+                        cache.put(request, responseClone);
+                    });
+                    return response;
+                });
+            }).catch(() => {
+                // Fallback for offline
+                if (request.destination === 'image') {
+                    return caches.match('/images/logo.webp');
+                }
+            })
+        );
+    } else {
+        // Network First Strategy for HTML and API calls
+        event.respondWith(
+            fetch(request)
+                .then(response => {
+                    if (!response || response.status !== 200) {
+                        return response;
+                    }
+                    const responseClone = response.clone();
+                    caches.open(RUNTIME_CACHE).then(cache => {
+                        cache.put(request, responseClone);
+                    });
+                    return response;
+                })
+                .catch(() => {
+                    return caches.match(request).then(response => {
+                        return response || caches.match('/offline.html');
+                    });
+                })
+        );
+    }
+});
+
+// 4. MESSAGE EVENT: Handle messages from clients
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+console.log('[SW] Service Worker loaded successfully!');
