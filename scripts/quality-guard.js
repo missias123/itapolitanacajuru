@@ -98,16 +98,23 @@
     } catch(e) {}
 
     // CLS — Cumulative Layout Shift (ideal < 0.1)
+    // Salva apenas após 5s do load para capturar o valor estabilizado
     try {
       let cls_total = 0;
-      new PerformanceObserver(function(list) {
+      const clsObserver = new PerformanceObserver(function(list) {
         list.getEntries().forEach(function(entry) {
           if (!entry.hadRecentInput) cls_total += entry.value;
         });
-        vitals.cls = Math.round(cls_total * 1000) / 1000;
-        vitals.cls_status = cls_total < 0.1 ? 'BOM' : cls_total < 0.25 ? 'MELHORAR' : 'RUIM';
-        salvarMemoria({ vitals });
-      }).observe({ type: 'layout-shift', buffered: true });
+      });
+      clsObserver.observe({ type: 'layout-shift', buffered: true });
+      // Salvar após 5 segundos (valor já estabilizado)
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          vitals.cls = Math.round(cls_total * 1000) / 1000;
+          vitals.cls_status = cls_total < 0.1 ? 'BOM' : cls_total < 0.25 ? 'MELHORAR' : 'RUIM';
+          salvarMemoria({ vitals });
+        }, 5000);
+      });
     } catch(e) {}
 
     // INP — Interaction to Next Paint (ideal < 200ms)
