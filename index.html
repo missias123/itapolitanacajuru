@@ -1629,6 +1629,37 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
         .hero{contain: layout;min-height:400px;background:#FFF8F0min-height:400px;}
         .nav-btn{min-height:52px;background:#eee;border-radius:12px}
     </style>
+    
+    <style id="wcag-contrast">
+        /* Garantir contraste mínimo de 4.5:1 para texto normal */
+        body { color: #1A0A00; background: #FFF8F0; }
+        a { color: #0D47A1; text-decoration: underline; }
+        a:visited { color: #6A1B9A; }
+        button { color: white; background: #EF0129; }
+        .nav-btn { color: #1A0A00; background: rgba(255,255,255,0.9); border: 2px solid #EF0129; }
+        /* Focus visible para navegação por teclado */
+        button:focus-visible, a:focus-visible, input:focus-visible {
+            outline: 3px solid #0D47A1;
+            outline-offset: 2px;
+        }
+    </style>
+    
+    <style id="mobile-buttons">
+        @media (max-width: 768px) {
+            button, a[role="button"], .nav-btn {
+                min-height: 48px;
+                min-width: 48px;
+                padding: 12px 16px;
+                font-size: 16px; /* Evita zoom em iOS */
+                line-height: 1.5;
+            }
+            input, textarea, select {
+                min-height: 48px;
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
     </head>
 <body>
 <noscript>
@@ -1660,7 +1691,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <header class="header">
 <div class="header-inner">
 <div class="brand">
-<div class="brand-icon"><img alt="Logo Sorveteria Itapolitana Cajuru - Sorvete tipo artesanal desde 2007" decoding="async" loading="lazy" src="images/logo.webp"/ fetchpriority="high" style="aspect-ratio: 1/1; width: 80px; height: 80px;">
+<div class="brand-icon"><img alt="Logo Sorveteria Itapolitana Cajuru - Sorvete tipo artesanal desde 2007" decoding="async" loading="lazy" src="images/logo.webp"/ fetchpriority="high" style="aspect-ratio: 1/1; width: 80px; height: 80px;" alt="Logo da Sorveteria Itapolitana Cajuru">
 </div>
 <nav class="header-nav">
 <a class="nav-btn nav-purple" href="encomendas.html"><span class="nav-icon">🛒</span><span class="nav-label">ENCOMENDAS</span></a>
@@ -1691,7 +1722,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20do%20carrinho%20de%20picolé%C3%A9%20para%20evento." rel="noopener" target="_blank">
 <picture>
             <source srcset="images/carrinho-picole-sm.webp 400w, images/carrinho-picole-md.webp 800w, images/carrinho-picole-lg.webp 1200w" sizes="(max-width: 600px) 400px, (max-width: 1200px) 800px, 1200px" type="image/webp">
-            <img alt="Carrinho de Picolé Gourmet para Eventos em Cajuru - Sorveteria Itapolitana" class="hero-carrinho-img" decoding="async" loading="lazy" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp"/>
+            <img alt="Carrinho de Picolé Gourmet para Eventos em Cajuru - Sorveteria Itapolitana" class="hero-carrinho-img" decoding="async" loading="lazy" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp"/ alt="Carrinho de sorvete para eventos">
         </picture>
 <div class="hero-carrinho-label1" id="carrinho-label1">🛒 Carrinho para Eventos</div>
 <div class="hero-carrinho-label2" id="carrinho-label2">Toque para consultar</div>
@@ -2019,7 +2050,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <footer class="footer">
 <div style="text-align:center;padding:24px 16px 16px;">
 <div style="margin-bottom:16px;">
-<img alt="Logo Sorveteria Itapolitana Cajuru - Sorvete tipo artesanal desde 2007" decoding="async" loading="lazy" src="images/logo.webp" style="width:clamp(70px,12vw,90px);height:clamp(70px,12vw,90px);border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 0 0 14px #0D47A1,0 4px 20px rgba(0,0,0,.6);display:block;margin:0 auto;"/ fetchpriority="high" style="aspect-ratio: 1/1; width: 80px; height: 80px;">
+<img alt="Logo Sorveteria Itapolitana Cajuru - Sorvete tipo artesanal desde 2007" decoding="async" loading="lazy" src="images/logo.webp" style="width:clamp(70px,12vw,90px);height:clamp(70px,12vw,90px);border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 0 0 14px #0D47A1,0 4px 20px rgba(0,0,0,.6);display:block;margin:0 auto;"/ fetchpriority="high" style="aspect-ratio: 1/1; width: 80px; height: 80px;" alt="Logo da Sorveteria Itapolitana Cajuru">
 <div id="brand-name" style="margin-top:8px;font-size:clamp(14px,4vw,16px);color:#E8000D;font-weight:900;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.9);">ITAPOLITANA</div>
 <div id="brand-sub" style="font-size:clamp(10px,2.5vw,11px);color:#fff;font-weight:700;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.7);">Cajuru · SP</div>
 </div>
@@ -2143,7 +2174,7 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 </div>
 <div class="fale-body">
 <label class="fale-label" id="fale-label-nome" for="fale-nome">Seu nome</label>
-<input class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" type="text"/>
+<label for="input- class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" "> class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" </label><input class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" type="text"/>
 <label class="fale-label" id="fale-label-msg" for="fale-msg">Sua mensagem</label>
 <textarea class="fale-textarea" id="fale-msg" placeholder="Escreva sua dúvida, sugestão ou pedido especial..."></textarea>
 <button class="fale-enviar" onclick="enviarFaleConosco()" type="button">
@@ -2175,7 +2206,7 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 <button class="sug" id="chat-sug-6" onclick="enviarSug(this)" type="button">Picolés</button>
 </div>
 <div class="chat-inp-row">
-<input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua pergunta..." type="text"/>
+<label for="input- class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua pergunta..." "> class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua pergunta..." </label><input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua pergunta..." type="text"/>
 <button class="chat-send" onclick="enviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
 </div>
 </div>
@@ -4034,5 +4065,5 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 <script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
-</body>
+<div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div></body>
 </html>
