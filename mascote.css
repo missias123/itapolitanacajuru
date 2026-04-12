@@ -50,15 +50,17 @@
   transform: scale(1.08) rotate(-3deg);
 }
 
-/* Correndo para a ESQUERDA: espelhado (de costas) */
+/* Fugindo para a ESQUERDA: espelhado (de costas) — scaleX(-1) */
 #ita-mascote.ita-correndo img {
   animation: ita-correr-esq 0.14s steps(2) infinite !important;
+  transform: scaleX(-1) !important;
   cursor: default;
 }
 
-/* Correndo para a DIREITA: normal (de frente) */
+/* Voltando para a DIREITA: normal (de frente) — scaleX(1) */
 #ita-mascote.ita-voltando img {
   animation: ita-correr-dir 0.14s steps(2) infinite !important;
+  transform: scaleX(1) !important;
   cursor: default;
 }
 
@@ -71,13 +73,13 @@
 
 @keyframes ita-correr-esq {
   0%   { transform: scaleX(-1) translateY(0px); }
-  50%  { transform: scaleX(-1) translateY(-12px) rotate(2deg); }
+  50%  { transform: scaleX(-1) translateY(-14px); }
   100% { transform: scaleX(-1) translateY(0px); }
 }
 
 @keyframes ita-correr-dir {
   0%   { transform: scaleX(1) translateY(0px); }
-  50%  { transform: scaleX(1) translateY(-12px) rotate(-2deg); }
+  50%  { transform: scaleX(1) translateY(-14px); }
   100% { transform: scaleX(1) translateY(0px); }
 }
 
