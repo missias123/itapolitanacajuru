@@ -109,26 +109,44 @@
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-/* ---- Balão de fala ---- */
+/* ---- Balão de fala — SUPER NÍTIDO, NEGRITADO, REALCE FORTE ---- */
 #ita-balao {
-  background: #fff;
-  border: 2.5px solid #E8000D;
-  border-radius: 14px 14px 4px 14px;
-  padding: 7px 12px;
-  margin-bottom: 8px;
-  font-family: 'Poppins', 'Nunito', Arial, sans-serif;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #E8000D;
-  max-width: 142px;
+  /* Fundo branco sólido com gradiente suave */
+  background: linear-gradient(135deg, #ffffff 60%, #fff5f5 100%);
+  /* Borda vermelha grossa e bem definida */
+  border: 4px solid #E8000D;
+  border-radius: 18px 18px 4px 18px;
+  padding: 10px 16px;
+  margin-bottom: 10px;
+  font-family: 'Poppins', 'Nunito', 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 900;          /* máximo negrito */
+  color: #B00008;            /* vermelho escuro para máximo contraste */
+  max-width: 165px;
   text-align: center;
-  line-height: 1.4;
-  box-shadow: 0 4px 14px rgba(232,0,13,0.13);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  /* Contorno do texto para realce extra */
+  -webkit-text-stroke: 0.3px #8B0000;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.8),
+    0 0 8px rgba(232,0,13,0.15);
+  /* Sombra do balão: borda inferior vermelha + sombra escura */
+  box-shadow:
+    0 4px 0 #A00008,
+    0 8px 24px rgba(0,0,0,0.28),
+    0 2px 8px rgba(232,0,13,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  /* Contorno externo branco para destacar do fundo da página */
+  outline: 3px solid rgba(255,255,255,0.95);
+  outline-offset: 2px;
   pointer-events: none;
   opacity: 0;
   transform: scale(0.75) translateY(8px);
   transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
   position: relative;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #ita-balao.ita-balao-show {
@@ -150,11 +168,18 @@
 @media (max-width: 1024px) and (min-width: 601px) {
   #ita-mascote     { bottom: 75px; right: 10px; }
   #ita-mascote img { width: 115px; }
-  #ita-balao       { font-size: 11px; max-width: 122px; }
+  #ita-balao       { font-size: 13px; max-width: 148px; padding: 9px 13px; }
 }
 
 @media (max-width: 600px) {
   #ita-mascote     { bottom: 68px; right: 6px; }
   #ita-mascote img { width: 78px; }
-  #ita-balao       { font-size: 9.5px; max-width: 96px; padding: 5px 9px; }
+  #ita-balao       {
+    font-size: 12px;
+    font-weight: 900;
+    max-width: 130px;
+    padding: 8px 11px;
+    border-width: 3px;
+    -webkit-text-stroke: 0.2px #8B0000;
+  }
 }
