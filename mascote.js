@@ -1,6 +1,6 @@
 /* =====================================================
-   ITAMANDUÁ — Mascote da Sorveteria Itapolitana
-   Versão: Fuga Horizontal Correta
+   ITAMANDUÁ — Mascote Sorveteria Itapolitana
+   Versão 4 — Fuga + Bolas de Sorvete Caindo
    ===================================================== */
 (function () {
   'use strict';
@@ -12,38 +12,42 @@
     'Temos 35 sabores! 🍨',
     'O melhor de Cajuru! 🏆',
     'Chocolate é vida! 🍫',
-    'Manga, morango, açaí... 🥭',
     'Nota 4.9 no Google! ⭐',
     'Peça pelo WhatsApp! 📱',
     'Venha nos visitar! 📍',
-    'Minha língua é enorme! 👅',
     'Feito com amor! ❤️'
+  ];
+
+  // Cores e emojis das 3 bolas de sorvete
+  var BOLAS = [
+    { cor: '#e75480', emoji: '🍓' }, // morango
+    { cor: '#8B4513', emoji: '🍫' }, // chocolate
+    { cor: '#FFD700', emoji: '🥭' }  // manga
   ];
 
   var fraseIdx   = 0;
   var timerFrase = null;
   var fugindo    = false;
+  var bolasNaTela = [];
 
+  /* ---- Cria o mascote ---- */
   function criar() {
     if (document.getElementById('ita-mascote')) return;
 
     var wrap = document.createElement('div');
     wrap.id = 'ita-mascote';
 
-    // Balão de fala
     var balao = document.createElement('div');
     balao.id = 'ita-balao';
     balao.textContent = FRASES[0];
     wrap.appendChild(balao);
 
-    // Imagem
     var img = document.createElement('img');
     img.src      = 'images/itamandua_lambendo.webp';
-    img.alt      = 'Itamanduá — Mascote da Sorveteria Itapolitana Cajuru';
+    img.alt      = 'Itamanduá — Mascote da Sorveteria Itapolitana';
     img.width    = 140;
     img.height   = 140;
     img.loading  = 'lazy';
-    img.decoding = 'async';
     img.title    = 'Clique para ver o Itamanduá correr!';
     wrap.appendChild(img);
 
@@ -55,16 +59,16 @@
       setTimeout(function () {
         balao.classList.add('mostrar');
         iniciarFrases(balao);
-      }, 600);
+      }, 700);
     }, 1200);
 
-    // Clique — fuga
     img.addEventListener('click', function () {
       if (fugindo) return;
       fugir(wrap, balao, img);
     });
   }
 
+  /* ---- Troca frases ---- */
   function iniciarFrases(balao) {
     clearInterval(timerFrase);
     timerFrase = setInterval(function () {
@@ -77,61 +81,141 @@
     }, 3000);
   }
 
+  /* ---- Cria uma bola de sorvete caindo ---- */
+  function criarBola(bola, posX) {
+    var el = document.createElement('div');
+    el.className = 'ita-bola';
+    el.style.cssText = [
+      'position:fixed',
+      'width:38px',
+      'height:38px',
+      'border-radius:50%',
+      'background:' + bola.cor,
+      'box-shadow:0 4px 12px rgba(0,0,0,0.3),inset -4px -4px 8px rgba(0,0,0,0.15)',
+      'z-index:9989',
+      'display:flex',
+      'align-items:center',
+      'justify-content:center',
+      'font-size:18px',
+      'left:' + posX + 'px',
+      'bottom:220px',
+      'transition:none',
+      'pointer-events:none'
+    ].join(';');
+    el.textContent = bola.emoji;
+    document.body.appendChild(el);
+
+    // Anima a queda
+    setTimeout(function () {
+      el.style.transition = 'bottom 0.6s cubic-bezier(0.55,0,1,0.45), transform 0.6s ease';
+      el.style.bottom = '75px';
+      el.style.transform = 'rotate(' + (Math.random() * 60 - 30) + 'deg)';
+
+      // Quique
+      setTimeout(function () {
+        el.style.transition = 'bottom 0.2s ease-out';
+        el.style.bottom = '95px';
+        setTimeout(function () {
+          el.style.transition = 'bottom 0.15s ease-in';
+          el.style.bottom = '75px';
+        }, 200);
+      }, 600);
+    }, 50);
+
+    return el;
+  }
+
+  /* ---- Recolhe as bolas (sobem e somem) ---- */
+  function recolherBolas(posXDestino) {
+    bolasNaTela.forEach(function (el, i) {
+      setTimeout(function () {
+        el.style.transition = 'left 0.4s ease-in, bottom 0.5s ease-in, opacity 0.3s ease, transform 0.4s ease';
+        el.style.left = posXDestino + 'px';
+        el.style.bottom = '220px';
+        el.style.transform = 'scale(0.3) rotate(360deg)';
+        el.style.opacity = '0';
+        setTimeout(function () {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 600);
+      }, i * 120);
+    });
+    bolasNaTela = [];
+  }
+
+  /* ---- Lógica de fuga ---- */
   function fugir(wrap, balao, img) {
     fugindo = true;
     clearInterval(timerFrase);
 
-    // 1. Esconde balão
+    // Esconde balão
     balao.classList.remove('mostrar');
 
-    // 2. Susto: pula rapidinho
+    // 1. Susto rápido
     img.style.transition = 'transform 0.15s ease';
-    img.style.transform  = 'translateY(-20px) scale(1.15) rotate(8deg)';
+    img.style.transform  = 'translateY(-18px) scale(1.12) rotate(8deg)';
 
     setTimeout(function () {
-      // 3. Inicia corrida para a esquerda
       img.style.transition = '';
       img.style.transform  = '';
-      wrap.classList.remove('visivel');
-      wrap.classList.add('correndo', 'fugindo');
 
-      // 4. Após sair da tela (1.1s de transição + margem)
+      // 2. Ativa corrida (espelha + bob)
+      wrap.classList.add('correndo');
+
+      // 3. Cria as 3 bolas caindo na posição do mascote
+      var rect = wrap.getBoundingClientRect();
+      var baseX = rect.left;
+      bolasNaTela = BOLAS.map(function (bola, i) {
+        return criarBola(bola, baseX - 10 + i * 15);
+      });
+
+      // 4. Fuga para a esquerda
       setTimeout(function () {
-        // 5. Remove classe de fuga, reposiciona sem transição à esquerda
-        wrap.classList.remove('fugindo', 'correndo');
-        wrap.classList.add('retorno-inicio', 'retornando');
+        wrap.classList.remove('visivel');
+        wrap.classList.add('fugindo');
 
-        // 6. Força reflow para aplicar posição sem animação
-        void wrap.offsetWidth;
-
-        // 7. Anima retorno da esquerda para a direita
+        // 5. Após sair da tela: reposiciona SILENCIOSAMENTE fora da tela à direita
         setTimeout(function () {
-          wrap.classList.remove('retorno-inicio');
-          wrap.classList.add('retorno-fim');
+          // Remove classes de fuga e corrida SEM transição
+          wrap.style.transition = 'none';
+          wrap.classList.remove('fugindo', 'correndo');
+          // Força posição fora da tela à direita (estado inicial)
+          wrap.style.transform = 'translateX(220px)';
 
-          // 8. Chegou — limpa tudo e retoma estado normal
+          // Força reflow para garantir que a posição foi aplicada
+          void wrap.offsetWidth;
+
+          // 6. Após 4 segundos, volta entrando pelo lado direito
           setTimeout(function () {
-            wrap.classList.remove('retorno-fim', 'retornando');
+            // Restaura transição e anima entrada pela direita
+            wrap.style.transition = '';
             wrap.classList.add('visivel');
-            img.style.transition = '';
-            img.style.transform  = '';
-            fugindo = false;
 
-            // Retoma balão
+            // Recolhe as bolas ao mesmo tempo
+            var retRect = wrap.getBoundingClientRect();
+            recolherBolas(window.innerWidth - 80);
+
+            // 7. Quando chegar, retoma estado normal
             setTimeout(function () {
-              balao.classList.add('mostrar');
-              iniciarFrases(balao);
-            }, 500);
-          }, 1100); // duração do retorno-fim
-        }, 50);
-      }, 1300); // aguarda fuga completa
-    }, 200); // duração do susto
+              wrap.style.transition = '';
+              wrap.style.transform  = '';
+              fugindo = false;
+
+              setTimeout(function () {
+                balao.classList.add('mostrar');
+                iniciarFrases(balao);
+              }, 400);
+            }, 1000);
+          }, 4000);
+        }, 1200); // tempo para sair da tela
+      }, 200); // pequeno delay antes de fugir
+    }, 180); // duração do susto
   }
 
-  // Inicia quando DOM estiver pronto
+  /* ---- Inicializa ---- */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', criar);
   } else {
     criar();
   }
+
 })();
