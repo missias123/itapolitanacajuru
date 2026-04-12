@@ -1,9 +1,9 @@
 /* =====================================================
    ITAMANDUÁ — Mascote Sorveteria Itapolitana
-   Versão 4 — Limpo, sem conflitos
+   Versão 5 — DEFINITIVA ENGRAÇADA
    ===================================================== */
 
-/* Posição base: lado direito, fixo */
+/* Container principal — fixo no lado direito */
 #ita-mascote {
   position: fixed;
   bottom: 80px;
@@ -13,8 +13,9 @@
   flex-direction: column;
   align-items: flex-end;
   pointer-events: none;
+  /* Estado inicial: fora da tela à direita */
   transform: translateX(220px);
-  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Visível: na posição normal */
@@ -24,66 +25,72 @@
 
 /* Fugindo: sai pela esquerda */
 #ita-mascote.fugindo {
-  transform: translateX(calc(-100vw - 250px));
-  transition: transform 1.0s linear;
+  transform: translateX(calc(-100vw - 260px));
+  transition: transform 1.1s cubic-bezier(0.55, 0, 1, 0.45);
 }
 
-/* Imagem */
+/* ---- Imagem do mascote ---- */
 #ita-mascote img {
   width: 140px;
   height: auto;
   display: block;
   cursor: pointer;
   pointer-events: auto;
-  filter: drop-shadow(2px 6px 10px rgba(0,0,0,0.28));
+  filter: drop-shadow(2px 6px 12px rgba(0,0,0,0.3));
   animation: ita-flutuar 3.5s ease-in-out infinite;
   -webkit-user-drag: none;
   user-select: none;
   transition: filter 0.25s ease;
+  transform-origin: bottom center;
 }
 
 #ita-mascote img:hover {
-  filter: drop-shadow(3px 8px 14px rgba(232,0,13,0.45));
+  filter: drop-shadow(3px 8px 16px rgba(232,0,13,0.5));
   animation-play-state: paused;
+  transform: scale(1.08) rotate(-3deg);
 }
 
-/* Correndo: espelhado + bob */
+/* ---- Correndo: espelhado + bob exagerado ---- */
 #ita-mascote.correndo img {
-  animation: ita-correr 0.18s steps(2) infinite;
+  animation: ita-correr 0.15s steps(2) infinite;
+  cursor: default;
 }
 
-/* Flutuação */
+/* ---- Flutuação suave ---- */
 @keyframes ita-flutuar {
-  0%,100% { transform: translateY(0px); }
-  50%      { transform: translateY(-12px); }
+  0%,100% { transform: translateY(0px) rotate(0deg); }
+  25%      { transform: translateY(-8px) rotate(1.5deg); }
+  75%      { transform: translateY(-14px) rotate(-1.5deg); }
 }
 
-/* Corrida para a esquerda */
+/* ---- Corrida para a esquerda ---- */
 @keyframes ita-correr {
-  0%   { transform: scaleX(-1) translateY(0px); }
-  50%  { transform: scaleX(-1) translateY(-9px); }
-  100% { transform: scaleX(-1) translateY(0px); }
+  0%   { transform: scaleX(-1) translateY(0px) rotate(0deg); }
+  50%  { transform: scaleX(-1) translateY(-11px) rotate(2deg); }
+  100% { transform: scaleX(-1) translateY(0px) rotate(0deg); }
 }
 
-/* Balão de fala */
+/* ---- Balão de fala ---- */
 #ita-balao {
   background: #fff;
   border: 2.5px solid #E8000D;
-  border-radius: 12px 12px 3px 12px;
-  padding: 6px 12px;
+  border-radius: 14px 14px 4px 14px;
+  padding: 7px 13px;
   margin-bottom: 8px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', 'Nunito', sans-serif;
   font-size: 11.5px;
   font-weight: 700;
   color: #E8000D;
-  max-width: 135px;
+  max-width: 140px;
   text-align: center;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+  box-shadow: 0 4px 16px rgba(232,0,13,0.15);
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.8) translateY(6px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: scale(0.75) translateY(8px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
   position: relative;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 #ita-balao.mostrar {
@@ -91,25 +98,27 @@
   transform: scale(1) translateY(0);
 }
 
+/* Seta do balão */
 #ita-balao::after {
   content: '';
   position: absolute;
-  bottom: -11px;
-  right: 18px;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-top: 11px solid #E8000D;
+  bottom: -12px;
+  right: 16px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid #E8000D;
 }
 
-/* Tablet */
+/* ---- Tablet ---- */
 @media (max-width: 1024px) and (min-width: 601px) {
   #ita-mascote img { width: 115px; }
-  #ita-mascote     { bottom: 75px; }
+  #ita-mascote     { bottom: 75px; right: 10px; }
+  #ita-balao       { font-size: 11px; max-width: 125px; }
 }
 
-/* Celular */
+/* ---- Celular ---- */
 @media (max-width: 600px) {
-  #ita-mascote img { width: 80px; }
-  #ita-balao       { font-size: 9.5px; max-width: 100px; padding: 5px 9px; }
-  #ita-mascote     { bottom: 68px; right: 8px; }
+  #ita-mascote img { width: 78px; }
+  #ita-balao       { font-size: 9.5px; max-width: 98px; padding: 5px 9px; }
+  #ita-mascote     { bottom: 68px; right: 6px; }
 }
