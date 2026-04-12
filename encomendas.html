@@ -1175,11 +1175,14 @@ html { scroll-behavior: smooth; }
 
 
 
-/* ===== MASCOTE ITAMANDUÁ - ANIMAÇÕES COMPLETAS ===== */
+
+
+
+/* ===== MASCOTE ITAMANDUÁ - RESPONSIVO 3 APARELHOS ===== */
 #itamandua-container {
     position: fixed;
     bottom: 80px;
-    left: -130px; /* começa fora da tela */
+    left: -150px; /* começa fora da tela */
     z-index: 9998;
     display: flex;
     flex-direction: column;
@@ -1187,40 +1190,36 @@ html { scroll-behavior: smooth; }
     animation: itamandua-entrar 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
 }
 @keyframes itamandua-entrar {
-    0%   { left: -130px; }
+    0%   { left: -150px; }
     100% { left: 12px; }
 }
 #itamandua-img {
-    width: 90px;
+    width: 120px; /* Computador */
     height: auto;
     cursor: pointer;
     filter: drop-shadow(3px 6px 10px rgba(0,0,0,0.30));
     animation: 
-        itamandua-float 3s ease-in-out infinite,
-        itamandua-swing 6s ease-in-out infinite;
+        itamandua-swing 4s ease-in-out infinite;
     transform-origin: bottom center;
     transition: transform 0.2s, filter 0.2s;
+    display: block;
 }
 #itamandua-img:hover {
     transform: scale(1.18) rotate(-8deg) !important;
     filter: drop-shadow(4px 8px 14px rgba(232,0,13,0.40));
     animation-play-state: paused;
 }
-@keyframes itamandua-float {
-    0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-12px); }
-}
 @keyframes itamandua-swing {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
-    25%       { transform: translateY(-6px) rotate(3deg); }
-    50%       { transform: translateY(-12px) rotate(0deg); }
-    75%       { transform: translateY(-6px) rotate(-3deg); }
+    25%       { transform: translateY(-8px) rotate(3deg); }
+    50%       { transform: translateY(-14px) rotate(0deg); }
+    75%       { transform: translateY(-8px) rotate(-3deg); }
 }
 #itamandua-balao {
     background: #fff;
     border: 2.5px solid #E8000D;
     border-radius: 14px 14px 14px 4px;
-    padding: 8px 12px;
+    padding: 7px 11px;
     font-size: 11px;
     font-weight: 800;
     color: #E8000D;
@@ -1231,6 +1230,7 @@ html { scroll-behavior: smooth; }
     position: relative;
     animation: balao-aparecer 0.5s ease-out;
     line-height: 1.4;
+    word-break: break-word;
 }
 #itamandua-balao::after {
     content: '';
@@ -1245,32 +1245,72 @@ html { scroll-behavior: smooth; }
     0%   { opacity: 0; transform: scale(0.7) translateY(10px); }
     100% { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* === TABLET (600px - 1024px) === */
+@media (max-width: 1024px) and (min-width: 601px) {
+    #itamandua-img {
+        width: 100px;
+    }
+    #itamandua-balao {
+        font-size: 10px;
+        max-width: 115px;
+        padding: 6px 10px;
+    }
+    #itamandua-container {
+        bottom: 75px;
+    }
+}
+
+/* === CELULAR (até 600px) === */
+@media (max-width: 600px) {
+    #itamandua-img {
+        width: 70px;
+    }
+    #itamandua-balao {
+        font-size: 9px;
+        max-width: 95px;
+        padding: 5px 8px;
+        border-width: 2px;
+    }
+    #itamandua-container {
+        bottom: 70px;
+        left: -100px;
+    }
+    @keyframes itamandua-entrar {
+        0%   { left: -100px; }
+        100% { left: 8px; }
+    }
+}
+
+/* Mascote nas seções internas */
 .itamandua-section {
     display: block;
-    width: 130px;
+    width: 110px;
     height: auto;
-    margin: 0 auto 12px auto;
+    margin: 0 auto 10px auto;
     filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.20));
-    animation: itamandua-float 3s ease-in-out infinite;
+    animation: itamandua-swing 4s ease-in-out infinite;
 }
 .itamandua-hero {
     position: absolute;
     right: -10px;
     bottom: -20px;
-    width: 200px;
+    width: 180px;
     height: auto;
     z-index: 10;
     filter: drop-shadow(3px 6px 8px rgba(0,0,0,0.25));
     animation: itamandua-swing 4s ease-in-out infinite;
     pointer-events: none;
 }
-@media (max-width: 600px) {
-    #itamandua-img { width: 70px; }
-    #itamandua-balao { font-size: 10px; max-width: 110px; }
-    .itamandua-hero { width: 120px; right: -5px; bottom: -10px; }
+@media (max-width: 1024px) and (min-width: 601px) {
     .itamandua-section { width: 90px; }
+    .itamandua-hero { width: 140px; }
 }
-/* ===== FIM MASCOTE ANIMADO ===== */
+@media (max-width: 600px) {
+    .itamandua-section { width: 70px; }
+    .itamandua-hero { width: 100px; right: -5px; bottom: -10px; }
+}
+/* ===== FIM MASCOTE RESPONSIVO ===== */
 
 </style>
 <script type="application/ld+json">
