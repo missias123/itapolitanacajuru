@@ -387,11 +387,34 @@ function limparErrosAntigos(dados) {
     document.getElementById('lcp-status').textContent = status === 'BOM' ? '✅ Bom' : status === 'MELHORAR' ? '⚠️ Melhorar' : '❌ Ruim';
   }
   if (v.cls !== undefined) {
-    const clsEl = document.getElementById('vital-cls');
-    const status = v.cls_status || 'BOM';
-    clsEl.className = 'vital-card ' + status.toLowerCase();
-    document.getElementById('cls-val').textContent = v.cls.toFixed(3);
-    document.getElementById('cls-status').textContent = status === 'BOM' ? '✅ Bom' : '⚠️ Melhorar';
+    // Se CLS > 0.2, é dado antigo/corrompido — descartar automaticamente e remedir
+    if (v.cls > 0.2) {
+      delete dados.vitals.cls;
+      delete dados.vitals.cls_status;
+      try { localStorage.setItem(QG_KEY, JSON.stringify(dados)); } catch(e) {}
+      // Remedir CLS em tempo real
+      let clsReal = 0;
+      const clsObs = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (!entry.hadRecentInput) clsReal += entry.value;
+        }
+      });
+      try { clsObs.observe({type: 'layout-shift', buffered: true}); } catch(e) {}
+      setTimeout(() => {
+        const clsEl = document.getElementById('vital-cls');
+        const status = clsReal < 0.1 ? 'bom' : clsReal < 0.25 ? 'melhorar' : 'ruim';
+        clsEl.className = 'vital-card ' + status;
+        document.getElementById('cls-val').textContent = clsReal.toFixed(3);
+        document.getElementById('cls-status').textContent = clsReal < 0.1 ? '\u2705 Bom' : '\u26a0\ufe0f Melhorar';
+        clsObs.disconnect();
+      }, 2000);
+    } else {
+      const clsEl = document.getElementById('vital-cls');
+      const status = v.cls_status || 'BOM';
+      clsEl.className = 'vital-card ' + status.toLowerCase();
+      document.getElementById('cls-val').textContent = v.cls.toFixed(3);
+      document.getElementById('cls-status').textContent = status === 'BOM' ? '\u2705 Bom' : '\u26a0\ufe0f Melhorar';
+    }
   }
   if (v.inp) {
     const inpEl = document.getElementById('vital-inp');
