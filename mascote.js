@@ -328,7 +328,7 @@
             wrap.style.transition = 'none';
             wrap.style.left   = 'auto';
             wrap.style.right  = '12px';
-            wrap.style.bottom = '80px';
+            wrap.style.bottom = '160px';
             wrap.style.transform = 'translateX(0)';
             void wrap.offsetWidth;
 
