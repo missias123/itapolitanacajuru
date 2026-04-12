@@ -86,15 +86,23 @@
   const vitals = {};
 
   // LCP — Largest Contentful Paint (ideal < 2500ms)
+  // Salva após 5s do load para capturar o valor final estabilizado
   if ('PerformanceObserver' in window) {
     try {
-      new PerformanceObserver(function(list) {
+      let lcpValue = 0;
+      const lcpObserver = new PerformanceObserver(function(list) {
         const entries = list.getEntries();
         const last = entries[entries.length - 1];
-        vitals.lcp = Math.round(last.startTime);
-        vitals.lcp_status = last.startTime < 2500 ? 'BOM' : last.startTime < 4000 ? 'MELHORAR' : 'RUIM';
-        salvarMemoria({ vitals });
-      }).observe({ type: 'largest-contentful-paint', buffered: true });
+        lcpValue = last.startTime;
+      });
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          vitals.lcp = Math.round(lcpValue);
+          vitals.lcp_status = lcpValue < 2500 ? 'BOM' : lcpValue < 4000 ? 'MELHORAR' : 'RUIM';
+          salvarMemoria({ vitals });
+        }, 5000);
+      });
     } catch(e) {}
 
     // CLS — Cumulative Layout Shift (ideal < 0.1)
