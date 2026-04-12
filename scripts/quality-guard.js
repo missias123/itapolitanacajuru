@@ -100,7 +100,7 @@
         setTimeout(function() {
           vitals.lcp = Math.round(lcpValue);
           vitals.lcp_status = lcpValue < 2500 ? 'BOM' : lcpValue < 4000 ? 'MELHORAR' : 'RUIM';
-          salvarMemoria({ vitals });
+          vitals._timestamp = Date.now(); salvarMemoria({ vitals });
         }, 5000);
       });
     } catch(e) {}
@@ -120,7 +120,7 @@
         setTimeout(function() {
           vitals.cls = Math.round(cls_total * 1000) / 1000;
           vitals.cls_status = cls_total < 0.1 ? 'BOM' : cls_total < 0.25 ? 'MELHORAR' : 'RUIM';
-          salvarMemoria({ vitals });
+          vitals._timestamp = Date.now(); salvarMemoria({ vitals });
         }, 5000);
       });
     } catch(e) {}
@@ -132,7 +132,7 @@
           if (!vitals.inp || entry.duration > vitals.inp) {
             vitals.inp = Math.round(entry.duration);
             vitals.inp_status = entry.duration < 200 ? 'BOM' : entry.duration < 500 ? 'MELHORAR' : 'RUIM';
-            salvarMemoria({ vitals });
+            vitals._timestamp = Date.now(); salvarMemoria({ vitals });
           }
         });
       }).observe({ type: 'event', durationThreshold: 16, buffered: true });

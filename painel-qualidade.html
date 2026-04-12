@@ -148,6 +148,7 @@
       <button class="btn-sm" onclick="carregarDados()">Atualizar</button>
       <button class="btn-sm" onclick="window.open('https://itapolitanacajuru.com.br','_blank')">Ver Site</button>
       <button class="btn-sm" onclick="window.open('https://github.com/missias123/itapolitanacajuru/blob/main/relatorio_auditoria.md','_blank')">Relatório</button>
+      <button class="btn-sm" onclick="resetarMetricas()" style="background:#E53935" title="Limpar dados antigos do cache">🗑️ Limpar Cache</button>
     </div>
   </div>
 
@@ -338,7 +339,24 @@ function limparErrosAntigos(dados) {
   return dados;
 }
 
-function carregarDados() {
+
+  // Função para resetar métricas antigas do localStorage
+  function resetarMetricas() {
+    const keys = ['vitals', 'erros_js', 'recursos_404', 'memoria_qualidade'];
+    keys.forEach(k => {
+      try { localStorage.removeItem(k); } catch(e) {}
+    });
+    // Limpar também chaves com prefixo itapolitana
+    Object.keys(localStorage).forEach(k => {
+      if (k.includes('vitals') || k.includes('cls') || k.includes('lcp') || k.includes('qualidade')) {
+        localStorage.removeItem(k);
+      }
+    });
+    alert('✅ Cache de métricas limpo! Abra o site principal, aguarde 6 segundos e volte aqui.');
+    carregarDados();
+  }
+
+  function carregarDados() {
   let dados = lerMemoria();
   dados = limparErrosAntigos(dados);
   
@@ -472,6 +490,25 @@ function enviarParaManus() {
     alert('Copie e envie ao Manus:\n\n"' + texto + '"');
   }
   input.value = '';
+}
+
+// Função para limpar cache de métricas antigas
+function resetarMetricas() {
+  try {
+    // Limpar todas as chaves relacionadas a métricas
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.includes('vitals') || k.includes('cls') || k.includes('lcp') || k.includes('qualidade') || k.includes('memoria') || k.includes('erros') || k.includes('recursos'))) {
+        keysToRemove.push(k);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    alert('✅ Cache limpo! Agora:\n1. Abra o site principal\n2. Aguarde 6 segundos\n3. Volte aqui e clique em Atualizar');
+    carregarDados();
+  } catch(e) {
+    alert('Erro ao limpar: ' + e.message);
+  }
 }
 
 // Animar barras
