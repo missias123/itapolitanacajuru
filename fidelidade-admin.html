@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Fidelidade – Itapolitana Cajuru</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f5f5f8;color:#111827;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('images/fundo-itapolitana.webp');background-repeat:repeat;background-size:150px 150px;opacity:.08;pointer-events:none;z-index:-1}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:#fff;border-radius:18px;padding:36px 28px;max-width:380px;width:100%;box-shadow:0 4px 28px rgba(0,0,0,.1);text-align:center}
+.login-box h2{font-size:22px;font-weight:900;margin-bottom:6px}
+.login-box p{font-size:13px;color:#E65100;font-weight:700;margin-bottom:24px}
+.senha-wrap{position:relative;margin-bottom:14px}
+.senha-wrap input{width:100%;padding:13px 44px 13px 16px;border:1.5px solid #E5E7EB;border-radius:11px;font-size:15px;outline:none}
+.senha-wrap input:focus{border-color:#E65100}
+.olho-btn{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#E65100;padding:0;line-height:1}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer}
+.btn-login:hover{opacity:.9}
+.back-link{display:block;margin-top:10px;font-size:13px;color:#E65100;text-decoration:none}
+#admin-panel{display:none}
+.admin-header{background:linear-gradient(135deg,#E65100,#FF6D00,#E53935);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(230,81,0,.4)}
+.admin-header h1{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn-logout{background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.admin-body{max-width:960px;margin:0 auto;padding:20px 16px 100px}
+.card{background:#fff;border-radius:16px;border:1px solid #E5E7EB;margin-bottom:20px;overflow:hidden}
+.card-header{padding:16px 20px;background:#FFF3E0;border-bottom:1px solid #FFE0B2;display:flex;align-items:center;gap:10px}
+.card-header h3{font-size:15px;font-weight:800;flex:1;color:#E65100}
+.card-body{padding:20px}
+.btn{padding:13px 24px;border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-laranja{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;box-shadow:0 4px 16px rgba(230,81,0,.4)}
+.btn-laranja:hover:not(:disabled){box-shadow:0 6px 22px rgba(230,81,0,.55)}
+.btn-verde{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35)}
+.btn-vermelho{background:linear-gradient(135deg,#DC2626,#EF4444);color:#fff;box-shadow:0 4px 16px rgba(220,38,38,.35)}
+.btn-azul{background:linear-gradient(135deg,#2563EB,#3B82F6);color:#fff;box-shadow:0 4px 16px rgba(37,99,235,.35)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-box{background:#fff;border-radius:14px;padding:16px;text-align:center;border:1px solid #E5E7EB}
+.stat-box .num{font-size:28px;font-weight:900;color:#E65100}
+.stat-box .label{font-size:11px;color:#6B7280;font-weight:600;margin-top:2px}
+.progresso-wrap{background:#FFF3E0;border:2px solid #FFD0A0;border-radius:14px;padding:16px;margin-top:16px;text-align:center}
+.progresso-titulo{font-size:15px;font-weight:900;color:#E65100;margin-bottom:8px}
+.progresso-barra-bg{background:#FFE0B2;border-radius:20px;height:14px;overflow:hidden;margin-bottom:8px}
+.progresso-barra{background:linear-gradient(90deg,#E65100,#FF6D00);height:100%;border-radius:20px;transition:width .4s ease}
+.progresso-texto{font-size:16px;font-weight:900;color:#E65100;margin-top:4px}
+.codigos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+@media(max-width:600px){.codigos-grid{grid-template-columns:repeat(2,1fr)}}
+.codigo-chip{background:#FFF3E0;border:1px solid #FFD0A0;border-radius:8px;padding:8px 6px;text-align:center;font-family:monospace;font-size:12px;font-weight:700;color:#E65100;letter-spacing:1px;word-break:break-all}
+.codigo-chip.usado{background:#FEE2E2;border-color:#FECACA;color:#991B1B;text-decoration:line-through;opacity:.7}
+.cliente-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F3F4F6;font-size:13px}
+.cliente-row:last-child{border-bottom:none}
+.cliente-nome{font-weight:700;color:#1F2937}
+.cliente-cel{color:#6B7280;font-size:12px}
+.cliente-pts{background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800}
+.cliente-pts.premio{background:linear-gradient(135deg,#F59E0B,#EF4444)}
+.alerta{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:700;margin-top:12px;display:none}
+.alerta.ok{background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7}
+.alerta.erro{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.alerta.info{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE}
+.info-box{background:#FFF3E0;border:1px solid #FFD0A0;border-radius:12px;padding:14px 16px;font-size:13px;color:#92400E;line-height:1.6;margin-bottom:16px}
+.lote-info{background:#E0F2FE;border:1px solid #BAE6FD;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:700;color:#0369A1;margin-top:12px;text-align:center}
+.token-wrap{background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.token-wrap label{display:block;font-size:12px;font-weight:700;color:#166534;margin-bottom:6px}
+.token-wrap input{width:100%;padding:10px 12px;border:1.5px solid #86EFAC;border-radius:8px;font-size:13px;font-family:monospace;outline:none;background:#fff}
+.token-wrap input:focus{border-color:#22C55E}
+.token-status{font-size:12px;font-weight:700;margin-top:6px}
+.token-status.ok{color:#166534}
+.token-status.erro{color:#991B1B}
+.sync-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.sync-badge.syncing{background:rgba(255,255,255,.2);color:#fff}
+.sync-badge.synced{background:rgba(255,255,255,.25);color:#fff}
+.sync-badge.offline{background:rgba(220,38,38,.3);color:#fff}
+.spinner{width:10px;height:10px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+button,input[type="submit"]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+body{overflow-x:hidden}
+@media(max-width:600px){.login-box{padding:20px 14px}.card{padding:14px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <h2>🍦 Admin Fidelidade</h2>
+    <p>Sorveteria Itapolitana Cajuru</p>
+    <div class="senha-wrap">
+      <input type="password" id="admin-password" placeholder="Senha administrativa" onkeydown="if(event.key==='Enter')checkLogin()">
+      <button class="olho-btn" onclick="toggleSenha()" aria-label="Mostrar/ocultar senha">👁</button>
+    </div>
+    <button class="btn-login" onclick="checkLogin()">Entrar</button>
+    <a href="fidelidade.html" class="back-link">← Página do Cliente</a>
+    <a href="index.html" class="back-link">← Voltar ao site</a>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div id="admin-panel">
+  <div class="admin-header">
+    <h1>⚙️ Admin Fidelidade
+      <span class="sync-badge offline" id="sync-badge">● Offline</span>
+    </h1>
+    <button class="btn-logout" onclick="sairAdmin()">Sair</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- TOKEN GITHUB -->
+    <div class="card" id="card-token">
+      <div class="card-header"><h3>🔑 Token GitHub (configure uma vez)</h3></div>
+      <div class="card-body">
+        <div class="token-wrap">
+          <label>Personal Access Token do GitHub (com permissão "repo")</label>
+          <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="salvarToken(this.value)">
+          <div class="token-status erro" id="token-status">⚠️ Token não configurado</div>
+        </div>
+        <div class="info-box">
+          <strong>Como obter (uma única vez):</strong><br>
+          github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → marque <strong>repo</strong> → Generate → copie e cole acima.<br>
+          O token fica salvo no seu navegador. Após configurar, os lotes são salvos <strong>automaticamente</strong> no GitHub a cada clique.
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-azul" onclick="testarToken()">🔍 Testar Conexão</button>
+          <button class="btn btn-laranja" onclick="carregarDoGitHub()">☁️ Carregar Dados do GitHub</button>
+        </div>
+        <div class="alerta" id="alerta-token"></div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÃO DO PRÊMIO -->
+    <div class="card" id="card-premio">
+      <div class="card-header"><h3>🎁 Configuração do Prêmio</h3></div>
+      <div class="card-body">
+        <div class="token-wrap">
+          <label>Nome do Prêmio (aparece na página do cliente)</label>
+          <input type="text" id="premio-nome" placeholder="Ex: Milkshake 300ml, Sundae 2 Bolas, Açaí 300ml..." style="width:100%;padding:12px;border:1.5px solid #86EFAC;border-radius:8px;font-size:15px;font-weight:700;outline:none;background:#fff;" oninput="atualizarPreviewPremio()">
+        </div>
+        <div class="token-wrap" style="margin-top:12px">
+          <label>Pontos necessários para resgatar</label>
+          <input type="number" id="premio-pontos" min="1" max="100" value="10" style="width:160px;padding:12px;border:1.5px solid #86EFAC;border-radius:8px;font-size:15px;font-weight:700;outline:none;background:#fff;" oninput="atualizarPreviewPremio()">
+        </div>
+        <div id="preview-premio" style="margin:16px 0;padding:18px;background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-radius:14px;border:2px solid #F97316;text-align:center;">
+          <span style="font-size:32px">🥤</span><br>
+          <strong style="font-size:20px;color:#EA580C" id="prev-nome">Milkshake 300ml</strong> <span style="color:#EA580C;font-weight:800">GRÁTIS</span><br>
+          <small style="color:#9CA3AF;font-size:13px">ao acumular <strong id="prev-pontos">10</strong> pontos</small>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-laranja" onclick="salvarConfigPremio()">💾 Salvar no GitHub</button>
+        </div>
+        <div class="alerta" id="alerta-premio"></div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="num" id="stat-liberados">0</div><div class="label">Códigos Liberados</div></div>
+      <div class="stat-box"><div class="num" id="stat-usados">0</div><div class="label">Códigos Usados</div></div>
+      <div class="stat-box"><div class="num" id="stat-clientes">0</div><div class="label">Clientes</div></div>
+    </div>
+
+    <!-- GERADOR -->
+    <div class="card">
+      <div class="card-header"><h3>🎟️ Gerador de Lotes de Códigos</h3></div>
+      <div class="card-body">
+        <div class="info-box">
+          Banco total: <strong>100.000 códigos únicos e indecifrávies</strong>.<br>
+          Cada clique em <strong>"Liberar 100 Códigos"</strong> gera o próximo lote e salva <strong>automaticamente no GitHub</strong>.<br>
+          O contador avança: <strong>100/100.000 → 200/100.000 → 300/100.000...</strong><br>
+          Apenas códigos liberados são aceitos pelos clientes — sem impressão = sem validade.
+        </div>
+
+        <div class="progresso-wrap">
+          <div class="progresso-titulo">Progresso do Banco de Códigos</div>
+          <div class="progresso-barra-bg"><div class="progresso-barra" id="prog-barra" style="width:0%"></div></div>
+          <div class="progresso-texto" id="prog-texto">0 / 100.000 códigos liberados</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-laranja" onclick="liberarLote()" id="btn-liberar">🎲 Liberar 100 Códigos</button>
+          <button class="btn btn-vermelho" onclick="apagarTudo()">🗑️ Apagar Todos</button>
+        </div>
+        <div class="alerta" id="alerta-gerador"></div>
+
+        <div id="lote-wrap" style="display:none;margin-top:16px">
+          <div class="lote-info" id="lote-info"></div>
+          <div class="codigos-grid" id="codigos-grid"></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn btn-laranja" onclick="gerarPDF()">📄 Baixar PDF (100 cupons)</button>
+            <button class="btn btn-verde" onclick="enviarWhatsApp()">📲 Notificar WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="card">
+      <div class="card-header">
+        <h3>👥 Clientes (por pontos)</h3>
+        <button class="btn btn-laranja" style="padding:8px 14px;font-size:12px" onclick="carregarDoGitHub()">↻ Atualizar</button>
+      </div>
+      <div class="card-body" id="lista-clientes">
+        <p style="color:#9CA3AF;font-size:13px">Carregue os dados do GitHub para ver os clientes.</p>
+      </div>
+    </div>
+
+    <!-- FRAUDES -->
+    <div class="card">
+      <div class="card-header"><h3>🚨 Tentativas de Fraude</h3></div>
+      <div class="card-body" id="lista-fraudes">
+        <p style="color:#9CA3AF;font-size:13px">Nenhuma tentativa registrada.</p>
+      </div>
+    </div>
+
+    <!-- RESET DO SISTEMA -->
+    <div class="card" style="border:2px solid #EF4444">
+      <div class="card-header" style="background:#FEE2E2;border-bottom:1px solid #FECACA">
+        <h3 style="color:#991B1B">🔄 Resetar Sistema Completo</h3>
+      </div>
+      <div class="card-body">
+        <div style="background:#FFF1F2;border:1px solid #FECACA;border-radius:10px;padding:14px;margin-bottom:16px">
+          <p style="color:#991B1B;font-weight:700;margin:0 0 6px">⚠️ ATENÇÃO — AÇÃO IRREVERSÍVEL</p>
+          <p style="color:#B91C1C;font-size:13px;margin:0 0 6px">Esta ação irá apagar <strong>TODOS</strong> os dados do sistema:</p>
+          <ul style="color:#B91C1C;font-size:13px;margin:0 0 0 16px;padding:0;line-height:1.8">
+            <li>Todos os clientes cadastrados (nome, celular, pontos, histórico)</li>
+            <li>Todos os códigos liberados e usados</li>
+            <li>Contador volta para <strong>0/100.000</strong></li>
+          </ul>
+          <p style="color:#991B1B;font-size:12px;margin:8px 0 0;font-weight:700">✅ As configurações do prêmio e o token GitHub são mantidos.</p>
+        </div>
+        <div id="reset-confirmacao" style="display:none;margin-bottom:12px;background:#FFF1F2;border:1px solid #FECACA;border-radius:10px;padding:14px">
+          <label style="color:#991B1B;font-size:13px;font-weight:700;display:block;margin-bottom:8px">🔐 Digite <strong>CONFIRMAR</strong> para prosseguir:</label>
+          <input type="text" id="reset-input" placeholder="Digite: CONFIRMAR" autocomplete="off" style="width:100%;padding:12px;border:2px solid #FECACA;border-radius:8px;font-size:15px;font-weight:700;outline:none;background:#fff;letter-spacing:2px" oninput="verificarConfirmacaoReset()">
+          <div class="btn-row" style="margin-top:12px">
+            <button onclick="executarReset()" id="btn-confirmar-reset" disabled class="btn" style="flex:1;background:#6B7280;color:#fff;cursor:not-allowed">✅ Confirmar Reset</button>
+            <button onclick="cancelarReset()" class="btn" style="flex:1;background:#E5E7EB;color:#374151">❌ Cancelar</button>
+          </div>
+        </div>
+        <button onclick="mostrarConfirmacaoReset()" id="btn-resetar" class="btn btn-vermelho" style="width:100%;padding:14px;font-size:15px">🔄 Resetar Sistema</button>
+        <div class="alerta" id="alerta-reset" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// =====================================================
+// CONFIGURAÇÕES
+// =====================================================
+const SENHA_ADMIN  = 'itapolitana2007@';
+const GH_OWNER     = 'missias123';
+const GH_REPO      = 'itapolitanacajuru';
+const GH_BRANCH    = 'main';
+const GH_FILE_PATH = 'dados/fidelidade.json';
+const TOTAL_BANCO  = 100000;
+const LOTE_SIZE    = 100;
+const SALT         = 'ITAP0L1T4N4#S3CR3T@2024!';
+// REGRA DOS CARACTERES PERMITIDOS NOS CUPONS:
+// Removidos para evitar confusao visual ao digitar o cupom fisico:
+//   Letra O  → parece numero 0
+//   Letra I  → parece numero 1 ou letra L
+//   Letra L  → parece numero 1 ou letra I
+//   Numero 0 → parece letra O
+//   Numero 1 → parece letra I ou letra L
+// Caracteres especiais mantidos para aumentar entropia e dificultar fraude.
+const CHARS        = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
+
+// Cache local dos dados do GitHub
+let db = null;
+
+// =====================================================
+// AUTENTICAÇÃO
+// =====================================================
+function checkLogin(){
+  if(document.getElementById('admin-password').value === SENHA_ADMIN){
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    carregarToken();
+    carregarDoGitHub();
+  } else {
+    alert('Senha incorreta!');
+  }
+}
+function sairAdmin(){
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('admin-password').value = '';
+}
+function toggleSenha(){
+  const i = document.getElementById('admin-password');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
+// =====================================================
+// TOKEN GITHUB
+// =====================================================
+function carregarToken(){
+  const t = localStorage.getItem('itap_admin_gh_token') || '';
+  document.getElementById('github-token').value = t;
+  atualizarStatusToken(t);
+}
+function salvarToken(t){
+  t = t.trim();
+  localStorage.setItem('itap_admin_gh_token', t);
+  atualizarStatusToken(t);
+}
+function getToken(){ return localStorage.getItem('itap_admin_gh_token') || ''; }
+function atualizarStatusToken(t){
+  const el = document.getElementById('token-status');
+  if(t && t.length > 15){
+    el.textContent = '✅ Token configurado — sincronização automática ativa';
+    el.className = 'token-status ok';
+  } else {
+    el.textContent = '⚠️ Token não configurado — configure para salvar no GitHub';
+    el.className = 'token-status erro';
+  }
+}
+async function testarToken(){
+  const token = getToken();
+  if(!token){ mostrarAlerta('alerta-token','⚠️ Configure o token primeiro.','erro'); return; }
+  mostrarAlerta('alerta-token','🔄 Testando...','info');
+  try {
+    const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
+      headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }
+    });
+    if(r.ok){
+      const d = await r.json();
+      mostrarAlerta('alerta-token',`✅ Conexão OK! Repo: ${d.full_name} | Push: ${d.permissions?.push?'Sim':'Não'}`,'ok');
+      setSyncBadge('synced');
+    } else {
+      mostrarAlerta('alerta-token',`❌ Erro ${r.status}: token inválido ou sem permissão.`,'erro');
+      setSyncBadge('offline');
+    }
+  } catch(e){
+    mostrarAlerta('alerta-token','❌ Erro de rede: '+e.message,'erro');
+  }
+}
+
+// =====================================================
+// SYNC BADGE
+// =====================================================
+function setSyncBadge(status){
+  const el = document.getElementById('sync-badge');
+  if(status==='syncing'){ el.className='sync-badge syncing'; el.innerHTML='<span class="spinner"></span> Salvando...'; }
+  else if(status==='synced'){ el.className='sync-badge synced'; el.innerHTML='● Online'; }
+  else { el.className='sync-badge offline'; el.innerHTML='● Offline'; }
+}
+
+// =====================================================
+// GITHUB API
+// =====================================================
+async function carregarDoGitHub(){
+  setSyncBadge('syncing');
+  try {
+    const token = getToken();
+    const headers = token ? { Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' } : { Accept:'application/vnd.github.v3+json' };
+    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}&_=${Date.now()}`;
+    const r = await fetch(url, { headers });
+    if(r.status === 404){
+      db = { liberados:0, codigos:{}, clientes:{}, fraudes:[], _sha:null };
+      setSyncBadge('synced');
+      renderTudo();
+      return;
+    }
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const fd = await r.json();
+    const json = decodeURIComponent(escape(atob(fd.content.replace(/\n/g,''))));
+    db = JSON.parse(json);
+    db._sha = fd.sha;
+    setSyncBadge('synced');
+    renderTudo();
+    carregarConfigPremio();
+  } catch(e){
+    setSyncBadge('offline');
+    mostrarAlerta('alerta-gerador','❌ Erro ao carregar: '+e.message,'erro');
+    if(!db) db = { liberados:0, codigos:{}, clientes:{}, fraudes:[], _sha:null };
+    renderTudo();
+  }
+}
+
+async function salvarNoGitHub(msg){
+  const token = getToken();
+  if(!token){
+    mostrarAlerta('alerta-gerador','⚠️ Token GitHub não configurado! Configure acima para salvar automaticamente.','erro');
+    return false;
+  }
+  setSyncBadge('syncing');
+  try {
+    // Atualizar SHA se necessário
+    if(!db._sha){
+      const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`,{
+        headers:{ Authorization:`token ${token}`, Accept:'application/vnd.github.v3+json' }
+      });
+      if(r.ok){ const d = await r.json(); db._sha = d.sha; }
+    }
+    const salvar = { ...db };
+    delete salvar._sha;
+    salvar.ultima_atualizacao = new Date().toISOString();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(salvar, null, 2))));
+    const body = { message: msg || 'Admin: Atualização fidelidade', content, branch: GH_BRANCH };
+    if(db._sha) body.sha = db._sha;
+    const r = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE_PATH}`,{
+      method:'PUT',
+      headers:{ Authorization:`token ${token}`, 'Content-Type':'application/json', Accept:'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok){
+      const err = await r.json();
+      // SHA desatualizado: recarregar e tentar de novo
+      if(r.status === 409 || (err.message && err.message.includes('sha'))){
+        db._sha = null;
+        return await salvarNoGitHub(msg);
+      }
+      throw new Error(err.message || `HTTP ${r.status}`);
+    }
+    const d = await r.json();
+    db._sha = d.content.sha;
+    setSyncBadge('synced');
+    return true;
+  } catch(e){
+    setSyncBadge('offline');
+    mostrarAlerta('alerta-gerador','❌ Erro ao salvar no GitHub: '+e.message,'erro');
+    return false;
+  }
+}
+
+// =====================================================
+// GERADOR DE CÓDIGOS (determinístico por índice)
+// =====================================================
+function gerarCodigo(idx){
+  const s = SALT;
+  let a = idx + 1, b = 0;
+  for(let i=0;i<s.length;i++) b += s.charCodeAt(i);
+  let x = (a*1664525+1013904223)>>>0;
+  x = (x^(x>>>11))>>>0;
+  x = (x+(b*22695477+1))>>>0;
+  x = (x^(x>>>16))>>>0;
+  x = (x*2246822519)>>>0;
+  x = (x^(x>>>13))>>>0;
+  x = (x*3266489917)>>>0;
+  x = (x^(x>>>16))>>>0;
+  let c='';
+  for(let i=0;i<10;i++){
+    x = (x*1664525+1013904223+i*31+a*7)>>>0;
+    x = (x^(x>>>15))>>>0;
+    c += CHARS[x%CHARS.length];
+  }
+  return c;
+}
+
+// =====================================================
+// LIBERAR LOTE
+// =====================================================
+async function liberarLote(){
+  if(!db) await carregarDoGitHub();
+  const atual = db.liberados || 0;
+  if(atual >= TOTAL_BANCO){
+    mostrarAlerta('alerta-gerador','⚠️ Todos os 100.000 códigos já foram liberados!','erro');
+    return;
+  }
+  const btn = document.getElementById('btn-liberar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;margin-right:6px"></span> Gerando e salvando no GitHub...';
+
+  const inicio = atual;
+  const fim = Math.min(atual + LOTE_SIZE, TOTAL_BANCO);
+  const loteNum = Math.ceil(fim / LOTE_SIZE);
+  const novos = [];
+  for(let i=inicio; i<fim; i++) novos.push(gerarCodigo(i));
+
+  if(!db.codigos) db.codigos = {};
+  novos.forEach((c,i) => {
+    db.codigos[c] = { status:'disponivel', idx:inicio+i, lote:loteNum };
+  });
+  db.liberados = fim;
+
+  // Salvar lote para PDF (local)
+  localStorage.setItem('fid_lote_atual', JSON.stringify({ inicio:inicio+1, fim, codigos:novos, loteNum }));
+
+  // Salvar no GitHub automaticamente
+  const ok = await salvarNoGitHub(`Fidelidade: Lote ${loteNum} liberado — ${fim.toLocaleString('pt-BR')}/${TOTAL_BANCO.toLocaleString('pt-BR')} códigos`);
+
+  btn.disabled = false;
+  renderProgresso();
+  renderLoteAtual();
+  renderStats();
+
+  if(ok){
+    mostrarAlerta('alerta-gerador',
+      `✅ Lote ${loteNum} liberado e salvo no GitHub! Contador: ${fim.toLocaleString('pt-BR')} / ${TOTAL_BANCO.toLocaleString('pt-BR')} códigos.`,
+      'ok');
+  } else {
+    mostrarAlerta('alerta-gerador',
+      `⚠️ Códigos gerados mas NÃO salvos no GitHub (configure o token acima!). Os clientes não conseguirão validar.`,
+      'erro');
+  }
+}
+
+async function apagarTudo(){
+  if(!confirm('Apagar TODOS os códigos liberados do GitHub? Clientes que já usaram códigos não são afetados.')) return;
+  db.codigos = {};
+  db.liberados = 0;
+  localStorage.removeItem('fid_lote_atual');
+  const ok = await salvarNoGitHub('Fidelidade: Todos os códigos apagados pelo admin');
+  document.getElementById('lote-wrap').style.display = 'none';
+  renderProgresso();
+  renderStats();
+  if(ok) mostrarAlerta('alerta-gerador','🗑️ Todos os códigos apagados do GitHub.','ok');
+}
+
+// =====================================================
+// RENDER
+// =====================================================
+function renderTudo(){
+  renderProgresso();
+  renderStats();
+  renderClientes();
+  renderFraudes();
+  const lote = localStorage.getItem('fid_lote_atual');
+  if(lote) renderLoteAtual();
+}
+
+function renderProgresso(){
+  const n = db ? (db.liberados||0) : 0;
+  const pct = (n/TOTAL_BANCO*100).toFixed(3);
+  document.getElementById('prog-barra').style.width = pct+'%';
+  document.getElementById('prog-texto').textContent =
+    `${n.toLocaleString('pt-BR')} / ${TOTAL_BANCO.toLocaleString('pt-BR')} códigos liberados`;
+  document.getElementById('stat-liberados').textContent = n.toLocaleString('pt-BR');
+  const restante = TOTAL_BANCO - n;
+  const btn = document.getElementById('btn-liberar');
+  if(restante > 0){
+    btn.textContent = `🎲 Liberar 100 Códigos (${restante.toLocaleString('pt-BR')} restantes)`;
+    btn.disabled = false;
+  } else {
+    btn.textContent = '✅ Banco Esgotado (100.000/100.000)';
+    btn.disabled = true;
+  }
+}
+
+function renderLoteAtual(){
+  const lote = JSON.parse(localStorage.getItem('fid_lote_atual')||'null');
+  if(!lote) return;
+  document.getElementById('lote-wrap').style.display = 'block';
+  document.getElementById('lote-info').textContent =
+    `Lote ${lote.loteNum||'?'}: códigos ${lote.inicio} a ${lote.fim} de ${TOTAL_BANCO.toLocaleString('pt-BR')}`;
+  const grid = document.getElementById('codigos-grid');
+  const codigos = db ? (db.codigos||{}) : {};
+  grid.innerHTML = lote.codigos.map(c => {
+    const usado = codigos[c] && codigos[c].status==='usado';
+    return `<div class="codigo-chip${usado?' usado':''}">${c}</div>`;
+  }).join('');
+}
+
+function renderStats(){
+  if(!db) return;
+  const usados = Object.values(db.codigos||{}).filter(v=>v.status==='usado').length;
+  document.getElementById('stat-usados').textContent = usados.toLocaleString('pt-BR');
+  const clientes = Object.keys(db.clientes||{}).length;
+  document.getElementById('stat-clientes').textContent = clientes;
+}
+
+function renderClientes(){
+  if(!db) return;
+  const clientes = db.clientes || {};
+  const lista = document.getElementById('lista-clientes');
+  const arr = Object.values(clientes).sort((a,b)=>(b.pontos||0)-(a.pontos||0));
+  if(!arr.length){
+    lista.innerHTML = '<p style="color:#9CA3AF;font-size:13px">Nenhum cliente cadastrado ainda.</p>';
+    return;
+  }
+  lista.innerHTML = arr.map((c,i) => `
+    <div class="cliente-row">
+      <div>
+        <div class="cliente-nome">${i+1}. ${c.nome}</div>
+        <div class="cliente-cel">📱 ${c.cel} &nbsp;·&nbsp; 🎟️ ${(c.historico||[]).length} código${(c.historico||[]).length!==1?'s':''} inserido${(c.historico||[]).length!==1?'s':''}</div>
+      </div>
+      <div class="cliente-pts${(c.pontos||0)>=10?' premio':''}">${c.pontos||0} pts</div>
+    </div>
+  `).join('');
+  document.getElementById('stat-clientes').textContent = arr.length;
+}
+
+function renderFraudes(){
+  if(!db) return;
+  const fraudes = db.fraudes || [];
+  const lista = document.getElementById('lista-fraudes');
+  if(!fraudes.length){
+    lista.innerHTML = '<p style="color:#9CA3AF;font-size:13px">Nenhuma tentativa registrada.</p>';
+    return;
+  }
+  lista.innerHTML = [...fraudes].reverse().slice(0,30).map(f => `
+    <div class="cliente-row">
+      <div>
+        <div class="cliente-nome">📱 ${f.cel||'Desconhecido'}</div>
+        <div class="cliente-cel">Código: <strong>${f.codigo}</strong> · ${new Date(f.data).toLocaleString('pt-BR')}</div>
+      </div>
+      <div style="font-size:11px;color:#EF4444;font-weight:700">FRAUDE</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// CONFIGURAÇÃO DO PRÊMIO
+// =====================================================
+function atualizarPreviewPremio(){
+  const nome = document.getElementById('premio-nome').value || 'Milkshake 300ml';
+  const pontos = document.getElementById('premio-pontos').value || '10';
+  document.getElementById('prev-nome').textContent = nome;
+  document.getElementById('prev-pontos').textContent = pontos;
+}
+
+async function salvarConfigPremio(){
+  const nome = (document.getElementById('premio-nome').value || '').trim();
+  const pontos = parseInt(document.getElementById('premio-pontos').value) || 10;
+  if(!nome){ mostrarAlerta('alerta-premio','⚠️ Digite o nome do prêmio.','erro'); return; }
+  if(!db){ mostrarAlerta('alerta-premio','⚠️ Carregue os dados do GitHub primeiro.','erro'); return; }
+  db.config = db.config || {};
+  db.config.premioNome = nome;
+  db.config.premioPontos = pontos;
+  const ok = await salvarNoGitHub(`Admin: Prêmio atualizado para "${nome}" (${pontos} pts)`);
+  if(ok !== false){
+    mostrarAlerta('alerta-premio',`✅ Prêmio atualizado: "${nome}" com ${pontos} pontos!`,'ok');
+  }
+}
+
+function carregarConfigPremio(){
+  if(!db || !db.config) return;
+  const nome = db.config.premioNome || 'Milkshake 300ml';
+  const pontos = db.config.premioPontos || 10;
+  document.getElementById('premio-nome').value = nome;
+  document.getElementById('premio-pontos').value = pontos;
+  atualizarPreviewPremio();
+}
+
+// =====================================================
+// PDF
+// =====================================================
+function gerarPDF(){
+  const lote = JSON.parse(localStorage.getItem('fid_lote_atual')||'null');
+  if(!lote||!lote.codigos.length){ alert('Nenhum lote gerado ainda.'); return; }
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pw=210,ph=297,cols=4,rows=5;
+  const cw=(pw-20)/cols, ch=(ph-20)/rows;
+  let idx=0;
+  const totalPages = Math.ceil(lote.codigos.length/(cols*rows));
+  for(let pg=0;pg<totalPages;pg++){
+    if(pg>0) doc.addPage();
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        if(idx>=lote.codigos.length) break;
+        const x=10+c*cw, y=10+r*ch, codigo=lote.codigos[idx++];
+        doc.setDrawColor(230,81,0); doc.setLineWidth(0.4);
+        doc.roundedRect(x+1,y+1,cw-2,ch-2,3,3,'S');
+        doc.setFillColor(230,81,0);
+        doc.roundedRect(x+1,y+1,cw-2,8,3,3,'F');
+        doc.rect(x+1,y+5,cw-2,4,'F');
+        doc.setTextColor(255,255,255); doc.setFontSize(7); doc.setFont(undefined,'bold');
+        doc.text('SORVETERIA ITAPOLITANA',x+cw/2,y+6,{align:'center'});
+        doc.setTextColor(80,40,0); doc.setFontSize(5.5); doc.setFont(undefined,'normal');
+        doc.text('Acesse: itapolitanacajuru.com.br',x+cw/2,y+13,{align:'center'});
+        doc.text('Clique em FIDELIDADE no menu',x+cw/2,y+17,{align:'center'});
+        doc.text('Digite seu celular, nome e o codigo:',x+cw/2,y+21,{align:'center'});
+        doc.setFillColor(255,243,224);
+        doc.roundedRect(x+4,y+23,cw-10,9,2,2,'F');
+        doc.setTextColor(230,81,0); doc.setFontSize(9); doc.setFont(undefined,'bold');
+        doc.text(codigo,x+cw/2,y+29,{align:'center'});
+        doc.setTextColor(80,40,0); doc.setFontSize(5); doc.setFont(undefined,'bold');
+        doc.text('10 pontos = MILKSHAKE 300ML GRATIS!',x+cw/2,y+35,{align:'center'});
+        doc.setDrawColor(200,200,200); doc.setLineDash([1,1]);
+        doc.line(x,y+ch,x+cw,y+ch); doc.line(x+cw,y,x+cw,y+ch);
+        doc.setLineDash([]);
+      }
+    }
+  }
+  doc.save(`cupons-itapolitana-lote${lote.loteNum||'?'}.pdf`);
+}
+
+// =====================================================
+// WHATSAPP
+// =====================================================
+function enviarWhatsApp(){
+  const lote = JSON.parse(localStorage.getItem('fid_lote_atual')||'null');
+  const msg = lote
+    ? encodeURIComponent(`Ola! Lote ${lote.loteNum} de cupons de fidelidade gerado (codigos ${lote.inicio} a ${lote.fim} de 100.000). PDF pronto para impressao e entrega.`)
+    : encodeURIComponent('Novo lote de cupons de fidelidade gerado pela Sorveteria Itapolitana.');
+  window.open(`https://wa.me/5516996062046?text=${msg}`,'_blank');
+}
+
+// =====================================================
+// ALERTA
+// =====================================================
+function mostrarAlerta(id,msg,tipo){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `alerta ${tipo}`;
+  el.style.display = 'block';
+  setTimeout(()=>el.style.display='none', 7000);
+}
+
+// =====================================================
+// INIT
+// =====================================================
+// =====================================================
+// RESET DO SISTEMA
+// =====================================================
+function mostrarConfirmacaoReset(){
+  document.getElementById('reset-confirmacao').style.display = 'block';
+  document.getElementById('btn-resetar').style.display = 'none';
+  document.getElementById('reset-input').value = '';
+  document.getElementById('reset-input').focus();
+  mostrarAlerta('alerta-reset','','info');
+}
+
+function cancelarReset(){
+  document.getElementById('reset-confirmacao').style.display = 'none';
+  document.getElementById('btn-resetar').style.display = 'block';
+  document.getElementById('reset-input').value = '';
+}
+
+function verificarConfirmacaoReset(){
+  const val = document.getElementById('reset-input').value.trim().toUpperCase();
+  const btn = document.getElementById('btn-confirmar-reset');
+  if(val === 'CONFIRMAR'){
+    btn.disabled = false;
+    btn.style.background = 'linear-gradient(135deg,#DC2626,#EF4444)';
+    btn.style.cursor = 'pointer';
+    btn.style.boxShadow = '0 4px 16px rgba(220,38,38,.35)';
+  } else {
+    btn.disabled = true;
+    btn.style.background = '#6B7280';
+    btn.style.cursor = 'not-allowed';
+    btn.style.boxShadow = 'none';
+  }
+}
+
+async function executarReset(){
+  const val = document.getElementById('reset-input').value.trim().toUpperCase();
+  if(val !== 'CONFIRMAR') return;
+  const token = getToken();
+  if(!token){ mostrarAlerta('alerta-reset','⚠️ Configure o Token GitHub antes de resetar.','erro'); return; }
+  mostrarAlerta('alerta-reset','⏳ Resetando sistema...','info');
+  document.getElementById('btn-confirmar-reset').disabled = true;
+  // Preservar configurações do prêmio
+  const configAtual = (db && db.config) ? db.config : {};
+  // Novo JSON zerado
+  const novoFidelidade = {
+    codigos: {},
+    liberados: 0,
+    usados: 0,
+    config: configAtual,
+    ultimoReset: new Date().toISOString()
+  };
+  const novoClientes = { clientes: {} };
+  // Salvar fidelidade.json zerado
+  const okFid = await salvarArquivoGitHub('dados/fidelidade.json', JSON.stringify(novoFidelidade, null, 2), 'Reset do sistema: fidelidade.json zerado');
+  // Salvar clientes.json zerado
+  const okCli = await salvarArquivoGitHub('dados/clientes.json', JSON.stringify(novoClientes, null, 2), 'Reset do sistema: clientes.json zerado');
+  if(okFid && okCli){
+    db = novoFidelidade;
+    renderTudo();
+    cancelarReset();
+    mostrarAlerta('alerta-reset','✅ Sistema resetado com sucesso! Contador: 0/100.000. Todos os clientes e códigos foram apagados.','ok');
+  } else {
+    mostrarAlerta('alerta-reset','❌ Erro ao resetar. Verifique o token GitHub e tente novamente.','erro');
+    document.getElementById('btn-confirmar-reset').disabled = false;
+  }
+}
+
+async function salvarArquivoGitHub(path, content, msg){
+  const token = getToken();
+  const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
+  // Obter SHA atual
+  let sha = null;
+  try {
+    const r = await fetch(apiUrl, { headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'} });
+    if(r.ok){ const d = await r.json(); sha = d.sha; }
+  } catch(e){}
+  // Codificar para base64
+  const bytes = new TextEncoder().encode(content);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  const b64 = btoa(bin);
+  const body = { message: msg, content: b64, branch: GH_BRANCH };
+  if(sha) body.sha = sha;
+  try {
+    const r = await fetch(apiUrl, {
+      method:'PUT',
+      headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    return r.ok;
+  } catch(e){ return false; }
+}
+
+window.onload = function(){ carregarToken(); };
+</script>
+</body>
+</html>
