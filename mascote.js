@@ -287,8 +287,8 @@
       wrap.style.right = 'auto';
       void wrap.offsetWidth;
 
-      /* Duração da corrida de ida: 2000ms */
-      var DURACAO_IDA = 2000;
+      /* Duração da corrida de ida: 3000ms */
+      var DURACAO_IDA = 3000;
 
       setTimeout(function () {
         wrap.style.left = (W + 300) + 'px';
@@ -324,7 +324,7 @@
         void wrap.offsetWidth;
 
         /* ---- FASE 5: TRILHO VOLTA — corre para a ESQUERDA ---- */
-        var DURACAO_VOLTA = 2000;
+        var DURACAO_VOLTA = 4500;
         setTimeout(function () {
           wrap.style.left = (-300) + 'px';
 
