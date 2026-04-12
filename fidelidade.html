@@ -355,32 +355,78 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 html{scroll-behavior:smooth}
 ::selection{background:#e85d04;color:#fff}
 
-/* ===== MASCOTE ITAMANDUÁ ===== */
-.itamandua-hero {
-    position: absolute;
-    right: -10px;
-    bottom: -20px;
-    width: 200px;
-    height: auto;
-    z-index: 10;
-    filter: drop-shadow(3px 6px 8px rgba(0,0,0,0.25));
-    animation: itamandua-float 3s ease-in-out infinite;
-    pointer-events: none;
-}
-.itamandua-fab {
+
+
+
+/* ===== MASCOTE ITAMANDUÁ - ANIMAÇÕES COMPLETAS ===== */
+#itamandua-container {
     position: fixed;
-    bottom: 90px;
-    left: 16px;
+    bottom: 80px;
+    left: -130px; /* começa fora da tela */
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: itamandua-entrar 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
+}
+@keyframes itamandua-entrar {
+    0%   { left: -130px; }
+    100% { left: 12px; }
+}
+#itamandua-img {
     width: 90px;
     height: auto;
-    z-index: 999;
-    filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.30));
-    animation: itamandua-float 3s ease-in-out infinite;
     cursor: pointer;
-    transition: transform 0.2s;
+    filter: drop-shadow(3px 6px 10px rgba(0,0,0,0.30));
+    animation: 
+        itamandua-float 3s ease-in-out infinite,
+        itamandua-swing 6s ease-in-out infinite;
+    transform-origin: bottom center;
+    transition: transform 0.2s, filter 0.2s;
 }
-.itamandua-fab:hover {
-    transform: scale(1.12) rotate(-5deg);
+#itamandua-img:hover {
+    transform: scale(1.18) rotate(-8deg) !important;
+    filter: drop-shadow(4px 8px 14px rgba(232,0,13,0.40));
+    animation-play-state: paused;
+}
+@keyframes itamandua-float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-12px); }
+}
+@keyframes itamandua-swing {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25%       { transform: translateY(-6px) rotate(3deg); }
+    50%       { transform: translateY(-12px) rotate(0deg); }
+    75%       { transform: translateY(-6px) rotate(-3deg); }
+}
+#itamandua-balao {
+    background: #fff;
+    border: 2.5px solid #E8000D;
+    border-radius: 14px 14px 14px 4px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #E8000D;
+    max-width: 130px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    margin-bottom: 6px;
+    position: relative;
+    animation: balao-aparecer 0.5s ease-out;
+    line-height: 1.4;
+}
+#itamandua-balao::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 16px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #E8000D;
+}
+@keyframes balao-aparecer {
+    0%   { opacity: 0; transform: scale(0.7) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 .itamandua-section {
     display: block;
@@ -390,56 +436,24 @@ html{scroll-behavior:smooth}
     filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.20));
     animation: itamandua-float 3s ease-in-out infinite;
 }
-.itamandua-inline {
-    width: 110px;
-    height: auto;
-    vertical-align: middle;
-    margin-left: 12px;
-    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.20));
-    animation: itamandua-float 3s ease-in-out infinite;
-}
-@keyframes itamandua-float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-.itamandua-tooltip {
-    position: fixed;
-    bottom: 185px;
-    left: 10px;
-    background: #fff;
-    border: 2px solid #E8000D;
-    border-radius: 12px;
-    padding: 8px 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #E8000D;
-    z-index: 1000;
-    max-width: 130px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    animation: tooltip-pulse 2s ease-in-out infinite;
-}
-.itamandua-tooltip::after {
-    content: '';
+.itamandua-hero {
     position: absolute;
-    bottom: -8px;
-    left: 20px;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid #E8000D;
-}
-@keyframes tooltip-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    right: -10px;
+    bottom: -20px;
+    width: 200px;
+    height: auto;
+    z-index: 10;
+    filter: drop-shadow(3px 6px 8px rgba(0,0,0,0.25));
+    animation: itamandua-swing 4s ease-in-out infinite;
+    pointer-events: none;
 }
 @media (max-width: 600px) {
+    #itamandua-img { width: 70px; }
+    #itamandua-balao { font-size: 10px; max-width: 110px; }
     .itamandua-hero { width: 120px; right: -5px; bottom: -10px; }
-    .itamandua-fab { width: 70px; bottom: 80px; left: 10px; }
     .itamandua-section { width: 90px; }
-    .itamandua-inline { width: 80px; }
-    .itamandua-tooltip { font-size: 10px; max-width: 110px; }
 }
-/* ===== FIM MASCOTE ===== */
+/* ===== FIM MASCOTE ANIMADO ===== */
 
 </style>
 <!-- cache-bust:20260408_111640 -->
