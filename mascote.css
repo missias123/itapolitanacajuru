@@ -1,39 +1,41 @@
 /* =====================================================
    ITAMANDUÁ — Mascote Sorveteria Itapolitana
-   Versão 8 — DOIS TRILHOS (pista oval)
+   Versão 9 — LADO ESQUERDO + DOIS TRILHOS (pista oval)
    
    LÓGICA DOS TRILHOS:
    ┌──────────────────────────────────────────────────┐
    │  TELA                                            │
    │                                                  │
-   │  TRILHO VOLTA (bottom:140px) →→→→→→→→→→→→→→→  │
+   │  TRILHO VOLTA (bottom:220px) →→→→→→→→→→→→→→→  │
    │                                                  │
-   │  TRILHO IDA   (bottom: 80px) ←←←←←←←←←←←←←←  │
+   │  TRILHO IDA   (bottom:160px) ←←←←←←←←←←←←←←  │
    │                                                  │
    └──────────────────────────────────────────────────┘
          ↑ curva fora                    ↑ curva fora
          da tela esq                     da tela dir
    
-   O mascote SEMPRE de frente — ZERO scaleX
-   Só o container se move com translateX / left
+   POSIÇÃO BASE: lado ESQUERDO (left: 6px)
+   Balão aparece à DIREITA do mascote — não cobre botões
+   O mascote SEMPRE de frente — ZERO scaleX no repouso
    ===================================================== */
 
-/* ---- Container — posição base (trilho ida, lado direito) ---- */
+/* ---- Container — posição base (lado esquerdo) ---- */
 #ita-mascote {
   position: fixed;
   bottom: 160px;
-  right: 12px;
+  left: 6px;
+  right: auto;
   z-index: 9990;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   pointer-events: none;
-  /* Entrada: vem de fora da tela à direita */
-  transform: translateX(250px);
+  /* Entrada: vem de fora da tela à esquerda */
+  transform: translateX(-250px);
   transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Visível: posição normal lado direito */
+/* Visível: posição normal lado esquerdo */
 #ita-mascote.ita-visivel {
   transform: translateX(0) !important;
   transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
@@ -43,6 +45,7 @@
    O container desliza para a esquerda — imagem fica de frente */
 #ita-mascote.ita-trilho-ida {
   bottom: 160px;
+  left: auto;
   right: auto;
   transition: left 1.6s linear !important;
   transform: none !important;
@@ -52,6 +55,7 @@
    Entra pela esquerda e vai para a direita — imagem fica de frente */
 #ita-mascote.ita-trilho-volta {
   bottom: 220px;
+  left: auto;
   right: auto;
   transition: left 1.6s linear !important;
   transform: none !important;
@@ -100,7 +104,7 @@
   70%      { transform: translateY(-15px) rotate(-1.5deg); }
 }
 
-/* Corrida: bounce vertical — imagem de frente na direção do movimento */
+/* Corrida: bounce vertical */
 @keyframes ita-correr {
   0%   { transform: translateY(0px) rotate(0deg); }
   25%  { transform: translateY(-12px) rotate(-2deg); }
@@ -109,35 +113,32 @@
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-/* ---- Balão de fala — SUPER NÍTIDO, NEGRITADO, REALCE FORTE ---- */
+/* ---- Balão de fala — aparece à DIREITA do mascote ---- */
 #ita-balao {
   /* Fundo branco sólido com gradiente suave */
   background: linear-gradient(135deg, #ffffff 60%, #fff5f5 100%);
   /* Borda vermelha grossa e bem definida */
   border: 4px solid #E8000D;
-  border-radius: 18px 18px 4px 18px;
+  border-radius: 18px 18px 18px 4px;  /* seta no canto inferior ESQUERDO */
   padding: 10px 16px;
   margin-bottom: 10px;
   font-family: 'Poppins', 'Nunito', 'Segoe UI', Arial, sans-serif;
   font-size: 14px;
-  font-weight: 900;          /* máximo negrito */
-  color: #B00008;            /* vermelho escuro para máximo contraste */
+  font-weight: 900;
+  color: #B00008;
   max-width: 165px;
   text-align: center;
   line-height: 1.5;
   letter-spacing: 0.02em;
-  /* Contorno do texto para realce extra */
   -webkit-text-stroke: 0.3px #8B0000;
   text-shadow:
     0 1px 0 rgba(255,255,255,0.8),
     0 0 8px rgba(232,0,13,0.15);
-  /* Sombra do balão: borda inferior vermelha + sombra escura */
   box-shadow:
     0 4px 0 #A00008,
     0 8px 24px rgba(0,0,0,0.28),
     0 2px 8px rgba(232,0,13,0.22),
     inset 0 1px 0 rgba(255,255,255,0.9);
-  /* Contorno externo branco para destacar do fundo da página */
   outline: 3px solid rgba(255,255,255,0.95);
   outline-offset: 2px;
   pointer-events: none;
@@ -147,6 +148,9 @@
   position: relative;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Balão à direita do mascote */
+  align-self: flex-start;
+  margin-left: 0;
 }
 
 #ita-balao.ita-balao-show {
@@ -154,11 +158,13 @@
   transform: scale(1) translateY(0);
 }
 
+/* Setinha no canto inferior ESQUERDO (aponta para o mascote que está à esquerda) */
 #ita-balao::after {
   content: '';
   position: absolute;
   bottom: -12px;
-  right: 18px;
+  left: 18px;
+  right: auto;
   border-left: 9px solid transparent;
   border-right: 9px solid transparent;
   border-top: 12px solid #E8000D;
@@ -166,13 +172,13 @@
 
 /* ---- Responsivo ---- */
 @media (max-width: 1024px) and (min-width: 601px) {
-  #ita-mascote     { bottom: 155px; right: 10px; }
+  #ita-mascote     { bottom: 155px; left: 8px; }
   #ita-mascote img { width: 115px; }
   #ita-balao       { font-size: 13px; max-width: 148px; padding: 9px 13px; }
 }
 
 @media (max-width: 600px) {
-  #ita-mascote     { bottom: 150px; right: 6px; }
+  #ita-mascote     { bottom: 150px; left: 4px; }
   #ita-mascote img { width: 78px; }
   #ita-balao       {
     font-size: 12px;

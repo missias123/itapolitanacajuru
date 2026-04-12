@@ -86,7 +86,7 @@
 
     document.body.appendChild(wrap);
 
-    /* Entra pela direita após 1.5s */
+    /* Entra pela esquerda após 1.5s */
     setTimeout(function () {
       wrap.classList.add('ita-visivel');
       setTimeout(function () {
@@ -239,7 +239,7 @@
 
     var W = window.innerWidth;
 
-    /* Posição atual do mascote (lado direito) */
+    /* Posição atual do mascote (lado esquerdo) */
     var rect  = wrap.getBoundingClientRect();
     var xBase = rect.left;
 
@@ -261,8 +261,8 @@
       wrap.style.transition = 'none';
       wrap.classList.remove('ita-visivel');
       wrap.classList.add('ita-correndo', 'ita-trilho-ida');
-      wrap.style.right = 'auto';
       wrap.style.left  = xBase + 'px';
+      wrap.style.right = 'auto';
       void wrap.offsetWidth;
 
       /* Inicia corrida para a esquerda */
@@ -324,10 +324,10 @@
           setTimeout(function () {
             wrap.classList.remove('ita-voltando', 'ita-trilho-volta');
 
-            /* Restaura posicionamento original */
+            /* Restaura posicionamento original — lado ESQUERDO */
             wrap.style.transition = 'none';
-            wrap.style.left   = 'auto';
-            wrap.style.right  = '12px';
+            wrap.style.right  = 'auto';
+            wrap.style.left   = '6px';
             wrap.style.bottom = '160px';
             wrap.style.transform = 'translateX(0)';
             void wrap.offsetWidth;
