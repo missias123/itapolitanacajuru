@@ -110,22 +110,29 @@
     /* BOTÃO CARRINHO FIXO */
     .btn-carrinho-fixo {
       position: fixed;
-      bottom: 82px;
-      right: 20px;
+      /* POSIÇÃO IFOOD/RAPPI: centralizado na parte inferior, acima da barra do sistema */
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      right: auto;
       background: var(--amarelo);
       color: #212121;
       border: none;
       border-radius: 50px;
-      padding: 14px 22px;
-      font-size: 1rem;
-      font-weight: 700;
+      padding: 16px 32px;
+      font-size: 1.05rem;
+      font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.35);
       display: flex;
       align-items: center;
-      gap: 10px;
-      z-index: 200;
-      transition: all 0.2s;
+      justify-content: center;
+      gap: 12px;
+      z-index: 500;
+      transition: opacity 0.2s, transform 0.2s;
+      min-width: 220px;
+      max-width: 90vw;
+      white-space: nowrap;
       /* Evita menu de contexto e seleção de texto no celular */
       user-select: none;
       -webkit-user-select: none;
@@ -133,10 +140,10 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
     }
-    .btn-carrinho-fixo:disabled { opacity: 0; pointer-events: none; transform: scale(0.7) translateY(20px); }
+    .btn-carrinho-fixo:disabled { opacity: 0; pointer-events: none; transform: translateX(-50%) scale(0.7) translateY(20px); }
     .btn-carrinho-fixo.ativo { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
-    @keyframes popIn { from { opacity:0; transform:scale(0.7) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    @keyframes popIn { from { opacity:0; transform:translateX(-50%) scale(0.7) translateY(20px); } to { opacity:1; transform:translateX(-50%) scale(1) translateY(0); } }
+    .btn-carrinho-fixo:not(:disabled):hover { transform: translateX(-50%) scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
     .btn-carrinho-fixo .badge {
       background: var(--vermelho);
       color: white;
@@ -1348,7 +1355,7 @@ html { scroll-behavior: smooth; }
 	</div>
 
 
-<button class="btn-carrinho-fixo" disabled="" id="btn-carrinho" onclick="abrirCarrinho()" type="button">
+<button class="btn-carrinho-fixo" disabled="" id="btn-carrinho" onclick="abrirCarrinho()" ontouchstart="this._t=Date.now()" ontouchend="if(Date.now()-this._t<300){abrirCarrinho()};event.preventDefault();return false" type="button">
   🛒 Ver Carrinho
   <span class="badge" id="carrinho-badge">0</span>
 </button>
