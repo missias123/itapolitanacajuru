@@ -265,9 +265,9 @@
       wrap.style.right = 'auto';
       void wrap.offsetWidth;
 
-      /* Inicia corrida para a esquerda */
+      /* Inicia corrida para a DIREITA */
       setTimeout(function () {
-        wrap.style.left = (-300) + 'px';
+        wrap.style.left = (W + 300) + 'px';
       }, 50);
 
       /* ---- FASE 3: Bolas caem UMA A UMA enquanto corre ---- */
@@ -287,29 +287,29 @@
 
       /* ---- FASE 4: Fora da tela — faz a curva invisível ---- */
       setTimeout(function () {
-        /* Reposiciona no TRILHO VOLTA, fora da tela à ESQUERDA */
+        /* Reposiciona no TRILHO VOLTA, fora da tela à DIREITA */
         wrap.style.transition = 'none';
         wrap.classList.remove('ita-correndo', 'ita-trilho-ida');
         wrap.classList.add('ita-voltando', 'ita-trilho-volta');
-        wrap.style.left = (-300) + 'px';
+        wrap.style.left = (W + 300) + 'px';
         void wrap.offsetWidth;
 
-        /* ---- FASE 5: TRILHO VOLTA — corre de frente para a direita ---- */
+        /* ---- FASE 5: TRILHO VOLTA — corre de frente para a ESQUERDA ---- */
         /* Duração da corrida de volta: 2000ms para cruzar a tela */
         var DURACAO_VOLTA = 2000;
         setTimeout(function () {
-          wrap.style.left = (W + 50) + 'px'; /* vai até além do lado direito */
+          wrap.style.left = (-300) + 'px'; /* vai até além do lado esquerdo */
 
           /* ---- FASE 6: Recupera bolas UMA A UMA conforme passa por elas ---- */
-          /* As bolas estão em bolaX[0], bolaX[1], bolaX[2] (da direita para esquerda) */
-          /* Na volta ele vem da esquerda → direita, então passa por bolaX[2] primeiro */
+          /* As bolas estão em bolaX[0], bolaX[1], bolaX[2] */
+          /* Na volta ele vem da DIREITA → esquerda, então passa por bolaX[0] primeiro */
           /* Calcula quando ele passa por cada bola baseado na posição X */
-          /* Ele percorre W+350px em DURACAO_VOLTA ms */
-          var velocidade = (W + 350) / DURACAO_VOLTA; /* px/ms */
+          /* Ele percorre W+600px em DURACAO_VOLTA ms */
+          var velocidade = (W + 600) / DURACAO_VOLTA; /* px/ms */
 
-          [2, 1, 0].forEach(function(idx) {
-            /* Tempo para chegar na posição da bola (partindo de -300) */
-            var distancia = bolaX[idx] - (-300);
+          [0, 1, 2].forEach(function(idx) {
+            /* Tempo para chegar na posição da bola (partindo de W+300, indo para esquerda) */
+            var distancia = (W + 300) - bolaX[idx];
             var tempoChegar = Math.round(distancia / velocidade);
 
             setTimeout(function () {
