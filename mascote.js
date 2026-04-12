@@ -1,6 +1,6 @@
 /* =====================================================
    ITAMANDUÁ — Mascote da Sorveteria Itapolitana
-   Versão: Fuga Engraçada ao Clicar
+   Versão: Fuga Horizontal Correta
    ===================================================== */
 (function () {
   'use strict';
@@ -22,11 +22,9 @@
 
   var fraseIdx   = 0;
   var timerFrase = null;
-  var timerVolta = null;
   var fugindo    = false;
 
   function criar() {
-    // Evita duplicação
     if (document.getElementById('ita-mascote')) return;
 
     var wrap = document.createElement('div');
@@ -40,18 +38,18 @@
 
     // Imagem
     var img = document.createElement('img');
-    img.src     = 'images/itamandua_lambendo.webp';
-    img.alt     = 'Itamanduá — Mascote da Sorveteria Itapolitana Cajuru';
-    img.width   = 140;
-    img.height  = 140;
-    img.loading = 'lazy';
+    img.src      = 'images/itamandua_lambendo.webp';
+    img.alt      = 'Itamanduá — Mascote da Sorveteria Itapolitana Cajuru';
+    img.width    = 140;
+    img.height   = 140;
+    img.loading  = 'lazy';
     img.decoding = 'async';
-    img.title   = 'Clique para ver o Itamanduá correr!';
+    img.title    = 'Clique para ver o Itamanduá correr!';
     wrap.appendChild(img);
 
     document.body.appendChild(wrap);
 
-    // Entrada suave após 1.2s
+    // Entrada: desliza da direita após 1.2s
     setTimeout(function () {
       wrap.classList.add('visivel');
       setTimeout(function () {
@@ -60,7 +58,7 @@
       }, 600);
     }, 1200);
 
-    // Clique — fuga engraçada
+    // Clique — fuga
     img.addEventListener('click', function () {
       if (fugindo) return;
       fugir(wrap, balao, img);
@@ -68,6 +66,7 @@
   }
 
   function iniciarFrases(balao) {
+    clearInterval(timerFrase);
     timerFrase = setInterval(function () {
       balao.classList.remove('mostrar');
       setTimeout(function () {
@@ -80,50 +79,40 @@
 
   function fugir(wrap, balao, img) {
     fugindo = true;
+    clearInterval(timerFrase);
 
     // 1. Esconde balão
     balao.classList.remove('mostrar');
-    clearInterval(timerFrase);
 
-    // 2. Susto — pula para cima
-    img.style.transition = 'transform 0.18s ease';
-    img.style.transform  = 'translateY(-25px) rotate(10deg) scale(1.2)';
+    // 2. Susto: pula rapidinho
+    img.style.transition = 'transform 0.15s ease';
+    img.style.transform  = 'translateY(-20px) scale(1.15) rotate(8deg)';
 
     setTimeout(function () {
-      // 3. Vira para a esquerda (espelha) e começa a correr
-      img.style.transition = 'none';
-      img.style.transform  = 'scaleX(-1)'; // vira para esquerda
-
-      // 4. Adiciona animação de corrida (pernas)
-      wrap.classList.add('correndo');
-
-      // 5. Desloca pela tela toda para a esquerda e some
+      // 3. Inicia corrida para a esquerda
+      img.style.transition = '';
+      img.style.transform  = '';
       wrap.classList.remove('visivel');
-      wrap.classList.add('fugindo');
+      wrap.classList.add('correndo', 'fugindo');
 
-    }, 220);
-
-    // 6. Após sair da tela, reposiciona para voltar da esquerda
-    setTimeout(function () {
-      wrap.classList.remove('fugindo');
-      wrap.classList.add('voltando-prep');
-
-      // Vira de volta para a direita
-      img.style.transition = 'none';
-      img.style.transform  = 'scaleX(-1)'; // ainda virado para esquerda (correndo para direita)
-
-      // 7. Entra correndo da esquerda
+      // 4. Após sair da tela (1.1s de transição + margem)
       setTimeout(function () {
-        wrap.classList.remove('voltando-prep');
-        wrap.classList.add('voltando');
+        // 5. Remove classe de fuga, reposiciona sem transição à esquerda
+        wrap.classList.remove('fugindo', 'correndo');
+        wrap.classList.add('retorno-inicio', 'retornando');
 
+        // 6. Força reflow para aplicar posição sem animação
+        void wrap.offsetWidth;
+
+        // 7. Anima retorno da esquerda para a direita
         setTimeout(function () {
-          // 8. Chegou — para, vira normal, retoma flutuação
-          wrap.classList.remove('correndo', 'voltando');
-          img.style.transition = 'transform 0.3s ease';
-          img.style.transform  = 'scaleX(1)';
+          wrap.classList.remove('retorno-inicio');
+          wrap.classList.add('retorno-fim');
 
+          // 8. Chegou — limpa tudo e retoma estado normal
           setTimeout(function () {
+            wrap.classList.remove('retorno-fim', 'retornando');
+            wrap.classList.add('visivel');
             img.style.transition = '';
             img.style.transform  = '';
             fugindo = false;
@@ -133,10 +122,10 @@
               balao.classList.add('mostrar');
               iniciarFrases(balao);
             }, 500);
-          }, 300);
-        }, 900);
-      }, 100);
-    }, 1200);
+          }, 1100); // duração do retorno-fim
+        }, 50);
+      }, 1300); // aguarda fuga completa
+    }, 200); // duração do susto
   }
 
   // Inicia quando DOM estiver pronto
