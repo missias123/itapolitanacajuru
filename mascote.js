@@ -1,12 +1,24 @@
 /* =====================================================
    ITAMANDUÁ — Mascote Sorveteria Itapolitana
-   Versão 5 — DEFINITIVA ENGRAÇADA
-   Inspirado em: Duolingo, Mailchimp, Disney
+   Versão 6 DEFINITIVA
+   
+   REGRAS:
+   - Sem clicar: fica parado no lado direito, flutua e fala
+   - Ao clicar:
+     1. Susto
+     2. Corre para a esquerda
+     3. 3 bolas caem no chão em sequência (ficam lá)
+     4. Some pelo lado esquerdo
+     5. Reposiciona fora da tela à ESQUERDA (invisível)
+     6. Volta correndo da ESQUERDA para a DIREITA (visível na tela)
+     7. Enquanto passa pelas bolas → cada uma pula para a casquinha
+     8. Para no lado direito com poeira
+     9. Diz frase engraçada e retoma frases normais
    ===================================================== */
 (function () {
   'use strict';
 
-  var FRASES_NORMAL = [
+  var FRASES = [
     'Oi! Sou o Itamanduá! 🍦',
     'Que sorvete gostoso! 😋',
     '17 anos de sabor! 🎉',
@@ -17,33 +29,31 @@
     'Peça pelo WhatsApp! 📱',
     'Venha nos visitar! 📍',
     'Feito com amor! ❤️',
-    'Clique em mim! 😜',
-    'Minha língua é enorme! 👅'
+    'Clique em mim! 😜'
   ];
 
   var FRASES_VOLTA = [
-    'Ufa! Quase perdi meu sorvete! 😅',
-    'Voltei! Não me assuste mais! 😤',
+    'Ufa! Recuperei meu sorvete! 😅',
+    'Quase perdi tudo! 😤',
     'Meu sorvete tá salvo! 🍦✅',
-    'Corri tanto que derreti! 😅'
+    'Nunca mais faço isso! 😅'
   ];
 
-  // 3 bolas de sorvete
   var BOLAS = [
-    { cor: '#e75480', sombra: '#c0395f', emoji: '🍓', nome: 'morango' },
-    { cor: '#6B3A2A', sombra: '#4a2518', emoji: '🍫', nome: 'chocolate' },
-    { cor: '#FFB300', sombra: '#e09000', emoji: '🥭', nome: 'manga' }
+    { cor: '#e75480', sombra: '#c0395f', emoji: '🍓' },
+    { cor: '#6B3A2A', sombra: '#4a2518', emoji: '🍫' },
+    { cor: '#FFB300', sombra: '#e09000', emoji: '🥭' }
   ];
 
-  var fraseIdx    = 0;
-  var timerFrase  = null;
-  var fugindo     = false;
+  var fugindo    = false;
+  var timerFrase = null;
+  var fraseIdx   = 0;
   var bolasNaTela = [];
 
-  /* ================================================
-     CRIAÇÃO DO MASCOTE
-  ================================================ */
-  function criar() {
+  /* ==================================================
+     INICIALIZAÇÃO
+  ================================================== */
+  function init() {
     if (document.getElementById('ita-mascote')) return;
 
     var wrap = document.createElement('div');
@@ -51,298 +61,268 @@
 
     var balao = document.createElement('div');
     balao.id = 'ita-balao';
-    balao.textContent = FRASES_NORMAL[0];
+    balao.textContent = FRASES[0];
     wrap.appendChild(balao);
 
     var img = document.createElement('img');
+    img.id      = 'ita-img';
     img.src     = 'images/itamandua_lambendo.webp';
     img.alt     = 'Itamanduá — Mascote da Sorveteria Itapolitana';
     img.width   = 140;
     img.height  = 140;
     img.loading = 'lazy';
-    img.title   = 'Clique para ver o Itamanduá correr! 🏃';
-    img.id      = 'ita-img';
+    img.title   = 'Clique para ver o Itamanduá correr!';
     wrap.appendChild(img);
 
     document.body.appendChild(wrap);
 
-    // Entrada suave pela direita após 1.2s
+    /* Entra pela direita após 1.5s */
     setTimeout(function () {
-      wrap.classList.add('visivel');
+      wrap.classList.add('ita-visivel');
       setTimeout(function () {
-        balao.classList.add('mostrar');
-        iniciarFrases(balao, FRASES_NORMAL);
-      }, 800);
-    }, 1200);
+        balao.classList.add('ita-balao-show');
+        rodarFrases(balao);
+      }, 900);
+    }, 1500);
 
     img.addEventListener('click', function () {
       if (fugindo) return;
-      fugir(wrap, balao, img);
+      animar(wrap, balao, img);
     });
   }
 
-  /* ================================================
+  /* ==================================================
      TROCA DE FRASES
-  ================================================ */
-  function iniciarFrases(balao, lista) {
+  ================================================== */
+  function rodarFrases(balao) {
     clearInterval(timerFrase);
-    fraseIdx = 0;
     timerFrase = setInterval(function () {
-      balao.classList.remove('mostrar');
+      balao.classList.remove('ita-balao-show');
       setTimeout(function () {
-        fraseIdx = (fraseIdx + 1) % lista.length;
-        balao.textContent = lista[fraseIdx];
-        balao.classList.add('mostrar');
-      }, 350);
-    }, 3200);
+        fraseIdx = (fraseIdx + 1) % FRASES.length;
+        balao.textContent = FRASES[fraseIdx];
+        balao.classList.add('ita-balao-show');
+      }, 300);
+    }, 3000);
   }
 
-  function mostrarFrase(balao, texto) {
-    clearInterval(timerFrase);
-    balao.classList.remove('mostrar');
-    setTimeout(function () {
-      balao.textContent = texto;
-      balao.classList.add('mostrar');
-    }, 300);
-  }
-
-  /* ================================================
-     EFEITO DE IMPACTO (PLOFT!)
-  ================================================ */
-  function criarImpacto(x, y) {
+  /* ==================================================
+     CRIA BOLA DE SORVETE NO CHÃO
+  ================================================== */
+  function criarBola(bola, xPos, delay) {
     var el = document.createElement('div');
-    el.className = 'ita-impacto';
+    el.className = 'ita-bola-sorvete';
     el.style.cssText = [
       'position:fixed',
-      'left:' + (x - 20) + 'px',
-      'bottom:' + y + 'px',
-      'width:40px',
-      'height:20px',
-      'border-radius:50%',
-      'background:rgba(232,0,13,0.18)',
-      'z-index:9988',
-      'pointer-events:none',
-      'transform:scale(0)',
-      'transition:transform 0.25s ease-out, opacity 0.3s ease 0.2s'
-    ].join(';');
-    document.body.appendChild(el);
-    setTimeout(function () {
-      el.style.transform = 'scale(1)';
-      el.style.opacity = '0';
-      setTimeout(function () {
-        if (el.parentNode) el.parentNode.removeChild(el);
-      }, 600);
-    }, 30);
-    return el;
-  }
-
-  /* ================================================
-     CRIA UMA BOLA DE SORVETE
-  ================================================ */
-  function criarBola(bola, posX, delay) {
-    var el = document.createElement('div');
-    el.className = 'ita-bola';
-    el.style.cssText = [
-      'position:fixed',
+      'z-index:9989',
       'width:40px',
       'height:40px',
       'border-radius:50%',
-      'background:radial-gradient(circle at 35% 35%, ' + bola.cor + ', ' + bola.sombra + ')',
-      'box-shadow:0 4px 14px rgba(0,0,0,0.35),inset -5px -5px 10px rgba(0,0,0,0.18)',
-      'z-index:9989',
+      'background:radial-gradient(circle at 35% 35%,' + bola.cor + ',' + bola.sombra + ')',
+      'box-shadow:0 4px 14px rgba(0,0,0,0.3),inset -4px -4px 8px rgba(0,0,0,0.15)',
       'display:flex',
       'align-items:center',
       'justify-content:center',
       'font-size:18px',
-      'left:' + posX + 'px',
-      'bottom:230px',
+      'pointer-events:none',
+      'left:' + xPos + 'px',
+      'bottom:240px',
       'opacity:0',
-      'transform:scale(0.3) rotate(-20deg)',
-      'transition:none',
-      'pointer-events:none'
+      'transition:none'
     ].join(';');
     el.textContent = bola.emoji;
     document.body.appendChild(el);
 
     setTimeout(function () {
-      // Aparece
-      el.style.transition = 'opacity 0.1s, transform 0.15s ease-out';
+      /* Aparece */
+      el.style.transition = 'opacity 0.1s ease';
       el.style.opacity = '1';
-      el.style.transform = 'scale(1) rotate(0deg)';
 
-      // 1ª queda
+      /* Cai após aparecer */
       setTimeout(function () {
-        var rotacao = (Math.random() * 50 - 25) + 'deg';
-        el.style.transition = 'bottom 0.55s cubic-bezier(0.55,0,1,0.45), transform 0.55s ease';
+        var rot = (Math.random() * 50 - 25) + 'deg';
+        el.style.transition = 'bottom 0.55s cubic-bezier(0.6,0,1,0.5), transform 0.55s ease';
         el.style.bottom = '72px';
-        el.style.transform = 'rotate(' + rotacao + ')';
+        el.style.transform = 'rotate(' + rot + ')';
 
-        // Impacto no chão
+        /* 1º quique */
         setTimeout(function () {
-          criarImpacto(posX + 20, 72);
-
-          // 1º quique
-          el.style.transition = 'bottom 0.22s cubic-bezier(0.33,0,0.66,1)';
-          el.style.bottom = '115px';
+          el.style.transition = 'bottom 0.22s ease-out';
+          el.style.bottom = '110px';
+          /* 2º quique */
           setTimeout(function () {
-            // 2º quique
-            el.style.transition = 'bottom 0.18s cubic-bezier(0.33,0,0.66,1)';
+            el.style.transition = 'bottom 0.18s ease-in';
             el.style.bottom = '72px';
-            setTimeout(function () {
-              // Para no chão
-              el.style.transition = 'bottom 0.12s ease-out';
-              el.style.bottom = '72px';
-            }, 180);
           }, 220);
         }, 550);
-      }, 150);
+      }, 100);
     }, delay);
 
     return el;
   }
 
-  /* ================================================
-     RECOLHE AS BOLAS — PULAM PARA A CASQUINHA
-  ================================================ */
-  function recolherBolas(xCasquinha) {
-    var mascote = document.getElementById('ita-mascote');
-    var yAlvo = mascote ? (window.innerHeight - mascote.getBoundingClientRect().top - 60) : 200;
-
-    bolasNaTela.forEach(function (el, i) {
-      if (!el || !el.parentNode) return;
-      setTimeout(function () {
-        // Arco de pulo em direção à casquinha
-        el.style.transition = [
-          'left 0.5s cubic-bezier(0.4,0,0.6,1)',
-          'bottom 0.5s cubic-bezier(0.2,0.8,0.4,1.4)',
-          'transform 0.5s ease',
-          'opacity 0.15s ease 0.35s'
-        ].join(',');
-        el.style.left      = (xCasquinha + i * 5) + 'px';
-        el.style.bottom    = yAlvo + 'px';
-        el.style.transform = 'scale(0.3) rotate(' + (i % 2 === 0 ? '360deg' : '-360deg') + ')';
-        el.style.opacity   = '0';
-        setTimeout(function () {
-          if (el.parentNode) el.parentNode.removeChild(el);
-        }, 600);
-      }, i * 200);
-    });
-    bolasNaTela = [];
-  }
-
-  /* ================================================
-     EFEITO DE POEIRA (FREADA)
-  ================================================ */
-  function criarPoeira(x, y) {
-    for (var p = 0; p < 5; p++) {
-      (function (idx) {
-        var puff = document.createElement('div');
-        puff.style.cssText = [
+  /* ==================================================
+     POEIRA NA FREADA
+  ================================================== */
+  function poeira(xPos) {
+    for (var i = 0; i < 5; i++) {
+      (function (n) {
+        var p = document.createElement('div');
+        p.style.cssText = [
           'position:fixed',
-          'width:' + (8 + idx * 4) + 'px',
-          'height:' + (8 + idx * 4) + 'px',
+          'width:' + (7 + n * 5) + 'px',
+          'height:' + (7 + n * 5) + 'px',
           'border-radius:50%',
-          'background:rgba(180,140,80,0.35)',
-          'left:' + (x - 20 + idx * 8) + 'px',
-          'bottom:' + (y + idx * 6) + 'px',
+          'background:rgba(160,120,60,0.38)',
+          'left:' + (xPos + n * 10 - 20) + 'px',
+          'bottom:' + (76 + n * 4) + 'px',
           'z-index:9987',
           'pointer-events:none',
-          'opacity:0.8',
-          'transition:all 0.5s ease-out'
+          'transition:all 0.45s ease-out'
         ].join(';');
-        document.body.appendChild(puff);
+        document.body.appendChild(p);
         setTimeout(function () {
-          puff.style.opacity = '0';
-          puff.style.transform = 'translate(' + (idx * 12 - 24) + 'px, -20px) scale(2)';
+          p.style.opacity = '0';
+          p.style.transform = 'translate(' + (n * 14 - 24) + 'px,-20px) scale(2.5)';
           setTimeout(function () {
-            if (puff.parentNode) puff.parentNode.removeChild(puff);
+            if (p.parentNode) p.parentNode.removeChild(p);
           }, 500);
-        }, 30 + idx * 40);
-      })(p);
+        }, 20 + n * 30);
+      })(i);
     }
   }
 
-  /* ================================================
-     LÓGICA DE FUGA — VERSÃO DEFINITIVA ENGRAÇADA
-  ================================================ */
-  function fugir(wrap, balao, img) {
+  /* ==================================================
+     RECOLHE BOLAS — pulam para a casquinha em sequência
+     Chamado ENQUANTO ele está visível na tela
+  ================================================== */
+  function recolherBolas(xCasquinha, yCasquinha) {
+    var lista = bolasNaTela.slice();
+    bolasNaTela = [];
+    lista.forEach(function (el, i) {
+      if (!el || !el.parentNode) return;
+      setTimeout(function () {
+        el.style.transition = [
+          'left 0.5s ease-in',
+          'bottom 0.5s cubic-bezier(0.2,0.8,0.4,1.5)',
+          'transform 0.5s ease',
+          'opacity 0.15s ease 0.38s'
+        ].join(',');
+        el.style.left      = xCasquinha + 'px';
+        el.style.bottom    = yCasquinha + 'px';
+        el.style.transform = 'scale(0.2) rotate(360deg)';
+        el.style.opacity   = '0';
+        setTimeout(function () {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 700);
+      }, i * 230);
+    });
+  }
+
+  /* ==================================================
+     ANIMAÇÃO PRINCIPAL
+  ================================================== */
+  function animar(wrap, balao, img) {
     fugindo = true;
     clearInterval(timerFrase);
 
-    // --- FASE 1: SUSTO (0ms) ---
-    balao.classList.remove('mostrar');
+    /* Captura posição atual do mascote */
+    var rect  = wrap.getBoundingClientRect();
+    var xBase = rect.left + rect.width / 2 - 20;
+
+    /* ---- FASE 1: Susto ---- */
+    balao.classList.remove('ita-balao-show');
     img.style.transition = 'transform 0.12s ease';
     img.style.transform  = 'translateY(-22px) scale(1.18) rotate(10deg)';
 
     setTimeout(function () {
-      // Volta do susto
       img.style.transition = 'transform 0.1s ease';
       img.style.transform  = '';
 
-      // --- FASE 2: COMEÇA A CORRER (200ms) ---
+      /* ---- FASE 2: Corre para a esquerda ---- */
       setTimeout(function () {
-        wrap.classList.add('correndo');
+        wrap.classList.add('ita-correndo');
 
-        // --- FASE 3: BOLAS CAEM EM SEQUÊNCIA (300ms, 700ms, 1100ms) ---
-        var rect  = wrap.getBoundingClientRect();
-        var baseX = rect.left + 20;
+        /* ---- FASE 3: Bolas caem em sequência ---- */
         bolasNaTela = [];
-
         BOLAS.forEach(function (bola, i) {
-          var el = criarBola(bola, baseX - 15 + i * 20, i * 400);
+          var el = criarBola(bola, xBase - 15 + i * 22, i * 420);
           bolasNaTela.push(el);
         });
 
-        // --- FASE 4: FUGA PARA A ESQUERDA (500ms após início) ---
+        /* ---- FASE 4: Some pelo lado esquerdo ---- */
         setTimeout(function () {
-          wrap.classList.remove('visivel');
-          wrap.classList.add('fugindo');
+          wrap.classList.remove('ita-visivel');
+          wrap.classList.add('ita-fugindo');
 
-          // --- FASE 5: REPOSICIONA SILENCIOSAMENTE À DIREITA ---
+          /* ---- FASE 5: Reposiciona fora da tela À ESQUERDA (invisível) ---- */
           setTimeout(function () {
             wrap.style.transition = 'none';
-            wrap.classList.remove('fugindo', 'correndo');
-            wrap.style.transform = 'translateX(220px)';
-            void wrap.offsetWidth; // força reflow
+            wrap.classList.remove('ita-fugindo');
+            /* Posiciona fora da tela à ESQUERDA */
+            wrap.style.right = 'auto';
+            wrap.style.left  = '-250px';
+            wrap.style.transform = 'translateX(0)';
+            void wrap.offsetWidth; /* força reflow */
 
-            // --- FASE 6: VOLTA PELA DIREITA (após 4.5s) ---
+            /* ---- FASE 6: Volta correndo da ESQUERDA para a DIREITA ---- */
+            /* Ele entra pela esquerda e corre até o lado direito — VISÍVEL NA TELA */
             setTimeout(function () {
-              wrap.style.transition = '';
-              wrap.classList.add('visivel');
+              /* Restaura transição de corrida */
+              wrap.style.transition = 'left 1.8s linear';
+              /* Corre até o lado direito */
+              wrap.style.left = (window.innerWidth - 160) + 'px';
 
-              // Recolhe bolas ao mesmo tempo
-              var retRect = wrap.getBoundingClientRect();
-              recolherBolas(retRect.right - 50);
-
-              // --- FASE 7: FREADA COM POEIRA ---
+              /* ---- FASE 7: Enquanto corre, recolhe bolas ao passar por elas ---- */
+              /* As bolas estão espalhadas na tela — recolhe após 0.8s (já está visível) */
               setTimeout(function () {
-                var r = wrap.getBoundingClientRect();
-                criarPoeira(r.left + 20, 80);
+                var r2 = wrap.getBoundingClientRect();
+                var xCasq = r2.left + 30;
+                var yCasq = window.innerHeight - r2.top - 60;
+                recolherBolas(xCasq, yCasq);
+              }, 800);
 
-                // Balão especial de volta
-                var fraseVolta = FRASES_VOLTA[Math.floor(Math.random() * FRASES_VOLTA.length)];
-                mostrarFrase(balao, fraseVolta);
+              /* ---- FASE 8: Para no lado direito com poeira ---- */
+              setTimeout(function () {
+                wrap.classList.remove('ita-correndo');
 
-                // Após 3s, volta às frases normais
+                /* Restaura posicionamento para right:12px */
+                wrap.style.transition = 'none';
+                wrap.style.left  = 'auto';
+                wrap.style.right = '12px';
+                wrap.style.transform = 'translateX(0)';
+                void wrap.offsetWidth;
+
+                /* Poeira */
+                var r3 = wrap.getBoundingClientRect();
+                poeira(r3.left + 20);
+
+                /* ---- FASE 9: Balão de volta + retoma frases ---- */
                 setTimeout(function () {
-                  fugindo = false;
-                  iniciarFrases(balao, FRASES_NORMAL);
-                }, 3000);
-              }, 900);
-            }, 4500);
-          }, 1300); // tempo para sair da tela
-        }, 500);
+                  var frase = FRASES_VOLTA[Math.floor(Math.random() * FRASES_VOLTA.length)];
+                  balao.textContent = frase;
+                  balao.classList.add('ita-balao-show');
+
+                  setTimeout(function () {
+                    fugindo = false;
+                    rodarFrases(balao);
+                  }, 3200);
+                }, 300);
+              }, 1900); /* tempo total da corrida */
+            }, 1200); /* espera antes de voltar */
+          }, 1200); /* tempo para sair da tela */
+        }, 600);
       }, 200);
     }, 130);
   }
 
-  /* ================================================
-     INICIALIZA
-  ================================================ */
+  /* ==================================================
+     START
+  ================================================== */
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', criar);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    criar();
+    init();
   }
 
 })();
