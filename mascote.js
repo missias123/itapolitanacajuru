@@ -125,19 +125,24 @@
     return el;
   }
 
-  /* ---- Recolhe as bolas (sobem e somem) ---- */
-  function recolherBolas(posXDestino) {
+  /* ---- Recolhe as bolas — pulam de volta para a casquinha em sequência ---- */
+  function recolherBolas(posXCasquinha) {
+    // Pega a posição vertical do mascote para saber onde está a casquinha
+    var mascote = document.getElementById('ita-mascote');
+    var alturaAlvo = mascote ? mascote.getBoundingClientRect().top + 80 : 200;
+
     bolasNaTela.forEach(function (el, i) {
       setTimeout(function () {
-        el.style.transition = 'left 0.4s ease-in, bottom 0.5s ease-in, opacity 0.3s ease, transform 0.4s ease';
-        el.style.left = posXDestino + 'px';
-        el.style.bottom = '220px';
-        el.style.transform = 'scale(0.3) rotate(360deg)';
+        // Pulo para cima em direção à casquinha
+        el.style.transition = 'left 0.45s ease-in, bottom 0.5s cubic-bezier(0.55,0,0.7,1.5), transform 0.45s ease, opacity 0.2s ease 0.3s';
+        el.style.left   = posXCasquinha + 'px';
+        el.style.bottom = (window.innerHeight - alturaAlvo) + 'px';
+        el.style.transform = 'scale(0.5) rotate(-360deg)';
         el.style.opacity = '0';
         setTimeout(function () {
           if (el.parentNode) el.parentNode.removeChild(el);
         }, 600);
-      }, i * 120);
+      }, i * 180); // sequência: 1ª, 2ª, 3ª bola
     });
     bolasNaTela = [];
   }
@@ -161,11 +166,15 @@
       // 2. Ativa corrida (espelha + bob)
       wrap.classList.add('correndo');
 
-      // 3. Cria as 3 bolas caindo na posição do mascote
+      // 3. Cria as 3 bolas caindo em SEQUÊNCIA — uma de cada vez
       var rect = wrap.getBoundingClientRect();
       var baseX = rect.left;
-      bolasNaTela = BOLAS.map(function (bola, i) {
-        return criarBola(bola, baseX - 10 + i * 15);
+      bolasNaTela = [];
+      BOLAS.forEach(function (bola, i) {
+        setTimeout(function () {
+          var el = criarBola(bola, baseX - 10 + i * 18);
+          bolasNaTela.push(el);
+        }, i * 400); // 0.4s entre cada bola
       });
 
       // 4. Fuga para a esquerda
