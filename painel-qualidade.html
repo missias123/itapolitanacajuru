@@ -317,8 +317,30 @@ function lerMemoria() {
   try { return JSON.parse(localStorage.getItem(QG_KEY) || '{}'); } catch(e) { return {}; }
 }
 
+function limparErrosAntigos(dados) {
+  // Erros com mais de 2 horas são automaticamente descartados (como grandes sites fazem)
+  const DOIS_HORAS = 2 * 60 * 60 * 1000;
+  const agora = Date.now();
+  let alterado = false;
+  if (dados.erros_js && dados.erros_js.length > 0) {
+    const antes = dados.erros_js.length;
+    dados.erros_js = dados.erros_js.filter(e => e.ts && (agora - e.ts) < DOIS_HORAS);
+    if (dados.erros_js.length !== antes) alterado = true;
+  }
+  if (dados.recursos_404 && dados.recursos_404.length > 0) {
+    const antes = dados.recursos_404.length;
+    dados.recursos_404 = dados.recursos_404.filter(e => e.ts && (agora - e.ts) < DOIS_HORAS);
+    if (dados.recursos_404.length !== antes) alterado = true;
+  }
+  if (alterado) {
+    try { localStorage.setItem(QG_KEY, JSON.stringify(dados)); } catch(e) {}
+  }
+  return dados;
+}
+
 function carregarDados() {
-  const dados = lerMemoria();
+  let dados = lerMemoria();
+  dados = limparErrosAntigos(dados);
   
   // Atualizar timestamp
   const ts = dados.ultima_atualizacao ? new Date(dados.ultima_atualizacao).toLocaleString('pt-BR') : 'Aguardando primeira visita ao site';
