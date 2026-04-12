@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Qualidade — Itapolitana Cajuru</title>
+<link rel="icon" href="/favicon.ico"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e8eaf6; min-height: 100vh; }
+
+  .header {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 3px solid #3949ab;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-logo { width: 44px; height: 44px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .header-title h1 { font-size: 17px; font-weight: 800; color: #fff; }
+  .header-title p { font-size: 11px; color: #9fa8da; margin-top: 2px; }
+  .header-badge { margin-left: auto; background: #4caf50; color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+  .pulse { width: 7px; height: 7px; background: #fff; border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
+
+  .main { padding: 20px; max-width: 900px; margin: 0 auto; }
+
+  .update-bar { background: #1e2130; border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 12px; color: #7986cb; gap: 10px; flex-wrap: wrap; }
+  .btn-sm { background: #3949ab; color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; touch-action: manipulation; user-select: none; transition: all .2s; }
+  .btn-sm:hover { background: #5c6bc0; }
+
+  /* SCORES */
+  .scores-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 24px; }
+  @media(max-width:600px){ .scores-grid{grid-template-columns:repeat(2,1fr)} }
+  .score-card { background: #1e2130; border-radius: 14px; padding: 14px; text-align: center; border: 2px solid transparent; transition: transform .2s; }
+  .score-card:hover { transform: translateY(-3px); }
+  .score-card.green { border-color: #4caf50; }
+  .score-card.yellow { border-color: #ff9800; }
+  .score-card.red { border-color: #f44336; }
+  .score-label { font-size: 10px; color: #9fa8da; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .score-value { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+  .score-card.green .score-value { color: #4caf50; }
+  .score-card.yellow .score-value { color: #ff9800; }
+  .score-card.red .score-value { color: #f44336; }
+  .score-bar { height: 5px; background: #2a2d3e; border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .score-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .green .score-bar-fill { background: #4caf50; }
+  .yellow .score-bar-fill { background: #ff9800; }
+  .red .score-bar-fill { background: #f44336; }
+
+  /* VITALS */
+  .vitals-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 24px; }
+  @media(max-width:500px){ .vitals-grid{grid-template-columns:1fr} }
+  .vital-card { background: #1e2130; border-radius: 12px; padding: 14px; border-left: 4px solid #3949ab; }
+  .vital-name { font-size: 11px; color: #9fa8da; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .vital-value { font-size: 24px; font-weight: 900; margin: 4px 0; }
+  .vital-desc { font-size: 11px; color: #5c6bc0; }
+  .vital-card.bom { border-left-color: #4caf50; }
+  .vital-card.bom .vital-value { color: #4caf50; }
+  .vital-card.melhorar { border-left-color: #ff9800; }
+  .vital-card.melhorar .vital-value { color: #ff9800; }
+  .vital-card.ruim { border-left-color: #f44336; }
+  .vital-card.ruim .vital-value { color: #f44336; }
+
+  /* SECTION */
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 13px; font-weight: 800; color: #9fa8da; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content:''; flex:1; height:1px; background:#2a2d3e; }
+
+  /* CHECKLIST */
+  .checklist { display: flex; flex-direction: column; gap: 8px; }
+  .check-item { background: #1e2130; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-left: 4px solid transparent; transition: all .2s; }
+  .check-item:hover { background: #252838; }
+  .check-item.critico { border-left-color: #f44336; }
+  .check-item.atencao { border-left-color: #ff9800; }
+  .check-item.ok { border-left-color: #4caf50; opacity: .8; }
+  .check-icon { font-size: 18px; flex-shrink: 0; }
+  .check-info { flex: 1; }
+  .check-title { font-size: 13px; font-weight: 700; color: #e8eaf6; }
+  .check-desc { font-size: 11px; color: #7986cb; margin-top: 2px; }
+  .check-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px; flex-shrink: 0; }
+  .tag-critico { background: rgba(244,67,54,.2); color: #ef9a9a; }
+  .tag-atencao { background: rgba(255,152,0,.2); color: #ffcc80; }
+  .tag-ok { background: rgba(76,175,80,.2); color: #a5d6a7; }
+  .btn-corrigir { background: linear-gradient(135deg,#3949ab,#1a237e); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all .2s; touch-action: manipulation; user-select: none; }
+  .btn-corrigir:hover { background: linear-gradient(135deg,#5c6bc0,#3949ab); transform: scale(1.05); }
+
+  /* ERROS */
+  .erro-item { background: rgba(244,67,54,.1); border: 1px solid rgba(244,67,54,.3); border-radius: 8px; padding: 10px 12px; font-size: 12px; font-family: monospace; color: #ef9a9a; margin-bottom: 6px; word-break: break-all; }
+  .sem-erros { background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.3); border-radius: 8px; padding: 12px; text-align: center; color: #a5d6a7; font-size: 13px; font-weight: 700; }
+
+  /* PÁGINAS */
+  .pages-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 24px; }
+  @media(max-width:500px){ .pages-grid{grid-template-columns:1fr} }
+  .page-card { background: #1e2130; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; border: 1px solid #2a2d3e; transition: all .2s; }
+  .page-card:hover { background: #252838; border-color: #3949ab; transform: translateY(-2px); }
+  .page-icon { font-size: 22px; }
+  .page-info { flex: 1; }
+  .page-name { font-size: 13px; font-weight: 700; }
+  .page-url { font-size: 11px; color: #7986cb; margin-top: 2px; }
+  .page-scores { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+  .mini-score { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; }
+  .ms-green { background: rgba(76,175,80,.2); color: #a5d6a7; }
+  .ms-yellow { background: rgba(255,152,0,.2); color: #ffcc80; }
+
+  /* MANUS BOX */
+  .manus-box { background: linear-gradient(135deg,#1a237e22,#3949ab22); border: 1px solid #3949ab; border-radius: 14px; padding: 18px; margin-bottom: 24px; }
+  .manus-title { font-size: 13px; font-weight: 800; color: #7986cb; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .manus-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+  .chip { background: #1e2130; border: 1px solid #3949ab; color: #9fa8da; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: all .2s; touch-action: manipulation; user-select: none; }
+  .chip:hover { background: #3949ab; color: #fff; }
+  .manus-input-row { display: flex; gap: 8px; }
+  .manus-input { flex: 1; background: #1e2130; border: 1px solid #3949ab; border-radius: 10px; padding: 10px 12px; color: #e8eaf6; font-size: 14px; outline: none; font-family: inherit; }
+  .manus-input:focus { border-color: #7986cb; }
+  .manus-send { background: linear-gradient(135deg,#3949ab,#1a237e); color: #fff; border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; touch-action: manipulation; user-select: none; transition: all .2s; }
+  .manus-send:hover { background: linear-gradient(135deg,#5c6bc0,#3949ab); }
+
+  /* SW STATUS */
+  .sw-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .sw-ativo { background: rgba(76,175,80,.2); color: #a5d6a7; border: 1px solid rgba(76,175,80,.4); }
+  .sw-erro { background: rgba(244,67,54,.2); color: #ef9a9a; border: 1px solid rgba(244,67,54,.4); }
+  .sw-desconhecido { background: rgba(158,158,158,.2); color: #bdbdbd; border: 1px solid rgba(158,158,158,.4); }
+
+  .footer { text-align: center; padding: 18px; color: #3949ab; font-size: 11px; border-top: 1px solid #1e2130; margin-top: 16px; }
+  .footer a { color: #7986cb; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🍦</div>
+  <div class="header-title">
+    <h1>Painel de Qualidade</h1>
+    <p>Sorveteria Itapolitana Cajuru · itapolitanacajuru.com.br</p>
+  </div>
+  <div class="header-badge">
+    <div class="pulse"></div>
+    <span id="badge-status">Carregando...</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- UPDATE BAR -->
+  <div class="update-bar">
+    <span id="ultima-leitura">Lendo dados do Quality Guard...</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-sm" onclick="carregarDados()">Atualizar</button>
+      <button class="btn-sm" onclick="window.open('https://itapolitanacajuru.com.br','_blank')">Ver Site</button>
+      <button class="btn-sm" onclick="window.open('https://github.com/missias123/itapolitanacajuru/blob/main/relatorio_auditoria.md','_blank')">Relatório</button>
+    </div>
+  </div>
+
+  <!-- SCORES LIGHTHOUSE -->
+  <div class="section-title">Scores Google Lighthouse</div>
+  <div class="scores-grid">
+    <div class="score-card yellow" id="card-perf">
+      <div class="score-label">Performance</div>
+      <div class="score-value" id="score-perf">61</div>
+      <div class="score-bar"><div class="score-bar-fill" id="bar-perf" style="width:61%"></div></div>
+    </div>
+    <div class="score-card green" id="card-acess">
+      <div class="score-label">Acessibilidade</div>
+      <div class="score-value" id="score-acess">96</div>
+      <div class="score-bar"><div class="score-bar-fill" id="bar-acess" style="width:96%"></div></div>
+    </div>
+    <div class="score-card green" id="card-bp">
+      <div class="score-label">Boas Práticas</div>
+      <div class="score-value" id="score-bp">96</div>
+      <div class="score-bar"><div class="score-bar-fill" id="bar-bp" style="width:96%"></div></div>
+    </div>
+    <div class="score-card green" id="card-seo">
+      <div class="score-label">SEO</div>
+      <div class="score-value" id="score-seo">100</div>
+      <div class="score-bar"><div class="score-bar-fill" id="bar-seo" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- CORE WEB VITALS (lidos do quality-guard em tempo real) -->
+  <div class="section">
+    <div class="section-title">Core Web Vitals — Dados Reais da Sessão</div>
+    <div class="vitals-grid">
+      <div class="vital-card" id="vital-lcp">
+        <div class="vital-name">LCP — Carregamento</div>
+        <div class="vital-value" id="lcp-val">—</div>
+        <div class="vital-desc">Ideal: &lt; 2.5s · <span id="lcp-status">aguardando...</span></div>
+      </div>
+      <div class="vital-card" id="vital-cls">
+        <div class="vital-name">CLS — Estabilidade</div>
+        <div class="vital-value" id="cls-val">—</div>
+        <div class="vital-desc">Ideal: &lt; 0.1 · <span id="cls-status">aguardando...</span></div>
+      </div>
+      <div class="vital-card" id="vital-inp">
+        <div class="vital-name">INP — Interatividade</div>
+        <div class="vital-value" id="inp-val">—</div>
+        <div class="vital-desc">Ideal: &lt; 200ms · <span id="inp-status">aguardando...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE WORKER -->
+  <div class="section">
+    <div class="section-title">PWA — Service Worker (Cache Offline)</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="sw-badge sw-desconhecido" id="sw-badge">⚙️ Verificando...</span>
+      <span style="font-size:12px;color:#7986cb" id="sw-desc">O Service Worker permite que o site funcione offline e carregue mais rápido.</span>
+    </div>
+  </div>
+
+  <!-- CHECKLIST DE QUALIDADE -->
+  <div class="section">
+    <div class="section-title">Checklist de Qualidade — Verificação Automática</div>
+    <div class="checklist" id="checklist-container">
+      <!-- Preenchido pelo JS -->
+    </div>
+  </div>
+
+  <!-- ERROS JS EM TEMPO REAL -->
+  <div class="section">
+    <div class="section-title">Erros JavaScript Detectados</div>
+    <div id="erros-container">
+      <div class="sem-erros">✅ Nenhum erro detectado nesta sessão</div>
+    </div>
+  </div>
+
+  <!-- PÁGINAS DO SITE -->
+  <div class="section">
+    <div class="section-title">Páginas Auditadas</div>
+    <div class="pages-grid">
+      <a class="page-card" href="https://itapolitanacajuru.com.br" target="_blank">
+        <div class="page-icon">🏠</div>
+        <div class="page-info">
+          <div class="page-name">Página Inicial</div>
+          <div class="page-url">itapolitanacajuru.com.br</div>
+          <div class="page-scores">
+            <span class="mini-score ms-yellow">Perf 61</span>
+            <span class="mini-score ms-green">SEO 100</span>
+            <span class="mini-score ms-green">Acess 96</span>
+          </div>
+        </div>
+      </a>
+      <a class="page-card" href="https://itapolitanacajuru.com.br/encomendas.html" target="_blank">
+        <div class="page-icon">🛒</div>
+        <div class="page-info">
+          <div class="page-name">Encomendas</div>
+          <div class="page-url">/encomendas.html</div>
+          <div class="page-scores">
+            <span class="mini-score ms-yellow">Perf 69</span>
+            <span class="mini-score ms-green">SEO 100</span>
+            <span class="mini-score ms-green">Acess 100</span>
+          </div>
+        </div>
+      </a>
+      <a class="page-card" href="https://itapolitanacajuru.com.br/fidelidade.html" target="_blank">
+        <div class="page-icon">⭐</div>
+        <div class="page-info">
+          <div class="page-name">Fidelidade</div>
+          <div class="page-url">/fidelidade.html</div>
+          <div class="page-scores">
+            <span class="mini-score ms-yellow">Perf 63</span>
+            <span class="mini-score ms-green">SEO 100</span>
+            <span class="mini-score ms-green">Acess 100</span>
+          </div>
+        </div>
+      </a>
+      <a class="page-card" href="https://itapolitanacajuru.com.br/promocao.html" target="_blank">
+        <div class="page-icon">🎁</div>
+        <div class="page-info">
+          <div class="page-name">Promoção</div>
+          <div class="page-url">/promocao.html</div>
+          <div class="page-scores">
+            <span class="mini-score ms-yellow">Perf 61</span>
+            <span class="mini-score ms-green">SEO 100</span>
+            <span class="mini-score ms-green">Acess 95</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- MANUS FERRAMENTA -->
+  <div class="section">
+    <div class="section-title">Ferramenta Manus — Solicitar Melhoria</div>
+    <div class="manus-box">
+      <div class="manus-title">🤖 O que você quer melhorar no site hoje?</div>
+      <div class="manus-chips">
+        <div class="chip" onclick="setInput('Otimizar imagens pesadas para melhorar performance')">⚡ Otimizar Imagens</div>
+        <div class="chip" onclick="setInput('Melhorar velocidade de carregamento — LCP abaixo de 2.5s')">🚀 Mais Velocidade</div>
+        <div class="chip" onclick="setInput('Verificar e corrigir erros de JavaScript no console')">🐛 Corrigir Erros JS</div>
+        <div class="chip" onclick="setInput('Melhorar experiência do usuário no celular')">📱 UX Mobile</div>
+        <div class="chip" onclick="setInput('Rodar auditoria completa Lighthouse e atualizar scores')">🔍 Nova Auditoria</div>
+        <div class="chip" onclick="setInput('Melhorar o design visual do site')">🎨 Melhorar Design</div>
+        <div class="chip" onclick="setInput('Adicionar nova funcionalidade ao site')">✨ Nova Funcionalidade</div>
+        <div class="chip" onclick="setInput('Verificar se o site está funcionando corretamente em todos os dispositivos')">✅ Verificar Tudo</div>
+      </div>
+      <div class="manus-input-row">
+        <input class="manus-input" id="manus-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." />
+        <button class="manus-send" onclick="enviarParaManus()">Enviar ao Manus</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Painel de Qualidade · Sorveteria Itapolitana Cajuru · Auditoria automática todo domingo às 03:00<br>
+  Desenvolvido com <strong>Manus AI</strong> · <a href="https://github.com/missias123/itapolitanacajuru" target="_blank">GitHub</a>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// LEITURA DO QUALITY GUARD (memória do código)
+// ═══════════════════════════════════════════════════════
+const QG_KEY = 'itap_quality_guard';
+
+function lerMemoria() {
+  try { return JSON.parse(localStorage.getItem(QG_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function carregarDados() {
+  const dados = lerMemoria();
+  
+  // Atualizar timestamp
+  const ts = dados.ultima_atualizacao ? new Date(dados.ultima_atualizacao).toLocaleString('pt-BR') : 'Aguardando primeira visita ao site';
+  document.getElementById('ultima-leitura').textContent = 'Última leitura do Quality Guard: ' + ts;
+  
+  // Badge status
+  const badge = document.getElementById('badge-status');
+  const erros = (dados.erros_js || []).length + (dados.recursos_404 || []).length;
+  if (erros > 0) {
+    badge.textContent = erros + ' problema(s)';
+    badge.parentElement.style.background = '#f44336';
+  } else if (dados.checklist) {
+    badge.textContent = 'Score: ' + (dados.checklist.score || '?') + '/100';
+    badge.parentElement.style.background = dados.checklist.score >= 80 ? '#4caf50' : '#ff9800';
+  } else {
+    badge.textContent = 'Monitorando';
+  }
+
+  // Core Web Vitals
+  const v = dados.vitals || {};
+  if (v.lcp) {
+    const lcpEl = document.getElementById('vital-lcp');
+    const status = v.lcp_status || 'MELHORAR';
+    lcpEl.className = 'vital-card ' + status.toLowerCase();
+    document.getElementById('lcp-val').textContent = (v.lcp/1000).toFixed(1) + 's';
+    document.getElementById('lcp-status').textContent = status === 'BOM' ? '✅ Bom' : status === 'MELHORAR' ? '⚠️ Melhorar' : '❌ Ruim';
+  }
+  if (v.cls !== undefined) {
+    const clsEl = document.getElementById('vital-cls');
+    const status = v.cls_status || 'BOM';
+    clsEl.className = 'vital-card ' + status.toLowerCase();
+    document.getElementById('cls-val').textContent = v.cls.toFixed(3);
+    document.getElementById('cls-status').textContent = status === 'BOM' ? '✅ Bom' : '⚠️ Melhorar';
+  }
+  if (v.inp) {
+    const inpEl = document.getElementById('vital-inp');
+    const status = v.inp_status || 'BOM';
+    inpEl.className = 'vital-card ' + status.toLowerCase();
+    document.getElementById('inp-val').textContent = v.inp + 'ms';
+    document.getElementById('inp-status').textContent = status === 'BOM' ? '✅ Bom' : '⚠️ Melhorar';
+  }
+
+  // Service Worker
+  const swBadge = document.getElementById('sw-badge');
+  const swDesc = document.getElementById('sw-desc');
+  const swStatus = dados.sw_status || 'desconhecido';
+  if (swStatus === 'ATIVO') {
+    swBadge.className = 'sw-badge sw-ativo';
+    swBadge.textContent = '✅ Service Worker Ativo — Site funciona offline';
+    swDesc.textContent = 'Cache ativo. O site carrega instantaneamente na segunda visita.';
+  } else if (swStatus === 'ERRO') {
+    swBadge.className = 'sw-badge sw-erro';
+    swBadge.textContent = '❌ Erro no Service Worker';
+    swDesc.textContent = dados.sw_erro || 'Verifique o arquivo sw.js';
+  } else {
+    swBadge.className = 'sw-badge sw-desconhecido';
+    swBadge.textContent = '⚙️ Aguardando primeira visita ao site principal';
+    swDesc.textContent = 'Abra o site para ativar o monitoramento.';
+  }
+
+  // Checklist
+  const cl = dados.checklist || {};
+  const itens = [
+    { key: 'https', label: 'HTTPS Ativo', desc: 'Conexão segura e criptografada', critico: true },
+    { key: 'viewport', label: 'Viewport Meta Tag', desc: 'Responsivo para celular', critico: true },
+    { key: 'favicon', label: 'Favicon', desc: 'Ícone na aba do navegador', critico: false },
+    { key: 'manifest', label: 'PWA Manifest', desc: 'Instalável como app no celular', critico: false },
+    { key: 'open_graph', label: 'Open Graph (WhatsApp/Facebook)', desc: 'Preview bonito ao compartilhar', critico: false },
+    { key: 'schema', label: 'Schema.org (SEO Estruturado)', desc: 'Google entende o negócio', critico: false },
+    { key: 'canonical', label: 'URL Canônica', desc: 'Evita conteúdo duplicado no Google', critico: false },
+    { key: 'meta_description', label: 'Meta Description', desc: 'Descrição nos resultados do Google', critico: false },
+    { key: 'imagens_alt', label: 'Imagens com Alt Text', desc: cl.imagens_sem_alt_count ? cl.imagens_sem_alt_count + ' imagem(ns) sem alt' : 'Acessibilidade e SEO', critico: false },
+  ];
+
+  const container = document.getElementById('checklist-container');
+  if (Object.keys(cl).length === 0) {
+    container.innerHTML = '<div class="sem-erros" style="background:rgba(57,73,171,.1);border-color:rgba(57,73,171,.3);color:#9fa8da">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>';
+  } else {
+    container.innerHTML = itens.map(item => {
+      const ok = cl[item.key];
+      const cls = ok ? 'ok' : (item.critico ? 'critico' : 'atencao');
+      const icon = ok ? '✅' : (item.critico ? '❌' : '⚠️');
+      const tag = ok ? '<span class="check-tag tag-ok">OK</span>' : (item.critico ? '<span class="check-tag tag-critico">Crítico</span>' : '<span class="check-tag tag-atencao">Atenção</span>');
+      const btn = !ok ? `<button class="btn-corrigir" onclick="pedirCorrecao('Corrigir: ${item.label} — ${item.desc}')">Corrigir</button>` : '';
+      return `<div class="check-item ${cls}">
+        <div class="check-icon">${icon}</div>
+        <div class="check-info">
+          <div class="check-title">${item.label}</div>
+          <div class="check-desc">${item.desc}</div>
+        </div>
+        ${tag}${btn}
+      </div>`;
+    }).join('');
+  }
+
+  // Erros JS
+  const errosJS = dados.erros_js || [];
+  const erros404 = dados.recursos_404 || [];
+  const todosErros = [...errosJS, ...erros404];
+  const errosContainer = document.getElementById('erros-container');
+  if (todosErros.length === 0) {
+    errosContainer.innerHTML = '<div class="sem-erros">✅ Nenhum erro detectado nesta sessão</div>';
+  } else {
+    errosContainer.innerHTML = todosErros.map(e => 
+      `<div class="erro-item">${e.tipo}: ${e.msg || e.url} ${e.arquivo ? '— ' + e.arquivo + ':' + e.linha : ''} <span style="color:#5c6bc0;font-size:10px">${new Date(e.ts).toLocaleTimeString('pt-BR')}</span></div>`
+    ).join('');
+  }
+}
+
+function setInput(texto) {
+  document.getElementById('manus-input').value = texto;
+  document.getElementById('manus-input').focus();
+}
+
+function pedirCorrecao(texto) {
+  setInput(texto);
+  document.getElementById('manus-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function enviarParaManus() {
+  const input = document.getElementById('manus-input');
+  const texto = input.value.trim();
+  if (!texto) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(texto).then(() => {
+      alert('✅ Mensagem copiada!\n\nCole no chat do Manus:\n\n"' + texto + '"');
+    });
+  } else {
+    alert('Copie e envie ao Manus:\n\n"' + texto + '"');
+  }
+  input.value = '';
+}
+
+// Animar barras
+window.addEventListener('load', function() {
+  document.querySelectorAll('.score-bar-fill').forEach(bar => {
+    const w = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = w; }, 400);
+  });
+  carregarDados();
+  // Atualizar a cada 10 segundos
+  setInterval(carregarDados, 10000);
+});
+</script>
+</body>
+</html>
