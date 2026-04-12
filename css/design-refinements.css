@@ -1,0 +1,85 @@
+
+    /* FASE 6: REFINAMENTOS DE DESIGN PARA MÁXIMA CONVERSÃO */
+    
+    :root {
+        --primary: #EF0129;
+        --secondary: #F9A825;
+        --accent: #0D47A1;
+        --light-bg: #FFF8F0;
+        --dark-text: #1A0A00;
+        --border-radius: 16px;
+        --shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* 1. MICRO-INTERACTIONS */
+    button, a[role="button"], .nav-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    button:hover::after, a[role="button"]:hover::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(-50%, -50%);
+        animation: ripple 0.6s ease-out;
+    }
+    
+    @keyframes ripple {
+        to {
+            width: 300px;
+            height: 300px;
+            opacity: 0;
+        }
+    }
+    
+    /* 2. SKELETON LOADING ANIMATION */
+    @keyframes skeleton-loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+    
+    /* 3. SMOOTH SCROLL */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* 4. FOCUS STATES PARA ACESSIBILIDADE */
+    *:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+    }
+    
+    /* 5. DARK MODE SUPPORT */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background: #1A1A1A;
+            color: #f0f0f0;
+        }
+        .card, .modal {
+            background: #2a2a2a;
+            color: #f0f0f0;
+        }
+    }
+    
+    /* 6. REDUCED MOTION SUPPORT */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+    
