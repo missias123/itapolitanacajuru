@@ -47,8 +47,8 @@
     var img = document.createElement('img');
     img.src = 'images/itamandua_lambendo.webp';
     img.alt = 'Itamanduá — Mascote da Sorveteria Itapolitana Cajuru';
-    img.width = 110;
-    img.height = 110;
+    img.width = 140;
+    img.height = 140;
     img.loading = 'lazy';
     img.decoding = 'async';
     img.title = 'Clique para esconder o Itamanduá';
