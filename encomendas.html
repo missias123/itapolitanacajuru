@@ -92,11 +92,11 @@
     /* BOTÃO CARRINHO FIXO */
     .btn-carrinho-fixo {
       position: fixed;
-      /* POSIÇÃO IFOOD/RAPPI: centralizado na parte inferior, acima da barra do sistema */
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      right: auto;
+      /* POSIÇÃO: canto inferior direito, visível acima do cardápio */
+      bottom: 80px;
+      right: 16px;
+      left: auto;
+      transform: none;
       background: var(--amarelo);
       color: #212121;
       border: none;
@@ -122,10 +122,10 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
     }
-    .btn-carrinho-fixo:disabled { opacity: 0; pointer-events: none; transform: translateX(-50%) scale(0.7) translateY(20px); }
+    .btn-carrinho-fixo:disabled { opacity: 0; pointer-events: none; transform: scale(0.7) translateY(20px); }
     .btn-carrinho-fixo.ativo { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
-    @keyframes popIn { from { opacity:0; transform:translateX(-50%) scale(0.7) translateY(20px); } to { opacity:1; transform:translateX(-50%) scale(1) translateY(0); } }
-    .btn-carrinho-fixo:not(:disabled):hover { transform: translateX(-50%) scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    @keyframes popIn { from { opacity:0; transform:scale(0.7) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
     .btn-carrinho-fixo .badge {
       background: var(--vermelho);
       color: white;
