@@ -126,6 +126,12 @@
       gap: 10px;
       z-index: 200;
       transition: all 0.2s;
+      /* Evita menu de contexto e seleção de texto no celular */
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
     }
     .btn-carrinho-fixo:disabled { opacity: 0; pointer-events: none; transform: scale(0.7) translateY(20px); }
     .btn-carrinho-fixo.ativo { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
@@ -282,6 +288,14 @@
     }
     .btn-sabores:hover:not(:disabled) { background: var(--azul-escuro); transform: translateY(-1px); }
     .btn-sabores:disabled { background: var(--cinza); cursor: not-allowed; }
+    /* Evita menu de contexto no celular em todos os botões */
+    button, .btn-sabores, .btn-carrinho-fixo, .btn-confirmar, .btn-qty, .btn-add-picóles, .btn-continuar-picóles, .btn-tipo-picóle, .btn-fechar-modal, .btn-voltar {
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
     .btn-picolé { background: #E65100; }
     .btn-picolé:hover:not(:disabled) { background: #BF360C; }
 
