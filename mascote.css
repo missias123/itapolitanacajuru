@@ -78,9 +78,17 @@
   transform: scale(1.08) rotate(-3deg);
 }
 
-/* Correndo em qualquer trilho: bounce vertical — SEM scaleX */
+/* TRILHO IDA (vai para esquerda): imagem normal — olha para direita = de frente */
 #ita-mascote.ita-correndo img {
   animation: ita-correr 0.16s ease-in-out infinite !important;
+  transform: scaleX(1) !important;
+  cursor: default;
+}
+
+/* TRILHO VOLTA (vai para direita): imagem espelhada — olha para esquerda = de frente */
+#ita-mascote.ita-voltando img {
+  animation: ita-correr 0.16s ease-in-out infinite !important;
+  transform: scaleX(-1) !important;
   cursor: default;
 }
 
@@ -92,7 +100,7 @@
   70%      { transform: translateY(-15px) rotate(-1.5deg); }
 }
 
-/* Corrida: bounce vertical — imagem sempre de frente, ZERO scaleX */
+/* Corrida: bounce vertical — imagem de frente na direção do movimento */
 @keyframes ita-correr {
   0%   { transform: translateY(0px) rotate(0deg); }
   25%  { transform: translateY(-12px) rotate(-2deg); }

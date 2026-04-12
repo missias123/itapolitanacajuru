@@ -285,6 +285,9 @@
 
         /* ---- FASE 5: TRILHO VOLTA — corre de frente da esquerda para a direita ---- */
         setTimeout(function () {
+          /* Adiciona classe ita-voltando para aplicar scaleX(-1) no CSS — fica de frente */
+          wrap.classList.remove('ita-correndo');
+          wrap.classList.add('ita-voltando');
           /* Corre até o lado direito (posição original) */
           wrap.style.left = (W - 160) + 'px';
 
@@ -297,7 +300,7 @@
           /* ---- FASE 7: Chegou no lado direito — para com poeira ---- */
           setTimeout(function () {
             /* Remove classes de corrida */
-            wrap.classList.remove('ita-correndo', 'ita-trilho-volta');
+            wrap.classList.remove('ita-correndo', 'ita-voltando', 'ita-trilho-volta');
 
             /* Restaura posicionamento original: right:12px, bottom:80px */
             wrap.style.transition = 'none';
