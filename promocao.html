@@ -193,139 +193,9 @@
 
 
 
-/* ===== MASCOTE ITAMANDUÁ - RESPONSIVO 3 APARELHOS ===== */
-#itamandua-container {
-    position: fixed;
-    bottom: 80px;
-    left: -150px; /* começa fora da tela */
-    z-index: 9998;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: itamandua-entrar 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
-}
-@keyframes itamandua-entrar {
-    0%   { left: -150px; }
-    100% { left: 12px; }
-}
-#itamandua-img {
-    width: 120px; /* Computador */
-    height: auto;
-    cursor: pointer;
-    filter: drop-shadow(3px 6px 10px rgba(0,0,0,0.30));
-    animation: 
-        itamandua-swing 4s ease-in-out infinite;
-    transform-origin: bottom center;
-    transition: transform 0.2s, filter 0.2s;
-    display: block;
-}
-#itamandua-img:hover {
-    transform: scale(1.18) rotate(-8deg) !important;
-    filter: drop-shadow(4px 8px 14px rgba(232,0,13,0.40));
-    animation-play-state: paused;
-}
-@keyframes itamandua-swing {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    25%       { transform: translateY(-8px) rotate(3deg); }
-    50%       { transform: translateY(-14px) rotate(0deg); }
-    75%       { transform: translateY(-8px) rotate(-3deg); }
-}
-#itamandua-balao {
-    background: #fff;
-    border: 2.5px solid #E8000D;
-    border-radius: 14px 14px 14px 4px;
-    padding: 7px 11px;
-    font-size: 11px;
-    font-weight: 800;
-    color: #E8000D;
-    max-width: 130px;
-    text-align: center;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-    margin-bottom: 6px;
-    position: relative;
-    animation: balao-aparecer 0.5s ease-out;
-    line-height: 1.4;
-    word-break: break-word;
-}
-#itamandua-balao::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 16px;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid #E8000D;
-}
-@keyframes balao-aparecer {
-    0%   { opacity: 0; transform: scale(0.7) translateY(10px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
 
-/* === TABLET (600px - 1024px) === */
-@media (max-width: 1024px) and (min-width: 601px) {
-    #itamandua-img {
-        width: 100px;
-    }
-    #itamandua-balao {
-        font-size: 10px;
-        max-width: 115px;
-        padding: 6px 10px;
-    }
-    #itamandua-container {
-        bottom: 75px;
-    }
-}
 
-/* === CELULAR (até 600px) === */
-@media (max-width: 600px) {
-    #itamandua-img {
-        width: 70px;
-    }
-    #itamandua-balao {
-        font-size: 9px;
-        max-width: 95px;
-        padding: 5px 8px;
-        border-width: 2px;
-    }
-    #itamandua-container {
-        bottom: 70px;
-        left: -100px;
-    }
-    @keyframes itamandua-entrar {
-        0%   { left: -100px; }
-        100% { left: 8px; }
-    }
-}
 
-/* Mascote nas seções internas */
-.itamandua-section {
-    display: block;
-    width: 110px;
-    height: auto;
-    margin: 0 auto 10px auto;
-    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.20));
-    animation: itamandua-swing 4s ease-in-out infinite;
-}
-.itamandua-hero {
-    position: absolute;
-    right: -10px;
-    bottom: -20px;
-    width: 180px;
-    height: auto;
-    z-index: 10;
-    filter: drop-shadow(3px 6px 8px rgba(0,0,0,0.25));
-    animation: itamandua-swing 4s ease-in-out infinite;
-    pointer-events: none;
-}
-@media (max-width: 1024px) and (min-width: 601px) {
-    .itamandua-section { width: 90px; }
-    .itamandua-hero { width: 140px; }
-}
-@media (max-width: 600px) {
-    .itamandua-section { width: 70px; }
-    .itamandua-hero { width: 100px; right: -5px; bottom: -10px; }
-}
-/* ===== FIM MASCOTE RESPONSIVO ===== */
 
 </style>
 <style>
@@ -997,47 +867,9 @@
 <!-- ===== FIM BOTÃO FIXO ===== -->
 
 
-<!-- ===== MASCOTE ITAMANDUÁ ===== -->
-<div id="itamandua-container" title="Itamanduá - Mascote da Itapolitana">
-  <div id="itamandua-balao">Oi! Sou o Itamanduá! 🍦</div>
-  <img id="itamandua-img"
-       src="images/itamandua_lambendo.webp"
-       alt="Itamanduá - Mascote da Sorveteria Itapolitana Cajuru"
-       width="120" height="120"
-       loading="lazy"
-       onclick="this.parentElement.style.left='-200px'; setTimeout(()=>{this.parentElement.style.left='12px';},3000);"
-  />
-</div>
-<script>
-(function(){
-  var frases = [
-    "Oi! Sou o Itamanduá! 🍦",
-    "Que sorvete gostoso! 😋",
-    "17 anos de sabor! 🎉",
-    "Temos 35 sabores! 🍨",
-    "O melhor de Cajuru! ⭐",
-    "Chocolate é vida! 🍫",
-    "Manga, morango, açaí... 🥭",
-    "Nota 4.9 no Google! 🌟",
-    "Peça pelo WhatsApp! 💬",
-    "Venha nos visitar! 📍",
-    "Minha língua é enorme! 👅",
-    "Feito com amor! ❤️"
-  ];
-  var idx = 0;
-  var balao = document.getElementById('itamandua-balao');
-  if (balao) {
-    setInterval(function(){
-      idx = (idx + 1) % frases.length;
-      balao.style.animation = 'none';
-      balao.offsetHeight; // reflow
-      balao.style.animation = 'balao-aparecer 0.5s ease-out';
-      balao.textContent = frases[idx];
-    }, 3000);
-  }
-})();
-</script>
-<!-- ===== FIM MASCOTE ITAMANDUÁ ===== -->
 
+
+
+<script src="mascote.js" defer></script>
 </body>
 </html>
