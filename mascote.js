@@ -1,19 +1,32 @@
 /* =====================================================
    ITAMANDUÁ — Mascote Sorveteria Itapolitana
-   Versão 6 DEFINITIVA
-   
-   REGRAS:
-   - Sem clicar: fica parado no lado direito, flutua e fala
-   - Ao clicar:
-     1. Susto
-     2. Corre para a esquerda
-     3. 3 bolas caem no chão em sequência (ficam lá)
-     4. Some pelo lado esquerdo
-     5. Reposiciona fora da tela à ESQUERDA (invisível)
-     6. Volta correndo da ESQUERDA para a DIREITA (visível na tela)
-     7. Enquanto passa pelas bolas → cada uma pula para a casquinha
-     8. Para no lado direito com poeira
-     9. Diz frase engraçada e retoma frases normais
+   Versão 8 — DOIS TRILHOS (pista oval)
+
+   LÓGICA COMO PISTA OVAL:
+   ┌──────────────────────────────────────────────────┐
+   │  TELA VISÍVEL                                    │
+   │                                                  │
+   │  TRILHO VOLTA (bottom:140px) →→→→→→→→→→→→→→→  │
+   │                                                  │
+   │  TRILHO IDA   (bottom: 80px) ←←←←←←←←←←←←←←  │
+   │                                                  │
+   └──────────────────────────────────────────────────┘
+         ↑ curva fora                    ↑ curva fora
+         da tela esq                     da tela dir
+
+   SEQUÊNCIA AO CLICAR:
+   1. Susto
+   2. TRILHO IDA: corre de frente → esquerda → some
+   3. Bolas caem no chão em sequência
+   4. Curva fora da tela (invisível)
+   5. TRILHO VOLTA: entra pela esquerda → corre de frente → direita
+   6. Passa pelas bolas → cada uma pula para a casquinha
+   7. Chega na posição original → para com poeira
+   8. Balão "Ufa! Recuperei meu sorvete!"
+   9. Retoma frases normais
+
+   REGRA DE OURO: ZERO scaleX. A imagem SEMPRE de frente.
+   Só o container (left) se move.
    ===================================================== */
 (function () {
   'use strict';
@@ -45,14 +58,14 @@
     { cor: '#FFB300', sombra: '#e09000', emoji: '🥭' }
   ];
 
-  var fugindo    = false;
-  var timerFrase = null;
-  var fraseIdx   = 0;
+  var fugindo     = false;
+  var timerFrase  = null;
+  var fraseIdx    = 0;
   var bolasNaTela = [];
 
-  /* ==================================================
+  /* ================================================
      INICIALIZAÇÃO
-  ================================================== */
+  ================================================ */
   function init() {
     if (document.getElementById('ita-mascote')) return;
 
@@ -91,9 +104,9 @@
     });
   }
 
-  /* ==================================================
+  /* ================================================
      TROCA DE FRASES
-  ================================================== */
+  ================================================ */
   function rodarFrases(balao) {
     clearInterval(timerFrase);
     timerFrase = setInterval(function () {
@@ -106,9 +119,9 @@
     }, 3000);
   }
 
-  /* ==================================================
+  /* ================================================
      CRIA BOLA DE SORVETE NO CHÃO
-  ================================================== */
+  ================================================ */
   function criarBola(bola, xPos, delay) {
     var el = document.createElement('div');
     el.className = 'ita-bola-sorvete';
@@ -134,11 +147,9 @@
     document.body.appendChild(el);
 
     setTimeout(function () {
-      /* Aparece */
       el.style.transition = 'opacity 0.1s ease';
       el.style.opacity = '1';
 
-      /* Cai após aparecer */
       setTimeout(function () {
         var rot = (Math.random() * 50 - 25) + 'deg';
         el.style.transition = 'bottom 0.55s cubic-bezier(0.6,0,1,0.5), transform 0.55s ease';
@@ -161,9 +172,9 @@
     return el;
   }
 
-  /* ==================================================
+  /* ================================================
      POEIRA NA FREADA
-  ================================================== */
+  ================================================ */
   function poeira(xPos) {
     for (var i = 0; i < 5; i++) {
       (function (n) {
@@ -192,10 +203,9 @@
     }
   }
 
-  /* ==================================================
-     RECOLHE BOLAS — pulam para a casquinha em sequência
-     Chamado ENQUANTO ele está visível na tela
-  ================================================== */
+  /* ================================================
+     RECOLHE BOLAS — pulam para a casquinha
+  ================================================ */
   function recolherBolas(xCasquinha, yCasquinha) {
     var lista = bolasNaTela.slice();
     bolasNaTela = [];
@@ -219,14 +229,16 @@
     });
   }
 
-  /* ==================================================
-     ANIMAÇÃO PRINCIPAL
-  ================================================== */
+  /* ================================================
+     ANIMAÇÃO PRINCIPAL — DOIS TRILHOS
+  ================================================ */
   function animar(wrap, balao, img) {
     fugindo = true;
     clearInterval(timerFrase);
 
-    /* Captura posição atual do mascote */
+    var W = window.innerWidth;
+
+    /* Posição atual do mascote (lado direito) */
     var rect  = wrap.getBoundingClientRect();
     var xBase = rect.left + rect.width / 2 - 20;
 
@@ -236,91 +248,93 @@
     img.style.transform  = 'translateY(-22px) scale(1.18) rotate(10deg)';
 
     setTimeout(function () {
-      img.style.transition = 'transform 0.1s ease';
+      img.style.transition = '';
       img.style.transform  = '';
 
-      /* ---- FASE 2: Corre para a esquerda ---- */
+      /* ---- FASE 2: Entra no TRILHO IDA (bottom: 80px) ---- */
+      /* Prepara: define left atual antes de remover right */
+      var xAtual = rect.left;
+      wrap.style.transition = 'none';
+      wrap.classList.remove('ita-visivel');
+      wrap.classList.add('ita-correndo', 'ita-trilho-ida');
+      wrap.style.right = 'auto';
+      wrap.style.left  = xAtual + 'px';
+      void wrap.offsetWidth; /* força reflow */
+
+      /* ---- FASE 3: Bolas caem em sequência (enquanto corre) ---- */
+      bolasNaTela = [];
+      BOLAS.forEach(function (bola, i) {
+        var el = criarBola(bola, xBase - 15 + i * 22, i * 420);
+        bolasNaTela.push(el);
+      });
+
+      /* Corre para a esquerda — sai da tela (TRILHO IDA) */
       setTimeout(function () {
-        wrap.classList.add('ita-correndo');
+        wrap.style.left = (-300) + 'px'; /* sai pela esquerda */
+      }, 50);
 
-        /* ---- FASE 3: Bolas caem em sequência ---- */
-        bolasNaTela = [];
-        BOLAS.forEach(function (bola, i) {
-          var el = criarBola(bola, xBase - 15 + i * 22, i * 420);
-          bolasNaTela.push(el);
-        });
+      /* ---- FASE 4: Chegou fora da tela à esquerda ---- */
+      /* Faz a "curva" invisível: reposiciona no TRILHO VOLTA, fora da tela à ESQUERDA */
+      setTimeout(function () {
+        wrap.style.transition = 'none';
+        wrap.classList.remove('ita-trilho-ida');
+        wrap.classList.add('ita-trilho-volta');
+        /* Posiciona fora da tela à esquerda, no trilho de volta (bottom: 140px) */
+        wrap.style.left = (-300) + 'px';
+        void wrap.offsetWidth; /* força reflow */
 
-        /* ---- FASE 4: Some pelo lado esquerdo ---- */
+        /* ---- FASE 5: TRILHO VOLTA — corre de frente da esquerda para a direita ---- */
         setTimeout(function () {
-          wrap.classList.remove('ita-visivel');
-          wrap.classList.add('ita-fugindo');
+          /* Corre até o lado direito (posição original) */
+          wrap.style.left = (W - 160) + 'px';
 
-          /* ---- FASE 5: Reposiciona fora da tela À ESQUERDA (invisível) ---- */
+          /* ---- FASE 6: Recolhe bolas enquanto passa por elas ---- */
           setTimeout(function () {
+            var r2 = wrap.getBoundingClientRect();
+            recolherBolas(r2.left + 30, 120);
+          }, 700);
+
+          /* ---- FASE 7: Chegou no lado direito — para com poeira ---- */
+          setTimeout(function () {
+            /* Remove classes de corrida */
+            wrap.classList.remove('ita-correndo', 'ita-trilho-volta');
+
+            /* Restaura posicionamento original: right:12px, bottom:80px */
             wrap.style.transition = 'none';
-            wrap.classList.remove('ita-fugindo');
-            /* Posiciona fora da tela à ESQUERDA */
-            wrap.style.right = 'auto';
-            wrap.style.left  = '-250px';
+            wrap.style.left   = 'auto';
+            wrap.style.right  = '12px';
+            wrap.style.bottom = '80px';
             wrap.style.transform = 'translateX(0)';
-            void wrap.offsetWidth; /* força reflow */
+            void wrap.offsetWidth;
 
-            /* ---- FASE 6: Volta correndo da ESQUERDA para a DIREITA ---- */
-            /* Ele entra pela esquerda e corre até o lado direito — VISÍVEL NA TELA */
+            /* Poeira */
+            var r3 = wrap.getBoundingClientRect();
+            poeira(r3.left + 20);
+
+            /* ---- FASE 8: Balão "Ufa!" ---- */
             setTimeout(function () {
-              /* Restaura transição de corrida — agora de frente (voltando) */
-              wrap.classList.remove('ita-correndo');
-              wrap.classList.add('ita-voltando');
-              wrap.style.transition = 'left 1.8s linear';
-              /* Corre até o lado direito */
-              wrap.style.left = (window.innerWidth - 160) + 'px';
+              var frase = FRASES_VOLTA[Math.floor(Math.random() * FRASES_VOLTA.length)];
+              balao.textContent = frase;
+              balao.classList.add('ita-balao-show');
 
-              /* ---- FASE 7: Enquanto corre, recolhe bolas ao passar por elas ---- */
-              /* As bolas estão espalhadas na tela — recolhe após 0.8s (já está visível) */
               setTimeout(function () {
-                var r2 = wrap.getBoundingClientRect();
-                var xCasq = r2.left + 30;
-                var yCasq = window.innerHeight - r2.top - 60;
-                recolherBolas(xCasq, yCasq);
-              }, 800);
+                fugindo = false;
+                rodarFrases(balao);
+              }, 3200);
+            }, 300);
 
-              /* ---- FASE 8: Para no lado direito com poeira ---- */
-              setTimeout(function () {
-                wrap.classList.remove('ita-correndo', 'ita-voltando');
+          }, 1700); /* tempo do trilho volta */
 
-                /* Restaura posicionamento para right:12px */
-                wrap.style.transition = 'none';
-                wrap.style.left  = 'auto';
-                wrap.style.right = '12px';
-                wrap.style.transform = 'translateX(0)';
-                void wrap.offsetWidth;
+        }, 200); /* pequena pausa antes de entrar no trilho volta */
 
-                /* Poeira */
-                var r3 = wrap.getBoundingClientRect();
-                poeira(r3.left + 20);
+      }, 1800); /* tempo para sair pela esquerda no trilho ida */
 
-                /* ---- FASE 9: Balão de volta + retoma frases ---- */
-                setTimeout(function () {
-                  var frase = FRASES_VOLTA[Math.floor(Math.random() * FRASES_VOLTA.length)];
-                  balao.textContent = frase;
-                  balao.classList.add('ita-balao-show');
-
-                  setTimeout(function () {
-                    fugindo = false;
-                    rodarFrases(balao);
-                  }, 3200);
-                }, 300);
-              }, 1900); /* tempo total da corrida */
-            }, 1200); /* espera antes de voltar */
-          }, 1200); /* tempo para sair da tela */
-        }, 600);
-      }, 200);
     }, 130);
   }
 
-  /* ==================================================
+  /* ================================================
      START
-  ================================================== */
+  ================================================ */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
