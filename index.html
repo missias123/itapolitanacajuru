@@ -2735,9 +2735,10 @@ function addMsg(tipo, txt) {
 
 
 function getResp(msg) {
-  const l=msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const l = norm(msg);
   for(const[k,r]of Object.entries(RESPOSTAS)){
-    if(k!=='default'&&l.includes(k)){
+    if(k!=='default' && l.includes(norm(k))){
       return typeof r==='function'?r():r;
     }
   }
