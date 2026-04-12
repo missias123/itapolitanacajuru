@@ -1,100 +1,110 @@
-# Relatório de Auditoria Técnica e UX — Sorveteria Itapolitana Cajuru
+# Relatório de Auditoria Semanal — Sorveteria Itapolitana Cajuru
 
-**Data da Auditoria:** 12 de Abril de 2026
-**Ferramentas Utilizadas:** Google Lighthouse, Console JS, Regex DOM Analysis, Z-Index Mapper
-
-Este relatório apresenta os resultados de uma auditoria completa no site da Sorveteria Itapolitana Cajuru, utilizando as mesmas metodologias aplicadas por grandes empresas de tecnologia (Google, Meta, Amazon) para identificar conflitos, erros, bugs, problemas de performance e acessibilidade.
+**Data da Auditoria:** 12/04/2026 às 06:23
+**Ferramentas:** Google Lighthouse 12.x · Análise DOM · Z-Index Mapper
 
 ---
 
-## 1. Visão Geral (Scores Lighthouse)
+## 1. Scores Lighthouse
 
-A auditoria do Google Lighthouse revelou os seguintes scores para as páginas principais:
-
-| Métrica | `index.html` | `encomendas.html` | Status |
-|---------|--------------|-------------------|--------|
-| **Performance** | 49/100 ❌ | 78/100 ⚠️ | Precisa de otimização |
-| **Acessibilidade** | 96/100 ✅ | 100/100 ✅ | Excelente |
-| **Boas Práticas** | 96/100 ✅ | 100/100 ✅ | Excelente |
-| **SEO** | 100/100 ✅ | 100/100 ✅ | Perfeito |
+| Página | Performance | Acessibilidade | Boas Práticas | SEO |
+|--------|-------------|----------------|---------------|-----|
+| `index.html` | ⚠️ 61/100 | ✅ 96/100 | ✅ 96/100 | ✅ 100/100 |
+| `encomendas.html` | ⚠️ 69/100 | ✅ 100/100 | ✅ 100/100 | ✅ 100/100 |
+| `fidelidade.html` | ⚠️ 63/100 | ✅ 100/100 | ✅ 96/100 | ✅ 100/100 |
+| `promocao.html` | ⚠️ 61/100 | ✅ 95/100 | ✅ 96/100 | ✅ 100/100 |
 
 ---
 
-## 2. Problemas Críticos Encontrados (Bugs e Erros)
+## 2. Problemas por Página
 
-### 2.1. Erros de Console JavaScript (JS)
-Foram detectados erros que quebram a execução de scripts na página inicial:
+### index.html
 
-*   ❌ **ReferenceError: `respostas` is not defined**
-    *   **Onde:** `index.html` (linha 3455)
-    *   **Causa:** O código tenta iterar sobre um objeto `respostas` que não foi declarado ou importado corretamente. Isso quebra a inicialização do chatbot.
-    *   **Solução:** Declarar o objeto `respostas` antes do seu uso ou garantir que o script que o contém seja carregado antes.
+**Erros de Console JavaScript:**
+- ❌ Failed to load resource: the server responded with a status of 404 ()
+- ❌ ReferenceError: respostas is not defined
+    at HTMLDocument.<anonymous> (https://itapolitanacajuru.com.br/:3455:15)
+- ❌ X-Frame-Options may only be set via an HTTP header sent along with a document. It may not be set inside <meta>.
 
-*   ❌ **Erro 404 (Not Found)**
-    *   **Onde:** `favicon.ico`
-    *   **Causa:** O navegador tenta carregar o ícone do site, mas o arquivo não existe no servidor.
-    *   **Solução:** Adicionar um arquivo `favicon.ico` (ou `.png`) na raiz do projeto e referenciá-lo no `<head>`.
+**Recursos com Erro 404:**
+- ❌ [404] https://itapolitanacajuru.com.br/favicon.ico
 
-### 2.2. Links e Recursos Quebrados
-A análise de links internos revelou variáveis de template vazando para o HTML final:
+**Problemas de UX/Mobile:**
+- ⚠️ 111 fontes < 16px (zoom automático no iOS)
 
-*   ❌ **Arquivos não encontrados:** `${f}` e `${foto}`
-    *   **Onde:** `index.html`
-    *   **Causa:** Variáveis de template literal do JavaScript (ex: `${foto}`) foram escritas diretamente no HTML estático ou não foram interpoladas corretamente.
-    *   **Solução:** Localizar essas strings no HTML e substituí-las por caminhos reais ou movê-las para dentro de scripts JS.
+**Problemas de Performance:**
+- ❌ [0%] Browser errors were logged to the console: 
+- ❌ [0%] Minimize main-thread work: 7.2 s
+- ❌ [0%] Largest Contentful Paint element: 5,860 ms
+- ❌ [0%] Background and foreground colors do not have a sufficient contrast ratio.: 
+- ❌ [0%] Elements with visible text labels do not have matching accessible names.: 
+- ❌ [0%] Eliminate render-blocking resources: Est savings of 1,060 ms
+- ❌ [0%] Reduce unused JavaScript: Est savings of 89 KiB
+- ❌ [0%] Properly size images: Est savings of 212 KiB
+
+### encomendas.html
+
+**Problemas de UX/Mobile:**
+- ⚠️ 61 fontes < 16px (zoom automático no iOS)
+
+**Problemas de Performance:**
+- ❌ [0%] Reduce initial server response time: Root document took 610 ms
+- ❌ [0%] Minimize main-thread work: 3.5 s
+- ❌ [0%] Largest Contentful Paint element: 3,910 ms
+- ❌ [0%] Reduce unused JavaScript: Est savings of 64 KiB
+- ❌ [0%] Document request latency: Est savings of 510 ms
+- ❌ [0%] Network dependency tree: 
+- ❌ [48%] Max Potential First Input Delay: 250 ms
+- ⚠️ [50%] Serve static assets with an efficient cache policy: 8 resources found
+
+### fidelidade.html
+
+**Erros de Console JavaScript:**
+- ❌ Failed to load resource: the server responded with a status of 404 ()
+
+**Recursos com Erro 404:**
+- ❌ [404] https://itapolitanacajuru.com.br/favicon.ico
+
+**Problemas de UX/Mobile:**
+- ⚠️ 3 fontes < 16px (zoom automático no iOS)
+
+**Problemas de Performance:**
+- ❌ [0%] Browser errors were logged to the console: 
+- ❌ [0%] Minimize main-thread work: 3.2 s
+- ❌ [0%] Largest Contentful Paint element: 5,870 ms
+- ❌ [0%] Eliminate render-blocking resources: Est savings of 1,360 ms
+- ❌ [0%] Reduce unused JavaScript: Est savings of 64 KiB
+- ❌ [0%] Network dependency tree: 
+- ❌ [0%] Render blocking requests: Est savings of 1,360 ms
+- ❌ [6%] First Contentful Paint: 5.4 s
+
+### promocao.html
+
+**Erros de Console JavaScript:**
+- ❌ Failed to load resource: the server responded with a status of 404 ()
+
+**Recursos com Erro 404:**
+- ❌ [404] https://itapolitanacajuru.com.br/favicon.ico
+
+**Problemas de UX/Mobile:**
+- ⚠️ 16 fontes < 16px (zoom automático no iOS)
+
+**Problemas de Performance:**
+- ❌ [0%] Browser errors were logged to the console: 
+- ❌ [0%] Largest Contentful Paint element: 7,580 ms
+- ❌ [0%] Background and foreground colors do not have a sufficient contrast ratio.: 
+- ❌ [0%] Eliminate render-blocking resources: Est savings of 310 ms
+- ❌ [0%] Properly size images: Est savings of 103 KiB
+- ❌ [0%] Use efficient cache lifetimes: Est savings of 217 KiB
+- ❌ [0%] Improve image delivery: Est savings of 189 KiB
+- ❌ [0%] LCP request discovery: 
 
 ---
 
-## 3. Auditoria de UX e Mobile (Celular)
+## 3. Resumo Executivo
 
-A experiência do usuário no celular foi analisada focando em touch targets, legibilidade e responsividade.
+Esta auditoria é executada automaticamente todo domingo às 03:00 pelo sistema Manus.
+Problemas críticos (❌) devem ser corrigidos com prioridade máxima.
+Problemas de atenção (⚠️) devem ser corrigidos na próxima sprint de manutenção.
 
-### 3.1. Fontes Pequenas (Zoom Automático no iOS)
-O iOS (iPhone) aplica um zoom automático irritante quando o usuário toca em inputs ou lê textos com fonte menor que 16px.
-
-*   ⚠️ **`index.html`:** 113 ocorrências de fontes menores que 16px (ex: 11px, 12px, 13px).
-*   ⚠️ **`encomendas.html`:** 61 ocorrências de fontes menores que 16px (ex: 0.7rem, 0.8rem).
-*   **Solução:** Aumentar o tamanho base das fontes para no mínimo 14px (ideal 16px) e garantir que todos os `<input>` e `<select>` tenham `font-size: 16px`.
-
-### 3.2. Risco de Scroll Horizontal
-*   ⚠️ **`admin.html`:** Não possui a regra `overflow-x: hidden` no `body`.
-*   **Causa:** Elementos mais largos que a tela podem causar rolagem horizontal indesejada no celular.
-*   **Solução:** Adicionar `body { overflow-x: hidden; }` no CSS do painel admin.
-
-### 3.3. Imagens sem Lazy Loading
-*   ⚠️ **`fidelidade.html`:** 6 imagens carregadas simultaneamente.
-*   **Solução:** Adicionar o atributo `loading="lazy"` nas tags `<img>` que ficam abaixo da dobra da tela para economizar dados do usuário.
-
----
-
-## 4. Auditoria de Performance
-
-A baixa pontuação de performance (49/100) no `index.html` se deve principalmente ao peso das imagens e bloqueio de renderização.
-
-### 4.1. Imagens Pesadas e Mal Dimensionadas
-*   ⚠️ **`logo.webp`:** Desperdício de 144 KB.
-*   ⚠️ **`carrinho-picole.webp`:** Desperdício de 35 KB.
-*   ⚠️ **`itamandua_lambendo.webp`:** Desperdício de 32 KB.
-*   **Solução:** Redimensionar as imagens para o tamanho exato em que são exibidas na tela e usar atributos `width` e `height` explícitos no HTML para evitar *Cumulative Layout Shift* (CLS).
-
-### 4.2. Bloqueio de Renderização (Render-blocking)
-*   ❌ **Fontes do Google (Inter):** Atraso de 150ms no carregamento da página.
-*   **Solução:** Adicionar `rel="preconnect"` para o Google Fonts e usar `font-display: swap` (já implementado, mas pode ser otimizado).
-
-### 4.3. JavaScript Não Utilizado
-*   ⚠️ **Google Tag Manager:** 63 KB carregados sem uso imediato.
-*   ⚠️ **Swiper JS:** 25 KB carregados.
-*   **Solução:** Adiar o carregamento de scripts não essenciais usando `defer` ou carregá-los apenas quando o usuário interagir com a página.
-
----
-
-## 5. Conclusão e Próximos Passos
-
-O site possui uma excelente base de SEO e Acessibilidade, mas requer atenção imediata aos erros de JavaScript que podem quebrar funcionalidades (como o chatbot) e otimizações de performance para melhorar o tempo de carregamento.
-
-**Plano de Ação Recomendado:**
-1.  **Crítico:** Corrigir o erro `ReferenceError: respostas is not defined` no `index.html`.
-2.  **Crítico:** Remover as strings literais `${f}` e `${foto}` do HTML estático.
-3.  **Importante:** Adicionar um `favicon.ico` para resolver o erro 404.
-4.  **UX:** Ajustar o tamanho das fontes dos inputs para 16px para evitar zoom no iPhone.
-5.  **Performance:** Redimensionar a `logo.webp` e adicionar `loading="lazy"` nas imagens secundárias.
+*Relatório gerado automaticamente em 12/04/2026 às 06:23*

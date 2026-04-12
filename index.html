@@ -544,9 +544,9 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
     .fale-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
     .fale-body{padding:0 20px}
     .fale-label{font-size:12px;font-weight:700;color:#0D47A1;margin-bottom:4px;display:block}
-    .fale-input{width:100%;padding:12px 14px;border:2px solid #E3F2FD;border-radius:12px;font-size:14px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .2s;box-sizing:border-box}
+    .fale-input{width:100%;padding:12px 14px;border:2px solid #E3F2FD;border-radius:12px;font-size:16px;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .2s;box-sizing:border-box}
     .fale-input:focus{border-color:#1565C0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
-    .fale-textarea{width:100%;padding:12px 14px;border:2px solid #E3F2FD;border-radius:12px;font-size:14px;font-family:inherit;outline:none;margin-bottom:16px;resize:vertical;min-height:100px;transition:border-color .2s;box-sizing:border-box}
+    .fale-textarea{width:100%;padding:12px 14px;border:2px solid #E3F2FD;border-radius:12px;font-size:16px;font-family:inherit;outline:none;margin-bottom:16px;resize:vertical;min-height:100px;transition:border-color .2s;box-sizing:border-box}
     .fale-textarea:focus{border-color:#1565C0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
     .fale-enviar{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(37,211,102,.4);font-family:inherit}
 /* SEÇÃO ENCOMENDAS NO CARDÁPIO */
@@ -3452,9 +3452,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 5. Corrigir chatbot: resolver funções
-  Object.keys(respostas).forEach(k => {
-    if (typeof respostas[k] === 'function') respostas[k] = respostas[k]();
-  });
+  if (typeof RESPOSTAS !== 'undefined') {
+    Object.keys(RESPOSTAS).forEach(k => {
+      if (typeof RESPOSTAS[k] === 'function') RESPOSTAS[k] = RESPOSTAS[k]();
+    });
+  }
 
   // 6. Horário dinâmico
   atualizarStatusHorário();
