@@ -74,35 +74,35 @@
   -webkit-user-drag: none;
   transform-origin: bottom center;
   transition: filter 0.25s ease;
-  transform: scaleX(-1); /* espelha para olhar para a direita (meio da tela) */
+  /* imagem já espelhada — olha naturalmente para a direita (meio da tela) */
 }
 
 #ita-mascote img:hover {
   filter: drop-shadow(3px 8px 18px rgba(232,0,13,0.5));
   animation-play-state: paused;
-  transform: scaleX(-1) scale(1.08) rotate(-3deg);
+  transform: scale(1.08) rotate(-3deg);
 }
 
-/* TRILHO IDA (vai para DIREITA): scaleX(-1) — olha para direita = de frente na direção do movimento */
+/* TRILHO IDA (vai para DIREITA): imagem já espelhada — olha para direita = de frente */
 #ita-mascote.ita-correndo img {
   animation: ita-correr 0.16s ease-in-out infinite !important;
-  transform: scaleX(-1) !important;
+  transform: none !important;
   cursor: default;
 }
 
-/* TRILHO VOLTA (vem da direita para ESQUERDA): scaleX(1) — olha para esquerda = de frente na direção do movimento */
+/* TRILHO VOLTA (vem da direita para ESQUERDA): espelha de volta = olha para esquerda = de frente */
 #ita-mascote.ita-voltando img {
   animation: ita-correr 0.16s ease-in-out infinite !important;
-  transform: scaleX(1) !important;
+  transform: scaleX(-1) !important;
   cursor: default;
 }
 
 /* ---- Animações ---- */
 
 @keyframes ita-flutuar {
-  0%,100% { transform: translateY(0px) rotate(0deg); }
-  30%      { transform: translateY(-9px) rotate(1.5deg); }
-  70%      { transform: translateY(-15px) rotate(-1.5deg); }
+  0%,100% { transform: translateY(0px) rotate(0deg) scaleX(1); }
+  30%      { transform: translateY(-9px) rotate(1.5deg) scaleX(1); }
+  70%      { transform: translateY(-15px) rotate(-1.5deg) scaleX(1); }
 }
 
 /* Corrida: bounce vertical */

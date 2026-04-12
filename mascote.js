@@ -273,11 +273,11 @@
     /* ---- FASE 1: Susto ---- */
     balao.classList.remove('ita-balao-show');
     img.style.transition = 'transform 0.12s ease';
-    img.style.transform  = 'scaleX(-1) translateY(-22px) scale(1.18) rotate(10deg)';
+      img.style.transform  = 'translateY(-22px) scale(1.18) rotate(10deg)';
 
     setTimeout(function () {
       img.style.transition = '';
-      img.style.transform  = 'scaleX(-1)';
+      img.style.transform  = '';
 
       /* ---- FASE 2: TRILHO IDA — corre para a DIREITA ---- */
       wrap.style.transition = 'none';
@@ -368,10 +368,11 @@
             wrap.style.right  = 'auto';
             wrap.style.left   = '6px';
             wrap.style.bottom = '160px';
-            wrap.style.transform = 'translateX(0)';
-            void wrap.offsetWidth;
+    wrap.style.transform = 'translateX(0)';
+        void wrap.offsetWidth;
 
-            /* Garante imagem com 3 bolas */
+            /* Garante imagem com 3 bolas e sem transform */
+            img.style.transform = '';
             trocarImagem(img, 3);
 
             var r3 = wrap.getBoundingClientRect();
