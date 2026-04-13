@@ -1854,6 +1854,45 @@ Talento</textarea>
         </div>
       </div>
 
+      <!-- 🌟 CORRIDA DAS ESTRELAS (NOVO) -->
+      <div class="card" style="border-left:4px solid #fbc02d">
+        <div class="card-header">
+          <h2>🌟 Corrida das Estrelas (Mensal)</h2>
+          <div class="btn-row">
+            <button class="btn btn-laranja" onclick="embaralharEstrelas()">🎲 Embaralhar Mês</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="fid-info-box" style="background:#fffde7; border-color:#fbc02d">
+            🏆 <strong>Regra do Ciclo:</strong> Do dia 01 ao dia 01 (00:01).<br>
+            ⭐ <strong>Meta Atual:</strong> <span id="est-meta-txt">5 estrelas</span>.<br>
+            📅 <strong>Estrela de Hoje:</strong> <span id="est-hoje-txt">Carregando...</span>
+          </div>
+          
+          <div class="seção-título" style="margin-top:20px">📊 Ranking do Ciclo Atual</div>
+          <div class="card-body" style="padding:0">
+            <div class="códigos-lista" id="est-ranking-lista">
+              <p style="color:#999;text-align:center;padding:20px">Nenhuma estrela capturada ainda...</p>
+            </div>
+          </div>
+
+          <div class="seção-título" style="margin-top:20px">⚙️ Configurações da Corrida</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit">
+              <label>Meta de Estrelas</label>
+              <input type="number" id="est-meta-input" min="1" max="30" value="5">
+            </div>
+            <div class="campo-edit">
+              <label>Horário de Hoje</label>
+              <input type="time" id="est-horario-hoje">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="salvarConfigEstrelas()">&#x1F4BE; Salvar Configuração</button>
+          </div>
+        </div>
+      </div>
+
     </div>
     <!-- CONFIG -->
 
@@ -2119,8 +2158,8 @@ const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
-const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,pagClientes:0,senhaAdmin:'itapolitana2007@'};
+const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:'itapolitana2007@'};
 const POR_PAGINA=50;
 async function ghGet(path){
   try{
@@ -2174,12 +2213,13 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  const[pr,cl,fi,en,prod]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos)]);
+  const[pr,cl,fi,en,prod,est]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.estrelas)]);
   if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
   if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
+  if(est.content){STATE.estrelas=est.content;STATE.estrelasSha=est.sha;}
   ocultarLoading();
   renderDashboard();preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();renderPreços();carregarEstoque();
   carregarTitulosCardapio();
@@ -2197,7 +2237,7 @@ function irPara(seção,btn){
   if(seção==='encomendas')renderEncomendas();
   if(seção==='participantes')renderParticipantes();
   if(seção==='clientes'){renderClientes();renderDuplicidades();}
-  if(seção==='fidelidade'){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();}
+  if(seção==='fidelidade'){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
   if(seção==='cardápio')preencherCardapio();
   if(seção==='depoimentos')preencherDepoimentos();
   if(seção==='qualidade')atualizarScoresQualidade();
@@ -3090,6 +3130,94 @@ function preencherFidelidade(){
   document.getElementById('fid-título').value=cfg.fidelidadeTitulo||'Programa de Fidelidade';
   document.getElementById('fid-descrição').value=cfg.fidelidadeDescricao||'Acumule pontos e ganhe prêmios incriveis!';
   atualizarStatsCódigos();
+  preencherEstrelas();
+}
+
+function preencherEstrelas() {
+  if (!STATE.estrelas) return;
+  const est = STATE.estrelas;
+  const hoje = new Date().toISOString().split('T')[0];
+  
+  document.getElementById('est-meta-txt').textContent = est.cicloAtual.metaEstrelas + ' estrelas';
+  document.getElementById('est-meta-input').value = est.cicloAtual.metaEstrelas;
+  
+  const hHoje = est.horariosDia[hoje];
+  if (hHoje) {
+    document.getElementById('est-hoje-txt').textContent = hHoje.horario + (hHoje.status === 'usado' ? ' (Capturada ✅)' : ' (Disponível 🌟)');
+    document.getElementById('est-horario-hoje').value = hHoje.horario;
+  } else {
+    document.getElementById('est-hoje-txt').textContent = 'Não agendada';
+  }
+  
+  renderRankingEstrelas();
+}
+
+function renderRankingEstrelas() {
+  const ranking = STATE.estrelas?.rankingAtual || {};
+  const lista = Object.values(ranking).sort((a, b) => b.estrelas - a.estrelas);
+  const container = document.getElementById('est-ranking-lista');
+  
+  if (lista.length === 0) {
+    container.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Nenhuma estrela capturada ainda...</p>';
+    return;
+  }
+  
+  container.innerHTML = lista.map((u, i) => `
+    <div class="sabor-item" style="padding:10px 15px; border-bottom:1px solid #eee">
+      <div style="display:flex; align-items:center; gap:10px; flex:1">
+        <span style="font-weight:900; color:#e8650a">#${i+1}</span>
+        <div style="display:flex; flex-direction:column">
+          <span style="font-weight:700; font-size:0.9rem">${u.nome}</span>
+          <span style="font-size:0.75rem; color:#666">${u.celular}</span>
+        </div>
+      </div>
+      <div style="background:#fbc02d; color:#000; padding:4px 12px; border-radius:20px; font-weight:900; font-size:0.85rem">
+        🌟 ${u.estrelas}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function salvarConfigEstrelas() {
+  if (!STATE.estrelas) return;
+  const meta = parseInt(document.getElementById('est-meta-input').value);
+  const horario = document.getElementById('est-horario-hoje').value;
+  const hoje = new Date().toISOString().split('T')[0];
+  
+  STATE.estrelas.cicloAtual.metaEstrelas = meta;
+  if (!STATE.estrelas.horariosDia[hoje]) {
+    STATE.estrelas.horariosDia[hoje] = { horario, status: 'disponivel', capturadoPor: null, capturadoEm: null };
+  } else {
+    STATE.estrelas.horariosDia[hoje].horario = horario;
+  }
+  
+  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: atualizar configuração da Corrida das Estrelas');
+  if (ok) preencherEstrelas();
+}
+
+async function embaralharEstrelas() {
+  if (!confirm('Deseja embaralhar os horários para os próximos 30 dias? Isso substituirá os horários agendados.')) return;
+  
+  const motor = new MotorEstrelas();
+  // Simular inicialização mínima para o motor funcionar
+  motor.config = STATE.estrelas.configGeral;
+  const novosHorarios = motor.gerarHorariosEmbaralhados(31);
+  
+  const hoje = new Date();
+  for (let i = 0; i < 31; i++) {
+    const data = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + i).toISOString().split('T')[0];
+    if (!STATE.estrelas.horariosDia[data] || STATE.estrelas.horariosDia[data].status !== 'usado') {
+      STATE.estrelas.horariosDia[data] = {
+        horario: novosHorarios[i],
+        status: 'disponivel',
+        capturadoPor: null,
+        capturadoEm: null
+      };
+    }
+  }
+  
+  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: embaralhar horários do mês');
+  if (ok) preencherEstrelas();
 }
 function atualizarStatsCódigos(){
   const códigos=STATE.fidelidade?.códigos||{};
