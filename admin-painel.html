@@ -472,6 +472,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('participantes',this)">👥 Participantes</button>
     <button class="nav-btn" onclick="irPara('clientes',this)">👤 Clientes</button>
     <button class="nav-btn" onclick="irPara('fidelidade',this)">&#x1F381; Fidelidade</button>
+    <button class="nav-btn" onclick="irPara('estrela',this)">🌟 Estrela do Dia</button>
     <button class="nav-btn" onclick="irPara('cardápio',this)">🍦 Cardápio</button>
     <button class="nav-btn" onclick="irPara('depoimentos',this)">⭐ Depoimentos</button>
     <button class="nav-btn" onclick="irPara('fale-conosco',this)">💬 Fale Conosco</button>
@@ -1940,6 +1941,54 @@ Talento</textarea>
       </div>
     </div>
 
+    <!-- SEÇÃO ESTRELA DO DIA -->
+    <div class="seção" id="sec-estrela">
+      <div class="card">
+        <div class="card-header">
+          <h2>🌟 Configuração da Estrela do Dia</h2>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-vermelho" onclick="panicButton()" title="Desativa a estrela imediatamente em caso de erro">🚨 BOTÃO DE PÂNICO</button>
+            <button class="btn btn-verde" onclick="carregarEstrelas()">🔄 Atualizar</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="background:#fff8f0;border:2px solid #ffcc80;border-radius:12px;padding:16px;margin-bottom:20px">
+            <h3 style="font-size:.9rem;color:#bf360c;margin-bottom:10px">📅 Cronograma de Aparição (Dias e Horas Definidos)</h3>
+            <div class="tabela-wrap">
+              <table class="tabela" id="tabela-estrelas">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Horário</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="lista-estrelas-agendadas">
+                  <!-- Preenchido via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="seção-título">Agendar Nova Estrela</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end">
+            <div class="campo-edit">
+              <label>Data</label>
+              <input type="date" id="estrela-data">
+            </div>
+            <div class="campo-edit">
+              <label>Horário (HH:MM)</label>
+              <input type="time" id="estrela-hora">
+            </div>
+            <div class="campo-edit">
+              <button class="btn btn-laranja" style="width:100%;margin-bottom:16px" onclick="agendarEstrela()">➕ Agendar Estrela</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="seção" id="sec-config">
       <div class="card">
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
@@ -2242,6 +2291,7 @@ function irPara(seção,btn){
   if(seção==='depoimentos')preencherDepoimentos();
   if(seção==='qualidade')atualizarScoresQualidade();
   if(seção==='fale-conosco')preencherFaleConosco();
+  if(seção==='estrela')carregarEstrelas();
 }
 
 function atualizarScoresQualidade(){
@@ -4829,6 +4879,107 @@ function removerSaborComConfirm(nome, tipo) {
     },
     'aviso'
   );
+}
+
+// ── ESTRELA DO DIA ──────────────────────────────────────────────────────────
+async function carregarEstrelas() {
+  mostrarLoading('Carregando cronograma de estrelas...');
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/estrelas_ciclo.json?t=' + Date.now());
+    if (!res.ok) throw new Error('Erro ao carregar arquivo');
+    const dados = await res.json();
+    STATE.estrelas = dados;
+    renderizarEstrelas();
+  } catch (e) {
+    console.error(e);
+    toast('❌ Erro ao carregar estrelas', 'erro');
+  }
+  ocultarLoading();
+}
+
+function renderizarEstrelas() {
+  const lista = document.getElementById('lista-estrelas-agendadas');
+  if (!lista || !STATE.estrelas || !STATE.estrelas.horariosDia) return;
+
+  const horarios = STATE.estrelas.horariosDia;
+  const html = Object.keys(horarios).sort().reverse().map(data => {
+    const h = horarios[data];
+    const statusClass = h.status === 'capturada' ? 'cod-status-usado' : 'cod-status-ok';
+    const statusTxt = h.status === 'capturada' ? '✅ Capturada' : '🌟 Disponível';
+    
+    return `
+      <tr>
+        <td style="font-weight:700">${data.split('-').reverse().join('/')}</td>
+        <td style="font-family:monospace;font-weight:700;font-size:1.1rem">${h.horario}</td>
+        <td class="${statusClass}">${statusTxt}</td>
+        <td>
+          <button class="btn btn-vermelho btn-sm" onclick="removerEstrela('${data}')">🗑️</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  lista.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;color:#888">Nenhuma estrela agendada.</td></tr>';
+}
+
+async function agendarEstrela() {
+  const data = document.getElementById('estrela-data').value;
+  const hora = document.getElementById('estrela-hora').value;
+
+  if (!data || !hora) {
+    toast('⚠️ Preencha data e hora!', 'aviso');
+    return;
+  }
+
+  if (!STATE.estrelas.horariosDia) STATE.estrelas.horariosDia = {};
+  
+  STATE.estrelas.horariosDia[data] = {
+    horario: hora,
+    status: "disponivel",
+    capturadoPor: null,
+    capturadoEm: null
+  };
+
+  mostrarLoading('Salvando agendamento...');
+  const ok = await salvarArquivo('estrelas_ciclo.json', STATE.estrelas, 'estrelasSha', 'Admin: agendar estrela para ' + data + ' às ' + hora);
+  ocultarLoading();
+
+  if (ok) {
+    toast('✅ Estrela agendada com sucesso!', 'sucesso');
+    renderizarEstrelas();
+  }
+}
+
+async function removerEstrela(data) {
+  if (!confirm('Deseja remover a estrela do dia ' + data + '?')) return;
+  
+  delete STATE.estrelas.horariosDia[data];
+  
+  mostrarLoading('Removendo estrela...');
+  const ok = await salvarArquivo('estrelas_ciclo.json', STATE.estrelas, 'estrelasSha', 'Admin: remover estrela do dia ' + data);
+  ocultarLoading();
+
+  if (ok) {
+    toast('✅ Estrela removida!', 'sucesso');
+    renderizarEstrelas();
+  }
+}
+
+async function panicButton() {
+  if (!confirm('🚨 ATENÇÃO: Isso desativará a estrela de hoje imediatamente. Deseja continuar?')) return;
+  
+  const hoje = new Date().toISOString().split('T')[0];
+  if (STATE.estrelas.horariosDia && STATE.estrelas.horariosDia[hoje]) {
+    STATE.estrelas.horariosDia[hoje].status = 'capturada'; // Marca como capturada para sumir
+    
+    mostrarLoading('Ativando pânico...');
+    const ok = await salvarArquivo('estrelas_ciclo.json', STATE.estrelas, 'estrelasSha', '🚨 ADMIN: BOTÃO DE PÂNICO ATIVADO');
+    ocultarLoading();
+    
+    if (ok) toast('🚨 Estrela desativada com sucesso!', 'sucesso');
+  } else {
+    toast('⚠️ Nenhuma estrela ativa hoje para desativar.', 'aviso');
+  }
 }
 
 </script>
