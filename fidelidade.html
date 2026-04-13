@@ -611,11 +611,68 @@ body { overflow-x: hidden; }
       <!-- Icones de sorvete -->
       <div class="sorvetes-grid" id="sorvetes-grid"></div>
 
+      <!-- BOTAO PARA MOSTRAR REGRAS DA CAÇADA -->
+      <button id="btn-ver-regras-estrelas" style="width:100%;padding:11px;border:2px solid #ffcc80;background:#fff8f0;color:#e8650a;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:12px;transition:.2s;font-family:'Nunito',sans-serif" onclick="toggleRegrasEstrelas()" title="Clique para ver as regras da caçada de estrelas">
+        🌟 Ver Regras da Caçada de Estrelas
+      </button>
+      <script>
+        function toggleRegrasEstrelas() {
+          const bloco = document.getElementById('bloco-regras-estrelas');
+          const btn = document.getElementById('btn-ver-regras-estrelas');
+          if (bloco.style.display === 'none') {
+            bloco.style.display = 'block';
+            btn.textContent = '🌟 Ocultar Regras';
+            btn.style.background = '#fff3e0';
+            bloco.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            bloco.style.display = 'none';
+            btn.textContent = '🌟 Ver Regras da Caçada de Estrelas';
+            btn.style.background = '#fff8f0';
+          }
+        }
+      </script>
+
       <!-- Barra de progresso -->
       <div class="progress-wrap">
         <div class="progress-bar" id="progress-bar" style="width:0%"></div>
       </div>
       <div class="progress-label" id="progress-label">0% concluido</div>
+
+      <!-- REGRAS DA CAÇADA DE ESTRELAS -->
+      <div id="bloco-regras-estrelas" style="background:linear-gradient(135deg,#fff8f0,#fff3e0);border:2px solid #ffcc80;border-radius:16px;padding:16px 18px;margin-top:14px;display:none">
+        <div style="text-align:center;margin-bottom:12px">
+          <div style="font-size:2rem;margin-bottom:6px">🌟</div>
+          <div style="font-size:1rem;font-weight:900;color:#bf360c;margin-bottom:4px">Regras da Corrida das Estrelas</div>
+          <div style="font-size:.78rem;color:#666">Leia atentamente antes de participar</div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:.82rem;line-height:1.7;color:#333">
+          <div style="margin-bottom:10px">
+            <div style="font-weight:800;color:#e8650a;margin-bottom:4px">⚡ Como funciona:</div>
+            <ul style="margin:0 0 0 18px;padding:0">
+              <li style="margin-bottom:5px">Uma <strong>estrela dourada aparece uma vez por dia</strong> em horário secreto</li>
+              <li style="margin-bottom:5px">O <strong>primeiro que clicar</strong> captura a estrela</li>
+              <li style="margin-bottom:5px">A estrela <strong>persiste na tela</strong> até ser capturada</li>
+              <li style="margin-bottom:5px">Você tem <strong>5 minutos</strong> para completar o cadastro após capturar</li>
+            </ul>
+          </div>
+          <div style="margin-bottom:10px">
+            <div style="font-weight:800;color:#e8650a;margin-bottom:4px">🏆 Prêmios:</div>
+            <ul style="margin:0 0 0 18px;padding:0">
+              <li style="margin-bottom:5px"><strong>5 estrelas = 1 prêmio imediato:</strong> Escolha entre Açaí 400ml, Milkshake ou 5 Picolés Recheados</li>
+              <li style="margin-bottom:5px"><strong>Primeiro do mês:</strong> Ganha prêmio especial exclusivo (anunciado no final do mês)</li>
+              <li style="margin-bottom:5px"><strong>Todos que completarem 5 estrelas:</strong> Entrada automática no sorteio anual da Torta de Sorvete</li>
+            </ul>
+          </div>
+          <div style="background:#fff3e0;border-left:4px solid #e8650a;padding:10px 12px;border-radius:6px;margin-bottom:10px">
+            <div style="font-weight:800;color:#bf360c;margin-bottom:4px">⚠️ Importante:</div>
+            <div style="font-size:.78rem;color:#5d4037">O código da estrela é <strong>invisível e intransferível</strong>. Não compartilhe sua conta. Tentativas de fraude resultam em <strong>bloqueio permanente</strong>.</div>
+          </div>
+        </div>
+        <label class="aceite-label" style="margin-bottom:0;cursor:pointer;background:#fff;border-radius:10px;padding:10px 12px;border:1.5px solid #ffcc80">
+          <input type="checkbox" id="chk-aceita-regras-estrelas" style="width:18px;height:18px;cursor:pointer;accent-color:#e8650a">
+          <span style="flex:1;font-size:.82rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
+        </label>
+      </div>
 
       <!-- Secao de resgate -->
       <div class="resgatar-section" id="resgatar-section" style="display:none">
