@@ -28,6 +28,8 @@ class MotorEstrelas {
       this.rankingAtual = dados.rankingAtual;
     this.estrelaCapturada = dados.estrelaCapturada;
     this.usuariosOnline = dados.usuariosOnline || 0;
+    this.ultimoCliqueEm = null;
+    this.tokenResgate = null;
     
     console.log('✅ Motor de Estrelas inicializado com sucesso');
     this.iniciarVerificacao();
@@ -106,6 +108,93 @@ class MotorEstrelas {
    */
   obterUsuariosOnline() {
     return this.usuariosOnline;
+  }
+
+  /**
+   * Processar clique na estrela com trava de concorrência
+   */
+  async processarClique(callback) {
+    // TRAVA 1: Verificação Local (Primeira Defesa)
+    if (this.estrelaCapturada.status === 'usado') {
+      console.warn('⚠️ A estrela já foi capturada!');
+      return { sucesso: false, motivo: 'ja_capturada' };
+    }
+
+    // TRAVA 2: Verificação de Timestamp (Evita Cliques Duplos)
+    const agora = Date.now();
+    if (this.ultimoCliqueEm && (agora - this.ultimoCliqueEm) < 500) {
+      console.warn('⚠️ Clique duplo detectado! Aguarde 500ms.');
+      return { sucesso: false, motivo: 'clique_duplo' };
+    }
+    this.ultimoCliqueEm = agora;
+
+    // TRAVA 3: Gera Token Único de Sessão
+    const tokenUnico = 'EST_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    
+    // TRAVA 4: Marca como "Em Resgate" (Bloqueio Temporário)
+    this.estrelaCapturada.status = 'em_resgate';
+    this.estrelaCapturada.tokenResgate = tokenUnico;
+    this.estrelaCapturada.capturadoEm = new Date().toISOString();
+    
+    console.log('🏆 Estrela capturada! Token:', tokenUnico);
+    
+    // TRAVA 5: Inicia Contador de 5 Minutos (Se não resgatar, volta)
+    this.iniciarContagemResgateExpiracao();
+    
+    if (callback) callback({ sucesso: true, token: tokenUnico, estrela: this.estrelaCapturada });
+    return { sucesso: true, token: tokenUnico };
+  }
+
+  /**
+   * Iniciar contagem de expiração do resgate (5 minutos)
+   */
+  iniciarContagemResgateExpiracao() {
+    setTimeout(() => {
+      if (this.estrelaCapturada.status === 'em_resgate') {
+        console.warn('⚠️ Tempo de resgate expirado! A estrela volta para o pool.');
+        this.estrelaCapturada.status = 'disponivel';
+        this.estrelaCapturada.tokenResgate = null;
+        
+        // Disparar evento de expiração
+        window.dispatchEvent(new CustomEvent('estrelaResgateFailed', {
+          detail: { motivo: 'timeout' }
+        }));
+      }
+    }, 5 * 60 * 1000); // 5 minutos
+  }
+
+  /**
+   * Validar token de resgate (Segurança)
+   */
+  validarTokenResgate(token) {
+    if (!token || !this.estrelaCapturada.tokenResgate) {
+      return { valido: false, motivo: 'token_invalido' };
+    }
+    
+    if (token !== this.estrelaCapturada.tokenResgate) {
+      return { valido: false, motivo: 'token_nao_corresponde' };
+    }
+    
+    // Verificar se ainda está em resgate
+    if (this.estrelaCapturada.status !== 'em_resgate') {
+      return { valido: false, motivo: 'nao_em_resgate' };
+    }
+    
+    // Marcar como definitivamente usada
+    this.estrelaCapturada.status = 'usado';
+    return { valido: true, motivo: 'resgate_confirmado' };
+  }
+
+  /**
+   * Ativar/Desativar o sistema (Botão de Pânico)
+   */
+  alternarStatusSistema(ativar) {
+    this.config.ativo = ativar;
+    console.log(ativar ? '🟢 Sistema ATIVADO' : '🔴 Sistema DESATIVADO');
+    
+    window.dispatchEvent(new CustomEvent('statusSistemaAlterado', {
+      detail: { ativo: ativar }
+    }));
   }
 
   /**
