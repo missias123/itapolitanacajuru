@@ -34,24 +34,21 @@
   };
 
   var FRASES = [
-    'Oi! Sou o Itamanduá! 🍦',
-    'Que sorvete gostoso! 😋',
-    '17 anos de sabor! 🎉',
-    'Temos 35 sabores! 🍨',
-    'O melhor de Cajuru! 🏆',
-    'Chocolate é vida! 🍫',
-    'Nota 4.9 no Google! ⭐',
-    'Peça pelo WhatsApp! 📱',
-    'Venha nos visitar! 📍',
-    'Feito com amor! ❤️',
-    'Clique em mim! 😜'
+    '🕵️‍♂️ Shhh! Tem caçadores de olho em mim agora...',
+    '👀 Cuidado! Vi pessoas procurando a estrela por aqui!',
+    '🌟 A disputa está quente! Quem será o primeiro a clicar?',
+    '🐻 Onde será que escondi a estrela de hoje?',
+    '✨ Dizem que eu solto estrelas premiadas... será?',
+    '🏆 Quem completar a meta do mês primeiro ganha o prêmio!',
+    '📱 Já fez seu cadastro no Fidelidade hoje?',
+    '🏃‍♂️ Fique de olho! A estrela pode aparecer a qualquer momento!'
   ];
 
   var FRASES_VOLTA = [
-    'Ufa! Recuperei meu sorvete! 😅',
-    'Quase perdi tudo! 😤',
-    'Meu sorvete tá salvo! 🍦✅',
-    'Nunca mais faço isso! 😅'
+    '🌟 Ufa! Quase deixei uma estrela escapar!',
+    '✨ Minhas estrelas estão bem guardadas!',
+    '🏃‍♂️ Correndo para esconder mais prêmios!',
+    '🏆 A corrida das estrelas não para!'
   ];
 
   var BOLAS = [
