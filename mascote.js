@@ -398,6 +398,34 @@
   }
 
   /* ================================================
+     INTEGRAÇÃO COM O MOTOR DE ESTRELAS (v2.0)
+  ================================================ */
+  window.addEventListener('estrelaAtiva', function (e) {
+    if (fugindo) return;
+    console.log('🌟 Itamanduá detectou a estrela! Iniciando corrida...');
+    
+    var wrap = document.getElementById('ita-mascote');
+    var balao = document.getElementById('ita-balao');
+    var img = document.getElementById('ita-img');
+    
+    if (wrap && balao && img) {
+      /* Inicia a animação de corrida */
+      animar(wrap, balao, img);
+      
+      /* Solta a estrela no meio da corrida de ida (aprox. 1.5s) */
+      setTimeout(function() {
+        if (window.motorEstrelas && typeof window.motorEstrelas.liberarEstrelaNaTela === 'function') {
+          window.motorEstrelas.liberarEstrelaNaTela();
+        } else {
+          /* Fallback caso o motor não tenha a função exposta */
+          var evento = new CustomEvent('soltarEstrelaAgora');
+          window.dispatchEvent(evento);
+        }
+      }, 1500);
+    }
+  });
+
+  /* ================================================
      START
   ================================================ */
   if (document.readyState === 'loading') {

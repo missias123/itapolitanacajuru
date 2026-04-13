@@ -310,12 +310,72 @@ class MotorEstrelasV2 {
    * Ativar a estrela (sinal para o mascote)
    */
   ativarEstrela() {
+    // Se já estiver ativa, não disparar novamente
+    if (document.getElementById('estrela-dourada-caçada')) return;
+
     window.dispatchEvent(new CustomEvent('estrelaAtiva', {
       detail: {
         horario: this.obterHorarioHoje(),
         timestamp: Date.now()
       }
     }));
+  }
+
+  /**
+   * Liberar a estrela visualmente na tela (chamado pelo mascote)
+   */
+  liberarEstrelaNaTela() {
+    if (document.getElementById('estrela-dourada-caçada')) return;
+
+    const estrela = document.createElement('div');
+    estrela.id = 'estrela-dourada-caçada';
+    estrela.innerHTML = '🌟';
+    estrela.style.cssText = `
+      position: fixed;
+      z-index: 9999;
+      font-size: 50px;
+      cursor: pointer;
+      filter: drop-shadow(0 0 15px gold);
+      animation: flutuarEstrela 2s ease-in-out infinite, surgirEstrela 0.5s ease-out;
+      user-select: none;
+      left: ${Math.random() * 70 + 15}%;
+      top: ${Math.random() * 50 + 20}%;
+    `;
+
+    // Adicionar animações CSS se não existirem
+    if (!document.getElementById('estilo-estrela-caçada')) {
+      const estilo = document.createElement('style');
+      estilo.id = 'estilo-estrela-caçada';
+      estilo.innerHTML = `
+        @keyframes flutuarEstrela {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-20px) scale(1.1); }
+        }
+        @keyframes surgirEstrela {
+          0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+          100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(estilo);
+    }
+
+    estrela.onclick = () => {
+      this.processarClique((res) => {
+        if (res.sucesso) {
+          estrela.style.transition = 'all 0.5s ease-in';
+          estrela.style.transform = 'scale(5) rotate(360deg)';
+          estrela.style.opacity = '0';
+          setTimeout(() => {
+            estrela.remove();
+            // Abrir o formulário de resgate (fidelidade.html)
+            window.location.href = 'fidelidade.html?token=' + res.token;
+          }, 500);
+        }
+      });
+    };
+
+    document.body.appendChild(estrela);
+    console.log('🌟 Estrela liberada na tela!');
   }
 
   /**
