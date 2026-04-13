@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 Teste: Itamanduá - Caça às Estrelas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e8650a;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.9rem;
+    }
+
+    .painel-controle {
+      background: #f5f5f5;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: 2px dashed #e8650a;
+    }
+
+    .painel-controle h3 {
+      color: #e8650a;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    .controle-grupo {
+      margin-bottom: 15px;
+    }
+
+    .controle-grupo label {
+      display: block;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .controle-grupo input,
+    .controle-grupo select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .botoes-controle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-ativar {
+      background: linear-gradient(135deg, #e8650a, #ff8c00);
+      color: white;
+      grid-column: 1 / -1;
+    }
+
+    .btn-ativar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(232, 101, 10, 0.4);
+    }
+
+    .btn-reset {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-reset:hover {
+      background: #e0e0e0;
+    }
+
+    .status-box {
+      background: #e8f5e9;
+      border-left: 4px solid #2e7d32;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .status-box.erro {
+      background: #ffebee;
+      border-left-color: #c62828;
+    }
+
+    .status-box.aviso {
+      background: #fff3e0;
+      border-left-color: #e65100;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .label-status {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .valor-status {
+      color: #666;
+    }
+
+    .mascote-area {
+      text-align: center;
+      margin: 30px 0;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #ddd;
+      border-radius: 15px;
+      background: #fafafa;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mascote {
+      font-size: 5rem;
+      animation: correr 2s infinite;
+    }
+
+    .estrela {
+      font-size: 3rem;
+      position: absolute;
+      animation: flutuar 3s ease-in-out infinite;
+      cursor: pointer;
+      filter: drop-shadow(0 0 10px #ffd700);
+    }
+
+    @keyframes correr {
+      0%, 100% { transform: translateX(-50px); }
+      50% { transform: translateX(50px); }
+    }
+
+    @keyframes flutuar {
+      0%, 100% { transform: translateY(0px) scale(1); opacity: 1; }
+      50% { transform: translateY(-20px) scale(1.1); }
+    }
+
+    @keyframes explodir {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    .estrela.capturada {
+      animation: explodir 0.5s ease-out forwards;
+    }
+
+    .ranking {
+      margin-top: 30px;
+    }
+
+    .ranking h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    .ranking-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border-left: 3px solid #e8650a;
+    }
+
+    .ranking-nome {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .ranking-estrelas {
+      background: #e8650a;
+      color: white;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .mensagem {
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .mensagem.sucesso {
+      background: #c8e6c9;
+      color: #2e7d32;
+      display: block;
+    }
+
+    .mensagem.erro {
+      background: #ffcdd2;
+      color: #c62828;
+      display: block;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌟 Teste: Caça às Estrelas</h1>
+    <p class="subtitle">Painel de Teste do Sistema "Itamanduá: A Corrida das Estrelas"</p>
+
+    <!-- Painel de Controle -->
+    <div class="painel-controle">
+      <h3>🎮 Painel de Controle (Teste)</h3>
+      
+      <div class="controle-grupo">
+        <label>Horário da Estrela (HH:MM):</label>
+        <input type="time" id="horarioEstrela" value="14:37">
+      </div>
+
+      <div class="controle-grupo">
+        <label>Nome do Usuário (Teste):</label>
+        <input type="text" id="nomeUsuario" placeholder="Ex: João Silva" value="Testador">
+      </div>
+
+      <div class="controle-grupo">
+        <label>Celular (Teste):</label>
+        <input type="tel" id="celularUsuario" placeholder="Ex: 16999999999" value="16999999999">
+      </div>
+
+      <div class="botoes-controle">
+        <button class="btn btn-ativar" onclick="ativarEstrelaAgora()">🌟 Ativar Estrela AGORA</button>
+        <button class="btn btn-reset" onclick="resetarTeste()">🔄 Resetar</button>
+      </div>
+    </div>
+
+    <!-- Mensagem de Feedback -->
+    <div id="mensagem" class="mensagem"></div>
+
+    <!-- Status do Sistema -->
+    <div id="statusBox" class="status-box">
+      <div class="status-item">
+        <span class="label-status">Status do Motor:</span>
+        <span class="valor-status" id="statusMotor">Carregando...</span>
+      </div>
+      <div class="status-item">
+        <span class="label-status">Ciclo Ativo:</span>
+        <span class="valor-status" id="statusCiclo">-</span>
+      </div>
+      <div class="status-item">
+        <span class="label-status">Estrela Capturada:</span>
+        <span class="valor-status" id="statusEstrela">Não</span>
+      </div>
+      <div class="status-item">
+        <span class="label-status">Horário Hoje:</span>
+        <span class="valor-status" id="statusHorario">-</span>
+      </div>
+    </div>
+
+    <!-- Área do Mascote -->
+    <div class="mascote-area" id="mascoteArea">
+      <div class="mascote">🐻</div>
+      <div id="estrelaVisual" class="estrela" style="display: none; left: 60%; top: 30%;">🌟</div>
+    </div>
+
+    <!-- Ranking -->
+    <div class="ranking">
+      <h3>📊 Ranking (Teste)</h3>
+      <div id="rankingLista">
+        <p style="text-align: center; color: #999;">Nenhuma captura ainda...</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>🔒 Esta página é apenas para testes. Não será publicada no site oficial.</p>
+      <p>Abra o Console (F12) para ver logs detalhados do sistema.</p>
+    </div>
+  </div>
+
+  <script src="scripts/motor-estrelas.js"></script>
+  <script>
+    let motor = null;
+
+    // Inicializar o motor ao carregar a página
+    async function inicializar() {
+      motor = new MotorEstrelas();
+      const sucesso = await motor.inicializar('estrelas_ciclo.json');
+      
+      if (sucesso) {
+        console.log('✅ Motor inicializado com sucesso');
+        atualizarStatus();
+        
+        // Escutar evento de captura
+        window.addEventListener('estrelaCaptured', (e) => {
+          console.log('🏆 Evento de captura recebido:', e.detail);
+          atualizarRanking();
+          atualizarStatus();
+        });
+
+        // Escutar atualização de usuários online
+        window.addEventListener('usuariosOnlineUpdate', (e) => {
+          atualizarFalasMascote(e.detail.count);
+        });
+      } else {
+        mostrarMensagem('❌ Erro ao carregar o motor', 'erro');
+      }
+    }
+
+    // Atualizar falas do mascote com o número de caçadores
+    function atualizarFalasMascote(count) {
+      const falas = [
+        `🕵️‍♂️ Shhh! Tem ${count} caçadores de olho em mim agora...`,
+        `👀 Cuidado! Vi ${count} pessoas procurando a estrela por aqui!`,
+        `🌟 A disputa está quente! ${count} caçadores online neste momento!`,
+        `🐻 Onde será que escondi a estrela de hoje?`
+      ];
+      
+      const falaAleatoria = falas[Math.floor(Math.random() * falas.length)];
+      console.log('🐻 Mascote diz:', falaAleatoria);
+      
+      // Mostrar no status para teste
+      document.getElementById('statusMotor').textContent = `✅ Ativo (${count} online)`;
+    }
+
+    // Ativar a estrela agora (para teste)
+    function ativarEstrelaAgora() {
+      const nome = document.getElementById('nomeUsuario').value.trim();
+      const celular = document.getElementById('celularUsuario').value.trim();
+
+      if (!nome || !celular) {
+        mostrarMensagem('❌ Preencha Nome e Celular', 'erro');
+        return;
+      }
+
+      // Mostrar estrela
+      const estrelaVisual = document.getElementById('estrelaVisual');
+      estrelaVisual.style.display = 'block';
+
+      // Simular captura após 2 segundos
+      setTimeout(() => {
+        const usuarioId = 'usuario_' + Date.now();
+        motor.capturarEstrela(usuarioId, nome, celular);
+        
+        // Animar captura
+        estrelaVisual.classList.add('capturada');
+        
+        setTimeout(() => {
+          estrelaVisual.style.display = 'none';
+          estrelaVisual.classList.remove('capturada');
+          mostrarMensagem(`🏆 ${nome} capturou a estrela!`, 'sucesso');
+          atualizarRanking();
+          atualizarStatus();
+        }, 500);
+      }, 2000);
+    }
+
+    // Resetar teste
+    function resetarTeste() {
+      motor.resetarCiclo();
+      document.getElementById('estrelaVisual').style.display = 'none';
+      document.getElementById('estrelaVisual').classList.remove('capturada');
+      mostrarMensagem('🔄 Teste resetado', 'sucesso');
+      atualizarRanking();
+      atualizarStatus();
+    }
+
+    // Atualizar status
+    function atualizarStatus() {
+      const status = motor.obterStatus();
+      
+      document.getElementById('statusMotor').textContent = '✅ Ativo';
+      document.getElementById('statusCiclo').textContent = status.cicloAtivo ? '✅ Sim' : '❌ Não';
+      document.getElementById('statusEstrela').textContent = status.estrelaCapturada ? '✅ Sim' : '❌ Não';
+      document.getElementById('statusHorario').textContent = status.horarioHoje || 'Não definido';
+    }
+
+    // Atualizar ranking
+    function atualizarRanking() {
+      const top5 = motor.obterTop5Ranking();
+      const rankingLista = document.getElementById('rankingLista');
+
+      if (top5.length === 0) {
+        rankingLista.innerHTML = '<p style="text-align: center; color: #999;">Nenhuma captura ainda...</p>';
+        return;
+      }
+
+      rankingLista.innerHTML = top5.map((item, index) => `
+        <div class="ranking-item">
+          <span class="ranking-nome">#${index + 1} ${item.nome}</span>
+          <span class="ranking-estrelas">🌟 ${item.estrelas}</span>
+        </div>
+      `).join('');
+    }
+
+    // Mostrar mensagem
+    function mostrarMensagem(texto, tipo) {
+      const msg = document.getElementById('mensagem');
+      msg.textContent = texto;
+      msg.className = 'mensagem ' + tipo;
+      
+      setTimeout(() => {
+        msg.className = 'mensagem';
+      }, 3000);
+    }
+
+    // Iniciar ao carregar
+    window.addEventListener('load', inicializar);
+  </script>
+</body>
+</html>

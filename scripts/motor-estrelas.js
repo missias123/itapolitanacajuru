@@ -26,12 +26,14 @@ class MotorEstrelas {
       this.cicloAtual = dados.cicloAtual;
       this.horariosDia = dados.horariosDia;
       this.rankingAtual = dados.rankingAtual;
-      this.estrelaCapturada = dados.estrelaCapturada;
-      
-      console.log('✅ Motor de Estrelas inicializado com sucesso');
-      this.iniciarVerificacao();
-      return true;
-    } catch (erro) {
+    this.estrelaCapturada = dados.estrelaCapturada;
+    this.usuariosOnline = dados.usuariosOnline || 0;
+    
+    console.log('✅ Motor de Estrelas inicializado com sucesso');
+    this.iniciarVerificacao();
+    this.iniciarHeartbeat();
+    return true;
+  } catch (erro) {
       console.error('❌ Erro ao inicializar motor:', erro);
       return false;
     }
@@ -78,6 +80,32 @@ class MotorEstrelas {
         this.ativarEstrela();
       }
     }, this.config.tempoSincronizacao);
+  }
+
+  /**
+   * Iniciar o "pulso" (heartbeat) para contar usuários online
+   */
+  iniciarHeartbeat() {
+    // Simular incremento de usuários online para teste
+    // No sistema real, isso enviaria um sinal para o servidor
+    this.usuariosOnline = Math.floor(Math.random() * 15) + 5; // Entre 5 e 20 usuários
+    
+    setInterval(() => {
+      // Variar levemente o número para parecer real
+      const variacao = Math.floor(Math.random() * 3) - 1; // -1, 0 ou +1
+      this.usuariosOnline = Math.max(1, this.usuariosOnline + variacao);
+      
+      window.dispatchEvent(new CustomEvent('usuariosOnlineUpdate', {
+        detail: { count: this.usuariosOnline }
+      }));
+    }, 15000); // Atualizar a cada 15 segundos
+  }
+
+  /**
+   * Obter o número de usuários online
+   */
+  obterUsuariosOnline() {
+    return this.usuariosOnline;
   }
 
   /**
