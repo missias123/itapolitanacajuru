@@ -34,14 +34,14 @@
   };
 
   var FRASES = [
-    '🕵️‍♂️ Shhh! Tem caçadores de olho em mim agora...',
-    '👀 Cuidado! Vi pessoas procurando a estrela por aqui!',
-    '🌟 A disputa está quente! Quem será o primeiro a clicar?',
-    '🐻 Onde será que escondi a estrela de hoje?',
-    '✨ Dizem que eu solto estrelas premiadas... será?',
-    '🏆 Quem completar a meta do mês primeiro ganha o prêmio!',
-    '📱 Já fez seu cadastro no Fidelidade hoje?',
-    '🏃‍♂️ Fique de olho! A estrela pode aparecer a qualquer momento!'
+    '🌟 Fique de olho! Posso soltar uma estrela a qualquer momento!',
+    '🏃‍♂️💨 Se eu correr, a estrela dourada vai aparecer!',
+    '🍦 Quem capturar a estrela primeiro ganha pontos no Clube!',
+    '✨ Minhas estrelas valem prêmios deliciosos!',
+    '🕵️‍♂️ O horário da estrela é segredo... você consegue achar?',
+    '🏆 Complete 5 estrelas e escolha seu prêmio!',
+    '📱 Já conferiu as regras da caçada no seu painel?',
+    '👀 Viu uma estrela brilhando? Clique nela rápido!'
   ];
 
   var FRASES_VOLTA = [
