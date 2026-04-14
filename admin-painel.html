@@ -1695,7 +1695,7 @@ Talento</textarea>
           </div>
         </div>
       </div>
-      <div class="card">
+        <div class="card">
         <div class="card-header">
           <h2>👥 Todos os Participantes</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1703,9 +1703,32 @@ Talento</textarea>
             <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Copiar Lista</button>
             <button class="btn" style="background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff" onclick="copiarTodosDados()">📋 Copiar Todos os Dados</button>
             <button class="btn" style="background:linear-gradient(135deg,#2e7d32,#388e3c);color:#fff" onclick="copiarApenassorteio()">🎁 Copiar Só Sorteio</button>
+            <button class="btn btn-vermelho" onclick="limparListaParticipantes()">🧹 Limpar Lista</button>
           </div>
         </div>
         <div class="card-body">
+          <!-- Formulário de adição manual -->
+          <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="font-size:.85rem;font-weight:700;color:#555;margin-bottom:10px">➕ Adicionar Participante Manualmente</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+              <div style="flex:2;min-width:160px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Nome completo</label>
+                <input type="text" id="add-part-nome" placeholder="Nome do participante" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
+              </div>
+              <div style="flex:1;min-width:140px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Celular (WhatsApp)</label>
+                <input type="tel" id="add-part-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
+              </div>
+              <div style="flex:1;min-width:140px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Tipo de cadastro</label>
+                <select id="add-part-tipo" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box">
+                  <option value="sorteio">🎁 Sorteio Mensal</option>
+                  <option value="fidelidade">🎟️ Clube Fidelidade</option>
+                </select>
+              </div>
+              <button class="btn btn-verde" onclick="adicionarParticipanteManual()" style="padding:10px 18px;white-space:nowrap">➕ Adicionar</button>
+            </div>
+          </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
             <input type="search" id="busca-participante" placeholder="🔍 Buscar por nome ou celular..." oninput="renderParticipantes()" style="flex:2;min-width:180px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
             <select id="filtro-tipo-part" onchange="renderParticipantes()" style="flex:1;min-width:140px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem">
@@ -1717,7 +1740,7 @@ Talento</textarea>
           </div>
           <div class="tabela-wrap">
             <table class="tabela">
-              <thead><tr><th>Nome</th><th>Celular</th><th>Tipo</th><th>Pontos</th><th>Cadastro</th><th>Status</th></tr></thead>
+              <thead><tr><th>Nome</th><th>Celular</th><th>Tipo</th><th>Pontos</th><th>Cadastro</th><th>Status</th><th>Ação</th></tr></thead>
               <tbody id="tabela-participantes"></tbody>
             </table>
           </div>
@@ -2868,11 +2891,12 @@ function renderParticipantes() {
     tbody.innerHTML = slice.map(p => `
       <tr>
         <td>${p.nome}</td>
-        <td><a href="https://wa.me/55${p.cel.replace(/\D/g,'')}" target="_blank" style="color:#e65100">${p.cel}</a></td>
+        <td><a href="https://wa.me/55${p.cel.replace(/\D/g,'")}" target="_blank" style="color:#e65100">${p.cel}</a></td>
         <td><span style="background:${tipoCor[p.tipo]};color:#fff;border-radius:12px;padding:3px 10px;font-size:.75rem;font-weight:700">${tipoLabel[p.tipo]}</span></td>
         <td style="font-weight:700;color:#e8650a">${p.pontos}</td>
         <td style="font-size:.78rem">${p.cadastro ? (p.cadastro.includes('T') ? new Date(p.cadastro).toLocaleDateString('pt-BR') : p.cadastro) : '-'}</td>
         <td style="color:${p.status==='Ativo'?'#2e7d32':p.status==='Bloqueado'?'#c62828':'#f57c00'};font-weight:700">${p.status}</td>
+        <td><button onclick="excluirParticipante('${p.cel}','${p.tipo}')" style="background:#c62828;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-weight:700">🗑️ Excluir</button></td>
       </tr>`).join('');
   }
 
@@ -2891,6 +2915,115 @@ function renderParticipantes() {
 }
 
 function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
+
+// ═══════════════════════════════════════════════════════════
+// EXCLUIR PARTICIPANTE INDIVIDUAL
+// ═══════════════════════════════════════════════════════════
+function excluirParticipante(cel, tipo) {
+  const celLimpo = cel.replace(/\D/g,'');
+  let nome = cel;
+  // Tentar encontrar o nome
+  if (tipo === 'sorteio' || tipo === 'ambos') {
+    const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
+    if (ins) nome = ins.nome;
+  } else {
+    const c = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
+    if (c) nome = c.nome;
+  }
+  confirmarAcao(
+    'Excluir Participante',
+    `Tem certeza que deseja excluir <strong>${nome}</strong> da lista?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
+    'Sim, excluir',
+    async () => {
+      let salvou = false;
+      // Remover do sorteioInscritos
+      if (STATE.fidelidade?.sorteioInscritos) {
+        const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
+        if (idx > -1) {
+          STATE.fidelidade.sorteioInscritos.splice(idx, 1);
+          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
+          salvou = true;
+        }
+      }
+      // Remover dos clientes
+      if (!salvou) {
+        if (STATE.clientes?.clientes?.[celLimpo]) {
+          delete STATE.clientes.clientes[celLimpo];
+          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome);
+        } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
+          delete STATE.fidelidade.clientes[celLimpo];
+          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
+        }
+      }
+      toast('🗑️ ' + nome + ' excluído(a) da lista.', 'ok');
+      renderParticipantes();
+    }
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// ADICIONAR PARTICIPANTE MANUALMENTE
+// ═══════════════════════════════════════════════════════════
+async function adicionarParticipanteManual() {
+  const nome = (document.getElementById('add-part-nome')?.value || '').trim();
+  const cel  = (document.getElementById('add-part-cel')?.value || '').trim();
+  const tipo = document.getElementById('add-part-tipo')?.value || 'sorteio';
+  if (!nome) { toast('Informe o nome do participante.', 'erro'); return; }
+  if (cel.replace(/\D/g,'').length < 10) { toast('Informe um celular válido.', 'erro'); return; }
+  const celLimpo = cel.replace(/\D/g,'');
+  if (tipo === 'sorteio') {
+    if (!STATE.fidelidade) STATE.fidelidade = {};
+    if (!STATE.fidelidade.sorteioInscritos) STATE.fidelidade.sorteioInscritos = [];
+    const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
+    if (jaExiste) { toast('\u274c ' + jaExiste.nome + ' já está inscrito(a) no sorteio.', 'erro'); return; }
+    STATE.fidelidade.sorteioInscritos.push({ nome, cel, dataNasc: '', data: new Date().toLocaleDateString('pt-BR'), hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) });
+    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
+  } else {
+    if (!STATE.clientes) STATE.clientes = { clientes: {} };
+    if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
+    if (STATE.clientes.clientes[celLimpo]) { toast('\u274c ' + STATE.clientes.clientes[celLimpo].nome + ' já está cadastrado(a) na fidelidade.', 'erro'); return; }
+    STATE.clientes.clientes[celLimpo] = { nome, cel: celLimpo, dataNasc: '', cadastro: new Date().toISOString(), saldoPontos: 0, codigosUsados: [], resgates: [], totalPremios: 0, totalCodigos: 0 };
+    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
+  }
+  document.getElementById('add-part-nome').value = '';
+  document.getElementById('add-part-cel').value = '';
+  toast('\u2705 ' + nome + ' adicionado(a) com sucesso!', 'sucesso');
+  renderParticipantes();
+}
+
+// ═══════════════════════════════════════════════════════════
+// LIMPAR LISTA DE PARTICIPANTES
+// ═══════════════════════════════════════════════════════════
+function limparListaParticipantes() {
+  const filtroTipo = document.getElementById('filtro-tipo-part')?.value || '';
+  const total = getParticipantesUnificados().length;
+  if (total === 0) { toast('A lista já está vazia.', 'aviso'); return; }
+  let descricao = 'todos os participantes';
+  if (filtroTipo === 'sorteio') descricao = 'todos os inscritos no Sorteio';
+  else if (filtroTipo === 'fidelidade') descricao = 'todos os clientes do Clube Fidelidade';
+  confirmarAcao(
+    '🧹 Limpar Lista de Participantes',
+    `Tem certeza que deseja apagar <strong>${descricao}</strong>?<br><br>⚠️ Isso vai remover <strong>todos os cadastros</strong> da lista selecionada.<br><br><span style="color:#c62828;font-weight:700">Esta ação NÃO pode ser desfeita!</span>`,
+    '🧹 Sim, limpar tudo',
+    async () => {
+      if (!filtroTipo || filtroTipo === 'sorteio' || filtroTipo === 'ambos') {
+        if (STATE.fidelidade?.sorteioInscritos) {
+          STATE.fidelidade.sorteioInscritos = [];
+          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: limpar lista sorteio');
+        }
+      }
+      if (!filtroTipo || filtroTipo === 'fidelidade' || filtroTipo === 'ambos') {
+        if (STATE.clientes?.clientes) {
+          STATE.clientes.clientes = {};
+          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: limpar lista fidelidade');
+        }
+      }
+      toast('🧹 Lista limpa com sucesso!', 'ok');
+      renderParticipantes();
+    },
+    'perigo'
+  );
+}
 
 function exportarParticipantesCSV() {
   const todos = getParticipantesUnificados();
