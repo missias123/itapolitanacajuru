@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Gradiente dourado 3D como na imagem -->
+    <radialGradient id="goldCenter" cx="50%" cy="45%" r="50%">
+      <stop offset="0%"   stop-color="#FFF176"/>
+      <stop offset="30%"  stop-color="#FFD600"/>
+      <stop offset="65%"  stop-color="#F9A825"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </radialGradient>
+
+    <!-- Gradiente para as faces laterais (sombra 3D) -->
+    <linearGradient id="goldDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#FFD600"/>
+      <stop offset="100%" stop-color="#BF6900"/>
+    </linearGradient>
+
+    <!-- Brilho central -->
+    <radialGradient id="shine" cx="42%" cy="38%" r="30%">
+      <stop offset="0%"   stop-color="#FFFDE7" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFD600" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Filtro de brilho externo -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Estrela de 6 pontas — polígono principal -->
+  <!-- Pontos calculados para estrela de 6 pontas perfeita centrada em 100,100 -->
+  <!-- Raio externo: 90, Raio interno: 45 -->
+  <polygon
+    points="
+      100,10
+      120.78,55
+      169.28,55
+      134.64,82.5
+      150,127.5
+      100,100
+      50,127.5
+      65.36,82.5
+      30.72,55
+      79.22,55
+    "
+    fill="url(#goldCenter)"
+    filter="url(#glow)"
+    stroke="#E65100"
+    stroke-width="1"
+    stroke-linejoin="round"
+  />
+
+  <!-- Estrela de 6 pontas correta usando dois triângulos sobrepostos -->
+  <!-- Triângulo 1 (apontando para cima) -->
+  <polygon
+    points="100,10 182,145 18,145"
+    fill="url(#goldCenter)"
+    filter="url(#glow)"
+  />
+  <!-- Triângulo 2 (apontando para baixo) -->
+  <polygon
+    points="100,190 18,55 182,55"
+    fill="url(#goldDark)"
+    opacity="0.85"
+  />
+  <!-- Camada de brilho sobre a estrela completa -->
+  <polygon
+    points="100,10 182,145 18,145"
+    fill="url(#shine)"
+  />
+
+  <!-- Brilho central pequeno -->
+  <circle cx="100" cy="100" r="18" fill="#FFFDE7" opacity="0.35"/>
+  <circle cx="93"  cy="88"  r="7"  fill="#FFFFFF" opacity="0.55"/>
+</svg>
