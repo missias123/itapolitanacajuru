@@ -1,6 +1,6 @@
 /* =====================================================
    ITAMANDUÁ — Mascote Sorveteria Itapolitana
-   Versão 9 — LADO ESQUERDO + DOIS TRILHOS (pista oval)
+   Versão 10 — BALÃO SUPER VISÍVEL (3 aparelhos)
    
    LÓGICA DOS TRILHOS:
    ┌──────────────────────────────────────────────────┐
@@ -41,27 +41,25 @@
   transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-/* TRILHO IDA: corre de frente para a esquerda (bottom: 160px)
-   O container desliza para a esquerda — imagem fica de frente */
+/* TRILHO IDA: corre de frente para a esquerda (bottom: 160px) */
 #ita-mascote.ita-trilho-ida {
   bottom: 160px;
   left: auto;
   right: auto;
-  transition: left 3s linear !important; /* IDA em 3s */
+  transition: left 3s linear !important;
   transform: none !important;
 }
 
-/* TRILHO VOLTA: corre de frente para a direita (bottom: 220px)
-   Entra pela esquerda e vai para a direita — imagem fica de frente */
+/* TRILHO VOLTA: corre de frente para a direita (bottom: 220px) */
 #ita-mascote.ita-trilho-volta {
   bottom: 220px;
   left: auto;
   right: auto;
-  transition: left 4.5s linear !important; /* VOLTA em 4.5s (bem mais lento) */
+  transition: left 4.5s linear !important;
   transform: none !important;
 }
 
-/* ---- Imagem — base com scaleX(-1) para ficar virado para o MEIO DA TELA (direita) ---- */
+/* ---- Imagem ---- */
 #ita-mascote img {
   width: 140px;
   height: auto;
@@ -74,7 +72,6 @@
   -webkit-user-drag: none;
   transform-origin: bottom center;
   transition: filter 0.25s ease;
-  /* imagem já espelhada — olha naturalmente para a direita (meio da tela) */
 }
 
 #ita-mascote img:hover {
@@ -83,14 +80,12 @@
   transform: scale(1.08) rotate(-3deg);
 }
 
-/* TRILHO IDA (vai para DIREITA): imagem já espelhada — olha para direita = de frente */
 #ita-mascote.ita-correndo img {
   animation: ita-correr 0.16s ease-in-out infinite !important;
   transform: none !important;
   cursor: default;
 }
 
-/* TRILHO VOLTA (paralelo, vai para ESQUERDA): sem espelhamento = sempre de frente */
 #ita-mascote.ita-voltando img {
   animation: ita-correr 0.16s ease-in-out infinite !important;
   transform: none !important;
@@ -98,14 +93,12 @@
 }
 
 /* ---- Animações ---- */
-
 @keyframes ita-flutuar {
   0%,100% { transform: translateY(0px) rotate(0deg) scaleX(1); }
   30%      { transform: translateY(-9px) rotate(1.5deg) scaleX(1); }
   70%      { transform: translateY(-15px) rotate(-1.5deg) scaleX(1); }
 }
 
-/* Corrida: bounce vertical */
 @keyframes ita-correr {
   0%   { transform: translateY(0px) rotate(0deg); }
   25%  { transform: translateY(-12px) rotate(-2deg); }
@@ -114,20 +107,29 @@
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-/* ---- Balão de fala — aparece à DIREITA do mascote ---- */
+/* Pulsação do balão para chamar atenção */
+@keyframes ita-balao-pulsar {
+  0%,100% { box-shadow: 0 4px 0 #A00008, 0 8px 24px rgba(0,0,0,0.28), 0 2px 8px rgba(232,0,13,0.22), inset 0 1px 0 rgba(255,255,255,0.9); }
+  50%     { box-shadow: 0 4px 0 #A00008, 0 8px 32px rgba(232,0,13,0.55), 0 2px 16px rgba(232,0,13,0.45), inset 0 1px 0 rgba(255,255,255,0.9); }
+}
+
+/* ---- BALÃO DE FALA — SUPER VISÍVEL ---- */
 #ita-balao {
   /* Fundo branco sólido com gradiente suave */
   background: linear-gradient(135deg, #ffffff 60%, #fff5f5 100%);
   /* Borda vermelha grossa e bem definida */
   border: 4px solid #E8000D;
-  border-radius: 18px 18px 18px 4px;  /* seta no canto inferior ESQUERDO */
-  padding: 10px 16px;
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px 18px;
   margin-bottom: 10px;
   font-family: 'Poppins', 'Nunito', 'Segoe UI', Arial, sans-serif;
-  font-size: 14px;
+  /* FONTE MAIOR para máxima legibilidade */
+  font-size: 15px;
   font-weight: 900;
   color: #B00008;
-  max-width: 165px;
+  /* LARGURA MAIOR para caber mais texto */
+  max-width: 200px;
+  min-width: 160px;
   text-align: center;
   line-height: 1.5;
   letter-spacing: 0.02em;
@@ -140,8 +142,9 @@
     0 8px 24px rgba(0,0,0,0.28),
     0 2px 8px rgba(232,0,13,0.22),
     inset 0 1px 0 rgba(255,255,255,0.9);
+  /* Contorno branco extra para destacar do fundo */
   outline: 3px solid rgba(255,255,255,0.95);
-  outline-offset: 2px;
+  outline-offset: 3px;
   pointer-events: none;
   opacity: 0;
   transform: scale(0.75) translateY(8px);
@@ -149,57 +152,96 @@
   position: relative;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Balão à direita do mascote */
   align-self: flex-start;
   margin-left: 0;
 }
 
+/* Quando visível: pulsa suavemente para chamar atenção */
 #ita-balao.ita-balao-show {
   opacity: 1;
   transform: scale(1) translateY(0);
+  animation: ita-balao-pulsar 2s ease-in-out infinite;
 }
 
-/* Setinha no canto inferior ESQUERDO (aponta para o mascote que está à esquerda) */
+/* Setinha no canto inferior ESQUERDO */
 #ita-balao::after {
   content: '';
   position: absolute;
-  bottom: -12px;
+  bottom: -14px;
   left: 18px;
   right: auto;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-top: 12px solid #E8000D;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 14px solid #E8000D;
 }
 
-/* ---- Responsivo ---- */
+/* Sombra branca atrás da setinha para contraste */
+#ita-balao::before {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 15px;
+  right: auto;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 17px solid rgba(255,255,255,0.9);
+}
+
+/* ============================================
+   RESPONSIVO — TABLET (601px a 1024px)
+   ============================================ */
 @media (max-width: 1024px) and (min-width: 601px) {
   #ita-mascote     { bottom: 155px; left: 8px; }
-  #ita-mascote img { width: 115px; }
-  #ita-balao       { font-size: 13px; max-width: 148px; padding: 9px 13px; }
+  #ita-mascote img { width: 120px; }
+  #ita-balao {
+    font-size: 14px;
+    max-width: 185px;
+    min-width: 150px;
+    padding: 11px 15px;
+    border-width: 3.5px;
+  }
 }
 
+/* ============================================
+   RESPONSIVO — CELULAR (até 600px)
+   ============================================ */
 @media (max-width: 600px) {
   #ita-mascote     { bottom: 150px; left: 4px; }
-  #ita-mascote img { width: 78px; }
-  #ita-balao       {
-    font-size: 12px;
+  #ita-mascote img { width: 85px; }
+  #ita-balao {
+    font-size: 13px;
     font-weight: 900;
-    max-width: 130px;
-    padding: 8px 11px;
+    max-width: 155px;
+    min-width: 130px;
+    padding: 10px 13px;
     border-width: 3px;
     -webkit-text-stroke: 0.2px #8B0000;
+    /* Balão ainda maior em relação ao mascote no celular */
+    outline-width: 2.5px;
   }
 }
 
-/* Telas muito pequenas (< 360px) — garante que não atrapalhe */
+/* ============================================
+   RESPONSIVO — CELULAR PEQUENO (até 360px)
+   ============================================ */
 @media (max-width: 359px) {
   #ita-mascote     { bottom: 145px; left: 2px; z-index: 9985; }
-  #ita-mascote img { width: 65px; }
-  #ita-balao       {
-    font-size: 11px;
-    max-width: 110px;
-    padding: 6px 9px;
-    border-width: 2px;
+  #ita-mascote img { width: 70px; }
+  #ita-balao {
+    font-size: 12px;
+    max-width: 135px;
+    min-width: 115px;
+    padding: 8px 10px;
+    border-width: 2.5px;
   }
-  #ita-balao::after { border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 10px solid #E8000D; }
+  #ita-balao::after {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 11px solid #E8000D;
+  }
+  #ita-balao::before {
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 14px solid rgba(255,255,255,0.9);
+  }
 }
