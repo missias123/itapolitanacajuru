@@ -114,16 +114,30 @@
   /* ================================================
      TROCA DE FRASES
   ================================================ */
+  /* Calcula tempo de leitura baseado no número de palavras da frase
+     Fórmula: (palavras / 3) * 1000ms + 1800ms de margem
+     Mínimo: 3000ms | Máximo: 9000ms */
+  function calcularTempoLeitura(texto) {
+    var palavras = texto.replace(/[^\w\s]/g, '').trim().split(/\s+/).length;
+    var tempo = Math.round((palavras / 3) * 1000) + 1800;
+    return Math.min(Math.max(tempo, 3000), 9000);
+  }
+
   function rodarFrases(balao) {
-    clearInterval(timerFrase);
-    timerFrase = setInterval(function () {
-      balao.classList.remove('ita-balao-show');
-      setTimeout(function () {
-        fraseIdx = (fraseIdx + 1) % FRASES.length;
-        balao.textContent = FRASES[fraseIdx];
-        balao.classList.add('ita-balao-show');
-      }, 300);
-    }, 3000);
+    clearTimeout(timerFrase);
+    function proximaFrase() {
+      var tempoAtual = calcularTempoLeitura(FRASES[fraseIdx]);
+      timerFrase = setTimeout(function () {
+        balao.classList.remove('ita-balao-show');
+        setTimeout(function () {
+          fraseIdx = (fraseIdx + 1) % FRASES.length;
+          balao.textContent = FRASES[fraseIdx];
+          balao.classList.add('ita-balao-show');
+          proximaFrase();
+        }, 300);
+      }, tempoAtual);
+    }
+    proximaFrase();
   }
 
   /* ================================================
