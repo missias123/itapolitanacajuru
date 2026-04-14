@@ -131,22 +131,31 @@ class MotorEstrelasV2 {
   }
 
   /**
-   * BUG FIX #4: Processar clique na estrela com trava de concorrência REAL
+   * TRAVA TOTAL: Processar clique com todas as defesas
    */
   async processarClique(callback) {
-    // TRAVA 1: Verificação Local (Primeira Defesa)
-    if (this.estrelaCapturada.status === 'capturada') {
-      console.warn('⚠️ A estrela já foi capturada!');
+    // TRAVA 1: Estrela já capturada hoje
+    if (this.estrelaCapturada.status === 'capturada' || this.estrelaCapturada.status === 'em_resgate') {
+      console.warn('⚠️ A estrela já foi capturada hoje!');
       return { sucesso: false, motivo: 'ja_capturada' };
     }
 
-    // TRAVA 2: Verificação de Timestamp (Evita Cliques Duplos)
+    // TRAVA 2: Verificar se ainda é o horário válido (não pode clicar fora do horário)
+    if (!this.ehHorarioDaEstrela()) {
+      console.warn('⚠️ Fora do horário permitido! Clique bloqueado.');
+      return { sucesso: false, motivo: 'fora_do_horario' };
+    }
+
+    // TRAVA 3: Anti-clique duplo (500ms entre cliques)
     const agora = Date.now();
     if (this.ultimoCliqueEm && (agora - this.ultimoCliqueEm) < 500) {
-      console.warn('⚠️ Clique duplo detectado! Aguarde 500ms.');
+      console.warn('⚠️ Clique duplo detectado!');
       return { sucesso: false, motivo: 'clique_duplo' };
     }
     this.ultimoCliqueEm = agora;
+
+    // TRAVA 4: Bloquear clique imediatamente (sem segundo clique possível)
+    this.estrelaCapturada.status = 'em_resgate'; // Bloqueia qualquer outro clique
 
     // TRAVA 3: Gera Token Único de Sessão (Impossível de duplicar)
     const tokenUnico = 'EST_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
@@ -280,7 +289,7 @@ class MotorEstrelasV2 {
   }
 
   /**
-   * BUG FIX #7: Registrar captura com escolha de prêmio
+   * Registrar captura com trava: 1 estrela por pessoa por dia
    */
   async registrarCaptura(usuarioId, usuarioNome, usuarioCelular, premioEscolhido) {
     // Validar prêmio escolhido
@@ -288,8 +297,29 @@ class MotorEstrelasV2 {
       return { sucesso: false, motivo: 'premio_invalido' };
     }
 
+    const hoje = this.obterHorarioAtualComFuso().toISOString().split('T')[0];
     const agora = new Date().toISOString();
-    
+
+    // TRAVA: 1 cadastro por pessoa por dia
+    if (this.rankingAtual[usuarioId]) {
+      const diaUltimaCaptura = this.rankingAtual[usuarioId].diaCaptura;
+      if (diaUltimaCaptura === hoje) {
+        console.warn('⚠️ Este usuário já capturou uma estrela hoje!');
+        return { sucesso: false, motivo: 'ja_capturou_hoje' };
+      }
+    }
+
+    // TRAVA: Apenas 1 estrela por dia no site inteiro (já capturada por outra pessoa)
+    if (this.estrelaCapturada.status === 'capturada') {
+      const diaCaptura = this.estrelaCapturada.capturadoEm
+        ? new Date(this.estrelaCapturada.capturadoEm).toISOString().split('T')[0]
+        : null;
+      if (diaCaptura === hoje) {
+        console.warn('⚠️ A estrela de hoje já foi capturada por outra pessoa!');
+        return { sucesso: false, motivo: 'estrela_do_dia_ja_capturada' };
+      }
+    }
+
     // Atualizar ranking
     if (!this.rankingAtual[usuarioId]) {
       this.rankingAtual[usuarioId] = {
@@ -297,7 +327,7 @@ class MotorEstrelasV2 {
         celular: usuarioCelular,
         estrelas: 0,
         ultimaCaptura: agora,
-        diaCaptura: new Date().toISOString().split('T')[0],
+        diaCaptura: hoje,
         premiosEscolhidos: []
       };
     }
@@ -368,13 +398,14 @@ class MotorEstrelasV2 {
 
     const estrela = document.createElement('div');
     estrela.id = 'estrela-dourada-caçada';
-    estrela.innerHTML = '🌟';
+    estrela.innerHTML = '<img src="imagens/estrela-dourada-6p.webp" alt="Estrela Dourada" width="90" height="90" style="display:block;pointer-events:none;">';
     estrela.style.cssText = `
       position: fixed;
       z-index: 9999;
-      font-size: 50px;
+      width: 90px;
+      height: 90px;
       cursor: pointer;
-      filter: drop-shadow(0 0 15px gold);
+      filter: drop-shadow(0 0 16px gold) drop-shadow(0 0 6px #FFD600);
       animation: flutuarEstrela 2s ease-in-out infinite, surgirEstrela 0.5s ease-out;
       user-select: none;
       left: ${Math.random() * 70 + 15}%;
@@ -398,17 +429,27 @@ class MotorEstrelasV2 {
       document.head.appendChild(estilo);
     }
 
+    let jaClicou = false; // Trava local: impede segundo clique
     estrela.onclick = () => {
+      if (jaClicou) return; // Segundo clique bloqueado imediatamente
+      jaClicou = true;
+      estrela.style.pointerEvents = 'none'; // Desativa cliques no DOM
+
       this.processarClique((res) => {
         if (res.sucesso) {
-          estrela.style.transition = 'all 0.5s ease-in';
-          estrela.style.transform = 'scale(5) rotate(360deg)';
+          // Some imediatamente do site
+          estrela.style.transition = 'all 0.4s ease-in';
+          estrela.style.transform = 'scale(4) rotate(360deg)';
           estrela.style.opacity = '0';
           setTimeout(() => {
-            estrela.remove();
-            // Abrir o formulário de resgate (fidelidade.html)
+            estrela.remove(); // Remove do DOM completamente
+            // Redireciona para o formulário de resgate
             window.location.href = 'fidelidade.html?token=' + res.token;
-          }, 500);
+          }, 400);
+        } else {
+          // Se falhou (fora do horário, etc.), restaura o clique
+          jaClicou = false;
+          estrela.style.pointerEvents = 'auto';
         }
       });
     };
