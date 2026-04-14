@@ -109,8 +109,8 @@
 
 /* Pulsação suave do balão */
 @keyframes ita-balao-pulsar {
-  0%,100% { box-shadow: 0 4px 0 #B8860B, 0 8px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6); }
-  50%     { box-shadow: 0 4px 0 #B8860B, 0 8px 28px rgba(255,215,0,0.6), 0 2px 14px rgba(255,215,0,0.4), inset 0 1px 0 rgba(255,255,255,0.6); }
+  0%,100% { box-shadow: 0 4px 0 #c04a00, 0 8px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6); }
+  50%     { box-shadow: 0 4px 0 #c04a00, 0 8px 28px rgba(232,101,10,0.5), 0 2px 14px rgba(232,101,10,0.3), inset 0 1px 0 rgba(255,255,255,0.6); }
 }
 
 /* ============================================
@@ -123,24 +123,24 @@
    - Borda: Laranja escuro (#B8860B) — delimita o balão em qualquer fundo
    ============================================ */
 #ita-balao {
-  background: linear-gradient(135deg, #FFD700 0%, #FFC200 100%);
-  border: 3px solid #B8860B;
+  background: #ffffff;
+  border: 3px solid #e8650a;
   border-radius: 16px 16px 16px 4px;
   padding: 10px 16px;
   margin-bottom: 10px;
   /* Nunito Bold: padrão de mascotes em grandes apps */
   font-family: 'Nunito', 'Poppins', 'Segoe UI', Arial, sans-serif;
   font-size: 14px;
-  font-weight: 800;
-  color: #1a1a1a;
+  font-weight: 900;
+  color: #000000;
   max-width: 200px;
   min-width: 160px;
   text-align: center;
   line-height: 1.5;
   letter-spacing: 0.01em;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  text-shadow: none;
   box-shadow:
-    0 4px 0 #B8860B,
+    0 4px 0 #c04a00,
     0 8px 20px rgba(0,0,0,0.25),
     inset 0 1px 0 rgba(255,255,255,0.6);
   outline: 3px solid rgba(255,255,255,0.9);
@@ -214,18 +214,17 @@
    ============================================ */
 @media (max-width: 600px) {
   #ita-mascote     { bottom: 150px; left: 4px; }
-  #ita-mascote img { width: 85px; }
+  #ita-mascote img { width: 75px; }
   #ita-balao {
-    /* Fonte maior em relação ao mascote — padrão mobile */
-    font-size: 13px;
+    /* Compacto no celular — legível mas sem atrapalhar */
+    font-size: 11px;
     font-weight: 800;
-    /* Balão 2.59x maior que o mascote para legibilidade */
-    max-width: 220px;
-    min-width: 175px;
-    padding: 10px 14px;
-    border-width: 3px;
-    outline-width: 2.5px;
-    line-height: 1.55;
+    max-width: 145px;
+    min-width: 110px;
+    padding: 7px 10px;
+    border-width: 2.5px;
+    outline-width: 2px;
+    line-height: 1.45;
   }
 }
 
@@ -235,15 +234,15 @@
    ============================================ */
 @media (max-width: 359px) {
   #ita-mascote     { bottom: 145px; left: 2px; z-index: 9985; }
-  #ita-mascote img { width: 70px; }
+  #ita-mascote img { width: 62px; }
   #ita-balao {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 800;
-    max-width: 190px;
-    min-width: 155px;
-    padding: 9px 12px;
-    border-width: 2.5px;
-    line-height: 1.5;
+    max-width: 125px;
+    min-width: 95px;
+    padding: 6px 9px;
+    border-width: 2px;
+    line-height: 1.4;
   }
   #ita-balao::after {
     border-left: 8px solid transparent;
