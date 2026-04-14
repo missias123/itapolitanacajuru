@@ -71,6 +71,13 @@
   /* ================================================
      INICIALIZAÇÃO
   ================================================ */
+  /* Verifica se o balão deve ficar mudo nesta página */
+  var PAGINAS_MUDAS = ['encomendas.html', 'encomendas'];
+  function paginaMuda() {
+    var caminho = window.location.pathname.toLowerCase();
+    return PAGINAS_MUDAS.some(function(p) { return caminho.indexOf(p) !== -1; });
+  }
+
   function init() {
     if (document.getElementById('ita-mascote')) return;
 
@@ -102,10 +109,13 @@
     /* Entra pela esquerda após 1.5s */
     setTimeout(function () {
       wrap.classList.add('ita-visivel');
-      setTimeout(function () {
-        balao.classList.add('ita-balao-show');
-        rodarFrases(balao);
-      }, 900);
+      /* Só fala se NÃO estiver em página de encomendas */
+      if (!paginaMuda()) {
+        setTimeout(function () {
+          balao.classList.add('ita-balao-show');
+          rodarFrases(balao);
+        }, 900);
+      }
     }, 1500);
 
     img.addEventListener('click', function () {
@@ -115,9 +125,10 @@
 
     /* ================================================
        SCROLL: balão some ao rolar, volta ao parar
+       (não aplica em páginas mudas)
     ================================================ */
     window.addEventListener('scroll', function () {
-      if (fugindo) return;
+      if (fugindo || paginaMuda()) return;
 
       /* Esconde o balão imediatamente ao rolar */
       if (balaoAtivo) {
