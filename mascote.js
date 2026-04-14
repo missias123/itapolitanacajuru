@@ -60,10 +60,13 @@
   /* Posições fixas das bolas no chão — espalhadas na tela */
   var BOLAS_X_PERCENT = [0.25, 0.50, 0.75];
 
-  var fugindo     = false;
-  var timerFrase  = null;
-  var fraseIdx    = 0;
-  var bolasNaTela = [];
+  var fugindo        = false;
+  var timerFrase     = null;
+  var fraseIdx       = 0;
+  var bolasNaTela    = [];
+  var rolando        = false;
+  var timerScroll    = null;
+  var balaoAtivo     = false;
 
   /* ================================================
      INICIALIZAÇÃO
@@ -109,6 +112,30 @@
       if (fugindo) return;
       animar(wrap, balao, img);
     });
+
+    /* ================================================
+       SCROLL: balão some ao rolar, volta ao parar
+    ================================================ */
+    window.addEventListener('scroll', function () {
+      if (fugindo) return;
+
+      /* Esconde o balão imediatamente ao rolar */
+      if (balaoAtivo) {
+        balao.classList.remove('ita-balao-show');
+        clearTimeout(timerFrase);
+        rolando = true;
+      }
+
+      /* Reinicia o timer: se parar de rolar por 2s, volta a falar */
+      clearTimeout(timerScroll);
+      timerScroll = setTimeout(function () {
+        rolando = false;
+        if (!fugindo) {
+          balao.classList.add('ita-balao-show');
+          rodarFrases(balao);
+        }
+      }, 2000);
+    }, { passive: true });
   }
 
   /* ================================================
@@ -125,11 +152,16 @@
 
   function rodarFrases(balao) {
     clearTimeout(timerFrase);
+    balaoAtivo = true;
     function proximaFrase() {
+      /* Não continua se estiver rolando ou fugindo */
+      if (rolando || fugindo) return;
       var tempoAtual = calcularTempoLeitura(FRASES[fraseIdx]);
       timerFrase = setTimeout(function () {
+        if (rolando || fugindo) return;
         balao.classList.remove('ita-balao-show');
         setTimeout(function () {
+          if (rolando || fugindo) return;
           fraseIdx = (fraseIdx + 1) % FRASES.length;
           balao.textContent = FRASES[fraseIdx];
           balao.classList.add('ita-balao-show');
