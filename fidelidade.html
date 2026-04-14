@@ -52,6 +52,17 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:100vh}
+/* === GUIA ESTRELA === */
+#banner-estrela-guia{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#bf360c,#e8650a);color:#fff;padding:10px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+#banner-estrela-guia .guia-titulo{font-size:1rem;font-weight:900;margin-bottom:2px}
+#banner-estrela-guia .guia-passo{font-size:.82rem;font-weight:700;opacity:.95;margin-bottom:4px}
+#banner-estrela-guia .guia-timer{font-size:1.3rem;font-weight:900;letter-spacing:2px}
+#banner-estrela-guia .guia-timer.urgente{color:#ffeb3b;animation:piscar .6s infinite}
+@keyframes piscar{0%,100%{opacity:1}50%{opacity:.3}}
+.seta-guia{display:none;position:absolute;left:-38px;top:50%;transform:translateY(-50%);font-size:1.8rem;animation:setaPulsar .7s infinite alternate;color:#e8650a;pointer-events:none;z-index:100}
+@keyframes setaPulsar{0%{transform:translateY(-50%) translateX(0)}100%{transform:translateY(-50%) translateX(8px)}}
+.campo-ativo-guia{border:3px solid #e8650a !important;box-shadow:0 0 0 4px rgba(232,101,10,.25) !important;transition:all .3s}
+.form-group{position:relative}
 
 /* ── LOADING ── */
 #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
@@ -364,6 +375,12 @@ body { overflow-x: hidden; }
 <link rel="stylesheet" href="mascote.css?v=7">
 </head>
 <body>
+<!-- BANNER GUIA ESTRELA DOURADA -->
+<div id="banner-estrela-guia">
+  <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
+  <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
+  <div class="guia-timer" id="guia-timer-txt">05:00</div>
+</div>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -598,17 +615,20 @@ body { overflow-x: hidden; }
       <button class="tab-btn" onclick="setTab('login')">Ja tenho conta</button>
     </div>
     <div id="form-novo">
-      <div class="form-group">
+      <div class="form-group" id="fg-nome">
+        <span class="seta-guia" id="seta-nome">&#10148;</span>
         <label>Seu nome completo <span style="font-size:11px;color:#c62828;font-weight:800;">&#128203; IDENTICO ao RG/CNH</span></label>
         <input type="text" id="inp-nome" placeholder="Nome completo como no RG/CNH" autocomplete="name">
         <div class="hint">&#9888;&#65039; Informe o nome <strong>exatamente</strong> como consta no seu documento de identidade (RG ou CNH). Qualquer divergencia cancela o cadastro.</div>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="fg-data">
+        <span class="seta-guia" id="seta-data">&#10148;</span>
         <label>Data de nascimento <span style="font-size:11px;color:#c62828;font-weight:800;">&#128203; IDENTICA ao RG/CNH &mdash; minimo 14 anos</span></label>
         <input type="date" id="inp-data-nasc" autocomplete="bday">
         <div class="hint">&#9888;&#65039; Informe a data <strong>exatamente</strong> como consta no seu RG ou CNH. Qualquer divergencia cancela o cadastro e o resgate do premio.</div>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="fg-cel">
+        <span class="seta-guia" id="seta-cel">&#10148;</span>
         <label>Celular (WhatsApp) <span style="font-size:11px;color:#E65100;font-weight:700;">&#128242; numero ativo com WhatsApp</span></label>
         <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
         <div class="hint warn">
@@ -630,7 +650,10 @@ body { overflow-x: hidden; }
       </div>
       <!-- Honeypot anti-bot: campo oculto, humanos nao preenchem -->
       <input type="text" id="fid-hp" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
-      <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px">&#127881; Quero Receber Promocoes!</button>
+      <div class="form-group" id="fg-confirmar" style="position:relative">
+        <span class="seta-guia" id="seta-confirmar">&#10148;</span>
+        <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px;width:100%">&#127881; Quero Receber Promocoes!</button>
+      </div>
     </div>
     <div id="form-login" style="display:none">
       <div class="form-group">
@@ -2248,9 +2271,179 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="scripts/site-loader.js" defer></script>
-
 <script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
+
+<!-- SCRIPT GUIA ESTRELA: contador 5 min + seta unica -->
+<script>
+(function(){
+  var DURACAO = 5 * 60; // 5 minutos em segundos
+  var _timer = null;
+  var _segundos = DURACAO;
+  var _modoGuia = false;
+  var _passoAtual = 0; // 0=nome, 1=data, 2=cel, 3=confirmar
+
+  var PASSOS = [
+    { fg:'fg-nome',      seta:'seta-nome',      campo:'inp-nome',      txt:'Preencha seu NOME COMPLETO \u2193' },
+    { fg:'fg-data',      seta:'seta-data',      campo:'inp-data-nasc', txt:'Informe sua DATA DE NASCIMENTO \u2193' },
+    { fg:'fg-cel',       seta:'seta-cel',       campo:'inp-cel-novo',  txt:'Digite seu CELULAR (WhatsApp) \u2193' },
+    { fg:'fg-confirmar', seta:'seta-confirmar', campo:null,            txt:'Clique em CONFIRMAR para finalizar \u2193' }
+  ];
+
+  function padZ(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function atualizarTimer(){
+    var m = Math.floor(_segundos / 60);
+    var s = _segundos % 60;
+    var el = document.getElementById('guia-timer-txt');
+    if(el){
+      el.textContent = padZ(m) + ':' + padZ(s);
+      if(_segundos <= 60){
+        el.classList.add('urgente');
+      } else {
+        el.classList.remove('urgente');
+      }
+    }
+    if(_segundos <= 0){
+      clearInterval(_timer);
+      encerrarGuia(true);
+      return;
+    }
+    _segundos--;
+  }
+
+  function mostrarSeta(passo){
+    // Esconder todas as setas
+    PASSOS.forEach(function(p){
+      var s = document.getElementById(p.seta);
+      var fg = document.getElementById(p.fg);
+      if(s) s.style.display = 'none';
+      if(fg) fg.classList.remove('campo-ativo-guia');
+    });
+    if(passo >= PASSOS.length) return;
+    var atual = PASSOS[passo];
+    var seta = document.getElementById(atual.seta);
+    var fg = document.getElementById(atual.fg);
+    if(seta) seta.style.display = 'block';
+    if(fg) fg.classList.add('campo-ativo-guia');
+    var pEl = document.getElementById('guia-passo-txt');
+    if(pEl) pEl.textContent = atual.txt;
+    // Focar o campo
+    if(atual.campo){
+      var c = document.getElementById(atual.campo);
+      if(c) setTimeout(function(){ c.focus(); }, 200);
+    }
+  }
+
+  function avancarPasso(){
+    _passoAtual++;
+    if(_passoAtual >= PASSOS.length){
+      mostrarSeta(PASSOS.length); // esconde tudo
+    } else {
+      mostrarSeta(_passoAtual);
+    }
+  }
+
+  function encerrarGuia(expirou){
+    _modoGuia = false;
+    var banner = document.getElementById('banner-estrela-guia');
+    if(banner) banner.style.display = 'none';
+    PASSOS.forEach(function(p){
+      var s = document.getElementById(p.seta);
+      var fg = document.getElementById(p.fg);
+      if(s) s.style.display = 'none';
+      if(fg) fg.classList.remove('campo-ativo-guia');
+    });
+    if(expirou){
+      alert('\u23f0 Tempo esgotado!\n\nO tempo de 5 minutos para cadastrar sua Estrela Dourada acabou.\n\nSe voce ainda nao se cadastrou, entre em contato com a sorveteria.');
+    }
+  }
+
+  function iniciarGuia(){
+    _modoGuia = true;
+    _segundos = DURACAO;
+    _passoAtual = 0;
+    var banner = document.getElementById('banner-estrela-guia');
+    if(banner) banner.style.display = 'block';
+    // Garantir que o formulario de novo cadastro esta visivel
+    var cardAcesso = document.getElementById('card-acesso');
+    if(cardAcesso) cardAcesso.style.display = 'block';
+    // Garantir aba "Primeira vez" ativa
+    if(typeof setTab === 'function') setTab('novo');
+    // Rolar ate o formulario
+    setTimeout(function(){
+      var fg = document.getElementById('fg-nome');
+      if(fg) fg.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 400);
+    mostrarSeta(0);
+    _timer = setInterval(atualizarTimer, 1000);
+    atualizarTimer();
+
+    // Listeners para avancar seta ao preencher cada campo
+    var inpNome = document.getElementById('inp-nome');
+    var inpData = document.getElementById('inp-data-nasc');
+    var inpCel  = document.getElementById('inp-cel-novo');
+
+    function onNomeBlur(){
+      if(_passoAtual === 0 && inpNome && inpNome.value.trim().length > 2){
+        avancarPasso();
+      }
+    }
+    function onDataChange(){
+      if(_passoAtual === 1 && inpData && inpData.value){
+        avancarPasso();
+      }
+    }
+    function onCelBlur(){
+      if(_passoAtual === 2 && inpCel && inpCel.value.replace(/\D/g,'').length >= 10){
+        avancarPasso();
+      }
+    }
+
+    if(inpNome) inpNome.addEventListener('blur', onNomeBlur);
+    if(inpData) inpData.addEventListener('change', onDataChange);
+    if(inpCel)  inpCel.addEventListener('blur', onCelBlur);
+  }
+
+  // Expor funcao globalmente para ser chamada apos deteccao do token
+  window.iniciarGuiaEstrela = iniciarGuia;
+  window.encerrarGuiaEstrela = encerrarGuia;
+
+  // Detectar chegada via estrela (token na URL)
+  document.addEventListener('DOMContentLoaded', function(){
+    var params = new URLSearchParams(window.location.search);
+    var token = params.get('token');
+    if(token && token.startsWith('EST')){
+      // Aguardar o formulario estar no DOM
+      setTimeout(iniciarGuia, 800);
+    }
+    // Tambem verificar sessionStorage
+    var tokenSessao = sessionStorage.getItem('itap_estrela_token');
+    if(tokenSessao && tokenSessao.startsWith('EST')){
+      setTimeout(iniciarGuia, 800);
+    }
+  });
+
+  // Encerrar guia apos cadastro bem-sucedido
+  var _origCadastrar = null;
+  document.addEventListener('DOMContentLoaded', function(){
+    // Hook na funcao cadastrar para encerrar o guia apos sucesso
+    var checkInterval = setInterval(function(){
+      if(typeof cadastrar === 'function' && !_origCadastrar){
+        _origCadastrar = cadastrar;
+        window.cadastrar = function(){
+          _origCadastrar.apply(this, arguments);
+          if(_modoGuia){
+            setTimeout(function(){ encerrarGuia(false); }, 1500);
+          }
+        };
+        clearInterval(checkInterval);
+      }
+    }, 300);
+  });
+
+})();
+</script>
 </body>
 </html>
