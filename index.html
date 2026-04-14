@@ -4005,7 +4005,22 @@ function recusarCookies() {
 document.addEventListener('DOMContentLoaded', checkCookies);
 </script>
 
+<script src="scripts/motor-estrelas-v2.js?v=1.1" defer></script>
 <script src="mascote.js?v=1.2" defer></script>
+<script>
+// Inicializar o Motor de Estrelas após todos os scripts carregarem
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    if (typeof MotorEstrelasV2 !== 'undefined') {
+      window.motorEstrelas = new MotorEstrelasV2();
+      window.motorEstrelas.inicializar('estrelas_ciclo.json?t=' + Date.now());
+      console.log('🌟 Motor de Estrelas v2.0 ativo!');
+    } else {
+      console.warn('⚠️ MotorEstrelasV2 não encontrado. Verifique o arquivo motor-estrelas-v2.js');
+    }
+  }, 800);
+});
+</script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div></body>
