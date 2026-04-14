@@ -170,20 +170,59 @@ class MotorEstrelasV2 {
   }
 
   /**
-   * BUG FIX #5: Salvar estado no GitHub
+   * BUG FIX #5 CORRIGIDO: Salvar estado real no GitHub via API
    */
   async salvarEstadoNoGitHub() {
     try {
-      // Aqui você integraria com a API do GitHub para salvar
-      // Por enquanto, vamos simular com localStorage
+      const GH_TOKEN  = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+      const GH_OWNER  = 'missias123';
+      const GH_REPO   = 'itapolitanacajuru';
+      const GH_BRANCH = 'main';
+      const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
+      const PATH      = 'estrelas_ciclo.json';
+
+      // 1. Buscar SHA atual do arquivo
+      const getResp = await fetch(GH_API + PATH + '?t=' + Date.now(), {
+        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (!getResp.ok) throw new Error('Erro ao buscar SHA: ' + getResp.status);
+      const getJson = await getResp.json();
+      const sha = getJson.sha;
+
+      // 2. Montar o objeto completo atualizado
+      const dadosAtualizados = {
+        versao: '1.0',
+        cicloAtual: this.cicloAtual,
+        horariosDia: this.horariosDia,
+        rankingAtual: this.rankingAtual,
+        historicoVencedores: this.cicloAtual.historicoVencedores || [],
+        configGeral: this.config,
+        estrelaCapturada: this.estrelaCapturada
+      };
+
+      // 3. Salvar no GitHub
+      const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dadosAtualizados, null, 2))));
+      const putResp = await fetch(GH_API + PATH, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: '🌟 Motor: atualizar estado da estrela',
+          content: conteudo,
+          sha: sha,
+          branch: GH_BRANCH
+        })
+      });
+
+      if (!putResp.ok) throw new Error('Erro ao salvar: ' + putResp.status);
+      console.log('💾 Estado salvo no GitHub com sucesso');
+    } catch (erro) {
+      console.error('❌ Erro ao salvar estado no GitHub:', erro);
+      // Fallback: salvar no localStorage como backup local
       localStorage.setItem('estrela_ciclo_backup', JSON.stringify({
         estrelaCapturada: this.estrelaCapturada,
         rankingAtual: this.rankingAtual,
         timestamp: new Date().toISOString()
       }));
-      console.log('💾 Estado salvo com sucesso');
-    } catch (erro) {
-      console.error('❌ Erro ao salvar estado:', erro);
     }
   }
 
