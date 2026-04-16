@@ -133,10 +133,14 @@ var carrinho = [];
 var produtoAtual = null;
 var saboresSelecionados = [];
 var selecoesPickle = {};        // seleções do modal atual (por sabor)
-var selecoesPickleGlobal = {};  // acumulado de TODOS os tipos (chave: tipo_id + sabor)
+var selecoesPickleGlobal = {};  // acumulado de TODOS os tipos (chave: tipo_id::sabor)
 var _nomeCliente = '';
 var _telCliente = '';
 var _endereçoCliente = '';
+
+// ---- PILHA DE NAVEGAÇÃO DO MODAL DE PICOLÉS ----
+// Garante que cada tela empilha a anterior e o botão Voltar sempre vai para a tela imediatamente anterior
+var _picoléNavStack = []; // ex: ['tipos', 'sabores']
 
 // Lista padrão de sabores
 const SABORES_PADRAO = [
@@ -562,7 +566,8 @@ function mostrarTelasTiposPicolé() {
 }
 
 function abrirTipoPicolé(id) {
-  // Abre os sabores do tipo selecionado dentro do mesmo modal
+  // Empilha a tela de sabores sobre a tela de tipos
+  _picoléNavStack.push('sabores');
   const telaTipos = document.getElementById('picolé-tela-tipos');
   const telaSabores = document.getElementById('picolé-tela-sabores');
   if (telaTipos) telaTipos.style.display = 'none';
@@ -570,17 +575,33 @@ function abrirTipoPicolé(id) {
   abrirModalPicolé(id);
 }
 
+// Voltar para a tela anterior na pilha de navegação do modal de picolés
+function voltarPicolé() {
+  // Remove a tela atual da pilha
+  if (_picoléNavStack.length > 1) _picoléNavStack.pop();
+  const telaAnterior = _picoléNavStack[_picoléNavStack.length - 1];
+  if (telaAnterior === 'tipos') {
+    mostrarTelasTiposPicolé();
+  } else {
+    // Fallback: fechar o modal
+    fecharModal('modal-picolé');
+  }
+}
+
 // Função para abrir o modal de picolés já sincronizado com o carrinho
 function abrirPicolésSincronizado() {
-  // Sincronizar selecoesPickleGlobal com o carrinho atual
+  // Reconstruir selecoesPickleGlobal a partir do carrinho atual
+  // Chave no carrinho já é tipoId::sabor — usar diretamente
   selecoesPickleGlobal = {};
   carrinho.forEach(item => {
     if (item.tipo === 'picolé') {
+      // item.id já está no formato 'pic_tipo::sabor'
       selecoesPickleGlobal[item.id] = item.quantidade;
     }
   });
   
-  // Resetar para a tela de tipos
+  // Resetar pilha de navegação e ir para tela de tipos
+  _picoléNavStack = ['tipos'];
   mostrarTelasTiposPicolé();
   abrirModal('modal-picolé');
 }
@@ -588,8 +609,9 @@ function abrirPicolésSincronizado() {
 function abrirModalPicolé(id, originEl) {
   const p = PRODUTOS.picolés.find(x => x.id === id);
   if (!p) return;
-   picoléAtual = p;
+  picoléAtual = p;
   // Restaurar seleções já feitas para este tipo a partir do global
+  // Chave global: 'pic_tipo::sabor' — extrair sabor corretamente
   selecoesPickle = {};
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
     if (chave.startsWith(p.id + '::')) {
@@ -789,13 +811,17 @@ function atualizarBotãoCarrinho() {
 function abrirCarrinho() {
   if (carrinho.length === 0) { showToast('Carrinho vazio! Adicione produtos.','alerta'); return; }
   
-  // Sincronizar selecoesPickleGlobal com o que está no carrinho antes de abrir
-  // Isso garante que se o usuário removeu itens no resumo, o modal de picolés saiba disso
-  selecoesPickleGlobal = {};
+  // Sincronizar selecoesPickleGlobal com o carrinho SEM ZERAR o que já existe
+  // Apenas atualiza/adiciona — não remove seleções pendentes do modal de picolés
   carrinho.forEach(item => {
     if (item.tipo === 'picolé') {
       selecoesPickleGlobal[item.id] = item.quantidade;
     }
+  });
+  // Remover do global itens de picolé que foram removidos do carrinho
+  Object.keys(selecoesPickleGlobal).forEach(chave => {
+    const noCarrinho = carrinho.find(c => c.tipo === 'picolé' && c.id === chave);
+    if (!noCarrinho) delete selecoesPickleGlobal[chave];
   });
 
   renderCarrinho();
@@ -871,7 +897,7 @@ function renderCarrinho() {
       aviso.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center';
       aviso.innerHTML = `
         <div style="margin-bottom:8px">🔒 Mínimo 100 picolés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.</div>
-        <button onclick="fecharModal('modal-carrinho'); abrirPicolésSincronizado();" style="background:#DC2626;color:#fff;border:none;padding:8px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-size:12px;box-shadow:0 2px 8px rgba(220,38,38,0.3)">➕ Adicionar mais sabores</button>
+        <button onclick="fecharCarrinho(); setTimeout(abrirPicolésSincronizado, 200);" style="background:#DC2626;color:#fff;border:none;padding:8px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-size:12px;box-shadow:0 2px 8px rgba(220,38,38,0.3)">➕ Adicionar mais sabores</button>
       `;
     }
     if (btnNext) {
