@@ -1,0 +1,118 @@
+direction: right
+
+Firebase: {
+  shape: cloud
+  label: "Firebase Firestore"
+  rules: "allow read, write: if true;"
+}
+
+Cliente: {
+  shape: person
+  label: "Cliente (Navegador)"
+}
+
+Sistema: {
+  shape: rectangle
+  label: "Sistema Itapolitana (fidelidade.html)"
+}
+
+Admin: {
+  shape: person
+  label: "Administrador (admin-painel.html)"
+}
+
+Cliente -> Sistema: Interage com o site
+Sistema -> Firebase: Lê/Escreve dados
+Admin -> Firebase: Lê/Escreve dados (via Admin Panel)
+
+Sistema.Fidelidade: {
+  shape: rectangle
+  label: "Programa de Fidelidade"
+  login: "Login/Cadastro"
+  validar_codigo: "Validar Código (validarCodigo)"
+  resgatar_premio: "Resgatar Prêmio (resgatarPremio)"
+}
+
+Sistema.CacadaEstrela: {
+  shape: rectangle
+  label: "Caçada da Estrela"
+  processar_token: "Processar Token (processarTokenEstrela)"
+  anti_robo: "Proteção Anti-Robô (Botão Oculto + Delay)"
+  captura_estrela: "Lógica de Captura"
+}
+
+Sistema.Fidelidade.validar_codigo -> Sistema.Fidelidade.login: Requer login
+Sistema.Fidelidade.validar_codigo -> Firebase: Consulta/Atualiza códigos e clientes
+Sistema.Fidelidade.resgatar_premio -> Firebase: Consulta/Atualiza clientes
+
+Sistema.CacadaEstrela.processar_token -> Sistema.CacadaEstrela.anti_robo: Ativa proteção
+Sistema.CacadaEstrela.anti_robo -> Sistema.CacadaEstrela.captura_estrela: Após clique humano
+Sistema.CacadaEstrela.captura_estrela -> Firebase: Registra estrela capturada
+
+subgraph ValidacaoCodigo {
+  shape: rectangle
+  label: "Fluxo de Validação de Código"
+  
+  start_val: { label: "Início Validação" }
+  check_cliente: { label: "Verifica Cliente Logado?" }
+  check_limites: { label: "Verifica Limites/Cooldowns?" }
+  get_codigo: { label: "Obtém Código do Input" }
+  fetch_data: { label: "Busca Dados (Fidelidade/Clientes)" }
+  check_bloqueio: { label: "Verifica Bloqueio Cliente?" }
+  check_cod_existe: { label: "Código Existe?" }
+  check_cod_expirado: { label: "Código Expirado?" }
+  check_cod_usado_global: { label: "Código Já Usado (Global)?" }
+  check_cod_usado_cliente: { label: "Código Já Usado (Cliente)?" }
+  add_ponto: { label: "Adiciona Ponto" }
+  save_data: { label: "Salva Dados (Fidelidade/Clientes)" }
+  end_val: { label: "Fim Validação" }
+  
+  start_val -> check_cliente
+  check_cliente -> get_codigo: Sim
+  check_cliente -> end_val: Não (Erro: Login)
+  get_codigo -> check_limites
+  check_limites -> fetch_data: Sim
+  check_limites -> end_val: Não (Erro: Limites)
+  fetch_data -> check_bloqueio
+  check_bloqueio -> check_cod_existe: Sim
+  check_bloqueio -> end_val: Não (Erro: Bloqueado)
+  
+  check_cod_existe -> check_cod_expirado: Sim
+  check_cod_existe -> registrar_fraude_inexistente: Não
+  registrar_fraude_inexistente: { label: "Registra Fraude (Inexistente)" }
+  registrar_fraude_inexistente -> end_val: Erro
+  
+  check_cod_expirado -> check_cod_usado_global: Não
+  check_cod_expirado -> end_val: Sim (Erro: Expirado)
+  
+  check_cod_usado_global -> check_cod_usado_cliente: Não
+  check_cod_usado_global -> registrar_fraude_reuso_global: Sim
+  registrar_fraude_reuso_global: { label: "Registra Fraude (Reuso Global)" }
+  registrar_fraude_reuso_global -> end_val: Erro
+  
+  check_cod_usado_cliente -> add_ponto: Não
+  check_cod_usado_cliente -> end_val: Sim (Erro: Reuso Cliente)
+  
+  add_ponto -> save_data
+  save_data -> end_val: Sucesso
+  save_data -> end_val: Erro ao Salvar
+}
+
+Sistema.Fidelidade.validar_codigo -> ValidacaoCodigo: Inicia
+ValidacaoCodigo -> Sistema.Fidelidade: Retorna Resultado
+
+subgraph AdminPanel {
+  shape: rectangle
+  label: "Painel Administrativo"
+  login_admin: "Login Admin"
+  gerenciar_estrelas: "Gerenciar Estrelas (Agendar/Resetar)"
+  historico_capturas: "Histórico de Capturas (Excluir)"
+}
+
+Admin -> AdminPanel: Acessa
+AdminPanel -> Firebase: Lê/Escreve dados (estrelas, clientes, fidelidade)
+
+Firebase.rules -> Sistema: Permissões de acesso
+Firebase.rules -> AdminPanel: Permissões de acesso
+
+

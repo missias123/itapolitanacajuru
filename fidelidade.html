@@ -93,7 +93,13 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .hero-premio-chip strong{display:block;font-size:.95rem;font-weight:900}
 .hero-premio-chip span{font-size:.75rem;opacity:.9}
 
-/* ── SECAO PROGRAMAS — CENTRALIZADO PROFISSIONAL ── */
+    <div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
+        <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
+        <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
+        <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;">REIVINDICAR MINHA ESTRELA!</button>
+    </div>
+
+    <!-- SECAO PROGRAMAS — CENTRALIZADO PROFISSIONAL --> */
 .secao-programas{
   width:100%;
   max-width:520px;
@@ -489,8 +495,8 @@ body { overflow-x: hidden; }
               2.3. Cada pessoa pode ter apenas <strong>um unico cadastro</strong>. Cadastros duplicados serao cancelados sem aviso previo.<br><br>
               <strong>3. DOS CUPONS E PONTOS</strong><br>
               3.1. A cada compra acima de R$ 30,00, o cliente recebe um cupom fisico com codigo unico.<br>
-              3.2. O codigo deve ser inserido no site dentro do prazo de validade: <strong>60 dias</strong> para codigos emitidos antes de 01/05/2026 e <strong>30 dias</strong> para codigos emitidos a partir de 01/05/2026.<br>
-              3.3. Cada codigo valido equivale a <strong>1 (um) ponto</strong>. Os pontos sao intransferiveis e nao possuem valor monetario.<br><br>
+              3.2. <strong>Emissao de cupons:</strong> A partir de <strong>01/05/2026</strong>. Os codigos serao entregues apenas de <strong>segunda a sexta-feira</strong>. Aos sabados e domingos, nao serao entregues cupons. Os codigos <strong>nao possuem prazo de validade</strong> e podem ser utilizados a qualquer momento.<br>
+              3.3. Cada codigo valido equivale a <strong>1 (um) ponto</strong>. Os pontos sao intransferiveis, nao possuem valor monetario e <strong>nao expiram</strong>.<br><br>
               <strong>4. DOS PREMIOS</strong><br>
               4.1. <strong>10 pontos</strong>: 1 Milkshake 300ml GRATIS.<br>
               4.2. <strong>30 pontos</strong>: 1 Caixa com 7 Bolas de Sorvete GRATIS.<br>
@@ -507,7 +513,7 @@ body { overflow-x: hidden; }
               Criticas infundadas, ofensas ou conduta inadequada poderao resultar no <strong>bloqueio definitivo</strong> do nome e numero de telefone no sistema.<br><br>
               <strong>7. DAS ALTERACOES E FASE DE TESTES</strong><br>
               7.1. A sorveteria reserva-se o direito de alterar, suspender ou encerrar o programa a qualquer momento, mediante aviso no site e nas redes sociais.<br>
-              7.2. <span style="color:#c62828;font-weight:900">O Clube Fidelidade poderá ser extinto sem aviso prévio, pois encontra-se em fase de testes.</span><br><br>
+              7.2. <span style="color:#c62828;font-weight:900">O Clube Fidelidade poderá ser extinto ou abortado a qualquer momento, sem aviso prévio, pois encontra-se em fase de testes.</span><br><br>
               <strong>8. DO FORO</strong><br>
               Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer duvidas ou litigios.
             </div>
@@ -1606,19 +1612,29 @@ function registrarUsoValido() {
 
 const EXPIRACAO_DIAS_NOVOS = 30;
 const EXPIRACAO_DIAS_ANTIGOS = 60;
-  const DATA_INICIO_PROMOCAO = new Date('2026-05-01T00:00:00-03:00').getTime();
+const DATA_INICIO_PROMOCAO = new Date('2026-05-01T00:00:00-03:00').getTime();
+
+const FERIADOS_BRASIL = ['01-01', '02-13', '02-14', '04-21', '05-01', '06-04', '09-07', '10-12', '11-02', '11-20', '12-25'];
+
+function ehDiaUtilParaCupom() {
+  const agora = new Date();
+  const diaSemana = agora.getDay();
+  const mesdia = String(agora.getMonth() + 1).padStart(2, '0') + '-' + String(agora.getDate()).padStart(2, '0');
+  if (diaSemana === 0 || diaSemana === 6) return false;
+  if (FERIADOS_BRASIL.includes(mesdia)) return false;
+  return true;
+}
+
 function codigoExpirado(dadosCodigo) {
   if (!dadosCodigo.geradoEm) return false;
-  const gerado = new Date(dadosCodigo.geradoEm).getTime();
   
   // Bloqueio de cupons antes de 01/05/2026
   if (Date.now() < DATA_INICIO_PROMOCAO) {
     return "BLOQUEADO_DATA";
   }
 
-  const diasPassados = (Date.now() - gerado) / (1000 * 60 * 60 * 24);
-  if (gerado < DATA_INICIO_PROMOCAO) return diasPassados > EXPIRACAO_DIAS_ANTIGOS;
-  return diasPassados > EXPIRACAO_DIAS_NOVOS;
+  // Cupons nao expiram - sempre valido
+  return false;
 }
 
 function registrarFraudeServidor(codigo, motivo) {
@@ -1772,12 +1788,7 @@ async function validarCodigo() {
     showMsg('msg-codigo', 'Os cupons só poderão ser validados a partir de 01 de Maio.', 'aviso');
     btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
   }
-  if (statusExpiracao === true) {
-    const geradoTs = new Date(codigos[codigo].geradoEm).getTime();
-    const validadeDias = geradoTs < DATA_INICIO_PROMOCAO ? EXPIRACAO_DIAS_ANTIGOS : EXPIRACAO_DIAS_NOVOS;
-    showMsg('msg-codigo',`Este codigo expirou (validade de ${validadeDias} dias). Solicite um novo na sorveteria.`,'aviso');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
+
 
   if (codigos[codigo].status === 'usado') {
     registrarFraudeServidor(codigo, 'Codigo ja utilizado — tentativa de reutilizacao');
@@ -2162,7 +2173,16 @@ async function processarTokenEstrela(tokenCaptura) {
       console.warn('⚠️ Estrela não está em resgate');
       return false;
     }
-    // Verificar validade do token (5 minutos)
+    // Verificar validade do token (2 minutos após aparição)
+    if (estrela.horaAparicao) {
+      const aparicao = new Date(estrela.horaAparicao);
+      const agora = new Date();
+      const tempoDecorrido = (agora - aparicao) / 1000; // em segundos
+      if (tempoDecorrido > 120) { // 2 minutos = 120 segundos
+        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + tempoDecorrido + 's');
+        return false;
+      }
+    }
     if (estrela.validadeToken) {
       const validade = new Date(estrela.validadeToken);
       if (new Date() > validade) {
@@ -2171,20 +2191,32 @@ async function processarTokenEstrela(tokenCaptura) {
       }
     }
 
-    // 3. Aguardar o cliente estar logado (com retry)
-    let tentativas = 0;
-    while (!clienteAtual && tentativas < 30) {
-      await new Promise(r => setTimeout(r, 500));
-      tentativas++;
+    // 3. Proteção Anti-Robô: Exibir botão para clique humano
+    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
+    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
+
+    if (secaoReivindicar && btnReivindicar) {
+      secaoReivindicar.style.display = 'block';
+      return new Promise(resolve => {
+        btnReivindicar.onclick = async () => {
+          secaoReivindicar.style.display = 'none';
+          // Adicionar um pequeno atraso aleatório para simular tempo de reação humano
+          await new Promise(r => setTimeout(r, 500 + Math.random() * 1500));
+          resolve(true);
+        };
+      });
     }
+
+
+
     if (!clienteAtual) {
       // Salvar token na sessão para processar após login
-      sessionStorage.setItem('itap_estrela_token', tokenCaptura);
-      console.log('🌟 Token salvo na sessão — aguardando login do cliente');
+      sessionStorage.setItem("itap_estrela_token", tokenCaptura);
+      console.log("🌟 Token salvo na sessão — aguardando login do cliente");
       return false;
     }
 
-    // 4. Registrar captura no ranking
+
     const hoje = new Date().toISOString().split('T')[0];
     const usuarioId = clienteAtual.cel;
     if (!dados.rankingAtual) dados.rankingAtual = {};
