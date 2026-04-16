@@ -61,7 +61,9 @@ class MotorEstrelasV2 {
    */
   obterHorarioHoje() {
     const hoje = this.obterHorarioAtualComFuso().toISOString().split('T')[0];
-    return this.horariosDia[hoje]?.horario || null;
+    // Suporta 'horario' e 'hora' para compatibilidade com versoes antigas do JSON
+    const entrada = this.horariosDia ? this.horariosDia[hoje] : null;
+    return (entrada?.horario || entrada?.hora) || null;
   }
 
   /**
@@ -470,6 +472,31 @@ class MotorEstrelasV2 {
 
     document.body.appendChild(estrela);
     console.log('🌟 Estrela liberada na tela!');
+
+    // ⏱️ Estrela some automaticamente após 2 minutos se não for clicada
+    const _timerSumir = setTimeout(() => {
+      const elAtual = document.getElementById('estrela-dourada-caçada');
+      if (elAtual && !jaClicou) {
+        elAtual.style.transition = 'all 0.8s ease-in';
+        elAtual.style.opacity = '0';
+        elAtual.style.transform = 'scale(0) rotate(180deg)';
+        setTimeout(() => {
+          if (elAtual.parentNode) elAtual.remove();
+          console.log('⏱️ Estrela sumiu — 2 minutos sem clique');
+          window.dispatchEvent(new CustomEvent('estrelaExpirou', { detail: { motivo: 'timeout_2min' } }));
+        }, 800);
+      }
+    }, 2 * 60 * 1000); // 2 minutos
+
+    // Guardar referência do timer para cancelar ao clicar
+    estrela._timerSumir = _timerSumir;
+
+    // Sobrescrever onclick para cancelar o timer ao clicar
+    const _onclickOriginal = estrela.onclick;
+    estrela.onclick = function(e) {
+      clearTimeout(estrela._timerSumir);
+      if (_onclickOriginal) _onclickOriginal.call(estrela, e);
+    };
   }
 
   /**
