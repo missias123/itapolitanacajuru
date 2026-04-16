@@ -2301,7 +2301,7 @@ function fecharFaqModal() {
 }
 </script>
 <!-- FIM FAQ PREMIUM -->
-<div id="fale-overlay" style="display:none" aria-hidden="true" inert>
+<div id="fale-overlay" style="display:none" aria-hidden="true" inert hidden>
 <div class="fale-box">
 <div class="fale-hdr">
 <div class="fale-hdr-txt">
@@ -2325,7 +2325,7 @@ function fecharFaqModal() {
   <span id="clube-fab-texto">🍦 Clube Itapolitana</span>
 </a>
 <button aria-label="Abrir chat de atendimento ao cliente" class="chat-fab" id="chat-fab-btn" onclick="abrirChat()" type="button"><span id="chat-fab-texto">💬 Fale Conosco</span></button>
-<div class="chat-overlay" id="chat-overlay" style="display:none" aria-hidden="true" inert>
+<div class="chat-overlay" id="chat-overlay" style="display:none" aria-hidden="true" inert hidden>
 <div class="chat-box">
 <div class="chat-hdr">
 <div><h3 id="chat-hdr-titulo">💬 Fale Conosco</h3><p id="chat-hdr-sub">Assistente Itapolitana · Responde na hora</p></div>
@@ -2478,6 +2478,7 @@ function fecharModal(id) {
     el.style.display = 'none';
     el.setAttribute('aria-hidden', 'true');
     el.setAttribute('inert', '');
+    el.setAttribute('hidden', '');
     el.style.animation = '';
 
     if (_modalAtivo === id) _modalAtivo = null;
@@ -2520,6 +2521,7 @@ function abrirModal(id, originEl) {
   // Exibe o modal
   const el = document.getElementById(id);
   if (!el) return;
+  el.removeAttribute('hidden');
   el.style.display = '';
   el.removeAttribute('aria-hidden');
   el.removeAttribute('inert');
