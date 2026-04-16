@@ -1326,6 +1326,18 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   animation: pulse-whatsapp 2s infinite;
 }
 
+
+    /* ── FALE CONOSCO PREMIUM CARDS ── */
+    .fale-card{background:#fff;border:1.5px solid #f0e6ff;border-radius:16px;padding:16px 12px;text-align:center;transition:all .2s ease;cursor:pointer;position:relative;overflow:hidden;}
+    .fale-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(123,45,139,.15);border-color:#9C27B0;}
+    .fale-card-destaque{border-color:#FFD700;background:linear-gradient(135deg,#FFFDE7,#FFF9C4);}
+    .fale-card-destaque:hover{border-color:#FFC107;box-shadow:0 8px 24px rgba(255,193,7,.25);}
+    .fale-card-badge{position:absolute;top:8px;right:8px;background:#FFD700;color:#7B5800;font-size:9px;font-weight:900;padding:2px 7px;border-radius:20px;letter-spacing:.5px;}
+    .fale-card-emoji{font-size:2rem;margin-bottom:8px;line-height:1;}
+    .fale-card-titulo{font-size:13px;font-weight:900;color:#1A1A1A;margin-bottom:4px;line-height:1.3;}
+    .fale-card-sub{font-size:11px;color:#888;line-height:1.4;margin-bottom:8px;}
+    .fale-card-link{font-size:11px;font-weight:800;color:#7B2D8B;}
+    .fale-card-destaque .fale-card-link{color:#E65100;}
 </style>
 <script type="application/ld+json">
 {
@@ -2149,191 +2161,153 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 <button class="promo-btn" id="promo-btn" onclick="abrirLinkPromo()" type="button">🎉 Ver Promoção Completa</button>
 </div>
 </div>
-<!-- FAQ PREMIUM - EXPERIÊNCIA DE LUXO -->
-<section id="faq-premium" style="background:#F9FAFB;padding:40px 16px;margin:30px 0;border-radius:24px;box-shadow:inset 0 2px 10px rgba(0,0,0,0.03);">
-  <div style="max-width:800px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:30px;">
-      <span style="background:#EDE7F6;color:#6A1B9A;padding:6px 16px;border-radius:50px;font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;">Central de Ajuda</span>
-      <h3 style="font-size:1.8rem;font-weight:900;color:#1A1A1A;margin:12px 0 8px;letter-spacing:-0.5px;">Dúvidas Frequentes</h3>
-      <p style="color:#666;font-size:14px;">Toque em um card para ver a resposta completa</p>
-    </div>
 
-    <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:16px;">
-      <!-- CARD 1: FIDELIDADE -->
-      <div onclick="abrirFaqModal('fidelidade')" style="background:#fff;padding:24px 20px;border-radius:20px;border:1px solid #E5E7EB;box-shadow:0 4px 15px rgba(0,0,0,0.05);cursor:pointer;transition:transform 0.2s;">
-        <div style="font-size:32px;margin-bottom:12px;">🎟️</div>
-        <div style="font-weight:900;color:#1A1A1A;font-size:15px;line-height:1.3;">Clube de Fidelidade</div>
-        <div style="color:#9C27B0;font-size:12px;font-weight:700;margin-top:6px;">Ver regras →</div>
-      </div>
-
-      <!-- CARD 2: PROMOÇÃO -->
-      <div onclick="abrirFaqModal('promocao')" style="background:#fff;padding:24px 20px;border-radius:20px;border:1px solid #E5E7EB;box-shadow:0 4px 15px rgba(0,0,0,0.05);cursor:pointer;transition:transform 0.2s;">
-        <div style="font-size:32px;margin-bottom:12px;">🎁</div>
-        <div style="font-weight:900;color:#1A1A1A;font-size:15px;line-height:1.3;">Sorteio Mensal</div>
-        <div style="color:#9C27B0;font-size:12px;font-weight:700;margin-top:6px;">Como participar →</div>
-      </div>
-
-      <!-- CARD 3: VALIDADE (DESTAQUE OURO) -->
-      <div onclick="abrirFaqModal('validade')" style="background:linear-gradient(135deg,#FFF9E6,#FFFBF0);padding:24px 20px;border-radius:20px;border:2px solid #FFD700;box-shadow:0 8px 20px rgba(255,215,0,0.15);cursor:pointer;transition:transform 0.2s;grid-column: span 2;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-          <div>
-            <div style="font-size:32px;margin-bottom:12px;">⭐</div>
-            <div style="font-weight:900;color:#F57F17;font-size:16px;line-height:1.3;">Meus pontos ou cupons expiram?</div>
-            <div style="color:#B8860B;font-size:12px;font-weight:800;margin-top:6px;">RESPOSTA IMPORTANTE ✨</div>
-          </div>
-          <div style="background:#FFD700;color:#fff;padding:4px 10px;border-radius:10px;font-size:10px;font-weight:900;">DESTAQUE</div>
-        </div>
-      </div>
-
-      <!-- CARD 4: ENCOMENDAS -->
-      <div onclick="abrirFaqModal('encomendas')" style="background:#fff;padding:24px 20px;border-radius:20px;border:1px solid #E5E7EB;box-shadow:0 4px 15px rgba(0,0,0,0.05);cursor:pointer;transition:transform 0.2s;grid-column: span 2;">
-        <div style="display:flex;align-items:center;gap:15px;">
-          <div style="font-size:32px;">📦</div>
-          <div style="flex:1;">
-            <div style="font-weight:900;color:#1A1A1A;font-size:15px;line-height:1.3;">Encomendas de Picolés</div>
-            <div style="color:#666;font-size:12px;margin-top:2px;">Mínimo 100 unidades no atacado</div>
-          </div>
-          <div style="color:#9C27B0;font-size:18px;">➔</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MODAL FAQ FULL-SCREEN -->
-<div id="faq-modal-overlay" style="display:none;position:fixed;inset:0;background:#fff;z-index:99999;overflow-y:auto;padding:0;animation:faqSlideUp 0.3s ease-out;">
-  <div style="position:sticky;top:0;background:#fff;padding:20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #EEE;z-index:10;">
-    <button onclick="fecharFaqModal()" style="background:#F3F4F6;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
-    <div style="font-weight:900;font-size:16px;color:#1A1A1A;">Dúvida Respondida</div>
-    <div style="width:40px;"></div>
-  </div>
-  
-  <div id="faq-modal-content" style="padding:30px 24px;max-width:600px;margin:0 auto;">
-    <!-- Conteúdo dinâmico via JS -->
-  </div>
-  
-  <div style="padding:20px 24px 40px;max-width:600px;margin:0 auto;">
-    <button onclick="fecharFaqModal()" style="width:100%;background:#1A1A1A;color:#fff;border:none;padding:16px;border-radius:16px;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,0.1);">Entendi, obrigado!</button>
-    <a href="https://wa.me/5516996062046" style="display:block;text-align:center;margin-top:20px;color:#666;font-size:14px;text-decoration:none;font-weight:700;">Ainda tenho dúvidas? <span style="color:#25D366;">Chamar no WhatsApp</span></a>
-  </div>
-</div>
-
-<style>
-@keyframes faqSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-#faq-premium div:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
-</style>
-
-<script>
-function abrirFaqModal(tipo) {
-  const content = document.getElementById('faq-modal-content');
-  const overlay = document.getElementById('faq-modal-overlay');
-  document.body.style.overflow = 'hidden';
-  
-  let html = '';
-  if (tipo === 'fidelidade') {
-    html = `
-      <div style="font-size:60px;margin-bottom:20px;text-align:center;">🎟️</div>
-      <h2 style="font-size:24px;font-weight:900;color:#1A1A1A;margin-bottom:20px;text-align:center;">Como ganho pontos no Clube de Fidelidade?</h2>
-      <div style="background:#F3E5F5;padding:20px;border-radius:20px;border-left:5px solid #9C27B0;margin-bottom:20px;">
-        <p style="margin:0;color:#4A148C;font-size:16px;line-height:1.6;font-weight:700;">Compre acima de <strong>R$ 30,00 de segunda a sexta-feira</strong> e ganhe cupons com pontos!</p>
-      </div>
-      <p style="color:#444;font-size:16px;line-height:1.7;margin-bottom:15px;">Sábados, domingos e feriados não geram cupons de fidelidade.</p>
-      <div style="background:#FFF;border:1px solid #E5E7EB;padding:15px;border-radius:15px;display:flex;align-items:center;gap:12px;">
-        <span style="font-size:24px;">💡</span>
-        <p style="margin:0;color:#666;font-size:14px;"><strong>Dica de Ouro:</strong> Seus pontos <strong>nunca expiram</strong> e podem ser resgatados a qualquer momento!</p>
-      </div>
-      <a href="fidelidade.html" style="display:block;margin-top:25px;text-align:center;background:#9C27B0;color:#fff;padding:15px;border-radius:12px;text-decoration:none;font-weight:900;">📖 Ver Regulamento Completo</a>
-    `;
-  } else if (tipo === 'promocao') {
-    html = `
-      <div style="font-size:60px;margin-bottom:20px;text-align:center;">🎁</div>
-      <h2 style="font-size:24px;font-weight:900;color:#1A1A1A;margin-bottom:20px;text-align:center;">Como participo do sorteio mensal?</h2>
-      <p style="color:#444;font-size:16px;line-height:1.7;margin-bottom:20px;">É muito simples participar e concorrer a prêmios incríveis todos os meses!</p>
-      <div style="display:flex;flex-direction:column;gap:15px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="background:#9C27B0;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">1</div>
-          <p style="margin:0;font-size:15px;color:#1A1A1A;">Acesse a página de <strong>Promoção</strong> no menu.</p>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="background:#9C27B0;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">2</div>
-          <p style="margin:0;font-size:15px;color:#1A1A1A;">Preencha o formulário com seus dados básicos.</p>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="background:#9C27B0;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">3</div>
-          <p style="margin:0;font-size:15px;color:#1A1A1A;">Você receberá um <strong>número de sorteio exclusivo</strong>!</p>
-        </div>
-      </div>
-      <a href="promocao.html" style="display:block;margin-top:25px;text-align:center;background:#9C27B0;color:#fff;padding:15px;border-radius:12px;text-decoration:none;font-weight:900;">🎊 Quero Participar Agora</a>
-    `;
-  } else if (tipo === 'validade') {
-    html = `
-      <div style="font-size:60px;margin-bottom:20px;text-align:center;">⭐</div>
-      <h2 style="font-size:24px;font-weight:900;color:#F57F17;margin-bottom:20px;text-align:center;">Meus pontos ou cupons expiram?</h2>
-      <div style="background:linear-gradient(135deg,#FFF9E6,#FFFBF0);padding:30px 20px;border-radius:24px;border:2px solid #FFD700;text-align:center;box-shadow:0 10px 30px rgba(255,215,0,0.2);">
-        <span style="font-size:18px;font-weight:900;color:#B8860B;display:block;margin-bottom:10px;">A RESPOSTA É:</span>
-        <div style="font-size:40px;font-weight:900;color:#F57F17;letter-spacing:-1px;">NÃO EXPIRAM!</div>
-      </div>
-      <p style="color:#444;font-size:17px;line-height:1.7;margin-top:25px;text-align:center;">Na Itapolitana, valorizamos sua fidelidade. Seus pontos e cupons <strong>não têm prazo de validade</strong>. Você pode acumular e usar quando quiser, sem nenhuma pressa!</p>
-      <div style="margin-top:20px;padding:15px;background:#F9FAFB;border-radius:15px;text-align:center;font-size:14px;color:#666;">
-        ✅ Regra válida para todos os clientes cadastrados.
-      </div>
-    `;
-  } else if (tipo === 'encomendas') {
-    html = `
-      <div style="font-size:60px;margin-bottom:20px;text-align:center;">📦</div>
-      <h2 style="font-size:24px;font-weight:900;color:#1A1A1A;margin-bottom:20px;text-align:center;">Como faço uma encomenda?</h2>
-      <p style="color:#444;font-size:16px;line-height:1.7;margin-bottom:20px;">Preparamos tudo com carinho para sua festa ou evento!</p>
-      <div style="background:#F9FAFB;padding:20px;border-radius:20px;margin-bottom:20px;">
-        <div style="font-weight:900;color:#1A1A1A;margin-bottom:8px;">🍦 Picolés no Atacado:</div>
-        <p style="margin:0;font-size:14px;color:#666;">Mínimo de <strong>100 unidades</strong> para garantir o preço de fábrica.</p>
-      </div>
-      <div style="background:#F9FAFB;padding:20px;border-radius:20px;margin-bottom:20px;">
-        <div style="font-weight:900;color:#1A1A1A;margin-bottom:8px;">⏱️ Prazo de Entrega:</div>
-        <p style="margin:0;font-size:14px;color:#666;">Até <strong>3 dias úteis</strong> após a confirmação do pagamento.</p>
-      </div>
-      <p style="font-size:14px;color:#666;text-align:center;">Você monta seu carrinho no site e finaliza pelo WhatsApp.</p>
-      <a href="encomendas.html" style="display:block;margin-top:25px;text-align:center;background:#1A1A1A;color:#fff;padding:15px;border-radius:12px;text-decoration:none;font-weight:900;">🛒 Ir para Encomendas</a>
-    `;
-  }
-  
-  content.innerHTML = html;
-  overlay.style.display = 'block';
-}
-
-function fecharFaqModal() {
-  document.getElementById('faq-modal-overlay').style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-<!-- FIM FAQ PREMIUM -->
-<!-- modais: dialog nativo, invisível por padrão -->
+<!-- FALE CONOSCO PREMIUM - dialog nativo, invisível por padrão -->
 <dialog id="fale-dialog" aria-labelledby="fale-modal-titulo">
 <div class="fale-box">
-<div class="fale-hdr">
-<div class="fale-hdr-txt">
-<h3 id="fale-modal-titulo">📩 Fale Conosco</h3>
-<p id="fale-modal-sub">Envie sua mensagem via WhatsApp</p>
-</div>
-<button class="fale-close" onclick="fecharFaleDialog()" type="button" aria-label="Fechar fale conosco">✕</button>
-</div>
-<div class="fale-body">
-<div class="fale-atalhos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-<button type="button" class="fale-atalho" onclick="usarAtalho('Qual o horário de funcionamento?')">🕐 Horário</button>
-<button type="button" class="fale-atalho" onclick="usarAtalho('Quero fazer uma encomenda de sorvete para evento.')">📦 Encomendar</button>
-<button type="button" class="fale-atalho" onclick="usarAtalho('Quais sabores de sorvete vocês têm disponíveis?')">🍦 Sabores</button>
-<button type="button" class="fale-atalho" onclick="usarAtalho('Quero saber sobre o Clube de Fidelidade.')">⭐ Fidelidade</button>
-<button type="button" class="fale-atalho" onclick="usarAtalho('Qual o valor do picolé no atacado?')">💰 Preços</button>
-<button type="button" class="fale-atalho" onclick="usarAtalho('Como chego na sorveteria?')">📍 Localização</button>
-</div>
-<label class="fale-label" id="fale-label-nome">Seu nome (opcional)</label>
-<input class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" type="text" autocomplete="name"/>
-<label class="fale-label" id="fale-label-msg">Sua mensagem</label>
-<textarea class="fale-textarea" id="fale-msg" placeholder="Escreva sua dúvida, sugestão ou pedido especial..."></textarea>
-<button class="fale-enviar" onclick="enviarFaleConosco()" type="button">
-        <span id="fale-btn-texto">💬 Enviar via WhatsApp</span>
-      </button>
-</div>
-</div>
+
+  <!-- Cabeçalho com gradiente -->
+  <div class="fale-hdr">
+    <div class="fale-hdr-txt">
+      <h3 id="fale-modal-titulo">💬 Fale Conosco</h3>
+      <p id="fale-modal-sub">Assistente Itapolitana · Responde na hora</p>
+    </div>
+    <button class="fale-close" onclick="fecharFaleDialog()" type="button" aria-label="Fechar fale conosco">✕</button>
+  </div>
+
+  <!-- Corpo scrollável -->
+  <div class="fale-corpo" style="overflow-y:auto;max-height:70vh;padding:0 20px 24px;">
+
+    <!-- Subtítulo -->
+    <p style="font-size:13px;color:#888;text-align:center;margin:16px 0 20px;line-height:1.5;">
+      Toque em uma dúvida para ir direto à resposta<br>ou escreva sua mensagem abaixo 👇
+    </p>
+
+    <!-- GRADE DE PERGUNTAS COM LINKS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+
+      <!-- 1. Fidelidade -->
+      <a href="fidelidade.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">🎟️</div>
+          <div class="fale-card-titulo">Clube de Fidelidade</div>
+          <div class="fale-card-sub">Como ganhar pontos e prêmios</div>
+          <div class="fale-card-link">Ver página →</div>
+        </div>
+      </a>
+
+      <!-- 2. Promoção -->
+      <a href="promocao.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">🎉</div>
+          <div class="fale-card-titulo">Promoções</div>
+          <div class="fale-card-sub">Ofertas e descontos especiais</div>
+          <div class="fale-card-link">Ver promoções →</div>
+        </div>
+      </a>
+
+      <!-- 3. Caça a Estrela -->
+      <a href="fidelidade.html#caca-estrela" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card fale-card-destaque">
+          <div class="fale-card-badge">⭐ DESTAQUE</div>
+          <div class="fale-card-emoji">🌟</div>
+          <div class="fale-card-titulo">Caça a Estrela</div>
+          <div class="fale-card-sub">Como participar e ganhar</div>
+          <div class="fale-card-link">Saiba mais →</div>
+        </div>
+      </a>
+
+      <!-- 4. Horário -->
+      <a href="index.html#horario" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">🕐</div>
+          <div class="fale-card-titulo">Horário</div>
+          <div class="fale-card-sub">Quando estamos abertos</div>
+          <div class="fale-card-link">Ver horário →</div>
+        </div>
+      </a>
+
+      <!-- 5. Cardápio e Sabores -->
+      <a href="index.html#cardápio" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">🍦</div>
+          <div class="fale-card-titulo">Sabores e Cardápio</div>
+          <div class="fale-card-sub">35+ sabores tipo artesanal</div>
+          <div class="fale-card-link">Ver cardápio →</div>
+        </div>
+      </a>
+
+      <!-- 6. Encomendas -->
+      <a href="encomendas.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">📦</div>
+          <div class="fale-card-titulo">Encomendas</div>
+          <div class="fale-card-sub">Caixas, tortas e eventos</div>
+          <div class="fale-card-link">Encomendar →</div>
+        </div>
+      </a>
+
+      <!-- 7. Picolés -->
+      <a href="encomendas.html#picolés" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">🍭</div>
+          <div class="fale-card-titulo">Picolés</div>
+          <div class="fale-card-sub">Atacado mín. 100 unidades</div>
+          <div class="fale-card-link">Ver picolés →</div>
+        </div>
+      </a>
+
+      <!-- 8. Localização -->
+      <a href="https://maps.google.com/?q=Sorveteria+Itapolitana+Cajuru+SP" target="_blank" rel="noopener" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">📍</div>
+          <div class="fale-card-titulo">Como Chegar</div>
+          <div class="fale-card-sub">Ver no Google Maps</div>
+          <div class="fale-card-link">Abrir mapa →</div>
+        </div>
+      </a>
+
+      <!-- 9. Dicas e Depoimentos -->
+      <a href="dicas.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">⭐</div>
+          <div class="fale-card-titulo">Dicas e Avaliações</div>
+          <div class="fale-card-sub">O que nossos clientes dizem</div>
+          <div class="fale-card-link">Ver depoimentos →</div>
+        </div>
+      </a>
+
+      <!-- 10. Preços -->
+      <a href="index.html#cardápio" onclick="fecharFaleDialog()" style="text-decoration:none;">
+        <div class="fale-card">
+          <div class="fale-card-emoji">💰</div>
+          <div class="fale-card-titulo">Preços</div>
+          <div class="fale-card-sub">Tabela completa de valores</div>
+          <div class="fale-card-link">Ver preços →</div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Divisor -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <div style="flex:1;height:1px;background:#eee;"></div>
+      <span style="font-size:12px;color:#aaa;white-space:nowrap;">ou envie uma mensagem</span>
+      <div style="flex:1;height:1px;background:#eee;"></div>
+    </div>
+
+    <!-- Campo de mensagem livre -->
+    <label class="fale-label" id="fale-label-nome">Seu nome (opcional)</label>
+    <input class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" type="text" autocomplete="name"/>
+    <label class="fale-label" id="fale-label-msg">Sua mensagem</label>
+    <textarea class="fale-textarea" id="fale-msg" placeholder="Escreva sua dúvida, sugestão ou pedido especial..."></textarea>
+    <button class="fale-enviar" onclick="enviarFaleConosco()" type="button">
+      <span id="fale-btn-texto">💬 Enviar via WhatsApp</span>
+    </button>
+
+  </div><!-- fim fale-corpo -->
+</div><!-- fim fale-box -->
+</dialog>
 </dialog>
 <a href="fidelidade.html" id="clube-fab" aria-label="Clube de Fidelidade Itapolitana">
   <span id="clube-fab-texto">🍦 Clube Itapolitana</span>
