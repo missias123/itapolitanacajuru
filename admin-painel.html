@@ -2302,11 +2302,25 @@ async function ghPut(path,data,sha,msg){
   }catch(e){return{ok:false,erro:e.message};}
 }
 async function salvarArquivo(path,data,shaKey,msg){
-  mostrarLoading('Salvando...');
+  mostrarLoading('Salvando no GitHub...');
+  console.log('[Admin] Salvando:', path, 'SHA:', STATE[shaKey]);
   const r=await ghPut(path,data,STATE[shaKey],msg);
   ocultarLoading();
-  if(r.ok){STATE[shaKey]=r.sha;toast('Salvo com sucesso!','sucesso');return true;}
-  else{toast('Erro ao salvar: '+r.erro,'erro');return false;}
+  if(r.ok){
+    STATE[shaKey]=r.sha;
+    toast('✅ Salvo com sucesso no GitHub!', 'sucesso');
+    console.log('[Admin] Salvo com sucesso. Novo SHA:', r.sha);
+    return true;
+  } else {
+    console.error('[Admin] Erro ao salvar:', r.erro);
+    // Se o erro for conflito de SHA (409), avisar o usuário para recarregar
+    if (r.erro.includes('409') || r.erro.toLowerCase().includes('conflict')) {
+      toast('⚠️ Conflito de versão! Outra pessoa alterou os dados. Recarregue a página (F5).', 'erro');
+    } else {
+      toast('❌ Erro ao salvar: ' + r.erro, 'erro');
+    }
+    return false;
+  }
 }
 function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
