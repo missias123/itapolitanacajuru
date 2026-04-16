@@ -190,7 +190,7 @@
   // ═══════════════════════════════════════════════════════
   // 7. CHECKLIST DE QUALIDADE — verificações automáticas
   // ═══════════════════════════════════════════════════════
-  window.addEventListener('DOMContentLoaded', function() {
+  window.addEventListener('load', function() {
     const checklist = {};
 
     // Verificar viewport meta
