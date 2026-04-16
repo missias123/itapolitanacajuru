@@ -2966,52 +2966,49 @@ function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
 function excluirParticipante(cel, tipo) {
   const celLimpo = cel.replace(/\D/g,'');
   let nome = cel;
-  // Tentar encontrar o nome
-  if (tipo === 'sorteio' || tipo === 'ambos') {
-    const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
-    if (ins) nome = ins.nome;
-  } else {
-    const c = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
-    if (c) nome = c.nome;
-  }
+  
+  // Tentar encontrar o nome em qualquer lugar
+  const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
+  const cli = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
+  if (ins) nome = ins.nome;
+  else if (cli) nome = cli.nome;
+
   confirmarAcao(
     'Excluir Participante',
-    `Tem certeza que deseja excluir <strong>${nome}</strong> da lista?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
-    'Sim, excluir',
+    `Tem certeza que deseja excluir <strong>${nome}</strong> de TODOS os sistemas (Fidelidade e Sorteio)?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
+    'Sim, excluir de tudo',
     async () => {
       try {
-        let salvou = false;
-        mostrarLoading('Excluindo participante...');
+        let salvouAlgo = false;
+        mostrarLoading('Excluindo de todos os sistemas...');
         
-        // Remover do sorteioInscritos
+        // 1. Remover do Sorteio (fidelidade.json)
         if (STATE.fidelidade?.sorteioInscritos) {
           const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
           if (idx > -1) {
             STATE.fidelidade.sorteioInscritos.splice(idx, 1);
-            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
-            salvou = true;
+            await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' do sorteio');
+            salvouAlgo = true;
           }
         }
         
-        // Remover dos clientes
-        if (!salvou) {
-          if (STATE.clientes?.clientes?.[celLimpo]) {
-            delete STATE.clientes.clientes[celLimpo];
-            const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome);
-            salvou = true;
-          } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
-            delete STATE.fidelidade.clientes[celLimpo];
-            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
-            salvou = true;
-          }
+        // 2. Remover do Clube de Fidelidade (clientes.json ou fidelidade.json)
+        if (STATE.clientes?.clientes?.[celLimpo]) {
+          delete STATE.clientes.clientes[celLimpo];
+          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
+          salvouAlgo = true;
+        } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
+          delete STATE.fidelidade.clientes[celLimpo];
+          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
+          salvouAlgo = true;
         }
         
         ocultarLoading();
-        if (salvou) {
-          toast('🗑️ ' + nome + ' excluído(a) com sucesso!', 'ok');
+        if (salvouAlgo) {
+          toast('🗑️ ' + nome + ' removido(a) com sucesso!', 'ok');
           renderParticipantes();
         } else {
-          toast('⚠️ Nao foi possivel encontrar ' + nome + ' para excluir.', 'aviso');
+          toast('⚠️ Registro não encontrado ou já excluído.', 'aviso');
         }
       } catch (erro) {
         ocultarLoading();
