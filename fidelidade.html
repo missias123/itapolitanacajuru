@@ -375,12 +375,20 @@ body { overflow-x: hidden; }
 <link rel="stylesheet" href="mascote.css?v=7">
 </head>
 <body>
-<!-- BANNER GUIA ESTRELA DOURADA -->
-<div id="banner-estrela-guia">
-  <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
-  <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
-  <div class="guia-timer" id="guia-timer-txt">05:00</div>
-</div>
+  <!-- BANNER GUIA ESTRELA DOURADA -->
+  <div id="banner-estrela-guia">
+    <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
+    <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
+    <div class="guia-timer" id="guia-timer-txt">05:00</div>
+  </div>
+
+  <!-- BANNER AVISO CUPONS E TESTE -->
+  <div id="banner-aviso-fidelidade" style="background: linear-gradient(90deg, #d32f2f, #f44336); color: #fff; padding: 12px; text-align: center; font-size: 0.85rem; font-weight: 800; box-shadow: 0 2px 10px rgba(0,0,0,0.2); position: relative; z-index: 99;">
+    <div style="max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+      <span>📢 <span style="text-transform: uppercase;">Aviso Importante:</span> Os cupons do Clube Fidelidade começarão a ser emitidos a partir de <strong>01 de Maio</strong>.</span>
+      <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">⚠️ O Clube Fidelidade poderá ser extinto sem aviso prévio, pois encontra-se em fase de testes.</span>
+    </div>
+  </div>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -497,8 +505,9 @@ body { overflow-x: hidden; }
               5.2. Tentativas de fraude implicarao no <strong>cancelamento imediato e permanente</strong> do cadastro, sem direito a recurso.<br><br>
               <strong>6. DAS CRITICAS E CONDUTA</strong><br>
               Criticas infundadas, ofensas ou conduta inadequada poderao resultar no <strong>bloqueio definitivo</strong> do nome e numero de telefone no sistema.<br><br>
-              <strong>7. DAS ALTERACOES</strong><br>
-              A sorveteria reserva-se o direito de alterar, suspender ou encerrar o programa a qualquer momento, mediante aviso no site e nas redes sociais.<br><br>
+              <strong>7. DAS ALTERACOES E FASE DE TESTES</strong><br>
+              7.1. A sorveteria reserva-se o direito de alterar, suspender ou encerrar o programa a qualquer momento, mediante aviso no site e nas redes sociais.<br>
+              7.2. <span style="color:#c62828;font-weight:900">O Clube Fidelidade poderá ser extinto sem aviso prévio, pois encontra-se em fase de testes.</span><br><br>
               <strong>8. DO FORO</strong><br>
               Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer duvidas ou litigios.
             </div>
@@ -1597,10 +1606,16 @@ function registrarUsoValido() {
 
 const EXPIRACAO_DIAS_NOVOS = 30;
 const EXPIRACAO_DIAS_ANTIGOS = 60;
-const DATA_INICIO_PROMOCAO = new Date('2026-05-01T00:00:00-03:00').getTime();
+  const DATA_INICIO_PROMOCAO = new Date('2026-05-01T00:00:00-03:00').getTime();
 function codigoExpirado(dadosCodigo) {
   if (!dadosCodigo.geradoEm) return false;
   const gerado = new Date(dadosCodigo.geradoEm).getTime();
+  
+  // Bloqueio de cupons antes de 01/05/2026
+  if (Date.now() < DATA_INICIO_PROMOCAO) {
+    return "BLOQUEADO_DATA";
+  }
+
   const diasPassados = (Date.now() - gerado) / (1000 * 60 * 60 * 24);
   if (gerado < DATA_INICIO_PROMOCAO) return diasPassados > EXPIRACAO_DIAS_ANTIGOS;
   return diasPassados > EXPIRACAO_DIAS_NOVOS;
@@ -1752,7 +1767,12 @@ async function validarCodigo() {
     btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
   }
 
-  if (codigoExpirado(codigos[codigo])) {
+  const statusExpiracao = codigoExpirado(codigos[codigo]);
+  if (statusExpiracao === "BLOQUEADO_DATA") {
+    showMsg('msg-codigo', 'Os cupons só poderão ser validados a partir de 01 de Maio.', 'aviso');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+  if (statusExpiracao === true) {
     const geradoTs = new Date(codigos[codigo].geradoEm).getTime();
     const validadeDias = geradoTs < DATA_INICIO_PROMOCAO ? EXPIRACAO_DIAS_ANTIGOS : EXPIRACAO_DIAS_NOVOS;
     showMsg('msg-codigo',`Este codigo expirou (validade de ${validadeDias} dias). Solicite um novo na sorveteria.`,'aviso');
