@@ -460,8 +460,8 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* BOTÃO FALE CONOSCO HERO */
 @keyframes pulse-chat{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.7),0 4px 20px rgba(37,211,102,.4)}60%{box-shadow:0 0 0 14px rgba(37,211,102,0),0 4px 20px rgba(37,211,102,.4)}}
 .hero-chat-btn{contain: layout;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:13px 30px;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:.4px;animation:pulse-chat 2s infinite;margin-bottom:14px;box-shadow:0 4px 20px rgba(37,211,102,.5);text-shadow:0 1px 4px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4)}
-.chat-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:700;align-items:flex-end;justify-content:center}
-.chat-overlay.show{display:flex}
+/* chat-overlay: substituído por dialog#chat-dialog */
+
 .chat-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;height:72vh;display:flex;flex-direction:column}
 .chat-hdr{background:linear-gradient(135deg,#FF6B35,#E8000D,#7B2D8B);color:#fff;padding:16px 20px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between}
 .chat-hdr h3{font-size:16px;font-weight:800}
@@ -2306,7 +2306,7 @@ function fecharFaqModal() {
 }
 </script>
 <!-- FIM FAQ PREMIUM -->
-<template id="modais-template">
+<!-- modais: dialog nativo, invisível por padrão -->
 <dialog id="fale-dialog" aria-labelledby="fale-modal-titulo">
 <div class="fale-box">
 <div class="fale-hdr">
@@ -2339,11 +2339,11 @@ function fecharFaqModal() {
   <span id="clube-fab-texto">🍦 Clube Itapolitana</span>
 </a>
 <button aria-label="Abrir chat de atendimento ao cliente" class="chat-fab" id="chat-fab-btn" onclick="abrirChat()" type="button"><span id="chat-fab-texto">💬 Fale Conosco</span></button>
-<div class="chat-overlay" id="chat-overlay" style="display:none" aria-hidden="true" inert>
+<dialog id="chat-dialog" aria-labelledby="chat-hdr-titulo">
 <div class="chat-box">
 <div class="chat-hdr">
 <div><h3 id="chat-hdr-titulo">💬 Fale Conosco</h3><p id="chat-hdr-sub">Assistente Itapolitana · Responde na hora</p></div>
-<button class="chat-close" onclick="fecharModal('chat-overlay')" type="button" aria-label="Fechar chat">✕</button>
+<button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
 </div>
 <div class="chat-msgs" id="chat-msgs">
 <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?</div>
@@ -2363,32 +2363,24 @@ function fecharFaqModal() {
       <button class="chat-send" onclick="enviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
     </div>
 </div>
-</div>
-</template>
+</dialog>
 <script>
-// Inicializa modais: move do template para o body (invisível para extratores de texto)
-(function() {
-  var t = document.getElementById('modais-template');
-  if (t) {
-    var frag = t.content;
-    document.body.appendChild(frag.cloneNode(true));
-    t.remove();
+// Fechar dialogs ao clicar no backdrop (fora da caixa)
+document.addEventListener('click', function(e) {
+  var fd = document.getElementById('fale-dialog');
+  if (fd && fd.open && e.target === fd) { fecharFaleDialog(); }
+  var cd = document.getElementById('chat-dialog');
+  if (cd && cd.open && e.target === cd) { fecharChatDialog(); }
+});
+// ESC fecha os dialogs e libera a página
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var fd = document.getElementById('fale-dialog');
+    if (fd && fd.open) { fecharFaleDialog(); e.preventDefault(); return; }
+    var cd = document.getElementById('chat-dialog');
+    if (cd && cd.open) { fecharChatDialog(); e.preventDefault(); }
   }
-  // Fechar dialog ao clicar no backdrop (fora da caixa)
-  document.addEventListener('click', function(e) {
-    var d = document.getElementById('fale-dialog');
-    if (d && d.open && e.target === d) {
-      fecharFaleDialog();
-    }
-  });
-  // ESC fecha o dialog e libera a página
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      var d = document.getElementById('fale-dialog');
-      if (d && d.open) { fecharFaleDialog(); e.preventDefault(); }
-    }
-  });
-})();
+});
 </script>
 <script src="scripts/site-loader.js?v=20260416_FINAL_V2" defer></script>
 <script src="scripts/products.js?v=20260416_FINAL_V2" defer></script>
@@ -2525,7 +2517,7 @@ function fecharModal(id) {
 
     // Libera a página apenas se nenhum outro modal estiver aberto
     const aindaAberto = document.querySelector(
-      '.modal-overlay.show, .chat-overlay.show, .promo-overlay.show'
+      '.modal-overlay.show, .promo-overlay.show'
     );
     if (!aindaAberto) _liberarPagina();
 
@@ -3118,7 +3110,10 @@ const RESPOSTAS={
   'default':'Não encontrei a resposta para isso aqui. 😊 Para atendimento personalizado, fale diretamente conosco pelo WhatsApp: (16) 99606-2046 — respondemos rapidinho! 📱'
 };
 // ── Chat e Fale Conosco ─────────────────────────────────────────────
-function abrirChat() { abrirModal('chat-overlay'); }
+function abrirChat() {
+  var d = document.getElementById('chat-dialog');
+  if (d) { d.showModal(); _travarPagina(); }
+}
 
 function abrirFaleConosco() {
   var d = document.getElementById('fale-dialog');
@@ -3138,6 +3133,10 @@ function enviarFaleConosco(){
 
 function fecharFaleDialog() {
   var d = document.getElementById('fale-dialog');
+  if (d) { d.close(); _liberarPagina(); }
+}
+function fecharChatDialog() {
+  var d = document.getElementById('chat-dialog');
   if (d) { d.close(); _liberarPagina(); }
 }
 function usarAtalho(texto) {
