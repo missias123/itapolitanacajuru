@@ -3639,9 +3639,135 @@ function apagarTodosCodigos(){
 function gerarPDFLote(){
   const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
   if(!lote||!lote.codigos||!lote.codigos.length){toast('Nenhum lote gerado ainda.','erro');return;}
-  const win=window.open('','_blank');
-  const rows=lote.codigos.map((c,i)=>`<tr><td>${lote.inicio+i}</td><td style="font-family:monospace;font-size:14px;font-weight:700;letter-spacing:2px;color:#E65100">${c}</td><td>Sorveteria Itapolitana Cajuru</td></tr>`).join('');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cupons Fidelidade — Lote ${lote.loteNum}</title><style>body{font-family:Arial,sans-serif;padding:20px}h1{color:#E65100;text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th{background:#E65100;color:#fff;padding:10px}td{padding:8px 12px;border:1px solid #ddd;text-align:center}tr:nth-child(even){background:#FFF3E0}@media print{button{display:none}}</style></head><body><h1>&#x1F3AB; Cupons de Fidelidade — Lote ${lote.loteNum}</h1><p style="text-align:center;color:#666">Códigos ${lote.inicio} a ${lote.fim} de ${FID_TOTAL_BANCO.toLocaleString('pt-BR')}</p><button onclick="window.print()" style="display:block;margin:10px auto;padding:10px 24px;background:#E65100;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer">🖨️ Imprimir / Salvar PDF</button><table><thead><tr><th>#</th><th>Código</th><th>Estabelecimento</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+
+  // === CONFIGURAÇÃO ETIQUETA PIMACO/AVERY 63,5 x 38,1 mm — 21 por folha A4 ===
+  // Folha A4: 210 x 297 mm
+  // Layout: 3 colunas x 7 linhas = 21 etiquetas
+  // Margens: topo 15,1mm, esq 4,8mm, gap col 2,5mm, gap linha 0mm
+
+  const etiquetas = lote.codigos.map((cod, i) => {
+    const num = lote.inicio + i;
+    return `
+      <div class="etiqueta">
+        <div class="eta-topo">
+          <span class="eta-marca">🍦 Itapolitana Cajuru</span>
+          <span class="eta-num">#${num}</span>
+        </div>
+        <div class="eta-codigo">${cod}</div>
+        <div class="eta-rodape">Programa de Fidelidade · itapolitanacajuru.com.br</div>
+      </div>`;
+  });
+
+  // Completar com etiquetas em branco para fechar as 5 folhas (105 posições)
+  while(etiquetas.length < 105) etiquetas.push('<div class="etiqueta etiqueta-vazia"></div>');
+
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>Etiquetas Fidelidade — Lote ${lote.loteNum}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+  }
+  .btn-imprimir {
+    display: block;
+    margin: 18px auto 12px;
+    padding: 12px 32px;
+    background: #E65100;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(230,81,0,.3);
+  }
+  .info-lote {
+    text-align: center;
+    color: #555;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  /* === FOLHA A4 === */
+  .folha {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 15.1mm 4.8mm 0;
+    display: grid;
+    grid-template-columns: repeat(3, 63.5mm);
+    grid-template-rows: repeat(7, 38.1mm);
+    column-gap: 2.5mm;
+    row-gap: 0mm;
+    page-break-after: always;
+    background: #fff;
+  }
+  /* === ETIQUETA === */
+  .etiqueta {
+    width: 63.5mm;
+    height: 38.1mm;
+    border: 1.5px dashed #aaa;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3mm 3mm 2mm;
+    overflow: hidden;
+    background: #fff;
+  }
+  .etiqueta-vazia {
+    border: 1.5px dashed #e0e0e0;
+  }
+  .eta-topo {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5mm;
+  }
+  .eta-marca {
+    font-size: 7pt;
+    color: #E65100;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .eta-num {
+    font-size: 7pt;
+    color: #999;
+    font-weight: 600;
+  }
+  /* === CÓDIGO EM NEGRITO BEM VISÍVEL === */
+  .eta-codigo {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16pt;
+    font-weight: 900;
+    color: #1a1a1a;
+    letter-spacing: 2px;
+    text-align: center;
+    line-height: 1;
+    margin: 1mm 0;
+  }
+  .eta-rodape {
+    font-size: 6pt;
+    color: #888;
+    text-align: center;
+    margin-top: 1.5mm;
+    white-space: nowrap;
+  }
+  @media print {
+    .btn-imprimir, .info-lote { display: none !important; }
+    body { background: #fff; }
+    .folha { margin: 0; }
+  }
+</style>
+</head><body>
+<button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir / Salvar PDF (5 folhas A4)</button>
+<p class="info-lote">Lote ${lote.loteNum} — Códigos ${lote.inicio} a ${lote.fim} — 5 folhas A4 · 21 etiquetas/folha · 63,5 × 38,1 mm</p>
+${[0,1,2,3,4].map(f => `<div class="folha">${etiquetas.slice(f*21,(f+1)*21).join('')}</div>`).join('')}
+</body></html>`);
   win.document.close();
 }
 async function salvarConfigFidelidade() {
