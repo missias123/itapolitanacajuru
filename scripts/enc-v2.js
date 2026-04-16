@@ -570,6 +570,21 @@ function abrirTipoPicolé(id) {
   abrirModalPicolé(id);
 }
 
+// Função para abrir o modal de picolés já sincronizado com o carrinho
+function abrirPicolésSincronizado() {
+  // Sincronizar selecoesPickleGlobal com o carrinho atual
+  selecoesPickleGlobal = {};
+  carrinho.forEach(item => {
+    if (item.tipo === 'picolé') {
+      selecoesPickleGlobal[item.id] = item.quantidade;
+    }
+  });
+  
+  // Resetar para a tela de tipos
+  mostrarTelasTiposPicolé();
+  abrirModal('modal-picolé');
+}
+
 function abrirModalPicolé(id, originEl) {
   const p = PRODUTOS.picolés.find(x => x.id === id);
   if (!p) return;
@@ -711,37 +726,41 @@ function atualizarTotalPickle() {
 
 function confirmarPickle() {
   const totalGlobal = totalPickleGlobal();
-  if (totalGlobal < MIN_PICOLES) { showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue comprando outros tipos!`, 'alerta'); return; }
-  if (totalGlobal > MAX_PICOLES) { showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); return; }
-  // Adicionar um item por SABOR no carrinho (não por tipo)
+  if (totalGlobal < MIN_PICOLES) { 
+    showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue escolhendo outros sabores!`, 'alerta'); 
+    return; 
+  }
+  if (totalGlobal > MAX_PICOLES) { 
+    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); 
+    return; 
+  }
+
+  // 1. Remover picolés antigos do carrinho para evitar duplicatas e garantir sincronia total
+  carrinho = carrinho.filter(c => c.tipo !== 'picolé');
+
+  // 2. Adicionar as novas seleções (Sincronização Inteligente)
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
     if (qtd <= 0) return;
     const [tipoId, ...saborParts] = chave.split('::');
     const sabor = saborParts.join('::');
     const p = PRODUTOS.picolés.find(x => x.id === tipoId);
     if (!p) return;
+    
     const itemId = tipoId + '::' + sabor;
-    // Se já existe esse sabor no carrinho, atualizar quantidade
-    const ex = carrinho.find(c => c.tipo === 'picolé' && c.id === itemId);
-    if (ex) { ex.quantidade = qtd; }
-    else {
-      carrinho.push({
-        id: itemId,
-        nome: sabor,
-        nomeTipo: p.nome,
-        preço: p.preçoAtacado,
-        sabores: [],
-        quantidade: qtd,
-        tipo: 'picolé'
-      });
-    }
+    carrinho.push({
+      id: itemId,
+      nome: sabor,
+      nomeTipo: p.nome,
+      preço: p.preçoAtacado,
+      sabores: [],
+      quantidade: qtd,
+      tipo: 'picolé'
+    });
   });
-  // Limpar seleções globais
-  selecoesPickleGlobal = {};
-  selecoesPickle = {};
+
   fecharModal('modal-picolé');
   atualizarBotãoCarrinho();
-  showToast(`✅ ${totalGlobal} picolé(s) adicionado(s) ao carrinho!`, 'sucesso');
+  showToast(`✅ ${totalGlobal} picolés sincronizados no carrinho!`, 'sucesso');
 }
 
 // ---- CARRINHO ----
@@ -769,6 +788,16 @@ function atualizarBotãoCarrinho() {
 
 function abrirCarrinho() {
   if (carrinho.length === 0) { showToast('Carrinho vazio! Adicione produtos.','alerta'); return; }
+  
+  // Sincronizar selecoesPickleGlobal com o que está no carrinho antes de abrir
+  // Isso garante que se o usuário removeu itens no resumo, o modal de picolés saiba disso
+  selecoesPickleGlobal = {};
+  carrinho.forEach(item => {
+    if (item.tipo === 'picolé') {
+      selecoesPickleGlobal[item.id] = item.quantidade;
+    }
+  });
+
   renderCarrinho();
   mostrarEtapa('revisao');
   abrirModal('modal-carrinho');
@@ -840,7 +869,10 @@ function renderCarrinho() {
     if (aviso) {
       aviso.style.display = 'block';
       aviso.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center';
-      aviso.textContent = `🔒 Mínimo 100 picolés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.`;
+      aviso.innerHTML = `
+        <div style="margin-bottom:8px">🔒 Mínimo 100 picolés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.</div>
+        <button onclick="fecharModal('modal-carrinho'); abrirPicolésSincronizado();" style="background:#DC2626;color:#fff;border:none;padding:8px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-size:12px;box-shadow:0 2px 8px rgba(220,38,38,0.3)">➕ Adicionar mais sabores</button>
+      `;
     }
     if (btnNext) {
       btnNext.disabled = true;
