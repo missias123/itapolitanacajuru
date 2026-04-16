@@ -322,8 +322,19 @@ class MotorEstrelasV2 {
 
     // Atualizar ranking
     if (!this.rankingAtual[usuarioId]) {
-      // Tentar herdar ID se já for cliente fidelidade
-      const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+      // PASSO 3: Verificar se já existe na Fidelidade para herdar o ID
+      let idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+      try {
+        const cRes = await fetch('dados/clientes.json?t=' + Date.now());
+        if (cRes.ok) {
+          const cData = await cRes.json();
+          const celLimpo = usuarioCelular.replace(/\D/g,'');
+          if (cData.clientes && cData.clientes[celLimpo]) {
+            idUnico = cData.clientes[celLimpo].id || idUnico;
+          }
+        }
+      } catch(e) { console.warn('Erro ao buscar ID na fidelidade:', e); }
+
       this.rankingAtual[usuarioId] = {
         id: idUnico,
         nome: usuarioNome,

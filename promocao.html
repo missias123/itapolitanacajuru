@@ -605,8 +605,19 @@ body { overflow-x: hidden; }
       }
       // 3. Adicionar novo inscrito
       var celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
-      // Gerar ID Único Permanente (USR-2026-XXXX)
+      
+      // PASSO 3: Verificar se já existe na Fidelidade para herdar o ID
       var idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+      try {
+        var cRes = await fetch('dados/clientes.json?t=' + Date.now());
+        if (cRes.ok) {
+          var cData = await cRes.json();
+          if (cData.clientes && cData.clientes[celLimpo]) {
+            idUnico = cData.clientes[celLimpo].id || idUnico;
+          }
+        }
+      } catch(e) { console.warn('Erro ao buscar ID na fidelidade:', e); }
+
       inscritos.push({
         id: idUnico,
         nome: nome,

@@ -1362,8 +1362,18 @@ async function cadastrar() {
 
   // ── NOVO CADASTRO (sem duplicidade) ────────────────────────
   setLoading('Criando sua conta...');
-  // Gerar ID Único Permanente (USR-2026-XXXX)
-  const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+  
+  // PASSO 3: Verificar se já existe no Sorteio para herdar o ID
+  let idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+  try {
+    const fRes = await ghGet(FIDELIDADE_PATH);
+    if (fRes.content) {
+      const fidData = JSON.parse(fRes.content);
+      const inscrito = (fidData.sorteioInscritos || []).find(s => s.cel.replace(/\D/g,'') === cel);
+      if (inscrito && inscrito.id) idUnico = inscrito.id;
+    }
+  } catch(e) { console.warn('Erro ao buscar ID no sorteio:', e); }
+
   const novoCliente = {
     id: idUnico,
     nome, dataNasc, cel,
@@ -1375,7 +1385,7 @@ async function cadastrar() {
     totalCodigos: 0
   };
   ghClientes.clientes[cel] = novoCliente;
-  const ok = await salvarClientes('Novo cliente: ' + nome + ' (' + cel + ')');
+  const ok = await salvarClientes('Novo cliente: ' + nome + ' (' + cel + ') [ID: ' + idUnico + ']');
   hideLoading();
   if (ok) {
     clienteAtual = novoCliente;
