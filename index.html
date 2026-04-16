@@ -443,13 +443,13 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .chat-fab{display:none;position:fixed;bottom:18px;left:8px;z-index:600;align-items:center;gap:6px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:50px;padding:9px 12px;font-size:11px;font-weight:900;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,.5);animation:pulse-chat 2.5s infinite;letter-spacing:.4px;max-width:calc(45vw - 12px);white-space:nowrap;overflow:hidden;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4)}
 /* TABLET (601px–900px) */
 @media(min-width:601px) and (max-width:900px){
-  .chat-fab{font-size:13px;padding:11px 16px;bottom:20px;left:12px;max-width:none}
+  
   #clube-fab{font-size:13px;padding:11px 16px;bottom:20px;right:12px}
   #promo-fab{bottom:85px;right:12px}
 }
 /* DESKTOP (901px+) */
 @media(min-width:901px){
-  .chat-fab{font-size:14px;padding:13px 20px;bottom:24px;left:24px;max-width:none}
+  
   #clube-fab{font-size:14px;padding:13px 20px;bottom:24px;right:24px;gap:9px}
   #promo-fab{bottom:90px;right:24px}
 }
@@ -1327,16 +1327,15 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 }
 
 
-    /* ── FALE CONOSCO PREMIUM CARDS ── */
-    .fale-card{background:#fff;border:1.5px solid #f0e6ff;border-radius:16px;padding:16px 12px;text-align:center;transition:all .2s ease;cursor:pointer;position:relative;overflow:hidden;}
-    .fale-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(123,45,139,.15);border-color:#9C27B0;}
-    .fale-card-destaque{border-color:#FFD700;background:linear-gradient(135deg,#FFFDE7,#FFF9C4);}
-    .fale-card-destaque:hover{border-color:#FFC107;box-shadow:0 8px 24px rgba(255,193,7,.25);}
-    .fale-card-badge{position:absolute;top:8px;right:8px;background:#FFD700;color:#7B5800;font-size:9px;font-weight:900;padding:2px 7px;border-radius:20px;letter-spacing:.5px;}
-    .fale-card-emoji{font-size:2rem;margin-bottom:8px;line-height:1;}
-    .fale-card-titulo{font-size:13px;font-weight:900;color:#1A1A1A;margin-bottom:4px;line-height:1.3;}
-    .fale-card-sub{font-size:11px;color:#888;line-height:1.4;margin-bottom:8px;}
-    .fale-card-link{font-size:11px;font-weight:800;color:#7B2D8B;display:block;margin-top:6px;text-decoration:underline;}
+    /* ── FALE CONOSCO NAVEGÁVEL ── */
+    .fale-tema-btn{display:flex;align-items:center;gap:12px;width:100%;background:#fff;border:1.5px solid #f0e6ff;border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .2s ease;text-align:left;}
+    .fale-tema-btn:hover{background:#F9F5FF;border-color:#9C27B0;transform:translateX(4px);}
+    .fale-tema-destaque{border-color:#FFD700!important;background:linear-gradient(135deg,#FFFDE7,#FFF9C4)!important;}
+    .fale-tema-destaque:hover{border-color:#FFC107!important;}
+    .fale-tema-emoji{font-size:1.6rem;flex-shrink:0;}
+    .fale-tema-nome{flex:1;font-size:14px;font-weight:800;color:#1A1A1A;}
+    .fale-tema-seta{font-size:20px;color:#9C27B0;font-weight:900;}
+
     .fale-card-destaque .fale-card-link{color:#E65100;}
 </style>
 <script type="application/ld+json">
@@ -2162,141 +2161,95 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 </div>
 </div>
 
-<!-- FALE CONOSCO PREMIUM - dialog nativo, invisível por padrão -->
+<!-- FALE CONOSCO PREMIUM - Navegação por etapas -->
 <dialog id="fale-dialog" aria-labelledby="fale-modal-titulo">
 <div class="fale-box">
 
-  <!-- Cabeçalho com gradiente -->
+  <!-- Cabeçalho -->
   <div class="fale-hdr">
     <div class="fale-hdr-txt">
       <h3 id="fale-modal-titulo">💬 Fale Conosco</h3>
       <p id="fale-modal-sub">Assistente Itapolitana · Responde na hora</p>
     </div>
-    <button class="fale-close" onclick="fecharFaleDialog()" type="button" aria-label="Fechar fale conosco">✕</button>
+    <button class="fale-close" onclick="fecharFaleDialog()" type="button" aria-label="Fechar">✕</button>
   </div>
 
-  <!-- Corpo scrollável -->
-  <div class="fale-corpo" style="overflow-y:auto;max-height:70vh;padding:0 20px 24px;">
+  <!-- TELA 1: Lista de temas -->
+  <div id="fale-tela-temas" style="overflow-y:auto;max-height:72vh;padding:12px 16px 24px;">
+    <p style="font-size:12px;color:#999;text-align:center;margin:0 0 14px;">Toque em um tema para ver a resposta 👇</p>
 
-    <!-- Subtítulo -->
-    <p style="font-size:13px;color:#888;text-align:center;margin:16px 0 20px;line-height:1.5;">
-      Toque em uma dúvida para ir direto à resposta<br>ou escreva sua mensagem abaixo 👇
-    </p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
 
-    <!-- GRADE DE PERGUNTAS COM LINKS -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('fidelidade')">
+        <span class="fale-tema-emoji">🎟️</span>
+        <span class="fale-tema-nome">Clube de Fidelidade</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 1. Fidelidade -->
-      <a href="fidelidade.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">🎟️</div>
-          <div class="fale-card-titulo">Clube de Fidelidade</div>
-          <div class="fale-card-sub">Como ganhar pontos e prêmios</div>
-          <div class="fale-card-link">Mais dúvidas sobre Fidelidade? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('promocao')">
+        <span class="fale-tema-emoji">🎉</span>
+        <span class="fale-tema-nome">Promoções</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 2. Promoção -->
-      <a href="promocao.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">🎉</div>
-          <div class="fale-card-titulo">Promoções</div>
-          <div class="fale-card-sub">Ofertas e descontos especiais</div>
-          <div class="fale-card-link">Mais dúvidas sobre Promoções? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn fale-tema-destaque" onclick="mostrarResposta('estrela')">
+        <span class="fale-tema-emoji">🌟</span>
+        <span class="fale-tema-nome">Caça a Estrela <span style="background:#FFD700;color:#7B5800;font-size:9px;font-weight:900;padding:2px 6px;border-radius:10px;margin-left:6px;">DESTAQUE</span></span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 3. Caça a Estrela -->
-      <a href="fidelidade.html#caca-estrela" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card fale-card-destaque">
-          <div class="fale-card-badge">⭐ DESTAQUE</div>
-          <div class="fale-card-emoji">🌟</div>
-          <div class="fale-card-titulo">Caça a Estrela</div>
-          <div class="fale-card-sub">Como participar e ganhar</div>
-          <div class="fale-card-link">Mais dúvidas sobre Caça a Estrela? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('horario')">
+        <span class="fale-tema-emoji">🕐</span>
+        <span class="fale-tema-nome">Horário de Funcionamento</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 4. Horário -->
-      <a href="index.html#horario" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">🕐</div>
-          <div class="fale-card-titulo">Horário</div>
-          <div class="fale-card-sub">Quando estamos abertos</div>
-          <div class="fale-card-link">Mais dúvidas sobre Horário? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('sabores')">
+        <span class="fale-tema-emoji">🍦</span>
+        <span class="fale-tema-nome">Sabores e Cardápio</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 5. Cardápio e Sabores -->
-      <a href="index.html#cardápio" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">🍦</div>
-          <div class="fale-card-titulo">Sabores e Cardápio</div>
-          <div class="fale-card-sub">35+ sabores tipo artesanal</div>
-          <div class="fale-card-link">Mais dúvidas sobre Sabores? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('encomendas')">
+        <span class="fale-tema-emoji">📦</span>
+        <span class="fale-tema-nome">Encomendas</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 6. Encomendas -->
-      <a href="encomendas.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">📦</div>
-          <div class="fale-card-titulo">Encomendas</div>
-          <div class="fale-card-sub">Caixas, tortas e eventos</div>
-          <div class="fale-card-link">Mais dúvidas sobre Encomendas? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('picoles')">
+        <span class="fale-tema-emoji">🍭</span>
+        <span class="fale-tema-nome">Picolés</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 7. Picolés -->
-      <a href="encomendas.html#picolés" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">🍭</div>
-          <div class="fale-card-titulo">Picolés</div>
-          <div class="fale-card-sub">Atacado mín. 100 unidades</div>
-          <div class="fale-card-link">Mais dúvidas sobre Picolés? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('localizacao')">
+        <span class="fale-tema-emoji">📍</span>
+        <span class="fale-tema-nome">Como Chegar</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 8. Localização -->
-      <a href="https://maps.google.com/?q=Sorveteria+Itapolitana+Cajuru+SP" target="_blank" rel="noopener" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">📍</div>
-          <div class="fale-card-titulo">Como Chegar</div>
-          <div class="fale-card-sub">Ver no Google Maps</div>
-          <div class="fale-card-link">Mais dúvidas sobre Localização? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('avaliacoes')">
+        <span class="fale-tema-emoji">⭐</span>
+        <span class="fale-tema-nome">Dicas e Avaliações</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
-      <!-- 9. Dicas e Depoimentos -->
-      <a href="dicas.html" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">⭐</div>
-          <div class="fale-card-titulo">Dicas e Avaliações</div>
-          <div class="fale-card-sub">O que nossos clientes dizem</div>
-          <div class="fale-card-link">Mais dúvidas sobre Avaliações? Acesse →</div>
-        </div>
-      </a>
-
-      <!-- 10. Preços -->
-      <a href="index.html#cardápio" onclick="fecharFaleDialog()" style="text-decoration:none;">
-        <div class="fale-card">
-          <div class="fale-card-emoji">💰</div>
-          <div class="fale-card-titulo">Preços</div>
-          <div class="fale-card-sub">Tabela completa de valores</div>
-          <div class="fale-card-link">Mais dúvidas sobre Preços? Acesse →</div>
-        </div>
-      </a>
+      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('precos')">
+        <span class="fale-tema-emoji">💰</span>
+        <span class="fale-tema-nome">Preços</span>
+        <span class="fale-tema-seta">›</span>
+      </button>
 
     </div>
 
     <!-- Divisor -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin:20px 0 14px;">
       <div style="flex:1;height:1px;background:#eee;"></div>
-      <span style="font-size:12px;color:#aaa;white-space:nowrap;">ou envie uma mensagem</span>
+      <span style="font-size:11px;color:#bbb;white-space:nowrap;">ou envie uma mensagem</span>
       <div style="flex:1;height:1px;background:#eee;"></div>
     </div>
 
-    <!-- Campo de mensagem livre -->
+    <!-- Campo livre -->
     <label class="fale-label" id="fale-label-nome">Seu nome (opcional)</label>
     <input class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" type="text" autocomplete="name"/>
     <label class="fale-label" id="fale-label-msg">Sua mensagem</label>
@@ -2304,10 +2257,191 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
     <button class="fale-enviar" onclick="enviarFaleConosco()" type="button">
       <span id="fale-btn-texto">💬 Enviar via WhatsApp</span>
     </button>
+  </div>
 
-  </div><!-- fim fale-corpo -->
-</div><!-- fim fale-box -->
+  <!-- TELA 2: Resposta do tema selecionado -->
+  <div id="fale-tela-resposta" style="display:none;overflow-y:auto;max-height:72vh;padding:12px 16px 24px;">
+
+    <!-- Botão voltar -->
+    <button type="button" onclick="voltarTemas()" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:#7B2D8B;font-size:13px;font-weight:800;cursor:pointer;padding:4px 0 14px;width:100%;">
+      ‹ Voltar para os temas
+    </button>
+
+    <!-- Conteúdo da resposta (preenchido por JS) -->
+    <div id="fale-resposta-conteudo"></div>
+
+  </div>
+
+</div>
 </dialog>
+
+<script>
+// Dados de cada tema
+var faleTemas = {
+  fidelidade: {
+    emoji: '🎟️',
+    titulo: 'Clube de Fidelidade',
+    palavras: [
+      '✅ A cada compra você acumula pontos automaticamente.',
+      '✅ Os pontos não expiram enquanto você fizer compras mensalmente.',
+      '✅ Troque pontos por sorvetes, picolés e prêmios exclusivos.',
+      '✅ Cadastro gratuito — basta pedir na loja.',
+      '✅ Acompanhe seu saldo pelo site na página Fidelidade.'
+    ],
+    link: 'fidelidade.html',
+    linkTexto: 'Mais dúvidas sobre Fidelidade? Acesse →'
+  },
+  promocao: {
+    emoji: '🎉',
+    titulo: 'Promoções',
+    palavras: [
+      '✅ Temos promoções semanais e mensais.',
+      '✅ Para participar: comente "PROMO ITAPOLITANA" em qualquer post do Instagram.',
+      '✅ Realize o cadastro na página de Promoção.',
+      '✅ Fique de olho nas redes sociais para não perder nenhuma oferta.',
+      '✅ Promoções válidas enquanto durarem os estoques.'
+    ],
+    link: 'promocao.html',
+    linkTexto: 'Mais dúvidas sobre Promoções? Acesse →'
+  },
+  estrela: {
+    emoji: '🌟',
+    titulo: 'Caça a Estrela',
+    palavras: [
+      '✅ O tamanduá pode soltar uma estrela a qualquer momento no site.',
+      '✅ Fique de olho na tela — quando aparecer, clique rápido!',
+      '✅ Quem capturar a estrela ganha um prêmio surpresa.',
+      '✅ O horário da estrela é segredo — pode aparecer a qualquer hora.',
+      '✅ Participe do Clube de Fidelidade para ter mais chances.'
+    ],
+    link: 'fidelidade.html#caca-estrela',
+    linkTexto: 'Mais dúvidas sobre Caça a Estrela? Acesse →'
+  },
+  horario: {
+    emoji: '🕐',
+    titulo: 'Horário de Funcionamento',
+    palavras: [
+      '✅ Segunda a Sexta: 14h às 22h.',
+      '✅ Sábados e Domingos: 13h às 22h.',
+      '✅ Feriados: consulte nossas redes sociais.',
+      '✅ Atendimento via WhatsApp durante o horário de funcionamento.',
+      '✅ Endereço: Cajuru/SP — veja o mapa no site.'
+    ],
+    link: 'index.html#horario',
+    linkTexto: 'Mais dúvidas sobre Horário? Acesse →'
+  },
+  sabores: {
+    emoji: '🍦',
+    titulo: 'Sabores e Cardápio',
+    palavras: [
+      '✅ Mais de 35 sabores de sorvete tipo artesanal.',
+      '✅ Servidos em bolas, casquinhas, cascões, cestinhas e copos.',
+      '✅ Também temos açaí, picolés, milkshakes e taças especiais.',
+      '✅ Alguns sabores variam conforme a produção do dia.',
+      '✅ Consulte o cardápio completo no site.'
+    ],
+    link: 'index.html#cardápio',
+    linkTexto: 'Mais dúvidas sobre Sabores? Acesse →'
+  },
+  encomendas: {
+    emoji: '📦',
+    titulo: 'Encomendas',
+    palavras: [
+      '✅ Fazemos encomendas de caixas de 5L e 10L.',
+      '✅ Tortas de sorvete com até 3 sabores — a partir de R$ 100.',
+      '✅ Carrinhos cortesia para eventos (reserva antecipada).',
+      '✅ Pedido mínimo: consulte na página de Encomendas.',
+      '✅ Confirme o pedido pelo WhatsApp — produção após pagamento.'
+    ],
+    link: 'encomendas.html',
+    linkTexto: 'Mais dúvidas sobre Encomendas? Acesse →'
+  },
+  picoles: {
+    emoji: '🍭',
+    titulo: 'Picolés',
+    palavras: [
+      '✅ Picolés de frutas/água: R$ 1,80/unidade.',
+      '✅ Picolés de leite sem recheio: R$ 2,00/unidade.',
+      '✅ Picolés de leite com recheio: R$ 2,00/unidade.',
+      '✅ Picolés de Leite Ninho: R$ 3,00/unidade.',
+      '✅ Picolés Eskimos: R$ 6,00/unidade.',
+      '✅ Atacado: mínimo 100 unidades — carrinho disponível com reserva.'
+    ],
+    link: 'encomendas.html#picolés',
+    linkTexto: 'Mais dúvidas sobre Picolés? Acesse →'
+  },
+  localizacao: {
+    emoji: '📍',
+    titulo: 'Como Chegar',
+    palavras: [
+      '✅ Estamos em Cajuru/SP.',
+      '✅ Atendemos também Santa Cruz da Esperança e Cássia dos Coqueiros.',
+      '✅ Veja o endereço completo e o mapa no Google Maps.',
+      '✅ Estacionamento disponível próximo à loja.',
+      '✅ Atendemos pelo WhatsApp para pedidos e informações.'
+    ],
+    link: 'https://maps.google.com/?q=Sorveteria+Itapolitana+Cajuru+SP',
+    linkTexto: 'Mais dúvidas sobre Localização? Acesse →',
+    externo: true
+  },
+  avaliacoes: {
+    emoji: '⭐',
+    titulo: 'Dicas e Avaliações',
+    palavras: [
+      '✅ Nota 4,8 no Google com centenas de avaliações.',
+      '✅ Sorvete feito com amor desde 2007.',
+      '✅ 100% feito com ingredientes selecionados.',
+      '✅ Veja o que nossos clientes dizem na página de Dicas.',
+      '✅ Deixe sua avaliação no Google Maps e ajude outros clientes!'
+    ],
+    link: 'dicas.html',
+    linkTexto: 'Mais dúvidas sobre Avaliações? Acesse →'
+  },
+  precos: {
+    emoji: '💰',
+    titulo: 'Preços',
+    palavras: [
+      '✅ Sorvete: a partir de R$ 5,00 (1 bola).',
+      '✅ Açaí: combos de 400ml a 700ml — consulte promoções.',
+      '✅ Milkshake: a partir de R$ 18,00.',
+      '✅ Torta de sorvete: a partir de R$ 100,00.',
+      '✅ Veja a tabela completa de preços no cardápio do site.'
+    ],
+    link: 'index.html#cardápio',
+    linkTexto: 'Mais dúvidas sobre Preços? Acesse →'
+  }
+};
+
+function mostrarResposta(tema) {
+  var dados = faleTemas[tema];
+  if (!dados) return;
+
+  var html = '<div style="text-align:center;margin-bottom:16px;">';
+  html += '<div style="font-size:2.5rem;margin-bottom:8px;">' + dados.emoji + '</div>';
+  html += '<div style="font-size:16px;font-weight:900;color:#1A1A1A;">' + dados.titulo + '</div>';
+  html += '</div>';
+
+  html += '<div style="background:#F9F5FF;border-radius:14px;padding:16px;margin-bottom:16px;">';
+  dados.palavras.forEach(function(p) {
+    html += '<p style="font-size:13px;color:#333;margin:0 0 10px;line-height:1.5;">' + p + '</p>';
+  });
+  html += '</div>';
+
+  var target = dados.externo ? '_blank" rel="noopener"' : '_self"';
+  html += '<a href="' + dados.link + '" target="' + target + ' onclick="fecharFaleDialog()" ';
+  html += 'style="display:block;text-align:center;background:linear-gradient(135deg,#7B2D8B,#4A148C);color:#fff;padding:14px 20px;border-radius:30px;font-size:13px;font-weight:900;text-decoration:none;margin-top:8px;">';
+  html += dados.linkTexto + '</a>';
+
+  document.getElementById('fale-resposta-conteudo').innerHTML = html;
+  document.getElementById('fale-tela-temas').style.display = 'none';
+  document.getElementById('fale-tela-resposta').style.display = 'block';
+}
+
+function voltarTemas() {
+  document.getElementById('fale-tela-resposta').style.display = 'none';
+  document.getElementById('fale-tela-temas').style.display = 'block';
+}
+</script>
 </dialog>
 <a href="fidelidade.html" id="clube-fab" aria-label="Clube de Fidelidade Itapolitana">
   <span id="clube-fab-texto">🍦 Clube Itapolitana</span>
