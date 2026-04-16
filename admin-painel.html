@@ -1971,7 +1971,7 @@ Talento</textarea>
           <h2>🌟 Configuração da Estrela do Dia</h2>
           <div style="display:flex;gap:8px">
             <button class="btn btn-vermelho" onclick="panicButton()" title="Desativa a estrela imediatamente em caso de erro">🚨 BOTÃO DE PÂNICO</button>
-            <button class="btn btn-verde" onclick="carregarEstrelas()">🔄 Atualizar</button>
+            <button class="btn btn-verde" id="btn-atualizar-estrelas" onclick="carregarEstrelas()">🔄 Atualizar Agora</button>
           </div>
         </div>
         <div class="card-body">
@@ -5046,9 +5046,20 @@ async function carregarEstrelas() {
     const dados = await res.json();
     STATE.estrelas = dados;
     renderizarEstrelas();
+    // Atualizar o botão de refresh para indicar sucesso
+    const btnRefresh = document.getElementById('btn-atualizar-estrelas');
+    if (btnRefresh) {
+      btnRefresh.innerHTML = '✅ Atualizado!';
+      setTimeout(() => { btnRefresh.innerHTML = '🔄 Atualizar Agora'; }, 2000);
+    }
   } catch (e) {
     console.error(e);
     toast('❌ Erro ao carregar estrelas', 'erro');
+    const btnRefresh = document.getElementById('btn-atualizar-estrelas');
+    if (btnRefresh) {
+      btnRefresh.innerHTML = '❌ Erro';
+      setTimeout(() => { btnRefresh.innerHTML = '🔄 Atualizar Agora'; }, 2000);
+    }
   }
   ocultarLoading();
 }
