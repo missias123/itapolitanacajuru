@@ -98,4 +98,15 @@ itapolitanacajuru/
 
 ---
 
+---
+
+## 🚨 REGRA 10 — NUNCA ALTERAR CONFIGURAÇÕES DO GITHUB PAGES VIA API
+- **NUNCA** usar comandos de API (`gh api --method PUT repos/.../pages`) para alterar configurações do GitHub Pages
+- Isso **desativa o HTTPS automaticamente** sem aviso
+- Configurações (HTTPS, domínio personalizado) só devem ser alteradas **manualmente** pelo proprietário MISSIAS na interface do GitHub
+- Para publicar código: usar apenas `git push origin main`
+- **CAUSA DO ERRO HISTÓRICO (16/04/2026):** Tentativa de ativar HTTPS via API desativou o HTTPS e causou erro de deploy no domínio `.com.br`
+
+---
+
 *Última atualização: 16/04/2026 — Criado após auditoria completa do sistema*
