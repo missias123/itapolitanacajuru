@@ -2979,28 +2979,44 @@ function excluirParticipante(cel, tipo) {
     `Tem certeza que deseja excluir <strong>${nome}</strong> da lista?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
     'Sim, excluir',
     async () => {
-      let salvou = false;
-      // Remover do sorteioInscritos
-      if (STATE.fidelidade?.sorteioInscritos) {
-        const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
-        if (idx > -1) {
-          STATE.fidelidade.sorteioInscritos.splice(idx, 1);
-          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
-          salvou = true;
+      try {
+        let salvou = false;
+        mostrarLoading('Excluindo participante...');
+        
+        // Remover do sorteioInscritos
+        if (STATE.fidelidade?.sorteioInscritos) {
+          const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
+          if (idx > -1) {
+            STATE.fidelidade.sorteioInscritos.splice(idx, 1);
+            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
+            salvou = true;
+          }
         }
-      }
-      // Remover dos clientes
-      if (!salvou) {
-        if (STATE.clientes?.clientes?.[celLimpo]) {
-          delete STATE.clientes.clientes[celLimpo];
-          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome);
-        } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
-          delete STATE.fidelidade.clientes[celLimpo];
-          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
+        
+        // Remover dos clientes
+        if (!salvou) {
+          if (STATE.clientes?.clientes?.[celLimpo]) {
+            delete STATE.clientes.clientes[celLimpo];
+            const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome);
+            salvou = true;
+          } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
+            delete STATE.fidelidade.clientes[celLimpo];
+            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome);
+            salvou = true;
+          }
         }
+        
+        ocultarLoading();
+        if (salvou) {
+          toast('🗑️ ' + nome + ' excluído(a) com sucesso!', 'ok');
+          renderParticipantes();
+        } else {
+          toast('⚠️ Nao foi possivel encontrar ' + nome + ' para excluir.', 'aviso');
+        }
+      } catch (erro) {
+        ocultarLoading();
+        toast('❌ Erro ao excluir: ' + erro.message, 'erro');
       }
-      toast('🗑️ ' + nome + ' excluído(a) da lista.', 'ok');
-      renderParticipantes();
     }
   );
 }
