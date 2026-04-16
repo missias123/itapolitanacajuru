@@ -2031,6 +2031,27 @@ Talento</textarea>
               <button class="btn btn-laranja" style="width:100%;margin-bottom:16px" onclick="agendarEstrela()">➕ Agendar Estrela</button>
             </div>
           </div>
+
+          <!-- ADICIONAR ESTRELA MANUALMENTE -->
+          <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:12px;padding:16px;margin-top:20px">
+            <h3 style="font-size:.9rem;color:#bf360c;margin-bottom:10px">➕ Adicionar Estrela Manualmente para Cliente</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+              <div style="flex:2;min-width:200px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Nome do Cliente</label>
+                <input type="text" id="add-estrela-nome" placeholder="Nome completo" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
+              </div>
+              <div style="flex:1;min-width:150px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">WhatsApp</label>
+                <input type="tel" id="add-estrela-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
+              </div>
+              <div style="flex:1;min-width:120px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Qtd Estrelas</label>
+                <input type="number" id="add-estrela-qtd" value="1" min="1" max="5" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
+              </div>
+              <button class="btn btn-laranja" onclick="adicionarEstrelaManual()" style="padding:11px 20px">➕ Adicionar Estrela</button>
+            </div>
+            <p style="font-size:.75rem;color:#888;margin-top:8px">Isso adicionará estrelas diretamente ao ranking do ciclo atual para este cliente.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -5148,6 +5169,47 @@ function renderizarEstrelas() {
         `;
       }).join('');
     }
+  }
+}
+
+async function adicionarEstrelaManual() {
+  const nome = (document.getElementById('add-estrela-nome')?.value || '').trim();
+  const cel = (document.getElementById('add-estrela-cel')?.value || '').trim();
+  const qtd = parseInt(document.getElementById('add-estrela-qtd')?.value || '1');
+  const celLimpo = cel.replace(/\D/g,'');
+
+  if (!nome || celLimpo.length < 10) {
+    toast('⚠️ Informe nome e celular válidos!', 'aviso');
+    return;
+  }
+
+  if (!STATE.estrelas.rankingAtual) STATE.estrelas.rankingAtual = {};
+  
+  if (!STATE.estrelas.rankingAtual[celLimpo]) {
+    STATE.estrelas.rankingAtual[celLimpo] = {
+      nome: nome,
+      celular: celLimpo,
+      estrelas: 0,
+      capturas: []
+    };
+  }
+
+  STATE.estrelas.rankingAtual[celLimpo].estrelas += qtd;
+  STATE.estrelas.rankingAtual[celLimpo].capturas.push({
+    data: new Date().toISOString(),
+    tipo: 'manual',
+    qtd: qtd
+  });
+
+  mostrarLoading('Adicionando estrela manual...');
+  const ok = await salvarArquivo('estrelas_ciclo.json', STATE.estrelas, 'estrelasSha', 'Admin: adicionar estrela manual para ' + nome);
+  ocultarLoading();
+
+  if (ok) {
+    toast('✅ Estrela adicionada com sucesso!', 'sucesso');
+    document.getElementById('add-estrela-nome').value = '';
+    document.getElementById('add-estrela-cel').value = '';
+    renderRankingEstrelas();
   }
 }
 
