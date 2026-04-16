@@ -322,7 +322,10 @@ class MotorEstrelasV2 {
 
     // Atualizar ranking
     if (!this.rankingAtual[usuarioId]) {
+      // Tentar herdar ID se já for cliente fidelidade
+      const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
       this.rankingAtual[usuarioId] = {
+        id: idUnico,
         nome: usuarioNome,
         celular: usuarioCelular,
         estrelas: 0,

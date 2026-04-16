@@ -1239,8 +1239,11 @@ function enviarSorteioWhatsApp() {
   }
   const dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
   const celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
+  // Gerar ID Único para o Sorteio
+  const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
   const msg = '🍦 *CADASTRO — Clube de Fidelidade*\n' +
     '*Sorveteria Itapolitana Cajuru*\n\n' +
+    '*ID Permanente:* ' + idUnico + '\n' +
     '*Nome:* ' + nome + '\n' +
     '*Celular:* ' + celFmt + '\n' +
     '*Data de nascimento:* ' + dataNasc + '\n\n' +
@@ -1359,7 +1362,10 @@ async function cadastrar() {
 
   // ── NOVO CADASTRO (sem duplicidade) ────────────────────────
   setLoading('Criando sua conta...');
+  // Gerar ID Único Permanente (USR-2026-XXXX)
+  const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
   const novoCliente = {
+    id: idUnico,
     nome, dataNasc, cel,
     cadastro:     new Date().toISOString(),
     saldoPontos:  0,

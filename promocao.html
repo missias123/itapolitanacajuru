@@ -605,7 +605,10 @@ body { overflow-x: hidden; }
       }
       // 3. Adicionar novo inscrito
       var celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
+      // Gerar ID Único Permanente (USR-2026-XXXX)
+      var idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
       inscritos.push({
+        id: idUnico,
         nome: nome,
         cel: celFmt,
         dataNasc: dataNasc,
@@ -625,6 +628,7 @@ body { overflow-x: hidden; }
       // 5. Abrir WhatsApp com número de inscrição
       var numStr = String(numInscricao).padStart(3,'0');
       var msg = '🍦 *SORTEIO MENSAL — Sorveteria Itapolitana Cajuru*\n\n' +
+        '*ID Permanente:* ' + idUnico + '\n' +
         '*Número de Inscrição:* #' + numStr + '\n' +
         '*Nome:* ' + nome + '\n' +
         '*Celular:* ' + celFmt + '\n' +

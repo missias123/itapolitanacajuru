@@ -1740,7 +1740,7 @@ Talento</textarea>
           </div>
           <div class="tabela-wrap">
             <table class="tabela">
-              <thead><tr><th>Nome</th><th>Celular</th><th>Tipo</th><th>Pontos</th><th>Cadastro</th><th>Status</th><th>Ação</th></tr></thead>
+              <thead><tr><th>ID</th><th>Nome</th><th>Celular</th><th>Tipo</th><th>Pts</th><th>Cadastro</th><th>Status</th><th>Ação</th></tr></thead>
               <tbody id="tabela-participantes"></tbody>
             </table>
           </div>
@@ -2882,6 +2882,7 @@ function getParticipantesUnificados() {
     const cel = c.cel || '';
     if (!cel) return;
     mapa[cel] = {
+      id: c.id || '-',
       nome: c.nome || '-',
       cel: cel,
       tipo: 'fidelidade',
@@ -2896,8 +2897,10 @@ function getParticipantesUnificados() {
     if (!cel) return;
     if (mapa[cel]) {
       mapa[cel].tipo = 'ambos'; // já está nos dois
+      if (c.id && mapa[cel].id === '-') mapa[cel].id = c.id;
     } else {
       mapa[cel] = {
+        id: c.id || '-',
         nome: c.nome || '-',
         cel: cel,
         tipo: 'sorteio',
@@ -2948,6 +2951,7 @@ function renderParticipantes() {
   } else {
     tbody.innerHTML = slice.map(p => `
       <tr>
+        <td style="font-family:monospace;font-size:.75rem;font-weight:700;color:#666">${p.id || '-'}</td>
         <td>${p.nome}</td>
         <td><a href="https://wa.me/55${p.cel.replace(/\D/g,'')}" target="_blank" style="color:#e65100">${p.cel}</a></td>
         <td><span style="background:${tipoCor[p.tipo]};color:#fff;border-radius:12px;padding:3px 10px;font-size:.75rem;font-weight:700">${tipoLabel[p.tipo]}</span></td>
