@@ -3358,6 +3358,16 @@ function preencherEstrelas() {
   renderRankingEstrelas();
 }
 
+async function excluirDoRanking(celular) {
+  if (!confirm('Tem certeza que deseja excluir este participante do ranking?')) return;
+  if (!STATE.estrelas.rankingAtual[celular]) return;
+  delete STATE.estrelas.rankingAtual[celular];
+  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: excluir participante do ranking');
+  if (ok) {
+    toast('Participante excluído do ranking!', 'ok');
+    renderRankingEstrelas();
+  }
+}
 function renderRankingEstrelas() {
   const ranking = STATE.estrelas?.rankingAtual || {};
   const lista = Object.values(ranking).sort((a, b) => b.estrelas - a.estrelas);
@@ -3369,7 +3379,7 @@ function renderRankingEstrelas() {
   }
   
   container.innerHTML = lista.map((u, i) => `
-    <div class="sabor-item" style="padding:10px 15px; border-bottom:1px solid #eee">
+    <div class="sabor-item" style="padding:10px 15px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between">
       <div style="display:flex; align-items:center; gap:10px; flex:1">
         <span style="font-weight:900; color:#e8650a">#${i+1}</span>
         <div style="display:flex; flex-direction:column">
@@ -3377,8 +3387,11 @@ function renderRankingEstrelas() {
           <span style="font-size:0.75rem; color:#666">${u.celular}</span>
         </div>
       </div>
-      <div style="background:#fbc02d; color:#000; padding:4px 12px; border-radius:20px; font-weight:900; font-size:0.85rem">
-        🌟 ${u.estrelas}
+      <div style="display:flex; align-items:center; gap:8px">
+        <div style="background:#fbc02d; color:#000; padding:4px 12px; border-radius:20px; font-weight:900; font-size:0.85rem">
+          🌟 ${u.estrelas}
+        </div>
+        <button class="btn btn-vermelho btn-sm" onclick="excluirDoRanking('${u.celular}')" title="Excluir do ranking">🗑️</button>
       </div>
     </div>
   `).join('');
