@@ -38,18 +38,15 @@ dados/
 └── clientes.json (Dados mestres dos clientes)
 ```
 
-### 2. Regras de Negócio
-
-#### Fidelidade
-- ✅ Cupons emitidos a partir de **01/05/2026**
-- ✅ Apenas **segunda a sexta-feira** (seg-sex)
-- ✅ Sem sábado, domingo e feriados
-- ✅ Cupons **SEM prazo de validade**
-- ✅ Pontos **NÃO expiram**
-- ✅ Clube pode ser **abortado a qualquer momento**
-- ✅ Compras em sab-dom-feriados **NÃO geram pontos**
-
-#### Promoção (Sorteio Mensal)
+### 2. Regras de Negóc43	#### Fidelidade
+44	- ✅ Cupons emitidos a partir de **01/05/2026**
+45	- ✅ Apenas **segunda a sexta-feira** (seg-sex)
+46	- ✅ Sem sábado, domingo e feriados
+47	- ✅ Cupons **SEM prazo de validade**
+48	- ✅ Pontos **NÃO expiram**
+49	- ✅ Clube pode ser **abortado a qualquer momento**
+50	- ✅ Compras em sab-dom-feriados **NÃO geram pontos**
+51	- ✅ **Atacado de Picolés:** Mínimo de 100 e Máximo de 250 unidades. (Acima de 250, contato via WhatsApp)teio Mensal)
 - ✅ Cadastro manual ou via formulário
 - ✅ Detecção de duplicatas (mesmo nome + data de nascimento)
 - ✅ Botão para limpar lista mensal
