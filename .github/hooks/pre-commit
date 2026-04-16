@@ -1,0 +1,68 @@
+#!/bin/bash
+# 🛡️ GUARDIÃO ITAPOLITANA — PRE-COMMIT HOOK
+# Bloqueia commits com código HTML solto ou CNAME errado
+# Instalação: cp .github/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+echo "🛡️ Guardião Itapolitana — Verificando código antes do commit..."
+
+# 1. Verificar CNAME
+if [ -f "CNAME" ]; then
+  DOMINIO=$(cat CNAME | tr -d '[:space:]')
+  if [ "$DOMINIO" != "itapolitanacajuru.com.br" ]; then
+    echo "❌ BLOQUEADO: CNAME incorreto! Encontrado: '$DOMINIO'"
+    echo "   Corrija para: itapolitanacajuru.com.br"
+    exit 1
+  fi
+  echo "✅ CNAME: $DOMINIO"
+fi
+
+# 2. Verificar código HTML solto nos arquivos modificados
+ARQUIVOS_HTML=$(git diff --cached --name-only | grep '\.html$')
+
+if [ -n "$ARQUIVOS_HTML" ]; then
+  python3 << 'PYEOF'
+import re, sys, subprocess
+
+# Pegar arquivos HTML em stage
+result = subprocess.run(['git', 'diff', '--cached', '--name-only'], capture_output=True, text=True)
+arquivos = [f for f in result.stdout.strip().split('\n') if f.endswith('.html')]
+
+erros = []
+padroes_proibidos = [
+    (r'class="[^"]*"\s+id="[^"]*"\s+onkeydown', 'Atributos HTML soltos (class+id+onkeydown)'),
+    (r'placeholder="[^"]*"\s*\n\s*Digite sua pergunta', 'placeholder solto fora de tag'),
+]
+
+for arquivo in arquivos:
+    try:
+        with open(arquivo, 'r', encoding='utf-8') as f:
+            conteudo = f.read()
+        
+        # Remover scripts, styles e tags
+        sem_scripts = re.sub(r'<script[^>]*>.*?</script>', '', conteudo, flags=re.DOTALL)
+        sem_styles = re.sub(r'<style[^>]*>.*?</style>', '', sem_scripts, flags=re.DOTALL)
+        texto_visivel = re.sub(r'<[^>]+>', '', sem_styles)
+        
+        for padrao, descricao in padroes_proibidos:
+            if re.search(padrao, texto_visivel):
+                erros.append(f"❌ {arquivo}: {descricao}")
+    except:
+        pass
+
+if erros:
+    print("\n🚨 COMMIT BLOQUEADO — Código solto encontrado:")
+    for e in erros:
+        print(f"   {e}")
+    print("\n💡 Corrija antes de commitar!")
+    sys.exit(1)
+else:
+    print("✅ HTML verificado — sem código solto.")
+PYEOF
+
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+fi
+
+echo "✅ Guardião Itapolitana — Tudo limpo! Commit autorizado."
+exit 0
