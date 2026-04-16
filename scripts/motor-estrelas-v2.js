@@ -50,10 +50,25 @@ class MotorEstrelasV2 {
    * BUG FIX #6: Obter horário correto com fuso horário (GMT-3)
    */
   obterHorarioAtualComFuso() {
+    // Usa Intl.DateTimeFormat — padrão de grandes sistemas, sem erro de fuso
     const agora = new Date();
-    const utc = agora.getTime() + (agora.getTimezoneOffset() * 60000);
-    const horarioBrasilia = new Date(utc + (3600000 * this.fusoHorario));
-    return horarioBrasilia;
+    const partes = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false
+    }).formatToParts(agora);
+    const get = (tipo) => partes.find(p => p.type === tipo)?.value || '00';
+    // Retorna objeto com os campos necessários
+    return {
+      getFullYear: () => parseInt(get('year')),
+      getMonth:    () => parseInt(get('month')) - 1,
+      getDate:     () => parseInt(get('day')),
+      getHours:    () => parseInt(get('hour')),
+      getMinutes:  () => parseInt(get('minute')),
+      getSeconds:  () => parseInt(get('second')),
+      toISOString: () => `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}Z`
+    };
   }
 
   /**
@@ -70,40 +85,38 @@ class MotorEstrelasV2 {
    * BUG FIX #1: Verificar se é o horário exato da estrela (SEM expiração automática)
    */
   ehHorarioDaEstrela() {
-    // Se a estrela já foi capturada hoje, não mostrar de novo
+    // Estrela já capturada ou em resgate — não mostrar
     if (this.estrelaCapturada.status === 'capturada' || this.estrelaCapturada.status === 'em_resgate') {
       return false;
     }
+    // Estrela já foi ativada nesta sessão — não disparar de novo
+    if (this._estrelaAtivadaEm) return false;
 
     const agora = this.obterHorarioAtualComFuso();
-    const horaAtual = String(agora.getHours()).padStart(2, '0');
-    const minutoAtual = String(agora.getMinutes()).padStart(2, '0');
-    const horarioAtual = `${horaAtual}:${minutoAtual}`;
-    
+    const horaAtual    = agora.getHours();
+    const minutoAtual  = agora.getMinutes();
     const horarioEstrela = this.obterHorarioHoje();
-    
     if (!horarioEstrela) return false;
-    
-    // Verificar se está no minuto exato (com margem de 1 minuto)
-    const [horaEstrela, minutoEstrela] = horarioEstrela.split(':');
-    const diferenca = Math.abs(
-      (parseInt(horaAtual) * 60 + parseInt(minutoAtual)) -
-      (parseInt(horaEstrela) * 60 + parseInt(minutoEstrela))
-    );
-    
-    return diferenca <= 1;
+
+    const [horaE, minE] = horarioEstrela.split(':').map(Number);
+    const minutosAgora   = horaAtual  * 60 + minutoAtual;
+    const minutosEstrela = horaE * 60 + minE;
+    // Janela de 5 minutos APÓS o horário agendado (nunca antes)
+    return minutosAgora >= minutosEstrela && minutosAgora < minutosEstrela + 5;
   }
 
   /**
    * Iniciar verificação contínua do horário
    */
   iniciarVerificacao() {
+    // Verifica a cada 10 segundos — rápido o suficiente para não perder o horário
     this.intervaloVerificacao = setInterval(() => {
       if (this.ehHorarioDaEstrela()) {
         console.log('🌟 É HORA DA ESTRELA! Ativando...');
+        this._estrelaAtivadaEm = Date.now(); // Trava: não disparar duas vezes
         this.ativarEstrela();
       }
-    }, this.config.tempoSincronizacao || 5000);
+    }, 10000); // 10 segundos
   }
 
   /**
@@ -142,9 +155,10 @@ class MotorEstrelasV2 {
       return { sucesso: false, motivo: 'ja_capturada' };
     }
 
-    // TRAVA 2: Verificar se ainda é o horário válido (não pode clicar fora do horário)
-    if (!this.ehHorarioDaEstrela()) {
-      console.warn('⚠️ Fora do horário permitido! Clique bloqueado.');
+    // TRAVA 2: Verificar se a estrela foi ativada nos últimos 2 minutos (janela de clique)
+    const agora2 = Date.now();
+    if (!this._estrelaAtivadaEm || (agora2 - this._estrelaAtivadaEm) > 2 * 60 * 1000) {
+      console.warn('⚠️ Janela de clique expirada! Clique bloqueado.');
       return { sucesso: false, motivo: 'fora_do_horario' };
     }
 
