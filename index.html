@@ -2301,7 +2301,8 @@ function fecharFaqModal() {
 }
 </script>
 <!-- FIM FAQ PREMIUM -->
-<div id="fale-overlay" style="display:none" aria-hidden="true" inert hidden>
+<template id="modais-template">
+<div id="fale-overlay" style="display:none" aria-hidden="true" inert>
 <div class="fale-box">
 <div class="fale-hdr">
 <div class="fale-hdr-txt">
@@ -2325,7 +2326,7 @@ function fecharFaqModal() {
   <span id="clube-fab-texto">🍦 Clube Itapolitana</span>
 </a>
 <button aria-label="Abrir chat de atendimento ao cliente" class="chat-fab" id="chat-fab-btn" onclick="abrirChat()" type="button"><span id="chat-fab-texto">💬 Fale Conosco</span></button>
-<div class="chat-overlay" id="chat-overlay" style="display:none" aria-hidden="true" inert hidden>
+<div class="chat-overlay" id="chat-overlay" style="display:none" aria-hidden="true" inert>
 <div class="chat-box">
 <div class="chat-hdr">
 <div><h3 id="chat-hdr-titulo">💬 Fale Conosco</h3><p id="chat-hdr-sub">Assistente Itapolitana · Responde na hora</p></div>
@@ -2350,6 +2351,18 @@ function fecharFaqModal() {
     </div>
 </div>
 </div>
+</template>
+<script>
+// Inicializa modais: move do template para o body (invisível para extratores de texto)
+(function() {
+  var t = document.getElementById('modais-template');
+  if (t) {
+    var frag = t.content;
+    document.body.appendChild(frag.cloneNode(true));
+    t.remove();
+  }
+})();
+</script>
 <script src="scripts/site-loader.js?v=20260416_FINAL_V2" defer></script>
 <script src="scripts/products.js?v=20260416_FINAL_V2" defer></script>
 <script>
