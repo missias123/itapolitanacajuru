@@ -242,9 +242,9 @@ img{max-width:100%;display:block}
 .brand-name{font-size:17px;font-weight:800;color:#E8000D;line-height:1.1;text-shadow:1px 1px 2px rgba(0,0,0,.25);letter-spacing:.3px;text-transform:uppercase;font-family:"Poppins",sans-serif}
 .brand-sub{font-size:11px;color:#7B2D8B;font-weight:700;letter-spacing:.3px}
 .header-nav{contain: layout;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:100%;box-sizing:border-box;grid-auto-rows:minmax(44px,auto)}
-.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;border-radius:12px;font-size:9px;font-weight:800;min-height:52px;transition:all .2s cubic-bezier(.34,1.56,.64,1);white-space:normal;overflow:hidden;word-break:break-word;width:100%;text-align:center;letter-spacing:0px;border:1px solid rgba(255,255,255,0.3);font-family:"Poppins",sans-serif;box-sizing:border-box;margin-bottom:0;flex-grow:1;line-height:1.2;}
-.nav-btn .nav-icon{font-size:1.5em;line-height:1;display:block;}
-.nav-btn .nav-label{font-size:clamp(8px,2vw,10px);font-weight:900;line-height:1.2;word-break:break-word;display:block;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);letter-spacing:.3px;}
+.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;border-radius:12px;font-size:11px;font-weight:800;min-height:56px;transition:all .2s cubic-bezier(.34,1.56,.64,1);white-space:normal;overflow:hidden;word-break:break-word;width:100%;text-align:center;letter-spacing:0px;border:1px solid rgba(255,255,255,0.3);font-family:"Poppins",sans-serif;box-sizing:border-box;margin-bottom:0;flex-grow:1;line-height:1.2;}
+.nav-btn .nav-icon{font-size:1.6em;line-height:1;display:block;}
+.nav-btn .nav-label{font-size:clamp(11px,2.5vw,13px);font-weight:900;line-height:1.2;word-break:break-word;display:block;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);letter-spacing:.3px;}
 .nav-btn:active{transform:scale(.95);filter:brightness(1.3);box-shadow:0 2px 8px rgba(0,0,0,0.1); /* Efeito de "clicar" */}
 .nav-btn:hover{transform:translateY(-2px);filter:brightness(1.2);box-shadow:0 6px 20px rgba(0,0,0,0.2); /* Efeito de "acender" */}
 .nav-purple{background:linear-gradient(135deg,#0D47A1,#00288F);color:#fff;box-shadow:0 4px 14px rgba(13,71,161,.4);border:1px solid rgba(255,255,255,0.3); /* Azul da logomarca */}
@@ -580,24 +580,24 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   .header-inner{contain: layout;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;padding:10px 16px}
   .brand{flex-direction:row;align-items:center;gap:10px;width:auto;flex-shrink:0}
   .header-nav{contain: layout;grid-template-columns:repeat(2,1fr);gap:7px;flex:1}
-  .nav-btn{padding:9px 6px;min-height:54px;}
-  .nav-btn .nav-icon{font-size:1.5em;}
-  .nav-btn .nav-label{font-size:10px;}
+  .nav-btn{padding:9px 6px;min-height:56px;}
+  .nav-btn .nav-icon{font-size:1.6em;}
+  .nav-btn .nav-label{font-size:12px;}
 }
 /* DESKTOP (acima de 768px) */
 @media(min-width:768px){
   .header-inner{contain: layout;flex-direction:row;align-items:center;justify-content:flex-start;gap:16px;padding:10px 20px}
   .brand{flex-direction:row;align-items:center;gap:12px;width:auto;flex-shrink:0}
   .header-nav{contain: layout;grid-template-columns:repeat(4,1fr);gap:8px;flex:1}
-  .nav-btn{padding:10px 8px;min-height:58px;}
-  .nav-btn .nav-icon{font-size:1.6em;}
-  .nav-btn .nav-label{font-size:11px;}
+  .nav-btn{padding:10px 8px;min-height:60px;}
+  .nav-btn .nav-icon{font-size:1.7em;}
+  .nav-btn .nav-label{font-size:13px;}
 }
 @media(min-width:1024px){
   .header-nav{contain: layout;grid-template-columns:repeat(4,1fr)}
   .nav-btn{padding:12px 10px;min-height:64px;}
-  .nav-btn .nav-icon{font-size:1.8em;}
-  .nav-btn .nav-label{font-size:12px;}
+  .nav-btn .nav-icon{font-size:1.9em;}
+  .nav-btn .nav-label{font-size:14px;}
   .info-cards{grid-template-columns:repeat(4,1fr)}
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
   /* CARDÁPIO DESKTOP (1024px+) */
@@ -1780,7 +1780,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 <!-- FIM CARROSSEL ITAPOLITANA -->
 <!-- postMessage de altura desativado: aspect-ratio 3/2 reserva o espaço sem CLS -->
 <!-- VER NOSSO CARDÁPIO - BANNER DIVISOR PROFISSIONAL -->
-<div class="vc-wrap" id="vc-wrap" onmouseleave="fecharCardápio()">
+<div class="vc-wrap" id="vc-wrap">
   <div class="vc-banner">
     <div class="vc-banner-icons" aria-hidden="true">🍦 🍧 🍨 🧃 🍦</div>
     <div class="vc-banner-titulo">Nosso Cardápio Completo</div>
@@ -2482,12 +2482,14 @@ function toggleAcc(id) {
   var el = document.getElementById(id);
   if (!el) return;
   var isOpen = el.classList.contains('open');
-  // Fecha todos os outros accordions abertos
+  // Fecha todos os outros accordions abertos com altura exata
   document.querySelectorAll('.acc.open').forEach(function(acc) {
     if (acc.id !== id) {
       acc.classList.remove('open');
       var h = acc.querySelector('.acc-header');
       if (h) h.setAttribute('aria-expanded', 'false');
+      var b = acc.querySelector('.acc-body');
+      if (b) b.style.maxHeight = '0';
     }
   });
   // Abre ou fecha o clicado
@@ -2495,6 +2497,8 @@ function toggleAcc(id) {
     el.classList.remove('open');
     var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'false');
+    var body = el.querySelector('.acc-body');
+    if (body) body.style.maxHeight = '0';
   } else {
     el.classList.add('open');
     var h = el.querySelector('.acc-header');
@@ -2502,6 +2506,13 @@ function toggleAcc(id) {
     // Re-renderiza ao abrir para garantir dados carregados
     if (id === 'acc-iso') renderIso();
     if (id === 'acc-sobremesas') renderSobremesas();
+    // Define altura exata — sem pulo, sem salto
+    var body = el.querySelector('.acc-body');
+    if (body) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      // Após abrir, recalcula se conteúdo dinâmico mudar
+      setTimeout(function(){ body.style.maxHeight = body.scrollHeight + 'px'; }, 350);
+    }
     // SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
   }
 }
