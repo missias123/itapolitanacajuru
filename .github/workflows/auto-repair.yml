@@ -1,0 +1,51 @@
+name: 🔧 Auto-Repair JavaScript
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.html'
+
+permissions:
+  contents: write
+
+jobs:
+  auto-repair:
+    name: Verificar e Reparar Erros de JS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório (histórico completo)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar identidade Git
+        run: |
+          git config user.name  "auto-repair[bot]"
+          git config user.email "auto-repair@itapolitanacajuru"
+
+      - name: Rodar Auto-Repair
+        id: repair
+        run: |
+          node scripts/auto-repair.js
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Commit das correções (se houver)
+        run: |
+          if git diff --quiet; then
+            echo "✅ Nenhuma correção necessária."
+          else
+            git add -A
+            git commit -m "fix(auto-repair): corrigir erros de JavaScript detectados automaticamente [skip ci]"
+            git push
+            echo "🔧 Correções aplicadas e enviadas."
+          fi

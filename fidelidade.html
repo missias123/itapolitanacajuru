@@ -92,14 +92,7 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .hero-premio-chip .chip-icon{font-size:1.8rem}
 .hero-premio-chip strong{display:block;font-size:.95rem;font-weight:900}
 .hero-premio-chip span{font-size:.75rem;opacity:.9}
-
-    <div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
-        <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
-        <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
-        <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;">REIVINDICAR MINHA ESTRELA!</button>
-    </div>
-
-    <!-- SECAO PROGRAMAS — CENTRALIZADO PROFISSIONAL --> */
+/* SECAO PROGRAMAS — CENTRALIZADO PROFISSIONAL */
 .secao-programas{
   width:100%;
   max-width:100%;
@@ -117,10 +110,14 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
   max-width:600px;
   margin:0 auto;
 }
-/* Desktop e tablet: 1 card centralizado */
-@media(min-width:641px){
+/* Desktop e tablet: grid 2 colunas a partir de 900px */
+@media(min-width:900px){
+  .secao-programas{max-width:1100px;padding:36px 24px;}
+  .programas-grid{grid-template-columns:repeat(2,1fr);max-width:1000px;}
+}
+@media(min-width:641px) and (max-width:899px){
   .secao-programas{max-width:100%;padding:36px 24px;}
-  .programas-grid{grid-template-columns:1fr;max-width:600px;}
+  .programas-grid{grid-template-columns:1fr;max-width:620px;}
 }
 
 /* ── CARD PROGRAMA ── */
@@ -291,15 +288,34 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .btn-sair-admin:hover{background:#eee}
 .admin-table-wrap{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden}
 .admin-table-header{display:grid;grid-template-columns:2fr 1.4fr 0.7fr 1.1fr 1.4fr;gap:0;background:#1a237e;color:#fff;font-size:.75rem;font-weight:700;padding:10px 14px;text-transform:uppercase;letter-spacing:.4px}
-@media(max-width:600px){.admin-table-header{grid-template-columns:2fr 1.2fr 0.6fr 1fr;} .admin-col-data{display:none}}
-.admin-row{display:grid;grid-template-columns:2fr 1.4fr 0.7fr 1.1fr 1.4fr;gap:0;padding:10px 14px;border-bottom:1px solid #f0e8e0;align-items:center;font-size:.82rem;transition:background .15s}
-.admin-row:hover{background:#fff8f0}
-.admin-row:last-child{border-bottom:none}
-@media(max-width:600px){.admin-row{grid-template-columns:2fr 1.2fr 0.6fr 1fr;} .admin-row .col-data{display:none}}
+@media(max-width:600px){
+  .admin-table-header{display:none}
+  .admin-row{
+    grid-template-columns:1fr;
+    gap:4px;
+    padding:12px 14px;
+    border:1px solid #f0e8e0;
+    border-radius:12px;
+    margin-bottom:8px;
+    background:#fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.06)
+  }
+  .admin-row .col-data{display:none}
+  .admin-acoes{margin-top:6px}
+  .admin-stats{grid-template-columns:repeat(2,1fr)}
+  #painel-admin{padding:12px 10px}
+  .admin-header{padding:14px 14px;border-radius:12px}
+  .admin-toolbar{flex-direction:column;gap:6px}
+  .admin-search{min-width:unset;width:100%}
+  .btn-admin{width:100%;text-align:center}
+}
 .admin-nome{font-weight:700;color:#333;font-size:.83rem;word-break:break-word}
 .admin-cel{font-family:monospace;color:#555;font-size:.78rem}
 .admin-pontos{font-weight:800;color:#e8650a;text-align:center}
 .admin-data{color:#888;font-size:.73rem}
+.admin-row{display:grid;grid-template-columns:2fr 1.4fr 0.7fr 1.1fr 1.4fr;gap:0;padding:10px 14px;border-bottom:1px solid #f0e8e0;align-items:center;font-size:.82rem;transition:background .15s}
+.admin-row:hover{background:#fff8f0}
+.admin-row:last-child{border-bottom:none}
 .badge-ativo{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:3px 8px;border-radius:20px;font-size:.7rem;font-weight:700;display:inline-block}
 .badge-bloqueado{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;padding:3px 8px;border-radius:20px;font-size:.7rem;font-weight:700;display:inline-block}
 .btn-bloquear{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;padding:4px 10px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;margin-left:4px}
@@ -400,7 +416,7 @@ body { overflow-x: hidden; }
   <div id="banner-estrela-guia">
     <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
     <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
-    <div class="guia-timer" id="guia-timer-txt">05:00</div>
+    <div class="guia-timer" id="guia-timer-txt">02:00</div>
   </div>
 
   <!-- BANNER AVISO CUPONS E TESTE -->
@@ -455,6 +471,13 @@ body { overflow-x: hidden; }
   </div>
 </section>
 
+<!-- SECAO REIVINDICAR ESTRELA (exibida dinamicamente pelo JS) -->
+<div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
+  <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
+  <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
+  <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;" aria-label="Reivindicar minha estrela dourada">REIVINDICAR MINHA ESTRELA!</button>
+</div>
+
 <!-- AVISO IMPORTANTE: DIAS UTEIS -->
 <div class="aviso-dias-uteis">
   <strong>IMPORTANTE:</strong><br>
@@ -462,7 +485,7 @@ body { overflow-x: hidden; }
 </div>
 
 <!-- SECAO DOS DOIS PROGRAMAS -->
-<section class="secao-programas">
+<section class="secao-programas" id="secao-programas">
   <div class="programas-grid">
 
     <!-- CARD 1: CLUBE DE FIDELIDADE -->
@@ -1075,9 +1098,12 @@ async function carregarDados() {
   }
   hideLoading();
   const celSalvo = localStorage.getItem('itap_cel');
-  if (celSalvo && ghClientes.clientes[celSalvo]) {
-    clienteAtual = ghClientes.clientes[celSalvo];
-    mostrarPainelCliente();
+  if (celSalvo) {
+    const chaveRestaurar = _chaveCliente(celSalvo);
+    if (chaveRestaurar) {
+      clienteAtual = ghClientes.clientes[chaveRestaurar];
+      mostrarPainelCliente();
+    }
   }
 }
 
@@ -1087,7 +1113,8 @@ async function salvarClientes(msg) {
     if (fresh && fresh.sha) ghClientesSha = fresh.sha;
     if (fresh && fresh.content) {
       const freshData = JSON.parse(fresh.content);
-      ghClientes.clientes = Object.assign({}, freshData.clientes || {}, ghClientes.clientes);
+      ghClientes.clientes      = Object.assign({}, freshData.clientes || {}, ghClientes.clientes);
+      ghClientes.indice_celular = Object.assign({}, freshData.indice_celular || {}, ghClientes.indice_celular || {});
     }
   } catch(e) {}
   const content = JSON.stringify(ghClientes, null, 2);
@@ -1097,6 +1124,19 @@ async function salvarClientes(msg) {
 }
 
 async function salvarFidelidade(msg) {
+  try {
+    const fresh = await ghGet(FIDELIDADE_PATH);
+    if (fresh && fresh.sha) ghFidelidadeSha = fresh.sha;
+    if (fresh && fresh.content) {
+      const freshData = JSON.parse(fresh.content);
+      // Mesclar códigos: servidor + local (local prevalece para marcar como usado/rollback)
+      const codLocal  = ghFidelidade['c\u00f3digos'] || ghFidelidade.codigos || {};
+      const codFresh  = freshData['c\u00f3digos']  || freshData.codigos  || {};
+      const codMerge  = Object.assign({}, codFresh, codLocal);
+      ghFidelidade['c\u00f3digos'] = codMerge;
+      ghFidelidade.codigos        = codMerge;
+    }
+  } catch(e) {}
   const content = JSON.stringify(ghFidelidade, null, 2);
   const r = await ghPut(FIDELIDADE_PATH, content, msg, ghFidelidadeSha);
   if (r.ok) ghFidelidadeSha = r.sha;
@@ -1208,6 +1248,22 @@ function mascaraTel(el) {
 }
 function limparTel(v) { return v.replace(/\D/g,''); }
 
+// ── Helpers de chave: clientes.json usa USR-2026-xxxx como chave primária ──
+// Resolve CEL → chave real (USR-xxxx ou CEL legado para compatibilidade)
+function _chaveCliente(cel) {
+  if (!cel) return null;
+  const idx = (ghClientes.indice_celular || {})[cel];
+  if (idx && ghClientes.clientes[idx]) return idx;
+  if (ghClientes.clientes[cel]) return cel; // compatibilidade com dados legados
+  return null;
+}
+// Persiste clienteAtual em ghClientes.clientes na chave correta
+function _gravarClienteAtual() {
+  if (!clienteAtual || !clienteAtual.cel) return;
+  const chave = _chaveCliente(clienteAtual.cel) || clienteAtual.id || clienteAtual.cel;
+  ghClientes.clientes[chave] = clienteAtual;
+}
+
 // ═══════════════════════════════════════════════════════════
 // MENSAGENS
 // ═══════════════════════════════════════════════════════════
@@ -1223,41 +1279,73 @@ function showMsg(id, txt, tipo) {
 // CADASTRO SORTEIO VIA WHATSAPP
 // ═══════════════════════════════════════════════════════════
 function enviarSorteioWhatsApp() {
-  const nome = (document.getElementById('sort-nome').value || '').trim();
-  const cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
-  const dia  = (document.getElementById('sort-dia').value || '').trim();
-  const mes  = (document.getElementById('sort-mes').value || '').trim();
-  const ano  = (document.getElementById('sort-ano').value || '').trim();
-  if (!nome || nome.length < 3) {
-    showMsg('msg-sorteio-inline', 'Informe seu nome completo.', 'aviso'); return;
+  const nomeEl = document.getElementById('sort-nome');
+  const celEl  = document.getElementById('sort-cel');
+  const diaEl  = document.getElementById('sort-dia');
+  const mesEl  = document.getElementById('sort-mes');
+  const anoEl  = document.getElementById('sort-ano');
+
+  // Verificar se os elementos existem no DOM (formulário pode estar em outra página)
+  if (!nomeEl || !celEl) { console.warn('enviarSorteioWhatsApp: elementos de formulário não encontrados'); return; }
+
+  const nome = nomeEl.value.trim();
+  const cel  = celEl.value.replace(/\D/g,'');
+  const diaRaw = (diaEl ? diaEl.value : '').trim();
+  const mesRaw = (mesEl ? mesEl.value : '').trim();
+  const anoRaw = (anoEl ? anoEl.value : '').trim();
+
+  if (!nome || nome.length < 3) { showMsg('msg-sorteio-inline', 'Informe seu nome completo.', 'aviso'); return; }
+  if (cel.length < 10) { showMsg('msg-sorteio-inline', 'Informe um celular valido com DDD.', 'aviso'); return; }
+  if (!diaRaw || !mesRaw || !anoRaw || anoRaw.length < 4) { showMsg('msg-sorteio-inline', 'Informe sua data de nascimento completa (Dia, Mes e Ano).', 'aviso'); return; }
+
+  const dia = diaRaw.padStart(2,'0');
+  const mes = mesRaw.padStart(2,'0');
+  const dataNascISO = anoRaw + '-' + mes + '-' + dia;
+  const dataNascFmt = dia + '/' + mes + '/' + anoRaw;
+  const nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
+
+  // ── DEDUP: verificar se já está inscrito pelo nome+data (identidade primária) ──
+  if (ghClientes && ghClientes.clientes) {
+    const jaInscritoNomeData = Object.values(ghClientes.clientes).find(c => {
+      const cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
+      return cNome === nomeNorm && c.dataNasc === dataNascISO;
+    });
+    if (jaInscritoNomeData) {
+      showMsg('msg-sorteio-inline', '⚠️ ' + nome.split(' ')[0] + ', você já está cadastrado no Clube de Fidelidade! Use o botão "Já sou cadastrado" para acessar sua conta.', 'aviso');
+      return;
+    }
+    // ── DEDUP: verificar se cel já está registrado (identidade secundária) ──
+    if (_chaveCliente(cel)) {
+      showMsg('msg-sorteio-inline', '⚠️ Este celular já está cadastrado. Use o botão "Já sou cadastrado" para acessar sua conta.', 'aviso');
+      return;
+    }
   }
-  if (cel.length < 10) {
-    showMsg('msg-sorteio-inline', 'Informe um celular valido com DDD.', 'aviso'); return;
-  }
-  if (!dia || !mes || !ano || ano.length < 4) {
-    showMsg('msg-sorteio-inline', 'Informe sua data de nascimento completa (Dia, Mes e Ano).', 'aviso'); return;
-  }
-  const dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
+
   const celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
-  // Gerar ID Único para o Sorteio
-  const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+  // Usar ID sequencial se disponível, senão gerar temporário
+  const ids = Object.keys((ghClientes && ghClientes.clientes) || {}).filter(k => k.startsWith('USR-2026-'));
+  const nums = ids.map(k => parseInt(k.replace('USR-2026-',''))).filter(n => !isNaN(n));
+  const maxNum = nums.length > 0 ? Math.max(...nums) : 0;
+  const idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
+
   const msg = '🍦 *CADASTRO — Clube de Fidelidade*\n' +
     '*Sorveteria Itapolitana Cajuru*\n\n' +
     '*ID Permanente:* ' + idUnico + '\n' +
     '*Nome:* ' + nome + '\n' +
     '*Celular:* ' + celFmt + '\n' +
-    '*Data de nascimento:* ' + dataNasc + '\n\n' +
+    '*Data de nascimento:* ' + dataNascFmt + '\n\n' +
     '⚠️ *ATENÇÃO IMPORTANTE:*\n' +
     'Os dados informados acima devem ser *idênticos* aos do meu documento oficial com foto (RG ou CNH).\n\n' +
     '🚫 *O PRÊMIO NÃO SERÁ ENTREGUE* se o nome ou a data de nascimento do documento divergirem do cadastro.\n\n' +
     'Estou ciente das regras e concordo com o regulamento do Clube de Fidelidade. 🎉';
+
   window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
   showMsg('msg-sorteio-inline', 'Redirecionando para o WhatsApp... Envie a mensagem para confirmar seu cadastro!', 'ok');
-  document.getElementById('sort-nome').value = '';
-  document.getElementById('sort-cel').value = '';
-  document.getElementById('sort-dia').value = '';
-  document.getElementById('sort-mes').value = '';
-  document.getElementById('sort-ano').value = '';
+  if (nomeEl) nomeEl.value = '';
+  if (celEl)  celEl.value = '';
+  if (diaEl)  diaEl.value = '';
+  if (mesEl)  mesEl.value = '';
+  if (anoEl)  anoEl.value = '';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1306,96 +1394,124 @@ async function cadastrar() {
   if (dddFid < 11 || dddFid > 99) { showMsg('msg-acesso','DDD invalido. Informe um celular com DDD correto.','aviso'); return; }
 
   // ── VALIDACAO DE UNICIDADE ──────────────────────────────────
-  // Normaliza nome para comparacao (minusculas, sem espacos extras)
+  // Recarregar dados frescos para evitar cadastro duplicado em paralelo
+  setLoading('Verificando dados...');
+  const freshC = await ghGet(CLIENTES_PATH);
+  if (freshC.content) {
+    try { ghClientes = JSON.parse(freshC.content); ghClientesSha = freshC.sha; } catch(e) {}
+  }
+  hideLoading();
+
   const nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
 
-  // PASSO 1: Verificar por Nome + Data de Nascimento
-  const registrosMesmoNomeData = Object.values(ghClientes.clientes).filter(c => {
+  // ── PASSO 1: IDENTIDADE PRIMÁRIA — Nome + Data de Nascimento ─────────────
+  // A mesma pessoa NÃO pode ter dois cadastros. Celular pode mudar.
+  const entradaNomeData = Object.entries(ghClientes.clientes).find(([, c]) => {
     const cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
     return cNome === nomeNorm && c.dataNasc === dataNasc;
   });
 
-  if (registrosMesmoNomeData.length > 0) {
-    // Verifica se o celular fornecido e igual a algum ja cadastrado
-    const mesmoCel = registrosMesmoNomeData.find(c => c.cel === cel);
-    if (mesmoCel) {
-      // Caso 1: Nome + Data + Celular iguais — ja cadastrado
-      clienteAtual = mesmoCel;
+  if (entradaNomeData) {
+    const [chaveExistente, regExistente] = entradaNomeData;
+    if (regExistente.cel === cel) {
+      // Caso 1: mesma pessoa, mesmo cel → já cadastrado, fazer login
+      clienteAtual = regExistente;
       localStorage.setItem('itap_cel', cel);
       showMsg('msg-acesso',
-        'Ola ' + nome.split(' ')[0] + '! Voce ja possui um cadastro em nosso programa de fidelidade com este telefone. Entrando na sua conta...','ok');
+        'Ola ' + nome.split(' ')[0] + '! Voce ja esta cadastrado no programa de fidelidade. Entrando na sua conta...', 'ok');
       setTimeout(mostrarPainelCliente, 1200);
-      return;
     } else {
-      // Caso 2: Nome + Data iguais mas celular DIFERENTE — potencial duplicidade
-      setLoading('Verificando dados...');
-      // Marca o registro existente como potencial duplicidade
-      const regExistente = registrosMesmoNomeData[0];
-      if (!regExistente.potencialDuplicidade) {
-        regExistente.potencialDuplicidade = [];
-      }
-      regExistente.potencialDuplicidade.push({
-        data: new Date().toISOString(),
-        celTentativa: cel,
-        status: 'Pendente revisao admin'
-      });
-      await salvarClientes('DUPLICIDADE: ' + nome + ' tentou cadastrar com cel ' + cel + ' (ja tem cadastro com outro cel)');
+      // Caso 2: mesma pessoa, celular diferente → atualizar cel (pessoa trocou de numero)
+      const celAntigo = regExistente.cel;
+      regExistente.cel = cel;
+      if (!regExistente.cel_anterior) regExistente.cel_anterior = [];
+      if (celAntigo && !regExistente.cel_anterior.includes(celAntigo)) regExistente.cel_anterior.push(celAntigo);
+      regExistente.ultimo_acesso = new Date().toISOString();
+      ghClientes.clientes[chaveExistente] = regExistente;
+      // Atualizar indice_celular: remover cel antigo, registrar novo
+      if (!ghClientes.indice_celular) ghClientes.indice_celular = {};
+      if (celAntigo) delete ghClientes.indice_celular[celAntigo];
+      ghClientes.indice_celular[cel] = chaveExistente;
+      setLoading('Atualizando seu numero de celular...');
+      await salvarClientes('Atualizacao de cel: ' + regExistente.nome + ' [' + celAntigo + ' -> ' + cel + ']');
       hideLoading();
+      clienteAtual = regExistente;
+      localStorage.setItem('itap_cel', cel);
       showMsg('msg-acesso',
-        'Ola ' + nome.split(' ')[0] + '! Parece que voce ja possui um cadastro em nosso programa de fidelidade com este nome e data de nascimento, mas com um numero de telefone diferente. Para evitar duplicidades, entre em contato conosco para atualizarmos seu cadastro. Isso garante que voce aproveite todos os seus beneficios!',
-        'aviso');
-      return;
+        'Ola ' + nome.split(' ')[0] + '! Reconhecemos seu cadastro. Seu numero foi atualizado. Entrando na sua conta...', 'ok');
+      setTimeout(mostrarPainelCliente, 1200);
     }
+    return;
   }
 
-  // PASSO 2: Verificar por Celular (se Passo 1 nao encontrou duplicidade)
-  if (ghClientes.clientes[cel]) {
-    const regCel = ghClientes.clientes[cel];
-    // Celular ja cadastrado com outro nome — entra na conta existente
-    clienteAtual = regCel;
+  // ── PASSO 2: IDENTIDADE SECUNDÁRIA — Celular ─────────────────────────────
+  // Se o cel já está vinculado a outra pessoa, entra na conta existente
+  const chaveExistenteCel = _chaveCliente(cel);
+  if (chaveExistenteCel) {
+    clienteAtual = ghClientes.clientes[chaveExistenteCel];
     localStorage.setItem('itap_cel', cel);
     showMsg('msg-acesso',
-      'Ola! Este numero de telefone ja esta cadastrado em nosso programa de fidelidade. Entrando na sua conta...','ok');
+      'Ola! Este numero ja esta cadastrado em nosso programa de fidelidade. Entrando na sua conta...', 'ok');
     setTimeout(mostrarPainelCliente, 1200);
     return;
   }
 
-  // ── NOVO CADASTRO (sem duplicidade) ────────────────────────
+  // ── PASSO 3: NOVO CADASTRO ────────────────────────────────────────────────
   setLoading('Criando sua conta...');
-  
-  // PASSO 3: Verificar se já existe no Sorteio para herdar o ID
-  let idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+
+  // Gerar ID sequencial USR-2026-xxxx
+  const idsExistentes = Object.keys(ghClientes.clientes).filter(k => k.startsWith('USR-2026-'));
+  const nums = idsExistentes.map(k => parseInt(k.replace('USR-2026-',''))).filter(n => !isNaN(n));
+  const maxNum = nums.length > 0 ? Math.max(...nums) : 0;
+  let idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
+
+  // Herdar ID se já inscrito no sorteio com o mesmo cel
   try {
     const fRes = await ghGet(FIDELIDADE_PATH);
     if (fRes.content) {
       const fidData = JSON.parse(fRes.content);
-      const inscrito = (fidData.sorteioInscritos || []).find(s => s.cel.replace(/\D/g,'') === cel);
-      if (inscrito && inscrito.id) idUnico = inscrito.id;
+      const inscrito = (fidData.sorteioInscritos || []).find(s =>
+        s.cel && s.cel.replace(/\D/g,'') === cel
+      );
+      if (inscrito && inscrito.id && inscrito.id.startsWith('USR-')) idUnico = inscrito.id;
     }
-  } catch(e) { console.warn('Erro ao buscar ID no sorteio:', e); }
+  } catch(e) {}
 
   const novoCliente = {
-    id: idUnico,
-    nome, dataNasc, cel,
-    cadastro:     new Date().toISOString(),
-    saldoPontos:  0,
-    codigosUsados: [],
-    resgates:     [],
-    totalPremios: 0,
-    totalCodigos: 0
+    id:              idUnico,
+    nome,
+    dataNasc,
+    cel,
+    cel_anterior:    [],
+    cadastro:        new Date().toISOString(),
+    saldoPontos:     0,
+    codigosUsados:   [],
+    resgates:        [],
+    totalPremios:    0,
+    totalCodigos:    0,
+    bloqueado:       false,
+    tentativasInvalidas: 0
   };
-  ghClientes.clientes[cel] = novoCliente;
+
+  // Salvar com USR-2026-xxxx como chave + registrar no indice_celular
+  ghClientes.clientes[idUnico] = novoCliente;
+  if (!ghClientes.indice_celular) ghClientes.indice_celular = {};
+  ghClientes.indice_celular[cel] = idUnico;
+  if (!ghClientes.metadata) ghClientes.metadata = {};
+  ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
+
   const ok = await salvarClientes('Novo cliente: ' + nome + ' (' + cel + ') [ID: ' + idUnico + ']');
   hideLoading();
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
     showMsg('msg-acesso',
-      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro no programa de fidelidade da Sorveteria Itapolitana Cajuru foi realizado com sucesso! Bem-vindo(a)!',
+      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro foi realizado com sucesso! Bem-vindo(a) ao programa de fidelidade!',
       'ok');
     setTimeout(mostrarPainelCliente, 1500);
   } else {
-    delete ghClientes.clientes[cel];
+    delete ghClientes.clientes[idUnico];
+    delete ghClientes.indice_celular[cel];
     showMsg('msg-acesso','Erro ao criar conta. Verifique sua conexao e tente novamente.','erro');
   }
 }
@@ -1405,52 +1521,79 @@ async function cadastrar() {
 // ═══════════════════════════════════════════════════════════
 async function entrar() {
   const cel = limparTel(document.getElementById('inp-cel-login').value);
-  const dia = document.getElementById('inp-login-dia').value.padStart(2,'0');
-  const mes = document.getElementById('inp-login-mes').value.padStart(2,'0');
-  const ano = document.getElementById('inp-login-ano').value;
+  const diaRaw = (document.getElementById('inp-login-dia').value || '').trim();
+  const mesRaw = (document.getElementById('inp-login-mes').value || '').trim();
+  const anoRaw = (document.getElementById('inp-login-ano').value || '').trim();
+  const diaNum = parseInt(diaRaw, 10);
+  const mesNum = parseInt(mesRaw, 10);
+  const anoNum = parseInt(anoRaw, 10);
+
   if (cel.length < 10) { showMsg('msg-acesso','Informe um celular valido com DDD.','aviso'); return; }
-  if (!dia || !mes || !ano || ano.length < 4) { showMsg('msg-acesso','Informe sua data de nascimento completa (Dia, Mes e Ano).','aviso'); return; }
+  if (!diaRaw || !mesRaw || !anoRaw) { showMsg('msg-acesso','Informe sua data de nascimento completa (Dia, Mes e Ano).','aviso'); return; }
+  if (isNaN(diaNum) || diaNum < 1 || diaNum > 31) { showMsg('msg-acesso','Dia invalido. Informe um numero entre 1 e 31.','aviso'); return; }
+  if (isNaN(mesNum) || mesNum < 1 || mesNum > 12) { showMsg('msg-acesso','Mes invalido. Informe um numero entre 1 e 12.','aviso'); return; }
+  if (isNaN(anoNum) || anoRaw.length !== 4 || anoNum < 1900 || anoNum > new Date().getFullYear()) { showMsg('msg-acesso','Ano invalido. Informe o ano completo (ex: 1990).','aviso'); return; }
+
+  const dia = String(diaNum).padStart(2,'0');
+  const mes = String(mesNum).padStart(2,'0');
+  const ano = String(anoNum);
+
   setLoading('Buscando sua conta...');
   const c = await ghGet(CLIENTES_PATH);
   if (c.content) {
     try { ghClientes = JSON.parse(c.content); ghClientesSha = c.sha; } catch(e) {}
   }
   hideLoading();
-  if (!ghClientes.clientes[cel]) {
-    showMsg('msg-acesso','Celular nao encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
+
+  // Resolver CEL via indice_celular (estrutura USR-xxxx) ou chave legada direta
+  const chaveCliente = _chaveCliente(cel);
+  if (!chaveCliente) {
+    showMsg('msg-acesso','Celular nao encontrado. Se e sua primeira vez, clique em "Primeira vez" para se cadastrar. Se trocou de numero, use "Primeira vez" para atualizar seu cadastro.','erro');
     return;
   }
-  clienteAtual = ghClientes.clientes[cel];
+  clienteAtual = ghClientes.clientes[chaveCliente];
+
   if (clienteAtual.bloqueado) {
     showMsg('msg-acesso','NUMERO BLOQUEADO — Este numero foi bloqueado por tentativas invalidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
     return;
   }
+
   const dataCadastrada = clienteAtual.dataNasc || '';
-  const dataDigitada = ano + '-' + mes + '-' + dia;
-  if (dataCadastrada && dataCadastrada !== dataDigitada) {
+  const dataDigitada   = ano + '-' + mes + '-' + dia;
+
+  // Se não há data no cadastro (dado incompleto) — bloquear acesso por segurança
+  if (!dataCadastrada) {
+    showMsg('msg-acesso','Cadastro incompleto. Entre em contato com a sorveteria para regularizar sua conta.','aviso');
+    return;
+  }
+
+  if (dataCadastrada !== dataDigitada) {
     clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
     const tentativas = clienteAtual.tentativasInvalidas;
     if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
     clienteAtual.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+
     if (tentativas >= 4) {
       clienteAtual.bloqueado = true;
       clienteAtual.dataBloqueio = new Date().toISOString();
-      ghClientes.clientes[cel] = clienteAtual;
+      _gravarClienteAtual();
       await salvarClientes('FRAUDE: bloqueio do numero ' + cel + ' apos ' + tentativas + ' tentativas');
       showMsg('msg-acesso','TENTATIVA DE FRAUDE DETECTADA! Seu numero foi BLOQUEADO apos ' + tentativas + ' tentativas invalidas. Entre em contato com a sorveteria.','erro');
     } else {
-      ghClientes.clientes[cel] = clienteAtual;
+      _gravarClienteAtual();
       await salvarClientes('Tentativa invalida ' + tentativas + '/4 para ' + cel);
       const restam = Math.max(0, 4 - tentativas);
       showMsg('msg-acesso','Data de nascimento incorreta. Tentativa ' + tentativas + ' de 4. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
     }
     return;
   }
+
   if (clienteAtual.tentativasInvalidas > 0) {
     clienteAtual.tentativasInvalidas = 0;
-    ghClientes.clientes[cel] = clienteAtual;
+    _gravarClienteAtual();
     await salvarClientes('Login OK: tentativas zeradas para ' + cel);
   }
+
   localStorage.setItem('itap_cel', cel);
   showMsg('msg-acesso','Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
   setTimeout(mostrarPainelCliente, 800);
@@ -1465,13 +1608,20 @@ function mostrarPainelCliente() {
     clienteAtual.saldoPontos   = pontosAntigos;
     clienteAtual.codigosUsados = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.codigos) || [];
     clienteAtual.resgates      = clienteAtual.resgates || [];
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    _gravarClienteAtual();
     salvarClientes('Migracao de dados: ' + clienteAtual.nome);
   }
   document.getElementById('card-acesso').style.display = 'none';
   document.getElementById('card-cliente').style.display = 'block';
   document.getElementById('card-historico').style.display = 'block';
   atualizarUI();
+
+  // Verificar se há token de estrela pendente na sessão (cliente fez login após capturar)
+  const tokenPendente = sessionStorage.getItem('itap_estrela_token');
+  if (tokenPendente && tokenPendente.startsWith('EST')) {
+    console.log('🌟 Token pendente detectado após login:', tokenPendente);
+    setTimeout(() => processarTokenEstrela(tokenPendente), 800);
+  }
 }
 
 function atualizarUI() {
@@ -1485,7 +1635,10 @@ function atualizarUI() {
     const [ano, mes, dia] = clienteAtual.dataNasc.split('-');
     dataNascFormatada = dia + '/' + mes + '/' + ano;
   }
-  const celFmt = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
+  const cel = clienteAtual.cel || '';
+  const celFmt = cel.length >= 10
+    ? '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7)
+    : cel || '—';
   document.getElementById('cliente-cel').textContent = celFmt + (dataNascFormatada ? ' • ' + dataNascFormatada : '');
   document.getElementById('rodada-badge').textContent = '🌟 ' + pontos + ' ponto' + (pontos !== 1 ? 's' : '') + ' no saldo';
 
@@ -1547,7 +1700,7 @@ function renderHistorico() {
   const lista = document.getElementById('historico-list');
   if (!clienteAtual) return;
 
-  const codigos   = clienteAtual.codigosUsados || clienteAtual.codigosUsados || [];
+  const codigos   = clienteAtual.codigosUsados || [];
   const resgates  = clienteAtual.resgates || [];
   let html = '';
 
@@ -1595,6 +1748,10 @@ function sair() {
   document.getElementById('inp-data-nasc').value = '';
   document.getElementById('inp-cel-novo').value = '';
   document.getElementById('inp-cel-login').value = '';
+  document.getElementById('inp-login-dia').value = '';
+  document.getElementById('inp-login-mes').value = '';
+  document.getElementById('inp-login-ano').value = '';
+  showMsg('msg-acesso','','ok');
   setTab('novo');
 }
 
@@ -1790,8 +1947,8 @@ async function validarCodigo() {
     try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
   }
 
-  if (ghClientes.clientes && ghClientes.clientes[clienteAtual.cel]) {
-    clienteAtual = ghClientes.clientes[clienteAtual.cel];
+  if (ghClientes.clientes && _chaveCliente(clienteAtual.cel)) {
+    clienteAtual = ghClientes.clientes[_chaveCliente(clienteAtual.cel)];
   }
 
   const msgBloqueioCliente = verificarBloqueioCliente();
@@ -1861,17 +2018,47 @@ async function validarCodigo() {
   clienteAtual.codigosUsados.push({ codigo, data: agora });
   clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
   clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
 
   limparBloqueioTentativas();
   registrarUsoValido();
   registrarUsoDispositivo();
 
-  const [okFid, okCli] = await Promise.all([
-    salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome),
-    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos)
-  ]);
+  // Salvar sequencialmente para permitir rollback em caso de falha parcial
+  // 1. Salvar fidelidade.json primeiro (marcar código como usado)
+  const okFid = await salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome);
+  if (!okFid) {
+    // Rollback total em memória
+    codigosObj[codigo].status = 'disponivel';
+    delete codigosObj[codigo].usadoPor;
+    delete codigosObj[codigo].usadoEm;
+    clienteAtual.codigosUsados.pop();
+    clienteAtual.saldoPontos--;
+    clienteAtual.totalCodigos--;
+    _gravarClienteAtual();
+    hideLoading();
+    showMsg('msg-codigo', 'Erro de conexao ao registrar codigo. Seu ponto NAO foi contabilizado. Verifique sua internet e tente novamente.', 'erro');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  // 2. Salvar clientes.json (adicionar ponto ao cliente)
+  const okCli = await salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos);
   hideLoading();
+  if (!okCli) {
+    // Rollback: desfazer em memória e restaurar fidelidade.json
+    codigosObj[codigo].status = 'disponivel';
+    delete codigosObj[codigo].usadoPor;
+    delete codigosObj[codigo].usadoEm;
+    clienteAtual.codigosUsados.pop();
+    clienteAtual.saldoPontos--;
+    clienteAtual.totalCodigos--;
+    _gravarClienteAtual();
+    // Tentar restaurar fidelidade.json
+    await salvarFidelidade('ROLLBACK: codigo ' + codigo + ' restaurado (falha ao salvar cliente)');
+    showMsg('msg-codigo', 'Erro ao salvar ponto. O codigo foi liberado para nova tentativa. Verifique sua internet e tente novamente.', 'erro');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
   if (okFid && okCli) {
     document.getElementById('input-codigo').value = '';
     showMsg('msg-codigo','+1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos > 1 ? 's' : '') + '.','ok');
@@ -1943,7 +2130,7 @@ async function resgatarPremio(tipo) {
     data:       agora
   });
   clienteAtual.totalPremios = (clienteAtual.totalPremios || 0) + 1;
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
 
   const ok = await salvarClientes(
     'Resgate: ' + clienteAtual.nome + ' — ' + nomePremio +
@@ -2193,99 +2380,132 @@ function toggleSenha(idCampo, idOlho) {
 // ESTRELA DOURADA — PROCESSAR TOKEN DA CAPTURA
 // ═══════════════════════════════════════════════════════════
 async function processarTokenEstrela(tokenCaptura) {
-  console.log('🚀 Iniciando processamento infalível do token:', tokenCaptura);
-  
-  const statusEl = document.createElement('div');
-  statusEl.id = 'status-processamento-estrela';
-  statusEl.style = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#27ae60;color:white;padding:15px 25px;border-radius:50px;z-index:10000;box-shadow:0 4px 15px rgba(0,0,0,0.2);font-weight:bold;display:flex;align-items:center;gap:10px;font-family:sans-serif;';
-  statusEl.innerHTML = '<span>⏳</span> Processando sua Estrela Dourada...';
-  document.body.appendChild(statusEl);
-
   try {
+    // 1. Buscar o estado atual da estrela no GitHub
     const ESTRELAS_PATH = 'estrelas_ciclo.json';
-    
-    async function tentarSalvar(tentativas = 3) {
-      for (let i = 0; i < tentativas; i++) {
-        try {
-          const resp = await ghGet(ESTRELAS_PATH);
-          
-          const dados = JSON.parse(resp.content);
-          const sha = resp.sha;
-          const estrela = dados.estrelaCapturada;
+    const resp = await ghGet(ESTRELAS_PATH);
+    if (!resp.content) { console.warn('⚠️ estrelas_ciclo.json não encontrado'); return false; }
+    const dados = JSON.parse(resp.content);
+    const sha = resp.sha;
 
-            if (estrela && estrela.status === 'capturada' && estrela.capturadoPor === (clienteAtual ? clienteAtual.cel : null)) {
-               return { sucesso: true, ja_capturada: true };
-            }
-            throw new Error('Token inválido ou já processado');
-          }
-
-            sessionStorage.setItem('itap_estrela_token', tokenCaptura);
-            statusEl.style.background = '#f39c12';
-            statusEl.innerHTML = '<span>🔑</span> Por favor, faça login para garantir sua estrela!';
-            setTimeout(() => statusEl.remove(), 5000);
-            return { sucesso: false, login_requerido: true };
-          }
-
-          const hoje = new Date().toISOString().split('T')[0];
-          const usuarioId = clienteAtual.cel;
-          
-            dados.rankingAtual[usuarioId] = { nome: clienteAtual.nome, celular: clienteAtual.cel, estrelas: 0, ultimaCaptura: null, diaCaptura: null };
-          }
-
-          dados.rankingAtual[usuarioId].estrelas += 1;
-          dados.rankingAtual[usuarioId].ultimaCaptura = new Date().toISOString();
-          dados.rankingAtual[usuarioId].diaCaptura = hoje;
-          
-          dados.estrelaCapturada.status = 'capturada';
-          dados.estrelaCapturada.capturadoPor = usuarioId;
-          dados.estrelaCapturada.capturadoEm = new Date().toISOString();
-          dados.estrelaCapturada.tokenResgate = null;
-
-          if (dados.horariosDia && dados.horariosDia[hoje]) {
-            dados.horariosDia[hoje].status = 'capturada';
-            dados.horariosDia[hoje].capturadoPor = usuarioId;
-          }
-
-          const conteudo = JSON.stringify(dados, null, 2);
-          const resultado = await ghPut(ESTRELAS_PATH, conteudo, '🌟 Estrela capturada por ' + clienteAtual.nome, sha);
-          
-          if (resultado.ok) return { sucesso: true, total: dados.rankingAtual[usuarioId].estrelas };
-          throw new Error('Falha no GitHub Put');
-          
-        } catch (err) {
-          console.warn('⚠️ Tentativa ' + (i+1) + ' falhou:', err.message);
-          if (i === tentativas - 1) throw err;
-          await new Promise(r => setTimeout(r, 2000));
-        }
+    // 2. Validar o token
+    const estrela = dados.estrelaCapturada;
+    if (!estrela || estrela.tokenResgate !== tokenCaptura) {
+      console.warn('⚠️ Token inválido ou estrela já processada');
+      return false;
+    }
+    if (estrela.status !== 'em_resgate') {
+      console.warn('⚠️ Estrela não está em resgate');
+      return false;
+    }
+    // Verificar validade do token (2 minutos após aparição)
+    if (estrela.horaAparicao) {
+      const aparicao = new Date(estrela.horaAparicao);
+      const agora = new Date();
+      const tempoDecorrido = (agora - aparicao) / 1000; // em segundos
+      if (tempoDecorrido > 120) { // 2 minutos = 120 segundos
+        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + tempoDecorrido + 's');
+        return false;
+      }
+    }
+    if (estrela.validadeToken) {
+      const validade = new Date(estrela.validadeToken);
+      if (new Date() > validade) {
+        console.warn('⏰ Token expirado!');
+        return false;
       }
     }
 
-    const res = await tentarSalvar();
-    
-    if (res && res.sucesso) {
-      statusEl.innerHTML = '<span>✅</span> Estrela Dourada Capturada com Sucesso!';
-      sessionStorage.removeItem('itap_estrela_token');
-      
+    // 3. Se não está logado, salva token para processar após login
+    if (!clienteAtual) {
+      sessionStorage.setItem("itap_estrela_token", tokenCaptura);
+      console.log("🌟 Token salvo na sessão — aguardando login do cliente");
+      // Inicia o guia visual para orientar o login
+      if (typeof window.iniciarGuiaEstrela === 'function') window.iniciarGuiaEstrela();
+      return false;
+    }
+
+    // 4. Proteção Anti-Robô: Exibir botão para clique humano
+    //    Todo o código de salvar fica DENTRO do onclick para executar após o clique
+    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
+    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
+
+    async function salvarCaptura() {
+      const hoje = new Date().toISOString().split('T')[0];
+      const usuarioId = clienteAtual.cel;
+      if (!dados.rankingAtual) dados.rankingAtual = {};
+      if (!dados.rankingAtual[usuarioId]) {
+        dados.rankingAtual[usuarioId] = {
+          nome: clienteAtual.nome,
+          celular: clienteAtual.cel,
+          estrelas: 0,
+          ultimaCaptura: null,
+          diaCaptura: null
+        };
+      }
+      dados.rankingAtual[usuarioId].estrelas += 1;
+      dados.rankingAtual[usuarioId].ultimaCaptura = new Date().toISOString();
+      dados.rankingAtual[usuarioId].diaCaptura = hoje;
+      dados.rankingAtual[usuarioId].nome = clienteAtual.nome;
+
+      // 5. Marcar estrela como capturada definitivamente
+      dados.estrelaCapturada.status = 'capturada';
+      dados.estrelaCapturada.capturadoPor = usuarioId;
+      dados.estrelaCapturada.capturadoEm = new Date().toISOString();
+      dados.estrelaCapturada.tokenResgate = null;
+
+      // Marcar o dia como capturado no horariosDia
+      if (dados.horariosDia && dados.horariosDia[hoje]) {
+        dados.horariosDia[hoje].status = 'capturada';
+        dados.horariosDia[hoje].capturadoPor = usuarioId;
+        dados.horariosDia[hoje].capturadoEm = new Date().toISOString();
+      }
+
+      // 6. Salvar no GitHub
+      const conteudo = JSON.stringify(dados, null, 2);
+      const resultado = await ghPut(ESTRELAS_PATH, conteudo,
+        '🌟 Estrela capturada por ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')', sha);
+
+      if (resultado.ok) {
+        console.log('🌟 Estrela registrada com sucesso para ' + clienteAtual.nome);
+        sessionStorage.removeItem('itap_estrela_token');
+        const totalEstrelas = dados.rankingAtual[usuarioId].estrelas;
+        const metaEstrelas = (dados.cicloAtual && dados.cicloAtual.metaEstrelas) || 5;
         setTimeout(() => {
-          statusEl.remove();
-          alert('🌟 PARABÉNS!
-
-Você capturou a Estrela Dourada!
-Total: ' + res.total + '/5');
-          window.location.reload();
-        }, 1500);
+          alert('🌟 PARABÉNS, ' + clienteAtual.nome.split(' ')[0] + '!\n\nVocê capturou a Estrela Dourada!\n\nTotal de estrelas: ' + totalEstrelas + '/' + metaEstrelas + '\n\n' +
+            (totalEstrelas >= metaEstrelas ? '🏆 Você completou ' + metaEstrelas + ' estrelas! Fale com a gente no WhatsApp para resgatar seu prêmio!' : 'Continue caçando! Faltam ' + (metaEstrelas - totalEstrelas) + ' estrela(s) para o prêmio!'));
+        }, 500);
+        return true;
       } else {
-        setTimeout(() => statusEl.remove(), 3000);
+        console.error('❌ Erro ao salvar captura da estrela');
+        return false;
       }
     }
 
-  } catch (error) {
-    console.error('❌ Erro crítico no resgate:', error);
-    statusEl.style.background = '#e74c3c';
-    statusEl.innerHTML = '<span>❌</span> Erro ao salvar. Tente novamente em instantes.';
-    setTimeout(() => statusEl.remove(), 5000);
+    if (secaoReivindicar && btnReivindicar) {
+      secaoReivindicar.style.display = 'block';
+      return new Promise(resolve => {
+        btnReivindicar.onclick = async () => {
+          secaoReivindicar.style.display = 'none';
+          // Atraso aleatório para simular tempo de reação humano (proteção anti-robô)
+          await new Promise(r => setTimeout(r, 500 + Math.random() * 1500));
+          const ok = await salvarCaptura();
+          resolve(ok);
+        };
+      });
+    }
+
+    // Se não há botão no DOM, salva diretamente
+    return await salvarCaptura();
+
+  } catch(e) {
+    console.error('❌ Erro ao processar token da estrela:', e);
+    return false;
   }
 }
+
+// ═══════════════════════════════════════════════════════════
+// INICIALIZACAO
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   carregarDados().then(() => {
@@ -2337,6 +2557,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
+<script src="scripts/auto-fixer.js" defer></script>
 
 <!-- SCRIPT GUIA ESTRELA: contador 5 min + seta unica -->
 <script>
