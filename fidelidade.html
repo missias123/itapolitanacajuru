@@ -1075,9 +1075,12 @@ async function carregarDados() {
   }
   hideLoading();
   const celSalvo = localStorage.getItem('itap_cel');
-  if (celSalvo && ghClientes.clientes[celSalvo]) {
-    clienteAtual = ghClientes.clientes[celSalvo];
-    mostrarPainelCliente();
+  if (celSalvo) {
+    const chaveRestaurar = _chaveCliente(celSalvo);
+    if (chaveRestaurar) {
+      clienteAtual = ghClientes.clientes[chaveRestaurar];
+      mostrarPainelCliente();
+    }
   }
 }
 
@@ -1087,7 +1090,8 @@ async function salvarClientes(msg) {
     if (fresh && fresh.sha) ghClientesSha = fresh.sha;
     if (fresh && fresh.content) {
       const freshData = JSON.parse(fresh.content);
-      ghClientes.clientes = Object.assign({}, freshData.clientes || {}, ghClientes.clientes);
+      ghClientes.clientes      = Object.assign({}, freshData.clientes || {}, ghClientes.clientes);
+      ghClientes.indice_celular = Object.assign({}, freshData.indice_celular || {}, ghClientes.indice_celular || {});
     }
   } catch(e) {}
   const content = JSON.stringify(ghClientes, null, 2);
@@ -1097,6 +1101,19 @@ async function salvarClientes(msg) {
 }
 
 async function salvarFidelidade(msg) {
+  try {
+    const fresh = await ghGet(FIDELIDADE_PATH);
+    if (fresh && fresh.sha) ghFidelidadeSha = fresh.sha;
+    if (fresh && fresh.content) {
+      const freshData = JSON.parse(fresh.content);
+      // Mesclar códigos: servidor + local (local prevalece para marcar como usado/rollback)
+      const codLocal  = ghFidelidade['c\u00f3digos'] || ghFidelidade.codigos || {};
+      const codFresh  = freshData['c\u00f3digos']  || freshData.codigos  || {};
+      const codMerge  = Object.assign({}, codFresh, codLocal);
+      ghFidelidade['c\u00f3digos'] = codMerge;
+      ghFidelidade.codigos        = codMerge;
+    }
+  } catch(e) {}
   const content = JSON.stringify(ghFidelidade, null, 2);
   const r = await ghPut(FIDELIDADE_PATH, content, msg, ghFidelidadeSha);
   if (r.ok) ghFidelidadeSha = r.sha;
@@ -1208,6 +1225,22 @@ function mascaraTel(el) {
 }
 function limparTel(v) { return v.replace(/\D/g,''); }
 
+// ── Helpers de chave: clientes.json usa USR-2026-xxxx como chave primária ──
+// Resolve CEL → chave real (USR-xxxx ou CEL legado para compatibilidade)
+function _chaveCliente(cel) {
+  if (!cel) return null;
+  const idx = (ghClientes.indice_celular || {})[cel];
+  if (idx && ghClientes.clientes[idx]) return idx;
+  if (ghClientes.clientes[cel]) return cel; // compatibilidade com dados legados
+  return null;
+}
+// Persiste clienteAtual em ghClientes.clientes na chave correta
+function _gravarClienteAtual() {
+  if (!clienteAtual || !clienteAtual.cel) return;
+  const chave = _chaveCliente(clienteAtual.cel) || clienteAtual.id || clienteAtual.cel;
+  ghClientes.clientes[chave] = clienteAtual;
+}
+
 // ═══════════════════════════════════════════════════════════
 // MENSAGENS
 // ═══════════════════════════════════════════════════════════
@@ -1306,96 +1339,124 @@ async function cadastrar() {
   if (dddFid < 11 || dddFid > 99) { showMsg('msg-acesso','DDD invalido. Informe um celular com DDD correto.','aviso'); return; }
 
   // ── VALIDACAO DE UNICIDADE ──────────────────────────────────
-  // Normaliza nome para comparacao (minusculas, sem espacos extras)
+  // Recarregar dados frescos para evitar cadastro duplicado em paralelo
+  setLoading('Verificando dados...');
+  const freshC = await ghGet(CLIENTES_PATH);
+  if (freshC.content) {
+    try { ghClientes = JSON.parse(freshC.content); ghClientesSha = freshC.sha; } catch(e) {}
+  }
+  hideLoading();
+
   const nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
 
-  // PASSO 1: Verificar por Nome + Data de Nascimento
-  const registrosMesmoNomeData = Object.values(ghClientes.clientes).filter(c => {
+  // ── PASSO 1: IDENTIDADE PRIMÁRIA — Nome + Data de Nascimento ─────────────
+  // A mesma pessoa NÃO pode ter dois cadastros. Celular pode mudar.
+  const entradaNomeData = Object.entries(ghClientes.clientes).find(([, c]) => {
     const cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
     return cNome === nomeNorm && c.dataNasc === dataNasc;
   });
 
-  if (registrosMesmoNomeData.length > 0) {
-    // Verifica se o celular fornecido e igual a algum ja cadastrado
-    const mesmoCel = registrosMesmoNomeData.find(c => c.cel === cel);
-    if (mesmoCel) {
-      // Caso 1: Nome + Data + Celular iguais — ja cadastrado
-      clienteAtual = mesmoCel;
+  if (entradaNomeData) {
+    const [chaveExistente, regExistente] = entradaNomeData;
+    if (regExistente.cel === cel) {
+      // Caso 1: mesma pessoa, mesmo cel → já cadastrado, fazer login
+      clienteAtual = regExistente;
       localStorage.setItem('itap_cel', cel);
       showMsg('msg-acesso',
-        'Ola ' + nome.split(' ')[0] + '! Voce ja possui um cadastro em nosso programa de fidelidade com este telefone. Entrando na sua conta...','ok');
+        'Ola ' + nome.split(' ')[0] + '! Voce ja esta cadastrado no programa de fidelidade. Entrando na sua conta...', 'ok');
       setTimeout(mostrarPainelCliente, 1200);
-      return;
     } else {
-      // Caso 2: Nome + Data iguais mas celular DIFERENTE — potencial duplicidade
-      setLoading('Verificando dados...');
-      // Marca o registro existente como potencial duplicidade
-      const regExistente = registrosMesmoNomeData[0];
-      if (!regExistente.potencialDuplicidade) {
-        regExistente.potencialDuplicidade = [];
-      }
-      regExistente.potencialDuplicidade.push({
-        data: new Date().toISOString(),
-        celTentativa: cel,
-        status: 'Pendente revisao admin'
-      });
-      await salvarClientes('DUPLICIDADE: ' + nome + ' tentou cadastrar com cel ' + cel + ' (ja tem cadastro com outro cel)');
+      // Caso 2: mesma pessoa, celular diferente → atualizar cel (pessoa trocou de numero)
+      const celAntigo = regExistente.cel;
+      regExistente.cel = cel;
+      if (!regExistente.cel_anterior) regExistente.cel_anterior = [];
+      if (celAntigo && !regExistente.cel_anterior.includes(celAntigo)) regExistente.cel_anterior.push(celAntigo);
+      regExistente.ultimo_acesso = new Date().toISOString();
+      ghClientes.clientes[chaveExistente] = regExistente;
+      // Atualizar indice_celular: remover cel antigo, registrar novo
+      if (!ghClientes.indice_celular) ghClientes.indice_celular = {};
+      if (celAntigo) delete ghClientes.indice_celular[celAntigo];
+      ghClientes.indice_celular[cel] = chaveExistente;
+      setLoading('Atualizando seu numero de celular...');
+      await salvarClientes('Atualizacao de cel: ' + regExistente.nome + ' [' + celAntigo + ' -> ' + cel + ']');
       hideLoading();
+      clienteAtual = regExistente;
+      localStorage.setItem('itap_cel', cel);
       showMsg('msg-acesso',
-        'Ola ' + nome.split(' ')[0] + '! Parece que voce ja possui um cadastro em nosso programa de fidelidade com este nome e data de nascimento, mas com um numero de telefone diferente. Para evitar duplicidades, entre em contato conosco para atualizarmos seu cadastro. Isso garante que voce aproveite todos os seus beneficios!',
-        'aviso');
-      return;
+        'Ola ' + nome.split(' ')[0] + '! Reconhecemos seu cadastro. Seu numero foi atualizado. Entrando na sua conta...', 'ok');
+      setTimeout(mostrarPainelCliente, 1200);
     }
+    return;
   }
 
-  // PASSO 2: Verificar por Celular (se Passo 1 nao encontrou duplicidade)
-  if (ghClientes.clientes[cel]) {
-    const regCel = ghClientes.clientes[cel];
-    // Celular ja cadastrado com outro nome — entra na conta existente
-    clienteAtual = regCel;
+  // ── PASSO 2: IDENTIDADE SECUNDÁRIA — Celular ─────────────────────────────
+  // Se o cel já está vinculado a outra pessoa, entra na conta existente
+  const chaveExistenteCel = _chaveCliente(cel);
+  if (chaveExistenteCel) {
+    clienteAtual = ghClientes.clientes[chaveExistenteCel];
     localStorage.setItem('itap_cel', cel);
     showMsg('msg-acesso',
-      'Ola! Este numero de telefone ja esta cadastrado em nosso programa de fidelidade. Entrando na sua conta...','ok');
+      'Ola! Este numero ja esta cadastrado em nosso programa de fidelidade. Entrando na sua conta...', 'ok');
     setTimeout(mostrarPainelCliente, 1200);
     return;
   }
 
-  // ── NOVO CADASTRO (sem duplicidade) ────────────────────────
+  // ── PASSO 3: NOVO CADASTRO ────────────────────────────────────────────────
   setLoading('Criando sua conta...');
-  
-  // PASSO 3: Verificar se já existe no Sorteio para herdar o ID
-  let idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+
+  // Gerar ID sequencial USR-2026-xxxx
+  const idsExistentes = Object.keys(ghClientes.clientes).filter(k => k.startsWith('USR-2026-'));
+  const nums = idsExistentes.map(k => parseInt(k.replace('USR-2026-',''))).filter(n => !isNaN(n));
+  const maxNum = nums.length > 0 ? Math.max(...nums) : 0;
+  let idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
+
+  // Herdar ID se já inscrito no sorteio com o mesmo cel
   try {
     const fRes = await ghGet(FIDELIDADE_PATH);
     if (fRes.content) {
       const fidData = JSON.parse(fRes.content);
-      const inscrito = (fidData.sorteioInscritos || []).find(s => s.cel.replace(/\D/g,'') === cel);
-      if (inscrito && inscrito.id) idUnico = inscrito.id;
+      const inscrito = (fidData.sorteioInscritos || []).find(s =>
+        s.cel && s.cel.replace(/\D/g,'') === cel
+      );
+      if (inscrito && inscrito.id && inscrito.id.startsWith('USR-')) idUnico = inscrito.id;
     }
-  } catch(e) { console.warn('Erro ao buscar ID no sorteio:', e); }
+  } catch(e) {}
 
   const novoCliente = {
-    id: idUnico,
-    nome, dataNasc, cel,
-    cadastro:     new Date().toISOString(),
-    saldoPontos:  0,
-    codigosUsados: [],
-    resgates:     [],
-    totalPremios: 0,
-    totalCodigos: 0
+    id:              idUnico,
+    nome,
+    dataNasc,
+    cel,
+    cel_anterior:    [],
+    cadastro:        new Date().toISOString(),
+    saldoPontos:     0,
+    codigosUsados:   [],
+    resgates:        [],
+    totalPremios:    0,
+    totalCodigos:    0,
+    bloqueado:       false,
+    tentativasInvalidas: 0
   };
-  ghClientes.clientes[cel] = novoCliente;
+
+  // Salvar com USR-2026-xxxx como chave + registrar no indice_celular
+  ghClientes.clientes[idUnico] = novoCliente;
+  if (!ghClientes.indice_celular) ghClientes.indice_celular = {};
+  ghClientes.indice_celular[cel] = idUnico;
+  if (!ghClientes.metadata) ghClientes.metadata = {};
+  ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
+
   const ok = await salvarClientes('Novo cliente: ' + nome + ' (' + cel + ') [ID: ' + idUnico + ']');
   hideLoading();
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
     showMsg('msg-acesso',
-      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro no programa de fidelidade da Sorveteria Itapolitana Cajuru foi realizado com sucesso! Bem-vindo(a)!',
+      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro foi realizado com sucesso! Bem-vindo(a) ao programa de fidelidade!',
       'ok');
     setTimeout(mostrarPainelCliente, 1500);
   } else {
-    delete ghClientes.clientes[cel];
+    delete ghClientes.clientes[idUnico];
+    delete ghClientes.indice_celular[cel];
     showMsg('msg-acesso','Erro ao criar conta. Verifique sua conexao e tente novamente.','erro');
   }
 }
@@ -1410,47 +1471,57 @@ async function entrar() {
   const ano = document.getElementById('inp-login-ano').value;
   if (cel.length < 10) { showMsg('msg-acesso','Informe um celular valido com DDD.','aviso'); return; }
   if (!dia || !mes || !ano || ano.length < 4) { showMsg('msg-acesso','Informe sua data de nascimento completa (Dia, Mes e Ano).','aviso'); return; }
+
   setLoading('Buscando sua conta...');
   const c = await ghGet(CLIENTES_PATH);
   if (c.content) {
     try { ghClientes = JSON.parse(c.content); ghClientesSha = c.sha; } catch(e) {}
   }
   hideLoading();
-  if (!ghClientes.clientes[cel]) {
-    showMsg('msg-acesso','Celular nao encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
+
+  // Resolver CEL via indice_celular (estrutura USR-xxxx) ou chave legada direta
+  const chaveCliente = _chaveCliente(cel);
+  if (!chaveCliente) {
+    showMsg('msg-acesso','Celular nao encontrado. Se e sua primeira vez, clique em "Primeira vez" para se cadastrar. Se trocou de numero, use "Primeira vez" para atualizar seu cadastro.','erro');
     return;
   }
-  clienteAtual = ghClientes.clientes[cel];
+  clienteAtual = ghClientes.clientes[chaveCliente];
+
   if (clienteAtual.bloqueado) {
     showMsg('msg-acesso','NUMERO BLOQUEADO — Este numero foi bloqueado por tentativas invalidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
     return;
   }
+
   const dataCadastrada = clienteAtual.dataNasc || '';
-  const dataDigitada = ano + '-' + mes + '-' + dia;
+  const dataDigitada   = ano + '-' + mes + '-' + dia;
+
   if (dataCadastrada && dataCadastrada !== dataDigitada) {
     clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
     const tentativas = clienteAtual.tentativasInvalidas;
     if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
     clienteAtual.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+
     if (tentativas >= 4) {
       clienteAtual.bloqueado = true;
       clienteAtual.dataBloqueio = new Date().toISOString();
-      ghClientes.clientes[cel] = clienteAtual;
+      _gravarClienteAtual();
       await salvarClientes('FRAUDE: bloqueio do numero ' + cel + ' apos ' + tentativas + ' tentativas');
       showMsg('msg-acesso','TENTATIVA DE FRAUDE DETECTADA! Seu numero foi BLOQUEADO apos ' + tentativas + ' tentativas invalidas. Entre em contato com a sorveteria.','erro');
     } else {
-      ghClientes.clientes[cel] = clienteAtual;
+      _gravarClienteAtual();
       await salvarClientes('Tentativa invalida ' + tentativas + '/4 para ' + cel);
       const restam = Math.max(0, 4 - tentativas);
       showMsg('msg-acesso','Data de nascimento incorreta. Tentativa ' + tentativas + ' de 4. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
     }
     return;
   }
+
   if (clienteAtual.tentativasInvalidas > 0) {
     clienteAtual.tentativasInvalidas = 0;
-    ghClientes.clientes[cel] = clienteAtual;
+    _gravarClienteAtual();
     await salvarClientes('Login OK: tentativas zeradas para ' + cel);
   }
+
   localStorage.setItem('itap_cel', cel);
   showMsg('msg-acesso','Bem-vindo(a) de volta, ' + clienteAtual.nome + '!','ok');
   setTimeout(mostrarPainelCliente, 800);
@@ -1465,8 +1536,7 @@ function mostrarPainelCliente() {
     clienteAtual.saldoPontos   = pontosAntigos;
     clienteAtual.codigosUsados = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.codigos) || [];
     clienteAtual.resgates      = clienteAtual.resgates || [];
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
-    salvarClientes('Migracao de dados: ' + clienteAtual.nome);
+    _gravarClienteAtual();
   }
   document.getElementById('card-acesso').style.display = 'none';
   document.getElementById('card-cliente').style.display = 'block';
@@ -1797,8 +1867,8 @@ async function validarCodigo() {
     try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
   }
 
-  if (ghClientes.clientes && ghClientes.clientes[clienteAtual.cel]) {
-    clienteAtual = ghClientes.clientes[clienteAtual.cel];
+  if (ghClientes.clientes && _chaveCliente(clienteAtual.cel)) {
+    clienteAtual = ghClientes.clientes[_chaveCliente(clienteAtual.cel)];
   }
 
   const msgBloqueioCliente = verificarBloqueioCliente();
@@ -1868,7 +1938,7 @@ async function validarCodigo() {
   clienteAtual.codigosUsados.push({ codigo, data: agora });
   clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
   clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
 
   limparBloqueioTentativas();
   registrarUsoValido();
@@ -1885,7 +1955,7 @@ async function validarCodigo() {
     clienteAtual.codigosUsados.pop();
     clienteAtual.saldoPontos--;
     clienteAtual.totalCodigos--;
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    _gravarClienteAtual();
     hideLoading();
     showMsg('msg-codigo', 'Erro de conexao ao registrar codigo. Seu ponto NAO foi contabilizado. Verifique sua internet e tente novamente.', 'erro');
     btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
@@ -1902,7 +1972,7 @@ async function validarCodigo() {
     clienteAtual.codigosUsados.pop();
     clienteAtual.saldoPontos--;
     clienteAtual.totalCodigos--;
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    _gravarClienteAtual();
     // Tentar restaurar fidelidade.json
     await salvarFidelidade('ROLLBACK: codigo ' + codigo + ' restaurado (falha ao salvar cliente)');
     showMsg('msg-codigo', 'Erro ao salvar ponto. O codigo foi liberado para nova tentativa. Verifique sua internet e tente novamente.', 'erro');
@@ -1980,7 +2050,7 @@ async function resgatarPremio(tipo) {
     data:       agora
   });
   clienteAtual.totalPremios = (clienteAtual.totalPremios || 0) + 1;
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
 
   const ok = await salvarClientes(
     'Resgate: ' + clienteAtual.nome + ' — ' + nomePremio +
