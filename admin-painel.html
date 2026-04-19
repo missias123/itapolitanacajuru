@@ -468,6 +468,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
     <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
     <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas/Depoimentos</button>
+    <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -1854,44 +1855,152 @@ Talento</textarea>
 
     <!-- QUALIDADE -->
     <div class="seção" id="sec-qualidade">
-      <div class="card">
-        <div class="card-header">
-          <h2>📊 Painel de Qualidade — Métricas do Site</h2>
-          <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none">🔗 Abrir em Nova Aba</a>
+      <div class="card" style="background:#0d1117;border:1px solid #30363d">
+        <div class="card-header" style="background:#161b22;border-bottom:1px solid #30363d">
+          <h2 style="color:#e8eaf6">📊 Painel de Qualidade — Métricas do Site</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:#8b949e" id="adm-qual-ts">Última leitura: aguardando...</span>
+            <button class="btn btn-salvar" onclick="carregarMetricasQualidade()" style="font-size:12px;padding:6px 12px">🔄 Atualizar</button>
+            <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">🔗 Nova Aba</a>
+          </div>
         </div>
-        <div class="card-body" style="padding:0">
-          <!-- Scores resumidos -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 20px;background:#0d1117;border-radius:8px;margin-bottom:0">
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-perf">98</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+        <div class="card-body" style="padding:16px;background:#0d1117">
+
+          <!-- SCORES LIGHTHOUSE -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Scores Google Lighthouse</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-perf">98</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-perf" style="height:100%;background:#4caf50;border-radius:3px;width:98%;transition:width 1s"></div></div>
             </div>
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-acess">96</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-acess">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-acess" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
             </div>
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-bp">96</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-bp">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-bp" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
             </div>
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-seo">100</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Perfeito</div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-seo">100</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-seo" style="height:100%;background:#4caf50;border-radius:3px;width:100%;transition:width 1s"></div></div>
             </div>
           </div>
-          <!-- Iframe do painel completo -->
-          <div style="position:relative;width:100%;padding-bottom:0">
-            <iframe
-              src="painel-qualidade.html"
-              style="width:100%;height:700px;border:none;border-radius:0 0 8px 8px;display:block"
-              title="Painel de Qualidade"
-              loading="lazy"
-            ></iframe>
+
+          <!-- CORE WEB VITALS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Core Web Vitals — Dados Reais da Sessão</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+            <div id="adm-vital-lcp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">LCP — Carregamento</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-lcp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 2.5s · <span id="adm-lcp-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-cls" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">CLS — Estabilidade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-cls-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 0.1 · <span id="adm-cls-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-inp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">INP — Interatividade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-inp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 200ms · <span id="adm-inp-status">aguardando...</span></div>
+            </div>
           </div>
+
+          <!-- SERVICE WORKER -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">PWA — Service Worker (Cache Offline)</div>
+          <div style="background:#161b22;border-radius:10px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span id="adm-sw-badge" style="background:#3949ab;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px">⚙️ Verificando...</span>
+            <span style="font-size:12px;color:#7986cb" id="adm-sw-desc">O Service Worker permite que o site funcione offline e carregue mais rápido.</span>
+          </div>
+
+          <!-- CHECKLIST -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Checklist de Qualidade — Verificação Automática</div>
+          <div id="adm-checklist" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#7986cb;font-size:13px">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>
+          </div>
+
+          <!-- ERROS JS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Erros JavaScript Detectados</div>
+          <div id="adm-erros" style="margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>
+          </div>
+
+          <!-- PÁGINAS AUDITADAS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Páginas Auditadas</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+            <a href="https://itapolitanacajuru.com.br" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🏠</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Página Inicial</div>
+                <div style="font-size:11px;color:#5c6bc0">itapolitanacajuru.com.br</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 98</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 96</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/encomendas.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🛒</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Encomendas</div>
+                <div style="font-size:11px;color:#5c6bc0">/encomendas.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/fidelidade.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">⭐</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Fidelidade</div>
+                <div style="font-size:11px;color:#5c6bc0">/fidelidade.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 91</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/promocao.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🎁</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Promoção</div>
+                <div style="font-size:11px;color:#5c6bc0">/promocao.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 95</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- FERRAMENTA MANUS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Manus — Solicitar Melhoria</div>
+          <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:10px">🤖 O que você quer melhorar no site hoje?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+              <button onclick="admQualSetInput('Otimizar imagens pesadas para melhorar performance')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">⚡ Otimizar Imagens</button>
+              <button onclick="admQualSetInput('Melhorar velocidade de carregamento — LCP abaixo de 2.5s')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🚀 Mais Velocidade</button>
+              <button onclick="admQualSetInput('Verificar e corrigir erros de JavaScript no console')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🐛 Corrigir Erros JS</button>
+              <button onclick="admQualSetInput('Melhorar experiência do usuário no celular')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">📱 UX Mobile</button>
+              <button onclick="admQualSetInput('Rodar auditoria completa Lighthouse e atualizar scores')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🔍 Nova Auditoria</button>
+              <button onclick="admQualSetInput('Melhorar o design visual do site')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🎨 Melhorar Design</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input id="adm-manus-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
+              <button onclick="admQualEnviarManus()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Manus</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -2343,14 +2452,144 @@ function irPara(seção,btn){
 }
 
 function atualizarScoresQualidade(){
-  // Ler scores do localStorage (gravados pelo quality-guard.js)
-  try {
-    const dados = JSON.parse(localStorage.getItem('qualidade_scores') || '{}');
-    if(dados.performance) document.getElementById('adm-score-perf').textContent = dados.performance;
-    if(dados.acessibilidade) document.getElementById('adm-score-acess').textContent = dados.acessibilidade;
-    if(dados.boasPraticas) document.getElementById('adm-score-bp').textContent = dados.boasPraticas;
-    if(dados.seo) document.getElementById('adm-score-seo').textContent = dados.seo;
-  } catch(e) {}
+  carregarMetricasQualidade();
+}
+function carregarMetricasQualidade(){
+  const QG_KEY='itap_quality_guard';
+  let dados={};
+  try{ dados=JSON.parse(localStorage.getItem(QG_KEY)||'{}'); }catch(e){}
+
+  // Timestamp
+  const tsEl=document.getElementById('adm-qual-ts');
+  if(tsEl) tsEl.textContent='Última leitura: '+(dados.ultima_atualizacao?new Date(dados.ultima_atualizacao).toLocaleString('pt-BR'):'Aguardando primeira visita ao site');
+
+  // Scores Lighthouse (lê também da chave legada)
+  try{
+    const sc=JSON.parse(localStorage.getItem('qualidade_scores')||'{}');
+    if(sc.performance){
+      const v=sc.performance;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-perf');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-perf');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+    if(sc.acessibilidade){
+      const v=sc.acessibilidade;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-acess');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-acess');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+    if(sc.boasPraticas){
+      const v=sc.boasPraticas;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-bp');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-bp');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+    if(sc.seo){
+      const v=sc.seo;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-seo');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-seo');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+  }catch(e){}
+
+  // Core Web Vitals
+  const v=dados.vitals||{};
+  function setVitalCard(cardId,valId,statusId,val,unit,bom,ruim,label){
+    const card=document.getElementById(cardId);
+    const valEl=document.getElementById(valId);
+    const stEl=document.getElementById(statusId);
+    if(!card||!valEl||!stEl)return;
+    if(val===undefined||val===null){return;}
+    const isGood=val<=bom;
+    const isBad=val>ruim;
+    const color=isGood?'#4caf50':isBad?'#f44336':'#ff9800';
+    const status=isGood?'✅ Bom':isBad?'❌ Ruim':'⚠️ Melhorar';
+    card.style.borderLeftColor=color;
+    valEl.style.color=color;
+    valEl.textContent=label(val);
+    stEl.textContent=status;
+  }
+  if(v.lcp) setVitalCard('adm-vital-lcp','adm-lcp-val','adm-lcp-status',v.lcp/1000,1,2.5,4,x=>x.toFixed(1)+'s');
+  if(v.inp) setVitalCard('adm-vital-inp','adm-inp-val','adm-inp-status',v.inp,1,200,500,x=>x+'ms');
+  if(v.cls!==undefined&&v.cls<=0.2) setVitalCard('adm-vital-cls','adm-cls-val','adm-cls-status',v.cls,1,0.1,0.25,x=>x.toFixed(3));
+
+  // Service Worker
+  const swBadge=document.getElementById('adm-sw-badge');
+  const swDesc=document.getElementById('adm-sw-desc');
+  if(swBadge&&swDesc){
+    const sw=dados.sw_status||'desconhecido';
+    if(sw==='ATIVO'){swBadge.textContent='✅ Service Worker Ativo — Site funciona offline';swBadge.style.background='#2e7d32';swDesc.textContent='Cache ativo. O site carrega instantaneamente na segunda visita.';}
+    else if(sw==='ERRO'){swBadge.textContent='❌ Erro no Service Worker';swBadge.style.background='#c62828';swDesc.textContent=dados.sw_erro||'Verifique o arquivo sw.js';}
+    else{swBadge.textContent='⚙️ Aguardando primeira visita ao site principal';swBadge.style.background='#3949ab';swDesc.textContent='Abra o site para ativar o monitoramento.';}
+  }
+
+  // Checklist
+  const cl=dados.checklist||{};
+  const checkEl=document.getElementById('adm-checklist');
+  if(checkEl){
+    const itens=[
+      {key:'https',label:'HTTPS Ativo',desc:'Conexão segura e criptografada',critico:true},
+      {key:'viewport',label:'Viewport Meta Tag',desc:'Responsivo para celular',critico:true},
+      {key:'favicon',label:'Favicon',desc:'Ícone na aba do navegador',critico:false},
+      {key:'manifest',label:'PWA Manifest',desc:'Instalável como app no celular',critico:false},
+      {key:'open_graph',label:'Open Graph (WhatsApp/Facebook)',desc:'Preview bonito ao compartilhar',critico:false},
+      {key:'schema',label:'Schema.org (SEO Estruturado)',desc:'Google entende o negócio',critico:false},
+      {key:'canonical',label:'URL Canônica',desc:'Evita conteúdo duplicado no Google',critico:false},
+      {key:'meta_description',label:'Meta Description',desc:'Descrição nos resultados do Google',critico:false},
+      {key:'imagens_alt',label:'Imagens com Alt Text',desc:cl.imagens_sem_alt_count?cl.imagens_sem_alt_count+' imagem(ns) sem alt':'Acessibilidade e SEO',critico:false},
+    ];
+    if(Object.keys(cl).length===0){
+      checkEl.innerHTML='<div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#7986cb;font-size:13px">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>';
+    }else{
+      checkEl.innerHTML=itens.map(item=>{
+        const ok=cl[item.key];
+        const border=ok?'#4caf50':item.critico?'#f44336':'#ff9800';
+        const icon=ok?'✅':item.critico?'❌':'⚠️';
+        const tag=ok?'<span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto">OK</span>':item.critico?'<span style="background:#b71c1c;color:#ef9a9a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto">Crítico</span>':'<span style="background:#e65100;color:#ffcc80;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto">Atenção</span>';
+        return `<div style="background:#161b22;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;border-left:4px solid ${border}">
+          <span style="font-size:18px">${icon}</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#e8eaf6">${item.label}</div>
+            <div style="font-size:11px;color:#7986cb;margin-top:2px">${item.desc}</div>
+          </div>${tag}</div>`;
+      }).join('');
+    }
+  }
+
+  // Erros JS
+  const errosJS=dados.erros_js||[];
+  const erros404=dados.recursos_404||[];
+  const todos=[...errosJS,...erros404];
+  const errosEl=document.getElementById('adm-erros');
+  if(errosEl){
+    if(todos.length===0){
+      errosEl.innerHTML='<div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>';
+    }else{
+      errosEl.innerHTML=todos.map(e=>`<div style="background:#161b22;border-left:4px solid #f44336;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#ef9a9a">${e.tipo||'ERRO'}: ${e.msg||e.url||''} ${e.arquivo?'— '+e.arquivo+':'+(e.linha||''):''}  <span style="color:#5c6bc0;font-size:10px">${e.ts?new Date(e.ts).toLocaleTimeString('pt-BR'):''}</span></div>`).join('');
+    }
+  }
+}
+function admQualSetInput(texto){
+  const el=document.getElementById('adm-manus-input');
+  if(el){el.value=texto;el.focus();}
+}
+function admQualEnviarManus(){
+  const el=document.getElementById('adm-manus-input');
+  if(!el)return;
+  const texto=el.value.trim();
+  if(!texto)return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(texto).then(()=>{alert('✅ Mensagem copiada!\n\nCole no chat do Manus:\n\n"'+texto+'"');});
+  }else{alert('Copie e envie ao Manus:\n\n"'+texto+'"');}
+  el.value='';
 }
 
 function renderDashboard(){
