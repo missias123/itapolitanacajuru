@@ -64,6 +64,66 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .campo-ativo-guia{border:3px solid #e8650a !important;box-shadow:0 0 0 4px rgba(232,101,10,.25) !important;transition:all .3s}
 .form-group{position:relative}
 
+/* ═══════════════════════════════════════════════════════════
+   WIZARD LINEAR DA ESTRELA DOURADA
+   Fluxo empilhado passo a passo — sem abas, sem confusão
+   ═══════════════════════════════════════════════════════════ */
+#wizard-estrela{display:none;max-width:480px;margin:0 auto 24px;font-family:'Nunito',sans-serif}
+.wiz-header{background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border-radius:18px 18px 0 0;padding:18px 20px 14px;text-align:center}
+.wiz-header h2{font-size:1.25rem;font-weight:900;margin:0 0 4px;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.wiz-timer-bar{background:rgba(0,0,0,.25);border-radius:8px;height:8px;margin:10px 0 4px;overflow:hidden}
+.wiz-timer-fill{height:100%;background:linear-gradient(90deg,#F9A825,#FFD600);border-radius:8px;transition:width 1s linear}
+.wiz-timer-txt{font-size:1.15rem;font-weight:900;letter-spacing:2px}
+.wiz-timer-txt.urgente{color:#FFD600;animation:piscar .6s infinite}
+/* Indicador de passos */
+.wiz-steps{display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 20px;background:#fff7f0;border-bottom:1px solid #FFE0B2}
+.wiz-step-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #E0E0E0;background:#fff;color:#999;font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.wiz-step-dot.ativo{border-color:#EF0129;background:#EF0129;color:#fff;box-shadow:0 0 0 3px rgba(239,1,41,.2)}
+.wiz-step-dot.feito{border-color:#2E7D32;background:#2E7D32;color:#fff}
+.wiz-step-linha{flex:1;height:2px;background:#E0E0E0;max-width:30px;transition:background .3s}
+.wiz-step-linha.feita{background:#2E7D32}
+/* Painel de cada etapa */
+.wiz-body{background:#fff;border-radius:0 0 18px 18px;padding:22px 20px 18px;box-shadow:0 8px 32px rgba(0,0,0,.13)}
+.wiz-etapa{display:none}
+.wiz-etapa.ativa{display:block}
+.wiz-titulo-etapa{font-size:1rem;font-weight:900;color:#1A0A00;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #FFF3E0}
+/* Campo do wizard */
+.wiz-campo{margin-bottom:16px}
+.wiz-campo label{display:block;font-size:.85rem;font-weight:800;color:#5D3A1A;margin-bottom:6px}
+.wiz-campo input{width:100%;padding:13px 14px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif;box-sizing:border-box;transition:border-color .2s,box-shadow .2s;color:#1A0A00}
+.wiz-campo input:focus{outline:none;border-color:#EF0129;box-shadow:0 0 0 3px rgba(239,1,41,.15)}
+.wiz-campo input.valido{border-color:#2E7D32;box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+.wiz-campo input.invalido{border-color:#C62828;box-shadow:0 0 0 3px rgba(198,40,40,.15)}
+.wiz-campo .wiz-dica{font-size:.78rem;color:#888;margin-top:4px;line-height:1.5}
+.wiz-campo .wiz-dica.alerta{color:#C62828;font-weight:700}
+/* Botões do wizard */
+.wiz-acoes{display:flex;gap:10px;margin-top:18px}
+.wiz-btn-prox{flex:1;padding:14px;background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border:none;border-radius:50px;font-size:1rem;font-weight:900;cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 4px 14px rgba(239,1,41,.35);transition:all .2s;font-family:'Nunito',sans-serif}
+.wiz-btn-prox:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
+.wiz-btn-prox:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(239,1,41,.45)}
+.wiz-btn-volt{padding:14px 18px;background:#fff;color:#C62828;border:2px solid #C62828;border-radius:50px;font-size:.9rem;font-weight:800;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+/* Mensagem de erro dentro do wizard */
+.wiz-msg{margin-top:12px;padding:10px 14px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}
+.wiz-msg.ok{background:#E8F5E9;color:#1B5E20;border:1.5px solid #81C784;display:block}
+.wiz-msg.erro{background:#FFEBEE;color:#C62828;border:1.5px solid #EF9A9A;display:block}
+.wiz-msg.aviso{background:#FFF8E1;color:#E65100;border:1.5px solid #FFE082;display:block}
+/* Botão escolha inicial */
+.wiz-escolha{display:flex;flex-direction:column;gap:12px}
+.wiz-btn-escolha{padding:16px 20px;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;border:2.5px solid transparent;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;font-family:'Nunito',sans-serif}
+.wiz-btn-escolha.novo{background:#FFF3E0;border-color:#E65100;color:#BF360C}
+.wiz-btn-escolha.novo:hover{background:#FFE0B2;transform:translateY(-2px)}
+.wiz-btn-escolha.login{background:#E3F2FD;border-color:#0D47A1;color:#0D47A1}
+.wiz-btn-escolha.login:hover{background:#BBDEFB;transform:translateY(-2px)}
+.wiz-btn-escolha-icon{font-size:1.8rem}
+.wiz-btn-escolha-txt strong{display:block;font-size:1rem}
+.wiz-btn-escolha-txt span{font-size:.8rem;font-weight:600;opacity:.8}
+/* Etapa de sucesso / reivindicar */
+#wiz-etapa-reivindicar{text-align:center;padding:8px 0 4px}
+.wiz-estrela-animada{font-size:4rem;animation:flutuarEstrela 2s ease-in-out infinite;display:block;margin-bottom:8px}
+.wiz-btn-reivindicar{width:100%;padding:18px;background:linear-gradient(135deg,#F9A825,#EF0129);color:#fff;border:none;border-radius:50px;font-size:1.15rem;font-weight:900;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.5);box-shadow:0 6px 22px rgba(239,1,41,.4);transition:all .2s;font-family:'Nunito',sans-serif;animation:pulsarBtn 1.5s ease-in-out infinite}
+@keyframes pulsarBtn{0%,100%{box-shadow:0 6px 22px rgba(239,1,41,.4)}50%{box-shadow:0 8px 30px rgba(239,1,41,.65)}}
+.wiz-btn-reivindicar:disabled{background:#ccc;animation:none;box-shadow:none;cursor:not-allowed}
+
 /* ── LOADING ── */
 #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loading-overlay.hide{opacity:0;pointer-events:none}

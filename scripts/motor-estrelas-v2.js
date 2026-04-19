@@ -180,7 +180,7 @@ class MotorEstrelasV2 {
     this.estrelaCapturada.status = 'em_resgate';
     this.estrelaCapturada.tokenResgate = tokenUnico;
     this.estrelaCapturada.capturadoEm = new Date().toISOString();
-    this.estrelaCapturada.validadeToken = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutos
+    this.estrelaCapturada.validadeToken = new Date(Date.now() + 8 * 60 * 1000).toISOString(); // 8 minutos — tempo para preencher cadastro
     
     console.log('🏆 Estrela capturada! Token:', tokenUnico);
     
