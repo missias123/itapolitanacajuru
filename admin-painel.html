@@ -866,6 +866,7 @@ body { overflow-x: hidden; }
               <option value="picolés">Picolés (Atacado)</option>
               <option value="caixa">Sorvete em Caixa</option>
               <option value="torta">Torta de Sorvete</option>
+              <option value="misto">Pedido Misto</option>
               <option value="isopor">Isopor de Viagem</option>
               <option value="carrinho">Carrinho para Eventos</option>
             </select>
@@ -2289,7 +2290,7 @@ const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:'itapolitana2007@'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:''};
 const POR_PAGINA=50;
 async function ghGet(path){
   try{
@@ -2340,11 +2341,12 @@ function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
+  if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   const cfg=await ghGet(PATHS.config);
   ocultarLoading();
   if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}
-  if(senha!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
+  if(!STATE.senhaAdmin||senha!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   carregarTudo();
@@ -4086,18 +4088,24 @@ async function salvarSabores() {
 // ESTOQUE — gestao de estoque de encomendas
 // =====================================================================
 function carregarEstoque() {
-  const caixas = JSON.parse(localStorage.getItem('itap_caixas_enc') || '[]');
+  const prod = STATE.produtos;
   const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
   const CAIXAS_PAD = [{preço:100,estoque:20},{preço:115,estoque:20},{preço:150,estoque:15},{preço:165,estoque:15}];
+  // Priorizar dados do GitHub (STATE.produtos), fallback para localStorage
+  const caixas = (prod && prod.caixas_enc && prod.caixas_enc.length > 0)
+    ? prod.caixas_enc
+    : JSON.parse(localStorage.getItem('itap_caixas_enc') || '[]');
   CAIXAS_IDS.forEach((id, i) => {
     const d = caixas[i] || CAIXAS_PAD[i];
-    const pr = document.getElementById(id + '_preço'); if (pr) pr.value = d.preço || CAIXAS_PAD[i].preço;
+    const pr = document.getElementById(id + '_preço'); if (pr) pr.value = d.preço || d.preco || CAIXAS_PAD[i].preço;
     const es = document.getElementById(id + '_estoque'); if (es) es.value = d.estoque != null ? d.estoque : CAIXAS_PAD[i].estoque;
     const eg = document.getElementById(id + '_esgotado'); if (eg) eg.checked = !!d.esgotado;
   });
-  const tortas = JSON.parse(localStorage.getItem('itap_tortas_enc') || '[]');
+  const tortas = (prod && prod.tortas_enc && prod.tortas_enc.length > 0)
+    ? prod.tortas_enc
+    : JSON.parse(localStorage.getItem('itap_tortas_enc') || '[]');
   const torta = tortas[0] || {preço:100,estoque:10,esgotado:false};
-  const tp = document.getElementById('torta1_preço'); if (tp) tp.value = torta.preço || 100;
+  const tp = document.getElementById('torta1_preço'); if (tp) tp.value = torta.preço || torta.preco || 100;
   const te = document.getElementById('torta1_estoque'); if (te) te.value = torta.estoque != null ? torta.estoque : 10;
   const teg = document.getElementById('torta1_esgotado'); if (teg) teg.checked = !!torta.esgotado;
   renderizarPicolésAdmin();
@@ -4120,7 +4128,6 @@ function toggleEsgotado(id) {
 }
 
 function renderizarAcréscimosAdmin() {
-  const salvo = localStorage.getItem('itap_acréscimos');
   const PADRAO = [
     {id:'acr_canudinho',nome:'Canudinho Wafer',preço:0.25,estoque:100,esgotado:false},
     {id:'acr_casquinha',nome:'Casquinhas',preço:0.25,estoque:100,esgotado:false},
@@ -4128,7 +4135,14 @@ function renderizarAcréscimosAdmin() {
     {id:'acr_cestinha',nome:'Cestinha Recheada',preço:1.00,estoque:100,esgotado:false},
     {id:'acr_cobertura',nome:'Cobertura 1.3L',preço:40.00,estoque:100,esgotado:false}
   ];
-  const dados = salvo ? JSON.parse(salvo) : PADRAO;
+  // Priorizar dados do GitHub (STATE.produtos.acrescimos), depois localStorage, depois padrão
+  let dados;
+  if (STATE.produtos && STATE.produtos.acrescimos && STATE.produtos.acrescimos.length > 0) {
+    dados = STATE.produtos.acrescimos;
+  } else {
+    const salvo = localStorage.getItem('itap_acréscimos');
+    dados = salvo ? JSON.parse(salvo) : PADRAO;
+  }
   const body = document.getElementById('estoque-acréscimos-body');
   if (!body) return;
   let html = '';
@@ -4187,13 +4201,24 @@ async function salvarEstoque() {
     if (acréscimos.length) localStorage.setItem('itap_acréscimos', JSON.stringify(acréscimos));
     const prod = STATE.produtos;
     if (prod) {
+      // Atualizar picolés
       for (const [cat, dados] of Object.entries(picDados)) {
-        if (prod.picolés[cat]) {
+        if (prod.picolés && prod.picolés[cat]) {
           prod.picolés[cat].preço_varejo = dados.preço_varejo;
           prod.picolés[cat].preço_atacado = dados.preço_atacado;
           prod.picolés[cat].estoque = dados.estoque;
         }
+        // Aceita também a chave sem acento (picoles)
+        if (prod.picoles && prod.picoles[cat]) {
+          prod.picoles[cat].preco_varejo = dados.preço_varejo;
+          prod.picoles[cat].preco_atacado = dados.preço_atacado;
+          prod.picoles[cat].estoque = dados.estoque;
+        }
       }
+      // Atualizar caixas, tortas e acréscimos no JSON da nuvem
+      prod.caixas_enc = caixas;
+      prod.tortas_enc = [{id:'torta1',nome:'Torta de Sorvete',preço:torta_preço,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}];
+      if (acréscimos.length) prod.acrescimos = acréscimos;
       STATE.produtos = prod;
       await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
     }
