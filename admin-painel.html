@@ -462,22 +462,13 @@ body { overflow-x: hidden; }
     </div>
   </div>
   <div class="admin-nav">
-    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Resumo Geral</button>
-    <button class="nav-btn" onclick="irPara('home',this)">🏠 Página Inicial</button>
-    <button class="nav-btn" onclick="irPara('preços',this)">💰 Preços do Cardápio</button>
-    <button class="nav-btn" onclick="irPara('promoção',this)">🎉 Promoção Ativa</button>
-    <button class="nav-btn" onclick="irPara('encomendas',this)">📦 Pedidos de Encomenda</button>
-    <button class="nav-btn" onclick="irPara('sabores',this)">🎨 Sabores dos Produtos</button>
-    <button class="nav-btn" onclick="irPara('estoque',this)">🗃️ Estoque de Caixas</button>
-    <button class="nav-btn" onclick="irPara('participantes',this)">👥 Cadastros do Sorteio</button>
-    <button class="nav-btn" onclick="irPara('clientes',this)">👤 Cadastros Fidelidade</button>
-    <button class="nav-btn" onclick="irPara('fidelidade',this)">🎁 Códigos e Prêmios</button>
-    <button class="nav-btn" onclick="irPara('estrela',this)">🌟 Estrela Dourada</button>
-    <button class="nav-btn" onclick="irPara('cardápio',this)">🍦 Títulos do Cardápio</button>
-    <button class="nav-btn" onclick="irPara('depoimentos',this)">⭐ Avaliações dos Clientes</button>
-    <button class="nav-btn" onclick="irPara('fale-conosco',this)">💬 Mensagens Recebidas</button>
-    <button class="nav-btn" onclick="irPara('config',this)">⚙️ Configurações Gerais</button>
-    <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Pesquisa de Qualidade</button>
+    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-btn" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+    <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+    <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
+    <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
+    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas/Depoimentos</button>
+    <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -789,65 +780,6 @@ body { overflow-x: hidden; }
       </div>
     </div>
 
-
-    <!-- ESTOQUE CAIXAS -->
-    <div class="seção" id="sec-estoque-caixas">
-      <div class="card">
-        <div class="card-header">
-          <h2>📦 Estoque — Caixas de Sorvete 5L e 10L</h2>
-          <button class="btn btn-salvar" onclick="salvarEstoqueCaixas()">💾 Salvar Estoque</button>
-        </div>
-        <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-          📦 <strong>Regra:</strong> Quando o estoque chegar a zero, o produto aparece com tarja <strong>ESGOTADO</strong> no cardápio e fica bloqueado nas encomendas. Atualiza o site imediatamente ao salvar.
-        </div>
-        <div class="card-body">
-          <div class="seção-título">📦 Caixas de 5 Litros</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-            <div class="campo-edit">
-              <label>5L — 2 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_2s',-1)">−</button>
-                <input type="number" id="caixa_5l_2s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_2s',1)">+</button>
-              </div>
-              <div id="status_caixa_5l_2s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-            <div class="campo-edit">
-              <label>5L — 3 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_3s',-1)">−</button>
-                <input type="number" id="caixa_5l_3s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_3s',1)">+</button>
-              </div>
-              <div id="status_caixa_5l_3s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-          </div>
-          <div class="seção-título">📦 Caixas de 10 Litros</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit">
-              <label>10L — 2 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_2s',-1)">−</button>
-                <input type="number" id="caixa_10l_2s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_2s',1)">+</button>
-              </div>
-              <div id="status_caixa_10l_2s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-            <div class="campo-edit">
-              <label>10L — 3 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_3s',-1)">−</button>
-                <input type="number" id="caixa_10l_3s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_3s',1)">+</button>
-              </div>
-              <div id="status_caixa_10l_3s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-          </div>
-          <div class="btn-row" style="margin-top:16px"><button class="btn btn-salvar" onclick="salvarEstoqueCaixas()">💾 Salvar Estoque de Caixas</button></div>
-        </div>
-      </div>
-    </div>
-
     <!-- ENCOMENDAS -->
     <div class="seção" id="sec-encomendas">
       <div class="card">
@@ -866,6 +798,7 @@ body { overflow-x: hidden; }
               <option value="picolés">Picolés (Atacado)</option>
               <option value="caixa">Sorvete em Caixa</option>
               <option value="torta">Torta de Sorvete</option>
+              <option value="misto">Pedido Misto</option>
               <option value="isopor">Isopor de Viagem</option>
               <option value="carrinho">Carrinho para Eventos</option>
             </select>
@@ -1922,44 +1855,152 @@ Talento</textarea>
 
     <!-- QUALIDADE -->
     <div class="seção" id="sec-qualidade">
-      <div class="card">
-        <div class="card-header">
-          <h2>📊 Painel de Qualidade — Métricas do Site</h2>
-          <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none">🔗 Abrir em Nova Aba</a>
+      <div class="card" style="background:#0d1117;border:1px solid #30363d">
+        <div class="card-header" style="background:#161b22;border-bottom:1px solid #30363d">
+          <h2 style="color:#e8eaf6">📊 Painel de Qualidade — Métricas do Site</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:#8b949e" id="adm-qual-ts">Última leitura: aguardando...</span>
+            <button class="btn btn-salvar" onclick="carregarMetricasQualidade()" style="font-size:12px;padding:6px 12px">🔄 Atualizar</button>
+            <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">🔗 Nova Aba</a>
+          </div>
         </div>
-        <div class="card-body" style="padding:0">
-          <!-- Scores resumidos -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 20px;background:#0d1117;border-radius:8px;margin-bottom:0">
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-perf">98</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+        <div class="card-body" style="padding:16px;background:#0d1117">
+
+          <!-- SCORES LIGHTHOUSE -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Scores Google Lighthouse</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-perf">98</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-perf" style="height:100%;background:#4caf50;border-radius:3px;width:98%;transition:width 1s"></div></div>
             </div>
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-acess">96</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-acess">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-acess" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
             </div>
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-bp">96</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Excelente</div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-bp">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-bp" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
             </div>
-            <div style="text-align:center;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 8px">
-              <div style="font-size:.7rem;color:#8b949e;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
-              <div style="font-size:2rem;font-weight:900;color:#00e676;line-height:1" id="adm-score-seo">100</div>
-              <div style="font-size:.65rem;color:#00e676;margin-top:4px">● Perfeito</div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-seo">100</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-seo" style="height:100%;background:#4caf50;border-radius:3px;width:100%;transition:width 1s"></div></div>
             </div>
           </div>
-          <!-- Iframe do painel completo -->
-          <div style="position:relative;width:100%;padding-bottom:0">
-            <iframe
-              src="painel-qualidade.html"
-              style="width:100%;height:700px;border:none;border-radius:0 0 8px 8px;display:block"
-              title="Painel de Qualidade"
-              loading="lazy"
-            ></iframe>
+
+          <!-- CORE WEB VITALS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Core Web Vitals — Dados Reais da Sessão</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+            <div id="adm-vital-lcp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">LCP — Carregamento</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-lcp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 2.5s · <span id="adm-lcp-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-cls" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">CLS — Estabilidade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-cls-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 0.1 · <span id="adm-cls-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-inp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">INP — Interatividade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-inp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 200ms · <span id="adm-inp-status">aguardando...</span></div>
+            </div>
           </div>
+
+          <!-- SERVICE WORKER -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">PWA — Service Worker (Cache Offline)</div>
+          <div style="background:#161b22;border-radius:10px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span id="adm-sw-badge" style="background:#3949ab;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px">⚙️ Verificando...</span>
+            <span style="font-size:12px;color:#7986cb" id="adm-sw-desc">O Service Worker permite que o site funcione offline e carregue mais rápido.</span>
+          </div>
+
+          <!-- CHECKLIST -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Checklist de Qualidade — Verificação Automática</div>
+          <div id="adm-checklist" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#7986cb;font-size:13px">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>
+          </div>
+
+          <!-- ERROS JS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Erros JavaScript Detectados</div>
+          <div id="adm-erros" style="margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>
+          </div>
+
+          <!-- PÁGINAS AUDITADAS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Páginas Auditadas</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+            <a href="https://itapolitanacajuru.com.br" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🏠</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Página Inicial</div>
+                <div style="font-size:11px;color:#5c6bc0">itapolitanacajuru.com.br</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 98</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 96</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/encomendas.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🛒</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Encomendas</div>
+                <div style="font-size:11px;color:#5c6bc0">/encomendas.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/fidelidade.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">⭐</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Fidelidade</div>
+                <div style="font-size:11px;color:#5c6bc0">/fidelidade.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 91</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/promocao.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🎁</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Promoção</div>
+                <div style="font-size:11px;color:#5c6bc0">/promocao.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 95</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- FERRAMENTA MANUS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Manus — Solicitar Melhoria</div>
+          <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:10px">🤖 O que você quer melhorar no site hoje?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+              <button onclick="admQualSetInput('Otimizar imagens pesadas para melhorar performance')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">⚡ Otimizar Imagens</button>
+              <button onclick="admQualSetInput('Melhorar velocidade de carregamento — LCP abaixo de 2.5s')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🚀 Mais Velocidade</button>
+              <button onclick="admQualSetInput('Verificar e corrigir erros de JavaScript no console')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🐛 Corrigir Erros JS</button>
+              <button onclick="admQualSetInput('Melhorar experiência do usuário no celular')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">📱 UX Mobile</button>
+              <button onclick="admQualSetInput('Rodar auditoria completa Lighthouse e atualizar scores')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🔍 Nova Auditoria</button>
+              <button onclick="admQualSetInput('Melhorar o design visual do site')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🎨 Melhorar Design</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input id="adm-manus-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
+              <button onclick="admQualEnviarManus()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Manus</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -2289,7 +2330,7 @@ const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:'itapolitana2007@'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:null};
 const POR_PAGINA=50;
 async function ghGet(path){
   try{
@@ -2340,11 +2381,12 @@ function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
+  if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   const cfg=await ghGet(PATHS.config);
   ocultarLoading();
   if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}
-  if(senha!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
+  if(!STATE.senhaAdmin||senha!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   carregarTudo();
@@ -2365,39 +2407,189 @@ async function carregarTudo(){
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(est.content){try{STATE.estrelas=JSON.parse(est.content);}catch(e){STATE.estrelas=null;}STATE.estrelasSha=est.sha;}
   ocultarLoading();
-  renderDashboard();preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();renderPreços();carregarEstoque();
-  carregarTitulosCardapio();
-  carregarEstoqueCaixas();renderizarSaboresAdmin();preencherCardapio();preencherDepoimentos();preencherFaleConosco();preencherCardapio();preencherDepoimentos();preencherFaleConosco();
+  renderDashboard();
+  preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();
+  renderPreços();carregarEstoque();carregarTitulosCardapio();
+  renderizarSaboresAdmin();preencherCardapio();preencherDepoimentos();preencherFaleConosco();
 }
 function irPara(seção,btn){
+  // Mapa: aba → lista de seções que compõem cada página do site
+  const sectionMap={
+    'dashboard':      ['dashboard'],
+    'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
+    'encomendas-admin':['encomendas','sabores','estoque'],
+    'promocao-admin': ['promoção'],
+    'fidelidade-admin':['participantes','clientes','fidelidade','estrela'],
+    'dicas-admin':    ['depoimentos'],
+    // acesso direto mantido para botão Qualidade do Dashboard
+    'qualidade':      ['qualidade']
+  };
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
-  document.getElementById('sec-'+seção).classList.add('ativo');
-  if(seção==='estoque')carregarEstoque();
-  carregarTitulosCardapio();
-  carregarEstoqueCaixas();
-  if(seção==='sabores')renderizarSaboresAdmin();
+  const ids=sectionMap[seção]||[seção];
+  ids.forEach(id=>{const el=document.getElementById('sec-'+id);if(el)el.classList.add('ativo');});
   if(btn)btn.classList.add('ativo');
-  if(seção==='encomendas')renderEncomendas();
-  if(seção==='participantes')renderParticipantes();
-  if(seção==='clientes'){renderClientes();renderDuplicidades();}
-  if(seção==='fidelidade'){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
-  if(seção==='cardápio')preencherCardapio();
-  if(seção==='depoimentos')preencherDepoimentos();
-  if(seção==='qualidade')atualizarScoresQualidade();
-  if(seção==='fale-conosco')preencherFaleConosco();
-  if(seção==='estrela')carregarEstrelas();
+  // Inicializar funções necessárias para cada seção visível
+  if(ids.includes('home'))preencherHome();
+  if(ids.includes('preços'))renderPreços();
+  if(ids.includes('cardapio-titulos'))carregarTitulosCardapio();
+  if(ids.includes('cardápio'))preencherCardapio();
+  if(ids.includes('fale-conosco'))preencherFaleConosco();
+  if(ids.includes('config'))preencherConfig();
+  if(ids.includes('encomendas'))renderEncomendas();
+  if(ids.includes('sabores'))renderizarSaboresAdmin();
+  if(ids.includes('estoque'))carregarEstoque();
+  if(ids.includes('promoção')){preencherPromoção();preencherSorteio();}
+  if(ids.includes('participantes'))renderParticipantes();
+  if(ids.includes('clientes')){renderClientes();renderDuplicidades();}
+  if(ids.includes('fidelidade')){preencherFidelidade();renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
+  if(ids.includes('estrela'))carregarEstrelas();
+  if(ids.includes('depoimentos'))preencherDepoimentos();
+  if(ids.includes('qualidade'))atualizarScoresQualidade();
+  // Scroll para o topo do conteúdo ao trocar de aba
+  const content=document.querySelector('.admin-content');
+  if(content)content.scrollTop=0;
 }
 
 function atualizarScoresQualidade(){
-  // Ler scores do localStorage (gravados pelo quality-guard.js)
-  try {
-    const dados = JSON.parse(localStorage.getItem('qualidade_scores') || '{}');
-    if(dados.performance) document.getElementById('adm-score-perf').textContent = dados.performance;
-    if(dados.acessibilidade) document.getElementById('adm-score-acess').textContent = dados.acessibilidade;
-    if(dados.boasPraticas) document.getElementById('adm-score-bp').textContent = dados.boasPraticas;
-    if(dados.seo) document.getElementById('adm-score-seo').textContent = dados.seo;
-  } catch(e) {}
+  carregarMetricasQualidade();
+}
+function carregarMetricasQualidade(){
+  const QG_KEY='itap_quality_guard';
+  let dados={};
+  try{ dados=JSON.parse(localStorage.getItem(QG_KEY)||'{}'); }catch(e){}
+
+  // Timestamp
+  const tsEl=document.getElementById('adm-qual-ts');
+  if(tsEl) tsEl.textContent='Última leitura: '+(dados.ultima_atualizacao?new Date(dados.ultima_atualizacao).toLocaleString('pt-BR'):'Aguardando primeira visita ao site');
+
+  // Scores Lighthouse (lê também da chave legada)
+  try{
+    const sc=JSON.parse(localStorage.getItem('qualidade_scores')||'{}');
+    if(sc.performance){
+      const v=sc.performance;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-perf');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-perf');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+    if(sc.acessibilidade){
+      const v=sc.acessibilidade;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-acess');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-acess');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+    if(sc.boasPraticas){
+      const v=sc.boasPraticas;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-bp');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-bp');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+    if(sc.seo){
+      const v=sc.seo;
+      const c=v>=90?'#4caf50':v>=50?'#ff9800':'#f44336';
+      const el=document.getElementById('adm-score-seo');
+      if(el){el.textContent=v;el.style.color=c;el.parentElement.style.borderColor=c;}
+      const b=document.getElementById('adm-bar-seo');
+      if(b){b.style.width=v+'%';b.style.background=c;}
+    }
+  }catch(e){}
+
+  // Core Web Vitals
+  const v=dados.vitals||{};
+  function setVitalCard(cardId,valId,statusId,val,unit,bom,ruim,label){
+    const card=document.getElementById(cardId);
+    const valEl=document.getElementById(valId);
+    const stEl=document.getElementById(statusId);
+    if(!card||!valEl||!stEl)return;
+    if(val===undefined||val===null){return;}
+    const isGood=val<=bom;
+    const isBad=val>ruim;
+    const color=isGood?'#4caf50':isBad?'#f44336':'#ff9800';
+    const status=isGood?'✅ Bom':isBad?'❌ Ruim':'⚠️ Melhorar';
+    card.style.borderLeftColor=color;
+    valEl.style.color=color;
+    valEl.textContent=label(val);
+    stEl.textContent=status;
+  }
+  if(v.lcp) setVitalCard('adm-vital-lcp','adm-lcp-val','adm-lcp-status',v.lcp/1000,1,2.5,4,x=>x.toFixed(1)+'s');
+  if(v.inp) setVitalCard('adm-vital-inp','adm-inp-val','adm-inp-status',v.inp,1,200,500,x=>x+'ms');
+  if(v.cls!==undefined&&v.cls<=0.2) setVitalCard('adm-vital-cls','adm-cls-val','adm-cls-status',v.cls,1,0.1,0.25,x=>x.toFixed(3));
+
+  // Service Worker
+  const swBadge=document.getElementById('adm-sw-badge');
+  const swDesc=document.getElementById('adm-sw-desc');
+  if(swBadge&&swDesc){
+    const sw=dados.sw_status||'desconhecido';
+    if(sw==='ATIVO'){swBadge.textContent='✅ Service Worker Ativo — Site funciona offline';swBadge.style.background='#2e7d32';swDesc.textContent='Cache ativo. O site carrega instantaneamente na segunda visita.';}
+    else if(sw==='ERRO'){swBadge.textContent='❌ Erro no Service Worker';swBadge.style.background='#c62828';swDesc.textContent=dados.sw_erro||'Verifique o arquivo sw.js';}
+    else{swBadge.textContent='⚙️ Aguardando primeira visita ao site principal';swBadge.style.background='#3949ab';swDesc.textContent='Abra o site para ativar o monitoramento.';}
+  }
+
+  // Checklist
+  const cl=dados.checklist||{};
+  const checkEl=document.getElementById('adm-checklist');
+  if(checkEl){
+    const itens=[
+      {key:'https',label:'HTTPS Ativo',desc:'Conexão segura e criptografada',critico:true},
+      {key:'viewport',label:'Viewport Meta Tag',desc:'Responsivo para celular',critico:true},
+      {key:'favicon',label:'Favicon',desc:'Ícone na aba do navegador',critico:false},
+      {key:'manifest',label:'PWA Manifest',desc:'Instalável como app no celular',critico:false},
+      {key:'open_graph',label:'Open Graph (WhatsApp/Facebook)',desc:'Preview bonito ao compartilhar',critico:false},
+      {key:'schema',label:'Schema.org (SEO Estruturado)',desc:'Google entende o negócio',critico:false},
+      {key:'canonical',label:'URL Canônica',desc:'Evita conteúdo duplicado no Google',critico:false},
+      {key:'meta_description',label:'Meta Description',desc:'Descrição nos resultados do Google',critico:false},
+      {key:'imagens_alt',label:'Imagens com Alt Text',desc:cl.imagens_sem_alt_count?cl.imagens_sem_alt_count+' imagem(ns) sem alt':'Acessibilidade e SEO',critico:false},
+    ];
+    if(Object.keys(cl).length===0){
+      checkEl.innerHTML='<div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#7986cb;font-size:13px">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>';
+    }else{
+      checkEl.innerHTML=itens.map(item=>{
+        const ok=cl[item.key];
+        const border=ok?'#4caf50':item.critico?'#f44336':'#ff9800';
+        const icon=ok?'✅':item.critico?'❌':'⚠️';
+        const tag=ok?'<span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto">OK</span>':item.critico?'<span style="background:#b71c1c;color:#ef9a9a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto">Crítico</span>':'<span style="background:#e65100;color:#ffcc80;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto">Atenção</span>';
+        return `<div style="background:#161b22;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;border-left:4px solid ${border}">
+          <span style="font-size:18px">${icon}</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#e8eaf6">${item.label}</div>
+            <div style="font-size:11px;color:#7986cb;margin-top:2px">${item.desc}</div>
+          </div>${tag}</div>`;
+      }).join('');
+    }
+  }
+
+  // Erros JS
+  const errosJS=dados.erros_js||[];
+  const erros404=dados.recursos_404||[];
+  const todos=[...errosJS,...erros404];
+  const errosEl=document.getElementById('adm-erros');
+  if(errosEl){
+    if(todos.length===0){
+      errosEl.innerHTML='<div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>';
+    }else{
+      errosEl.innerHTML=todos.map(e=>`<div style="background:#161b22;border-left:4px solid #f44336;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#ef9a9a">${e.tipo||'ERRO'}: ${e.msg||e.url||''} ${e.arquivo?'— '+e.arquivo+':'+(e.linha||''):''}  <span style="color:#5c6bc0;font-size:10px">${e.ts?new Date(e.ts).toLocaleTimeString('pt-BR'):''}</span></div>`).join('');
+    }
+  }
+}
+function admQualSetInput(texto){
+  const el=document.getElementById('adm-manus-input');
+  if(el){el.value=texto;el.focus();}
+}
+function admQualEnviarManus(){
+  const el=document.getElementById('adm-manus-input');
+  if(!el)return;
+  const texto=el.value.trim();
+  if(!texto)return;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(texto).then(()=>{alert('✅ Mensagem copiada!\n\nCole no chat do Manus:\n\n"'+texto+'"');});
+  }else{alert('Copie e envie ao Manus:\n\n"'+texto+'"');}
+  el.value='';
 }
 
 function renderDashboard(){
@@ -4085,19 +4277,27 @@ async function salvarSabores() {
 // =====================================================================
 // ESTOQUE — gestao de estoque de encomendas
 // =====================================================================
+// Helper: lê preço normalizando chaves 'preço' (com acento) e 'preco' (legado localStorage)
+function _normPreço(obj, fallback) { return obj.preço || obj.preco || fallback; }
 function carregarEstoque() {
-  const caixas = JSON.parse(localStorage.getItem('itap_caixas_enc') || '[]');
+  const prod = STATE.produtos;
   const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
   const CAIXAS_PAD = [{preço:100,estoque:20},{preço:115,estoque:20},{preço:150,estoque:15},{preço:165,estoque:15}];
+  // Priorizar dados do GitHub (STATE.produtos), fallback para localStorage
+  const caixas = (prod && prod.caixas_enc && prod.caixas_enc.length > 0)
+    ? prod.caixas_enc
+    : JSON.parse(localStorage.getItem('itap_caixas_enc') || '[]');
   CAIXAS_IDS.forEach((id, i) => {
     const d = caixas[i] || CAIXAS_PAD[i];
-    const pr = document.getElementById(id + '_preço'); if (pr) pr.value = d.preço || CAIXAS_PAD[i].preço;
+    const pr = document.getElementById(id + '_preço'); if (pr) pr.value = _normPreço(d, CAIXAS_PAD[i].preço);
     const es = document.getElementById(id + '_estoque'); if (es) es.value = d.estoque != null ? d.estoque : CAIXAS_PAD[i].estoque;
     const eg = document.getElementById(id + '_esgotado'); if (eg) eg.checked = !!d.esgotado;
   });
-  const tortas = JSON.parse(localStorage.getItem('itap_tortas_enc') || '[]');
+  const tortas = (prod && prod.tortas_enc && prod.tortas_enc.length > 0)
+    ? prod.tortas_enc
+    : JSON.parse(localStorage.getItem('itap_tortas_enc') || '[]');
   const torta = tortas[0] || {preço:100,estoque:10,esgotado:false};
-  const tp = document.getElementById('torta1_preço'); if (tp) tp.value = torta.preço || 100;
+  const tp = document.getElementById('torta1_preço'); if (tp) tp.value = _normPreço(torta, 100);
   const te = document.getElementById('torta1_estoque'); if (te) te.value = torta.estoque != null ? torta.estoque : 10;
   const teg = document.getElementById('torta1_esgotado'); if (teg) teg.checked = !!torta.esgotado;
   renderizarPicolésAdmin();
@@ -4120,7 +4320,6 @@ function toggleEsgotado(id) {
 }
 
 function renderizarAcréscimosAdmin() {
-  const salvo = localStorage.getItem('itap_acréscimos');
   const PADRAO = [
     {id:'acr_canudinho',nome:'Canudinho Wafer',preço:0.25,estoque:100,esgotado:false},
     {id:'acr_casquinha',nome:'Casquinhas',preço:0.25,estoque:100,esgotado:false},
@@ -4128,7 +4327,14 @@ function renderizarAcréscimosAdmin() {
     {id:'acr_cestinha',nome:'Cestinha Recheada',preço:1.00,estoque:100,esgotado:false},
     {id:'acr_cobertura',nome:'Cobertura 1.3L',preço:40.00,estoque:100,esgotado:false}
   ];
-  const dados = salvo ? JSON.parse(salvo) : PADRAO;
+  // Priorizar dados do GitHub (STATE.produtos.acrescimos), depois localStorage, depois padrão
+  let dados;
+  if (STATE.produtos && STATE.produtos.acrescimos && STATE.produtos.acrescimos.length > 0) {
+    dados = STATE.produtos.acrescimos;
+  } else {
+    const salvo = localStorage.getItem('itap_acréscimos');
+    dados = salvo ? JSON.parse(salvo) : PADRAO;
+  }
   const body = document.getElementById('estoque-acréscimos-body');
   if (!body) return;
   let html = '';
@@ -4187,13 +4393,24 @@ async function salvarEstoque() {
     if (acréscimos.length) localStorage.setItem('itap_acréscimos', JSON.stringify(acréscimos));
     const prod = STATE.produtos;
     if (prod) {
+      // Atualizar picolés
       for (const [cat, dados] of Object.entries(picDados)) {
-        if (prod.picolés[cat]) {
+        if (prod.picolés && prod.picolés[cat]) {
           prod.picolés[cat].preço_varejo = dados.preço_varejo;
           prod.picolés[cat].preço_atacado = dados.preço_atacado;
           prod.picolés[cat].estoque = dados.estoque;
         }
+        // Aceita também a chave sem acento (picoles)
+        if (prod.picoles && prod.picoles[cat]) {
+          prod.picoles[cat].preco_varejo = dados.preço_varejo;
+          prod.picoles[cat].preco_atacado = dados.preço_atacado;
+          prod.picoles[cat].estoque = dados.estoque;
+        }
       }
+      // Atualizar caixas, tortas e acréscimos no JSON da nuvem
+      prod.caixas_enc = caixas;
+      prod.tortas_enc = [{id:'torta1',nome:'Torta de Sorvete',preço:torta_preço,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}];
+      if (acréscimos.length) prod.acrescimos = acréscimos;
       STATE.produtos = prod;
       await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
     }
@@ -4678,9 +4895,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 })();
 
-// ── TÍTULOS DO CARDÁPIO ──────────────────────────────────────────────────────
+// ── TÍTULOS DO CARDÁPIO (GitHub API) ─────────────────────────────────────────
 function carregarTitulosCardapio() {
-  var cfg = JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
+  // Preferência: dados do GitHub (STATE.config), fallback localStorage
+  var titulos = (STATE.config && STATE.config.titulosCardapio)
+    ? STATE.config.titulosCardapio
+    : JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
   var campos = [
     ['acc-sorvetes-titulo','Sorvetes de Massa'],
     ['acc-sorvetes-sub','Cremoso, gelado, irresistível · 35 sabores pra você escolher'],
@@ -4711,11 +4931,11 @@ function carregarTitulosCardapio() {
   ];
   campos.forEach(function(c) {
     var el = document.getElementById(c[0]);
-    if (el) el.value = cfg[c[0]] || c[1];
+    if (el) el.value = titulos[c[0]] || c[1];
   });
 }
 
-function salvarTitulosCardapio() {
+async function salvarTitulosCardapio() {
   var campos = ['acc-sorvetes-titulo','acc-sorvetes-sub','acc-picoles-titulo','acc-picoles-sub',
     'acc-açaí-promo-titulo','acc-açaí-promo-sub','acc-açaí-titulo','acc-açaí-sub',
     'acc-milk-titulo','acc-milk-sub','acc-tacas-titulo','acc-tacas-sub',
@@ -4723,56 +4943,24 @@ function salvarTitulosCardapio() {
     'acc-sobremesas-titulo','acc-sobremesas-sub','acc-caixas-titulo','acc-caixas-sub',
     'acc-torta-titulo','acc-torta-sub','acc-enc-picoles-titulo','acc-enc-picoles-sub',
     'acc-complementos-titulo','acc-complementos-sub'];
-  var cfg = {};
+  var titulos = {};
   campos.forEach(function(id) {
     var el = document.getElementById(id);
-    if (el) cfg[id] = el.value.trim();
+    if (el) titulos[id] = el.value.trim();
   });
-  localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(cfg));
-  mostrarToast('✅ Títulos do cardápio salvos! O site será atualizado ao recarregar.');
+  const cfg = STATE.config || {};
+  cfg.titulosCardapio = titulos;
+  STATE.config = cfg;
+  // Manter localStorage como fallback para browsers offline
+  try { localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(titulos)); } catch(e) {}
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar títulos do cardápio');
 }
 
-// ── ESTOQUE CAIXAS ───────────────────────────────────────────────────────────
-function carregarEstoqueCaixas() {
-  var est = JSON.parse(localStorage.getItem('estoque_caixas') || '{}');
-  ['caixa_5l_2s','caixa_5l_3s','caixa_10l_2s','caixa_10l_3s'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.value = est[id] !== undefined ? est[id] : 0;
-      atualizarStatusCaixa(id, parseInt(el.value));
-    }
-  });
-}
-
-function ajustarEstoqueCaixa(id, delta) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  var v = Math.max(0, Math.min(999, parseInt(el.value || 0) + delta));
-  el.value = v;
-  atualizarStatusCaixa(id, v);
-}
-
-function atualizarStatusCaixa(id, v) {
-  var st = document.getElementById('status_' + id);
-  if (!st) return;
-  if (v === 0) {
-    st.textContent = '🔴 ESGOTADO';
-    st.style.color = '#e53935';
-  } else {
-    st.textContent = '🟢 Disponível — ' + v + ' unidade(s)';
-    st.style.color = '#2e7d32';
-  }
-}
-
-function salvarEstoqueCaixas() {
-  var est = {};
-  ['caixa_5l_2s','caixa_5l_3s','caixa_10l_2s','caixa_10l_3s'].forEach(function(id) {
-    var el = document.getElementById(id);
-    est[id] = el ? parseInt(el.value || 0) : 0;
-  });
-  localStorage.setItem('estoque_caixas', JSON.stringify(est));
-  mostrarToast('✅ Estoque de caixas salvo! O site reflete imediatamente.');
-}
+// ── ESTOQUE CAIXAS (funções mantidas para compatibilidade, seção removida) ────
+function carregarEstoqueCaixas() { /* seção removida — use sec-estoque via GitHub */ }
+function ajustarEstoqueCaixa() {}
+function atualizarStatusCaixa() {}
+function salvarEstoqueCaixas() {}
 
 // ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
 function preencherCardapio() {
