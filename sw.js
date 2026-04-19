@@ -4,8 +4,8 @@
  * Estratégia: Cache First (assets), Network First (HTML/API)
  */
 
-const CACHE_NAME   = 'itapolitana-v4';
-const ASSETS_CACHE = 'assets-v4';
+const CACHE_NAME   = 'itapolitana-v5';
+const ASSETS_CACHE = 'assets-v5';
 
 const CRITICAL_ASSETS = [
   '/',
@@ -53,10 +53,11 @@ self.addEventListener('fetch', (event) => {
 
   if (!url.protocol.startsWith('http')) return;
 
-  // GitHub API e raw — Network Only (nunca cachear dados dinâmicos)
+  // GitHub API, raw e painel admin — Network Only (nunca cachear)
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
-      url.pathname.startsWith('/dados/')) {
+      url.pathname.startsWith('/dados/') ||
+      url.pathname === '/admin-painel.html') {
     event.respondWith(
       fetch(request).catch(() =>
         new Response(JSON.stringify({ erro: 'Offline', cached: false }), {
