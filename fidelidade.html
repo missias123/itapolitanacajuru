@@ -462,7 +462,7 @@ body { overflow-x: hidden; }
 </div>
 
 <!-- SECAO DOS DOIS PROGRAMAS -->
-<section class="secao-programas">
+<section class="secao-programas" id="secao-programas">
   <div class="programas-grid">
 
     <!-- CARD 1: CLUBE DE FIDELIDADE -->
@@ -1554,7 +1554,7 @@ function renderHistorico() {
   const lista = document.getElementById('historico-list');
   if (!clienteAtual) return;
 
-  const codigos   = clienteAtual.codigosUsados || clienteAtual.codigosUsados || [];
+  const codigos   = clienteAtual.codigosUsados || [];
   const resgates  = clienteAtual.resgates || [];
   let html = '';
 
@@ -1874,11 +1874,41 @@ async function validarCodigo() {
   registrarUsoValido();
   registrarUsoDispositivo();
 
-  const [okFid, okCli] = await Promise.all([
-    salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome),
-    salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos)
-  ]);
+  // Salvar sequencialmente para permitir rollback em caso de falha parcial
+  // 1. Salvar fidelidade.json primeiro (marcar código como usado)
+  const okFid = await salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome);
+  if (!okFid) {
+    // Rollback total em memória
+    codigosObj[codigo].status = 'disponivel';
+    delete codigosObj[codigo].usadoPor;
+    delete codigosObj[codigo].usadoEm;
+    clienteAtual.codigosUsados.pop();
+    clienteAtual.saldoPontos--;
+    clienteAtual.totalCodigos--;
+    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    hideLoading();
+    showMsg('msg-codigo', 'Erro de conexao ao registrar codigo. Seu ponto NAO foi contabilizado. Verifique sua internet e tente novamente.', 'erro');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
+  // 2. Salvar clientes.json (adicionar ponto ao cliente)
+  const okCli = await salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos);
   hideLoading();
+  if (!okCli) {
+    // Rollback: desfazer em memória e restaurar fidelidade.json
+    codigosObj[codigo].status = 'disponivel';
+    delete codigosObj[codigo].usadoPor;
+    delete codigosObj[codigo].usadoEm;
+    clienteAtual.codigosUsados.pop();
+    clienteAtual.saldoPontos--;
+    clienteAtual.totalCodigos--;
+    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    // Tentar restaurar fidelidade.json
+    await salvarFidelidade('ROLLBACK: codigo ' + codigo + ' restaurado (falha ao salvar cliente)');
+    showMsg('msg-codigo', 'Erro ao salvar ponto. O codigo foi liberado para nova tentativa. Verifique sua internet e tente novamente.', 'erro');
+    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
+  }
+
   if (okFid && okCli) {
     document.getElementById('input-codigo').value = '';
     showMsg('msg-codigo','+1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos > 1 ? 's' : '') + '.','ok');
