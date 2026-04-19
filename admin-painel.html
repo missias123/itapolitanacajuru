@@ -462,22 +462,12 @@ body { overflow-x: hidden; }
     </div>
   </div>
   <div class="admin-nav">
-    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Resumo Geral</button>
-    <button class="nav-btn" onclick="irPara('home',this)">🏠 Página Inicial</button>
-    <button class="nav-btn" onclick="irPara('preços',this)">💰 Preços do Cardápio</button>
-    <button class="nav-btn" onclick="irPara('promoção',this)">🎉 Promoção Ativa</button>
-    <button class="nav-btn" onclick="irPara('encomendas',this)">📦 Pedidos de Encomenda</button>
-    <button class="nav-btn" onclick="irPara('sabores',this)">🎨 Sabores dos Produtos</button>
-    <button class="nav-btn" onclick="irPara('estoque',this)">🗃️ Estoque de Caixas</button>
-    <button class="nav-btn" onclick="irPara('participantes',this)">👥 Cadastros do Sorteio</button>
-    <button class="nav-btn" onclick="irPara('clientes',this)">👤 Cadastros Fidelidade</button>
-    <button class="nav-btn" onclick="irPara('fidelidade',this)">🎁 Códigos e Prêmios</button>
-    <button class="nav-btn" onclick="irPara('estrela',this)">🌟 Estrela Dourada</button>
-    <button class="nav-btn" onclick="irPara('cardápio',this)">🍦 Títulos do Cardápio</button>
-    <button class="nav-btn" onclick="irPara('depoimentos',this)">⭐ Avaliações dos Clientes</button>
-    <button class="nav-btn" onclick="irPara('fale-conosco',this)">💬 Mensagens Recebidas</button>
-    <button class="nav-btn" onclick="irPara('config',this)">⚙️ Configurações Gerais</button>
-    <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Pesquisa de Qualidade</button>
+    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-btn" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+    <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+    <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
+    <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
+    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas/Depoimentos</button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -785,65 +775,6 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-complementos-sub" maxlength="100" placeholder="Canudinho, Casquinha, Cascão, Cestinha, Cobertura"/><div class="hint">Descrição dos complementos disponíveis.</div></div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarTitulosCardapio()">💾 Salvar Títulos do Cardápio</button></div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ESTOQUE CAIXAS -->
-    <div class="seção" id="sec-estoque-caixas">
-      <div class="card">
-        <div class="card-header">
-          <h2>📦 Estoque — Caixas de Sorvete 5L e 10L</h2>
-          <button class="btn btn-salvar" onclick="salvarEstoqueCaixas()">💾 Salvar Estoque</button>
-        </div>
-        <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-          📦 <strong>Regra:</strong> Quando o estoque chegar a zero, o produto aparece com tarja <strong>ESGOTADO</strong> no cardápio e fica bloqueado nas encomendas. Atualiza o site imediatamente ao salvar.
-        </div>
-        <div class="card-body">
-          <div class="seção-título">📦 Caixas de 5 Litros</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-            <div class="campo-edit">
-              <label>5L — 2 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_2s',-1)">−</button>
-                <input type="number" id="caixa_5l_2s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_2s',1)">+</button>
-              </div>
-              <div id="status_caixa_5l_2s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-            <div class="campo-edit">
-              <label>5L — 3 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_3s',-1)">−</button>
-                <input type="number" id="caixa_5l_3s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_5l_3s',1)">+</button>
-              </div>
-              <div id="status_caixa_5l_3s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-          </div>
-          <div class="seção-título">📦 Caixas de 10 Litros</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit">
-              <label>10L — 2 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_2s',-1)">−</button>
-                <input type="number" id="caixa_10l_2s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_2s',1)">+</button>
-              </div>
-              <div id="status_caixa_10l_2s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-            <div class="campo-edit">
-              <label>10L — 3 Sabores (Estoque)</label>
-              <div style="display:flex;align-items:center;gap:8px">
-                <button class="btn" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_3s',-1)">−</button>
-                <input type="number" id="caixa_10l_3s" min="0" max="999" value="0" style="width:80px;text-align:center;font-size:1.2rem;font-weight:800"/>
-                <button class="btn btn-verde" style="padding:6px 12px;font-size:18px" onclick="ajustarEstoqueCaixa('caixa_10l_3s',1)">+</button>
-              </div>
-              <div id="status_caixa_10l_3s" style="margin-top:4px;font-weight:700;color:#e53935">ESGOTADO</div>
-            </div>
-          </div>
-          <div class="btn-row" style="margin-top:16px"><button class="btn btn-salvar" onclick="salvarEstoqueCaixas()">💾 Salvar Estoque de Caixas</button></div>
         </div>
       </div>
     </div>
@@ -2367,28 +2298,46 @@ async function carregarTudo(){
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(est.content){try{STATE.estrelas=JSON.parse(est.content);}catch(e){STATE.estrelas=null;}STATE.estrelasSha=est.sha;}
   ocultarLoading();
-  renderDashboard();preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();renderPreços();carregarEstoque();
-  carregarTitulosCardapio();
-  carregarEstoqueCaixas();renderizarSaboresAdmin();preencherCardapio();preencherDepoimentos();preencherFaleConosco();preencherCardapio();preencherDepoimentos();preencherFaleConosco();
+  renderDashboard();
+  preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();
+  renderPreços();carregarEstoque();carregarTitulosCardapio();
+  renderizarSaboresAdmin();preencherCardapio();preencherDepoimentos();preencherFaleConosco();
 }
 function irPara(seção,btn){
+  // Mapa: aba → lista de seções que compõem cada página do site
+  const sectionMap={
+    'dashboard':      ['dashboard'],
+    'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
+    'encomendas-admin':['encomendas','sabores','estoque'],
+    'promocao-admin': ['promoção'],
+    'fidelidade-admin':['participantes','clientes','fidelidade','estrela'],
+    'dicas-admin':    ['depoimentos'],
+    // acesso direto mantido para botão Qualidade do Dashboard
+    'qualidade':      ['qualidade']
+  };
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
-  document.getElementById('sec-'+seção).classList.add('ativo');
-  if(seção==='estoque')carregarEstoque();
-  carregarTitulosCardapio();
-  carregarEstoqueCaixas();
-  if(seção==='sabores')renderizarSaboresAdmin();
+  const ids=sectionMap[seção]||[seção];
+  ids.forEach(id=>{const el=document.getElementById('sec-'+id);if(el)el.classList.add('ativo');});
   if(btn)btn.classList.add('ativo');
-  if(seção==='encomendas')renderEncomendas();
-  if(seção==='participantes')renderParticipantes();
-  if(seção==='clientes'){renderClientes();renderDuplicidades();}
-  if(seção==='fidelidade'){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
-  if(seção==='cardápio')preencherCardapio();
-  if(seção==='depoimentos')preencherDepoimentos();
-  if(seção==='qualidade')atualizarScoresQualidade();
-  if(seção==='fale-conosco')preencherFaleConosco();
-  if(seção==='estrela')carregarEstrelas();
+  // Inicializar funções necessárias para cada seção visível
+  if(ids.includes('preços'))renderPreços();
+  if(ids.includes('cardapio-titulos'))carregarTitulosCardapio();
+  if(ids.includes('cardápio'))preencherCardapio();
+  if(ids.includes('fale-conosco'))preencherFaleConosco();
+  if(ids.includes('config'))preencherConfig();
+  if(ids.includes('encomendas'))renderEncomendas();
+  if(ids.includes('sabores'))renderizarSaboresAdmin();
+  if(ids.includes('estoque'))carregarEstoque();
+  if(ids.includes('participantes'))renderParticipantes();
+  if(ids.includes('clientes')){renderClientes();renderDuplicidades();}
+  if(ids.includes('fidelidade')){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
+  if(ids.includes('estrela'))carregarEstrelas();
+  if(ids.includes('depoimentos'))preencherDepoimentos();
+  if(ids.includes('qualidade'))atualizarScoresQualidade();
+  // Scroll para o topo do conteúdo ao trocar de aba
+  const content=document.querySelector('.admin-content');
+  if(content)content.scrollTop=0;
 }
 
 function atualizarScoresQualidade(){
@@ -4705,9 +4654,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 })();
 
-// ── TÍTULOS DO CARDÁPIO ──────────────────────────────────────────────────────
+// ── TÍTULOS DO CARDÁPIO (GitHub API) ─────────────────────────────────────────
 function carregarTitulosCardapio() {
-  var cfg = JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
+  // Preferência: dados do GitHub (STATE.config), fallback localStorage
+  var titulos = (STATE.config && STATE.config.titulosCardapio)
+    ? STATE.config.titulosCardapio
+    : JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
   var campos = [
     ['acc-sorvetes-titulo','Sorvetes de Massa'],
     ['acc-sorvetes-sub','Cremoso, gelado, irresistível · 35 sabores pra você escolher'],
@@ -4738,11 +4690,11 @@ function carregarTitulosCardapio() {
   ];
   campos.forEach(function(c) {
     var el = document.getElementById(c[0]);
-    if (el) el.value = cfg[c[0]] || c[1];
+    if (el) el.value = titulos[c[0]] || c[1];
   });
 }
 
-function salvarTitulosCardapio() {
+async function salvarTitulosCardapio() {
   var campos = ['acc-sorvetes-titulo','acc-sorvetes-sub','acc-picoles-titulo','acc-picoles-sub',
     'acc-açaí-promo-titulo','acc-açaí-promo-sub','acc-açaí-titulo','acc-açaí-sub',
     'acc-milk-titulo','acc-milk-sub','acc-tacas-titulo','acc-tacas-sub',
@@ -4750,56 +4702,24 @@ function salvarTitulosCardapio() {
     'acc-sobremesas-titulo','acc-sobremesas-sub','acc-caixas-titulo','acc-caixas-sub',
     'acc-torta-titulo','acc-torta-sub','acc-enc-picoles-titulo','acc-enc-picoles-sub',
     'acc-complementos-titulo','acc-complementos-sub'];
-  var cfg = {};
+  var titulos = {};
   campos.forEach(function(id) {
     var el = document.getElementById(id);
-    if (el) cfg[id] = el.value.trim();
+    if (el) titulos[id] = el.value.trim();
   });
-  localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(cfg));
-  mostrarToast('✅ Títulos do cardápio salvos! O site será atualizado ao recarregar.');
+  const cfg = STATE.config || {};
+  cfg.titulosCardapio = titulos;
+  STATE.config = cfg;
+  // Manter localStorage como fallback para browsers offline
+  try { localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(titulos)); } catch(e) {}
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar títulos do cardápio');
 }
 
-// ── ESTOQUE CAIXAS ───────────────────────────────────────────────────────────
-function carregarEstoqueCaixas() {
-  var est = JSON.parse(localStorage.getItem('estoque_caixas') || '{}');
-  ['caixa_5l_2s','caixa_5l_3s','caixa_10l_2s','caixa_10l_3s'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.value = est[id] !== undefined ? est[id] : 0;
-      atualizarStatusCaixa(id, parseInt(el.value));
-    }
-  });
-}
-
-function ajustarEstoqueCaixa(id, delta) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  var v = Math.max(0, Math.min(999, parseInt(el.value || 0) + delta));
-  el.value = v;
-  atualizarStatusCaixa(id, v);
-}
-
-function atualizarStatusCaixa(id, v) {
-  var st = document.getElementById('status_' + id);
-  if (!st) return;
-  if (v === 0) {
-    st.textContent = '🔴 ESGOTADO';
-    st.style.color = '#e53935';
-  } else {
-    st.textContent = '🟢 Disponível — ' + v + ' unidade(s)';
-    st.style.color = '#2e7d32';
-  }
-}
-
-function salvarEstoqueCaixas() {
-  var est = {};
-  ['caixa_5l_2s','caixa_5l_3s','caixa_10l_2s','caixa_10l_3s'].forEach(function(id) {
-    var el = document.getElementById(id);
-    est[id] = el ? parseInt(el.value || 0) : 0;
-  });
-  localStorage.setItem('estoque_caixas', JSON.stringify(est));
-  mostrarToast('✅ Estoque de caixas salvo! O site reflete imediatamente.');
-}
+// ── ESTOQUE CAIXAS (funções mantidas para compatibilidade, seção removida) ────
+function carregarEstoqueCaixas() { /* seção removida — use sec-estoque via GitHub */ }
+function ajustarEstoqueCaixa() {}
+function atualizarStatusCaixa() {}
+function salvarEstoqueCaixas() {}
 
 // ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
 function preencherCardapio() {
