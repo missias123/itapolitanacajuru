@@ -414,9 +414,9 @@ body { overflow-x: hidden; }
 <body>
   <!-- BANNER GUIA ESTRELA DOURADA -->
   <div id="banner-estrela-guia">
-    <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
-    <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
-    <div class="guia-timer" id="guia-timer-txt">02:00</div>
+    <div class="guia-titulo">⭐ ESTRELA DOURADA CAPTURADA! Cadastre-se ou entre na sua conta!</div>
+    <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo ↓</div>
+    <div class="guia-timer" id="guia-timer-txt">05:00</div>
   </div>
 
   <!-- BANNER AVISO CUPONS E TESTE -->
@@ -1017,25 +1017,48 @@ async function ghGet(path) {
 }
 
 async function ghPut(path, content, message, sha) {
-  try {
-    const bytes = new TextEncoder().encode(content);
-    let bin = '';
-    bytes.forEach(b => bin += String.fromCharCode(b));
-    const b64 = btoa(bin);
-    const body = { message, content: b64, branch: GH_BRANCH };
-    if (sha) body.sha = sha;
-    const r = await fetch(GH_API + path, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
-    const d = await r.json();
-    return { ok: true, sha: d.content.sha };
-  } catch(e) {
-    console.error('ghPut error', path, e);
-    return { ok: false, error: e.message };
+  // ── BUG 5 CORRIGIDO: retry automático em conflito de salvamento ──
+  // Se dois clientes salvam ao mesmo tempo (race condition), o GitHub retorna
+  // erro 409/422. Tentamos novamente até 3 vezes buscando o SHA mais recente.
+  const MAX_TENTATIVAS = 3;
+  let shaAtual = sha;
+  for (let tentativa = 1; tentativa <= MAX_TENTATIVAS; tentativa++) {
+    try {
+      const bytes = new TextEncoder().encode(content);
+      let bin = '';
+      bytes.forEach(b => bin += String.fromCharCode(b));
+      const b64 = btoa(bin);
+      const body = { message, content: b64, branch: GH_BRANCH };
+      if (shaAtual) body.sha = shaAtual;
+      const r = await fetch(GH_API + path, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (r.ok) {
+        const d = await r.json();
+        return { ok: true, sha: d.content.sha };
+      }
+      const erro = await r.json().catch(() => ({}));
+      const msg = erro.message || String(r.status);
+      // Conflito de SHA (outro cliente salvou antes): buscar SHA atual e tentar de novo
+      if ((r.status === 409 || r.status === 422) && tentativa < MAX_TENTATIVAS) {
+        console.warn('⚠️ Conflito de salvamento (tentativa ' + tentativa + '/' + MAX_TENTATIVAS + '). Buscando SHA atualizado...');
+        const fresh = await ghGet(path);
+        if (fresh && fresh.sha) shaAtual = fresh.sha;
+        await new Promise(res => setTimeout(res, 500 * tentativa)); // aguardar antes de tentar
+        continue;
+      }
+      throw new Error(msg);
+    } catch(e) {
+      if (tentativa === MAX_TENTATIVAS) {
+        console.error('❌ ghPut falhou após ' + MAX_TENTATIVAS + ' tentativas:', path, e);
+        return { ok: false, error: e.message };
+      }
+      await new Promise(res => setTimeout(res, 500 * tentativa));
+    }
   }
+  return { ok: false, error: 'Falha após ' + MAX_TENTATIVAS + ' tentativas' };
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2406,20 +2429,24 @@ async function processarTokenEstrela(tokenCaptura) {
       console.warn('⚠️ Estrela não está em resgate');
       return false;
     }
-    // Verificar validade do token (2 minutos após aparição)
+    // ── BUG 6 CORRIGIDO: janela de validade 2 min → 6 min ──
+    // O usuário tem 5 min para preencher o formulário + tempo de processamento.
+    // Validamos com 6 min para dar margem de segurança.
     if (estrela.horaAparicao) {
       const aparicao = new Date(estrela.horaAparicao);
       const agora = new Date();
       const tempoDecorrido = (agora - aparicao) / 1000; // em segundos
-      if (tempoDecorrido > 120) { // 2 minutos = 120 segundos
-        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + tempoDecorrido + 's');
+      if (tempoDecorrido > 360) { // 6 minutos = 360 segundos
+        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + Math.round(tempoDecorrido) + 's (limite: 360s)');
+        sessionStorage.removeItem('itap_estrela_token');
         return false;
       }
     }
     if (estrela.validadeToken) {
       const validade = new Date(estrela.validadeToken);
       if (new Date() > validade) {
-        console.warn('⏰ Token expirado!');
+        console.warn('⏰ Token expirado pelo validadeToken!');
+        sessionStorage.removeItem('itap_estrela_token');
         return false;
       }
     }
@@ -2567,10 +2594,13 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="scripts/auto-healer.js" defer></script>
 <script src="scripts/auto-fixer.js" defer></script>
 
-<!-- SCRIPT GUIA ESTRELA: contador 5 min + seta unica -->
-<script>
+// ═══════════════════════════════════════════════════════════════════
+// GUIA DA ESTRELA DOURADA
+// Orienta o cliente a se cadastrar OU fazer login após capturar.
+// Timer: 5 minutos — tempo real para preencher no celular.
+// ═══════════════════════════════════════════════════════════════════
 (function(){
-  var DURACAO = 2 * 60; // 2 minutos em segundos
+  var DURACAO = 5 * 60; // ← BUG 2 CORRIGIDO: era 2 min, agora 5 min
   var _timer = null;
   var _segundos = DURACAO;
   var _modoGuia = false;
@@ -2591,6 +2621,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var el = document.getElementById('guia-timer-txt');
     if(el){
       el.textContent = padZ(m) + ':' + padZ(s);
+      // Urgente nos últimos 60 segundos
       if(_segundos <= 60){
         el.classList.add('urgente');
       } else {
@@ -2606,7 +2637,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function mostrarSeta(passo){
-    // Esconder todas as setas
     PASSOS.forEach(function(p){
       var s = document.getElementById(p.seta);
       var fg = document.getElementById(p.fg);
@@ -2621,7 +2651,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(fg) fg.classList.add('campo-ativo-guia');
     var pEl = document.getElementById('guia-passo-txt');
     if(pEl) pEl.textContent = atual.txt;
-    // Focar o campo
     if(atual.campo){
       var c = document.getElementById(atual.campo);
       if(c) setTimeout(function(){ c.focus(); }, 200);
@@ -2631,14 +2660,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function avancarPasso(){
     _passoAtual++;
     if(_passoAtual >= PASSOS.length){
-      mostrarSeta(PASSOS.length); // esconde tudo
+      mostrarSeta(PASSOS.length);
     } else {
       mostrarSeta(_passoAtual);
     }
   }
 
+  // ── BUG 3 CORRIGIDO: limpar token da sessão sempre que o guia encerrar ──
   function encerrarGuia(expirou){
     _modoGuia = false;
+    clearInterval(_timer);
     var banner = document.getElementById('banner-estrela-guia');
     if(banner) banner.style.display = 'none';
     PASSOS.forEach(function(p){
@@ -2648,7 +2679,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if(fg) fg.classList.remove('campo-ativo-guia');
     });
     if(expirou){
-      alert('\u23f0 Tempo esgotado!\n\nO tempo de 2 minutos para cadastrar sua Estrela Dourada acabou.\n\nSe voce ainda nao se cadastrou, entre em contato com a sorveteria.');
+      // BUG 3: limpar token expirado para não reprocessar ao recarregar a página
+      sessionStorage.removeItem('itap_estrela_token');
+      alert('\u23f0 Tempo esgotado!\n\nO tempo de 5 minutos para cadastrar sua Estrela Dourada acabou e ela foi perdida.\n\nSe precisar de ajuda, entre em contato com a sorveteria pelo WhatsApp.');
     }
   }
 
@@ -2656,41 +2689,64 @@ document.addEventListener('DOMContentLoaded', () => {
     _modoGuia = true;
     _segundos = DURACAO;
     _passoAtual = 0;
+
+    // ── BUG 4 CORRIGIDO: atualizar banner para mostrar DOIS caminhos ──
+    var bannerTitulo = document.querySelector('#banner-estrela-guia .guia-titulo');
+    if(bannerTitulo) bannerTitulo.textContent = '\u2B50 ESTRELA CAPTURADA! Cadastre-se ou entre na sua conta!';
+    var bannerPasso = document.getElementById('guia-passo-txt');
+
     var banner = document.getElementById('banner-estrela-guia');
-    if(banner) banner.style.display = 'block';
-    // Garantir que o formulario de novo cadastro esta visivel
+    if(banner){
+      // Adicionar botão "Já tenho conta" no banner se ainda não existir
+      if(!document.getElementById('guia-btn-login')){
+        var btnLogin = document.createElement('button');
+        btnLogin.id = 'guia-btn-login';
+        btnLogin.textContent = '\ud83d\udd13 Já tenho conta — Entrar';
+        btnLogin.style.cssText = 'background:#fff;color:#bf360c;border:none;border-radius:8px;padding:6px 14px;font-size:.8rem;font-weight:900;cursor:pointer;margin-top:6px;font-family:inherit';
+        btnLogin.onclick = function(){
+          // Redirecionar para aba login e focar no campo celular
+          if(typeof setTab === 'function') setTab('login');
+          var cardAcesso = document.getElementById('card-acesso');
+          if(cardAcesso) cardAcesso.style.display = 'block';
+          var inpCelLogin = document.getElementById('inp-cel-login');
+          if(inpCelLogin){
+            setTimeout(function(){ inpCelLogin.focus(); inpCelLogin.scrollIntoView({behavior:'smooth',block:'center'}); }, 300);
+          }
+          if(bannerPasso) bannerPasso.textContent = 'Digite seu celular e data de nascimento para entrar \u2193';
+        };
+        banner.appendChild(btnLogin);
+      }
+      banner.style.display = 'block';
+    }
+
+    // Garantir que o formulário de novo cadastro está visível
     var cardAcesso = document.getElementById('card-acesso');
     if(cardAcesso) cardAcesso.style.display = 'block';
-    // Garantir aba "Primeira vez" ativa
+    // Iniciar na aba "Primeira vez"
     if(typeof setTab === 'function') setTab('novo');
-    // Rolar ate o formulario
+    // Rolar até o formulário
     setTimeout(function(){
       var fg = document.getElementById('fg-nome');
       if(fg) fg.scrollIntoView({behavior:'smooth', block:'center'});
     }, 400);
     mostrarSeta(0);
+    if(_timer) clearInterval(_timer);
     _timer = setInterval(atualizarTimer, 1000);
     atualizarTimer();
 
-    // Listeners para avancar seta ao preencher cada campo
+    // Avançar seta ao preencher cada campo
     var inpNome = document.getElementById('inp-nome');
     var inpData = document.getElementById('inp-data-nasc');
     var inpCel  = document.getElementById('inp-cel-novo');
 
     function onNomeBlur(){
-      if(_passoAtual === 0 && inpNome && inpNome.value.trim().length > 2){
-        avancarPasso();
-      }
+      if(_passoAtual === 0 && inpNome && inpNome.value.trim().length > 2) avancarPasso();
     }
     function onDataChange(){
-      if(_passoAtual === 1 && inpData && inpData.value){
-        avancarPasso();
-      }
+      if(_passoAtual === 1 && inpData && inpData.value) avancarPasso();
     }
     function onCelBlur(){
-      if(_passoAtual === 2 && inpCel && inpCel.value.replace(/\D/g,'').length >= 10){
-        avancarPasso();
-      }
+      if(_passoAtual === 2 && inpCel && inpCel.value.replace(/\D/g,'').length >= 10) avancarPasso();
     }
 
     if(inpNome) inpNome.addEventListener('blur', onNomeBlur);
@@ -2698,37 +2754,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if(inpCel)  inpCel.addEventListener('blur', onCelBlur);
   }
 
-  // Expor funcao globalmente para ser chamada apos deteccao do token
+  // Expor funções globalmente
   window.iniciarGuiaEstrela = iniciarGuia;
   window.encerrarGuiaEstrela = encerrarGuia;
 
-  // Detectar chegada via estrela (token na URL)
+  // Detectar chegada via estrela (token na URL ou sessionStorage)
   document.addEventListener('DOMContentLoaded', function(){
     var params = new URLSearchParams(window.location.search);
     var token = params.get('token');
     if(token && token.startsWith('EST')){
-      // Aguardar o formulario estar no DOM
       setTimeout(iniciarGuia, 800);
     }
-    // Tambem verificar sessionStorage
     var tokenSessao = sessionStorage.getItem('itap_estrela_token');
-    if(tokenSessao && tokenSessao.startsWith('EST')){
+    if(tokenSessao && tokenSessao.startsWith('EST') && !token){
+      // Token pendente da sessão: retomar guia
       setTimeout(iniciarGuia, 800);
     }
   });
 
-  // Encerrar guia apos cadastro bem-sucedido
-  var _origCadastrar = null;
+  // ── BUG 1 REFORÇADO: encerrar guia visualmente após cadastro/login bem-sucedido ──
   document.addEventListener('DOMContentLoaded', function(){
-    // Hook na funcao cadastrar para encerrar o guia apos sucesso
     var checkInterval = setInterval(function(){
-      if(typeof cadastrar === 'function' && !_origCadastrar){
-        _origCadastrar = cadastrar;
-        window.cadastrar = function(){
-          _origCadastrar.apply(this, arguments);
-          if(_modoGuia){
-            setTimeout(function(){ encerrarGuia(false); }, 1500);
-          }
+      if(typeof cadastrar === 'function'){
+        var _origCadastrar = cadastrar;
+        window.cadastrar = async function(){
+          await _origCadastrar.apply(this, arguments);
+          // Encerrar guia visual (sem expiração) após cadastro concluído
+          if(_modoGuia) setTimeout(function(){ encerrarGuia(false); }, 2000);
         };
         clearInterval(checkInterval);
       }
