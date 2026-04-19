@@ -293,22 +293,20 @@ class MotorEstrelasV2 {
    * Iniciar contagem de expiração do resgate (5 minutos)
    */
   iniciarContagemResgateExpiracao() {
-    setTimeout(() => {
+    // Limpar timer anterior se existir
+    if (this._timerExpiracao) clearTimeout(this._timerExpiracao);
+    this._timerExpiracao = setTimeout(() => {
       if (this.estrelaCapturada.status === 'em_resgate') {
-        console.warn('⚠️ Tempo de resgate expirado! A estrela volta para o pool.');
+        console.warn('⚠️ Tempo de resgate expirado (8 min). A estrela volta para disponível.');
         this.estrelaCapturada.status = 'disponivel';
         this.estrelaCapturada.tokenResgate = null;
         this.estrelaCapturada.validadeToken = null;
-        
-        // Disparar evento de expiração
         window.dispatchEvent(new CustomEvent('estrelaResgateFailed', {
           detail: { motivo: 'timeout' }
         }));
-        
-        // Salvar mudança
         this.salvarEstadoNoGitHub();
       }
-    }, 5 * 60 * 1000); // 5 minutos
+    }, 8 * 60 * 1000); // 8 minutos — compatível com validadeToken
   }
 
   /**

@@ -532,11 +532,163 @@ body { overflow-x: hidden; }
 </section>
 
 <!-- SECAO REIVINDICAR ESTRELA (exibida dinamicamente pelo JS) -->
+<!-- SEÇÃO REIVINDICAR (mantida para compatibilidade com código legado) -->
 <div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
   <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
   <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
   <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;" aria-label="Reivindicar minha estrela dourada">REIVINDICAR MINHA ESTRELA!</button>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     WIZARD LINEAR DA ESTRELA DOURADA
+     Fluxo empilhado passo a passo — padrão iFood/WhatsApp
+     Aparece automaticamente quando há ?token=EST_ na URL
+     ═══════════════════════════════════════════════════════════ -->
+<div id="wizard-estrela">
+
+  <!-- Cabeçalho com timer -->
+  <div class="wiz-header">
+    <div style="font-size:2rem;margin-bottom:4px">⭐</div>
+    <h2>Você capturou a Estrela Dourada!</h2>
+    <p style="font-size:.85rem;opacity:.9;margin:2px 0 8px">Siga os passos abaixo para garantir sua estrela</p>
+    <div class="wiz-timer-bar"><div class="wiz-timer-fill" id="wiz-timer-fill"></div></div>
+    <div class="wiz-timer-txt" id="wiz-timer-txt">05:00</div>
+  </div>
+
+  <!-- Indicador de etapas -->
+  <div class="wiz-steps" id="wiz-steps">
+    <div class="wiz-step-dot ativo" id="wiz-dot-0">1</div>
+    <div class="wiz-step-linha" id="wiz-linha-0"></div>
+    <div class="wiz-step-dot" id="wiz-dot-1">2</div>
+    <div class="wiz-step-linha" id="wiz-linha-1"></div>
+    <div class="wiz-step-dot" id="wiz-dot-2">3</div>
+    <div class="wiz-step-linha" id="wiz-linha-2"></div>
+    <div class="wiz-step-dot" id="wiz-dot-3">⭐</div>
+  </div>
+
+  <!-- Corpo do wizard -->
+  <div class="wiz-body">
+
+    <!-- ETAPA 0: Já tem cadastro? -->
+    <div class="wiz-etapa ativa" id="wiz-e0">
+      <div class="wiz-titulo-etapa">Passo 1 — Você já tem cadastro aqui?</div>
+      <p style="font-size:.9rem;color:#555;margin-bottom:16px;line-height:1.6">Para garantir sua estrela precisamos identificar você. Escolha uma opção:</p>
+      <div class="wiz-escolha">
+        <button class="wiz-btn-escolha login" onclick="wizIrPara('login')">
+          <span class="wiz-btn-escolha-icon">🔓</span>
+          <div class="wiz-btn-escolha-txt">
+            <strong>Sim, já sou cadastrado</strong>
+            <span>Entrar com celular e data de nascimento</span>
+          </div>
+        </button>
+        <button class="wiz-btn-escolha novo" onclick="wizIrPara('novo')">
+          <span class="wiz-btn-escolha-icon">🆕</span>
+          <div class="wiz-btn-escolha-txt">
+            <strong>Não, é minha primeira vez</strong>
+            <span>Criar cadastro rápido — 3 campos apenas</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ETAPA LOGIN: Celular + Data -->
+    <div class="wiz-etapa" id="wiz-e-login">
+      <div class="wiz-titulo-etapa">Passo 2 — Entre na sua conta</div>
+      <div class="wiz-campo">
+        <label>📱 Seu celular (WhatsApp com DDD)</label>
+        <input type="tel" id="wiz-cel-login" placeholder="(16) 99999-9999"
+               oninput="mascaraTel(this)" maxlength="15" inputmode="numeric"
+               autocomplete="tel">
+        <div class="wiz-dica">O mesmo número cadastrado no Clube de Fidelidade</div>
+      </div>
+      <div class="wiz-campo">
+        <label>🎂 Data de nascimento (confirmação)</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="wiz-login-dia" placeholder="Dia" maxlength="2"
+                 inputmode="numeric" autocomplete="off"
+                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
+          <input type="text" id="wiz-login-mes" placeholder="Mês" maxlength="2"
+                 inputmode="numeric" autocomplete="off"
+                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
+          <input type="text" id="wiz-login-ano" placeholder="Ano" maxlength="4"
+                 inputmode="numeric" autocomplete="off"
+                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
+        </div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-login"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('inicio')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizEntrar()" id="wiz-btn-entrar">🔓 Entrar e Garantir Estrela</button>
+      </div>
+    </div>
+
+    <!-- ETAPA NOVO — Passo A: Nome -->
+    <div class="wiz-etapa" id="wiz-e-nome">
+      <div class="wiz-titulo-etapa">Passo 2 — Qual é o seu nome completo?</div>
+      <div class="wiz-campo">
+        <label>📋 Nome completo (idêntico ao RG/CNH)</label>
+        <input type="text" id="wiz-nome" placeholder="Ex: Maria Silva de Oliveira"
+               autocomplete="name" autocapitalize="words"
+               oninput="wizValidarNome(this)">
+        <div class="wiz-dica alerta">⚠️ Informe exatamente como no documento. Necessário para retirar prêmios.</div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-nome"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('inicio')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizAvancarNome()" id="wiz-btn-nome">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ETAPA NOVO — Passo B: Data de Nascimento -->
+    <div class="wiz-etapa" id="wiz-e-data">
+      <div class="wiz-titulo-etapa">Passo 3 — Qual é a sua data de nascimento?</div>
+      <div class="wiz-campo">
+        <label>🎂 Data de nascimento (idêntica ao RG/CNH)</label>
+        <input type="date" id="wiz-data" autocomplete="bday"
+               onchange="wizValidarData(this)">
+        <div class="wiz-dica alerta">⚠️ Mínimo 14 anos. Necessário para retirar prêmios.</div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-data"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('nome')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizAvancarData()" id="wiz-btn-data">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ETAPA NOVO — Passo C: Celular -->
+    <div class="wiz-etapa" id="wiz-e-cel">
+      <div class="wiz-titulo-etapa">Passo 4 — Qual é o seu celular (WhatsApp)?</div>
+      <div class="wiz-campo">
+        <label>📱 Celular com DDD (WhatsApp ativo)</label>
+        <input type="tel" id="wiz-cel" placeholder="(16) 99999-9999"
+               oninput="mascaraTel(this)" maxlength="15" inputmode="numeric"
+               autocomplete="tel">
+        <div class="wiz-dica">⭐ Seu prêmio será comunicado por este número. Verifique antes de continuar.</div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-cel"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('data')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizCadastrar()" id="wiz-btn-cel">✅ Confirmar Cadastro</button>
+      </div>
+    </div>
+
+    <!-- ETAPA FINAL: Reivindicar -->
+    <div class="wiz-etapa" id="wiz-e-reivindicar">
+      <div id="wiz-etapa-reivindicar">
+        <span class="wiz-estrela-animada" id="wiz-estrela-emoji">⭐</span>
+        <div style="font-size:1.1rem;font-weight:900;color:#C62828;margin-bottom:6px" id="wiz-nome-parabens">Parabéns!</div>
+        <div style="font-size:.9rem;color:#555;margin-bottom:20px;line-height:1.6" id="wiz-txt-reivindicar">
+          Sua estrela está reservada! Clique no botão abaixo para confirmar a captura.
+        </div>
+        <button class="wiz-btn-reivindicar" onclick="wizReivindicar()" id="wiz-btn-reivindicar">
+          ⭐ REIVINDICAR MINHA ESTRELA!
+        </button>
+        <div class="wiz-msg" id="wiz-msg-reivindicar" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+  </div><!-- .wiz-body -->
+</div><!-- #wizard-estrela -->
 
 <!-- AVISO IMPORTANTE: DIAS UTEIS -->
 <div class="aviso-dias-uteis">
