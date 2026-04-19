@@ -2383,6 +2383,10 @@ async function salvarArquivo(path,data,shaKey,msg){
 }
 function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
   const tok=document.getElementById('inp-gh-token').value.trim();
@@ -2392,7 +2396,8 @@ async function entrar(){
   const cfg=await ghGet(PATHS.config);
   ocultarLoading();
   if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}
-  if(!STATE.senhaAdmin||senha!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
+  const senhaHash = await sha256(senha);
+  if(!STATE.senhaAdmin||senhaHash!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   carregarTudo();
@@ -4108,10 +4113,10 @@ async function salvarConfig(){
   const seoTitEl=document.getElementById('cfg-seo-titulo'); if(seoTitEl) cfg.seoTitulo=seoTitEl.value.trim();
   const seoDesEl=document.getElementById('cfg-seo-descricao'); if(seoDesEl) cfg.seoDescricao=seoDesEl.value.trim();
   const seoPalEl=document.getElementById('cfg-seo-palavras'); if(seoPalEl) cfg.seoPalavrasChave=seoPalEl.value.trim();
-  if(novaSenha)cfg.senhaAdmin=novaSenha;
+  if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
-  if(ok){document.getElementById('cfg-nova-senha').value='';document.getElementById('cfg-conf-senha').value='';if(novaSenha)STATE.senhaAdmin=novaSenha;}
+  if(ok){document.getElementById('cfg-nova-senha').value='';document.getElementById('cfg-conf-senha').value='';if(novaSenha)STATE.senhaAdmin=await sha256(novaSenha);}
 }
 
 // Salvar Hero Fidelidade (IDs: fid-hero-titulo, fid-hero-desc)
