@@ -92,14 +92,7 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .hero-premio-chip .chip-icon{font-size:1.8rem}
 .hero-premio-chip strong{display:block;font-size:.95rem;font-weight:900}
 .hero-premio-chip span{font-size:.75rem;opacity:.9}
-
-    <div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
-        <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
-        <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
-        <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;">REIVINDICAR MINHA ESTRELA!</button>
-    </div>
-
-    <!-- SECAO PROGRAMAS — CENTRALIZADO PROFISSIONAL --> */
+/* SECAO PROGRAMAS — CENTRALIZADO PROFISSIONAL */
 .secao-programas{
   width:100%;
   max-width:100%;
@@ -117,10 +110,14 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
   max-width:600px;
   margin:0 auto;
 }
-/* Desktop e tablet: 1 card centralizado */
-@media(min-width:641px){
+/* Desktop e tablet: grid 2 colunas a partir de 900px */
+@media(min-width:900px){
+  .secao-programas{max-width:1100px;padding:36px 24px;}
+  .programas-grid{grid-template-columns:repeat(2,1fr);max-width:1000px;}
+}
+@media(min-width:641px) and (max-width:899px){
   .secao-programas{max-width:100%;padding:36px 24px;}
-  .programas-grid{grid-template-columns:1fr;max-width:600px;}
+  .programas-grid{grid-template-columns:1fr;max-width:620px;}
 }
 
 /* ── CARD PROGRAMA ── */
@@ -291,15 +288,34 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .btn-sair-admin:hover{background:#eee}
 .admin-table-wrap{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden}
 .admin-table-header{display:grid;grid-template-columns:2fr 1.4fr 0.7fr 1.1fr 1.4fr;gap:0;background:#1a237e;color:#fff;font-size:.75rem;font-weight:700;padding:10px 14px;text-transform:uppercase;letter-spacing:.4px}
-@media(max-width:600px){.admin-table-header{grid-template-columns:2fr 1.2fr 0.6fr 1fr;} .admin-col-data{display:none}}
-.admin-row{display:grid;grid-template-columns:2fr 1.4fr 0.7fr 1.1fr 1.4fr;gap:0;padding:10px 14px;border-bottom:1px solid #f0e8e0;align-items:center;font-size:.82rem;transition:background .15s}
-.admin-row:hover{background:#fff8f0}
-.admin-row:last-child{border-bottom:none}
-@media(max-width:600px){.admin-row{grid-template-columns:2fr 1.2fr 0.6fr 1fr;} .admin-row .col-data{display:none}}
+@media(max-width:600px){
+  .admin-table-header{display:none}
+  .admin-row{
+    grid-template-columns:1fr;
+    gap:4px;
+    padding:12px 14px;
+    border:1px solid #f0e8e0;
+    border-radius:12px;
+    margin-bottom:8px;
+    background:#fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.06)
+  }
+  .admin-row .col-data{display:none}
+  .admin-acoes{margin-top:6px}
+  .admin-stats{grid-template-columns:repeat(2,1fr)}
+  #painel-admin{padding:12px 10px}
+  .admin-header{padding:14px 14px;border-radius:12px}
+  .admin-toolbar{flex-direction:column;gap:6px}
+  .admin-search{min-width:unset;width:100%}
+  .btn-admin{width:100%;text-align:center}
+}
 .admin-nome{font-weight:700;color:#333;font-size:.83rem;word-break:break-word}
 .admin-cel{font-family:monospace;color:#555;font-size:.78rem}
 .admin-pontos{font-weight:800;color:#e8650a;text-align:center}
 .admin-data{color:#888;font-size:.73rem}
+.admin-row{display:grid;grid-template-columns:2fr 1.4fr 0.7fr 1.1fr 1.4fr;gap:0;padding:10px 14px;border-bottom:1px solid #f0e8e0;align-items:center;font-size:.82rem;transition:background .15s}
+.admin-row:hover{background:#fff8f0}
+.admin-row:last-child{border-bottom:none}
 .badge-ativo{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:3px 8px;border-radius:20px;font-size:.7rem;font-weight:700;display:inline-block}
 .badge-bloqueado{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;padding:3px 8px;border-radius:20px;font-size:.7rem;font-weight:700;display:inline-block}
 .btn-bloquear{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;padding:4px 10px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;margin-left:4px}
@@ -400,7 +416,7 @@ body { overflow-x: hidden; }
   <div id="banner-estrela-guia">
     <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
     <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
-    <div class="guia-timer" id="guia-timer-txt">05:00</div>
+    <div class="guia-timer" id="guia-timer-txt">02:00</div>
   </div>
 
   <!-- BANNER AVISO CUPONS E TESTE -->
@@ -454,6 +470,13 @@ body { overflow-x: hidden; }
     </div>
   </div>
 </section>
+
+<!-- SECAO REIVINDICAR ESTRELA (exibida dinamicamente pelo JS) -->
+<div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
+  <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
+  <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
+  <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;" aria-label="Reivindicar minha estrela dourada">REIVINDICAR MINHA ESTRELA!</button>
+</div>
 
 <!-- AVISO IMPORTANTE: DIAS UTEIS -->
 <div class="aviso-dias-uteis">
@@ -1256,41 +1279,73 @@ function showMsg(id, txt, tipo) {
 // CADASTRO SORTEIO VIA WHATSAPP
 // ═══════════════════════════════════════════════════════════
 function enviarSorteioWhatsApp() {
-  const nome = (document.getElementById('sort-nome').value || '').trim();
-  const cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
-  const dia  = (document.getElementById('sort-dia').value || '').trim();
-  const mes  = (document.getElementById('sort-mes').value || '').trim();
-  const ano  = (document.getElementById('sort-ano').value || '').trim();
-  if (!nome || nome.length < 3) {
-    showMsg('msg-sorteio-inline', 'Informe seu nome completo.', 'aviso'); return;
+  const nomeEl = document.getElementById('sort-nome');
+  const celEl  = document.getElementById('sort-cel');
+  const diaEl  = document.getElementById('sort-dia');
+  const mesEl  = document.getElementById('sort-mes');
+  const anoEl  = document.getElementById('sort-ano');
+
+  // Verificar se os elementos existem no DOM (formulário pode estar em outra página)
+  if (!nomeEl || !celEl) { console.warn('enviarSorteioWhatsApp: elementos de formulário não encontrados'); return; }
+
+  const nome = nomeEl.value.trim();
+  const cel  = celEl.value.replace(/\D/g,'');
+  const diaRaw = (diaEl ? diaEl.value : '').trim();
+  const mesRaw = (mesEl ? mesEl.value : '').trim();
+  const anoRaw = (anoEl ? anoEl.value : '').trim();
+
+  if (!nome || nome.length < 3) { showMsg('msg-sorteio-inline', 'Informe seu nome completo.', 'aviso'); return; }
+  if (cel.length < 10) { showMsg('msg-sorteio-inline', 'Informe um celular valido com DDD.', 'aviso'); return; }
+  if (!diaRaw || !mesRaw || !anoRaw || anoRaw.length < 4) { showMsg('msg-sorteio-inline', 'Informe sua data de nascimento completa (Dia, Mes e Ano).', 'aviso'); return; }
+
+  const dia = diaRaw.padStart(2,'0');
+  const mes = mesRaw.padStart(2,'0');
+  const dataNascISO = anoRaw + '-' + mes + '-' + dia;
+  const dataNascFmt = dia + '/' + mes + '/' + anoRaw;
+  const nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
+
+  // ── DEDUP: verificar se já está inscrito pelo nome+data (identidade primária) ──
+  if (ghClientes && ghClientes.clientes) {
+    const jaInscritoNomeData = Object.values(ghClientes.clientes).find(c => {
+      const cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
+      return cNome === nomeNorm && c.dataNasc === dataNascISO;
+    });
+    if (jaInscritoNomeData) {
+      showMsg('msg-sorteio-inline', '⚠️ ' + nome.split(' ')[0] + ', você já está cadastrado no Clube de Fidelidade! Use o botão "Já sou cadastrado" para acessar sua conta.', 'aviso');
+      return;
+    }
+    // ── DEDUP: verificar se cel já está registrado (identidade secundária) ──
+    if (_chaveCliente(cel)) {
+      showMsg('msg-sorteio-inline', '⚠️ Este celular já está cadastrado. Use o botão "Já sou cadastrado" para acessar sua conta.', 'aviso');
+      return;
+    }
   }
-  if (cel.length < 10) {
-    showMsg('msg-sorteio-inline', 'Informe um celular valido com DDD.', 'aviso'); return;
-  }
-  if (!dia || !mes || !ano || ano.length < 4) {
-    showMsg('msg-sorteio-inline', 'Informe sua data de nascimento completa (Dia, Mes e Ano).', 'aviso'); return;
-  }
-  const dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
+
   const celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
-  // Gerar ID Único para o Sorteio
-  const idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+  // Usar ID sequencial se disponível, senão gerar temporário
+  const ids = Object.keys((ghClientes && ghClientes.clientes) || {}).filter(k => k.startsWith('USR-2026-'));
+  const nums = ids.map(k => parseInt(k.replace('USR-2026-',''))).filter(n => !isNaN(n));
+  const maxNum = nums.length > 0 ? Math.max(...nums) : 0;
+  const idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
+
   const msg = '🍦 *CADASTRO — Clube de Fidelidade*\n' +
     '*Sorveteria Itapolitana Cajuru*\n\n' +
     '*ID Permanente:* ' + idUnico + '\n' +
     '*Nome:* ' + nome + '\n' +
     '*Celular:* ' + celFmt + '\n' +
-    '*Data de nascimento:* ' + dataNasc + '\n\n' +
+    '*Data de nascimento:* ' + dataNascFmt + '\n\n' +
     '⚠️ *ATENÇÃO IMPORTANTE:*\n' +
     'Os dados informados acima devem ser *idênticos* aos do meu documento oficial com foto (RG ou CNH).\n\n' +
     '🚫 *O PRÊMIO NÃO SERÁ ENTREGUE* se o nome ou a data de nascimento do documento divergirem do cadastro.\n\n' +
     'Estou ciente das regras e concordo com o regulamento do Clube de Fidelidade. 🎉';
+
   window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
   showMsg('msg-sorteio-inline', 'Redirecionando para o WhatsApp... Envie a mensagem para confirmar seu cadastro!', 'ok');
-  document.getElementById('sort-nome').value = '';
-  document.getElementById('sort-cel').value = '';
-  document.getElementById('sort-dia').value = '';
-  document.getElementById('sort-mes').value = '';
-  document.getElementById('sort-ano').value = '';
+  if (nomeEl) nomeEl.value = '';
+  if (celEl)  celEl.value = '';
+  if (diaEl)  diaEl.value = '';
+  if (mesEl)  mesEl.value = '';
+  if (anoEl)  anoEl.value = '';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1466,11 +1521,22 @@ async function cadastrar() {
 // ═══════════════════════════════════════════════════════════
 async function entrar() {
   const cel = limparTel(document.getElementById('inp-cel-login').value);
-  const dia = document.getElementById('inp-login-dia').value.padStart(2,'0');
-  const mes = document.getElementById('inp-login-mes').value.padStart(2,'0');
-  const ano = document.getElementById('inp-login-ano').value;
+  const diaRaw = (document.getElementById('inp-login-dia').value || '').trim();
+  const mesRaw = (document.getElementById('inp-login-mes').value || '').trim();
+  const anoRaw = (document.getElementById('inp-login-ano').value || '').trim();
+  const diaNum = parseInt(diaRaw, 10);
+  const mesNum = parseInt(mesRaw, 10);
+  const anoNum = parseInt(anoRaw, 10);
+
   if (cel.length < 10) { showMsg('msg-acesso','Informe um celular valido com DDD.','aviso'); return; }
-  if (!dia || !mes || !ano || ano.length < 4) { showMsg('msg-acesso','Informe sua data de nascimento completa (Dia, Mes e Ano).','aviso'); return; }
+  if (!diaRaw || !mesRaw || !anoRaw) { showMsg('msg-acesso','Informe sua data de nascimento completa (Dia, Mes e Ano).','aviso'); return; }
+  if (isNaN(diaNum) || diaNum < 1 || diaNum > 31) { showMsg('msg-acesso','Dia invalido. Informe um numero entre 1 e 31.','aviso'); return; }
+  if (isNaN(mesNum) || mesNum < 1 || mesNum > 12) { showMsg('msg-acesso','Mes invalido. Informe um numero entre 1 e 12.','aviso'); return; }
+  if (isNaN(anoNum) || anoRaw.length !== 4 || anoNum < 1900 || anoNum > new Date().getFullYear()) { showMsg('msg-acesso','Ano invalido. Informe o ano completo (ex: 1990).','aviso'); return; }
+
+  const dia = String(diaNum).padStart(2,'0');
+  const mes = String(mesNum).padStart(2,'0');
+  const ano = String(anoNum);
 
   setLoading('Buscando sua conta...');
   const c = await ghGet(CLIENTES_PATH);
@@ -1495,7 +1561,13 @@ async function entrar() {
   const dataCadastrada = clienteAtual.dataNasc || '';
   const dataDigitada   = ano + '-' + mes + '-' + dia;
 
-  if (dataCadastrada && dataCadastrada !== dataDigitada) {
+  // Se não há data no cadastro (dado incompleto) — bloquear acesso por segurança
+  if (!dataCadastrada) {
+    showMsg('msg-acesso','Cadastro incompleto. Entre em contato com a sorveteria para regularizar sua conta.','aviso');
+    return;
+  }
+
+  if (dataCadastrada !== dataDigitada) {
     clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
     const tentativas = clienteAtual.tentativasInvalidas;
     if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
@@ -1537,6 +1609,7 @@ function mostrarPainelCliente() {
     clienteAtual.codigosUsados = (clienteAtual.rodadaAtual && clienteAtual.rodadaAtual.codigos) || [];
     clienteAtual.resgates      = clienteAtual.resgates || [];
     _gravarClienteAtual();
+    salvarClientes('Migracao de dados: ' + clienteAtual.nome);
   }
   document.getElementById('card-acesso').style.display = 'none';
   document.getElementById('card-cliente').style.display = 'block';
@@ -1562,7 +1635,10 @@ function atualizarUI() {
     const [ano, mes, dia] = clienteAtual.dataNasc.split('-');
     dataNascFormatada = dia + '/' + mes + '/' + ano;
   }
-  const celFmt = '(' + clienteAtual.cel.slice(0,2) + ') ' + clienteAtual.cel.slice(2,7) + '-' + clienteAtual.cel.slice(7);
+  const cel = clienteAtual.cel || '';
+  const celFmt = cel.length >= 10
+    ? '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7)
+    : cel || '—';
   document.getElementById('cliente-cel').textContent = celFmt + (dataNascFormatada ? ' • ' + dataNascFormatada : '');
   document.getElementById('rodada-badge').textContent = '🌟 ' + pontos + ' ponto' + (pontos !== 1 ? 's' : '') + ' no saldo';
 
@@ -1672,6 +1748,10 @@ function sair() {
   document.getElementById('inp-data-nasc').value = '';
   document.getElementById('inp-cel-novo').value = '';
   document.getElementById('inp-cel-login').value = '';
+  document.getElementById('inp-login-dia').value = '';
+  document.getElementById('inp-login-mes').value = '';
+  document.getElementById('inp-login-ano').value = '';
+  showMsg('msg-acesso','','ok');
   setTab('novo');
 }
 
@@ -2477,6 +2557,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
+<script src="scripts/auto-fixer.js" defer></script>
 
 <!-- SCRIPT GUIA ESTRELA: contador 5 min + seta unica -->
 <script>
