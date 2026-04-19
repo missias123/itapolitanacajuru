@@ -1773,7 +1773,7 @@ Talento</textarea>
             <div class="fid-lote-info" id="fid-lote-info"></div>
             <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
             <div class="btn-row" style="margin-top:16px">
-              <button class="btn btn-laranja" onclick="gerarPDFLote()">&#x1F4C4; Baixar PDF (100 cupons)</button>
+              <button class="btn btn-laranja" onclick="gerarPDFLote()">&#x1F4C4; Imprimir Etiquetas PDF (99,1&times;38,1 mm)</button>
             </div>
           </div>
         </div>
@@ -3838,133 +3838,171 @@ function gerarPDFLote(){
   const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
   if(!lote||!lote.codigos||!lote.codigos.length){toast('Nenhum lote gerado ainda.','erro');return;}
 
-  // === CONFIGURAÇÃO ETIQUETA PIMACO/AVERY 63,5 x 38,1 mm — 21 por folha A4 ===
-  // Folha A4: 210 x 297 mm
-  // Layout: 3 colunas x 7 linhas = 21 etiquetas
-  // Margens: topo 15,1mm, esq 4,8mm, gap col 2,5mm, gap linha 0mm
+  // ═══════════════════════════════════════════════════════════════
+  // ESPECIFICAÇÃO DE LAYOUT — Etiqueta 99,1 × 38,1 mm (Pimaco 6181 / Avery L7163)
+  // ---------------------------------------------------------------
+  // Folha A4 : 210 × 297 mm
+  // Colunas  : 2   |  Linhas : 7   →  14 etiquetas por folha
+  // Etiqueta : 99,1 mm × 38,1 mm
+  // Margens  : Esq 4 mm | Dir 4 mm | Sup 15 mm | Inf 15 mm
+  // Gap H    : 2 mm     | Gap V   : 0 mm
+  //
+  // Verificação de largura : 2×99,1 + 1×2 + 4+4 = 208,2 mm ≤ 210 mm ✓
+  // Verificação de altura  : 7×38,1 + 0   + 15+15 = 296,7 mm ≤ 297 mm ✓
+  // ═══════════════════════════════════════════════════════════════
 
-  const etiquetas = lote.codigos.map((cod, i) => {
+  const ETQ_POR_PAGINA = 14; // 2 colunas × 7 linhas
+  const total = lote.codigos.length;
+  const numPaginas = Math.ceil(total / ETQ_POR_PAGINA);
+
+  // Completar último lote com etiquetas em branco
+  const codigos = lote.codigos.slice();
+  while(codigos.length % ETQ_POR_PAGINA !== 0) codigos.push(null);
+
+  // Gerar HTML de cada etiqueta
+  const etiquetasHTML = codigos.map((cod, i) => {
+    if(!cod) return '<div class="etiqueta etiqueta-vazia"></div>';
     const num = lote.inicio + i;
-    return `
-      <div class="etiqueta">
-        <div class="eta-topo">
-          <span class="eta-marca">🍦 Itapolitana Cajuru</span>
-          <span class="eta-num">#${num}</span>
-        </div>
-        <div class="eta-codigo">${cod}</div>
-        <div class="eta-rodape">Programa de Fidelidade · itapolitanacajuru.com.br</div>
-      </div>`;
+    return `<div class="etiqueta">
+  <div class="eta-titulo">Programa de Fidelidade</div>
+  <div class="eta-codigo">${cod}</div>
+  <div class="eta-instrucao">Apresente este c&#xF3;digo no caixa.</div>
+</div>`;
   });
 
-  // Completar com etiquetas em branco para fechar as 5 folhas (105 posições)
-  while(etiquetas.length < 105) etiquetas.push('<div class="etiqueta etiqueta-vazia"></div>');
+  // Dividir em páginas
+  const paginas = [];
+  for(let p = 0; p < numPaginas; p++){
+    const fatia = etiquetasHTML.slice(p * ETQ_POR_PAGINA, (p+1) * ETQ_POR_PAGINA);
+    paginas.push(`<div class="folha">${fatia.join('')}</div>`);
+  }
 
   const win = window.open('','_blank');
+  if(!win){ toast('Permita pop-ups para gerar o PDF.','erro'); return; }
+
   win.document.write(`<!DOCTYPE html>
-<html><head>
+<html lang="pt-BR"><head>
 <meta charset="utf-8">
-<title>Etiquetas Fidelidade — Lote ${lote.loteNum}</title>
+<title>Etiquetas Fidelidade \u2014 Lote ${lote.loteNum}</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: Arial, sans-serif;
-    background: #fff;
-  }
-  .btn-imprimir {
-    display: block;
-    margin: 18px auto 12px;
-    padding: 12px 32px;
-    background: #E65100;
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { font-family: Arial, Helvetica, sans-serif; background: #f5f5f5; }
+
+  /* ── Barra de ação (some no print) ── */
+  .barra-acao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1565C0;
     color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(230,81,0,.3);
+    padding: 12px 20px;
+    gap: 16px;
+    flex-wrap: wrap;
   }
-  .info-lote {
-    text-align: center;
-    color: #555;
-    font-size: 13px;
-    margin-bottom: 14px;
+  .barra-acao h2 { font-size: 15px; font-weight: 700; }
+  .barra-acao p  { font-size: 12px; opacity: .85; }
+  .btn-print {
+    background: #E65100; color: #fff; border: none;
+    padding: 10px 28px; border-radius: 8px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(0,0,0,.25);
   }
-  /* === FOLHA A4 === */
+  .btn-print:hover { background: #BF360C; }
+
+  /* ── Folha A4 ── */
   .folha {
     width: 210mm;
-    min-height: 297mm;
-    padding: 15.1mm 4.8mm 0;
+    height: 297mm;
+    /* Margens: Sup 15mm | Dir 4mm | Inf 15mm | Esq 4mm */
+    padding: 15mm 4mm 15mm 4mm;
     display: grid;
-    grid-template-columns: repeat(3, 63.5mm);
+    grid-template-columns: repeat(2, 99.1mm);
     grid-template-rows: repeat(7, 38.1mm);
-    column-gap: 2.5mm;
+    column-gap: 2mm;
     row-gap: 0mm;
-    page-break-after: always;
     background: #fff;
+    margin: 20px auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    page-break-after: always;
+    overflow: hidden;
   }
-  /* === ETIQUETA === */
+
+  /* ── Etiqueta individual ── */
   .etiqueta {
-    width: 63.5mm;
+    width: 99.1mm;
     height: 38.1mm;
-    border: 1.5px dashed #aaa;
-    border-radius: 3px;
+    border: 0.4mm dashed #c0c0c0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3mm 3mm 2mm;
+    padding: 2mm 4mm;
     overflow: hidden;
     background: #fff;
+    gap: 0.8mm;
   }
   .etiqueta-vazia {
-    border: 1.5px dashed #e0e0e0;
+    border: 0.4mm dashed #ebebeb;
+    background: #fafafa;
   }
-  .eta-topo {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5mm;
-  }
-  .eta-marca {
-    font-size: 7pt;
-    color: #E65100;
+
+  /* ── Conteúdo da etiqueta ── */
+  .eta-titulo {
+    font-size: 8pt;
     font-weight: 700;
-    white-space: nowrap;
+    color: #1565C0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
   }
-  .eta-num {
-    font-size: 7pt;
-    color: #999;
-    font-weight: 600;
-  }
-  /* === CÓDIGO EM NEGRITO BEM VISÍVEL === */
   .eta-codigo {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 16pt;
+    font-size: 18pt;
     font-weight: 900;
-    color: #1a1a1a;
-    letter-spacing: 2px;
+    color: #111;
+    letter-spacing: 3px;
     text-align: center;
     line-height: 1;
-    margin: 1mm 0;
   }
-  .eta-rodape {
-    font-size: 6pt;
-    color: #888;
+  .eta-instrucao {
+    font-size: 7pt;
+    color: #666;
     text-align: center;
-    margin-top: 1.5mm;
-    white-space: nowrap;
+    line-height: 1.3;
   }
+
+  /* ── Print: esconder barra, remover sombras ── */
   @media print {
-    .btn-imprimir, .info-lote { display: none !important; }
-    body { background: #fff; }
-    .folha { margin: 0; }
+    html, body { background: #fff !important; }
+    .barra-acao { display: none !important; }
+    .folha {
+      margin: 0 !important;
+      box-shadow: none !important;
+      page-break-after: always;
+    }
+    /* Garantir que o navegador use o tamanho A4 correto */
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
   }
 </style>
 </head><body>
-<button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir / Salvar PDF (5 folhas A4)</button>
-<p class="info-lote">Lote ${lote.loteNum} — Códigos ${lote.inicio} a ${lote.fim} — 5 folhas A4 · 21 etiquetas/folha · 63,5 × 38,1 mm</p>
-${[0,1,2,3,4].map(f => `<div class="folha">${etiquetas.slice(f*21,(f+1)*21).join('')}</div>`).join('')}
+
+<div class="barra-acao">
+  <div>
+    <h2>&#x1F3AB; Etiquetas de Fidelidade &mdash; Lote ${lote.loteNum}</h2>
+    <p>${total} c&oacute;digos &middot; ${numPaginas} folha${numPaginas>1?'s':''} A4 &middot; 14 etiquetas/folha &middot; 99,1 &times; 38,1 mm &middot; C&oacute;digos ${lote.inicio}&ndash;${lote.fim}</p>
+  </div>
+  <button class="btn-print" onclick="window.print()">&#x1F5A8;&#xFE0F; Imprimir / Salvar PDF</button>
+</div>
+
+${paginas.join('\n')}
+
 </body></html>`);
   win.document.close();
 }
