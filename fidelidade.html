@@ -1472,6 +1472,13 @@ function mostrarPainelCliente() {
   document.getElementById('card-cliente').style.display = 'block';
   document.getElementById('card-historico').style.display = 'block';
   atualizarUI();
+
+  // Verificar se há token de estrela pendente na sessão (cliente fez login após capturar)
+  const tokenPendente = sessionStorage.getItem('itap_estrela_token');
+  if (tokenPendente && tokenPendente.startsWith('EST')) {
+    console.log('🌟 Token pendente detectado após login:', tokenPendente);
+    setTimeout(() => processarTokenEstrela(tokenPendente), 800);
+  }
 }
 
 function atualizarUI() {
@@ -2229,82 +2236,88 @@ async function processarTokenEstrela(tokenCaptura) {
       }
     }
 
-    // 3. Proteção Anti-Robô: Exibir botão para clique humano
+    // 3. Se não está logado, salva token para processar após login
+    if (!clienteAtual) {
+      sessionStorage.setItem("itap_estrela_token", tokenCaptura);
+      console.log("🌟 Token salvo na sessão — aguardando login do cliente");
+      // Inicia o guia visual para orientar o login
+      if (typeof window.iniciarGuiaEstrela === 'function') window.iniciarGuiaEstrela();
+      return false;
+    }
+
+    // 4. Proteção Anti-Robô: Exibir botão para clique humano
+    //    Todo o código de salvar fica DENTRO do onclick para executar após o clique
     const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
     const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
+
+    async function salvarCaptura() {
+      const hoje = new Date().toISOString().split('T')[0];
+      const usuarioId = clienteAtual.cel;
+      if (!dados.rankingAtual) dados.rankingAtual = {};
+      if (!dados.rankingAtual[usuarioId]) {
+        dados.rankingAtual[usuarioId] = {
+          nome: clienteAtual.nome,
+          celular: clienteAtual.cel,
+          estrelas: 0,
+          ultimaCaptura: null,
+          diaCaptura: null
+        };
+      }
+      dados.rankingAtual[usuarioId].estrelas += 1;
+      dados.rankingAtual[usuarioId].ultimaCaptura = new Date().toISOString();
+      dados.rankingAtual[usuarioId].diaCaptura = hoje;
+      dados.rankingAtual[usuarioId].nome = clienteAtual.nome;
+
+      // 5. Marcar estrela como capturada definitivamente
+      dados.estrelaCapturada.status = 'capturada';
+      dados.estrelaCapturada.capturadoPor = usuarioId;
+      dados.estrelaCapturada.capturadoEm = new Date().toISOString();
+      dados.estrelaCapturada.tokenResgate = null;
+
+      // Marcar o dia como capturado no horariosDia
+      if (dados.horariosDia && dados.horariosDia[hoje]) {
+        dados.horariosDia[hoje].status = 'capturada';
+        dados.horariosDia[hoje].capturadoPor = usuarioId;
+        dados.horariosDia[hoje].capturadoEm = new Date().toISOString();
+      }
+
+      // 6. Salvar no GitHub
+      const conteudo = JSON.stringify(dados, null, 2);
+      const resultado = await ghPut(ESTRELAS_PATH, conteudo,
+        '🌟 Estrela capturada por ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')', sha);
+
+      if (resultado.ok) {
+        console.log('🌟 Estrela registrada com sucesso para ' + clienteAtual.nome);
+        sessionStorage.removeItem('itap_estrela_token');
+        const totalEstrelas = dados.rankingAtual[usuarioId].estrelas;
+        const metaEstrelas = (dados.cicloAtual && dados.cicloAtual.metaEstrelas) || 5;
+        setTimeout(() => {
+          alert('🌟 PARABÉNS, ' + clienteAtual.nome.split(' ')[0] + '!\n\nVocê capturou a Estrela Dourada!\n\nTotal de estrelas: ' + totalEstrelas + '/' + metaEstrelas + '\n\n' +
+            (totalEstrelas >= metaEstrelas ? '🏆 Você completou ' + metaEstrelas + ' estrelas! Fale com a gente no WhatsApp para resgatar seu prêmio!' : 'Continue caçando! Faltam ' + (metaEstrelas - totalEstrelas) + ' estrela(s) para o prêmio!'));
+        }, 500);
+        return true;
+      } else {
+        console.error('❌ Erro ao salvar captura da estrela');
+        return false;
+      }
+    }
 
     if (secaoReivindicar && btnReivindicar) {
       secaoReivindicar.style.display = 'block';
       return new Promise(resolve => {
         btnReivindicar.onclick = async () => {
           secaoReivindicar.style.display = 'none';
-          // Adicionar um pequeno atraso aleatório para simular tempo de reação humano
+          // Atraso aleatório para simular tempo de reação humano (proteção anti-robô)
           await new Promise(r => setTimeout(r, 500 + Math.random() * 1500));
-          resolve(true);
+          const ok = await salvarCaptura();
+          resolve(ok);
         };
       });
     }
 
+    // Se não há botão no DOM, salva diretamente
+    return await salvarCaptura();
 
-
-    if (!clienteAtual) {
-      // Salvar token na sessão para processar após login
-      sessionStorage.setItem("itap_estrela_token", tokenCaptura);
-      console.log("🌟 Token salvo na sessão — aguardando login do cliente");
-      return false;
-    }
-
-
-    const hoje = new Date().toISOString().split('T')[0];
-    const usuarioId = clienteAtual.cel;
-    if (!dados.rankingAtual) dados.rankingAtual = {};
-    if (!dados.rankingAtual[usuarioId]) {
-      dados.rankingAtual[usuarioId] = {
-        nome: clienteAtual.nome,
-        celular: clienteAtual.cel,
-        estrelas: 0,
-        ultimaCaptura: null,
-        diaCaptura: null
-      };
-    }
-    dados.rankingAtual[usuarioId].estrelas += 1;
-    dados.rankingAtual[usuarioId].ultimaCaptura = new Date().toISOString();
-    dados.rankingAtual[usuarioId].diaCaptura = hoje;
-    dados.rankingAtual[usuarioId].nome = clienteAtual.nome;
-
-    // 5. Marcar estrela como capturada definitivamente
-    dados.estrelaCapturada.status = 'capturada';
-    dados.estrelaCapturada.capturadoPor = usuarioId;
-    dados.estrelaCapturada.capturadoEm = new Date().toISOString();
-    dados.estrelaCapturada.tokenResgate = null; // Invalidar token
-
-    // Marcar o dia como capturado no horariosDia
-    if (dados.horariosDia && dados.horariosDia[hoje]) {
-      dados.horariosDia[hoje].status = 'capturada';
-      dados.horariosDia[hoje].capturadoPor = usuarioId;
-      dados.horariosDia[hoje].capturadoEm = new Date().toISOString();
-    }
-
-    // 6. Salvar no GitHub
-    const conteudo = JSON.stringify(dados, null, 2);
-    const resultado = await ghPut(ESTRELAS_PATH, conteudo,
-      '🌟 Estrela capturada por ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')', sha);
-
-    if (resultado.ok) {
-      console.log('🌟 Estrela registrada com sucesso para ' + clienteAtual.nome);
-      // Limpar token da sessão
-      sessionStorage.removeItem('itap_estrela_token');
-      // Mostrar mensagem de sucesso
-      const totalEstrelas = dados.rankingAtual[usuarioId].estrelas;
-      setTimeout(() => {
-        alert('🌟 PARABÉNS, ' + clienteAtual.nome.split(' ')[0] + '!\n\nVocê capturou a Estrela Dourada!\n\nTotal de estrelas: ' + totalEstrelas + '/5\n\n' +
-          (totalEstrelas >= 5 ? '🏆 Você completou 5 estrelas! Fale com a gente no WhatsApp para resgatar seu prêmio!' : 'Continue caçando! Faltam ' + (5 - totalEstrelas) + ' estrela(s) para o prêmio!'));
-      }, 500);
-      return true;
-    } else {
-      console.error('❌ Erro ao salvar captura da estrela');
-      return false;
-    }
   } catch(e) {
     console.error('❌ Erro ao processar token da estrela:', e);
     return false;

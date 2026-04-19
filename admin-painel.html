@@ -2363,7 +2363,7 @@ async function carregarTudo(){
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
-  if(est.content){STATE.estrelas=est.content;STATE.estrelasSha=est.sha;}
+  if(est.content){try{STATE.estrelas=JSON.parse(est.content);}catch(e){STATE.estrelas=null;}STATE.estrelasSha=est.sha;}
   ocultarLoading();
   renderDashboard();preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();renderPreços();carregarEstoque();
   carregarTitulosCardapio();
