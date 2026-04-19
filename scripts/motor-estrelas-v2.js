@@ -199,7 +199,7 @@ class MotorEstrelasV2 {
    */
   async salvarEstadoNoGitHub() {
     try {
-      const GH_TOKEN  = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+      const GH_TOKEN  = (function(){return localStorage.getItem('itap_gh_token')||'';})();
       const GH_OWNER  = 'missias123';
       const GH_REPO   = 'itapolitanacajuru';
       const GH_BRANCH = 'main';
