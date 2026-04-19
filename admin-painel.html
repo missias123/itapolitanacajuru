@@ -447,6 +447,10 @@ body { overflow-x: hidden; }
       <input type="password" id="inp-senha" placeholder="Senha do administrador" onkeydown="if(event.key==='Enter')entrar()"/>
       <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">&#x1F441;&#xFE0F;</button>
     </div>
+    <div class="inp-wrap" style="margin-top:8px">
+      <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"/>
+    </div>
+    <div style="font-size:0.72rem;color:#aaa;margin-bottom:12px">O token é salvo apenas neste navegador, nunca no servidor.</div>
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Senha incorreta.</div>
     <br/>
@@ -2323,7 +2327,7 @@ Talento</textarea>
   </div>
 </div>
 <script>
-const GH_TOKEN=['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+function getToken(){return localStorage.getItem('itap_gh_token')||'';}
 const GH_OWNER='missias123';
 const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
@@ -2334,7 +2338,7 @@ const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:nu
 const POR_PAGINA=50;
 async function ghGet(path){
   try{
-    const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}});
+    const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:{'Authorization':'token '+getToken(),'Accept':'application/vnd.github.v3+json'}});
     if(r.status===404)return{content:null,sha:null};
     if(!r.ok)throw new Error(r.status);
     const d=await r.json();
@@ -2350,7 +2354,7 @@ async function ghPut(path,data,sha,msg){
     const content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
     const body={message:msg,content};
     if(sha)body.sha=sha;
-    const r=await fetch(GH_API+path,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const r=await fetch(GH_API+path,{method:'PUT',headers:{'Authorization':'token '+getToken(),'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok){const e=await r.json();throw new Error(e.message);}
     const d=await r.json();
     return{ok:true,sha:d.content.sha};
@@ -2381,6 +2385,8 @@ function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
+  const tok=document.getElementById('inp-gh-token').value.trim();
+  if(tok) localStorage.setItem('itap_gh_token',tok);
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   const cfg=await ghGet(PATHS.config);
@@ -2823,14 +2829,14 @@ async function ghPutImagem(path, blob, msg) {
     // Buscar SHA atual do arquivo (se já existir)
     let sha = null;
     try {
-      const r = await fetch(GH_API + path, { headers: { 'Authorization': 'token ' + GH_TOKEN } });
+      const r = await fetch(GH_API + path, { headers: { 'Authorization': 'token ' + getToken() } });
       if (r.ok) { const d = await r.json(); sha = d.sha; }
     } catch(e) {}
     const body = { message: msg, content: base64 };
     if (sha) body.sha = sha;
     const r = await fetch(GH_API + path, {
       method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
     if (!r.ok) { const e = await r.json(); throw new Error(e.message); }

@@ -973,7 +973,7 @@ body { overflow-x: hidden; }
 // ═══════════════════════════════════════════════════════════
 // CONFIGURACOES
 // ═══════════════════════════════════════════════════════════
-const GH_TOKEN   = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+function getToken(){return localStorage.getItem('itap_gh_token')||'';}
 const GH_OWNER   = 'missias123';
 const GH_REPO    = 'itapolitanacajuru';
 const GH_BRANCH  = 'main';
@@ -1000,7 +1000,7 @@ let NOME_PREMIO = 'Milkshake 300ml';
 async function ghGet(path) {
   try {
     const r = await fetch(GH_API + path + '?t=' + Date.now(), {
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      headers: { 'Authorization': 'token ' + getToken(), 'Accept': 'application/vnd.github.v3+json' }
     });
     if (r.status === 404) return { content: null, sha: null };
     if (!r.ok) throw new Error(r.status);
@@ -1026,7 +1026,7 @@ async function ghPut(path, content, message, sha) {
     if (sha) body.sha = sha;
     const r = await fetch(GH_API + path, {
       method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
     if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
@@ -2156,7 +2156,7 @@ async function resgatarPremio(tipo) {
 // ═══════════════════════════════════════════════════════════
 // PAINEL ADMIN
 // ═══════════════════════════════════════════════════════════
-const ADMIN_SENHA = 'itapolitana2007@';
+const ADMIN_SENHA = null; // senha lida dinamicamente do config.json
 const ADMIN_POR_PAGINA = 50;
 let adminPaginaAtual = 1;
 let adminClientesFiltrados = [];
@@ -2177,10 +2177,18 @@ function fecharAdmin() {
   window.scrollTo(0, 0);
 }
 
-function adminLogin() {
+async function adminLogin() {
   const senha = document.getElementById('inp-admin-senha').value;
-  if (senha !== ADMIN_SENHA) {
-    showMsg('msg-admin-login', 'Senha incorreta.', 'erro');
+  try {
+    const r = await fetch('dados/config.json?t=' + Date.now());
+    const cfg = r.ok ? await r.json() : {};
+    const senhaEsperada = cfg.senhaAdmin || '';
+    if (!senhaEsperada || senha !== senhaEsperada) {
+      showMsg('msg-admin-login', 'Senha incorreta.', 'erro');
+      return;
+    }
+  } catch(e) {
+    showMsg('msg-admin-login', 'Erro ao verificar senha.', 'erro');
     return;
   }
   document.getElementById('admin-login-box').style.display = 'none';
