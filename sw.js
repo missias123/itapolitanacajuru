@@ -54,8 +54,8 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) return;
 
   // GitHub API e raw — Network Only (nunca cachear dados dinâmicos)
-  if (url.hostname.includes('raw.githubusercontent.com') ||
-      url.hostname.includes('api.github.com') ||
+  if (url.hostname === 'raw.githubusercontent.com' ||
+      url.hostname === 'api.github.com' ||
       url.pathname.startsWith('/dados/')) {
     event.respondWith(
       fetch(request).catch(() =>
