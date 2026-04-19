@@ -173,8 +173,15 @@ class MotorEstrelasV2 {
     // TRAVA 4: Bloquear clique imediatamente (sem segundo clique possível)
     this.estrelaCapturada.status = 'em_resgate'; // Bloqueia qualquer outro clique
 
-    // TRAVA 3: Gera Token Único de Sessão (Impossível de duplicar)
-    const tokenUnico = 'EST_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    // TRAVA 3: Token diário baseado no relógio — formato EST_AAAAMMDD_HHMMSS
+    // Único por segundo, nunca se repete em todo o histórico do sistema
+    const _tPartes = new Intl.DateTimeFormat('pt-BR', {
+      timeZone:'America/Sao_Paulo',
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+    }).formatToParts(new Date());
+    const _tGet = (t) => (_tPartes.find(p => p.type === t) || {value:'00'}).value;
+    const tokenUnico = 'EST_' + _tGet('year') + _tGet('month') + _tGet('day') + '_' + _tGet('hour') + _tGet('minute') + _tGet('second');
     
     // TRAVA 4: Marca como "Em Resgate" (Bloqueio Temporário)
     this.estrelaCapturada.status = 'em_resgate';
