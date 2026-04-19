@@ -2290,7 +2290,7 @@ const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:''};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:null};
 const POR_PAGINA=50;
 async function ghGet(path){
   try{
@@ -4087,6 +4087,8 @@ async function salvarSabores() {
 // =====================================================================
 // ESTOQUE — gestao de estoque de encomendas
 // =====================================================================
+// Helper: lê preço normalizando chaves 'preço' (com acento) e 'preco' (legado localStorage)
+function _normPreço(obj, fallback) { return obj.preço || obj.preco || fallback; }
 function carregarEstoque() {
   const prod = STATE.produtos;
   const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
@@ -4097,7 +4099,7 @@ function carregarEstoque() {
     : JSON.parse(localStorage.getItem('itap_caixas_enc') || '[]');
   CAIXAS_IDS.forEach((id, i) => {
     const d = caixas[i] || CAIXAS_PAD[i];
-    const pr = document.getElementById(id + '_preço'); if (pr) pr.value = d.preço || d.preco || CAIXAS_PAD[i].preço;
+    const pr = document.getElementById(id + '_preço'); if (pr) pr.value = _normPreço(d, CAIXAS_PAD[i].preço);
     const es = document.getElementById(id + '_estoque'); if (es) es.value = d.estoque != null ? d.estoque : CAIXAS_PAD[i].estoque;
     const eg = document.getElementById(id + '_esgotado'); if (eg) eg.checked = !!d.esgotado;
   });
@@ -4105,7 +4107,7 @@ function carregarEstoque() {
     ? prod.tortas_enc
     : JSON.parse(localStorage.getItem('itap_tortas_enc') || '[]');
   const torta = tortas[0] || {preço:100,estoque:10,esgotado:false};
-  const tp = document.getElementById('torta1_preço'); if (tp) tp.value = torta.preço || torta.preco || 100;
+  const tp = document.getElementById('torta1_preço'); if (tp) tp.value = _normPreço(torta, 100);
   const te = document.getElementById('torta1_estoque'); if (te) te.value = torta.estoque != null ? torta.estoque : 10;
   const teg = document.getElementById('torta1_esgotado'); if (teg) teg.checked = !!torta.esgotado;
   renderizarPicolésAdmin();
