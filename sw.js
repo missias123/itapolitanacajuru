@@ -1,115 +1,112 @@
+/**
+ * SW.JS — Sorveteria Itapolitana Cajuru
+ * Versão: 4.0 — Cache inteligente para GitHub Pages
+ * Estratégia: Cache First (assets), Network First (HTML/API)
+ */
 
-// PHASE 4: ENHANCED SERVICE WORKER WITH INTELLIGENT CACHING
-// Sorveteria Itapolitana Cajuru - PWA Benchmark
+const CACHE_NAME   = 'itapolitana-v4';
+const ASSETS_CACHE = 'assets-v4';
 
-const CACHE_NAME = 'itapolitana-v2';
-const RUNTIME_CACHE = 'itapolitana-runtime-v2';
 const CRITICAL_ASSETS = [
-    '/',
-    '/index.html',
-    '/css/design-system.min.css',
-    '/css/estilo-encomendas.min.css',
-    '/mascote.min.js',
-    '/images/logo.webp',
-    '/images/banner-cardapio.webp'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/mascote.css',
+  '/css/design-system.min.css',
+  '/images/logo.webp',
+  '/images/icon-192.webp',
+  '/offline.html'
 ];
 
-// 1. INSTALL EVENT: Cache critical assets
-self.addEventListener('install', event => {
-    console.log('[SW] Installing Service Worker...');
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log('[SW] Caching critical assets...');
-            return cache.addAll(CRITICAL_ASSETS);
-        }).then(() => {
-            console.log('[SW] Service Worker installed successfully!');
-            return self.skipWaiting();
+// ── INSTALL ─────────────────────────────────────────────────
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache =>
+        Promise.allSettled(
+          CRITICAL_ASSETS.map(url => cache.add(url).catch(() => {}))
+        )
+      )
+      .then(() => self.skipWaiting())
+  );
+});
+
+// ── ACTIVATE — limpar caches antigos ────────────────────────
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys =>
+        Promise.all(
+          keys
+            .filter(k => k !== CACHE_NAME && k !== ASSETS_CACHE)
+            .map(k => caches.delete(k))
+        )
+      )
+      .then(() => self.clients.claim())
+  );
+});
+
+// ── FETCH — estratégia por tipo de recurso ──────────────────
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  if (!url.protocol.startsWith('http')) return;
+
+  // GitHub API e raw — Network Only (nunca cachear dados dinâmicos)
+  if (url.hostname.includes('raw.githubusercontent.com') ||
+      url.hostname.includes('api.github.com') ||
+      url.pathname.startsWith('/dados/')) {
+    event.respondWith(
+      fetch(request).catch(() =>
+        new Response(JSON.stringify({ erro: 'Offline', cached: false }), {
+          headers: { 'Content-Type': 'application/json' }
         })
+      )
     );
-});
+    return;
+  }
 
-// 2. ACTIVATE EVENT: Clean up old caches
-self.addEventListener('activate', event => {
-    console.log('[SW] Activating Service Worker...');
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
-                        console.log('[SW] Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => self.clients.claim())
+  // Assets estáticos — Cache First
+  if (request.destination === 'image' ||
+      request.destination === 'style'  ||
+      request.destination === 'script' ||
+      request.destination === 'font') {
+    event.respondWith(
+      caches.match(request).then(cached => {
+        if (cached) return cached;
+        return fetch(request).then(response => {
+          if (response.ok) {
+            caches.open(ASSETS_CACHE)
+              .then(cache => cache.put(request, response.clone()));
+          }
+          return response;
+        }).catch(() => cached || new Response('', { status: 503 }));
+      })
     );
+    return;
+  }
+
+  // HTML e navegação — Network First com fallback offline
+  event.respondWith(
+    fetch(request)
+      .then(response => {
+        if (response.ok) {
+          caches.open(CACHE_NAME)
+            .then(cache => cache.put(request, response.clone()));
+        }
+        return response;
+      })
+      .catch(() =>
+        caches.match(request)
+          .then(cached => cached || caches.match('/offline.html'))
+      )
+  );
 });
 
-// 3. FETCH EVENT: Intelligent caching strategy
-self.addEventListener('fetch', event => {
-    const { request } = event;
-    const url = new URL(request.url);
-
-    // Skip non-GET requests
-    if (request.method !== 'GET') {
-        return;
-    }
-
-    // Skip cross-origin requests
-    if (url.origin !== location.origin) {
-        return;
-    }
-
-    // Strategy: Cache First for static assets, Network First for dynamic content
-    if (request.destination === 'image' || request.destination === 'font' || request.destination === 'style' || request.destination === 'script') {
-        // Cache First Strategy
-        event.respondWith(
-            caches.match(request).then(response => {
-                return response || fetch(request).then(response => {
-                    if (!response || response.status !== 200 || response.type === 'error') {
-                        return response;
-                    }
-                    const responseClone = response.clone();
-                    caches.open(RUNTIME_CACHE).then(cache => {
-                        cache.put(request, responseClone);
-                    });
-                    return response;
-                });
-            }).catch(() => {
-                // Fallback for offline
-                if (request.destination === 'image') {
-                    return caches.match('/images/logo.webp');
-                }
-            })
-        );
-    } else {
-        // Network First Strategy for HTML and API calls
-        event.respondWith(
-            fetch(request)
-                .then(response => {
-                    if (!response || response.status !== 200) {
-                        return response;
-                    }
-                    const responseClone = response.clone();
-                    caches.open(RUNTIME_CACHE).then(cache => {
-                        cache.put(request, responseClone);
-                    });
-                    return response;
-                })
-                .catch(() => {
-                    return caches.match(request).then(response => {
-                        return response || caches.match('/offline.html');
-                    });
-                })
-        );
-    }
+// ── MESSAGE — forçar atualização ────────────────────────────
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
-
-// 4. MESSAGE EVENT: Handle messages from clients
-self.addEventListener('message', event => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-});
-
-console.log('[SW] Service Worker loaded successfully!');
