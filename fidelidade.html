@@ -102,22 +102,26 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
   flex-direction:column;
   align-items:center;
 }
+/* Todos os filhos diretos da seção ficam full-width para não colapsar no PC */
+.secao-programas > *{width:100%;box-sizing:border-box;}
 .programas-grid{
   display:grid;
   grid-template-columns:1fr;
   gap:24px;
   width:100%;
-  max-width:600px;
+  max-width:700px;
   margin:0 auto;
 }
-/* Desktop e tablet: grid 2 colunas a partir de 900px */
-@media(min-width:900px){
-  .secao-programas{max-width:1100px;padding:36px 24px;}
-  .programas-grid{grid-template-columns:repeat(2,1fr);max-width:1000px;}
-}
+/* Tablet médio: card um pouco mais largo */
 @media(min-width:641px) and (max-width:899px){
   .secao-programas{max-width:100%;padding:36px 24px;}
-  .programas-grid{grid-template-columns:1fr;max-width:620px;}
+  .programas-grid{grid-template-columns:1fr;max-width:740px;}
+}
+/* Desktop: grid 2 colunas a partir de 900px */
+@media(min-width:900px){
+  .secao-programas{max-width:1200px;padding:36px 32px;}
+  .programas-grid{grid-template-columns:repeat(2,1fr);max-width:1140px;width:100%;}
+  .card-programa-body{padding:20px 24px 24px;}
 }
 
 /* ── CARD PROGRAMA ── */
@@ -141,7 +145,7 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .passo-mini-num.verde{background:#2e7d32}
 
 /* ── DESTAQUE PREMIO ── */
-.destaque-premio{border-radius:12px;padding:10px 14px;font-size:.8rem;font-weight:700;line-height:1.5;text-align:center}
+.destaque-premio{border-radius:12px;padding:10px 14px;font-size:.8rem;font-weight:700;line-height:1.5;text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 14px}
 .destaque-premio.laranja{background:#fff3e0;border:1.5px solid #ffcc80;color:#bf360c}
 .destaque-premio.verde{background:#e8f5e9;border:1.5px solid #a5d6a7;color:#1b5e20}
 
@@ -515,7 +519,8 @@ body { overflow-x: hidden; }
           </div>
         </div>
         <div class="destaque-premio laranja">
-          &#127834; <strong>10 pts</strong> = Milkshake 300ml GRATIS &nbsp;|&nbsp; &#127846; <strong>30 pts</strong> = Caixa 7 Bolas GRATIS
+          <span>&#127834; <strong>10 pts</strong> = Milkshake 300ml GRATIS</span>
+          <span>&#127846; <strong>30 pts</strong> = Caixa 7 Bolas GRATIS</span>
         </div>
         <button class="btn-participar laranja" onclick="abrirRegrasF()">&#127903;&#65039; Quero Participar</button>
 
