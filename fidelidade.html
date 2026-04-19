@@ -2213,12 +2213,11 @@ async function processarTokenEstrela(tokenCaptura) {
           const sha = resp.sha;
           const estrela = dados.estrelaCapturada;
 
-            if (estrela && estrela.status === 'capturada' && estrela.capturadoPor === (clienteAtual ? clienteAtual.cel : null)) {
-               return { sucesso: true, ja_capturada: true };
-            }
-            throw new Error('Token inválido ou já processado');
+          if (estrela && estrela.status === 'capturada' && estrela.capturadoPor === (clienteAtual ? clienteAtual.cel : null)) {
+            return { sucesso: true, ja_capturada: true };
           }
 
+          if (!clienteAtual) {
             sessionStorage.setItem('itap_estrela_token', tokenCaptura);
             statusEl.style.background = '#f39c12';
             statusEl.innerHTML = '<span>🔑</span> Por favor, faça login para garantir sua estrela!';
@@ -2229,6 +2228,7 @@ async function processarTokenEstrela(tokenCaptura) {
           const hoje = new Date().toISOString().split('T')[0];
           const usuarioId = clienteAtual.cel;
           
+          if (!dados.rankingAtual[usuarioId]) {
             dados.rankingAtual[usuarioId] = { nome: clienteAtual.nome, celular: clienteAtual.cel, estrelas: 0, ultimaCaptura: null, diaCaptura: null };
           }
 
@@ -2265,18 +2265,13 @@ async function processarTokenEstrela(tokenCaptura) {
     if (res && res.sucesso) {
       statusEl.innerHTML = '<span>✅</span> Estrela Dourada Capturada com Sucesso!';
       sessionStorage.removeItem('itap_estrela_token');
-      
-        setTimeout(() => {
-          statusEl.remove();
-          alert('🌟 PARABÉNS!
-
-Você capturou a Estrela Dourada!
-Total: ' + res.total + '/5');
-          window.location.reload();
-        }, 1500);
-      } else {
-        setTimeout(() => statusEl.remove(), 3000);
-      }
+      setTimeout(() => {
+        statusEl.remove();
+        alert('🌟 PARABÉNS!\n\nVocê capturou a Estrela Dourada!\nTotal: ' + res.total + '/5');
+        window.location.reload();
+      }, 1500);
+    } else {
+      setTimeout(() => statusEl.remove(), 3000);
     }
 
   } catch (error) {
