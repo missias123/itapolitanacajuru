@@ -2321,6 +2321,7 @@ function irPara(seção,btn){
   ids.forEach(id=>{const el=document.getElementById('sec-'+id);if(el)el.classList.add('ativo');});
   if(btn)btn.classList.add('ativo');
   // Inicializar funções necessárias para cada seção visível
+  if(ids.includes('home'))preencherHome();
   if(ids.includes('preços'))renderPreços();
   if(ids.includes('cardapio-titulos'))carregarTitulosCardapio();
   if(ids.includes('cardápio'))preencherCardapio();
@@ -2329,9 +2330,10 @@ function irPara(seção,btn){
   if(ids.includes('encomendas'))renderEncomendas();
   if(ids.includes('sabores'))renderizarSaboresAdmin();
   if(ids.includes('estoque'))carregarEstoque();
+  if(ids.includes('promoção')){preencherPromoção();preencherSorteio();}
   if(ids.includes('participantes'))renderParticipantes();
   if(ids.includes('clientes')){renderClientes();renderDuplicidades();}
-  if(ids.includes('fidelidade')){renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
+  if(ids.includes('fidelidade')){preencherFidelidade();renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
   if(ids.includes('estrela'))carregarEstrelas();
   if(ids.includes('depoimentos'))preencherDepoimentos();
   if(ids.includes('qualidade'))atualizarScoresQualidade();
