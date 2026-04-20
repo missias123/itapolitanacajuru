@@ -471,7 +471,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
     <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
     <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
-    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas/Depoimentos</button>
+    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
   </div>
   <div class="admin-content">
@@ -485,14 +485,28 @@ body { overflow-x: hidden; }
         <div class="dash-item"><div class="di-icon">&#x1F4E6;</div><div class="di-num" id="d-encomendas">-</div><div class="di-txt">Encomendas</div></div>
         <div class="dash-item"><div class="di-icon">&#x1F389;</div><div class="di-num" id="d-promo">-</div><div class="di-txt">Promoção</div></div>
       </div>
+      <!-- AÇÕES RÁPIDAS — navegação interna -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><h2>⚡ Ações Rápidas — Editar Seções</h2></div>
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
+          <button onclick="irPara('pagina-inicial',document.querySelector('.nav-btn:nth-child(2)'))" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">🏠<span>Página Inicial</span></button>
+          <button onclick="irPara('encomendas-admin',document.querySelector('.nav-btn:nth-child(3)'))" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(135deg,#0d47a1,#1565c0);color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">🛒<span>Encomendas</span></button>
+          <button onclick="irPara('promocao-admin',document.querySelector('.nav-btn:nth-child(4)'))" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(135deg,#e65100,#f57c00);color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">🎉<span>Promoção</span></button>
+          <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(5)'))" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(135deg,#4a148c,#6a1b9a);color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">🎟️<span>Fidelidade</span></button>
+          <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(6)'))" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">⭐<span>Dicas</span></button>
+          <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(7)'))" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">📊<span>Qualidade</span></button>
+        </div>
+      </div>
+      <!-- ABRIR NO SITE — links externos -->
       <div class="card">
-        <div class="card-header"><h2>&#x1F517; Acesso Rápido ao Site</h2></div>
+        <div class="card-header"><h2>&#x1F310; Abrir Página no Site</h2></div>
         <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
           <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
           <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
           <a href="fidelidade.html" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
-          <button onclick="irPara('qualidade',null)" class="link-site" style="border:none;cursor:pointer;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff">📊 Qualidade</button>
+          <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
+          <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
         </div>
       </div>
     </div>
@@ -2431,8 +2445,8 @@ function irPara(seção,btn){
     'dashboard':      ['dashboard'],
     'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
     'encomendas-admin':['encomendas','sabores','estoque'],
-    'promocao-admin': ['promoção'],
-    'fidelidade-admin':['participantes','clientes','fidelidade','estrela'],
+    'promocao-admin': ['promoção','participantes'],
+    'fidelidade-admin':['clientes','fidelidade','estrela'],
     'dicas-admin':    ['depoimentos'],
     // acesso direto mantido para botão Qualidade do Dashboard
     'qualidade':      ['qualidade']
