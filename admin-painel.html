@@ -55,7 +55,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .btn{padding:10px 20px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{opacity:.85}
 .btn-salvar{background:#2e7d32;color:#fff}
-.btn-verde{background:#1565c0;color:#fff}
+.btn-verde{background:#2e7d32;color:#fff}
 .btn-laranja{background:#e65100;color:#fff}
 .btn-cinza{background:#757575;color:#fff}
 .btn-vermelho{background:#c62828;color:#fff}
@@ -150,7 +150,6 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .estoque-campos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .btn-qty-est{width:38px;height:38px;border-radius:50%;border:2px solid #e65100;background:#fff;color:#e65100;font-size:22px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0}
 .btn-qty-est.btn-add{background:#e65100;color:#fff;border-color:#e65100}
-.btn-verde{background:#2e7d32;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
 @media(max-width:600px){.estoque-campos{grid-template-columns:1fr}}
 
 /* =====================================================
@@ -2704,7 +2703,7 @@ async function salvarHome(){
   cfg.carrinhoLabel2=document.getElementById('home-carrinho-label2').value.trim()||'Toque para consultar';
   cfg.carrinhoWhatsMsg=document.getElementById('home-carrinho-whats').value.trim();
   STATE.config=cfg;
-  await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
+  const ok = await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
 }
 function renderPreços(){
   const p=STATE.produtos;
@@ -2845,7 +2844,7 @@ async function salvarPreços(){
   const sob=p.sobremesas||{};
   for(const nome of Object.keys(sob)){if(typeof sob[nome]==='number'){const id=`preço_sob_${nome}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.sobremesas[nome]=parseFloat(el.value)||0;}}
   STATE.produtos=p;
-  await salvarArquivo(PATHS.produtos,p,'produtosSha','Admin: atualizar preços do cardápio');
+  const ok = await salvarArquivo(PATHS.produtos,p,'produtosSha','Admin: atualizar preços do cardápio');
 }
 function preencherPromoção(){
   const pr=STATE.promo||{};
@@ -2968,8 +2967,8 @@ async function adicionarBannerCarrossel() {
         // Adicionar ao carrossel.html via atualização do JSON de banners
         if (!STATE.config.banners) STATE.config.banners = [];
         STATE.config.banners.push({ src: nomeArq, alt: altText, ts });
-        await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
-        toast('✅ Banner adicionado ao carrossel!', 'ok');
+        const ok = await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
+        if (ok) { toast('✅ Banner adicionado ao carrossel!', 'ok'); }
         _bannerBlobPendente = null;
         _bannerInfoPendente = null;
         const previewWrap = document.getElementById('home-banner-preview-wrap');
@@ -3037,7 +3036,7 @@ async function salvarPromoção(){
     cfg.promocaoDataFim=pr.dataFim||'';
     cfg.promocaoFab=pr.fabLabel||'';
     STATE.config=cfg;
-    await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
+    const ok = await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
   }
 }
 function renderEncomendas(){
@@ -3120,7 +3119,7 @@ async function alterarStatusEncomenda(idx,novoStatus){
   if(!registros[idx])return;
   registros[idx].status=novoStatus;
   STATE.encomendas.registros=registros;
-  await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
+  const ok = await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
   renderEncomendas();
 }
 function getClientes(){return Object.values(STATE.clientes?.clientes||STATE.fidelidade?.clientes||{});}
@@ -3266,20 +3265,20 @@ function excluirParticipante(cel, tipo) {
           const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
           if (idx > -1) {
             STATE.fidelidade.sorteioInscritos.splice(idx, 1);
-            await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' do sorteio');
-            salvouAlgo = true;
+            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' do sorteio');
+            if (ok) salvouAlgo = true;
           }
         }
         
         // 2. Remover do Clube de Fidelidade (clientes.json ou fidelidade.json)
         if (STATE.clientes?.clientes?.[celLimpo]) {
           delete STATE.clientes.clientes[celLimpo];
-          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
-          salvouAlgo = true;
+          const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
+          if (ok) salvouAlgo = true;
         } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
           delete STATE.fidelidade.clientes[celLimpo];
-          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
-          salvouAlgo = true;
+          const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
+          if (ok) salvouAlgo = true;
         }
         
         ocultarLoading();
@@ -3313,13 +3312,13 @@ async function adicionarParticipanteManual() {
     const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
     if (jaExiste) { toast('\u274c ' + jaExiste.nome + ' já está inscrito(a) no sorteio.', 'erro'); return; }
     STATE.fidelidade.sorteioInscritos.push({ nome, cel, dataNasc: '', data: new Date().toLocaleDateString('pt-BR'), hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) });
-    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
+    const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
   } else {
     if (!STATE.clientes) STATE.clientes = { clientes: {} };
     if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
     if (STATE.clientes.clientes[celLimpo]) { toast('\u274c ' + STATE.clientes.clientes[celLimpo].nome + ' já está cadastrado(a) na fidelidade.', 'erro'); return; }
     STATE.clientes.clientes[celLimpo] = { nome, cel: celLimpo, dataNasc: '', cadastro: new Date().toISOString(), saldoPontos: 0, codigosUsados: [], resgates: [], totalPremios: 0, totalCodigos: 0 };
-    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
+    const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
   }
   document.getElementById('add-part-nome').value = '';
   document.getElementById('add-part-cel').value = '';
@@ -3342,20 +3341,20 @@ function limparListaParticipantes() {
     `Tem certeza que deseja apagar <strong>${descricao}</strong>?<br><br>⚠️ Isso vai remover <strong>todos os cadastros</strong> da lista selecionada.<br><br><span style="color:#c62828;font-weight:700">Esta ação NÃO pode ser desfeita!</span>`,
     '🧹 Sim, limpar tudo',
     async () => {
+      let ok = true;
       if (!filtroTipo || filtroTipo === 'sorteio' || filtroTipo === 'ambos') {
         if (STATE.fidelidade?.sorteioInscritos) {
           STATE.fidelidade.sorteioInscritos = [];
-          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: limpar lista sorteio');
+          ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: limpar lista sorteio') && ok;
         }
       }
       if (!filtroTipo || filtroTipo === 'fidelidade' || filtroTipo === 'ambos') {
         if (STATE.clientes?.clientes) {
           STATE.clientes.clientes = {};
-          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: limpar lista fidelidade');
+          ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: limpar lista fidelidade') && ok;
         }
       }
-      toast('🧹 Lista limpa com sucesso!', 'ok');
-      renderParticipantes();
+      if (ok) { toast('🧹 Lista limpa com sucesso!', 'ok'); renderParticipantes(); }
     },
     'perigo'
   );
@@ -3534,10 +3533,10 @@ async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
   }
   if (STATE.clientes?.clientes) {
     STATE.clientes.clientes = clientes;
-    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: resolver duplicidade ' + celOriginal);
+    const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: resolver duplicidade ' + celOriginal);
   } else {
     STATE.fidelidade.clientes = clientes;
-    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: resolver duplicidade ' + celOriginal);
+    const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: resolver duplicidade ' + celOriginal);
   }
   renderClientes();
   renderDuplicidades();
@@ -3554,16 +3553,18 @@ async function toggleBloqueio(cel,bloquear){
       'Sim, bloquear',
       async ()=>{
         clientes[cel].bloqueado=true;
-        if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: bloquear ${cel}`);}
-        else{STATE.fidelidade.clientes=clientes;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: bloquear ${cel}`);}
-        renderClientes();
+        let ok=false;
+        if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: bloquear ${cel}`);}
+        else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: bloquear ${cel}`);}
+        if(ok)renderClientes();
       }
     );
   }else{
     clientes[cel].bloqueado=false;
-    if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${cel}`);}
-    else{STATE.fidelidade.clientes=clientes;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${cel}`);}
-    renderClientes();
+    let ok=false;
+    if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${cel}`);}
+    else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${cel}`);}
+    if(ok)renderClientes();
   }
 }
 // ═══════════════════════════════════════════════════════════
@@ -3628,10 +3629,11 @@ async function salvarSorteio() {
   const obs    = document.getElementById('sort-obs').value.trim();
   if (!STATE.fidelidade) STATE.fidelidade = {};
   STATE.fidelidade.sorteio = { dataProx: data, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
-  await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
-  const msg = document.getElementById('sort-msg');
-  if (msg) { msg.textContent = '✅ Sorteio salvo com sucesso!'; msg.style.color = '#2e7d32'; setTimeout(() => msg.textContent = '', 3000); }
-  toast('Configuração do sorteio salva!', 'sucesso');
+  const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
+  if (ok) {
+    const msg = document.getElementById('sort-msg');
+    if (msg) { msg.textContent = '✅ Sorteio salvo!'; msg.style.color = '#2e7d32'; setTimeout(() => msg.textContent = '', 3000); }
+  }
 }
 
 function preencherSorteio() {
@@ -4188,7 +4190,7 @@ async function salvarFidHero() {
   cfg.fidHeroTitulo = document.getElementById('cfg-fid-hero-titulo').value.trim();
   cfg.fidHeroDesc = document.getElementById('cfg-fid-hero-desc').value.trim();
   STATE.config = cfg;
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
@@ -4199,7 +4201,7 @@ async function salvarPromoTextos() {
   cfg.promoTituloEl = document.getElementById('cfg-promo-titulo-el').value.trim();
   cfg.promoDescEl = document.getElementById('cfg-promo-desc-el').value.trim();
   STATE.config = cfg;
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos promocao');
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos promocao');
 }
 function toast(msg,tipo=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+tipo;setTimeout(()=>el.className='toast',3000);}
 function mostrarLoading(txt='Salvando...'){document.getElementById('loading-txt').textContent=txt;document.getElementById('loading-overlay').style.display='flex';}
@@ -4380,7 +4382,7 @@ async function salvarSabores() {
     STATE.produtos = prod;
 
     // Salvar no GitHub (produtos.json)
-    await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e preços');
+    const ok = await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e preços');
     toast('Sabores salvos e publicados no site!', 'sucesso');
   } catch(e) { toast('Erro: ' + e.message, 'erro'); }
   ocultarLoading();
@@ -4524,9 +4526,9 @@ async function salvarEstoque() {
       prod.tortas_enc = [{id:'torta1',nome:'Torta de Sorvete',preço:torta_preço,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}];
       if (acréscimos.length) prod.acrescimos = acréscimos;
       STATE.produtos = prod;
-      await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
+      const ok = await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
     }
-    toast('Estoque salvo!', 'sucesso');
+    if (ok !== false) toast('Estoque salvo!', 'sucesso');
   } catch(e) { toast('Erro: ' + e.message, 'erro'); }
   ocultarLoading();
 }
@@ -5106,14 +5108,8 @@ async function salvarTitulosCardapio() {
   STATE.config = cfg;
   // Manter localStorage como fallback para browsers offline
   try { localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(titulos)); } catch(e) {}
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar títulos do cardápio');
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar títulos do cardápio');
 }
-
-// ── ESTOQUE CAIXAS (funções mantidas para compatibilidade, seção removida) ────
-function carregarEstoqueCaixas() { /* seção removida — use sec-estoque via GitHub */ }
-function ajustarEstoqueCaixa() {}
-function atualizarStatusCaixa() {}
-function salvarEstoqueCaixas() {}
 
 // ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
 function preencherCardapio() {
@@ -5348,7 +5344,7 @@ async function salvarDepoimentos() {
   }
   c.depoimentos = lista;
   
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
 }
 
 // ── FALE CONOSCO ────────────────────────────────────────────────────────────
@@ -5399,7 +5395,7 @@ async function salvarFaleConosco() {
   c.fcEmail = document.getElementById('fc-email').value.trim();
   c.fcEndereco = document.getElementById('fc-endereco').value.trim();
   c.fcHorario = document.getElementById('fc-horario').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco geral');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco geral');
 }
 
 // Salvar Modal Fale Conosco (IDs: fale-modal-titulo, fale-modal-sub, fale-label-nome, fale-label-msg, fale-btn-texto)
@@ -5410,7 +5406,7 @@ async function salvarModalFaleConosco() {
   c.faleLabelNome = document.getElementById('fc-label-nome').value.trim();
   c.faleLabelMsg = document.getElementById('fc-label-msg').value.trim();
   c.faleBtnTexto = document.getElementById('fc-btn-texto').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modal fale conosco');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modal fale conosco');
 }
 
 // Salvar Chat (IDs: chat-fab-texto, chat-hdr-titulo, chat-hdr-sub, chat-msg-inicio, chat-sug-1..6)
@@ -5423,21 +5419,21 @@ async function salvarChat() {
   c.chatSugestoes = document.getElementById('fc-chat-opcoes').value.split('\n').map(s => s.trim()).filter(s => s);
   c.fcChatOpcoes = c.chatSugestoes; // compatibilidade retroativa
   c.fcChatFora = document.getElementById('fc-chat-fora').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar chat e sugestoes');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar chat e sugestoes');
 }
 
 // Salvar Clube FAB (ID: clube-fab-texto)
 async function salvarClubeFab() {
   const c = STATE.config;
   c.clubeFabTexto = document.getElementById('fc-clube-fab').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
 }
 
 // Salvar Promo FAB (ID: promo-fab-label)
 async function salvarPromoFab() {
   const c = STATE.config;
   c.promoFabLabel = document.getElementById('fc-promo-fab-label').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar promo fab');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar promo fab');
 }
 
 // Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
@@ -5448,7 +5444,7 @@ async function salvarModaisCardapio() {
   c.modalPicoleTitulo = document.getElementById('fc-modal-picole-titulo').value.trim();
   c.modalAçaíTitulo = document.getElementById('fc-modal-açaí-titulo').value.trim();
   c.modalAçaíSub = document.getElementById('fc-modal-açaí-sub').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
 }
 
 // Salvar Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
@@ -5457,7 +5453,7 @@ async function salvarCarrinhoEvento() {
   c.carrinhoLabel1 = document.getElementById('home-carrinho-label1').value.trim();
   c.carrinhoLabel2 = document.getElementById('home-carrinho-label2').value.trim();
   c.carrinhoWhatsMsg = document.getElementById('home-carrinho-whats').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar carrinho para eventos');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar carrinho para eventos');
 }
 
 
@@ -5501,9 +5497,8 @@ function excluirEncomenda(numPedido) {
     async () => {
       const idx = STATE.encomendas.registros.findIndex(r => r.num === numPedido);
       if (idx > -1) STATE.encomendas.registros.splice(idx, 1);
-      await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', 'Admin: excluir pedido ' + numPedido);
-      toast('Pedido ' + numPedido + ' excluído.', 'ok');
-      renderEncomendas();
+      const ok = await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', 'Admin: excluir pedido ' + numPedido);
+      if (ok) { toast('Pedido ' + numPedido + ' excluído.', 'ok'); renderEncomendas(); }
     }
   );
 }
@@ -5520,16 +5515,15 @@ function excluirCliente(cel) {
     `Tem certeza que deseja excluir o cadastro de <strong>${c.nome || cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">Todos os pontos e histórico serão perdidos. Esta ação não pode ser desfeita.</span>`,
     'Sim, excluir cliente',
     async () => {
+      let ok = false;
       if (STATE.clientes?.clientes) {
         delete STATE.clientes.clientes[cel];
-        await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + cel);
+        ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + cel);
       } else {
         delete STATE.fidelidade.clientes[cel];
-        await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + cel);
+        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + cel);
       }
-      toast('Cliente ' + (c.nome || cel) + ' excluído.', 'ok');
-      renderClientes();
-      renderDuplicidades();
+      if (ok) { toast('Cliente ' + (c.nome || cel) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
     }
   );
 }
