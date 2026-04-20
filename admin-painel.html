@@ -4506,6 +4506,7 @@ async function salvarEstoque() {
     }
     if (acréscimos.length) localStorage.setItem('itap_acréscimos', JSON.stringify(acréscimos));
     const prod = STATE.produtos;
+    let ok = true;
     if (prod) {
       // Atualizar picolés
       for (const [cat, dados] of Object.entries(picDados)) {
@@ -4526,7 +4527,7 @@ async function salvarEstoque() {
       prod.tortas_enc = [{id:'torta1',nome:'Torta de Sorvete',preço:torta_preço,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}];
       if (acréscimos.length) prod.acrescimos = acréscimos;
       STATE.produtos = prod;
-      const ok = await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
+      ok = await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
     }
     if (ok !== false) toast('Estoque salvo!', 'sucesso');
   } catch(e) { toast('Erro: ' + e.message, 'erro'); }
