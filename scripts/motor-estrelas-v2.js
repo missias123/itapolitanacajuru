@@ -407,7 +407,8 @@ class MotorEstrelasV2 {
     
     this.rankingAtual[usuarioId].estrelas += 1;
     this.rankingAtual[usuarioId].ultimaCaptura = agora;
-    this.rankingAtual[usuarioId].diaCaptura = new Date().toISOString().split('T')[0];
+    // Data correta em SP — evita virada de dia UTC às 21h no Brasil
+    this.rankingAtual[usuarioId].diaCaptura = this.obterHorarioAtualComFuso().toISOString().split('T')[0];
     
     // Se atingiu a meta, registrar prêmio escolhido
     if (this.rankingAtual[usuarioId].estrelas >= this.cicloAtual.metaEstrelas) {
@@ -654,7 +655,7 @@ class MotorEstrelasV2 {
       cicloAtivo: this.cicloAtual.statusCiclo === 'ativo',
       metaEstrelas: this.cicloAtual.metaEstrelas,
       estrelaCapturada: this.estrelaCapturada.status,
-      horarioHoje: this.obterHorarioHoje(),
+      // horarioHoje removido: não expor o horário da estrela publicamente
       rankingTop5: this.obterTop5Ranking(),
       usuariosOnline: this.usuariosOnline
     };
