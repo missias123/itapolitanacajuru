@@ -189,6 +189,7 @@ var _endereçoCliente = '';
 // ---- PILHA DE NAVEGAÇÃO DO MODAL DE PICOLÉS ----
 // Garante que cada tela empilha a anterior e o botão Voltar sempre vai para a tela imediatamente anterior
 var _picoléNavStack = []; // ex: ['tipos', 'sabores']
+var picoléAtual = null;   // produto de picolé selecionado no modal
 
 // Lista padrão de sabores
 const SABORES_PADRAO = [
