@@ -706,6 +706,7 @@ function abrirModalPicolé(id, originEl) {
   if (!_mPic || !_mPic.classList.contains('ativo')) {
     abrirModal('modal-picolé', originEl);
   }
+}
 
 function qtdPickle(sabor, delta) {
   if (!selecoesPickle[sabor]) selecoesPickle[sabor] = 0;
