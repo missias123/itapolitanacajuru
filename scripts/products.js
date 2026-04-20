@@ -159,3 +159,77 @@ const produtos = {
         "Sorvete Diet (1 bola)": 10.00
     }
 };
+
+// Carrega dados atualizados do JSON remoto e atualiza o objeto 'produtos' global.
+// Chamada por enc-v2.js antes de renderizar os cards de encomenda.
+async function carregarPreçosNuvem() {
+  try {
+    const resp = await fetch(
+      'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json?t=' + Date.now(),
+      { cache: 'no-store' }
+    );
+    if (!resp.ok) return;
+    const dados = await resp.json();
+
+    // ── Sorvetes ─────────────────────────────────────────
+    if (dados.sorvetes) {
+      if (dados.sorvetes.sabores) produtos.sorvetes.sabores = dados.sorvetes.sabores;
+      if (dados.sorvetes.precos) {
+        const p = dados.sorvetes.precos;
+        produtos.sorvetes.preços = {
+          casquinha_copão: p.casquinha_copo  || p.casquinha_copão,
+          copão_recheado:  p.copo_recheado   || p.copão_recheado,
+          cascão:          p.cascão,
+          cestinha:        p.cestinha
+        };
+      }
+    }
+
+    // ── Picolés ───────────────────────────────────────────
+    if (dados.picoles) {
+      Object.entries(dados.picoles).forEach(([key, p]) => {
+        if (produtos.picolés[key]) {
+          if (p.preco_varejo  !== undefined) produtos.picolés[key].preço_varejo  = p.preco_varejo;
+          if (p.preco_atacado !== undefined) produtos.picolés[key].preço_atacado = p.preco_atacado;
+          if (p.estoque       !== undefined) produtos.picolés[key].estoque       = p.estoque;
+          if (p.sabores)                     produtos.picolés[key].sabores       = p.sabores;
+        }
+      });
+    }
+
+    // ── Caixas de encomenda ───────────────────────────────
+    if (dados.caixas_enc && dados.caixas_enc.length > 0) {
+      window._itap_caixas = dados.caixas_enc.map(c => ({
+        id:         c.id,
+        nome:       c.nome,
+        preço:      c['preço'] || c.preco || 100,
+        maxSabores: c.maxSabores || 2,
+        estoque:    c.estoque   || 0,
+        esgotado:   !!(c.esgotado || c.estoque <= 0)
+      }));
+    }
+
+    // ── Tortas de encomenda ───────────────────────────────
+    if (dados.tortas_enc && dados.tortas_enc.length > 0) {
+      window._itap_tortas = dados.tortas_enc.map(t => ({
+        id:         t.id,
+        nome:       t.nome,
+        preço:      t['preço'] || t.preco || 100,
+        maxSabores: t.maxSabores || 3,
+        estoque:    t.estoque   || 0,
+        esgotado:   !!(t.esgotado || t.estoque <= 0)
+      }));
+    }
+
+    // ── Outros ────────────────────────────────────────────
+    if (dados.milkshake)        produtos.milkshake        = dados.milkshake;
+    if (dados.tacas)            produtos.tacas            = dados.tacas;
+    if (dados.açaí || dados.acai) produtos.açaí = dados.açaí || dados.acai;
+    if (dados.caixas_viagem)    produtos.caixas_viagem    = dados.caixas_viagem;
+    if (dados.isopores_viagem)  produtos.isopores_viagem  = dados.isopores_viagem;
+    if (dados.sobremesas)       produtos.sobremesas       = dados.sobremesas;
+
+  } catch (e) {
+    console.warn('[Itap] carregarPreçosNuvem falhou, usando dados locais:', e.message);
+  }
+}
