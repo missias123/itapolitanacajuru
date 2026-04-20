@@ -2,8 +2,8 @@
 // PHASE 4: ENHANCED SERVICE WORKER WITH INTELLIGENT CACHING
 // Sorveteria Itapolitana Cajuru - PWA Benchmark
 
-const CACHE_NAME = 'itapolitana-v2';
-const RUNTIME_CACHE = 'itapolitana-runtime-v2';
+const CACHE_NAME = 'itapolitana-v3';
+const RUNTIME_CACHE = 'itapolitana-runtime-v3';
 const CRITICAL_ASSETS = [
     '/',
     '/index.html',

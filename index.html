@@ -3724,12 +3724,19 @@ function aplicarConfig(c) {
 
   // Salvar no localStorage como fallback
   try { localStorage.setItem('itap_config_cache', JSON.stringify(c)); } catch(e) {}
+
+  // Aplicar títulos dos accordions salvos via admin (GitHub API)
+  if (c.titulosCardapio) {
+    aplicarTitulosCardapio(c.titulosCardapio);
+    try { localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(c.titulosCardapio)); } catch(e) {}
+  }
 }
 
 // ── APLICAR TÍTULOS DOS ACCORDIONS SALVOS NO ADMIN ──────────────────────
-function aplicarTitulosCardapio() {
+function aplicarTitulosCardapio(cfgTitulos) {
   try {
-    var cfg = JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
+    // Preferência: dados do GitHub (passados via aplicarConfig), fallback localStorage
+    var cfg = cfgTitulos || JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
     if (!cfg || !Object.keys(cfg).length) return;
     var mapa = [
       ['acc-sorvetes-titulo','acc-sorvetes-sub','acc-sorvetes'],
@@ -3790,7 +3797,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Carregar config (textos, hero, footer, strip)
   carregarConfig();
 
-  // 2b. Aplicar títulos dos accordions salvos no admin
+  // 2b. Aplicar títulos dos accordions (fallback localStorage; GitHub sobrescreve em aplicarConfig)
   aplicarTitulosCardapio();
 
   // 3. Carregar banner
