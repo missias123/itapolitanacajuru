@@ -2397,7 +2397,9 @@ async function entrar(){
   ocultarLoading();
   if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}
   const senhaHash = await sha256(senha);
-  if(!STATE.senhaAdmin||senhaHash!==STATE.senhaAdmin){document.getElementById('login-erro').style.display='block';return;}
+  // Suporta senha em SHA-256 (novo) OU em texto puro (legado — até o PR ser mergeado no main)
+  const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
+  if(!senhaOk){document.getElementById('login-erro').style.display='block';return;}
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   carregarTudo();
