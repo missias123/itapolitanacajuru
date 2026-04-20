@@ -972,6 +972,20 @@ let META_PONTOS = 10;
 let NOME_PREMIO = 'Milkshake 300ml';
 
 // ═══════════════════════════════════════════════════════════
+// BUSCA DE CLIENTE — suporta chave por cel (novos) e por ID (admin)
+// ═══════════════════════════════════════════════════════════
+function _buscarClientePorCel(cel) {
+  if (!ghClientes || !ghClientes.clientes) return null;
+  // 1) chave direta por cel (clientes cadastrados pelo site)
+  if (ghClientes.clientes[cel]) return ghClientes.clientes[cel];
+  // 2) fallback via indice_celular (clientes adicionados pelo admin)
+  const id = ghClientes.indice_celular && ghClientes.indice_celular[cel];
+  if (id && ghClientes.clientes[id]) return ghClientes.clientes[id];
+  // 3) varredura completa como último recurso
+  return Object.values(ghClientes.clientes).find(c => c.cel === cel) || null;
+}
+
+// ═══════════════════════════════════════════════════════════
 // UTILITARIOS GITHUB
 // ═══════════════════════════════════════════════════════════
 async function ghGet(path) {
@@ -1075,9 +1089,9 @@ async function carregarDados() {
   }
   hideLoading();
   const celSalvo = localStorage.getItem('itap_cel');
-  if (celSalvo && ghClientes.clientes[celSalvo]) {
-    clienteAtual = ghClientes.clientes[celSalvo];
-    mostrarPainelCliente();
+  if (celSalvo) {
+    const c = _buscarClientePorCel(celSalvo);
+    if (c) { clienteAtual = c; mostrarPainelCliente(); }
   }
 }
 
@@ -1349,10 +1363,9 @@ async function cadastrar() {
   }
 
   // PASSO 2: Verificar por Celular (se Passo 1 nao encontrou duplicidade)
-  if (ghClientes.clientes[cel]) {
-    const regCel = ghClientes.clientes[cel];
-    // Celular ja cadastrado com outro nome — entra na conta existente
-    clienteAtual = regCel;
+  const regCelExistente = _buscarClientePorCel(cel);
+  if (regCelExistente) {
+    clienteAtual = regCelExistente;
     localStorage.setItem('itap_cel', cel);
     showMsg('msg-acesso',
       'Ola! Este numero de telefone ja esta cadastrado em nosso programa de fidelidade. Entrando na sua conta...','ok');
@@ -1417,8 +1430,13 @@ async function entrar() {
   }
   hideLoading();
   if (!ghClientes.clientes[cel]) {
-    showMsg('msg-acesso','Celular nao encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
-    return;
+    const found = _buscarClientePorCel(cel);
+    if (found) {
+      ghClientes.clientes[cel] = found; // migra para chave-cel para próximas vezes
+    } else {
+      showMsg('msg-acesso','Celular nao encontrado. Clique em "Primeira vez" para se cadastrar.','erro');
+      return;
+    }
   }
   clienteAtual = ghClientes.clientes[cel];
   if (clienteAtual.bloqueado) {
