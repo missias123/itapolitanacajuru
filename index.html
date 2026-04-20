@@ -3836,7 +3836,7 @@ function aplicarConfig(c) {
 
   // hero-título: usa ID direto (padrão profissional — não depende de seletor de tag)
   const heroTituloEl = document.getElementById('hero-título');
-  if (heroTituloEl && c.heroTitulo) {contain: layout;
+  if (heroTituloEl && c.heroTitulo) {
     heroTituloEl.innerHTML = c.heroTitulo.replace(
       /(Cajuru|Itapolitana|sorvete|açaí|picolé|cremoso)/gi,
       '<span class="destaque-texto">$1</span>'
@@ -3852,14 +3852,14 @@ function aplicarConfig(c) {
   if (heroCtaWhats && c.heroCtaWhats) heroCtaWhats.textContent = c.heroCtaWhats;
 
   // --- FRASES ROTATIVAS ---
-  if (c.heroFrases && Array.isArray(c.heroFrases) && c.heroFrases.length > 0) {contain: layout;
+  if (c.heroFrases && Array.isArray(c.heroFrases) && c.heroFrases.length > 0) {
     window.FRASES_HERO = c.heroFrases;
     const fraseEl = document.getElementById('frase-rotativa');
     if (fraseEl) fraseEl.textContent = c.heroFrases[0];
   }
 
   // --- STRIP SENSORIAL ---
-  if (c.stripSensorial && Array.isArray(c.stripSensorial) && c.stripSensorial.length > 0) {contain: layout;
+  if (c.stripSensorial && Array.isArray(c.stripSensorial) && c.stripSensorial.length > 0) {
     window.STRIPS = c.stripSensorial;
     const stripEl = document.getElementById('strip-sensorial');
     if (stripEl) stripEl.textContent = c.stripSensorial[0];
@@ -3948,7 +3948,7 @@ function aplicarConfig(c) {
   const carrinhoLabel2 = document.getElementById('carrinho-label2');
   if (carrinhoLabel2 && c.carrinhoLabel2) carrinhoLabel2.textContent = c.carrinhoLabel2;
   const carrinhoLink = document.querySelector('.hero-carrinho-wrap a');
-  if (carrinhoLink && c.carrinhoWhatsMsg) {contain: layout;
+  if (carrinhoLink && c.carrinhoWhatsMsg) {
     carrinhoLink.href = 'https://wa.me/' + (c.whatsapp || '5516996062046') + '?text=' + encodeURIComponent(c.carrinhoWhatsMsg);
   }
 

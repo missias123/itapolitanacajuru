@@ -104,7 +104,7 @@ async function atualizarEstoqueGitHub(caixasAtualizadas, tortasAtualizadas) {
   }
 }
 
-
+async function carregarPreçosNuvem() {
   // Normaliza chaves do JSON — aceita com e sem acento (picoles/picolés, preco/preço)
   function normalizarPicolés(obj) {
     if (!obj) return null;
