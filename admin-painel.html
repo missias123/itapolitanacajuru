@@ -35,6 +35,8 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .nav-btn{padding:12px 16px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s;white-space:nowrap}
 .nav-btn:hover{color:#e65100}
 .nav-btn.ativo{color:#e65100;border-bottom-color:#e65100}
+.btn-acao-rapida{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s,opacity .15s}
+.btn-acao-rapida:hover{transform:translateY(-2px);opacity:.9}
 .admin-content{padding:20px;max-width:1000px;margin:0 auto}
 .card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:20px;overflow:hidden}
 .card-header{padding:16px 20px;border-bottom:2px solid #f0f2f5;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -53,7 +55,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .btn{padding:10px 20px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{opacity:.85}
 .btn-salvar{background:#2e7d32;color:#fff}
-.btn-verde{background:#1565c0;color:#fff}
+.btn-verde{background:#2e7d32;color:#fff}
 .btn-laranja{background:#e65100;color:#fff}
 .btn-cinza{background:#757575;color:#fff}
 .btn-vermelho{background:#c62828;color:#fff}
@@ -148,7 +150,6 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .estoque-campos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .btn-qty-est{width:38px;height:38px;border-radius:50%;border:2px solid #e65100;background:#fff;color:#e65100;font-size:22px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0}
 .btn-qty-est.btn-add{background:#e65100;color:#fff;border-color:#e65100}
-.btn-verde{background:#2e7d32;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
 @media(max-width:600px){.estoque-campos{grid-template-columns:1fr}}
 
 /* =====================================================
@@ -471,7 +472,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
     <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
     <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
-    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas/Depoimentos</button>
+    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
   </div>
   <div class="admin-content">
@@ -485,14 +486,28 @@ body { overflow-x: hidden; }
         <div class="dash-item"><div class="di-icon">&#x1F4E6;</div><div class="di-num" id="d-encomendas">-</div><div class="di-txt">Encomendas</div></div>
         <div class="dash-item"><div class="di-icon">&#x1F389;</div><div class="di-num" id="d-promo">-</div><div class="di-txt">Promoção</div></div>
       </div>
+      <!-- AÇÕES RÁPIDAS — navegação interna -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><h2>⚡ Ações Rápidas — Editar Seções</h2></div>
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
+          <button onclick="irPara('pagina-inicial',document.querySelector('.nav-btn:nth-child(2)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
+          <button onclick="irPara('encomendas-admin',document.querySelector('.nav-btn:nth-child(3)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
+          <button onclick="irPara('promocao-admin',document.querySelector('.nav-btn:nth-child(4)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
+          <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(5)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
+          <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(6)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
+          <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(7)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+        </div>
+      </div>
+      <!-- ABRIR NO SITE — links externos -->
       <div class="card">
-        <div class="card-header"><h2>&#x1F517; Acesso Rápido ao Site</h2></div>
+        <div class="card-header"><h2>&#x1F310; Abrir Página no Site</h2></div>
         <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
           <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
           <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
           <a href="fidelidade.html" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
-          <button onclick="irPara('qualidade',null)" class="link-site" style="border:none;cursor:pointer;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff">📊 Qualidade</button>
+          <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
+          <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
         </div>
       </div>
     </div>
@@ -507,7 +522,7 @@ body { overflow-x: hidden; }
           <div class="seção-título">&#x1F3AF; Hero - Topo da Página</div>
           <div class="campo-edit"><label>Badge do Hero (linha pequena acima do título)</label><input type="text" id="home-badge" maxlength="60" placeholder="35 sabores tipo artesanal"/><div class="hint">Max. 60 caracteres. Aparece em destaque acima do título principal.</div></div>
           <div class="campo-edit"><label>Título principal (H1)</label><input type="text" id="home-titulo" maxlength="80" placeholder="O Sorvete que Cajuru Ama de Verdade"/><div class="hint">Max. 80 caracteres. É o título H1 da página — impacta SEO. Use palavras-chave.</div></div>
-          <div class="campo-edit"><label>Descrição do Hero</label><textarea id="home-descricao" rows="3" placeholder="Cremosidade real, sabores que encantam..."></textarea></div>
+          <div class="campo-edit"><label>Descrição do Hero</label><textarea id="home-descricao" rows="3" maxlength="200" placeholder="Cremosidade real, sabores que encantam..."></textarea><div class="hint">Max. 200 caracteres. Texto de apoio abaixo do título. Descreva o diferencial da sorveteria. Ex: Sorvete tipo artesanal, feito com leite fresco e ingredientes selecionados.</div></div>
           <div class="campo-edit"><label>Botão principal - Ver Cardápio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardápio Completo"/><div class="hint">Max. 40 caracteres. Texto do botão verde que rola até o cardápio.</div></div>
           <div class="campo-edit"><label>Botão WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botão laranja do WhatsApp.</div></div>
           <div class="campo-edit"><label>Subtítulo do Hero</label>
@@ -557,8 +572,8 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Textos da faixa animada (um por linha)</label><textarea id="home-strip" rows="4" placeholder="Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores"></textarea><div class="hint">Cada linha é um texto da faixa animada colorida</div></div>
           <div class="seção-título">&#x1F366; Cardápio</div>
           <div class="campo-edit"><label>Título do Cardápio</label><input type="text" id="home-cardápio-título" maxlength="60" placeholder="🍦 Escolha sua Felicidade Hoje"/><div class="hint">Aparece como título da seção de cardápio no site. Max. 60 caracteres.</div></div>
-          <div class="campo-edit"><label>Subtítulo do Cardápio</label><input type="text" id="home-cardápio-sub" maxlength="80" placeholder="Toque numa categoria e descubra sabores irresistíveis"/></div>
-          <div class="campo-edit"><label>Badge do Cardápio</label><input type="text" id="home-cardápio-badge" maxlength="50" placeholder="✨ Feito com amor desde 2007"/></div>
+          <div class="campo-edit"><label>Subtítulo do Cardápio</label><input type="text" id="home-cardápio-sub" maxlength="80" placeholder="Toque numa categoria e descubra sabores irresistíveis"/><div class="hint">Max. 80 caracteres. Linha descritiva abaixo do título do cardápio.</div></div>
+          <div class="campo-edit"><label>Badge do Cardápio</label><input type="text" id="home-cardápio-badge" maxlength="50" placeholder="✨ Feito com amor desde 2007"/><div class="hint">Max. 50 caracteres. Pequena etiqueta colorida acima do título do cardápio. Ex: ✨ Feito com amor desde 2007.</div></div>
 
           <div class="seção-título">🔗 Botões de Navegação (Menu do Site)</div>
           <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
@@ -612,8 +627,8 @@ body { overflow-x: hidden; }
           <div class="seção-título">📝 Card Principal da Promoção</div>
           <div class="campo-edit"><label>Título da promoção</label><input type="text" id="promo-título" maxlength="80" placeholder="Todo mês sorteamos 1 caixa de sorvete!"/><div class="hint">Max. 80 caracteres. Título em destaque no banner da promoção.</div></div>
           <div class="campo-edit"><label>Descrição</label><textarea id="promo-descrição" rows="3" placeholder="Descrição da promoção..."></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="promo-btn" placeholder="Ver no Instagram"/></div>
-          <div class="campo-edit"><label>Link do botão</label><input type="url" id="promo-link" placeholder="https://..."/></div>
+          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="promo-btn" maxlength="30" placeholder="Ver no Instagram"/><div class="hint">Max. 30 caracteres. Texto do botão de ação da promoção. Ex: Ver no Instagram.</div></div>
+          <div class="campo-edit"><label>Link do botão</label><input type="url" id="promo-link" placeholder="https://"/><div class="hint">Cole o link completo começando com https://. Ex: https://www.instagram.com/itapolitana</div></div>
           <div class="campo-edit"><label>Data de encerramento (opcional)</label><input type="datetime-local" id="promo-datafim"/><div class="hint">Deixe em branco para promoção sem prazo</div></div>
           <div class="campo-edit"><label>Texto do botão flutuante (FAB)</label><input type="text" id="promo-fab" maxlength="15" placeholder="SORTEIO!"/><div class="hint">Max. 15 caracteres. Texto curto e impactante. Aparece no canto inferior direito do site.</div></div>
           
@@ -657,8 +672,8 @@ body { overflow-x: hidden; }
         <div class="card-body">
           <div class="seção-título">&#x1F4CD; Configuração do Sorteio</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit"><label>Data do próximo sorteio</label><input type="date" id="sort-data-prox"/></div>
-            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" placeholder="1 caixa de 5 litros de sorvete tipo artesanal"/></div>
+            <div class="campo-edit"><label>Data do próximo sorteio</label><input type="date" id="sort-data-prox"/><div class="hint">Data em que ocorrerá o próximo sorteio. Aparece no site para os participantes.</div></div>
+            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" maxlength="100" placeholder="1 caixa de 5 litros de sorvete tipo artesanal"/><div class="hint">Max. 100 caracteres. Descreva o prêmio claramente. Ex: 1 caixa de 5 litros de sorvete.</div></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="campo-edit"><label>Status do sorteio</label>
@@ -668,9 +683,9 @@ body { overflow-x: hidden; }
                 <option value="realizado">Realizado (vencedor definido)</option>
               </select>
             </div>
-            <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" placeholder="Nome do vencedor"/></div>
+            <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" maxlength="80" placeholder="Nome do vencedor"/><div class="hint">Max. 80 caracteres. Nome do vencedor do último sorteio realizado. Aparece no site.</div></div>
           </div>
-          <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" placeholder="Notas internas sobre o sorteio..."></textarea></div>
+          <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" maxlength="500" placeholder="Notas internas sobre o sorteio..."></textarea><div class="hint">Anotações internas para o administrador. Não aparece no site. Max. 500 caracteres.</div></div>
           <div id="sort-msg" style="font-size:.85rem;font-weight:600;margin-top:8px"></div>
         </div>
       </div>
@@ -2134,7 +2149,7 @@ Talento</textarea>
             <div class="campo-edit"><label>Horário de fechamento (hora)</label><input type="number" id="cfg-hora-fecha" min="0" max="23" placeholder="22"/></div>
           </div>
           <div class="campo-edit"><label class="label-obrigatório">Horário resumido (exibição no site)</label><input type="text" id="cfg-horario" maxlength="50" placeholder="Todos os dias: 10h as 22h"/></div>
-          <div class="campo-edit"><label>Horário detalhado</label><input type="text" id="cfg-horário-det" placeholder="Segunda a Domingo: 10h as 22h"/></div>
+          <div class="campo-edit"><label>Horário detalhado</label><input type="text" id="cfg-horário-det" maxlength="100" placeholder="Segunda a Domingo: 10h às 22h"/><div class="hint">Max. 100 caracteres. Horário completo exibido na página de contato. Ex: Segunda a Domingo: 10h às 22h.</div></div>
           <div class="campo-edit"><label>Horário no rodapé</label><textarea id="cfg-footer-horário" rows="2" placeholder="Todos os dias: 10h as 22h&#10;Segunda a Domingo"></textarea></div>
           <div class="seção-título">&#x1F3E2; Dados da Empresa</div>
           <div class="campo-edit"><label class="label-obrigatório">Nome da empresa</label><input type="text" id="cfg-nome-empresa" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru"/></div>
@@ -2143,7 +2158,7 @@ Talento</textarea>
           <div class="campo-edit"><label>CNPJ (formato: XX.XXX.XXX/XXXX-XX)</label><input type="text" id="cfg-CNPJ" maxlength="18" placeholder="08.922.044/0001-80"/><div class="hint">Formato: 08.922.044/0001-80. Max. 18 caracteres.</div></div>
           <div class="seção-título">&#x1F4C4; Rodapé do Site</div>
           <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" maxlength="80" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
-          <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" placeholder="SgtMissiascacarato"/></div>
+          <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" maxlength="60" placeholder="SgtMissiascacarato"/><div class="hint">Max. 60 caracteres. Aparece no rodapé do site. Pode deixar em branco.</div></div>
           <div class="seção-título">&#x1F50D; SEO — Visibilidade no Google</div>
           <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
             &#x1F4CC; <strong>O que é SEO?</strong> São os textos que aparecem no Google quando alguém pesquisa sua sorveteria. Preencher corretamente aumenta as visitas ao site.
@@ -2350,15 +2365,34 @@ async function ghGet(path){
   }catch(e){return{content:null,sha:null};}
 }
 async function ghPut(path,data,sha,msg){
-  try{
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
-    const body={message:msg,content};
-    if(sha)body.sha=sha;
-    const r=await fetch(GH_API+path,{method:'PUT',headers:{'Authorization':'token '+getToken(),'Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(!r.ok){const e=await r.json();throw new Error(e.message);}
-    const d=await r.json();
-    return{ok:true,sha:d.content.sha};
-  }catch(e){return{ok:false,erro:e.message};}
+  const MAX_TENTATIVAS = 3;
+  for(let tentativa = 1; tentativa <= MAX_TENTATIVAS; tentativa++){
+    try{
+      const content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
+      const body={message:msg,content};
+      if(sha)body.sha=sha;
+      const r=await fetch(GH_API+path,{method:'PUT',headers:{'Authorization':'token '+getToken(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+      // Rate limit (429) ou servidor temporariamente indisponível (503) → aguardar e tentar novamente
+      if((r.status===429||r.status===503)&&tentativa<MAX_TENTATIVAS){
+        const espera=tentativa*2000; // tentativa 1→2s, tentativa 2→4s
+        console.warn(`[Admin] API retornou ${r.status}. Tentativa ${tentativa}/${MAX_TENTATIVAS}. Aguardando ${espera/1000}s...`);
+        await new Promise(res=>setTimeout(res,espera));
+        continue;
+      }
+      if(!r.ok){const e=await r.json();throw new Error(e.message);}
+      const d=await r.json();
+      return{ok:true,sha:d.content.sha};
+    }catch(e){
+      if(tentativa<MAX_TENTATIVAS&&(e.message==='Failed to fetch'||e.message==='NetworkError')){
+        const espera=tentativa*1500;
+        console.warn(`[Admin] Erro de rede. Tentativa ${tentativa}/${MAX_TENTATIVAS}. Aguardando ${espera/1000}s...`);
+        await new Promise(res=>setTimeout(res,espera));
+        continue;
+      }
+      return{ok:false,erro:e.message};
+    }
+  }
+  return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
   mostrarLoading('Salvando no GitHub...');
@@ -2393,7 +2427,14 @@ async function entrar(){
   if(tok) localStorage.setItem('itap_gh_token',tok);
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
-  const cfg=await ghGet(PATHS.config);
+  let cfg=await ghGet(PATHS.config);
+  // Fallback: se API falhou (sem token salvo), tenta URL pública raw (repo público)
+  if(!cfg.content){
+    try{
+      const r=await fetch(GH_RAW+PATHS.config+'?t='+Date.now());
+      if(r.ok){const d=await r.json();cfg={content:d,sha:null};}
+    }catch(e){}
+  }
   ocultarLoading();
   if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}
   const senhaHash = await sha256(senha);
@@ -2431,8 +2472,8 @@ function irPara(seção,btn){
     'dashboard':      ['dashboard'],
     'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
     'encomendas-admin':['encomendas','sabores','estoque'],
-    'promocao-admin': ['promoção'],
-    'fidelidade-admin':['participantes','clientes','fidelidade','estrela'],
+    'promocao-admin': ['promoção','participantes'],
+    'fidelidade-admin':['clientes','fidelidade','estrela'],
     'dicas-admin':    ['depoimentos'],
     // acesso direto mantido para botão Qualidade do Dashboard
     'qualidade':      ['qualidade']
@@ -2644,6 +2685,9 @@ function preencherHome(){
   document.getElementById('home-carrinho-whats').value=cfg.carrinhoWhatsMsg||'Olá! Gostaria de consultar a disponibilidade do carrinho para eventos.';
 }
 async function salvarHome(){
+  // Validação antes de salvar (padrão iFood/Shopify: guardar com feedback inline)
+  const titulo=document.getElementById('home-titulo').value.trim();
+  if(!titulo){toast('⚠️ O Título principal (H1) não pode estar vazio.','erro');document.getElementById('home-titulo').focus();return;}
   const cfg=STATE.config||{};
   cfg.heroBadge=document.getElementById('home-badge').value.trim();
   cfg.heroTitulo=document.getElementById('home-titulo').value.trim();
@@ -2666,7 +2710,7 @@ async function salvarHome(){
   cfg.carrinhoLabel2=document.getElementById('home-carrinho-label2').value.trim()||'Toque para consultar';
   cfg.carrinhoWhatsMsg=document.getElementById('home-carrinho-whats').value.trim();
   STATE.config=cfg;
-  await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
+  const ok = await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar textos da Home');
 }
 function renderPreços(){
   const p=STATE.produtos;
@@ -2807,7 +2851,7 @@ async function salvarPreços(){
   const sob=p.sobremesas||{};
   for(const nome of Object.keys(sob)){if(typeof sob[nome]==='number'){const id=`preço_sob_${nome}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el)p.sobremesas[nome]=parseFloat(el.value)||0;}}
   STATE.produtos=p;
-  await salvarArquivo(PATHS.produtos,p,'produtosSha','Admin: atualizar preços do cardápio');
+  const ok = await salvarArquivo(PATHS.produtos,p,'produtosSha','Admin: atualizar preços do cardápio');
 }
 function preencherPromoção(){
   const pr=STATE.promo||{};
@@ -2930,8 +2974,8 @@ async function adicionarBannerCarrossel() {
         // Adicionar ao carrossel.html via atualização do JSON de banners
         if (!STATE.config.banners) STATE.config.banners = [];
         STATE.config.banners.push({ src: nomeArq, alt: altText, ts });
-        await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
-        toast('✅ Banner adicionado ao carrossel!', 'ok');
+        const ok = await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
+        if (ok) { toast('✅ Banner adicionado ao carrossel!', 'ok'); }
         _bannerBlobPendente = null;
         _bannerInfoPendente = null;
         const previewWrap = document.getElementById('home-banner-preview-wrap');
@@ -2952,6 +2996,10 @@ async function adicionarBannerCarrossel() {
 }
 
 async function salvarPromoção(){
+  // Validação: título obrigatório quando promoção ativa
+  const ativo=document.getElementById('promo-ativo').checked;
+  const titulo=document.getElementById('promo-título').value.trim();
+  if(ativo&&!titulo){toast('⚠️ Preencha o Título da promoção antes de ativá-la no site.','erro');document.getElementById('promo-título').focus();return;}
   const pr=STATE.promo||{};
   pr.ativo=document.getElementById('promo-ativo').checked;
   // Campos do header da página promoção.html
@@ -2995,7 +3043,7 @@ async function salvarPromoção(){
     cfg.promocaoDataFim=pr.dataFim||'';
     cfg.promocaoFab=pr.fabLabel||'';
     STATE.config=cfg;
-    await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
+    const ok = await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
   }
 }
 function renderEncomendas(){
@@ -3078,7 +3126,7 @@ async function alterarStatusEncomenda(idx,novoStatus){
   if(!registros[idx])return;
   registros[idx].status=novoStatus;
   STATE.encomendas.registros=registros;
-  await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
+  const ok = await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
   renderEncomendas();
 }
 function getClientes(){return Object.values(STATE.clientes?.clientes||STATE.fidelidade?.clientes||{});}
@@ -3224,20 +3272,20 @@ function excluirParticipante(cel, tipo) {
           const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
           if (idx > -1) {
             STATE.fidelidade.sorteioInscritos.splice(idx, 1);
-            await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' do sorteio');
-            salvouAlgo = true;
+            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' do sorteio');
+            if (ok) salvouAlgo = true;
           }
         }
         
         // 2. Remover do Clube de Fidelidade (clientes.json ou fidelidade.json)
         if (STATE.clientes?.clientes?.[celLimpo]) {
           delete STATE.clientes.clientes[celLimpo];
-          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
-          salvouAlgo = true;
+          const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
+          if (ok) salvouAlgo = true;
         } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
           delete STATE.fidelidade.clientes[celLimpo];
-          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
-          salvouAlgo = true;
+          const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
+          if (ok) salvouAlgo = true;
         }
         
         ocultarLoading();
@@ -3271,13 +3319,13 @@ async function adicionarParticipanteManual() {
     const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
     if (jaExiste) { toast('\u274c ' + jaExiste.nome + ' já está inscrito(a) no sorteio.', 'erro'); return; }
     STATE.fidelidade.sorteioInscritos.push({ nome, cel, dataNasc: '', data: new Date().toLocaleDateString('pt-BR'), hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) });
-    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
+    const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
   } else {
     if (!STATE.clientes) STATE.clientes = { clientes: {} };
     if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
     if (STATE.clientes.clientes[celLimpo]) { toast('\u274c ' + STATE.clientes.clientes[celLimpo].nome + ' já está cadastrado(a) na fidelidade.', 'erro'); return; }
     STATE.clientes.clientes[celLimpo] = { nome, cel: celLimpo, dataNasc: '', cadastro: new Date().toISOString(), saldoPontos: 0, codigosUsados: [], resgates: [], totalPremios: 0, totalCodigos: 0 };
-    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
+    const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
   }
   document.getElementById('add-part-nome').value = '';
   document.getElementById('add-part-cel').value = '';
@@ -3300,20 +3348,20 @@ function limparListaParticipantes() {
     `Tem certeza que deseja apagar <strong>${descricao}</strong>?<br><br>⚠️ Isso vai remover <strong>todos os cadastros</strong> da lista selecionada.<br><br><span style="color:#c62828;font-weight:700">Esta ação NÃO pode ser desfeita!</span>`,
     '🧹 Sim, limpar tudo',
     async () => {
+      let ok = true;
       if (!filtroTipo || filtroTipo === 'sorteio' || filtroTipo === 'ambos') {
         if (STATE.fidelidade?.sorteioInscritos) {
           STATE.fidelidade.sorteioInscritos = [];
-          await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: limpar lista sorteio');
+          ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: limpar lista sorteio') && ok;
         }
       }
       if (!filtroTipo || filtroTipo === 'fidelidade' || filtroTipo === 'ambos') {
         if (STATE.clientes?.clientes) {
           STATE.clientes.clientes = {};
-          await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: limpar lista fidelidade');
+          ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: limpar lista fidelidade') && ok;
         }
       }
-      toast('🧹 Lista limpa com sucesso!', 'ok');
-      renderParticipantes();
+      if (ok) { toast('🧹 Lista limpa com sucesso!', 'ok'); renderParticipantes(); }
     },
     'perigo'
   );
@@ -3492,10 +3540,10 @@ async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
   }
   if (STATE.clientes?.clientes) {
     STATE.clientes.clientes = clientes;
-    await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: resolver duplicidade ' + celOriginal);
+    const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: resolver duplicidade ' + celOriginal);
   } else {
     STATE.fidelidade.clientes = clientes;
-    await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: resolver duplicidade ' + celOriginal);
+    const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: resolver duplicidade ' + celOriginal);
   }
   renderClientes();
   renderDuplicidades();
@@ -3503,10 +3551,28 @@ async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
 async function toggleBloqueio(cel,bloquear){
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   if(!clientes[cel])return;
-  clientes[cel].bloqueado=bloquear;
-  if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: ${bloquear?'bloquear':'desbloquear'} ${cel}`);}
-  else{STATE.fidelidade.clientes=clientes;await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: ${bloquear?'bloquear':'desbloquear'} ${cel}`);}
-  renderClientes();
+  const c=clientes[cel];
+  if(bloquear){
+    // Exigir confirmação antes de bloquear
+    confirmarAcao(
+      'Bloquear Cliente',
+      `Tem certeza que deseja <strong>bloquear</strong> o cadastro de <strong>${c.nome||cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">O cliente não conseguirá mais acessar o clube de fidelidade até ser desbloqueado.</span>`,
+      'Sim, bloquear',
+      async ()=>{
+        clientes[cel].bloqueado=true;
+        let ok=false;
+        if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: bloquear ${cel}`);}
+        else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: bloquear ${cel}`);}
+        if(ok)renderClientes();
+      }
+    );
+  }else{
+    clientes[cel].bloqueado=false;
+    let ok=false;
+    if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${cel}`);}
+    else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${cel}`);}
+    if(ok)renderClientes();
+  }
 }
 // ═══════════════════════════════════════════════════════════
 // SORTEIOS MENSAIS — ADMIN
@@ -3570,10 +3636,11 @@ async function salvarSorteio() {
   const obs    = document.getElementById('sort-obs').value.trim();
   if (!STATE.fidelidade) STATE.fidelidade = {};
   STATE.fidelidade.sorteio = { dataProx: data, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
-  await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
-  const msg = document.getElementById('sort-msg');
-  if (msg) { msg.textContent = '✅ Sorteio salvo com sucesso!'; msg.style.color = '#2e7d32'; setTimeout(() => msg.textContent = '', 3000); }
-  toast('Configuração do sorteio salva!', 'sucesso');
+  const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
+  if (ok) {
+    const msg = document.getElementById('sort-msg');
+    if (msg) { msg.textContent = '✅ Sorteio salvo!'; msg.style.color = '#2e7d32'; setTimeout(() => msg.textContent = '', 3000); }
+  }
 }
 
 function preencherSorteio() {
@@ -4091,7 +4158,10 @@ function preencherConfig(){
 async function salvarConfig(){
   const novaSenha=document.getElementById('cfg-nova-senha').value;
   const confSenha=document.getElementById('cfg-conf-senha').value;
-  if(novaSenha&&novaSenha!==confSenha){toast('As senhas não coincidem.','erro');return;}
+  if(novaSenha&&novaSenha!==confSenha){toast('⚠️ As senhas não coincidem. Verifique e tente novamente.','erro');return;}
+  if(novaSenha&&novaSenha.length<6){toast('⚠️ A senha deve ter pelo menos 6 caracteres.','erro');return;}
+  const whats=document.getElementById('cfg-whatsapp').value.trim().replace(/\D/g,'');
+  if(whats&&(whats.length<10||whats.length>13)){toast('⚠️ Número de WhatsApp inválido. Use o formato com DDD: (16) 99999-9999.','erro');document.getElementById('cfg-whatsapp').focus();return;}
   const cfg=STATE.config||{};
   cfg.whatsapp=document.getElementById('cfg-whatsapp').value.trim();
   cfg.whatsappFormatado=document.getElementById('cfg-whats-fmt').value.trim();
@@ -4127,7 +4197,7 @@ async function salvarFidHero() {
   cfg.fidHeroTitulo = document.getElementById('cfg-fid-hero-titulo').value.trim();
   cfg.fidHeroDesc = document.getElementById('cfg-fid-hero-desc').value.trim();
   STATE.config = cfg;
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
@@ -4138,7 +4208,7 @@ async function salvarPromoTextos() {
   cfg.promoTituloEl = document.getElementById('cfg-promo-titulo-el').value.trim();
   cfg.promoDescEl = document.getElementById('cfg-promo-desc-el').value.trim();
   STATE.config = cfg;
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos promocao');
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos promocao');
 }
 function toast(msg,tipo=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+tipo;setTimeout(()=>el.className='toast',3000);}
 function mostrarLoading(txt='Salvando...'){document.getElementById('loading-txt').textContent=txt;document.getElementById('loading-overlay').style.display='flex';}
@@ -4319,7 +4389,7 @@ async function salvarSabores() {
     STATE.produtos = prod;
 
     // Salvar no GitHub (produtos.json)
-    await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e preços');
+    const ok = await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar sabores e preços');
     toast('Sabores salvos e publicados no site!', 'sucesso');
   } catch(e) { toast('Erro: ' + e.message, 'erro'); }
   ocultarLoading();
@@ -4443,6 +4513,7 @@ async function salvarEstoque() {
     }
     if (acréscimos.length) localStorage.setItem('itap_acréscimos', JSON.stringify(acréscimos));
     const prod = STATE.produtos;
+    let ok = true;
     if (prod) {
       // Atualizar picolés
       for (const [cat, dados] of Object.entries(picDados)) {
@@ -4463,9 +4534,9 @@ async function salvarEstoque() {
       prod.tortas_enc = [{id:'torta1',nome:'Torta de Sorvete',preço:torta_preço,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}];
       if (acréscimos.length) prod.acrescimos = acréscimos;
       STATE.produtos = prod;
-      await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
+      ok = await salvarArquivo(PATHS.produtos, prod, 'produtosSha', 'Admin: atualizar estoque encomendas');
     }
-    toast('Estoque salvo!', 'sucesso');
+    if (ok !== false) toast('Estoque salvo!', 'sucesso');
   } catch(e) { toast('Erro: ' + e.message, 'erro'); }
   ocultarLoading();
 }
@@ -4588,7 +4659,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
   reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
-      // Calcular dimensões mantendo propçãorção
+      // Calcular dimensões mantendo proporção
       let w = img.width;
       let h = img.height;
       
@@ -4616,15 +4687,22 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
         }
         
         const tamanhoKB = Math.round(blob.size / 1024);
-        const info = {
-          blob,
-          width: w,
-          height: h,
-          tamanhoKB,
-          formato: 'WebP',
-          reducao: Math.round((1 - blob.size / file.size) * 100)
+        // Converter blob para dataUrl para uso em preview e upload base64
+        const reader2 = new FileReader();
+        reader2.onload = (ev) => {
+          const info = {
+            blob,
+            dataUrl: ev.target.result,   // data:image/webp;base64,...
+            width: w,
+            height: h,
+            tamanhoKB,
+            tamanho: blob.size,
+            formato: 'WebP',
+            reducao: Math.round((1 - blob.size / file.size) * 100)
+          };
+          callback(info, null);
         };
-        callback(info, null);
+        reader2.readAsDataURL(blob);
       }, 'image/webp', qualidade);
     };
     img.src = e.target.result;
@@ -4944,6 +5022,40 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // --- CAMADA 4: Aviso de alterações não salvas (padrão Shopify/WordPress) ---
+  let _temAlteracoesNaoSalvas = false;
+
+  function marcarAlterado() { _temAlteracoesNaoSalvas = true; }
+  function marcarSalvo()    { _temAlteracoesNaoSalvas = false; }
+
+  // Detectar mudanças em qualquer campo do admin
+  document.addEventListener('input', function(e) {
+    if (e.target.matches('input, textarea, select')) marcarAlterado();
+  });
+
+  // Interceptar salvarArquivo para marcar como salvo após sucesso
+  const _origSalvarArquivo = window.salvarArquivo;
+  if (typeof _origSalvarArquivo === 'function') {
+    window.salvarArquivo = async function(...args) {
+      const resultado = await _origSalvarArquivo.apply(this, args);
+      if (resultado) marcarSalvo();
+      return resultado;
+    };
+  }
+
+  // Aviso ao tentar sair da página com alterações não salvas
+  window.addEventListener('beforeunload', function(e) {
+    if (_temAlteracoesNaoSalvas) {
+      e.preventDefault();
+      e.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?';
+      return e.returnValue;
+    }
+  });
+
+  // Expor funções para uso externo
+  window._adminMarcarAlterado = marcarAlterado;
+  window._adminMarcarSalvo    = marcarSalvo;
+
 })();
 
 // ── TÍTULOS DO CARDÁPIO (GitHub API) ─────────────────────────────────────────
@@ -5004,14 +5116,8 @@ async function salvarTitulosCardapio() {
   STATE.config = cfg;
   // Manter localStorage como fallback para browsers offline
   try { localStorage.setItem('cfg_titulos_cardapio', JSON.stringify(titulos)); } catch(e) {}
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar títulos do cardápio');
+  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar títulos do cardápio');
 }
-
-// ── ESTOQUE CAIXAS (funções mantidas para compatibilidade, seção removida) ────
-function carregarEstoqueCaixas() { /* seção removida — use sec-estoque via GitHub */ }
-function ajustarEstoqueCaixa() {}
-function atualizarStatusCaixa() {}
-function salvarEstoqueCaixas() {}
 
 // ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
 function preencherCardapio() {
@@ -5207,10 +5313,10 @@ function processarFotoDepoimento(file, idx) {
       if (erroEl) { erroEl.textContent = erro; erroEl.classList.add('ativo'); }
       return;
     }
-    _depFotosPendentes[idx] = info.base64;
-    if (previewImg) previewImg.src = info.base64;
+    _depFotosPendentes[idx] = info.dataUrl;
+    if (previewImg) previewImg.src = info.dataUrl;
     if (previewWrap) previewWrap.style.display = 'block';
-    if (infoEl) infoEl.textContent = `${info.largura}×${info.altura}px — ${(info.tamanho/1024).toFixed(1)} KB`;
+    if (infoEl) infoEl.textContent = `${info.width}×${info.height}px — ${info.tamanhoKB} KB`;
   });
 }
 
@@ -5246,7 +5352,7 @@ async function salvarDepoimentos() {
   }
   c.depoimentos = lista;
   
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
 }
 
 // ── FALE CONOSCO ────────────────────────────────────────────────────────────
@@ -5297,7 +5403,7 @@ async function salvarFaleConosco() {
   c.fcEmail = document.getElementById('fc-email').value.trim();
   c.fcEndereco = document.getElementById('fc-endereco').value.trim();
   c.fcHorario = document.getElementById('fc-horario').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco geral');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar fale conosco geral');
 }
 
 // Salvar Modal Fale Conosco (IDs: fale-modal-titulo, fale-modal-sub, fale-label-nome, fale-label-msg, fale-btn-texto)
@@ -5308,7 +5414,7 @@ async function salvarModalFaleConosco() {
   c.faleLabelNome = document.getElementById('fc-label-nome').value.trim();
   c.faleLabelMsg = document.getElementById('fc-label-msg').value.trim();
   c.faleBtnTexto = document.getElementById('fc-btn-texto').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modal fale conosco');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modal fale conosco');
 }
 
 // Salvar Chat (IDs: chat-fab-texto, chat-hdr-titulo, chat-hdr-sub, chat-msg-inicio, chat-sug-1..6)
@@ -5321,21 +5427,21 @@ async function salvarChat() {
   c.chatSugestoes = document.getElementById('fc-chat-opcoes').value.split('\n').map(s => s.trim()).filter(s => s);
   c.fcChatOpcoes = c.chatSugestoes; // compatibilidade retroativa
   c.fcChatFora = document.getElementById('fc-chat-fora').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar chat e sugestoes');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar chat e sugestoes');
 }
 
 // Salvar Clube FAB (ID: clube-fab-texto)
 async function salvarClubeFab() {
   const c = STATE.config;
   c.clubeFabTexto = document.getElementById('fc-clube-fab').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
 }
 
 // Salvar Promo FAB (ID: promo-fab-label)
 async function salvarPromoFab() {
   const c = STATE.config;
   c.promoFabLabel = document.getElementById('fc-promo-fab-label').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar promo fab');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar promo fab');
 }
 
 // Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
@@ -5346,7 +5452,7 @@ async function salvarModaisCardapio() {
   c.modalPicoleTitulo = document.getElementById('fc-modal-picole-titulo').value.trim();
   c.modalAçaíTitulo = document.getElementById('fc-modal-açaí-titulo').value.trim();
   c.modalAçaíSub = document.getElementById('fc-modal-açaí-sub').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
 }
 
 // Salvar Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
@@ -5355,7 +5461,7 @@ async function salvarCarrinhoEvento() {
   c.carrinhoLabel1 = document.getElementById('home-carrinho-label1').value.trim();
   c.carrinhoLabel2 = document.getElementById('home-carrinho-label2').value.trim();
   c.carrinhoWhatsMsg = document.getElementById('home-carrinho-whats').value.trim();
-  await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar carrinho para eventos');
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar carrinho para eventos');
 }
 
 
@@ -5394,14 +5500,13 @@ function excluirEncomenda(numPedido) {
   if (!enc) return;
   confirmarAcao(
     'Excluir Pedido',
-    `Tem certeza que deseja excluir o pedido <strong>${numPedido}</strong> de <strong>${enc.nome || 'cliente'}</strong>?<br><br><span style="color:#c62828;font-weight:700">Esta acao nao pode ser desfeita.</span>`,
+    `Tem certeza que deseja excluir o pedido <strong>${numPedido}</strong> de <strong>${enc.nome || 'cliente'}</strong>?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
     'Sim, excluir pedido',
     async () => {
       const idx = STATE.encomendas.registros.findIndex(r => r.num === numPedido);
       if (idx > -1) STATE.encomendas.registros.splice(idx, 1);
-      await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', 'Admin: excluir pedido ' + numPedido);
-      toast('Pedido ' + numPedido + ' excluido.', 'ok');
-      renderEncomendas();
+      const ok = await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', 'Admin: excluir pedido ' + numPedido);
+      if (ok) { toast('Pedido ' + numPedido + ' excluído.', 'ok'); renderEncomendas(); }
     }
   );
 }
@@ -5415,19 +5520,18 @@ function excluirCliente(cel) {
   if (!c) return;
   confirmarAcao(
     'Excluir Cliente',
-    `Tem certeza que deseja excluir o cadastro de <strong>${c.nome || cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">Todos os pontos e historico serao perdidos. Esta acao nao pode ser desfeita.</span>`,
+    `Tem certeza que deseja excluir o cadastro de <strong>${c.nome || cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">Todos os pontos e histórico serão perdidos. Esta ação não pode ser desfeita.</span>`,
     'Sim, excluir cliente',
     async () => {
+      let ok = false;
       if (STATE.clientes?.clientes) {
         delete STATE.clientes.clientes[cel];
-        await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + cel);
+        ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + cel);
       } else {
         delete STATE.fidelidade.clientes[cel];
-        await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + cel);
+        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + cel);
       }
-      toast('Cliente ' + (c.nome || cel) + ' excluido.', 'ok');
-      renderClientes();
-      renderDuplicidades();
+      if (ok) { toast('Cliente ' + (c.nome || cel) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
     }
   );
 }
