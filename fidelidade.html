@@ -384,6 +384,8 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .btn-bloquear:hover{background:#ffcdd2}
 .btn-desbloquear{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:4px 10px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;margin-left:4px}
 .btn-desbloquear:hover{background:#c8e6c9}
+.btn-excluir{background:#fff;color:#d32f2f;border:1px solid #ffcdd2;padding:4px 10px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;margin-left:4px;transition:all .2s}
+.btn-excluir:hover{background:#d32f2f;color:#fff;border-color:#d32f2f}
 .admin-acoes{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .admin-empty{text-align:center;padding:30px;color:#999;font-size:.9rem}
 .admin-login{max-width:360px;margin:60px auto;background:#fff;border-radius:18px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.12)}
@@ -2506,12 +2508,13 @@ function adminRenderizar() {
       const btnAcao = bloqueado
         ? '<button class="btn-desbloquear" onclick="adminToggleBloqueio(\'' + c.cel + '\', false)">Desbloquear</button>'
         : '<button class="btn-bloquear" onclick="adminToggleBloqueio(\'' + c.cel + '\', true)">Bloquear</button>';
+      const btnExcluir = '<button class="btn-excluir" onclick="adminExcluirCliente(\'' + c.cel + '\')">Excluir</button>';
       return '<div class="admin-row' + (bloqueado ? '" style="background:#fff5f5' : '') + '">' +
         '<div><div class="admin-nome">' + num + '. ' + (c.nome || '—') + '</div></div>' +
         '<div class="admin-cel">' + celFmt + '</div>' +
         '<div class="admin-pontos">' + pontos + '</div>' +
         '<div class="admin-data col-data">' + dataInsc + '</div>' +
-        '<div class="admin-acoes">' + statusHtml + btnAcao + '</div>' +
+        '<div class="admin-acoes">' + statusHtml + btnAcao + btnExcluir + '</div>' +
         '</div>';
     }).join('');
   }
@@ -2561,6 +2564,32 @@ async function adminToggleBloqueio(cel, bloquear) {
     c.bloqueado = !bloquear;
     ghClientes.clientes[cel] = c;
     adminRenderizar();
+  }
+}
+
+async function adminExcluirCliente(cel) {
+  if (!ghClientes.clientes[cel]) return;
+  const c = ghClientes.clientes[cel];
+  if (!confirm('⚠️ ATENÇÃO: Deseja excluir permanentemente o cliente ' + c.nome + '?\nEsta ação não pode ser desfeita.')) return;
+  
+  const idPermanente = ghClientes.indice_celular[cel];
+  delete ghClientes.clientes[idPermanente];
+  delete ghClientes.indice_celular[cel];
+  
+  if (ghClientes.metadata) {
+    ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
+  }
+  
+  setLoading('Excluindo cliente...');
+  const ok = await salvarClientes('Admin excluiu cliente: ' + c.nome + ' (' + cel + ')');
+  hideLoading();
+  
+  if (ok) {
+    adminBuscar(); // Recarregar a lista filtrada
+    alert('Cliente excluído com sucesso.');
+  } else {
+    alert('Erro ao excluir. Tente novamente.');
+    adminCarregarClientes(); // Recarregar dados originais em caso de erro
   }
 }
 
