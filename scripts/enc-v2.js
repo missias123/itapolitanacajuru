@@ -56,8 +56,8 @@ async function enviarPedidoGitHub(pedido) {
   }
 }
 
-// Atualiza o estoque de caixas e tortas em dados/produtos.json no GitHub após um pedido
-async function atualizarEstoqueGitHub(caixasAtualizadas, tortasAtualizadas) {
+// Atualiza o estoque de caixas, tortas e picolés em dados/produtos.json no GitHub após um pedido
+async function atualizarEstoqueGitHub(caixasAtualizadas, tortasAtualizadas, picolesQtdPorCat) {
   try {
     const r = await fetch(_GH_API + 'dados/produtos.json?t=' + Date.now(), {
       headers: { 'Authorization': 'token ' + _GH_TK, 'Accept': 'application/vnd.github.v3+json' }
@@ -88,6 +88,18 @@ async function atualizarEstoqueGitHub(caixasAtualizadas, tortasAtualizadas) {
           prodAtual.tortas_enc[idx].esgotado = tr.estoque <= 0;
         }
       });
+    }
+    // Aplicar baixa de estoque nos picolés por categoria (chave picoles sem acento no JSON)
+    if (picolesQtdPorCat && Object.keys(picolesQtdPorCat).length > 0) {
+      const srcPic = prodAtual.picoles || prodAtual.picolés || {};
+      Object.entries(picolesQtdPorCat).forEach(([cat, qtd]) => {
+        if (srcPic[cat]) {
+          srcPic[cat].estoque = Math.max(0, (srcPic[cat].estoque || 0) - qtd);
+          srcPic[cat].esgotado = srcPic[cat].estoque === 0;
+        }
+      });
+      if (prodAtual.picoles) prodAtual.picoles = srcPic;
+      else if (prodAtual.picolés) prodAtual.picolés = srcPic;
     }
     const novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(prodAtual, null, 2))));
     const resp = await fetch(_GH_API + 'dados/produtos.json', {
@@ -489,8 +501,9 @@ function renderizarPicolés() {
       <div class="prod-body">
         <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
         <div class="prod-preços-picolé">
-          <span>Varejo: R$ ${p.preçoVarejo.toFixed(2).replace('.',',')}</span>
-          <span class="destaque">Atacado: R$ ${p.preçoAtacado.toFixed(2).replace('.',',')}</span>
+          <span class="preco-varejo-ref">De R$\u00a0${p.preçoVarejo.toFixed(2).replace('.',',')} varejo</span>
+          <span class="preco-atacado-main">R$\u00a0${p.preçoAtacado.toFixed(2).replace('.',',')} <small>atacado</small></span>
+          <span class="badge-min-picole">Mín. ${MIN_PICOLES} un.</span>
         </div>
         <div class="prod-estoque">${esg?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
       </div>
@@ -513,12 +526,7 @@ function abrirSaboresSorvete(id, cat, originEl) {
   document.getElementById('modal-subtítulo-sabores').textContent = `Selecione exatamente ${p.maxSabores} sabores`;
 
   const grid = document.getElementById('grid-sabores');
-  grid.innerHTML = SABORES_SORVETE.map(s => {
-    const nome = typeof s === 'object' ? s.nome : s;
-    const esg  = typeof s === 'object' ? s.esgotado : false;
-    if (esg) return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado">${nome}</button>`;
-    return `<button class="sabor-item" onclick="toggleSabor('${nome}',this)">${nome}</button>`;
-  }).join('');
+  renderizarGridSabores(grid);
 
   atualizarBtnConfirmar();
   abrirModal('modal-sabores', originEl);
@@ -673,9 +681,12 @@ function abrirModalPicolé(id, originEl) {
     }
   });
   document.getElementById('picolé-título').textContent = p.nome;
-  document.getElementById('picolé-preços').textContent =
-    `Varejo: R$ ${p.preçoVarejo.toFixed(2).replace('.',',')} | Atacado: R$ ${p.preçoAtacado.toFixed(2).replace('.',',')}`;
-
+  const elPreços = document.getElementById('picolé-preços');
+  if (elPreços) {
+    elPreços.innerHTML =
+      `<span style="font-size:11px;color:#888;text-decoration:line-through">Varejo R$\u00a0${p.preçoVarejo.toFixed(2).replace('.',',')}</span>&nbsp;&nbsp;` +
+      `<strong style="color:#1B5E20;font-size:15px">R$\u00a0${p.preçoAtacado.toFixed(2).replace('.',',')} <small style="font-size:11px;font-weight:400">/un. atacado</small></strong>`;
+  }
   const lista = document.getElementById('lista-sabores-picolé');
   lista.innerHTML = p.sabores.map(s => {
     const qtdAtual = selecoesPickle[s] || 0;
@@ -691,8 +702,10 @@ function abrirModalPicolé(id, originEl) {
   }).join('');
 
   atualizarTotalPickle();
-  abrirModal('modal-picolé', originEl);
-}
+  const _mPic = document.getElementById('modal-picolé');
+  if (!_mPic || !_mPic.classList.contains('ativo')) {
+    abrirModal('modal-picolé', originEl);
+  }
 
 function qtdPickle(sabor, delta) {
   if (!selecoesPickle[sabor]) selecoesPickle[sabor] = 0;
@@ -1035,11 +1048,6 @@ function mostrarEtapa(etapa) {
   document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
   const el = document.getElementById(`etapa-${etapa}`);
   if (el) el.classList.add('ativa');
-  // Botão Finalizar: visível apenas na etapa de revisão
-  const btnIrDados = document.getElementById('btn-ir-dados');
-  if (btnIrDados) {
-    btnIrDados.closest('div[style]') && (btnIrDados.closest('div[style]').style.display = etapa === 'revisao' ? 'flex' : 'none');
-  }
   // Steps
   const steps = ['revisao','dados','confirmação'];
   const idx = steps.indexOf(etapa);
@@ -1300,26 +1308,23 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     try {
       const caixas = getCaixasEncomenda();
       const tortas = getTortasEncomenda();
-      const estoquePicolés = typeof getEstoquePickles === 'function' ? getEstoquePickles() : JSON.parse(localStorage.getItem('itap_estoque_picolés') || '{}');
-      
+      // Agregar picolés por categoria para baixa de estoque no GitHub
+      // item.id = 'pic_frutas_agua::Limão' → categoria = 'frutas_agua'
+      const picolesQtdPorCat = {};
       carrinho.forEach(item => {
         const cx = caixas.find(c => c.id === item.id);
         if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
         const tr = tortas.find(t => t.id === item.id);
         if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
         if (item.tipo === 'picolé') {
-          const sabor = item.nome;
-          if (estoquePicolés[sabor] !== undefined) {
-            estoquePicolés[sabor] = Math.max(0, estoquePicolés[sabor] - item.quantidade);
-          }
+          const cat = item.id.split('::')[0].replace('pic_', '');
+          picolesQtdPorCat[cat] = (picolesQtdPorCat[cat] || 0) + item.quantidade;
         }
       });
-      
       localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
       localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
-      localStorage.setItem('itap_estoque_picolés', JSON.stringify(estoquePicolés));
-      // Persistir baixa de estoque de caixas/tortas no GitHub (assíncrono, não bloqueia UI)
-      atualizarEstoqueGitHub(caixas, tortas).catch(() => {});
+      // Persistir baixa de estoque (caixas + tortas + picolés) no GitHub — assíncrono, não bloqueia UI
+      atualizarEstoqueGitHub(caixas, tortas, picolesQtdPorCat).catch(() => {});
     } catch(e) { console.warn('[ITAP] Erro ao atualizar estoque:', e); }
 
     // Esvaziar carrinho e resetar botões
