@@ -484,8 +484,8 @@ body { overflow-x: hidden; }
     setTimeout(function() { if (el.textContent === txt) el.style.display = 'none'; }, 5000);
   }
 
-  // Token para verificar duplicata no GitHub
-  var _GH_TK_P = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+  // Token lido do localStorage (configurado pelo admin no painel)
+  var _GH_TK_P = (function(){return localStorage.getItem('itap_gh_token')||'';})();
   var _GH_FID  = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/fidelidade.json';
 
   // ═══ SEGURANÇA: Rate Limiting local (máx. 3 tentativas em 30 min por dispositivo) ═══

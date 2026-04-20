@@ -152,23 +152,23 @@
     }
 
     // ── Horário dinâmico ───────────────────────
-    if (cfg.horárioAbre !== undefined && cfg.horárioFecha !== undefined) {
-      window._HORARIO_ABRE  = cfg.horárioAbre;
-      window._HORARIO_FECHA = cfg.horárioFecha;
+    if (cfg.horarioAbre !== undefined && cfg.horarioFecha !== undefined) {
+      window._HORARIO_ABRE  = cfg.horarioAbre;
+      window._HORARIO_FECHA = cfg.horarioFecha;
     }
 
     // ── Hero ───────────────────────────────────
     const heroTítulo = document.getElementById('hero-título');
-    if (heroTítulo && cfg.heroTítulo) heroTítulo.innerHTML = cfg.heroTítulo;
+    if (heroTítulo && cfg.heroTitulo) heroTítulo.innerHTML = cfg.heroTitulo;
 
     const heroSub = document.getElementById('hero-subtítulo');
-    if (heroSub && cfg.heroSubtítulo) heroSub.textContent = cfg.heroSubtítulo;
+    if (heroSub && cfg.heroSubtitulo) heroSub.textContent = cfg.heroSubtitulo;
 
     const heroBadge = document.getElementById('hero-badge');
     if (heroBadge && cfg.heroBadge) heroBadge.textContent = cfg.heroBadge;
 
     const heroDesc = document.getElementById('hero-descrição');
-    if (heroDesc && cfg.heroDescrição) heroDesc.textContent = cfg.heroDescrição;
+    if (heroDesc && cfg.heroDescricao) heroDesc.textContent = cfg.heroDescricao;
 
     const heroCta = document.getElementById('hero-cta');
     if (heroCta && cfg.heroCta) heroCta.textContent = cfg.heroCta;
@@ -178,13 +178,13 @@
 
     // ── Cardápio ───────────────────────────────
     const cardápioTítulo = document.getElementById('cardápio-título');
-    if (cardápioTítulo && cfg.cardápioTítulo) cardápioTítulo.textContent = cfg.cardápioTítulo;
+    if (cardápioTítulo && cfg.cardapioTitulo) cardápioTítulo.textContent = cfg.cardapioTitulo;
 
     const cardápioSub = document.getElementById('cardápio-subtítulo');
-    if (cardápioSub && cfg.cardápioSubtítulo) cardápioSub.textContent = cfg.cardápioSubtítulo;
+    if (cardápioSub && cfg.cardapioSubtitulo) cardápioSub.textContent = cfg.cardapioSubtitulo;
 
     const cardápioBadge = document.getElementById('cardápio-badge');
-    if (cardápioBadge && cfg.cardápioBadge) cardápioBadge.textContent = cfg.cardápioBadge;
+    if (cardápioBadge && cfg.cardapioBadge) cardápioBadge.textContent = cfg.cardapioBadge;
 
     // ── Footer ─────────────────────────────────
     const footerCopy = document.getElementById('footer-copy');
@@ -194,7 +194,7 @@
     if (footerDev && cfg.footerDev) footerDev.textContent = cfg.footerDev;
 
     const footerHorário = document.getElementById('footer-horário');
-    if (footerHorário && cfg.footerHorário) footerHorário.innerHTML = cfg.footerHorário.replace(/\n/g, '<br>');
+    if (footerHorário && cfg.footerHorario) footerHorário.innerHTML = cfg.footerHorario.replace(/\n/g, '<br>');
 
     // ── Fidelidade: pontos e prêmios ───────────
     if (cfg.pontosMilkshake !== undefined) {
@@ -224,8 +224,8 @@
         el.textContent = cfg.encomendaAviso;
       });
     }
-    if (cfg.encomendaMinPicolés !== undefined) {
-      window._MIN_PICOLES = cfg.encomendaMinPicolés;
+    if (cfg.encomendaMinPicoles !== undefined) {
+      window._MIN_PICOLES = cfg.encomendaMinPicoles;
     }
 
     // ── Disparar evento para outros scripts ────
@@ -261,7 +261,7 @@
   // ═══════════════════════════════════════════════
   // INICIALIZAÇÃO AUTOMÁTICA
   // ═══════════════════════════════════════════════
-  if (document.readyStaté === 'loading') {
+  if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', carregarConfig);
   } else {
     carregarConfig();

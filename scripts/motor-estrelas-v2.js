@@ -173,48 +173,84 @@ class MotorEstrelasV2 {
     // TRAVA 4: Bloquear clique imediatamente (sem segundo clique possível)
     this.estrelaCapturada.status = 'em_resgate'; // Bloqueia qualquer outro clique
 
-    // TRAVA 3: Gera Token Único de Sessão (Impossível de duplicar)
-    const tokenUnico = 'EST_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    // TRAVA 3: Token diário baseado no relógio — formato EST_AAAAMMDD_HHMMSS
+    // Único por segundo, nunca se repete em todo o histórico do sistema
+    const _tPartes = new Intl.DateTimeFormat('pt-BR', {
+      timeZone:'America/Sao_Paulo',
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+    }).formatToParts(new Date());
+    const _tGet = (t) => (_tPartes.find(p => p.type === t) || {value:'00'}).value;
+    const tokenUnico = 'EST_' + _tGet('year') + _tGet('month') + _tGet('day') + '_' + _tGet('hour') + _tGet('minute') + _tGet('second');
     
     // TRAVA 4: Marca como "Em Resgate" (Bloqueio Temporário)
     this.estrelaCapturada.status = 'em_resgate';
     this.estrelaCapturada.tokenResgate = tokenUnico;
     this.estrelaCapturada.capturadoEm = new Date().toISOString();
-    this.estrelaCapturada.validadeToken = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutos
+    this.estrelaCapturada.validadeToken = new Date(Date.now() + 8 * 60 * 1000).toISOString(); // 8 minutos — tempo para preencher cadastro
     
     console.log('🏆 Estrela capturada! Token:', tokenUnico);
     
-    // TRAVA 5: Inicia Contador de 5 Minutos (Se não resgatar, volta)
+    // TRAVA 5: Inicia Contador de 8 Minutos (compatível com validadeToken de 8 min)
     this.iniciarContagemResgateExpiracao();
     
-    // BUG FIX #5: Salvar no GitHub imediatamente
-    await this.salvarEstadoNoGitHub();
-    
+    // SALVAR COM COMPARE-AND-SWAP: verifica se outro cliente capturou simultaneamente
+    const resultado = await this.salvarEstadoNoGitHub({ verificarConflito: true });
+
+    if (!resultado.ok) {
+      // Outra pessoa ganhou a corrida — reverter estado local
+      this.estrelaCapturada.status = 'disponivel';
+      this.estrelaCapturada.tokenResgate = null;
+      this.estrelaCapturada.validadeToken = null;
+      clearTimeout(this._timerExpiracao);
+      console.warn('❌ Captura cancelada:', resultado.motivo);
+      if (callback) callback({ sucesso: false, motivo: resultado.motivo || 'ja_capturada' });
+      return { sucesso: false, motivo: resultado.motivo || 'ja_capturada' };
+    }
+
     if (callback) callback({ sucesso: true, token: tokenUnico, estrela: this.estrelaCapturada });
     return { sucesso: true, token: tokenUnico };
   }
 
   /**
-   * BUG FIX #5 CORRIGIDO: Salvar estado real no GitHub via API
+   * Salvar estado no GitHub com Compare-And-Swap:
+   * busca o estado ATUAL do servidor antes de gravar.
+   * Se outra pessoa já capturou (race condition), retorna falha.
+   * Garante que somente UMA pessoa capture a estrela por dia.
    */
-  async salvarEstadoNoGitHub() {
+  async salvarEstadoNoGitHub(opcoes = {}) {
+    const { verificarConflito = false } = opcoes;
     try {
-      const GH_TOKEN  = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+      const GH_TOKEN  = (function(){return localStorage.getItem('itap_gh_token')||'';})();
       const GH_OWNER  = 'missias123';
       const GH_REPO   = 'itapolitanacajuru';
       const GH_BRANCH = 'main';
       const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
       const PATH      = 'estrelas_ciclo.json';
 
-      // 1. Buscar SHA atual do arquivo
+      // 1. Buscar estado ATUAL do arquivo (SHA + conteúdo frescos)
       const getResp = await fetch(GH_API + PATH + '?t=' + Date.now(), {
         headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
       });
-      if (!getResp.ok) throw new Error('Erro ao buscar SHA: ' + getResp.status);
+      if (!getResp.ok) throw new Error('Erro ao buscar estado atual: ' + getResp.status);
       const getJson = await getResp.json();
       const sha = getJson.sha;
 
-      // 2. Montar o objeto completo atualizado
+      // 2. COMPARE-AND-SWAP: se outro cliente já capturou, NÃO sobrescrever
+      if (verificarConflito) {
+        try {
+          const conteudoAtual = JSON.parse(atob(getJson.content.replace(/\n/g, '')));
+          const statusAtual = conteudoAtual.estrelaCapturada && conteudoAtual.estrelaCapturada.status;
+          if (statusAtual === 'capturada' || statusAtual === 'em_resgate') {
+            // Outro navegador ganhou a corrida — esta captura é inválida
+            console.warn('⚠️ CORRIDA PERDIDA: outro cliente já capturou esta estrela.');
+            this.estrelaCapturada = conteudoAtual.estrelaCapturada; // sincronizar estado local
+            return { ok: false, motivo: 'ja_capturada_por_outro' };
+          }
+        } catch(e) { /* ignorar erro de parse — continuar tentativa de salvar */ }
+      }
+
+      // 3. Montar objeto completo atualizado
       const dadosAtualizados = {
         versao: '1.0',
         cicloAtual: this.cicloAtual,
@@ -225,7 +261,7 @@ class MotorEstrelasV2 {
         estrelaCapturada: this.estrelaCapturada
       };
 
-      // 3. Salvar no GitHub
+      // 4. Salvar no GitHub usando o SHA fresco
       const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dadosAtualizados, null, 2))));
       const putResp = await fetch(GH_API + PATH, {
         method: 'PUT',
@@ -238,16 +274,25 @@ class MotorEstrelasV2 {
         })
       });
 
-      if (!putResp.ok) throw new Error('Erro ao salvar: ' + putResp.status);
+      if (!putResp.ok) {
+        // 409 = conflito de SHA — outra pessoa salvou antes; tentar novamente sem conflito
+        if (putResp.status === 409 || putResp.status === 422) {
+          console.warn('⚠️ Conflito de SHA ao salvar estrela (status ' + putResp.status + '). Verifique se outro cliente capturou.');
+          return { ok: false, motivo: 'conflito_sha' };
+        }
+        throw new Error('Erro ao salvar: ' + putResp.status);
+      }
       console.log('💾 Estado salvo no GitHub com sucesso');
+      return { ok: true };
     } catch (erro) {
       console.error('❌ Erro ao salvar estado no GitHub:', erro);
-      // Fallback: salvar no localStorage como backup local
+      // Backup local como fallback
       localStorage.setItem('estrela_ciclo_backup', JSON.stringify({
         estrelaCapturada: this.estrelaCapturada,
         rankingAtual: this.rankingAtual,
         timestamp: new Date().toISOString()
       }));
+      return { ok: false, motivo: 'erro_rede' };
     }
   }
 
@@ -255,22 +300,20 @@ class MotorEstrelasV2 {
    * Iniciar contagem de expiração do resgate (5 minutos)
    */
   iniciarContagemResgateExpiracao() {
-    setTimeout(() => {
+    // Limpar timer anterior se existir
+    if (this._timerExpiracao) clearTimeout(this._timerExpiracao);
+    this._timerExpiracao = setTimeout(() => {
       if (this.estrelaCapturada.status === 'em_resgate') {
-        console.warn('⚠️ Tempo de resgate expirado! A estrela volta para o pool.');
+        console.warn('⚠️ Tempo de resgate expirado (8 min). A estrela volta para disponível.');
         this.estrelaCapturada.status = 'disponivel';
         this.estrelaCapturada.tokenResgate = null;
         this.estrelaCapturada.validadeToken = null;
-        
-        // Disparar evento de expiração
         window.dispatchEvent(new CustomEvent('estrelaResgateFailed', {
           detail: { motivo: 'timeout' }
         }));
-        
-        // Salvar mudança
         this.salvarEstadoNoGitHub();
       }
-    }, 5 * 60 * 1000); // 5 minutos
+    }, 8 * 60 * 1000); // 8 minutos — compatível com validadeToken
   }
 
   /**
@@ -364,7 +407,8 @@ class MotorEstrelasV2 {
     
     this.rankingAtual[usuarioId].estrelas += 1;
     this.rankingAtual[usuarioId].ultimaCaptura = agora;
-    this.rankingAtual[usuarioId].diaCaptura = new Date().toISOString().split('T')[0];
+    // Data correta em SP — evita virada de dia UTC às 21h no Brasil
+    this.rankingAtual[usuarioId].diaCaptura = this.obterHorarioAtualComFuso().toISOString().split('T')[0];
     
     // Se atingiu a meta, registrar prêmio escolhido
     if (this.rankingAtual[usuarioId].estrelas >= this.cicloAtual.metaEstrelas) {
@@ -611,7 +655,7 @@ class MotorEstrelasV2 {
       cicloAtivo: this.cicloAtual.statusCiclo === 'ativo',
       metaEstrelas: this.cicloAtual.metaEstrelas,
       estrelaCapturada: this.estrelaCapturada.status,
-      horarioHoje: this.obterHorarioHoje(),
+      // horarioHoje removido: não expor o horário da estrela publicamente
       rankingTop5: this.obterTop5Ranking(),
       usuariosOnline: this.usuariosOnline
     };

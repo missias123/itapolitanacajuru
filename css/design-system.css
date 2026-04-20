@@ -1,36 +1,44 @@
 /* 
-   🎨 DESIGN SYSTEM - SORVETERIA ITAPOLITANA 
-   Focado em: Legibilidade, Conversão e Mobile-First
+   🎨 SISTEMA DE DESIGN — SORVETERIA ITAPOLITANA 
+   Paleta baseada na logomarca: Vermelho · Azul · Dourado
+   Princípio: legibilidade máxima, hierarquia clara, sem peso visual
 */
 
 :root {
-  /* PALETA DE CORES (Baseada na Logomarca) */
-  --cor-primaria: #0D47A1;    /* Azul Royal (Confiança) */
-  --cor-secundaria: #1565C0;  /* Azul Médio (Ação) */
-  --cor-destaque: #FFC107;    /* Amarelo Ouro (Atenção/Sorteio) */
-  --cor-sucesso: #10B981;     /* Verde Esmeralda (Preços/Confirmar) */
-  --cor-erro: #EF4444;        /* Vermelho (Esgotado/Remover) */
-  --cor-fundo: #F5F5F8;       /* Cinza Muito Claro (Limpeza) */
-  --cor-texto: #111827;       /* Cinza Escuro (Leitura) */
-  --cor-texto-suave: #6B7280; /* Cinza Médio (Descrições) */
-  
-  /* TIPOGRAFIA */
-  --fonte-principal: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  
-  /* ESPAÇAMENTO (Regra de 4px/8px) */
+  /* ── PALETA DA LOGOMARCA ── */
+  --cor-primaria:   #0D47A1;   /* Azul Royal — confiança, navegação       */
+  --cor-secundaria: #1565C0;   /* Azul Médio — hover, links               */
+  --cor-destaque:   #F9A825;   /* Dourado    — destaque, badge, acento     */
+  --cor-acao:       #EF0129;   /* Vermelho   — CTA, preços, urgência       */
+  --cor-sucesso:    #1B8A4E;   /* Verde      — confirmação, aberto         */
+  --cor-erro:       #C62828;   /* Vermelho escuro — esgotado, erro        */
+  --cor-fundo:      #FFFAF5;   /* Creme quente — fundo principal          */
+  --cor-superficie: #FFFFFF;   /* Branco     — cards, modais              */
+  --cor-texto:      #1A0A00;   /* Marrom escuro quente — leitura          */
+  --cor-texto-suave:#6B5744;   /* Marrom médio — descrições               */
+
+  /* ── TIPOGRAFIA ── */
+  --fonte-principal: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* ── ESPAÇAMENTO (regra de 4px/8px) ── */
   --espaco-xs: 4px;
   --espaco-sm: 8px;
   --espaco-md: 16px;
   --espaco-lg: 24px;
   --espaco-xl: 32px;
-  
-  /* BORDAS E SOMBRAS */
+
+  /* ── BORDAS E SOMBRAS ── */
   --raio-borda: 12px;
   --sombra-suave: 0 2px 8px rgba(0,0,0,0.08);
-  --sombra-forte: 0 4px 20px rgba(0,0,0,0.12);
+  --sombra-forte: 0 4px 20px rgba(0,0,0,0.14);
+
+  /* ── CONTORNO DE TEXTO PADRÃO (legibilidade em fundos coloridos) ── */
+  --contorno-texto:       0 1px 4px rgba(0,0,0,.55), 0 0 2px rgba(0,0,0,.4);
+  --contorno-texto-suave: 0 1px 3px rgba(0,0,0,.35), 0 0 1px rgba(0,0,0,.25);
+  --contorno-titulo:      0 2px 6px rgba(0,0,0,.5),  0 0 2px rgba(0,0,0,.3);
 }
 
-/* ESTILOS GERAIS DE TEXTO */
+/* ── ESTILOS GERAIS DE TEXTO ── */
 body {
   font-family: var(--fonte-principal);
   background-color: var(--cor-fundo);
@@ -44,15 +52,15 @@ h1, h2, h3, h4 {
   letter-spacing: -0.02em;
 }
 
-/* BOTÕES PROFISSIONAIS */
+/* ── BOTÕES PADRÃO ── todos com contorno de texto para legibilidade */
 .btn-padrao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 20px;
+  padding: 13px 22px;
   border-radius: var(--raio-borda);
   font-weight: 800;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;

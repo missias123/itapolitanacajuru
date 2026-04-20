@@ -7,7 +7,7 @@
 // =====================================================
 const ITAP_PRODUTOS_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json';
 // API GitHub para salvar pedidos no encomendas.json
-const _GH_TK = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+const _GH_TK = (function(){return localStorage.getItem('itap_gh_token')||'';})();
 const _GH_API = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';
 
 // Envia o pedido para dados/encomendas.json no GitHub

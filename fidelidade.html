@@ -64,6 +64,66 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .campo-ativo-guia{border:3px solid #e8650a !important;box-shadow:0 0 0 4px rgba(232,101,10,.25) !important;transition:all .3s}
 .form-group{position:relative}
 
+/* ═══════════════════════════════════════════════════════════
+   WIZARD LINEAR DA ESTRELA DOURADA
+   Fluxo empilhado passo a passo — sem abas, sem confusão
+   ═══════════════════════════════════════════════════════════ */
+#wizard-estrela{display:none;max-width:480px;margin:0 auto 24px;font-family:'Nunito',sans-serif}
+.wiz-header{background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border-radius:18px 18px 0 0;padding:18px 20px 14px;text-align:center}
+.wiz-header h2{font-size:1.25rem;font-weight:900;margin:0 0 4px;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.wiz-timer-bar{background:rgba(0,0,0,.25);border-radius:8px;height:8px;margin:10px 0 4px;overflow:hidden}
+.wiz-timer-fill{height:100%;background:linear-gradient(90deg,#F9A825,#FFD600);border-radius:8px;transition:width 1s linear}
+.wiz-timer-txt{font-size:1.15rem;font-weight:900;letter-spacing:2px}
+.wiz-timer-txt.urgente{color:#FFD600;animation:piscar .6s infinite}
+/* Indicador de passos */
+.wiz-steps{display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 20px;background:#fff7f0;border-bottom:1px solid #FFE0B2}
+.wiz-step-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #E0E0E0;background:#fff;color:#999;font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.wiz-step-dot.ativo{border-color:#EF0129;background:#EF0129;color:#fff;box-shadow:0 0 0 3px rgba(239,1,41,.2)}
+.wiz-step-dot.feito{border-color:#2E7D32;background:#2E7D32;color:#fff}
+.wiz-step-linha{flex:1;height:2px;background:#E0E0E0;max-width:30px;transition:background .3s}
+.wiz-step-linha.feita{background:#2E7D32}
+/* Painel de cada etapa */
+.wiz-body{background:#fff;border-radius:0 0 18px 18px;padding:22px 20px 18px;box-shadow:0 8px 32px rgba(0,0,0,.13)}
+.wiz-etapa{display:none}
+.wiz-etapa.ativa{display:block}
+.wiz-titulo-etapa{font-size:1rem;font-weight:900;color:#1A0A00;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #FFF3E0}
+/* Campo do wizard */
+.wiz-campo{margin-bottom:16px}
+.wiz-campo label{display:block;font-size:.85rem;font-weight:800;color:#5D3A1A;margin-bottom:6px}
+.wiz-campo input{width:100%;padding:13px 14px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif;box-sizing:border-box;transition:border-color .2s,box-shadow .2s;color:#1A0A00}
+.wiz-campo input:focus{outline:none;border-color:#EF0129;box-shadow:0 0 0 3px rgba(239,1,41,.15)}
+.wiz-campo input.valido{border-color:#2E7D32;box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+.wiz-campo input.invalido{border-color:#C62828;box-shadow:0 0 0 3px rgba(198,40,40,.15)}
+.wiz-campo .wiz-dica{font-size:.78rem;color:#888;margin-top:4px;line-height:1.5}
+.wiz-campo .wiz-dica.alerta{color:#C62828;font-weight:700}
+/* Botões do wizard */
+.wiz-acoes{display:flex;gap:10px;margin-top:18px}
+.wiz-btn-prox{flex:1;padding:14px;background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border:none;border-radius:50px;font-size:1rem;font-weight:900;cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 4px 14px rgba(239,1,41,.35);transition:all .2s;font-family:'Nunito',sans-serif}
+.wiz-btn-prox:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
+.wiz-btn-prox:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(239,1,41,.45)}
+.wiz-btn-volt{padding:14px 18px;background:#fff;color:#C62828;border:2px solid #C62828;border-radius:50px;font-size:.9rem;font-weight:800;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
+/* Mensagem de erro dentro do wizard */
+.wiz-msg{margin-top:12px;padding:10px 14px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}
+.wiz-msg.ok{background:#E8F5E9;color:#1B5E20;border:1.5px solid #81C784;display:block}
+.wiz-msg.erro{background:#FFEBEE;color:#C62828;border:1.5px solid #EF9A9A;display:block}
+.wiz-msg.aviso{background:#FFF8E1;color:#E65100;border:1.5px solid #FFE082;display:block}
+/* Botão escolha inicial */
+.wiz-escolha{display:flex;flex-direction:column;gap:12px}
+.wiz-btn-escolha{padding:16px 20px;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;border:2.5px solid transparent;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;font-family:'Nunito',sans-serif}
+.wiz-btn-escolha.novo{background:#FFF3E0;border-color:#E65100;color:#BF360C}
+.wiz-btn-escolha.novo:hover{background:#FFE0B2;transform:translateY(-2px)}
+.wiz-btn-escolha.login{background:#E3F2FD;border-color:#0D47A1;color:#0D47A1}
+.wiz-btn-escolha.login:hover{background:#BBDEFB;transform:translateY(-2px)}
+.wiz-btn-escolha-icon{font-size:1.8rem}
+.wiz-btn-escolha-txt strong{display:block;font-size:1rem}
+.wiz-btn-escolha-txt span{font-size:.8rem;font-weight:600;opacity:.8}
+/* Etapa de sucesso / reivindicar */
+#wiz-etapa-reivindicar{text-align:center;padding:8px 0 4px}
+.wiz-estrela-animada{font-size:4rem;animation:flutuarEstrela 2s ease-in-out infinite;display:block;margin-bottom:8px}
+.wiz-btn-reivindicar{width:100%;padding:18px;background:linear-gradient(135deg,#F9A825,#EF0129);color:#fff;border:none;border-radius:50px;font-size:1.15rem;font-weight:900;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.5);box-shadow:0 6px 22px rgba(239,1,41,.4);transition:all .2s;font-family:'Nunito',sans-serif;animation:pulsarBtn 1.5s ease-in-out infinite}
+@keyframes pulsarBtn{0%,100%{box-shadow:0 6px 22px rgba(239,1,41,.4)}50%{box-shadow:0 8px 30px rgba(239,1,41,.65)}}
+.wiz-btn-reivindicar:disabled{background:#ccc;animation:none;box-shadow:none;cursor:not-allowed}
+
 /* ── LOADING ── */
 #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
 #loading-overlay.hide{opacity:0;pointer-events:none}
@@ -109,43 +169,41 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
   grid-template-columns:1fr;
   gap:24px;
   width:100%;
-  max-width:700px;
+  max-width:660px;
   margin:0 auto;
 }
-/* Tablet médio: card um pouco mais largo */
+/* Tablet e Desktop: 1 coluna centralizada (há apenas 1 card) */
 @media(min-width:641px) and (max-width:899px){
   .secao-programas{max-width:100%;padding:36px 24px;}
-  .programas-grid{grid-template-columns:1fr;max-width:740px;}
+  .programas-grid{max-width:660px;}
 }
-/* Desktop: grid 2 colunas a partir de 900px */
 @media(min-width:900px){
-  .secao-programas{max-width:1200px;padding:36px 32px;}
-  .programas-grid{grid-template-columns:repeat(2,1fr);max-width:1140px;width:100%;}
-  .card-programa-body{padding:20px 24px 24px;}
+  .secao-programas{max-width:1100px;margin:0 auto;padding:40px 32px;align-items:center;}
+  .programas-grid{max-width:660px;margin:0 auto;}
 }
 
 /* ── CARD PROGRAMA ── */
 .card-programa{background:#fff;border-radius:22px;box-shadow:0 6px 30px rgba(0,0,0,.1);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
 .card-programa:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,0,0,.14)}
-.card-programa-header{padding:22px 20px 16px;text-align:center;position:relative}
+.card-programa-header{padding:26px 24px 18px;text-align:center;position:relative}
 .card-programa-header.laranja{background:linear-gradient(135deg,#fff3e0,#ffe0b2)}
 .card-programa-header.verde{background:linear-gradient(135deg,#e8f5e9,#c8e6c9)}
-.card-programa-icon{font-size:3rem;margin-bottom:8px;display:block}
-.card-programa-titulo{font-size:1.05rem;font-weight:900;letter-spacing:.5px;margin-bottom:6px}
+.card-programa-icon{font-size:3rem;margin-bottom:10px;display:block}
+.card-programa-titulo{font-size:1.15rem;font-weight:900;letter-spacing:.5px;margin-bottom:8px}
 .card-programa-titulo.laranja{color:#bf360c}
 .card-programa-titulo.verde{color:#1b5e20}
-.card-programa-desc{font-size:.82rem;color:#555;line-height:1.55}
-.card-programa-body{padding:16px 20px 20px;flex:1;display:flex;flex-direction:column;gap:10px}
+.card-programa-desc{font-size:.93rem;color:#555;line-height:1.6}
+.card-programa-body{padding:20px 24px 24px;flex:1;display:flex;flex-direction:column;gap:12px}
 
 /* ── PASSOS MINI ── */
-.passos-mini{display:flex;flex-direction:column;gap:8px}
-.passo-mini{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#444;line-height:1.45}
-.passo-mini-num{min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px}
+.passos-mini{display:flex;flex-direction:column;gap:10px}
+.passo-mini{display:flex;align-items:flex-start;gap:12px;font-size:.93rem;color:#333;line-height:1.5}
+.passo-mini-num{min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px}
 .passo-mini-num.laranja{background:#e8650a}
 .passo-mini-num.verde{background:#2e7d32}
 
 /* ── DESTAQUE PREMIO ── */
-.destaque-premio{border-radius:12px;padding:10px 14px;font-size:.8rem;font-weight:700;line-height:1.5;text-align:center;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 14px}
+.destaque-premio{border-radius:12px;padding:12px 16px;font-size:.93rem;font-weight:700;line-height:1.6;text-align:center}
 .destaque-premio.laranja{background:#fff3e0;border:1.5px solid #ffcc80;color:#bf360c}
 .destaque-premio.verde{background:#e8f5e9;border:1.5px solid #a5d6a7;color:#1b5e20}
 
@@ -418,9 +476,9 @@ body { overflow-x: hidden; }
 <body>
   <!-- BANNER GUIA ESTRELA DOURADA -->
   <div id="banner-estrela-guia">
-    <div class="guia-titulo">&#11088; ESTRELA DOURADA CAPTURADA! Cadastre-se agora!</div>
-    <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo &#8595;</div>
-    <div class="guia-timer" id="guia-timer-txt">02:00</div>
+    <div class="guia-titulo">⭐ ESTRELA DOURADA CAPTURADA! Cadastre-se ou entre na sua conta!</div>
+    <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo ↓</div>
+    <div class="guia-timer" id="guia-timer-txt">05:00</div>
   </div>
 
   <!-- BANNER AVISO CUPONS E TESTE -->
@@ -476,11 +534,163 @@ body { overflow-x: hidden; }
 </section>
 
 <!-- SECAO REIVINDICAR ESTRELA (exibida dinamicamente pelo JS) -->
+<!-- SEÇÃO REIVINDICAR (mantida para compatibilidade com código legado) -->
 <div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
   <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
   <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
   <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;" aria-label="Reivindicar minha estrela dourada">REIVINDICAR MINHA ESTRELA!</button>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     WIZARD LINEAR DA ESTRELA DOURADA
+     Fluxo empilhado passo a passo — padrão iFood/WhatsApp
+     Aparece automaticamente quando há ?token=EST_ na URL
+     ═══════════════════════════════════════════════════════════ -->
+<div id="wizard-estrela">
+
+  <!-- Cabeçalho com timer -->
+  <div class="wiz-header">
+    <div style="font-size:2rem;margin-bottom:4px">⭐</div>
+    <h2>Você capturou a Estrela Dourada!</h2>
+    <p style="font-size:.85rem;opacity:.9;margin:2px 0 8px">Siga os passos abaixo para garantir sua estrela</p>
+    <div class="wiz-timer-bar"><div class="wiz-timer-fill" id="wiz-timer-fill"></div></div>
+    <div class="wiz-timer-txt" id="wiz-timer-txt">05:00</div>
+  </div>
+
+  <!-- Indicador de etapas -->
+  <div class="wiz-steps" id="wiz-steps">
+    <div class="wiz-step-dot ativo" id="wiz-dot-0">1</div>
+    <div class="wiz-step-linha" id="wiz-linha-0"></div>
+    <div class="wiz-step-dot" id="wiz-dot-1">2</div>
+    <div class="wiz-step-linha" id="wiz-linha-1"></div>
+    <div class="wiz-step-dot" id="wiz-dot-2">3</div>
+    <div class="wiz-step-linha" id="wiz-linha-2"></div>
+    <div class="wiz-step-dot" id="wiz-dot-3">⭐</div>
+  </div>
+
+  <!-- Corpo do wizard -->
+  <div class="wiz-body">
+
+    <!-- ETAPA 0: Já tem cadastro? -->
+    <div class="wiz-etapa ativa" id="wiz-e0">
+      <div class="wiz-titulo-etapa">Passo 1 — Você já tem cadastro aqui?</div>
+      <p style="font-size:.9rem;color:#555;margin-bottom:16px;line-height:1.6">Para garantir sua estrela precisamos identificar você. Escolha uma opção:</p>
+      <div class="wiz-escolha">
+        <button class="wiz-btn-escolha login" onclick="wizIrPara('login')">
+          <span class="wiz-btn-escolha-icon">🔓</span>
+          <div class="wiz-btn-escolha-txt">
+            <strong>Sim, já sou cadastrado</strong>
+            <span>Entrar com celular e data de nascimento</span>
+          </div>
+        </button>
+        <button class="wiz-btn-escolha novo" onclick="wizIrPara('novo')">
+          <span class="wiz-btn-escolha-icon">🆕</span>
+          <div class="wiz-btn-escolha-txt">
+            <strong>Não, é minha primeira vez</strong>
+            <span>Criar cadastro rápido — 3 campos apenas</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ETAPA LOGIN: Celular + Data -->
+    <div class="wiz-etapa" id="wiz-e-login">
+      <div class="wiz-titulo-etapa">Passo 2 — Entre na sua conta</div>
+      <div class="wiz-campo">
+        <label>📱 Seu celular (WhatsApp com DDD)</label>
+        <input type="tel" id="wiz-cel-login" placeholder="(16) 99999-9999"
+               oninput="mascaraTel(this)" maxlength="15" inputmode="numeric"
+               autocomplete="tel">
+        <div class="wiz-dica">O mesmo número cadastrado no Clube de Fidelidade</div>
+      </div>
+      <div class="wiz-campo">
+        <label>🎂 Data de nascimento (confirmação)</label>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="wiz-login-dia" placeholder="Dia" maxlength="2"
+                 inputmode="numeric" autocomplete="off"
+                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
+          <input type="text" id="wiz-login-mes" placeholder="Mês" maxlength="2"
+                 inputmode="numeric" autocomplete="off"
+                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
+          <input type="text" id="wiz-login-ano" placeholder="Ano" maxlength="4"
+                 inputmode="numeric" autocomplete="off"
+                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
+        </div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-login"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('inicio')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizEntrar()" id="wiz-btn-entrar">🔓 Entrar e Garantir Estrela</button>
+      </div>
+    </div>
+
+    <!-- ETAPA NOVO — Passo A: Nome -->
+    <div class="wiz-etapa" id="wiz-e-nome">
+      <div class="wiz-titulo-etapa">Passo 2 — Qual é o seu nome completo?</div>
+      <div class="wiz-campo">
+        <label>📋 Nome completo (idêntico ao RG/CNH)</label>
+        <input type="text" id="wiz-nome" placeholder="Ex: Maria Silva de Oliveira"
+               autocomplete="name" autocapitalize="words"
+               oninput="wizValidarNome(this)">
+        <div class="wiz-dica alerta">⚠️ Informe exatamente como no documento. Necessário para retirar prêmios.</div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-nome"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('inicio')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizAvancarNome()" id="wiz-btn-nome">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ETAPA NOVO — Passo B: Data de Nascimento -->
+    <div class="wiz-etapa" id="wiz-e-data">
+      <div class="wiz-titulo-etapa">Passo 3 — Qual é a sua data de nascimento?</div>
+      <div class="wiz-campo">
+        <label>🎂 Data de nascimento (idêntica ao RG/CNH)</label>
+        <input type="date" id="wiz-data" autocomplete="bday"
+               onchange="wizValidarData(this)">
+        <div class="wiz-dica alerta">⚠️ Mínimo 14 anos. Necessário para retirar prêmios.</div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-data"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('nome')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizAvancarData()" id="wiz-btn-data">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ETAPA NOVO — Passo C: Celular -->
+    <div class="wiz-etapa" id="wiz-e-cel">
+      <div class="wiz-titulo-etapa">Passo 4 — Qual é o seu celular (WhatsApp)?</div>
+      <div class="wiz-campo">
+        <label>📱 Celular com DDD (WhatsApp ativo)</label>
+        <input type="tel" id="wiz-cel" placeholder="(16) 99999-9999"
+               oninput="mascaraTel(this)" maxlength="15" inputmode="numeric"
+               autocomplete="tel">
+        <div class="wiz-dica">⭐ Seu prêmio será comunicado por este número. Verifique antes de continuar.</div>
+      </div>
+      <div class="wiz-msg" id="wiz-msg-cel"></div>
+      <div class="wiz-acoes">
+        <button class="wiz-btn-volt" onclick="wizIrPara('data')">← Voltar</button>
+        <button class="wiz-btn-prox" onclick="wizCadastrar()" id="wiz-btn-cel">✅ Confirmar Cadastro</button>
+      </div>
+    </div>
+
+    <!-- ETAPA FINAL: Reivindicar -->
+    <div class="wiz-etapa" id="wiz-e-reivindicar">
+      <div id="wiz-etapa-reivindicar">
+        <span class="wiz-estrela-animada" id="wiz-estrela-emoji">⭐</span>
+        <div style="font-size:1.1rem;font-weight:900;color:#C62828;margin-bottom:6px" id="wiz-nome-parabens">Parabéns!</div>
+        <div style="font-size:.9rem;color:#555;margin-bottom:20px;line-height:1.6" id="wiz-txt-reivindicar">
+          Sua estrela está reservada! Clique no botão abaixo para confirmar a captura.
+        </div>
+        <button class="wiz-btn-reivindicar" onclick="wizReivindicar()" id="wiz-btn-reivindicar">
+          ⭐ REIVINDICAR MINHA ESTRELA!
+        </button>
+        <div class="wiz-msg" id="wiz-msg-reivindicar" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+  </div><!-- .wiz-body -->
+</div><!-- #wizard-estrela -->
 
 <!-- AVISO IMPORTANTE: DIAS UTEIS -->
 <div class="aviso-dias-uteis">
@@ -979,7 +1189,7 @@ body { overflow-x: hidden; }
 // ═══════════════════════════════════════════════════════════
 // CONFIGURACOES
 // ═══════════════════════════════════════════════════════════
-const GH_TOKEN   = ['ghp','_Mdftjmli97dRl4ta','uAOJJrORaJfTpo4Can27'].join('');
+function getToken(){return localStorage.getItem('itap_gh_token')||'';}
 const GH_OWNER   = 'missias123';
 const GH_REPO    = 'itapolitanacajuru';
 const GH_BRANCH  = 'main';
@@ -1006,7 +1216,7 @@ let NOME_PREMIO = 'Milkshake 300ml';
 async function ghGet(path) {
   try {
     const r = await fetch(GH_API + path + '?t=' + Date.now(), {
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json' }
+      headers: { 'Authorization': 'token ' + getToken(), 'Accept': 'application/vnd.github.v3+json' }
     });
     if (r.status === 404) return { content: null, sha: null };
     if (!r.ok) throw new Error(r.status);
@@ -1023,25 +1233,48 @@ async function ghGet(path) {
 }
 
 async function ghPut(path, content, message, sha) {
-  try {
-    const bytes = new TextEncoder().encode(content);
-    let bin = '';
-    bytes.forEach(b => bin += String.fromCharCode(b));
-    const b64 = btoa(bin);
-    const body = { message, content: b64, branch: GH_BRANCH };
-    if (sha) body.sha = sha;
-    const r = await fetch(GH_API + path, {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
-    const d = await r.json();
-    return { ok: true, sha: d.content.sha };
-  } catch(e) {
-    console.error('ghPut error', path, e);
-    return { ok: false, error: e.message };
+  // ── BUG 5 CORRIGIDO: retry automático em conflito de salvamento ──
+  // Se dois clientes salvam ao mesmo tempo (race condition), o GitHub retorna
+  // erro 409/422. Tentamos novamente até 3 vezes buscando o SHA mais recente.
+  const MAX_TENTATIVAS = 3;
+  let shaAtual = sha;
+  for (let tentativa = 1; tentativa <= MAX_TENTATIVAS; tentativa++) {
+    try {
+      const bytes = new TextEncoder().encode(content);
+      let bin = '';
+      bytes.forEach(b => bin += String.fromCharCode(b));
+      const b64 = btoa(bin);
+      const body = { message, content: b64, branch: GH_BRANCH };
+      if (shaAtual) body.sha = shaAtual;
+      const r = await fetch(GH_API + path, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (r.ok) {
+        const d = await r.json();
+        return { ok: true, sha: d.content.sha };
+      }
+      const erro = await r.json().catch(() => ({}));
+      const msg = erro.message || String(r.status);
+      // Conflito de SHA (outro cliente salvou antes): buscar SHA atual e tentar de novo
+      if ((r.status === 409 || r.status === 422) && tentativa < MAX_TENTATIVAS) {
+        console.warn('⚠️ Conflito de salvamento (tentativa ' + tentativa + '/' + MAX_TENTATIVAS + '). Buscando SHA atualizado...');
+        const fresh = await ghGet(path);
+        if (fresh && fresh.sha) shaAtual = fresh.sha;
+        await new Promise(res => setTimeout(res, 500 * tentativa)); // aguardar antes de tentar
+        continue;
+      }
+      throw new Error(msg);
+    } catch(e) {
+      if (tentativa === MAX_TENTATIVAS) {
+        console.error('❌ ghPut falhou após ' + MAX_TENTATIVAS + ' tentativas:', path, e);
+        return { ok: false, error: e.message };
+      }
+      await new Promise(res => setTimeout(res, 500 * tentativa));
+    }
   }
+  return { ok: false, error: 'Falha após ' + MAX_TENTATIVAS + ' tentativas' };
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2162,7 +2395,7 @@ async function resgatarPremio(tipo) {
 // ═══════════════════════════════════════════════════════════
 // PAINEL ADMIN
 // ═══════════════════════════════════════════════════════════
-const ADMIN_SENHA = 'itapolitana2007@';
+const ADMIN_SENHA = null; // senha lida dinamicamente do config.json
 const ADMIN_POR_PAGINA = 50;
 let adminPaginaAtual = 1;
 let adminClientesFiltrados = [];
@@ -2183,10 +2416,18 @@ function fecharAdmin() {
   window.scrollTo(0, 0);
 }
 
-function adminLogin() {
+async function adminLogin() {
   const senha = document.getElementById('inp-admin-senha').value;
-  if (senha !== ADMIN_SENHA) {
-    showMsg('msg-admin-login', 'Senha incorreta.', 'erro');
+  try {
+    const r = await fetch('dados/config.json?t=' + Date.now());
+    const cfg = r.ok ? await r.json() : {};
+    const senhaEsperada = cfg.senhaAdmin || '';
+    if (!senhaEsperada || senha !== senhaEsperada) {
+      showMsg('msg-admin-login', 'Senha incorreta.', 'erro');
+      return;
+    }
+  } catch(e) {
+    showMsg('msg-admin-login', 'Erro ao verificar senha.', 'erro');
     return;
   }
   document.getElementById('admin-login-box').style.display = 'none';
@@ -2404,20 +2645,24 @@ async function processarTokenEstrela(tokenCaptura) {
       console.warn('⚠️ Estrela não está em resgate');
       return false;
     }
-    // Verificar validade do token (2 minutos após aparição)
+    // ── BUG 6 CORRIGIDO: janela de validade 2 min → 6 min ──
+    // O usuário tem 5 min para preencher o formulário + tempo de processamento.
+    // Validamos com 6 min para dar margem de segurança.
     if (estrela.horaAparicao) {
       const aparicao = new Date(estrela.horaAparicao);
       const agora = new Date();
       const tempoDecorrido = (agora - aparicao) / 1000; // em segundos
-      if (tempoDecorrido > 120) { // 2 minutos = 120 segundos
-        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + tempoDecorrido + 's');
+      if (tempoDecorrido > 360) { // 6 minutos = 360 segundos
+        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + Math.round(tempoDecorrido) + 's (limite: 360s)');
+        sessionStorage.removeItem('itap_estrela_token');
         return false;
       }
     }
     if (estrela.validadeToken) {
       const validade = new Date(estrela.validadeToken);
       if (new Date() > validade) {
-        console.warn('⏰ Token expirado!');
+        console.warn('⏰ Token expirado pelo validadeToken!');
+        sessionStorage.removeItem('itap_estrela_token');
         return false;
       }
     }
@@ -2564,175 +2809,170 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
 <script src="scripts/auto-fixer.js" defer></script>
-
-<!-- SCRIPT GUIA ESTRELA: contador 5 min + seta unica -->
 <script>
+// ═══════════════════════════════════════════════════════════════════
+// WIZARD ESTRELA DOURADA v3 — Fluxo linear seguro
+// Token: EST_AAAAMMDD_HHMMSS (diário, baseado no relógio, nunca repete)
+// ═══════════════════════════════════════════════════════════════════
 (function(){
-  var DURACAO = 2 * 60; // 2 minutos em segundos
-  var _timer = null;
-  var _segundos = DURACAO;
-  var _modoGuia = false;
-  var _passoAtual = 0; // 0=nome, 1=data, 2=cel, 3=confirmar
-
-  var PASSOS = [
-    { fg:'fg-nome',      seta:'seta-nome',      campo:'inp-nome',      txt:'Preencha seu NOME COMPLETO \u2193' },
-    { fg:'fg-data',      seta:'seta-data',      campo:'inp-data-nasc', txt:'Informe sua DATA DE NASCIMENTO \u2193' },
-    { fg:'fg-cel',       seta:'seta-cel',       campo:'inp-cel-novo',  txt:'Digite seu CELULAR (WhatsApp) \u2193' },
-    { fg:'fg-confirmar', seta:'seta-confirmar', campo:null,            txt:'Clique em CONFIRMAR para finalizar \u2193' }
-  ];
-
-  function padZ(n){ return n < 10 ? '0'+n : ''+n; }
-
-  function atualizarTimer(){
-    var m = Math.floor(_segundos / 60);
-    var s = _segundos % 60;
-    var el = document.getElementById('guia-timer-txt');
-    if(el){
-      el.textContent = padZ(m) + ':' + padZ(s);
-      if(_segundos <= 60){
-        el.classList.add('urgente');
-      } else {
-        el.classList.remove('urgente');
-      }
-    }
-    if(_segundos <= 0){
-      clearInterval(_timer);
-      encerrarGuia(true);
-      return;
-    }
-    _segundos--;
-  }
-
-  function mostrarSeta(passo){
-    // Esconder todas as setas
-    PASSOS.forEach(function(p){
-      var s = document.getElementById(p.seta);
-      var fg = document.getElementById(p.fg);
-      if(s) s.style.display = 'none';
-      if(fg) fg.classList.remove('campo-ativo-guia');
+  var _tok=null,_timer=null,_seg=480,_aberto=false;
+  function _pad(n){return n<10?'0'+n:''+n;}
+  function _irPara(e){
+    ['wiz-e0','wiz-e-login','wiz-e-nome','wiz-e-data','wiz-e-cel','wiz-e-reivindicar'].forEach(function(id){
+      var el=document.getElementById(id);if(el)el.classList.remove('ativa');
     });
-    if(passo >= PASSOS.length) return;
-    var atual = PASSOS[passo];
-    var seta = document.getElementById(atual.seta);
-    var fg = document.getElementById(atual.fg);
-    if(seta) seta.style.display = 'block';
-    if(fg) fg.classList.add('campo-ativo-guia');
-    var pEl = document.getElementById('guia-passo-txt');
-    if(pEl) pEl.textContent = atual.txt;
-    // Focar o campo
-    if(atual.campo){
-      var c = document.getElementById(atual.campo);
-      if(c) setTimeout(function(){ c.focus(); }, 200);
+    var m={inicio:'wiz-e0',login:'wiz-e-login',novo:'wiz-e-nome',nome:'wiz-e-nome',data:'wiz-e-data',cel:'wiz-e-cel',reivindicar:'wiz-e-reivindicar'};
+    var alvo=document.getElementById(m[e]||'wiz-e0');
+    if(alvo){alvo.classList.add('ativa');var inp=alvo.querySelector('input');if(inp)setTimeout(function(){inp.focus();},200);}
+    var idx=e==='inicio'?0:(e==='login'||e==='novo'||e==='nome')?1:(e==='data'||e==='cel')?2:3;
+    for(var i=0;i<=3;i++){
+      var d=document.getElementById('wiz-dot-'+i),l=document.getElementById('wiz-linha-'+i);
+      if(d){d.classList.remove('ativo','feito');if(i<idx)d.classList.add('feito');else if(i===idx)d.classList.add('ativo');}
+      if(l){l.classList.remove('feita');if(i<idx)l.classList.add('feita');}
     }
   }
-
-  function avancarPasso(){
-    _passoAtual++;
-    if(_passoAtual >= PASSOS.length){
-      mostrarSeta(PASSOS.length); // esconde tudo
-    } else {
-      mostrarSeta(_passoAtual);
-    }
+  function _timer_tick(){
+    var m=Math.floor(_seg/60),s=_seg%60;
+    var t=document.getElementById('wiz-timer-txt'),b=document.getElementById('wiz-timer-fill');
+    if(t){t.textContent=_pad(m)+':'+_pad(s);t.style.color=_seg<=60?'#C62828':'';}
+    if(b)b.style.width=Math.max(0,(_seg/480)*100)+'%';
   }
-
-  function encerrarGuia(expirou){
-    _modoGuia = false;
-    var banner = document.getElementById('banner-estrela-guia');
-    if(banner) banner.style.display = 'none';
-    PASSOS.forEach(function(p){
-      var s = document.getElementById(p.seta);
-      var fg = document.getElementById(p.fg);
-      if(s) s.style.display = 'none';
-      if(fg) fg.classList.remove('campo-ativo-guia');
-    });
-    if(expirou){
-      alert('\u23f0 Tempo esgotado!\n\nO tempo de 2 minutos para cadastrar sua Estrela Dourada acabou.\n\nSe voce ainda nao se cadastrou, entre em contato com a sorveteria.');
-    }
+  function _iniciarTimer(){
+    _seg=480;if(_timer)clearInterval(_timer);_timer_tick();
+    _timer=setInterval(function(){_seg--;_timer_tick();if(_seg<=0){clearInterval(_timer);_expirar();}},1000);
   }
-
-  function iniciarGuia(){
-    _modoGuia = true;
-    _segundos = DURACAO;
-    _passoAtual = 0;
-    var banner = document.getElementById('banner-estrela-guia');
-    if(banner) banner.style.display = 'block';
-    // Garantir que o formulario de novo cadastro esta visivel
-    var cardAcesso = document.getElementById('card-acesso');
-    if(cardAcesso) cardAcesso.style.display = 'block';
-    // Garantir aba "Primeira vez" ativa
-    if(typeof setTab === 'function') setTab('novo');
-    // Rolar ate o formulario
+  function _expirar(){
+    sessionStorage.removeItem('itap_estrela_token');_tok=null;_irPara('reivindicar');
+    var div=document.getElementById('wiz-etapa-reivindicar');
+    if(div)div.innerHTML='<div style="text-align:center;padding:20px 8px"><div style="font-size:3rem">\u23F0</div><div style="font-size:1.1rem;font-weight:900;color:#C62828;margin:10px 0">Tempo esgotado!</div><p style="color:#555;font-size:.9rem;line-height:1.7">Os 8 minutos acabaram e a estrela foi liberada para outros ca\u00E7adores.</p><p style="color:#888;font-size:.8rem;margin-top:14px">Fique ligado nos pr\u00F3ximos hor\u00E1rios! \u2B50</p></div>';
+  }
+  function _hookPainel(){
+    if(window.__wizHooked)return;window.__wizHooked=true;
+    var orig=window.mostrarPainelCliente;
+    if(typeof orig!=='function'){setTimeout(_hookPainel,400);return;}
+    window.mostrarPainelCliente=function(){
+      orig.apply(this,arguments);
+      if(_aberto&&_tok){setTimeout(function(){_irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});},500);}
+    };
+  }
+  function _prepReiv(){
+    var n=(typeof clienteAtual!=='undefined'&&clienteAtual&&clienteAtual.nome)?clienteAtual.nome.split(' ')[0]:'Ca\u00E7ador';
+    var en=document.getElementById('wiz-nome-parabens'),et=document.getElementById('wiz-txt-reivindicar');
+    if(en)en.textContent='Ol\u00E1, '+n+'! \uD83D\uDC4B';
+    if(et)et.textContent='Sua estrela est\u00E1 reservada! Clique abaixo para confirmar antes que o tempo acabe.';
+  }
+  function _sucesso(){
+    clearInterval(_timer);sessionStorage.removeItem('itap_estrela_token');
+    var n=(typeof clienteAtual!=='undefined'&&clienteAtual&&clienteAtual.nome)?clienteAtual.nome.split(' ')[0]:'Ca\u00E7ador';
+    var div=document.getElementById('wiz-etapa-reivindicar');
+    if(!div)return;
+    div.innerHTML='<div style="text-align:center;padding:10px 4px"><div style="font-size:3.2rem">\u2B50</div><div style="font-size:1.2rem;font-weight:900;color:#2E7D32;margin:10px 0 4px">PARAB\u00C9NS, '+n.toUpperCase()+'! \uD83C\uDF89</div><div style="font-size:.92rem;color:#555;line-height:1.7;margin-bottom:14px">Sua <strong>Estrela Dourada</strong> foi registrada com sucesso!</div><div id="wiz-s-total" style="background:linear-gradient(135deg,#FFF8E1,#FFF3CD);border:2px solid #FFD600;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:.88rem;color:#5D4037;font-weight:700">\u2B50 Carregando seu total...</div><div style="font-size:.78rem;color:#999;line-height:1.6">Continue ca\u00E7ando estrelas! Fique ligado nos pr\u00F3ximos hor\u00E1rios.</div></div>';
+    fetch('estrelas_ciclo.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){
+      var cel=(typeof clienteAtual!=='undefined'&&clienteAtual)?clienteAtual.cel:null;
+      var el=document.getElementById('wiz-s-total');if(!el)return;
+      if(cel&&d.rankingAtual&&d.rankingAtual[cel]){
+        var tot=d.rankingAtual[cel].estrelas||0,meta=(d.cicloAtual&&d.cicloAtual.metaEstrelas)||5,falt=Math.max(0,meta-tot);
+        el.innerHTML='\u2B50 Suas estrelas: <strong>'+tot+' / '+meta+'</strong><br><span style="font-weight:400">'+(falt===0?'\uD83C\uDFC6 Ciclo completo! Fale no WhatsApp para resgatar seu pr\u00EAmio!':'Faltam <strong>'+falt+'</strong> estrela'+(falt!==1?'s':'')+' para o pr\u00EAmio!')+'</span>';
+      }else{el.innerHTML='\u2B50 Estrela registrada! Continue ca\u00E7ando para ganhar pr\u00EAmios!';}
+    }).catch(function(){var el=document.getElementById('wiz-s-total');if(el)el.innerHTML='\u2B50 Estrela registrada com sucesso!';});
+  }
+  function _erro(msg){
+    var em=document.getElementById('wiz-msg-reivindicar'),btn=document.getElementById('wiz-btn-reivindicar');
+    if(em)em.innerHTML='<div style="background:#FFEBEE;border:1px solid #EF9A9A;border-radius:10px;padding:12px;color:#C62828;font-size:.85rem;line-height:1.6;margin-top:10px">\u274C <strong>N\u00E3o foi poss\u00EDvel registrar a estrela.</strong><br>'+msg+'</div>';
+    if(btn){btn.disabled=false;btn.textContent='\u2B50 REIVINDICAR MINHA ESTRELA!';}
+  }
+  function _abrir(token){
+    _tok=token||sessionStorage.getItem('itap_estrela_token');if(!_tok)return;
+    _aberto=true;var wiz=document.getElementById('wizard-estrela');
+    if(!wiz)return;wiz.style.display='block';
+    setTimeout(function(){wiz.scrollIntoView({behavior:'smooth',block:'start'});},80);
+    _irPara('inicio');_iniciarTimer();_hookPainel();
+  }
+  window.wizIrPara=function(e){_irPara(e);};
+  window.wizValidarNome=function(el){
+    var msg=document.getElementById('wiz-msg-nome');if(!msg)return;
+    var v=el.value.trim();
+    msg.innerHTML=(v.length>3&&v.split(/\s+/).length>=2)?'<span style="color:#2E7D32;font-size:.82rem">\u2713 Nome v\u00E1lido</span>':'';
+  };
+  window.wizAvancarNome=function(){
+    var inp=document.getElementById('wiz-nome'),msg=document.getElementById('wiz-msg-nome');
+    var v=inp?inp.value.trim():'';
+    if(v.length<5||v.split(/\s+/).length<2){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F Informe nome e sobrenome (m\u00EDnimo 5 letras).</span>';return;}
+    if(msg)msg.innerHTML='';_irPara('data');
+  };
+  window.wizValidarData=function(el){
+    var msg=document.getElementById('wiz-msg-data');if(!msg)return;
+    if(!el.value){msg.innerHTML='';return;}
+    var nasc=new Date(el.value),hoje=new Date(),idade=hoje.getFullYear()-nasc.getFullYear();
+    if(hoje.getMonth()<nasc.getMonth()||(hoje.getMonth()===nasc.getMonth()&&hoje.getDate()<nasc.getDate()))idade--;
+    msg.innerHTML=idade<14?'<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>':'<span style="color:#2E7D32;font-size:.82rem">\u2713 OK</span>';
+  };
+  window.wizAvancarData=function(){
+    var inp=document.getElementById('wiz-data'),msg=document.getElementById('wiz-msg-data');
+    if(!inp||!inp.value){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F Informe sua data de nascimento.</span>';return;}
+    var nasc=new Date(inp.value),hoje=new Date(),idade=hoje.getFullYear()-nasc.getFullYear();
+    if(hoje.getMonth()<nasc.getMonth()||(hoje.getMonth()===nasc.getMonth()&&hoje.getDate()<nasc.getDate()))idade--;
+    if(idade<14){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>';return;}
+    if(msg)msg.innerHTML='';_irPara('cel');
+  };
+  window.wizEntrar=function(){
+    var btn=document.getElementById('wiz-btn-entrar'),msg=document.getElementById('wiz-msg-login');
+    if(btn){btn.disabled=true;btn.textContent='\u23F3 Verificando...';}if(msg)msg.innerHTML='';
+    var mapa={'wiz-cel-login':'inp-cel-login','wiz-login-dia':'inp-login-dia','wiz-login-mes':'inp-login-mes','wiz-login-ano':'inp-login-ano'};
+    Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
+    try{entrar();}catch(e){console.warn('wizEntrar:',e);}
     setTimeout(function(){
-      var fg = document.getElementById('fg-nome');
-      if(fg) fg.scrollIntoView({behavior:'smooth', block:'center'});
-    }, 400);
-    mostrarSeta(0);
-    _timer = setInterval(atualizarTimer, 1000);
-    atualizarTimer();
-
-    // Listeners para avancar seta ao preencher cada campo
-    var inpNome = document.getElementById('inp-nome');
-    var inpData = document.getElementById('inp-data-nasc');
-    var inpCel  = document.getElementById('inp-cel-novo');
-
-    function onNomeBlur(){
-      if(_passoAtual === 0 && inpNome && inpNome.value.trim().length > 2){
-        avancarPasso();
+      if(typeof clienteAtual!=='undefined'&&clienteAtual){
+        _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
+      }else{
+        var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
+        if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
+        if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
       }
+    },1400);
+  };
+  window.wizCadastrar=function(){
+    var btn=document.getElementById('wiz-btn-cel'),msg=document.getElementById('wiz-msg-cel');
+    if(btn){btn.disabled=true;btn.textContent='\u23F3 Criando conta...';}if(msg)msg.innerHTML='';
+    var celEl=document.getElementById('wiz-cel'),cel=celEl?celEl.value.replace(/\D/g,''):'';
+    if(cel.length<10){
+      if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.83rem">\u26A0\uFE0F Informe um celular v\u00E1lido com DDD.</span>';
+      if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}return;
     }
-    function onDataChange(){
-      if(_passoAtual === 1 && inpData && inpData.value){
-        avancarPasso();
+    var mapa={'wiz-nome':'inp-nome','wiz-data':'inp-data-nasc','wiz-cel':'inp-cel-novo'};
+    Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
+    try{cadastrar();}catch(e){console.warn('wizCadastrar:',e);}
+    setTimeout(function(){
+      if(typeof clienteAtual!=='undefined'&&clienteAtual){
+        _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
+      }else{
+        var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
+        if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Verifique seus dados e tente novamente.')+'</div>';
+        if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
       }
-    }
-    function onCelBlur(){
-      if(_passoAtual === 2 && inpCel && inpCel.value.replace(/\D/g,'').length >= 10){
-        avancarPasso();
-      }
-    }
-
-    if(inpNome) inpNome.addEventListener('blur', onNomeBlur);
-    if(inpData) inpData.addEventListener('change', onDataChange);
-    if(inpCel)  inpCel.addEventListener('blur', onCelBlur);
-  }
-
-  // Expor funcao globalmente para ser chamada apos deteccao do token
-  window.iniciarGuiaEstrela = iniciarGuia;
-  window.encerrarGuiaEstrela = encerrarGuia;
-
-  // Detectar chegada via estrela (token na URL)
-  document.addEventListener('DOMContentLoaded', function(){
-    var params = new URLSearchParams(window.location.search);
-    var token = params.get('token');
-    if(token && token.startsWith('EST')){
-      // Aguardar o formulario estar no DOM
-      setTimeout(iniciarGuia, 800);
-    }
-    // Tambem verificar sessionStorage
-    var tokenSessao = sessionStorage.getItem('itap_estrela_token');
-    if(tokenSessao && tokenSessao.startsWith('EST')){
-      setTimeout(iniciarGuia, 800);
-    }
+    },2200);
+  };
+  window.wizReivindicar=function(){
+    var btn=document.getElementById('wiz-btn-reivindicar'),msg=document.getElementById('wiz-msg-reivindicar');
+    if(btn){btn.disabled=true;btn.textContent='\u23F3 Registrando estrela...';}if(msg)msg.innerHTML='';
+    var tok=_tok||sessionStorage.getItem('itap_estrela_token');
+    if(!tok){_erro('Token n\u00E3o encontrado. A estrela pode ter expirado.');return;}
+    var btnLeg=document.getElementById('btn-reivindicar-estrela');
+    var promise=processarTokenEstrela(tok);
+    if(btnLeg)setTimeout(function(){btnLeg.click();},200);
+    Promise.resolve(promise).then(function(ok){
+      if(ok)_sucesso();
+      else _erro('Pode ter expirado ou j\u00E1 foi capturada por outro ca\u00E7ador.<br><span style="font-size:.8rem;color:#888">Tente novamente no pr\u00F3ximo hor\u00E1rio.</span>');
+    }).catch(function(){_erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');});
+  };
+  window.iniciarGuiaEstrela=function(){_abrir();};
+  window.encerrarGuiaEstrela=function(){};
+  window.abrirWizardEstrela=_abrir;
+  document.addEventListener('DOMContentLoaded',function(){
+    var p=new URLSearchParams(window.location.search),tok=p.get('token');
+    if(tok&&tok.startsWith('EST')){sessionStorage.setItem('itap_estrela_token',tok);setTimeout(function(){_abrir(tok);},700);}
+    else{var ts=sessionStorage.getItem('itap_estrela_token');if(ts&&ts.startsWith('EST'))setTimeout(function(){_abrir(ts);},700);}
   });
-
-  // Encerrar guia apos cadastro bem-sucedido
-  var _origCadastrar = null;
-  document.addEventListener('DOMContentLoaded', function(){
-    // Hook na funcao cadastrar para encerrar o guia apos sucesso
-    var checkInterval = setInterval(function(){
-      if(typeof cadastrar === 'function' && !_origCadastrar){
-        _origCadastrar = cadastrar;
-        window.cadastrar = function(){
-          _origCadastrar.apply(this, arguments);
-          if(_modoGuia){
-            setTimeout(function(){ encerrarGuia(false); }, 1500);
-          }
-        };
-        clearInterval(checkInterval);
-      }
-    }, 300);
-  });
-
 })();
 </script>
 </body>
