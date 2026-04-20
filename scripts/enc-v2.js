@@ -56,7 +56,55 @@ async function enviarPedidoGitHub(pedido) {
   }
 }
 
-async function carregarPreçosNuvem() {
+// Atualiza o estoque de caixas e tortas em dados/produtos.json no GitHub após um pedido
+async function atualizarEstoqueGitHub(caixasAtualizadas, tortasAtualizadas) {
+  try {
+    const r = await fetch(_GH_API + 'dados/produtos.json?t=' + Date.now(), {
+      headers: { 'Authorization': 'token ' + _GH_TK, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) throw new Error('Leitura falhou: ' + r.status);
+    const d = await r.json();
+    const sha = d.sha;
+    const bin = atob(d.content.replace(/\n/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const prodAtual = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    // Aplicar baixa de estoque nas caixas
+    if (prodAtual.caixas_enc && caixasAtualizadas.length > 0) {
+      caixasAtualizadas.forEach(cx => {
+        const idx = prodAtual.caixas_enc.findIndex(c => c.id === cx.id);
+        if (idx !== -1) {
+          prodAtual.caixas_enc[idx].estoque = cx.estoque;
+          prodAtual.caixas_enc[idx].esgotado = cx.estoque <= 0;
+        }
+      });
+    }
+    // Aplicar baixa de estoque nas tortas
+    if (prodAtual.tortas_enc && tortasAtualizadas.length > 0) {
+      tortasAtualizadas.forEach(tr => {
+        const idx = prodAtual.tortas_enc.findIndex(t => t.id === tr.id);
+        if (idx !== -1) {
+          prodAtual.tortas_enc[idx].estoque = tr.estoque;
+          prodAtual.tortas_enc[idx].esgotado = tr.estoque <= 0;
+        }
+      });
+    }
+    const novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(prodAtual, null, 2))));
+    const resp = await fetch(_GH_API + 'dados/produtos.json', {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + _GH_TK, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Baixa de estoque automática', content: novoConteudo, sha })
+    });
+    if (!resp.ok) throw new Error('Gravação falhou: ' + resp.status);
+    console.log('[Itap] Estoque atualizado no GitHub ✅');
+    return true;
+  } catch(e) {
+    console.warn('[Itap] Erro ao atualizar estoque no GitHub:', e.message);
+    return false;
+  }
+}
+
+
   // Normaliza chaves do JSON — aceita com e sem acento (picoles/picolés, preco/preço)
   function normalizarPicolés(obj) {
     if (!obj) return null;
@@ -1206,27 +1254,6 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     msg += `📍 *Retirada na loja:* R. Cel. Manoel Caetano, 311 – Cajuru/SP\n`;
     msg += `💳 *Pagamento antecipado* obrigatório para confirmar a produção.\n\n`;
     msg += `🔗 Acesse: https://itapolitanacajuru.com.br/encomendas.html`;    
-    // ENVIO DE E-MAIL INTERNO (Fallback quando WhatsApp não funcionar)
-    const emailPayload = {
-      _subject: `[ITAPOLITANA] Novo Pedido - ${numPedido}`,
-      _from_name: nome,
-      _from_email: 'pedidos@itapolitanacajuru.com.br',
-      pedido_número: numPedido,
-      cliente_nome: nome,
-      cliente_whatsapp: tel,
-      cliente_endereço: end,
-      data_pedido: dataFormatada,
-      total: total.toFixed(2),
-      mensagem_resumo: msg
-    };
-    
-    // Tentar enviar e-mail (não bloqueia o fluxo WhatsApp)
-    fetch('https://formspree.io/f/xyzabc123', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(emailPayload)
-    }).catch(e => console.warn('[ITAP] E-mail interno não enviado (fallback WhatsApp ativo):', e));
-
     // Montar objeto do pedido
     const pedidoObj = {
       num: numPedido,
@@ -1238,7 +1265,13 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
       itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preço: i.preço, tipo: i.tipo || 'sorvete' })),
       total: total,
       status: 'novo',
-      tipo: carrinho.some(i => i.tipo === 'picolé') ? 'picolés' : carrinho.some(i => i.tipo === 'sorvete' && i.nome.includes('Torta')) ? 'torta' : 'caixa'
+      tipo: (() => {
+        const temPicolé = carrinho.some(i => i.tipo === 'picolé');
+        const temTorta  = carrinho.some(i => i.tipo === 'sorvete' && i.nome.toLowerCase().includes('torta'));
+        const temCaixa  = carrinho.some(i => i.tipo === 'sorvete' && !i.nome.toLowerCase().includes('torta'));
+        const tipos = [temPicolé && 'picolés', temTorta && 'torta', temCaixa && 'caixa'].filter(Boolean);
+        return tipos.length > 1 ? 'misto' : (tipos[0] || 'caixa');
+      })()
     };
     // Salvar pedido no localStorage com proteção extra
     try {
@@ -1280,6 +1313,8 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
       localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
       localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
       localStorage.setItem('itap_estoque_picolés', JSON.stringify(estoquePicolés));
+      // Persistir baixa de estoque de caixas/tortas no GitHub (assíncrono, não bloqueia UI)
+      atualizarEstoqueGitHub(caixas, tortas).catch(() => {});
     } catch(e) { console.warn('[ITAP] Erro ao atualizar estoque:', e); }
 
     // Esvaziar carrinho e resetar botões
@@ -1411,6 +1446,12 @@ function getAcréscimosEnc() {
     { id:'acr_cestinha',  nome:'Cestinha Recheada',        preço:1.00,  estoque:100, esgotado:false },
     { id:'acr_cobertura', nome:'Cobertura 1.3L',  preço:40.00, estoque:100, esgotado:false }
   ];
+  // 1. Priorizar dados da nuvem carregados em window._itap_acréscimos
+  if (window._itap_acréscimos && window._itap_acréscimos.length > 0) {
+    const ativos = window._itap_acréscimos.filter(c => c.nome && c.nome.trim() !== '');
+    if (ativos.length > 0) return ativos;
+  }
+  // 2. Fallback: localStorage
   try {
     const salvo = localStorage.getItem('itap_acréscimos');
     if (salvo) {
