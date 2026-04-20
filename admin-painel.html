@@ -2427,7 +2427,14 @@ async function entrar(){
   if(tok) localStorage.setItem('itap_gh_token',tok);
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
-  const cfg=await ghGet(PATHS.config);
+  let cfg=await ghGet(PATHS.config);
+  // Fallback: se API falhou (sem token salvo), tenta URL pública raw (repo público)
+  if(!cfg.content){
+    try{
+      const r=await fetch(GH_RAW+PATHS.config+'?t='+Date.now());
+      if(r.ok){const d=await r.json();cfg={content:d,sha:null};}
+    }catch(e){}
+  }
   ocultarLoading();
   if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}
   const senhaHash = await sha256(senha);
