@@ -245,7 +245,7 @@ img{max-width:100%;display:block}
 @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
 .promo-top-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2.5s infinite}
 /* HEADER */
-.header{contain: layout;background:linear-gradient(135deg,#fff 0%,#FFF8F0 60%,#FFF0F0 100%);border-bottom:3px solid #EF0129;padding:0 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(239,1,41,.15);isolation:isolate;width:100%;box-sizing:border-box;border-top:3px solid #EF0129;min-height:160px;}
+.header{background:linear-gradient(135deg,#fff 0%,#FFF8F0 60%,#FFF0F0 100%);border-bottom:3px solid #EF0129;padding:0 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(239,1,41,.15);isolation:isolate;width:100%;box-sizing:border-box;border-top:3px solid #EF0129;}
 .header-inner{contain: layout;max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:12px 16px}
 .brand{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;padding:0;flex-shrink:0}
 .brand-icon{width:80px;min-width:80px;flex-shrink:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:-3px 0}.brand-icon img{width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18)}
@@ -501,7 +501,8 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* MOBILE (≤600px) */
 @media(max-width:600px){
   .itabot-wrap{bottom:14px;right:12px}
-  .itabot-btn{width:68px;height:90px}
+  .itabot-btn{width:96px;height:126px}
+  .itabot-btn svg{width:90px;height:120px}
 }
 /* TABLET (601px–900px) */
 @media(min-width:601px) and (max-width:900px){
@@ -516,12 +517,21 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* BOTAO ADMIN FLUTUANTE - DIREITA ACIMA DO SORTEIO */
 #admin-fab{position:fixed;right:6px;bottom:108px;z-index:9998;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.12);color:rgba(255,255,255,.3);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.1);box-shadow:none;letter-spacing:.2px;white-space:nowrap;opacity:.4}
 /* chat-overlay: substituído por dialog#chat-dialog */
+dialog#chat-dialog{border:none;padding:0;background:transparent;width:calc(100% - 32px);max-width:500px;margin:auto auto 0;border-radius:24px 24px 0 0;overflow:hidden;max-height:92vh}
+dialog#chat-dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog#chat-dialog[open]{animation:slideUpDialog .25s ease-out}
+@media(max-width:600px){
+  dialog#chat-dialog{inset:0;width:100%;max-width:100%;height:100%;max-height:100%;border-radius:0;margin:0}
+  .chat-box{height:100svh;border-radius:0;max-width:100%}
+  .chat-hdr{border-radius:0;padding:16px 16px 12px}
+  .chat-close{border-radius:10px;padding:8px 14px;width:auto;height:auto;min-height:44px;font-size:15px;gap:5px}
+}
 
 .chat-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;height:72vh;display:flex;flex-direction:column}
 .chat-hdr{background:linear-gradient(135deg,#FF6B35,#E8000D,#7B2D8B);color:#fff;padding:16px 20px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between}
 .chat-hdr h3{font-size:16px;font-weight:800}
 .chat-hdr p{font-size:11px;color:#fff;font-weight:600}
-.chat-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.chat-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:44px;height:44px;color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
 .msg{max-width:80%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;animation:msg-slide .22s ease-out}
 @keyframes msg-slide{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -654,18 +664,15 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 }
 /* TABLET (480px a 767px) */
 @media(min-width:480px) and (max-width:767px){
-  .header-inner{contain: layout;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;padding:10px 16px}
-  .brand{flex-direction:row;align-items:center;gap:10px;width:auto;flex-shrink:0}
-  .header-nav{contain: layout;grid-template-columns:repeat(2,1fr);gap:7px;flex:1}
+  .header-nav{grid-template-columns:repeat(4,1fr);gap:7px}
   .nav-btn{padding:9px 6px;min-height:56px;}
   .nav-btn .nav-icon{font-size:1.6em;}
   .nav-btn .nav-label{font-size:12px;}
 }
 /* DESKTOP (acima de 768px) */
 @media(min-width:768px){
-  .header-inner{contain: layout;flex-direction:row;align-items:center;justify-content:flex-start;gap:16px;padding:10px 20px}
-  .brand{flex-direction:row;align-items:center;gap:12px;width:auto;flex-shrink:0}
-  .header-nav{contain: layout;grid-template-columns:repeat(4,1fr);gap:8px;flex:1}
+  .header-inner{padding:10px 20px}
+  .header-nav{grid-template-columns:repeat(4,1fr);gap:8px}
   .nav-btn{padding:10px 8px;min-height:60px;}
   .nav-btn .nav-icon{font-size:1.7em;}
   .nav-btn .nav-label{font-size:13px;}
@@ -2698,7 +2705,7 @@ function voltarTemas() {
     <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">🟢 Online agora · Responde na hora</p>
   </div>
 </div>
-<button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
+<button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">← Voltar</button>
 </div>
 <div class="chat-msgs" id="chat-msgs">
 <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Digite uma palavra e respondo na hora 👇<br><small style="color:#888;font-size:11px">Ex: horário · sabores · preço · picolé · açaí · encomenda · localização</small></div>
