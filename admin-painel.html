@@ -4321,17 +4321,25 @@ function adicionarSaborSorvete() {
 function renderizarPicolésAdmin() {
   // Usar STATE.produtos como fonte de verdade (sincronizado com produtos.json)
   const prod = STATE.produtos;
-  const dados = (prod && prod.picoles) ? prod.picoles : PICOLES_PADRAO;
+  // Aceita 'picoles' (JSON sem acento) ou 'picolés' (JS com acento), normaliza campos
+  const _raw = (prod && prod.picoles) ? prod.picoles : ((prod && prod.picolés) ? prod.picolés : PICOLES_PADRAO);
   const body = document.getElementById('estoque-picolés-body');
   if (!body) return;
   const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   let html = '';
-  for (const [cat, pp] of Object.entries(dados)) {
-    const saboresHtml = pp.sabores.map(s => {
+  for (const [cat, pp] of Object.entries(_raw)) {
+    // Normalizar chaves de preço com ou sem acento para não crashar
+    const pVarejo  = pp.preço_varejo  ?? pp.preco_varejo  ?? 0;
+    const pAtacado = pp.preço_atacado ?? pp.preco_atacado ?? 0;
+    const estoque  = pp.estoque ?? 200;
+    const esgotado = pp.esgotado ?? false;
+    const nome     = pp.nome || cat;
+    const sabores  = Array.isArray(pp.sabores) ? pp.sabores : [];
+    const saboresHtml = sabores.map(s => {
       const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
       return '<div class="sabor-item ' + (s.esgotado ? 'esgotado' : '') + '"><span class="sabor-nome">' + s.nome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" ' + (s.esgotado ? '' : 'checked') + ' onchange="toggleSaborPicolé(\'' + cat + '\',\'' + s.nome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status ' + (s.esgotado ? 'esgotado' : '') + '" id="status_' + sid + '">' + (s.esgotado ? 'Esgotado' : 'Disponível') + '</span></div>';
     }).join('');
-    html += '<div class="estoque-card ' + (pp.esgotado ? 'esgotado' : '') + '"><div class="estoque-header"><span class="estoque-nome">🍭 ' + pp.nome + '</span><span class="estoque-preço-badge">Varejo R$ ' + pp.preço_varejo.toFixed(2).replace('.',',') + ' | Atacado R$ ' + pp.preço_atacado.toFixed(2).replace('.',',') + '</span></div><div class="estoque-campos"><div class="campo-edit"><label>Preço Varejo (Cardápio)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_varejo" value="' + pp.preço_varejo + '" min="0" step="0.1"/></div><div class="hint">Preço unitario no cardápio da loja.</div></div><div class="campo-edit"><label>Preço Atacado (Encomendas)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_atacado" value="' + pp.preço_atacado + '" min="0" step="0.1"/></div><div class="hint">Preço por unidade em encomendas (min. 100 un.).</div></div><div class="campo-edit"><label>Estoque total (0 a 200)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoquePicolé(\'' + cat + '\',-1)">-</button><input type="number" id="pic_' + cat + '_estoque" value="' + pp.estoque + '" min="0" max="200" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoquePicolé(\'' + cat + '\',1)">+</button></div><div class="hint">0 = Esgotado. Max. 200.</div></div></div><div class="seção-título" style="font-size:.78rem;margin:12px 0 8px">Sabores desta categoria</div><div class="sabores-grid">' + saboresHtml + '</div></div>';
+    html += '<div class="estoque-card ' + (esgotado ? 'esgotado' : '') + '"><div class="estoque-header"><span class="estoque-nome">🍭 ' + nome + '</span><span class="estoque-preço-badge">Varejo R$ ' + pVarejo.toFixed(2).replace('.',',') + ' | Atacado R$ ' + pAtacado.toFixed(2).replace('.',',') + '</span></div><div class="estoque-campos"><div class="campo-edit"><label>Preço Varejo (Cardápio)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_varejo" value="' + pVarejo + '" min="0" step="0.1"/></div><div class="hint">Preço unitário no cardápio da loja.</div></div><div class="campo-edit"><label>Preço Atacado (Encomendas)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_atacado" value="' + pAtacado + '" min="0" step="0.1"/></div><div class="hint">Preço por unidade em encomendas (mín. 100 un.).</div></div><div class="campo-edit"><label>Estoque total (0 a 200)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoquePicolé(\'' + cat + '\',-1)">-</button><input type="number" id="pic_' + cat + '_estoque" value="' + estoque + '" min="0" max="200" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoquePicolé(\'' + cat + '\',1)">+</button></div><div class="hint">0 = Esgotado. Max. 200.</div></div></div><div class="seção-título" style="font-size:.78rem;margin:12px 0 8px">Sabores desta categoria</div><div class="sabores-grid">' + saboresHtml + '</div></div>';
   }
   body.innerHTML = html;
 }
@@ -4479,18 +4487,36 @@ async function salvarEstoque() {
     const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
     const CAIXAS_NOMES = ['Caixa 5 Litros - 2 Sabores','Caixa 5 Litros - 3 Sabores','Caixa 10 Litros - 2 Sabores','Caixa 10 Litros - 3 Sabores'];
     const CAIXAS_MAX = [2,3,2,3];
+    // Preços das caixas: lê do STATE (fonte de verdade) pois não há campo de preço editável nesta seção
+    const CAIXAS_PRECOS_PAD = [100, 115, 150, 165];
+    const _caixasAtual = (STATE.produtos && STATE.produtos.caixas_enc) ? STATE.produtos.caixas_enc : [];
     const caixas = CAIXAS_IDS.map((id, i) => {
-      const preço = parseFloat(document.getElementById(id + '_preço') ? document.getElementById(id + '_preço').value : 100) || 100;
+      const elPreço = document.getElementById(id + '_preço');
+      const preçoFallback = _caixasAtual[i] ? (_caixasAtual[i].preço || _caixasAtual[i].preco || CAIXAS_PRECOS_PAD[i]) : CAIXAS_PRECOS_PAD[i];
+      const preço = elPreço ? (parseFloat(elPreço.value) || preçoFallback) : preçoFallback;
       const estoque = parseInt(document.getElementById(id + '_estoque') ? document.getElementById(id + '_estoque').value : 20);
       const esgotado = (document.getElementById(id + '_esgotado') ? document.getElementById(id + '_esgotado').checked : false) || estoque === 0;
       return { id, nome: CAIXAS_NOMES[i], preço, maxSabores: CAIXAS_MAX[i], estoque: isNaN(estoque) ? 20 : estoque, esgotado };
     });
     localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
-    const torta_preço = parseFloat(document.getElementById('torta1_preço') ? document.getElementById('torta1_preço').value : 100) || 100;
+    // Preço da torta: lê do STATE como fallback
+    const _tortaAtual = (STATE.produtos && STATE.produtos.tortas_enc && STATE.produtos.tortas_enc[0]) ? STATE.produtos.tortas_enc[0] : null;
+    const elTortaPreço = document.getElementById('torta1_preço');
+    const tortaPreçoFallback = _tortaAtual ? (_tortaAtual.preço || _tortaAtual.preco || 100) : 100;
+    const torta_preço = elTortaPreço ? (parseFloat(elTortaPreço.value) || tortaPreçoFallback) : tortaPreçoFallback;
     const torta_estoque = parseInt(document.getElementById('torta1_estoque') ? document.getElementById('torta1_estoque').value : 10);
     const torta_esgotado = (document.getElementById('torta1_esgotado') ? document.getElementById('torta1_esgotado').checked : false) || torta_estoque === 0;
     localStorage.setItem('itap_tortas_enc', JSON.stringify([{id:'torta1',nome:'Torta de Sorvete',preço:torta_preço,maxSabores:3,estoque:isNaN(torta_estoque)?10:torta_estoque,esgotado:torta_esgotado}]));
-    const picDados = JSON.parse(localStorage.getItem('itap_picolés_admin') || JSON.stringify(PICOLES_PADRAO));
+    // Picolés: usar STATE.produtos como fonte de verdade (não localStorage)
+    const _picRaw = (STATE.produtos && (STATE.produtos.picolés || STATE.produtos.picoles)) || null;
+    const picDados = _picRaw
+      ? Object.fromEntries(Object.entries(_picRaw).map(([k, v]) => [k, {
+          preço_varejo:  v.preço_varejo  ?? v.preco_varejo  ?? 0,
+          preço_atacado: v.preço_atacado ?? v.preco_atacado ?? 0,
+          estoque: v.estoque ?? 200,
+          esgotado: v.esgotado ?? false
+        }]))
+      : JSON.parse(localStorage.getItem('itap_picolés_admin') || JSON.stringify(PICOLES_PADRAO));
     for (const cat of Object.keys(picDados)) {
       const varejo = parseFloat(document.getElementById('pic_' + cat + '_varejo') ? document.getElementById('pic_' + cat + '_varejo').value : picDados[cat].preço_varejo) || picDados[cat].preço_varejo;
       const atacado = parseFloat(document.getElementById('pic_' + cat + '_atacado') ? document.getElementById('pic_' + cat + '_atacado').value : picDados[cat].preço_atacado) || picDados[cat].preço_atacado;
