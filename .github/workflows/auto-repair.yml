@@ -24,7 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Instalar html-validate
         run: npm install -g html-validate@8
@@ -60,7 +59,7 @@ jobs:
       - name: Verificar arquivos essenciais
         run: |
           echo "✅ Verificando arquivos críticos do site..."
-          for f in index.html fidelidade.html encomendas.html dicas.html promocao.html manifest.json robots.txt sitemap.xml sw.js; do
+          for f in index.html fidelidade.html encomendas.html dicas.html promocao.html carrossel.html manifest.json robots.txt sitemap.xml sw.js; do
             if [ ! -f "$f" ]; then
               echo "❌ Arquivo crítico ausente: $f"
               exit 1

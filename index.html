@@ -350,7 +350,7 @@ img{max-width:100%;display:block}
 .acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
 .acc.open .acc-arrow{transform:rotate(180deg)}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .35s ease,padding .35s ease;opacity:0;padding:0 16px;background:#FFFDF9;border:2px solid transparent;border-top:none;}
-.acc.open .acc-body{max-height:5000px;opacity:1;padding:20px 16px;}
+.acc.open .acc-body{max-height:9999px;opacity:1;padding:20px 16px;}
 /* ════════════════════════════════════════════════════════════════
    CORES DOS ACORDEÕES — NEUROMARKETING AVANÇADO
    Cada categoria usa a cor do próprio produto para estimular
@@ -1649,7 +1649,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 .vc-seta{display:inline-block;transition:transform .35s;font-style:normal;}
 .vc-btn.aberto .vc-seta{transform:rotate(180deg);}
 .vc-container{max-height:0;overflow:hidden;transition:max-height .55s ease,opacity .4s ease;opacity:0;}
-.vc-container.aberto{max-height:4000px;opacity:1;}
+.vc-container.aberto{max-height:9999px;opacity:1;}
 @media(max-width:600px){.vc-btn{font-size:.97rem;padding:13px 24px;}}
 
 </style>
@@ -2774,23 +2774,30 @@ function toggleAcc(id) {
   var el = document.getElementById(id);
   if (!el) return;
   var isOpen = el.classList.contains('open');
-  // Fecha todos os outros accordions abertos com altura exata
+  // Fecha todos os outros accordions abertos — padrão iFood: trava altura atual → anima até 0
   document.querySelectorAll('.acc.open').forEach(function(acc) {
     if (acc.id !== id) {
+      var b = acc.querySelector('.acc-body');
+      if (b) {
+        b.style.maxHeight = b.scrollHeight + 'px';
+        requestAnimationFrame(function() { b.style.maxHeight = '0'; });
+      }
       acc.classList.remove('open');
       var h = acc.querySelector('.acc-header');
       if (h) h.setAttribute('aria-expanded', 'false');
-      var b = acc.querySelector('.acc-body');
-      if (b) b.style.maxHeight = '0';
     }
   });
   // Abre ou fecha o clicado
   if (isOpen) {
+    // Fecha: trava na altura real → anima até 0 (suave, sem salto)
+    var body = el.querySelector('.acc-body');
+    if (body) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(function() { body.style.maxHeight = '0'; });
+    }
     el.classList.remove('open');
     var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'false');
-    var body = el.querySelector('.acc-body');
-    if (body) body.style.maxHeight = '0';
   } else {
     el.classList.add('open');
     var h = el.querySelector('.acc-header');
@@ -2798,14 +2805,15 @@ function toggleAcc(id) {
     // Re-renderiza ao abrir para garantir dados carregados
     if (id === 'acc-iso') renderIso();
     if (id === 'acc-sobremesas') renderSobremesas();
-    // Define altura exata — sem pulo, sem salto
+    // Abre: scrollHeight para animação suave → após 500ms remove inline e deixa CSS (max-height:9999px)
+    // assumir o controle — conteúdo dinâmico (chips, sabores) cresce livremente sem novo JS
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
-      // Após abrir, recalcula se conteúdo dinâmico mudar
-      setTimeout(function(){ body.style.maxHeight = body.scrollHeight + 'px'; }, 350);
+      setTimeout(function() {
+        if (el.classList.contains('open')) body.style.maxHeight = '';
+      }, 500);
     }
-    // SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
   }
 }
 
@@ -4214,11 +4222,11 @@ function toggleCardápio() {
     btn.classList.add('aberto');
     btn.setAttribute('aria-expanded', 'true');
     btn.innerHTML = '🍦 Esconder Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
-    // Altura exata — sem pulo, sem salto de 4000px
+    // Altura exata para animação suave de abertura
     c.style.maxHeight = c.scrollHeight + 'px';
     c.style.opacity   = '1';
-    // Após abrir (caso conteúdo dinâmico expanda), recalcula
-    setTimeout(function(){ c.style.maxHeight = c.scrollHeight + 'px'; }, 600);
+    // Após animação, remove inline → CSS max-height:9999px assume → accordions expandem livremente
+    setTimeout(function(){ if (c.classList.contains('aberto')) c.style.maxHeight = ''; }, 650);
   }
 }
 
@@ -4330,16 +4338,8 @@ function _semPulo(fn) {
   // Restaura posição em 2 frames consecutivos para garantir
   requestAnimationFrame(function() {
     window.scrollTo(0, y);
-    // Recalcula altura de todos os accordions abertos
-    document.querySelectorAll('.acc.open .acc-body').forEach(function(b) {
-      b.style.maxHeight = b.scrollHeight + 'px';
-    });
-    // Segunda passagem — caso conteúdo dinâmico ainda esteja carregando
     requestAnimationFrame(function() {
       window.scrollTo(0, y);
-      document.querySelectorAll('.acc.open .acc-body').forEach(function(b) {
-        b.style.maxHeight = b.scrollHeight + 'px';
-      });
     });
   });
 }
@@ -4591,7 +4591,7 @@ function abrirComplementosInline(el) {
 
   html += '<button type="button" class="btn-voltar-nivel" onclick="voltarNivel(this)">← Voltar</button>';
   html += '</div>';
-  accBody.innerHTML = html;
+  _semPulo(function() { accBody.innerHTML = html; });
 }
 
 // Mostra duas seções (opções + sabores) dentro do acc-body
@@ -4604,17 +4604,19 @@ function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chip
   var chips1Html = chips1.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
   var chips2Html = chips2.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
 
-  accBodyEl.innerHTML =
-    '<div class="sabores-inline">' +
-      '<div class="sabores-inline-titulo">' + titulo1 + '</div>' +
-      '<div class="sabores-inline-sub">' + sub1 + '</div>' +
-      '<div class="chips-inline">' + chips1Html + '</div>' +
-      '<div style="height:1px;background:linear-gradient(90deg,transparent,#E040FB,transparent);margin:14px 0"></div>' +
-      '<div class="sabores-inline-titulo">' + titulo2 + '</div>' +
-      '<div class="sabores-inline-sub">' + sub2 + '</div>' +
-      '<div class="chips-inline">' + chips2Html + '</div>' +
-      '<button type="button" class="btn-voltar-nivel" onclick="voltarNivel(this)">← Voltar</button>' +
-    '</div>';
+  _semPulo(function() {
+    accBodyEl.innerHTML =
+      '<div class="sabores-inline">' +
+        '<div class="sabores-inline-titulo">' + titulo1 + '</div>' +
+        '<div class="sabores-inline-sub">' + sub1 + '</div>' +
+        '<div class="chips-inline">' + chips1Html + '</div>' +
+        '<div style="height:1px;background:linear-gradient(90deg,transparent,#E040FB,transparent);margin:14px 0"></div>' +
+        '<div class="sabores-inline-titulo">' + titulo2 + '</div>' +
+        '<div class="sabores-inline-sub">' + sub2 + '</div>' +
+        '<div class="chips-inline">' + chips2Html + '</div>' +
+        '<button type="button" class="btn-voltar-nivel" onclick="voltarNivel(this)">← Voltar</button>' +
+      '</div>';
+  });
 }
 
 </script>

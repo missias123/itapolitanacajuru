@@ -371,21 +371,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Carregar preços da nuvem e re-renderizar
-  carregarPreçosNuvem().then(() => {
-    // Re-inicializar PRODUTOS com preços atualizados
-    PRODUTOS.caixas = getCaixasEncomenda();
-    PRODUTOS.tortas = getTortasEncomenda();
-    PRODUTOS.picolés = Object.entries(produtos.picolés).map(([key, p]) => ({
-      id: 'pic_'+key,
-      nome: p.nome,
-      preçoVarejo: p.preço_varejo,
-      preçoAtacado: p.preço_atacado,
-      estoque: p.estoque,
-      sabores: p.sabores
-    }));
-    renderizarTudo();
-    atualizarBotãoCarrinho();
-  });
+  try {
+    carregarPreçosNuvem().then(() => {
+      // Re-inicializar PRODUTOS com preços atualizados
+      PRODUTOS.caixas = getCaixasEncomenda();
+      PRODUTOS.tortas = getTortasEncomenda();
+      PRODUTOS.picolés = Object.entries(produtos.picolés).map(([key, p]) => ({
+        id: 'pic_'+key,
+        nome: p.nome,
+        preçoVarejo: p.preço_varejo,
+        preçoAtacado: p.preço_atacado,
+        estoque: p.estoque,
+        sabores: p.sabores
+      }));
+      renderizarTudo();
+      atualizarBotãoCarrinho();
+    }).catch(() => { /* falha silenciosa — dados locais já foram renderizados */ });
+  } catch(e) {
+    console.warn('[Itap] carregarPreçosNuvem indisponível:', e.message);
+  }
   renderizarTudo();
   atualizarBotãoCarrinho();
   // Abrir seção via hash (ex: encomendas.html#caixas)
