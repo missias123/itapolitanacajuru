@@ -33,16 +33,50 @@
     0: 'images/itamandua_cascao.webp'
   };
 
-  var FRASES = [
-    '🌟 Fique de olho! Posso soltar uma estrela a qualquer momento!',
-    '🏃‍♂️💨 Se eu correr, a estrela dourada vai aparecer!',
-    '🍦 Quem capturar a estrela primeiro ganha pontos no Clube!',
-    '✨ Minhas estrelas valem prêmios deliciosos!',
-    '🕵️‍♂️ O horário da estrela é segredo... você consegue achar?',
-    '🏆 Complete 5 estrelas e escolha seu prêmio!',
-    '📱 Já conferiu as regras da caçada no seu painel?',
-    '👀 Viu uma estrela brilhando? Clique nela rápido!'
-  ];
+  function obterFrasesInteligentes() {
+    var agora = new Date();
+    var hora = agora.getHours();
+    var dia = agora.getDay(); // 0=Domingo, 6=Sábado
+    var frases = [
+      '🌟 Fique de olho! Posso soltar uma estrela a qualquer momento!',
+      '🏃‍♂️💨 Se eu correr, a estrela dourada vai aparecer!',
+      '🍦 Quem capturar a estrela primeiro ganha pontos no Clube!',
+      '✨ Minhas estrelas valem prêmios deliciosos!',
+      '🕵️‍♂️ O horário da estrela é segredo... você consegue achar?',
+      '🏆 Complete 5 estrelas e escolha seu prêmio!',
+      '📱 Já conferiu as regras da caçada no seu painel?',
+      '👀 Viu uma estrela brilhando? Clique nela rápido!'
+    ];
+
+    // Saudações por horário
+    if (hora >= 5 && hora < 12) {
+      frases.push('☀️ Bom dia! Que tal um açaí para começar bem o dia?');
+    } else if (hora >= 12 && hora < 18) {
+      frases.push('🔥 Calor, né? Vem se refrescar com nossos 35 sabores!');
+      frases.push('🍦 Tarde perfeita para um sorvete tipo artesanal!');
+    } else if (hora >= 18 && hora < 22) {
+      frases.push('🌙 Noite linda! Já escolheu sua sobremesa de hoje?');
+      frases.push('🍨 Nada melhor que um sorvete para fechar o dia!');
+    } else {
+      frases.push('😴 Já estamos fechados, mas amanhã tem mais delícias!');
+    }
+
+    // Dicas por dia da semana
+    if (dia === 0 || dia === 6) {
+      frases.push('🎉 Final de semana pede uma Taça Premium, hein?');
+    } else if (dia === 1) {
+      frases.push('💪 Segunda-feira com sorvete fica muito mais leve!');
+    }
+
+    // Sugestões de produtos
+    frases.push('🎂 Sabia que fazemos Tortas de Sorvete por encomenda?');
+    frases.push('🥤 Nossos Milkshakes são os mais cremosos da região!');
+    frases.push('📦 Precisa de sorvete para festa? Temos caixas de 5L e 10L!');
+
+    return frases;
+  }
+
+  var FRASES = obterFrasesInteligentes();
 
   var FRASES_VOLTA = [
     '🌟 Ufa! Quase deixei uma estrela escapar!',
@@ -178,6 +212,8 @@
         balao.classList.remove('ita-balao-show');
         setTimeout(function () {
           if (rolando || fugindo) return;
+          // Atualiza a lista de frases para manter o contexto de horário
+          FRASES = obterFrasesInteligentes();
           fraseIdx = (fraseIdx + 1) % FRASES.length;
           balao.textContent = FRASES[fraseIdx];
           balao.classList.add('ita-balao-show');
