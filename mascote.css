@@ -61,17 +61,17 @@
 
 /* ---- Imagem ---- */
 #ita-mascote img {
-  width: 180px;
+  width: clamp(160px, 45vw, 220px); /* Tamanho responsivo e maior no desktop */
   height: auto;
   display: block;
   cursor: pointer;
   pointer-events: auto;
-  filter: drop-shadow(2px 6px 12px rgba(0,0,0,0.28));
+  filter: drop-shadow(3px 8px 16px rgba(0,0,0,0.35));
   animation: ita-flutuar 3.5s ease-in-out infinite;
   user-select: none;
   -webkit-user-drag: none;
   transform-origin: bottom center;
-  transition: filter 0.25s ease;
+  transition: filter 0.25s ease, transform 0.3s ease;
 }
 
 #ita-mascote img:hover {
@@ -236,18 +236,19 @@
    balão ocupa ~60% da largura da tela.
    ============================================ */
 @media (max-width: 600px) {
-  #ita-mascote     { bottom: 150px; left: 4px; }
-  #ita-mascote img { width: 130px; } /* Aumentado significativamente conforme pedido */
+  #ita-mascote     { bottom: 140px; left: 6px; }
+  #ita-mascote img { width: clamp(140px, 42vw, 180px); } /* Robô GIGANTE e responsivo no celular */
   #ita-balao {
-    /* Compacto no celular — legível mas sem atrapalhar */
-    font-size: 12px;
-    font-weight: 800;
-    max-width: 160px;
-    min-width: 120px;
-    padding: 8px 12px;
-    border-width: 2.5px;
+    /* Balão maior para acompanhar o robô maior */
+    font-size: 13px;
+    font-weight: 900;
+    max-width: 200px;
+    min-width: 140px;
+    padding: 10px 14px;
+    border-width: 3px;
     outline-width: 2px;
-    line-height: 1.45;
+    line-height: 1.4;
+    margin-bottom: 12px;
   }
 }
 
@@ -256,16 +257,16 @@
    mascote: 70px → balão: max 190px (2.71x)
    ============================================ */
 @media (max-width: 359px) {
-  #ita-mascote     { bottom: 145px; left: 2px; z-index: 9985; }
-  #ita-mascote img { width: 110px; } /* Aumentado significativamente */
+  #ita-mascote     { bottom: 135px; left: 4px; z-index: 9985; }
+  #ita-mascote img { width: 125px; } /* Máximo destaque mesmo em telas pequenas */
   #ita-balao {
-    font-size: 11px;
-    font-weight: 800;
-    max-width: 140px;
-    min-width: 105px;
-    padding: 7px 10px;
-    border-width: 2px;
-    line-height: 1.4;
+    font-size: 12px;
+    font-weight: 900;
+    max-width: 160px;
+    min-width: 120px;
+    padding: 8px 12px;
+    border-width: 2.5px;
+    line-height: 1.35;
   }
   #ita-balao::after {
     border-left: 8px solid transparent;
