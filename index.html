@@ -567,13 +567,53 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   .itabot-btn{width:68px;height:68px}
   .gatilho-flutuante { bottom: 95px !important; right: 15px !important; width: 70px !important; height: 70px !important; }
 }
-/* TABLET (601px–900px) */
-@media(min-width:601px) and (max-width:900px){
+/* TABLET (601px–1024px) - OTIMIZAÇÃO DE LAYOUT */
+@media(min-width:601px) and (max-width:1024px){
+  .header-inner { padding: 20px !important; }
+  .header-nav {
+    grid-template-columns: repeat(4, 1fr) !important; /* 4 botões em linha no tablet */
+    gap: 15px !important;
+  }
+  .nav-btn { height: 90px !important; }
+  .nav-label { font-size: 14px !important; }
+  
+  #hero-título { font-size: 42px !important; }
+  #hero-descrição { font-size: 22px !important; max-width: 80% !important; }
+  
+  .info-cards { grid-template-columns: repeat(2, 1fr) !important; gap: 20px !important; }
+  .prod-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  
   #promo-fab{bottom:85px;right:12px}
   .itabot-wrap{bottom:18px;right:12px}
 }
-/* DESKTOP (901px+) */
-@media(min-width:901px){
+
+/* DESKTOP (1025px+) - ELEGÂNCIA E ESPAÇO */
+@media(min-width:1025px){
+  .header-inner { 
+    flex-direction: row !important; 
+    justify-content: space-between !important; 
+    max-width: 1200px !important; 
+    padding: 15px 40px !important;
+  }
+  .brand { width: auto !important; flex-direction: row !important; gap: 20px !important; }
+  .brand-icon img { width: 90px !important; height: 90px !important; }
+  .header-nav { 
+    width: auto !important; 
+    grid-template-columns: repeat(4, 1fr) !important; 
+    gap: 20px !important; 
+    margin-top: 0 !important;
+  }
+  .nav-btn { min-width: 140px !important; height: 100px !important; }
+  .nav-label { font-size: 15px !important; }
+
+  .hero { padding: 60px 20px !important; }
+  #hero-título { font-size: 56px !important; }
+  #hero-descrição { font-size: 24px !important; max-width: 700px !important; }
+  
+  .info-cards { grid-template-columns: repeat(4, 1fr) !important; gap: 25px !important; max-width: 1200px !important; }
+  .cardápio { max-width: 1100px !important; padding: 40px !important; }
+  .prod-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 25px !important; }
+
   #promo-fab{bottom:90px;right:24px}
   .itabot-wrap{bottom:24px;right:24px}
 }
