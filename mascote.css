@@ -1,23 +1,6 @@
 /* =====================================================
-   ITAMANDUÁ — Mascote Sorveteria Itapolitana
-   Versão 11 — BALÃO PROPORCIONAL AO MASCOTE NO CELULAR
-   
-   ANÁLISE DE PROPORÇÃO:
-   ┌─────────────────────────────────────────────────────┐
-   │  Desktop:  mascote 140px → balão max 200px (1.43x)  │
-   │  Tablet:   mascote 120px → balão max 185px (1.54x)  │
-   │  Celular:  mascote  85px → balão max 220px (2.59x)  │
-   │  Cel.Peq:  mascote  70px → balão max 190px (2.71x)  │
-   └─────────────────────────────────────────────────────┘
-   
-   PRINCÍPIO: No celular o balão deve ser MAIOR que o
-   mascote para garantir legibilidade — padrão Duolingo/
-   McDonald's. Fonte Nunito Bold: arredondada, alegre e
-   legível em tamanhos pequenos (padrão apps de mascote).
-   
-   COR: Amarelo dourado (#FFD700) + texto escuro (#1a1a1a)
-   → Maior contraste possível (ratio 14:1, supera WCAG AAA)
-   → Combina com a estrela dourada da Caçada
+   ITAMANDUÁ & ITA BOT — Mascotes Sorveteria Itapolitana
+   Padronização de Tamanho: 60px fixo para todos
    ===================================================== */
 
 /* ---- Container — posição base (lado esquerdo) ---- */
@@ -29,7 +12,7 @@
   z-index: 9990;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   pointer-events: none;
   transform: translateX(-250px);
   transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -59,25 +42,35 @@
   transform: none !important;
 }
 
-/* ---- Imagem ---- */
-#ita-mascote img {
-  width: clamp(180px, 50vw, 260px); /* Robô ainda maior e imponente */
-  height: auto;
-  display: block;
+/* ---- Imagem Padronizada (60px) ---- */
+#ita-mascote img, #itabot-wrap img, #ita-img, #itabot-img {
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  min-height: 60px !important;
+  max-width: 60px !important;
+  max-height: 60px !important;
+  object-fit: contain !important;
+  display: block !important;
   cursor: pointer;
   pointer-events: auto;
-  filter: drop-shadow(3px 8px 16px rgba(0,0,0,0.35));
+  /* Destaque: Borda e Sombra para o Robô e Itamandua */
+  border: 3px solid #FFD700 !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 2px !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
   animation: ita-flutuar 3.5s ease-in-out infinite;
   user-select: none;
   -webkit-user-drag: none;
   transform-origin: bottom center;
-  transition: filter 0.25s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 #ita-mascote img:hover {
-  filter: drop-shadow(3px 8px 18px rgba(232,0,13,0.5));
-  animation-play-state: paused;
-  transform: scale(1.08) rotate(-3deg);
+  filter: drop-shadow(0 6px 12px rgba(232,0,13,0.5));
+  transform: scale(1.1) rotate(-3deg);
+  border-color: #E8000D;
 }
 
 #ita-mascote.ita-correndo img {
@@ -94,188 +87,81 @@
 
 /* ---- Animações ---- */
 @keyframes ita-flutuar {
-  0%,100% { transform: translateY(0px) rotate(0deg) scaleX(1); }
-  30%      { transform: translateY(-9px) rotate(1.5deg) scaleX(1); }
-  70%      { transform: translateY(-15px) rotate(-1.5deg) scaleX(1); }
+  0%,100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-8px) rotate(2deg); }
 }
 
 @keyframes ita-correr {
   0%   { transform: translateY(0px) rotate(0deg); }
-  25%  { transform: translateY(-12px) rotate(-2deg); }
-  50%  { transform: translateY(-16px) rotate(0deg); }
-  75%  { transform: translateY(-12px) rotate(2deg); }
+  25%  { transform: translateY(-10px) rotate(-3deg); }
+  50%  { transform: translateY(-14px) rotate(0deg); }
+  75%  { transform: translateY(-10px) rotate(3deg); }
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-/* Pulsação suave do balão */
-@keyframes ita-balao-pulsar {
-  0%,100% { box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
-  50%     { box-shadow: 0 6px 22px rgba(0,0,0,0.22); }
-}
-
-/* ============================================
-   BALÃO DE FALA — PROPORCIONAL + MÁXIMO CONTRASTE
-   
-   PADRÃO DUOLINGO/McDONALD'S para mascotes:
-   - Fundo: Amarelo dourado (#FFD700) — cor quente, chama atenção
-   - Texto: Preto escuro (#1a1a1a) — contraste ratio 14:1 (WCAG AAA)
-   - Fonte: Nunito Bold — arredondada, alegre, legível em tamanhos pequenos
-   - Borda: Laranja escuro (#B8860B) — delimita o balão em qualquer fundo
-   ============================================ */
+/* ---- Balão de Fala ---- */
 #ita-balao {
   background: #ffffff;
-  border: 3px solid #e8650a;
+  border: 3px solid #FFD700;
   border-radius: 16px 16px 16px 4px;
-  padding: 10px 16px;
-  margin-bottom: 10px;
-  /* Nunito Bold: padrão de mascotes em grandes apps */
-  font-family: 'Nunito', 'Poppins', 'Segoe UI', Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 900;
-  color: #000000;
-  max-width: 200px;
-  min-width: 160px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a1a1a;
+  max-width: 180px;
   text-align: center;
-  line-height: 1.5;
-  letter-spacing: 0.01em;
-  text-shadow: none;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.75) translateY(8px);
-  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  transform: scale(0.8) translateY(10px);
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
   position: relative;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  align-self: flex-start;
-  margin-left: 0;
 }
 
-/* Quando visível: pulsa suavemente */
 #ita-balao.ita-balao-show {
   opacity: 1;
   transform: scale(1) translateY(0);
-  animation: ita-balao-pulsar 2.5s ease-in-out infinite;
 }
 
-/* Setinha inferior esquerda */
 #ita-balao::after {
   content: '';
   position: absolute;
-  bottom: -13px;
-  left: 16px;
-  right: auto;
-  border-left: 9px solid transparent;
-  border-right: 9px solid transparent;
-  border-top: 13px solid #B8860B;
+  bottom: -10px;
+  left: 12px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid #FFD700;
 }
 
-/* Sombra branca atrás da setinha */
-#ita-balao::before {
-  content: '';
-  position: absolute;
-  bottom: -17px;
-  left: 13px;
-  right: auto;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 16px solid rgba(255,255,255,0.85);
-}
-
-/* Rótulo "FALE COMIGO" abaixo do mascote */
+/* Rótulo "FALE COMIGO" */
 #ita-label {
   display: block;
   text-align: center;
-  font-family: 'Poppins', 'Nunito', Arial, sans-serif;
-  font-size: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 9px;
   font-weight: 900;
   color: #fff;
-  background: linear-gradient(135deg, #E8650A, #FF4500);
+  background: linear-gradient(135deg, #E8000D, #C62828);
   border-radius: 20px;
-  padding: 3px 10px;
+  padding: 2px 8px;
   margin-top: 4px;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(232,101,10,.5);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   pointer-events: auto;
   cursor: pointer;
-  white-space: nowrap;
-  align-self: center;
+  transition: transform 0.2s;
 }
+
 #ita-label:hover {
-  background: linear-gradient(135deg, #FF4500, #E8650A);
-  transform: scale(1.06);
-}
-@media (max-width: 600px) {
-  #ita-label { font-size: 9px; padding: 3px 8px; }
-}
-@media (max-width: 359px) {
-  #ita-label { font-size: 8px; padding: 2px 7px; }
-}
-   mascote: 120px → balão: max 185px (1.54x)
-   ============================================ */
-@media (max-width: 1024px) and (min-width: 601px) {
-  #ita-mascote     { bottom: 155px; left: 8px; }
-  #ita-mascote img { width: 120px; }
-  #ita-balao {
-    font-size: 13px;
-    max-width: 185px;
-    min-width: 148px;
-    padding: 10px 14px;
-    border-width: 3px;
-  }
+  transform: scale(1.05);
 }
 
-/* ============================================
-   RESPONSIVO — CELULAR (até 600px)
-   mascote: 85px → balão: max 220px (2.59x)
-   
-   ANÁLISE: Com mascote pequeno (85px), o balão
-   precisa ser PROPORCIONALMENTE MAIOR para que
-   a fonte seja legível. Padrão Duolingo mobile:
-   balão ocupa ~60% da largura da tela.
-   ============================================ */
+/* Responsivo Mobile */
 @media (max-width: 600px) {
-  #ita-mascote     { bottom: 140px; left: 6px; }
-  #ita-mascote img { width: clamp(180px, 55vw, 240px); } /* Robô GIGANTE e responsivo no celular */
-  #ita-balao {
-    /* Balão maior para acompanhar o robô maior */
-    font-size: 13px;
-    font-weight: 900;
-    max-width: 200px;
-    min-width: 140px;
-    padding: 10px 14px;
-    border-width: 3px;
-    outline-width: 2px;
-    line-height: 1.4;
-    margin-bottom: 12px;
-  }
-}
-
-/* ============================================
-   RESPONSIVO — CELULAR PEQUENO (até 360px)
-   mascote: 70px → balão: max 190px (2.71x)
-   ============================================ */
-@media (max-width: 359px) {
-  #ita-mascote     { bottom: 135px; left: 4px; z-index: 9985; }
-  #ita-mascote img { width: 160px; } /* Máximo destaque mesmo em telas pequenas */
-  #ita-balao {
-    font-size: 12px;
-    font-weight: 900;
-    max-width: 160px;
-    min-width: 120px;
-    padding: 8px 12px;
-    border-width: 2.5px;
-    line-height: 1.35;
-  }
-  #ita-balao::after {
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 11px solid #B8860B;
-  }
-  #ita-balao::before {
-    border-left: 11px solid transparent;
-    border-right: 11px solid transparent;
-    border-top: 14px solid rgba(255,255,255,0.85);
-  }
+  #ita-mascote { bottom: 130px; left: 8px; }
+  #ita-mascote img { width: 60px !important; height: 60px !important; }
+  #ita-balao { font-size: 12px; max-width: 150px; }
 }
