@@ -502,7 +502,8 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* CHATBOT */
 /* ═══ ITA BOT — ROBOZINHO FLUTUANTE ═══════════════════════════════ */
 .itabot-wrap{display:none;position:fixed;bottom:20px;right:8px;z-index:600;flex-direction:column;align-items:center;gap:0}
-.itabot-btn{width:64px;height:64px;background:linear-gradient(135deg,#FF6B35,#E8000D);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;animation:itabot-pulse 2.4s ease-in-out infinite;box-shadow:0 6px 20px rgba(232,0,13,.4);position:relative;flex-shrink:0;padding:0}
+.itabot-btn{width:128px;height:128px;background:linear-gradient(135deg,#FF6B35,#E8000D);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;animation:itabot-pulse 2.4s ease-in-out infinite;box-shadow:0 6px 20px rgba(232,0,13,.4);position:relative;flex-shrink:0;padding:0}
+.itabot-btn svg{width:80px;height:80px}
 @keyframes itabot-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .itabot-bubble{background:#fff;color:#1A1A1A;padding:9px 15px;border-radius:16px 16px 4px 16px;font-size:13px;font-weight:800;box-shadow:0 3px 16px rgba(0,0,0,.18);margin-bottom:10px;position:relative;max-width:200px;white-space:normal;text-align:center;animation:itabot-pop .35s cubic-bezier(.34,1.56,.64,1);transition:opacity .4s}
 .itabot-bubble::after{content:'';position:absolute;bottom:-6px;right:18px;border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff}
@@ -574,14 +575,13 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 
   /* 3. AJUSTES DE ELEMENTOS FLUTUANTES */
   .itabot-wrap{bottom:14px;right:12px}
-  .itabot-btn{width:68px;height:68px}
   .gatilho-flutuante { bottom: 95px !important; right: 15px !important; width: 70px !important; height: 70px !important; }
 }
 /* TABLET (601px–1024px) - OTIMIZAÇÃO DE LAYOUT */
 @media(min-width:601px) and (max-width:1024px){
   .header-inner { padding: 20px !important; }
   .header-nav {
-    grid-template-columns: repeat(4, 1fr) !important; /* 4 botões em linha no tablet */
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 em tablet */
     gap: 15px !important;
   }
   .nav-btn { height: 90px !important; }
@@ -600,15 +600,16 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* DESKTOP (1025px+) - ELEGÂNCIA E ESPAÇO */
 @media(min-width:1025px){
   .header-inner { 
-    flex-direction: row !important; 
-    justify-content: space-between !important; 
+    flex-direction: column !important; 
+    align-items: center !important;
+    justify-content: center !important;
     max-width: 1200px !important; 
     padding: 15px 40px !important;
   }
-  .brand { width: auto !important; flex-direction: row !important; gap: 20px !important; }
+  .brand { width: 100% !important; flex-direction: column !important; align-items: center !important; gap: 4px !important; }
   .brand-icon img { width: 90px !important; height: 90px !important; }
   .header-nav { 
-    width: auto !important; 
+    width: 100% !important; 
     grid-template-columns: repeat(4, 1fr) !important; 
     gap: 20px !important; 
     margin-top: 0 !important;
@@ -779,10 +780,10 @@ dialog#chat-dialog[open]{animation:slideUpDialog .25s ease-out}
 		  .nav-btn .nav-icon{font-size:1.8em;}
 		  .nav-btn .nav-label{font-size:14px;font-weight:900;}
 		}
-/* DESKTOP (acima de 768px) */
-@media(min-width:768px){
+/* DESKTOP (acima de 768px e até 1024px: ainda tablet, 2x2) */
+@media(min-width:768px) and (max-width:1024px){
 	  .header-inner{padding:10px 20px}
-	  .header-nav{grid-template-columns:repeat(4,1fr) !important;gap:8px}
+	  .header-nav{grid-template-columns:repeat(2,1fr) !important;gap:8px}
   .nav-btn{padding:10px 8px;min-height:60px;}
   .nav-btn .nav-icon{font-size:1.7em;}
   .nav-btn .nav-label{font-size:13px;}
