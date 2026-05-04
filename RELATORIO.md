@@ -1,6 +1,6 @@
 # RELATORIO.md — Sorveteria Itapolitana Cajuru
 > **Este arquivo é a verdade absoluta sobre a arquitetura atual do site.**  
-> Última atualização: 2026-05-04 (PR: melhorar-home-cardápio)
+> Última atualização: 2026-05-04 (PR: melhorar-home-cardápio / UX+LGPD formulários)
 
 ---
 
