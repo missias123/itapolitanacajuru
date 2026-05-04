@@ -435,11 +435,23 @@ img{max-width:100%;display:block}
 .prod-card{background:#FFFDF9;border:1px solid #F0E8D8;border-radius:14px;overflow:hidden;text-align:center;box-shadow:0 0 0 2px #FF6B35,0 4px 12px rgba(255,107,53,.12);isolation:isolate}
 .prod-card-img{width:100%;height:110px;object-fit:cover;display:block}
 .prod-card-sem-foto{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(135deg,#FFF3E0,#FCE4EC)}
+/* HIERARQUIA: nome (maior/negrito) → descrição (menor/roxo) → preço (vermelho/destaque) */
 .prod-card-body{padding:10px 12px 14px}
-.prod-nome{font-size:14px;font-weight:800;color:#1A0A00;margin-bottom:4px;letter-spacing:.1px;line-height:1.3}
-.prod-desc{font-size:12px;color:#7B2D8B;font-weight:700;margin-bottom:8px;line-height:1.4}
-.prod-preço{font-size:18px;font-weight:900;color:#E8000D;letter-spacing:-.3px}
+.prod-nome{font-size:14px;font-weight:900;color:#1A0A00;margin-bottom:3px;letter-spacing:.1px;line-height:1.3}
+.prod-desc{font-size:11px;color:#7B2D8B;font-weight:600;margin-bottom:8px;line-height:1.4}
+.prod-preço{font-size:18px;font-weight:900;color:#E8000D;letter-spacing:-.3px;padding-top:6px;border-top:1px solid #F0E8D8}
 .prod-esgotado{font-size:12px;color:#EF4444;font-weight:700;margin-top:4px}
+/* ═══════════════════════════════════════════════════════════════
+   SELOS DE DESTAQUE — "Mais Pedido" / "Favorito"
+   Infraestrutura HTML+CSS pronta.
+   Ativação futura: verificar campo is_featured em produtos.json
+   e injetar <span class="badge-mais-pedido">Mais pedido</span>
+   ou <span class="badge-favorito">Favorito</span> dentro de
+   .prod-card-body ao renderizar via renderTudo().
+   ═══════════════════════════════════════════════════════════════ */
+.badge-mais-pedido,.badge-favorito{display:inline-block;font-size:10px;font-weight:800;border-radius:20px;padding:2px 9px;letter-spacing:.3px;vertical-align:middle;margin-left:4px;pointer-events:none;line-height:1.4}
+.badge-mais-pedido{background:#C62828;color:#fff}
+.badge-favorito{background:#F9A825;color:#1A0A00}
 /* BOTÕES VER SABORES / COMPLEMENTOS */
 /* ── BOTÃO "VER SABORES" — vermelho puro: urgência + fome (técnica McDonald's/iFood) ── */
 .btn-sabores{display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:13px 20px;min-height:48px;width:100%;background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:900;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 16px rgba(239,1,41,.4);letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.45)}
@@ -451,6 +463,7 @@ img{max-width:100%;display:block}
 .btn-voltar-inicio{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 4px;padding:13px 24px;min-height:48px;width:100%;background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:900;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 16px rgba(13,71,161,.4);letter-spacing:.3px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.45)}
 .btn-voltar-inicio:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 7px 22px rgba(13,71,161,.55)}
 /* ── CARD DO AÇAÍ — roxo profundo: cor real do açaí, ativa memória sensorial ── */
+/* HIERARQUIA: nome + preço na mesma linha (row) → descrição abaixo */
 .açaí-item{background:#FFFDF9;border:1px solid #CE93D8;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 0 0 2px #6A1B9A,0 4px 12px rgba(106,27,154,.15)}
 .açaí-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .açaí-nome{font-size:14px;font-weight:700;color:#1A0A00}
@@ -2077,7 +2090,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
   </div>
   <div class="vc-container" id="vc-container">
 <div class="acc" id="acc-sorvetes">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-sorvetes-body" onclick="toggleAcc('acc-sorvetes')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sorvetes');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sorvetes-body" onclick="toggleAcc('acc-sorvetes')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sorvetes');}">
 <div class="acc-left">
 <span class="acc-icon">🍨</span>
 <div><div class="acc-title">Sorvetes de Massa</div><div class="acc-sub">Cremoso, gelado, irresistível · 35 sabores pra você escolher</div></div>
@@ -2092,7 +2105,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 </div>
 <div class="acc" id="acc-picolés">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-picolés-body" onclick="toggleAcc('acc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-picolés');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="picolés-body" onclick="toggleAcc('acc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-picolés');}">
 <div class="acc-left">
 <span class="acc-icon">🧊</span>
 <div><div class="acc-title">Picolés</div><div class="acc-sub">Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó</div></div>
@@ -2102,7 +2115,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-body" id="picolés-body"></div>
 </div>
 <div class="acc" id="acc-açaí-promo">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-açaí-promo-body" onclick="toggleAcc('acc-açaí-promo')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-açaí-promo');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="açaí-promo-body" onclick="toggleAcc('acc-açaí-promo')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-açaí-promo');}">
 <div class="acc-left">
 <span class="acc-icon">🫐</span>
 <div><div class="acc-title">🔥 Açaí em Promoção</div><div class="acc-sub">Aproveite agora! 8 combos irresistíveis · 400ml a 700ml</div></div>
@@ -2112,7 +2125,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-body" id="açaí-promo-body"></div>
 </div>
 <div class="acc" id="acc-açaí">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-açaí-body" onclick="toggleAcc('acc-açaí')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-açaí');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="açaí-body" onclick="toggleAcc('acc-açaí')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-açaí');}">
 <div class="acc-left">
 <span class="acc-icon">🍇</span>
 <div><div class="acc-title">Açaí tipo artesanal</div><div class="acc-sub">Do jeito que você ama · Monte o seu · 300ml a 600ml</div></div>
@@ -2122,7 +2135,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-body" id="açaí-body"></div>
 </div>
 <div class="acc" id="acc-milk">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-milk-body" onclick="toggleAcc('acc-milk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-milk');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="milk-body" onclick="toggleAcc('acc-milk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-milk');}">
 <div class="acc-left">
 <span class="acc-icon">🥤</span>
 <div><div class="acc-title">Milkshakes</div><div class="acc-sub">Cremoso e gelado · Tradicional e Top · 35 sabores</div></div>
@@ -2137,7 +2150,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 </div>
 <div class="acc" id="acc-tacas">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-tacas-body" onclick="toggleAcc('acc-tacas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="tacas-body" onclick="toggleAcc('acc-tacas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas');}">
 <div class="acc-left">
 <span class="acc-icon">🍧</span>
 <div><div class="acc-title">Taças</div><div class="acc-sub">Uma experiência única · Colegial, Sundae, Banana Split e mais</div></div>
@@ -2152,7 +2165,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 </div>
 <div class="acc" id="acc-tacas-p">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-tacas-p-body" onclick="toggleAcc('acc-tacas-p')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas-p');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="tacas-p-body" onclick="toggleAcc('acc-tacas-p')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas-p');}">
 <div class="acc-left">
 <span class="acc-icon">👑</span>
 <div><div class="acc-title">Taças Premium (Taças Sujas)</div><div class="acc-sub">O melhor da sorveteria · Prestígio, Kit Kat, Unicórnio e mais</div></div>
@@ -2167,7 +2180,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 </div>
 <div class="acc" id="acc-iso">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-iso-body" onclick="toggleAcc('acc-iso')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-iso');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="iso-body" onclick="toggleAcc('acc-iso')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-iso');}">
 <div class="acc-left">
 <span class="acc-icon">🧊</span>
 <div><div class="acc-title">Isopores de Viagem</div><div class="acc-sub">Leve o prazer para casa · 4 tamanhos disponíveis</div></div>
@@ -2177,7 +2190,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-body" id="iso-body"></div>
 </div>
 <div class="acc" id="acc-sobremesas">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
 <div class="acc-left">
 <span class="acc-icon">🍨</span>
 <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
@@ -2209,8 +2222,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <span class="acc-arrow">▼</span>
 </div>
-<div class="acc-body">
-<div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><a href="encomendas.html" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a></div>
+<div class="acc-body" id="acc-enc-caixas-body"><div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">📦 Para encomendar, acesse a página de Encomendas no menu acima</div><a href="encomendas.html" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">📦 Ir para Encomendas</a></div>
 <button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-caixas')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
@@ -2222,13 +2234,13 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <span class="acc-arrow">▼</span>
 </div>
-<div class="acc-body">
+<div class="acc-body" id="acc-enc-tortas-body">
 <a class="enc-link-btn" href="encomendas.html#tortas">🎂 Ver Tortas de Sorvete e Encomendar →</a>
 <button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-tortas')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
 <div class="acc" id="acc-enc-picolés">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-picolés-body" onclick="toggleAcc('acc-enc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-picolés');}">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="picolés-enc-body" onclick="toggleAcc('acc-enc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-picolés');}">
 <div class="acc-left">
 <span class="acc-icon">❄️</span>
 <div><div class="acc-title">Picolés para Encomenda</div><div class="acc-sub">Preço especial de atacado · 5 tipos · Mín. 100 unidades</div></div>
@@ -2241,7 +2253,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 </div>
 <div class="acc" id="acc-complementos">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-complementos-body" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-body-complementos" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
 <div class="acc-left">
 <span class="acc-icon">🍫</span>
 <div><div class="acc-title" style="color:#fff">Complementos para Sorvetes</div><div class="acc-sub" style="color:rgba(255,255,255,0.85)">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div></div>
@@ -2292,7 +2304,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <footer class="footer">
 <div style="text-align:center;padding:24px 16px 16px;">
 <div style="margin-bottom:16px;">
-<img alt="Logo Sorveteria Itapolitana Cajuru – Sorvete tipo artesanal desde 2007" decoding="async" loading="lazy" src="images/logo.webp" style="width:clamp(120px,25vw,160px);height:clamp(120px,25vw,160px);border-radius:50%;object-fit:cover;box-shadow:0 0 0 4px #fff,0 0 0 8px #FBD100,0 0 0 12px #C62828,0 0 0 18px #0D47A1,0 6px 25px rgba(0,0,0,.7);display:block;margin:0 auto;">
+<img alt="Logo Sorveteria Itapolitana Cajuru – Sorvete tipo artesanal desde 2007" decoding="async" loading="lazy" width="160" height="160" src="images/logo.webp" style="width:clamp(120px,25vw,160px);height:clamp(120px,25vw,160px);border-radius:50%;object-fit:cover;box-shadow:0 0 0 4px #fff,0 0 0 8px #FBD100,0 0 0 12px #C62828,0 0 0 18px #0D47A1,0 6px 25px rgba(0,0,0,.7);display:block;margin:0 auto;">
 <div id="brand-name" style="margin-top:8px;font-size:clamp(14px,4vw,16px);color:#E8000D;font-weight:900;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.9);">ITAPOLITANA</div>
 <div id="brand-sub" style="font-size:clamp(10px,2.5vw,11px);color:#fff;font-weight:700;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.7);">Cajuru · SP</div>
 </div>
