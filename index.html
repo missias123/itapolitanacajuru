@@ -4353,7 +4353,8 @@ function fecharCardápio() {
 
 // ── Barra sticky de categorias: mostra/oculta com o cardápio ──
 (function() {
-  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function getScrollBehavior() { return motionQuery.matches ? 'auto' : 'smooth'; }
   document.addEventListener('click', function(e) {
     var pill = e.target.closest('.cat-pill');
     if (!pill) return;
@@ -4370,7 +4371,7 @@ function fecharCardápio() {
     }
     // Scroll suave até o accordion
     setTimeout(function() {
-      target.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+      target.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
     }, 50);
   });
 })();
