@@ -1905,10 +1905,10 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <!-- CTAs -->
 <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:4px;">
   <a id="hero-cta-primario" href="#cardápio" onclick="toggleCardápio(); return true;" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border-radius:50px;padding:13px 24px;font-size:15px;font-weight:900;text-decoration:none;box-shadow:0 4px 16px rgba(239,1,41,.4);transition:all .2s;letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.6);">
-    🍦 Ver cardápio completo
+    🍦 <span id="hero-cta-primario-txt">Ver cardápio completo</span>
   </a>
   <a id="hero-cta-secundario" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido." rel="noopener" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border-radius:50px;padding:13px 24px;font-size:15px;font-weight:900;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,.35);transition:all .2s;letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.45);">
-    💬 Fazer pedido pelo WhatsApp
+    💬 <span id="hero-cta-secundario-txt">Fazer pedido pelo WhatsApp</span>
   </a>
 </div>
 </div>
@@ -2035,8 +2035,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 .home-categorias-titulo{text-align:center;font-size:clamp(18px,5vw,24px);font-weight:900;color:#1A0A00;margin-bottom:6px;letter-spacing:-.3px;}
 .home-categorias-sub{text-align:center;font-size:13px;color:#7B2D8B;font-weight:600;margin-bottom:20px;}
 .home-categorias-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:680px;margin:0 auto;}
-@media(min-width:480px){.home-categorias-grid{grid-template-columns:repeat(4,1fr);}}
-@media(min-width:768px){.home-categorias-grid{grid-template-columns:repeat(5,1fr);gap:14px;}}
+@media(min-width:600px){.home-categorias-grid{grid-template-columns:repeat(5,1fr);gap:14px;}}
 .cat-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:16px;text-decoration:none;font-size:12px;font-weight:800;color:#fff;text-align:center;letter-spacing:.3px;text-transform:uppercase;line-height:1.2;box-shadow:0 4px 14px rgba(0,0,0,.18);transition:transform .2s,box-shadow .2s;border:2px solid rgba(255,255,255,.35);cursor:pointer;background:none;}
 .cat-btn:hover,.cat-btn:focus{transform:translateY(-3px) scale(1.04);box-shadow:0 8px 22px rgba(0,0,0,.25);outline:3px solid rgba(255,255,255,.7);}
 .cat-btn:active{transform:translateY(0) scale(.97);}
@@ -4025,10 +4024,21 @@ function aplicarConfig(c) {
   const heroTituloEl = document.getElementById('hero-título');
   if (heroTituloEl && (c.heroH1 || c.heroTitulo)) {
     const txt = c.heroH1 || c.heroTitulo;
-    heroTituloEl.innerHTML = txt.replace(
-      /(sorveteria|Cajuru|Itapolitana|artesanal|sorvete|açaí|picolé|cremoso)/gi,
-      '<span class="destaque-texto">$1</span>'
-    );
+    // Criar o H1 de forma segura: textContent base + span highlight para palavras-chave
+    heroTituloEl.textContent = '';
+    const keywords = ['sorveteria','cajuru','itapolitana','artesanal','sorvete','açaí','picolé','cremoso'];
+    const re = new RegExp('(' + keywords.join('|') + ')', 'gi');
+    let last = 0;
+    let m;
+    while ((m = re.exec(txt)) !== null) {
+      if (m.index > last) heroTituloEl.appendChild(document.createTextNode(txt.slice(last, m.index)));
+      const sp = document.createElement('span');
+      sp.className = 'destaque-texto';
+      sp.textContent = m[0];
+      heroTituloEl.appendChild(sp);
+      last = m.index + m[0].length;
+    }
+    if (last < txt.length) heroTituloEl.appendChild(document.createTextNode(txt.slice(last)));
   }
 
   // hero-subtitulo-seo
@@ -4043,22 +4053,23 @@ function aplicarConfig(c) {
   const heroProvaEl = document.getElementById('hero-prova');
   if (heroProvaEl && c.heroProva) heroProvaEl.textContent = c.heroProva;
 
-  // hero-cta-primario
-  const heroCTAPrimEl = document.getElementById('hero-cta-primario');
-  if (heroCTAPrimEl && c.heroCTAPrimario) {
-    const txt = heroCTAPrimEl.childNodes[heroCTAPrimEl.childNodes.length - 1];
-    if (txt && txt.nodeType === Node.TEXT_NODE) txt.nodeValue = ' ' + c.heroCTAPrimario;
-  }
+  // hero-cta-primario — usa span dedicado para o texto (estrutura estável)
+  const heroCTAPrimTxt = document.getElementById('hero-cta-primario-txt');
+  if (heroCTAPrimTxt && c.heroCTAPrimario) heroCTAPrimTxt.textContent = c.heroCTAPrimario;
 
-  // hero-cta-secundario
-  const heroCTASecEl = document.getElementById('hero-cta-secundario');
-  if (heroCTASecEl && c.heroCTASecundario) {
-    const txt = heroCTASecEl.childNodes[heroCTASecEl.childNodes.length - 1];
-    if (txt && txt.nodeType === Node.TEXT_NODE) txt.nodeValue = ' ' + c.heroCTASecundario;
-  }
-  if (c.whatsapp && heroCTASecEl) {
-    const url = heroCTASecEl.href;
-    heroCTASecEl.href = 'https://wa.me/' + c.whatsapp + (url.includes('?') ? url.slice(url.indexOf('?')) : '');
+  // hero-cta-secundario — usa span dedicado para o texto (estrutura estável)
+  const heroCTASecTxt = document.getElementById('hero-cta-secundario-txt');
+  if (heroCTASecTxt && c.heroCTASecundario) heroCTASecTxt.textContent = c.heroCTASecundario;
+
+  // Atualizar número do WhatsApp no CTA secundário
+  if (c.whatsapp) {
+    const heroCTASecEl = document.getElementById('hero-cta-secundario');
+    if (heroCTASecEl) {
+      const currentHref = heroCTASecEl.href || '';
+      const queryStart = currentHref.indexOf('?');
+      const query = queryStart !== -1 ? currentHref.slice(queryStart) : '';
+      heroCTASecEl.href = 'https://wa.me/' + c.whatsapp + query;
+    }
   }
 
   // --- FRASES ROTATIVAS ---
