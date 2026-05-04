@@ -280,7 +280,57 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 
 ---
 
-## 5. ROADMAP / SUGESTÕES FUTURAS
+## 7. FORMULÁRIOS E LGPD (Atualizações — PR melhorar-home-cardápio)
+
+### 7.1 Inventário de formulários
+
+| Arquivo | Formulário / Área | IDs principais | Tem consentimento? |
+|---|---|---|---|
+| `fidelidade.html` | Wizard Estrela Dourada (5 passos: escolha → login/novo → reivindicar) | `wiz-cel-login`, `wiz-login-dia/mes/ano`, `wiz-nome`, `wiz-data`, `wiz-cel` | ❌ Não tinha — wizard usa dados pré-validados |
+| `fidelidade.html` | Bloco Regulamento Fidelidade (inline) | `aceite-fidelidade-inline`, `btn-aceitar-fidelidade-inline` | ✅ Aprimorado nesta PR |
+| `fidelidade.html` | Painel Cadastro Novo (`form-novo`) | `inp-nome`, `inp-data-nasc`, `inp-cel-novo`, `btn-cadastrar` | ✅ Adicionado nesta PR |
+| `fidelidade.html` | Painel Login (`form-login`) | `inp-cel-login`, `inp-login-dia/mes/ano` | — (login, não coleta novos dados) |
+| `fidelidade.html` | Bloco Regras Estrelas (painel cliente) | `chk-aceita-regras-estrelas` | ✅ Aprimorado nesta PR |
+| `fidelidade.html` | Inserir Código (painel cliente) | `input-codigo`, `btn-validar` | — (só valida código) |
+| `promocao.html` | Aceite Sorteio (inline, antes do form) | `aceite-sorteio-inline`, `btn-aceitar-sorteio-inline` | ✅ Aprimorado nesta PR |
+| `promocao.html` | Form Sorteio Inline | `sort-nome`, `sort-cel`, `sort-dia/mes/ano`, `btn-enviar-sorteio-promo` | ✅ Nota LGPD adicionada nesta PR |
+
+### 7.2 Melhorias implementadas
+
+**Padrão aplicado em todos os campos de consentimento:**
+- Checkbox `22×22px` (vs. 18px anterior) — atende o mínimo visual recomendado pelo WCAG
+- Área de toque da `<label>` toda clicável (`min-height: 44px`) — WAI-WCAG AA touch target
+- `for="id-do-checkbox"` na `<label>` — associação semântica correta
+- `aria-disabled="true"` sincronizado com o atributo `disabled` no botão
+- Link para `politica-privacidade.html` no texto de consentimento — conformidade LGPD
+- Texto "ⓘ Marque a caixa acima para continuar" visível quando botão está desabilitado
+- Botão ativo com `animation: pulsarBtnConsent` — sinaliza claramente a ação disponível
+- `.aceite-area` / `.aceite-area-promo`: fundo colorido + borda que distingue a zona de consentimento do resto do formulário
+
+**Classes CSS adicionadas em `fidelidade.html`:**
+- `.aceite-area` (laranja/verde) — container visual da zona de consentimento
+- `.aceite-label` — label clicável, hierarquia clara
+- `.aceite-lgpd-link` — link para política de privacidade
+- `.btn-aceitar-hint` — texto de ajuda visível quando botão está desabilitado
+- `.aceite-estrelas-label` — variante para o painel do cliente (regras da caçada)
+- `@keyframes pulsarBtnConsent` — animação do botão após liberação
+
+**Funções JS adicionadas em `fidelidade.html`:**
+- `verificarLgpdNovo()` — gata o botão `#btn-cadastrar` do `form-novo` ao checkbox `#chk-lgpd-novo`
+
+**Classes CSS adicionadas em `promocao.html`:**
+- `.aceite-area-promo`, `.aceite-label-promo`, `.aceite-lgpd-link-promo` — idem, tema verde
+- `#btn-aceitar-sorteio-inline.ativo-verde` — estado ativo com animação
+- `@keyframes pulsarVerde` — pulsação verde do botão após marcar consentimento
+
+### 7.3 Sugestões futuras
+
+- **Wizard da Estrela Dourada**: Na etapa `wiz-e-cel` (último passo do cadastro novo), adicionar checkbox LGPD antes do botão "Confirmar Cadastro". Atualmente o wizard usa `wizCadastrar()` que chama `cadastrar()` internamente — basta adicionar um gate visual nessa etapa.
+- **Form-login**: Adicionar nota "Ao entrar, você concorda com nossa Política de Privacidade" (sem checkbox, pois é só login) para melhor transparência.
+- **`politica-privacidade.html`**: Verificar se a página existe; se não, criar uma versão simplificada com: finalidade dos dados, base legal (legítimo interesse / consentimento), retenção, direitos do titular (art. 18 LGPD), contato do responsável.
+
+---
+
 
 ### 5.1 Curto prazo (próxima PR)
 - [ ] Adicionar campo `"is_featured"` (string: `"mais-pedido"` | `"favorito"` | `null`) em `dados/produtos.json` e ligar aos badges CSS já preparados.
