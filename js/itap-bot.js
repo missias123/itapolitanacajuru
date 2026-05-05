@@ -50,6 +50,15 @@
       .trim();
   }
 
+  // // Segurança: sanitiza HTML de respostas do bot (remove scripts e handlers inline)
+  // Bot responses may contain safe HTML (links, <br>, <strong>) — strip only dangerous parts.
+  function _sanitizeHtml(html) {
+    return (html || '')
+      .replace(/<script[\s\S]*?<\/script>/gi, '')   // remove blocos <script>
+      .replace(/javascript\s*:/gi, '#')             // remove javascript: URIs
+      .replace(/\bon\w+\s*=/gi, 'data-removed=');   // remove event handlers inline (onclick= etc.)
+  }
+
   // ── Carregamento dos FAQs ───────────────────────────────────────────────────
   function _carregarFAQs() {
     // Suporte a file://, localhost e produção (GitHub Pages / raw)
@@ -202,10 +211,11 @@
 
       // // UX: registra preferências simples para personalizar respostas futuras
       if (tipo === 'user') {
+        var normTexto = _norm(texto);
         var prefs = _carregarPrefs();
-        if (/fidel|pont|clube|estrela|premio|pr[eê]mio/i.test(texto)) prefs.interesseFidelidade = true;
-        if (/encomen|torta|caixa|festa/i.test(texto)) prefs.interesseEncomendas = true;
-        if (/promoç|sorteio|concorr/i.test(texto)) prefs.interessePromocao = true;
+        if (/fidel|pont|clube|estrela|premio/.test(normTexto)) prefs.interesseFidelidade = true;
+        if (/encomen|torta|caixa|festa/.test(normTexto)) prefs.interesseEncomendas = true;
+        if (/promo|sorteio|concorr/.test(normTexto)) prefs.interessePromocao = true;
         _salvarPrefs(prefs);
       }
     } catch (e) {}
@@ -231,22 +241,19 @@
     var msgInicio = document.getElementById('chat-msg-inicio');
     if (msgInicio) msgInicio.style.display = 'none';
 
-    // Renderiza mensagens anteriores (máximo das últimas 20 para não sobrecarregar)
+    // Renderiza as últimas 20 mensagens (evita sobrecarregar o DOM)
     var inicio = Math.max(0, h.length - 20);
     for (var i = inicio; i < h.length; i++) {
       var item = h[i];
-      // Evita duplicar mensagens já no DOM
-      var existe = false;
-      var divs = container.querySelectorAll('.msg');
-      for (var d = 0; d < divs.length; d++) {
-        if ((divs[d].textContent || divs[d].innerHTML) === item.texto) { existe = true; break; }
+      var div = document.createElement('div');
+      div.className = 'msg ' + item.tipo;
+      if (item.tipo === 'bot') {
+        // // Segurança: sanitiza HTML vindo do localStorage antes de inserir no DOM
+        div.innerHTML = _sanitizeHtml(item.texto);
+      } else {
+        div.textContent = item.texto;
       }
-      if (!existe) {
-        var div = document.createElement('div');
-        div.className = 'msg ' + item.tipo;
-        if (item.tipo === 'bot') { div.innerHTML = item.texto; } else { div.textContent = item.texto; }
-        container.appendChild(div);
-      }
+      container.appendChild(div);
     }
 
     // // UX: Mensagem de retorno personalizada
@@ -269,11 +276,13 @@
       return responderPergunta(msg);
     };
 
-    // Override addMsg — adiciona gravação no localStorage
+    // Override addMsg — sanitiza HTML do bot e salva no localStorage
     var _addMsgOrig = window.addMsg;
     window.addMsg = function (tipo, txt) {
-      if (_addMsgOrig) _addMsgOrig(tipo, txt);
-      _salvarMensagem(tipo, txt);
+      // // Segurança: sanitiza respostas do bot antes de passar para innerHTML
+      var safeTxt = (tipo === 'bot') ? _sanitizeHtml(txt) : txt;
+      if (_addMsgOrig) _addMsgOrig(tipo, safeTxt);
+      _salvarMensagem(tipo, safeTxt);
     };
 
     // Override abrirChat — carrega histórico ao abrir o chat
