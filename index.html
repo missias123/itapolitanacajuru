@@ -3564,9 +3564,64 @@ const RESPOSTAS={
   'historia':'🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos servindo sorvetes tipo artesanal com muito carinho!',
   'artesanal':'🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis. Feitos com ingredientes selecionados!',
   'qualidade':'🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
+  // ── CAÇA À ESTRELA ──
+  'caça':        '⭐ Caça à Estrela: o Itamanduá aparece em horários surpresa no site! Quem clicar primeiro captura a estrela. Acumule 5 estrelas no mês e ganhe um prêmio: Açaí 400ml, Milkshake ou 5 Picolés Recheados! Acesse a página de Fidelidade para participar.',
+  'estrela':     '⭐ Caça à Estrela: acumule 5 estrelas no mês para ganhar Açaí 400ml, Milkshake ou 5 Picolés Recheados! O Itamanduá aparece em horários surpresa no site. Primeiro a clicar leva!',
+  'itamandua':   '🦎 O Itamanduá é nosso mascote! Ele aparece correndo pelo site em horários surpresa. Clique nele para capturar a estrela e acumular pontos para um prêmio!',
+  'mascote':     '🦎 Nosso mascote é o Itamanduá! Fique de olho — ele aparece em horários surpresa no site para a Caça à Estrela.',
+  // ── DICAS E DEPOIMENTOS ──
+  'dicas':       '💡 Temos uma página de Dicas com orientações para festas e eventos: quanto sorvete comprar, como conservar, quais sabores escolher. Acesse "Dicas/Depoimentos" no menu!',
+  'depoimentos': '⭐ Veja o que nossos clientes dizem! Acesse a página "Dicas/Depoimentos" no menu do site para ler avaliações e dicas exclusivas.',
+  // ── PRIVACIDADE E LGPD ──
+  'privacidade': '🔒 Nossa Política de Privacidade está disponível no site. Respeitamos a LGPD e protegemos seus dados pessoais. Consulte o link "Política de Privacidade" no rodapé.',
+  'lgpd':        '🔒 Seguimos a Lei Geral de Proteção de Dados (LGPD). Seus dados são usados apenas para o Clube de Fidelidade e Sorteio. Veja nossa Política de Privacidade no rodapé do site.',
+  'dados pessoais': '🔒 Seus dados pessoais são protegidos conforme a LGPD. Usamos apenas para o Clube de Fidelidade e Sorteio Mensal. Consulte nossa Política de Privacidade no rodapé do site.',
+  // ── GALERIA ──
+  'galeria':     '📸 Temos uma galeria de fotos no site! Acesse "Galeria" para ver imagens dos nossos produtos e da sorveteria.',
+  'foto':        '📸 Veja fotos dos nossos produtos na Galeria do site! E siga @sorveteriaitapolitanacajuru no Instagram para novidades diárias.',
+  // ── PICOLÉS RECHEADOS ──
+  'recheado':    '🍭 Picolés Recheados são nossa especialidade! Veja os sabores disponíveis na página de Fidelidade (são o prêmio da Caça à Estrela). Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
   // ── DEFAULT (FALLBACK PARA WHATSAPP) ──
-  'default':'Hmm, não encontrei isso aqui 😊<br>Tente: <em>horário · sabores · preço · picolé · açaí · milkshake · encomenda · localização · pagamento · sorteio</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
+  'default':'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · sorteio · caça à estrela · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
 };
+window.RESPOSTAS = RESPOSTAS;
+// ItaBot: base de conhecimento consolidada a partir de TODO o site
+// Carrega FAQs dos módulos e mescla com as respostas existentes
+(function carregarFaqsItaBot() {
+  'use strict';
+  var FAQ_ARQUIVOS = [
+    'dados/faq_horarios_localizacao.json',
+    'dados/faq_cardapio.json',
+    'dados/faq_encomendas.json',
+    'dados/faq_fidelidade.json',
+    'dados/faq_sorteio_promocoes.json'
+  ];
+
+  function normalizarTag(t) {
+    return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function mesclarFaq(faq) {
+    if (!faq || !Array.isArray(faq.perguntas)) return;
+    faq.perguntas.forEach(function(p) {
+      if (!p.tags || !p.resposta) return;
+      p.tags.forEach(function(tag) {
+        var chave = normalizarTag(tag);
+        // Não sobrescreve respostas que já têm função (preços dinâmicos)
+        if (typeof window.RESPOSTAS[chave] !== 'function') {
+          window.RESPOSTAS[chave] = p.resposta;
+        }
+      });
+    });
+  }
+
+  FAQ_ARQUIVOS.forEach(function(url) {
+    fetch(url + '?v=' + (window._itapV || Date.now()))
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(faq) { if (faq) mesclarFaq(faq); });
+  });
+}());
 // ── Chat e Fale Conosco ─────────────────────────────────────────────
 function abrirChat() {
   var d = document.getElementById('chat-dialog');
@@ -3957,7 +4012,7 @@ function aplicarConfig(c) {
   const brandSub = document.getElementById('brand-sub');
   if (brandSub && c.slogan) brandSub.textContent = c.slogan;
   // --- CHATBOT: atualizar respostas dinâmicas de endereço e WhatsApp ---
-  if (c.enderecoCompleto && window.RESPOSTAS) {contain: layout;
+  if (c.enderecoCompleto && window.RESPOSTAS) {
     window.RESPOSTAS['endereço'] = 'Estamos em ' + c.enderecoCompleto + ' 📍';
     window.RESPOSTAS['localização'] = window.RESPOSTAS['endereço'];
     window.RESPOSTAS['onde'] = window.RESPOSTAS['endereço'];
