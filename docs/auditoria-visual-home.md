@@ -32,7 +32,7 @@
 |---|----------|----------|------------|
 | C1 | `.nav-orange` box-shadow | `box-shadow: 0 0 15px rgba(255,255,255,0.6) !important` — brilho branco excessivo no botão PROMOÇÃO cria hierarquia errada: o PROMOÇÃO parece o CTA principal quando ENCOMENDAS deveria ter destaque equivalente | 🟠 Alto |
 | C2 | `.brand-sub` | `color:#7B2D8B` (roxo) sobre fundo vermelho do header — contraste WCAG AA insuficiente (estimado ~1.8:1). Obs: elemento não renderizado no HTML atual, é CSS morto | 🟡 Baixo |
-| C3 | `.brand-name` | `color:#E8000D` sobre gradiente vermelho `#E8000D–#C62828` — texo quase invisível se renderizado. CSS morto atualmente | 🟡 Baixo |
+| C3 | `.brand-name` | `color:#E8000D` sobre gradiente vermelho `#E8000D–#C62828` — texto quase invisível se renderizado. CSS morto atualmente | 🟡 Baixo |
 | C4 | `.carrinho-cortesia-label2` | `color:#3E0066` (roxo escuro) sobre fundo branco — contraste adequado (>4.5:1), sem problemas | ✅ OK |
 | C5 | Strip sensorial | `color:#F9A825` sobre `background:#C62828` — contraste ~3.8:1, passável mas abaixo do ideal WCAG AA (4.5:1) para texto pequeno | 🟡 Médio |
 

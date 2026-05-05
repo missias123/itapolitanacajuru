@@ -241,9 +241,9 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .aceite-area.verde:has(input:checked){border-color:#2e7d32;background:#e8f5e9}
 /* Label clicável de largura total — touch target generoso */
 .aceite-label{display:flex;align-items:center;gap:14px;cursor:pointer;font-size:.87rem;color:#333;margin-bottom:0;min-height:52px;padding:8px 4px;line-height:1.5}
-/* Esconde checkbox nativo */
+/* Esconde checkbox nativo — mantém acessibilidade para teclado/leitores de tela */
 .aceite-label input[type="checkbox"]{
-  position:absolute;opacity:0;width:0;height:0;pointer-events:none;
+  position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;
 }
 /* Quadrado visual customizado */
 .chk-aceite-visual{
@@ -304,7 +304,7 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .aceite-estrelas-label{display:flex;align-items:center;gap:14px;cursor:pointer;background:#fff;border-radius:10px;padding:14px;border:2px solid #FFCC80;min-height:52px;font-size:.85rem;color:#333;line-height:1.5;transition:border-color .3s,background .3s}
 .aceite-estrelas-label:has(input:checked){border-color:#e8650a;background:#FFF8F0}
 /* Esconde checkbox nativo dentro de aceite-estrelas-label */
-.aceite-estrelas-label input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.aceite-estrelas-label input[type="checkbox"]{position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden}
 /* Quadrado visual customizado (herdado de .aceite-label mas também funciona aqui) */
 .aceite-estrelas-label .chk-aceite-visual{border-color:#e8650a}
 .aceite-estrelas-label input[type="checkbox"]:checked + .chk-aceite-visual{background:#e8650a;border-color:#e8650a;font-size:18px;color:#fff;font-weight:900;animation:none;box-shadow:0 0 0 4px rgba(232,101,10,.2)}
