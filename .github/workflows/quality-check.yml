@@ -97,7 +97,9 @@ jobs:
       - name: 🗃️ Validar JSON de dados
         run: |
           for f in dados/config.json dados/produtos.json dados/promo.json manifest.json; do
-            [ -f "$f" ] && node -e "JSON.parse(require('fs').readFileSync('$f','utf8')); console.log('  ✓ $f');" || { echo "❌ JSON inválido: $f"; exit 1; }
+            if [ -f "$f" ]; then
+              node -e "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')); console.log('  ✓ ' + process.argv[1]);" -- "$f" || { echo "❌ JSON inválido: $f"; exit 1; }
+            fi
           done
           echo "✅ JSON válido."
 
