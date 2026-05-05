@@ -1966,12 +1966,16 @@ function atualizarUI() {
     } else {
       document.getElementById('resgatar-txt').textContent = 'Voce tem ' + pontos + ' pontos! Resgate o Milkshake ou continue acumulando para a Caixa 7 Bolas (30 pts).';
     }
-    document.getElementById('btn-validar').disabled = false;
+    const btnValidar = document.getElementById('btn-validar');
+    btnValidar.disabled = false;
+    if (btnValidar.textContent !== BTN_VALIDAR_LABEL) btnValidar.textContent = BTN_VALIDAR_LABEL;
   } else {
     resgatar.style.display = 'none';
     card10.style.display  = 'none';
     card30.style.display  = 'none';
-    document.getElementById('btn-validar').disabled = false;
+    const btnV = document.getElementById('btn-validar');
+    btnV.disabled = false;
+    if (btnV.textContent !== BTN_VALIDAR_LABEL) btnV.textContent = BTN_VALIDAR_LABEL;
   }
 
   renderHistorico();
@@ -2201,157 +2205,173 @@ async function bloquearClienteServidor(motivo) {
 // ═══════════════════════════════════════════════════════════
 // VALIDAR CODIGO
 // ═══════════════════════════════════════════════════════════
+const BTN_VALIDAR_LABEL = '✅ Validar Codigo'; // rótulo original do botão
+
 async function validarCodigo() {
-  if (!clienteAtual) { showMsg('msg-codigo','Faca login primeiro.','aviso'); return; }
-
-  const msgBloqueio = verificarBloqueioTentativas();
-  if (msgBloqueio) { showMsg('msg-codigo', msgBloqueio,'erro'); return; }
-
-  const msgCooldown = verificarCooldown();
-  if (msgCooldown) { showMsg('msg-codigo', msgCooldown,'aviso'); return; }
-
-  const msgDispositivo = verificarLimiteDispositivo();
-  if (msgDispositivo) { showMsg('msg-codigo', msgDispositivo,'aviso'); return; }
-
-  const codigo = document.getElementById('input-codigo').value.trim().toUpperCase();
-  if (!codigo || codigo.length < 8) { showMsg('msg-codigo','Digite um codigo valido (minimo 8 caracteres).','aviso'); return; }
-
   const btn = document.getElementById('btn-validar');
-  btn.disabled = true;
-  btn.textContent = 'Validando...';
-  showMsg('msg-codigo','Verificando codigo no servidor...','info');
+  const _resetBtn = () => { btn.disabled = false; btn.textContent = BTN_VALIDAR_LABEL; };
 
-  setLoading('Verificando codigo...');
-  const [fRes, cRes] = await Promise.all([ghGet(FIDELIDADE_PATH), ghGet(CLIENTES_PATH)]);
-  hideLoading();
-  if (fRes.content) {
-    try { ghFidelidade = JSON.parse(fRes.content); ghFidelidadeSha = fRes.sha; } catch(e) {}
-  }
-  if (cRes.content) {
-    try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
-  }
+  try {
+    if (!clienteAtual) { showMsg('msg-codigo','Faca login primeiro.','aviso'); return; }
 
-  if (ghClientes.clientes && _chaveCliente(clienteAtual.cel)) {
-    clienteAtual = ghClientes.clientes[_chaveCliente(clienteAtual.cel)];
-  }
+    const msgBloqueio = verificarBloqueioTentativas();
+    if (msgBloqueio) { showMsg('msg-codigo', msgBloqueio,'erro'); return; }
 
-  const msgBloqueioCliente = verificarBloqueioCliente();
-  if (msgBloqueioCliente) {
-    showMsg('msg-codigo', msgBloqueioCliente,'erro');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
+    const msgCooldown = verificarCooldown();
+    if (msgCooldown) { showMsg('msg-codigo', msgCooldown,'aviso'); return; }
 
-  // Suporte a chave "codigos" (sem acento), "c\u00f3digos" (com acento) e "c\u00f3digos" — compatibilidade total
-  const codigos = ghFidelidade['c\u00f3digos'] || ghFidelidade.codigos || {};
-  if (!codigos[codigo]) {
-    registrarFraudeServidor(codigo, 'Codigo inexistente');
-    registrarLogDetalhado(codigo, 'Codigo inexistente');
-    const podeTentar = registrarTentativaInvalida();
-    const tentativas = JSON.parse(localStorage.getItem('itap_fid_tentativas') || '{"tentativas":[]}');
-    const restam = LIMITE_TENTATIVAS - (tentativas.tentativas ? tentativas.tentativas.length : 0);
-    if (!podeTentar) {
-      showMsg('msg-codigo','Muitas tentativas. Aguarde 10 minutos.','erro');
-      const fraudesCliente = Object.values(ghFidelidade.fraudes || {}).filter(f => f.cel === (clienteAtual ? clienteAtual.cel : '')).length;
-      if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
-        await bloquearClienteServidor('Excesso de tentativas invalidas (' + fraudesCliente + ')');
-      }
-    } else {
-      showMsg('msg-codigo',`Codigo invalido. Tentativas restantes: ${Math.max(0,restam)}.`,'erro');
-    }
-    await salvarFidelidade('Tentativa invalida: ' + (clienteAtual ? clienteAtual.nome : '?') + ' — codigo inexistente');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
+    const msgDispositivo = verificarLimiteDispositivo();
+    if (msgDispositivo) { showMsg('msg-codigo', msgDispositivo,'aviso'); return; }
 
-  const statusExpiracao = codigoExpirado(codigos[codigo]);
-  if (statusExpiracao === "BLOQUEADO_DATA") {
-    showMsg('msg-codigo', 'Os cupons só poderão ser validados a partir de 01 de Maio.', 'aviso');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
+    const codigo = document.getElementById('input-codigo').value.trim().toUpperCase();
+    if (!codigo || codigo.length < 8) { showMsg('msg-codigo','Digite um codigo valido (minimo 8 caracteres).','aviso'); return; }
 
+    btn.disabled = true;
+    btn.textContent = 'Validando...';
+    showMsg('msg-codigo','Verificando codigo no servidor...','info');
 
-  if (codigos[codigo].status === 'usado') {
-    registrarFraudeServidor(codigo, 'Codigo ja utilizado — tentativa de reutilizacao');
-    registrarLogDetalhado(codigo, 'Tentativa de reutilizacao de codigo ja usado');
-    registrarTentativaInvalida();
-    await salvarFidelidade('Tentativa de reutilizacao: ' + (clienteAtual ? clienteAtual.nome : '?'));
-    showMsg('msg-codigo','Este codigo ja foi utilizado anteriormente.','aviso');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
-
-  const codigosUsados = clienteAtual.codigosUsados || [];
-  const jaUsou = codigosUsados.some(c => c.codigo === codigo);
-  if (jaUsou) {
-    showMsg('msg-codigo','Voce ja usou este codigo.','aviso');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
-
-  // CODIGO VALIDO
-  setLoading('Registrando ponto...');
-  const agora = new Date().toISOString();
-
-  // Usar a mesma chave que encontrou o código válido (códigos com acento ou codigos sem acento)
-  const codigosObj = ghFidelidade['c\u00f3digos'] || ghFidelidade.codigos;
-  codigosObj[codigo].status   = 'usado';
-  codigosObj[codigo].usadoPor = clienteAtual.cel;
-  codigosObj[codigo].usadoEm  = agora;
-  if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
-  if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, codigos: 0 };
-  ghFidelidade.clientes[clienteAtual.cel].codigos = (ghFidelidade.clientes[clienteAtual.cel].codigos || 0) + 1;
-
-  if (!clienteAtual.codigosUsados) clienteAtual.codigosUsados = [];
-  clienteAtual.codigosUsados.push({ codigo, data: agora });
-  clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
-  clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
-  _gravarClienteAtual();
-
-  limparBloqueioTentativas();
-  registrarUsoValido();
-  registrarUsoDispositivo();
-
-  // Salvar sequencialmente para permitir rollback em caso de falha parcial
-  // 1. Salvar fidelidade.json primeiro (marcar código como usado)
-  const okFid = await salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome);
-  if (!okFid) {
-    // Rollback total em memória
-    codigosObj[codigo].status = 'disponivel';
-    delete codigosObj[codigo].usadoPor;
-    delete codigosObj[codigo].usadoEm;
-    clienteAtual.codigosUsados.pop();
-    clienteAtual.saldoPontos--;
-    clienteAtual.totalCodigos--;
-    _gravarClienteAtual();
+    setLoading('Verificando codigo...');
+    const [fRes, cRes] = await Promise.all([ghGet(FIDELIDADE_PATH), ghGet(CLIENTES_PATH)]);
     hideLoading();
-    showMsg('msg-codigo', 'Erro de conexao ao registrar codigo. Seu ponto NAO foi contabilizado. Verifique sua internet e tente novamente.', 'erro');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
+    if (fRes.content) {
+      try { ghFidelidade = JSON.parse(fRes.content); ghFidelidadeSha = fRes.sha; } catch(e) {}
+    }
+    if (cRes.content) {
+      try { ghClientes = JSON.parse(cRes.content); ghClientesSha = cRes.sha; } catch(e) {}
+    }
 
-  // 2. Salvar clientes.json (adicionar ponto ao cliente)
-  const okCli = await salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos);
-  hideLoading();
-  if (!okCli) {
-    // Rollback: desfazer em memória e restaurar fidelidade.json
-    codigosObj[codigo].status = 'disponivel';
-    delete codigosObj[codigo].usadoPor;
-    delete codigosObj[codigo].usadoEm;
-    clienteAtual.codigosUsados.pop();
-    clienteAtual.saldoPontos--;
-    clienteAtual.totalCodigos--;
+    // Atualizar clienteAtual com dados frescos — guardar referência de segurança
+    if (ghClientes.clientes && clienteAtual && clienteAtual.cel) {
+      const chave = _chaveCliente(clienteAtual.cel);
+      if (chave && ghClientes.clientes[chave]) {
+        clienteAtual = ghClientes.clientes[chave];
+      }
+    }
+
+    if (!clienteAtual) {
+      showMsg('msg-codigo','Sessao expirada. Faca login novamente.','aviso');
+      _resetBtn(); return;
+    }
+
+    const msgBloqueioCliente = verificarBloqueioCliente();
+    if (msgBloqueioCliente) {
+      showMsg('msg-codigo', msgBloqueioCliente,'erro');
+      _resetBtn(); return;
+    }
+
+    // Suporte a chave "codigos" (sem acento), "c\u00f3digos" (com acento) — compatibilidade total
+    const codigos = ghFidelidade['c\u00f3digos'] || ghFidelidade.codigos || {};
+    if (!codigos[codigo]) {
+      registrarFraudeServidor(codigo, 'Codigo inexistente');
+      registrarLogDetalhado(codigo, 'Codigo inexistente');
+      const podeTentar = registrarTentativaInvalida();
+      const tentativas = JSON.parse(localStorage.getItem('itap_fid_tentativas') || '{"tentativas":[]}');
+      const restam = Math.max(0, LIMITE_TENTATIVAS - (tentativas.tentativas ? tentativas.tentativas.length : 0));
+      if (!podeTentar) {
+        showMsg('msg-codigo','Muitas tentativas. Aguarde 10 minutos.','erro');
+        const fraudesCliente = Object.values(ghFidelidade.fraudes || {}).filter(f => f.cel === clienteAtual.cel).length;
+        if (fraudesCliente >= MAX_FRAUDES_BLOQUEIO) {
+          await bloquearClienteServidor('Excesso de tentativas invalidas (' + fraudesCliente + ')');
+        }
+      } else {
+        showMsg('msg-codigo','Código inválido, verifique e tente novamente. Tentativas restantes: ' + restam + '.','erro');
+      }
+      await salvarFidelidade('Tentativa invalida: ' + clienteAtual.nome + ' — codigo inexistente');
+      _resetBtn(); return;
+    }
+
+    const statusExpiracao = codigoExpirado(codigos[codigo]);
+    if (statusExpiracao === "BLOQUEADO_DATA") {
+      showMsg('msg-codigo', 'Os cupons só poderão ser validados a partir de 01 de Maio.', 'aviso');
+      _resetBtn(); return;
+    }
+
+    if (codigos[codigo].status === 'usado') {
+      registrarFraudeServidor(codigo, 'Codigo ja utilizado — tentativa de reutilizacao');
+      registrarLogDetalhado(codigo, 'Tentativa de reutilizacao de codigo ja usado');
+      registrarTentativaInvalida();
+      await salvarFidelidade('Tentativa de reutilizacao: ' + clienteAtual.nome);
+      showMsg('msg-codigo','Este código já foi utilizado.','aviso');
+      _resetBtn(); return;
+    }
+
+    const codigosUsados = clienteAtual.codigosUsados || [];
+    const jaUsou = codigosUsados.some(c => c.codigo === codigo);
+    if (jaUsou) {
+      showMsg('msg-codigo','Este código já foi utilizado.','aviso');
+      _resetBtn(); return;
+    }
+
+    // CODIGO VALIDO
+    setLoading('Registrando ponto...');
+    const agora = new Date().toISOString();
+
+    // Usar a mesma chave que encontrou o código válido (códigos com acento ou sem acento)
+    const codigosObj = ghFidelidade['c\u00f3digos'] || ghFidelidade.codigos;
+    codigosObj[codigo].status   = 'usado';
+    codigosObj[codigo].usadoPor = clienteAtual.cel;
+    codigosObj[codigo].usadoEm  = agora;
+    if (!ghFidelidade.clientes) ghFidelidade.clientes = {};
+    if (!ghFidelidade.clientes[clienteAtual.cel]) ghFidelidade.clientes[clienteAtual.cel] = { nome: clienteAtual.nome, codigos: 0 };
+    ghFidelidade.clientes[clienteAtual.cel].codigos = (ghFidelidade.clientes[clienteAtual.cel].codigos || 0) + 1;
+
+    if (!clienteAtual.codigosUsados) clienteAtual.codigosUsados = [];
+    clienteAtual.codigosUsados.push({ codigo, data: agora });
+    clienteAtual.saldoPontos  = (clienteAtual.saldoPontos  || 0) + 1;
+    clienteAtual.totalCodigos = (clienteAtual.totalCodigos || 0) + 1;
     _gravarClienteAtual();
-    // Tentar restaurar fidelidade.json
-    await salvarFidelidade('ROLLBACK: codigo ' + codigo + ' restaurado (falha ao salvar cliente)');
-    showMsg('msg-codigo', 'Erro ao salvar ponto. O codigo foi liberado para nova tentativa. Verifique sua internet e tente novamente.', 'erro');
-    btn.disabled = false; btn.textContent = 'Validar Codigo'; return;
-  }
 
-  if (okFid && okCli) {
+    limparBloqueioTentativas();
+    registrarUsoValido();
+    registrarUsoDispositivo();
+
+    // Salvar sequencialmente para permitir rollback em caso de falha parcial
+    // 1. Salvar fidelidade.json primeiro (marcar código como usado)
+    const okFid = await salvarFidelidade('Codigo ' + codigo + ' usado por ' + clienteAtual.nome);
+    if (!okFid) {
+      // Rollback total em memória
+      codigosObj[codigo].status = 'disponivel';
+      delete codigosObj[codigo].usadoPor;
+      delete codigosObj[codigo].usadoEm;
+      clienteAtual.codigosUsados.pop();
+      clienteAtual.saldoPontos--;
+      clienteAtual.totalCodigos--;
+      _gravarClienteAtual();
+      hideLoading();
+      showMsg('msg-codigo', 'Erro de conexao ao registrar codigo. Seu ponto NAO foi contabilizado. Verifique sua internet e tente novamente.', 'erro');
+      _resetBtn(); return;
+    }
+
+    // 2. Salvar clientes.json (adicionar ponto ao cliente)
+    const okCli = await salvarClientes('Ponto adicionado: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — saldo: ' + clienteAtual.saldoPontos);
+    hideLoading();
+    if (!okCli) {
+      // Rollback: desfazer em memória e restaurar fidelidade.json
+      codigosObj[codigo].status = 'disponivel';
+      delete codigosObj[codigo].usadoPor;
+      delete codigosObj[codigo].usadoEm;
+      clienteAtual.codigosUsados.pop();
+      clienteAtual.saldoPontos--;
+      clienteAtual.totalCodigos--;
+      _gravarClienteAtual();
+      // Tentar restaurar fidelidade.json
+      await salvarFidelidade('ROLLBACK: codigo ' + codigo + ' restaurado (falha ao salvar cliente)');
+      showMsg('msg-codigo', 'Erro ao salvar ponto. O codigo foi liberado para nova tentativa. Verifique sua internet e tente novamente.', 'erro');
+      _resetBtn(); return;
+    }
+
     document.getElementById('input-codigo').value = '';
     showMsg('msg-codigo','+1 ponto! Saldo atual: ' + clienteAtual.saldoPontos + ' ponto' + (clienteAtual.saldoPontos > 1 ? 's' : '') + '.','ok');
     atualizarUI();
-  } else {
-    showMsg('msg-codigo','Ponto registrado mas houve erro ao salvar. Tente novamente.','aviso');
-    atualizarUI();
+    _resetBtn();
+
+  } catch(e) {
+    console.error('validarCodigo erro inesperado:', e);
+    hideLoading();
+    showMsg('msg-codigo','Ocorreu um erro inesperado. Tente novamente.','erro');
+    const btn2 = document.getElementById('btn-validar');
+    if (btn2) { btn2.disabled = false; btn2.textContent = BTN_VALIDAR_LABEL; }
   }
-  btn.disabled = false; btn.textContent = 'Validar Codigo';
 }
 
 // ═══════════════════════════════════════════════════════════
