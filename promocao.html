@@ -183,7 +183,7 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
 body { overflow-x: hidden; }
 
 /* ═══════════════════════════════════════════════════════════
-   ÁREA DE CONSENTIMENTO — LGPD / Regulamento (WAI-VCAG AA)
+   ÁREA DE CONSENTIMENTO — LGPD / Regulamento (WAI-WCAG AA)
    ═══════════════════════════════════════════════════════════ */
 /* Box de regulamento: destaque visual + seta indicando interação */
 .aceite-area-promo{background:#FFF8E1;border:3px solid #E65100;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 3px 14px rgba(230,81,0,0.18);transition:border-color .3s,background .3s}
@@ -192,11 +192,18 @@ body { overflow-x: hidden; }
 .aceite-label-promo{display:flex;align-items:center;gap:14px;cursor:pointer;font-size:.87rem;color:#333;min-height:52px;padding:6px 0;line-height:1.5}
 /* Esconde checkbox nativo */
 .aceite-label-promo input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
-/* Quadrado visual customizado verde */
-.aceite-label-promo .chk-aceite-visual{
-  border-color:#2e7d32;
+/* Quadrado visual base — verde para esta página */
+.chk-aceite-visual{
+  display:flex;align-items:center;justify-content:center;
+  width:30px;height:30px;min-width:30px;
+  border:3px solid #2e7d32;border-radius:8px;
+  background:#fff;cursor:pointer;flex-shrink:0;
+  transition:all .25s;
   animation:pulsarChkVerde 1.8s ease-in-out infinite;
+  font-size:0;
 }
+.chk-aceite-visual::after{content:"✓";color:#fff;font-weight:900;font-size:inherit;line-height:1}
+/* Quadrado visual customizado verde */
 .aceite-label-promo input[type="checkbox"]:checked + .chk-aceite-visual{
   background:#2e7d32;border-color:#2e7d32;
   font-size:18px;color:#fff;animation:none;
@@ -205,21 +212,6 @@ body { overflow-x: hidden; }
 @keyframes pulsarChkVerde{
   0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,.35);border-color:#2e7d32}
   50%{box-shadow:0 0 0 6px rgba(46,125,50,.0);border-color:#43a047}
-}
-/* Quadrado visual base (compartilhado) */
-.chk-aceite-visual{
-  display:flex;align-items:center;justify-content:center;
-  width:30px;height:30px;min-width:30px;
-  border:3px solid #e8650a;border-radius:8px;
-  background:#fff;cursor:pointer;flex-shrink:0;
-  transition:all .25s;
-  animation:pulsarChkBase 1.8s ease-in-out infinite;
-  font-size:0;
-}
-.chk-aceite-visual::after{content:"✓";color:#fff;font-weight:900;font-size:inherit;line-height:1}
-@keyframes pulsarChkBase{
-  0%,100%{box-shadow:0 0 0 0 rgba(232,101,10,.35)}
-  50%{box-shadow:0 0 0 6px rgba(232,101,10,.0)}
 }
 .aceite-label-promo .aceite-txt{flex:1}
 .aceite-lgpd-link-promo{color:#2e7d32;font-weight:700;text-decoration:underline}
