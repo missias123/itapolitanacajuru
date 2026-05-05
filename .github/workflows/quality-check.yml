@@ -1,0 +1,171 @@
+name: 🔍 Quality Check — Lint, HTML & JS
+
+# Organização: dispara em push, pull_request e diariamente às 06h (horário de Brasília = 09h UTC)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 9 * * *'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  quality-check:
+    name: 🔍 Lint + HTML + JS Syntax
+    runs-on: ubuntu-latest
+
+    outputs:
+      # Exporta resultado para o job de criação de issue
+      resultado: ${{ steps.summary.outputs.resultado }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Perf: instala dependências apenas uma vez via cache
+      - name: 📦 Instalar ferramentas de lint
+        run: |
+          npm install -g eslint@8 htmlhint@1
+          echo "✅ ESLint e HTMLHint instalados."
+
+      # ── ETAPA 1: ESLint nos scripts JS ────────────────────────────────────────
+      - name: 🟡 ESLint — scripts/
+        id: eslint
+        run: |
+          echo "## ESLint — scripts JS" >> $GITHUB_STEP_SUMMARY
+          if eslint scripts/ --ext .js --format stylish 2>&1 | tee /tmp/eslint-output.txt; then
+            echo "✅ ESLint: sem erros graves." >> $GITHUB_STEP_SUMMARY
+            echo "status=ok" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ ESLint encontrou avisos/erros:" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/eslint-output.txt >> $GITHUB_STEP_SUMMARY
+            echo "status=warning" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      # ── ETAPA 2: HTMLHint nas páginas principais ───────────────────────────────
+      - name: 🟡 HTMLHint — páginas principais
+        id: htmlhint
+        run: |
+          echo "## HTMLHint — Páginas HTML" >> $GITHUB_STEP_SUMMARY
+          PAGES="index.html fidelidade.html promocao.html encomendas.html"
+          FALHOU=0
+          for PAGE in $PAGES; do
+            if [ -f "$PAGE" ]; then
+              if htmlhint "$PAGE" --config .htmlhintrc 2>&1 | tee /tmp/htmlhint-${PAGE}.txt; then
+                echo "✅ $PAGE: OK" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "⚠️ $PAGE: problemas encontrados:" >> $GITHUB_STEP_SUMMARY
+                cat /tmp/htmlhint-${PAGE}.txt >> $GITHUB_STEP_SUMMARY
+                FALHOU=1
+              fi
+            else
+              echo "⚠️ $PAGE não encontrado!" >> $GITHUB_STEP_SUMMARY
+              FALHOU=1
+            fi
+          done
+          if [ $FALHOU -eq 1 ]; then
+            echo "status=warning" >> $GITHUB_OUTPUT
+          else
+            echo "status=ok" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      # ── ETAPA 3: Verificar sintaxe JS embutido nos HTMLs ──────────────────────
+      - name: 🔴 JS Syntax check (inline scripts)
+        id: js_syntax
+        run: |
+          echo "## JS Syntax — Scripts embutidos nos HTMLs" >> $GITHUB_STEP_SUMMARY
+          node scripts/auto-repair.js --check 2>&1 | tee /tmp/js-syntax-output.txt
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ Nenhum erro de JS detectado." >> $GITHUB_STEP_SUMMARY
+            echo "status=ok" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Erros de JS detectados:" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/js-syntax-output.txt >> $GITHUB_STEP_SUMMARY
+            echo "status=error" >> $GITHUB_OUTPUT
+          fi
+        # JS syntax é crítico — falha o job
+        continue-on-error: false
+
+      # ── ETAPA 4: Verificar arquivos críticos ──────────────────────────────────
+      - name: 📁 Arquivos críticos presentes
+        id: critical_files
+        run: |
+          echo "## Arquivos Críticos" >> $GITHUB_STEP_SUMMARY
+          FALHOU=0
+          for f in index.html fidelidade.html encomendas.html promocao.html manifest.json robots.txt sitemap.xml sw.js dados/config.json dados/produtos.json; do
+            if [ ! -f "$f" ]; then
+              echo "❌ AUSENTE: $f" >> $GITHUB_STEP_SUMMARY
+              FALHOU=1
+            else
+              echo "✅ $f" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          if [ $FALHOU -eq 1 ]; then
+            exit 1
+          fi
+
+      # ── ETAPA 5: Verificar tokens expostos ───────────────────────────────────
+      - name: 🔒 Segurança — tokens hardcoded
+        run: |
+          echo "## Segurança — Tokens expostos" >> $GITHUB_STEP_SUMMARY
+          if grep -rn "ghp_\|github_pat_\|ghs_" --include="*.html" --include="*.js" . 2>/dev/null | grep -v ".git"; then
+            echo "❌ BLOQUEADO: Token GitHub encontrado no código!" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          echo "✅ Nenhum token exposto." >> $GITHUB_STEP_SUMMARY
+
+      # ── ETAPA 6: Validar JSON de dados ───────────────────────────────────────
+      - name: 🗃️ JSON válido
+        run: |
+          echo "## JSON de Dados" >> $GITHUB_STEP_SUMMARY
+          for f in dados/config.json dados/produtos.json dados/promo.json manifest.json; do
+            if [ -f "$f" ]; then
+              if node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" 2>/dev/null; then
+                echo "✅ $f" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "❌ JSON inválido: $f" >> $GITHUB_STEP_SUMMARY
+                exit 1
+              fi
+            fi
+          done
+
+      # ── ETAPA 7: Relatório de tamanho ────────────────────────────────────────
+      - name: 📦 Tamanho das páginas
+        run: |
+          echo "## Tamanho das Páginas" >> $GITHUB_STEP_SUMMARY
+          for f in index.html fidelidade.html encomendas.html promocao.html; do
+            size=$(wc -c < "$f")
+            kb=$((size / 1024))
+            if [ $kb -gt 500 ]; then
+              echo "⚠️ $f: ${kb}KB (acima de 500KB)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ $f: ${kb}KB" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+      # ── RESUMO FINAL ─────────────────────────────────────────────────────────
+      - name: 📊 Resumo
+        id: summary
+        if: always()
+        run: |
+          ESLINT="${{ steps.eslint.outputs.status }}"
+          HTMLHINT="${{ steps.htmlhint.outputs.status }}"
+          JS="${{ steps.js_syntax.outputs.status }}"
+          if [ "$JS" = "error" ] || [ "$ESLINT" = "error" ] || [ "$HTMLHINT" = "error" ]; then
+            echo "resultado=failure" >> $GITHUB_OUTPUT
+          elif [ "$ESLINT" = "warning" ] || [ "$HTMLHINT" = "warning" ]; then
+            echo "resultado=warning" >> $GITHUB_OUTPUT
+          else
+            echo "resultado=success" >> $GITHUB_OUTPUT
+          fi
