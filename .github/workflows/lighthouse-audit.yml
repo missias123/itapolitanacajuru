@@ -1,0 +1,155 @@
+name: 🔦 Lighthouse + Axe Auditoria
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Auditoria Lighthouse diária às 04:00 UTC (01:00 Brasília)
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  lighthouse:
+    name: 🔦 Lighthouse Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    outputs:
+      critical_failures: ${{ steps.check.outputs.critical_failures }}
+      report_date: ${{ steps.date.outputs.date }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Obter data atual
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Instalar dependências
+        # Auditoria: instalar Lighthouse CLI e servidor estático
+        run: |
+          npm install -g lighthouse@12 @lhci/cli@0.14 serve
+
+      - name: Iniciar servidor local
+        run: |
+          serve . --listen 8080 --no-clipboard &
+          echo $! > /tmp/serve.pid
+          sleep 3
+          curl -sf http://localhost:8080/ > /dev/null && echo "✅ Servidor local OK" || { echo "❌ Servidor não respondeu"; exit 1; }
+
+      - name: 🔦 Auditoria Lighthouse — index.html
+        id: lh_index
+        run: |
+          mkdir -p docs/relatorios
+          lighthouse http://localhost:8080/ \
+            --output=json,html \
+            --output-path=docs/relatorios/lighthouse-index \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo,pwa \
+            --quiet 2>&1 || true
+        continue-on-error: true
+
+      - name: 🔦 Auditoria Lighthouse — fidelidade.html
+        id: lh_fidelidade
+        run: |
+          lighthouse http://localhost:8080/fidelidade.html \
+            --output=json,html \
+            --output-path=docs/relatorios/lighthouse-fidelidade \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --quiet 2>&1 || true
+        continue-on-error: true
+
+      - name: 🔦 Auditoria Lighthouse — encomendas.html
+        id: lh_encomendas
+        run: |
+          lighthouse http://localhost:8080/encomendas.html \
+            --output=json,html \
+            --output-path=docs/relatorios/lighthouse-encomendas \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --quiet 2>&1 || true
+        continue-on-error: true
+
+      - name: 📊 Gerar relatório Markdown
+        id: check
+        run: |
+          DATE="${{ steps.date.outputs.date }}"
+          REPORT="docs/relatorios/lighthouse-${DATE}.md"
+          mkdir -p docs/relatorios
+
+          echo "# 🔦 Relatório Lighthouse — ${DATE}" > $REPORT
+          echo "" >> $REPORT
+          echo "_Gerado automaticamente via GitHub Actions — workflow: \`lighthouse-audit.yml\`_" >> $REPORT
+          echo "" >> $REPORT
+
+          CRITICAL=false
+
+          for PAGE in index fidelidade encomendas; do
+            JSON="docs/relatorios/lighthouse-${PAGE}.report.json"
+            echo "## Página: ${PAGE}.html" >> $REPORT
+            echo "" >> $REPORT
+
+            if [ -f "$JSON" ]; then
+              node -e "
+                const r = JSON.parse(require('fs').readFileSync('${JSON}','utf8'));
+                const cats = r.categories || {};
+                const scores = {
+                  performance:     Math.round((cats.performance?.score    || 0) * 100),
+                  accessibility:   Math.round((cats.accessibility?.score  || 0) * 100),
+                  'best-practices':Math.round((cats['best-practices']?.score || 0) * 100),
+                  seo:             Math.round((cats.seo?.score            || 0) * 100),
+                  pwa:             Math.round((cats.pwa?.score            || 0) * 100),
+                };
+                const emoji = (n) => n >= 90 ? '🟢' : n >= 50 ? '🟡' : '🔴';
+                console.log('| Categoria | Pontuação | Status |');
+                console.log('|-----------|-----------|--------|');
+                for (const [k,v] of Object.entries(scores)) {
+                  if (v > 0) console.log(\`| \${k} | \${v} | \${emoji(v)} |\`);
+                }
+                console.log('');
+                const hasFailing = Object.values(scores).some(v => v > 0 && v < 50);
+                process.exit(hasFailing ? 1 : 0);
+              " >> $REPORT 2>&1
+              if [ $? -ne 0 ]; then
+                CRITICAL=true
+                echo "⚠️ **Scores críticos detectados (abaixo de 50) nesta página.**" >> $REPORT
+              fi
+            else
+              echo "_Relatório não disponível para esta página._" >> $REPORT
+            fi
+            echo "" >> $REPORT
+          done
+
+          echo "critical_failures=$CRITICAL" >> $GITHUB_OUTPUT
+
+          cat $REPORT >> $GITHUB_STEP_SUMMARY
+
+      - name: Parar servidor local
+        if: always()
+        run: |
+          [ -f /tmp/serve.pid ] && kill $(cat /tmp/serve.pid) 2>/dev/null || true
+
+      - name: 📎 Upload relatórios Lighthouse
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports-${{ steps.date.outputs.date }}-${{ github.run_number }}
+          path: docs/relatorios/lighthouse*
+          retention-days: 30
+
+      - name: ❌ Falhar se scores críticos encontrados
+        if: steps.check.outputs.critical_failures == 'true'
+        run: |
+          echo "::error::Lighthouse detectou scores críticos (< 50) em uma ou mais categorias. Veja o relatório nos artefatos."
+          exit 1

@@ -1,0 +1,108 @@
+name: 🔍 Quality Check — Lint + Auditoria de Código
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Auditoria diária às 03:00 UTC (00:00 Brasília)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  lint:
+    name: 🧹 ESLint + HTMLHint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências de lint
+        # Auditoria: instalar ESLint e HTMLHint para cobertura de JS e HTML
+        run: |
+          npm install -g eslint@8 htmlhint@1
+
+      - name: 🔍 ESLint — scripts JS
+        id: eslint
+        run: |
+          echo "## ESLint — Resultado" >> $GITHUB_STEP_SUMMARY
+          eslint scripts/*.js --format stylish 2>&1 | tee /tmp/eslint-output.txt || true
+          if grep -q "error" /tmp/eslint-output.txt; then
+            echo "❌ ESLint encontrou erros" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/eslint-output.txt >> $GITHUB_STEP_SUMMARY
+            echo "eslint_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ ESLint: nenhum erro encontrado" >> $GITHUB_STEP_SUMMARY
+            echo "eslint_failed=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: 🔍 HTMLHint — páginas HTML principais
+        id: htmlhint
+        run: |
+          echo "## HTMLHint — Resultado" >> $GITHUB_STEP_SUMMARY
+          htmlhint index.html fidelidade.html encomendas.html promocao.html carrossel.html dicas.html offline.html --config .htmlhintrc 2>&1 | tee /tmp/htmlhint-output.txt || true
+          if grep -q "error\|Error" /tmp/htmlhint-output.txt; then
+            echo "❌ HTMLHint encontrou erros" >> $GITHUB_STEP_SUMMARY
+            cat /tmp/htmlhint-output.txt >> $GITHUB_STEP_SUMMARY
+            echo "htmlhint_failed=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ HTMLHint: nenhum erro encontrado" >> $GITHUB_STEP_SUMMARY
+            echo "htmlhint_failed=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+
+      - name: 🔒 Verificar tokens expostos
+        # Segurança: bloquear tokens GitHub hardcoded no código
+        run: |
+          echo "🔒 Verificando tokens e senhas hardcoded..."
+          if grep -rn "ghp_\|github_pat_\|ghs_" --include="*.html" --include="*.js" . 2>/dev/null | grep -v ".git"; then
+            echo "❌ BLOQUEADO: Token GitHub encontrado no código!"
+            exit 1
+          fi
+          echo "✅ Nenhum token exposto encontrado."
+
+      - name: 📦 Relatório de tamanho
+        # Perf: avisar se página principal ultrapassar 500KB
+        run: |
+          echo "## Tamanho das Páginas" >> $GITHUB_STEP_SUMMARY
+          for f in index.html fidelidade.html encomendas.html; do
+            size=$(wc -c < "$f")
+            kb=$((size / 1024))
+            if [ $kb -gt 500 ]; then
+              echo "  ⚠️  $f: ${kb}KB (acima de 500KB)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "  ✓ $f: ${kb}KB" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+      - name: 📁 Verificar arquivos essenciais
+        run: |
+          for f in index.html fidelidade.html encomendas.html dicas.html promocao.html carrossel.html manifest.json robots.txt sitemap.xml sw.js; do
+            [ -f "$f" ] || { echo "❌ Arquivo crítico ausente: $f"; exit 1; }
+          done
+          echo "✅ Todos os arquivos críticos presentes."
+
+      - name: 🗃️ Validar JSON de dados
+        run: |
+          for f in dados/config.json dados/produtos.json dados/promo.json manifest.json; do
+            [ -f "$f" ] && node -e "JSON.parse(require('fs').readFileSync('$f','utf8')); console.log('  ✓ $f');" || { echo "❌ JSON inválido: $f"; exit 1; }
+          done
+          echo "✅ JSON válido."
+
+      - name: ❌ Falhar se houver erros de lint
+        if: steps.eslint.outputs.eslint_failed == 'true' || steps.htmlhint.outputs.htmlhint_failed == 'true'
+        run: |
+          echo "Lint falhou. Veja o resumo do job para detalhes."
+          exit 1
