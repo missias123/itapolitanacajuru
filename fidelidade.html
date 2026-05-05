@@ -1900,45 +1900,52 @@ async function entrar() {
   // Resolver CEL via indice_celular (estrutura USR-xxxx) ou chave legada direta
   const chaveCliente = _chaveCliente(cel);
   if (!chaveCliente) {
+    clienteAtual = null;
     showMsg('msg-acesso','Celular nao encontrado. Se e sua primeira vez, clique em "Primeira vez" para se cadastrar. Se trocou de numero, use "Primeira vez" para atualizar seu cadastro.','erro');
     return;
   }
-  clienteAtual = ghClientes.clientes[chaveCliente];
+  // Usar variável local — clienteAtual só é atribuído após TODAS as validações
+  const registroEncontrado = ghClientes.clientes[chaveCliente];
 
-  if (clienteAtual.bloqueado) {
+  if (registroEncontrado.bloqueado) {
+    clienteAtual = null;
     showMsg('msg-acesso','NUMERO BLOQUEADO — Este numero foi bloqueado por tentativas invalidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
     return;
   }
 
-  const dataCadastrada = clienteAtual.dataNasc || '';
+  const dataCadastrada = registroEncontrado.dataNasc || '';
   const dataDigitada   = ano + '-' + mes + '-' + dia;
 
   // Se não há data no cadastro (dado incompleto) — bloquear acesso por segurança
   if (!dataCadastrada) {
+    clienteAtual = null;
     showMsg('msg-acesso','Cadastro incompleto. Entre em contato com a sorveteria para regularizar sua conta.','aviso');
     return;
   }
 
   if (dataCadastrada !== dataDigitada) {
-    clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
-    const tentativas = clienteAtual.tentativasInvalidas;
-    if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
-    clienteAtual.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+    registroEncontrado.tentativasInvalidas = (registroEncontrado.tentativasInvalidas || 0) + 1;
+    const tentativas = registroEncontrado.tentativasInvalidas;
+    if (!registroEncontrado.logFraude) registroEncontrado.logFraude = [];
+    registroEncontrado.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+    ghClientes.clientes[chaveCliente] = registroEncontrado;
+    clienteAtual = null;
 
     if (tentativas >= 4) {
-      clienteAtual.bloqueado = true;
-      clienteAtual.dataBloqueio = new Date().toISOString();
-      _gravarClienteAtual();
+      registroEncontrado.bloqueado = true;
+      registroEncontrado.dataBloqueio = new Date().toISOString();
       await salvarClientes('FRAUDE: bloqueio do numero ' + cel + ' apos ' + tentativas + ' tentativas');
       showMsg('msg-acesso','TENTATIVA DE FRAUDE DETECTADA! Seu numero foi BLOQUEADO apos ' + tentativas + ' tentativas invalidas. Entre em contato com a sorveteria.','erro');
     } else {
-      _gravarClienteAtual();
       await salvarClientes('Tentativa invalida ' + tentativas + '/4 para ' + cel);
       const restam = Math.max(0, 4 - tentativas);
       showMsg('msg-acesso','Data de nascimento incorreta. Tentativa ' + tentativas + ' de 4. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
     }
     return;
   }
+
+  // Todas as validações passaram — atribuir clienteAtual
+  clienteAtual = registroEncontrado;
 
   if (clienteAtual.tentativasInvalidas > 0) {
     clienteAtual.tentativasInvalidas = 0;
@@ -1968,13 +1975,9 @@ function mostrarPainelCliente() {
   document.getElementById('card-historico').style.display = 'block';
   atualizarUI();
 
-  // Verificar se há token de estrela pendente na sessão (cliente fez login após capturar)
-  const tokenPendente = sessionStorage.getItem('itap_estrela_token');
-  if (tokenPendente && tokenPendente.startsWith('EST')) {
-    console.log('🌟 Token pendente detectado após login:', tokenPendente);
-    setTimeout(() => processarTokenEstrela(tokenPendente), 800);
-  }
 }
+// Nota: o wizard intercepta mostrarPainelCliente via _hookPainel e
+// move automaticamente para a etapa de reivindicação quando há token ativo.
 
 function atualizarUI() {
   if (!clienteAtual) return;
@@ -2262,7 +2265,7 @@ async function bloquearClienteServidor(motivo) {
   clienteAtual.dataBloqueio = new Date().toISOString();
   if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
   clienteAtual.logFraude.push({ motivo, data: new Date().toISOString() });
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
   await salvarClientes('BLOQUEIO AUTOMATICO: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — ' + motivo);
 }
 
@@ -2499,7 +2502,7 @@ async function resgatarPremio(tipo) {
     clienteAtual.saldoPontos = saldoAntes;
     clienteAtual.resgates.pop();
     clienteAtual.totalPremios--;
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    _gravarClienteAtual();
     showMsg('msg-codigo','Erro ao registrar resgate. Tente novamente.','erro');
     atualizarUI();
   }
@@ -2650,8 +2653,10 @@ function adminIrPagina(p) {
 }
 
 async function adminToggleBloqueio(cel, bloquear) {
-  if (!ghClientes.clientes[cel]) return;
-  const c = ghClientes.clientes[cel];
+  const chave = _chaveCliente(cel);
+  if (!chave) return;
+  const c = ghClientes.clientes[chave];
+  if (!c) return;
   if (bloquear) {
     if (!confirm('Bloquear ' + c.nome + '?')) return;
     c.bloqueado = true;
@@ -2664,7 +2669,7 @@ async function adminToggleBloqueio(cel, bloquear) {
     c.logFraude = [];
     c.dataBloqueio = null;
   }
-  ghClientes.clientes[cel] = c;
+  ghClientes.clientes[chave] = c;
   setLoading(bloquear ? 'Bloqueando cliente...' : 'Desbloqueando cliente...');
   const ok = await salvarClientes((bloquear ? 'Admin bloqueou: ' : 'Admin desbloqueou: ') + c.nome + ' (' + cel + ')');
   hideLoading();
@@ -2673,34 +2678,35 @@ async function adminToggleBloqueio(cel, bloquear) {
   } else {
     alert('Erro ao salvar. Tente novamente.');
     c.bloqueado = !bloquear;
-    ghClientes.clientes[cel] = c;
+    ghClientes.clientes[chave] = c;
     adminRenderizar();
   }
 }
 
 async function adminExcluirCliente(cel) {
-  if (!ghClientes.clientes[cel]) return;
-  const c = ghClientes.clientes[cel];
+  const chave = _chaveCliente(cel);
+  if (!chave) return;
+  const c = ghClientes.clientes[chave];
+  if (!c) return;
   if (!confirm('⚠️ ATENÇÃO: Deseja excluir permanentemente o cliente ' + c.nome + '?\nEsta ação não pode ser desfeita.')) return;
-  
-  const idPermanente = ghClientes.indice_celular[cel];
-  delete ghClientes.clientes[idPermanente];
+
+  delete ghClientes.clientes[chave];
   delete ghClientes.indice_celular[cel];
-  
+
   if (ghClientes.metadata) {
     ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
   }
-  
+
   setLoading('Excluindo cliente...');
   const ok = await salvarClientes('Admin excluiu cliente: ' + c.nome + ' (' + cel + ')');
   hideLoading();
-  
+
   if (ok) {
-    adminBuscar(); // Recarregar a lista filtrada
+    adminBuscar();
     alert('Cliente excluído com sucesso.');
   } else {
     alert('Erro ao excluir. Tente novamente.');
-    adminCarregarClientes(); // Recarregar dados originais em caso de erro
+    adminCarregarClientes();
   }
 }
 
@@ -2765,8 +2771,12 @@ function toggleSenha(idCampo, idOlho) {
 
 // ═══════════════════════════════════════════════════════════
 // ESTRELA DOURADA — PROCESSAR TOKEN DA CAPTURA
+// direto=true: chamado pelo wizard após login/cadastro + clique no botão reivindicar
+//              → pula o flow de botão legado e salva diretamente (sem double-trigger)
+// direto=false (padrão): chamado via fluxo legado com botão de confirmação
 // ═══════════════════════════════════════════════════════════
-async function processarTokenEstrela(tokenCaptura) {
+async function processarTokenEstrela(tokenCaptura, direto) {
+  direto = !!direto;
   try {
     // 1. Buscar o estado atual da estrela no GitHub
     const ESTRELAS_PATH = 'estrelas_ciclo.json';
@@ -2785,19 +2795,7 @@ async function processarTokenEstrela(tokenCaptura) {
       console.warn('⚠️ Estrela não está em resgate');
       return false;
     }
-    // ── BUG 6 CORRIGIDO: janela de validade 2 min → 6 min ──
-    // O usuário tem 5 min para preencher o formulário + tempo de processamento.
-    // Validamos com 6 min para dar margem de segurança.
-    if (estrela.horaAparicao) {
-      const aparicao = new Date(estrela.horaAparicao);
-      const agora = new Date();
-      const tempoDecorrido = (agora - aparicao) / 1000; // em segundos
-      if (tempoDecorrido > 360) { // 6 minutos = 360 segundos
-        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + Math.round(tempoDecorrido) + 's (limite: 360s)');
-        sessionStorage.removeItem('itap_estrela_token');
-        return false;
-      }
-    }
+    // Janela de validade: respeita validadeToken salvo pelo motor (8 min)
     if (estrela.validadeToken) {
       const validade = new Date(estrela.validadeToken);
       if (new Date() > validade) {
@@ -2816,11 +2814,7 @@ async function processarTokenEstrela(tokenCaptura) {
       return false;
     }
 
-    // 4. Proteção Anti-Robô: Exibir botão para clique humano
-    //    Todo o código de salvar fica DENTRO do onclick para executar após o clique
-    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
-    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
-
+    // Função interna de persistência — única chamada possível
     async function salvarCaptura() {
       const hoje = new Date().toISOString().split('T')[0];
       const usuarioId = clienteAtual.cel;
@@ -2839,7 +2833,7 @@ async function processarTokenEstrela(tokenCaptura) {
       dados.rankingAtual[usuarioId].diaCaptura = hoje;
       dados.rankingAtual[usuarioId].nome = clienteAtual.nome;
 
-      // 5. Marcar estrela como capturada definitivamente
+      // Marcar estrela como capturada definitivamente
       dados.estrelaCapturada.status = 'capturada';
       dados.estrelaCapturada.capturadoPor = usuarioId;
       dados.estrelaCapturada.capturadoEm = new Date().toISOString();
@@ -2852,7 +2846,7 @@ async function processarTokenEstrela(tokenCaptura) {
         dados.horariosDia[hoje].capturadoEm = new Date().toISOString();
       }
 
-      // 6. Salvar no GitHub
+      // Salvar no GitHub
       const conteudo = JSON.stringify(dados, null, 2);
       const resultado = await ghPut(ESTRELAS_PATH, conteudo,
         '🌟 Estrela capturada por ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')', sha);
@@ -2860,12 +2854,6 @@ async function processarTokenEstrela(tokenCaptura) {
       if (resultado.ok) {
         console.log('🌟 Estrela registrada com sucesso para ' + clienteAtual.nome);
         sessionStorage.removeItem('itap_estrela_token');
-        const totalEstrelas = dados.rankingAtual[usuarioId].estrelas;
-        const metaEstrelas = (dados.cicloAtual && dados.cicloAtual.metaEstrelas) || 5;
-        setTimeout(() => {
-          alert('🌟 PARABÉNS, ' + clienteAtual.nome.split(' ')[0] + '!\n\nVocê capturou a Estrela Dourada!\n\nTotal de estrelas: ' + totalEstrelas + '/' + metaEstrelas + '\n\n' +
-            (totalEstrelas >= metaEstrelas ? '🏆 Você completou ' + metaEstrelas + ' estrelas! Fale com a gente no WhatsApp para resgatar seu prêmio!' : 'Continue caçando! Faltam ' + (metaEstrelas - totalEstrelas) + ' estrela(s) para o prêmio!'));
-        }, 500);
         return true;
       } else {
         console.error('❌ Erro ao salvar captura da estrela');
@@ -2873,20 +2861,27 @@ async function processarTokenEstrela(tokenCaptura) {
       }
     }
 
+    // 4a. Fluxo direto (chamado pelo wizard após interação humana confirmada)
+    if (direto) {
+      return await salvarCaptura();
+    }
+
+    // 4b. Fluxo legado: exibir botão de confirmação (proteção anti-robô)
+    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
+    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
     if (secaoReivindicar && btnReivindicar) {
       secaoReivindicar.style.display = 'block';
       return new Promise(resolve => {
         btnReivindicar.onclick = async () => {
           secaoReivindicar.style.display = 'none';
-          // Atraso aleatório para simular tempo de reação humano (proteção anti-robô)
-          await new Promise(r => setTimeout(r, 500 + Math.random() * 1500));
+          await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));
           const ok = await salvarCaptura();
           resolve(ok);
         };
       });
     }
 
-    // Se não há botão no DOM, salva diretamente
+    // Fallback: sem botão no DOM, salva diretamente
     return await salvarCaptura();
 
   } catch(e) {
@@ -2900,19 +2895,8 @@ async function processarTokenEstrela(tokenCaptura) {
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   carregarDados().then(() => {
-    // Verificar se há token de estrela na URL (?token=EST_xxxxx)
-    const params = new URLSearchParams(window.location.search);
-    const tokenEstrela = params.get('token');
-    if (tokenEstrela && tokenEstrela.startsWith('EST')) {
-      console.log('🌟 Token de estrela detectado:', tokenEstrela);
-      processarTokenEstrela(tokenEstrela);
-    }
-    // Verificar se há token pendente na sessão (cliente fez login após captura)
-    const tokenSessao = sessionStorage.getItem('itap_estrela_token');
-    if (tokenSessao && clienteAtual) {
-      console.log('🌟 Token pendente na sessão:', tokenSessao);
-      processarTokenEstrela(tokenSessao);
-    }
+    // O wizard (DOMContentLoaded abaixo) é o único responsável pelo fluxo do token.
+    // Nada a fazer aqui para a estrela.
   });
 
   if (sessionStorage.getItem('itap_abrir_admin') === '1') {
@@ -3055,23 +3039,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if(idade<14){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>';return;}
     if(msg)msg.innerHTML='';_irPara('cel');
   };
-  window.wizEntrar=function(){
+  // wizEntrar: async/await — elimina setTimeout polling (1400ms), usa resultado real de entrar()
+  window.wizEntrar=async function(){
     var btn=document.getElementById('wiz-btn-entrar'),msg=document.getElementById('wiz-msg-login');
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Verificando...';}if(msg)msg.innerHTML='';
     var mapa={'wiz-cel-login':'inp-cel-login','wiz-login-dia':'inp-login-dia','wiz-login-mes':'inp-login-mes','wiz-login-ano':'inp-login-ano'};
     Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
-    try{entrar();}catch(e){console.warn('wizEntrar:',e);}
-    setTimeout(function(){
-      if(typeof clienteAtual!=='undefined'&&clienteAtual){
-        _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
-      }else{
-        var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
-        if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
-        if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
-      }
-    },1400);
+    try{await entrar();}catch(e){console.warn('wizEntrar:',e);}
+    if(typeof clienteAtual!=='undefined'&&clienteAtual){
+      _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{
+      var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
+      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
+      if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
+    }
   };
-  window.wizCadastrar=function(){
+  // wizCadastrar: async/await — elimina setTimeout polling (2200ms), usa resultado real de cadastrar()
+  window.wizCadastrar=async function(){
     var btn=document.getElementById('wiz-btn-cel'),msg=document.getElementById('wiz-msg-cel');
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Criando conta...';}if(msg)msg.innerHTML='';
     var celEl=document.getElementById('wiz-cel'),cel=celEl?celEl.value.replace(/\D/g,''):'';
@@ -3081,26 +3065,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     var mapa={'wiz-nome':'inp-nome','wiz-data':'inp-data-nasc','wiz-cel':'inp-cel-novo'};
     Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
-    try{cadastrar();}catch(e){console.warn('wizCadastrar:',e);}
-    setTimeout(function(){
-      if(typeof clienteAtual!=='undefined'&&clienteAtual){
-        _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
-      }else{
-        var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
-        if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Verifique seus dados e tente novamente.')+'</div>';
-        if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
-      }
-    },2200);
+    try{await cadastrar();}catch(e){console.warn('wizCadastrar:',e);}
+    if(typeof clienteAtual!=='undefined'&&clienteAtual){
+      _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{
+      var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
+      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Verifique seus dados e tente novamente.')+'</div>';
+      if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
+    }
   };
+  // wizReivindicar: chama processarTokenEstrela com direto=true (interação humana já confirmada)
+  // Remove o hack btnLeg.click() que causava double-trigger
   window.wizReivindicar=function(){
     var btn=document.getElementById('wiz-btn-reivindicar'),msg=document.getElementById('wiz-msg-reivindicar');
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Registrando estrela...';}if(msg)msg.innerHTML='';
     var tok=_tok||sessionStorage.getItem('itap_estrela_token');
     if(!tok){_erro('Token n\u00E3o encontrado. A estrela pode ter expirado.');return;}
-    var btnLeg=document.getElementById('btn-reivindicar-estrela');
-    var promise=processarTokenEstrela(tok);
-    if(btnLeg)setTimeout(function(){btnLeg.click();},200);
-    Promise.resolve(promise).then(function(ok){
+    // direto=true: pula o botão legado, salva direto (o clique no wizard JÁ é a confirmação humana)
+    Promise.resolve(processarTokenEstrela(tok,true)).then(function(ok){
       if(ok)_sucesso();
       else _erro('Pode ter expirado ou j\u00E1 foi capturada por outro ca\u00E7ador.<br><span style="font-size:.8rem;color:#888">Tente novamente no pr\u00F3ximo hor\u00E1rio.</span>');
     }).catch(function(){_erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');});
