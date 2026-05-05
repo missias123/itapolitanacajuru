@@ -1,0 +1,160 @@
+name: 🐛 Criar Issue Automático em Falha
+
+on:
+  workflow_run:
+    workflows:
+      - "🔍 Quality Check — Lint + Auditoria de Código"
+      - "🎭 E2E Tests — Playwright"
+      - "🔦 Lighthouse + Axe Auditoria"
+    types:
+      - completed
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create-issue:
+    name: 📝 Criar Issue de Falha
+    runs-on: ubuntu-latest
+    # Só executar quando o workflow pai falhar
+    if: github.event.workflow_run.conclusion == 'failure'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 📋 Determinar tipo de falha
+        id: classify
+        run: |
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          echo "workflow_name=$WORKFLOW_NAME" >> $GITHUB_OUTPUT
+
+          if echo "$WORKFLOW_NAME" | grep -qi "quality\|lint"; then
+            echo "tipo=Lint (ESLint / HTMLHint)" >> $GITHUB_OUTPUT
+            echo "label=bug,lint" >> $GITHUB_OUTPUT
+            echo "emoji=🧹" >> $GITHUB_OUTPUT
+          elif echo "$WORKFLOW_NAME" | grep -qi "playwright\|e2e"; then
+            echo "tipo=Testes E2E (Playwright)" >> $GITHUB_OUTPUT
+            echo "label=bug,e2e-test" >> $GITHUB_OUTPUT
+            echo "emoji=🎭" >> $GITHUB_OUTPUT
+          elif echo "$WORKFLOW_NAME" | grep -qi "lighthouse\|axe"; then
+            echo "tipo=Auditoria (Lighthouse / Axe)" >> $GITHUB_OUTPUT
+            echo "label=bug,performance,acessibilidade" >> $GITHUB_OUTPUT
+            echo "emoji=🔦" >> $GITHUB_OUTPUT
+          else
+            echo "tipo=CI Genérico" >> $GITHUB_OUTPUT
+            echo "label=bug" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔍 Verificar se já existe Issue aberto
+        id: check_issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `${{ steps.classify.outputs.emoji }} Falha em CI: ${{ steps.classify.outputs.tipo }} (run #${{ github.event.workflow_run.run_number }})`;
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'bug',
+              per_page: 10,
+            });
+            const existing = issues.data.find(i => i.title.includes('${{ steps.classify.outputs.tipo }}'));
+            if (existing) {
+              core.setOutput('skip', 'true');
+              console.log(`Issue já existe: #${existing.number}`);
+            } else {
+              core.setOutput('skip', 'false');
+            }
+
+      - name: 📝 Criar Issue com instruções para IA
+        if: steps.check_issue.outputs.skip != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}`;
+            const artifactsUrl = `${runUrl}#artifacts`;
+            const logsUrl = `${runUrl}`;
+            const tipo = `${{ steps.classify.outputs.tipo }}`;
+            const emoji = `${{ steps.classify.outputs.emoji }}`;
+            const branch = `${{ github.event.workflow_run.head_branch }}`;
+            const commitSha = `${{ github.event.workflow_run.head_sha }}`.substring(0, 7);
+            const date = new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+            const body = `## ${emoji} Falha Automática — ${tipo}
+
+            **Data:** ${date}
+            **Branch:** \`${branch}\`
+            **Commit:** \`${commitSha}\`
+            **Workflow:** \`${{ github.event.workflow_run.name }}\`
+            **Run #:** ${{ github.event.workflow_run.run_number }}
+
+            ---
+
+            ### 🔗 Links Úteis
+
+            | Recurso | Link |
+            |---------|------|
+            | 📋 Logs completos | [Ver logs](${logsUrl}) |
+            | 📎 Artefatos / Relatórios | [Ver artefatos](${artifactsUrl}) |
+            | 📁 Repositório | [Abrir repo](https://github.com/${{ github.repository }}) |
+
+            ---
+
+            ### 🤖 Instruções para IA (Copilot / Claude / GPT)
+
+            > Cole o bloco abaixo diretamente em uma conversa com Copilot, Claude ou GPT:
+
+            \`\`\`
+            Você é um tech lead sênior de front-end para sites de alimentos (iFood, Rappi, McDonald's como benchmark).
+            Repositório: https://github.com/${{ github.repository }}
+            Tipo de falha: ${tipo}
+
+            Logs do CI: ${logsUrl}
+            Artefatos e relatórios: ${artifactsUrl}
+
+            INSTRUÇÕES:
+            1. Leia os logs do workflow "${emoji} ${tipo}" e identifique os arquivos/linhas com erro.
+            2. Abra os arquivos correspondentes no repositório.
+            3. Corrija os problemas apontados seguindo estas regras obrigatórias:
+               - NÃO truncar HTML (index.html, fidelidade.html, encomendas.html, etc.).
+               - NÃO remover seções: hero, cardápio, promoções, fidelidade, rodapé.
+               - NÃO alterar regras de negócio (Programa de Fidelidade, caça à estrela, preços).
+               - Manter o site responsivo em mobile, tablet e desktop.
+               - Usar os prefixos de comentário: // Testes: // Auditoria: // Perf: // A11y: // Segurança:
+            4. No final, liste:
+               - Os arquivos alterados
+               - O que foi corrigido em cada um
+               - Se algum TODO foi identificado para confirmar com o proprietário
+            \`\`\`
+
+            ---
+
+            ### 📊 Contexto do Site
+
+            - **Site:** Sorveteria Itapolitana Cajuru (https://itapolitanacajuru.com.br)
+            - **Stack:** HTML estático, CSS inline, JS vanilla, GitHub Pages, PWA
+            - **Ferramentas de CI:**
+              - 🧹 **Lint:** ESLint (JS) + HTMLHint (HTML) → \`quality-check.yml\`
+              - 🎭 **E2E:** Playwright → \`e2e-tests.yml\`
+              - 🔦 **Auditoria:** Lighthouse CLI → \`lighthouse-audit.yml\`
+            - **Páginas críticas:** index.html, fidelidade.html, encomendas.html, promocao.html
+
+            ---
+
+            _Issue criado automaticamente pelo workflow \`create-issue-on-failure.yml\`_`;
+
+            // Limpar indentação do template literal
+            const cleanBody = body.split('\n').map(l => l.trimStart()).join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `${emoji} Falha em CI: ${tipo} (run #${{ github.event.workflow_run.run_number }})`,
+              body: cleanBody,
+              labels: ['bug'],
+            });
+
+            console.log('✅ Issue criado com sucesso!');
