@@ -1,21 +1,64 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF"></script>
+<!-- Google Consent Mode v2 — padrão negado até o usuário escolher no banner de cookies -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-S6TCMLQLQF');
+  gtag('consent', 'default', {
+    'analytics_storage': 'denied',
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'wait_for_update': 500
+  });
 </script>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K7L8M9N');</script>
-<!-- End Google Tag Manager -->
+<!-- PERF/LGPD: adiar carregamento do GA/GTM até consentimento explícito -->
+<script>
+  (function(){
+    'use strict';
+    var KEY='itap_cookie_consent_v1';
+    function getConsent(){
+      try { return JSON.parse(localStorage.getItem(KEY)||'null'); } catch(e){ return null; }
+    }
+    function setConsent(prefs){
+      try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch(e){}
+      gtag('consent','update',{
+        'analytics_storage': prefs.analytics ? 'granted' : 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+      });
+      if (prefs.analytics) loadAnalytics();
+    }
+    function loadAnalytics(){
+      if (window.__itap_analytics_loaded) return;
+      window.__itap_analytics_loaded = true;
+      var ga = document.createElement('script');
+      ga.async = true;
+      ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF';
+      document.head.appendChild(ga);
+      gtag('js', new Date());
+      gtag('config', 'G-S6TCMLQLQF', {'send_page_view': true});
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-K7L8M9N');
+    }
+    var saved = getConsent();
+    if (saved && saved.analytics === true) {
+      gtag('consent','update',{
+        'analytics_storage':'granted',
+        'ad_storage':'denied',
+        'ad_user_data':'denied',
+        'ad_personalization':'denied'
+      });
+      loadAnalytics();
+    }
+    window.ITAP_CONSENT = { get:getConsent, set:setConsent, loadAnalytics:loadAnalytics };
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Programa de Fidelidade – Sorveteria Itapolitana Cajuru</title>
@@ -2151,7 +2194,7 @@ async function bloquearClienteServidor(motivo) {
   clienteAtual.dataBloqueio = new Date().toISOString();
   if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
   clienteAtual.logFraude.push({ motivo, data: new Date().toISOString() });
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
   await salvarClientes('BLOQUEIO AUTOMATICO: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — ' + motivo);
 }
 
@@ -2388,7 +2431,7 @@ async function resgatarPremio(tipo) {
     clienteAtual.saldoPontos = saldoAntes;
     clienteAtual.resgates.pop();
     clienteAtual.totalPremios--;
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    _gravarClienteAtual();
     showMsg('msg-codigo','Erro ao registrar resgate. Tente novamente.','erro');
     atualizarUI();
   }
@@ -2539,8 +2582,9 @@ function adminIrPagina(p) {
 }
 
 async function adminToggleBloqueio(cel, bloquear) {
-  if (!ghClientes.clientes[cel]) return;
-  const c = ghClientes.clientes[cel];
+  const chave = _chaveCliente(cel);
+  if (!chave || !ghClientes.clientes[chave]) return;
+  const c = ghClientes.clientes[chave];
   if (bloquear) {
     if (!confirm('Bloquear ' + c.nome + '?')) return;
     c.bloqueado = true;
@@ -2553,7 +2597,7 @@ async function adminToggleBloqueio(cel, bloquear) {
     c.logFraude = [];
     c.dataBloqueio = null;
   }
-  ghClientes.clientes[cel] = c;
+  ghClientes.clientes[chave] = c;
   setLoading(bloquear ? 'Bloqueando cliente...' : 'Desbloqueando cliente...');
   const ok = await salvarClientes((bloquear ? 'Admin bloqueou: ' : 'Admin desbloqueou: ') + c.nome + ' (' + cel + ')');
   hideLoading();
@@ -2562,19 +2606,19 @@ async function adminToggleBloqueio(cel, bloquear) {
   } else {
     alert('Erro ao salvar. Tente novamente.');
     c.bloqueado = !bloquear;
-    ghClientes.clientes[cel] = c;
+    ghClientes.clientes[chave] = c;
     adminRenderizar();
   }
 }
 
 async function adminExcluirCliente(cel) {
-  if (!ghClientes.clientes[cel]) return;
-  const c = ghClientes.clientes[cel];
+  const chave = _chaveCliente(cel) || cel;
+  if (!ghClientes.clientes[chave]) return;
+  const c = ghClientes.clientes[chave];
   if (!confirm('⚠️ ATENÇÃO: Deseja excluir permanentemente o cliente ' + c.nome + '?\nEsta ação não pode ser desfeita.')) return;
   
-  const idPermanente = ghClientes.indice_celular[cel];
-  delete ghClientes.clientes[idPermanente];
-  delete ghClientes.indice_celular[cel];
+  delete ghClientes.clientes[chave];
+  if (ghClientes.indice_celular) delete ghClientes.indice_celular[cel];
   
   if (ghClientes.metadata) {
     ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
