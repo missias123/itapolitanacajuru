@@ -2612,13 +2612,15 @@ async function adminToggleBloqueio(cel, bloquear) {
 }
 
 async function adminExcluirCliente(cel) {
-  const chave = _chaveCliente(cel) || cel;
-  if (!ghClientes.clientes[chave]) return;
+  // Resolver chave: USR-xxxx (novo) ou cel diretamente (legado)
+  const chave = _chaveCliente(cel);
+  if (!chave || !ghClientes.clientes[chave]) return;
   const c = ghClientes.clientes[chave];
   if (!confirm('⚠️ ATENÇÃO: Deseja excluir permanentemente o cliente ' + c.nome + '?\nEsta ação não pode ser desfeita.')) return;
-  
+
   delete ghClientes.clientes[chave];
-  if (ghClientes.indice_celular) delete ghClientes.indice_celular[cel];
+  ghClientes.indice_celular = ghClientes.indice_celular || {};
+  delete ghClientes.indice_celular[cel];
   
   if (ghClientes.metadata) {
     ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
