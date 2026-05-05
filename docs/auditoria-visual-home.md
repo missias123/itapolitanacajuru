@@ -34,7 +34,7 @@
 | C2 | `.brand-sub` | `color:#7B2D8B` (roxo) sobre fundo vermelho do header — contraste WCAG AA insuficiente. CSS morto atualmente | 🟡 Baixo | ✅ Não renderizado |
 | C3 | `.brand-name` | `color:#E8000D` sobre gradiente vermelho — texto quase invisível se renderizado. CSS morto atualmente | 🟡 Baixo | ✅ Não renderizado |
 | C4 | `.carrinho-cortesia-label2` | `color:#3E0066` (roxo escuro) sobre fundo branco — contraste adequado (>4.5:1) | ✅ OK | ✅ Sem alteração |
-| C5 | Strip sensorial | `color:#F9A825` sobre `background:#C62828` — contraste ~2.76:1, abaixo de WCAG AA (4.5:1) para texto pequeno | 🟡 Médio | ✅ **Corrigido** — mudado para `#fff` (contraste ~5.5:1) |
+| C5 | Strip sensorial | `color:#F9A825` sobre `background:#C62828` — contraste ~1.85:1, muito abaixo de WCAG AA (4.5:1) para texto pequeno | 🔴 Crítico | ✅ **Corrigido** — mudado para `#fff` (contraste ~5.5:1, passa WCAG AA) |
 | C6 | Stats section gradient | `background: linear-gradient(#e91e63, #ff5722)` — pink/laranja não alinhado com paleta da marca (vermelho/azul/dourado) | 🟡 Médio | ✅ **Corrigido** — `#C62828→#E8000D` (vermelho Itapolitana) |
 
 ---

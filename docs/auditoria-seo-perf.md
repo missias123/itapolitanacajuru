@@ -50,7 +50,7 @@ Relatórios são publicados como artefatos em `docs/relatorios/` com retenção 
 
 | # | Problema | Impacto | Status |
 |---|----------|---------|--------|
-| A1 | Strip sensorial: `color:#F9A825` sobre `background:#C62828` → contraste ~2.76:1 | Texto ilegível para baixa visão | ✅ **Corrigido** — mudado para `#fff` (contraste ~5.5:1) |
+| A1 | Strip sensorial: `color:#F9A825` sobre `background:#C62828` → contraste ~1.85:1 | Texto ilegível para baixa visão (muito abaixo de WCAG AA 4.5:1) | ✅ **Corrigido** — mudado para `#fff` (contraste ~5.5:1, passa WCAG AA) |
 | A2 | Botão skip link "Pular para o conteúdo principal" | Navegação por teclado | ✅ Já existia — mantido |
 | A3 | `aria-expanded`, `aria-controls`, `tabindex` nos accordeões | Navegação por leitor de tela | ✅ Já existia — mantido |
 | A4 | `aria-label` em botões de fechar modais | Leitores de tela | ✅ Já existia — mantido |
