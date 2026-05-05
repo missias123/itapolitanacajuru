@@ -157,7 +157,7 @@ function verificarDuplicidadesPromo(config, promo) {
       ok(`"${label}": campo config.json "${ck}" vazio → promo.json "${pk}" é a fonte ativa`);
     } else if (!vp) {
       warn(`"${label}": config.json "${ck}" = "${vc}" mas promo.json "${pk}" está vazio. config.json prevalece no site.`);
-    } else if (vc.trim() !== vp.trim()) {
+    } else if (String(vc).trim() !== String(vp).trim()) {
       warn(`"${label}": CONFLITO entre config.json "${ck}" = "${String(vc).slice(0,40)}" e promo.json "${pk}" = "${String(vp).slice(0,40)}". config.json prevalece.`);
     } else {
       ok(`"${label}": config.json e promo.json em sincronia`);
@@ -231,7 +231,8 @@ function verificarHorario(config) {
 
 function verificarWhatsApp(config) {
   header('Configuração de WhatsApp');
-  const num = String(config.whatsapp || '').replace(/\D/g, '');
+  // config.whatsapp pode ser string ou número no JSON; normalizar sempre para string
+  const num = String(config.whatsapp ?? '').replace(/\D/g, '');
   if (num.length < 10 || num.length > 13) {
     err(`whatsapp "${config.whatsapp}" parece inválido (${num.length} dígitos)`);
   } else {
