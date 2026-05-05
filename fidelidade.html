@@ -229,11 +229,60 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .reg-texto{max-height:240px;overflow-y:auto;border-radius:10px;padding:12px 14px;font-size:clamp(.7rem,2vw,.79rem);color:#333;line-height:1.7;margin-bottom:14px}
 .reg-texto.laranja{background:#fff8f0;border:1.5px solid #ffcc80}
 .reg-texto.verde{background:#f1f8e9;border:1.5px solid #a5d6a7}
-.aceite-label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:.83rem;color:#333;margin-bottom:12px}
-.aceite-label input{width:18px;height:18px;margin-top:2px;flex-shrink:0}
-.btn-aceitar{width:100%;padding:13px;border:none;border-radius:12px;font-size:.95rem;font-weight:900;cursor:not-allowed;transition:.3s;color:#fff;background:#ccc;letter-spacing:.3px}
-.btn-aceitar.laranja-ativo{background:linear-gradient(135deg,#e8650a,#ff8c00);cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4)}
-.btn-aceitar.verde-ativo{background:linear-gradient(135deg,#2e7d32,#43a047);cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4)}
+/* ═══════════════════════════════════════════════════════════
+   ÁREA DE CONSENTIMENTO — LGPD / Regulamento
+   Padrão WAI-WCAG AA: checkbox visível, touch target ≥ 44px,
+   botão desabilitado explícito, link para política de privacidade.
+   ═══════════════════════════════════════════════════════════ */
+.aceite-area{background:#FFFDE7;border:2px solid #FFF176;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.aceite-area.laranja{background:#FFF8F0;border-color:#FFCC80}
+.aceite-area.verde{background:#F1F8E9;border-color:#A5D6A7}
+/* Label clicável de largura total — touch target generoso */
+.aceite-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:.87rem;color:#333;margin-bottom:0;min-height:44px;padding:4px 0;line-height:1.5}
+.aceite-label input[type="checkbox"]{
+  width:22px;height:22px;min-width:22px;
+  margin-top:1px;flex-shrink:0;cursor:pointer;
+  accent-color:#e8650a;
+  border-radius:5px;
+}
+.aceite-label .aceite-txt{flex:1}
+.aceite-lgpd-link{color:#e8650a;font-weight:700;text-decoration:underline}
+.aceite-lgpd-link:hover{color:#bf360c}
+/* Estado desabilitado explícito — usuário vê "por que" o botão está bloqueado */
+.btn-aceitar-hint{display:none;font-size:.75rem;color:#999;text-align:center;margin-top:6px;font-style:italic}
+.btn-aceitar[disabled] + .btn-aceitar-hint{display:block}
+/* Botão de aceite e avançar */
+.btn-aceitar{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  font-size:1rem;font-weight:900;letter-spacing:.3px;
+  transition:all .3s;color:#fff;background:#C8C8C8;
+  cursor:not-allowed;text-shadow:none;
+  opacity:.7;
+  font-family:'Nunito',sans-serif;
+}
+.btn-aceitar:not([disabled]):hover{transform:translateY(-2px)}
+.btn-aceitar.laranja-ativo{
+  background:linear-gradient(135deg,#e8650a,#ff8c00);
+  cursor:pointer;opacity:1;
+  box-shadow:0 4px 16px rgba(232,101,10,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);
+  animation:pulsarBtnConsent 1.6s ease-in-out infinite;
+}
+.btn-aceitar.verde-ativo{
+  background:linear-gradient(135deg,#2e7d32,#43a047);
+  cursor:pointer;opacity:1;
+  box-shadow:0 4px 16px rgba(46,125,50,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);
+  animation:pulsarBtnConsent 1.6s ease-in-out infinite;
+}
+@keyframes pulsarBtnConsent{
+  0%,100%{box-shadow:0 4px 16px rgba(232,101,10,.4)}
+  50%{box-shadow:0 6px 24px rgba(232,101,10,.65)}
+}
+/* Checkbox grande na área de estrelas (dentro do painel cliente) */
+.aceite-estrelas-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;background:#fff;border-radius:10px;padding:12px 14px;border:2px solid #FFCC80;min-height:44px;font-size:.85rem;color:#333;line-height:1.5;transition:border-color .2s}
+.aceite-estrelas-label:has(input:checked){border-color:#e8650a;background:#FFF8F0}
+.aceite-estrelas-label input[type="checkbox"]{width:22px;height:22px;min-width:22px;margin-top:1px;flex-shrink:0;cursor:pointer;accent-color:#e8650a}
 
 /* ── BLOCO FORMULARIO INLINE ── */
 .bloco-form{display:none;margin-top:14px;background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
@@ -779,11 +828,14 @@ body { overflow-x: hidden; }
               <strong>8. DO FORO</strong><br>
               Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer duvidas ou litigios.
             </div>
-            <label class="aceite-label">
-              <input type="checkbox" id="aceite-fidelidade-inline" onchange="verificarAceiteFidelidadeInline()" style="accent-color:#e8650a">
-              <span>Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru.</span>
-            </label>
-            <button id="btn-aceitar-fidelidade-inline" class="btn-aceitar" onclick="abrirFormFidelidade()" disabled>&#128221; Aceitar e Fazer Cadastro</button>
+            <div class="aceite-area laranja">
+              <label class="aceite-label" for="aceite-fidelidade-inline">
+                <input type="checkbox" id="aceite-fidelidade-inline" onchange="verificarAceiteFidelidadeInline()">
+                <span class="aceite-txt">Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru e com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+              </label>
+            </div>
+            <button id="btn-aceitar-fidelidade-inline" class="btn-aceitar" onclick="abrirFormFidelidade()" disabled aria-disabled="true">&#128221; Aceitar e Fazer Cadastro</button>
+            <p class="btn-aceitar-hint">&#9432; Marque a caixa acima para continuar</p>
           </div>
         </div>
 
@@ -929,8 +981,15 @@ body { overflow-x: hidden; }
       <input type="text" id="fid-hp" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
       <div class="form-group" id="fg-confirmar" style="position:relative">
         <span class="seta-guia" id="seta-confirmar">&#10148;</span>
-        <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px;width:100%">&#127881; Quero Receber Promocoes!</button>
-        <p style="font-size:11px;color:#888;text-align:center;margin-top:10px;line-height:1.5;">&#128274; Seus dados (nome, celular e data de nascimento) são usados exclusivamente para o programa de fidelidade da Sorveteria Itapolitana. Não compartilhamos com terceiros. <a href="politica-privacidade.html" style="color:#e8650a;">Política de Privacidade</a>.</p>
+        <!-- LGPD / Consentimento explícito WCAG AA -->
+        <div class="aceite-area laranja" style="margin-bottom:10px">
+          <label class="aceite-label" for="chk-lgpd-novo">
+            <input type="checkbox" id="chk-lgpd-novo" onchange="verificarLgpdNovo()">
+            <span class="aceite-txt">Li e concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados exclusivamente para o programa de fidelidade.</span>
+          </label>
+        </div>
+        <button id="btn-cadastrar" class="btn btn-laranja" onclick="cadastrar()" style="margin-top:4px;width:100%;opacity:.5;cursor:not-allowed" disabled aria-disabled="true">&#127881; Quero Receber Promocoes!</button>
+        <p class="btn-aceitar-hint" style="display:block">&#9432; Marque a caixa acima para continuar</p>
       </div>
     </div>
     <div id="form-login" style="display:none">
@@ -1038,9 +1097,9 @@ body { overflow-x: hidden; }
             <div style="font-size:.78rem;color:#5d4037">O código da estrela é <strong>invisível e intransferível</strong>. Não compartilhe sua conta. Tentativas de fraude resultam em <strong>bloqueio permanente</strong>.</div>
           </div>
         </div>
-        <label class="aceite-label" style="margin-bottom:0;cursor:pointer;background:#fff;border-radius:10px;padding:10px 12px;border:1.5px solid #ffcc80">
-          <input type="checkbox" id="chk-aceita-regras-estrelas" style="width:18px;height:18px;cursor:pointer;accent-color:#e8650a">
-          <span style="flex:1;font-size:.82rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
+        <label class="aceite-estrelas-label" for="chk-aceita-regras-estrelas">
+          <input type="checkbox" id="chk-aceita-regras-estrelas" style="cursor:pointer;accent-color:#e8650a">
+          <span style="flex:1;font-size:.85rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
         </label>
       </div>
 
@@ -1434,10 +1493,32 @@ function verificarAceiteFidelidadeInline() {
   if (!cb || !btn) return;
   if (cb.checked) {
     btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
     btn.className = 'btn-aceitar laranja-ativo';
   } else {
     btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
     btn.className = 'btn-aceitar';
+  }
+}
+// LGPD gate para o cadastro do painel principal (form-novo)
+function verificarLgpdNovo() {
+  const cb = document.getElementById('chk-lgpd-novo');
+  const btn = document.getElementById('btn-cadastrar');
+  const hint = btn ? btn.nextElementSibling : null;
+  if (!cb || !btn) return;
+  if (cb.checked) {
+    btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    if (hint) hint.style.display = 'none';
+  } else {
+    btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
+    btn.style.opacity = '.5';
+    btn.style.cursor = 'not-allowed';
+    if (hint) hint.style.display = 'block';
   }
 }
 function verificarAceiteSorteioInline() {
@@ -1446,9 +1527,11 @@ function verificarAceiteSorteioInline() {
   if (!cb || !btn) return;
   if (cb.checked) {
     btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
     btn.className = 'btn-aceitar verde-ativo';
   } else {
     btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
     btn.className = 'btn-aceitar';
   }
 }

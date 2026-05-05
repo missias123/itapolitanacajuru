@@ -181,6 +181,37 @@
 /* Touch - evita menu de contexto no celular */
 button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body { overflow-x: hidden; }
+
+/* ═══════════════════════════════════════════════════════════
+   ÁREA DE CONSENTIMENTO — LGPD / Regulamento (WAI-WCAG AA)
+   ═══════════════════════════════════════════════════════════ */
+.aceite-area-promo{background:#F1F8E9;border:2px solid #A5D6A7;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.aceite-label-promo{display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:.87rem;color:#333;min-height:44px;padding:4px 0;line-height:1.5}
+.aceite-label-promo input[type="checkbox"]{width:22px;height:22px;min-width:22px;margin-top:1px;flex-shrink:0;cursor:pointer;accent-color:#2e7d32;border-radius:5px}
+.aceite-label-promo .aceite-txt{flex:1}
+.aceite-lgpd-link-promo{color:#2e7d32;font-weight:700;text-decoration:underline}
+.aceite-lgpd-link-promo:hover{color:#1b5e20}
+/* Hint quando botão está desabilitado */
+.btn-aceitar-hint-promo{font-size:.75rem;color:#999;text-align:center;margin-top:6px;font-style:italic;display:none}
+/* Botão desabilitado vs ativo */
+#btn-aceitar-sorteio-inline{
+  width:100%;padding:13px;border:none;border-radius:12px;
+  font-size:.95rem;font-weight:900;letter-spacing:.3px;
+  cursor:not-allowed;background:#C8C8C8;color:#fff;opacity:.7;
+  transition:all .3s;font-family:'Poppins',sans-serif;
+  text-shadow:none;
+}
+#btn-aceitar-sorteio-inline.ativo-verde{
+  background:linear-gradient(135deg,#2e7d32,#43a047);
+  cursor:pointer;opacity:1;
+  box-shadow:0 4px 16px rgba(46,125,50,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);
+  animation:pulsarVerde 1.6s ease-in-out infinite;
+}
+@keyframes pulsarVerde{
+  0%,100%{box-shadow:0 4px 16px rgba(46,125,50,.4)}
+  50%{box-shadow:0 6px 24px rgba(46,125,50,.65)}
+}
 </style>
 <!-- cache-bust:20260408_111640 -->
 <script type="application/ld+json">
@@ -308,11 +339,14 @@ body { overflow-x: hidden; }
         Fica eleito o foro da Comarca de Cajuru &mdash; SP para dirimir quaisquer dúvidas ou litígios.
       </div>
       <div style="padding:12px 16px;background:#f9f9f9;border-top:1px solid #e0e0e0;">
-        <label style="display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#333;cursor:pointer;">
-          <input type="checkbox" id="aceite-sorteio-inline" onchange="verificarAceiteSorteioPromo()" style="accent-color:#2e7d32;margin-top:2px;">
-          <span>Li e concordo com o <strong>Regulamento do Sorteio Mensal</strong> da Sorveteria Itapolitana Cajuru.</span>
-        </label>
-        <button id="btn-aceitar-sorteio-inline" style="width:100%;padding:12px;border:none;border-radius:10px;font-size:.95rem;font-weight:900;cursor:pointer;margin-top:10px;background:#ccc;color:#888;transition:.2s;" onclick="abrirFormSorteioPromo()" disabled>📝 Aceitar e Fazer Cadastro</button>
+        <div class="aceite-area-promo">
+          <label class="aceite-label-promo" for="aceite-sorteio-inline">
+            <input type="checkbox" id="aceite-sorteio-inline" onchange="verificarAceiteSorteioPromo()">
+            <span class="aceite-txt">Li e concordo com o <strong>Regulamento do Sorteio Mensal</strong> da Sorveteria Itapolitana Cajuru e com a <a class="aceite-lgpd-link-promo" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+          </label>
+        </div>
+        <button id="btn-aceitar-sorteio-inline" onclick="abrirFormSorteioPromo()" disabled aria-disabled="true">📝 Aceitar e Fazer Cadastro</button>
+        <p class="btn-aceitar-hint-promo" id="hint-aceite-sorteio">&#9432; Marque a caixa acima para continuar</p>
       </div>
     </div>
     <div id="form-sorteio-inline" style="display:none;border:2px solid #2e7d32;border-radius:14px;overflow:hidden;margin-top:4px;">
@@ -354,6 +388,7 @@ body { overflow-x: hidden; }
           </div>
         </div>
         <button id="btn-enviar-sorteio-promo" style="width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35);transition:.2s;" onclick="enviarSorteioPromo()">&#128172; Enviar Cadastro via WhatsApp</button>
+        <p style="font-size:11px;color:#888;text-align:center;margin-top:8px;line-height:1.5;">&#128274; Seus dados são usados exclusivamente para o sorteio. Não compartilhamos com terceiros. <a href="politica-privacidade.html" style="color:#2e7d32;font-weight:700;">Política de Privacidade</a>.</p>
         <div id="msg-sorteio-inline" style="font-size:.85rem;font-weight:700;text-align:center;padding:8px;border-radius:8px;display:none;"></div>
       </div>
     </div>
@@ -441,19 +476,20 @@ body { overflow-x: hidden; }
   }
 
   function verificarAceiteSorteioPromo() {
-    var cb  = document.getElementById('aceite-sorteio-inline');
-    var btn = document.getElementById('btn-aceitar-sorteio-inline');
+    var cb   = document.getElementById('aceite-sorteio-inline');
+    var btn  = document.getElementById('btn-aceitar-sorteio-inline');
+    var hint = document.getElementById('hint-aceite-sorteio');
     if (!cb || !btn) return;
     if (cb.checked) {
       btn.disabled = false;
-      btn.style.background = 'linear-gradient(135deg,#2e7d32,#43a047)';
-      btn.style.color = '#fff';
-      btn.style.boxShadow = '0 4px 16px rgba(46,125,50,.35)';
+      btn.removeAttribute('aria-disabled');
+      btn.classList.add('ativo-verde');
+      if (hint) hint.style.display = 'none';
     } else {
       btn.disabled = true;
-      btn.style.background = '#ccc';
-      btn.style.color = '#888';
-      btn.style.boxShadow = 'none';
+      btn.setAttribute('aria-disabled', 'true');
+      btn.classList.remove('ativo-verde');
+      if (hint) hint.style.display = 'block';
     }
   }
 
