@@ -3684,7 +3684,19 @@ function addMsg(tipo, txt) {
   const m = document.getElementById('chat-msgs');
   const d = document.createElement('div');
   d.className = 'msg ' + tipo;
-  if (tipo === 'bot') { d.innerHTML = txt; } else { d.textContent = txt; }
+  if (tipo === 'bot') {
+    // // Segurança: sanitiza HTML do bot via DOM parser antes de inserir no documento
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(txt, 'text/html');
+      doc.querySelectorAll('script').forEach(s => s.remove());
+      doc.querySelectorAll('*').forEach(el => {
+        [...el.attributes].filter(a => /^on/i.test(a.name) || /javascript\s*:/i.test(a.value))
+          .forEach(a => el.removeAttribute(a.name));
+      });
+      d.innerHTML = doc.body ? doc.body.innerHTML : '';
+    } catch(e) { d.textContent = txt; }
+  } else { d.textContent = txt; }
   m.appendChild(d);
   m.scrollTop = m.scrollHeight;
 }

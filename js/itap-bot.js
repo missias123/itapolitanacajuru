@@ -50,13 +50,39 @@
       .trim();
   }
 
-  // // Segurança: sanitiza HTML de respostas do bot (remove scripts e handlers inline)
-  // Bot responses may contain safe HTML (links, <br>, <strong>) — strip only dangerous parts.
+  // // Segurança: sanitiza HTML de respostas do bot usando DOM parser (scripts não executam em nó destacado)
+  // Abordagem DOM-based é mais segura que regex e evita falsos positivos de sanitização incompleta.
   function _sanitizeHtml(html) {
-    return (html || '')
-      .replace(/<script[\s\S]*?<\/script>/gi, '')   // remove blocos <script>
-      .replace(/javascript\s*:/gi, '#')             // remove javascript: URIs
-      .replace(/\bon\w+\s*=/gi, 'data-removed=');   // remove event handlers inline (onclick= etc.)
+    if (!html) return '';
+    try {
+      // DOMParser cria um documento isolado; scripts não são executados durante o parse
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+      // Remove elementos <script>
+      var scripts = doc.querySelectorAll('script');
+      for (var i = scripts.length - 1; i >= 0; i--) {
+        scripts[i].parentNode.removeChild(scripts[i]);
+      }
+      // Remove atributos perigosos (event handlers e javascript: URIs) de todos os elementos
+      var elements = doc.body ? doc.body.querySelectorAll('*') : [];
+      for (var j = 0; j < elements.length; j++) {
+        var attrs = elements[j].attributes;
+        var toRemove = [];
+        for (var k = 0; k < attrs.length; k++) {
+          var a = attrs[k];
+          if (/^on/i.test(a.name) || /javascript\s*:/i.test(a.value)) {
+            toRemove.push(a.name);
+          }
+        }
+        for (var r = 0; r < toRemove.length; r++) {
+          elements[j].removeAttribute(toRemove[r]);
+        }
+      }
+      return doc.body ? doc.body.innerHTML : '';
+    } catch (e) {
+      // Fallback seguro: escapa tudo se DOMParser falhar
+      return (html || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
   }
 
   // ── Carregamento dos FAQs ───────────────────────────────────────────────────
