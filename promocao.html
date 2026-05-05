@@ -79,6 +79,10 @@
 	<link rel="canonical" href="https://itapolitanacajuru.com.br/promocao.html"/>
 <!-- SEO: indicar ao Google que a página deve ser indexada e links seguidos -->
 <meta name="robots" content="index, follow"/>
+<!-- PWA: ícone e cor de tema para salvar na tela inicial do celular -->
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="images/logo.webp"/>
+<meta name="theme-color" content="#EF0129"/>
 <!-- Perf: pré-conectar ao servidor de fontes para reduzir latência -->
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -255,12 +259,15 @@ body { overflow-x: hidden; }
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<!-- A11y: skip-link para usuários de teclado pularem direto para o conteúdo -->
+<a href="#conteudo-principal" class="skip-link" style="position:absolute;top:-40px;left:0;background:#1565C0;color:#fff;padding:8px 16px;z-index:9999;border-radius:0 0 4px 0;font-weight:700;transition:top 0.2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Pular para o conteúdo principal</a>
 
 <header class="header">
 <h1 id="promo-h1">🎉 Grande Sorteio Mensal</h1>
 <p>Sorveteria Itapolitana Cajuru</p>
 <span class="since-badge">✨ Desde 2007</span>
-</header>
+<!-- A11y: <main> delimita o conteúdo principal para leitores de tela e navegação por landmark -->
+<main id="conteudo-principal">
 <div class="container">
 <div class="countdown-box">
 <div class="countdown-title">⏳ Contagem Regressiva para o Sorteio:</div>
@@ -375,7 +382,7 @@ body { overflow-x: hidden; }
         </div>
         <div>
           <label style="font-size:.82rem;font-weight:700;color:#333;display:block;margin-bottom:4px;">WhatsApp (com DDD)</label>
-          <input type="tel" id="sort-cel" placeholder="(16) 99999-9999" maxlength="15" inputmode="numeric" oninput="mascaraTelPromo(this)" style="width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:.95rem;font-family:'Poppins',sans-serif;box-sizing:border-box;outline:none;">
+          <input type="tel" id="sort-cel" placeholder="(16) 99999-9999" maxlength="15" inputmode="numeric" autocomplete="tel" oninput="mascaraTelPromo(this)" style="width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:.95rem;font-family:'Poppins',sans-serif;box-sizing:border-box;outline:none;">
         </div>
         <div>
           <label style="font-size:.82rem;font-weight:700;color:#333;display:block;margin-bottom:4px;">Data de nascimento <span style="font-size:.75rem;color:#c62828;font-weight:800;">&#128203; IDENTICA ao RG/CNH</span></label>
@@ -418,6 +425,7 @@ body { overflow-x: hidden; }
   <p style="font-size: 0.85rem; color: #666; margin-top: 10px; font-weight: 600;">Veja o que nossos clientes dizem sobre nós!</p>
 </div>
 </div><!-- /container -->
+</main>
 <footer style="text-align:center; padding:20px; font-size:12px; color:#666;">
 <strong>Sorveteria Itapolitana Cajuru</strong><br/>
   CNPJ: 08.922.044/0001-80<br/>

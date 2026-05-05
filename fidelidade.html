@@ -66,6 +66,10 @@
 <link rel="canonical" href="https://itapolitanacajuru.com.br/fidelidade.html">
 <!-- SEO: indicar ao Google que a página deve ser indexada e links seguidos -->
 <meta name="robots" content="index, follow"/>
+<!-- PWA: ícone e cor de tema para salvar na tela inicial do celular -->
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="images/logo.webp"/>
+<meta name="theme-color" content="#EF0129"/>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://itapolitanacajuru.com.br/fidelidade.html">
 <meta property="og:title" content="Programa de Fidelidade – Sorveteria Itapolitana Cajuru">
@@ -521,6 +525,8 @@ body { overflow-x: hidden; }
 <link rel="stylesheet" href="mascote.css?v=7">
 </head>
 <body>
+<!-- A11y: skip-link para usuários de teclado pularem direto para o conteúdo -->
+<a href="#conteudo-principal" class="skip-link" style="position:absolute;top:-40px;left:0;background:#1565C0;color:#fff;padding:8px 16px;z-index:9999;border-radius:0 0 4px 0;font-weight:700;transition:top 0.2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Pular para o conteúdo principal</a>
   <!-- BANNER GUIA ESTRELA DOURADA -->
   <div id="banner-estrela-guia">
     <div class="guia-titulo">⭐ ESTRELA DOURADA CAPTURADA! Cadastre-se ou entre na sua conta!</div>
@@ -557,6 +563,8 @@ body { overflow-x: hidden; }
   <a class="back" href="index.html">&#8592; Voltar</a>
 </header>
 
+<!-- A11y: <main> delimita o conteúdo principal para leitores de tela e navegação por landmark -->
+<main id="conteudo-principal">
 <!-- HERO BANNER -->
 <section class="hero-banner">
   <img loading="lazy" class="hero-logo-circle" src="images/logo.webp" alt="Logo Itapolitana" onerror="this.style.display='none'">
@@ -952,7 +960,7 @@ body { overflow-x: hidden; }
       <div class="form-group" id="fg-cel">
         <span class="seta-guia" id="seta-cel">&#10148;</span>
         <label>Celular (WhatsApp) <span style="font-size:11px;color:#E65100;font-weight:700;">&#128242; numero ativo com WhatsApp</span></label>
-        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" autocomplete="tel">
         <div class="hint warn">
           &#11088; <strong>IMPORTANTE:</strong> Este celular sera usado para receber seu premio. Certifique-se de que o numero esta correto e com WhatsApp ativo.
         </div>
@@ -981,7 +989,7 @@ body { overflow-x: hidden; }
     <div id="form-login" style="display:none">
       <div class="form-group">
         <label>Celular (WhatsApp)</label>
-        <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+        <input type="tel" id="inp-cel-login" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" autocomplete="tel">
       </div>
       <div class="form-group">
         <label>Data de nascimento (confirmacao)</label>
@@ -1218,6 +1226,7 @@ body { overflow-x: hidden; }
 </div>
 
 <!-- RODAPE -->
+</main>
 <footer style="background:#222;color:#aaa;text-align:center;padding:24px 20px;font-size:.8rem;margin-top:20px">
   <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
     <img loading="lazy" src="images/logo.webp" alt="Logo" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.2)" onerror="this.style.display='none'">
@@ -1226,7 +1235,7 @@ body { overflow-x: hidden; }
       <div style="font-size:.75rem">Programa de Fidelidade</div>
     </div>
   </div>
-  <p>Duvidas? <a href="https://wa.me/5516996062046" style="color:#ff8c00" target="_blank">Fale conosco no WhatsApp</a></p>
+  <p>Duvidas? <a href="https://wa.me/5516996062046" style="color:#ff8c00" target="_blank" rel="noopener noreferrer">Fale conosco no WhatsApp</a></p>
   <p style="margin-top:12px">
     <button onclick="window.location.href='admin-painel.html'" style="background:none;border:none;color:rgba(255,255,255,0.12);font-size:1.1rem;cursor:pointer;padding:8px;line-height:1;" title="Admin">&#9881;&#65039;</button>
   </p>
