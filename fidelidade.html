@@ -3049,8 +3049,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(typeof clienteAtual!=='undefined'&&clienteAtual){
       _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
     }else{
-      var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
-      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
+      var mm=document.getElementById('msg-acesso'),errTxt=mm?(mm.textContent||'').trim():'';
+      var errSafe=errTxt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(errSafe||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
       if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
     }
   };
@@ -3069,8 +3070,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(typeof clienteAtual!=='undefined'&&clienteAtual){
       _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
     }else{
-      var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
-      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Verifique seus dados e tente novamente.')+'</div>';
+      var mm=document.getElementById('msg-acesso'),errTxt=mm?(mm.textContent||'').trim():'';
+      var errSafe=errTxt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(errSafe||'Verifique seus dados e tente novamente.')+'</div>';
       if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
     }
   };
@@ -3082,7 +3084,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var tok=_tok||sessionStorage.getItem('itap_estrela_token');
     if(!tok){_erro('Token n\u00E3o encontrado. A estrela pode ter expirado.');return;}
     // direto=true: pula o botão legado, salva direto (o clique no wizard JÁ é a confirmação humana)
-    Promise.resolve(processarTokenEstrela(tok,true)).then(function(ok){
+    processarTokenEstrela(tok,true).then(function(ok){
       if(ok)_sucesso();
       else _erro('Pode ter expirado ou j\u00E1 foi capturada por outro ca\u00E7ador.<br><span style="font-size:.8rem;color:#888">Tente novamente no pr\u00F3ximo hor\u00E1rio.</span>');
     }).catch(function(){_erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');});
