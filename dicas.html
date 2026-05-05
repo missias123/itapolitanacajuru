@@ -378,5 +378,59 @@
 <script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
+
+<script>
+// AdminSync: depoimentos a partir do admin, com fallback para conteúdo estático
+(function () {
+  'use strict';
+  var CONFIG_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/config.json';
+
+  function renderEstrelas(n) {
+    var s = '';
+    for (var i = 0; i < (n || 5); i++) s += '★';
+    return s;
+  }
+
+  function renderDepoimentos(lista) {
+    var grid = document.querySelector('.testimonial-grid');
+    if (!grid) return;
+    grid.innerHTML = lista.map(function (d) {
+      var fotoHtml = d.foto
+        ? '<img src="' + d.foto + '" alt="' + (d.nome || 'Cliente') + '" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #E64A19;">'
+        : '';
+      return '<div class="testimonial-item">'
+        + '<div class="stars">' + renderEstrelas(d.estrelas) + '</div>'
+        + '<p>"' + (d.texto || '') + '"</p>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-top:6px;">'
+        + fotoHtml
+        + '<p class="author">- ' + (d.nome || 'Cliente') + '</p>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  try {
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var tid = ctrl ? setTimeout(function () { ctrl.abort(); }, 4000) : null;
+    fetch(CONFIG_URL, ctrl ? { signal: ctrl.signal } : {})
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (cfg) {
+        if (tid) clearTimeout(tid);
+        if (!cfg) return; // Fallback: mantém conteúdo estático
+
+        // AdminSync: renderizar depoimentos do admin se houver dados válidos
+        if (Array.isArray(cfg.depoimentos)) {
+          var validos = cfg.depoimentos.filter(function (d) { return d && typeof d.texto === 'string' && d.texto.trim(); });
+          if (validos.length > 0) renderDepoimentos(validos);
+        }
+
+        // AdminSync: atualizar link do Google Maps se configurado no admin
+        var mapsBtn = document.querySelector('.btn-google-reviews');
+        if (mapsBtn && cfg.googleMaps) mapsBtn.href = cfg.googleMaps;
+      });
+  } catch (e) {} // Fallback: mantém conteúdo estático em caso de erro inesperado
+}());
+</script>
 </body>
 </html>
