@@ -1113,7 +1113,7 @@ body { overflow-x: hidden; }
       <div class="card-title">&#127903;&#65039; Inserir Codigo</div>
       <p style="font-size:.82rem;color:#888;margin-bottom:12px">Digite o codigo que voce recebeu na sorveteria.</p>
       <input type="text" id="input-codigo" class="codigo-input" placeholder="Ex: VH*BCCQFN%" maxlength="10" oninput="this.value=this.value.toUpperCase()">
-      <button class="btn btn-laranja" id="btn-validar" onclick="validarCodigo()" style="margin-top:12px">&#9989; Validar Codigo</button>
+      <button class="btn btn-laranja" id="btn-validar" onclick="validarCodigo()" style="margin-top:12px">&#9989; Validar Código</button>
       <div class="msg" id="msg-codigo"></div>
     </div>
 
@@ -2205,7 +2205,7 @@ async function bloquearClienteServidor(motivo) {
 // ═══════════════════════════════════════════════════════════
 // VALIDAR CODIGO
 // ═══════════════════════════════════════════════════════════
-const BTN_VALIDAR_LABEL = '✅ Validar Codigo'; // rótulo original do botão
+const BTN_VALIDAR_LABEL = '✅ Validar Código'; // rótulo original do botão
 
 async function validarCodigo() {
   const btn = document.getElementById('btn-validar');
@@ -2266,7 +2266,8 @@ async function validarCodigo() {
       registrarLogDetalhado(codigo, 'Codigo inexistente');
       const podeTentar = registrarTentativaInvalida();
       const tentativas = JSON.parse(localStorage.getItem('itap_fid_tentativas') || '{"tentativas":[]}');
-      const restam = Math.max(0, LIMITE_TENTATIVAS - (tentativas.tentativas ? tentativas.tentativas.length : 0));
+      const listaTentativas = tentativas.tentativas || [];
+      const restam = Math.max(0, LIMITE_TENTATIVAS - listaTentativas.length);
       if (!podeTentar) {
         showMsg('msg-codigo','Muitas tentativas. Aguarde 10 minutos.','erro');
         const fraudesCliente = Object.values(ghFidelidade.fraudes || {}).filter(f => f.cel === clienteAtual.cel).length;
