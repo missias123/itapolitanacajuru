@@ -7,16 +7,63 @@
   <meta name="description" content="Política de Privacidade da Sorveteria Itapolitana de Cajuru/SP. Saiba como coletamos, usamos e protegemos seus dados conforme a LGPD."/>
   <meta name="robots" content="index, follow"/>
   <link rel="canonical" href="https://itapolitanacajuru.com.br/politica-privacidade.html"/>
-  <!-- Google Analytics (Consent Mode v2 padrão negado) -->
+  <!-- Segurança/LGPD: Google Consent Mode v2 — padrão negado até o usuário escolher no banner de cookies -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('consent', 'default', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'wait_for_update': 500
+    });
   </script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF"></script>
+  <!-- Perf/LGPD: adiar carregamento do GA/GTM até consentimento explícito -->
   <script>
-    gtag('js', new Date());
-    gtag('config', 'G-S6TCMLQLQF');
+    (function(){
+      'use strict';
+      var KEY='itap_cookie_consent_v1';
+      function getConsent(){
+        try { return JSON.parse(localStorage.getItem(KEY)||'null'); } catch(e){ return null; }
+      }
+      function setConsent(prefs){
+        try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch(e){}
+        gtag('consent','update',{
+          'analytics_storage': prefs.analytics ? 'granted' : 'denied',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied'
+        });
+        if (prefs.analytics) loadAnalytics();
+      }
+      function loadAnalytics(){
+        if (window.__itap_analytics_loaded) return;
+        window.__itap_analytics_loaded = true;
+        var ga = document.createElement('script');
+        ga.async = true;
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF';
+        document.head.appendChild(ga);
+        gtag('js', new Date());
+        gtag('config', 'G-S6TCMLQLQF', {'send_page_view': true});
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-K7L8M9N');
+      }
+      var saved = getConsent();
+      if (saved && saved.analytics === true) {
+        gtag('consent','update',{
+          'analytics_storage':'granted',
+          'ad_storage':'denied',
+          'ad_user_data':'denied',
+          'ad_personalization':'denied'
+        });
+        loadAnalytics();
+      }
+      window.ITAP_CONSENT = { get:getConsent, set:setConsent, loadAnalytics:loadAnalytics };
+    })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
