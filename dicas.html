@@ -421,7 +421,7 @@
 
         // AdminSync: renderizar depoimentos do admin se houver dados válidos
         if (Array.isArray(cfg.depoimentos)) {
-          var validos = cfg.depoimentos.filter(function (d) { return d && d.texto; });
+          var validos = cfg.depoimentos.filter(function (d) { return d && typeof d.texto === 'string' && d.texto.trim(); });
           if (validos.length > 0) renderDepoimentos(validos);
         }
 
