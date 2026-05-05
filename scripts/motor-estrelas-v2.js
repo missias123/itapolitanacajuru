@@ -85,6 +85,8 @@ class MotorEstrelasV2 {
    * BUG FIX #1: Verificar se é o horário exato da estrela (SEM expiração automática)
    */
   ehHorarioDaEstrela() {
+    // Sistema desativado pelo admin — não mostrar
+    if (!this.config || !this.config.ativo) return false;
     // Estrela já capturada ou em resgate — não mostrar
     if (this.estrelaCapturada.status === 'capturada' || this.estrelaCapturada.status === 'em_resgate') {
       return false;
