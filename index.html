@@ -4873,5 +4873,87 @@ document.addEventListener('DOMContentLoaded', checkCookies);
   document.head.appendChild(s1);
 })();
 </script>
+<!-- ══════════════════════════════════════════════════════════════════
+     🎵 PLAYER DE MÚSICA FLUTUANTE
+     Como os grandes sites fazem: só toca quando o visitante clicar.
+     Para trocar a música: substitua a URL em `src` abaixo por qualquer
+     link .mp3 público, ou faça upload do arquivo e use o caminho relativo
+     (ex: "musicas/fundo.mp3").
+     ══════════════════════════════════════════════════════════════════ -->
+<audio id="musica-fundo" loop preload="none">
+  <source src="https://cdn.pixabay.com/audio/2023/07/05/audio_38a80c5945.mp3" type="audio/mpeg">
+</audio>
+
+<button id="btn-musica" aria-label="Tocar música de fundo" title="Tocar / Pausar música">
+  🎵
+</button>
+
+<style>
+#btn-musica {
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  z-index: 9997;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #EF0129;
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(239,1,41,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+}
+#btn-musica:hover  { background: #c0001f; transform: scale(1.08); }
+#btn-musica:active { transform: scale(.94); }
+#btn-musica.tocando {
+  animation: musica-pulse 1.8s ease-in-out infinite;
+}
+@keyframes musica-pulse {
+  0%,100% { box-shadow: 0 4px 16px rgba(239,1,41,.45); }
+  50%      { box-shadow: 0 4px 28px rgba(239,1,41,.85), 0 0 0 10px rgba(239,1,41,.15); }
+}
+</style>
+
+<script>
+(function () {
+  var audio = document.getElementById('musica-fundo');
+  var btn   = document.getElementById('btn-musica');
+  if (!audio || !btn) return;
+
+  btn.addEventListener('click', function () {
+    if (audio.paused) {
+      audio.play().then(function () {
+        btn.textContent = '⏸';
+        btn.setAttribute('aria-label', 'Pausar música');
+        btn.classList.add('tocando');
+      }).catch(function (err) {
+        console.warn('[Música] Não foi possível tocar:', err);
+      });
+    } else {
+      audio.pause();
+      btn.textContent = '🎵';
+      btn.setAttribute('aria-label', 'Tocar música de fundo');
+      btn.classList.remove('tocando');
+    }
+  });
+
+  // Restaura ícone se o áudio for interrompido externamente
+  audio.addEventListener('pause', function () {
+    if (btn.textContent === '⏸') {
+      btn.textContent = '🎵';
+      btn.classList.remove('tocando');
+    }
+  });
+})();
+</script>
+
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div></body>
 </html>
