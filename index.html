@@ -614,8 +614,9 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   .btn-sabores, .btn-comp { font-size: 16px !important; font-weight: 900 !important; height: 54px !important; }
 
   /* 3. AJUSTES DE ELEMENTOS FLUTUANTES */
-  .itabot-wrap{bottom:14px;right:12px}
-  .itabot-btn{width:68px;height:68px}
+  /* Ita Bot: tamanhos responsivos — Mobile (≤600px) */
+  .itabot-wrap{bottom:16px;right:16px}
+  .itabot-btn{width:56px;height:56px}
   .gatilho-flutuante { bottom: 95px !important; right: 15px !important; width: 70px !important; height: 70px !important; }
 }
 /* TABLET (601px–1024px) - OTIMIZAÇÃO DE LAYOUT */
@@ -635,7 +636,12 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   .prod-grid { grid-template-columns: repeat(3, 1fr) !important; }
   
   #promo-fab{bottom:85px;right:12px}
-  .itabot-wrap{bottom:18px;right:12px}
+  /* Ita Bot: tamanhos responsivos — Tablet (601px–1024px) */
+  .itabot-wrap{bottom:20px;right:20px}
+  .itabot-btn{width:60px;height:60px}
+  /* Ita Bot: tamanhos responsivos — janela chat tablet */
+  dialog#chat-dialog{max-width:320px;height:60vh;max-height:60vh}
+  .chat-box{height:60vh;max-width:320px}
 }
 
 /* DESKTOP (1025px+) - ELEGÂNCIA E ESPAÇO */
@@ -666,22 +672,26 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   .prod-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 25px !important; }
 
   #promo-fab{bottom:90px;right:24px}
+  /* Ita Bot: tamanhos responsivos — Desktop (≥1025px) */
   .itabot-wrap{bottom:24px;right:24px}
+  .itabot-btn{width:64px;height:64px}
 }
 /* BOTAO ADMIN FLUTUANTE - DIREITA ACIMA DO SORTEIO */
 #admin-fab{position:fixed;right:6px;bottom:108px;z-index:9998;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.12);color:rgba(255,255,255,.3);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.1);box-shadow:none;letter-spacing:.2px;white-space:nowrap;opacity:.4}
 /* chat-overlay: substituído por dialog#chat-dialog */
-dialog#chat-dialog{border:none;padding:0;background:transparent;width:calc(100% - 32px);max-width:500px;margin:auto auto 0;border-radius:24px 24px 0 0;overflow:hidden;max-height:92vh}
+dialog#chat-dialog{border:none;padding:0;background:transparent;width:calc(100% - 32px);max-width:360px;margin:auto auto 0;border-radius:24px 24px 0 0;overflow:hidden;max-height:70vh}
 dialog#chat-dialog::backdrop{background:rgba(0,0,0,.6)}
 dialog#chat-dialog[open]{animation:slideUpDialog .25s ease-out}
 @media(max-width:600px){
-  dialog#chat-dialog{inset:0;width:100%;max-width:100%;height:100%;max-height:100%;border-radius:0;margin:0}
-  .chat-box{height:100svh;border-radius:0;max-width:100%}
-  .chat-hdr{border-radius:0;padding:16px 16px 12px}
+  /* Ita Bot: tamanhos responsivos — janela chat mobile (≤600px) */
+  dialog#chat-dialog{inset:auto 8px 72px 8px;width:auto;max-width:none;height:70vh;max-height:70vh;border-radius:20px 20px 0 0;margin:0}
+  .chat-box{height:70vh;border-radius:20px 20px 0 0;max-width:100%}
+  .chat-hdr{border-radius:20px 20px 0 0;padding:16px 16px 12px}
   .chat-close{border-radius:10px;padding:8px 14px;width:auto;height:auto;min-height:44px;font-size:15px;gap:5px}
 }
 
-.chat-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:500px;height:72vh;display:flex;flex-direction:column}
+/* Ita Bot: tamanhos responsivos — janela chat desktop (base) */
+.chat-box{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:360px;height:min(480px,70vh);display:flex;flex-direction:column}
 .chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);color:#fff;padding:16px 20px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between}
 .chat-hdr h3{font-size:16px;font-weight:800}
 .chat-hdr p{font-size:11px;color:#fff;font-weight:600}
