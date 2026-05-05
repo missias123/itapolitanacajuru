@@ -235,15 +235,36 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
    botão desabilitado explícito, link para política de privacidade.
    ═══════════════════════════════════════════════════════════ */
 .aceite-area{background:#FFFDE7;border:2px solid #FFF176;border-radius:14px;padding:14px 16px;margin-bottom:14px}
-.aceite-area.laranja{background:#FFF8F0;border-color:#FFCC80}
-.aceite-area.verde{background:#F1F8E9;border-color:#A5D6A7}
+.aceite-area.laranja{background:#FFF8F0;border-color:#FFCC80;transition:border-color .3s,background .3s}
+.aceite-area.laranja:has(input:checked){border-color:#e8650a;background:#fff3e0}
+.aceite-area.verde{background:#F1F8E9;border-color:#A5D6A7;transition:border-color .3s,background .3s}
+.aceite-area.verde:has(input:checked){border-color:#2e7d32;background:#e8f5e9}
 /* Label clicável de largura total — touch target generoso */
-.aceite-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:.87rem;color:#333;margin-bottom:0;min-height:44px;padding:4px 0;line-height:1.5}
+.aceite-label{display:flex;align-items:center;gap:14px;cursor:pointer;font-size:.87rem;color:#333;margin-bottom:0;min-height:52px;padding:8px 4px;line-height:1.5}
+/* Esconde checkbox nativo */
 .aceite-label input[type="checkbox"]{
-  width:22px;height:22px;min-width:22px;
-  margin-top:1px;flex-shrink:0;cursor:pointer;
-  accent-color:#e8650a;
-  border-radius:5px;
+  position:absolute;opacity:0;width:0;height:0;pointer-events:none;
+}
+/* Quadrado visual customizado */
+.chk-aceite-visual{
+  display:flex;align-items:center;justify-content:center;
+  width:30px;height:30px;min-width:30px;
+  border:3px solid #e8650a;border-radius:8px;
+  background:#fff;cursor:pointer;flex-shrink:0;
+  transition:all .25s;
+  animation:pulsarChk 1.8s ease-in-out infinite;
+  font-size:0;
+}
+.aceite-label input[type="checkbox"]:checked + .chk-aceite-visual{
+  background:#e8650a;border-color:#e8650a;
+  font-size:18px;color:#fff;font-weight:900;
+  animation:none;
+  box-shadow:0 0 0 4px rgba(232,101,10,.2);
+}
+.chk-aceite-visual::after{content:"✓";color:#fff;font-weight:900;font-size:inherit;line-height:1}
+@keyframes pulsarChk{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,101,10,.35);border-color:#e8650a}
+  50%{box-shadow:0 0 0 6px rgba(232,101,10,.0);border-color:#ff8c00}
 }
 .aceite-label .aceite-txt{flex:1}
 .aceite-lgpd-link{color:#e8650a;font-weight:700;text-decoration:underline}
@@ -280,9 +301,13 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
   50%{box-shadow:0 6px 24px rgba(232,101,10,.65)}
 }
 /* Checkbox grande na área de estrelas (dentro do painel cliente) */
-.aceite-estrelas-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer;background:#fff;border-radius:10px;padding:12px 14px;border:2px solid #FFCC80;min-height:44px;font-size:.85rem;color:#333;line-height:1.5;transition:border-color .2s}
+.aceite-estrelas-label{display:flex;align-items:center;gap:14px;cursor:pointer;background:#fff;border-radius:10px;padding:14px;border:2px solid #FFCC80;min-height:52px;font-size:.85rem;color:#333;line-height:1.5;transition:border-color .3s,background .3s}
 .aceite-estrelas-label:has(input:checked){border-color:#e8650a;background:#FFF8F0}
-.aceite-estrelas-label input[type="checkbox"]{width:22px;height:22px;min-width:22px;margin-top:1px;flex-shrink:0;cursor:pointer;accent-color:#e8650a}
+/* Esconde checkbox nativo dentro de aceite-estrelas-label */
+.aceite-estrelas-label input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+/* Quadrado visual customizado (herdado de .aceite-label mas também funciona aqui) */
+.aceite-estrelas-label .chk-aceite-visual{border-color:#e8650a}
+.aceite-estrelas-label input[type="checkbox"]:checked + .chk-aceite-visual{background:#e8650a;border-color:#e8650a;font-size:18px;animation:none;box-shadow:0 0 0 4px rgba(232,101,10,.2)}
 
 /* ── BLOCO FORMULARIO INLINE ── */
 .bloco-form{display:none;margin-top:14px;background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
@@ -831,6 +856,7 @@ body { overflow-x: hidden; }
             <div class="aceite-area laranja">
               <label class="aceite-label" for="aceite-fidelidade-inline">
                 <input type="checkbox" id="aceite-fidelidade-inline" onchange="verificarAceiteFidelidadeInline()">
+                <span class="chk-aceite-visual" aria-hidden="true"></span>
                 <span class="aceite-txt">Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru e com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
               </label>
             </div>
@@ -985,6 +1011,7 @@ body { overflow-x: hidden; }
         <div class="aceite-area laranja" style="margin-bottom:10px">
           <label class="aceite-label" for="chk-lgpd-novo">
             <input type="checkbox" id="chk-lgpd-novo" onchange="verificarLgpdNovo()">
+            <span class="chk-aceite-visual" aria-hidden="true"></span>
             <span class="aceite-txt">Li e concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados exclusivamente para o programa de fidelidade.</span>
           </label>
         </div>
@@ -1099,6 +1126,7 @@ body { overflow-x: hidden; }
         </div>
         <label class="aceite-estrelas-label" for="chk-aceita-regras-estrelas">
           <input type="checkbox" id="chk-aceita-regras-estrelas" style="cursor:pointer;accent-color:#e8650a">
+          <span class="chk-aceite-visual" aria-hidden="true"></span>
           <span style="flex:1;font-size:.85rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
         </label>
       </div>
