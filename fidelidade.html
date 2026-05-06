@@ -52,77 +52,6 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:100vh}
-/* === GUIA ESTRELA === */
-#banner-estrela-guia{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#bf360c,#e8650a);color:#fff;padding:10px 16px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.35)}
-#banner-estrela-guia .guia-titulo{font-size:1rem;font-weight:900;margin-bottom:2px}
-#banner-estrela-guia .guia-passo{font-size:.82rem;font-weight:700;opacity:.95;margin-bottom:4px}
-#banner-estrela-guia .guia-timer{font-size:1.3rem;font-weight:900;letter-spacing:2px}
-#banner-estrela-guia .guia-timer.urgente{color:#ffeb3b;animation:piscar .6s infinite}
-@keyframes piscar{0%,100%{opacity:1}50%{opacity:.3}}
-.seta-guia{display:none;position:absolute;left:-38px;top:50%;transform:translateY(-50%);font-size:1.8rem;animation:setaPulsar .7s infinite alternate;color:#e8650a;pointer-events:none;z-index:100}
-@keyframes setaPulsar{0%{transform:translateY(-50%) translateX(0)}100%{transform:translateY(-50%) translateX(8px)}}
-.campo-ativo-guia{border:3px solid #e8650a !important;box-shadow:0 0 0 4px rgba(232,101,10,.25) !important;transition:all .3s}
-.form-group{position:relative}
-
-/* ═══════════════════════════════════════════════════════════
-   WIZARD LINEAR DA ESTRELA DOURADA
-   Fluxo empilhado passo a passo — sem abas, sem confusão
-   ═══════════════════════════════════════════════════════════ */
-#wizard-estrela{display:none;max-width:480px;margin:0 auto 24px;font-family:'Nunito',sans-serif}
-.wiz-header{background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border-radius:18px 18px 0 0;padding:18px 20px 14px;text-align:center}
-.wiz-header h2{font-size:1.25rem;font-weight:900;margin:0 0 4px;text-shadow:0 1px 4px rgba(0,0,0,.4)}
-.wiz-timer-bar{background:rgba(0,0,0,.25);border-radius:8px;height:8px;margin:10px 0 4px;overflow:hidden}
-.wiz-timer-fill{height:100%;background:linear-gradient(90deg,#F9A825,#FFD600);border-radius:8px;transition:width 1s linear}
-.wiz-timer-txt{font-size:1.15rem;font-weight:900;letter-spacing:2px}
-.wiz-timer-txt.urgente{color:#FFD600;animation:piscar .6s infinite}
-/* Indicador de passos */
-.wiz-steps{display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 20px;background:#fff7f0;border-bottom:1px solid #FFE0B2}
-.wiz-step-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #E0E0E0;background:#fff;color:#999;font-size:.78rem;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all .3s}
-.wiz-step-dot.ativo{border-color:#EF0129;background:#EF0129;color:#fff;box-shadow:0 0 0 3px rgba(239,1,41,.2)}
-.wiz-step-dot.feito{border-color:#2E7D32;background:#2E7D32;color:#fff}
-.wiz-step-linha{flex:1;height:2px;background:#E0E0E0;max-width:30px;transition:background .3s}
-.wiz-step-linha.feita{background:#2E7D32}
-/* Painel de cada etapa */
-.wiz-body{background:#fff;border-radius:0 0 18px 18px;padding:22px 20px 18px;box-shadow:0 8px 32px rgba(0,0,0,.13)}
-.wiz-etapa{display:none}
-.wiz-etapa.ativa{display:block}
-.wiz-titulo-etapa{font-size:1rem;font-weight:900;color:#1A0A00;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #FFF3E0}
-/* Campo do wizard */
-.wiz-campo{margin-bottom:16px}
-.wiz-campo label{display:block;font-size:.85rem;font-weight:800;color:#5D3A1A;margin-bottom:6px}
-.wiz-campo input{width:100%;padding:13px 14px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif;box-sizing:border-box;transition:border-color .2s,box-shadow .2s;color:#1A0A00}
-.wiz-campo input:focus{outline:none;border-color:#EF0129;box-shadow:0 0 0 3px rgba(239,1,41,.15)}
-.wiz-campo input.valido{border-color:#2E7D32;box-shadow:0 0 0 3px rgba(46,125,50,.12)}
-.wiz-campo input.invalido{border-color:#C62828;box-shadow:0 0 0 3px rgba(198,40,40,.15)}
-.wiz-campo .wiz-dica{font-size:.78rem;color:#888;margin-top:4px;line-height:1.5}
-.wiz-campo .wiz-dica.alerta{color:#C62828;font-weight:700}
-/* Botões do wizard */
-.wiz-acoes{display:flex;gap:10px;margin-top:18px}
-.wiz-btn-prox{flex:1;padding:14px;background:linear-gradient(135deg,#C62828,#EF0129);color:#fff;border:none;border-radius:50px;font-size:1rem;font-weight:900;cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.5);box-shadow:0 4px 14px rgba(239,1,41,.35);transition:all .2s;font-family:'Nunito',sans-serif}
-.wiz-btn-prox:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
-.wiz-btn-prox:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(239,1,41,.45)}
-.wiz-btn-volt{padding:14px 18px;background:#fff;color:#C62828;border:2px solid #C62828;border-radius:50px;font-size:.9rem;font-weight:800;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif}
-/* Mensagem de erro dentro do wizard */
-.wiz-msg{margin-top:12px;padding:10px 14px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}
-.wiz-msg.ok{background:#E8F5E9;color:#1B5E20;border:1.5px solid #81C784;display:block}
-.wiz-msg.erro{background:#FFEBEE;color:#C62828;border:1.5px solid #EF9A9A;display:block}
-.wiz-msg.aviso{background:#FFF8E1;color:#E65100;border:1.5px solid #FFE082;display:block}
-/* Botão escolha inicial */
-.wiz-escolha{display:flex;flex-direction:column;gap:12px}
-.wiz-btn-escolha{padding:16px 20px;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;border:2.5px solid transparent;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;font-family:'Nunito',sans-serif}
-.wiz-btn-escolha.novo{background:#FFF3E0;border-color:#E65100;color:#BF360C}
-.wiz-btn-escolha.novo:hover{background:#FFE0B2;transform:translateY(-2px)}
-.wiz-btn-escolha.login{background:#E3F2FD;border-color:#0D47A1;color:#0D47A1}
-.wiz-btn-escolha.login:hover{background:#BBDEFB;transform:translateY(-2px)}
-.wiz-btn-escolha-icon{font-size:1.8rem}
-.wiz-btn-escolha-txt strong{display:block;font-size:1rem}
-.wiz-btn-escolha-txt span{font-size:.8rem;font-weight:600;opacity:.8}
-/* Etapa de sucesso / reivindicar */
-#wiz-etapa-reivindicar{text-align:center;padding:8px 0 4px}
-.wiz-estrela-animada{font-size:4rem;animation:flutuarEstrela 2s ease-in-out infinite;display:block;margin-bottom:8px}
-.wiz-btn-reivindicar{width:100%;padding:18px;background:linear-gradient(135deg,#F9A825,#EF0129);color:#fff;border:none;border-radius:50px;font-size:1.15rem;font-weight:900;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.5);box-shadow:0 6px 22px rgba(239,1,41,.4);transition:all .2s;font-family:'Nunito',sans-serif;animation:pulsarBtn 1.5s ease-in-out infinite}
-@keyframes pulsarBtn{0%,100%{box-shadow:0 6px 22px rgba(239,1,41,.4)}50%{box-shadow:0 8px 30px rgba(239,1,41,.65)}}
-.wiz-btn-reivindicar:disabled{background:#ccc;animation:none;box-shadow:none;cursor:not-allowed}
 
 /* ── LOADING ── */
 #loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
@@ -300,14 +229,6 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
   0%,100%{box-shadow:0 4px 16px rgba(232,101,10,.4)}
   50%{box-shadow:0 6px 24px rgba(232,101,10,.65)}
 }
-/* Checkbox grande na área de estrelas (dentro do painel cliente) */
-.aceite-estrelas-label{display:flex;align-items:center;gap:14px;cursor:pointer;background:#fff;border-radius:10px;padding:14px;border:2px solid #FFCC80;min-height:52px;font-size:.85rem;color:#333;line-height:1.5;transition:border-color .3s,background .3s}
-.aceite-estrelas-label:has(input:checked){border-color:#e8650a;background:#FFF8F0}
-/* Esconde checkbox nativo dentro de aceite-estrelas-label */
-.aceite-estrelas-label input[type="checkbox"]{position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden}
-/* Quadrado visual customizado (herdado de .aceite-label mas também funciona aqui) */
-.aceite-estrelas-label .chk-aceite-visual{border-color:#e8650a}
-.aceite-estrelas-label input[type="checkbox"]:checked + .chk-aceite-visual{background:#e8650a;border-color:#e8650a;font-size:18px;color:#fff;font-weight:900;animation:none;box-shadow:0 0 0 4px rgba(232,101,10,.2)}
 
 /* ── BLOCO FORMULARIO INLINE ── */
 .bloco-form{display:none;margin-top:14px;background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
@@ -547,16 +468,8 @@ button, input[type="submit"] {
 body { overflow-x: hidden; }
 </style>
 <!-- cache-bust:20260416_083500 -->
-<link rel="stylesheet" href="mascote.css?v=7">
 </head>
 <body>
-  <!-- BANNER GUIA ESTRELA DOURADA -->
-  <div id="banner-estrela-guia">
-    <div class="guia-titulo">⭐ ESTRELA DOURADA CAPTURADA! Cadastre-se ou entre na sua conta!</div>
-    <div class="guia-passo" id="guia-passo-txt">Preencha o campo abaixo ↓</div>
-    <div class="guia-timer" id="guia-timer-txt">05:00</div>
-  </div>
-
   <!-- BANNER AVISO CUPONS E TESTE -->
   <div id="banner-aviso-fidelidade" style="background: linear-gradient(90deg, #d32f2f, #f44336); color: #fff; padding: 12px; text-align: center; font-size: 0.85rem; font-weight: 800; box-shadow: 0 2px 10px rgba(0,0,0,0.2); position: relative; z-index: 99;">
     <div style="max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
@@ -637,165 +550,6 @@ body { overflow-x: hidden; }
     </div>
   </div>
 </section>
-
-<!-- SECAO REIVINDICAR ESTRELA (exibida dinamicamente pelo JS) -->
-<!-- SEÇÃO REIVINDICAR (mantida para compatibilidade com código legado) -->
-<div id="secao-reivindicar-estrela" style="display:none;" class="hero-banner">
-  <h1 style="font-size:1.5rem;margin-bottom:10px;">🌟 Estrela Dourada Encontrada!</h1>
-  <p style="margin-bottom:20px;">Clique abaixo para reivindicar sua estrela e somar pontos!</p>
-  <button id="btn-reivindicar-estrela" class="btn-participar laranja" style="width:auto;padding:12px 30px;" aria-label="Reivindicar minha estrela dourada">REIVINDICAR MINHA ESTRELA!</button>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     WIZARD LINEAR DA ESTRELA DOURADA
-     Fluxo empilhado passo a passo — padrão iFood/WhatsApp
-     Aparece automaticamente quando há ?token=EST_ na URL
-     ═══════════════════════════════════════════════════════════ -->
-<div id="wizard-estrela">
-
-  <!-- Cabeçalho com timer -->
-  <div class="wiz-header">
-    <div style="font-size:2rem;margin-bottom:4px">⭐</div>
-    <h2>Você capturou a Estrela Dourada!</h2>
-    <p style="font-size:.85rem;opacity:.9;margin:2px 0 8px">Siga os passos abaixo para garantir sua estrela</p>
-    <div class="wiz-timer-bar"><div class="wiz-timer-fill" id="wiz-timer-fill"></div></div>
-    <div class="wiz-timer-txt" id="wiz-timer-txt">05:00</div>
-  </div>
-
-  <!-- Indicador de etapas -->
-  <div class="wiz-steps" id="wiz-steps">
-    <div class="wiz-step-dot ativo" id="wiz-dot-0">1</div>
-    <div class="wiz-step-linha" id="wiz-linha-0"></div>
-    <div class="wiz-step-dot" id="wiz-dot-1">2</div>
-    <div class="wiz-step-linha" id="wiz-linha-1"></div>
-    <div class="wiz-step-dot" id="wiz-dot-2">3</div>
-    <div class="wiz-step-linha" id="wiz-linha-2"></div>
-    <div class="wiz-step-dot" id="wiz-dot-3">⭐</div>
-  </div>
-
-  <!-- Corpo do wizard -->
-  <div class="wiz-body">
-
-    <!-- ETAPA 0: Já tem cadastro? -->
-    <div class="wiz-etapa ativa" id="wiz-e0">
-      <div class="wiz-titulo-etapa">Passo 1 — Você já tem cadastro aqui?</div>
-      <p style="font-size:.9rem;color:#555;margin-bottom:16px;line-height:1.6">Para garantir sua estrela precisamos identificar você. Escolha uma opção:</p>
-      <div class="wiz-escolha">
-        <button class="wiz-btn-escolha login" onclick="wizIrPara('login')">
-          <span class="wiz-btn-escolha-icon">🔓</span>
-          <div class="wiz-btn-escolha-txt">
-            <strong>Sim, já sou cadastrado</strong>
-            <span>Entrar com celular e data de nascimento</span>
-          </div>
-        </button>
-        <button class="wiz-btn-escolha novo" onclick="wizIrPara('novo')">
-          <span class="wiz-btn-escolha-icon">🆕</span>
-          <div class="wiz-btn-escolha-txt">
-            <strong>Não, é minha primeira vez</strong>
-            <span>Criar cadastro rápido — 3 campos apenas</span>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <!-- ETAPA LOGIN: Celular + Data -->
-    <div class="wiz-etapa" id="wiz-e-login">
-      <div class="wiz-titulo-etapa">Passo 2 — Entre na sua conta</div>
-      <div class="wiz-campo">
-        <label>📱 Seu celular (WhatsApp com DDD)</label>
-        <input type="tel" id="wiz-cel-login" placeholder="(16) 99999-9999"
-               oninput="mascaraTel(this)" maxlength="15" inputmode="numeric"
-               autocomplete="tel">
-        <div class="wiz-dica">O mesmo número cadastrado no Clube de Fidelidade</div>
-      </div>
-      <div class="wiz-campo">
-        <label>🎂 Data de nascimento (confirmação)</label>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="wiz-login-dia" placeholder="Dia" maxlength="2"
-                 inputmode="numeric" autocomplete="off"
-                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
-          <input type="text" id="wiz-login-mes" placeholder="Mês" maxlength="2"
-                 inputmode="numeric" autocomplete="off"
-                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
-          <input type="text" id="wiz-login-ano" placeholder="Ano" maxlength="4"
-                 inputmode="numeric" autocomplete="off"
-                 style="flex:1;padding:13px;border:2px solid #E0E0E0;border-radius:10px;font-size:1rem;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;box-sizing:border-box">
-        </div>
-      </div>
-      <div class="wiz-msg" id="wiz-msg-login"></div>
-      <div class="wiz-acoes">
-        <button class="wiz-btn-volt" onclick="wizIrPara('inicio')">← Voltar</button>
-        <button class="wiz-btn-prox" onclick="wizEntrar()" id="wiz-btn-entrar">🔓 Entrar e Garantir Estrela</button>
-      </div>
-    </div>
-
-    <!-- ETAPA NOVO — Passo A: Nome -->
-    <div class="wiz-etapa" id="wiz-e-nome">
-      <div class="wiz-titulo-etapa">Passo 2 — Qual é o seu nome completo?</div>
-      <div class="wiz-campo">
-        <label>📋 Nome completo (idêntico ao RG/CNH)</label>
-        <input type="text" id="wiz-nome" placeholder="Ex: Maria Silva de Oliveira"
-               autocomplete="name" autocapitalize="words"
-               oninput="wizValidarNome(this)">
-        <div class="wiz-dica alerta">⚠️ Informe exatamente como no documento. Necessário para retirar prêmios.</div>
-      </div>
-      <div class="wiz-msg" id="wiz-msg-nome"></div>
-      <div class="wiz-acoes">
-        <button class="wiz-btn-volt" onclick="wizIrPara('inicio')">← Voltar</button>
-        <button class="wiz-btn-prox" onclick="wizAvancarNome()" id="wiz-btn-nome">Continuar →</button>
-      </div>
-    </div>
-
-    <!-- ETAPA NOVO — Passo B: Data de Nascimento -->
-    <div class="wiz-etapa" id="wiz-e-data">
-      <div class="wiz-titulo-etapa">Passo 3 — Qual é a sua data de nascimento?</div>
-      <div class="wiz-campo">
-        <label>🎂 Data de nascimento (idêntica ao RG/CNH)</label>
-        <input type="date" id="wiz-data" autocomplete="bday"
-               onchange="wizValidarData(this)">
-        <div class="wiz-dica alerta">⚠️ Mínimo 14 anos. Necessário para retirar prêmios.</div>
-      </div>
-      <div class="wiz-msg" id="wiz-msg-data"></div>
-      <div class="wiz-acoes">
-        <button class="wiz-btn-volt" onclick="wizIrPara('nome')">← Voltar</button>
-        <button class="wiz-btn-prox" onclick="wizAvancarData()" id="wiz-btn-data">Continuar →</button>
-      </div>
-    </div>
-
-    <!-- ETAPA NOVO — Passo C: Celular -->
-    <div class="wiz-etapa" id="wiz-e-cel">
-      <div class="wiz-titulo-etapa">Passo 4 — Qual é o seu celular (WhatsApp)?</div>
-      <div class="wiz-campo">
-        <label>📱 Celular com DDD (WhatsApp ativo)</label>
-        <input type="tel" id="wiz-cel" placeholder="(16) 99999-9999"
-               oninput="mascaraTel(this)" maxlength="15" inputmode="numeric"
-               autocomplete="tel">
-        <div class="wiz-dica">⭐ Seu prêmio será comunicado por este número. Verifique antes de continuar.</div>
-      </div>
-      <div class="wiz-msg" id="wiz-msg-cel"></div>
-      <div class="wiz-acoes">
-        <button class="wiz-btn-volt" onclick="wizIrPara('data')">← Voltar</button>
-        <button class="wiz-btn-prox" onclick="wizCadastrar()" id="wiz-btn-cel">✅ Confirmar Cadastro</button>
-      </div>
-    </div>
-
-    <!-- ETAPA FINAL: Reivindicar -->
-    <div class="wiz-etapa" id="wiz-e-reivindicar">
-      <div id="wiz-etapa-reivindicar">
-        <span class="wiz-estrela-animada" id="wiz-estrela-emoji">⭐</span>
-        <div style="font-size:1.1rem;font-weight:900;color:#C62828;margin-bottom:6px" id="wiz-nome-parabens">Parabéns!</div>
-        <div style="font-size:.9rem;color:#555;margin-bottom:20px;line-height:1.6" id="wiz-txt-reivindicar">
-          Sua estrela está reservada! Clique no botão abaixo para confirmar a captura.
-        </div>
-        <button class="wiz-btn-reivindicar" onclick="wizReivindicar()" id="wiz-btn-reivindicar">
-          ⭐ REIVINDICAR MINHA ESTRELA!
-        </button>
-        <div class="wiz-msg" id="wiz-msg-reivindicar" style="margin-top:14px"></div>
-      </div>
-    </div>
-
-  </div><!-- .wiz-body -->
-</div><!-- #wizard-estrela -->
 
 <!-- AVISO IMPORTANTE: DIAS UTEIS -->
 <div class="aviso-dias-uteis">
@@ -899,72 +653,6 @@ body { overflow-x: hidden; }
 
   </div><!-- /programas-grid -->
 
-  <!-- BANNER DIVISOR CAÇADA -->
-  <div style="margin-top:40px;margin-bottom:20px;padding:0 4px">
-    <div style="background:linear-gradient(135deg,#bf360c,#e8650a);border-radius:15px;padding:15px;text-align:center;box-shadow:0 4px 15px rgba(191,54,12,0.3);border:2px solid #fff">
-      <h2 style="color:#fff;font-size:1.1rem;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;margin:0;display:flex;align-items:center;justify-content:center;gap:10px">
-        🌟 DESAFIO: CAÇADA DAS ESTRELAS 🌟
-      </h2>
-      <p style="color:rgba(255,255,255,0.9);font-size:0.75rem;font-weight:700;margin-top:5px;letter-spacing:0.5px">O MISTÉRIO DO ITAMANDUÁ — PROCURE E GANHE!</p>
-    </div>
-  </div>
-
-  <!-- REGRAS DA CAÇADA VISÍVEIS -->
-  <div style="margin-top:10px;padding:0 4px">
-    <div style="background:linear-gradient(135deg,#fff8f0,#fff3e0);border:2.5px solid #ffcc80;border-radius:20px;padding:20px 18px;box-shadow:0 6px 20px rgba(232,101,10,.15);position:relative;overflow:hidden">
-      <div style="position:absolute;top:-15px;right:-15px;font-size:4rem;opacity:0.1;transform:rotate(15deg)">🌟</div>
-      <div style="text-align:center;margin-bottom:16px;position:relative;z-index:1">
-        <div style="font-size:2.2rem;margin-bottom:8px">🌟</div>
-        <h2 style="font-size:1.2rem;font-weight:900;color:#bf360c;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">Caçada das Estrelas</h2>
-        <p style="font-size:0.85rem;color:#e8650a;font-weight:700">Como funciona a brincadeira do Itamanduá</p>
-      </div>
-      
-      <div style="background:#fff;border-radius:15px;padding:16px;font-size:0.88rem;line-height:1.6;color:#333;position:relative;z-index:1">
-        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
-          <div style="background:#e8650a;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;font-size:0.8rem">1</div>
-          <div><strong>Fique de Olho:</strong> O Itamanduá aparece correndo no site em horários surpresa todos os dias! 🏃‍♂️💨</div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
-          <div style="background:#e8650a;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;font-size:0.8rem">2</div>
-          <div><strong>Capture a Estrela:</strong> Viu a Estrela Dourada? Seja o primeiro a clicar nela para garantir seu ponto! 🖱️✨</div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
-          <div style="background:#e8650a;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;font-size:0.8rem">3</div>
-          <div><strong>Corrida Mensal:</strong> Apenas <strong>UM CLIENTE</strong> completa as 5 estrelas por mês. O mais rápido <strong>ESCOLHE UM DOS 3 PRÊMIOS!</strong> 🏁🎁</div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px">
-          <div style="background:#c62828;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;font-size:0.8rem">🎄</div>
-          <div><strong>Grande Sorteio de Natal:</strong> Os <strong>8 GANHADORES (OU MENOS)</strong> que vencerem as caçadas mensais do ano participam do sorteio de uma <strong>TORTA DE NATAL DE 3 SABORES!</strong> 🍰🎁</div>
-        </div>
-        
-        <div style="background:#fff3e0;border:1.5px dashed #ffcc80;border-radius:10px;padding:12px;margin-top:10px;font-size:0.8rem;color:#5d4037;text-align:center">
-          ⚠️ <strong>ATENÇÃO:</strong> A estrela aparece apenas uma vez por dia. O primeiro que clicar, leva! No início de cada mês, o contador <strong>ZERA COMPLETAMENTE PARA TODOS</strong> para uma nova caçada! 🤫🔄
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TERMOS E CONDIÇÕES DETALHADOS (PARA EVITAR CONTESTAÇÕES) -->
-  <div style="margin-top:24px;padding:0 4px">
-    <div style="background:#fff;border:2px solid #e0e0e0;border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.05)">
-      <h3 style="font-size:1rem;font-weight:900;color:#333;margin-bottom:15px;display:flex;align-items:center;gap:8px">
-        ⚖️ Regras Oficiais da Caçada
-      </h3>
-      <div style="font-size:0.82rem;color:#555;line-height:1.6">
-        <p style="margin-bottom:10px">Para garantir a transparência e justiça na <strong>Caçada das Estrelas</strong>, ficam estabelecidas as seguintes regras:</p>
-        <ul style="margin:0 0 15px 20px;padding:0">
-          <li style="margin-bottom:8px"><strong>Vencedor Único Mensal:</strong> Apenas o <strong>PRIMEIRO CLIENTE</strong> que completar o acúmulo de <strong>5 estrelas</strong> dentro do mês vigente terá direito ao prêmio. Assim que um vencedor for validado, a caçada daquele mês se encerra.</li>
-          <li style="margin-bottom:8px;color:#c62828"><strong>VALIDADE APENAS NO MÊS VIGENTE (ZERA):</strong> As estrelas capturadas valem <strong>SOMENTE para o mês em que foram coletadas</strong>. No dia 1º de cada mês, às 00:00h, o saldo de <strong>TODOS os participantes VOLTA AO ZERO AUTOMATICAMENTE</strong>. <strong>NÃO EXISTE ACÚMULO OU TRANSFERÊNCIA DE ESTRELAS PARA O MÊS SEGUINTE.</strong></li>
-          <li style="margin-bottom:8px"><strong>Sorteio de Natal:</strong> Os vencedores mensais (totalizando <strong>8 GANHADORES OU MENOS</strong> no ano) ganharão o direito automático de participar do <strong>Sorteio Especial de Natal</strong>, concorrendo a uma <strong>Torta de Natal de 3 Sabores</strong>.</li>
-          <li style="margin-bottom:8px"><strong>Critério de Desempate:</strong> Em caso de cliques simultâneos, prevalecerá o registro de data e hora (milissegundos) gravado no servidor oficial do site.</li>
-          <li style="margin-bottom:8px"><strong>Identificação Obrigatória:</strong> O prêmio é pessoal e intransferível. Os dados do cadastro (Nome e Data de Nascimento) devem ser <strong>idênticos ao documento oficial</strong> apresentado na retirada.</li>
-        </ul>
-        <div style="background:#fff3e0;border-left:4px solid #e8650a;padding:10px;font-style:italic;font-size:0.78rem">
-          A Sorveteria Itapolitana reserva-se o direito de excluir participantes que utilizarem robôs, scripts ou qualquer meio artificial para capturar estrelas.
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- AVISO ANTI-FRAUDE PULSANTE -->
   <div style="margin-top:24px;padding:0 4px">
@@ -1114,71 +802,11 @@ body { overflow-x: hidden; }
       <!-- Icones de sorvete -->
       <div class="sorvetes-grid" id="sorvetes-grid"></div>
 
-      <!-- BOTAO PARA MOSTRAR REGRAS DA CAÇADA -->
-      <button id="btn-ver-regras-estrelas" style="width:100%;padding:11px;border:2px solid #ffcc80;background:#fff8f0;color:#e8650a;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:12px;transition:.2s;font-family:'Nunito',sans-serif" onclick="toggleRegrasEstrelas()" title="Clique para ver as regras da caçada de estrelas">
-        🌟 Ver Regras da Caçada de Estrelas
-      </button>
-      <script>
-        function toggleRegrasEstrelas() {
-          const bloco = document.getElementById('bloco-regras-estrelas');
-          const btn = document.getElementById('btn-ver-regras-estrelas');
-          if (bloco.style.display === 'none') {
-            bloco.style.display = 'block';
-            btn.textContent = '🌟 Ocultar Regras';
-            btn.style.background = '#fff3e0';
-            bloco.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          } else {
-            bloco.style.display = 'none';
-            btn.textContent = '🌟 Ver Regras da Caçada de Estrelas';
-            btn.style.background = '#fff8f0';
-          }
-        }
-      </script>
-
       <!-- Barra de progresso -->
       <div class="progress-wrap">
         <div class="progress-bar" id="progress-bar" style="width:0%"></div>
       </div>
       <div class="progress-label" id="progress-label">0% concluido</div>
-
-      <!-- REGRAS DA CAÇADA DE ESTRELAS -->
-      <div id="bloco-regras-estrelas" style="background:linear-gradient(135deg,#fff8f0,#fff3e0);border:2px solid #ffcc80;border-radius:16px;padding:16px 18px;margin-top:14px;display:none">
-        <div style="text-align:center;margin-bottom:12px">
-          <div style="font-size:2rem;margin-bottom:6px">🌟</div>
-          <div style="font-size:1rem;font-weight:900;color:#bf360c;margin-bottom:4px">Regras da Corrida das Estrelas</div>
-          <div style="font-size:.78rem;color:#666">Leia atentamente antes de participar</div>
-        </div>
-        <div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:.82rem;line-height:1.7;color:#333">
-          <div style="margin-bottom:10px">
-            <div style="font-weight:800;color:#e8650a;margin-bottom:4px">⚡ Como funciona:</div>
-            <ul style="margin:0 0 0 18px;padding:0">
-              <li style="margin-bottom:5px">Uma <strong>estrela dourada aparece uma vez por dia</strong> em horário secreto</li>
-              <li style="margin-bottom:5px">O <strong>primeiro que clicar</strong> captura a estrela</li>
-              <li style="margin-bottom:5px">Apenas <strong>UM CLIENTE</strong> completa as 5 estrelas por mês. O mais rápido escolhe o prêmio! 🏁</li>
-              <li style="margin-bottom:5px"><strong>SORTEIO DE NATAL:</strong> Os <strong>8 GANHADORES (OU MENOS)</strong> do ano participam do sorteio de uma <strong>TORTA DE NATAL DE 3 SABORES!</strong> 🎄🍰</li>
-              <li style="margin-bottom:5px;color:#c62828"><strong>AS ESTRELAS NÃO ACUMULAM PARA O MÊS SEGUINTE!</strong> No dia 1º de cada mês, o contador <strong>ZERA COMPLETAMENTE PARA TODOS!</strong> 🔄</li>
-              <li style="margin-bottom:5px">Você tem <strong>2 minutos</strong> para completar o cadastro após capturar</li>
-            </ul>
-          </div>
-          <div style="margin-bottom:10px">
-            <div style="font-weight:800;color:#e8650a;margin-bottom:4px">🏆 Prêmios:</div>
-            <ul style="margin:0 0 0 18px;padding:0">
-              <li style="margin-bottom:5px"><strong>5 estrelas = 1 prêmio imediato:</strong> Escolha entre Açaí 400ml, Milkshake ou 5 Picolés Recheados</li>
-              <li style="margin-bottom:5px"><strong>Primeiro do mês:</strong> Ganha prêmio especial exclusivo (anunciado no final do mês)</li>
-              <li style="margin-bottom:5px"><strong>Todos que completarem 5 estrelas:</strong> Entrada automática no sorteio anual da Torta de Sorvete</li>
-            </ul>
-          </div>
-          <div style="background:#fff3e0;border-left:4px solid #e8650a;padding:10px 12px;border-radius:6px;margin-bottom:10px">
-            <div style="font-weight:800;color:#bf360c;margin-bottom:4px">⚠️ Importante:</div>
-            <div style="font-size:.78rem;color:#5d4037">O código da estrela é <strong>invisível e intransferível</strong>. Não compartilhe sua conta. Tentativas de fraude resultam em <strong>bloqueio permanente</strong>.</div>
-          </div>
-        </div>
-        <label class="aceite-estrelas-label" for="chk-aceita-regras-estrelas">
-          <input type="checkbox" id="chk-aceita-regras-estrelas" style="cursor:pointer;accent-color:#e8650a">
-          <span class="chk-aceite-visual" aria-hidden="true"></span>
-          <span style="flex:1;font-size:.85rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
-        </label>
-      </div>
 
       <!-- Secao de resgate -->
       <div class="resgatar-section" id="resgatar-section" style="display:none">
@@ -2224,12 +1852,6 @@ function sair() {
   document.getElementById('inp-login-dia').value = '';
   document.getElementById('inp-login-mes').value = '';
   document.getElementById('inp-login-ano').value = '';
-  // Fix #4.1: Limpar campos do wizard ao sair (privacidade em dispositivos compartilhados)
-  ['wiz-nome','wiz-data','wiz-cel','wiz-cel-login','wiz-login-dia','wiz-login-mes','wiz-login-ano'].forEach(function(id){
-    var el = document.getElementById(id); if (el) el.value = '';
-  });
-  // Fix #4.2: Limpar token da estrela da sessionStorage ao sair
-  sessionStorage.removeItem('itap_estrela_token');
   // Esconder fallback WhatsApp se estava visível
   const fb = document.getElementById('fallback-whatsapp-cad');
   if (fb) fb.style.display = 'none';
@@ -2896,135 +2518,12 @@ function toggleSenha(idCampo, idOlho) {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-// ESTRELA DOURADA — PROCESSAR TOKEN DA CAPTURA
-// direto=true: chamado pelo wizard após login/cadastro + clique no botão reivindicar
-//              → pula o flow de botão legado e salva diretamente (sem double-trigger)
-// direto=false (padrão): chamado via fluxo legado com botão de confirmação
-// ═══════════════════════════════════════════════════════════
-async function processarTokenEstrela(tokenCaptura, direto) {
-  direto = !!direto;
-  try {
-    // 1. Buscar o estado atual da estrela no GitHub
-    const ESTRELAS_PATH = 'estrelas_ciclo.json';
-    const resp = await ghGet(ESTRELAS_PATH);
-    if (!resp.content) { console.warn('⚠️ estrelas_ciclo.json não encontrado'); return false; }
-    const dados = JSON.parse(resp.content);
-    const sha = resp.sha;
-
-    // 2. Validar o token
-    const estrela = dados.estrelaCapturada;
-    if (!estrela || estrela.tokenResgate !== tokenCaptura) {
-      console.warn('⚠️ Token inválido ou estrela já processada');
-      return false;
-    }
-    if (estrela.status !== 'em_resgate') {
-      console.warn('⚠️ Estrela não está em resgate');
-      return false;
-    }
-    // Janela de validade: respeita validadeToken salvo pelo motor (8 min)
-    if (estrela.validadeToken) {
-      const validade = new Date(estrela.validadeToken);
-      if (new Date() > validade) {
-        console.warn('⏰ Token expirado pelo validadeToken!');
-        sessionStorage.removeItem('itap_estrela_token');
-        return false;
-      }
-    }
-
-    // 3. Se não está logado, salva token para processar após login
-    if (!clienteAtual) {
-      sessionStorage.setItem("itap_estrela_token", tokenCaptura);
-      console.log("🌟 Token salvo na sessão — aguardando login do cliente");
-      // Inicia o guia visual para orientar o login
-      if (typeof window.iniciarGuiaEstrela === 'function') window.iniciarGuiaEstrela();
-      return false;
-    }
-
-    // Função interna de persistência — única chamada possível
-    async function salvarCaptura() {
-      const hoje = new Date().toISOString().split('T')[0];
-      const usuarioId = clienteAtual.cel;
-      if (!dados.rankingAtual) dados.rankingAtual = {};
-      if (!dados.rankingAtual[usuarioId]) {
-        dados.rankingAtual[usuarioId] = {
-          nome: clienteAtual.nome,
-          celular: clienteAtual.cel,
-          estrelas: 0,
-          ultimaCaptura: null,
-          diaCaptura: null
-        };
-      }
-      dados.rankingAtual[usuarioId].estrelas += 1;
-      dados.rankingAtual[usuarioId].ultimaCaptura = new Date().toISOString();
-      dados.rankingAtual[usuarioId].diaCaptura = hoje;
-      dados.rankingAtual[usuarioId].nome = clienteAtual.nome;
-
-      // Marcar estrela como capturada definitivamente
-      dados.estrelaCapturada.status = 'capturada';
-      dados.estrelaCapturada.capturadoPor = usuarioId;
-      dados.estrelaCapturada.capturadoEm = new Date().toISOString();
-      dados.estrelaCapturada.tokenResgate = null;
-
-      // Marcar o dia como capturado no horariosDia
-      if (dados.horariosDia && dados.horariosDia[hoje]) {
-        dados.horariosDia[hoje].status = 'capturada';
-        dados.horariosDia[hoje].capturadoPor = usuarioId;
-        dados.horariosDia[hoje].capturadoEm = new Date().toISOString();
-      }
-
-      // Salvar no GitHub
-      const conteudo = JSON.stringify(dados, null, 2);
-      const resultado = await ghPut(ESTRELAS_PATH, conteudo,
-        '🌟 Estrela capturada por ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')', sha);
-
-      if (resultado.ok) {
-        console.log('🌟 Estrela registrada com sucesso para ' + clienteAtual.nome);
-        sessionStorage.removeItem('itap_estrela_token');
-        return true;
-      } else {
-        console.error('❌ Erro ao salvar captura da estrela');
-        return false;
-      }
-    }
-
-    // 4a. Fluxo direto (chamado pelo wizard após interação humana confirmada)
-    if (direto) {
-      return await salvarCaptura();
-    }
-
-    // 4b. Fluxo legado: exibir botão de confirmação (proteção anti-robô)
-    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
-    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
-    if (secaoReivindicar && btnReivindicar) {
-      secaoReivindicar.style.display = 'block';
-      return new Promise(resolve => {
-        btnReivindicar.onclick = async () => {
-          secaoReivindicar.style.display = 'none';
-          await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));
-          const ok = await salvarCaptura();
-          resolve(ok);
-        };
-      });
-    }
-
-    // Fallback: sem botão no DOM, salva diretamente
-    return await salvarCaptura();
-
-  } catch(e) {
-    console.error('❌ Erro ao processar token da estrela:', e);
-    return false;
-  }
-}
 
 // ═══════════════════════════════════════════════════════════
 // INICIALIZACAO
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  carregarDados().then(() => {
-    // O wizard (DOMContentLoaded abaixo) é o único responsável pelo fluxo do token.
-    // Nada a fazer aqui para a estrela.
-  });
+  carregarDados();
 
   if (sessionStorage.getItem('itap_abrir_admin') === '1') {
     sessionStorage.removeItem('itap_abrir_admin');
@@ -3056,197 +2555,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="scripts/site-loader.js" defer></script>
-<script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
 <script src="scripts/auto-fixer.js" defer></script>
-<script>
-// ═══════════════════════════════════════════════════════════════════
-// WIZARD ESTRELA DOURADA v3 — Fluxo linear seguro
-// Token: EST_AAAAMMDD_HHMMSS (diário, baseado no relógio, nunca repete)
-// ═══════════════════════════════════════════════════════════════════
-(function(){
-  var _tok=null,_timer=null,_seg=480,_aberto=false;
-  function _pad(n){return n<10?'0'+n:''+n;}
-  function _irPara(e){
-    ['wiz-e0','wiz-e-login','wiz-e-nome','wiz-e-data','wiz-e-cel','wiz-e-reivindicar'].forEach(function(id){
-      var el=document.getElementById(id);if(el)el.classList.remove('ativa');
-    });
-    var m={inicio:'wiz-e0',login:'wiz-e-login',novo:'wiz-e-nome',nome:'wiz-e-nome',data:'wiz-e-data',cel:'wiz-e-cel',reivindicar:'wiz-e-reivindicar'};
-    var alvo=document.getElementById(m[e]||'wiz-e0');
-    if(alvo){alvo.classList.add('ativa');var inp=alvo.querySelector('input');if(inp)setTimeout(function(){inp.focus();},200);}
-    var idx=e==='inicio'?0:(e==='login'||e==='novo'||e==='nome')?1:(e==='data'||e==='cel')?2:3;
-    for(var i=0;i<=3;i++){
-      var d=document.getElementById('wiz-dot-'+i),l=document.getElementById('wiz-linha-'+i);
-      if(d){d.classList.remove('ativo','feito');if(i<idx)d.classList.add('feito');else if(i===idx)d.classList.add('ativo');}
-      if(l){l.classList.remove('feita');if(i<idx)l.classList.add('feita');}
-    }
-  }
-  function _timer_tick(){
-    var m=Math.floor(_seg/60),s=_seg%60;
-    var t=document.getElementById('wiz-timer-txt'),b=document.getElementById('wiz-timer-fill');
-    if(t){t.textContent=_pad(m)+':'+_pad(s);t.style.color=_seg<=60?'#C62828':'';}
-    if(b)b.style.width=Math.max(0,(_seg/480)*100)+'%';
-  }
-  function _iniciarTimer(){
-    _seg=480;if(_timer)clearInterval(_timer);_timer_tick();
-    _timer=setInterval(function(){_seg--;_timer_tick();if(_seg<=0){clearInterval(_timer);_expirar();}},1000);
-  }
-  function _expirar(){
-    // Fix #3.8: Só sobrescrever a tela se não há uma chamada API em andamento.
-    // wizReivindicar já pausa o timer antes de chamar processarTokenEstrela,
-    // então _expirar() só dispara quando o botão ainda não foi clicado.
-    sessionStorage.removeItem('itap_estrela_token');_tok=null;_irPara('reivindicar');
-    var div=document.getElementById('wiz-etapa-reivindicar');
-    if(div)div.innerHTML='<div style="text-align:center;padding:20px 8px"><div style="font-size:3rem">\u23F0</div><div style="font-size:1.1rem;font-weight:900;color:#C62828;margin:10px 0">Tempo esgotado!</div><p style="color:#555;font-size:.9rem;line-height:1.7">Os 8 minutos acabaram e a estrela foi liberada para outros ca\u00E7adores.</p><p style="color:#888;font-size:.8rem;margin-top:14px">Fique ligado nos pr\u00F3ximos hor\u00E1rios! \u2B50</p></div>';
-  }
-  function _hookPainel(){
-    if(window.__wizHooked)return;window.__wizHooked=true;
-    var orig=window.mostrarPainelCliente;
-    if(typeof orig!=='function'){setTimeout(_hookPainel,400);return;}
-    window.mostrarPainelCliente=function(){
-      orig.apply(this,arguments);
-      if(_aberto&&_tok){setTimeout(function(){_irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});},500);}
-    };
-  }
-  function _prepReiv(){
-    var n=(typeof clienteAtual!=='undefined'&&clienteAtual&&clienteAtual.nome)?clienteAtual.nome.split(' ')[0]:'Ca\u00E7ador';
-    var en=document.getElementById('wiz-nome-parabens'),et=document.getElementById('wiz-txt-reivindicar');
-    if(en)en.textContent='Ol\u00E1, '+n+'! \uD83D\uDC4B';
-    if(et)et.textContent='Sua estrela est\u00E1 reservada! Clique abaixo para confirmar antes que o tempo acabe.';
-  }
-  function _sucesso(){
-    clearInterval(_timer);sessionStorage.removeItem('itap_estrela_token');
-    var n=(typeof clienteAtual!=='undefined'&&clienteAtual&&clienteAtual.nome)?clienteAtual.nome.split(' ')[0]:'Ca\u00E7ador';
-    var div=document.getElementById('wiz-etapa-reivindicar');
-    if(!div)return;
-    div.innerHTML='<div style="text-align:center;padding:10px 4px"><div style="font-size:3.2rem">\u2B50</div><div style="font-size:1.2rem;font-weight:900;color:#2E7D32;margin:10px 0 4px">PARAB\u00C9NS, '+n.toUpperCase()+'! \uD83C\uDF89</div><div style="font-size:.92rem;color:#555;line-height:1.7;margin-bottom:14px">Sua <strong>Estrela Dourada</strong> foi registrada com sucesso!</div><div id="wiz-s-total" style="background:linear-gradient(135deg,#FFF8E1,#FFF3CD);border:2px solid #FFD600;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:.88rem;color:#5D4037;font-weight:700">\u2B50 Carregando seu total...</div><div style="font-size:.78rem;color:#999;line-height:1.6">Continue ca\u00E7ando estrelas! Fique ligado nos pr\u00F3ximos hor\u00E1rios.</div></div>';
-    fetch('estrelas_ciclo.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){
-      var cel=(typeof clienteAtual!=='undefined'&&clienteAtual)?clienteAtual.cel:null;
-      var el=document.getElementById('wiz-s-total');if(!el)return;
-      if(cel&&d.rankingAtual&&d.rankingAtual[cel]){
-        var tot=d.rankingAtual[cel].estrelas||0,meta=(d.cicloAtual&&d.cicloAtual.metaEstrelas)||5,falt=Math.max(0,meta-tot);
-        el.innerHTML='\u2B50 Suas estrelas: <strong>'+tot+' / '+meta+'</strong><br><span style="font-weight:400">'+(falt===0?'\uD83C\uDFC6 Ciclo completo! Fale no WhatsApp para resgatar seu pr\u00EAmio!':'Faltam <strong>'+falt+'</strong> estrela'+(falt!==1?'s':'')+' para o pr\u00EAmio!')+'</span>';
-      }else{el.innerHTML='\u2B50 Estrela registrada! Continue ca\u00E7ando para ganhar pr\u00EAmios!';}
-    }).catch(function(){var el=document.getElementById('wiz-s-total');if(el)el.innerHTML='\u2B50 Estrela registrada com sucesso!';});
-  }
-  function _erro(msg){
-    // Fix #3.3: Parar o timer para não sobrescrever a mensagem de erro com "Tempo esgotado"
-    clearInterval(_timer);
-    var em=document.getElementById('wiz-msg-reivindicar'),btn=document.getElementById('wiz-btn-reivindicar');
-    if(em)em.innerHTML='<div style="background:#FFEBEE;border:1px solid #EF9A9A;border-radius:10px;padding:12px;color:#C62828;font-size:.85rem;line-height:1.6;margin-top:10px">\u274C <strong>N\u00E3o foi poss\u00EDvel registrar a estrela.</strong><br>'+msg+'</div>';
-    if(btn){btn.disabled=false;btn.textContent='\u2B50 REIVINDICAR MINHA ESTRELA!';}
-  }
-  function _abrir(token){
-    _tok=token||sessionStorage.getItem('itap_estrela_token');if(!_tok)return;
-    _aberto=true;var wiz=document.getElementById('wizard-estrela');
-    if(!wiz)return;wiz.style.display='block';
-    setTimeout(function(){wiz.scrollIntoView({behavior:'smooth',block:'start'});},80);
-    _irPara('inicio');_iniciarTimer();_hookPainel();
-  }
-  window.wizIrPara=function(e){_irPara(e);};
-  window.wizValidarNome=function(el){
-    var msg=document.getElementById('wiz-msg-nome');if(!msg)return;
-    var v=el.value.trim();
-    msg.innerHTML=(v.length>3&&v.split(/\s+/).length>=2)?'<span style="color:#2E7D32;font-size:.82rem">\u2713 Nome v\u00E1lido</span>':'';
-  };
-  window.wizAvancarNome=function(){
-    var inp=document.getElementById('wiz-nome'),msg=document.getElementById('wiz-msg-nome');
-    var v=inp?inp.value.trim():'';
-    if(v.length<5||v.split(/\s+/).length<2){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F Informe nome e sobrenome (m\u00EDnimo 5 letras).</span>';return;}
-    if(msg)msg.innerHTML='';_irPara('data');
-  };
-  window.wizValidarData=function(el){
-    var msg=document.getElementById('wiz-msg-data');if(!msg)return;
-    if(!el.value){msg.innerHTML='';return;}
-    // Fix #3.1: Parsing local (evita bug UTC off-by-one)
-    var p=el.value.split('-').map(Number),nascAno=p[0],nascMes=p[1],nascDia=p[2];
-    var hoje=new Date(),idade=hoje.getFullYear()-nascAno;
-    if(hoje.getMonth()+1<nascMes||(hoje.getMonth()+1===nascMes&&hoje.getDate()<nascDia))idade--;
-    msg.innerHTML=idade<14?'<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>':'<span style="color:#2E7D32;font-size:.82rem">\u2713 OK</span>';
-  };
-  window.wizAvancarData=function(){
-    var inp=document.getElementById('wiz-data'),msg=document.getElementById('wiz-msg-data');
-    if(!inp||!inp.value){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F Informe sua data de nascimento.</span>';return;}
-    // Fix #3.1: Parsing local (evita bug UTC off-by-one)
-    var p=inp.value.split('-').map(Number),nascAno=p[0],nascMes=p[1],nascDia=p[2];
-    var hoje=new Date(),idade=hoje.getFullYear()-nascAno;
-    if(hoje.getMonth()+1<nascMes||(hoje.getMonth()+1===nascMes&&hoje.getDate()<nascDia))idade--;
-    if(idade<14){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>';return;}
-    if(msg)msg.innerHTML='';_irPara('cel');
-  };
-  // wizEntrar: async/await — elimina setTimeout polling (1400ms), usa resultado real de entrar()
-  window.wizEntrar=async function(){
-    var btn=document.getElementById('wiz-btn-entrar'),msg=document.getElementById('wiz-msg-login');
-    if(btn){btn.disabled=true;btn.textContent='\u23F3 Verificando...';}if(msg)msg.innerHTML='';
-    var mapa={'wiz-cel-login':'inp-cel-login','wiz-login-dia':'inp-login-dia','wiz-login-mes':'inp-login-mes','wiz-login-ano':'inp-login-ano'};
-    Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
-    try{await entrar();}catch(e){console.warn('wizEntrar:',e);}
-    if(typeof clienteAtual!=='undefined'&&clienteAtual){
-      _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
-    }else{
-      var mm=document.getElementById('msg-acesso'),errTxt=mm?(mm.textContent||'').trim():'';
-      var errSafe=errTxt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(errSafe||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
-      if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
-    }
-  };
-  // wizCadastrar: async/await — elimina setTimeout polling (2200ms), usa resultado real de cadastrar()
-  window.wizCadastrar=async function(){
-    var btn=document.getElementById('wiz-btn-cel'),msg=document.getElementById('wiz-msg-cel');
-    if(btn){btn.disabled=true;btn.textContent='\u23F3 Criando conta...';}if(msg)msg.innerHTML='';
-    var celEl=document.getElementById('wiz-cel'),cel=celEl?celEl.value.replace(/\D/g,''):'';
-    if(cel.length<10){
-      if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.83rem">\u26A0\uFE0F Informe um celular v\u00E1lido com DDD.</span>';
-      if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}return;
-    }
-    var mapa={'wiz-nome':'inp-nome','wiz-data':'inp-data-nasc','wiz-cel':'inp-cel-novo'};
-    Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
-    try{await cadastrar();}catch(e){console.warn('wizCadastrar:',e);}
-    if(typeof clienteAtual!=='undefined'&&clienteAtual){
-      _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
-    }else{
-      var mm=document.getElementById('msg-acesso'),errTxt=mm?(mm.textContent||'').trim():'';
-      var errSafe=errTxt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(errSafe||'Verifique seus dados e tente novamente.')+'</div>';
-      if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
-    }
-  };
-  // wizReivindicar: chama processarTokenEstrela com direto=true (interação humana já confirmada)
-  // Remove o hack btnLeg.click() que causava double-trigger
-  window.wizReivindicar=function(){
-    var btn=document.getElementById('wiz-btn-reivindicar'),msg=document.getElementById('wiz-msg-reivindicar');
-    if(btn){btn.disabled=true;btn.textContent='\u23F3 Registrando estrela...';}if(msg)msg.innerHTML='';
-    var tok=_tok||sessionStorage.getItem('itap_estrela_token');
-    if(!tok){_erro('Token n\u00E3o encontrado. A estrela pode ter expirado.');return;}
-    // Fix #3.4/#3.8: Pausar o timer durante a chamada API para evitar race condition
-    clearInterval(_timer);
-    var _reivJaResolvido=false;
-    // direto=true: pula o botão legado, salva direto (o clique no wizard JÁ é a confirmação humana)
-    processarTokenEstrela(tok,true).then(function(ok){
-      if(_reivJaResolvido)return;_reivJaResolvido=true;
-      if(ok)_sucesso();
-      else _erro('Pode ter expirado ou j\u00E1 foi capturada por outro ca\u00E7ador.<br><span style="font-size:.8rem;color:#888">Tente novamente no pr\u00F3ximo hor\u00E1rio.</span>');
-    }).catch(function(){
-      if(_reivJaResolvido)return;_reivJaResolvido=true;
-      _erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');
-    });
-  };
-  window.iniciarGuiaEstrela=function(){_abrir();};
-  // Fix #3.7: Implementar encerrarGuiaEstrela (antes era função vazia)
-  window.encerrarGuiaEstrela=function(){
-    clearInterval(_timer);_tok=null;_aberto=false;
-    var wiz=document.getElementById('wizard-estrela');
-    if(wiz)wiz.style.display='none';
-  };
-  window.abrirWizardEstrela=_abrir;
-  document.addEventListener('DOMContentLoaded',function(){
-    var p=new URLSearchParams(window.location.search),tok=p.get('token');
-    if(tok&&tok.startsWith('EST')){sessionStorage.setItem('itap_estrela_token',tok);setTimeout(function(){_abrir(tok);},700);}
-    else{var ts=sessionStorage.getItem('itap_estrela_token');if(ts&&ts.startsWith('EST'))setTimeout(function(){_abrir(ts);},700);}
-  });
-})();
-</script>
 <script src="scripts/nav-active.js"></script>
 <script src="scripts/ita-bot-widget.js" defer></script>
 </body>
