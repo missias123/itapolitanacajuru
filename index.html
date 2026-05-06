@@ -700,7 +700,14 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 @media(prefers-reduced-motion:reduce){@keyframes duvidaFadeIn{from{opacity:0}to{opacity:1}}}
 
 .chat-box{background:#fff;border-radius:0;width:100%;max-width:100%;height:100dvh;display:flex;flex-direction:column}
-.chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);color:#fff;padding:16px 20px;border-radius:0;display:flex;align-items:center;justify-content:space-between}
+.chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);color:#fff;padding:10px 16px 12px;border-radius:0;display:flex;flex-direction:column;gap:8px}
+.chat-hdr-logo-row{display:flex;align-items:center;justify-content:center;gap:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.22)}
+.chat-hdr-logo-img{width:46px;height:46px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px #FBD100;flex-shrink:0}
+.chat-hdr-logo-text{font-size:13px;font-weight:900;color:#FBD100;letter-spacing:1.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.4)}
+.chat-hdr-main-row{display:flex;align-items:center;justify-content:space-between}
+.chat-hdr-btns{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.chat-btn-home{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);border-radius:8px;color:#fff;font-size:10px;font-weight:900;padding:4px 8px;cursor:pointer;letter-spacing:.8px;white-space:nowrap;text-transform:uppercase;touch-action:manipulation}
+.chat-btn-home:hover{background:rgba(255,255,255,.32)}
 .chat-hdr h3{font-size:16px;font-weight:800}
 .chat-hdr p{font-size:11px;color:#fff;font-weight:600}
 .chat-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:48px;height:48px;color:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
@@ -2840,6 +2847,16 @@ function voltarTemas() {
 <div id="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-hdr-titulo" aria-hidden="true">
 <div class="chat-box">
 <div class="chat-hdr">
+<!-- Logo row -->
+<div class="chat-hdr-logo-row">
+  <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="chat-hdr-logo-img" loading="lazy" decoding="async">
+  <div>
+    <div class="chat-hdr-logo-text">Itapolitana</div>
+    <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.8px;">Cajuru · SP · Sorvete Artesanal</div>
+  </div>
+</div>
+<!-- Main row: robot + title + buttons -->
+<div class="chat-hdr-main-row">
 <div style="display:flex;align-items:center;gap:11px">
   <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 27 68 57" width="36" height="36" aria-hidden="true">
@@ -2871,8 +2888,12 @@ function voltarTemas() {
     <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Pergunte sobre sabores, horários, encomendas e muito mais</p>
   </div>
 </div>
-<button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
+<div class="chat-hdr-btns">
+  <button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
+  <button class="chat-btn-home" onclick="fecharChatDialog();window.scrollTo({top:0,behavior:'smooth'})" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
 </div>
+</div><!-- end .chat-hdr-main-row -->
+</div><!-- end .chat-hdr -->
 <div class="chat-msgs" id="chat-msgs">
 <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Digite uma palavra e respondo na hora 👇<br><small style="color:#888;font-size:11px">Ex: horário · sabores · preço · picolé · açaí · encomenda · localização</small></div>
 </div>
@@ -2904,6 +2925,23 @@ function voltarTemas() {
       <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
       <button class="chat-send" onclick="enviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
     </div>
+<!-- RODAPÉ do chat -->
+<div style="background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:10px 12px;border-top:3px solid #FBD100;flex-shrink:0;">
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;">
+    <img src="images/logo.webp" alt="Logo Itapolitana" style="width:34px;height:34px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px #FBD100;" loading="lazy" decoding="async">
+    <div style="text-align:left;">
+      <div style="font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;">Itapolitana</div>
+      <div style="font-size:9px;color:rgba(255,255,255,.85);font-weight:700;">Cajuru · SP · Sorvete Artesanal</div>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:6px;">
+    <a href="index.html" onclick="fecharChatDialog()" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 10px;">🍦 Cardápio</a>
+    <a href="encomendas.html" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 10px;">📦 Encomendas</a>
+    <a href="fidelidade.html" style="font-size:10px;font-weight:800;color:#FBD100;text-decoration:none;background:rgba(251,209,0,.18);border:1px solid rgba(251,209,0,.55);border-radius:20px;padding:4px 10px;">⭐ Fidelidade</a>
+    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(37,211,102,.2);border:1px solid rgba(37,211,102,.7);border-radius:20px;padding:4px 10px;">💬 WhatsApp</a>
+  </div>
+  <div style="font-size:9px;color:rgba(255,255,255,.65);font-weight:600;">© 2007–2026 Sorveteria Itapolitana · Cajuru/SP</div>
+</div>
 </div>
 </div>
 <script>
