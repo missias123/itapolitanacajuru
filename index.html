@@ -4125,17 +4125,23 @@ function aplicarConfig(c) {
     const ns = c.numSabores;
     // Botões "Ver 35 Sabores" no cardápio
     document.querySelectorAll('.btn-sabores').forEach(function (btn) {
-      btn.textContent = btn.textContent.replace(/\b\d+\b(?=\s+[Ss]abores)/, ns);
+      btn.textContent = btn.textContent.replace(/\b\d+\s+sabores\b/gi, function (m) {
+        return m.replace(/\d+/, ns);
+      });
     });
     // Banner de categorias ".vc-banner-sub"
     document.querySelectorAll('.vc-banner-sub').forEach(function (el) {
-      el.textContent = el.textContent.replace(/\b\d+\s+sabores\b/gi, ns + ' sabores');
+      el.textContent = el.textContent.replace(/\b\d+\s+sabores\b/gi, function (m) {
+        return m.replace(/\d+/, ns);
+      });
     });
     // Chatbot: substituir "35 sabores" em todas as respostas
     if (window.RESPOSTAS) {
       Object.keys(window.RESPOSTAS).forEach(function (k) {
         if (typeof window.RESPOSTAS[k] !== 'string') return;
-        window.RESPOSTAS[k] = window.RESPOSTAS[k].replace(/\b\d+\s+sabores\b/gi, ns + ' sabores');
+        window.RESPOSTAS[k] = window.RESPOSTAS[k].replace(/\b\d+\s+sabores\b/gi, function (m) {
+          return m.replace(/\d+/, ns);
+        });
       });
     }
   }
