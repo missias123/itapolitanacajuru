@@ -1930,7 +1930,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <!-- cache-bust:20260408_111640 -->
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
   <link rel="alternate" hreflang="pt-BR" href="https://itapolitanacajuru.com.br/" />
-<link rel="stylesheet" href="mascote.css?v=12">
+
 
     </head>
 <body>
@@ -5023,40 +5023,7 @@ function recusarCookies() {
 document.addEventListener('DOMContentLoaded', checkCookies);
 </script>
 
-<script>
-/* ESTRELA — carregamento diferido via requestIdleCallback (não bloqueia interação) */
-(function() {
-  var v = '20260420';
-  function carregarEstrela() {
-    var s1 = document.createElement('script');
-    s1.src = 'scripts/motor-estrelas-v2.js?v=' + v;
-    s1.onload = function() {
-      var s2 = document.createElement('script');
-      s2.src = 'mascote.js?v=' + v;
-      s2.onload = function() {
-        if (typeof MotorEstrelasV2 !== 'undefined') {
-          window.motorEstrelas = new MotorEstrelasV2();
-          window.motorEstrelas.inicializar('estrelas_ciclo.json?t=' + Date.now())
-            .then(function(ok) {
-              console.log('[ESTRELA] ' + (ok ? 'Motor ativo!' : 'ERRO ao carregar JSON'));
-            });
-        } else {
-          console.error('[ESTRELA] ERRO: MotorEstrelasV2 nao encontrado');
-        }
-      };
-      s2.onerror = function() { console.error('[ESTRELA] ERRO ao carregar mascote.js'); };
-      document.head.appendChild(s2);
-    };
-    s1.onerror = function() { console.error('[ESTRELA] ERRO ao carregar motor-estrelas-v2.js'); };
-    document.head.appendChild(s1);
-  }
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(carregarEstrela, { timeout: 3000 });
-  } else {
-    setTimeout(carregarEstrela, 1000);
-  }
-})();
-</script>
+
 
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div></body>
 </html>
