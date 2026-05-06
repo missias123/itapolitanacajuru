@@ -4032,8 +4032,13 @@ function aplicarConfig(c) {
   // hero-título: usa ID direto (padrão profissional — não depende de seletor de tag)
   const heroTituloEl = document.getElementById('hero-título');
   if (heroTituloEl && c.heroTitulo) {
-    // Escapa HTML para prevenir XSS antes de injetar spans de destaque
-    const _titulo = c.heroTitulo.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Escapa HTML completamente para prevenir XSS (& primeiro, depois < > " ')
+    const _titulo = c.heroTitulo
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
     heroTituloEl.innerHTML = _titulo.replace(
       /(Cajuru|Itapolitana|sorvete|açaí|picolé|cremoso)/gi,
       '<span class="destaque-texto">$1</span>'
@@ -4098,8 +4103,13 @@ function aplicarConfig(c) {
   // --- FOOTER ---
   const footerHorario = document.getElementById('footer-horário');
   if (footerHorario && c.footerHorario) {
-    // Escapa HTML para prevenir XSS antes de converter \n em <br>
-    const _horario = c.footerHorario.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Escapa HTML completamente para prevenir XSS (& primeiro, depois < > " ')
+    const _horario = c.footerHorario
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
     footerHorario.innerHTML = _horario.replace(/\n/g, '<br>');
   }
 
