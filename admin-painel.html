@@ -526,7 +526,7 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Botão principal - Ver Cardápio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardápio Completo"/><div class="hint">Max. 40 caracteres. Texto do botão verde que rola até o cardápio.</div></div>
           <div class="campo-edit"><label>Botão WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botão laranja do WhatsApp.</div></div>
           <div class="campo-edit"><label>Subtítulo do Hero</label>
-            <input type="text" id="home-subtitulo" value="35 sabores tipo artesanal — feitos com ingredientes selecionados" maxlength="100" placeholder="Sorvete tipo artesanal em Cajuru/SP"/>
+            <input type="text" id="home-subtitulo" maxlength="100" placeholder="35 sabores tipo artesanal — feitos com ingredientes selecionados"/>
             <div class="hint">Max. 100 caracteres. Linha de apoio abaixo do título principal.</div></div>
           <div class="campo-edit"><label>Frases rotativas do carrossel (uma por linha)</label><textarea id="home-frases" rows="10" placeholder="O sorvete mais cremoso de Cajuru, desde 2007!"></textarea><div class="hint">Cada linha é uma frase que aparece no carrossel de texto do hero</div></div>
 
@@ -2155,6 +2155,7 @@ Talento</textarea>
           <div class="campo-edit"><label class="label-obrigatório">Nome da empresa</label><input type="text" id="cfg-nome-empresa" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Slogan</label><input type="text" id="cfg-slogan" maxlength="80" placeholder="Sorvete Tipo Artesanal desde 2007"/></div>
           <div class="campo-edit"><label>Ano de fundação</label><input type="text" id="cfg-fundação" maxlength="4" pattern="[0-9]{4}" placeholder="2007"/><div class="hint">4 digitos. Exemplo: 2007. Usado no copyright e no hero.</div></div>
+          <div class="campo-edit"><label for="cfg-num-sabores">Número de sabores de sorvete</label><input type="number" id="cfg-num-sabores" min="1" max="999" placeholder="35"/><div class="hint">Atualiza automaticamente botões, badges e chatbot com o número correto. Exemplo: 35.</div></div>
           <div class="campo-edit"><label>CNPJ (formato: XX.XXX.XXX/XXXX-XX)</label><input type="text" id="cfg-CNPJ" maxlength="18" placeholder="08.922.044/0001-80"/><div class="hint">Formato: 08.922.044/0001-80. Max. 18 caracteres.</div></div>
           <div class="seção-título">&#x1F4C4; Rodapé do Site</div>
           <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" maxlength="80" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
@@ -2280,7 +2281,13 @@ Talento</textarea>
           <div class="campo-edit"><label>Mensagem de sucesso (após envio)</label><input type="text" id="fc-msg-sucesso" maxlength="120" placeholder="Mensagem enviada! Retornaremos em breve."/></div>
 
           <div class="seção-título" style="margin-top:20px">📞 Contato</div>
-          <div class="campo-edit"><label>WhatsApp de atendimento (somente números)</label><input type="text" id="fc-whatsapp" maxlength="15" inputmode="numeric" placeholder="5516996062046"/></div>
+          <div class="campo-edit">
+            <div class="hint">
+              📱 <strong>WhatsApp do Fale Conosco</strong><br>
+              Usa automaticamente o número global configurado em <em>Configurações Gerais → WhatsApp</em>.<br>
+              Para alterar o número de atendimento, acesse a aba <strong>Configurações Gerais</strong>.
+            </div>
+          </div>
           <div class="campo-edit"><label>E-mail de contato</label><input type="email" id="fc-email" placeholder="contato@itapolitanacajuru.com.br"/></div>
           <div class="campo-edit"><label>Endereço completo</label><input type="text" id="fc-endereco" maxlength="120" placeholder="Rua Exemplo, 123 — Centro — Cajuru/SP"/></div>
           <div class="campo-edit"><label>Horário de atendimento</label><input type="text" id="fc-horario" maxlength="80" placeholder="Todos os dias: 10h às 22h"/><div class="hint">Exibido na seção de contato. Ex: Todos os dias: 10h às 22h</div></div>
@@ -3032,19 +3039,6 @@ async function salvarPromoção(){
     }
   }
   const okPromo = await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
-  // Sincronizar config.json com os campos que o index.html lê para o FAB e barra de promoção
-  if(okPromo){
-    const cfg=STATE.config||{};
-    cfg.promocaoAtiva=pr.ativo;
-    cfg.promocaoTitulo=pr.título||'';
-    cfg.promocaoDescricao=pr.descrição||'';
-    cfg.promocaoBotao=pr.btnTexto||'';
-    cfg.promocaoLink=pr.link||'';
-    cfg.promocaoDataFim=pr.dataFim||'';
-    cfg.promocaoFab=pr.fabLabel||'';
-    STATE.config=cfg;
-    const ok = await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
-  }
 }
 function renderEncomendas(){
   const registros=STATE.encomendas?.registros||[];
@@ -4139,6 +4133,7 @@ function preencherConfig(){
   document.getElementById('cfg-nome-empresa').value=cfg.nomeEmpresa||'';
   document.getElementById('cfg-slogan').value=cfg.slogan||'';
   document.getElementById('cfg-fundação').value=cfg.fundacao||'2007';
+  document.getElementById('cfg-num-sabores').value=cfg.numSabores||35;
   document.getElementById('cfg-CNPJ').value=cfg.cnpj||'';
   document.getElementById('cfg-footer-copy').value=cfg.footerCopy||'';
   document.getElementById('cfg-footer-dev').value=cfg.footerDev||'';
@@ -4178,6 +4173,7 @@ async function salvarConfig(){
   cfg.nomeEmpresa=document.getElementById('cfg-nome-empresa').value.trim();
   cfg.slogan=document.getElementById('cfg-slogan').value.trim();
   cfg.fundacao=document.getElementById('cfg-fundação').value.trim();
+  cfg.numSabores=parseInt(document.getElementById('cfg-num-sabores').value)||35;
   cfg.cnpj=document.getElementById('cfg-CNPJ').value.trim();
   cfg.footerCopy=document.getElementById('cfg-footer-copy').value.trim();
   cfg.footerDev=document.getElementById('cfg-footer-dev').value.trim();
@@ -5388,7 +5384,6 @@ function preencherFaleConosco() {
   document.getElementById('fc-titulo').value = c.fcTitulo || 'Fale com a Itapolitana';
   document.getElementById('fc-subtitulo').value = c.fcSubtitulo || 'Manda uma mensagem, a gente responde rapidinho!';
   document.getElementById('fc-msg-sucesso').value = c.fcMsgSucesso || 'Mensagem enviada! Retornaremos em breve.';
-  document.getElementById('fc-whatsapp').value = c.fcWhatsapp || c.whatsapp || '';
   document.getElementById('fc-email').value = c.fcEmail || '';
   document.getElementById('fc-endereco').value = c.fcEndereco || c.enderecoCompleto || '';
   document.getElementById('fc-horario').value = c.fcHorario || c.horario || '';
@@ -5425,7 +5420,6 @@ async function salvarFaleConosco() {
   c.fcTitulo = document.getElementById('fc-titulo').value.trim();
   c.fcSubtitulo = document.getElementById('fc-subtitulo').value.trim();
   c.fcMsgSucesso = document.getElementById('fc-msg-sucesso').value.trim();
-  c.fcWhatsapp = document.getElementById('fc-whatsapp').value.trim();
   c.fcEmail = document.getElementById('fc-email').value.trim();
   c.fcEndereco = document.getElementById('fc-endereco').value.trim();
   c.fcHorario = document.getElementById('fc-horario').value.trim();
