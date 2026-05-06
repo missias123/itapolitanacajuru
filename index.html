@@ -4120,6 +4120,26 @@ function aplicarConfig(c) {
     });
   }
 
+  // --- NÚMERO DE SABORES (numSabores) ---
+  if (c.numSabores) {
+    const ns = c.numSabores;
+    // Botões "Ver 35 Sabores" no cardápio
+    document.querySelectorAll('.btn-sabores').forEach(function (btn) {
+      btn.textContent = btn.textContent.replace(/\b\d+\b(?=\s+[Ss]abores)/, ns);
+    });
+    // Banner de categorias ".vc-banner-sub"
+    document.querySelectorAll('.vc-banner-sub').forEach(function (el) {
+      el.textContent = el.textContent.replace(/\b\d+\s+sabores\b/gi, ns + ' sabores');
+    });
+    // Chatbot: substituir "35 sabores" em todas as respostas
+    if (window.RESPOSTAS) {
+      Object.keys(window.RESPOSTAS).forEach(function (k) {
+        if (typeof window.RESPOSTAS[k] !== 'string') return;
+        window.RESPOSTAS[k] = window.RESPOSTAS[k].replace(/\b\d+\s+sabores\b/gi, ns + ' sabores');
+      });
+    }
+  }
+
   // --- FOOTER ---
   const footerHorario = document.getElementById('footer-horário');
   if (footerHorario && c.footerHorario) {
@@ -4226,8 +4246,7 @@ function aplicarConfig(c) {
   }
 
   // --- PROMO FAB LABEL ---
-  const promoFabLabel = document.getElementById('promo-fab-label');
-  if (promoFabLabel && c.promoFabLabel) promoFabLabel.textContent = c.promoFabLabel;
+  // (o FAB lê fabLabel diretamente de promo.json; este campo não é mais necessário aqui)
 
   // Salvar no localStorage como fallback
   try { localStorage.setItem('itap_config_cache', JSON.stringify(c)); } catch(e) {}
