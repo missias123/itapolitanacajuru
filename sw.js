@@ -11,7 +11,6 @@ const CRITICAL_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/mascote.css',
   '/css/design-system.min.css',
   '/images/logo.webp',
   '/images/icon-192.webp',

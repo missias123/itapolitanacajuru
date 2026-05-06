@@ -85,8 +85,7 @@
       'inp-login-dia','inp-login-mes','inp-login-ano',
       'loading-overlay','painel','painel-admin',
       'pontos-atual','sorvetes-grid','progress-bar',
-      'admin-lista','admin-busca','admin-paginacao',
-      'btn-reivindicar-estrela','secao-reivindicar-estrela'
+      'admin-lista','admin-busca','admin-paginacao'
     ];
     ids.forEach(id => {
       if (!existe(id)) {
