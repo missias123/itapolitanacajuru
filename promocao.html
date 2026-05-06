@@ -675,8 +675,10 @@ body { overflow-x: hidden; }
         var cRes = await fetch('dados/clientes.json?t=' + Date.now());
         if (cRes.ok) {
           var cData = await cRes.json();
-          if (cData.clientes && cData.clientes[celLimpo]) {
-            idUnico = cData.clientes[celLimpo].id || idUnico;
+          // Fix: clientes.json é indexado por USR-2026-xxxx, usar indice_celular para lookup por cel
+          var cKey = cData.indice_celular && cData.indice_celular[celLimpo];
+          if (cKey && cData.clientes && cData.clientes[cKey]) {
+            idUnico = cData.clientes[cKey].id || idUnico;
           }
         }
       } catch(e) { console.warn('Erro ao buscar ID na fidelidade:', e); }

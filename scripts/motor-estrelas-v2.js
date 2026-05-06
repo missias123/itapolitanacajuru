@@ -92,7 +92,22 @@ class MotorEstrelasV2 {
       return false;
     }
     // Estrela já foi ativada nesta sessão — não disparar de novo
-    if (this._estrelaAtivadaEm) return false;
+    // Fix #6.4: Resetar flag se a ativação foi em outro dia (virada de meia-noite)
+    if (this._estrelaAtivadaEm) {
+      const agora2 = this.obterHorarioAtualComFuso();
+      const dataAtivacao = new Date(this._estrelaAtivadaEm);
+      // Comparar dia atual (SP) com dia da ativação — ambos formatados como dd/mm/yyyy
+      const diaAtivacao = new Intl.DateTimeFormat('pt-BR', {
+        timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'
+      }).format(dataAtivacao);
+      const hojeFmt = String(agora2.getDate()).padStart(2,'0') + '/' + String(agora2.getMonth()+1).padStart(2,'0') + '/' + agora2.getFullYear();
+      if (diaAtivacao !== hojeFmt) {
+        // Virou o dia — resetar flag para que nova estrela possa aparecer
+        this._estrelaAtivadaEm = null;
+      } else {
+        return false;
+      }
+    }
 
     const agora = this.obterHorarioAtualComFuso();
     const horaAtual    = agora.getHours();
@@ -175,15 +190,16 @@ class MotorEstrelasV2 {
     // TRAVA 4: Bloquear clique imediatamente (sem segundo clique possível)
     this.estrelaCapturada.status = 'em_resgate'; // Bloqueia qualquer outro clique
 
-    // TRAVA 3: Token diário baseado no relógio — formato EST_AAAAMMDD_HHMMSS
-    // Único por segundo, nunca se repete em todo o histórico do sistema
+    // TRAVA 3: Token diário baseado no relógio — formato EST_AAAAMMDD_HHMMSS_RRR
+    // Fix #6.5: Sufixo aleatório de 3 dígitos para evitar colisão quando dois usuários clicam no mesmo segundo
     const _tPartes = new Intl.DateTimeFormat('pt-BR', {
       timeZone:'America/Sao_Paulo',
       year:'numeric', month:'2-digit', day:'2-digit',
       hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
     }).formatToParts(new Date());
     const _tGet = (t) => (_tPartes.find(p => p.type === t) || {value:'00'}).value;
-    const tokenUnico = 'EST_' + _tGet('year') + _tGet('month') + _tGet('day') + '_' + _tGet('hour') + _tGet('minute') + _tGet('second');
+    const _rnd3 = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+    const tokenUnico = 'EST_' + _tGet('year') + _tGet('month') + _tGet('day') + '_' + _tGet('hour') + _tGet('minute') + _tGet('second') + '_' + _rnd3;
     
     // TRAVA 4: Marca como "Em Resgate" (Bloqueio Temporário)
     this.estrelaCapturada.status = 'em_resgate';

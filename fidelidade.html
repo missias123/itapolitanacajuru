@@ -959,10 +959,18 @@ body { overflow-x: hidden; }
   <div class="card" id="card-acesso" style="display:none">
     <div style="text-align:center;margin-bottom:16px">
       <img loading="lazy" src="images/logo.webp" alt="Logo" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #e8650a;box-shadow:0 3px 12px rgba(232,101,10,.25);margin-bottom:10px" onerror="this.style.display='none'">
-      <div style="font-size:clamp(1.1rem,4vw,1.3rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:4px">&#127881; Receba Promocoes Exclusivas!</div>
-      <p style="font-size:clamp(.82rem,2.4vw,.9rem);color:#555;margin-top:4px;margin-bottom:8px">Cadastre seu WhatsApp para receber promocoes, cupons e bonificacoes na Sorveteria Itapolitana.</p>
-      <div style="font-size:clamp(.75rem,2.2vw,.82rem);background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037;text-align:left">
-        &#9989; <strong>Regras dos cupons de bonificacao:</strong> validos apenas para <strong>compras acima de R$ 30,00</strong> realizadas de <strong>segunda a sexta-feira</strong> na sorveteria.
+      <div style="font-size:clamp(1.15rem,4.5vw,1.4rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:6px">&#127881; Entre no Clube de Fidelidade!</div>
+      <p style="font-size:clamp(.85rem,2.5vw,.95rem);color:#444;margin-top:4px;margin-bottom:12px;line-height:1.5">Ganhe pontos em cada compra, promoções exclusivas e <strong>surpresas no seu aniversário</strong> na Sorveteria Itapolitana.</p>
+      <div style="display:flex;flex-direction:column;gap:6px;text-align:left;font-size:clamp(.78rem,2.2vw,.85rem);margin-bottom:10px">
+        <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037">
+          &#9989; <strong>Pontos a cada compra</strong> — troque por prêmios exclusivos
+        </div>
+        <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:8px;padding:7px 12px;color:#2e7d32">
+          &#127881; <strong>Surpresa no aniversário</strong> — brinde especial no seu dia
+        </div>
+        <div style="background:#e3f2fd;border:1.5px solid #90caf9;border-radius:8px;padding:7px 12px;color:#1565c0">
+          &#128172; <strong>Promoções exclusivas</strong> — só para membros do clube (seg–sex, compras acima de R$ 30)
+        </div>
       </div>
     </div>
     <div class="form-tabs">
@@ -985,38 +993,50 @@ body { overflow-x: hidden; }
       <div class="form-group" id="fg-cel">
         <span class="seta-guia" id="seta-cel">&#10148;</span>
         <label>Celular (WhatsApp) <span style="font-size:11px;color:#E65100;font-weight:700;">&#128242; numero ativo com WhatsApp</span></label>
-        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" autocomplete="tel">
         <div class="hint warn">
-          &#11088; <strong>IMPORTANTE:</strong> Este celular sera usado para receber seu premio. Certifique-se de que o numero esta correto e com WhatsApp ativo.
+          &#11088; Este numero sera usado para enviar suas promoções e prêmios. Confira se esta correto!
         </div>
       </div>
-      <div style="background:#ffebee;border:2.5px solid #c62828;border-radius:12px;padding:14px 16px;margin-top:12px;font-size:.82rem;color:#4e342e;line-height:1.6">
-        <div style="font-size:.9rem;font-weight:900;color:#c62828;margin-bottom:8px;">&#128683; ATENCAO — RETIRADA DE PREMIOS</div>
-        Para retirar qualquer premio, o titular do cadastro devera comparecer <strong>pessoalmente</strong> na sorveteria portando <strong>obrigatoriamente</strong>:
-        <ul style="margin:8px 0 0 16px;padding:0;">
-          <li style="margin-bottom:4px;">&#128196; <strong>Documento oficial com foto</strong> (RG ou CNH) — original, nao sera aceita copia</li>
-          <li style="margin-bottom:4px;">&#128100; O <strong>nome completo</strong> no documento deve ser <strong>IDENTICO</strong> ao informado no cadastro</li>
-          <li style="margin-bottom:4px;">&#127881; A <strong>data de nascimento</strong> no documento deve ser <strong>IDENTICA</strong> a informada no cadastro</li>
-          <li style="margin-bottom:4px;">&#128242; O <strong>celular cadastrado</strong> com WhatsApp ativo e acessivel no momento da retirada</li>
+      <div class="form-group">
+        <label>E-mail <span style="font-size:11px;color:#888;font-weight:600;">(opcional)</span></label>
+        <input type="email" id="inp-email" placeholder="seuemail@exemplo.com" autocomplete="email" style="width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;outline:none;transition:.2s;font-family:'Nunito',sans-serif">
+        <div class="hint">Receba novidades e promos também por e-mail (opcional).</div>
+      </div>
+      <div class="form-group">
+        <label>Bairro / Cidade <span style="font-size:11px;color:#888;font-weight:600;">(opcional)</span></label>
+        <input type="text" id="inp-cidade" placeholder="Ex: Centro – Cajuru" maxlength="60" autocomplete="address-level2" style="width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;outline:none;transition:.2s;font-family:'Nunito',sans-serif">
+      </div>
+      <!-- Regras resumidas em detalhes colapsável -->
+      <details style="margin-top:12px;background:#fff8f0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;font-size:.8rem;color:#5d4037;cursor:pointer">
+        <summary style="font-weight:800;color:#c62828;font-size:.82rem;list-style:none;outline:none">&#9432; Regras para retirada de prêmios (clique para ver)</summary>
+        <ul style="margin:8px 0 0 16px;padding:0;line-height:1.7">
+          <li>&#128196; Documento com foto (RG ou CNH) — original obrigatório</li>
+          <li>&#128100; Nome e data de nascimento <strong>idênticos</strong> ao cadastro</li>
+          <li>&#128242; Celular cadastrado com WhatsApp ativo</li>
+          <li>&#128683; Prêmio <strong>não é transferível</strong> e deve ser retirado pessoalmente</li>
         </ul>
-        <div style="background:#c62828;color:#fff;border-radius:8px;padding:9px 12px;margin-top:10px;font-weight:900;font-size:.82rem;text-align:center;line-height:1.5;">
-          &#128683; O PREMIO NAO SERA ENTREGUE em caso de divergencia entre o documento e os dados do cadastro.<br>Nao sera permitida retirada por terceiros. Sem excecoes e sem direito a recurso.
-        </div>
-      </div>
+      </details>
       <!-- Honeypot anti-bot: campo oculto, humanos nao preenchem -->
       <input type="text" id="fid-hp" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
-      <div class="form-group" id="fg-confirmar" style="position:relative">
+      <div class="form-group" id="fg-confirmar" style="position:relative;margin-top:14px">
         <span class="seta-guia" id="seta-confirmar">&#10148;</span>
         <!-- LGPD / Consentimento explícito WCAG AA -->
         <div class="aceite-area laranja" style="margin-bottom:10px">
           <label class="aceite-label" for="chk-lgpd-novo">
             <input type="checkbox" id="chk-lgpd-novo" onchange="verificarLgpdNovo()">
             <span class="chk-aceite-visual" aria-hidden="true"></span>
-            <span class="aceite-txt">Li e concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados exclusivamente para o programa de fidelidade.</span>
+            <span class="aceite-txt">Concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados <strong>exclusivamente</strong> para o Clube de Fidelidade Itapolitana (LGPD — Lei 13.709/2018).</span>
           </label>
         </div>
-        <button id="btn-cadastrar" class="btn btn-laranja" onclick="cadastrar()" style="margin-top:4px;width:100%;opacity:.5;cursor:not-allowed" disabled aria-disabled="true">&#127881; Quero Receber Promocoes!</button>
+        <button id="btn-cadastrar" class="btn btn-laranja" onclick="cadastrar()" style="margin-top:4px;width:100%;opacity:.5;cursor:not-allowed" disabled aria-disabled="true">&#127881; Quero entrar no Clube de Fidelidade!</button>
         <p class="btn-aceitar-hint" style="display:block">&#9432; Marque a caixa acima para continuar</p>
+      </div>
+      <!-- Fallback WhatsApp (exibido via JS quando o salvamento falha) -->
+      <div id="fallback-whatsapp-cad" style="display:none;margin-top:12px;background:#e8f5e9;border:2px solid #a5d6a7;border-radius:12px;padding:14px 16px;text-align:center">
+        <div style="font-size:.9rem;font-weight:800;color:#2e7d32;margin-bottom:6px">&#128172; Conclua o cadastro pelo WhatsApp!</div>
+        <p style="font-size:.82rem;color:#444;margin-bottom:10px;line-height:1.5">Nosso servidor está temporariamente ocupado. Clique abaixo para confirmar pelo WhatsApp — é rápido!</p>
+        <button id="btn-fallback-whats" class="btn btn-whats" onclick="_cadastroFallbackWhatsApp()" style="width:100%">&#128172; Confirmar Cadastro pelo WhatsApp</button>
       </div>
     </div>
     <div id="form-login" style="display:none">
@@ -1725,17 +1745,19 @@ async function cadastrar() {
   const nome     = document.getElementById('inp-nome').value.replace(/<[^>]*>/g,'').trim();
   const dataNasc = document.getElementById('inp-data-nasc').value;
   const cel      = limparTel(document.getElementById('inp-cel-novo').value);
+  const email    = (document.getElementById('inp-email') ? document.getElementById('inp-email').value.trim() : '');
+  const cidade   = (document.getElementById('inp-cidade') ? document.getElementById('inp-cidade').value.replace(/<[^>]*>/g,'').trim() : '');
 
   if (!nome || nome.length < 5) { showMsg('msg-acesso','Informe seu nome completo (minimo 5 letras).','aviso'); return; }
   if (nome.trim().split(/\s+/).length < 2) { showMsg('msg-acesso','Informe nome e sobrenome completos.','aviso'); return; }
   if (!dataNasc) { showMsg('msg-acesso','Informe sua data de nascimento.','aviso'); return; }
 
-  const hoje     = new Date();
-  const nasc     = new Date(dataNasc);
-  let idade      = hoje.getFullYear() - nasc.getFullYear();
-  const mesAntes = hoje.getMonth() < nasc.getMonth() ||
-                   (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate());
-  if (mesAntes) idade--;
+  // ── Fix #1.1: Usar parsing local (evita bug UTC off-by-one) ──
+  const [nascAno, nascMes, nascDia] = dataNasc.split('-').map(Number);
+  const hoje = new Date();
+  const nasc = new Date(nascAno, nascMes - 1, nascDia);
+  let idade  = hoje.getFullYear() - nascAno;
+  if (hoje.getMonth() + 1 < nascMes || (hoje.getMonth() + 1 === nascMes && hoje.getDate() < nascDia)) idade--;
   if (idade < 14) {
     showMsg('msg-acesso','E necessario ter no minimo 14 anos para participar dos bonus e sorteios da Sorveteria Itapolitana.','aviso');
     return;
@@ -1834,6 +1856,8 @@ async function cadastrar() {
     nome,
     dataNasc,
     cel,
+    email:           email || '',
+    cidade:          cidade || '',
     cel_anterior:    [],
     cadastro:        new Date().toISOString(),
     saldoPontos:     0,
@@ -1857,15 +1881,46 @@ async function cadastrar() {
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
+    // Esconder fallback WhatsApp se estava visível
+    const fb = document.getElementById('fallback-whatsapp-cad');
+    if (fb) fb.style.display = 'none';
     showMsg('msg-acesso',
-      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro foi realizado com sucesso! Bem-vindo(a) ao programa de fidelidade!',
+      'Parabens, ' + nome.split(' ')[0] + '! Bem-vindo(a) ao Clube de Fidelidade Itapolitana! Voce ja pode acumular pontos e ganhar premios.',
       'ok');
     setTimeout(mostrarPainelCliente, 1500);
   } else {
     delete ghClientes.clientes[idUnico];
     delete ghClientes.indice_celular[cel];
-    showMsg('msg-acesso','Erro ao criar conta. Verifique sua conexao e tente novamente.','erro');
+    showMsg('msg-acesso','Nao foi possivel salvar seu cadastro agora. Use o WhatsApp abaixo para confirmar!','aviso');
+    // ── Fix #1.4: Exibir fallback WhatsApp quando GitHub save falha ──
+    const fb = document.getElementById('fallback-whatsapp-cad');
+    if (fb) {
+      fb.style.display = 'block';
+      fb.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
   }
+}
+
+// ── Fallback: enviar cadastro via WhatsApp quando GitHub save falha ──
+function _cadastroFallbackWhatsApp() {
+  const nome     = (document.getElementById('inp-nome') || {}).value || '';
+  const dataNasc = (document.getElementById('inp-data-nasc') || {}).value || '';
+  const cel      = limparTel((document.getElementById('inp-cel-novo') || {}).value || '');
+  const email    = (document.getElementById('inp-email') || {}).value || '';
+  const cidade   = (document.getElementById('inp-cidade') || {}).value || '';
+  if (!nome || !cel) { showMsg('msg-acesso','Preencha nome e celular antes de continuar.','aviso'); return; }
+  const celFmt  = cel.length >= 10 ? '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7) : cel;
+  const nascFmt = dataNasc ? dataNasc.split('-').reverse().join('/') : 'Nao informada';
+  const msg = '🍦 *CADASTRO — Clube de Fidelidade*\n' +
+    '*Sorveteria Itapolitana Cajuru*\n\n' +
+    '*Nome:* ' + nome.trim() + '\n' +
+    '*Celular:* ' + celFmt + '\n' +
+    '*Data de nascimento:* ' + nascFmt + '\n' +
+    (email ? '*E-mail:* ' + email + '\n' : '') +
+    (cidade ? '*Bairro/Cidade:* ' + cidade + '\n' : '') +
+    '\nEstou ciente das regras e concordo com o regulamento do Clube de Fidelidade. 🎉';
+  window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+  showMsg('msg-acesso','Redirecionando para o WhatsApp. Envie a mensagem para confirmar seu cadastro!','ok');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2106,6 +2161,15 @@ function sair() {
   document.getElementById('inp-login-dia').value = '';
   document.getElementById('inp-login-mes').value = '';
   document.getElementById('inp-login-ano').value = '';
+  // Fix #4.1: Limpar campos do wizard ao sair (privacidade em dispositivos compartilhados)
+  ['wiz-nome','wiz-data','wiz-cel','wiz-cel-login','wiz-login-dia','wiz-login-mes','wiz-login-ano'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  // Fix #4.2: Limpar token da estrela da sessionStorage ao sair
+  sessionStorage.removeItem('itap_estrela_token');
+  // Esconder fallback WhatsApp se estava visível
+  const fb = document.getElementById('fallback-whatsapp-cad');
+  if (fb) fb.style.display = 'none';
   showMsg('msg-acesso','','ok');
   setTab('novo');
 }
@@ -2966,6 +3030,9 @@ document.addEventListener('DOMContentLoaded', () => {
     _timer=setInterval(function(){_seg--;_timer_tick();if(_seg<=0){clearInterval(_timer);_expirar();}},1000);
   }
   function _expirar(){
+    // Fix #3.8: Só sobrescrever a tela se não há uma chamada API em andamento.
+    // wizReivindicar já pausa o timer antes de chamar processarTokenEstrela,
+    // então _expirar() só dispara quando o botão ainda não foi clicado.
     sessionStorage.removeItem('itap_estrela_token');_tok=null;_irPara('reivindicar');
     var div=document.getElementById('wiz-etapa-reivindicar');
     if(div)div.innerHTML='<div style="text-align:center;padding:20px 8px"><div style="font-size:3rem">\u23F0</div><div style="font-size:1.1rem;font-weight:900;color:#C62828;margin:10px 0">Tempo esgotado!</div><p style="color:#555;font-size:.9rem;line-height:1.7">Os 8 minutos acabaram e a estrela foi liberada para outros ca\u00E7adores.</p><p style="color:#888;font-size:.8rem;margin-top:14px">Fique ligado nos pr\u00F3ximos hor\u00E1rios! \u2B50</p></div>';
@@ -3001,6 +3068,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }).catch(function(){var el=document.getElementById('wiz-s-total');if(el)el.innerHTML='\u2B50 Estrela registrada com sucesso!';});
   }
   function _erro(msg){
+    // Fix #3.3: Parar o timer para não sobrescrever a mensagem de erro com "Tempo esgotado"
+    clearInterval(_timer);
     var em=document.getElementById('wiz-msg-reivindicar'),btn=document.getElementById('wiz-btn-reivindicar');
     if(em)em.innerHTML='<div style="background:#FFEBEE;border:1px solid #EF9A9A;border-radius:10px;padding:12px;color:#C62828;font-size:.85rem;line-height:1.6;margin-top:10px">\u274C <strong>N\u00E3o foi poss\u00EDvel registrar a estrela.</strong><br>'+msg+'</div>';
     if(btn){btn.disabled=false;btn.textContent='\u2B50 REIVINDICAR MINHA ESTRELA!';}
@@ -3027,15 +3096,19 @@ document.addEventListener('DOMContentLoaded', () => {
   window.wizValidarData=function(el){
     var msg=document.getElementById('wiz-msg-data');if(!msg)return;
     if(!el.value){msg.innerHTML='';return;}
-    var nasc=new Date(el.value),hoje=new Date(),idade=hoje.getFullYear()-nasc.getFullYear();
-    if(hoje.getMonth()<nasc.getMonth()||(hoje.getMonth()===nasc.getMonth()&&hoje.getDate()<nasc.getDate()))idade--;
+    // Fix #3.1: Parsing local (evita bug UTC off-by-one)
+    var p=el.value.split('-').map(Number),nascAno=p[0],nascMes=p[1],nascDia=p[2];
+    var hoje=new Date(),idade=hoje.getFullYear()-nascAno;
+    if(hoje.getMonth()+1<nascMes||(hoje.getMonth()+1===nascMes&&hoje.getDate()<nascDia))idade--;
     msg.innerHTML=idade<14?'<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>':'<span style="color:#2E7D32;font-size:.82rem">\u2713 OK</span>';
   };
   window.wizAvancarData=function(){
     var inp=document.getElementById('wiz-data'),msg=document.getElementById('wiz-msg-data');
     if(!inp||!inp.value){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F Informe sua data de nascimento.</span>';return;}
-    var nasc=new Date(inp.value),hoje=new Date(),idade=hoje.getFullYear()-nasc.getFullYear();
-    if(hoje.getMonth()<nasc.getMonth()||(hoje.getMonth()===nasc.getMonth()&&hoje.getDate()<nasc.getDate()))idade--;
+    // Fix #3.1: Parsing local (evita bug UTC off-by-one)
+    var p=inp.value.split('-').map(Number),nascAno=p[0],nascMes=p[1],nascDia=p[2];
+    var hoje=new Date(),idade=hoje.getFullYear()-nascAno;
+    if(hoje.getMonth()+1<nascMes||(hoje.getMonth()+1===nascMes&&hoje.getDate()<nascDia))idade--;
     if(idade<14){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>';return;}
     if(msg)msg.innerHTML='';_irPara('cel');
   };
@@ -3083,14 +3156,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Registrando estrela...';}if(msg)msg.innerHTML='';
     var tok=_tok||sessionStorage.getItem('itap_estrela_token');
     if(!tok){_erro('Token n\u00E3o encontrado. A estrela pode ter expirado.');return;}
+    // Fix #3.4/#3.8: Pausar o timer durante a chamada API para evitar race condition
+    clearInterval(_timer);
+    var _reivJaResolvido=false;
     // direto=true: pula o botão legado, salva direto (o clique no wizard JÁ é a confirmação humana)
     processarTokenEstrela(tok,true).then(function(ok){
+      if(_reivJaResolvido)return;_reivJaResolvido=true;
       if(ok)_sucesso();
       else _erro('Pode ter expirado ou j\u00E1 foi capturada por outro ca\u00E7ador.<br><span style="font-size:.8rem;color:#888">Tente novamente no pr\u00F3ximo hor\u00E1rio.</span>');
-    }).catch(function(){_erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');});
+    }).catch(function(){
+      if(_reivJaResolvido)return;_reivJaResolvido=true;
+      _erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');
+    });
   };
   window.iniciarGuiaEstrela=function(){_abrir();};
-  window.encerrarGuiaEstrela=function(){};
+  // Fix #3.7: Implementar encerrarGuiaEstrela (antes era função vazia)
+  window.encerrarGuiaEstrela=function(){
+    clearInterval(_timer);_tok=null;_aberto=false;
+    var wiz=document.getElementById('wizard-estrela');
+    if(wiz)wiz.style.display='none';
+  };
   window.abrirWizardEstrela=_abrir;
   document.addEventListener('DOMContentLoaded',function(){
     var p=new URLSearchParams(window.location.search),tok=p.get('token');
