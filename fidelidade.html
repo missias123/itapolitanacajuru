@@ -229,11 +229,85 @@ body{font-family:'Nunito',sans-serif;background:#f5f5f5;color:#333;min-height:10
 .reg-texto{max-height:240px;overflow-y:auto;border-radius:10px;padding:12px 14px;font-size:clamp(.7rem,2vw,.79rem);color:#333;line-height:1.7;margin-bottom:14px}
 .reg-texto.laranja{background:#fff8f0;border:1.5px solid #ffcc80}
 .reg-texto.verde{background:#f1f8e9;border:1.5px solid #a5d6a7}
-.aceite-label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:.83rem;color:#333;margin-bottom:12px}
-.aceite-label input{width:18px;height:18px;margin-top:2px;flex-shrink:0}
-.btn-aceitar{width:100%;padding:13px;border:none;border-radius:12px;font-size:.95rem;font-weight:900;cursor:not-allowed;transition:.3s;color:#fff;background:#ccc;letter-spacing:.3px}
-.btn-aceitar.laranja-ativo{background:linear-gradient(135deg,#e8650a,#ff8c00);cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4)}
-.btn-aceitar.verde-ativo{background:linear-gradient(135deg,#2e7d32,#43a047);cursor:pointer;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4)}
+/* ═══════════════════════════════════════════════════════════
+   ÁREA DE CONSENTIMENTO — LGPD / Regulamento
+   Padrão WAI-WCAG AA: checkbox visível, touch target ≥ 44px,
+   botão desabilitado explícito, link para política de privacidade.
+   ═══════════════════════════════════════════════════════════ */
+.aceite-area{background:#FFFDE7;border:2px solid #FFF176;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.aceite-area.laranja{background:#FFF8F0;border-color:#FFCC80;transition:border-color .3s,background .3s}
+.aceite-area.laranja:has(input:checked){border-color:#e8650a;background:#fff3e0}
+.aceite-area.verde{background:#F1F8E9;border-color:#A5D6A7;transition:border-color .3s,background .3s}
+.aceite-area.verde:has(input:checked){border-color:#2e7d32;background:#e8f5e9}
+/* Label clicável de largura total — touch target generoso */
+.aceite-label{display:flex;align-items:center;gap:14px;cursor:pointer;font-size:.87rem;color:#333;margin-bottom:0;min-height:52px;padding:8px 4px;line-height:1.5}
+/* Esconde checkbox nativo — mantém acessibilidade para teclado/leitores de tela */
+.aceite-label input[type="checkbox"]{
+  position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;
+}
+/* Quadrado visual customizado */
+.chk-aceite-visual{
+  display:flex;align-items:center;justify-content:center;
+  width:30px;height:30px;min-width:30px;
+  border:3px solid #e8650a;border-radius:8px;
+  background:#fff;cursor:pointer;flex-shrink:0;
+  transition:all .25s;
+  animation:pulsarChk 1.8s ease-in-out infinite;
+  font-size:0;
+}
+.aceite-label input[type="checkbox"]:checked + .chk-aceite-visual{
+  background:#e8650a;border-color:#e8650a;
+  font-size:18px;color:#fff;font-weight:900;
+  animation:none;
+  box-shadow:0 0 0 4px rgba(232,101,10,.2);
+}
+.chk-aceite-visual::after{content:"✓";color:#fff;font-weight:900;font-size:inherit;line-height:1}
+@keyframes pulsarChk{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,101,10,.35);border-color:#e8650a}
+  50%{box-shadow:0 0 0 6px rgba(232,101,10,.0);border-color:#ff8c00}
+}
+.aceite-label .aceite-txt{flex:1}
+.aceite-lgpd-link{color:#e8650a;font-weight:700;text-decoration:underline}
+.aceite-lgpd-link:hover{color:#bf360c}
+/* Estado desabilitado explícito — usuário vê "por que" o botão está bloqueado */
+.btn-aceitar-hint{display:none;font-size:.75rem;color:#999;text-align:center;margin-top:6px;font-style:italic}
+.btn-aceitar[disabled] + .btn-aceitar-hint{display:block}
+/* Botão de aceite e avançar */
+.btn-aceitar{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  font-size:1rem;font-weight:900;letter-spacing:.3px;
+  transition:all .3s;color:#fff;background:#C8C8C8;
+  cursor:not-allowed;text-shadow:none;
+  opacity:.7;
+  font-family:'Nunito',sans-serif;
+}
+.btn-aceitar:not([disabled]):hover{transform:translateY(-2px)}
+.btn-aceitar.laranja-ativo{
+  background:linear-gradient(135deg,#e8650a,#ff8c00);
+  cursor:pointer;opacity:1;
+  box-shadow:0 4px 16px rgba(232,101,10,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);
+  animation:pulsarBtnConsent 1.6s ease-in-out infinite;
+}
+.btn-aceitar.verde-ativo{
+  background:linear-gradient(135deg,#2e7d32,#43a047);
+  cursor:pointer;opacity:1;
+  box-shadow:0 4px 16px rgba(46,125,50,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);
+  animation:pulsarBtnConsent 1.6s ease-in-out infinite;
+}
+@keyframes pulsarBtnConsent{
+  0%,100%{box-shadow:0 4px 16px rgba(232,101,10,.4)}
+  50%{box-shadow:0 6px 24px rgba(232,101,10,.65)}
+}
+/* Checkbox grande na área de estrelas (dentro do painel cliente) */
+.aceite-estrelas-label{display:flex;align-items:center;gap:14px;cursor:pointer;background:#fff;border-radius:10px;padding:14px;border:2px solid #FFCC80;min-height:52px;font-size:.85rem;color:#333;line-height:1.5;transition:border-color .3s,background .3s}
+.aceite-estrelas-label:has(input:checked){border-color:#e8650a;background:#FFF8F0}
+/* Esconde checkbox nativo dentro de aceite-estrelas-label */
+.aceite-estrelas-label input[type="checkbox"]{position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden}
+/* Quadrado visual customizado (herdado de .aceite-label mas também funciona aqui) */
+.aceite-estrelas-label .chk-aceite-visual{border-color:#e8650a}
+.aceite-estrelas-label input[type="checkbox"]:checked + .chk-aceite-visual{background:#e8650a;border-color:#e8650a;font-size:18px;color:#fff;font-weight:900;animation:none;box-shadow:0 0 0 4px rgba(232,101,10,.2)}
 
 /* ── BLOCO FORMULARIO INLINE ── */
 .bloco-form{display:none;margin-top:14px;background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
@@ -501,16 +575,45 @@ body { overflow-x: hidden; }
 </div>
 
 <!-- HEADER -->
-<header class="site-header">
-  <a class="logo-wrap" href="index.html">
-    <img loading="lazy" class="logo-img" src="images/logo.webp" alt="Itapolitana" onerror="this.style.display='none'">
-    <div>
-      <div class="logo-txt">Itapolitana Cajuru</div>
-      <div class="logo-sub">Sorveteria tipo Artesanal</div>
-    </div>
-  </a>
-  <a class="back" href="index.html">&#8592; Voltar</a>
+<style>
+/* ═══ CABEÇALHO PADRÃO ITAPOLITANA ══════════════════════════════════ */
+.itap-header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:9000;box-shadow:0 4px 20px rgba(0,0,0,.25);width:100%;box-sizing:border-box;}
+.itap-header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:10px 8px 14px;}
+.itap-brand-icon{width:90px;min-width:90px;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:0 0 2px 0;}
+.itap-brand-icon img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18);}
+.itap-header-nav{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;box-sizing:border-box;}
+.itap-nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;border-radius:16px;font-size:12px;font-weight:900;min-height:68px;text-align:center;border:2px solid rgba(255,255,255,.35);font-family:"Poppins",sans-serif;box-sizing:border-box;line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,.2);text-decoration:none;transition:transform .15s,filter .15s;}
+.itap-nav-btn:active{transform:scale(.95);}
+.itap-nav-btn:hover{transform:translateY(-2px);filter:brightness(1.15);}
+.itap-nav-icon{font-size:1.7em;line-height:1;display:block;margin-bottom:1px;}
+.itap-nav-label{font-size:clamp(12px,3.2vw,14px);font-weight:900;line-height:1.1;display:block;text-shadow:0 2px 5px rgba(0,0,0,.8);letter-spacing:.5px;text-transform:uppercase;color:#fff;}
+@media(max-width:480px){.itap-brand-icon img{width:76px;height:76px;}.itap-nav-btn{min-height:58px;padding:8px 4px;}.itap-nav-label{font-size:12px;}}
+@media(min-width:601px){.itap-header-nav{grid-template-columns:repeat(4,1fr);}.itap-nav-btn{min-height:80px;}}
+/* ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════ */
+</style>
+<!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
+<header class="itap-header">
+  <div class="itap-header-inner">
+    <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
+    </a>
+    <nav class="itap-header-nav" aria-label="Menu principal">
+      <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
+        <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
+      </a>
+      <a class="itap-nav-btn" href="promocao.html" style="background:linear-gradient(135deg,#E8000D,#C62828);">
+        <span class="itap-nav-icon">🎉</span><span class="itap-nav-label">PROMOÇÃO</span>
+      </a>
+      <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">
+        <span class="itap-nav-icon">⭐</span><span class="itap-nav-label">DICAS/DEPOIMENTOS</span>
+      </a>
+      <a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);">
+        <span class="itap-nav-icon">🎟️</span><span class="itap-nav-label">FIDELIDADE</span>
+      </a>
+    </nav>
+  </div>
 </header>
+<!-- ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════════ -->
 
 <!-- HERO BANNER -->
 <section class="hero-banner">
@@ -779,11 +882,15 @@ body { overflow-x: hidden; }
               <strong>8. DO FORO</strong><br>
               Fica eleito o foro da Comarca de Cajuru — SP para dirimir quaisquer duvidas ou litigios.
             </div>
-            <label class="aceite-label">
-              <input type="checkbox" id="aceite-fidelidade-inline" onchange="verificarAceiteFidelidadeInline()" style="accent-color:#e8650a">
-              <span>Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru.</span>
-            </label>
-            <button id="btn-aceitar-fidelidade-inline" class="btn-aceitar" onclick="abrirFormFidelidade()" disabled>&#128221; Aceitar e Fazer Cadastro</button>
+            <div class="aceite-area laranja">
+              <label class="aceite-label" for="aceite-fidelidade-inline">
+                <input type="checkbox" id="aceite-fidelidade-inline" onchange="verificarAceiteFidelidadeInline()">
+                <span class="chk-aceite-visual" aria-hidden="true"></span>
+                <span class="aceite-txt">Li e concordo com o <strong>Regulamento do Clube de Fidelidade</strong> da Sorveteria Itapolitana Cajuru e com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+              </label>
+            </div>
+            <button id="btn-aceitar-fidelidade-inline" class="btn-aceitar" onclick="abrirFormFidelidade()" disabled aria-disabled="true">&#128221; Aceitar e Fazer Cadastro</button>
+            <p class="btn-aceitar-hint">&#9432; Marque a caixa acima para continuar</p>
           </div>
         </div>
 
@@ -881,10 +988,18 @@ body { overflow-x: hidden; }
   <div class="card" id="card-acesso" style="display:none">
     <div style="text-align:center;margin-bottom:16px">
       <img loading="lazy" src="images/logo.webp" alt="Logo" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #e8650a;box-shadow:0 3px 12px rgba(232,101,10,.25);margin-bottom:10px" onerror="this.style.display='none'">
-      <div style="font-size:clamp(1.1rem,4vw,1.3rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:4px">&#127881; Receba Promocoes Exclusivas!</div>
-      <p style="font-size:clamp(.82rem,2.4vw,.9rem);color:#555;margin-top:4px;margin-bottom:8px">Cadastre seu WhatsApp para receber promocoes, cupons e bonificacoes na Sorveteria Itapolitana.</p>
-      <div style="font-size:clamp(.75rem,2.2vw,.82rem);background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037;text-align:left">
-        &#9989; <strong>Regras dos cupons de bonificacao:</strong> validos apenas para <strong>compras acima de R$ 30,00</strong> realizadas de <strong>segunda a sexta-feira</strong> na sorveteria.
+      <div style="font-size:clamp(1.15rem,4.5vw,1.4rem);font-weight:900;color:#e8650a;line-height:1.3;margin-bottom:6px">&#127881; Entre no Clube de Fidelidade!</div>
+      <p style="font-size:clamp(.85rem,2.5vw,.95rem);color:#444;margin-top:4px;margin-bottom:12px;line-height:1.5">Ganhe pontos em cada compra, promoções exclusivas e <strong>surpresas no seu aniversário</strong> na Sorveteria Itapolitana.</p>
+      <div style="display:flex;flex-direction:column;gap:6px;text-align:left;font-size:clamp(.78rem,2.2vw,.85rem);margin-bottom:10px">
+        <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:8px;padding:7px 12px;color:#5d4037">
+          &#9989; <strong>Pontos a cada compra</strong> — troque por prêmios exclusivos
+        </div>
+        <div style="background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:8px;padding:7px 12px;color:#2e7d32">
+          &#127881; <strong>Surpresa no aniversário</strong> — brinde especial no seu dia
+        </div>
+        <div style="background:#e3f2fd;border:1.5px solid #90caf9;border-radius:8px;padding:7px 12px;color:#1565c0">
+          &#128172; <strong>Promoções exclusivas</strong> — só para membros do clube (seg–sex, compras acima de R$ 30)
+        </div>
       </div>
     </div>
     <div class="form-tabs">
@@ -907,30 +1022,50 @@ body { overflow-x: hidden; }
       <div class="form-group" id="fg-cel">
         <span class="seta-guia" id="seta-cel">&#10148;</span>
         <label>Celular (WhatsApp) <span style="font-size:11px;color:#E65100;font-weight:700;">&#128242; numero ativo com WhatsApp</span></label>
-        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric">
+        <input type="tel" id="inp-cel-novo" placeholder="(16) 99999-9999" oninput="mascaraTel(this)" maxlength="15" inputmode="numeric" autocomplete="tel">
         <div class="hint warn">
-          &#11088; <strong>IMPORTANTE:</strong> Este celular sera usado para receber seu premio. Certifique-se de que o numero esta correto e com WhatsApp ativo.
+          &#11088; Este numero sera usado para enviar suas promoções e prêmios. Confira se esta correto!
         </div>
       </div>
-      <div style="background:#ffebee;border:2.5px solid #c62828;border-radius:12px;padding:14px 16px;margin-top:12px;font-size:.82rem;color:#4e342e;line-height:1.6">
-        <div style="font-size:.9rem;font-weight:900;color:#c62828;margin-bottom:8px;">&#128683; ATENCAO — RETIRADA DE PREMIOS</div>
-        Para retirar qualquer premio, o titular do cadastro devera comparecer <strong>pessoalmente</strong> na sorveteria portando <strong>obrigatoriamente</strong>:
-        <ul style="margin:8px 0 0 16px;padding:0;">
-          <li style="margin-bottom:4px;">&#128196; <strong>Documento oficial com foto</strong> (RG ou CNH) — original, nao sera aceita copia</li>
-          <li style="margin-bottom:4px;">&#128100; O <strong>nome completo</strong> no documento deve ser <strong>IDENTICO</strong> ao informado no cadastro</li>
-          <li style="margin-bottom:4px;">&#127881; A <strong>data de nascimento</strong> no documento deve ser <strong>IDENTICA</strong> a informada no cadastro</li>
-          <li style="margin-bottom:4px;">&#128242; O <strong>celular cadastrado</strong> com WhatsApp ativo e acessivel no momento da retirada</li>
+      <div class="form-group">
+        <label>E-mail <span style="font-size:11px;color:#888;font-weight:600;">(opcional)</span></label>
+        <input type="email" id="inp-email" placeholder="seuemail@exemplo.com" autocomplete="email" style="width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;outline:none;transition:.2s;font-family:'Nunito',sans-serif">
+        <div class="hint">Receba novidades e promos também por e-mail (opcional).</div>
+      </div>
+      <div class="form-group">
+        <label>Bairro / Cidade <span style="font-size:11px;color:#888;font-weight:600;">(opcional)</span></label>
+        <input type="text" id="inp-cidade" placeholder="Ex: Centro – Cajuru" maxlength="60" autocomplete="address-level2" style="width:100%;padding:12px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;outline:none;transition:.2s;font-family:'Nunito',sans-serif">
+      </div>
+      <!-- Regras resumidas em detalhes colapsável -->
+      <details style="margin-top:12px;background:#fff8f0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;font-size:.8rem;color:#5d4037;cursor:pointer">
+        <summary style="font-weight:800;color:#c62828;font-size:.82rem;list-style:none;outline:none">&#9432; Regras para retirada de prêmios (clique para ver)</summary>
+        <ul style="margin:8px 0 0 16px;padding:0;line-height:1.7">
+          <li>&#128196; Documento com foto (RG ou CNH) — original obrigatório</li>
+          <li>&#128100; Nome e data de nascimento <strong>idênticos</strong> ao cadastro</li>
+          <li>&#128242; Celular cadastrado com WhatsApp ativo</li>
+          <li>&#128683; Prêmio <strong>não é transferível</strong> e deve ser retirado pessoalmente</li>
         </ul>
-        <div style="background:#c62828;color:#fff;border-radius:8px;padding:9px 12px;margin-top:10px;font-weight:900;font-size:.82rem;text-align:center;line-height:1.5;">
-          &#128683; O PREMIO NAO SERA ENTREGUE em caso de divergencia entre o documento e os dados do cadastro.<br>Nao sera permitida retirada por terceiros. Sem excecoes e sem direito a recurso.
-        </div>
-      </div>
+      </details>
       <!-- Honeypot anti-bot: campo oculto, humanos nao preenchem -->
       <input type="text" id="fid-hp" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
-      <div class="form-group" id="fg-confirmar" style="position:relative">
+      <div class="form-group" id="fg-confirmar" style="position:relative;margin-top:14px">
         <span class="seta-guia" id="seta-confirmar">&#10148;</span>
-        <button class="btn btn-laranja" onclick="cadastrar()" style="margin-top:14px;width:100%">&#127881; Quero Receber Promocoes!</button>
-        <p style="font-size:11px;color:#888;text-align:center;margin-top:10px;line-height:1.5;">&#128274; Seus dados (nome, celular e data de nascimento) são usados exclusivamente para o programa de fidelidade da Sorveteria Itapolitana. Não compartilhamos com terceiros. <a href="politica-privacidade.html" style="color:#e8650a;">Política de Privacidade</a>.</p>
+        <!-- LGPD / Consentimento explícito WCAG AA -->
+        <div class="aceite-area laranja" style="margin-bottom:10px">
+          <label class="aceite-label" for="chk-lgpd-novo">
+            <input type="checkbox" id="chk-lgpd-novo" onchange="verificarLgpdNovo()">
+            <span class="chk-aceite-visual" aria-hidden="true"></span>
+            <span class="aceite-txt">Li e concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados <strong>exclusivamente</strong> para o Clube de Fidelidade Itapolitana (LGPD — Lei 13.709/2018).</span>
+          </label>
+        </div>
+        <button id="btn-cadastrar" class="btn btn-laranja" onclick="cadastrar()" style="margin-top:4px;width:100%;opacity:.5;cursor:not-allowed" disabled aria-disabled="true">&#127881; Quero entrar no Clube de Fidelidade!</button>
+        <p class="btn-aceitar-hint" style="display:block">&#9432; Marque a caixa acima para continuar</p>
+      </div>
+      <!-- Fallback WhatsApp (exibido via JS quando o salvamento falha) -->
+      <div id="fallback-whatsapp-cad" style="display:none;margin-top:12px;background:#e8f5e9;border:2px solid #a5d6a7;border-radius:12px;padding:14px 16px;text-align:center">
+        <div style="font-size:.9rem;font-weight:800;color:#2e7d32;margin-bottom:6px">&#128172; Conclua o cadastro pelo WhatsApp!</div>
+        <p style="font-size:.82rem;color:#444;margin-bottom:10px;line-height:1.5">Nosso servidor está temporariamente ocupado. Clique abaixo para confirmar pelo WhatsApp — é rápido!</p>
+        <button id="btn-fallback-whats" class="btn btn-whats" onclick="_cadastroFallbackWhatsApp()" style="width:100%">&#128172; Confirmar Cadastro pelo WhatsApp</button>
       </div>
     </div>
     <div id="form-login" style="display:none">
@@ -1038,9 +1173,10 @@ body { overflow-x: hidden; }
             <div style="font-size:.78rem;color:#5d4037">O código da estrela é <strong>invisível e intransferível</strong>. Não compartilhe sua conta. Tentativas de fraude resultam em <strong>bloqueio permanente</strong>.</div>
           </div>
         </div>
-        <label class="aceite-label" style="margin-bottom:0;cursor:pointer;background:#fff;border-radius:10px;padding:10px 12px;border:1.5px solid #ffcc80">
-          <input type="checkbox" id="chk-aceita-regras-estrelas" style="width:18px;height:18px;cursor:pointer;accent-color:#e8650a">
-          <span style="flex:1;font-size:.82rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
+        <label class="aceite-estrelas-label" for="chk-aceita-regras-estrelas">
+          <input type="checkbox" id="chk-aceita-regras-estrelas" style="cursor:pointer;accent-color:#e8650a">
+          <span class="chk-aceite-visual" aria-hidden="true"></span>
+          <span style="flex:1;font-size:.85rem;color:#333;font-weight:600">✅ Li e concordo com as <strong>Regras da Corrida das Estrelas</strong></span>
         </label>
       </div>
 
@@ -1172,20 +1308,50 @@ body { overflow-x: hidden; }
   </div>
 </div>
 
-<!-- RODAPE -->
-<footer style="background:#222;color:#aaa;text-align:center;padding:24px 20px;font-size:.8rem;margin-top:20px">
-  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
-    <img loading="lazy" src="images/logo.webp" alt="Logo" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.2)" onerror="this.style.display='none'">
-    <div>
-      <div style="color:#fff;font-weight:800;font-size:.9rem">Sorveteria Itapolitana Cajuru</div>
-      <div style="font-size:.75rem">Programa de Fidelidade</div>
+<!-- ═══ RODAPÉ PADRÃO ITAPOLITANA ═══════════════════════════════════════ -->
+<footer style="background:linear-gradient(160deg,#0060B0 0%,#0292EC 40%,#00AAFF 70%,#0292EC 100%);color:#fff;text-align:center;border-top:4px solid #FBD100;box-shadow:0 -4px 24px rgba(2,146,236,.4);width:100%;box-sizing:border-box;">
+  <style>
+    .itap-footer-pill{color:#FBD100;font-weight:900;font-size:.82rem;text-decoration:none;background:rgba(251,209,0,.12);border:1.5px solid rgba(251,209,0,.6);border-radius:50px;padding:7px 15px;display:inline-block;animation:itap-footer-pulse 2.2s ease-in-out infinite;white-space:nowrap}
+    .itap-footer-pill:hover{background:rgba(251,209,0,.25);text-decoration:underline}
+    @keyframes itap-footer-pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,209,0,.65);border-color:rgba(251,209,0,.65)}50%{box-shadow:0 0 0 8px rgba(251,209,0,0);border-color:#FBD100}}
+    .itap-footer-nav{color:#fff;text-decoration:none;font-size:12px;font-weight:800;border-radius:30px;padding:7px 14px;display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12)}
+    .itap-footer-nav:hover{background:rgba(255,255,255,.25)}
+    @media(max-width:600px){footer{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))!important}}
+  </style>
+  <!-- Logo + nome -->
+  <div style="padding:26px 20px 18px;">
+    <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="lazy" decoding="async" width="96" height="96"
+         style="width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 4px 20px rgba(0,0,0,.55);display:block;margin:0 auto;">
+    <div style="margin-top:10px;font-size:16px;color:#FBD100;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px rgba(0,0,0,.7);">ITAPOLITANA</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.9);font-weight:700;letter-spacing:1px;margin-top:2px;">Cajuru · SP · Sorvete tipo artesanal desde 2007</div>
+  </div>
+  <!-- Links rápidos -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 16px 20px;">
+    <a href="index.html" class="itap-footer-nav">🍦 Cardápio</a>
+    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="itap-footer-nav" style="border-color:rgba(37,211,102,.7);background:rgba(37,211,102,.2);">💬 WhatsApp</a>
+    <a href="encomendas.html" class="itap-footer-nav">📦 Encomendas</a>
+    <a href="fidelidade.html" class="itap-footer-nav" style="border-color:rgba(251,209,0,.55);background:rgba(251,209,0,.18);">⭐ Fidelidade</a>
+  </div>
+  <!-- Faixa LGPD -->
+  <div style="margin:0 16px 18px;padding:13px 16px;background:rgba(0,0,0,.3);border-radius:14px;border:1px solid rgba(251,209,0,.3);">
+    <div style="font-size:11px;color:rgba(255,255,255,.88);font-weight:700;line-height:1.65;margin-bottom:10px;">🔒 Seus dados estão seguros. Usamos apenas cookies essenciais e de análise. Nenhum dado de pagamento é armazenado pelo site.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <a href="politica-privacidade.html" class="itap-footer-pill">🔒 Política de Privacidade (LGPD)</a>
+      <span style="color:rgba(255,255,255,.3);font-weight:700;font-size:16px;">·</span>
+      <a href="sobre.html" class="itap-footer-pill">ℹ️ Sobre a Itapolitana</a>
     </div>
   </div>
-  <p>Duvidas? <a href="https://wa.me/5516996062046" style="color:#ff8c00" target="_blank">Fale conosco no WhatsApp</a></p>
-  <p style="margin-top:12px">
-    <button onclick="window.location.href='admin-painel.html'" style="background:none;border:none;color:rgba(255,255,255,0.12);font-size:1.1rem;cursor:pointer;padding:8px;line-height:1;" title="Admin">&#9881;&#65039;</button>
-  </p>
+  <!-- Copyright -->
+  <div style="padding:12px 16px 6px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;color:rgba(255,255,255,.75);font-weight:600;line-height:1.8;">
+    © 2007–2026 Sorveteria Itapolitana · Cajuru/SP · Todos os direitos reservados<br>
+    Desenvolvido por <span style="color:#FBD100;font-weight:900;">MissiaScaçarato</span>
+  </div>
+  <!-- Admin link discreto -->
+  <div style="padding:4px 0 16px;">
+    <a href="admin-painel.html" style="color:rgba(255,255,255,.15);font-size:1.1rem;text-decoration:none;padding:8px;" title="Admin">⚙️</a>
+  </div>
 </footer>
+<!-- ═══ FIM RODAPÉ PADRÃO ═══════════════════════════════════════════════════ -->
 
 <script>
 // ═══════════════════════════════════════════════════════════
@@ -1434,10 +1600,32 @@ function verificarAceiteFidelidadeInline() {
   if (!cb || !btn) return;
   if (cb.checked) {
     btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
     btn.className = 'btn-aceitar laranja-ativo';
   } else {
     btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
     btn.className = 'btn-aceitar';
+  }
+}
+// LGPD gate para o cadastro do painel principal (form-novo)
+function verificarLgpdNovo() {
+  const cb = document.getElementById('chk-lgpd-novo');
+  const btn = document.getElementById('btn-cadastrar');
+  const hint = btn ? btn.nextElementSibling : null;
+  if (!cb || !btn) return;
+  if (cb.checked) {
+    btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    if (hint) hint.style.display = 'none';
+  } else {
+    btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
+    btn.style.opacity = '.5';
+    btn.style.cursor = 'not-allowed';
+    if (hint) hint.style.display = 'block';
   }
 }
 function verificarAceiteSorteioInline() {
@@ -1446,9 +1634,11 @@ function verificarAceiteSorteioInline() {
   if (!cb || !btn) return;
   if (cb.checked) {
     btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
     btn.className = 'btn-aceitar verde-ativo';
   } else {
     btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
     btn.className = 'btn-aceitar';
   }
 }
@@ -1611,20 +1801,26 @@ async function cadastrar() {
   if (_fidRateDados.t.length >= 3) { _fidRateDados.bloqAte = _fidRateAgora + 30*60*1000; _fidRateDados.t = []; }
   localStorage.setItem(_fidRateKey, JSON.stringify(_fidRateDados));
 
-  const nome     = document.getElementById('inp-nome').value.replace(/<[^>]*>/g,'').trim();
+  const nome     = document.getElementById('inp-nome').value.replace(/[<>"'&]/g,'').trim();
   const dataNasc = document.getElementById('inp-data-nasc').value;
   const cel      = limparTel(document.getElementById('inp-cel-novo').value);
+  const email    = (document.getElementById('inp-email') ? document.getElementById('inp-email').value.trim() : '');
+  const cidade   = (document.getElementById('inp-cidade') ? document.getElementById('inp-cidade').value.replace(/[<>"'&]/g,'').trim() : '');
 
   if (!nome || nome.length < 5) { showMsg('msg-acesso','Informe seu nome completo (minimo 5 letras).','aviso'); return; }
   if (nome.trim().split(/\s+/).length < 2) { showMsg('msg-acesso','Informe nome e sobrenome completos.','aviso'); return; }
   if (!dataNasc) { showMsg('msg-acesso','Informe sua data de nascimento.','aviso'); return; }
 
-  const hoje     = new Date();
-  const nasc     = new Date(dataNasc);
-  let idade      = hoje.getFullYear() - nasc.getFullYear();
-  const mesAntes = hoje.getMonth() < nasc.getMonth() ||
-                   (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate());
-  if (mesAntes) idade--;
+  // ── Fix #1.1: Usar parsing local (evita bug UTC off-by-one) ──
+  const _nascParts = dataNasc.split('-').map(Number);
+  const nascAno = _nascParts[0], nascMes = _nascParts[1], nascDia = _nascParts[2];
+  if (!nascAno || !nascMes || !nascDia) {
+    showMsg('msg-acesso','Data de nascimento invalida. Use o formato correto.','aviso'); return;
+  }
+  const hoje = new Date();
+  const nasc = new Date(nascAno, nascMes - 1, nascDia);
+  let idade  = hoje.getFullYear() - nascAno;
+  if (hoje.getMonth() + 1 < nascMes || (hoje.getMonth() + 1 === nascMes && hoje.getDate() < nascDia)) idade--;
   if (idade < 14) {
     showMsg('msg-acesso','E necessario ter no minimo 14 anos para participar dos bonus e sorteios da Sorveteria Itapolitana.','aviso');
     return;
@@ -1723,6 +1919,8 @@ async function cadastrar() {
     nome,
     dataNasc,
     cel,
+    email:           email || '',
+    cidade:          cidade || '',
     cel_anterior:    [],
     cadastro:        new Date().toISOString(),
     saldoPontos:     0,
@@ -1746,15 +1944,46 @@ async function cadastrar() {
   if (ok) {
     clienteAtual = novoCliente;
     localStorage.setItem('itap_cel', cel);
+    // Esconder fallback WhatsApp se estava visível
+    const fb = document.getElementById('fallback-whatsapp-cad');
+    if (fb) fb.style.display = 'none';
     showMsg('msg-acesso',
-      'Parabens, ' + nome.split(' ')[0] + '! Seu cadastro foi realizado com sucesso! Bem-vindo(a) ao programa de fidelidade!',
+      'Parabens, ' + nome.split(' ')[0] + '! Bem-vindo(a) ao Clube de Fidelidade Itapolitana! Voce ja pode acumular pontos e ganhar premios.',
       'ok');
     setTimeout(mostrarPainelCliente, 1500);
   } else {
     delete ghClientes.clientes[idUnico];
     delete ghClientes.indice_celular[cel];
-    showMsg('msg-acesso','Erro ao criar conta. Verifique sua conexao e tente novamente.','erro');
+    showMsg('msg-acesso','Nao foi possivel salvar seu cadastro agora. Use o WhatsApp abaixo para confirmar!','aviso');
+    // ── Fix #1.4: Exibir fallback WhatsApp quando GitHub save falha ──
+    const fb = document.getElementById('fallback-whatsapp-cad');
+    if (fb) {
+      fb.style.display = 'block';
+      fb.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
   }
+}
+
+// ── Fallback: enviar cadastro via WhatsApp quando GitHub save falha ──
+function _cadastroFallbackWhatsApp() {
+  const nome     = (document.getElementById('inp-nome') || {}).value || '';
+  const dataNasc = (document.getElementById('inp-data-nasc') || {}).value || '';
+  const cel      = limparTel((document.getElementById('inp-cel-novo') || {}).value || '');
+  const email    = (document.getElementById('inp-email') || {}).value || '';
+  const cidade   = (document.getElementById('inp-cidade') || {}).value || '';
+  if (!nome || !cel) { showMsg('msg-acesso','Preencha nome e celular antes de continuar.','aviso'); return; }
+  const celFmt  = cel.length >= 10 ? '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7) : cel;
+  const nascFmt = dataNasc ? dataNasc.split('-').reverse().join('/') : 'Nao informada';
+  const msg = '🍦 *CADASTRO — Clube de Fidelidade*\n' +
+    '*Sorveteria Itapolitana Cajuru*\n\n' +
+    '*Nome:* ' + nome.trim() + '\n' +
+    '*Celular:* ' + celFmt + '\n' +
+    '*Data de nascimento:* ' + nascFmt + '\n' +
+    (email ? '*E-mail:* ' + email + '\n' : '') +
+    (cidade ? '*Bairro/Cidade:* ' + cidade + '\n' : '') +
+    '\nEstou ciente das regras e concordo com o regulamento do Clube de Fidelidade. 🎉';
+  window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+  showMsg('msg-acesso','Redirecionando para o WhatsApp. Envie a mensagem para confirmar seu cadastro!','ok');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1789,45 +2018,52 @@ async function entrar() {
   // Resolver CEL via indice_celular (estrutura USR-xxxx) ou chave legada direta
   const chaveCliente = _chaveCliente(cel);
   if (!chaveCliente) {
+    clienteAtual = null;
     showMsg('msg-acesso','Celular nao encontrado. Se e sua primeira vez, clique em "Primeira vez" para se cadastrar. Se trocou de numero, use "Primeira vez" para atualizar seu cadastro.','erro');
     return;
   }
-  clienteAtual = ghClientes.clientes[chaveCliente];
+  // Usar variável local — clienteAtual só é atribuído após TODAS as validações
+  const registroEncontrado = ghClientes.clientes[chaveCliente];
 
-  if (clienteAtual.bloqueado) {
+  if (registroEncontrado.bloqueado) {
+    clienteAtual = null;
     showMsg('msg-acesso','NUMERO BLOQUEADO — Este numero foi bloqueado por tentativas invalidas de acesso. Entre em contato com a sorveteria para desbloquear.','erro');
     return;
   }
 
-  const dataCadastrada = clienteAtual.dataNasc || '';
+  const dataCadastrada = registroEncontrado.dataNasc || '';
   const dataDigitada   = ano + '-' + mes + '-' + dia;
 
   // Se não há data no cadastro (dado incompleto) — bloquear acesso por segurança
   if (!dataCadastrada) {
+    clienteAtual = null;
     showMsg('msg-acesso','Cadastro incompleto. Entre em contato com a sorveteria para regularizar sua conta.','aviso');
     return;
   }
 
   if (dataCadastrada !== dataDigitada) {
-    clienteAtual.tentativasInvalidas = (clienteAtual.tentativasInvalidas || 0) + 1;
-    const tentativas = clienteAtual.tentativasInvalidas;
-    if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
-    clienteAtual.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+    registroEncontrado.tentativasInvalidas = (registroEncontrado.tentativasInvalidas || 0) + 1;
+    const tentativas = registroEncontrado.tentativasInvalidas;
+    if (!registroEncontrado.logFraude) registroEncontrado.logFraude = [];
+    registroEncontrado.logFraude.push({ data: new Date().toISOString(), tentativa: tentativas });
+    ghClientes.clientes[chaveCliente] = registroEncontrado;
+    clienteAtual = null;
 
     if (tentativas >= 4) {
-      clienteAtual.bloqueado = true;
-      clienteAtual.dataBloqueio = new Date().toISOString();
-      _gravarClienteAtual();
+      registroEncontrado.bloqueado = true;
+      registroEncontrado.dataBloqueio = new Date().toISOString();
       await salvarClientes('FRAUDE: bloqueio do numero ' + cel + ' apos ' + tentativas + ' tentativas');
       showMsg('msg-acesso','TENTATIVA DE FRAUDE DETECTADA! Seu numero foi BLOQUEADO apos ' + tentativas + ' tentativas invalidas. Entre em contato com a sorveteria.','erro');
     } else {
-      _gravarClienteAtual();
       await salvarClientes('Tentativa invalida ' + tentativas + '/4 para ' + cel);
       const restam = Math.max(0, 4 - tentativas);
       showMsg('msg-acesso','Data de nascimento incorreta. Tentativa ' + tentativas + ' de 4. Mais ' + restam + ' tentativa(s) antes do bloqueio.','aviso');
     }
     return;
   }
+
+  // Todas as validações passaram — atribuir clienteAtual
+  clienteAtual = registroEncontrado;
 
   if (clienteAtual.tentativasInvalidas > 0) {
     clienteAtual.tentativasInvalidas = 0;
@@ -1857,13 +2093,9 @@ function mostrarPainelCliente() {
   document.getElementById('card-historico').style.display = 'block';
   atualizarUI();
 
-  // Verificar se há token de estrela pendente na sessão (cliente fez login após capturar)
-  const tokenPendente = sessionStorage.getItem('itap_estrela_token');
-  if (tokenPendente && tokenPendente.startsWith('EST')) {
-    console.log('🌟 Token pendente detectado após login:', tokenPendente);
-    setTimeout(() => processarTokenEstrela(tokenPendente), 800);
-  }
 }
+// Nota: o wizard intercepta mostrarPainelCliente via _hookPainel e
+// move automaticamente para a etapa de reivindicação quando há token ativo.
 
 function atualizarUI() {
   if (!clienteAtual) return;
@@ -1992,6 +2224,15 @@ function sair() {
   document.getElementById('inp-login-dia').value = '';
   document.getElementById('inp-login-mes').value = '';
   document.getElementById('inp-login-ano').value = '';
+  // Fix #4.1: Limpar campos do wizard ao sair (privacidade em dispositivos compartilhados)
+  ['wiz-nome','wiz-data','wiz-cel','wiz-cel-login','wiz-login-dia','wiz-login-mes','wiz-login-ano'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  // Fix #4.2: Limpar token da estrela da sessionStorage ao sair
+  sessionStorage.removeItem('itap_estrela_token');
+  // Esconder fallback WhatsApp se estava visível
+  const fb = document.getElementById('fallback-whatsapp-cad');
+  if (fb) fb.style.display = 'none';
   showMsg('msg-acesso','','ok');
   setTab('novo');
 }
@@ -2151,7 +2392,7 @@ async function bloquearClienteServidor(motivo) {
   clienteAtual.dataBloqueio = new Date().toISOString();
   if (!clienteAtual.logFraude) clienteAtual.logFraude = [];
   clienteAtual.logFraude.push({ motivo, data: new Date().toISOString() });
-  ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+  _gravarClienteAtual();
   await salvarClientes('BLOQUEIO AUTOMATICO: ' + clienteAtual.nome + ' (' + clienteAtual.cel + ') — ' + motivo);
 }
 
@@ -2388,7 +2629,7 @@ async function resgatarPremio(tipo) {
     clienteAtual.saldoPontos = saldoAntes;
     clienteAtual.resgates.pop();
     clienteAtual.totalPremios--;
-    ghClientes.clientes[clienteAtual.cel] = clienteAtual;
+    _gravarClienteAtual();
     showMsg('msg-codigo','Erro ao registrar resgate. Tente novamente.','erro');
     atualizarUI();
   }
@@ -2539,8 +2780,10 @@ function adminIrPagina(p) {
 }
 
 async function adminToggleBloqueio(cel, bloquear) {
-  if (!ghClientes.clientes[cel]) return;
-  const c = ghClientes.clientes[cel];
+  const chave = _chaveCliente(cel);
+  if (!chave) return;
+  const c = ghClientes.clientes[chave];
+  if (!c) return;
   if (bloquear) {
     if (!confirm('Bloquear ' + c.nome + '?')) return;
     c.bloqueado = true;
@@ -2553,7 +2796,7 @@ async function adminToggleBloqueio(cel, bloquear) {
     c.logFraude = [];
     c.dataBloqueio = null;
   }
-  ghClientes.clientes[cel] = c;
+  ghClientes.clientes[chave] = c;
   setLoading(bloquear ? 'Bloqueando cliente...' : 'Desbloqueando cliente...');
   const ok = await salvarClientes((bloquear ? 'Admin bloqueou: ' : 'Admin desbloqueou: ') + c.nome + ' (' + cel + ')');
   hideLoading();
@@ -2562,34 +2805,35 @@ async function adminToggleBloqueio(cel, bloquear) {
   } else {
     alert('Erro ao salvar. Tente novamente.');
     c.bloqueado = !bloquear;
-    ghClientes.clientes[cel] = c;
+    ghClientes.clientes[chave] = c;
     adminRenderizar();
   }
 }
 
 async function adminExcluirCliente(cel) {
-  if (!ghClientes.clientes[cel]) return;
-  const c = ghClientes.clientes[cel];
+  const chave = _chaveCliente(cel);
+  if (!chave) return;
+  const c = ghClientes.clientes[chave];
+  if (!c) return;
   if (!confirm('⚠️ ATENÇÃO: Deseja excluir permanentemente o cliente ' + c.nome + '?\nEsta ação não pode ser desfeita.')) return;
-  
-  const idPermanente = ghClientes.indice_celular[cel];
-  delete ghClientes.clientes[idPermanente];
+
+  delete ghClientes.clientes[chave];
   delete ghClientes.indice_celular[cel];
-  
+
   if (ghClientes.metadata) {
     ghClientes.metadata.total_clientes = Object.keys(ghClientes.clientes).length;
   }
-  
+
   setLoading('Excluindo cliente...');
   const ok = await salvarClientes('Admin excluiu cliente: ' + c.nome + ' (' + cel + ')');
   hideLoading();
-  
+
   if (ok) {
-    adminBuscar(); // Recarregar a lista filtrada
+    adminBuscar();
     alert('Cliente excluído com sucesso.');
   } else {
     alert('Erro ao excluir. Tente novamente.');
-    adminCarregarClientes(); // Recarregar dados originais em caso de erro
+    adminCarregarClientes();
   }
 }
 
@@ -2654,8 +2898,12 @@ function toggleSenha(idCampo, idOlho) {
 
 // ═══════════════════════════════════════════════════════════
 // ESTRELA DOURADA — PROCESSAR TOKEN DA CAPTURA
+// direto=true: chamado pelo wizard após login/cadastro + clique no botão reivindicar
+//              → pula o flow de botão legado e salva diretamente (sem double-trigger)
+// direto=false (padrão): chamado via fluxo legado com botão de confirmação
 // ═══════════════════════════════════════════════════════════
-async function processarTokenEstrela(tokenCaptura) {
+async function processarTokenEstrela(tokenCaptura, direto) {
+  direto = !!direto;
   try {
     // 1. Buscar o estado atual da estrela no GitHub
     const ESTRELAS_PATH = 'estrelas_ciclo.json';
@@ -2674,19 +2922,7 @@ async function processarTokenEstrela(tokenCaptura) {
       console.warn('⚠️ Estrela não está em resgate');
       return false;
     }
-    // ── BUG 6 CORRIGIDO: janela de validade 2 min → 6 min ──
-    // O usuário tem 5 min para preencher o formulário + tempo de processamento.
-    // Validamos com 6 min para dar margem de segurança.
-    if (estrela.horaAparicao) {
-      const aparicao = new Date(estrela.horaAparicao);
-      const agora = new Date();
-      const tempoDecorrido = (agora - aparicao) / 1000; // em segundos
-      if (tempoDecorrido > 360) { // 6 minutos = 360 segundos
-        console.warn('⏰ Estrela expirou! Tempo decorrido: ' + Math.round(tempoDecorrido) + 's (limite: 360s)');
-        sessionStorage.removeItem('itap_estrela_token');
-        return false;
-      }
-    }
+    // Janela de validade: respeita validadeToken salvo pelo motor (8 min)
     if (estrela.validadeToken) {
       const validade = new Date(estrela.validadeToken);
       if (new Date() > validade) {
@@ -2705,11 +2941,7 @@ async function processarTokenEstrela(tokenCaptura) {
       return false;
     }
 
-    // 4. Proteção Anti-Robô: Exibir botão para clique humano
-    //    Todo o código de salvar fica DENTRO do onclick para executar após o clique
-    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
-    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
-
+    // Função interna de persistência — única chamada possível
     async function salvarCaptura() {
       const hoje = new Date().toISOString().split('T')[0];
       const usuarioId = clienteAtual.cel;
@@ -2728,7 +2960,7 @@ async function processarTokenEstrela(tokenCaptura) {
       dados.rankingAtual[usuarioId].diaCaptura = hoje;
       dados.rankingAtual[usuarioId].nome = clienteAtual.nome;
 
-      // 5. Marcar estrela como capturada definitivamente
+      // Marcar estrela como capturada definitivamente
       dados.estrelaCapturada.status = 'capturada';
       dados.estrelaCapturada.capturadoPor = usuarioId;
       dados.estrelaCapturada.capturadoEm = new Date().toISOString();
@@ -2741,7 +2973,7 @@ async function processarTokenEstrela(tokenCaptura) {
         dados.horariosDia[hoje].capturadoEm = new Date().toISOString();
       }
 
-      // 6. Salvar no GitHub
+      // Salvar no GitHub
       const conteudo = JSON.stringify(dados, null, 2);
       const resultado = await ghPut(ESTRELAS_PATH, conteudo,
         '🌟 Estrela capturada por ' + clienteAtual.nome + ' (' + clienteAtual.cel + ')', sha);
@@ -2749,12 +2981,6 @@ async function processarTokenEstrela(tokenCaptura) {
       if (resultado.ok) {
         console.log('🌟 Estrela registrada com sucesso para ' + clienteAtual.nome);
         sessionStorage.removeItem('itap_estrela_token');
-        const totalEstrelas = dados.rankingAtual[usuarioId].estrelas;
-        const metaEstrelas = (dados.cicloAtual && dados.cicloAtual.metaEstrelas) || 5;
-        setTimeout(() => {
-          alert('🌟 PARABÉNS, ' + clienteAtual.nome.split(' ')[0] + '!\n\nVocê capturou a Estrela Dourada!\n\nTotal de estrelas: ' + totalEstrelas + '/' + metaEstrelas + '\n\n' +
-            (totalEstrelas >= metaEstrelas ? '🏆 Você completou ' + metaEstrelas + ' estrelas! Fale com a gente no WhatsApp para resgatar seu prêmio!' : 'Continue caçando! Faltam ' + (metaEstrelas - totalEstrelas) + ' estrela(s) para o prêmio!'));
-        }, 500);
         return true;
       } else {
         console.error('❌ Erro ao salvar captura da estrela');
@@ -2762,20 +2988,27 @@ async function processarTokenEstrela(tokenCaptura) {
       }
     }
 
+    // 4a. Fluxo direto (chamado pelo wizard após interação humana confirmada)
+    if (direto) {
+      return await salvarCaptura();
+    }
+
+    // 4b. Fluxo legado: exibir botão de confirmação (proteção anti-robô)
+    const secaoReivindicar = document.getElementById("secao-reivindicar-estrela");
+    const btnReivindicar = document.getElementById("btn-reivindicar-estrela");
     if (secaoReivindicar && btnReivindicar) {
       secaoReivindicar.style.display = 'block';
       return new Promise(resolve => {
         btnReivindicar.onclick = async () => {
           secaoReivindicar.style.display = 'none';
-          // Atraso aleatório para simular tempo de reação humano (proteção anti-robô)
-          await new Promise(r => setTimeout(r, 500 + Math.random() * 1500));
+          await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));
           const ok = await salvarCaptura();
           resolve(ok);
         };
       });
     }
 
-    // Se não há botão no DOM, salva diretamente
+    // Fallback: sem botão no DOM, salva diretamente
     return await salvarCaptura();
 
   } catch(e) {
@@ -2789,19 +3022,8 @@ async function processarTokenEstrela(tokenCaptura) {
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   carregarDados().then(() => {
-    // Verificar se há token de estrela na URL (?token=EST_xxxxx)
-    const params = new URLSearchParams(window.location.search);
-    const tokenEstrela = params.get('token');
-    if (tokenEstrela && tokenEstrela.startsWith('EST')) {
-      console.log('🌟 Token de estrela detectado:', tokenEstrela);
-      processarTokenEstrela(tokenEstrela);
-    }
-    // Verificar se há token pendente na sessão (cliente fez login após captura)
-    const tokenSessao = sessionStorage.getItem('itap_estrela_token');
-    if (tokenSessao && clienteAtual) {
-      console.log('🌟 Token pendente na sessão:', tokenSessao);
-      processarTokenEstrela(tokenSessao);
-    }
+    // O wizard (DOMContentLoaded abaixo) é o único responsável pelo fluxo do token.
+    // Nada a fazer aqui para a estrela.
   });
 
   if (sessionStorage.getItem('itap_abrir_admin') === '1') {
@@ -2871,6 +3093,9 @@ document.addEventListener('DOMContentLoaded', () => {
     _timer=setInterval(function(){_seg--;_timer_tick();if(_seg<=0){clearInterval(_timer);_expirar();}},1000);
   }
   function _expirar(){
+    // Fix #3.8: Só sobrescrever a tela se não há uma chamada API em andamento.
+    // wizReivindicar já pausa o timer antes de chamar processarTokenEstrela,
+    // então _expirar() só dispara quando o botão ainda não foi clicado.
     sessionStorage.removeItem('itap_estrela_token');_tok=null;_irPara('reivindicar');
     var div=document.getElementById('wiz-etapa-reivindicar');
     if(div)div.innerHTML='<div style="text-align:center;padding:20px 8px"><div style="font-size:3rem">\u23F0</div><div style="font-size:1.1rem;font-weight:900;color:#C62828;margin:10px 0">Tempo esgotado!</div><p style="color:#555;font-size:.9rem;line-height:1.7">Os 8 minutos acabaram e a estrela foi liberada para outros ca\u00E7adores.</p><p style="color:#888;font-size:.8rem;margin-top:14px">Fique ligado nos pr\u00F3ximos hor\u00E1rios! \u2B50</p></div>';
@@ -2906,6 +3131,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }).catch(function(){var el=document.getElementById('wiz-s-total');if(el)el.innerHTML='\u2B50 Estrela registrada com sucesso!';});
   }
   function _erro(msg){
+    // Fix #3.3: Parar o timer para não sobrescrever a mensagem de erro com "Tempo esgotado"
+    clearInterval(_timer);
     var em=document.getElementById('wiz-msg-reivindicar'),btn=document.getElementById('wiz-btn-reivindicar');
     if(em)em.innerHTML='<div style="background:#FFEBEE;border:1px solid #EF9A9A;border-radius:10px;padding:12px;color:#C62828;font-size:.85rem;line-height:1.6;margin-top:10px">\u274C <strong>N\u00E3o foi poss\u00EDvel registrar a estrela.</strong><br>'+msg+'</div>';
     if(btn){btn.disabled=false;btn.textContent='\u2B50 REIVINDICAR MINHA ESTRELA!';}
@@ -2932,35 +3159,40 @@ document.addEventListener('DOMContentLoaded', () => {
   window.wizValidarData=function(el){
     var msg=document.getElementById('wiz-msg-data');if(!msg)return;
     if(!el.value){msg.innerHTML='';return;}
-    var nasc=new Date(el.value),hoje=new Date(),idade=hoje.getFullYear()-nasc.getFullYear();
-    if(hoje.getMonth()<nasc.getMonth()||(hoje.getMonth()===nasc.getMonth()&&hoje.getDate()<nasc.getDate()))idade--;
+    // Fix #3.1: Parsing local (evita bug UTC off-by-one)
+    var p=el.value.split('-').map(Number),nascAno=p[0],nascMes=p[1],nascDia=p[2];
+    var hoje=new Date(),idade=hoje.getFullYear()-nascAno;
+    if(hoje.getMonth()+1<nascMes||(hoje.getMonth()+1===nascMes&&hoje.getDate()<nascDia))idade--;
     msg.innerHTML=idade<14?'<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>':'<span style="color:#2E7D32;font-size:.82rem">\u2713 OK</span>';
   };
   window.wizAvancarData=function(){
     var inp=document.getElementById('wiz-data'),msg=document.getElementById('wiz-msg-data');
     if(!inp||!inp.value){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F Informe sua data de nascimento.</span>';return;}
-    var nasc=new Date(inp.value),hoje=new Date(),idade=hoje.getFullYear()-nasc.getFullYear();
-    if(hoje.getMonth()<nasc.getMonth()||(hoje.getMonth()===nasc.getMonth()&&hoje.getDate()<nasc.getDate()))idade--;
+    // Fix #3.1: Parsing local (evita bug UTC off-by-one)
+    var p=inp.value.split('-').map(Number),nascAno=p[0],nascMes=p[1],nascDia=p[2];
+    var hoje=new Date(),idade=hoje.getFullYear()-nascAno;
+    if(hoje.getMonth()+1<nascMes||(hoje.getMonth()+1===nascMes&&hoje.getDate()<nascDia))idade--;
     if(idade<14){if(msg)msg.innerHTML='<span style="color:#C62828;font-size:.82rem">\u26A0\uFE0F M\u00EDnimo 14 anos.</span>';return;}
     if(msg)msg.innerHTML='';_irPara('cel');
   };
-  window.wizEntrar=function(){
+  // wizEntrar: async/await — elimina setTimeout polling (1400ms), usa resultado real de entrar()
+  window.wizEntrar=async function(){
     var btn=document.getElementById('wiz-btn-entrar'),msg=document.getElementById('wiz-msg-login');
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Verificando...';}if(msg)msg.innerHTML='';
     var mapa={'wiz-cel-login':'inp-cel-login','wiz-login-dia':'inp-login-dia','wiz-login-mes':'inp-login-mes','wiz-login-ano':'inp-login-ano'};
     Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
-    try{entrar();}catch(e){console.warn('wizEntrar:',e);}
-    setTimeout(function(){
-      if(typeof clienteAtual!=='undefined'&&clienteAtual){
-        _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
-      }else{
-        var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
-        if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
-        if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
-      }
-    },1400);
+    try{await entrar();}catch(e){console.warn('wizEntrar:',e);}
+    if(typeof clienteAtual!=='undefined'&&clienteAtual){
+      _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{
+      var mm=document.getElementById('msg-acesso'),errTxt=mm?(mm.textContent||'').trim():'';
+      var errSafe=errTxt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(errSafe||'Celular ou data incorretos. Verifique e tente novamente.')+'</div>';
+      if(btn){btn.disabled=false;btn.textContent='\uD83D\uDD13 Entrar e Garantir Estrela';}
+    }
   };
-  window.wizCadastrar=function(){
+  // wizCadastrar: async/await — elimina setTimeout polling (2200ms), usa resultado real de cadastrar()
+  window.wizCadastrar=async function(){
     var btn=document.getElementById('wiz-btn-cel'),msg=document.getElementById('wiz-msg-cel');
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Criando conta...';}if(msg)msg.innerHTML='';
     var celEl=document.getElementById('wiz-cel'),cel=celEl?celEl.value.replace(/\D/g,''):'';
@@ -2970,32 +3202,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     var mapa={'wiz-nome':'inp-nome','wiz-data':'inp-data-nasc','wiz-cel':'inp-cel-novo'};
     Object.keys(mapa).forEach(function(s){var a=document.getElementById(s),b=document.getElementById(mapa[s]);if(a&&b)b.value=a.value;});
-    try{cadastrar();}catch(e){console.warn('wizCadastrar:',e);}
-    setTimeout(function(){
-      if(typeof clienteAtual!=='undefined'&&clienteAtual){
-        _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
-      }else{
-        var mm=document.getElementById('msg-acesso'),err=mm?(mm.textContent||'').trim():'';
-        if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(err||'Verifique seus dados e tente novamente.')+'</div>';
-        if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
-      }
-    },2200);
+    try{await cadastrar();}catch(e){console.warn('wizCadastrar:',e);}
+    if(typeof clienteAtual!=='undefined'&&clienteAtual){
+      _irPara('reivindicar');_prepReiv();var w=document.getElementById('wizard-estrela');if(w)w.scrollIntoView({behavior:'smooth',block:'start'});
+    }else{
+      var mm=document.getElementById('msg-acesso'),errTxt=mm?(mm.textContent||'').trim():'';
+      var errSafe=errTxt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      if(msg)msg.innerHTML='<div style="color:#C62828;background:#FFEBEE;border-radius:8px;padding:9px 12px;font-size:.83rem;margin-top:6px">\u26A0\uFE0F '+(errSafe||'Verifique seus dados e tente novamente.')+'</div>';
+      if(btn){btn.disabled=false;btn.textContent='\u2705 Confirmar Cadastro';}
+    }
   };
+  // wizReivindicar: chama processarTokenEstrela com direto=true (interação humana já confirmada)
+  // Remove o hack btnLeg.click() que causava double-trigger
   window.wizReivindicar=function(){
     var btn=document.getElementById('wiz-btn-reivindicar'),msg=document.getElementById('wiz-msg-reivindicar');
     if(btn){btn.disabled=true;btn.textContent='\u23F3 Registrando estrela...';}if(msg)msg.innerHTML='';
     var tok=_tok||sessionStorage.getItem('itap_estrela_token');
     if(!tok){_erro('Token n\u00E3o encontrado. A estrela pode ter expirado.');return;}
-    var btnLeg=document.getElementById('btn-reivindicar-estrela');
-    var promise=processarTokenEstrela(tok);
-    if(btnLeg)setTimeout(function(){btnLeg.click();},200);
-    Promise.resolve(promise).then(function(ok){
+    // Fix #3.4/#3.8: Pausar o timer durante a chamada API para evitar race condition
+    clearInterval(_timer);
+    var _reivJaResolvido=false;
+    // direto=true: pula o botão legado, salva direto (o clique no wizard JÁ é a confirmação humana)
+    processarTokenEstrela(tok,true).then(function(ok){
+      if(_reivJaResolvido)return;_reivJaResolvido=true;
       if(ok)_sucesso();
       else _erro('Pode ter expirado ou j\u00E1 foi capturada por outro ca\u00E7ador.<br><span style="font-size:.8rem;color:#888">Tente novamente no pr\u00F3ximo hor\u00E1rio.</span>');
-    }).catch(function(){_erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');});
+    }).catch(function(){
+      if(_reivJaResolvido)return;_reivJaResolvido=true;
+      _erro('Erro de conex\u00E3o. Verifique sua internet e tente novamente.');
+    });
   };
   window.iniciarGuiaEstrela=function(){_abrir();};
-  window.encerrarGuiaEstrela=function(){};
+  // Fix #3.7: Implementar encerrarGuiaEstrela (antes era função vazia)
+  window.encerrarGuiaEstrela=function(){
+    clearInterval(_timer);_tok=null;_aberto=false;
+    var wiz=document.getElementById('wizard-estrela');
+    if(wiz)wiz.style.display='none';
+  };
   window.abrirWizardEstrela=_abrir;
   document.addEventListener('DOMContentLoaded',function(){
     var p=new URLSearchParams(window.location.search),tok=p.get('token');
@@ -3004,5 +3247,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 </script>
+<script src="scripts/nav-active.js"></script>
+<script src="scripts/ita-bot-widget.js" defer></script>
 </body>
 </html>

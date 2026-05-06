@@ -91,6 +91,45 @@
     </style>
 </head>
 <body>
+<style>
+/* ═══ CABEÇALHO PADRÃO ITAPOLITANA ══════════════════════════════════ */
+.itap-header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:9000;box-shadow:0 4px 20px rgba(0,0,0,.25);width:100%;box-sizing:border-box;}
+.itap-header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:10px 8px 14px;}
+.itap-brand-icon{width:90px;min-width:90px;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:0 0 2px 0;}
+.itap-brand-icon img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18);}
+.itap-header-nav{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;box-sizing:border-box;}
+.itap-nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;border-radius:16px;font-size:12px;font-weight:900;min-height:68px;text-align:center;border:2px solid rgba(255,255,255,.35);font-family:"Poppins",sans-serif;box-sizing:border-box;line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,.2);text-decoration:none;transition:transform .15s,filter .15s;}
+.itap-nav-btn:active{transform:scale(.95);}
+.itap-nav-btn:hover{transform:translateY(-2px);filter:brightness(1.15);}
+.itap-nav-icon{font-size:1.7em;line-height:1;display:block;margin-bottom:1px;}
+.itap-nav-label{font-size:clamp(12px,3.2vw,14px);font-weight:900;line-height:1.1;display:block;text-shadow:0 2px 5px rgba(0,0,0,.8);letter-spacing:.5px;text-transform:uppercase;color:#fff;}
+@media(max-width:480px){.itap-brand-icon img{width:76px;height:76px;}.itap-nav-btn{min-height:58px;padding:8px 4px;}.itap-nav-label{font-size:12px;}}
+@media(min-width:601px){.itap-header-nav{grid-template-columns:repeat(4,1fr);}.itap-nav-btn{min-height:80px;}}
+/* ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════ */
+</style>
+<!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
+<header class="itap-header">
+  <div class="itap-header-inner">
+    <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
+    </a>
+    <nav class="itap-header-nav" aria-label="Menu principal">
+      <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
+        <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
+      </a>
+      <a class="itap-nav-btn" href="promocao.html" style="background:linear-gradient(135deg,#E8000D,#C62828);">
+        <span class="itap-nav-icon">🎉</span><span class="itap-nav-label">PROMOÇÃO</span>
+      </a>
+      <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">
+        <span class="itap-nav-icon">⭐</span><span class="itap-nav-label">DICAS/DEPOIMENTOS</span>
+      </a>
+      <a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);">
+        <span class="itap-nav-icon">🎟️</span><span class="itap-nav-label">FIDELIDADE</span>
+      </a>
+    </nav>
+  </div>
+</header>
+<!-- ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════════ -->
     <div class="gallery-container">
         <a class="gallery-back" href="index.html">← Voltar para o início</a>
         <h1>📸 Galeria – Sorveteria Itapolitana Cajuru</h1>
@@ -107,8 +146,53 @@
             <div class="gallery-item">
                 <img src="images/mascote_itapolitana.webp" alt="Mascote Itamanduá – Sorveteria Itapolitana Cajuru" loading="lazy" decoding="async" onerror="this.closest('.gallery-item').style.display='none'">
                 <div class="gallery-overlay"><p>Mascote Itamanduá</p></div>
-            </div>
-        </div>
     </div>
+</div>
+<!-- ═══ RODAPÉ PADRÃO ITAPOLITANA ═══════════════════════════════════════ -->
+<footer style="background:linear-gradient(160deg,#0060B0 0%,#0292EC 40%,#00AAFF 70%,#0292EC 100%);color:#fff;text-align:center;border-top:4px solid #FBD100;box-shadow:0 -4px 24px rgba(2,146,236,.4);width:100%;box-sizing:border-box;">
+  <style>
+    .itap-footer-pill{color:#FBD100;font-weight:900;font-size:.82rem;text-decoration:none;background:rgba(251,209,0,.12);border:1.5px solid rgba(251,209,0,.6);border-radius:50px;padding:7px 15px;display:inline-block;animation:itap-footer-pulse 2.2s ease-in-out infinite;white-space:nowrap}
+    .itap-footer-pill:hover{background:rgba(251,209,0,.25);text-decoration:underline}
+    @keyframes itap-footer-pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,209,0,.65);border-color:rgba(251,209,0,.65)}50%{box-shadow:0 0 0 8px rgba(251,209,0,0);border-color:#FBD100}}
+    .itap-footer-nav{color:#fff;text-decoration:none;font-size:12px;font-weight:800;border-radius:30px;padding:7px 14px;display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12)}
+    .itap-footer-nav:hover{background:rgba(255,255,255,.25)}
+    @media(max-width:600px){footer{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))!important}}
+  </style>
+  <!-- Logo + nome -->
+  <div style="padding:26px 20px 18px;">
+    <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="lazy" decoding="async" width="96" height="96"
+         style="width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 4px 20px rgba(0,0,0,.55);display:block;margin:0 auto;">
+    <div style="margin-top:10px;font-size:16px;color:#FBD100;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px rgba(0,0,0,.7);">ITAPOLITANA</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.9);font-weight:700;letter-spacing:1px;margin-top:2px;">Cajuru · SP · Sorvete tipo artesanal desde 2007</div>
+  </div>
+  <!-- Links rápidos -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 16px 20px;">
+    <a href="index.html" class="itap-footer-nav">🍦 Cardápio</a>
+    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="itap-footer-nav" style="border-color:rgba(37,211,102,.7);background:rgba(37,211,102,.2);">💬 WhatsApp</a>
+    <a href="encomendas.html" class="itap-footer-nav">📦 Encomendas</a>
+    <a href="fidelidade.html" class="itap-footer-nav" style="border-color:rgba(251,209,0,.55);background:rgba(251,209,0,.18);">⭐ Fidelidade</a>
+  </div>
+  <!-- Faixa LGPD -->
+  <div style="margin:0 16px 18px;padding:13px 16px;background:rgba(0,0,0,.3);border-radius:14px;border:1px solid rgba(251,209,0,.3);">
+    <div style="font-size:11px;color:rgba(255,255,255,.88);font-weight:700;line-height:1.65;margin-bottom:10px;">🔒 Seus dados estão seguros. Usamos apenas cookies essenciais e de análise. Nenhum dado de pagamento é armazenado pelo site.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <a href="politica-privacidade.html" class="itap-footer-pill">🔒 Política de Privacidade (LGPD)</a>
+      <span style="color:rgba(255,255,255,.3);font-weight:700;font-size:16px;">·</span>
+      <a href="sobre.html" class="itap-footer-pill">ℹ️ Sobre a Itapolitana</a>
+    </div>
+  </div>
+  <!-- Copyright -->
+  <div style="padding:12px 16px 6px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;color:rgba(255,255,255,.75);font-weight:600;line-height:1.8;">
+    © 2007–2026 Sorveteria Itapolitana · Cajuru/SP · Todos os direitos reservados<br>
+    Desenvolvido por <span style="color:#FBD100;font-weight:900;">MissiaScaçarato</span>
+  </div>
+  <!-- Admin link discreto -->
+  <div style="padding:4px 0 16px;">
+    <a href="admin-painel.html" style="color:rgba(255,255,255,.15);font-size:1.1rem;text-decoration:none;padding:8px;" title="Admin">⚙️</a>
+  </div>
+</footer>
+<!-- ═══ FIM RODAPÉ PADRÃO ═══════════════════════════════════════════════════ -->
+<script src="scripts/nav-active.js"></script>
+<script src="scripts/ita-bot-widget.js" defer></script>
 </body>
 </html>

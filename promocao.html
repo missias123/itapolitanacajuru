@@ -181,6 +181,62 @@
 /* Touch - evita menu de contexto no celular */
 button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body { overflow-x: hidden; }
+
+/* ═══════════════════════════════════════════════════════════
+   ÁREA DE CONSENTIMENTO — LGPD / Regulamento (WAI-WCAG AA)
+   ═══════════════════════════════════════════════════════════ */
+/* Box de regulamento: destaque visual + seta indicando interação */
+.aceite-area-promo{background:#FFF8E1;border:3px solid #E65100;border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 3px 14px rgba(230,81,0,0.18);transition:border-color .3s,background .3s}
+.aceite-area-promo:has(input:checked){border-color:#2e7d32;background:#e8f5e9}
+.aceite-indicador-promo{font-size:.78rem;font-weight:800;color:#E65100;text-align:center;margin:0 0 8px;letter-spacing:.3px}
+.aceite-label-promo{display:flex;align-items:center;gap:14px;cursor:pointer;font-size:.87rem;color:#333;min-height:52px;padding:6px 0;line-height:1.5}
+/* Esconde checkbox nativo — mantém acessibilidade para teclado/leitores de tela */
+.aceite-label-promo input[type="checkbox"]{position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden}
+/* Quadrado visual base — verde para esta página */
+.chk-aceite-visual{
+  display:flex;align-items:center;justify-content:center;
+  width:30px;height:30px;min-width:30px;
+  border:3px solid #2e7d32;border-radius:8px;
+  background:#fff;cursor:pointer;flex-shrink:0;
+  transition:all .25s;
+  animation:pulsarChkVerde 1.8s ease-in-out infinite;
+  font-size:0;
+}
+.chk-aceite-visual::after{content:"✓";color:#fff;font-weight:900;font-size:inherit;line-height:1}
+/* Quadrado visual customizado verde */
+.aceite-label-promo input[type="checkbox"]:checked + .chk-aceite-visual{
+  background:#2e7d32;border-color:#2e7d32;
+  font-size:18px;color:#fff;animation:none;
+  box-shadow:0 0 0 4px rgba(46,125,50,.2);
+}
+@keyframes pulsarChkVerde{
+  0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,.35);border-color:#2e7d32}
+  50%{box-shadow:0 0 0 6px rgba(46,125,50,.0);border-color:#43a047}
+}
+.aceite-label-promo .aceite-txt{flex:1}
+.aceite-lgpd-link-promo{color:#2e7d32;font-weight:700;text-decoration:underline}
+.aceite-lgpd-link-promo:hover{color:#1b5e20}
+/* Hint quando botão está desabilitado */
+.btn-aceitar-hint-promo{font-size:.75rem;color:#999;text-align:center;margin-top:6px;font-style:italic;display:none}
+/* Botão desabilitado vs ativo */
+#btn-aceitar-sorteio-inline{
+  width:100%;padding:13px;border:none;border-radius:12px;
+  font-size:.95rem;font-weight:900;letter-spacing:.3px;
+  cursor:not-allowed;background:#C8C8C8;color:#fff;opacity:.7;
+  transition:all .3s;font-family:'Poppins',sans-serif;
+  text-shadow:none;
+}
+#btn-aceitar-sorteio-inline.ativo-verde{
+  background:linear-gradient(135deg,#2e7d32,#43a047);
+  cursor:pointer;opacity:1;
+  box-shadow:0 4px 16px rgba(46,125,50,.4);
+  text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.4);
+  animation:pulsarVerde 1.6s ease-in-out infinite;
+}
+@keyframes pulsarVerde{
+  0%,100%{box-shadow:0 4px 16px rgba(46,125,50,.4)}
+  50%{box-shadow:0 6px 24px rgba(46,125,50,.65)}
+}
 </style>
 <!-- cache-bust:20260408_111640 -->
 <script type="application/ld+json">
@@ -208,11 +264,45 @@ body { overflow-x: hidden; }
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
-<header class="header">
-<h1 id="promo-h1">🎉 Grande Sorteio Mensal</h1>
-<p>Sorveteria Itapolitana Cajuru</p>
-<span class="since-badge">✨ Desde 2007</span>
+<style>
+/* ═══ CABEÇALHO PADRÃO ITAPOLITANA ══════════════════════════════════ */
+.itap-header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:9000;box-shadow:0 4px 20px rgba(0,0,0,.25);width:100%;box-sizing:border-box;}
+.itap-header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:10px 8px 14px;}
+.itap-brand-icon{width:90px;min-width:90px;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:0 0 2px 0;}
+.itap-brand-icon img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18);}
+.itap-header-nav{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;box-sizing:border-box;}
+.itap-nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;border-radius:16px;font-size:12px;font-weight:900;min-height:68px;text-align:center;border:2px solid rgba(255,255,255,.35);font-family:"Poppins",sans-serif;box-sizing:border-box;line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,.2);text-decoration:none;transition:transform .15s,filter .15s;}
+.itap-nav-btn:active{transform:scale(.95);}
+.itap-nav-btn:hover{transform:translateY(-2px);filter:brightness(1.15);}
+.itap-nav-icon{font-size:1.7em;line-height:1;display:block;margin-bottom:1px;}
+.itap-nav-label{font-size:clamp(12px,3.2vw,14px);font-weight:900;line-height:1.1;display:block;text-shadow:0 2px 5px rgba(0,0,0,.8);letter-spacing:.5px;text-transform:uppercase;color:#fff;}
+@media(max-width:480px){.itap-brand-icon img{width:76px;height:76px;}.itap-nav-btn{min-height:58px;padding:8px 4px;}.itap-nav-label{font-size:12px;}}
+@media(min-width:601px){.itap-header-nav{grid-template-columns:repeat(4,1fr);}.itap-nav-btn{min-height:80px;}}
+/* ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════ */
+</style>
+<!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
+<header class="itap-header">
+  <div class="itap-header-inner">
+    <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
+    </a>
+    <nav class="itap-header-nav" aria-label="Menu principal">
+      <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
+        <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
+      </a>
+      <a class="itap-nav-btn" href="promocao.html" style="background:linear-gradient(135deg,#E8000D,#C62828);">
+        <span class="itap-nav-icon">🎉</span><span class="itap-nav-label">PROMOÇÃO</span>
+      </a>
+      <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">
+        <span class="itap-nav-icon">⭐</span><span class="itap-nav-label">DICAS/DEPOIMENTOS</span>
+      </a>
+      <a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);">
+        <span class="itap-nav-icon">🎟️</span><span class="itap-nav-label">FIDELIDADE</span>
+      </a>
+    </nav>
+  </div>
 </header>
+<!-- ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════════ -->
 <div class="container">
 <div class="countdown-box">
 <div class="countdown-title">⏳ Contagem Regressiva para o Sorteio:</div>
@@ -273,7 +363,7 @@ body { overflow-x: hidden; }
     <button id="btn-quero-participar" style="width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;letter-spacing:.4px;transition:.2s;margin-top:4px;background:linear-gradient(135deg,#2e7d32,#43a047);color:#fff;box-shadow:0 4px 16px rgba(46,125,50,.35);" onclick="abrirRegrasSorteioPromo()">🎁 Quero Participar</button>
     <div id="bloco-regras-sorteio-promo" style="display:none;border:2px solid #2e7d32;border-radius:14px;overflow:hidden;margin-top:4px;">
       <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);padding:14px 16px;text-align:center;">
-        <h3 style="color:#1b5e20;font-size:1rem;font-weight:900;margin:0 0 4px;">📜 REGULAMENTO &mdash; SORTEIO MENSAL</h3>
+        <h3 id="regulamento-sorteio-topo" style="color:#1b5e20;font-size:1rem;font-weight:900;margin:0 0 4px;">📜 REGULAMENTO &mdash; SORTEIO MENSAL</h3>
         <p style="font-size:.8rem;color:#555;margin:0;">Leia atentamente antes de se cadastrar</p>
       </div>
       <div style="padding:14px 16px;font-size:.8rem;color:#333;line-height:1.6;max-height:260px;overflow-y:auto;">
@@ -308,11 +398,16 @@ body { overflow-x: hidden; }
         Fica eleito o foro da Comarca de Cajuru &mdash; SP para dirimir quaisquer dúvidas ou litígios.
       </div>
       <div style="padding:12px 16px;background:#f9f9f9;border-top:1px solid #e0e0e0;">
-        <label style="display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#333;cursor:pointer;">
-          <input type="checkbox" id="aceite-sorteio-inline" onchange="verificarAceiteSorteioPromo()" style="accent-color:#2e7d32;margin-top:2px;">
-          <span>Li e concordo com o <strong>Regulamento do Sorteio Mensal</strong> da Sorveteria Itapolitana Cajuru.</span>
-        </label>
-        <button id="btn-aceitar-sorteio-inline" style="width:100%;padding:12px;border:none;border-radius:10px;font-size:.95rem;font-weight:900;cursor:pointer;margin-top:10px;background:#ccc;color:#888;transition:.2s;" onclick="abrirFormSorteioPromo()" disabled>📝 Aceitar e Fazer Cadastro</button>
+        <div class="aceite-area-promo">
+          <p class="aceite-indicador-promo" aria-hidden="true">&#8595; Leia o regulamento acima e marque a caixa para continuar:</p>
+          <label class="aceite-label-promo" for="aceite-sorteio-inline">
+            <input type="checkbox" id="aceite-sorteio-inline" onchange="verificarAceiteSorteioPromo()">
+            <span class="chk-aceite-visual" aria-hidden="true"></span>
+            <span class="aceite-txt">Li e concordo com o <a href="#regulamento-sorteio-topo" class="aceite-lgpd-link-promo"><strong>Regulamento do Sorteio Mensal</strong></a> da Sorveteria Itapolitana Cajuru e com a <a class="aceite-lgpd-link-promo" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+          </label>
+        </div>
+        <button id="btn-aceitar-sorteio-inline" onclick="abrirFormSorteioPromo()" disabled aria-disabled="true">📝 Aceitar e Fazer Cadastro</button>
+        <p class="btn-aceitar-hint-promo" id="hint-aceite-sorteio">&#9432; Marque a caixa acima para continuar</p>
       </div>
     </div>
     <div id="form-sorteio-inline" style="display:none;border:2px solid #2e7d32;border-radius:14px;overflow:hidden;margin-top:4px;">
@@ -354,6 +449,7 @@ body { overflow-x: hidden; }
           </div>
         </div>
         <button id="btn-enviar-sorteio-promo" style="width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35);transition:.2s;" onclick="enviarSorteioPromo()">&#128172; Enviar Cadastro via WhatsApp</button>
+        <p style="font-size:11px;color:#888;text-align:center;margin-top:8px;line-height:1.5;">&#128274; Seus dados são usados exclusivamente para o sorteio. Não compartilhamos com terceiros. <a href="politica-privacidade.html" style="color:#2e7d32;font-weight:700;">Política de Privacidade</a>.</p>
         <div id="msg-sorteio-inline" style="font-size:.85rem;font-weight:700;text-align:center;padding:8px;border-radius:8px;display:none;"></div>
       </div>
     </div>
@@ -370,11 +466,50 @@ body { overflow-x: hidden; }
   <p style="font-size: 0.85rem; color: #666; margin-top: 10px; font-weight: 600;">Veja o que nossos clientes dizem sobre nós!</p>
 </div>
 </div><!-- /container -->
-<footer style="text-align:center; padding:20px; font-size:12px; color:#666;">
-<strong>Sorveteria Itapolitana Cajuru</strong><br/>
-  CNPJ: 08.922.044/0001-80<br/>
-  Desenvolvido por SgtMissiasCaçaRato
+<!-- ═══ RODAPÉ PADRÃO ITAPOLITANA ═══════════════════════════════════════ -->
+<footer style="background:linear-gradient(160deg,#0060B0 0%,#0292EC 40%,#00AAFF 70%,#0292EC 100%);color:#fff;text-align:center;border-top:4px solid #FBD100;box-shadow:0 -4px 24px rgba(2,146,236,.4);width:100%;box-sizing:border-box;">
+  <style>
+    .itap-footer-pill{color:#FBD100;font-weight:900;font-size:.82rem;text-decoration:none;background:rgba(251,209,0,.12);border:1.5px solid rgba(251,209,0,.6);border-radius:50px;padding:7px 15px;display:inline-block;animation:itap-footer-pulse 2.2s ease-in-out infinite;white-space:nowrap}
+    .itap-footer-pill:hover{background:rgba(251,209,0,.25);text-decoration:underline}
+    @keyframes itap-footer-pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,209,0,.65);border-color:rgba(251,209,0,.65)}50%{box-shadow:0 0 0 8px rgba(251,209,0,0);border-color:#FBD100}}
+    .itap-footer-nav{color:#fff;text-decoration:none;font-size:12px;font-weight:800;border-radius:30px;padding:7px 14px;display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12)}
+    .itap-footer-nav:hover{background:rgba(255,255,255,.25)}
+    @media(max-width:600px){footer{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))!important}}
+  </style>
+  <!-- Logo + nome -->
+  <div style="padding:26px 20px 18px;">
+    <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="lazy" decoding="async" width="96" height="96"
+         style="width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 4px 20px rgba(0,0,0,.55);display:block;margin:0 auto;">
+    <div style="margin-top:10px;font-size:16px;color:#FBD100;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px rgba(0,0,0,.7);">ITAPOLITANA</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.9);font-weight:700;letter-spacing:1px;margin-top:2px;">Cajuru · SP · Sorvete tipo artesanal desde 2007</div>
+  </div>
+  <!-- Links rápidos -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 16px 20px;">
+    <a href="index.html" class="itap-footer-nav">🍦 Cardápio</a>
+    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="itap-footer-nav" style="border-color:rgba(37,211,102,.7);background:rgba(37,211,102,.2);">💬 WhatsApp</a>
+    <a href="encomendas.html" class="itap-footer-nav">📦 Encomendas</a>
+    <a href="fidelidade.html" class="itap-footer-nav" style="border-color:rgba(251,209,0,.55);background:rgba(251,209,0,.18);">⭐ Fidelidade</a>
+  </div>
+  <!-- Faixa LGPD -->
+  <div style="margin:0 16px 18px;padding:13px 16px;background:rgba(0,0,0,.3);border-radius:14px;border:1px solid rgba(251,209,0,.3);">
+    <div style="font-size:11px;color:rgba(255,255,255,.88);font-weight:700;line-height:1.65;margin-bottom:10px;">🔒 Seus dados estão seguros. Usamos apenas cookies essenciais e de análise. Nenhum dado de pagamento é armazenado pelo site.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <a href="politica-privacidade.html" class="itap-footer-pill">🔒 Política de Privacidade (LGPD)</a>
+      <span style="color:rgba(255,255,255,.3);font-weight:700;font-size:16px;">·</span>
+      <a href="sobre.html" class="itap-footer-pill">ℹ️ Sobre a Itapolitana</a>
+    </div>
+  </div>
+  <!-- Copyright -->
+  <div style="padding:12px 16px 6px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;color:rgba(255,255,255,.75);font-weight:600;line-height:1.8;">
+    © 2007–2026 Sorveteria Itapolitana · Cajuru/SP · Todos os direitos reservados<br>
+    Desenvolvido por <span style="color:#FBD100;font-weight:900;">MissiaScaçarato</span>
+  </div>
+  <!-- Admin link discreto -->
+  <div style="padding:4px 0 16px;">
+    <a href="admin-painel.html" style="color:rgba(255,255,255,.15);font-size:1.1rem;text-decoration:none;padding:8px;" title="Admin">⚙️</a>
+  </div>
 </footer>
+<!-- ═══ FIM RODAPÉ PADRÃO ═══════════════════════════════════════════════════ -->
 <script>
   function calcularPróximoFim() {
     const agora = new Date();
@@ -441,19 +576,20 @@ body { overflow-x: hidden; }
   }
 
   function verificarAceiteSorteioPromo() {
-    var cb  = document.getElementById('aceite-sorteio-inline');
-    var btn = document.getElementById('btn-aceitar-sorteio-inline');
+    var cb   = document.getElementById('aceite-sorteio-inline');
+    var btn  = document.getElementById('btn-aceitar-sorteio-inline');
+    var hint = document.getElementById('hint-aceite-sorteio');
     if (!cb || !btn) return;
     if (cb.checked) {
       btn.disabled = false;
-      btn.style.background = 'linear-gradient(135deg,#2e7d32,#43a047)';
-      btn.style.color = '#fff';
-      btn.style.boxShadow = '0 4px 16px rgba(46,125,50,.35)';
+      btn.removeAttribute('aria-disabled');
+      btn.classList.add('ativo-verde');
+      if (hint) hint.style.display = 'none';
     } else {
       btn.disabled = true;
-      btn.style.background = '#ccc';
-      btn.style.color = '#888';
-      btn.style.boxShadow = 'none';
+      btn.setAttribute('aria-disabled', 'true');
+      btn.classList.remove('ativo-verde');
+      if (hint) hint.style.display = 'block';
     }
   }
 
@@ -612,8 +748,10 @@ body { overflow-x: hidden; }
         var cRes = await fetch('dados/clientes.json?t=' + Date.now());
         if (cRes.ok) {
           var cData = await cRes.json();
-          if (cData.clientes && cData.clientes[celLimpo]) {
-            idUnico = cData.clientes[celLimpo].id || idUnico;
+          // Fix: clientes.json é indexado por USR-2026-xxxx, usar indice_celular para lookup por cel
+          var cKey = cData.indice_celular && cData.indice_celular[celLimpo];
+          if (cKey && cData.clientes && cData.clientes[cKey]) {
+            idUnico = cData.clientes[cKey].id || idUnico;
           }
         }
       } catch(e) { console.warn('Erro ao buscar ID na fidelidade:', e); }
@@ -814,5 +952,7 @@ body { overflow-x: hidden; }
 <script src="mascote.js" defer></script>
 <script src="scripts/quality-guard.js" defer></script>
 <script src="scripts/auto-healer.js" defer></script>
+<script src="scripts/nav-active.js"></script>
+<script src="scripts/ita-bot-widget.js" defer></script>
 </body>
 </html>
