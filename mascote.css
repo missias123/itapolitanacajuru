@@ -1,6 +1,6 @@
 /* =====================================================
    ITAMANDUÁ & ITA BOT — Mascotes Sorveteria Itapolitana
-   Padronização de Tamanho: 60px fixo para todos
+   Itamanduá: 100px desktop / 82px mobile
    ===================================================== */
 
 /* ---- Container — posição base (lado esquerdo) ---- */
@@ -14,7 +14,7 @@
   flex-direction: column;
   align-items: center;
   pointer-events: none;
-  transform: translateX(-250px);
+  transform: translateX(-320px);
   transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -42,8 +42,32 @@
   transform: none !important;
 }
 
-/* ---- Imagem Padronizada (60px) ---- */
-#ita-mascote img, #itabot-wrap img, #ita-img, #itabot-img {
+/* ---- Itamanduá — imagem principal (100px) ---- */
+#ita-mascote img, #ita-img {
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  min-height: 100px !important;
+  max-width: 100px !important;
+  max-height: 100px !important;
+  object-fit: contain !important;
+  display: block !important;
+  cursor: pointer;
+  pointer-events: auto;
+  border: 3px solid #FFD700 !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 3px !important;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.38), 0 2px 8px rgba(232,0,13,0.18) !important;
+  animation: ita-flutuar 3.5s ease-in-out infinite;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: bottom center;
+  transition: all 0.3s ease;
+}
+
+/* ---- Itabot — imagem do robô (mantém 60px) ---- */
+#itabot-wrap img, #itabot-img {
   width: 60px !important;
   height: 60px !important;
   min-width: 60px !important;
@@ -52,19 +76,6 @@
   max-height: 60px !important;
   object-fit: contain !important;
   display: block !important;
-  cursor: pointer;
-  pointer-events: auto;
-  /* Destaque: Borda e Sombra para o Robô e Itamandua */
-  border: 3px solid #FFD700 !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  padding: 2px !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
-  animation: ita-flutuar 3.5s ease-in-out infinite;
-  user-select: none;
-  -webkit-user-drag: none;
-  transform-origin: bottom center;
-  transition: all 0.3s ease;
 }
 
 #ita-mascote img:hover {
@@ -161,7 +172,14 @@
 
 /* Responsivo Mobile */
 @media (max-width: 600px) {
-  #ita-mascote { bottom: 130px; left: 8px; }
-  #ita-mascote img { width: 60px !important; height: 60px !important; }
-  #ita-balao { font-size: 12px; max-width: 150px; }
+  #ita-mascote { bottom: 130px; left: 6px; }
+  #ita-mascote img, #ita-img {
+    width: 82px !important;
+    height: 82px !important;
+    min-width: 82px !important;
+    min-height: 82px !important;
+    max-width: 82px !important;
+    max-height: 82px !important;
+  }
+  #ita-balao { font-size: 12px; max-width: 160px; }
 }
