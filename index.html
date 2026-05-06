@@ -4100,6 +4100,26 @@ function aplicarConfig(c) {
     window.RESPOSTAS['contato'] = window.RESPOSTAS['telefone'];
   }
 
+  // --- CHATBOT: varredura global — substitui telefone e horário em TODAS as respostas ---
+  if (window.RESPOSTAS && (c.whatsappFormatado || c.horarioAbre !== undefined)) {
+    const tel   = c.whatsappFormatado || '';
+    const abre  = c.horarioAbre  !== undefined ? c.horarioAbre  : 10;
+    const fecha = c.horarioFecha !== undefined ? c.horarioFecha : 22;
+    const reTel     = /\(\d{2}\)\s?\d{4,5}[-\s]?\d{4}/g;
+    const reHorario = /\b\d{1,2}h\s+às\s+\d{1,2}h/g;
+    const novoHorario = abre + 'h às ' + fecha + 'h';
+    Object.keys(window.RESPOSTAS).forEach(function (k) {
+      if (typeof window.RESPOSTAS[k] !== 'string') return;
+      let txt = window.RESPOSTAS[k];
+      if (tel) txt = txt.replace(reTel, tel);
+      txt = txt.replace(reHorario, novoHorario);
+      txt = txt.replace(/\b[Aa]brimos às \d{1,2}h/g, 'Abrimos às ' + abre + 'h');
+      txt = txt.replace(/\b[Ff]echamos às \d{1,2}h/g, 'Fechamos às ' + fecha + 'h');
+      txt = txt.replace(/\babre amanhã às \d{1,2}h/gi, 'abre amanhã às ' + abre + 'h');
+      window.RESPOSTAS[k] = txt;
+    });
+  }
+
   // --- FOOTER ---
   const footerHorario = document.getElementById('footer-horário');
   if (footerHorario && c.footerHorario) {
@@ -4131,23 +4151,23 @@ function aplicarConfig(c) {
   if (c.horarioAbre !== undefined) window.ITAP_HORA_ABRE = c.horarioAbre;
   if (c.horarioFecha !== undefined) window.ITAP_HORA_FECHA = c.horarioFecha;
 
-  // --- PROMOÇÃO TOP BAR ---
-  const promoBar = document.getElementById('promo-top-bar');
-  if (promoBar) {
-    if (c.promocaoAtiva) {
-      promoBar.classList.add('show');
-      const ptbTitulo = document.getElementById('ptb-título');
-      if (ptbTitulo && c.promocaoTitulo) ptbTitulo.textContent = c.promocaoTitulo;
-      const ptbSub = document.getElementById('ptb-sub');
-      if (ptbSub && c.promocaoDescricao) ptbSub.textContent = c.promocaoDescricao;
-    } else {
-      promoBar.classList.remove('show');
-    }
+  // --- JSON-LD: atualizar opens/closes com horários do config ---
+  if (c.horarioAbre !== undefined && c.horarioFecha !== undefined) {
+    const pad2 = function (n) { return String(n).padStart(2, '0'); };
+    const opensStr  = pad2(c.horarioAbre)  + ':00';
+    const closesStr = pad2(c.horarioFecha) + ':00';
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(function (el) {
+      try {
+        const d = JSON.parse(el.textContent);
+        const spec = d.openingHoursSpecification;
+        if (!spec) return;
+        const arr = Array.isArray(spec) ? spec : [spec];
+        arr.forEach(function (s) { s.opens = opensStr; s.closes = closesStr; });
+        d.openingHoursSpecification = arr;
+        el.textContent = JSON.stringify(d);
+      } catch (_) {}
+    });
   }
-
-  // --- FAB PROMOÇÃO ---
-  const fabBtn = document.getElementById('promo-fab-btn');
-  if (fabBtn && c.promocaoFab) fabBtn.textContent = c.promocaoFab;
 
   // --- CARRINHO PARA EVENTOS ---
   const carrinhoLabel1 = document.getElementById('carrinho-label1');
@@ -4284,6 +4304,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Carregar config (textos, hero, footer, strip)
   carregarConfig();
 
+  // 2c. Carregar estado da promoção (top bar + FAB) diretamente de promo.json
+  carregarBarraPromo();
+
   // 2b. Aplicar títulos dos accordions (fallback localStorage; GitHub sobrescreve em aplicarConfig)
   aplicarTitulosCardapio();
 
@@ -4372,28 +4395,42 @@ function atualizarStatusHorário() {
 <div id="promo-fab-arrow">▼ VER PROMOÇÃO</div>
 </a>
 <script>
-(function(){
-  // ✏️ EDITE AQUI PARA TROCAR A PROMOÇÃO
-  var PROMO_ATIVO   = true;                        // false = esconde o botão
-  var PROMO_DATA_FIM = '2026-06-30T23:59:59-03:00'; // data/hora de encerramento
-  // =========================================================
+(function () {
+  'use strict';
   var fab = document.getElementById('promo-fab');
-  if(!PROMO_ATIVO){ fab.style.display='none'; return; }
-  var fim = new Date(PROMO_DATA_FIM).getTime();
-  function pad(n){return n<10?'0'+n:n;}
-  function tick(){
-    var diff = fim - Date.now();
-    var el = document.getElementById('promo-fab-timer');
-	    if(!el) return;
-	    if(isNaN(fim) || diff <= 0){ fab.style.display='none'; return; }
-    var d=Math.floor(diff/86400000);
-    var h=Math.floor((diff%86400000)/3600000);
-    var m=Math.floor((diff%3600000)/60000);
-    var s=Math.floor((diff%60000)/1000);
-    el.textContent = d>0 ? '⏳ '+d+'d '+pad(h)+'h '+pad(m)+'m' : '⏳ '+pad(h)+':'+pad(m)+':'+pad(s);
-  }
-  tick();
-  setInterval(tick,1000);
+  if (!fab) return;
+  // Esconde imediatamente até confirmar via promo.json
+  fab.style.display = 'none';
+  fetch('dados/promo.json?v=' + Date.now())
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (pr) {
+      if (!pr || !pr.ativo) return;
+      fab.style.display = '';
+      var labelEl = document.getElementById('promo-fab-label');
+      if (labelEl && pr.fabLabel) labelEl.textContent = pr.fabLabel;
+      var dataFimStr = pr.dataFim
+        ? pr.dataFim + 'T' + (pr.horaFim || '23:59:00') + '-03:00'
+        : '';
+      var fim = dataFimStr ? new Date(dataFimStr).getTime() : 0;
+      function pad(n) { return n < 10 ? '0' + n : n; }
+      function tick() {
+        var el = document.getElementById('promo-fab-timer');
+        if (!el) return;
+        if (!fim || isNaN(fim)) { el.textContent = '⏳ Ver detalhes'; return; }
+        var diff = fim - Date.now();
+        if (diff <= 0) { fab.style.display = 'none'; return; }
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff % 86400000) / 3600000);
+        var m = Math.floor((diff % 3600000) / 60000);
+        var s = Math.floor((diff % 60000) / 1000);
+        el.textContent = d > 0
+          ? '⏳ ' + d + 'd ' + pad(h) + 'h ' + pad(m) + 'm'
+          : '⏳ ' + pad(h) + ':' + pad(m) + ':' + pad(s);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })
+    .catch(function () { fab.style.display = 'none'; });
 })();
 </script>
 <!-- CSS info-contato e promo-fab consolidados no bloco principal -->
@@ -4481,12 +4518,12 @@ function atualizarStatusLoja() {
   const hora = agora.getHours();
   const min = agora.getMinutes();
   const horaAtual = hora + min / 60;
-  
-  // Horário: 10h às 22h todos os dias
-  const abre = 10;
-  const fecha = 22;
+
+  // Horários dinâmicos via config.json (fallback: 10h–22h)
+  const abre  = window.ITAP_HORA_ABRE  !== undefined ? window.ITAP_HORA_ABRE  : 10;
+  const fecha = window.ITAP_HORA_FECHA !== undefined ? window.ITAP_HORA_FECHA : 22;
   const aberto = horaAtual >= abre && horaAtual < fecha;
-  
+
   const statusEls = document.querySelectorAll('.status-loja');
   statusEls.forEach(el => {
     if (aberto) {
@@ -4495,7 +4532,7 @@ function atualizarStatusLoja() {
     } else {
       el.className = 'status-loja fechado';
       const abreAmanha = hora >= fecha;
-      el.innerHTML = `<span class="dot"></span> ${abreAmanha ? 'Abre amanhã às 10h' : 'Abre às 10h'}`;
+      el.innerHTML = `<span class="dot"></span> ${abreAmanha ? 'Abre amanhã às ' + abre + 'h' : 'Abre às ' + abre + 'h'}`;
     }
   });
 }

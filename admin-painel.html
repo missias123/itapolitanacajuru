@@ -526,7 +526,7 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Botão principal - Ver Cardápio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardápio Completo"/><div class="hint">Max. 40 caracteres. Texto do botão verde que rola até o cardápio.</div></div>
           <div class="campo-edit"><label>Botão WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botão laranja do WhatsApp.</div></div>
           <div class="campo-edit"><label>Subtítulo do Hero</label>
-            <input type="text" id="home-subtitulo" value="35 sabores tipo artesanal — feitos com ingredientes selecionados" maxlength="100" placeholder="Sorvete tipo artesanal em Cajuru/SP"/>
+            <input type="text" id="home-subtitulo" maxlength="100" placeholder="35 sabores tipo artesanal — feitos com ingredientes selecionados"/>
             <div class="hint">Max. 100 caracteres. Linha de apoio abaixo do título principal.</div></div>
           <div class="campo-edit"><label>Frases rotativas do carrossel (uma por linha)</label><textarea id="home-frases" rows="10" placeholder="O sorvete mais cremoso de Cajuru, desde 2007!"></textarea><div class="hint">Cada linha é uma frase que aparece no carrossel de texto do hero</div></div>
 
@@ -2280,7 +2280,13 @@ Talento</textarea>
           <div class="campo-edit"><label>Mensagem de sucesso (após envio)</label><input type="text" id="fc-msg-sucesso" maxlength="120" placeholder="Mensagem enviada! Retornaremos em breve."/></div>
 
           <div class="seção-título" style="margin-top:20px">📞 Contato</div>
-          <div class="campo-edit"><label>WhatsApp de atendimento (somente números)</label><input type="text" id="fc-whatsapp" maxlength="15" inputmode="numeric" placeholder="5516996062046"/></div>
+          <div class="campo-edit">
+            <div class="hint" style="background:#e8f5e9;border-left:3px solid #4CAF50;padding:10px 14px;border-radius:8px">
+              📱 <strong>WhatsApp do Fale Conosco</strong><br>
+              Usa automaticamente o número global configurado em <em>Configurações Gerais → WhatsApp</em>.<br>
+              <small>Para alterar o número de atendimento, acesse a aba <strong>Configurações Gerais</strong>.</small>
+            </div>
+          </div>
           <div class="campo-edit"><label>E-mail de contato</label><input type="email" id="fc-email" placeholder="contato@itapolitanacajuru.com.br"/></div>
           <div class="campo-edit"><label>Endereço completo</label><input type="text" id="fc-endereco" maxlength="120" placeholder="Rua Exemplo, 123 — Centro — Cajuru/SP"/></div>
           <div class="campo-edit"><label>Horário de atendimento</label><input type="text" id="fc-horario" maxlength="80" placeholder="Todos os dias: 10h às 22h"/><div class="hint">Exibido na seção de contato. Ex: Todos os dias: 10h às 22h</div></div>
@@ -3032,19 +3038,6 @@ async function salvarPromoção(){
     }
   }
   const okPromo = await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
-  // Sincronizar config.json com os campos que o index.html lê para o FAB e barra de promoção
-  if(okPromo){
-    const cfg=STATE.config||{};
-    cfg.promocaoAtiva=pr.ativo;
-    cfg.promocaoTitulo=pr.título||'';
-    cfg.promocaoDescricao=pr.descrição||'';
-    cfg.promocaoBotao=pr.btnTexto||'';
-    cfg.promocaoLink=pr.link||'';
-    cfg.promocaoDataFim=pr.dataFim||'';
-    cfg.promocaoFab=pr.fabLabel||'';
-    STATE.config=cfg;
-    const ok = await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
-  }
 }
 function renderEncomendas(){
   const registros=STATE.encomendas?.registros||[];
@@ -5388,7 +5381,6 @@ function preencherFaleConosco() {
   document.getElementById('fc-titulo').value = c.fcTitulo || 'Fale com a Itapolitana';
   document.getElementById('fc-subtitulo').value = c.fcSubtitulo || 'Manda uma mensagem, a gente responde rapidinho!';
   document.getElementById('fc-msg-sucesso').value = c.fcMsgSucesso || 'Mensagem enviada! Retornaremos em breve.';
-  document.getElementById('fc-whatsapp').value = c.fcWhatsapp || c.whatsapp || '';
   document.getElementById('fc-email').value = c.fcEmail || '';
   document.getElementById('fc-endereco').value = c.fcEndereco || c.enderecoCompleto || '';
   document.getElementById('fc-horario').value = c.fcHorario || c.horario || '';
@@ -5425,7 +5417,6 @@ async function salvarFaleConosco() {
   c.fcTitulo = document.getElementById('fc-titulo').value.trim();
   c.fcSubtitulo = document.getElementById('fc-subtitulo').value.trim();
   c.fcMsgSucesso = document.getElementById('fc-msg-sucesso').value.trim();
-  c.fcWhatsapp = document.getElementById('fc-whatsapp').value.trim();
   c.fcEmail = document.getElementById('fc-email').value.trim();
   c.fcEndereco = document.getElementById('fc-endereco').value.trim();
   c.fcHorario = document.getElementById('fc-horario').value.trim();
