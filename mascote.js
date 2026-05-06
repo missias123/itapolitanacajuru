@@ -158,20 +158,17 @@
     });
 
     /* ================================================
-       SCROLL: balão some ao rolar, volta ao parar
+       QUALQUER MOVIMENTO: balão some, volta após 2s de silêncio
+       Cobre: scroll, mousemove, touchmove, touchstart, click, keydown
        (não aplica em páginas mudas)
     ================================================ */
-    window.addEventListener('scroll', function () {
+    function aoMovimento() {
       if (fugindo || paginaMuda()) return;
-
-      /* Esconde o balão imediatamente ao rolar */
       if (balaoAtivo) {
         balao.classList.remove('ita-balao-show');
         clearTimeout(timerFrase);
         rolando = true;
       }
-
-      /* Reinicia o timer: se parar de rolar por 2s, volta a falar */
       clearTimeout(timerScroll);
       timerScroll = setTimeout(function () {
         rolando = false;
@@ -180,7 +177,12 @@
           rodarFrases(balao);
         }
       }, 2000);
-    }, { passive: true });
+    }
+
+    var EVENTOS_MOVIMENTO = ['scroll', 'mousemove', 'touchmove', 'touchstart', 'click', 'keydown'];
+    EVENTOS_MOVIMENTO.forEach(function(ev) {
+      window.addEventListener(ev, aoMovimento, { passive: true });
+    });
   }
 
   /* ================================================
