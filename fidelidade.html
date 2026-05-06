@@ -1026,7 +1026,7 @@ body { overflow-x: hidden; }
           <label class="aceite-label" for="chk-lgpd-novo">
             <input type="checkbox" id="chk-lgpd-novo" onchange="verificarLgpdNovo()">
             <span class="chk-aceite-visual" aria-hidden="true"></span>
-            <span class="aceite-txt">Concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados <strong>exclusivamente</strong> para o Clube de Fidelidade Itapolitana (LGPD — Lei 13.709/2018).</span>
+            <span class="aceite-txt">Li e concordo com a <a class="aceite-lgpd-link" href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo o uso dos meus dados <strong>exclusivamente</strong> para o Clube de Fidelidade Itapolitana (LGPD — Lei 13.709/2018).</span>
           </label>
         </div>
         <button id="btn-cadastrar" class="btn btn-laranja" onclick="cadastrar()" style="margin-top:4px;width:100%;opacity:.5;cursor:not-allowed" disabled aria-disabled="true">&#127881; Quero entrar no Clube de Fidelidade!</button>
@@ -1742,18 +1742,22 @@ async function cadastrar() {
   if (_fidRateDados.t.length >= 3) { _fidRateDados.bloqAte = _fidRateAgora + 30*60*1000; _fidRateDados.t = []; }
   localStorage.setItem(_fidRateKey, JSON.stringify(_fidRateDados));
 
-  const nome     = document.getElementById('inp-nome').value.replace(/<[^>]*>/g,'').trim();
+  const nome     = document.getElementById('inp-nome').value.replace(/[<>"'&]/g,'').trim();
   const dataNasc = document.getElementById('inp-data-nasc').value;
   const cel      = limparTel(document.getElementById('inp-cel-novo').value);
   const email    = (document.getElementById('inp-email') ? document.getElementById('inp-email').value.trim() : '');
-  const cidade   = (document.getElementById('inp-cidade') ? document.getElementById('inp-cidade').value.replace(/<[^>]*>/g,'').trim() : '');
+  const cidade   = (document.getElementById('inp-cidade') ? document.getElementById('inp-cidade').value.replace(/[<>"'&]/g,'').trim() : '');
 
   if (!nome || nome.length < 5) { showMsg('msg-acesso','Informe seu nome completo (minimo 5 letras).','aviso'); return; }
   if (nome.trim().split(/\s+/).length < 2) { showMsg('msg-acesso','Informe nome e sobrenome completos.','aviso'); return; }
   if (!dataNasc) { showMsg('msg-acesso','Informe sua data de nascimento.','aviso'); return; }
 
   // ── Fix #1.1: Usar parsing local (evita bug UTC off-by-one) ──
-  const [nascAno, nascMes, nascDia] = dataNasc.split('-').map(Number);
+  const _nascParts = dataNasc.split('-').map(Number);
+  const nascAno = _nascParts[0], nascMes = _nascParts[1], nascDia = _nascParts[2];
+  if (!nascAno || !nascMes || !nascDia) {
+    showMsg('msg-acesso','Data de nascimento invalida. Use o formato correto.','aviso'); return;
+  }
   const hoje = new Date();
   const nasc = new Date(nascAno, nascMes - 1, nascDia);
   let idade  = hoje.getFullYear() - nascAno;

@@ -94,13 +94,10 @@ class MotorEstrelasV2 {
     // Estrela já foi ativada nesta sessão — não disparar de novo
     // Fix #6.4: Resetar flag se a ativação foi em outro dia (virada de meia-noite)
     if (this._estrelaAtivadaEm) {
-      const agora2 = this.obterHorarioAtualComFuso();
       const dataAtivacao = new Date(this._estrelaAtivadaEm);
-      // Comparar dia atual (SP) com dia da ativação — ambos formatados como dd/mm/yyyy
-      const diaAtivacao = new Intl.DateTimeFormat('pt-BR', {
-        timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'
-      }).format(dataAtivacao);
-      const hojeFmt = String(agora2.getDate()).padStart(2,'0') + '/' + String(agora2.getMonth()+1).padStart(2,'0') + '/' + agora2.getFullYear();
+      const fmt = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' };
+      const diaAtivacao = new Intl.DateTimeFormat('pt-BR', fmt).format(dataAtivacao);
+      const hojeFmt     = new Intl.DateTimeFormat('pt-BR', fmt).format(new Date());
       if (diaAtivacao !== hojeFmt) {
         // Virou o dia — resetar flag para que nova estrela possa aparecer
         this._estrelaAtivadaEm = null;
