@@ -138,11 +138,6 @@
     img.title   = 'Clique para ver o Itamanduá correr!';
     wrap.appendChild(img);
 
-    var label = document.createElement('div');
-    label.id = 'ita-label';
-    label.textContent = 'FALE COMIGO';
-    wrap.appendChild(label);
-
     document.body.appendChild(wrap);
 
     /* Entra pela esquerda após 1.5s */
