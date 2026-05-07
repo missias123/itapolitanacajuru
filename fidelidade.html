@@ -363,7 +363,7 @@
           <span class="itap-nav-icon">🎉</span><span class="itap-nav-label">PROMOÇÃO</span>
         </a>
         <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">
-          <span class="itap-nav-icon">💬</span><span class="itap-nav-label">DICAS</span>
+          <span class="itap-nav-icon">💬</span><span class="itap-nav-label">DICAS/DEPOIMENTOS</span>
         </a>
         <a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);">
           <span class="itap-nav-icon">🎟️</span><span class="itap-nav-label">FIDELIDADE</span>
@@ -532,6 +532,7 @@
       var WPP_NUM = '5516996062046';
       var META_10 = 10;
       var META_30 = 30;
+      var STATUS_DISPONIVEL = 'disponível';
 
       /* ── referências DOM ───────────────────────────────────────────── */
       var inputTel          = document.getElementById('cliente-telefone');
@@ -699,7 +700,7 @@
               setResultado('Código inválido. Verifique o cupom e tente novamente.', 'erro');
               return;
             }
-            if (entrada.status !== 'disponível') {
+            if (entrada.status !== STATUS_DISPONIVEL) {
               setResultado('Este código já foi utilizado. Cada cupom vale apenas uma vez.', 'erro');
               return;
             }
