@@ -72,15 +72,17 @@
       border: 1px solid rgba(255, 255, 255, .2);
     }
 
-    /* Botão "Fazer cadastro" (--primary) fica invisível sobre o fundo laranja igual.
-       Sobrescreve para branco com texto laranja, garantindo contraste alto. */
-    .hero .itap-food-hero__action--primary {
+    /* Botão principal de cadastro: sólido, alto contraste e destaque no banner */
+    .hero .itap-food-hero__action--primary,
+    .hero .btn-fidelidade-cadastro {
       background: #fff;
       color: #E65100;
-      border: 2px solid rgba(255, 255, 255, .4);
-      box-shadow: 0 10px 22px rgba(0, 0, 0, .22);
+      border: none;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .25);
     }
-    .hero .itap-food-hero__action--primary:hover {
+    .hero .itap-food-hero__action--primary:hover,
+    .hero .btn-fidelidade-cadastro:hover {
       background: #FFF3E0;
     }
     /* Botão "Ver regras" (--ghost) sobre fundo laranja: torna-o translúcido com borda branca visível */
@@ -258,10 +260,20 @@
     }
     .cad-row { display: grid; gap: 6px; margin-bottom: 10px; }
     .cad-nasc-grid { display: grid; grid-template-columns: 1fr 1.5fr 1.6fr; gap: 6px; }
-    .cad-aceite-row { display: flex; align-items: flex-start; gap: 9px; margin: 10px 0 12px; }
-    .cad-aceite-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: #2e7d32; }
-    .cad-aceite-row label { font-size: .82rem; font-weight: 600; color: #333; line-height: 1.45; }
-    .cad-aceite-row a { color: #C62828; font-weight: 800; }
+    .cad-aceite-row { background:#FFF8E1;border:3px solid #E65100;border-radius:14px;padding:12px 14px;margin:10px 0 12px;box-shadow:0 3px 14px rgba(230,81,0,.18);transition:border-color .3s,background .3s; }
+    .cad-aceite-row:has(input:checked){ border-color:#2e7d32; background:#e8f5e9; }
+    .cad-aceite-indicador { font-size:.76rem;font-weight:800;color:#E65100;text-align:center;margin:0 0 8px;letter-spacing:.3px; }
+    .cad-aceite-label { display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-size:.84rem;color:#333;min-height:52px;line-height:1.45; }
+    .cad-aceite-label input[type="checkbox"]{ position:absolute;opacity:0;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden; }
+    .cad-aceite-visual{ display:flex;align-items:center;justify-content:center;width:30px;height:30px;min-width:30px;border:3px solid #2e7d32;border-radius:8px;background:#fff;flex-shrink:0;transition:all .25s;animation:pulsarChkFidelidade 1.8s ease-in-out infinite;font-size:0; }
+    .cad-aceite-visual::after{ content:"✓";color:#fff;font-weight:900;font-size:inherit;line-height:1; }
+    .cad-aceite-label input[type="checkbox"]:checked + .cad-aceite-visual{ background:#2e7d32;border-color:#2e7d32;font-size:18px;animation:none;box-shadow:0 0 0 4px rgba(46,125,50,.2); }
+    .cad-aceite-label a { color: #C62828; font-weight: 800; }
+    .cad-aceite-text{ flex:1; }
+    @keyframes pulsarChkFidelidade{
+      0%,100%{ box-shadow:0 0 0 0 rgba(46,125,50,.35); border-color:#2e7d32; }
+      50%{ box-shadow:0 0 0 6px rgba(46,125,50,0); border-color:#43a047; }
+    }
     /* Texto de instrução de preenchimento dentro do formulário de cadastro */
     .cad-instrucao { font-size: .82rem; color: #4a6741; background: #f1f8f1; border-left: 3px solid #2e7d32; border-radius: 0 8px 8px 0; padding: 8px 10px; margin-bottom: 12px; line-height: 1.5; }
     select {
@@ -383,7 +395,7 @@
       <span class="hero-badge">⚡ Fase de testes · Em breve totalmente online</span>
       <!-- Alteração para alinhar o fluxo de fidelidade da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
       <div class="itap-food-hero__actions" style="margin-top:14px;">
-        <a href="#titulo-cadastro" class="itap-food-hero__action itap-food-hero__action--primary">🎟️ Fazer cadastro</a>
+        <a href="#titulo-cadastro" class="itap-food-hero__action itap-food-hero__action--primary btn-fidelidade-cadastro">🎟️ Fazer cadastro</a>
         <a href="#titulo-area-cliente" class="itap-food-hero__action itap-food-hero__action--secondary">🔎 Consultar pontos</a>
         <a href="#titulo-regras" class="itap-food-hero__action itap-food-hero__action--ghost">📜 Ver regras</a>
         <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
@@ -514,9 +526,13 @@
         </div>
 
         <div class="cad-aceite-row">
+          <p class="cad-aceite-indicador" aria-hidden="true">↓ Leia as regras acima e marque a caixa para continuar</p>
           <!-- ID cad-aceite — não alterar: verificado no JS antes de enviar o cadastro -->
-          <input id="cad-aceite" type="checkbox">
-          <label for="cad-aceite">Li e aceito as <a href="#titulo-regras" onclick="document.querySelector('details.regulamento').open=true;">Regras do Clube de Fidelidade</a></label>
+          <label class="cad-aceite-label" for="cad-aceite">
+            <input id="cad-aceite" type="checkbox">
+            <span class="cad-aceite-visual" aria-hidden="true"></span>
+            <span class="cad-aceite-text">Li e aceito as <a href="#titulo-regras" onclick="document.querySelector('details.regulamento').open=true;">Regras do Clube de Fidelidade</a></span>
+          </label>
         </div>
 
         <!-- ID btn-cadastrar-clube — não alterar: listener de click dispara o envio ao admin -->
