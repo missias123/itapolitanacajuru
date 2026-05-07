@@ -4154,10 +4154,39 @@ setInterval(() => {
 // Resultado: [logo (esquerda)] [DÚVIDAS (centro pulsante)] [robô (direita)]
 // Mesmo padrão visual do mockup, replicado em todas as páginas.
 function posicionarItaBotNoTopo() {
-  // Header agora tem estrutura estática 3-colunas (.itap-header-top).
-  // Esta função era usada para posicionar dinamicamente o robô no topo,
-  // mas com o HTML estático ela não é mais necessária — retorna imediatamente.
-  if (document.querySelector('.itap-header-top')) return;
+  // Header com estrutura estática 3-colunas (.itap-header-top):
+  // mantém apenas um botão DÚVIDAS no centro e garante o robô visível à direita.
+  const staticTop = document.querySelector('.itap-header-top');
+  if (staticTop) {
+    const wrapStatic = document.getElementById('itabot-wrap');
+    const botCol = staticTop.querySelector('.itap-header-bot');
+    const logoStatic = staticTop.querySelector('.itap-brand-icon, .brand-icon');
+
+    staticTop.classList.add('itabot-top-row');
+
+    if (wrapStatic && botCol) {
+      if (wrapStatic.parentElement !== botCol) botCol.appendChild(wrapStatic);
+      wrapStatic.style.position = 'static';
+      wrapStatic.style.top = 'auto';
+      wrapStatic.style.right = 'auto';
+      wrapStatic.style.bottom = 'auto';
+      wrapStatic.style.display = 'flex';
+      wrapStatic.style.flexDirection = 'row';
+      wrapStatic.style.alignItems = 'center';
+      wrapStatic.style.gap = '0';
+
+      const oldBtnStatic = wrapStatic.querySelector('.itabot-duvidas-btn');
+      if (oldBtnStatic) oldBtnStatic.style.display = 'none';
+    }
+
+    const oldRobotBtn = staticTop.querySelector('#chat-fab-btn');
+    if (oldRobotBtn) oldRobotBtn.style.display = 'none';
+
+    const logoImgStatic = logoStatic && logoStatic.querySelector('img');
+    const sizeStatic = logoImgStatic ? Math.round(logoImgStatic.getBoundingClientRect().width || logoImgStatic.width || 80) : 80;
+    document.documentElement.style.setProperty('--itabot-logo-size', sizeStatic + 'px');
+    return;
+  }
   // Código legado mantido abaixo caso o HTML reverta para estrutura dinâmica:
   const wrap = document.getElementById('itabot-wrap');
   const logo = document.querySelector('.brand-icon, .itap-brand-icon');
