@@ -1696,11 +1696,21 @@ html { scroll-behavior: smooth; }
 // UX FINAL: sincroniza mini-resumo com badge do carrinho e total atual.
 (function() {
   var badge = document.getElementById('carrinho-badge');
+  var carrinhoBtn = document.getElementById('btn-carrinho');
+  var tabs = document.querySelector('.itap-bottom-tabs');
   var total = document.getElementById('total-carrinho');
   var outItens = document.getElementById('resumo-flutuante-itens');
   var outTotal = document.getElementById('resumo-flutuante-total');
   var box = document.getElementById('resumo-pedido-flutuante');
   if (!badge || !total || !outItens || !outTotal || !box) return;
+
+  function atualizarEspacoSeguro() {
+    var hResumo = box.offsetHeight || 0;
+    var hCarrinho = carrinhoBtn ? (carrinhoBtn.offsetHeight || 0) : 0;
+    var hTabs = tabs ? (tabs.offsetHeight || 0) : 0;
+    var reserva = hResumo + hCarrinho + hTabs + 26;
+    document.documentElement.style.setProperty('--ux-final-safe-bottom', Math.max(140, reserva) + 'px');
+  }
 
   function atualizarResumoFlutuante() {
     var qtd = parseInt((badge.textContent || '0').replace(/\D/g, ''), 10) || 0;
@@ -1708,11 +1718,20 @@ html { scroll-behavior: smooth; }
     outItens.textContent = qtd + ' item' + (qtd === 1 ? '' : 's');
     outTotal.textContent = totalTxt;
     box.style.display = qtd > 0 ? 'block' : 'none';
+    atualizarEspacoSeguro();
   }
 
   atualizarResumoFlutuante();
-  new MutationObserver(atualizarResumoFlutuante).observe(badge, { childList: true, subtree: true, characterData: true });
-  new MutationObserver(atualizarResumoFlutuante).observe(total, { childList: true, subtree: true, characterData: true });
+  var obsBadge = new MutationObserver(atualizarResumoFlutuante);
+  var obsTotal = new MutationObserver(atualizarResumoFlutuante);
+  obsBadge.observe(badge, { childList: true, subtree: true, characterData: true });
+  obsTotal.observe(total, { childList: true, subtree: true, characterData: true });
+  window.addEventListener('resize', atualizarEspacoSeguro);
+  window.addEventListener('orientationchange', atualizarEspacoSeguro);
+  window.addEventListener('beforeunload', function() {
+    obsBadge.disconnect();
+    obsTotal.disconnect();
+  });
 })();
 </script>
 
