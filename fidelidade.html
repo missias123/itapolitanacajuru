@@ -288,6 +288,41 @@
     .resultado.ok { background: #E8F5E9; border-color: #81C784; color: #1B5E20; }
     .resultado.erro { background: #FFEBEE; border-color: #EF9A9A; color: #B71C1C; }
 
+    /* ── FORMULÁRIO DE CADASTRO ─────────────────────── */
+    .cad-box {
+      background: #e8f5e9;
+      border: 2px solid #2e7d32;
+      border-radius: 14px;
+      padding: 16px 16px 18px;
+      margin-top: 10px;
+      display: none;
+    }
+    .cad-box.visivel { display: block; }
+    .cad-titulo {
+      font-weight: 900;
+      color: #1b5e20;
+      font-size: .98rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .cad-row { display: grid; gap: 6px; margin-bottom: 10px; }
+    .cad-nasc-grid { display: grid; grid-template-columns: 1fr 1.5fr 1.6fr; gap: 6px; }
+    .cad-aceite-row { display: flex; align-items: flex-start; gap: 9px; margin: 10px 0 12px; }
+    .cad-aceite-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: #2e7d32; }
+    .cad-aceite-row label { font-size: .82rem; font-weight: 600; color: #333; line-height: 1.45; }
+    .cad-aceite-row a { color: #C62828; font-weight: 800; }
+    select {
+      width: 100%;
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 10px 8px;
+      font-size: .92rem;
+      font-family: inherit;
+      background: #fff;
+    }
+    select:focus { outline: none; border-color: #EF0129; }
+    .btn-verde { background: linear-gradient(135deg, #2e7d32, #43a047); color: #fff; width: 100%; }
+
     details.regulamento {
       border: 1px solid #FFD6B0;
       border-radius: 12px;
@@ -446,6 +481,45 @@
         </div>
       </div>
 
+      <!-- FORMULÁRIO DE CADASTRO — aparece quando telefone não encontrado -->
+      <div class="cad-box" id="form-cadastro-wrap">
+        <div class="cad-titulo">📝 Cadastro gratuito no Clube de Fidelidade</div>
+
+        <div class="cad-row">
+          <label for="cad-nome">Nome completo</label>
+          <input id="cad-nome" type="text" placeholder="Seu nome completo" autocomplete="name" maxlength="100">
+        </div>
+
+        <div class="cad-row">
+          <label>Celular (WhatsApp)</label>
+          <input id="cad-tel-view" type="tel" readonly style="background:#f0f0f0;color:#555;cursor:default;" tabindex="-1">
+        </div>
+
+        <div class="cad-row">
+          <label>Data de nascimento</label>
+          <div class="cad-nasc-grid">
+            <select id="cad-dia"><option value="">Dia</option></select>
+            <select id="cad-mes">
+              <option value="">Mês</option>
+              <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+              <option value="03">Março</option><option value="04">Abril</option>
+              <option value="05">Maio</option><option value="06">Junho</option>
+              <option value="07">Julho</option><option value="08">Agosto</option>
+              <option value="09">Setembro</option><option value="10">Outubro</option>
+              <option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+            <select id="cad-ano"><option value="">Ano</option></select>
+          </div>
+        </div>
+
+        <div class="cad-aceite-row">
+          <input id="cad-aceite" type="checkbox">
+          <label for="cad-aceite">Li e concordo com o <a href="#titulo-regras" onclick="document.querySelector('details.regulamento').open=true;">Regulamento do Clube de Fidelidade</a></label>
+        </div>
+
+        <button class="btn btn-verde" id="btn-cadastrar-clube">🎟️ Cadastrar no Clube</button>
+      </div>
+
       <div class="resultado" id="resultado-cliente" style="margin-top:12px;" role="status">
         Olá! Entre com seu WhatsApp para consultar sua pontuação.
       </div>
@@ -529,6 +603,7 @@
 
       /* ── constantes ────────────────────────────────────────────────── */
       var GH_RAW = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/';
+      var GH_API = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';
       var WPP_NUM = '5516996062046';
       var META_10 = 10;
       var META_30 = 30;
@@ -543,6 +618,7 @@
       var btnRegistrar      = document.getElementById('btn-registrar-ponto');
       var resultado         = document.getElementById('resultado-cliente');
       var formCodigoWrap    = document.getElementById('form-codigo-wrap');
+      var formCadastroWrap  = document.getElementById('form-cadastro-wrap');
       var btnWppResgatar    = document.getElementById('btn-wpp-resgatar');
       var fillBar10         = document.getElementById('progresso-fill');
       var fillBar30         = document.getElementById('progresso-fill30');
@@ -703,6 +779,160 @@
             return r.json();
           });
       }
+
+      /* ── inicializar selects de data de nascimento ───────────────────── */
+      (function iniciarSelectsData() {
+        var selDia = document.getElementById('cad-dia');
+        var selAno = document.getElementById('cad-ano');
+        for (var d = 1; d <= 31; d++) {
+          var o = document.createElement('option');
+          o.value = String(d).padStart(2, '0');
+          o.textContent = String(d).padStart(2, '0');
+          selDia.appendChild(o);
+        }
+        var anoAtual = new Date().getFullYear();
+        for (var a = anoAtual; a >= 1920; a--) {
+          var oa = document.createElement('option');
+          oa.value = String(a);
+          oa.textContent = String(a);
+          selAno.appendChild(oa);
+        }
+      })();
+
+      /* ── CADASTRO NO CLUBE ───────────────────────────────────────────── */
+      function mostrarFormCadastro(tel) {
+        var cadTelView = document.getElementById('cad-tel-view');
+        if (cadTelView) cadTelView.value = mascaraTel(tel);
+        formCadastroWrap.classList.add('visivel');
+        var cadNome = document.getElementById('cad-nome');
+        if (cadNome) cadNome.focus();
+      }
+
+      function ocultarFormCadastro() {
+        formCadastroWrap.classList.remove('visivel');
+      }
+
+      document.getElementById('btn-cadastrar-clube').addEventListener('click', function() {
+        var nome    = (document.getElementById('cad-nome').value || '').trim();
+        var dia     = document.getElementById('cad-dia').value;
+        var mes     = document.getElementById('cad-mes').value;
+        var ano     = document.getElementById('cad-ano').value;
+        var aceite  = document.getElementById('cad-aceite').checked;
+        var telRaw  = inputTel.value.replace(/\D/g, '');
+
+        if (!nome || nome.length < 3) {
+          setResultado('⚠️ Informe seu nome completo.', 'erro'); return;
+        }
+        if (telRaw.length < 10) {
+          setResultado('⚠️ Número de WhatsApp inválido. Volte e digite novamente.', 'erro'); return;
+        }
+        if (!dia || !mes || !ano) {
+          setResultado('⚠️ Informe sua data de nascimento completa.', 'erro'); return;
+        }
+        if (!aceite) {
+          setResultado('⚠️ Você precisa aceitar o regulamento para se cadastrar.', 'erro'); return;
+        }
+
+        var dataNasc = ano + '-' + mes + '-' + dia;
+        var btn = document.getElementById('btn-cadastrar-clube');
+        btn.disabled = true;
+        btn.textContent = 'Cadastrando…';
+        setResultado('Aguarde, registrando seu cadastro…', '');
+
+        var tk = (function(){ try { return localStorage.getItem('itap_gh_token') || ''; } catch(e){ return ''; } })();
+
+        if (!tk) {
+          /* sem token → redireciona WhatsApp */
+          var msg = '🎟️ *Cadastro no Clube de Fidelidade — Sorveteria Itapolitana Cajuru*\n\n' +
+            '*Nome:* ' + nome + '\n' +
+            '*WhatsApp:* ' + mascaraTel(telRaw) + '\n' +
+            '*Data de nascimento:* ' + dia + '/' + mes + '/' + ano + '\n\n' +
+            'Confirmo que li e aceito o Regulamento do Clube de Fidelidade. ✅';
+          window.open('https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg), '_blank');
+          setResultado('✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
+          ocultarFormCadastro();
+          btn.disabled = false;
+          btn.textContent = '🎟️ Cadastrar no Clube';
+          return;
+        }
+
+        /* com token → salva direto no GitHub */
+        var CLIENTES_PATH = 'dados/clientes.json';
+        fetch(GH_API + CLIENTES_PATH, {
+          headers: { 'Authorization': 'token ' + tk, 'Accept': 'application/vnd.github.v3+json' }
+        })
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(ghResp) {
+          var sha = ghResp.sha;
+          var dados = JSON.parse(decodeURIComponent(escape(atob(ghResp.content.replace(/\n/g,'')))));
+
+          /* verificar duplicidade */
+          var idx = dados.indice_celular || {};
+          if (idx[telRaw]) {
+            setResultado('ℹ️ Este número já está cadastrado. Use "Entrar" para consultar seus pontos.', '');
+            ocultarFormCadastro();
+            btn.disabled = false;
+            btn.textContent = '🎟️ Cadastrar no Clube';
+            return;
+          }
+
+          /* gerar próximo ID */
+          var existentes = Object.keys(dados.clientes || {});
+          var maxNum = 0;
+          existentes.forEach(function(k) {
+            var m = k.match(/USR-2026-(\d+)/);
+            if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+          });
+          var novoId = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
+
+          /* criar novo cliente */
+          var agora = new Date().toISOString();
+          dados.clientes[novoId] = {
+            id_permanente: novoId,
+            id_hash: Math.random().toString(16).toUpperCase().substr(2, 8),
+            nome: nome,
+            dataNasc: dataNasc,
+            cel: telRaw,
+            cel_anterior: [],
+            cadastro: agora,
+            saldoPontos: 0,
+            codigosUsados: [],
+            resgates: [],
+            totalPremios: 0,
+            totalCodigos: 0,
+            historico_alteracoes: [{ data: agora, tipo: 'cadastro', descricao: 'Cadastro pelo site', por: 'cliente' }],
+            bloqueado: false,
+            motivo_bloqueio: null,
+            tentativas_fraude: 0,
+            ultimo_acesso: agora
+          };
+          idx[telRaw] = novoId;
+          dados.indice_celular = idx;
+
+          var novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+          return fetch(GH_API + CLIENTES_PATH, {
+            method: 'PUT',
+            headers: { 'Authorization': 'token ' + tk, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Clube: novo cadastro ' + nome, content: novoConteudo, sha: sha })
+          }).then(function(r) {
+            if (!r.ok) throw new Error('Erro ao salvar: ' + r.status);
+            _clienteAtual = dados.clientes[novoId];
+            _nomeSessao = primeiroNome(nome);
+            salvarSaldoEmCache(telRaw, 0, nome);
+            atualizarBarras(0);
+            setResultado('🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '! Agora registre seu primeiro cupom.', 'ok');
+            ocultarFormCadastro();
+            formCodigoWrap.style.display = 'grid';
+          });
+        })
+        .catch(function(e) {
+          setResultado('⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
+        })
+        .finally(function() {
+          btn.disabled = false;
+          btn.textContent = '🎟️ Cadastrar no Clube';
+        });
+      });
 
       /* ── máscara ────────────────────────────────────────────────────── */
       inputTel.addEventListener('input', function() {
