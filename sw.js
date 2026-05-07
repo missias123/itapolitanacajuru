@@ -1,11 +1,14 @@
 /**
  * SW.JS — Sorveteria Itapolitana Cajuru
- * Versão: 4.0 — Cache inteligente para GitHub Pages
+ * Versão: 5.0 (itapolitana-v7) — PWA Versão 2
  * Estratégia: Cache First (assets), Network First (HTML/API)
+ *
+ * Para atualizar o cache no futuro, incremente CACHE_NAME e ASSETS_CACHE
+ * (ex.: itapolitana-v8 / assets-v8). O evento 'activate' apaga versões antigas.
  */
 
-const CACHE_NAME   = 'itapolitana-v6';
-const ASSETS_CACHE = 'assets-v6';
+const CACHE_NAME   = 'itapolitana-v7';
+const ASSETS_CACHE = 'assets-v7';
 
 const CRITICAL_ASSETS = [
   '/',
