@@ -235,7 +235,7 @@
       </div>
       <div>
         <h3 id="chat-hdr-titulo" style="font-size:15px;font-weight:900;margin:0;color:#fff">🤖 DÚVIDAS — Ita Bot</h3>
-        <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Pergunte sobre sabores, horários, encomendas e muito mais</p>
+        <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Cardápio, promoções, fidelidade e encomendas sem sair do fluxo</p>
       </div>
     </div>
     <div class="chat-hdr-btns">
@@ -244,9 +244,9 @@
     </div>
   </div>
 </div>
-<div class="chat-msgs" id="duvidas-resposta" aria-live="polite">Olá! 👋 Sou o <strong>Ita Bot</strong>. Digite sua dúvida abaixo e vou responder aqui.</div>
+<div class="chat-msgs" id="duvidas-resposta" aria-live="polite">Olá! 👋 Sou o <strong>Ita Bot</strong>.<br><br>Posso te levar direto para os fluxos principais:<br><br><a class="itabot-link-btn" href="${_base}encomendas.html">📦 Quero ver cardápio / encomendar</a><a class="itabot-link-btn" href="${_base}promocao.html">🎁 Quero ver promoções</a><a class="itabot-link-btn" href="${_base}fidelidade.html">⭐ Quero ver fidelidade</a></div>
 <div class="chat-inp-row">
-  <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida ou palavra-chave" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
+  <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida ou peça: cardápio, promoções, fidelidade..." type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
   <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">Enviar</button>
 </div>
 </div>
@@ -329,7 +329,7 @@
     'instagram':     '📸 Nos siga no Instagram para ver novidades, sabores e promoções! Busque @sorveteriaitapolitanacajuru.',
     'sabor':         '🍦 Temos 35 sabores tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
     'sabores':       '🍦 Temos 35 sabores tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
-    'cardápio':      '🍦 Acesse o cardápio completo no site! Sorvetes, Açaí, Milkshake, Taças, Picolés e Sobremesas. Tudo fresquinho!',
+    'cardápio':      '🍦 Abra a área de Encomendas/Cardápio para ver categorias, produtos e próximos passos do pedido.',
     'nutella':       '🍦 Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutella e muito mais! Delicioso! 😋',
     'chocolate':     '🍦 Temos Chocolate, Chocolate com Café, Bis e Trufa, Menta com Chocolate, Prestígio e Torta de Chocolate! 🍫',
     'leite ninho':   '🍦 Temos Leite Ninho, Leite Ninho Folheado e Leite Ninho com Oreo! Os favoritos das crianças! 🥛',
@@ -407,9 +407,9 @@
     // ── Intenção: Cardápio / Menu / Sabores de sorvete / Taças / Sobremesas ──
     {
       keywords: ['cardápio', 'cardapio', 'menu', 'sabores', 'sabor', 'sorvetes', 'sorvete', 'gelado', 'gelados', 'casquinha', 'taça', 'taca', 'taças', 'tacas', 'sundae', 'banana split', 'sobremesa', 'isopor'],
-      answer: '🍦 Temos 35 sabores tipo artesanal! Chocolate, Nutella, Leite Ninho, Morango Trufado, Pistache, Ferrero Rocher, Kinder Ovo, Ovomaltine e muito mais. Também taças, isopores e sobremesas. Confira o cardápio completo:',
-      linkText: '🍦 Abrir Cardápio Digital',
-      linkHref: 'index.html'
+      answer: '🍦 Temos 35 sabores tipo artesanal! Chocolate, Nutella, Leite Ninho, Morango Trufado, Pistache, Ferrero Rocher, Kinder Ovo, Ovomaltine e muito mais. Para navegar no cardápio com foco em pedido, abra a área de Encomendas:',
+      linkText: '🍦 Abrir Cardápio / Encomendas',
+      linkHref: 'encomendas.html'
     },
 
     // ── Intenção: Açaí ──

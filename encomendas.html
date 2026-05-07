@@ -97,7 +97,7 @@
     .btn-carrinho-fixo {
       position: fixed;
       /* POSIÇÃO: canto inferior direito, visível acima do cardápio */
-      bottom: 80px;
+      bottom: calc(86px + env(safe-area-inset-bottom, 0px));
       right: 16px;
       left: auto;
       transform: none;
@@ -141,6 +141,16 @@
       justify-content: center;
       font-size: 0.8rem;
       font-weight: 700;
+    }
+    @media (max-width: 640px) {
+      .btn-carrinho-fixo {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        min-width: 0;
+        justify-content: space-between;
+        padding: 14px 18px;
+      }
     }
 
     /* BANNER INFO */
@@ -1272,6 +1282,24 @@ html { scroll-behavior: smooth; }
     Como funciona: <strong>1. Escolha os produtos</strong> · <strong>2. Clique em “Fazer pedido”</strong> · <strong>3. Finalize no WhatsApp</strong>
   </div>
 </section>
+<section class="itap-page-shell" aria-labelledby="atalhos-encomendas-titulo">
+  <!-- Alteração para alinhar o fluxo de encomendas da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
+  <div class="itap-surface-card">
+    <div class="itap-surface-card__body">
+      <div class="itap-surface-card__eyebrow">Categorias visíveis</div>
+      <h2 class="itap-surface-card__title" id="atalhos-encomendas-titulo">Escolha sua categoria e siga direto para o carrinho</h2>
+      <p class="itap-surface-card__text">O cardápio de encomendas agora destaca os atalhos mais usados no topo para o cliente chegar mais rápido ao produto certo.</p>
+      <div class="itap-anchor-strip" style="margin-top:14px;">
+        <a class="is-dest" href="#caixas">🍦 Caixas</a>
+        <a href="#tortas">🎂 Tortas</a>
+        <a href="#picolés">🍭 Picolés</a>
+        <a href="#acréscimos">🍪 Acréscimos</a>
+        <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
+      </div>
+      <div class="itap-inline-note" style="margin-top:14px;">Carrinho sempre acessível no rodapé do celular para manter o fluxo categoria → carrinho → WhatsApp sem sobreposição.</div>
+    </div>
+  </div>
+</section>
 <style>
 /* Reserva espaço para: botão carrinho fixo + mini resumo + tabs inferiores no mobile */
 :root { --ux-final-safe-bottom: 150px; }
@@ -1406,7 +1434,7 @@ html { scroll-behavior: smooth; }
 <div class="prod-grid" id="lista-picolés">
 <div class="prod-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 14px;gap:8px;">
 <a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20do%20carrinho%20de%20picolé%C3%A9%20para%20evento." rel="noopener" style="text-decoration:none;display:inline-block;" target="_blank">
-<img alt="Carrinho de Picolé para Eventos" decoding="async" loading="lazy" onmouSEOut="this.style.transform='scale(1)'" onmouSEOver="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp" style="width:150px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));transition:transform 0.2s;"/>
+<img alt="Carrinho de Picolé para Eventos" decoding="async" loading="lazy" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp" style="width:150px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));transition:transform 0.2s;"/>
 <div style="font-size:0.72rem;font-weight:800;color:#E65100;margin-top:6px;letter-spacing:.3px;">🛒 Carrinho para Eventos</div>
 <div style="font-size:0.68rem;color:#5C2D6B;font-weight:700;">Toque para consultar</div>
 </a>
