@@ -1196,28 +1196,49 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .delay-5 { transition-delay: 0.5s; }
 
 /* Badges de confiança */
+/* Selos de confiança – estilo grandes apps (iFood, Rappi, McDonald's BR):
+   contornos visíveis, frosted-glass, variante dourada para destaques */
 .badges-confianca {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  margin: 20px 0;
+  margin: 16px 0 20px;
 }
 .badge-conf {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
+  gap: 7px;
+  background: rgba(255,255,255,0.13);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,0.55);
   border-radius: 30px;
-  padding: 6px 14px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: #fff;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-.badge-conf .badge-icon { font-size: 1rem; }
+.badge-conf:hover {
+  background: rgba(255,255,255,0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.16);
+}
+/* Variante dourada: destaques especiais (ex.: Desde 2007, Fidelidade) */
+.badge-conf.badge-dest {
+  border-color: rgba(251,209,0,0.8);
+  background: rgba(251,209,0,0.14);
+  color: #FBD100;
+  box-shadow: 0 2px 10px rgba(251,209,0,0.22), inset 0 1px 0 rgba(251,209,0,0.1);
+}
+.badge-conf.badge-dest:hover {
+  background: rgba(251,209,0,0.24);
+  box-shadow: 0 4px 14px rgba(251,209,0,0.32), inset 0 1px 0 rgba(251,209,0,0.14);
+}
+.badge-conf .badge-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
 
 /* Micro-interações nos botões */
 .btn-cta, .btn-whatsapp, .btn-encomenda {
@@ -1351,7 +1372,8 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* Responsividade dos badges */
 @media (max-width: 480px) {
   .badges-confianca { gap: 6px; }
-  .badge-conf { font-size: 0.75rem; padding: 5px 10px; }
+  .badge-conf { font-size: 0.73rem; padding: 6px 11px; }
+  .badge-conf .badge-icon { font-size: 1rem; }
 }
 
 /* ── PAINEL INLINE DE SABORES (Nível 3) ── */
@@ -2542,6 +2564,15 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <!-- Frase de confiança LGPD + links úteis -->
 <div style="margin-top:16px;padding:14px 16px;background:rgba(0,0,0,0.35);border-radius:12px;border:1px solid rgba(251,209,0,0.35);text-align:center;">
+  <!-- Selos de confiança – estilo grandes apps (iFood, Rappi, McDonald's BR) – contornos visíveis -->
+  <div class="badges-confianca">
+    <span class="badge-conf badge-dest"><span class="badge-icon">🏅</span> Desde 2007</span>
+    <span class="badge-conf"><span class="badge-icon">🔒</span> Site Seguro</span>
+    <span class="badge-conf"><span class="badge-icon">💳</span> Pix Aceito</span>
+    <span class="badge-conf"><span class="badge-icon">📱</span> App Disponível</span>
+    <span class="badge-conf badge-dest"><span class="badge-icon">⭐</span> Clube Fidelidade</span>
+    <span class="badge-conf"><span class="badge-icon">✅</span> LGPD Conforme</span>
+  </div>
   <div style="font-size:clamp(11px,2.5vw,12px);color:rgba(255,255,255,.85);font-weight:700;line-height:1.6;margin-bottom:10px;">
     🔒 Seus dados estão seguros. Usamos apenas cookies essenciais e de análise. Nenhum dado de pagamento é armazenado pelo site.
   </div>
