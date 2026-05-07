@@ -1443,10 +1443,7 @@ html { scroll-behavior: smooth; }
   🛒 Ver Carrinho
   <span class="badge" id="carrinho-badge">0</span>
 </button>
-<!-- UX FINAL (inspiração iFood): mini-resumo sempre visível perto da ação principal -->
-<div id="resumo-pedido-flutuante" style="position:fixed;right:14px;bottom:84px;z-index:9600;background:#fff;border:1.5px solid #FFE0B2;border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.14);font-size:.78rem;font-weight:800;color:#5D4037;max-width:240px;">
-  Resumo: <span id="resumo-flutuante-itens">0 itens</span> · <span id="resumo-flutuante-total">R$ 0,00</span>
-</div>
+
 <div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
 <div class="modal-box">
 <div class="modal-header">
@@ -1682,50 +1679,7 @@ html { scroll-behavior: smooth; }
 <!-- FIM CERTIFICAÇÕES E SEGURANÇA -->
 <script src="scripts/products.js?v=20260225" defer></script>
 <script src="scripts/enc-v2.js?v=25_limite_excedido" defer></script>
-<script>
-// UX FINAL: sincroniza mini-resumo com badge do carrinho e total atual.
-(function() {
-  var badge = document.getElementById('carrinho-badge');
-  var carrinhoBtn = document.getElementById('btn-carrinho');
-  var tabs = document.querySelector('.itap-bottom-tabs');
-  var total = document.getElementById('total-carrinho');
-  var outItens = document.getElementById('resumo-flutuante-itens');
-  var outTotal = document.getElementById('resumo-flutuante-total');
-  var box = document.getElementById('resumo-pedido-flutuante');
-  if (!badge || !total || !outItens || !outTotal || !box) return;
 
-  function atualizarEspacoSeguro() {
-    var hResumo = box.offsetHeight || 0;
-    var hCarrinho = carrinhoBtn ? (carrinhoBtn.offsetHeight || 0) : 0;
-    var hTabs = tabs ? (tabs.offsetHeight || 0) : 0;
-    // 26px = respiro visual entre elementos fixos e o conteúdo rolável.
-    var margemRespiro = 26;
-    var reserva = hResumo + hCarrinho + hTabs + margemRespiro;
-    document.documentElement.style.setProperty('--ux-final-safe-bottom', Math.max(140, reserva) + 'px');
-  }
-
-  function atualizarResumoFlutuante() {
-    var qtd = parseInt((badge.textContent || '0').replace(/\D/g, ''), 10) || 0;
-    var totalTxt = (total.textContent || 'R$ 0,00').trim();
-    outItens.textContent = qtd + ' item' + (qtd === 1 ? '' : 's');
-    outTotal.textContent = totalTxt;
-    box.style.display = qtd > 0 ? 'block' : 'none';
-    atualizarEspacoSeguro();
-  }
-
-  atualizarResumoFlutuante();
-  var obsBadge = new MutationObserver(atualizarResumoFlutuante);
-  var obsTotal = new MutationObserver(atualizarResumoFlutuante);
-  obsBadge.observe(badge, { childList: true, subtree: true, characterData: true });
-  obsTotal.observe(total, { childList: true, subtree: true, characterData: true });
-  window.addEventListener('resize', atualizarEspacoSeguro);
-  window.addEventListener('orientationchange', atualizarEspacoSeguro);
-  window.addEventListener('beforeunload', function() {
-    obsBadge.disconnect();
-    obsTotal.disconnect();
-  });
-})();
-</script>
 
 
 <!-- Botão Admin discreto -->
