@@ -94,10 +94,16 @@
 .duvidas-card-logo,.duvidas-btn{display:none}
 @keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
 /* Botão "DÚVIDAS" pulsante ao lado do robô – abre o chat Ita Bot em tela cheia */
-.itabot-duvidas-btn{background:linear-gradient(135deg,#C62828,#E8000D);color:#fff;border:2px solid rgba(255,255,255,.75);border-radius:999px;padding:7px 13px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 2s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;text-transform:uppercase;line-height:1;align-self:center;flex-shrink:0}
+.itabot-duvidas-btn{background:linear-gradient(135deg,#D00000,#E8000D);color:#fff;border:2px solid #fff;border-radius:999px;padding:7px 13px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 1.35s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;text-transform:uppercase;line-height:1;align-self:center;flex-shrink:0;text-shadow:0 0 6px rgba(255,255,255,.65),0 0 12px rgba(255,64,64,.55)}
 .itabot-duvidas-btn:hover{filter:brightness(1.1);transform:scale(1.05)}
-@keyframes itabot-btn-pulse{0%,100%{box-shadow:0 2px 8px rgba(232,0,13,.35)}50%{box-shadow:0 4px 14px rgba(232,0,13,.6),0 0 0 3px rgba(232,0,13,.18)}}
+@keyframes itabot-btn-pulse{
+0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.95),0 0 10px rgba(255,40,40,.55),0 0 22px rgba(255,0,80,.35)}
+50%{box-shadow:0 0 0 2px rgba(255,255,255,1),0 0 18px rgba(255,64,64,.92),0 0 34px rgba(255,0,110,.72),0 0 54px rgba(255,0,140,.5)}
+}
 @media(prefers-reduced-motion:reduce){.duvidas-card svg,.itabot-duvidas-btn{animation:none}}
+/* Botão-link de ação nas respostas do bot — grande e fácil de tocar em mobile */
+.itabot-link-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:900;letter-spacing:.4px;margin-top:6px;min-height:48px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:normal;word-break:break-word}
+.itabot-link-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.itabot-link-btn:active{transform:scale(.97)}
 /* Chat Ita Bot: modal fullscreen acima de tudo, inclusive barra inferior Android */
 /* Ajuste de safe area para evitar sobreposição em mobile (cabeçalho e barra inferior) */
 #chat-dialog{inset:0;height:100%}
@@ -216,32 +222,11 @@
   </div>
 </div>
 <div class="chat-msgs" id="chat-msgs">
-  <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Digite uma palavra e respondo na hora 👇<br><small style="color:#888;font-size:11px">Ex: horário · sabores · preço · picolé · açaí · encomenda · localização</small></div>
+  <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Me conte sua dúvida e eu te ajudo na hora.</div>
 </div>
 <div class="chat-typing" id="chat-typing"><span></span><span></span><span></span></div>
-<div id="chat-sugs-container" style="display:flex;gap:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;-ms-overflow-style:none;border-top:1px solid #F3F4F6">
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Horário</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Como encomendar</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Sabores</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Preços</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Localização</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Picolés</button>
-</div>
-<div class="duvidas-chips-wrap" id="duvidas-chips-wrap">
-  <span class="duvidas-chips-label">Pergunte sobre:</span>
-  <div class="duvidas-chips-row" role="group" aria-label="Temas de dúvidas rápidas">
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('sabores')" type="button">SABORES</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('horário')" type="button">HORÁRIO</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('encomendas')" type="button">ENCOMENDAS</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('localização')" type="button">LOCALIZAÇÃO</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('whatsapp')" type="button">WHATSAPP</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('pagamento')" type="button">PAGAMENTOS</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('promoção')" type="button">PROMOÇÕES</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('artesanal')" type="button">ARTESANAL</button>
-  </div>
-</div>
 <div class="chat-inp-row">
-  <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
+  <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Palavra-chave ou digite sua dúvida" type="text" autocomplete="off" spellcheck="false" aria-label="Palavra-chave ou digite sua dúvida"/>
   <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
 </div>
 <!-- Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) -->
@@ -387,8 +372,171 @@
     'historia':      '🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos de tradição!',
     'artesanal':     '🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis!',
     'qualidade':     '🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
-    'default':       'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · promoções · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
+    'default':       'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>cardápio · horário · encomendas · fidelidade · promoções · picolé · açaí · milkshake · localização · pagamento · WhatsApp</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
   };
+
+  /* ─── BASE DE CONHECIMENTO DO ITA BOT ───────────────────────────────────
+     Cada entrada define uma INTENÇÃO reconhecida pelo bot:
+       - keywords : palavras-chave que ativam esta intenção (normalizadas em minúsculas)
+       - answer   : texto de resposta exibido ao usuário
+       - linkText : texto do botão de ação (opcional)
+       - linkHref : URL de destino — use caminhos relativos para páginas internas
+                    (ex.: 'encomendas.html') e URL completa para links externos
+       - external : true → abre em nova aba; false/omitido → abre na mesma aba (PWA)
+
+     Como adicionar uma nova intenção no futuro:
+       1. Adicione um objeto ao array abaixo, seguindo o padrão existente.
+       2. Inclua todas as variações de palavras-chave relevantes no array keywords.
+       3. Defina a página/âncora correta em linkHref.
+     ─────────────────────────────────────────────────────────────────────── */
+  var itaBotKnowledge = [
+
+    // ── Intenção: Cardápio / Menu / Sabores de sorvete / Taças / Sobremesas ──
+    {
+      keywords: ['cardápio', 'cardapio', 'menu', 'sabores', 'sabor', 'sorvetes', 'sorvete', 'gelado', 'gelados', 'casquinha', 'taça', 'taca', 'taças', 'tacas', 'sundae', 'banana split', 'sobremesa', 'isopor'],
+      answer: '🍦 Temos 35 sabores tipo artesanal! Chocolate, Nutella, Leite Ninho, Morango Trufado, Pistache, Ferrero Rocher, Kinder Ovo, Ovomaltine e muito mais. Também taças, isopores e sobremesas. Confira o cardápio completo:',
+      linkText: '🍦 Abrir Cardápio Digital',
+      linkHref: 'index.html'
+    },
+
+    // ── Intenção: Açaí ──
+    {
+      keywords: ['açaí', 'acai', 'açai', 'complemento açaí', 'complementos acai', 'topping acai'],
+      answer: '🫐 Açaí tipo artesanal em copos de 300ml (R$15), 360ml (R$16), 400ml (R$17) e 600ml (R$20). Personalize com frutas, cremes e chocolates! Também temos Açaí Promocional a partir de R$15. Veja no cardápio:',
+      linkText: '🫐 Ver Cardápio — Açaí',
+      linkHref: 'index.html'
+    },
+
+    // ── Intenção: Milkshake ──
+    {
+      keywords: ['milkshake', 'milk shake', 'milk'],
+      answer: '🥤 Milkshakes em copo transparente com tampa bolha! Tradicional: 300ml R$17 · 400ml R$20 · 500ml R$22 · 750ml R$28. Adicional Ovomaltine R$3,00. Veja no cardápio:',
+      linkText: '🥤 Ver Cardápio — Milkshakes',
+      linkHref: 'index.html'
+    },
+
+    // ── Intenção: Picolé (varejo e atacado) ──
+    {
+      keywords: ['picolé', 'picole', 'picolés', 'picoles', 'leitinho', 'esquimó', 'esquimo'],
+      answer: '🍭 Picolés: Fruta/Água R$2,50 · Leite sem recheio R$2,50 · Leite com recheio R$3,00 · Leite Ninho (o LEITINHO!) R$4,00 · Esquimó R$8,00. Atacado (mín. 100 un.) disponível via encomenda. Veja o cardápio ou encomende:',
+      linkText: '🍭 Ver Picolés / Fazer Encomenda',
+      linkHref: 'encomendas.html'
+    },
+
+    // ── Intenção: Promoções / Sorteio mensal ──
+    {
+      keywords: ['promoção', 'promocao', 'promoções', 'promocoes', 'sorteio', 'desconto', 'oferta', 'promo', 'ganhar', 'concorrer', 'grátis'],
+      answer: '🎉 Sorteio Mensal 2026: todo dia 01 sorteamos 1 caixa de 5L de sorvete — totalmente gratuito! Cadastre-se pelo site para concorrer. Também confira promoções especiais do dia:',
+      linkText: '🎉 Ver Promoções e Sorteio',
+      linkHref: 'promocao.html'
+    },
+
+    // ── Intenção: Encomendas / Pedidos / Festas e eventos ──
+    {
+      keywords: ['encomendar', 'encomenda', 'encomendas', 'pedido', 'pedir', 'reservar', 'torta', 'caixa', 'festa', 'evento', 'aniversário', 'aniversario', 'casamento', 'formatura', 'carrinho', 'atacado'],
+      answer: '📦 Trabalhamos com Torta de Sorvete (R$100), Caixa 5L (a partir de R$100), Caixa 10L (a partir de R$150), Picolés no atacado (mín. 100 un.) e Carrinho para Eventos. Prazo mínimo: 3 dias úteis + pagamento antecipado. Faça seu pedido online:',
+      linkText: '📦 Fazer Encomenda',
+      linkHref: 'encomendas.html'
+    },
+
+    // ── Intenção: Clube de Fidelidade / Pontos / Cupom / Prêmios ──
+    {
+      keywords: ['fidelidade', 'pontos', 'clube', 'cupom', 'cupons', 'prêmio', 'premio', 'resgatar', 'resgate', 'validar código', 'validar codigo'],
+      answer: '⭐ Clube de Fidelidade Itapolitana! Compre acima de R$30 de segunda a sexta → ganhe cupom → acumule pontos. Prêmios: 10 pontos = 1 bola de sorvete · 30 pontos = 1 caixa de 12 picolés. Programa gratuito, disponível a partir de maio/2026. Acesse:',
+      linkText: '⭐ Abrir Clube de Fidelidade',
+      linkHref: 'fidelidade.html'
+    },
+
+    // ── Intenção: Cadastro (fidelidade ou sorteio) ──
+    {
+      keywords: ['cadastro', 'cadastrar', 'cadastre', 'me cadastrar', 'quero me cadastrar'],
+      answer: '📝 Você pode se cadastrar gratuitamente no Clube de Fidelidade ou no Sorteio Mensal pelas páginas do menu. Acesse diretamente:',
+      linkText: '⭐ Clube de Fidelidade',
+      linkHref: 'fidelidade.html'
+    },
+
+    // ── Intenção: Horário de funcionamento ──
+    {
+      keywords: ['horário', 'horario', 'abre', 'fecha', 'aberto', 'aberta', 'fechado', 'fechada', 'funciona', 'funcionamento', 'hoje abre', 'hoje fecha', 'domingo', 'sábado', 'sabado', 'feriado', 'fim de semana'],
+      answer: '🕙 Funcionamos TODOS os dias (inclusive sábados, domingos e feriados), das 10h às 22h. Te esperamos! 🍦',
+      linkText: '🗺️ Ver localização e horário',
+      linkHref: 'index.html'
+    },
+
+    // ── Intenção: Endereço / Localização / Como chegar ──
+    {
+      keywords: ['endereço', 'endereco', 'localização', 'localizacao', 'onde fica', 'onde estão', 'como chegar', 'mapa', 'google maps', 'cajuru', 'santa cruz', 'cássia', 'cassia'],
+      answer: '📍 Estamos na R. Cel. Manoel Caetano, 311 – Praça Largo São Bento – Centro, Cajuru/SP. Atendemos também clientes de Santa Cruz da Esperança e Cássia dos Coqueiros. Veja no mapa:',
+      linkText: '📍 Abrir no Google Maps',
+      linkHref: 'https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817',
+      external: true
+    },
+
+    // ── Intenção: WhatsApp / Contato / Falar com atendente ──
+    {
+      keywords: ['whatsapp', 'zap', 'wpp', 'contato', 'telefone', 'fone', 'falar', 'atendente', 'fale conosco', 'número'],
+      answer: '📱 Fale direto com a gente pelo WhatsApp para encomendas, dúvidas e eventos! Número: (16) 99606-2046 · Atendimento: todos os dias das 10h às 22h.',
+      linkText: '💬 Chamar no WhatsApp',
+      linkHref: 'https://wa.me/5516996062046',
+      external: true
+    },
+
+    // ── Intenção: Instagram / Redes sociais ──
+    {
+      keywords: ['instagram', 'insta', 'redes sociais', 'seguir', 'novidades'],
+      answer: '📸 Siga nosso Instagram para ver novidades, promoções e novos sabores! Perfil: @sorveteriaitapolitanacajuru',
+      linkText: '📸 Abrir Instagram',
+      linkHref: 'https://www.instagram.com/sorveteriaitapolitanacajuru',
+      external: true
+    },
+
+    // ── Intenção: Formas de pagamento ──
+    {
+      keywords: ['pagamento', 'pagar', 'formas de pagamento', 'aceita cartão', 'aceita pix', 'aceita dinheiro', 'pix', 'crédito', 'credito', 'débito', 'debito', 'dinheiro'],
+      answer: '💳 Aceitamos Dinheiro, Pix, Cartão de Débito e Crédito. Para encomendas, o pagamento antecipado é obrigatório (conta o prazo de 3 dias úteis após o pagamento). Dúvidas? Fale conosco:',
+      linkText: '💬 Falar no WhatsApp',
+      linkHref: 'https://wa.me/5516996062046',
+      external: true
+    },
+
+    // ── Intenção: Não fazemos delivery ──
+    {
+      keywords: ['delivery', 'entrega', 'entregar', 'motoboy', 'ifood', 'rappi', 'uber eats', 'traz em casa', 'entregam'],
+      answer: '🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP. Para encomendas, a retirada é feita no local com prazo de 3 dias úteis. Veja como fazer pedidos:',
+      linkText: '📦 Ver Encomendas (retirada na loja)',
+      linkHref: 'encomendas.html'
+    },
+
+    // ── Intenção: Opções diet / vegano / lactose ──
+    {
+      keywords: ['diet', 'dieta', 'vegano', 'vegan', 'lactose', 'intolerante', 'diabético', 'diabetico', 'açúcar', 'acucar', 'sem açúcar', 'sem lactose'],
+      answer: '🌿 Temos Sorvete Diet (1 bola R$10,00). Para informações sobre opções veganas ou sem lactose, entre em contato — teremos prazer em orientá-lo!',
+      linkText: '💬 Consultar via WhatsApp',
+      linkHref: 'https://wa.me/5516996062046',
+      external: true
+    },
+
+    // ── Intenção: Preços / Valores gerais ──
+    {
+      keywords: ['preço', 'precos', 'preços', 'quanto custa', 'quanto é', 'valor', 'valores', 'tabela de preços', 'tabela precos'],
+      answer: '💰 Valores: Sorvetes a partir de R$8,00 · Açaí a partir de R$15,00 · Milkshakes a partir de R$17,00 · Picolés a partir de R$2,50 · Taças a partir de R$20,00. Veja todos os preços no cardápio:',
+      linkText: '🍦 Ver Cardápio com Preços',
+      linkHref: 'index.html'
+    }
+
+  ];
+
+  /* Monta a resposta HTML: texto base + botão-link clicável (grande e tátil em Android).
+     Parâmetro: entrada do itaBotKnowledge com answer, linkText, linkHref, external. */
+  function _itabotMontarResposta(entry) {
+    var html = '<span style="display:block;margin-bottom:10px;line-height:1.6">' + entry.answer + '</span>';
+    if (entry.linkHref && entry.linkText) {
+      var target = entry.external ? ' target="_blank" rel="noopener noreferrer"' : '';
+      var href = entry.external ? entry.linkHref : (_base + entry.linkHref);
+      html += '<a href="' + href + '" class="itabot-link-btn"' + target + '>' + entry.linkText + '</a>';
+    }
+    return html;
+  }
 
   /* ─── Carrega FAQs dos JSON e mescla ─── */
   (function () {
@@ -429,11 +577,25 @@
   function _itabotGetResp(msg) {
     var norm = function (s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
     var l = norm(msg);
+
+    // 1) Verifica itaBotKnowledge primeiro: intenções com resposta + link de redirecionamento
+    for (var i = 0; i < itaBotKnowledge.length; i++) {
+      var entry = itaBotKnowledge[i];
+      for (var j = 0; j < entry.keywords.length; j++) {
+        if (l.indexOf(norm(entry.keywords[j])) !== -1) {
+          return _itabotMontarResposta(entry);
+        }
+      }
+    }
+
+    // 2) Fallback: verifica RESPOSTAS para palavras-chave específicas (sabores, preços detalhados, etc.)
     for (var k in RESPOSTAS) {
       if (k !== 'default' && l.indexOf(norm(k)) !== -1) {
         return typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
       }
     }
+
+    // 3) Resposta padrão quando nenhuma palavra-chave for reconhecida
     var d = RESPOSTAS['default'];
     return typeof d === 'function' ? d() : d;
   }
