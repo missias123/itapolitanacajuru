@@ -130,8 +130,28 @@
       text-align: center;
       border: 1px solid rgba(255, 255, 255, .2);
     }
+    .hero-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 10px;
+      box-shadow: 0 0 0 3px rgba(255,255,255,.4), 0 4px 16px rgba(0,0,0,.25);
+    }
     .hero h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin-bottom: 6px; }
     .hero p { font-size: clamp(.95rem, 3.5vw, 1.1rem); opacity: .95; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 30px;
+      font-size: .75rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      margin-top: 10px;
+      letter-spacing: .5px;
+    }
 
     .steps { display: grid; gap: 10px; margin-top: 10px; }
     .step {
@@ -159,18 +179,70 @@
     .premios {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 12px;
+      margin-top: 14px;
     }
     .premio {
-      border-radius: 14px;
-      padding: 12px;
-      font-weight: 800;
+      border-radius: 16px;
+      padding: 16px 14px;
       border: 2px solid;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
+    .premio-icon { font-size: 2.4rem; line-height: 1; }
+    .premio-pts {
+      display: inline-block;
+      font-size: .8rem;
+      font-weight: 900;
+      border-radius: 30px;
+      padding: 3px 12px;
+      letter-spacing: .5px;
+    }
+    .premio-nome { font-size: 1rem; font-weight: 800; }
     .premio.milk { background: #E8F5E9; border-color: #81C784; color: #1B5E20; }
+    .premio.milk .premio-pts { background: #C8E6C9; color: #1B5E20; }
     .premio.caixa { background: #FFF3E0; border-color: #FFB74D; color: #BF360C; }
+    .premio.caixa .premio-pts { background: #FFE0B2; color: #BF360C; }
+
+    /* Barra de progresso */
+    .progresso-wrap {
+      margin-top: 14px;
+      background: #FFF8F0;
+      border: 1px solid #FFD7AA;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .progresso-label {
+      font-size: .85rem;
+      font-weight: 800;
+      color: #BF360C;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progresso-bar-bg {
+      background: #FFE0C2;
+      border-radius: 99px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progresso-bar-fill {
+      background: linear-gradient(90deg, #EF0129, #FF6D00);
+      height: 100%;
+      border-radius: 99px;
+      width: 0%;
+      transition: width .5s ease;
+    }
+    .progresso-hint {
+      font-size: .78rem;
+      color: #888;
+      margin-top: 5px;
+      text-align: center;
+    }
 
     .cliente-grid {
       display: grid;
@@ -192,23 +264,29 @@
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 12px 14px;
+      padding: 13px 14px;
       font-weight: 900;
       font-size: .95rem;
       cursor: pointer;
+      transition: opacity .15s, transform .1s;
     }
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
     .btn-primary { background: linear-gradient(135deg, #EF0129, #C62828); color: #fff; }
     .btn-sec { background: linear-gradient(135deg, #E65100, #FF8F00); color: #fff; }
+    .btn-wpp { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; margin-top: 6px; width: 100%; display: none; }
 
     .resultado {
       background: #E3F2FD;
       border: 1px solid #90CAF9;
       border-radius: 10px;
-      padding: 10px;
+      padding: 10px 12px;
       font-size: .9rem;
       color: #0D47A1;
       min-height: 44px;
     }
+    .resultado.ok { background: #E8F5E9; border-color: #81C784; color: #1B5E20; }
+    .resultado.erro { background: #FFEBEE; border-color: #EF9A9A; color: #B71C1C; }
 
     details.regulamento {
       border: 1px solid #FFD6B0;
@@ -230,7 +308,6 @@
     @media (min-width: 760px) {
       main { padding: 22px 18px 40px; }
       .premios { grid-template-columns: 1fr 1fr; }
-      .cliente-grid { grid-template-columns: 1fr 1fr; }
     }
 
     /* RODAPÉ PADRÃO */
@@ -298,8 +375,10 @@
   <main>
     <!-- 1) Cabeçalho amigável do Clube -->
     <section class="card hero" aria-labelledby="titulo-clube">
+      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
       <h1 id="titulo-clube">Clube de Fidelidade Itapolitana</h1>
       <p>Acumule pontos e troque por prêmios deliciosos!</p>
+      <span class="hero-badge">⚡ Fase de testes · Em breve totalmente online</span>
     </section>
 
     <!-- 2) Como funciona + cards de prêmios -->
@@ -314,8 +393,28 @@
       </div>
 
       <div class="premios">
-        <article class="premio milk">🥤 <strong>10 pontos</strong> = 1 Milkshake 300ml grátis</article>
-        <article class="premio caixa">🍨 <strong>30 pontos</strong> = 1 Caixa com 7 bolas grátis</article>
+        <article class="premio milk">
+          <span class="premio-icon">🥤</span>
+          <span class="premio-pts">⭐ 10 pontos</span>
+          <span class="premio-nome">Milkshake 300ml grátis</span>
+        </article>
+        <article class="premio caixa">
+          <span class="premio-icon">🍨</span>
+          <span class="premio-pts">⭐ 30 pontos</span>
+          <span class="premio-nome">Caixa com 7 bolas grátis</span>
+        </article>
+      </div>
+
+      <!-- Barra de progresso (placeholder visual — sem backend) -->
+      <div class="progresso-wrap" id="progresso-wrap" aria-live="polite">
+        <div class="progresso-label">
+          <span>Sua pontuação atual</span>
+          <strong id="progresso-pts-texto">0 / 10 pts</strong>
+        </div>
+        <div class="progresso-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10" aria-label="Progresso de pontos">
+          <div class="progresso-bar-fill" id="progresso-fill"></div>
+        </div>
+        <p class="progresso-hint">Entre com seu WhatsApp para ver seus pontos reais</p>
       </div>
     </section>
 
@@ -331,16 +430,19 @@
           <button class="btn btn-primary" id="btn-entrar">Entrar / Consultar meus pontos</button>
         </div>
 
-        <div class="form-row">
+        <div class="form-row" id="form-codigo-wrap" style="display:none;">
           <label for="cliente-codigo">Inserir código do cupom</label>
           <input id="cliente-codigo" type="text" maxlength="20" placeholder="Ex: ABC123XYZ" style="text-transform:uppercase;">
-          <button class="btn btn-sec" id="btn-registrar-ponto">Registrar ponto</button>
+          <button class="btn btn-sec" id="btn-registrar-ponto">✅ Validar Código</button>
         </div>
       </div>
 
-      <div class="resultado" id="resultado-cliente" style="margin-top:12px;">
+      <div class="resultado" id="resultado-cliente" style="margin-top:12px;" role="status">
         Olá! Entre com seu WhatsApp para consultar sua pontuação.
       </div>
+      <a id="btn-wpp-resgatar" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
+        💬 Resgatar meu prêmio via WhatsApp
+      </a>
     </section>
 
     <!-- 4) Regras completas do programa -->
@@ -348,7 +450,7 @@
       <h2 id="titulo-regras" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Regras completas do programa</h2>
 
       <!-- O regulamento fica em <details> para melhorar UX mobile sem esconder conteúdo -->
-      <details class="regulamento" open>
+      <details class="regulamento">
         <summary>📜 Ler regulamento completo do Clube de Fidelidade</summary>
         <div class="reg-body">
           <p><strong>1. DO PROGRAMA</strong><br>1.1. O Clube de Fidelidade Itapolitana é uma ação promocional gratuita da Sorveteria Itapolitana Cajuru.<br>1.2. O programa funciona por acúmulo de pontos via códigos de cupons distribuídos na loja.<br>1.3. Não há raspadinha, caçada de estrelas ou prêmio extra nesta fase.</p>
@@ -400,6 +502,12 @@
       var btnEntrar = document.getElementById('btn-entrar');
       var btnRegistrar = document.getElementById('btn-registrar-ponto');
       var resultado = document.getElementById('resultado-cliente');
+      var formCodigoWrap = document.getElementById('form-codigo-wrap');
+      var btnWppResgatar = document.getElementById('btn-wpp-resgatar');
+      var progressoFill = document.getElementById('progresso-fill');
+      var progressoPtsTexto = document.getElementById('progresso-pts-texto');
+
+      var WPP_NUMERO = '5516996062046';
 
       function mascaraTel(valor) {
         var digits = (valor || '').replace(/\D/g, '').slice(0, 11);
@@ -409,31 +517,74 @@
         return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
       }
 
+      function setResultado(msg, tipo) {
+        resultado.textContent = msg;
+        resultado.className = 'resultado' + (tipo ? ' ' + tipo : '');
+      }
+
+      function atualizarProgresso(pontos, meta) {
+        var m = meta || 10;
+        var pct = Math.min(100, Math.round((pontos / m) * 100));
+        progressoFill.style.width = pct + '%';
+        progressoFill.parentElement.setAttribute('aria-valuenow', pontos);
+        progressoFill.parentElement.setAttribute('aria-valuemax', m);
+        progressoPtsTexto.textContent = pontos + ' / ' + m + ' pts';
+      }
+
       inputTel.addEventListener('input', function() {
         inputTel.value = mascaraTel(inputTel.value);
       });
 
       btnEntrar.addEventListener('click', function() {
-        if (!inputTel.value || inputTel.value.replace(/\D/g, '').length < 10) {
-          resultado.textContent = 'Informe um número de WhatsApp válido para consultar seus pontos.';
+        var tel = inputTel.value.replace(/\D/g, '');
+        if (!tel || tel.length < 10) {
+          setResultado('Informe um número de WhatsApp válido para consultar seus pontos.', 'erro');
           return;
         }
 
+        btnEntrar.disabled = true;
+        btnEntrar.textContent = 'Consultando…';
+
         // Placeholder UX (FASE 2): simula retorno da consulta.
-        // TODO integração futura: trocar este bloco por fetch para API/JSON do cliente.
-        resultado.textContent = 'Olá, cliente! Você tem X pontos. Em breve esta consulta será em tempo real.';
+        // TODO integração futura: substituir por fetch para dados/clientes.json autenticado.
+        setTimeout(function() {
+          btnEntrar.disabled = false;
+          btnEntrar.textContent = 'Entrar / Consultar meus pontos';
+
+          // Simulação de 0 pontos até integração real
+          var pts = 0;
+          var meta = 10;
+          atualizarProgresso(pts, meta);
+
+          if (pts >= 10) {
+            setResultado('🎉 Parabéns! Você tem ' + pts + ' pontos e pode resgatar um prêmio!', 'ok');
+            btnWppResgatar.style.display = 'block';
+          } else {
+            setResultado('Olá! Você tem ' + pts + ' pontos. Faltam ' + (meta - pts) + ' para o primeiro prêmio. 🍦 (Dados reais em breve!)', '');
+            formCodigoWrap.style.display = 'grid';
+            btnWppResgatar.style.display = 'none';
+          }
+        }, 700);
       });
 
       btnRegistrar.addEventListener('click', function() {
         var codigo = (inputCodigo.value || '').trim().toUpperCase();
         if (!codigo) {
-          resultado.textContent = 'Digite o código do cupom para continuar.';
+          setResultado('Digite o código do cupom para continuar.', 'erro');
           return;
         }
 
+        btnRegistrar.disabled = true;
+        btnRegistrar.textContent = 'Validando…';
+
         // Placeholder UX (FASE 2): sem backend real por enquanto.
-        // TODO integração futura: enviar código via fetch e atualizar saldo de pontos.
-        resultado.textContent = 'Em breve você poderá registrar seus códigos aqui.';
+        // TODO integração futura: fetch para dados/fidelidade.json → validar código → incrementar pontos.
+        setTimeout(function() {
+          btnRegistrar.disabled = false;
+          btnRegistrar.textContent = '✅ Validar Código';
+          setResultado('Código recebido! Em breve você poderá registrar seus códigos em tempo real. 🎟️', '');
+          inputCodigo.value = '';
+        }, 700);
       });
 
       inputCodigo.addEventListener('input', function() {
