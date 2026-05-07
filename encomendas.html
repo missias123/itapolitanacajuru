@@ -1708,7 +1708,9 @@ html { scroll-behavior: smooth; }
     var hResumo = box.offsetHeight || 0;
     var hCarrinho = carrinhoBtn ? (carrinhoBtn.offsetHeight || 0) : 0;
     var hTabs = tabs ? (tabs.offsetHeight || 0) : 0;
-    var reserva = hResumo + hCarrinho + hTabs + 26;
+    // 26px = respiro visual entre elementos fixos e o conteúdo rolável.
+    var margemRespiro = 26;
+    var reserva = hResumo + hCarrinho + hTabs + margemRespiro;
     document.documentElement.style.setProperty('--ux-final-safe-bottom', Math.max(140, reserva) + 'px');
   }
 
