@@ -78,53 +78,35 @@
 .chat-send{background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;box-shadow:0 4px 12px rgba(232,0,13,.25);transition:transform .1s}
 .chat-send:active{transform:scale(.95)}
 .sug{background:#FFF3E0;color:#BF360C;border:2px solid #E64A19;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;flex-shrink:0;min-height:36px}
-:root{--itabot-app-bottom-bar-height:56px;--itabot-chat-bottom-safe:calc(var(--itabot-app-bottom-bar-height) + env(safe-area-inset-bottom,0px));--itabot-logo-size:80px}
-/* Ajuste do Ita Bot: ícone com contorno branco e botão "DÚVIDAS" no topo direito, ao lado do logo, em todas as páginas */
-.itabot-top-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
-.itabot-top-row .itap-brand-icon,.itabot-top-row .brand-icon{width:var(--itabot-logo-size);min-width:var(--itabot-logo-size);margin:0;display:flex;align-items:center;justify-content:center}
-.itabot-top-row .itap-brand-icon img,.itabot-top-row .brand-icon img{width:var(--itabot-logo-size);height:var(--itabot-logo-size)}
-/* Wrap do robô: flex-row para robô + botão "DÚVIDAS" lado a lado */
-.itabot-wrap{position:static;top:auto;right:auto;bottom:auto;display:none;flex-direction:row;align-items:center;gap:6px;flex:0 0 auto;width:auto;min-width:0}
-/* Robô: círculo com borda branca, sem fundo grande, sem neon */
-.duvidas-card{width:var(--itabot-logo-size);height:var(--itabot-logo-size);min-width:var(--itabot-logo-size);padding:0;display:flex;align-items:center;justify-content:center;background:transparent;border:2.5px solid rgba(255,255,255,.8);border-radius:50%;box-shadow:none;filter:none;animation:none;overflow:visible;transform:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.duvidas-card::before{display:none}
-.duvidas-card:hover{border-color:#fff;transform:scale(1.06);box-shadow:none;filter:none;transition:transform .15s}
-/* SVG do robô: animação suave, sombra leve (sem neon) */
-.duvidas-card svg{width:90%;height:90%;display:block;transform-origin:center bottom;animation:itabot-sway 1.9s ease-in-out infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
-.duvidas-card-logo,.duvidas-btn{display:none}
-@keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
-/* Botão "DÚVIDAS" pulsante ao lado do robô – abre o chat Ita Bot em tela cheia */
-.itabot-duvidas-btn{background:linear-gradient(135deg,#D00000,#E8000D);color:#fff;border:2px solid #fff;border-radius:999px;padding:7px 13px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 1.35s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;text-transform:uppercase;line-height:1;align-self:center;flex-shrink:0;text-shadow:0 0 6px rgba(255,255,255,.65),0 0 12px rgba(255,64,64,.55)}
-.itabot-duvidas-btn:hover{filter:brightness(1.1);transform:scale(1.05)}
-@keyframes itabot-btn-pulse{
-0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.95),0 0 10px rgba(255,40,40,.55),0 0 22px rgba(255,0,80,.35)}
-50%{box-shadow:0 0 0 2px rgba(255,255,255,1),0 0 18px rgba(255,64,64,.92),0 0 34px rgba(255,0,110,.72),0 0 54px rgba(255,0,140,.5)}
-}
-@media(prefers-reduced-motion:reduce){.duvidas-card svg,.itabot-duvidas-btn{animation:none}}
+:root{--itabot-app-bottom-bar-height:56px;--itabot-chat-bottom-safe:calc(var(--itabot-app-bottom-bar-height) + env(safe-area-inset-bottom,0px))}
+/* Wrap do robô: oculto (não aparece mais no topo) */
+.itabot-wrap{position:static;display:none;flex-direction:row;align-items:center;gap:6px;flex:0 0 auto;width:auto;min-width:0}
+.duvidas-card{display:flex;align-items:center;justify-content:center;background:transparent;border:2.5px solid rgba(255,255,255,.8);border-radius:50%;box-shadow:none;filter:none;animation:none;overflow:visible;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.duvidas-card svg{width:90%;height:90%;display:block}
+.duvidas-card-logo,.duvidas-btn,.itabot-duvidas-btn{display:none}
 /* Botão-link de ação nas respostas do bot — grande e fácil de tocar em mobile */
 .itabot-link-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:900;letter-spacing:.4px;margin-top:6px;min-height:48px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:normal;word-break:break-word}
 .itabot-link-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.itabot-link-btn:active{transform:scale(.97)}
 /* Chat Ita Bot: modal fullscreen acima de tudo, inclusive barra inferior Android */
-/* Ajuste de safe area para evitar sobreposição em mobile (cabeçalho e barra inferior) */
 #chat-dialog{inset:0;height:100%}
-/* chat-box: tela cheia, sem borda de bottom-sheet */
 .chat-box{border-radius:0;height:100%;overflow:hidden}
 .chat-msgs{padding-bottom:20px}
 .chat-footer{background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:3px solid #FBD100;flex-shrink:0}
 .chat-footer-title{font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
 .chat-footer-wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 16px;border-radius:999px;background:rgba(37,211,102,.18);border:1px solid rgba(37,211,102,.78);color:#fff;font-size:12px;font-weight:900;text-decoration:none}
 .chat-footer-copy{font-size:10px;color:rgba(255,255,255,.76);font-weight:700;margin-top:8px;line-height:1.4}
-@media(max-width:600px){:root{--itabot-logo-size:72px}.itabot-top-row{gap:6px}.itabot-duvidas-btn{font-size:10px;padding:6px 10px}}
-@media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:10px}}
 @media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(720px,calc(100dvh - 42px));border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}
 
-/* === AJUSTE UX: header com logo e robô equilibrados + DÚVIDAS central === */
-.itabot-top-row{display:grid!important;grid-template-columns:auto 1fr auto!important;align-items:center!important;gap:10px!important;width:100%!important;max-width:420px;margin:0 auto}
-.itap-header-duvidas{display:flex;justify-content:center;align-items:center;width:100%}
-.ita-bot-duvidas-btn{background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border:2px solid rgba(255,255,255,.8);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:900;letter-spacing:.6px;cursor:pointer;animation:itabot-btn-pulse 1.8s ease-in-out infinite}
+/* Botão DÚVIDAS no topo — estilo canônico (override para páginas sem itap-shared.css) */
+.ita-bot-duvidas-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 28px;min-height:44px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border:2px solid rgba(255,255,255,.85);border-radius:999px;font-family:inherit;font-size:14px;font-weight:900;letter-spacing:.8px;line-height:1;cursor:pointer;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;animation:itabot-btn-pulse 1.8s ease-in-out infinite}
+.ita-bot-duvidas-btn:hover{filter:brightness(1.12);transform:scale(1.04)}
 .ita-bot-duvidas-btn:focus-visible{outline:3px solid #FFD600;outline-offset:2px}
-.itabot-top-row .itabot-wrap{display:flex!important;align-items:center;justify-content:center}
-.itabot-top-row .duvidas-card{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important}
+@keyframes itabot-btn-pulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.9),0 4px 12px rgba(0,60,180,.35)}50%{box-shadow:0 0 0 2px rgba(255,255,255,1),0 0 18px rgba(0,80,220,.65),0 0 32px rgba(0,80,220,.3)}}
+/* header-top: centraliza o botão Dúvidas */
+.itap-header-top{display:flex;justify-content:center;align-items:center;padding:2px 0;width:100%;box-sizing:border-box}
+.itap-header-duvidas{display:flex;justify-content:center}
+@media(max-width:600px){.ita-bot-duvidas-btn{font-size:13px;padding:9px 22px}}
+@media(prefers-reduced-motion:reduce){.ita-bot-duvidas-btn{animation:none;box-shadow:0 4px 12px rgba(0,60,180,.35)}}
 
 /* === TELA DE DÚVIDAS minimalista em 3 blocos === */
 .chat-box{display:flex;flex-direction:column;height:100dvh!important;background:#fff}
@@ -138,7 +120,7 @@
 .chat-inp-row{border-top:1px solid #ECECEC;background:#fff;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px}
 #duvidas-pergunta.chat-inp{flex:1;border:2px solid #E5E7EB;border-radius:12px;padding:12px 14px;font-size:16px}
 .chat-send{width:auto;height:auto;min-width:92px;border-radius:12px;padding:0 14px;font-size:14px;font-weight:800}
-@media(max-width:600px){.ita-bot-duvidas-btn{font-size:13px;padding:8px 14px}#duvidas-resposta.chat-msgs{font-size:14px}}
+@media(max-width:600px){#duvidas-resposta.chat-msgs{font-size:14px}}
 
 `;
 
@@ -677,49 +659,38 @@
   function _itabotPosicionarAoLadoDoLogo() {
     var staticTop = document.querySelector('.itap-header-top');
     if (staticTop) {
-      var staticDuvidasBtn = staticTop.querySelector('.itap-header-duvidas .ita-bot-duvidas-btn, .itap-header-duvidas #ita-bot-duvidas');
+      /* Header limpo: apenas atribui o handler ao botão Dúvidas existente */
+      var staticDuvidasBtn = staticTop.querySelector('.ita-bot-duvidas-btn, #ita-bot-duvidas');
       if (staticDuvidasBtn) staticDuvidasBtn.onclick = _itabotAbrirItaBot;
-      var staticRobotBtn = staticTop.querySelector('.itap-header-bot .itap-header-bot-btn, .itap-header-bot #chat-fab-btn');
-      if (staticRobotBtn) staticRobotBtn.onclick = _itabotAbrirItaBot;
       return;
     }
 
+    /* Fallback para páginas sem .itap-header-top: injeta botão Dúvidas */
     var wrap = document.getElementById('itabot-wrap');
-    var logo = document.querySelector('.itap-brand-icon, .brand-icon');
-    if (!wrap || !logo) return;
-    var row = logo.parentElement && logo.parentElement.classList && logo.parentElement.classList.contains('itabot-top-row')
-      ? logo.parentElement
-      : null;
-    if (!row) {
-      var host = logo.parentElement;
-      row = document.createElement('div');
-      row.className = 'itabot-top-row';
-      host.insertBefore(row, logo);
-      row.appendChild(logo);
+    var headerInner = document.querySelector('.itap-header-inner, .itap-header');
+    if (!headerInner) return;
+
+    var top = document.createElement('div');
+    top.className = 'itap-header-top';
+    var duvidasDiv = document.createElement('div');
+    duvidasDiv.className = 'itap-header-duvidas';
+    var duvidasBtn = document.createElement('button');
+    duvidasBtn.type = 'button';
+    duvidasBtn.className = 'ita-bot-duvidas-btn';
+    duvidasBtn.setAttribute('aria-label', 'Dúvidas — Ita Bot');
+    duvidasBtn.setAttribute('aria-haspopup', 'dialog');
+    duvidasBtn.textContent = '💬 DÚVIDAS';
+    duvidasBtn.onclick = _itabotAbrirItaBot;
+    duvidasDiv.appendChild(duvidasBtn);
+    top.appendChild(duvidasDiv);
+    headerInner.insertBefore(top, headerInner.firstChild);
+
+    if (wrap) {
+      var oldBtn = wrap.querySelector('.itabot-duvidas-btn');
+      if (oldBtn) oldBtn.style.display = 'none';
     }
-
-    var center = row.querySelector('.itap-header-duvidas');
-    if (!center) {
-      center = document.createElement('div');
-      center.className = 'itap-header-duvidas';
-      center.innerHTML = '<button type="button" id="ita-bot-duvidas" class="ita-bot-duvidas-btn" aria-label="Abrir dúvidas com o Ita Bot">DÚVIDAS</button>';
-      row.appendChild(center);
-    }
-    var centerBtn = center.querySelector('#ita-bot-duvidas');
-    if (centerBtn) centerBtn.onclick = _itabotAbrirItaBot;
-
-    if (wrap.parentElement !== row) row.appendChild(wrap);
-    var oldBtn = wrap.querySelector('.itabot-duvidas-btn');
-    if (oldBtn) oldBtn.style.display = 'none';
-
-    var logoImg = logo.querySelector('img');
-    var size = logoImg ? Math.round(logoImg.getBoundingClientRect().width || logoImg.width || 80) : 80;
-    document.documentElement.style.setProperty('--itabot-logo-size', size + 'px');
-    wrap.style.display = 'flex';
   }
-  window.addEventListener('resize', _itabotPosicionarAoLadoDoLogo);
-
-  /* ─── Mostra o widget no topo, ao lado do logo ─── */
+  /* ─── Conecta o botão Dúvidas do topo ao chat Ita Bot ─── */
   _itabotPosicionarAoLadoDoLogo();
 
 }());
