@@ -222,32 +222,11 @@
   </div>
 </div>
 <div class="chat-msgs" id="chat-msgs">
-  <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Digite uma palavra e respondo na hora 👇<br><small style="color:#888;font-size:11px">Ex: horário · sabores · preço · picolé · açaí · encomenda · localização</small></div>
+  <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Me conte sua dúvida e eu te ajudo na hora.</div>
 </div>
 <div class="chat-typing" id="chat-typing"><span></span><span></span><span></span></div>
-<div id="chat-sugs-container" style="display:flex;gap:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;-ms-overflow-style:none;border-top:1px solid #F3F4F6">
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Horário</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Como encomendar</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Sabores</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Preços</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Localização</button>
-  <button class="sug" onclick="_itabotEnviarSug(this)" type="button">Picolés</button>
-</div>
-<div class="duvidas-chips-wrap" id="duvidas-chips-wrap">
-  <span class="duvidas-chips-label">Pergunte sobre:</span>
-  <div class="duvidas-chips-row" role="group" aria-label="Temas de dúvidas rápidas">
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('sabores')" type="button">SABORES</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('horário')" type="button">HORÁRIO</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('encomendas')" type="button">ENCOMENDAS</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('localização')" type="button">LOCALIZAÇÃO</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('whatsapp')" type="button">WHATSAPP</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('pagamento')" type="button">PAGAMENTOS</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('promoção')" type="button">PROMOÇÕES</button>
-    <button class="duvidas-chip" onclick="_itabotInserirKeyword('artesanal')" type="button">ARTESANAL</button>
-  </div>
-</div>
 <div class="chat-inp-row">
-  <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
+  <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Palavra-chave ou digite sua dúvida" type="text" autocomplete="off" spellcheck="false" aria-label="Palavra-chave ou digite sua dúvida"/>
   <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
 </div>
 <!-- Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) -->
