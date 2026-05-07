@@ -739,6 +739,20 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 
 .itabot-wrap{bottom:24px;right:24px}
 }
+/* Robô ao lado do logo no topo */
+:root{--itabot-logo-size:80px}
+.itabot-top-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
+.itabot-top-row .brand-icon,.itabot-top-row .itap-brand-icon{width:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important;margin:0!important;display:flex;align-items:center;justify-content:center}
+.itabot-top-row .brand-icon img,.itabot-top-row .itap-brand-icon img{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important}
+.itabot-top-row .itabot-wrap{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;display:none;align-items:center;justify-content:center;flex:0 0 auto;width:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important}
+.itabot-top-row .duvidas-card{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important;padding:0!important;display:flex;align-items:center;justify-content:center;background:transparent!important;border:none!important;box-shadow:none!important;filter:none!important;animation:none!important;overflow:visible!important;transform:none!important}
+.itabot-top-row .duvidas-card::before{display:none!important}
+.itabot-top-row .duvidas-card:hover{transform:none!important;box-shadow:none!important;filter:none!important}
+.itabot-top-row .duvidas-card svg{width:100%!important;height:100%!important;display:block;transform-origin:center bottom;animation:itabot-sway 1.9s ease-in-out infinite;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px rgba(0,234,255,.92)) drop-shadow(0 0 16px rgba(0,234,255,.55))}
+@keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
+@media(max-width:600px){:root{--itabot-logo-size:80px}.itabot-top-row{gap:10px}}
+@media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:14px}}
+@media(prefers-reduced-motion:reduce){.itabot-top-row .duvidas-card svg{animation:none}}
 /* BOTAO ADMIN FLUTUANTE */
 #admin-fab{position:fixed;right:6px;bottom:108px;z-index:9998;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.12);color:rgba(255,255,255,.3);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.1);box-shadow:none;letter-spacing:.2px;white-space:nowrap;opacity:.4}
 /* chat/dúvidas: overlay fullscreen controlado por .aberto */
@@ -4018,15 +4032,33 @@ setInterval(() => {
   }
 }, 4000);
 // [frase-rotativa fundida no DOMContentLoaded principal]
-// Ita Bot: aparece após 5 segundos, bubble some após 6 segundos
-setTimeout(() => {
-  const w = document.getElementById('itabot-wrap');
-  if (w) w.style.display = 'flex';
-}, 5000);
+function posicionarItaBotNoTopo() {
+  const wrap = document.getElementById('itabot-wrap');
+  const logo = document.querySelector('.brand-icon, .itap-brand-icon');
+  if (!wrap || !logo) return;
+  let row = logo.parentElement && logo.parentElement.classList && logo.parentElement.classList.contains('itabot-top-row')
+    ? logo.parentElement
+    : null;
+  if (!row) {
+    const host = logo.parentElement;
+    row = document.createElement('div');
+    row.className = 'itabot-top-row';
+    host.insertBefore(row, logo);
+    row.appendChild(logo);
+  }
+  if (wrap.parentElement !== row) row.appendChild(wrap);
+  const logoImg = logo.querySelector('img');
+  const size = logoImg ? Math.round(logoImg.getBoundingClientRect().width || logoImg.width || 80) : 80;
+  document.documentElement.style.setProperty('--itabot-logo-size', size + 'px');
+  wrap.style.display = 'flex';
+}
+window.addEventListener('resize', posicionarItaBotNoTopo);
+// Ita Bot: fica visível no topo, ao lado do logo
+posicionarItaBotNoTopo();
 setTimeout(() => {
   const b = document.getElementById('itabot-bubble');
   if (b) { b.style.opacity = '0'; setTimeout(() => { b.style.display = 'none'; }, 400); }
-}, 11000);
+}, 6000);
 const STRIPS = [
   '🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · tipo artesanal · 🍦',
   '🍨 Sorvete de Massa · Picolés Recheados · Açaí Premium · Tortas · Milkshakes · Taças · 🍨',

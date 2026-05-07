@@ -76,16 +76,19 @@
 .chat-send{background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;box-shadow:0 4px 12px rgba(232,0,13,.25);transition:transform .1s}
 .chat-send:active{transform:scale(.95)}
 .sug{background:#FFF3E0;color:#BF360C;border:2px solid #E64A19;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;flex-shrink:0;min-height:36px}
-:root{--itabot-app-bottom-bar-height:56px;--itabot-chat-bottom-safe:calc(var(--itabot-app-bottom-bar-height) + env(safe-area-inset-bottom,0px))}
+:root{--itabot-app-bottom-bar-height:56px;--itabot-chat-bottom-safe:calc(var(--itabot-app-bottom-bar-height) + env(safe-area-inset-bottom,0px));--itabot-logo-size:80px}
 /* Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) */
-.itabot-wrap{top:calc(env(safe-area-inset-top,0px) + 14px);right:12px;bottom:auto}
-.duvidas-card{width:82px;height:82px;min-width:82px;padding:0;border-radius:26px;justify-content:center;background:radial-gradient(circle at 30% 20%,#29448f 0%,#0d1b4d 55%,#060b23 100%);border:2px solid rgba(0,234,255,.88);box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(0,234,255,.48),0 14px 30px rgba(6,11,35,.42);animation:itabot-fab-pulse 1.8s ease-in-out infinite;overflow:visible}
-.duvidas-card::before{content:'';position:absolute;inset:-6px;border-radius:32px;background:radial-gradient(circle,rgba(0,234,255,.28) 0%,rgba(0,234,255,.08) 48%,rgba(0,234,255,0) 72%);z-index:-1;pointer-events:none}
-.duvidas-card:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 0 0 2px rgba(255,255,255,.16),0 0 22px rgba(0,234,255,.62),0 18px 34px rgba(6,11,35,.46)}
-.duvidas-card svg{width:62px;height:62px;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.28))}
+.itabot-top-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
+.itabot-top-row .itap-brand-icon,.itabot-top-row .brand-icon{width:var(--itabot-logo-size);min-width:var(--itabot-logo-size);margin:0;display:flex;align-items:center;justify-content:center}
+.itabot-top-row .itap-brand-icon img,.itabot-top-row .brand-icon img{width:var(--itabot-logo-size);height:var(--itabot-logo-size)}
+.itabot-wrap{position:static;top:auto;right:auto;bottom:auto;display:none;align-items:center;justify-content:center;flex:0 0 auto;width:var(--itabot-logo-size);min-width:var(--itabot-logo-size)}
+.duvidas-card{width:var(--itabot-logo-size);height:var(--itabot-logo-size);min-width:var(--itabot-logo-size);padding:0;display:flex;align-items:center;justify-content:center;background:transparent;border:none;box-shadow:none;filter:none;animation:none;overflow:visible;transform:none}
+.duvidas-card::before{display:none}
+.duvidas-card:hover{transform:none;box-shadow:none;filter:none}
+.duvidas-card svg{width:100%;height:100%;display:block;transform-origin:center bottom;animation:itabot-sway 1.9s ease-in-out infinite;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px rgba(0,234,255,.92)) drop-shadow(0 0 16px rgba(0,234,255,.55))}
 .duvidas-card-logo,.duvidas-btn{display:none}
-@keyframes itabot-fab-pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(0,234,255,.48),0 14px 30px rgba(6,11,35,.42)}50%{transform:scale(1.04);box-shadow:0 0 0 2px rgba(255,255,255,.18),0 0 24px rgba(0,234,255,.72),0 16px 32px rgba(6,11,35,.5)}}
-@media(prefers-reduced-motion:reduce){.duvidas-card{animation:none}}
+@keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
+@media(prefers-reduced-motion:reduce){.duvidas-card svg{animation:none}}
 #chat-dialog{inset:0 0 var(--itabot-chat-bottom-safe) 0;height:auto}
 .chat-box{border-radius:24px 24px 0 0;height:100%;overflow:hidden}
 .chat-msgs{padding-bottom:20px}
@@ -93,9 +96,9 @@
 .chat-footer-title{font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
 .chat-footer-wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 16px;border-radius:999px;background:rgba(37,211,102,.18);border:1px solid rgba(37,211,102,.78);color:#fff;font-size:12px;font-weight:900;text-decoration:none}
 .chat-footer-copy{font-size:10px;color:rgba(255,255,255,.76);font-weight:700;margin-top:8px;line-height:1.4}
-@media(max-width:600px){.itabot-wrap{top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;bottom:auto}.duvidas-card{width:78px;height:78px;min-width:78px}}
-@media(min-width:601px){.itabot-wrap{top:18px;right:14px;bottom:auto}}
-@media(min-width:768px){:root{--itabot-chat-bottom-safe:env(safe-area-inset-bottom,0px)}.itabot-wrap{top:24px;right:24px;bottom:auto}.duvidas-card{width:72px;height:72px;min-width:72px;border-radius:24px}.duvidas-card svg{width:54px;height:54px}#chat-dialog{inset:0;padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(720px,calc(100dvh - 42px));border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}
+@media(max-width:600px){:root{--itabot-logo-size:76px}.itabot-top-row{gap:10px}}
+@media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:14px}}
+@media(min-width:768px){:root{--itabot-chat-bottom-safe:env(safe-area-inset-bottom,0px)}#chat-dialog{inset:0;padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(720px,calc(100dvh - 42px));border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}
 `;
 
   var styleEl = document.createElement('style');
@@ -446,10 +449,29 @@
   }
   window._itabotEnviarChat = _itabotEnviarChat;
 
-  /* ─── Mostra o widget após 5s ─── */
-  setTimeout(function () {
-    var w = document.getElementById('itabot-wrap');
-    if (w) w.style.display = 'flex';
-  }, 5000);
+  function _itabotPosicionarAoLadoDoLogo() {
+    var wrap = document.getElementById('itabot-wrap');
+    var logo = document.querySelector('.itap-brand-icon, .brand-icon');
+    if (!wrap || !logo) return;
+    var row = logo.parentElement && logo.parentElement.classList && logo.parentElement.classList.contains('itabot-top-row')
+      ? logo.parentElement
+      : null;
+    if (!row) {
+      var host = logo.parentElement;
+      row = document.createElement('div');
+      row.className = 'itabot-top-row';
+      host.insertBefore(row, logo);
+      row.appendChild(logo);
+    }
+    if (wrap.parentElement !== row) row.appendChild(wrap);
+    var logoImg = logo.querySelector('img');
+    var size = logoImg ? Math.round(logoImg.getBoundingClientRect().width || logoImg.width || 80) : 80;
+    document.documentElement.style.setProperty('--itabot-logo-size', size + 'px');
+    wrap.style.display = 'flex';
+  }
+  window.addEventListener('resize', _itabotPosicionarAoLadoDoLogo);
+
+  /* ─── Mostra o widget no topo, ao lado do logo ─── */
+  _itabotPosicionarAoLadoDoLogo();
 
 }());
