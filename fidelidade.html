@@ -684,6 +684,12 @@
         return SALDO_CACHE_PREFIX + String(tel || '').replace(/\D/g, '');
       }
 
+      function gerarIdHash() {
+        var b = new Uint8Array(4);
+        crypto.getRandomValues(b);
+        return Array.from(b).map(function(x) { return x.toString(16).padStart(2, '0'); }).join('').toUpperCase();
+      }
+
       function salvarSaldoEmCache(tel, pontos, nome) {
         try {
           var payload = {
@@ -791,7 +797,7 @@
           selDia.appendChild(o);
         }
         var anoAtual = new Date().getFullYear();
-        for (var a = anoAtual; a >= 1920; a--) {
+        for (var a = anoAtual; a >= 1940; a--) {
           var oa = document.createElement('option');
           oa.value = String(a);
           oa.textContent = String(a);
@@ -864,7 +870,8 @@
         .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(ghResp) {
           var sha = ghResp.sha;
-          var dados = JSON.parse(decodeURIComponent(escape(atob(ghResp.content.replace(/\n/g,'')))));
+          var rawJson = new TextDecoder().decode(Uint8Array.from(atob(ghResp.content.replace(/\n/g,'')).split(''), function(c){return c.charCodeAt(0);}));
+          var dados = JSON.parse(rawJson);
 
           /* verificar duplicidade */
           var idx = dados.indice_celular || {};
@@ -889,7 +896,7 @@
           var agora = new Date().toISOString();
           dados.clientes[novoId] = {
             id_permanente: novoId,
-            id_hash: Math.random().toString(16).toUpperCase().substr(2, 8),
+            id_hash: gerarIdHash(),
             nome: nome,
             dataNasc: dataNasc,
             cel: telRaw,
@@ -909,7 +916,13 @@
           idx[telRaw] = novoId;
           dados.indice_celular = idx;
 
-          var novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+          var enc = new TextEncoder().encode(JSON.stringify(dados, null, 2));
+          var chunks = [];
+          var CHUNK = 8192;
+          for (var ci = 0; ci < enc.length; ci += CHUNK) {
+            chunks.push(String.fromCharCode.apply(null, enc.subarray(ci, ci + CHUNK)));
+          }
+          var novoConteudo = btoa(chunks.join(''));
           return fetch(GH_API + CLIENTES_PATH, {
             method: 'PUT',
             headers: { 'Authorization': 'token ' + tk, 'Content-Type': 'application/json' },
