@@ -17,6 +17,7 @@
   const QG_KEY = 'itap_quality_guard';
   const RECENT_PAGES_KEY = 'itap_recent_pages';
   const PWA_INSTALL_KEY = 'itap_pwa_install_prompt_until';
+  const PWA_FIRST_SEEN_KEY = 'itap_pwa_first_seen_at';
   
   function lerMemoria() {
     try {
@@ -52,6 +53,7 @@
     let bannerPwa = null;
     let toastRede = null;
     let deferredPrompt = null;
+    let monitorPromptAndroid = null;
 
     function promptAdiadoAtivo() {
       try {
@@ -61,9 +63,76 @@
 
     function adiarPrompt(dias) {
       try {
-        const ate = Date.now() + (dias * 24 * 60 * 60 * 1000);
-        localStorage.setItem(PWA_INSTALL_KEY, String(ate));
+        const expiryTimestamp = Date.now() + (dias * 24 * 60 * 60 * 1000);
+        localStorage.setItem(PWA_INSTALL_KEY, String(expiryTimestamp));
       } catch(e) {}
+    }
+
+    function obterPrimeiraVisitaTs() {
+      try {
+        var atual = Number(localStorage.getItem(PWA_FIRST_SEEN_KEY) || 0);
+        if (atual > 0) return atual;
+        var agora = Date.now();
+        localStorage.setItem(PWA_FIRST_SEEN_KEY, String(agora));
+        return agora;
+      } catch(e) {
+        return Date.now();
+      }
+    }
+
+    function contarPaginasRecentesUnicas() {
+      try {
+        var lista = JSON.parse(localStorage.getItem(RECENT_PAGES_KEY) || '[]');
+        if (!Array.isArray(lista)) return 0;
+        var unicas = {};
+        lista.forEach(function(item) {
+          if (item && item.path) unicas[item.path] = true;
+        });
+        return Object.keys(unicas).length;
+      } catch(e) {
+        return 0;
+      }
+    }
+
+    function prontoParaPromptAndroid() {
+      var paginas = contarPaginasRecentesUnicas();
+      var primeiraVisita = obterPrimeiraVisitaTs();
+      var tempoDecorrido = Date.now() - primeiraVisita;
+      return paginas >= 2 && tempoDecorrido >= 30 * 1000;
+    }
+
+    function tentarMostrarPromptAndroid() {
+      if (!deferredPrompt) return false;
+      if (standalone) return false;
+      if (promptAdiadoAtivo()) return false;
+      if (!prontoParaPromptAndroid()) return false;
+
+      // Exibir o install prompt em momento de valor (após navegação + tempo),
+      // seguindo padrão de engajamento de apps grandes: primeiro valor, depois convite.
+      mostrarBanner({
+        msg: 'Instale o app da Itapolitana na tela inicial para abrir como aplicativo.',
+        primaryLabel: 'Instalar app',
+        onPrimary: function() {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.finally(function() {
+            deferredPrompt = null;
+            removerBanner();
+            adiarPrompt(30);
+          });
+        }
+      });
+      return true;
+    }
+
+    function iniciarMonitorPromptAndroid() {
+      if (monitorPromptAndroid) return;
+      monitorPromptAndroid = setInterval(function() {
+        if (tentarMostrarPromptAndroid()) {
+          clearInterval(monitorPromptAndroid);
+          monitorPromptAndroid = null;
+        }
+      }, 5000);
     }
 
     function injetarCss() {
@@ -138,19 +207,7 @@
       e.preventDefault();
       deferredPrompt = e;
       if (standalone) return;
-      mostrarBanner({
-        msg: 'Instale o app da Itapolitana na tela inicial para abrir como aplicativo.',
-        primaryLabel: 'Instalar app',
-        onPrimary: function() {
-          if (!deferredPrompt) return;
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.finally(function() {
-            deferredPrompt = null;
-            removerBanner();
-            adiarPrompt(30);
-          });
-        }
-      });
+      if (!tentarMostrarPromptAndroid()) iniciarMonitorPromptAndroid();
     });
 
     if (isIos && !standalone && !promptAdiadoAtivo()) {

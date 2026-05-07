@@ -533,6 +533,8 @@
       var META_10 = 10;
       var META_30 = 30;
       var STATUS_DISPONIVEL = 'disponível';
+      var SALDO_CACHE_PREFIX = 'itap_fidelidade_saldo_';
+      var SALDO_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24h
 
       /* ── referências DOM ───────────────────────────────────────────── */
       var inputTel          = document.getElementById('cliente-telefone');
@@ -596,6 +598,68 @@
         btnWppResgatar.style.display = 'block';
       }
 
+      function chaveSaldoCache(tel) {
+        return SALDO_CACHE_PREFIX + String(tel || '').replace(/\D/g, '');
+      }
+
+      function salvarSaldoEmCache(tel, pontos, nome) {
+        try {
+          var payload = {
+            pontos: Number(pontos || 0),
+            nome: nome || 'Cliente',
+            atualizadoEm: new Date().toISOString()
+          };
+          localStorage.setItem(chaveSaldoCache(tel), JSON.stringify(payload));
+        } catch (e) {}
+      }
+
+      function lerSaldoDoCache(tel) {
+        try {
+          var bruto = localStorage.getItem(chaveSaldoCache(tel));
+          if (!bruto) return null;
+          return JSON.parse(bruto);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function eSaldoRecente(cache) {
+        if (!cache || !cache.atualizadoEm) return false;
+        var ts = new Date(cache.atualizadoEm).getTime();
+        if (!ts) return false;
+        return (Date.now() - ts) <= SALDO_CACHE_MAX_AGE_MS;
+      }
+
+      function formatarDataHoraPtBr(iso) {
+        try {
+          return new Date(iso).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } catch (e) {
+          return 'agora há pouco';
+        }
+      }
+
+      function tentarUsarSaldoCacheOffline(tel) {
+        var cache = lerSaldoDoCache(tel);
+        if (!eSaldoRecente(cache)) return false;
+        var pts = Number(cache.pontos || 0);
+        var nome = primeiroNome(cache.nome || 'Cliente');
+        atualizarBarras(pts);
+        setResultado(
+          'Olá, ' + nome + '! Você está vendo seus pontos guardados da última consulta em ' +
+          formatarDataHoraPtBr(cache.atualizadoEm) +
+          '. Eles serão atualizados quando a internet voltar.',
+          'ok'
+        );
+        formCodigoWrap.style.display = 'none';
+        btnWppResgatar.style.display = 'none';
+        return true;
+      }
+
       /* ── busca via raw GitHub (público, sem token) ──────────────────── */
       function ghRawFetch(path) {
         return fetch(GH_RAW + path + '?t=' + Date.now())
@@ -618,6 +682,12 @@
         var tel = inputTel.value.replace(/\D/g, '');
         if (!tel || tel.length < 10) {
           setResultado('Informe um número de WhatsApp válido para consultar seus pontos.', 'erro');
+          return;
+        }
+
+        if (!navigator.onLine) {
+          if (tentarUsarSaldoCacheOffline(tel)) return;
+          setResultado('Sem conexão no momento. Conecte-se à internet para consultar seus pontos.', 'erro');
           return;
         }
 
@@ -645,6 +715,7 @@
             _clienteAtual = dados.clientes[usrKey];
             var pts = _clienteAtual.saldoPontos || 0;
             var nome = primeiroNome(_clienteAtual.nome);
+            salvarSaldoEmCache(tel, pts, _clienteAtual.nome || nome);
 
             atualizarBarras(pts);
 
@@ -666,6 +737,7 @@
             }
           })
           .catch(function() {
+            if (tentarUsarSaldoCacheOffline(tel)) return;
             setResultado('Não foi possível consultar agora. Verifique sua conexão ou fale via WhatsApp.', 'erro');
             mostrarWppBtn(wppLink('Olá! Preciso consultar meus pontos no Clube de Fidelidade.'), '💬 Consultar pontos via WhatsApp');
           })
