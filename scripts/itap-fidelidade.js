@@ -47,11 +47,13 @@
       }
 
       function setResultado(msg, tipo) {
+        if (!resultado) return;
         resultado.textContent = msg;
         resultado.className = 'resultado' + (tipo ? ' ' + tipo : '');
       }
 
       function atualizarBarras(pts) {
+        if (!fillBar10 || !fillBar30 || !ptsTexto10 || !ptsTexto30 || !progressoHint) return;
         var pct10 = Math.min(100, Math.round((pts / META_10) * 100));
         var pct30 = Math.min(100, Math.round((pts / META_30) * 100));
 
@@ -78,7 +80,7 @@
       }
 
       function mostrarWppBtn(href, texto) {
-        btnWppResgatar.href = href;
+        if (!btnWppResgatar) return;
         btnWppResgatar.textContent = texto;
         btnWppResgatar.style.display = 'block';
       }
@@ -357,15 +359,20 @@
       });
 
       /* ── máscara ────────────────────────────────────────────────────── */
-      inputTel.addEventListener('input', function() {
-        inputTel.value = mascaraTel(inputTel.value);
-      });
-      inputCodigo.addEventListener('input', function() {
-        inputCodigo.value = inputCodigo.value.toUpperCase();
-      });
+      if (inputTel) {
+        inputTel.addEventListener('input', function() {
+          inputTel.value = mascaraTel(inputTel.value);
+        });
+      }
+      if (inputCodigo) {
+        inputCodigo.addEventListener('input', function() {
+          inputCodigo.value = inputCodigo.value.toUpperCase();
+        });
+      }
       tentarRestaurarSessaoVisivel();
 
       /* ── CONSULTAR PONTOS ────────────────────────────────────────────── */
+      if (btnEntrar) {
       btnEntrar.addEventListener('click', function() {
         var tel = inputTel.value.replace(/\D/g, '');
         if (!tel || tel.length < 10) {
@@ -434,9 +441,11 @@
             btnEntrar.disabled = false;
             btnEntrar.textContent = 'Entrar / Consultar meus pontos';
           });
-      });
+      }); // end btnEntrar click
+      } // end if (btnEntrar)
 
       /* ── VALIDAR CÓDIGO ─────────────────────────────────────────────── */
+      if (btnRegistrar) {
       btnRegistrar.addEventListener('click', function() {
         var codigo = (inputCodigo.value || '').trim().toUpperCase();
         if (!codigo) {
@@ -487,5 +496,6 @@
             btnRegistrar.disabled = false;
             btnRegistrar.textContent = '✅ Validar Código';
           });
-      });
+      }); // end btnRegistrar click
+      } // end if (btnRegistrar)
     })();
