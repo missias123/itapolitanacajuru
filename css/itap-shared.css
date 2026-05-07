@@ -1,7 +1,7 @@
 /*
  * ITAP SHARED CSS — Sorveteria Itapolitana Cajuru
  * Estilos compartilhados entre todas as páginas principais.
- * Inclui: header padrão (.itap-header) + barra inferior mobile (.itap-bottom-tabs)
+ * Inclui: header padrão (.itap-header)
  * Gerado na Fase 2 da refatoração arquitetural.
  */
 
@@ -205,56 +205,6 @@
 /* Responsividade */
 @media (max-width: 360px) { .btn { padding: 10px 14px; font-size: .85rem; min-height: 40px; } }
 @media (min-width: 768px) { .btn { padding: 12px 24px; font-size: .95rem; } }
-
-/* ═══════════════════════════════════════════════════════════════════
-   BARRA INFERIOR MOBILE (TABS)
-   Usada em: index, encomendas, promocao, fidelidade, offline
-═══════════════════════════════════════════════════════════════════ */
-.itap-bottom-tabs {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9500;
-  background: #FFF8F0;
-  border-top: 1px solid #E8D7C5;
-  box-shadow: 0 -6px 18px rgba(0, 0, 0, .12);
-  display: none;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-.itap-bottom-tabs__inner {
-  max-width: 980px;
-  margin: 0 auto;
-  height: 56px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-.itap-tab {
-  min-height: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  text-decoration: none;
-  color: #5D4037;
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: .2px;
-}
-.itap-tab-icon  { font-size: 1.22rem; line-height: 1; }
-.itap-tab-label { line-height: 1; }
-.itap-tab.is-active { color: #E8000D; background: rgba(232, 0, 13, .08); }
-.itap-tab.is-active .itap-tab-icon { transform: translateY(-1px); }
-@media (max-width: 768px) {
-  .itap-bottom-tabs { display: block; }
-  body.itap-has-bottom-tabs { padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important; }
-  /* Banner LGPD: sobe acima da barra de tabs */
-  #cookie-banner { bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important; }
-}
-@media (min-width: 769px) {
-  .itap-bottom-tabs { display: none !important; }
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    FOOTER — PILLS LGPD e BADGES DE CONFIANÇA
