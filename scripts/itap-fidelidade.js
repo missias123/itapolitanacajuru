@@ -19,10 +19,10 @@
       var inputCodigo       = document.getElementById('cliente-codigo');
       var btnEntrar         = document.getElementById('btn-entrar');
       var btnRegistrar      = document.getElementById('btn-registrar-ponto');
-      var resultado         = document.getElementById('resultado-cliente');
+      var resultado         = document.getElementById('resultado-consulta');
       var formCodigoWrap    = document.getElementById('form-codigo-wrap');
       var formCadastroWrap  = document.getElementById('form-cadastro-wrap');
-      var btnWppResgatar    = document.getElementById('btn-wpp-resgatar');
+      var btnWppResgatar    = document.getElementById('btn-wpp-resgatar-consulta');
       var fillBar10         = document.getElementById('progresso-fill');
       var fillBar30         = document.getElementById('progresso-fill30');
       var ptsTexto10        = document.getElementById('progresso-pts-texto');
@@ -50,6 +50,14 @@
         if (!resultado) return;
         resultado.textContent = msg;
         resultado.className = 'resultado' + (tipo ? ' ' + tipo : '');
+      }
+
+      /* helper para atualizar qualquer elemento de resultado pelo ID */
+      function setResultadoEl(id, msg, tipo) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'resultado' + (tipo ? ' ' + tipo : '');
       }
 
       function atualizarBarras(pts) {
@@ -153,7 +161,7 @@
           'ok'
         );
         formCodigoWrap.style.display = 'none';
-        btnWppResgatar.style.display = 'none';
+        if (btnWppResgatar) btnWppResgatar.style.display = 'none';
         return true;
       }
 
@@ -219,14 +227,30 @@
       ───────────────────────────────────────────────────────────────────── */
       function mostrarFormCadastro(tel) {
         var cadTelView = document.getElementById('cad-tel-view');
-        if (cadTelView) cadTelView.value = mascaraTel(tel);
-        formCadastroWrap.classList.add('visivel');
+        if (cadTelView && tel && tel.trim()) cadTelView.value = mascaraTel(tel);
+        /* formulário já está sempre visível; scroll suave até ele */
+        if (formCadastroWrap) formCadastroWrap.scrollIntoView({behavior:'smooth', block:'start'});
         var cadNome = document.getElementById('cad-nome');
-        if (cadNome) cadNome.focus();
+        if (cadNome && !(cadNome.value || '').trim()) cadNome.focus();
       }
 
       function ocultarFormCadastro() {
-        formCadastroWrap.classList.remove('visivel');
+        /* formulário permanece visível após cadastro — apenas limpa os campos */
+        var campos = ['cad-nome', 'cad-tel-view', 'cad-dia', 'cad-mes', 'cad-ano'];
+        campos.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        var aceite = document.getElementById('cad-aceite');
+        if (aceite) aceite.checked = false;
+      }
+
+      /* ── Máscara no campo de telefone do formulário de cadastro ─── */
+      var cadTelInput = document.getElementById('cad-tel-view');
+      if (cadTelInput) {
+        cadTelInput.addEventListener('input', function() {
+          cadTelInput.value = mascaraTel(cadTelInput.value);
+        });
       }
 
       document.getElementById('btn-cadastrar-clube').addEventListener('click', function() {
@@ -235,26 +259,28 @@
         var mes     = document.getElementById('cad-mes').value;
         var ano     = document.getElementById('cad-ano').value;
         var aceite  = document.getElementById('cad-aceite').checked;
-        var telRaw  = inputTel.value.replace(/\D/g, '');
+        /* lê o telefone do próprio campo do formulário (agora editável) */
+        var cadTelEl = document.getElementById('cad-tel-view');
+        var telRaw  = (cadTelEl ? cadTelEl.value : '').replace(/\D/g, '');
 
         if (!nome || nome.length < 3) {
-          setResultado('⚠️ Informe seu nome completo.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Informe seu nome completo.', 'erro'); return;
         }
         if (telRaw.length < 10) {
-          setResultado('⚠️ Número de WhatsApp inválido. Volte e digite novamente.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Número de WhatsApp inválido. Corrija o número no campo acima.', 'erro'); return;
         }
         if (!dia || !mes || !ano) {
-          setResultado('⚠️ Informe sua data de nascimento completa.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Informe sua data de nascimento completa.', 'erro'); return;
         }
         if (!aceite) {
-          setResultado('⚠️ Você precisa aceitar o regulamento para se cadastrar.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Você precisa aceitar as regras do programa para se cadastrar.', 'erro'); return;
         }
 
         var dataNasc = ano + '-' + mes + '-' + dia;
         var btn = document.getElementById('btn-cadastrar-clube');
         btn.disabled = true;
         btn.textContent = 'Cadastrando…';
-        setResultado('Aguarde, registrando seu cadastro…', '');
+        setResultadoEl('resultado-cliente', 'Aguarde, registrando seu cadastro…', '');
 
         var tk = (function(){ try { return localStorage.getItem('itap_gh_token') || ''; } catch(e){ return ''; } })();
 
@@ -266,7 +292,7 @@
             '*Data de nascimento:* ' + dia + '/' + mes + '/' + ano + '\n\n' +
             'Confirmo que li e aceito o Regulamento do Clube de Fidelidade. ✅';
           window.open('https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg), '_blank');
-          setResultado('✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
+          setResultadoEl('resultado-cliente', '✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
           ocultarFormCadastro();
           btn.disabled = false;
           btn.textContent = '🎟️ Cadastrar no Clube';
@@ -287,8 +313,7 @@
           /* verificar duplicidade */
           var idx = dados.indice_celular || {};
           if (idx[telRaw]) {
-            setResultado('ℹ️ Este número já está cadastrado. Use "Entrar" para consultar seus pontos.', '');
-            ocultarFormCadastro();
+            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use a seção "Consultar pontos" abaixo para entrar.', '');
             btn.disabled = false;
             btn.textContent = '🎟️ Cadastrar no Clube';
             return;
@@ -344,13 +369,12 @@
             _nomeSessao = primeiroNome(nome);
             salvarSaldoEmCache(telRaw, 0, nome);
             atualizarBarras(0);
-            setResultado('🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '! Agora registre seu primeiro cupom.', 'ok');
+            setResultadoEl('resultado-cliente', '🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '! Agora use a seção "Consultar pontos" abaixo para inserir o código do cupom.', 'ok');
             ocultarFormCadastro();
-            formCodigoWrap.style.display = 'grid';
           });
         })
         .catch(function(e) {
-          setResultado('⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
+          setResultadoEl('resultado-cliente', '⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
         })
         .finally(function() {
           btn.disabled = false;
@@ -390,7 +414,7 @@
         btnEntrar.textContent = 'Consultando…';
         _clienteAtual = null;
         formCodigoWrap.style.display = 'none';
-        btnWppResgatar.style.display = 'none';
+        if (btnWppResgatar) btnWppResgatar.style.display = 'none';
 
         ghRawFetch('dados/clientes.json')
           .then(function(dados) {
@@ -398,12 +422,10 @@
             var usrKey = idx[tel];
 
             if (!usrKey || !dados.clientes[usrKey]) {
-              /* telefone não cadastrado */
-              setResultado('Número não encontrado no Clube. Cadastre-se gratuitamente pelo WhatsApp!', 'erro');
-              mostrarWppBtn(
-                wppLink('Olá! Quero me cadastrar no Clube de Fidelidade Itapolitana. Meu WhatsApp: ' + tel),
-                '💬 Cadastrar no Clube via WhatsApp'
-              );
+              /* telefone não cadastrado — redirecionar ao formulário acima */
+              setResultado('Número não encontrado. Use o formulário "Cadastro gratuito" acima para se inscrever no Clube!', 'erro');
+              /* pré-preenche o campo de telefone do formulário de cadastro */
+              mostrarFormCadastro(tel);
               return;
             }
 
