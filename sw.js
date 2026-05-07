@@ -1,6 +1,6 @@
 /**
  * SW.JS — Sorveteria Itapolitana Cajuru
- * Versão: 5.0 (itapolitana-v7) — PWA Versão 2
+ * Versão: 7.0 (itapolitana-v7) — PWA Versão 2
  * Estratégia: Cache First (assets), Network First (HTML/API)
  *
  * Para atualizar o cache no futuro, incremente CACHE_NAME e ASSETS_CACHE
