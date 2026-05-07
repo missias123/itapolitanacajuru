@@ -398,6 +398,53 @@ img{max-width:100%;display:block}
 .acc.open .acc-arrow{transform:rotate(180deg)}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .35s ease,padding .35s ease;opacity:0;padding:0 16px;background:#FFFDF9;border:2px solid transparent;border-top:none;}
 .acc.open .acc-body{max-height:9999px;opacity:1;padding:20px 16px;}
+.home-enc-separator{
+  margin:20px 0 14px;
+  text-align:center;
+  scroll-margin-top:120px;
+}
+.home-enc-separator-line-wrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:8px;
+}
+.home-enc-separator-line{
+  flex:1;
+  height:2px;
+  background:linear-gradient(90deg,transparent,#0D47A1,transparent);
+}
+.home-enc-separator-title{
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:#0D47A1;
+  background:linear-gradient(135deg,#E3F2FD,#BBDEFB);
+  padding:7px 14px;
+  border-radius:20px;
+  border:1.5px solid #90CAF9;
+  text-align:center;
+  line-height:1.3;
+}
+.home-enc-separator-sub{
+  font-size:.75rem;
+  color:#1565C0;
+  font-weight:600;
+}
+.home-enc-comp-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  align-items:start;
+}
+.home-enc-comp-card{
+  margin-bottom:0;
+  height:100%;
+}
+@media(min-width:900px){
+  .home-enc-comp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 /* ════════════════════════════════════════════════════════════════
    CORES DOS ACORDEÕES — NEUROMARKETING AVANÇADO
    Cada categoria usa a cor do próprio produto para estimular
@@ -465,6 +512,9 @@ img{max-width:100%;display:block}
 /* Encomendas Picolés: laranja quente → apetitoso, energético */
 #acc-enc-picolés>.acc-header{background:linear-gradient(135deg,#BF360C,#E65100)}
 #acc-enc-picolés>.acc-body{border-color:#FFE0B2}
+/* Complementos: vermelho vibrante → extras e personalização */
+#acc-complementos>.acc-header{background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)}
+#acc-complementos>.acc-body{border-color:#FFCDD2}
 .enc-link-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff;border-radius:50px;padding:16px 24px;font-size:15px;font-weight:900;text-decoration:none;box-shadow:0 4px 16px rgba(13,71,161,.4);transition:all .2s cubic-bezier(.34,1.56,.64,1);margin:4px 0;letter-spacing:.3px;min-height:52px;text-shadow:0 1px 4px rgba(0,0,0,.6),0 0 1px rgba(0,0,0,.4)}
 .enc-link-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 24px rgba(99,102,241,.5)}
 /* GRID PRODUTOS (visualização) */
@@ -2335,17 +2385,18 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <!-- VER NOSSO CARDÁPIO - FIM -->
 
 <!-- SEPARADOR ENCOMENDAS -->
-<div id="acc-encomendas" style="margin:20px 0 14px;text-align:center;scroll-margin-top:120px;">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-    <div style="flex:1;height:2px;background:linear-gradient(90deg,transparent,#0D47A1,transparent);"></div>
-    <div style="font-size:0.78rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#0D47A1;white-space:nowrap;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);padding:6px 16px;border-radius:20px;border:1.5px solid #90CAF9;">📦 Encomendas &amp; Complementos</div>
-    <div style="flex:1;height:2px;background:linear-gradient(90deg,transparent,#0D47A1,transparent);"></div>
+<div id="acc-encomendas" class="home-enc-separator">
+  <div class="home-enc-separator-line-wrap">
+    <div class="home-enc-separator-line"></div>
+    <div class="home-enc-separator-title">📦 Encomendas &amp; Complementos</div>
+    <div class="home-enc-separator-line"></div>
   </div>
-  <div style="font-size:0.75rem;color:#1565C0;font-weight:600;">Peça com antecedência · Retirada na loja</div>
+  <div class="home-enc-separator-sub">Peça com antecedência · Retirada na loja</div>
 </div>
 <!-- FIM SEPARADOR -->
 
-<div class="acc" id="acc-enc-caixas">
+<div class="home-enc-comp-grid">
+<div class="acc home-enc-comp-card" id="acc-enc-caixas">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-caixas-body" onclick="toggleAcc('acc-enc-caixas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-caixas');}">
 <div class="acc-left">
 <span class="acc-icon">📦</span>
@@ -2357,7 +2408,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-caixas')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
-<div class="acc" id="acc-enc-tortas">
+<div class="acc home-enc-comp-card" id="acc-enc-tortas">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-tortas-body" onclick="toggleAcc('acc-enc-tortas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-tortas');}">
 <div class="acc-left">
 <span class="acc-icon">🎂</span>
@@ -2369,7 +2420,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <a class="enc-link-btn" href="encomendas.html#tortas">🎂 Ver Tortas de Sorvete e Encomendar →</a><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-tortas')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
-<div class="acc" id="acc-enc-picolés">
+<div class="acc home-enc-comp-card" id="acc-enc-picolés">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="picolés-enc-body" onclick="toggleAcc('acc-enc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-picolés');}">
 <div class="acc-left">
 <span class="acc-icon">❄️</span>
@@ -2383,15 +2434,16 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-picolés')">← Voltar ao Início do Cardápio</button>
 </div>
 </div>
-<div class="acc" id="acc-complementos">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-body-complementos" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}" style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252)">
+<div class="acc home-enc-comp-card" id="acc-complementos">
+<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-body-complementos" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}">
 <div class="acc-left">
 <span class="acc-icon">🍫</span>
-<div><div class="acc-title" style="color:#fff">Complementos para Sorvetes</div><div class="acc-sub" style="color:rgba(255,255,255,0.85)">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div></div>
+<div><div class="acc-title">Complementos para Sorvetes</div><div class="acc-sub">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div></div>
 </div>
-<span class="acc-arrow" style="color:#fff">▼</span>
+<span class="acc-arrow">▼</span>
 </div>
 <div class="acc-body" id="acc-body-complementos"><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-complementos')">← Voltar ao Início do Cardápio</button></div>
+</div>
 </div>
 </section>
 
