@@ -675,6 +675,15 @@
   window._itabotEnviarChat = _itabotEnviarChat;
 
   function _itabotPosicionarAoLadoDoLogo() {
+    var staticTop = document.querySelector('.itap-header-top');
+    if (staticTop) {
+      var staticDuvidasBtn = staticTop.querySelector('.itap-header-duvidas .ita-bot-duvidas-btn, .itap-header-duvidas #ita-bot-duvidas');
+      if (staticDuvidasBtn) staticDuvidasBtn.onclick = _itabotAbrirItaBot;
+      var staticRobotBtn = staticTop.querySelector('.itap-header-bot .itap-header-bot-btn, .itap-header-bot #chat-fab-btn');
+      if (staticRobotBtn) staticRobotBtn.onclick = _itabotAbrirItaBot;
+      return;
+    }
+
     var wrap = document.getElementById('itabot-wrap');
     var logo = document.querySelector('.itap-brand-icon, .brand-icon');
     if (!wrap || !logo) return;
