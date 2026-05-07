@@ -19,6 +19,9 @@
     return '';
   })();
 
+  var APP_BOTTOM_BAR_HEIGHT = 56; // altura da barra inferior
+  document.documentElement.style.setProperty('--itabot-app-bottom-bar-height', APP_BOTTOM_BAR_HEIGHT + 'px');
+
   /* ─── CSS ─── */
   var css = `
 .itabot-wrap{display:none;position:fixed;bottom:18px;right:8px;z-index:9996;flex-direction:column;align-items:flex-end;gap:0}
@@ -73,6 +76,26 @@
 .chat-send{background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;box-shadow:0 4px 12px rgba(232,0,13,.25);transition:transform .1s}
 .chat-send:active{transform:scale(.95)}
 .sug{background:#FFF3E0;color:#BF360C;border:2px solid #E64A19;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;flex-shrink:0;min-height:36px}
+:root{--itabot-app-bottom-bar-height:56px;--itabot-chat-bottom-safe:calc(var(--itabot-app-bottom-bar-height) + env(safe-area-inset-bottom,0px))}
+/* Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) */
+.itabot-wrap{top:calc(env(safe-area-inset-top,0px) + 14px);right:12px;bottom:auto}
+.duvidas-card{width:82px;height:82px;min-width:82px;padding:0;border-radius:26px;justify-content:center;background:radial-gradient(circle at 30% 20%,#29448f 0%,#0d1b4d 55%,#060b23 100%);border:2px solid rgba(0,234,255,.88);box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(0,234,255,.48),0 14px 30px rgba(6,11,35,.42);animation:itabot-fab-pulse 1.8s ease-in-out infinite;overflow:visible}
+.duvidas-card::before{content:'';position:absolute;inset:-6px;border-radius:32px;background:radial-gradient(circle,rgba(0,234,255,.28) 0%,rgba(0,234,255,.08) 48%,rgba(0,234,255,0) 72%);z-index:-1;pointer-events:none}
+.duvidas-card:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 0 0 2px rgba(255,255,255,.16),0 0 22px rgba(0,234,255,.62),0 18px 34px rgba(6,11,35,.46)}
+.duvidas-card svg{width:62px;height:62px;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.28))}
+.duvidas-card-logo,.duvidas-btn{display:none}
+@keyframes itabot-fab-pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(0,234,255,.48),0 14px 30px rgba(6,11,35,.42)}50%{transform:scale(1.04);box-shadow:0 0 0 2px rgba(255,255,255,.18),0 0 24px rgba(0,234,255,.72),0 16px 32px rgba(6,11,35,.5)}}
+@media(prefers-reduced-motion:reduce){.duvidas-card{animation:none}}
+#chat-dialog{inset:0 0 var(--itabot-chat-bottom-safe) 0;height:auto}
+.chat-box{border-radius:24px 24px 0 0;height:100%;overflow:hidden}
+.chat-msgs{padding-bottom:20px}
+.chat-footer{background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:3px solid #FBD100;flex-shrink:0}
+.chat-footer-title{font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.chat-footer-wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 16px;border-radius:999px;background:rgba(37,211,102,.18);border:1px solid rgba(37,211,102,.78);color:#fff;font-size:12px;font-weight:900;text-decoration:none}
+.chat-footer-copy{font-size:10px;color:rgba(255,255,255,.76);font-weight:700;margin-top:8px;line-height:1.4}
+@media(max-width:600px){.itabot-wrap{top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;bottom:auto}.duvidas-card{width:78px;height:78px;min-width:78px}}
+@media(min-width:601px){.itabot-wrap{top:18px;right:14px;bottom:auto}}
+@media(min-width:768px){:root{--itabot-chat-bottom-safe:env(safe-area-inset-bottom,0px)}.itabot-wrap{top:24px;right:24px;bottom:auto}.duvidas-card{width:72px;height:72px;min-width:72px;border-radius:24px}.duvidas-card svg{width:54px;height:54px}#chat-dialog{inset:0;padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(720px,calc(100dvh - 42px));border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}
 `;
 
   var styleEl = document.createElement('style');
@@ -120,8 +143,6 @@
       <ellipse cx="76" cy="18" rx="9" ry="8" fill="#F9C6D0"/>
       <ellipse cx="73" cy="15" rx="3" ry="2" fill="white" opacity=".5"/>
     </svg>
-    <span class="duvidas-card-logo">Itapolitana</span>
-    <span class="duvidas-btn">DÚVIDAS</span>
   </button>
 </div>
 
@@ -169,7 +190,7 @@
     </div>
     <div class="chat-hdr-btns">
       <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
-      <button class="chat-btn-home" onclick="_itabotFecharChatDialog();window.location.href='${_base}index.html'" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
+      <button class="chat-btn-home" onclick="window._itabotFecharChatDialog();window.location.href='${_base}index.html'" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
     </div>
   </div>
 </div>
@@ -202,22 +223,12 @@
   <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
   <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
 </div>
-<!-- RODAPÉ do chat -->
-<div style="background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:10px 12px;border-top:3px solid #FBD100;flex-shrink:0;">
-  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;">
-    <img src="${logoSrc}" alt="Logo Itapolitana" style="width:34px;height:34px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px #FBD100;" loading="lazy" decoding="async">
-    <div style="text-align:left;">
-      <div style="font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;">Itapolitana</div>
-      <div style="font-size:9px;color:rgba(255,255,255,.85);font-weight:700;">Cajuru · SP · Sorvete Artesanal</div>
-    </div>
-  </div>
-  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:6px;">
-    <a href="${_base}index.html" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 10px;">🍦 Cardápio</a>
-    <a href="${_base}encomendas.html" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 10px;">📦 Encomendas</a>
-    <a href="${_base}fidelidade.html" style="font-size:10px;font-weight:800;color:#FBD100;text-decoration:none;background:rgba(251,209,0,.18);border:1px solid rgba(251,209,0,.55);border-radius:20px;padding:4px 10px;">⭐ Fidelidade</a>
-    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(37,211,102,.2);border:1px solid rgba(37,211,102,.7);border-radius:20px;padding:4px 10px;">💬 WhatsApp</a>
-  </div>
-  <div style="font-size:9px;color:rgba(255,255,255,.65);font-weight:600;">© 2007–2026 Sorveteria Itapolitana · Cajuru/SP</div>
+<!-- Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) -->
+<!-- Navegação duplicada removida: o chat mantém só o CTA útil de atendimento humano -->
+<div class="chat-footer"> 
+  <div class="chat-footer-title">Atendimento humano</div>
+  <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="chat-footer-wa">💬 Continuar no WhatsApp</a>
+  <div class="chat-footer-copy">Todos os dias, das 10h às 22h · 🚫 Não fazemos delivery · Encomende e retire na loja</div>
 </div>
 </div>
 </div>`;
@@ -232,13 +243,13 @@
   document.addEventListener('click', function (e) {
     var cd = document.getElementById('chat-dialog');
     if (cd && cd.classList.contains('aberto') && e.target === cd) {
-      _itabotFecharChatDialog();
+      window._itabotFecharChatDialog();
     }
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       var cd = document.getElementById('chat-dialog');
-      if (cd && cd.classList.contains('aberto')) { _itabotFecharChatDialog(); e.preventDefault(); }
+      if (cd && cd.classList.contains('aberto')) { window._itabotFecharChatDialog(); e.preventDefault(); }
     }
   });
 
@@ -277,11 +288,11 @@
 
   /* ─── RESPOSTAS ─── */
   var RESPOSTAS = {
-    'horário':       '🕙 Funcionamos todos os dias, de Segunda a Domingo, das 10h às 22h. Inclusive feriados!',
-    'funciona':      '🕙 Funcionamos todos os dias, de Segunda a Domingo, das 10h às 22h. Inclusive feriados!',
+    'horário':       '🕙 Funcionamos todos os dias, das 10h às 22h, inclusive feriados.',
+    'funciona':      '🕙 Funcionamos todos os dias, das 10h às 22h, inclusive feriados.',
     'abre':          '🕙 Abrimos todos os dias às 10h e fechamos às 22h. Te esperamos!',
     'fecha':         '🕙 Fechamos às 22h todos os dias. Venha antes! 😊',
-    'aberto':        '🕙 Estamos abertos todos os dias das 10h às 22h, inclusive feriados!',
+    'aberto':        '🕙 Funcionamos todos os dias, das 10h às 22h, inclusive feriados.',
     'domingo':       '🕙 Sim! Abrimos também aos domingos, das 10h às 22h. 🍦',
     'feriado':       '🕙 Sim! Funcionamos em feriados, das 10h às 22h.',
     'endereço':      '📍 Estamos na R. Cel. Manoel Caetano, 311 – Pça Largo São Bento – Centro, Cajuru/SP. Fácil de encontrar!',
@@ -345,17 +356,21 @@
     'promoção':      '🎁 Temos sorteio mensal! Cadastre-se na página de Promoção no menu do site para concorrer. Gratuito!',
     'sorteio':       '🎁 Sorteio mensal gratuito! Cadastre-se na página de Promoção no menu do site. Boa sorte! 🍀',
     'cadastro':      '📝 Para se cadastrar no Clube de Fidelidade ou no Sorteio Mensal, acesse as páginas no menu. É gratuito!',
-    'delivery':      '🏪 Não fazemos delivery. Atendemos somente na loja: R. Cel. Manoel Caetano, 311 – Centro, Cajuru/SP.',
-    'entrega':       '🏪 Não fazemos entrega. Para encomendas, a retirada é na loja com prazo de 3 dias úteis.',
-    'motoboy':       '🏪 Não trabalhamos com motoboy. Atendemos somente na loja em Cajuru/SP.',
-    'ifood':         '🏪 Não estamos no iFood. Atendemos somente na loja: R. Cel. Manoel Caetano, 311 – Centro, Cajuru/SP.',
+    'delivery':      '🚫 Não fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
+    'entrega':       '🚫 Não fazemos delivery. Para encomendas, a retirada é na loja com prazo de 3 dias úteis.',
+    'motoboy':       '🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP.',
+    'ifood':         '🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP.',
     'anos':          '🍦 A Sorveteria Itapolitana está em Cajuru desde 2007 — mais de 19 anos de tradição e sabor!',
     'historia':      '🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos de tradição!',
     'artesanal':     '🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis!',
     'qualidade':     '🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
-    'caça':          '⭐ Caça à Estrela: a Estrela Dourada aparece em horários surpresa! Quem clicar primeiro captura a estrela. Acumule 5 estrelas no mês e ganhe um prêmio!',
-    'estrela':       '⭐ Caça à Estrela: acumule 5 estrelas no mês para ganhar Açaí 400ml, Milkshake ou 5 Picolés Recheados!',
-    'mascote':       '⭐ Na Caça à Estrela, fique de olho na Estrela Dourada que aparece em horários surpresa no site.',
+    // Features descontinuadas: Caça à Estrela, Estrela Dourada, Itamanduá e Raspadinha.
+    'caça':          'ℹ️ A Caça à Estrela foi descontinuada. Hoje o destaque é o Clube de Fidelidade e as promoções atuais da Itapolitana.',
+    'estrela':       'ℹ️ A Caça à Estrela foi descontinuada. Posso te ajudar com fidelidade, promoções ou encomendas atuais.',
+    'estrela dourada':'ℹ️ A Estrela Dourada foi descontinuada. Agora o foco está no Clube de Fidelidade e nas promoções atuais.',
+    'mascote':       '🤖 O Ita Bot continua por aqui para ajudar com cardápio, fidelidade, encomendas e promoções atuais.',
+    'itamandua':     'ℹ️ O conteúdo do Itamanduá ligado à Caça à Estrela foi descontinuado. Posso te ajudar com os recursos atuais do site.',
+    'raspadinha':    'ℹ️ A raspadinha foi descontinuada. Hoje o foco está no Clube de Fidelidade e nas promoções atuais da Itapolitana.',
     'dicas':         '💡 Temos uma página de Dicas com orientações para festas e eventos. Acesse "Dicas/Depoimentos" no menu!',
     'depoimentos':   '⭐ Veja o que nossos clientes dizem! Acesse a página "Dicas/Depoimentos" no menu do site.',
     'privacidade':   '🔒 Nossa Política de Privacidade está disponível no site. Respeitamos a LGPD e protegemos seus dados pessoais.',
@@ -364,7 +379,7 @@
     'galeria':       '📸 Temos uma galeria de fotos no site! Acesse "Galeria" para ver imagens dos nossos produtos.',
     'foto':          '📸 Veja fotos dos nossos produtos na Galeria do site! E siga @sorveteriaitapolitanacajuru no Instagram.',
     'recheado':      '🍭 Picolés Recheados são nossa especialidade! Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
-    'default':       'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · sorteio · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
+    'default':       'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · promoções · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
   };
 
   /* ─── Carrega FAQs dos JSON e mescla ─── */
