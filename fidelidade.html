@@ -236,7 +236,7 @@
       border-radius: 14px;
       padding: 16px 16px 18px;
       margin-top: 10px;
-      display: none;
+      display: block;
     }
     .cad-box.visivel { display: block; }
     .cad-titulo {
@@ -413,50 +413,54 @@
       </div>
     </section>
 
-    <!-- 3) Área do Cliente — integração real com dados/clientes.json via GitHub API -->
-    <section class="card" aria-labelledby="titulo-area-cliente">
-      <h2 id="titulo-area-cliente" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Área do Cliente</h2>
-      <p style="font-size:.9rem;color:#555;margin-bottom:12px;">Digite seu WhatsApp para consultar seus pontos ou se cadastrar gratuitamente no Clube de Fidelidade.</p>
+    <!-- 3) Regras completas do programa — exibidas ANTES do formulário de cadastro -->
+    <section class="card" aria-labelledby="titulo-regras">
+      <h2 id="titulo-regras" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Regras completas do programa</h2>
 
-      <div class="cliente-grid">
-        <div class="form-row">
-          <label for="cliente-telefone">Telefone (WhatsApp)</label>
-          <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
-          <button class="btn btn-primary" id="btn-entrar">Entrar / Consultar meus pontos</button>
+      <!-- O regulamento fica em <details> para melhorar UX mobile sem esconder conteúdo -->
+      <details class="regulamento" open>
+        <summary>📜 Ler regulamento completo do Clube de Fidelidade</summary>
+        <div class="reg-body">
+          <p><strong>1. DO PROGRAMA</strong><br>1.1. O Clube de Fidelidade Itapolitana é uma ação promocional gratuita da Sorveteria Itapolitana Cajuru.<br>1.2. O programa funciona por acúmulo de pontos via códigos de cupons distribuídos na loja.<br>1.3. Não há campanhas promocionais extras paralelas nesta fase.</p>
+
+          <p><strong>2. DA PARTICIPAÇÃO</strong><br>2.1. A participação exige cadastro no site oficial, com dados verdadeiros do cliente.<br>2.2. O participante deve informar um número de celular (WhatsApp) válido para identificação e contato.</p>
+
+          <p><strong>3. DOS CUPONS E PONTOS</strong><br>3.1. Compras acima de R$ 30,00, de segunda a sexta, geram 1 cupom com código.<br>3.2. Cada código válido inserido no site gera +1 ponto.<br>3.3. Pontos não expiram enquanto o programa estiver ativo.<br>3.4. Códigos inválidos, duplicados ou já utilizados não geram pontuação.</p>
+
+          <p><strong>4. DOS PRÊMIOS</strong><br>4.1. Com 10 pontos: 1 Milkshake 300ml grátis.<br>4.2. Com 30 pontos: 1 Caixa com 7 bolas de sorvete grátis.<br>4.3. O resgate é pessoal e pode exigir confirmação de cadastro para retirada.</p>
+
+          <p><strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>5.1. É proibido usar código de terceiros sem autorização, manipular sistema, automações, robôs ou qualquer tentativa de fraude.<br>5.2. Em caso de fraude, a conta pode ser bloqueada e excluída do programa, sem aviso prévio.</p>
+
+          <p><strong>6. DAS CRÍTICAS E CONDUTA</strong><br>6.1. O canal de atendimento deve ser usado com respeito e boa-fé.<br>6.2. Condutas ofensivas, abusivas ou ameaçadoras podem resultar em restrição de atendimento e participação.</p>
+
+          <p><strong>7. DAS ALTERAÇÕES E FASE DE TESTES</strong><br>7.1. O programa pode sofrer ajustes operacionais, de regras e de prêmios, com atualização nesta página.<br>7.2. A Itapolitana pode suspender ou encerrar o programa em caso de necessidade operacional.</p>
+
+          <p><strong>8. DO FORO</strong><br>8.1. Para eventuais controvérsias, fica eleito o foro da comarca de Cajuru/SP, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
         </div>
+      </details>
+    </section>
 
-        <div class="form-row" id="form-codigo-wrap" style="display:none;">
-          <label for="cliente-codigo">Inserir código do cupom</label>
-          <input id="cliente-codigo" type="text" maxlength="20" placeholder="Ex: ABC123XYZ" style="text-transform:uppercase;">
-          <button class="btn btn-sec" id="btn-registrar-ponto">✅ Validar Código</button>
-        </div>
-      </div>
-
+    <!-- 4) Formulário de cadastro — exibido logo abaixo das regras -->
+    <section class="card" aria-labelledby="titulo-cadastro">
+      <h2 id="titulo-cadastro" style="font-size:1.25rem;color:#1b5e20;margin-bottom:8px;">📝 Cadastro gratuito no Clube de Fidelidade</h2>
       <!--
-        Formulário de cadastro do Clube de Fidelidade — manter IDs e lógica JS pois
-        estão integrados com o admin (dados/clientes.json via GitHub API).
-        - IDs críticos: cad-nome, cad-tel-view, cad-dia, cad-mes, cad-ano, cad-aceite, btn-cadastrar-clube
-        - Sem atributo action/method: envio gerenciado 100% pelo JS abaixo (mostrarFormCadastro / btn-cadastrar-clube)
-        - Sem token: fallback via WhatsApp para a loja confirmar manualmente.
-        - Com token (itap_gh_token no localStorage): salva direto no GitHub.
+        IDs críticos: cad-nome, cad-tel-view, cad-dia, cad-mes, cad-ano, cad-aceite, btn-cadastrar-clube
+        Sem atributo action/method: envio gerenciado 100% pelo JS (btn-cadastrar-clube listener).
+        Sem token: fallback via WhatsApp. Com token (itap_gh_token): salva direto no GitHub.
       -->
-      <!-- FORMULÁRIO DE CADASTRO — aparece via JS quando o WhatsApp informado não está cadastrado -->
-      <div class="cad-box" id="form-cadastro-wrap">
-        <div class="cad-titulo">📝 Cadastro gratuito no Clube de Fidelidade</div>
-
-        <!-- Instruções de preenchimento -->
-        <p class="cad-instrucao">Preencha os campos abaixo com seus dados reais. O celular já foi preenchido automaticamente. Use seu WhatsApp principal para receber as confirmações da loja.</p>
+      <div class="cad-box visivel" id="form-cadastro-wrap">
+        <p class="cad-instrucao">Preencha os campos abaixo com seus dados reais. Use seu WhatsApp principal para receber as confirmações da loja.</p>
 
         <div class="cad-row">
           <label for="cad-nome">Nome completo</label>
-          <!-- ID cad-nome — não alterar: referenciado no JS de cadastro -->
+          <!-- ID cad-nome — não alterar: referenciado no JS de cadastro e no admin -->
           <input id="cad-nome" type="text" placeholder="Informe seu nome completo" autocomplete="name" maxlength="100">
         </div>
 
         <div class="cad-row">
-          <label>Celular (WhatsApp)</label>
-          <!-- ID cad-tel-view — não alterar: preenchido automaticamente pelo JS com o número digitado acima -->
-          <input id="cad-tel-view" type="tel" readonly style="background:#f0f0f0;color:#555;cursor:default;" tabindex="-1">
+          <label for="cad-tel-view">Celular (WhatsApp)</label>
+          <!-- ID cad-tel-view — não alterar: referenciado no JS de cadastro e no admin -->
+          <input id="cad-tel-view" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
         </div>
 
         <div class="cad-row">
@@ -487,39 +491,37 @@
         <button class="btn btn-verde" id="btn-cadastrar-clube">🎟️ Cadastrar no Clube</button>
       </div>
 
-      <div class="resultado" id="resultado-cliente" style="margin-top:12px;" role="status">
-        Olá! Entre com seu WhatsApp para consultar sua pontuação.
-      </div>
+      <div class="resultado" id="resultado-cliente" style="margin-top:12px;" role="status"></div>
       <a id="btn-wpp-resgatar" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
         💬 Resgatar meu prêmio via WhatsApp
       </a>
     </section>
 
-    <!-- 4) Regras completas do programa -->
-    <section class="card" aria-labelledby="titulo-regras">
-      <h2 id="titulo-regras" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Regras completas do programa</h2>
+    <!-- 5) Área do Cliente — consultar pontos e inserir código do cupom -->
+    <section class="card" aria-labelledby="titulo-area-cliente">
+      <h2 id="titulo-area-cliente" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Área do Cliente — Consultar pontos</h2>
+      <p style="font-size:.9rem;color:#555;margin-bottom:12px;">Já é cadastrado? Digite seu WhatsApp para consultar seus pontos e inserir o código do cupom.</p>
 
-      <!-- O regulamento fica em <details> para melhorar UX mobile sem esconder conteúdo -->
-      <details class="regulamento">
-        <summary>📜 Ler regulamento completo do Clube de Fidelidade</summary>
-        <div class="reg-body">
-          <p><strong>1. DO PROGRAMA</strong><br>1.1. O Clube de Fidelidade Itapolitana é uma ação promocional gratuita da Sorveteria Itapolitana Cajuru.<br>1.2. O programa funciona por acúmulo de pontos via códigos de cupons distribuídos na loja.<br>1.3. Não há campanhas promocionais extras paralelas nesta fase.</p>
-
-          <p><strong>2. DA PARTICIPAÇÃO</strong><br>2.1. A participação exige cadastro no site oficial, com dados verdadeiros do cliente.<br>2.2. O participante deve informar um número de celular (WhatsApp) válido para identificação e contato.</p>
-
-          <p><strong>3. DOS CUPONS E PONTOS</strong><br>3.1. Compras acima de R$ 30,00, de segunda a sexta, geram 1 cupom com código.<br>3.2. Cada código válido inserido no site gera +1 ponto.<br>3.3. Pontos não expiram enquanto o programa estiver ativo.<br>3.4. Códigos inválidos, duplicados ou já utilizados não geram pontuação.</p>
-
-          <p><strong>4. DOS PRÊMIOS</strong><br>4.1. Com 10 pontos: 1 Milkshake 300ml grátis.<br>4.2. Com 30 pontos: 1 Caixa com 7 bolas de sorvete grátis.<br>4.3. O resgate é pessoal e pode exigir confirmação de cadastro para retirada.</p>
-
-          <p><strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>5.1. É proibido usar código de terceiros sem autorização, manipular sistema, automações, robôs ou qualquer tentativa de fraude.<br>5.2. Em caso de fraude, a conta pode ser bloqueada e excluída do programa, sem aviso prévio.</p>
-
-          <p><strong>6. DAS CRÍTICAS E CONDUTA</strong><br>6.1. O canal de atendimento deve ser usado com respeito e boa-fé.<br>6.2. Condutas ofensivas, abusivas ou ameaçadoras podem resultar em restrição de atendimento e participação.</p>
-
-          <p><strong>7. DAS ALTERAÇÕES E FASE DE TESTES</strong><br>7.1. O programa pode sofrer ajustes operacionais, de regras e de prêmios, com atualização nesta página.<br>7.2. A Itapolitana pode suspender ou encerrar o programa em caso de necessidade operacional.</p>
-
-          <p><strong>8. DO FORO</strong><br>8.1. Para eventuais controvérsias, fica eleito o foro da comarca de Cajuru/SP, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
+      <div class="cliente-grid">
+        <div class="form-row">
+          <label for="cliente-telefone">Telefone (WhatsApp)</label>
+          <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
+          <button class="btn btn-primary" id="btn-entrar">Entrar / Consultar meus pontos</button>
         </div>
-      </details>
+
+        <div class="form-row" id="form-codigo-wrap" style="display:none;">
+          <label for="cliente-codigo">Inserir código do cupom</label>
+          <input id="cliente-codigo" type="text" maxlength="20" placeholder="Ex: ABC123XYZ" style="text-transform:uppercase;">
+          <button class="btn btn-sec" id="btn-registrar-ponto">✅ Validar Código</button>
+        </div>
+      </div>
+
+      <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">
+        Olá! Entre com seu WhatsApp para consultar sua pontuação.
+      </div>
+      <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
+        💬 Resgatar meu prêmio via WhatsApp
+      </a>
     </section>
   </main>
 
