@@ -94,9 +94,12 @@
 .duvidas-card-logo,.duvidas-btn{display:none}
 @keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
 /* Botão "DÚVIDAS" pulsante ao lado do robô – abre o chat Ita Bot em tela cheia */
-.itabot-duvidas-btn{background:linear-gradient(135deg,#C62828,#E8000D);color:#fff;border:2px solid rgba(255,255,255,.75);border-radius:999px;padding:7px 13px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 2s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;text-transform:uppercase;line-height:1;align-self:center;flex-shrink:0}
+.itabot-duvidas-btn{background:linear-gradient(135deg,#D00000,#E8000D);color:#fff;border:2px solid #fff;border-radius:999px;padding:7px 13px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 1.35s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;text-transform:uppercase;line-height:1;align-self:center;flex-shrink:0;text-shadow:0 0 6px rgba(255,255,255,.65),0 0 12px rgba(255,64,64,.55)}
 .itabot-duvidas-btn:hover{filter:brightness(1.1);transform:scale(1.05)}
-@keyframes itabot-btn-pulse{0%,100%{box-shadow:0 2px 8px rgba(232,0,13,.35)}50%{box-shadow:0 4px 14px rgba(232,0,13,.6),0 0 0 3px rgba(232,0,13,.18)}}
+@keyframes itabot-btn-pulse{
+0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.95),0 0 10px rgba(255,40,40,.55),0 0 22px rgba(255,0,80,.35)}
+50%{box-shadow:0 0 0 2px rgba(255,255,255,1),0 0 18px rgba(255,64,64,.92),0 0 34px rgba(255,0,110,.72),0 0 54px rgba(255,0,140,.5)}
+}
 @media(prefers-reduced-motion:reduce){.duvidas-card svg,.itabot-duvidas-btn{animation:none}}
 /* Botão-link de ação nas respostas do bot — grande e fácil de tocar em mobile */
 .itabot-link-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:900;letter-spacing:.4px;margin-top:6px;min-height:48px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:normal;word-break:break-word}
