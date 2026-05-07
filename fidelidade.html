@@ -670,15 +670,15 @@
 
         ghRawFetch('dados/fidelidade.json')
           .then(function(fid) {
-            /* chave com acento conforme dados/fidelidade.json */
-            var codigos = fid['c\u00f3digos'] || fid['codigos'] || {};
+            /* chave literal conforme dados/fidelidade.json (UTF-8) */
+            var codigos = fid['códigos'] || fid['codigos'] || {};
             var entrada = codigos[codigo];
 
             if (!entrada) {
               setResultado('Código inválido. Verifique o cupom e tente novamente.', 'erro');
               return;
             }
-            if (entrada.status !== 'dispon\u00edvel') {
+            if (entrada.status !== 'disponível') {
               setResultado('Este código já foi utilizado. Cada cupom vale apenas uma vez.', 'erro');
               return;
             }
