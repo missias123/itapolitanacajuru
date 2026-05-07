@@ -115,11 +115,19 @@
         onPrimary: function() {
           if (!deferredPrompt) return;
           deferredPrompt.prompt();
-          deferredPrompt.userChoice.finally(function() {
+          if (deferredPrompt.userChoice && typeof deferredPrompt.userChoice.finally === 'function') {
+            deferredPrompt.userChoice
+              .catch(function() {})
+              .finally(function() {
+                deferredPrompt = null;
+                removerBanner();
+                adiarPrompt(30);
+              });
+          } else {
             deferredPrompt = null;
             removerBanner();
             adiarPrompt(30);
-          });
+          }
         }
       });
       return true;
@@ -134,6 +142,13 @@
         }
       }, 5000);
     }
+
+    window.addEventListener('beforeunload', function() {
+      if (monitorPromptAndroid) {
+        clearInterval(monitorPromptAndroid);
+        monitorPromptAndroid = null;
+      }
+    });
 
     function injetarCss() {
       if (cssInjetado) return;

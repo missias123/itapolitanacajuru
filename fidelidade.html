@@ -645,7 +645,10 @@
 
       function tentarUsarSaldoCacheOffline(tel) {
         var cache = lerSaldoDoCache(tel);
-        if (!eSaldoRecente(cache)) return false;
+        if (!eSaldoRecente(cache)) {
+          try { localStorage.removeItem(chaveSaldoCache(tel)); } catch (e) {}
+          return false;
+        }
         var pts = Number(cache.pontos || 0);
         var nome = primeiroNome(cache.nome || 'Cliente');
         atualizarBarras(pts);
