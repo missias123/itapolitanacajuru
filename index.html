@@ -1928,7 +1928,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 
 
     </head>
-<body>
+<body class="itap-has-bottom-tabs">
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
 <noscript>
 <!-- Conteúdo do cardápio para rastreadores de busca e usuários sem JavaScript -->
@@ -4962,6 +4962,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
   </script>
 
+<style>
+/* ═══ APP TABS MOBILE (FASE 3.1) ═══════════════════════════════════════ */
+.itap-bottom-tabs{position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#FFF8F0;border-top:1px solid #E8D7C5;box-shadow:0 -6px 18px rgba(0,0,0,.12);display:none;padding-bottom:env(safe-area-inset-bottom,0px)}
+.itap-bottom-tabs__inner{max-width:980px;margin:0 auto;height:56px;display:grid;grid-template-columns:repeat(4,1fr)}
+.itap-tab{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#5D4037;font-weight:800;font-size:11px;letter-spacing:.2px}
+.itap-tab-icon{font-size:1.22rem;line-height:1}
+.itap-tab-label{line-height:1}
+.itap-tab.is-active{color:#E8000D;background:rgba(232,0,13,.08)}
+.itap-tab.is-active .itap-tab-icon{transform:translateY(-1px)}
+@media(max-width:768px){.itap-bottom-tabs{display:block}body.itap-has-bottom-tabs{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}#cookie-banner{bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}}
+@media(min-width:769px){.itap-bottom-tabs{display:none!important}}
+</style>
+<nav class="itap-bottom-tabs" aria-label="Navegação inferior do app">
+  <div class="itap-bottom-tabs__inner">
+    <a class="itap-tab is-active" href="index.html" aria-current="page"><span class="itap-tab-icon">🍦</span><span class="itap-tab-label">Início</span></a>
+    <a class="itap-tab" href="encomendas.html"><span class="itap-tab-icon">📦</span><span class="itap-tab-label">Encomendas</span></a>
+    <a class="itap-tab" href="promocao.html"><span class="itap-tab-icon">🎁</span><span class="itap-tab-label">Promoções</span></a>
+    <a class="itap-tab" href="fidelidade.html"><span class="itap-tab-icon">⭐</span><span class="itap-tab-label">Fidelidade</span></a>
+  </div>
+</nav>
 <!-- Banner LGPD -->
 <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.92); color: white; padding: 15px 20px; z-index: 9999; text-align: center; font-size: 14px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);">
   <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">

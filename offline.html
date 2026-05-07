@@ -1,138 +1,189 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#EF0129">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <title>Sorveteria Itapolitana - Modo Offline</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(135deg, #FFF8F0 0%, #FFE8F0 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .offline-container {
-            text-align: center;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            max-width: 500px;
-        }
-        .offline-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #EF0129;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-        p {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-        .cached-pages {
-            background: #f5f5f5;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .cached-pages h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .cached-pages ul {
-            list-style: none;
-        }
-        .cached-pages li {
-            padding: 8px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        .cached-pages li:last-child {
-            border-bottom: none;
-        }
-        .cached-pages a {
-            color: #0D47A1;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .cached-pages a:hover {
-            text-decoration: underline;
-        }
-        .retry-btn {
-            background: linear-gradient(135deg, #EF0129, #C62828);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 20px;
-        }
-        .retry-btn:hover {
-            transform: scale(1.05);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#EF0129">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <title>Itapolitana | Modo Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body.itap-has-bottom-tabs {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: #FFF8F0;
+      color: #1A0A00;
+      min-height: 100vh;
+    }
+    .itap-header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:9000;box-shadow:0 4px 20px rgba(0,0,0,.25);width:100%;box-sizing:border-box}
+    .itap-header-inner{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:10px 8px 14px}
+    .itap-brand-icon{width:90px;min-width:90px;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:0 0 2px 0}
+    .itap-brand-icon img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18)}
+    .itap-header-nav{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;box-sizing:border-box}
+    .itap-nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 6px;border-radius:16px;font-size:12px;font-weight:900;min-height:68px;text-align:center;border:2px solid rgba(255,255,255,.35);font-family:"Poppins",sans-serif;box-sizing:border-box;line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,.2);text-decoration:none;transition:transform .15s,filter .15s}
+    .itap-nav-btn:active{transform:scale(.95)}
+    .itap-nav-icon{font-size:1.7em;line-height:1;display:block;margin-bottom:1px}
+    .itap-nav-label{font-size:clamp(12px,3.2vw,14px);font-weight:900;line-height:1.1;display:block;text-shadow:0 2px 5px rgba(0,0,0,.8);letter-spacing:.5px;text-transform:uppercase;color:#fff}
+    @media(max-width:480px){.itap-brand-icon img{width:76px;height:76px}.itap-nav-btn{min-height:58px;padding:8px 4px}.itap-nav-label{font-size:12px}}
+    @media(min-width:601px){.itap-header-nav{grid-template-columns:repeat(4,1fr)}.itap-nav-btn{min-height:80px}}
+
+    main { max-width: 780px; margin: 0 auto; padding: 18px 14px 24px; }
+    .offline-card {
+      background: #fff;
+      border: 1px solid #FFD7AA;
+      border-radius: 20px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.1);
+      padding: 22px 16px 18px;
+      text-align: center;
+    }
+    .offline-logo {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px;
+      box-shadow: 0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 9px #C62828,0 4px 16px rgba(0,0,0,.28);
+    }
+    .offline-title { font-size: clamp(1.35rem, 5.8vw, 1.9rem); color: #C62828; margin-bottom: 6px; }
+    .offline-sub { font-size: .94rem; color: #5D4037; margin-bottom: 16px; line-height: 1.55; font-weight: 600; }
+    .offline-pill {
+      display: inline-block; margin-bottom: 14px; font-size: .76rem; font-weight: 800;
+      color: #0D47A1; border: 1.5px solid #90CAF9; background: #E3F2FD; border-radius: 999px; padding: 5px 12px;
+    }
+    .cached-pages {
+      background: #FFF8F0;
+      border: 1px solid #FFE0B2;
+      border-radius: 14px;
+      padding: 12px;
+      margin: 14px 0 10px;
+      text-align: left;
+    }
+    .cached-pages h2 {
+      font-size: .9rem;
+      color: #E65100;
+      margin-bottom: 8px;
+      font-weight: 900;
+    }
+    #offline-links { list-style: none; display: grid; gap: 8px; }
+    #offline-links li a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #0D47A1;
+      background: #fff;
+      border: 1px solid #BBDEFB;
+      border-radius: 12px;
+      padding: 12px 12px;
+      min-height: 48px;
+      font-weight: 800;
+      font-size: .93rem;
+    }
+    .retry-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg,#E8000D,#C62828);
+      color: #fff;
+      min-height: 48px;
+      font-size: .95rem;
+      font-weight: 900;
+      letter-spacing: .3px;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 16px rgba(232,0,13,.35);
+    }
+    .offline-help { font-size: .78rem; color: #777; margin-top: 10px; line-height: 1.45; }
+
+    /* ═══ APP TABS MOBILE (FASE 3.1) ═══════════════════════════════════════ */
+    .itap-bottom-tabs{position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#FFF8F0;border-top:1px solid #E8D7C5;box-shadow:0 -6px 18px rgba(0,0,0,.12);display:none;padding-bottom:env(safe-area-inset-bottom,0px)}
+    .itap-bottom-tabs__inner{max-width:980px;margin:0 auto;height:56px;display:grid;grid-template-columns:repeat(4,1fr)}
+    .itap-tab{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#5D4037;font-weight:800;font-size:11px;letter-spacing:.2px}
+    .itap-tab-icon{font-size:1.22rem;line-height:1}
+    .itap-tab-label{line-height:1}
+    .itap-tab.is-active{color:#E8000D;background:rgba(232,0,13,.08)}
+    @media(max-width:768px){.itap-bottom-tabs{display:block}body.itap-has-bottom-tabs{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}}
+    @media(min-width:769px){.itap-bottom-tabs{display:none!important}}
+  </style>
 </head>
-<body>
-    <div class="offline-container">
-        <div class="offline-icon">📡</div>
-        <h1>Você está offline</h1>
-        <p>Não conseguimos conectar à internet, mas você pode acessar as páginas que já foram carregadas:</p>
-        
-        <div class="cached-pages">
-            <h3>📄 Páginas em Cache</h3>
-            <ul id="offline-links">
-                <li><a href="/">🍦 Página Principal</a></li>
-                <li><a href="/encomendas.html">🛒 Encomendas</a></li>
-                <li><a href="/fidelidade.html">⭐ Fidelidade</a></li>
-                <li><a href="/promocao.html">🎁 Promoções</a></li>
-            </ul>
-        </div>
-        
-        <p style="font-size: 14px; color: #999;">Verifique sua conexão com a internet e tente novamente.</p>
-        <button class="retry-btn" onclick="location.reload()">🔄 Tentar Novamente</button>
+<body class="itap-has-bottom-tabs">
+  <header class="itap-header">
+    <div class="itap-header-inner">
+      <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+        <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
+      </a>
+      <nav class="itap-header-nav" aria-label="Menu principal">
+        <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
+          <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
+        </a>
+        <a class="itap-nav-btn" href="promocao.html" style="background:linear-gradient(135deg,#E8000D,#C62828);">
+          <span class="itap-nav-icon">🎉</span><span class="itap-nav-label">PROMOÇÃO</span>
+        </a>
+        <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">
+          <span class="itap-nav-icon">⭐</span><span class="itap-nav-label">DICAS/DEPOIMENTOS</span>
+        </a>
+        <a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);">
+          <span class="itap-nav-icon">🎟️</span><span class="itap-nav-label">FIDELIDADE</span>
+        </a>
+      </nav>
     </div>
-    <script>
-      (function() {
-        try {
-          const lista = document.getElementById('offline-links');
-          const recentes = JSON.parse(localStorage.getItem('itap_recent_pages') || '[]');
-          if (!Array.isArray(recentes) || !recentes.length) return;
-          const base = [
-            { path: '/', title: '🍦 Página Principal' },
-            { path: '/encomendas.html', title: '🛒 Encomendas' },
-            { path: '/fidelidade.html', title: '⭐ Fidelidade' },
-            { path: '/promocao.html', title: '🎁 Promoções' }
-          ];
-          const itens = {};
-          base.concat(recentes).forEach(function(item) {
-            if (!item || !item.path) return;
-            itens[item.path] = item.title || item.path;
-          });
-          lista.innerHTML = '';
-          Object.keys(itens).slice(0, 8).forEach(function(path) {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = path;
-            a.textContent = itens[path];
-            li.appendChild(a);
-            lista.appendChild(li);
-          });
-        } catch (e) {}
-      })();
-    </script>
+  </header>
+
+  <main>
+    <section class="offline-card">
+      <img class="offline-logo" src="/images/logo.webp" alt="Logo Itapolitana">
+      <span class="offline-pill">📡 Modo offline ativo</span>
+      <h1 class="offline-title">Sem internet agora</h1>
+      <p class="offline-sub">Você pode continuar navegando nas páginas já salvas deste app. Assim que a conexão voltar, tudo será atualizado automaticamente.</p>
+
+      <div class="cached-pages">
+        <h2>🍦 Acessos rápidos disponíveis</h2>
+        <ul id="offline-links">
+          <li><a href="/">🍦 Início / Cardápio</a></li>
+          <li><a href="/encomendas.html">📦 Encomendas</a></li>
+          <li><a href="/promocao.html">🎁 Promoções</a></li>
+          <li><a href="/fidelidade.html">⭐ Fidelidade</a></li>
+        </ul>
+      </div>
+
+      <button class="retry-btn" onclick="location.reload()">🔄 Tentar novamente</button>
+      <p class="offline-help">Dica: use o botão abaixo para recarregar quando a internet voltar.</p>
+    </section>
+  </main>
+
+  <nav class="itap-bottom-tabs" aria-label="Navegação inferior do app">
+    <div class="itap-bottom-tabs__inner">
+      <a class="itap-tab" href="index.html"><span class="itap-tab-icon">🍦</span><span class="itap-tab-label">Início</span></a>
+      <a class="itap-tab" href="encomendas.html"><span class="itap-tab-icon">📦</span><span class="itap-tab-label">Encomendas</span></a>
+      <a class="itap-tab" href="promocao.html"><span class="itap-tab-icon">🎁</span><span class="itap-tab-label">Promoções</span></a>
+      <a class="itap-tab" href="fidelidade.html"><span class="itap-tab-icon">⭐</span><span class="itap-tab-label">Fidelidade</span></a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      try {
+        var lista = document.getElementById('offline-links');
+        var recentes = JSON.parse(localStorage.getItem('itap_recent_pages') || '[]');
+        if (!Array.isArray(recentes) || !recentes.length) return;
+        var base = [
+          { path: '/', title: '🍦 Início / Cardápio' },
+          { path: '/encomendas.html', title: '📦 Encomendas' },
+          { path: '/promocao.html', title: '🎁 Promoções' },
+          { path: '/fidelidade.html', title: '⭐ Fidelidade' }
+        ];
+        var itens = {};
+        base.concat(recentes).forEach(function(item) {
+          if (!item || !item.path) return;
+          itens[item.path] = item.title || item.path;
+        });
+        lista.innerHTML = '';
+        Object.keys(itens).slice(0, 8).forEach(function(path) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = path;
+          a.textContent = itens[path];
+          li.appendChild(a);
+          lista.appendChild(li);
+        });
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
