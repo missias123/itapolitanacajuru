@@ -405,16 +405,25 @@
         </article>
       </div>
 
-      <!-- Barra de progresso (placeholder visual — sem backend) -->
+      <!-- Barra de progresso (alimentada pelo fetch real) -->
       <div class="progresso-wrap" id="progresso-wrap" aria-live="polite">
         <div class="progresso-label">
-          <span>Sua pontuação atual</span>
+          <span>🥤 Milkshake (meta: 10 pts)</span>
           <strong id="progresso-pts-texto">0 / 10 pts</strong>
         </div>
-        <div class="progresso-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10" aria-label="Progresso de pontos">
+        <div class="progresso-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10" aria-label="Progresso para Milkshake">
           <div class="progresso-bar-fill" id="progresso-fill"></div>
         </div>
-        <p class="progresso-hint">Entre com seu WhatsApp para ver seus pontos reais</p>
+
+        <div class="progresso-label" style="margin-top:10px;">
+          <span>🍨 Caixa 7 bolas (meta: 30 pts)</span>
+          <strong id="progresso-pts30-texto">0 / 30 pts</strong>
+        </div>
+        <div class="progresso-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="30" aria-label="Progresso para Caixa 7 bolas">
+          <div class="progresso-bar-fill" id="progresso-fill30"></div>
+        </div>
+
+        <p class="progresso-hint" id="progresso-hint">Entre com seu WhatsApp para ver seus pontos reais</p>
       </div>
     </section>
 
@@ -497,24 +506,40 @@
     (function() {
       'use strict';
 
-      var inputTel = document.getElementById('cliente-telefone');
-      var inputCodigo = document.getElementById('cliente-codigo');
-      var btnEntrar = document.getElementById('btn-entrar');
-      var btnRegistrar = document.getElementById('btn-registrar-ponto');
-      var resultado = document.getElementById('resultado-cliente');
-      var formCodigoWrap = document.getElementById('form-codigo-wrap');
-      var btnWppResgatar = document.getElementById('btn-wpp-resgatar');
-      var progressoFill = document.getElementById('progresso-fill');
-      var progressoPtsTexto = document.getElementById('progresso-pts-texto');
+      /* ── constantes ────────────────────────────────────────────────── */
+      var GH_RAW = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/';
+      var WPP_NUM = '5516996062046';
+      var META_10 = 10;
+      var META_30 = 30;
 
-      var WPP_NUMERO = '5516996062046';
+      /* ── referências DOM ───────────────────────────────────────────── */
+      var inputTel          = document.getElementById('cliente-telefone');
+      var inputCodigo       = document.getElementById('cliente-codigo');
+      var btnEntrar         = document.getElementById('btn-entrar');
+      var btnRegistrar      = document.getElementById('btn-registrar-ponto');
+      var resultado         = document.getElementById('resultado-cliente');
+      var formCodigoWrap    = document.getElementById('form-codigo-wrap');
+      var btnWppResgatar    = document.getElementById('btn-wpp-resgatar');
+      var fillBar10         = document.getElementById('progresso-fill');
+      var fillBar30         = document.getElementById('progresso-fill30');
+      var ptsTexto10        = document.getElementById('progresso-pts-texto');
+      var ptsTexto30        = document.getElementById('progresso-pts30-texto');
+      var progressoHint     = document.getElementById('progresso-hint');
 
-      function mascaraTel(valor) {
-        var digits = (valor || '').replace(/\D/g, '').slice(0, 11);
-        if (digits.length <= 2) return digits;
-        if (digits.length <= 6) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2);
-        if (digits.length <= 10) return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6);
-        return '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7);
+      /* estado da sessão */
+      var _clienteAtual = null;
+
+      /* ── helpers ───────────────────────────────────────────────────── */
+      function mascaraTel(v) {
+        var d = (v || '').replace(/\D/g, '').slice(0, 11);
+        if (d.length <= 2) return d;
+        if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+        if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+        return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+      }
+
+      function primeiroNome(nomeCompleto) {
+        return (nomeCompleto || 'Cliente').split(' ')[0];
       }
 
       function setResultado(msg, tipo) {
@@ -522,19 +547,51 @@
         resultado.className = 'resultado' + (tipo ? ' ' + tipo : '');
       }
 
-      function atualizarProgresso(pontos, meta) {
-        var m = meta || 10;
-        var pct = Math.min(100, Math.round((pontos / m) * 100));
-        progressoFill.style.width = pct + '%';
-        progressoFill.parentElement.setAttribute('aria-valuenow', pontos);
-        progressoFill.parentElement.setAttribute('aria-valuemax', m);
-        progressoPtsTexto.textContent = pontos + ' / ' + m + ' pts';
+      function atualizarBarras(pts) {
+        var pct10 = Math.min(100, Math.round((pts / META_10) * 100));
+        var pct30 = Math.min(100, Math.round((pts / META_30) * 100));
+
+        fillBar10.style.width = pct10 + '%';
+        fillBar10.parentElement.setAttribute('aria-valuenow', pts);
+        ptsTexto10.textContent = pts + ' / ' + META_10 + ' pts';
+
+        fillBar30.style.width = pct30 + '%';
+        fillBar30.parentElement.setAttribute('aria-valuenow', pts);
+        ptsTexto30.textContent = pts + ' / ' + META_30 + ' pts';
+
+        progressoHint.textContent = pts === 0
+          ? 'Registre cupons para acumular pontos!'
+          : pts + ' ponto' + (pts > 1 ? 's' : '') + ' acumulado' + (pts > 1 ? 's' : '') + ' 🎉';
       }
 
+      function wppLink(texto) {
+        return 'https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(texto);
+      }
+
+      function mostrarWppBtn(href, texto) {
+        btnWppResgatar.href = href;
+        btnWppResgatar.textContent = texto;
+        btnWppResgatar.style.display = 'block';
+      }
+
+      /* ── busca via raw GitHub (público, sem token) ──────────────────── */
+      function ghRawFetch(path) {
+        return fetch(GH_RAW + path + '?t=' + Date.now())
+          .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          });
+      }
+
+      /* ── máscara ────────────────────────────────────────────────────── */
       inputTel.addEventListener('input', function() {
         inputTel.value = mascaraTel(inputTel.value);
       });
+      inputCodigo.addEventListener('input', function() {
+        inputCodigo.value = inputCodigo.value.toUpperCase();
+      });
 
+      /* ── CONSULTAR PONTOS ────────────────────────────────────────────── */
       btnEntrar.addEventListener('click', function() {
         var tel = inputTel.value.replace(/\D/g, '');
         if (!tel || tel.length < 10) {
@@ -544,51 +601,108 @@
 
         btnEntrar.disabled = true;
         btnEntrar.textContent = 'Consultando…';
+        _clienteAtual = null;
+        formCodigoWrap.style.display = 'none';
+        btnWppResgatar.style.display = 'none';
 
-        // Simula latência típica de API (~700ms) para UX placeholder.
-        // TODO integração futura: substituir por fetch para dados/clientes.json autenticado.
-        setTimeout(function() {
-          btnEntrar.disabled = false;
-          btnEntrar.textContent = 'Entrar / Consultar meus pontos';
+        ghRawFetch('dados/clientes.json')
+          .then(function(dados) {
+            var idx = dados.indice_celular || {};
+            var usrKey = idx[tel];
 
-          // Simulação de 0 pontos até integração real
-          var pts = 0;
-          var meta = 10;
-          atualizarProgresso(pts, meta);
+            if (!usrKey || !dados.clientes[usrKey]) {
+              /* telefone não cadastrado */
+              setResultado('Número não encontrado no Clube. Cadastre-se gratuitamente pelo WhatsApp!', 'erro');
+              mostrarWppBtn(
+                wppLink('Olá! Quero me cadastrar no Clube de Fidelidade Itapolitana. Meu WhatsApp: ' + tel),
+                '💬 Cadastrar no Clube via WhatsApp'
+              );
+              return;
+            }
 
-          if (pts >= 10) {
-            setResultado('🎉 Parabéns! Você tem ' + pts + ' pontos e pode resgatar um prêmio!', 'ok');
-            btnWppResgatar.style.display = 'block';
-          } else {
-            setResultado('Olá! Você tem ' + pts + ' pontos. Faltam ' + (meta - pts) + ' para o primeiro prêmio. 🍦 (Dados reais em breve!)', '');
-            formCodigoWrap.style.display = 'grid';
-            btnWppResgatar.style.display = 'none';
-          }
-        }, 700);
+            _clienteAtual = dados.clientes[usrKey];
+            var pts = _clienteAtual.saldoPontos || 0;
+            var nome = primeiroNome(_clienteAtual.nome);
+
+            atualizarBarras(pts);
+
+            if (_clienteAtual.bloqueado) {
+              setResultado('⚠️ Conta com restrição. Fale conosco pelo WhatsApp para regularizar.', 'erro');
+              mostrarWppBtn(wppLink('Olá! Minha conta no Clube Fidelidade está bloqueada. Cel: ' + tel), '💬 Falar com atendente');
+              return;
+            }
+
+            if (pts >= META_30) {
+              setResultado('🎉 ' + nome + ', você tem ' + pts + ' pontos! Pode resgatar a Caixa com 7 bolas grátis!', 'ok');
+              mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Caixa 7 bolas via WhatsApp');
+            } else if (pts >= META_10) {
+              setResultado('🥤 ' + nome + ', você tem ' + pts + ' pontos! Pode resgatar um Milkshake 300ml grátis!', 'ok');
+              mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Milkshake via WhatsApp');
+            } else {
+              setResultado('Olá, ' + nome + '! Você tem ' + pts + ' ponto' + (pts !== 1 ? 's' : '') + '. Faltam ' + (META_10 - pts) + ' para o primeiro prêmio. 🍦', '');
+              formCodigoWrap.style.display = 'grid';
+            }
+          })
+          .catch(function() {
+            setResultado('Não foi possível consultar agora. Verifique sua conexão ou fale via WhatsApp.', 'erro');
+            mostrarWppBtn(wppLink('Olá! Preciso consultar meus pontos no Clube de Fidelidade.'), '💬 Consultar pontos via WhatsApp');
+          })
+          .finally(function() {
+            btnEntrar.disabled = false;
+            btnEntrar.textContent = 'Entrar / Consultar meus pontos';
+          });
       });
 
+      /* ── VALIDAR CÓDIGO ─────────────────────────────────────────────── */
       btnRegistrar.addEventListener('click', function() {
         var codigo = (inputCodigo.value || '').trim().toUpperCase();
         if (!codigo) {
           setResultado('Digite o código do cupom para continuar.', 'erro');
           return;
         }
+        if (!_clienteAtual) {
+          setResultado('Consulte seu WhatsApp primeiro para identificar sua conta.', 'erro');
+          return;
+        }
 
         btnRegistrar.disabled = true;
         btnRegistrar.textContent = 'Validando…';
 
-        // Simula latência típica de API (~700ms) para UX placeholder.
-        // TODO integração futura: fetch para dados/fidelidade.json → validar código → incrementar pontos.
-        setTimeout(function() {
-          btnRegistrar.disabled = false;
-          btnRegistrar.textContent = '✅ Validar Código';
-          setResultado('Código recebido! Em breve você poderá registrar seus códigos em tempo real. 🎟️', '');
-          inputCodigo.value = '';
-        }, 700);
-      });
+        ghRawFetch('dados/fidelidade.json')
+          .then(function(fid) {
+            /* chave com acento conforme dados/fidelidade.json */
+            var codigos = fid['c\u00f3digos'] || fid['codigos'] || {};
+            var entrada = codigos[codigo];
 
-      inputCodigo.addEventListener('input', function() {
-        inputCodigo.value = inputCodigo.value.toUpperCase();
+            if (!entrada) {
+              setResultado('Código inválido. Verifique o cupom e tente novamente.', 'erro');
+              return;
+            }
+            if (entrada.status !== 'dispon\u00edvel') {
+              setResultado('Este código já foi utilizado. Cada cupom vale apenas uma vez.', 'erro');
+              return;
+            }
+            var usados = _clienteAtual.codigosUsados || [];
+            if (usados.indexOf(codigo) !== -1) {
+              setResultado('Você já usou este código anteriormente.', 'erro');
+              return;
+            }
+
+            /* código válido → encaminhar ao atendente via WhatsApp */
+            var pts = _clienteAtual.saldoPontos || 0;
+            var telCliente = _clienteAtual.cel || inputTel.value.replace(/\D/g, '');
+            var msg = 'Clube Fidelidade - Registrar ponto\nNome: ' + _clienteAtual.nome + '\nTel: ' + telCliente + '\nCódigo: ' + codigo + '\nPontos atuais: ' + pts;
+            setResultado('✅ Código válido! Clique no botão abaixo para enviar ao atendente e registrar seu ponto. 🎟️', 'ok');
+            mostrarWppBtn(wppLink(msg), '💬 Enviar código para registrar ponto');
+            inputCodigo.value = '';
+          })
+          .catch(function() {
+            setResultado('Erro ao validar código. Tente novamente.', 'erro');
+          })
+          .finally(function() {
+            btnRegistrar.disabled = false;
+            btnRegistrar.textContent = '✅ Validar Código';
+          });
       });
     })();
   </script>
