@@ -539,16 +539,23 @@
 
   ];
 
-  /* Monta a resposta HTML: texto base + botão-link clicável (grande e tátil em Android).
-     Parâmetro: entrada do itaBotKnowledge com answer, linkText, linkHref, external. */
+  /* Monta a resposta como DocumentFragment usando apenas DOM APIs (sem innerHTML).
+     UX: texto limpo em span + link-botão opcional. Segurança: textContent em cada nó. */
   function _itabotMontarResposta(entry) {
-    var html = '<span style="display:block;margin-bottom:10px;line-height:1.6">' + entry.answer + '</span>';
+    var frag = document.createDocumentFragment();
+    var span = document.createElement('span');
+    span.style.cssText = 'display:block;margin-bottom:10px;line-height:1.6';
+    span.textContent = entry.answer;
+    frag.appendChild(span);
     if (entry.linkHref && entry.linkText) {
-      var target = entry.external ? ' target="_blank" rel="noopener noreferrer"' : '';
-      var href = entry.external ? entry.linkHref : (_base + entry.linkHref);
-      html += '<a href="' + href + '" class="itabot-link-btn"' + target + '>' + entry.linkText + '</a>';
+      var a = document.createElement('a');
+      a.href = entry.external ? entry.linkHref : (_base + entry.linkHref);
+      a.className = 'itabot-link-btn';
+      if (entry.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      a.textContent = entry.linkText;
+      frag.appendChild(a);
     }
-    return html;
+    return frag;
   }
 
   /* ─── Carrega FAQs dos JSON e mescla ─── */
@@ -579,39 +586,44 @@
   }());
 
   /* ─── Chat functions ─── */
-  /* Renderiza a resposta do bot usando DOM API (sem innerHTML direto),
-     evitando XSS mesmo que o conteúdo carregue de JSON externo. */
-  function _itabotSetResposta(html) {
-    var el = document.getElementById('duvidas-resposta');
-    if (!el) return;
-    /* Usar DOMParser para criar um documento seguro, depois copiar
-       apenas os nós permitidos (span + a) para o container. */
+  /* Converte string HTML (de RESPOSTAS/FAQ) em DocumentFragment seguro usando DOMParser.
+     RESPOSTAS vêm de dados estáticos do servidor, nunca do input do usuário. */
+  function _itabotHtmlParaFragmento(html) {
     try {
       var parser = new DOMParser();
       var doc = parser.parseFromString(html, 'text/html');
-      /* Remover scripts e atributos de eventos inline (segurança) */
       doc.querySelectorAll('script, style').forEach(function (n) { n.remove(); });
       doc.querySelectorAll('*').forEach(function (n) {
         var toRemove = [];
         for (var i = 0; i < n.attributes.length; i++) {
           var a = n.attributes[i];
-          if (/^on/i.test(a.name) || /javascript\s*:/i.test(a.value)) {
-            toRemove.push(a.name);
-          }
+          if (/^on/i.test(a.name) || /javascript\s*:/i.test(a.value)) toRemove.push(a.name);
         }
         toRemove.forEach(function (name) { n.removeAttribute(name); });
       });
-      /* Limpar container e inserir nós via adoptNode (sem innerHTML) */
-      while (el.firstChild) { el.removeChild(el.firstChild); }
+      var frag = document.createDocumentFragment();
       Array.from(doc.body.childNodes).forEach(function (child) {
-        el.appendChild(document.adoptNode(child));
+        frag.appendChild(document.adoptNode(child));
       });
+      return frag;
     } catch (e) {
-      /* Fallback seguro: exibir como texto puro */
-      el.textContent = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      var frag2 = document.createDocumentFragment();
+      var span = document.createElement('span');
+      span.textContent = html.replace(/<[^>]*>/g, ' ').trim();
+      frag2.appendChild(span);
+      return frag2;
     }
+  }
+  /* Exibe um DocumentFragment na área de resposta (sem innerHTML, sem parseFromString aqui). */
+  function _itabotSetResposta(frag) {
+    var el = document.getElementById('duvidas-resposta');
+    if (!el) return;
+    while (el.firstChild) { el.removeChild(el.firstChild); }
+    if (frag) { el.appendChild(frag); }
     el.scrollTop = 0;
   }
+  /* Lookup: recebe msg do usuário, retorna DocumentFragment com dados estáticos.
+     msg é usada SOMENTE como chave de busca — nunca incluída no conteúdo exibido. */
   function _itabotGetResp(msg) {
     var norm = function (s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
     var l = norm(msg);
@@ -621,7 +633,7 @@
       var entry = itaBotKnowledge[i];
       for (var j = 0; j < entry.keywords.length; j++) {
         if (l.indexOf(norm(entry.keywords[j])) !== -1) {
-          return _itabotMontarResposta(entry);
+          return _itabotMontarResposta(entry);  /* retorna DocumentFragment */
         }
       }
     }
@@ -629,13 +641,15 @@
     // 2) Fallback: verifica RESPOSTAS para palavras-chave específicas (sabores, preços detalhados, etc.)
     for (var k in RESPOSTAS) {
       if (k !== 'default' && l.indexOf(norm(k)) !== -1) {
-        return typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
+        var r = typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
+        return _itabotHtmlParaFragmento(r);  /* converte HTML estático em DOM fragment */
       }
     }
 
     // 3) Resposta padrão quando nenhuma palavra-chave for reconhecida
     var d = RESPOSTAS['default'];
-    return typeof d === 'function' ? d() : d;
+    var dHtml = typeof d === 'function' ? d() : d;
+    return _itabotHtmlParaFragmento(dHtml);
   }
   window._itabotEnviarSug = function (btn) {
     var inp = document.getElementById('duvidas-pergunta');
