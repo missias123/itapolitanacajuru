@@ -578,18 +578,38 @@
     });
   }());
 
-  /* Sanitização defensiva para respostas do bot antes de usar innerHTML.
-     Remove handlers JS inline e esquemas javascript: de qualquer conteúdo. */
-  function _itabotSanitize(html) {
-    return html
-      .replace(/javascript\s*:/gi, '#')
-      .replace(/\s*on\w+\s*=/gi, ' data-removed=');
-  }
   /* ─── Chat functions ─── */
+  /* Renderiza a resposta do bot usando DOM API (sem innerHTML direto),
+     evitando XSS mesmo que o conteúdo carregue de JSON externo. */
   function _itabotSetResposta(html) {
     var el = document.getElementById('duvidas-resposta');
     if (!el) return;
-    el.innerHTML = _itabotSanitize(html);
+    /* Usar DOMParser para criar um documento seguro, depois copiar
+       apenas os nós permitidos (span + a) para o container. */
+    try {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+      /* Remover scripts e atributos de eventos inline (segurança) */
+      doc.querySelectorAll('script, style').forEach(function (n) { n.remove(); });
+      doc.querySelectorAll('*').forEach(function (n) {
+        var toRemove = [];
+        for (var i = 0; i < n.attributes.length; i++) {
+          var a = n.attributes[i];
+          if (/^on/i.test(a.name) || /javascript\s*:/i.test(a.value)) {
+            toRemove.push(a.name);
+          }
+        }
+        toRemove.forEach(function (name) { n.removeAttribute(name); });
+      });
+      /* Limpar container e inserir nós via adoptNode (sem innerHTML) */
+      while (el.firstChild) { el.removeChild(el.firstChild); }
+      Array.from(doc.body.childNodes).forEach(function (child) {
+        el.appendChild(document.adoptNode(child));
+      });
+    } catch (e) {
+      /* Fallback seguro: exibir como texto puro */
+      el.textContent = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
     el.scrollTop = 0;
   }
   function _itabotGetResp(msg) {
