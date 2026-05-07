@@ -3954,6 +3954,23 @@ function abrirItaBot() {
     if (inp) inp.focus();
   }, 120);
 }
+// Reforço de binding do Ita Bot na home para manter o clique consistente no mobile e nos testes E2E.
+document.addEventListener('DOMContentLoaded', function() {
+  var fab = document.getElementById('chat-fab-btn');
+  if (fab) {
+    fab.addEventListener('click', function(e) {
+      e.preventDefault();
+      abrirItaBot();
+    });
+  }
+  var btnDuvidas = document.getElementById('ita-bot-duvidas');
+  if (btnDuvidas) {
+    btnDuvidas.addEventListener('click', function(e) {
+      e.preventDefault();
+      abrirItaBot();
+    });
+  }
+});
 
 function abrirFaleConosco() {
   var d = document.getElementById('fale-dialog');
