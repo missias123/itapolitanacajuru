@@ -251,7 +251,8 @@ img{max-width:100%;display:block}
 .promo-top-bar-título{font-size:clamp(13px,3.5vw,16px);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
 .promo-top-bar-sub{font-size:clamp(11px,3vw,13px);font-weight:700;opacity:.85}
 .promo-top-bar-cta{background:rgba(0,0,0,.18);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:900;white-space:nowrap;flex-shrink:0}
-.promo-top-bar-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.2);border:none;border-radius:50%;width:26px;height:26px;color:#1A0A00;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+/* Ajuste de safe area para evitar sobreposição em mobile – touch target mínimo 44px */
+.promo-top-bar-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.2);border:none;border-radius:50%;width:44px;height:44px;color:#1A0A00;font-size:15px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
 .promo-top-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2.5s infinite}
 /* HEADER */
@@ -550,7 +551,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 @keyframes popInModal{from{transform:scale(.93) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 @media(min-width:600px){.modal-box{max-height:82vh;max-width:500px}}
 .modal-handle{display:block;width:36px;height:4px;background:#D1D5DB;border-radius:3px;margin:6px auto 14px;flex-shrink:0}
-.modal-close{position:absolute;top:12px;right:14px;background:#F3F4F6;border:none;border-radius:50%;width:38px;height:38px;font-size:18px;font-weight:700;color:#374151;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;z-index:10}
+.modal-close{position:absolute;top:10px;right:10px;background:#F3F4F6;border:none;border-radius:50%;width:44px;height:44px;font-size:18px;font-weight:700;color:#374151;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;z-index:10;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .modal-close:hover{background:#E5E7EB}
 .modal-title{font-size:19px;font-weight:900;margin-bottom:4px;padding-right:48px;line-height:1.3}
 .modal-sub{font-size:13px;color:#7B2D8B;font-weight:700;margin-bottom:16px}
@@ -567,7 +568,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .promo-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;align-items:center;justify-content:center;padding:16px}
 .promo-overlay.show{display:flex}
 .promo-box{background:linear-gradient(135deg,#FF6B35,#E8000D,#7B2D8B);border-radius:20px;padding:28px 24px;max-width:380px;width:100%;color:#fff;text-align:center;position:relative;box-shadow:0 8px 32px rgba(232,0,13,.4)}
-.promo-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.promo-close{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:44px;height:44px;color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .promo-icon{font-size:48px;margin-bottom:12px}
 .promo-title{font-size:22px;font-weight:900;margin-bottom:8px}
 .promo-desc{font-size:14px;color:#fff;margin-bottom:20px;line-height:1.5}

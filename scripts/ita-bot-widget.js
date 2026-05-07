@@ -39,7 +39,8 @@
 .duvidas-chips-wrap{padding:8px 14px 10px;background:#FAFAFA;border-top:1px solid #F3F4F6;flex-shrink:0}
 .duvidas-chips-label{font-size:10px;color:#999;font-weight:700;margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase;display:block}
 .duvidas-chips-row{display:flex;gap:6px;flex-wrap:wrap}
-.duvidas-chip{background:#FFF5F5;color:#C62828;border:1.5px solid #FFCDD2;border-radius:22px;padding:6px 11px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:background .15s,transform .1s,border-color .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex-shrink:0;min-height:34px}
+/* Ajuste de safe area para evitar sobreposição em mobile – touch target mínimo 44px (Apple/Google HIG) */
+.duvidas-chip{background:#FFF5F5;color:#C62828;border:1.5px solid #FFCDD2;border-radius:22px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:background .15s,transform .1s,border-color .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex-shrink:0;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
 .duvidas-chip:hover,.duvidas-chip:focus-visible{background:#FFEBEE;border-color:#E8000D;transform:translateY(-1px);outline:2px solid #E8000D;outline-offset:1px}
 .duvidas-chip:active{transform:scale(.95)}
 #chat-dialog{display:none;position:fixed;inset:0;width:100%;height:100%;z-index:10000;background:rgba(0,0,0,.55);overflow:hidden}
