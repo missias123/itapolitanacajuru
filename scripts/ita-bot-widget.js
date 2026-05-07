@@ -364,21 +364,6 @@
     'historia':      '🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos de tradição!',
     'artesanal':     '🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis!',
     'qualidade':     '🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
-    // Features descontinuadas: Caça à Estrela, Estrela Dourada, Itamanduá e Raspadinha.
-    'caça':          'ℹ️ A Caça à Estrela foi descontinuada. Hoje o destaque é o Clube de Fidelidade e as promoções atuais da Itapolitana.',
-    'estrela':       'ℹ️ A Caça à Estrela foi descontinuada. Posso te ajudar com fidelidade, promoções ou encomendas atuais.',
-    'estrela dourada':'ℹ️ A Estrela Dourada foi descontinuada. Agora o foco está no Clube de Fidelidade e nas promoções atuais.',
-    'mascote':       '🤖 O Ita Bot continua por aqui para ajudar com cardápio, fidelidade, encomendas e promoções atuais.',
-    'itamandua':     'ℹ️ O conteúdo do Itamanduá ligado à Caça à Estrela foi descontinuado. Posso te ajudar com os recursos atuais do site.',
-    'raspadinha':    'ℹ️ A raspadinha foi descontinuada. Hoje o foco está no Clube de Fidelidade e nas promoções atuais da Itapolitana.',
-    'dicas':         '💡 Temos uma página de Dicas com orientações para festas e eventos. Acesse "Dicas/Depoimentos" no menu!',
-    'depoimentos':   '⭐ Veja o que nossos clientes dizem! Acesse a página "Dicas/Depoimentos" no menu do site.',
-    'privacidade':   '🔒 Nossa Política de Privacidade está disponível no site. Respeitamos a LGPD e protegemos seus dados pessoais.',
-    'lgpd':          '🔒 Seguimos a LGPD. Seus dados são usados apenas para o Clube de Fidelidade e Sorteio.',
-    'dados pessoais':'🔒 Seus dados pessoais são protegidos conforme a LGPD. Consulte nossa Política de Privacidade no rodapé.',
-    'galeria':       '📸 Temos uma galeria de fotos no site! Acesse "Galeria" para ver imagens dos nossos produtos.',
-    'foto':          '📸 Veja fotos dos nossos produtos na Galeria do site! E siga @sorveteriaitapolitanacajuru no Instagram.',
-    'recheado':      '🍭 Picolés Recheados são nossa especialidade! Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
     'default':       'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · promoções · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
   };
 
