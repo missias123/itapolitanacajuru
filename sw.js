@@ -4,17 +4,23 @@
  * Estratégia: Cache First (assets), Network First (HTML/API)
  */
 
-const CACHE_NAME   = 'itapolitana-v5';
-const ASSETS_CACHE = 'assets-v5';
+const CACHE_NAME   = 'itapolitana-v6';
+const ASSETS_CACHE = 'assets-v6';
 
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
+  '/fidelidade.html',
+  '/encomendas.html',
+  '/promocao.html',
   '/manifest.json',
   '/mascote.css',
   '/css/design-system.min.css',
+  '/scripts/quality-guard.js',
   '/images/logo.webp',
+  '/images/icon-192.png',
   '/images/icon-192.webp',
+  '/apple-touch-icon.png',
   '/offline.html'
 ];
 
@@ -88,7 +94,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML e navegação — Network First com fallback offline
+  // HTML e navegação — Network First com fallback offline útil
   event.respondWith(
     fetch(request)
       .then(response => {
@@ -99,8 +105,14 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() =>
-        caches.match(request)
-          .then(cached => cached || caches.match('/offline.html'))
+        caches.match(request).then(cached => {
+          if (cached) return cached;
+          if (request.mode === 'navigate') {
+            return caches.match('/index.html')
+              .then(home => home || caches.match('/offline.html'));
+          }
+          return caches.match('/offline.html');
+        })
       )
   );
 });

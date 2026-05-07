@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#EF0129">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <title>Sorveteria Itapolitana - Modo Offline</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -91,7 +94,7 @@
         
         <div class="cached-pages">
             <h3>📄 Páginas em Cache</h3>
-            <ul>
+            <ul id="offline-links">
                 <li><a href="/">🍦 Página Principal</a></li>
                 <li><a href="/encomendas.html">🛒 Encomendas</a></li>
                 <li><a href="/fidelidade.html">⭐ Fidelidade</a></li>
@@ -101,5 +104,34 @@
         <p style="font-size: 14px; color: #999;">Verifique sua conexão com a internet e tente novamente.</p>
         <button class="retry-btn" onclick="location.reload()">🔄 Tentar Novamente</button>
     </div>
+    <script>
+      (function() {
+        try {
+          const lista = document.getElementById('offline-links');
+          const recentes = JSON.parse(localStorage.getItem('itap_recent_pages') || '[]');
+          if (!Array.isArray(recentes) || !recentes.length) return;
+          const base = [
+            { path: '/', title: '🍦 Página Principal' },
+            { path: '/encomendas.html', title: '🛒 Encomendas' },
+            { path: '/fidelidade.html', title: '⭐ Fidelidade' },
+            { path: '/promocao.html', title: '🎁 Promoções' }
+          ];
+          const itens = {}
+          base.concat(recentes).forEach(function(item) {
+            if (!item || !item.path) return;
+            itens[item.path] = item.title || item.path;
+          });
+          lista.innerHTML = '';
+          Object.keys(itens).slice(0, 8).forEach(function(path) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = path;
+            a.textContent = itens[path];
+            li.appendChild(a);
+            lista.appendChild(li);
+          });
+        } catch (e) {}
+      })();
+    </script>
 </body>
 </html>
