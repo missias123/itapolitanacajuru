@@ -21,6 +21,10 @@
   <link rel="dns-prefetch" href="https://raw.githubusercontent.com"/>
   <link rel="dns-prefetch" href="https://wa.me"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="theme-color" content="#EF0129"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="description" content="Encomende tortas de sorvete, caixas 5L/10L e picolés em atacado para festas em Cajuru/SP. Peça pela Itapolitana via WhatsApp! Atendemos Cajuru, Ribeirão Preto e região."/>
 <meta content="encomenda sorvete Cajuru, torta de sorvete Cajuru, caixa de sorvete Cajuru, picolé atacado Cajuru, festa sorvete Cajuru, Itapolitana encomendas, sorvete para eventos Cajuru" name="keywords"/>
 <meta content="index, follow" name="robots"/>
@@ -32,7 +36,7 @@
 <meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
 <meta content="pt_BR" property="og:locale"/>
 <link href="manifest.json" rel="manifest"/>
-<link href="images/logo.webp" rel="apple-touch-icon"/>
+<link href="/apple-touch-icon.png" rel="apple-touch-icon"/>
 <title>Encomendas de Sorvete para Festas | Cajuru SP</title>
 
 <style>
@@ -1212,7 +1216,7 @@ html { scroll-behavior: smooth; }
 </style>
 <!-- cache-bust:20260408_111640 -->
 </head>
-<body>
+<body class="itap-has-bottom-tabs">
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -1272,6 +1276,19 @@ html { scroll-behavior: smooth; }
 <!-- Badge: sem delivery — Item 1 -->
 <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.45);border-radius:50px;padding:7px 18px;margin-top:14px;font-size:0.82rem;font-weight:800;color:#fff;letter-spacing:.2px;" role="note" aria-label="Informação sobre delivery">🚫 Não fazemos delivery &nbsp;·&nbsp; Encomende e retire na loja</div>
 </div>
+<!-- UX FINAL (inspiração iFood/Rappi): trilha curta de fluxo logo no topo para reduzir dúvidas -->
+<section style="max-width:860px;margin:14px auto 0;padding:0 16px 8px;">
+  <div style="background:#FFFFFF;border:1.5px solid #BBDEFB;border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px rgba(13,71,161,.08);font-size:.86rem;color:#0D47A1;font-weight:800;text-align:center;">
+    Como funciona: <strong>1. Escolha os produtos</strong> · <strong>2. Clique em “Fazer pedido”</strong> · <strong>3. Finalize no WhatsApp</strong>
+  </div>
+</section>
+<style>
+/* Reserva espaço para: botão carrinho fixo + mini resumo + tabs inferiores no mobile */
+:root { --ux-final-safe-bottom: 150px; }
+@media (max-width: 768px) {
+  body { padding-bottom: calc(var(--ux-final-safe-bottom) + env(safe-area-inset-bottom, 0px)); }
+}
+</style>
 
 <!-- ═══════════════════════════════════════════════════
      SEÇÃO: COMO FAZER SUA ENCOMENDA — Item 3
@@ -1436,6 +1453,10 @@ html { scroll-behavior: smooth; }
   🛒 Ver Carrinho
   <span class="badge" id="carrinho-badge">0</span>
 </button>
+<!-- UX FINAL (inspiração iFood): mini-resumo sempre visível perto da ação principal -->
+<div id="resumo-pedido-flutuante" style="position:fixed;right:14px;bottom:84px;z-index:900;background:#fff;border:1.5px solid #FFE0B2;border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.14);font-size:.78rem;font-weight:800;color:#5D4037;max-width:240px;">
+  Resumo: <span id="resumo-flutuante-itens">0 itens</span> · <span id="resumo-flutuante-total">R$ 0,00</span>
+</div>
 <div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
 <div class="modal-box">
 <div class="modal-header">
@@ -1573,7 +1594,7 @@ html { scroll-behavior: smooth; }
 <div class="botãoes-etapa-dados">
 <div class="barra-acao barra-verde" id="barra-btn-finalizar">
 <span style="width:44px;"></span>
-<span class="barra-texto" id="texto-btn-finalizar">📲 Gerar Pedido e Enviar via WhatsApp</span>
+<span class="barra-texto" id="texto-btn-finalizar">📲 Finalizar no WhatsApp</span>
 <button class="btn-acao-redondo btn-vermelho" disabled="" id="btn-finalizar" style="opacity:0.4;" title="Gerar Pedido" type="button">✓</button>
 </div>
 <div id="campos-obrigatórios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
@@ -1671,6 +1692,50 @@ html { scroll-behavior: smooth; }
 <!-- FIM CERTIFICAÇÕES E SEGURANÇA -->
 <script src="scripts/products.js?v=20260225" defer></script>
 <script src="scripts/enc-v2.js?v=25_limite_excedido" defer></script>
+<script>
+// UX FINAL: sincroniza mini-resumo com badge do carrinho e total atual.
+(function() {
+  var badge = document.getElementById('carrinho-badge');
+  var carrinhoBtn = document.getElementById('btn-carrinho');
+  var tabs = document.querySelector('.itap-bottom-tabs');
+  var total = document.getElementById('total-carrinho');
+  var outItens = document.getElementById('resumo-flutuante-itens');
+  var outTotal = document.getElementById('resumo-flutuante-total');
+  var box = document.getElementById('resumo-pedido-flutuante');
+  if (!badge || !total || !outItens || !outTotal || !box) return;
+
+  function atualizarEspacoSeguro() {
+    var hResumo = box.offsetHeight || 0;
+    var hCarrinho = carrinhoBtn ? (carrinhoBtn.offsetHeight || 0) : 0;
+    var hTabs = tabs ? (tabs.offsetHeight || 0) : 0;
+    // 26px = respiro visual entre elementos fixos e o conteúdo rolável.
+    var margemRespiro = 26;
+    var reserva = hResumo + hCarrinho + hTabs + margemRespiro;
+    document.documentElement.style.setProperty('--ux-final-safe-bottom', Math.max(140, reserva) + 'px');
+  }
+
+  function atualizarResumoFlutuante() {
+    var qtd = parseInt((badge.textContent || '0').replace(/\D/g, ''), 10) || 0;
+    var totalTxt = (total.textContent || 'R$ 0,00').trim();
+    outItens.textContent = qtd + ' item' + (qtd === 1 ? '' : 's');
+    outTotal.textContent = totalTxt;
+    box.style.display = qtd > 0 ? 'block' : 'none';
+    atualizarEspacoSeguro();
+  }
+
+  atualizarResumoFlutuante();
+  var obsBadge = new MutationObserver(atualizarResumoFlutuante);
+  var obsTotal = new MutationObserver(atualizarResumoFlutuante);
+  obsBadge.observe(badge, { childList: true, subtree: true, characterData: true });
+  obsTotal.observe(total, { childList: true, subtree: true, characterData: true });
+  window.addEventListener('resize', atualizarEspacoSeguro);
+  window.addEventListener('orientationchange', atualizarEspacoSeguro);
+  window.addEventListener('beforeunload', function() {
+    obsBadge.disconnect();
+    obsTotal.disconnect();
+  });
+})();
+</script>
 
 
 <!-- Botão Admin discreto -->
@@ -1723,6 +1788,27 @@ html { scroll-behavior: smooth; }
   </div>
 </footer>
 <!-- ═══ FIM RODAPÉ PADRÃO ═══════════════════════════════════════════════════ -->
+
+<style>
+/* ═══ APP TABS MOBILE (FASE 3.1) ═══════════════════════════════════════ */
+.itap-bottom-tabs{position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#FFF8F0;border-top:1px solid #E8D7C5;box-shadow:0 -6px 18px rgba(0,0,0,.12);display:none;padding-bottom:env(safe-area-inset-bottom,0px)}
+.itap-bottom-tabs__inner{max-width:980px;margin:0 auto;height:56px;display:grid;grid-template-columns:repeat(4,1fr)}
+.itap-tab{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#5D4037;font-weight:800;font-size:11px;letter-spacing:.2px}
+.itap-tab-icon{font-size:1.22rem;line-height:1}
+.itap-tab-label{line-height:1}
+.itap-tab.is-active{color:#E8000D;background:rgba(232,0,13,.08)}
+.itap-tab.is-active .itap-tab-icon{transform:translateY(-1px)}
+@media(max-width:768px){.itap-bottom-tabs{display:block}body.itap-has-bottom-tabs{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}}
+@media(min-width:769px){.itap-bottom-tabs{display:none!important}}
+</style>
+<nav class="itap-bottom-tabs" aria-label="Navegação inferior do app">
+  <div class="itap-bottom-tabs__inner">
+    <a class="itap-tab" href="index.html"><span class="itap-tab-icon">🍦</span><span class="itap-tab-label">Início</span></a>
+    <a class="itap-tab is-active" href="encomendas.html" aria-current="page"><span class="itap-tab-icon">📦</span><span class="itap-tab-label">Encomendas</span></a>
+    <a class="itap-tab" href="promocao.html"><span class="itap-tab-icon">🎁</span><span class="itap-tab-label">Promoções</span></a>
+    <a class="itap-tab" href="fidelidade.html"><span class="itap-tab-icon">⭐</span><span class="itap-tab-label">Fidelidade</span></a>
+  </div>
+</nav>
 
 <script src="scripts/site-loader.js" defer></script>
 

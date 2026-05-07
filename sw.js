@@ -1,20 +1,29 @@
 /**
  * SW.JS — Sorveteria Itapolitana Cajuru
- * Versão: 4.0 — Cache inteligente para GitHub Pages
+ * Versão: 7.0 (itapolitana-v7) — PWA Versão 2
  * Estratégia: Cache First (assets), Network First (HTML/API)
+ *
+ * Para atualizar o cache no futuro, incremente CACHE_NAME e ASSETS_CACHE
+ * (ex.: itapolitana-v8 / assets-v8). O evento 'activate' apaga versões antigas.
  */
 
-const CACHE_NAME   = 'itapolitana-v5';
-const ASSETS_CACHE = 'assets-v5';
+const CACHE_NAME   = 'itapolitana-v7';
+const ASSETS_CACHE = 'assets-v7';
 
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
+  '/fidelidade.html',
+  '/encomendas.html',
+  '/promocao.html',
   '/manifest.json',
   '/mascote.css',
   '/css/design-system.min.css',
+  '/scripts/quality-guard.js',
   '/images/logo.webp',
+  '/images/icon-192.png',
   '/images/icon-192.webp',
+  '/apple-touch-icon.png',
   '/offline.html'
 ];
 
@@ -54,6 +63,8 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) return;
 
   // GitHub API, raw e painel admin — Network Only (nunca cachear)
+  // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
+  // Para fidelidade offline parcial, o fallback de último saldo é feito via localStorage na própria página.
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
       url.pathname.startsWith('/dados/') ||
@@ -88,7 +99,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML e navegação — Network First com fallback offline
+  // HTML e navegação — Network First com fallback offline útil
   event.respondWith(
     fetch(request)
       .then(response => {
@@ -99,8 +110,14 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() =>
-        caches.match(request)
-          .then(cached => cached || caches.match('/offline.html'))
+        caches.match(request).then(cached => {
+          if (cached) return cached;
+          if (request.mode === 'navigate') {
+            return caches.match('/index.html')
+              .then(home => home || caches.match('/offline.html'));
+          }
+          return caches.match('/offline.html');
+        })
       )
   );
 });

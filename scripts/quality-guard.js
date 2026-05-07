@@ -15,6 +15,9 @@
   // 1. MEMÓRIA DE QUALIDADE — persiste entre sessões
   // ═══════════════════════════════════════════════════════
   const QG_KEY = 'itap_quality_guard';
+  const RECENT_PAGES_KEY = 'itap_recent_pages';
+  const PWA_INSTALL_KEY = 'itap_pwa_install_prompt_until';
+  const PWA_FIRST_SEEN_KEY = 'itap_pwa_first_seen_at';
   
   function lerMemoria() {
     try {
@@ -28,6 +31,212 @@
       const novo = Object.assign(atual, dados, { ultima_atualizacao: new Date().toISOString() });
       localStorage.setItem(QG_KEY, JSON.stringify(novo));
     } catch(e) {}
+  }
+
+  function salvarPaginaRecente() {
+    try {
+      const titulo = (document.title || '').trim().slice(0, 80) || 'Página';
+      const item = {
+        path: window.location.pathname || '/',
+        title: titulo,
+        ts: new Date().toISOString()
+      };
+      const atual = JSON.parse(localStorage.getItem(RECENT_PAGES_KEY) || '[]');
+      const semDuplicado = atual.filter(function(p) { return p.path !== item.path; });
+      semDuplicado.unshift(item);
+      localStorage.setItem(RECENT_PAGES_KEY, JSON.stringify(semDuplicado.slice(0, 8)));
+    } catch(e) {}
+  }
+
+  function instalarUiPwa() {
+    let cssInjetado = false;
+    let bannerPwa = null;
+    let toastRede = null;
+    let deferredPrompt = null;
+    let monitorPromptAndroid = null;
+
+    function promptAdiadoAtivo() {
+      try {
+        return Number(localStorage.getItem(PWA_INSTALL_KEY) || 0) > Date.now();
+      } catch(e) { return false; }
+    }
+
+    function adiarPrompt(dias) {
+      try {
+        const expiryTimestamp = Date.now() + (dias * 24 * 60 * 60 * 1000);
+        localStorage.setItem(PWA_INSTALL_KEY, String(expiryTimestamp));
+      } catch(e) {}
+    }
+
+    function obterPrimeiraVisitaTs() {
+      try {
+        var atual = Number(localStorage.getItem(PWA_FIRST_SEEN_KEY) || 0);
+        if (atual > 0) return atual;
+        var agora = Date.now();
+        localStorage.setItem(PWA_FIRST_SEEN_KEY, String(agora));
+        return agora;
+      } catch(e) {
+        return Date.now();
+      }
+    }
+
+    function contarPaginasRecentesUnicas() {
+      try {
+        var lista = JSON.parse(localStorage.getItem(RECENT_PAGES_KEY) || '[]');
+        if (!Array.isArray(lista)) return 0;
+        var unicas = {};
+        lista.forEach(function(item) {
+          if (item && item.path) unicas[item.path] = true;
+        });
+        return Object.keys(unicas).length;
+      } catch(e) {
+        return 0;
+      }
+    }
+
+    function prontoParaPromptAndroid() {
+      var paginas = contarPaginasRecentesUnicas();
+      var primeiraVisita = obterPrimeiraVisitaTs();
+      var tempoDecorrido = Date.now() - primeiraVisita;
+      return paginas >= 2 && tempoDecorrido >= 30 * 1000;
+    }
+
+    function tentarMostrarPromptAndroid() {
+      if (!deferredPrompt) return false;
+      if (standalone) return false;
+      if (promptAdiadoAtivo()) return false;
+      if (!prontoParaPromptAndroid()) return false;
+
+      // Exibir o install prompt em momento de valor (após navegação + tempo),
+      // seguindo padrão de engajamento de apps grandes: primeiro valor, depois convite.
+      mostrarBanner({
+        msg: 'Instale o app da Itapolitana na tela inicial para abrir como aplicativo.',
+        primaryLabel: 'Instalar app',
+        onPrimary: function() {
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          if (deferredPrompt.userChoice && typeof deferredPrompt.userChoice.finally === 'function') {
+            deferredPrompt.userChoice
+              .catch(function() {})
+              .finally(function() {
+                deferredPrompt = null;
+                removerBanner();
+                adiarPrompt(30);
+              });
+          } else {
+            deferredPrompt = null;
+            removerBanner();
+            adiarPrompt(30);
+          }
+        }
+      });
+      return true;
+    }
+
+    function iniciarMonitorPromptAndroid() {
+      if (monitorPromptAndroid) return;
+      monitorPromptAndroid = setInterval(function() {
+        if (tentarMostrarPromptAndroid()) {
+          clearInterval(monitorPromptAndroid);
+          monitorPromptAndroid = null;
+        }
+      }, 5000);
+    }
+
+    window.addEventListener('beforeunload', function() {
+      if (monitorPromptAndroid) {
+        clearInterval(monitorPromptAndroid);
+        monitorPromptAndroid = null;
+      }
+    });
+
+    function injetarCss() {
+      if (cssInjetado) return;
+      cssInjetado = true;
+      const style = document.createElement('style');
+      style.textContent = '.itap-pwa-banner{position:fixed;left:12px;right:12px;bottom:14px;z-index:2147483000;background:#fff;border:2px solid #EF0129;border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.25);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.itap-pwa-msg{font-size:.86rem;font-weight:800;color:#1A0A00;line-height:1.25}.itap-pwa-acoes{display:flex;gap:8px;flex-shrink:0}.itap-pwa-btn{border:none;border-radius:999px;padding:8px 12px;font-size:.78rem;font-weight:900;cursor:pointer}.itap-pwa-btn.primary{background:#EF0129;color:#fff}.itap-pwa-btn.ghost{background:#f1f1f1;color:#333}.itap-net-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:2147483001;background:#1A0A00;color:#fff;padding:8px 12px;border-radius:999px;font-size:.78rem;font-weight:800;box-shadow:0 8px 16px rgba(0,0,0,.24);opacity:0;transition:opacity .2s ease}.itap-net-toast.show{opacity:1}@media (min-width:768px){.itap-pwa-banner{max-width:560px;left:50%;right:auto;transform:translateX(-50%)}}';
+      document.head.appendChild(style);
+    }
+
+    function removerBanner() {
+      if (bannerPwa && bannerPwa.parentNode) bannerPwa.parentNode.removeChild(bannerPwa);
+      bannerPwa = null;
+    }
+
+    function mostrarBanner(opts) {
+      if (promptAdiadoAtivo()) return;
+      injetarCss();
+      removerBanner();
+      bannerPwa = document.createElement('div');
+      bannerPwa.className = 'itap-pwa-banner';
+      bannerPwa.innerHTML = '<div class="itap-pwa-msg"></div><div class="itap-pwa-acoes"></div>';
+      const msg = bannerPwa.querySelector('.itap-pwa-msg');
+      const acoes = bannerPwa.querySelector('.itap-pwa-acoes');
+      msg.textContent = opts.msg;
+
+      const btnPrincipal = document.createElement('button');
+      btnPrincipal.className = 'itap-pwa-btn primary';
+      btnPrincipal.textContent = opts.primaryLabel || 'Instalar';
+      btnPrincipal.addEventListener('click', opts.onPrimary);
+      acoes.appendChild(btnPrincipal);
+
+      const btnFechar = document.createElement('button');
+      btnFechar.className = 'itap-pwa-btn ghost';
+      btnFechar.textContent = 'Agora não';
+      btnFechar.addEventListener('click', function() {
+        adiarPrompt(7);
+        removerBanner();
+      });
+      acoes.appendChild(btnFechar);
+
+      document.body.appendChild(bannerPwa);
+    }
+
+    function mostrarToast(texto, cor) {
+      injetarCss();
+      if (!toastRede) {
+        toastRede = document.createElement('div');
+        toastRede.className = 'itap-net-toast';
+        document.body.appendChild(toastRede);
+      }
+      toastRede.textContent = texto;
+      toastRede.style.background = cor || '#1A0A00';
+      toastRede.classList.add('show');
+      setTimeout(function() { toastRede.classList.remove('show'); }, 2200);
+    }
+
+    window.addEventListener('offline', function() {
+      document.documentElement.classList.add('itap-offline');
+      mostrarToast('Você está offline. Alguns recursos podem ficar limitados.', '#C62828');
+    });
+
+    window.addEventListener('online', function() {
+      document.documentElement.classList.remove('itap-offline');
+      mostrarToast('Conexão restaurada!', '#2E7D32');
+    });
+
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (standalone) return;
+      if (!tentarMostrarPromptAndroid()) iniciarMonitorPromptAndroid();
+    });
+
+    if (isIos && !standalone && !promptAdiadoAtivo()) {
+      setTimeout(function() {
+        mostrarBanner({
+          msg: 'No iPhone: toque em Compartilhar e depois em "Adicionar à Tela de Início".',
+          primaryLabel: 'Entendi',
+          onPrimary: function() {
+            adiarPrompt(30);
+            removerBanner();
+          }
+        });
+      }, 1600);
+    }
   }
 
   // ═══════════════════════════════════════════════════════
@@ -191,6 +400,9 @@
   // 7. CHECKLIST DE QUALIDADE — verificações automáticas
   // ═══════════════════════════════════════════════════════
   window.addEventListener('load', function() {
+    salvarPaginaRecente();
+    instalarUiPwa();
+
     const checklist = {};
 
     // Verificar viewport meta
@@ -201,6 +413,8 @@
     
     // Verificar manifest PWA
     checklist.manifest = !!document.querySelector('link[rel="manifest"]');
+    checklist.theme_color = !!document.querySelector('meta[name="theme-color"]');
+    checklist.apple_touch_icon = !!document.querySelector('link[rel="apple-touch-icon"]');
     
     // Verificar HTTPS
     checklist.https = location.protocol === 'https:';
@@ -228,7 +442,7 @@
     checklist.total_botoes = botoes.length;
     
     // Score de qualidade (0-100)
-    const itens = ['viewport','favicon','manifest','https','open_graph','schema','canonical','meta_description','imagens_alt'];
+    const itens = ['viewport','favicon','manifest','theme_color','apple_touch_icon','https','open_graph','schema','canonical','meta_description','imagens_alt'];
     const aprovados = itens.filter(k => checklist[k]).length;
     checklist.score = Math.round((aprovados / itens.length) * 100);
     
