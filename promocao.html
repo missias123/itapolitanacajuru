@@ -103,6 +103,31 @@
     .promo-badge { background: #E8F5E9; color: #2E7D32; padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 800; display: inline-block; margin-bottom: 15px; }
     .promo-title { font-size: 22px; font-weight: 900; color: var(--secondary); margin-bottom: 10px; line-height: 1.2; }
     .promo-desc { font-size: 15px; color: #555; margin-bottom: 20px; }
+    .ofertas-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 18px; }
+    .oferta-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1.5px solid #FFE0B2;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+    .oferta-card img { width: 100%; height: 170px; object-fit: cover; background: #f6f6f6; }
+    .oferta-body { padding: 12px 14px 14px; }
+    .oferta-badge { display:inline-block; background:#FFEBEE; color:#B71C1C; font-size:11px; font-weight:900; padding:4px 9px; border-radius:999px; margin-bottom:8px; }
+    .oferta-titulo { font-size: 17px; color: #1A237E; font-weight: 900; margin: 0 0 4px; }
+    .oferta-desc { font-size: 13px; color: #555; margin: 0 0 10px; line-height: 1.5; }
+    .ofertas-subtitulo { font-size: 18px; font-weight: 900; color: #C62828; margin: 8px 0 10px; }
+    .sem-promo-card {
+      background: linear-gradient(135deg,#FFF3E0,#FFF8F0);
+      border: 2px dashed #FFCC80;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    @media (min-width: 700px) {
+      .ofertas-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
 
     /* BOTÕES */
     .btn-group { display: flex; flex-direction: column; gap: 12px; }
@@ -320,6 +345,49 @@ body { overflow-x: hidden; }
 <div id="cd-encerrado">SORTEIO EM ANDAMENTO! 🎰</div>
 
 </div>
+<!-- UX FINAL (inspiração iFood/McDonald's): sessão de ofertas em cards com CTA direto -->
+<section aria-labelledby="ofertas-mes-titulo" style="margin:0 0 20px;">
+  <h2 id="ofertas-mes-titulo" class="ofertas-subtitulo">Ofertas do mês</h2>
+  <div class="ofertas-grid" id="ofertas-grid-principal">
+    <article class="oferta-card">
+      <img src="images/sorvetes-montanha.webp" alt="Oferta de sorvetes da semana" loading="lazy" decoding="async">
+      <div class="oferta-body">
+        <span class="oferta-badge">Só este mês</span>
+        <h3 class="oferta-titulo">2º Milkshake com desconto</h3>
+        <p class="oferta-desc">Na compra de 1 milkshake grande, o 2º sai com desconto especial no balcão.</p>
+        <a class="btn btn-primary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Quero%20aproveitar%20a%20promo%C3%A7%C3%A3o%20de%20milkshake." target="_blank" rel="noopener">💬 Pedir pelo WhatsApp</a>
+      </div>
+    </article>
+    <article class="oferta-card">
+      <img src="images/itamandua_cascao.webp" alt="Combo especial Itapolitana" loading="lazy" decoding="async">
+      <div class="oferta-body">
+        <span class="oferta-badge">Seg a sex</span>
+        <h3 class="oferta-titulo">Combo família 5L + picolés</h3>
+        <p class="oferta-desc">Leve uma caixa de 5L e ganhe condição especial em picolés selecionados.</p>
+        <a class="btn btn-outline" href="encomendas.html">👀 Ver detalhes</a>
+      </div>
+    </article>
+  </div>
+
+  <h2 class="ofertas-subtitulo" style="margin-top:2px;">Combos especiais</h2>
+  <div class="ofertas-grid" id="combos-grid-principal">
+    <article class="oferta-card">
+      <img src="images/itamandua_2bolas.webp" alt="Combo sobremesa da tarde" loading="lazy" decoding="async">
+      <div class="oferta-body">
+        <span class="oferta-badge">Novo</span>
+        <h3 class="oferta-titulo">Combo tarde feliz</h3>
+        <p class="oferta-desc">Taça + cascão + bebida com preço de combo para consumo na loja.</p>
+        <a class="btn btn-outline" href="index.html#cardápio">🍦 Ver cardápio</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="sem-promo-card" id="sem-promocoes-card" style="display:none;">
+    <h3 style="font-size:1.05rem;color:#BF360C;font-weight:900;margin:0 0 6px;">Sem promoções no momento</h3>
+    <p style="font-size:.88rem;color:#6D4C41;margin:0 0 10px;">Hoje não temos promoção ativa, mas o cardápio está recheado de opções deliciosas.</p>
+    <a class="btn btn-back-home" href="/#cardapio">🍨 Ver cardápio agora</a>
+  </div>
+</section>
 <!-- ═══ CARD RASPADINHA ITAPOLITANA ══════════════════════════════════════ -->
 <div style="background:#fff;border-radius:22px;box-shadow:0 6px 30px rgba(0,0,0,.12);overflow:hidden;margin:0 0 24px 0;">
   <div style="background:linear-gradient(135deg,#E8000D,#C62828);padding:22px 20px 16px;text-align:center;">
@@ -853,6 +921,24 @@ body { overflow-x: hidden; }
       });
     }
   }
+
+  // UX FINAL: flag simples para exibir estado vazio sem mexer em regras do sorteio.
+  (function controlarEstadoOfertas() {
+    var PROMOCOES_ATIVAS = true; // Altere para false quando quiser mostrar "Sem promoções no momento".
+    var gridOfertas = document.getElementById('ofertas-grid-principal');
+    var gridCombos = document.getElementById('combos-grid-principal');
+    var semPromo = document.getElementById('sem-promocoes-card');
+    if (!gridOfertas || !gridCombos || !semPromo) return;
+    if (PROMOCOES_ATIVAS) {
+      semPromo.style.display = 'none';
+      gridOfertas.style.display = 'grid';
+      gridCombos.style.display = 'grid';
+    } else {
+      semPromo.style.display = 'block';
+      gridOfertas.style.display = 'none';
+      gridCombos.style.display = 'none';
+    }
+  })();
 
   // ═══ CARREGAMENTO DINÂMICO DO PROMO.JSON ═══
   // Atualiza os campos da página com os dados salvos pelo admin

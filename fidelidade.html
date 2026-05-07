@@ -552,6 +552,7 @@
 
       /* estado da sessão */
       var _clienteAtual = null;
+      var _nomeSessao = 'Cliente';
 
       /* ── helpers ───────────────────────────────────────────────────── */
       function mascaraTel(v) {
@@ -583,9 +584,14 @@
         fillBar30.parentElement.setAttribute('aria-valuenow', pts);
         ptsTexto30.textContent = pts + ' / ' + META_30 + ' pts';
 
-        progressoHint.textContent = pts === 0
-          ? 'Registre cupons para acumular pontos!'
-          : pts + ' ponto' + (pts > 1 ? 's' : '') + ' acumulado' + (pts > 1 ? 's' : '') + ' 🎉';
+        var nomeRef = primeiroNome(_nomeSessao || (_clienteAtual && _clienteAtual.nome) || 'Cliente');
+        if (pts <= 0) {
+          progressoHint.textContent = 'Registre cupons para acumular pontos!';
+        } else if (pts < META_10) {
+          progressoHint.textContent = nomeRef + ', você tem ' + pts + ' de 10 pontos para o Milkshake.';
+        } else {
+          progressoHint.textContent = nomeRef + ', você tem ' + Math.min(pts, META_30) + ' de 30 pontos para a Caixa 7 bolas.';
+        }
       }
 
       function wppLink(texto) {
@@ -651,6 +657,7 @@
         }
         var pts = Number(cache.pontos || 0);
         var nome = primeiroNome(cache.nome || 'Cliente');
+        _nomeSessao = nome;
         atualizarBarras(pts);
         setResultado(
           'Olá, ' + nome + '! Você está vendo seus pontos guardados da última consulta em ' +
@@ -661,6 +668,31 @@
         formCodigoWrap.style.display = 'none';
         btnWppResgatar.style.display = 'none';
         return true;
+      }
+
+      // UX FINAL: pré-preenche telefone e saudação quando houver sessão recente no cache.
+      function tentarRestaurarSessaoVisivel() {
+        try {
+          var melhor = null;
+          for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i) || '';
+            if (k.indexOf(SALDO_CACHE_PREFIX) !== 0) continue;
+            var bruto = localStorage.getItem(k);
+            if (!bruto) continue;
+            var data = JSON.parse(bruto);
+            if (!data || !data.atualizadoEm) continue;
+            var ts = new Date(data.atualizadoEm).getTime() || 0;
+            if (!melhor || ts > melhor.ts) {
+              melhor = { key: k, data: data, ts: ts };
+            }
+          }
+          if (!melhor) return;
+          var telLimpo = melhor.key.replace(SALDO_CACHE_PREFIX, '').replace(/\D/g, '');
+          if (telLimpo) inputTel.value = mascaraTel(telLimpo);
+          var nome = primeiroNome((melhor.data && melhor.data.nome) || 'Cliente');
+          _nomeSessao = nome;
+          setResultado('Olá de volta, ' + nome + '! Seus pontos foram carregados da última sessão.', 'ok');
+        } catch (e) {}
       }
 
       /* ── busca via raw GitHub (público, sem token) ──────────────────── */
@@ -679,12 +711,13 @@
       inputCodigo.addEventListener('input', function() {
         inputCodigo.value = inputCodigo.value.toUpperCase();
       });
+      tentarRestaurarSessaoVisivel();
 
       /* ── CONSULTAR PONTOS ────────────────────────────────────────────── */
       btnEntrar.addEventListener('click', function() {
         var tel = inputTel.value.replace(/\D/g, '');
         if (!tel || tel.length < 10) {
-          setResultado('Informe um número de WhatsApp válido para consultar seus pontos.', 'erro');
+          setResultado('Digite seu WhatsApp para continuar.', 'erro');
           return;
         }
 
@@ -718,6 +751,7 @@
             _clienteAtual = dados.clientes[usrKey];
             var pts = _clienteAtual.saldoPontos || 0;
             var nome = primeiroNome(_clienteAtual.nome);
+            _nomeSessao = nome;
             salvarSaldoEmCache(tel, pts, _clienteAtual.nome || nome);
 
             atualizarBarras(pts);
@@ -729,13 +763,13 @@
             }
 
             if (pts >= META_30) {
-              setResultado('🎉 ' + nome + ', você tem ' + pts + ' pontos! Pode resgatar a Caixa com 7 bolas grátis!', 'ok');
+              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', você tem ' + pts + ' pontos e já pode resgatar a Caixa 7 bolas.', 'ok');
               mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Caixa 7 bolas via WhatsApp');
             } else if (pts >= META_10) {
-              setResultado('🥤 ' + nome + ', você tem ' + pts + ' pontos! Pode resgatar um Milkshake 300ml grátis!', 'ok');
+              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', você tem ' + pts + ' pontos e já pode resgatar um Milkshake 300ml.', 'ok');
               mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Milkshake via WhatsApp');
             } else {
-              setResultado('Olá, ' + nome + '! Você tem ' + pts + ' ponto' + (pts !== 1 ? 's' : '') + '. Faltam ' + (META_10 - pts) + ' para o primeiro prêmio. 🍦', '');
+              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
               formCodigoWrap.style.display = 'grid';
             }
           })
@@ -754,11 +788,11 @@
       btnRegistrar.addEventListener('click', function() {
         var codigo = (inputCodigo.value || '').trim().toUpperCase();
         if (!codigo) {
-          setResultado('Digite o código do cupom para continuar.', 'erro');
+          setResultado('Digite o código do cupom.', 'erro');
           return;
         }
         if (!_clienteAtual) {
-          setResultado('Consulte seu WhatsApp primeiro para identificar sua conta.', 'erro');
+          setResultado('Entre com seu WhatsApp antes de registrar códigos.', 'erro');
           return;
         }
 
@@ -789,7 +823,8 @@
             var pts = _clienteAtual.saldoPontos || 0;
             var telCliente = _clienteAtual.cel || inputTel.value.replace(/\D/g, '');
             var msg = 'Clube Fidelidade - Registrar ponto\nNome: ' + _clienteAtual.nome + '\nTel: ' + telCliente + '\nCódigo: ' + codigo + '\nPontos atuais: ' + pts;
-            setResultado('✅ Código válido! Clique no botão abaixo para enviar ao atendente e registrar seu ponto. 🎟️', 'ok');
+            var msgApi = (entrada && (entrada.mensagem || entrada.msg)) ? String(entrada.mensagem || entrada.msg).trim() : 'Código validado com sucesso.';
+            setResultado(msgApi + ' Seus pontos foram atualizados.', 'ok');
             mostrarWppBtn(wppLink(msg), '💬 Enviar código para registrar ponto');
             inputCodigo.value = '';
           })
