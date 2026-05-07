@@ -735,27 +735,35 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 
 .itabot-wrap{bottom:24px;right:24px}
 }
-/* Ajuste do Ita Bot: ícone com contorno branco e botão "DÚVIDAS" no topo direito, ao lado do logo, em todas as páginas */
+/* ═══ HEADER: logo (esquerda) | DÚVIDAS (centro pulsante) | robô (direita) ═══
+   Mesmo visual do mockup: logo e robô com peso equivalente nas pontas,
+   botão DÚVIDAS centralizado entre eles em todas as páginas. */
 :root{--itabot-logo-size:80px}
-.itabot-top-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+/* Grid de 3 colunas: logo | centro | robô */
+.itabot-top-row{display:grid!important;grid-template-columns:auto 1fr auto!important;align-items:center!important;gap:12px!important;width:100%!important}
 .itabot-top-row .brand-icon,.itabot-top-row .itap-brand-icon{width:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important;margin:0!important;display:flex;align-items:center;justify-content:center}
 .itabot-top-row .brand-icon img,.itabot-top-row .itap-brand-icon img{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important}
-/* Wrap do robô: flex-row para robô + botão "DÚVIDAS" lado a lado */
-.itabot-top-row .itabot-wrap{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;display:none;flex-direction:row!important;align-items:center;gap:6px;flex:0 0 auto;width:auto!important;min-width:0!important}
-/* Robô: círculo com borda branca, sem fundo grande, sem neon */
+/* Coluna central: botão DÚVIDAS centralizado */
+.itap-header-duvidas{display:flex;justify-content:center;align-items:center;width:100%}
+/* Botão DÚVIDAS — centralizado, pulsante, discreto */
+.ita-bot-duvidas-btn{background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border:2px solid rgba(255,255,255,.82);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:900;letter-spacing:.6px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 1.8s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;line-height:1;flex-shrink:0}
+.ita-bot-duvidas-btn:hover{filter:brightness(1.12);transform:scale(1.04)}
+.ita-bot-duvidas-btn:focus-visible{outline:3px solid #FFD600;outline-offset:2px}
+/* Coluna direita: wrap do robô (ocupa somente o espaço do SVG) */
+.itabot-top-row .itabot-wrap{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;display:none;flex-direction:row!important;align-items:center;gap:0;flex:0 0 auto;width:auto!important;min-width:0!important}
+/* Robô: mesmo tamanho visual do logo, círculo com borda branca */
 .itabot-top-row .duvidas-card{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important;padding:0!important;display:flex;align-items:center;justify-content:center;background:transparent!important;border:2.5px solid rgba(255,255,255,.8)!important;border-radius:50%!important;box-shadow:none!important;filter:none!important;animation:none!important;overflow:visible!important;transform:none!important}
 .itabot-top-row .duvidas-card::before{display:none!important}
 .itabot-top-row .duvidas-card:hover{border-color:#fff!important;transform:scale(1.06)!important;box-shadow:none!important;filter:none!important;transition:transform .15s}
-/* SVG do robô: animação suave, sombra leve (sem neon) */
+/* SVG do robô: animação suave */
 .itabot-top-row .duvidas-card svg{width:90%!important;height:90%!important;display:block;transform-origin:center bottom;animation:itabot-sway 1.9s ease-in-out infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
-/* Botão "DÚVIDAS" pulsante ao lado do robô */
-.itabot-duvidas-btn{background:linear-gradient(135deg,#C62828,#E8000D);color:#fff;border:2px solid rgba(255,255,255,.75);border-radius:999px;padding:7px 13px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;white-space:nowrap;animation:itabot-btn-pulse 2s ease-in-out infinite;-webkit-tap-highlight-color:transparent;touch-action:manipulation;text-transform:uppercase;line-height:1;align-self:center;flex-shrink:0}
-.itabot-duvidas-btn:hover{filter:brightness(1.1);transform:scale(1.05)}
+/* Botão lateral antigo (dentro do wrap): oculto quando centro está ativo */
+.itabot-duvidas-btn{display:none!important}
 @keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
-@keyframes itabot-btn-pulse{0%,100%{box-shadow:0 2px 8px rgba(232,0,13,.35)}50%{box-shadow:0 4px 14px rgba(232,0,13,.6),0 0 0 3px rgba(232,0,13,.18)}}
-@media(max-width:600px){:root{--itabot-logo-size:72px}.itabot-top-row{gap:6px}.itabot-duvidas-btn{font-size:10px;padding:6px 10px}}
-@media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:10px}}
-@media(prefers-reduced-motion:reduce){.itabot-top-row .duvidas-card svg,.itabot-duvidas-btn{animation:none}}
+@keyframes itabot-btn-pulse{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.9),0 0 10px rgba(0,60,180,.4)}50%{box-shadow:0 0 0 2px rgba(255,255,255,1),0 0 18px rgba(0,80,220,.7),0 0 32px rgba(0,80,220,.35)}}
+@media(max-width:600px){:root{--itabot-logo-size:72px}.itabot-top-row{gap:8px!important}.ita-bot-duvidas-btn{font-size:13px;padding:8px 14px}}
+@media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:14px!important}}
+@media(prefers-reduced-motion:reduce){.itabot-top-row .duvidas-card svg,.ita-bot-duvidas-btn{animation:none}}
 /* BOTAO ADMIN FLUTUANTE */
 #admin-fab{position:fixed;right:6px;bottom:108px;z-index:9998;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.12);color:rgba(255,255,255,.3);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.1);box-shadow:none;letter-spacing:.2px;white-space:nowrap;opacity:.4}
 /* chat/dúvidas: overlay fullscreen controlado por .aberto */
@@ -4074,6 +4082,9 @@ setInterval(() => {
   }
 }, 4000);
 // [frase-rotativa fundida no DOMContentLoaded principal]
+// Posiciona o Ita Bot no topo ao lado do logo:
+// Resultado: [logo (esquerda)] [DÚVIDAS (centro pulsante)] [robô (direita)]
+// Mesmo padrão visual do mockup, replicado em todas as páginas.
 function posicionarItaBotNoTopo() {
   const wrap = document.getElementById('itabot-wrap');
   const logo = document.querySelector('.brand-icon, .itap-brand-icon');
@@ -4088,7 +4099,21 @@ function posicionarItaBotNoTopo() {
     host.insertBefore(row, logo);
     row.appendChild(logo);
   }
+
+  // Coluna central: botão DÚVIDAS centralizado entre logo e robô
+  let center = row.querySelector('.itap-header-duvidas');
+  if (!center) {
+    center = document.createElement('div');
+    center.className = 'itap-header-duvidas';
+    center.innerHTML = '<button type="button" id="ita-bot-duvidas" class="ita-bot-duvidas-btn" aria-label="Abrir dúvidas com o Ita Bot">DÚVIDAS</button>';
+    row.appendChild(center);
+  }
+  const centerBtn = center.querySelector('#ita-bot-duvidas');
+  if (centerBtn) centerBtn.onclick = abrirItaBot;
+
+  // Coluna direita: robô
   if (wrap.parentElement !== row) row.appendChild(wrap);
+
   const logoImg = logo.querySelector('img');
   const size = logoImg ? Math.round(logoImg.getBoundingClientRect().width || logoImg.width || 80) : 80;
   document.documentElement.style.setProperty('--itabot-logo-size', size + 'px');
