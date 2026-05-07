@@ -101,11 +101,62 @@
       return paginas >= 2 && tempoDecorrido >= 30 * 1000;
     }
 
+    function obterBotoesInstalacao() {
+      return Array.prototype.slice.call(document.querySelectorAll('.js-pwa-install'));
+    }
+
+    function atualizarBotoesInstalacao(visivel) {
+      const botoes = obterBotoesInstalacao();
+      botoes.forEach(function(btn) {
+        btn.hidden = !visivel;
+        btn.disabled = !visivel;
+        btn.classList.toggle('is-hidden', !visivel);
+        btn.setAttribute('aria-hidden', visivel ? 'false' : 'true');
+      });
+      return botoes.length > 0;
+    }
+
+    function existemBotoesInstalacao() {
+      return obterBotoesInstalacao().length > 0;
+    }
+
+    function ocultarPromptsPwa() {
+      atualizarBotoesInstalacao(false);
+      removerBanner();
+    }
+
+    function finalizarPromptInstalacao(resultado) {
+      deferredPrompt = null;
+      ocultarPromptsPwa();
+      adiarPrompt(resultado === 'accepted' ? 30 : 7);
+    }
+
+    function dispararPromptInstalacao() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      if (deferredPrompt.userChoice && typeof deferredPrompt.userChoice.then === 'function') {
+        deferredPrompt.userChoice
+          .then(function(choice) {
+            finalizarPromptInstalacao(choice && choice.outcome);
+          })
+          .catch(function() {
+            finalizarPromptInstalacao('dismissed');
+          });
+      } else {
+        finalizarPromptInstalacao('dismissed');
+      }
+    }
+
     function tentarMostrarPromptAndroid() {
       if (!deferredPrompt) return false;
       if (standalone) return false;
       if (promptAdiadoAtivo()) return false;
       if (!prontoParaPromptAndroid()) return false;
+
+      if (existemBotoesInstalacao()) {
+        atualizarBotoesInstalacao(true);
+        return true;
+      }
 
       // Exibir o install prompt em momento de valor (após navegação + tempo),
       // seguindo padrão de engajamento de apps grandes: primeiro valor, depois convite.
@@ -113,21 +164,7 @@
         msg: 'Instale o app da Itapolitana na tela inicial para abrir como aplicativo.',
         primaryLabel: 'Instalar app',
         onPrimary: function() {
-          if (!deferredPrompt) return;
-          deferredPrompt.prompt();
-          if (deferredPrompt.userChoice && typeof deferredPrompt.userChoice.finally === 'function') {
-            deferredPrompt.userChoice
-              .catch(function() {})
-              .finally(function() {
-                deferredPrompt = null;
-                removerBanner();
-                adiarPrompt(30);
-              });
-          } else {
-            deferredPrompt = null;
-            removerBanner();
-            adiarPrompt(30);
-          }
+          dispararPromptInstalacao();
         }
       });
       return true;
@@ -158,6 +195,13 @@
       document.head.appendChild(style);
     }
 
+    document.addEventListener('click', function(e) {
+      const alvo = e.target && e.target.closest ? e.target.closest('.js-pwa-install') : null;
+      if (!alvo || alvo.hidden || alvo.disabled) return;
+      e.preventDefault();
+      dispararPromptInstalacao();
+    });
+
     function removerBanner() {
       if (bannerPwa && bannerPwa.parentNode) bannerPwa.parentNode.removeChild(bannerPwa);
       bannerPwa = null;
@@ -185,7 +229,7 @@
       btnFechar.textContent = 'Agora não';
       btnFechar.addEventListener('click', function() {
         adiarPrompt(7);
-        removerBanner();
+        ocultarPromptsPwa();
       });
       acoes.appendChild(btnFechar);
 
@@ -218,11 +262,17 @@
     const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent || '');
 
+    if (standalone) ocultarPromptsPwa();
+
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
       deferredPrompt = e;
       if (standalone) return;
       if (!tentarMostrarPromptAndroid()) iniciarMonitorPromptAndroid();
+    });
+
+    window.addEventListener('appinstalled', function() {
+      finalizarPromptInstalacao('accepted');
     });
 
     if (isIos && !standalone && !promptAdiadoAtivo()) {

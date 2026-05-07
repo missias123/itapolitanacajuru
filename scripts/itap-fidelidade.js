@@ -190,13 +190,60 @@
         } catch (e) {}
       }
 
-      /* ── busca via raw GitHub (público, sem token) ──────────────────── */
+      /* ── busca via GitHub API (sem CDN) para atualização imediata no site ─
+         Quando o admin salva dados/clientes.json ou dados/fidelidade.json,
+         a mudança fica visível instantaneamente via API (sem cache de CDN).
+         Fallback: raw.githubusercontent.com com cache-buster ?t=Date.now(). ── */
       function ghRawFetch(path) {
-        return fetch(GH_RAW + path + '?t=' + Date.now())
+        var apiUrl = GH_API + path;
+        var tk = '';
+        try { tk = localStorage.getItem('itap_gh_token') || ''; } catch (e) {}
+        var opts = { cache: 'no-store' };
+        if (tk) opts.headers = { 'Authorization': 'token ' + tk, 'Accept': 'application/vnd.github.v3+json' };
+        return fetch(apiUrl, opts)
           .then(function(r) {
             if (!r.ok) throw new Error('HTTP ' + r.status);
             return r.json();
+          })
+          .then(function(ghResp) {
+            if (!ghResp.content) throw new Error('conteudo ausente');
+            var raw = new TextDecoder().decode(
+              Uint8Array.from(atob(ghResp.content.replace(/\n/g, '')).split(''), function(c) { return c.charCodeAt(0); })
+            );
+            return JSON.parse(raw);
+          })
+          .catch(function() {
+            /* fallback: raw URL com cache-buster */
+            return fetch(GH_RAW + path + '?t=' + Date.now(), { cache: 'no-store' })
+              .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
           });
+      }
+
+      /* ── controle de tentativas erradas de código ──────────────────────────
+         Regra: o cliente tem 3 tentativas; na 4ª a conta é bloqueada por segurança.
+         "DIGITAR CÓDIGO" só está disponível dentro da Área do Cliente (após login),
+         nunca fora do cadastro — regra do programa de fidelidade.              ── */
+      var TENT_COD_PREFIX = 'itap_tent_cod_';
+      var MAX_TENT_CODIGO = 3; /* 3 tentativas; na 4ª, bloqueia */
+
+      function getTentativasCodigo() {
+        var tel = (_clienteAtual && _clienteAtual.cel) || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
+        if (!tel) return 0;
+        return parseInt(localStorage.getItem(TENT_COD_PREFIX + tel) || '0', 10);
+      }
+
+      function incrementarTentativaCodigo() {
+        var tel = (_clienteAtual && _clienteAtual.cel) || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
+        if (!tel) return { total: 0, bloqueado: false, restantes: MAX_TENT_CODIGO };
+        var total = parseInt(localStorage.getItem(TENT_COD_PREFIX + tel) || '0', 10) + 1;
+        localStorage.setItem(TENT_COD_PREFIX + tel, String(total));
+        var bloqueado = total > MAX_TENT_CODIGO; /* 4ª = bloqueado */
+        return { total: total, bloqueado: bloqueado, restantes: Math.max(0, MAX_TENT_CODIGO - total) };
+      }
+
+      function resetarTentativasCodigo() {
+        var tel = (_clienteAtual && _clienteAtual.cel) || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
+        if (tel) localStorage.removeItem(TENT_COD_PREFIX + tel);
       }
 
       /* ── inicializar selects de data de nascimento ───────────────────── */
@@ -232,6 +279,24 @@
         if (formCadastroWrap) formCadastroWrap.scrollIntoView({behavior:'smooth', block:'start'});
         var cadNome = document.getElementById('cad-nome');
         if (cadNome && !(cadNome.value || '').trim()) cadNome.focus();
+      }
+
+      /* ── Fluxo sequencial: após cadastro bem-sucedido, direcionar automaticamente
+         o cliente para a Área do Cliente com o telefone pré-preenchido.
+         "DIGITAR CÓDIGO" só aparece aqui dentro (nunca fora) — regra do programa. ── */
+      function ativarAreaClientePosCadastro(telRaw, nomePrimeiro, pontos) {
+        /* pré-preenche o campo de login da Área do Cliente */
+        if (inputTel) inputTel.value = mascaraTel(telRaw);
+        /* atualiza barras de progresso */
+        atualizarBarras(pontos || 0);
+        /* mostra campo de código se ainda não tem pontos suficientes para resgatar */
+        if (formCodigoWrap && (pontos || 0) < META_10) {
+          setResultado('Bem-vindo(a), ' + nomePrimeiro + '! 🎉 Cadastro confirmado. Insira o código do seu cupom abaixo para registrar seu primeiro ponto.', 'ok');
+          formCodigoWrap.style.display = 'grid';
+        }
+        /* scroll suave até a Área do Cliente */
+        var secArea = document.getElementById('titulo-area-cliente');
+        if (secArea) setTimeout(function() { secArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
       }
 
       function ocultarFormCadastro() {
@@ -294,6 +359,9 @@
           window.open('https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg), '_blank');
           setResultadoEl('resultado-cliente', '✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
           ocultarFormCadastro();
+          /* scroll até a Área do Cliente para o cliente aguardar a confirmação */
+          var secAreaWpp = document.getElementById('titulo-area-cliente');
+          if (secAreaWpp) setTimeout(function() { secAreaWpp.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
           btn.disabled = false;
           btn.textContent = '🎟️ Cadastrar no Clube';
           return;
@@ -369,8 +437,10 @@
             _nomeSessao = primeiroNome(nome);
             salvarSaldoEmCache(telRaw, 0, nome);
             atualizarBarras(0);
-            setResultadoEl('resultado-cliente', '🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '! Agora use a seção "Consultar pontos" abaixo para inserir o código do cupom.', 'ok');
+            setResultadoEl('resultado-cliente', '🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '!', 'ok');
             ocultarFormCadastro();
+            /* fluxo sequencial: regulamento → cadastro → área do cliente → digitar código */
+            ativarAreaClientePosCadastro(telRaw, primeiroNome(nome), 0);
           });
         })
         .catch(function(e) {
@@ -466,7 +536,10 @@
       }); // end btnEntrar click
       } // end if (btnEntrar)
 
-      /* ── VALIDAR CÓDIGO ─────────────────────────────────────────────── */
+      /* ── VALIDAR CÓDIGO ─────────────────────────────────────────────────────
+         Regra de segurança: máx 3 tentativas erradas; na 4ª, conta é bloqueada.
+         "DIGITAR CÓDIGO" só fica acessível dentro da Área do Cliente (após login),
+         nunca fora — impede que qualquer pessoa tente adivinhar códigos aleatórios. ── */
       if (btnRegistrar) {
       btnRegistrar.addEventListener('click', function() {
         var codigo = (inputCodigo.value || '').trim().toUpperCase();
@@ -479,6 +552,14 @@
           return;
         }
 
+        /* verificar se conta já está bloqueada */
+        if (_clienteAtual.bloqueado || getTentativasCodigo() > MAX_TENT_CODIGO) {
+          setResultado('⛔ Conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
+          mostrarWppBtn(wppLink('Minha conta no Clube Fidelidade está bloqueada. WhatsApp: ' + (_clienteAtual.cel || '')), '💬 Solicitar desbloqueio');
+          if (formCodigoWrap) formCodigoWrap.style.display = 'none';
+          return;
+        }
+
         btnRegistrar.disabled = true;
         btnRegistrar.textContent = 'Validando…';
 
@@ -488,21 +569,50 @@
             var codigos = fid['códigos'] || fid['codigos'] || {};
             var entrada = codigos[codigo];
 
+            /* ── código não existe: contar tentativa errada ── */
             if (!entrada) {
-              setResultado('Código inválido. Verifique o cupom e tente novamente.', 'erro');
+              var t = incrementarTentativaCodigo();
+              if (t.bloqueado) {
+                /* 4ª tentativa errada: bloquear conta */
+                _clienteAtual.bloqueado = true;
+                var telBloq = _clienteAtual.cel || inputTel.value.replace(/\D/g, '');
+                setResultado('⛔ Código inválido. 4ª tentativa: conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
+                if (formCodigoWrap) formCodigoWrap.style.display = 'none';
+                mostrarWppBtn(
+                  wppLink('Bloqueio no Clube Fidelidade após 4 tentativas incorretas.\nNome: ' + (_clienteAtual.nome || '-') + '\nWhatsApp: ' + mascaraTel(telBloq)),
+                  '💬 Solicitar desbloqueio ao atendente'
+                );
+              } else if (t.restantes === 0) {
+                setResultado('❌ Código inválido. ' + t.total + '/3 tentativas usadas. ⚠️ Próxima tentativa bloqueará sua conta!', 'erro');
+              } else {
+                setResultado('❌ Código inválido. ' + t.total + '/3 tentativas usadas. Restam ' + t.restantes + ' tentativa(s).', 'erro');
+              }
               return;
             }
+
+            /* ── código já utilizado: também conta tentativa errada ── */
             if (entrada.status !== STATUS_DISPONIVEL) {
-              setResultado('Este código já foi utilizado. Cada cupom vale apenas uma vez.', 'erro');
+              var t2 = incrementarTentativaCodigo();
+              if (t2.bloqueado) {
+                _clienteAtual.bloqueado = true;
+                setResultado('⛔ Código já utilizado. 4ª tentativa: conta bloqueada por segurança.', 'erro');
+                if (formCodigoWrap) formCodigoWrap.style.display = 'none';
+                mostrarWppBtn(wppLink('Bloqueio no Clube Fidelidade. Nome: ' + (_clienteAtual.nome || '-')), '💬 Solicitar desbloqueio');
+              } else {
+                setResultado('⚠️ Este código já foi utilizado. Cada cupom vale apenas uma vez. (' + t2.total + '/3 tentativas)', 'erro');
+              }
               return;
             }
+
+            /* ── cliente já usou este código: aviso simples, sem contar tentativa ── */
             var usados = _clienteAtual.codigosUsados || [];
             if (usados.indexOf(codigo) !== -1) {
               setResultado('Você já usou este código anteriormente.', 'erro');
               return;
             }
 
-            /* código válido → encaminhar ao atendente via WhatsApp */
+            /* ── código válido: resetar tentativas e encaminhar via WhatsApp ── */
+            resetarTentativasCodigo();
             var pts = _clienteAtual.saldoPontos || 0;
             var telCliente = _clienteAtual.cel || inputTel.value.replace(/\D/g, '');
             var msg = 'Clube Fidelidade - Registrar ponto\nNome: ' + _clienteAtual.nome + '\nTel: ' + telCliente + '\nCódigo: ' + codigo + '\nPontos atuais: ' + pts;

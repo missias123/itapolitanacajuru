@@ -338,9 +338,28 @@
 
   <header class="itap-header">
     <div class="itap-header-inner">
-      <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
-        <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
-      </a>
+      <!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô.
+           Sem position:absolute/fixed; sobreposição impossível via flex + gap + margin. -->
+      <div class="itap-header-top">
+        <!-- 1. Logo — esquerda -->
+        <div class="itap-header-logo">
+          <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+            <img class="itap-logo-img" src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="40" height="40">
+          </a>
+        </div>
+        <!-- 2. Botão Dúvidas — centro (gap seguro da logo e do robô) -->
+        <div class="itap-header-duvidas">
+          <button type="button" class="ita-bot-duvidas-btn"
+                  onclick="_itabotAbrirItaBot()"
+                  aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">🤖 DÚVIDAS</button>
+        </div>
+        <!-- 3. Robô — direita (margem segura da área central) -->
+        <div class="itap-header-bot">
+          <button type="button" class="itap-header-bot-btn itabot-btn"
+                  onclick="_itabotAbrirItaBot()"
+                  aria-label="Abrir Ita Bot" aria-haspopup="dialog">🤖</button>
+        </div>
+      </div>
       <nav class="itap-header-nav" aria-label="Menu principal">
         <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
           <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
@@ -363,8 +382,24 @@
     <section class="card hero" aria-labelledby="titulo-clube">
       <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
       <h1 id="titulo-clube">Clube de Fidelidade Itapolitana</h1>
-      <p>Acumule pontos e troque por prêmios deliciosos!</p>
+      <p>Acumule pontos, consulte seu saldo e valide códigos em um fluxo simples no mobile.</p>
       <span class="hero-badge">⚡ Fase de testes · Em breve totalmente online</span>
+      <!-- Alteração para alinhar o fluxo de fidelidade da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
+      <div class="itap-food-hero__actions" style="margin-top:14px;">
+        <a href="#titulo-cadastro" class="itap-food-hero__action itap-food-hero__action--primary">🎟️ Fazer cadastro</a>
+        <a href="#titulo-area-cliente" class="itap-food-hero__action itap-food-hero__action--secondary">🔎 Consultar pontos</a>
+        <a href="#titulo-regras" class="itap-food-hero__action itap-food-hero__action--ghost">📜 Ver regras</a>
+        <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="titulo-resumo-regras">
+      <h2 id="titulo-resumo-regras" style="font-size:1.1rem;color:#C62828;margin-bottom:10px;">Resumo rápido do programa</h2>
+      <div class="itap-flow-list">
+        <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Compras acima de <strong>R$ 30,00</strong>, de segunda a sexta, geram 1 cupom.</p></div>
+        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>Cadastre-se com nome, WhatsApp, data de nascimento e aceite das regras.</p></div>
+        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Entre com seu WhatsApp, valide o código do cupom e acompanhe a progressão dos prêmios.</p></div>
+      </div>
     </section>
 
     <!-- 2) Como funciona + cards de prêmios -->
@@ -512,7 +547,7 @@
         <div class="form-row" id="form-codigo-wrap" style="display:none;">
           <label for="cliente-codigo">Inserir código do cupom</label>
           <input id="cliente-codigo" type="text" maxlength="20" placeholder="Ex: ABC123XYZ" style="text-transform:uppercase;">
-          <button class="btn btn-sec" id="btn-registrar-ponto">✅ Validar Código</button>
+          <button class="btn btn-sec btn-validar-codigo" id="btn-registrar-ponto">✅ Validar Código</button>
         </div>
       </div>
 

@@ -97,7 +97,7 @@
     .btn-carrinho-fixo {
       position: fixed;
       /* POSIÇÃO: canto inferior direito, visível acima do cardápio */
-      bottom: 80px;
+      bottom: calc(86px + env(safe-area-inset-bottom, 0px));
       right: 16px;
       left: auto;
       transform: none;
@@ -141,6 +141,16 @@
       justify-content: center;
       font-size: 0.8rem;
       font-weight: 700;
+    }
+    @media (max-width: 640px) {
+      .btn-carrinho-fixo {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        min-width: 0;
+        justify-content: space-between;
+        padding: 14px 18px;
+      }
     }
 
     /* BANNER INFO */
@@ -1230,9 +1240,28 @@ html { scroll-behavior: smooth; }
 <!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
 <header class="itap-header">
   <div class="itap-header-inner">
-    <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
-      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
-    </a>
+    <!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô.
+         Sem position:absolute/fixed; sobreposição impossível via flex + gap + margin. -->
+    <div class="itap-header-top">
+      <!-- 1. Logo — esquerda -->
+      <div class="itap-header-logo">
+        <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+          <img class="itap-logo-img" src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="40" height="40">
+        </a>
+      </div>
+      <!-- 2. Botão Dúvidas — centro (gap seguro da logo e do robô) -->
+      <div class="itap-header-duvidas">
+        <button type="button" class="ita-bot-duvidas-btn"
+                onclick="_itabotAbrirItaBot()"
+                aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">🤖 DÚVIDAS</button>
+      </div>
+      <!-- 3. Robô — direita (margem segura da área central) -->
+      <div class="itap-header-bot">
+        <button type="button" class="itap-header-bot-btn itabot-btn"
+                onclick="_itabotAbrirItaBot()"
+                aria-label="Abrir Ita Bot" aria-haspopup="dialog">🤖</button>
+      </div>
+    </div>
     <nav class="itap-header-nav" aria-label="Menu principal">
       <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
         <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
@@ -1270,6 +1299,24 @@ html { scroll-behavior: smooth; }
 <section style="max-width:860px;margin:14px auto 0;padding:0 16px 8px;">
   <div style="background:#FFFFFF;border:1.5px solid #BBDEFB;border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px rgba(13,71,161,.08);font-size:.86rem;color:#0D47A1;font-weight:800;text-align:center;">
     Como funciona: <strong>1. Escolha os produtos</strong> · <strong>2. Clique em “Fazer pedido”</strong> · <strong>3. Finalize no WhatsApp</strong>
+  </div>
+</section>
+<section class="itap-page-shell" aria-labelledby="atalhos-encomendas-titulo">
+  <!-- Alteração para alinhar o fluxo de encomendas da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
+  <div class="itap-surface-card">
+    <div class="itap-surface-card__body">
+      <div class="itap-surface-card__eyebrow">Categorias visíveis</div>
+      <h2 class="itap-surface-card__title" id="atalhos-encomendas-titulo">Escolha sua categoria e siga direto para o carrinho</h2>
+      <p class="itap-surface-card__text">O cardápio de encomendas agora destaca os atalhos mais usados no topo para o cliente chegar mais rápido ao produto certo.</p>
+      <div class="itap-anchor-strip" style="margin-top:14px;">
+        <a class="is-dest" href="#caixas">🍦 Caixas</a>
+        <a href="#tortas">🎂 Tortas</a>
+        <a href="#picolés">🍭 Picolés</a>
+        <a href="#acréscimos">🍪 Acréscimos</a>
+        <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
+      </div>
+      <div class="itap-inline-note" style="margin-top:14px;">Carrinho sempre acessível no rodapé do celular para manter o fluxo categoria → carrinho → WhatsApp sem sobreposição.</div>
+    </div>
   </div>
 </section>
 <style>
@@ -1406,7 +1453,7 @@ html { scroll-behavior: smooth; }
 <div class="prod-grid" id="lista-picolés">
 <div class="prod-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 14px;gap:8px;">
 <a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20do%20carrinho%20de%20picolé%C3%A9%20para%20evento." rel="noopener" style="text-decoration:none;display:inline-block;" target="_blank">
-<img alt="Carrinho de Picolé para Eventos" decoding="async" loading="lazy" onmouSEOut="this.style.transform='scale(1)'" onmouSEOver="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp" style="width:150px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));transition:transform 0.2s;"/>
+<img alt="Carrinho de Picolé para Eventos" decoding="async" loading="lazy" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp" style="width:150px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));transition:transform 0.2s;"/>
 <div style="font-size:0.72rem;font-weight:800;color:#E65100;margin-top:6px;letter-spacing:.3px;">🛒 Carrinho para Eventos</div>
 <div style="font-size:0.68rem;color:#5C2D6B;font-weight:700;">Toque para consultar</div>
 </a>
@@ -1426,18 +1473,18 @@ html { scroll-behavior: smooth; }
 </div>
 <span class="toggle-icon">▼</span>
 </div>
-	<div class="categoria-conteudo" id="conteudo-acréscimos">
-	<div id="lista-acréscimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
-	</div>
-	</div>
+<div class="categoria-conteudo" id="conteudo-acréscimos">
+<div id="lista-acréscimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
+</div>
+</div>
 
-	<!-- BOTÃO DEPOIMENTOS ABAIXO DE ACRÉSCIMOS -->
-	<div style="text-align: center; padding: 20px; background: #fff; border-radius: 20px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-	  <a class="nav-btn nav-green" href="dicas.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 15px 30px; border-radius: 50px; font-size: clamp(0.85rem,2.5vw,1.1rem); font-weight: 800; text-decoration: none; background: linear-gradient(135deg,#00C853,#009624); color: #fff; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 14px rgba(0,200,83,.4); transition: transform 0.2s; white-space: nowrap;">
-	    ⭐ DICAS/DEPOIMENTOS
-	  </a>
-	  <p style="font-size: 0.85rem; color: #666; margin-top: 10px; font-weight: 600;">Veja o que nossos clientes dizem sobre nós!</p>
-	</div>
+<!-- BOTÃO DEPOIMENTOS ABAIXO DE ACRÉSCIMOS -->
+<div style="text-align: center; padding: 20px; background: #fff; border-radius: 20px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+  <a class="nav-btn nav-green" href="dicas.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 15px 30px; border-radius: 50px; font-size: clamp(0.85rem,2.5vw,1.1rem); font-weight: 800; text-decoration: none; background: linear-gradient(135deg,#00C853,#009624); color: #fff; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 14px rgba(0,200,83,.4); transition: transform 0.2s; white-space: nowrap;">
+    ⭐ DICAS/DEPOIMENTOS
+  </a>
+  <p style="font-size: 0.85rem; color: #666; margin-top: 10px; font-weight: 600;">Veja o que nossos clientes dizem sobre nós!</p>
+</div>
 
 <button class="btn-carrinho-fixo" disabled="" id="btn-carrinho" onclick="abrirCarrinho()" ontouchstart="this._t=Date.now()" ontouchend="if(Date.now()-this._t<300){abrirCarrinho()};event.preventDefault();return false" type="button">
   🛒 Ver Carrinho
