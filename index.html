@@ -2016,17 +2016,35 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </script>
 <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
 <main id="conteudo-principal">
-<header class="header">
-<div class="header-inner">
-<div class="brand">
-<a href="index.html" aria-label="Início – Sorveteria Itapolitana Cajuru"><div class="brand-icon"><img alt="Logo Sorveteria Itapolitana Cajuru – Sorvete tipo artesanal desde 2007" decoding="async" loading="eager" fetchpriority="high" src="images/logo.webp" width="80" height="80" style="aspect-ratio:1/1;width:80px;height:80px;"></div></a>
+<header class="itap-header">
+<div class="itap-header-inner">
+<!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô.
+     Mudança: substituiu .header/.brand por .itap-header/.itap-header-top para garantir
+     que o botão Dúvidas nunca sobreponha a logomarca em nenhuma resolução. -->
+<div class="itap-header-top">
+  <div class="itap-header-logo">
+    <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+      <img class="itap-logo-img" alt="Logo Sorveteria Itapolitana Cajuru – Sorvete tipo artesanal desde 2007" decoding="async" loading="eager" fetchpriority="high" src="images/logo.webp" width="40" height="40">
+    </a>
+  </div>
+  <div class="itap-header-duvidas">
+    <button type="button" class="ita-bot-duvidas-btn"
+            id="ita-bot-duvidas"
+            onclick="abrirItaBot()"
+            aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">🤖 DÚVIDAS</button>
+  </div>
+  <div class="itap-header-bot">
+    <button type="button" class="itap-header-bot-btn itabot-btn"
+            id="chat-fab-btn"
+            onclick="abrirItaBot()"
+            aria-label="Abrir Ita Bot" aria-haspopup="dialog">🤖</button>
+  </div>
 </div>
-<nav class="header-nav">
-<a class="nav-btn nav-purple" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);color:#fff;"><span class="nav-icon">🛒</span><span class="nav-label" style="color:#fff;">ENCOMENDAS</span></a>
-<a class="nav-btn nav-orange" href="promocao.html" id="nav-promo-btn" style="background:linear-gradient(135deg,#E8000D,#C62828);color:#fff;"><span class="nav-icon">🎉</span><span class="nav-label" style="color:#fff;">PROMOÇÃO</span></a>
-<a class="nav-btn nav-green" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);color:#fff;"><span class="nav-icon">⭐</span><span class="nav-label" style="color:#fff;">DICAS/DEPOIMENTOS</span></a>
-<!-- UIAudit: adicionado class nav-yellow para consistência semântica com os outros 3 botões -->
-<a class="nav-btn nav-yellow" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;"><span class="nav-icon">🎟️</span><span class="nav-label" style="color:#fff;">FIDELIDADE</span></a>
+<nav class="itap-header-nav" aria-label="Menu principal">
+<a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);color:#fff;"><span class="itap-nav-icon">🛒</span><span class="itap-nav-label" style="color:#fff;">ENCOMENDAS</span></a>
+<a class="itap-nav-btn" href="promocao.html" id="nav-promo-btn" style="background:linear-gradient(135deg,#E8000D,#C62828);color:#fff;"><span class="itap-nav-icon">🎉</span><span class="itap-nav-label" style="color:#fff;">PROMOÇÃO</span></a>
+<a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);color:#fff;"><span class="itap-nav-icon">⭐</span><span class="itap-nav-label" style="color:#fff;">DICAS/DEPOIMENTOS</span></a>
+<a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;"><span class="itap-nav-icon">🎟️</span><span class="itap-nav-label" style="color:#fff;">FIDELIDADE</span></a>
 </nav>
 </div></header>
 
@@ -2976,9 +2994,9 @@ function voltarTemas() {
   <!-- badge / bubble mantidos como elementos ocultos para compatibilidade JS -->
   <span class="itabot-badge" id="itabot-badge" aria-hidden="true"></span>
   <div class="itabot-bubble" id="itabot-bubble" aria-hidden="true"></div>
-  <!-- Card DÚVIDAS: robô com sorvete + botão -->
+  <!-- Card DÚVIDAS: robô com sorvete + botão (id removido — chat-fab-btn agora está no header) -->
   <button type="button"
-          id="chat-fab-btn"
+          id="itabot-card-btn"
           class="duvidas-card"
           onclick="abrirItaBot()"
           aria-label="Abrir Ita Bot – Dúvidas sobre a Sorveteria"
@@ -4138,6 +4156,11 @@ setInterval(() => {
 // Resultado: [logo (esquerda)] [DÚVIDAS (centro pulsante)] [robô (direita)]
 // Mesmo padrão visual do mockup, replicado em todas as páginas.
 function posicionarItaBotNoTopo() {
+  // Header agora tem estrutura estática 3-colunas (.itap-header-top).
+  // Esta função era usada para posicionar dinamicamente o robô no topo,
+  // mas com o HTML estático ela não é mais necessária — retorna imediatamente.
+  if (document.querySelector('.itap-header-top')) return;
+  // Código legado mantido abaixo caso o HTML reverta para estrutura dinâmica:
   const wrap = document.getElementById('itabot-wrap');
   const logo = document.querySelector('.brand-icon, .itap-brand-icon');
   if (!wrap || !logo) return;

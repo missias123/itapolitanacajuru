@@ -86,9 +86,24 @@
 <body class="itap-has-bottom-tabs">
   <header class="itap-header">
     <div class="itap-header-inner">
-      <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
-        <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
-      </a>
+      <!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô -->
+      <div class="itap-header-top">
+        <div class="itap-header-logo">
+          <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+            <img class="itap-logo-img" src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="40" height="40">
+          </a>
+        </div>
+        <div class="itap-header-duvidas">
+          <button type="button" class="ita-bot-duvidas-btn"
+                  onclick="_itabotAbrirItaBot()"
+                  aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">🤖 DÚVIDAS</button>
+        </div>
+        <div class="itap-header-bot">
+          <button type="button" class="itap-header-bot-btn itabot-btn"
+                  onclick="_itabotAbrirItaBot()"
+                  aria-label="Abrir Ita Bot" aria-haspopup="dialog">🤖</button>
+        </div>
+      </div>
       <nav class="itap-header-nav" aria-label="Menu principal">
         <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
           <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
@@ -166,5 +181,7 @@
       } catch (e) {}
     })();
   </script>
+  <!-- Ita Bot: carregado em todas as páginas principais para o botão Dúvidas funcionar -->
+  <script src="scripts/ita-bot-widget.js" defer></script>
 </body>
 </html>

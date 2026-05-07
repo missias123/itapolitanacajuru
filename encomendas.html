@@ -1240,9 +1240,28 @@ html { scroll-behavior: smooth; }
 <!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
 <header class="itap-header">
   <div class="itap-header-inner">
-    <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
-      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="90" height="90">
-    </a>
+    <!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô.
+         Sem position:absolute/fixed; sobreposição impossível via flex + gap + margin. -->
+    <div class="itap-header-top">
+      <!-- 1. Logo — esquerda -->
+      <div class="itap-header-logo">
+        <a href="index.html" class="itap-brand-icon" aria-label="Início – Sorveteria Itapolitana Cajuru">
+          <img class="itap-logo-img" src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="40" height="40">
+        </a>
+      </div>
+      <!-- 2. Botão Dúvidas — centro (gap seguro da logo e do robô) -->
+      <div class="itap-header-duvidas">
+        <button type="button" class="ita-bot-duvidas-btn"
+                onclick="_itabotAbrirItaBot()"
+                aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">🤖 DÚVIDAS</button>
+      </div>
+      <!-- 3. Robô — direita (margem segura da área central) -->
+      <div class="itap-header-bot">
+        <button type="button" class="itap-header-bot-btn itabot-btn"
+                onclick="_itabotAbrirItaBot()"
+                aria-label="Abrir Ita Bot" aria-haspopup="dialog">🤖</button>
+      </div>
+    </div>
     <nav class="itap-header-nav" aria-label="Menu principal">
       <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
         <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>

@@ -1710,7 +1710,7 @@ Talento</textarea>
         <div class="stat-card"><div class="num" id="sc-fraudes">-</div><div class="txt">Fraudes</div></div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button></div>
+        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn" style="background:#1565c0;color:#fff" onclick="cadastrarClienteManual()">➕ Cadastrar Manual</button></div></div>
         <div class="card-body">
           <div class="busca-wrap"><input type="search" id="busca-cliente" placeholder="Buscar por nome ou WhatsApp..." oninput="renderClientes()"/></div>
           <div class="tabela-wrap">
@@ -3468,7 +3468,22 @@ function renderClientes(){
   const slice=filtrados.slice(pag*POR_PAGINA,(pag+1)*POR_PAGINA);
   const tbody=document.getElementById('tabela-clientes');
   if(!slice.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">Nenhum cliente encontrado.</td></tr>';}
-  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}"><td>${c.nome||'-'}</td><td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td><td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td><td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDateString('pt-BR'):'-'}</td><td>${c.bloqueado?'Bloqueado':c.fraude?'Fraude':'Ativo'}</td><td style="display:flex;gap:6px;flex-wrap:wrap">${c.bloqueado?`<button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',false)">Desbloquear</button>`:`<button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="toggleBloqueio('${c.cel}',true)">Bloquear</button>`}<button class="btn" style="background:#c62828;color:#fff;padding:5px 10px;font-size:.78rem" onclick="excluirCliente('${c.cel}')">🗑️ Excluir</button></td></tr>`).join('');}
+  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}">
+    <td>${c.nome||'-'}</td>
+    <td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td>
+    <td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td>
+    <td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDateString('pt-BR'):'-'}</td>
+    <td>${c.bloqueado?'<span style="color:#c62828;font-weight:700">Bloqueado</span>':c.fraude?'<span style="color:#f57c00;font-weight:700">Fraude</span>':'<span style="color:#2e7d32">Ativo</span>'}${(c.tentativas_fraude||0)>0?` <small style="color:#888">(${c.tentativas_fraude} tent.)</small>`:''}</td>
+    <td style="display:flex;gap:5px;flex-wrap:wrap">
+      ${c.bloqueado
+        ?`<button class="btn btn-verde" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${c.cel}',false)">🔓 Desbloquear</button>`
+        :`<button class="btn btn-vermelho" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${c.cel}',true)">🔒 Bloquear</button>`}
+      ${(c.tentativas_fraude||0)>0?`<button class="btn" style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${c.cel}')">🔄 Zerar tent.</button>`:''}
+      <button class="btn" style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${c.cel}')">➕ Ponto</button>
+      <button class="btn" style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${c.cel}')">✅ Código</button>
+      <button class="btn" style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${c.cel}')">🗑️ Excluir</button>
+    </td>
+  </tr>`).join('');}
   const pagDiv=document.getElementById('pag-clientes');
   let pagHtml='';
   for(let i=0;i<paginas;i++)pagHtml+=`<button class="${i===pag?'ativo':''}" onclick="irPagClientes(${i})">${i+1}</button>`;
@@ -3561,13 +3576,136 @@ async function toggleBloqueio(cel,bloquear){
       }
     );
   }else{
+    /* Desbloquear: também zera tentativas_fraude para o cliente poder tentar novamente */
     clientes[cel].bloqueado=false;
+    clientes[cel].tentativas_fraude=0;
+    clientes[cel].motivo_bloqueio=null;
+    const agora=new Date().toISOString();
+    if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
+    clientes[cel].historico_alteracoes.push({data:agora,tipo:'desbloqueio',descricao:'Conta desbloqueada e tentativas zeradas pelo admin',por:'admin'});
     let ok=false;
     if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${cel}`);}
     else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${cel}`);}
-    if(ok)renderClientes();
+    if(ok){toast('✅ Conta desbloqueada e tentativas zeradas. Mudança salva no GitHub.','sucesso');renderClientes();}
   }
 }
+// ═══════════════════════════════════════════════════════════
+// FUNÇÕES DE GESTÃO MANUAL DO CLUBE DE FIDELIDADE
+// Todas as ações salvam no GitHub (dados/clientes.json / dados/fidelidade.json)
+// para atualização imediata no site — sem cache de CDN.
+// ═══════════════════════════════════════════════════════════
+
+/* Adicionar ponto(s) manualmente para um cliente.
+   Admin usa quando o cliente trouxe cupom físico ou houve erro no fluxo. */
+async function adicionarPontoManual(cel){
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const c=clientes[cel];
+  if(!c)return;
+  const qtdStr=prompt(`➕ Adicionar pontos para ${c.nome}\nWhatsApp: ${cel}\nPontos atuais: ${c.saldoPontos||0}\n\nQuantidade a adicionar:`);
+  if(qtdStr===null)return;
+  const n=parseInt(qtdStr,10);
+  if(isNaN(n)||n<=0){toast('Quantidade inválida.','erro');return;}
+  const motivo=prompt('Motivo ou código do cupom (opcional):')||'Adicionado manualmente pelo admin';
+  const agora=new Date().toISOString();
+  clientes[cel].saldoPontos=(clientes[cel].saldoPontos||0)+n;
+  if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
+  clientes[cel].historico_alteracoes.push({data:agora,tipo:'ponto_manual',descricao:motivo,por:'admin',pontos:n});
+  let ok=false;
+  if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: +${n}pt para ${c.nome}`);}
+  else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: +${n}pt para ${c.nome}`);}
+  if(ok){toast(`✅ +${n} ponto(s) para ${c.nome}. Novo saldo: ${clientes[cel].saldoPontos}. Salvo no GitHub.`,'sucesso');renderClientes();}
+}
+
+/* Zerar tentativas de código e desbloquear.
+   Usar quando o cliente erroneamente foi bloqueado ou após confirmação pessoal. */
+async function zerarTentativas(cel){
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const c=clientes[cel];
+  if(!c)return;
+  const agora=new Date().toISOString();
+  clientes[cel].tentativas_fraude=0;
+  clientes[cel].bloqueado=false;
+  clientes[cel].motivo_bloqueio=null;
+  if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
+  clientes[cel].historico_alteracoes.push({data:agora,tipo:'reset_tentativas',descricao:'Tentativas zeradas e conta desbloqueada pelo admin',por:'admin'});
+  let ok=false;
+  if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: zerar tentativas ${cel}`);}
+  else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: zerar tentativas ${cel}`);}
+  if(ok){toast('✅ Tentativas zeradas e conta desbloqueada. Salvo no GitHub.','sucesso');renderClientes();}
+}
+
+/* Validar código manualmente pelo admin.
+   Marca o código como usado em fidelidade.json E adiciona 1 ponto ao cliente em clientes.json.
+   Ambas as mudanças são persistidas no GitHub para atualização imediata no site. */
+async function adminValidarCodigo(cel){
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const c=clientes[cel];
+  if(!c)return;
+  const codigo=(prompt(`✅ Validar código para ${c.nome}\nWhatsApp: ${cel}\nPontos atuais: ${c.saldoPontos||0}\n\nDigite o código do cupom:`)||'').trim().toUpperCase();
+  if(!codigo)return;
+  const codigos=STATE.fidelidade?.['códigos']||STATE.fidelidade?.codigos||{};
+  const entrada=codigos[codigo];
+  if(!entrada){toast(`Código "${codigo}" não encontrado em fidelidade.json.`,'erro');return;}
+  if(entrada.status!=='disponível'&&entrada.status!=='disponivel'){toast(`Código "${codigo}" já foi utilizado (status: ${entrada.status}).`,'erro');return;}
+  const usados=c.codigosUsados||[];
+  if(usados.indexOf(codigo)!==-1){toast(`${c.nome} já usou este código anteriormente.`,'erro');return;}
+
+  /* registrar: +1 ponto, marcar código como usado, zerar tentativas de fraude */
+  const agora=new Date().toISOString();
+  clientes[cel].saldoPontos=(clientes[cel].saldoPontos||0)+1;
+  clientes[cel].codigosUsados=[...usados,codigo];
+  clientes[cel].totalCodigos=(clientes[cel].totalCodigos||0)+1;
+  clientes[cel].tentativas_fraude=0;
+  if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
+  clientes[cel].historico_alteracoes.push({data:agora,tipo:'codigo_validado_admin',descricao:`Código ${codigo} validado manualmente pelo admin`,por:'admin',pontos:1});
+
+  /* atualizar status do código em fidelidade.json */
+  const chave=STATE.fidelidade?.['códigos']?'códigos':'codigos';
+  STATE.fidelidade[chave][codigo]=Object.assign({},entrada,{status:'usado',usadoPor:cel,usadoEm:agora});
+
+  /* salvar clientes.json */
+  let okC=false;
+  if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;okC=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: código ${codigo} → ${c.nome}`);}
+
+  /* salvar fidelidade.json */
+  const okF=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: código ${codigo} usado por ${c.nome}`);
+
+  if(okC||okF){
+    toast(`✅ Código ${codigo} validado! ${c.nome} agora tem ${clientes[cel].saldoPontos} ponto(s). Salvo no GitHub.`,'sucesso');
+    renderClientes();
+    if(typeof renderCódigos==='function')renderCódigos();
+  }
+}
+
+/* Cadastrar cliente manualmente pelo admin (sem passar pelo formulário do site).
+   Útil quando o cliente está presencialmente na loja. */
+async function cadastrarClienteManual(){
+  const nome=(prompt('Nome completo do cliente:')||'').trim();
+  if(nome.length<3){toast('Nome muito curto.','erro');return;}
+  const celRaw=(prompt('WhatsApp (somente números):')||'').replace(/\D/g,'');
+  if(celRaw.length<10){toast('WhatsApp inválido.','erro');return;}
+  const nasc=prompt('Data de nascimento (AAAA-MM-DD ou deixe em branco):')||'';
+  const clientes=STATE.clientes?.clientes||{};
+  if(clientes[celRaw]){toast(`Número ${celRaw} já está cadastrado.`,'aviso');return;}
+  const agora=new Date().toISOString();
+  const existentes=Object.keys(clientes);
+  let maxNum=0;
+  existentes.forEach(k=>{const m=k.match(/USR-2026-(\d+)/);if(m)maxNum=Math.max(maxNum,parseInt(m[1],10));});
+  const novoId='USR-2026-'+String(maxNum+1).padStart(4,'0');
+  clientes[celRaw]={
+    id_permanente:novoId,nome,cel:celRaw,dataNasc:nasc,
+    cadastro:agora,saldoPontos:0,codigosUsados:[],resgates:[],
+    totalPremios:0,totalCodigos:0,bloqueado:false,motivo_bloqueio:null,
+    tentativas_fraude:0,ultimo_acesso:agora,
+    historico_alteracoes:[{data:agora,tipo:'cadastro_manual',descricao:'Cadastro manual pelo admin na loja',por:'admin'}]
+  };
+  if(!STATE.clientes?.indice_celular)STATE.clientes.indice_celular={};
+  STATE.clientes.indice_celular[celRaw]=novoId;
+  STATE.clientes.clientes=clientes;
+  const ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: cadastro manual ${nome}`);
+  if(ok){toast(`✅ ${nome} cadastrado com ID ${novoId}. Salvo no GitHub.`,'sucesso');renderClientes();}
+}
+
 // ═══════════════════════════════════════════════════════════
 // SORTEIOS MENSAIS — ADMIN
 // ═══════════════════════════════════════════════════════════
