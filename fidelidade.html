@@ -311,6 +311,8 @@
     .cad-aceite-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: #2e7d32; }
     .cad-aceite-row label { font-size: .82rem; font-weight: 600; color: #333; line-height: 1.45; }
     .cad-aceite-row a { color: #C62828; font-weight: 800; }
+    /* Texto de instrução de preenchimento dentro do formulário de cadastro */
+    .cad-instrucao { font-size: .82rem; color: #4a6741; background: #f1f8f1; border-left: 3px solid #2e7d32; border-radius: 0 8px 8px 0; padding: 8px 10px; margin-bottom: 12px; line-height: 1.5; }
     select {
       width: 100%;
       border: 2px solid #E0E0E0;
@@ -379,6 +381,14 @@
       display: inline-block;
       margin: 4px;
     }
+    /* Selos de confiança – estilo grandes apps (iFood, Rappi, McDonald's BR) – contornos visíveis */
+    .badge-conf{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.55);border-radius:30px;padding:7px 14px;font-size:.8rem;font-weight:700;color:#fff;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.12);transition:background .2s,transform .15s;margin:0}
+    .badge-conf:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+    .badge-conf.badge-dest{border-color:rgba(251,209,0,.8);background:rgba(251,209,0,.14);color:#FBD100;box-shadow:0 2px 10px rgba(251,209,0,.22),inset 0 1px 0 rgba(251,209,0,.1)}
+    .badge-conf.badge-dest:hover{background:rgba(251,209,0,.24)}
+    .badge-conf .badge-icon{font-size:1.1rem;line-height:1;flex-shrink:0}
+    .badges-confianca{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0 20px}
+    @media(max-width:480px){.badge-conf{font-size:.73rem;padding:6px 11px}}
   </style>
 </head>
 <body class="itap-has-bottom-tabs">
@@ -462,10 +472,10 @@
       </div>
     </section>
 
-    <!-- 3) Área do Cliente (placeholder preparado para integração futura) -->
+    <!-- 3) Área do Cliente — integração real com dados/clientes.json via GitHub API -->
     <section class="card" aria-labelledby="titulo-area-cliente">
       <h2 id="titulo-area-cliente" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Área do Cliente</h2>
-      <p style="font-size:.9rem;color:#555;margin-bottom:12px;">Faça sua consulta de pontos e registre cupons. Nesta fase, os botões estão em modo de simulação.</p>
+      <p style="font-size:.9rem;color:#555;margin-bottom:12px;">Digite seu WhatsApp para consultar seus pontos ou se cadastrar gratuitamente no Clube de Fidelidade.</p>
 
       <div class="cliente-grid">
         <div class="form-row">
@@ -481,22 +491,36 @@
         </div>
       </div>
 
-      <!-- FORMULÁRIO DE CADASTRO — aparece quando telefone não encontrado -->
+      <!--
+        Formulário de cadastro do Clube de Fidelidade — manter IDs e lógica JS pois
+        estão integrados com o admin (dados/clientes.json via GitHub API).
+        - IDs críticos: cad-nome, cad-tel-view, cad-dia, cad-mes, cad-ano, cad-aceite, btn-cadastrar-clube
+        - Sem atributo action/method: envio gerenciado 100% pelo JS abaixo (mostrarFormCadastro / btn-cadastrar-clube)
+        - Sem token: fallback via WhatsApp para a loja confirmar manualmente.
+        - Com token (itap_gh_token no localStorage): salva direto no GitHub.
+      -->
+      <!-- FORMULÁRIO DE CADASTRO — aparece via JS quando o WhatsApp informado não está cadastrado -->
       <div class="cad-box" id="form-cadastro-wrap">
         <div class="cad-titulo">📝 Cadastro gratuito no Clube de Fidelidade</div>
 
+        <!-- Instruções de preenchimento -->
+        <p class="cad-instrucao">Preencha os campos abaixo com seus dados reais. O celular já foi preenchido automaticamente. Use seu WhatsApp principal para receber as confirmações da loja.</p>
+
         <div class="cad-row">
           <label for="cad-nome">Nome completo</label>
-          <input id="cad-nome" type="text" placeholder="Seu nome completo" autocomplete="name" maxlength="100">
+          <!-- ID cad-nome — não alterar: referenciado no JS de cadastro -->
+          <input id="cad-nome" type="text" placeholder="Informe seu nome completo" autocomplete="name" maxlength="100">
         </div>
 
         <div class="cad-row">
           <label>Celular (WhatsApp)</label>
+          <!-- ID cad-tel-view — não alterar: preenchido automaticamente pelo JS com o número digitado acima -->
           <input id="cad-tel-view" type="tel" readonly style="background:#f0f0f0;color:#555;cursor:default;" tabindex="-1">
         </div>
 
         <div class="cad-row">
           <label>Data de nascimento</label>
+          <!-- IDs cad-dia, cad-mes, cad-ano — não alterar: usados no JS para montar dataNasc enviada ao admin -->
           <div class="cad-nasc-grid">
             <select id="cad-dia"><option value="">Dia</option></select>
             <select id="cad-mes">
@@ -513,10 +537,12 @@
         </div>
 
         <div class="cad-aceite-row">
+          <!-- ID cad-aceite — não alterar: verificado no JS antes de enviar o cadastro -->
           <input id="cad-aceite" type="checkbox">
-          <label for="cad-aceite">Li e concordo com o <a href="#titulo-regras" onclick="document.querySelector('details.regulamento').open=true;">Regulamento do Clube de Fidelidade</a></label>
+          <label for="cad-aceite">Li e aceito as <a href="#titulo-regras" onclick="document.querySelector('details.regulamento').open=true;">Regras do Clube de Fidelidade</a></label>
         </div>
 
+        <!-- ID btn-cadastrar-clube — não alterar: listener de click dispara o envio ao admin -->
         <button class="btn btn-verde" id="btn-cadastrar-clube">🎟️ Cadastrar no Clube</button>
       </div>
 
@@ -564,6 +590,16 @@
         <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="itap-footer-nav" style="border-color:rgba(37,211,102,.7);background:rgba(37,211,102,.2);">💬 WhatsApp</a>
         <a href="encomendas.html" class="itap-footer-nav">📦 Encomendas</a>
         <a href="fidelidade.html" class="itap-footer-nav" style="border-color:rgba(251,209,0,.55);background:rgba(251,209,0,.18);">⭐ Fidelidade</a>
+      </div>
+
+      <!-- Selos de confiança – estilo grandes apps (iFood, Rappi, McDonald's BR) – contornos visíveis -->
+      <div class="badges-confianca">
+        <span class="badge-conf badge-dest"><span class="badge-icon">🏅</span> Desde 2007</span>
+        <span class="badge-conf"><span class="badge-icon">🔒</span> Site Seguro</span>
+        <span class="badge-conf"><span class="badge-icon">💳</span> Pix Aceito</span>
+        <span class="badge-conf"><span class="badge-icon">📱</span> App Disponível</span>
+        <span class="badge-conf badge-dest"><span class="badge-icon">⭐</span> Clube Fidelidade</span>
+        <span class="badge-conf"><span class="badge-icon">✅</span> LGPD Conforme</span>
       </div>
 
       <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
@@ -805,7 +841,13 @@
         }
       })();
 
-      /* ── CADASTRO NO CLUBE ───────────────────────────────────────────── */
+      /* ── CADASTRO NO CLUBE ───────────────────────────────────────────────
+         Integração com admin: dados salvos em dados/clientes.json via GitHub API.
+         IDs críticos: cad-nome, cad-tel-view, cad-dia, cad-mes, cad-ano, cad-aceite, btn-cadastrar-clube.
+         NÃO alterar esses IDs sem atualizar o admin-painel.html correspondente.
+         O fluxo de pontos/cupons (cliente-telefone, form-codigo-wrap, btn-entrar,
+         btn-registrar-ponto) está SEPARADO e NÃO foi alterado.
+      ───────────────────────────────────────────────────────────────────── */
       function mostrarFormCadastro(tel) {
         var cadTelView = document.getElementById('cad-tel-view');
         if (cadTelView) cadTelView.value = mascaraTel(tel);

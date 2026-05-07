@@ -1454,7 +1454,7 @@ html { scroll-behavior: smooth; }
   <span class="badge" id="carrinho-badge">0</span>
 </button>
 <!-- UX FINAL (inspiração iFood): mini-resumo sempre visível perto da ação principal -->
-<div id="resumo-pedido-flutuante" style="position:fixed;right:14px;bottom:84px;z-index:900;background:#fff;border:1.5px solid #FFE0B2;border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.14);font-size:.78rem;font-weight:800;color:#5D4037;max-width:240px;">
+<div id="resumo-pedido-flutuante" style="position:fixed;right:14px;bottom:84px;z-index:9600;background:#fff;border:1.5px solid #FFE0B2;border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.14);font-size:.78rem;font-weight:800;color:#5D4037;max-width:240px;">
   Resumo: <span id="resumo-flutuante-itens">0 itens</span> · <span id="resumo-flutuante-total">R$ 0,00</span>
 </div>
 <div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
@@ -1753,6 +1753,14 @@ html { scroll-behavior: smooth; }
     .itap-footer-nav{color:#fff;text-decoration:none;font-size:12px;font-weight:800;border-radius:30px;padding:7px 14px;display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12)}
     .itap-footer-nav:hover{background:rgba(255,255,255,.25)}
     @media(max-width:600px){footer{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))!important}}
+    /* Selos de confiança – estilo grandes apps (iFood, Rappi) – contornos visíveis */
+    .badge-conf{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1.5px solid rgba(255,255,255,.55);border-radius:30px;padding:7px 14px;font-size:.8rem;font-weight:700;color:#fff;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.12);transition:background .2s,transform .15s}
+    .badge-conf:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+    .badge-conf.badge-dest{border-color:rgba(251,209,0,.8);background:rgba(251,209,0,.14);color:#FBD100;box-shadow:0 2px 10px rgba(251,209,0,.22),inset 0 1px 0 rgba(251,209,0,.1)}
+    .badge-conf.badge-dest:hover{background:rgba(251,209,0,.24)}
+    .badge-conf .badge-icon{font-size:1.1rem;line-height:1;flex-shrink:0}
+    .badges-confianca{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0 20px}
+    @media(max-width:480px){.badge-conf{font-size:.73rem;padding:6px 11px}}
   </style>
   <!-- Logo + nome -->
   <div style="padding:26px 20px 18px;">
@@ -1767,6 +1775,15 @@ html { scroll-behavior: smooth; }
     <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="itap-footer-nav" style="border-color:rgba(37,211,102,.7);background:rgba(37,211,102,.2);">💬 WhatsApp</a>
     <a href="encomendas.html" class="itap-footer-nav">📦 Encomendas</a>
     <a href="fidelidade.html" class="itap-footer-nav" style="border-color:rgba(251,209,0,.55);background:rgba(251,209,0,.18);">⭐ Fidelidade</a>
+  </div>
+  <!-- Selos de confiança – estilo grandes apps (iFood, Rappi, McDonald's BR) – contornos visíveis -->
+  <div class="badges-confianca">
+    <span class="badge-conf badge-dest"><span class="badge-icon">🏅</span> Desde 2007</span>
+    <span class="badge-conf"><span class="badge-icon">🔒</span> Site Seguro</span>
+    <span class="badge-conf"><span class="badge-icon">💳</span> Pix Aceito</span>
+    <span class="badge-conf"><span class="badge-icon">📱</span> App Disponível</span>
+    <span class="badge-conf badge-dest"><span class="badge-icon">⭐</span> Clube Fidelidade</span>
+    <span class="badge-conf"><span class="badge-icon">✅</span> LGPD Conforme</span>
   </div>
   <!-- Faixa LGPD -->
   <div style="margin:0 16px 18px;padding:13px 16px;background:rgba(0,0,0,.3);border-radius:14px;border:1px solid rgba(251,209,0,.3);">
