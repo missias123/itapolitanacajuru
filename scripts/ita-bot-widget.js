@@ -355,7 +355,6 @@
     'qualidade':     '🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
     'caça':          '⭐ Caça à Estrela: a Estrela Dourada aparece em horários surpresa! Quem clicar primeiro captura a estrela. Acumule 5 estrelas no mês e ganhe um prêmio!',
     'estrela':       '⭐ Caça à Estrela: acumule 5 estrelas no mês para ganhar Açaí 400ml, Milkshake ou 5 Picolés Recheados!',
-    'itamandua':     '⭐ Na Caça à Estrela, a Estrela Dourada aparece em horários surpresa no site. Clique para capturar a estrela!',
     'mascote':       '⭐ Na Caça à Estrela, fique de olho na Estrela Dourada que aparece em horários surpresa no site.',
     'dicas':         '💡 Temos uma página de Dicas com orientações para festas e eventos. Acesse "Dicas/Depoimentos" no menu!',
     'depoimentos':   '⭐ Veja o que nossos clientes dizem! Acesse a página "Dicas/Depoimentos" no menu do site.',
