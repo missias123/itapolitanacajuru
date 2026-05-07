@@ -165,7 +165,8 @@
       onclick="_itabotAbrirItaBot()"
       aria-label="Abrir dúvidas com Ita Bot">DÚVIDAS</button>
 </div>
-
+<!-- Ajuste estrutural do Ita Bot: #itabot-wrap fecha aqui (somente robô + botão DÚVIDAS). -->
+<!-- #chat-dialog é bloco separado, fora do #itabot-wrap, para evitar HTML inválido e sobreposição no Android. -->
 <div id="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-hdr-titulo" aria-hidden="true">
 <div class="chat-box">
 <div class="chat-hdr">
