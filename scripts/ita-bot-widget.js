@@ -117,6 +117,29 @@
 @media(max-width:600px){:root{--itabot-logo-size:72px}.itabot-top-row{gap:6px}.itabot-duvidas-btn{font-size:10px;padding:6px 10px}}
 @media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:10px}}
 @media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(720px,calc(100dvh - 42px));border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}
+
+/* === AJUSTE UX: header com logo e robô equilibrados + DÚVIDAS central === */
+.itabot-top-row{display:grid!important;grid-template-columns:auto 1fr auto!important;align-items:center!important;gap:10px!important;width:100%!important;max-width:420px;margin:0 auto}
+.itap-header-duvidas{display:flex;justify-content:center;align-items:center;width:100%}
+.ita-bot-duvidas-btn{background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border:2px solid rgba(255,255,255,.8);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:900;letter-spacing:.6px;cursor:pointer;animation:itabot-btn-pulse 1.8s ease-in-out infinite}
+.ita-bot-duvidas-btn:focus-visible{outline:3px solid #FFD600;outline-offset:2px}
+.itabot-top-row .itabot-wrap{display:flex!important;align-items:center;justify-content:center}
+.itabot-top-row .duvidas-card{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important}
+
+/* === TELA DE DÚVIDAS minimalista em 3 blocos === */
+.chat-box{display:flex;flex-direction:column;height:100dvh!important;background:#fff}
+.chat-hdr{background:#fff;color:#1A0A00;border-bottom:1px solid #ECECEC;padding:10px 12px;display:flex;gap:8px}
+.chat-hdr-logo-row{border:0;padding:0;flex:1;justify-content:flex-start}
+.chat-hdr-main-row{display:flex;justify-content:flex-end}
+.chat-hdr-main-row>div:first-child,.chat-btn-home,.chat-hdr p,.chat-hdr h3{display:none!important}
+.chat-close{background:#F3F4F6;color:#111827;width:40px;height:40px;font-size:18px}
+#duvidas-resposta.chat-msgs{flex:1!important;min-height:40vh;padding:14px 16px;overflow-y:auto;background:#FAFAFA;font-size:15px;line-height:1.6;color:#111827}
+.chat-typing,.chat-sugs,.duvidas-chips-wrap,.chat-footer{display:none!important}
+.chat-inp-row{border-top:1px solid #ECECEC;background:#fff;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px}
+#duvidas-pergunta.chat-inp{flex:1;border:2px solid #E5E7EB;border-radius:12px;padding:12px 14px;font-size:16px}
+.chat-send{width:auto;height:auto;min-width:92px;border-radius:12px;padding:0 14px;font-size:14px;font-weight:800}
+@media(max-width:600px){.ita-bot-duvidas-btn{font-size:13px;padding:8px 14px}#duvidas-resposta.chat-msgs{font-size:14px}}
+
 `;
 
   var styleEl = document.createElement('style');
@@ -130,7 +153,7 @@
 <div class="itabot-wrap" id="itabot-wrap">
   <span class="itabot-badge" id="itabot-badge" aria-hidden="true" style="display:none"></span>
   <div class="itabot-bubble" id="itabot-bubble" aria-hidden="true" style="display:none"></div>
-  <button type="button" id="chat-fab-btn" class="duvidas-card"
+  <button type="button" id="ita-bot-trigger" class="duvidas-card"
       onclick="_itabotAbrirItaBot()"
       aria-label="Clique para tirar suas dúvidas sobre sorvetes, açaí e encomendas."
       aria-haspopup="dialog">
@@ -221,20 +244,10 @@
     </div>
   </div>
 </div>
-<div class="chat-msgs" id="chat-msgs">
-  <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Me conte sua dúvida e eu te ajudo na hora.</div>
-</div>
-<div class="chat-typing" id="chat-typing"><span></span><span></span><span></span></div>
+<div class="chat-msgs" id="duvidas-resposta" aria-live="polite">Olá! 👋 Sou o <strong>Ita Bot</strong>. Digite sua dúvida abaixo e vou responder aqui.</div>
 <div class="chat-inp-row">
-  <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Palavra-chave ou digite sua dúvida" type="text" autocomplete="off" spellcheck="false" aria-label="Palavra-chave ou digite sua dúvida"/>
-  <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
-</div>
-<!-- Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) -->
-<!-- Navegação duplicada removida: o chat mantém só o CTA útil de atendimento humano -->
-<div class="chat-footer"> 
-  <div class="chat-footer-title">Atendimento humano</div>
-  <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="chat-footer-wa">💬 Continuar no WhatsApp</a>
-  <div class="chat-footer-copy">Todos os dias, das 10h às 22h · 🚫 Não fazemos delivery · Encomende e retire na loja</div>
+  <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida ou palavra-chave" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
+  <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">Enviar</button>
 </div>
 </div>
 </div>`;
@@ -283,7 +296,7 @@
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.add('aberto'); d.removeAttribute('aria-hidden'); d.setAttribute('aria-modal', 'true'); _itabotTravarPagina(); }
     setTimeout(function () {
-      var inp = document.getElementById('chat-inp');
+      var inp = document.getElementById('duvidas-pergunta');
       if (inp) inp.focus();
     }, 120);
   }
@@ -566,13 +579,11 @@
   }());
 
   /* ─── Chat functions ─── */
-  function _itabotAddMsg(tipo, txt) {
-    var m = document.getElementById('chat-msgs');
-    var d = document.createElement('div');
-    d.className = 'msg ' + tipo;
-    if (tipo === 'bot') { d.innerHTML = txt; } else { d.textContent = txt; }
-    m.appendChild(d);
-    m.scrollTop = m.scrollHeight;
+  function _itabotSetResposta(html) {
+    var el = document.getElementById('duvidas-resposta');
+    if (!el) return;
+    el.innerHTML = html;
+    el.scrollTop = 0;
   }
   function _itabotGetResp(msg) {
     var norm = function (s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
@@ -600,32 +611,25 @@
     return typeof d === 'function' ? d() : d;
   }
   window._itabotEnviarSug = function (btn) {
-    document.getElementById('chat-inp').value = btn.textContent;
-    var sugs = document.getElementById('chat-sugs-container');
-    if (sugs) sugs.style.display = 'none';
+    var inp = document.getElementById('duvidas-pergunta');
+    if (!inp) return;
+    inp.value = btn.textContent;
     _itabotEnviarChat();
   };
   window._itabotInserirKeyword = function (kw) {
-    var inp = document.getElementById('chat-inp');
+    var inp = document.getElementById('duvidas-pergunta');
     if (!inp) return;
     inp.value = kw;
     inp.focus();
     _itabotEnviarChat();
   };
   function _itabotEnviarChat() {
-    var inp = document.getElementById('chat-inp');
+    var inp = document.getElementById('duvidas-pergunta');
+    if (!inp) return;
     var msg = inp.value.trim();
     if (!msg) return;
     inp.value = '';
-    var sugs = document.getElementById('chat-sugs-container');
-    if (sugs) sugs.style.display = 'none';
-    _itabotAddMsg('user', msg);
-    var t = document.getElementById('chat-typing');
-    t.classList.add('show');
-    setTimeout(function () {
-      t.classList.remove('show');
-      _itabotAddMsg('bot', _itabotGetResp(msg));
-    }, 700 + Math.random() * 500);
+    _itabotSetResposta(_itabotGetResp(msg));
   }
   window._itabotEnviarChat = _itabotEnviarChat;
 
@@ -643,7 +647,21 @@
       host.insertBefore(row, logo);
       row.appendChild(logo);
     }
+
+    var center = row.querySelector('.itap-header-duvidas');
+    if (!center) {
+      center = document.createElement('div');
+      center.className = 'itap-header-duvidas';
+      center.innerHTML = '<button type="button" id="ita-bot-duvidas" class="ita-bot-duvidas-btn" aria-label="Abrir dúvidas com o Ita Bot">DÚVIDAS</button>';
+      row.appendChild(center);
+    }
+    var centerBtn = center.querySelector('#ita-bot-duvidas');
+    if (centerBtn) centerBtn.onclick = _itabotAbrirItaBot;
+
     if (wrap.parentElement !== row) row.appendChild(wrap);
+    var oldBtn = wrap.querySelector('.itabot-duvidas-btn');
+    if (oldBtn) oldBtn.style.display = 'none';
+
     var logoImg = logo.querySelector('img');
     var size = logoImg ? Math.round(logoImg.getBoundingClientRect().width || logoImg.width || 80) : 80;
     document.documentElement.style.setProperty('--itabot-logo-size', size + 'px');
