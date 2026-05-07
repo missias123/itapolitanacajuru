@@ -601,6 +601,27 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 .duvidas-chip{background:#FFF5F5;color:#C62828;border:1.5px solid #FFCDD2;border-radius:22px;padding:6px 11px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:background .15s,transform .1s,border-color .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex-shrink:0;min-height:34px}
 .duvidas-chip:hover,.duvidas-chip:focus-visible{background:#FFEBEE;border-color:#E8000D;transform:translateY(-1px);outline:2px solid #E8000D;outline-offset:1px}
 .duvidas-chip:active{transform:scale(.95)}
+.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none}
+.skip-link:focus,.skip-link:focus-visible{left:16px;top:0;width:auto;height:auto;overflow:visible;outline:2px solid #fff;outline-offset:2px}
+:root{--itabot-app-bottom-bar-height:56px;--itabot-chat-bottom-safe:calc(var(--itabot-app-bottom-bar-height) + env(safe-area-inset-bottom,0px))}
+/* Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) */
+.itabot-wrap{top:calc(env(safe-area-inset-top,0px) + 12px)!important;right:12px!important;bottom:auto!important}
+.duvidas-card{width:82px!important;height:82px!important;min-width:82px!important;padding:0!important;justify-content:center!important;border-radius:26px!important;background:radial-gradient(circle at 30% 20%,#29448f 0%,#0d1b4d 55%,#060b23 100%)!important;border:2px solid rgba(0,234,255,.88)!important;box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(0,234,255,.48),0 14px 30px rgba(6,11,35,.42)!important;animation:itabot-fab-pulse 1.8s ease-in-out infinite!important;overflow:visible!important}
+.duvidas-card::before{content:'';position:absolute;inset:-6px;border-radius:32px;background:radial-gradient(circle,rgba(0,234,255,.28) 0%,rgba(0,234,255,.08) 48%,rgba(0,234,255,0) 72%);z-index:-1;pointer-events:none}
+.duvidas-card:hover{transform:translateY(-2px) scale(1.02)!important;box-shadow:0 0 0 2px rgba(255,255,255,.16),0 0 22px rgba(0,234,255,.62),0 18px 34px rgba(6,11,35,.46)!important}
+.duvidas-card svg{width:62px!important;height:62px!important;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.28))}
+.duvidas-card-logo,.duvidas-btn{display:none!important}
+@keyframes itabot-fab-pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(0,234,255,.48),0 14px 30px rgba(6,11,35,.42)}50%{transform:scale(1.04);box-shadow:0 0 0 2px rgba(255,255,255,.18),0 0 24px rgba(0,234,255,.72),0 16px 32px rgba(6,11,35,.5)}}
+#chat-dialog{inset:0 0 var(--itabot-chat-bottom-safe) 0!important;height:auto!important}
+.chat-box{border-radius:24px 24px 0 0!important;height:100%!important;overflow:hidden!important}
+.chat-msgs{padding-bottom:20px!important}
+.chat-footer{background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:3px solid #FBD100;flex-shrink:0}
+.chat-footer-title{font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.chat-footer-wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 16px;border-radius:999px;background:rgba(37,211,102,.18);border:1px solid rgba(37,211,102,.78);color:#fff;font-size:12px;font-weight:900;text-decoration:none}
+.chat-footer-copy{font-size:10px;color:rgba(255,255,255,.76);font-weight:700;margin-top:8px;line-height:1.4}
+@media(max-width:600px){.itabot-wrap{top:calc(env(safe-area-inset-top,0px) + 8px)!important;right:10px!important}.duvidas-card{width:78px!important;height:78px!important;min-width:78px!important}}
+@media(min-width:769px){:root{--itabot-chat-bottom-safe:env(safe-area-inset-bottom,0px)}.itabot-wrap{top:24px!important;right:24px!important}.duvidas-card{width:72px!important;height:72px!important;min-width:72px!important;border-radius:24px!important}.duvidas-card svg{width:54px!important;height:54px!important}#chat-dialog{inset:0!important;padding:18px 24px 24px!important;align-items:flex-start!important;justify-content:flex-end!important}.chat-box{max-width:420px!important;height:min(720px,calc(100dvh - 42px))!important;border-radius:28px!important;box-shadow:0 18px 50px rgba(0,0,0,.32)!important}}
+@media(prefers-reduced-motion:reduce){.duvidas-card{animation:none!important}}
 /* MOBILE (≤600px) - PADRONIZAÇÃO TOTAL COM PROMOÇÃO/FIDELIDADE */
 @media(max-width:600px){
   /* 1. BOTÕES DO TOPO EM 2x2 (FORÇADO) */
@@ -718,6 +739,20 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 
 .itabot-wrap{bottom:24px;right:24px}
 }
+/* Robô ao lado do logo no topo */
+:root{--itabot-logo-size:80px}
+.itabot-top-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
+.itabot-top-row .brand-icon,.itabot-top-row .itap-brand-icon{width:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important;margin:0!important;display:flex;align-items:center;justify-content:center}
+.itabot-top-row .brand-icon img,.itabot-top-row .itap-brand-icon img{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important}
+.itabot-top-row .itabot-wrap{position:static!important;top:auto!important;right:auto!important;bottom:auto!important;display:none;align-items:center;justify-content:center;flex:0 0 auto;width:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important}
+.itabot-top-row .duvidas-card{width:var(--itabot-logo-size)!important;height:var(--itabot-logo-size)!important;min-width:var(--itabot-logo-size)!important;padding:0!important;display:flex;align-items:center;justify-content:center;background:transparent!important;border:none!important;box-shadow:none!important;filter:none!important;animation:none!important;overflow:visible!important;transform:none!important}
+.itabot-top-row .duvidas-card::before{display:none!important}
+.itabot-top-row .duvidas-card:hover{transform:none!important;box-shadow:none!important;filter:none!important}
+.itabot-top-row .duvidas-card svg{width:100%!important;height:100%!important;display:block;transform-origin:center bottom;animation:itabot-sway 1.9s ease-in-out infinite;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px rgba(0,234,255,.92)) drop-shadow(0 0 16px rgba(0,234,255,.55))}
+@keyframes itabot-sway{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-2px) rotate(4deg) scale(1.03)}}
+@media(max-width:600px){:root{--itabot-logo-size:80px}.itabot-top-row{gap:10px}}
+@media(min-width:601px){:root{--itabot-logo-size:90px}.itabot-top-row{gap:14px}}
+@media(prefers-reduced-motion:reduce){.itabot-top-row .duvidas-card svg{animation:none}}
 /* BOTAO ADMIN FLUTUANTE */
 #admin-fab{position:fixed;right:6px;bottom:108px;z-index:9998;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.12);color:rgba(255,255,255,.3);border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.1);box-shadow:none;letter-spacing:.2px;white-space:nowrap;opacity:.4}
 /* chat/dúvidas: overlay fullscreen controlado por .aberto */
@@ -1955,7 +1990,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
   }
 }
 </script>
-<a href="#conteudo-principal" class="skip-link" style="position:absolute;top:-40px;left:0;background:#1565C0;color:#fff;padding:8px 16px;z-index:9999;border-radius:0 0 4px 0;font-weight:700;transition:top 0.2s" onfocus="this.style.top='0'" onblur="this.style.top='-40px'">Pular para o conteúdo principal</a>
+<a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
 <main id="conteudo-principal">
 <header class="header">
 <div class="header-inner">
@@ -2599,12 +2634,6 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
         <span class="fale-tema-seta">›</span>
       </button>
 
-      <button type="button" class="fale-tema-btn fale-tema-destaque" onclick="mostrarResposta('estrela')">
-        <span class="fale-tema-emoji">🌟</span>
-        <span class="fale-tema-nome">Caça a Estrela <span style="background:#FFD700;color:#7B5800;font-size:9px;font-weight:900;padding:2px 6px;border-radius:10px;margin-left:6px;">DESTAQUE</span></span>
-        <span class="fale-tema-seta">›</span>
-      </button>
-
       <button type="button" class="fale-tema-btn" onclick="mostrarResposta('horario')">
         <span class="fale-tema-emoji">🕐</span>
         <span class="fale-tema-nome">Horário de Funcionamento</span>
@@ -2711,19 +2740,6 @@ var faleTemas = {
     ],
     link: 'promocao.html',
     linkTexto: 'Mais dúvidas sobre Promoções? Acesse →'
-  },
-  estrela: {
-    emoji: '🌟',
-    titulo: 'Caça a Estrela',
-    palavras: [
-      '✅ O tamanduá pode soltar uma estrela a qualquer momento no site.',
-      '✅ Fique de olho na tela — quando aparecer, clique rápido!',
-      '✅ Quem capturar a estrela ganha um prêmio surpresa.',
-      '✅ O horário da estrela é segredo — pode aparecer a qualquer hora.',
-      '✅ Participe do Clube de Fidelidade para ter mais chances.'
-    ],
-    link: 'fidelidade.html#caca-estrela',
-    linkTexto: 'Mais dúvidas sobre Caça a Estrela? Acesse →'
   },
   horario: {
     emoji: '🕐',
@@ -2908,8 +2924,6 @@ function voltarTemas() {
       <ellipse cx="76" cy="18" rx="9" ry="8" fill="#F9C6D0"/>
       <ellipse cx="73" cy="15" rx="3" ry="2" fill="white" opacity=".5"/>
     </svg>
-    <span class="duvidas-card-logo">Itapolitana</span>
-    <span class="duvidas-btn">DÚVIDAS</span>
   </button>
 </div>
 <div id="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-hdr-titulo" aria-hidden="true">
@@ -2993,22 +3007,12 @@ function voltarTemas() {
       <input class="chat-inp" id="chat-inp" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
       <button class="chat-send" onclick="enviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
     </div>
-<!-- RODAPÉ do chat -->
-<div style="background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:10px 12px;border-top:3px solid #FBD100;flex-shrink:0;">
-  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;">
-    <img src="images/logo.webp" alt="Logo Itapolitana" style="width:34px;height:34px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px #FBD100;" loading="lazy" decoding="async">
-    <div style="text-align:left;">
-      <div style="font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;">Itapolitana</div>
-      <div style="font-size:9px;color:rgba(255,255,255,.85);font-weight:700;">Cajuru · SP · Sorvete Artesanal</div>
-    </div>
-  </div>
-  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-bottom:6px;">
-    <a href="index.html" onclick="fecharChatDialog()" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 10px;">🍦 Cardápio</a>
-    <a href="encomendas.html" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 10px;">📦 Encomendas</a>
-    <a href="fidelidade.html" style="font-size:10px;font-weight:800;color:#FBD100;text-decoration:none;background:rgba(251,209,0,.18);border:1px solid rgba(251,209,0,.55);border-radius:20px;padding:4px 10px;">⭐ Fidelidade</a>
-    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="font-size:10px;font-weight:800;color:#fff;text-decoration:none;background:rgba(37,211,102,.2);border:1px solid rgba(37,211,102,.7);border-radius:20px;padding:4px 10px;">💬 WhatsApp</a>
-  </div>
-  <div style="font-size:9px;color:rgba(255,255,255,.65);font-weight:600;">© 2007–2026 Sorveteria Itapolitana · Cajuru/SP</div>
+<!-- Ajuste de posição do Ita Bot para não sobrepor a barra inferior do app (tabs) -->
+<!-- Navegação duplicada removida: o chat mantém só o CTA útil de atendimento humano -->
+<div class="chat-footer">
+  <div class="chat-footer-title">Atendimento humano</div>
+  <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="chat-footer-wa">💬 Continuar no WhatsApp</a>
+  <div class="chat-footer-copy">Todos os dias, das 10h às 22h · 🚫 Não fazemos delivery · Encomende e retire na loja</div>
 </div>
 </div>
 </div>
@@ -3683,11 +3687,11 @@ async function iniciarTimer(){
 }
 const RESPOSTAS={
   // ── HORÁRIO ──
-  'horário':'🕙 Funcionamos todos os dias, de Segunda a Domingo, das 10h às 22h. Inclusive feriados!',
-  'funciona':'🕙 Funcionamos todos os dias, de Segunda a Domingo, das 10h às 22h. Inclusive feriados!',
+  'horário':'🕙 Funcionamos todos os dias, das 10h às 22h, inclusive feriados.',
+  'funciona':'🕙 Funcionamos todos os dias, das 10h às 22h, inclusive feriados.',
   'abre':'🕙 Abrimos todos os dias às 10h e fechamos às 22h. Te esperamos!',
   'fecha':'🕙 Fechamos às 22h todos os dias. Venha antes! 😊',
-  'aberto':'🕙 Estamos abertos todos os dias das 10h às 22h, inclusive feriados!',
+  'aberto':'🕙 Funcionamos todos os dias, das 10h às 22h, inclusive feriados.',
   'domingo':'🕙 Sim! Abrimos também aos domingos, das 10h às 22h. 🍦',
   'feriado':'🕙 Sim! Funcionamos em feriados, das 10h às 22h.',
   // ── ENDEREÇO E LOCALIZAÇÃO ──
@@ -3764,19 +3768,15 @@ const RESPOSTAS={
   'sorteio':'🎁 Sorteio mensal gratuito! Cadastre-se na página de Promoção no menu do site. Boa sorte! 🍀',
   'cadastro':'📝 Para se cadastrar no Clube de Fidelidade ou no Sorteio Mensal, acesse as páginas correspondentes no menu do site. É gratuito!',
   // ── DELIVERY E RETIRADA ──
-  'delivery':'🏪 Não fazemos delivery. Atendemos somente na loja: R. Cel. Manoel Caetano, 311 – Centro, Cajuru/SP. Venha nos visitar!',
-  'entrega':'🏪 Não fazemos entrega. Para encomendas, a retirada é na loja com prazo de 3 dias úteis.',
-  'motoboy':'🏪 Não trabalhamos com motoboy. Atendemos somente na loja em Cajuru/SP.',
-  'ifood':'🏪 Não estamos no iFood. Atendemos somente na loja: R. Cel. Manoel Caetano, 311 – Centro, Cajuru/SP.',
+  'delivery':'🚫 Não fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
+  'entrega':'🚫 Não fazemos delivery. Para encomendas, a retirada é na loja com prazo de 3 dias úteis.',
+  'motoboy':'🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP.',
+  'ifood':'🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP.',
   // ── SOBRE A SORVETERIA ──
   'anos':'🍦 A Sorveteria Itapolitana está em Cajuru desde 2007 — mais de 19 anos de tradição e sabor!',
   'historia':'🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos servindo sorvetes tipo artesanal com muito carinho!',
   'artesanal':'🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis. Feitos com ingredientes selecionados!',
   'qualidade':'🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
-  // ── CAÇA À ESTRELA ──
-  'caça':        '⭐ Caça à Estrela: em horários surpresa, aparece a Estrela Dourada no site. Quem clicar primeiro captura! Acumule 5 estrelas no mês e ganhe um prêmio: Açaí 400ml, Milkshake ou 5 Picolés Recheados. Acesse a página de Fidelidade para participar.',
-  'estrela':     '⭐ Caça à Estrela: acumule 5 estrelas no mês para ganhar Açaí 400ml, Milkshake ou 5 Picolés Recheados! A Estrela Dourada aparece em horários surpresa no site. Primeiro a clicar leva!',
-  'mascote':     '⭐ Na Caça à Estrela, fique de olho na Estrela Dourada que aparece em horários surpresa no site.',
   // ── DICAS E DEPOIMENTOS ──
   'dicas':       '💡 Temos uma página de Dicas com orientações para festas e eventos: quanto sorvete comprar, como conservar, quais sabores escolher. Acesse "Dicas/Depoimentos" no menu!',
   'depoimentos': '⭐ Veja o que nossos clientes dizem! Acesse a página "Dicas/Depoimentos" no menu do site para ler avaliações e dicas exclusivas.',
@@ -3788,9 +3788,9 @@ const RESPOSTAS={
   'galeria':     '📸 Temos uma galeria de fotos no site! Acesse "Galeria" para ver imagens dos nossos produtos e da sorveteria.',
   'foto':        '📸 Veja fotos dos nossos produtos na Galeria do site! E siga @sorveteriaitapolitanacajuru no Instagram para novidades diárias.',
   // ── PICOLÉS RECHEADOS ──
-  'recheado':    '🍭 Picolés Recheados são nossa especialidade! Veja os sabores disponíveis na página de Fidelidade (são o prêmio da Caça à Estrela). Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
+  'recheado':    '🍭 Picolés Recheados são nossa especialidade! Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
   // ── DEFAULT (FALLBACK PARA WHATSAPP) ──
-  'default':'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · sorteio · caça à estrela · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
+  'default':'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · promoções · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
 };
 window.RESPOSTAS = RESPOSTAS;
 // ItaBot: base de conhecimento consolidada a partir de TODO o site
@@ -4032,15 +4032,33 @@ setInterval(() => {
   }
 }, 4000);
 // [frase-rotativa fundida no DOMContentLoaded principal]
-// Ita Bot: aparece após 5 segundos, bubble some após 6 segundos
-setTimeout(() => {
-  const w = document.getElementById('itabot-wrap');
-  if (w) w.style.display = 'flex';
-}, 5000);
+function posicionarItaBotNoTopo() {
+  const wrap = document.getElementById('itabot-wrap');
+  const logo = document.querySelector('.brand-icon, .itap-brand-icon');
+  if (!wrap || !logo) return;
+  let row = logo.parentElement && logo.parentElement.classList && logo.parentElement.classList.contains('itabot-top-row')
+    ? logo.parentElement
+    : null;
+  if (!row) {
+    const host = logo.parentElement;
+    row = document.createElement('div');
+    row.className = 'itabot-top-row';
+    host.insertBefore(row, logo);
+    row.appendChild(logo);
+  }
+  if (wrap.parentElement !== row) row.appendChild(wrap);
+  const logoImg = logo.querySelector('img');
+  const size = logoImg ? Math.round(logoImg.getBoundingClientRect().width || logoImg.width || 80) : 80;
+  document.documentElement.style.setProperty('--itabot-logo-size', size + 'px');
+  wrap.style.display = 'flex';
+}
+window.addEventListener('resize', posicionarItaBotNoTopo);
+// Ita Bot: fica visível no topo, ao lado do logo
+posicionarItaBotNoTopo();
 setTimeout(() => {
   const b = document.getElementById('itabot-bubble');
   if (b) { b.style.opacity = '0'; setTimeout(() => { b.style.display = 'none'; }, 400); }
-}, 11000);
+}, 6000);
 const STRIPS = [
   '🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · tipo artesanal · 🍦',
   '🍨 Sorvete de Massa · Picolés Recheados · Açaí Premium · Tortas · Milkshakes · Taças · 🍨',
