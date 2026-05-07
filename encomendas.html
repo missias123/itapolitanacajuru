@@ -1283,8 +1283,10 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 <style>
+/* Reserva espaço para: botão carrinho fixo + mini resumo + tabs inferiores no mobile */
+:root { --ux-final-safe-bottom: 150px; }
 @media (max-width: 768px) {
-  body { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
+  body { padding-bottom: calc(var(--ux-final-safe-bottom) + env(safe-area-inset-bottom, 0px)); }
 }
 </style>
 
