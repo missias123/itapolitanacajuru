@@ -147,7 +147,7 @@
     var msgRate = _promoVerificarRate();
     if (msgRate) { mostrarMsgSorteio(msgRate, 'aviso'); return; }
 
-    var nome = (document.getElementById('sort-nome').value || '').replace(/<[^>]*>/g,'').trim();
+    var nome = (document.getElementById('sort-nome').value || '').replace(/[<>&"'/\\]/g, '').trim();
     var cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
     var dia  = (document.getElementById('sort-dia').value || '').trim();
     var mes  = (document.getElementById('sort-mes').value || '').trim();

@@ -578,11 +578,18 @@
     });
   }());
 
+  /* Sanitização defensiva para respostas do bot antes de usar innerHTML.
+     Remove handlers JS inline e esquemas javascript: de qualquer conteúdo. */
+  function _itabotSanitize(html) {
+    return html
+      .replace(/javascript\s*:/gi, '#')
+      .replace(/\s*on\w+\s*=/gi, ' data-removed=');
+  }
   /* ─── Chat functions ─── */
   function _itabotSetResposta(html) {
     var el = document.getElementById('duvidas-resposta');
     if (!el) return;
-    el.innerHTML = html;
+    el.innerHTML = _itabotSanitize(html);
     el.scrollTop = 0;
   }
   function _itabotGetResp(msg) {
