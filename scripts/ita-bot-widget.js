@@ -190,7 +190,7 @@
     </div>
     <div class="chat-hdr-btns">
       <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
-      <button class="chat-btn-home" onclick="window._itabotFecharChatDialog();window.location.href='${_base}index.html'" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
+      <button class="chat-btn-home" onclick="_itabotFecharChatDialog();window.location.href='${_base}index.html'" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
     </div>
   </div>
 </div>
@@ -243,13 +243,13 @@
   document.addEventListener('click', function (e) {
     var cd = document.getElementById('chat-dialog');
     if (cd && cd.classList.contains('aberto') && e.target === cd) {
-      window._itabotFecharChatDialog();
+      _itabotFecharChatDialog();
     }
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       var cd = document.getElementById('chat-dialog');
-      if (cd && cd.classList.contains('aberto')) { window._itabotFecharChatDialog(); e.preventDefault(); }
+      if (cd && cd.classList.contains('aberto')) { _itabotFecharChatDialog(); e.preventDefault(); }
     }
   });
 
@@ -273,18 +273,20 @@
   }
 
   /* ─── Chat open/close ─── */
-  window._itabotAbrirItaBot = function () {
+  function _itabotAbrirItaBot() {
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.add('aberto'); d.removeAttribute('aria-hidden'); d.setAttribute('aria-modal', 'true'); _itabotTravarPagina(); }
     setTimeout(function () {
       var inp = document.getElementById('chat-inp');
       if (inp) inp.focus();
     }, 120);
-  };
-  window._itabotFecharChatDialog = function () {
+  }
+  function _itabotFecharChatDialog() {
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
-  };
+  }
+  window._itabotAbrirItaBot = _itabotAbrirItaBot;
+  window._itabotFecharChatDialog = _itabotFecharChatDialog;
 
   /* ─── RESPOSTAS ─── */
   var RESPOSTAS = {
