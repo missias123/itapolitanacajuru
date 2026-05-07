@@ -52,6 +52,14 @@
         resultado.className = 'resultado' + (tipo ? ' ' + tipo : '');
       }
 
+      /* helper para atualizar qualquer elemento de resultado pelo ID */
+      function setResultadoEl(id, msg, tipo) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'resultado' + (tipo ? ' ' + tipo : '');
+      }
+
       function atualizarBarras(pts) {
         if (!fillBar10 || !fillBar30 || !ptsTexto10 || !ptsTexto30 || !progressoHint) return;
         var pct10 = Math.min(100, Math.round((pts / META_10) * 100));
@@ -219,11 +227,11 @@
       ───────────────────────────────────────────────────────────────────── */
       function mostrarFormCadastro(tel) {
         var cadTelView = document.getElementById('cad-tel-view');
-        if (cadTelView && tel) cadTelView.value = mascaraTel(tel);
+        if (cadTelView && tel && tel.trim()) cadTelView.value = mascaraTel(tel);
         /* formulário já está sempre visível; scroll suave até ele */
         if (formCadastroWrap) formCadastroWrap.scrollIntoView({behavior:'smooth', block:'start'});
         var cadNome = document.getElementById('cad-nome');
-        if (cadNome) cadNome.focus();
+        if (cadNome && !(cadNome.value || '').trim()) cadNome.focus();
       }
 
       function ocultarFormCadastro() {
@@ -255,31 +263,24 @@
         var cadTelEl = document.getElementById('cad-tel-view');
         var telRaw  = (cadTelEl ? cadTelEl.value : '').replace(/\D/g, '');
 
-        var resultadoCadastro = document.getElementById('resultado-cliente');
-        function setRes(msg, tipo) {
-          if (!resultadoCadastro) return;
-          resultadoCadastro.textContent = msg;
-          resultadoCadastro.className = 'resultado' + (tipo ? ' ' + tipo : '');
-        }
-
         if (!nome || nome.length < 3) {
-          setRes('⚠️ Informe seu nome completo.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Informe seu nome completo.', 'erro'); return;
         }
         if (telRaw.length < 10) {
-          setRes('⚠️ Número de WhatsApp inválido. Informe o celular com DDD.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Número de WhatsApp inválido. Corrija o número no campo acima.', 'erro'); return;
         }
         if (!dia || !mes || !ano) {
-          setRes('⚠️ Informe sua data de nascimento completa.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Informe sua data de nascimento completa.', 'erro'); return;
         }
         if (!aceite) {
-          setRes('⚠️ Você precisa aceitar as regras do programa para se cadastrar.', 'erro'); return;
+          setResultadoEl('resultado-cliente', '⚠️ Você precisa aceitar as regras do programa para se cadastrar.', 'erro'); return;
         }
 
         var dataNasc = ano + '-' + mes + '-' + dia;
         var btn = document.getElementById('btn-cadastrar-clube');
         btn.disabled = true;
         btn.textContent = 'Cadastrando…';
-        setRes('Aguarde, registrando seu cadastro…', '');
+        setResultadoEl('resultado-cliente', 'Aguarde, registrando seu cadastro…', '');
 
         var tk = (function(){ try { return localStorage.getItem('itap_gh_token') || ''; } catch(e){ return ''; } })();
 
@@ -291,7 +292,7 @@
             '*Data de nascimento:* ' + dia + '/' + mes + '/' + ano + '\n\n' +
             'Confirmo que li e aceito o Regulamento do Clube de Fidelidade. ✅';
           window.open('https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg), '_blank');
-          setRes('✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
+          setResultadoEl('resultado-cliente', '✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
           ocultarFormCadastro();
           btn.disabled = false;
           btn.textContent = '🎟️ Cadastrar no Clube';
@@ -312,7 +313,7 @@
           /* verificar duplicidade */
           var idx = dados.indice_celular || {};
           if (idx[telRaw]) {
-            setRes('ℹ️ Este número já está cadastrado. Use a seção "Consultar pontos" abaixo para entrar.', '');
+            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use a seção "Consultar pontos" abaixo para entrar.', '');
             btn.disabled = false;
             btn.textContent = '🎟️ Cadastrar no Clube';
             return;
@@ -368,12 +369,12 @@
             _nomeSessao = primeiroNome(nome);
             salvarSaldoEmCache(telRaw, 0, nome);
             atualizarBarras(0);
-            setRes('🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '! Agora use a seção "Consultar pontos" abaixo para inserir o código do cupom.', 'ok');
+            setResultadoEl('resultado-cliente', '🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '! Agora use a seção "Consultar pontos" abaixo para inserir o código do cupom.', 'ok');
             ocultarFormCadastro();
           });
         })
         .catch(function(e) {
-          setRes('⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
+          setResultadoEl('resultado-cliente', '⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
         })
         .finally(function() {
           btn.disabled = false;
