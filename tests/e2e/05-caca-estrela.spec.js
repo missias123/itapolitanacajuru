@@ -30,11 +30,11 @@ test.describe('Caça à Estrela', () => {
     expect(json).not.toBeNull();
   });
 
-  test('página de fidelidade tem âncora caca-estrela', async ({ page }) => {
+  test('página de fidelidade mantém área do cliente ativa (fase 2)', async ({ page }) => {
     await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(500);
-    // O elemento de caça à estrela deve existir no DOM (pode estar oculto)
-    const el = page.locator('#caca-estrela, [id*="caca"], [id*="estrela"], [class*="estrela-wizard"]').first();
+    // Fase 2: o fluxo principal é área do cliente + validação de código (sem depender da caça à estrela no DOM)
+    const el = page.locator('#area-cliente, #form-codigo-wrap, #cliente-codigo, #btn-registrar-ponto, .btn-validar-codigo').first();
     await expect(el).toBeAttached({ timeout: 5000 });
   });
 

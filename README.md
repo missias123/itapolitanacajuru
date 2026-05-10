@@ -6,6 +6,10 @@
 🌐 **URL de produção:** [https://itapolitanacajuru.com.br](https://itapolitanacajuru.com.br)  
 📦 **Hospedagem:** GitHub Pages (branch `main`, domínio customizado via CNAME)
 
+### ✅ Compromisso de Qualidade Contínua (baseline `v1.0-quality-94`)
+
+> A partir da tag **v1.0-quality-94**, este repositório segue uma política de qualidade contínua: todos os PRs são checados automaticamente quanto a código, performance, SEO, segurança e responsividade. Qualquer regressão relevante impede o merge até correção. A branch `main` deve permanecer, no mínimo, com **score ≥ 90/100**, **zero erros críticos** e **zero alertas CodeQL**.
+
 ---
 
 ## 📋 Sumário

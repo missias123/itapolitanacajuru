@@ -14,12 +14,12 @@ test.describe('Ita Bot — Chat', () => {
   });
 
   test('botão flutuante do Ita Bot é visível', async ({ page }) => {
-    const botBtn = page.locator('#chat-fab-btn, .itabot-btn').first();
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
     await expect(botBtn).toBeVisible({ timeout: 8000 });
   });
 
   test('clicar no Ita Bot abre o dialog', async ({ page }) => {
-    const botBtn = page.locator('#chat-fab-btn, .itabot-btn').first();
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
     if (await botBtn.isVisible()) {
       await botBtn.click();
       await page.waitForTimeout(600);
@@ -32,7 +32,7 @@ test.describe('Ita Bot — Chat', () => {
   });
 
   test('dialog do chat contém input de mensagem', async ({ page }) => {
-    const botBtn = page.locator('#chat-fab-btn, .itabot-btn').first();
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
     if (await botBtn.isVisible()) {
       await botBtn.click();
       await page.waitForTimeout(600);
@@ -48,7 +48,7 @@ test.describe('Ita Bot — Chat', () => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
 
-    const botBtn = page.locator('#chat-fab-btn, .itabot-btn').first();
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
     if (await botBtn.isVisible()) {
       await botBtn.click();
       await page.waitForTimeout(600);
@@ -78,7 +78,7 @@ test.describe('Ita Bot — Chat', () => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
 
-    const botBtn = page.locator('#chat-fab-btn, .itabot-btn').first();
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
     if (await botBtn.isVisible()) {
       await botBtn.click();
       await page.waitForTimeout(600);
@@ -100,7 +100,7 @@ test.describe('Ita Bot — Chat', () => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
 
-    const botBtn = page.locator('#chat-fab-btn, .itabot-btn').first();
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
     if (await botBtn.isVisible()) {
       await botBtn.click();
       await page.waitForTimeout(600);

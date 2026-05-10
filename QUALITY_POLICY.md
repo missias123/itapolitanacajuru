@@ -95,7 +95,9 @@ Para proteger o branch `main`, configure em:
 ✅ Require status checks to pass before merging
    Required checks:
    - "🔍 Validação HTML, Lint e Segurança"   ← quality-check.yml
-   - "🎭 Playwright E2E"                     ← e2e-tests.yml (opcional)
+   - "🎭 Playwright E2E"                     ← e2e-tests.yml
+   - "🔦 Lighthouse Audit"                   ← lighthouse-audit.yml
+   - "CodeQL" (ou nome equivalente no repositório) ← segurança estática
 
 ✅ Require branches to be up to date before merging
 
@@ -103,7 +105,7 @@ Para proteger o branch `main`, configure em:
 ```
 
 > **Nota:** Os checks são configurados pelo nome exato do `job.name` no YAML.
-> Veja `.github/workflows/quality-check.yml` → `jobs.quality.name`.
+> Veja `.github/workflows/quality-check.yml` → `jobs.lint.name`.
 
 ---
 

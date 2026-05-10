@@ -11,7 +11,7 @@ test.describe('Botões de Navegação — Header', () => {
 
   test('botão Cardápio revela seção de cardápio', async ({ page }) => {
     // Clicar no botão de cardápio do header
-    const btnCardapio = page.locator('.nav-btn').filter({ hasText: /cardápio|cardapio/i }).first();
+    const btnCardapio = page.locator('.nav-btn, .itap-nav-btn').filter({ hasText: /cardápio|cardapio/i }).first();
     if (await btnCardapio.isVisible()) {
       await btnCardapio.click();
       await page.waitForTimeout(800);
@@ -25,7 +25,7 @@ test.describe('Botões de Navegação — Header', () => {
   });
 
   test('botão Promoções navega para promocao.html', async ({ page }) => {
-    const btn = page.locator('.nav-btn').filter({ hasText: /promo/i }).first();
+    const btn = page.locator('.nav-btn, .itap-nav-btn').filter({ hasText: /promo/i }).first();
     if (await btn.isVisible()) {
       await Promise.all([
         page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {}),
@@ -41,7 +41,7 @@ test.describe('Botões de Navegação — Header', () => {
   });
 
   test('botão Fidelidade navega para fidelidade.html', async ({ page }) => {
-    const btn = page.locator('.nav-btn').filter({ hasText: /fidelidade/i }).first();
+    const btn = page.locator('.nav-btn, .itap-nav-btn').filter({ hasText: /fidelidade/i }).first();
     if (await btn.isVisible()) {
       await Promise.all([
         page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {}),
@@ -55,7 +55,7 @@ test.describe('Botões de Navegação — Header', () => {
   });
 
   test('botão Encomendas navega para encomendas.html', async ({ page }) => {
-    const btn = page.locator('.nav-btn').filter({ hasText: /encomen/i }).first();
+    const btn = page.locator('.nav-btn, .itap-nav-btn').filter({ hasText: /encomen/i }).first();
     if (await btn.isVisible()) {
       await Promise.all([
         page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {}),
@@ -82,7 +82,7 @@ test.describe('Botões de Navegação — Header', () => {
 test.describe('Hero Section', () => {
   test('logo da sorveteria é visível', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    const logo = page.locator('.brand img, .brand, header img[src*="logo"]').first();
+    const logo = page.locator('.brand-icon img, img[alt*="Logo Sorveteria Itapolitana"], #hero-título, .hero h1').first();
     await expect(logo).toBeVisible({ timeout: 5000 });
   });
 
