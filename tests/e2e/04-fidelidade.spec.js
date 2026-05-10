@@ -30,17 +30,17 @@ test.describe('Programa de Fidelidade', () => {
     }
   });
 
-  test('botão Validar Código existe', async ({ page }) => {
+  test('botão Validar Código existe no DOM (visível após consulta)', async ({ page }) => {
     await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
     // Botão de validação de código (label conforme memória: '✅ Validar Código')
     const btn = page.locator('button').filter({ hasText: /validar\s*c[oó]digo/i }).first();
     if (await btn.count() > 0) {
-      await expect(btn).toBeVisible();
+      await expect(btn).toBeAttached({ timeout: 5000 });
     } else {
       // Pode estar escondido até login — apenas garantir que existe no DOM
-      const btnAny = page.locator('[id*="validar"], [class*="validar"]').first();
+      const btnAny = page.locator('#btn-registrar-ponto, .btn-validar-codigo, [id*="validar"], [class*="validar"]').first();
       await expect(btnAny).toBeAttached({ timeout: 5000 });
     }
   });

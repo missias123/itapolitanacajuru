@@ -6,6 +6,10 @@
 🌐 **URL de produção:** [https://itapolitanacajuru.com.br](https://itapolitanacajuru.com.br)  
 📦 **Hospedagem:** GitHub Pages (branch `main`, domínio customizado via CNAME)
 
+### ✅ Compromisso de Qualidade Contínua (baseline `v1.0-quality-94`)
+
+> A partir da tag **v1.0-quality-94**, este repositório segue uma política de qualidade contínua: todos os PRs são checados automaticamente quanto a código, performance, SEO, segurança e responsividade. Qualquer regressão relevante impede o merge até correção. A branch `main` deve permanecer, no mínimo, com **score ≥ 90/100**, **zero erros críticos** e **zero alertas CodeQL**.
+
 ---
 
 ## 📋 Sumário
@@ -185,7 +189,7 @@ Os commits do Copilot ficam no repositório local e são publicados normalmente 
 
 ## 🤖 Pipelines CI/CD — GitHub Actions
 
-O repositório possui **5 workflows** automáticos. Todos rodam quando há push para `main`:
+O repositório possui **6 workflows** automáticos. Todos rodam quando há push para `main`:
 
 | Workflow | Arquivo | O que faz |
 |----------|---------|-----------|
@@ -193,6 +197,7 @@ O repositório possui **5 workflows** automáticos. Todos rodam quando há push 
 | 🚀 Auto-Repair | `auto-repair.yml` | Detecta erros de JS e aplica correções automáticas no `main` |
 | 🔦 Lighthouse Audit | `lighthouse-audit.yml` | Roda Lighthouse nos 3 pages principais; falha se score < 50 |
 | 🎭 E2E Tests | `e2e-tests.yml` | Testes Playwright de ponta a ponta |
+| 🔐 CodeQL Security Scan | `codeql.yml` | Segurança estática (SAST) para JavaScript/TypeScript |
 | 🐛 Issue on Failure | `create-issue-on-failure.yml` | Cria issue automática quando outro workflow falha |
 
 ### Deploy automático (GitHub Pages)
