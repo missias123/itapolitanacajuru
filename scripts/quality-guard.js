@@ -513,6 +513,7 @@
         if (r.height > 0 && r.height < 44) botoes_pequenos++;
       } catch(e) {}
     });
+    // true = todos os botões visíveis têm pelo menos 44px de altura (nenhum é pequeno demais)
     checklist.botoes_grande = botoes_pequenos === 0;
     checklist.botoes_pequenos_count = botoes_pequenos;
     

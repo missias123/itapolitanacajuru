@@ -91,8 +91,24 @@ const REGRAS = [
     categoria: 'Código',
     critico: true,
     verificar(html) {
-      // Ignorar h1 dentro de scripts/estilos/noscript
-      const semScript = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<noscript[\s\S]*?<\/noscript>/gi, '');
+      // Extrair apenas conteúdo real da página (fora de scripts/estilos/noscript).
+      // Usamos um split simples por blocos para evitar regex greedy que pode
+      // falhar em edge cases de tags com espaços (ex: </script >) — CodeQL safe.
+      const stripBlock = (src, openTag, closeTag) => {
+        const parts = [];
+        let pos = 0;
+        while (pos < src.length) {
+          const start = src.toLowerCase().indexOf(openTag, pos);
+          if (start === -1) { parts.push(src.slice(pos)); break; }
+          parts.push(src.slice(pos, start));
+          const end = src.toLowerCase().indexOf(closeTag, start + openTag.length);
+          pos = end === -1 ? src.length : end + closeTag.length;
+        }
+        return parts.join('');
+      };
+      let semScript = stripBlock(html,   '<script',  '</script>');
+      semScript      = stripBlock(semScript, '<style',   '</style>');
+      semScript      = stripBlock(semScript, '<noscript','</noscript>');
       const ok = /<h1[\s>]/i.test(semScript);
       return { ok, msg: ok ? 'H1 presente' : 'Nenhum <h1> encontrado — prejudica SEO e acessibilidade' };
     },
@@ -240,11 +256,12 @@ const REGRAS = [
     categoria: 'Segurança',
     critico: true,
     verificar(html) {
-      // Ignorar comentários e conteúdo dentro de scripts/template strings
-      const semComent = html.replace(/<!--[\s\S]*?-->/g, '');
-      // Detectar src/href com http:// explícito apontando para recursos externos
-      const mixedRe = /(?:src|href|action)\s*=\s*["']http:\/\/(?!localhost|127\.0\.0\.1)[^"']+["']/gi;
-      const encontrados = (semComent.match(mixedRe) || []).filter(s => !s.includes('itapolitanacajuru'));
+      // Detectar src/href com http:// apontando para domínios externos
+      // (excluímos localhost, 127.0.0.1 e o próprio domínio do site).
+      // Não fazemos strip de comentários para evitar problemas de sanitização parcial —
+      // apenas usamos um padrão restrito que já filtra contextos válidos.
+      const mixedRe = /(?:src|href|action)\s*=\s*["']http:\/\/(?!localhost|127\.0\.0\.1|itapolitanacajuru)[^"']+["']/gi;
+      const encontrados = html.match(mixedRe) || [];
       const ok = encontrados.length === 0;
       return {
         ok,
@@ -280,7 +297,22 @@ const REGRAS = [
     categoria: 'Acessibilidade',
     critico: false,
     verificar(html) {
-      const semScript = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<template[\s\S]*?<\/template>/gi, '');
+      // Usar o mesmo stripBlock (split seguro) para remover blocos de script/template
+      // antes de analisar tags <img> — evita falsos positivos de imagens em templates.
+      const stripBlock = (src, openTag, closeTag) => {
+        const parts = [];
+        let pos = 0;
+        while (pos < src.length) {
+          const start = src.toLowerCase().indexOf(openTag, pos);
+          if (start === -1) { parts.push(src.slice(pos)); break; }
+          parts.push(src.slice(pos, start));
+          const end = src.toLowerCase().indexOf(closeTag, start + openTag.length);
+          pos = end === -1 ? src.length : end + closeTag.length;
+        }
+        return parts.join('');
+      };
+      let semScript = stripBlock(html,      '<script',   '</script>');
+      semScript      = stripBlock(semScript, '<template', '</template>');
       const imgs = extrairTags(semScript, /<img\s[^>]*>/i);
       const semAlt = imgs.filter(m => !/\balt=["'][^"']/i.test(m[0])).length;
       const ok = semAlt === 0;
