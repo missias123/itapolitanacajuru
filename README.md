@@ -189,7 +189,7 @@ Os commits do Copilot ficam no repositório local e são publicados normalmente 
 
 ## 🤖 Pipelines CI/CD — GitHub Actions
 
-O repositório possui **5 workflows** automáticos. Todos rodam quando há push para `main`:
+O repositório possui **6 workflows** automáticos. Todos rodam quando há push para `main`:
 
 | Workflow | Arquivo | O que faz |
 |----------|---------|-----------|
@@ -197,6 +197,7 @@ O repositório possui **5 workflows** automáticos. Todos rodam quando há push 
 | 🚀 Auto-Repair | `auto-repair.yml` | Detecta erros de JS e aplica correções automáticas no `main` |
 | 🔦 Lighthouse Audit | `lighthouse-audit.yml` | Roda Lighthouse nos 3 pages principais; falha se score < 50 |
 | 🎭 E2E Tests | `e2e-tests.yml` | Testes Playwright de ponta a ponta |
+| 🔐 CodeQL Security Scan | `codeql.yml` | Segurança estática (SAST) para JavaScript/TypeScript |
 | 🐛 Issue on Failure | `create-issue-on-failure.yml` | Cria issue automática quando outro workflow falha |
 
 ### Deploy automático (GitHub Pages)
