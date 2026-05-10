@@ -340,22 +340,6 @@ function limparErrosAntigos(dados) {
 }
 
 
-  // Função para resetar métricas antigas do localStorage
-  function resetarMetricas() {
-    const keys = ['vitals', 'erros_js', 'recursos_404', 'memoria_qualidade'];
-    keys.forEach(k => {
-      try { localStorage.removeItem(k); } catch(e) {}
-    });
-    // Limpar também chaves com prefixo itapolitana
-    Object.keys(localStorage).forEach(k => {
-      if (k.includes('vitals') || k.includes('cls') || k.includes('lcp') || k.includes('qualidade')) {
-        localStorage.removeItem(k);
-      }
-    });
-    alert('✅ Cache de métricas limpo! Abra o site principal, aguarde 6 segundos e volte aqui.');
-    carregarDados();
-  }
-
   function carregarDados() {
   let dados = lerMemoria();
   dados = limparErrosAntigos(dados);
@@ -472,6 +456,13 @@ function limparErrosAntigos(dados) {
     { key: 'canonical', label: 'URL Canônica', desc: 'Evita conteúdo duplicado no Google', critico: false },
     { key: 'meta_description', label: 'Meta Description', desc: 'Descrição nos resultados do Google', critico: false },
     { key: 'imagens_alt', label: 'Imagens com Alt Text', desc: cl.imagens_sem_alt_count ? cl.imagens_sem_alt_count + ' imagem(ns) sem alt' : 'Acessibilidade e SEO', critico: false },
+    // Performance
+    { key: 'lazy_loading', label: 'Lazy Loading em Imagens', desc: cl.imagens_sem_lazy_count ? cl.imagens_sem_lazy_count + ' imagem(ns) sem loading=lazy' : 'Carregamento eficiente (exceto hero)', critico: false },
+    { key: 'sem_rolagem_horizontal', label: 'Sem Rolagem Horizontal', desc: 'Layout não vaza além do viewport no mobile', critico: true },
+    // SEO / Código
+    { key: 'h1_presente', label: 'H1 na Página', desc: 'Cabeçalho principal para SEO e acessibilidade', critico: true },
+    // UX Mobile
+    { key: 'botoes_grande', label: 'Botões com 44px mínimo', desc: cl.botoes_pequenos_count ? cl.botoes_pequenos_count + ' botão(ões) com alvo de toque pequeno' : 'Touch targets acessíveis para mobile', critico: false },
   ];
 
   const container = document.getElementById('checklist-container');

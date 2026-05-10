@@ -490,9 +490,34 @@
     // Verificar botões com touch-action
     const botoes = document.querySelectorAll('button, .btn, [onclick]');
     checklist.total_botoes = botoes.length;
+
+    // Verificar lazy loading em imagens (a 1ª imagem pode usar eager — hero)
+    const todasImgs = Array.from(imgs);
+    const imgs_sem_lazy = todasImgs.slice(1).filter(function(img) {
+      return img.loading !== 'lazy';
+    }).length;
+    checklist.lazy_loading = imgs_sem_lazy === 0;
+    checklist.imagens_sem_lazy_count = imgs_sem_lazy;
+
+    // Verificar presença de H1 na página
+    checklist.h1_presente = !!document.querySelector('h1');
+
+    // Verificar sem rolagem horizontal
+    checklist.sem_rolagem_horizontal = document.documentElement.scrollWidth <= window.innerWidth + 2;
+
+    // Verificar tamanho de botões (44px touch target — padrão WCAG 2.5.5)
+    var botoes_pequenos = 0;
+    document.querySelectorAll('button, a.btn, .btn').forEach(function(b) {
+      try {
+        var r = b.getBoundingClientRect();
+        if (r.height > 0 && r.height < 44) botoes_pequenos++;
+      } catch(e) {}
+    });
+    checklist.botoes_grande = botoes_pequenos === 0;
+    checklist.botoes_pequenos_count = botoes_pequenos;
     
     // Score de qualidade (0-100)
-    const itens = ['viewport','favicon','manifest','theme_color','apple_touch_icon','https','open_graph','schema','canonical','meta_description','imagens_alt'];
+    const itens = ['viewport','favicon','manifest','theme_color','apple_touch_icon','https','open_graph','schema','canonical','meta_description','imagens_alt','lazy_loading','h1_presente','sem_rolagem_horizontal','botoes_grande'];
     const aprovados = itens.filter(k => checklist[k]).length;
     checklist.score = Math.round((aprovados / itens.length) * 100);
     

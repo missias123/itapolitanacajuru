@@ -103,6 +103,18 @@ jobs:
           done
           echo "✅ JSON válido."
 
+      - name: 🔍 Auditoria Estática de Qualidade
+        # Auditoria: verificar Performance, SEO, Acessibilidade, Segurança e PWA em todas as páginas
+        run: |
+          echo "## 🔍 Quality Audit — Resultado" >> $GITHUB_STEP_SUMMARY
+          node scripts/quality-audit.js --md 2>&1 | tee /tmp/audit-output.txt
+          cat /tmp/audit-output.txt >> $GITHUB_STEP_SUMMARY
+          if [ -f "docs/relatorios/quality-audit.md" ]; then
+            echo "✅ Relatório gerado em docs/relatorios/quality-audit.md"
+          fi
+          # Falhar apenas se houver itens críticos (exit 1 com --fail)
+          node scripts/quality-audit.js --fail 2>&1 || { echo "❌ Itens críticos detectados na auditoria."; exit 1; }
+
       - name: ❌ Falhar se houver erros de lint
         if: steps.eslint.outputs.eslint_failed == 'true' || steps.htmlhint.outputs.htmlhint_failed == 'true'
         run: |
