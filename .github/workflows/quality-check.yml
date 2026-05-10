@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "## ESLint — Resultado" >> $GITHUB_STEP_SUMMARY
           eslint scripts/*.js --format stylish 2>&1 | tee /tmp/eslint-output.txt || true
-          if grep -q "error" /tmp/eslint-output.txt; then
+          if grep -qE "[1-9][0-9]* error" /tmp/eslint-output.txt; then
             echo "❌ ESLint encontrou erros" >> $GITHUB_STEP_SUMMARY
             cat /tmp/eslint-output.txt >> $GITHUB_STEP_SUMMARY
             echo "eslint_failed=true" >> $GITHUB_OUTPUT
