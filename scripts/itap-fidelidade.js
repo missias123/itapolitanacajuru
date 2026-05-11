@@ -110,7 +110,7 @@
           return;
         }
         var nomeExib = nomeCompleto || _nomeSessao || 'Cliente';
-        var telFormatado = mascaraTel((tel || '').replace(/\D/g, ''));
+        var telFormatado = mascaraTel(tel);
         var pontosTxt = pts === 1 ? '1 ponto' : pts + ' pontos';
 
         var html = '<div class="resgate-wrap">';
