@@ -470,6 +470,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Dashboard</button>
     <button class="nav-btn" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
     <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+    <button class="nav-btn" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
     <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
     <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
     <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
@@ -492,10 +493,11 @@ body { overflow-x: hidden; }
         <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
           <button onclick="irPara('pagina-inicial',document.querySelector('.nav-btn:nth-child(2)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
           <button onclick="irPara('encomendas-admin',document.querySelector('.nav-btn:nth-child(3)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
-          <button onclick="irPara('promocao-admin',document.querySelector('.nav-btn:nth-child(4)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
-          <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(5)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
-          <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(6)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
-          <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(7)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+          <button onclick="irPara('produtos-admin',document.querySelector('.nav-btn:nth-child(3)').nextElementSibling)" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
+          <button onclick="irPara('promocao-admin',document.querySelector('.nav-btn:nth-child(5)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
+          <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(6)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
+          <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(7)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
+          <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(8)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
         </div>
       </div>
       <!-- ABRIR NO SITE — links externos -->
@@ -711,6 +713,49 @@ body { overflow-x: hidden; }
 
       <!-- REGULAMENTO DO SORTEIO -->
       <div class="card" style="border-left:4px solid #7b1fa2">
+
+      <!-- LISTA DE PROMOÇÕES ADICIONAIS -->
+      <div class="card" style="border-left:4px solid #1565c0;margin-top:16px">
+        <!-- form panel -->
+        <div id="promos-form-panel" style="display:none;background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:16px;margin-bottom:14px">
+          <div style="font-weight:800;color:#1565c0;margin-bottom:12px" id="promos-form-titulo">➕ Nova Promoção</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="campo-edit"><label>Nome</label><input type="text" id="promos-f-nome" maxlength="80" placeholder="Ex: Desconto Especial no Milkshake"/></div>
+            <div class="campo-edit"><label>Período</label><input type="text" id="promos-f-periodo" maxlength="60" placeholder="Ex: Todo mês de maio"/></div>
+          </div>
+          <div class="campo-edit"><label>Descrição</label><textarea id="promos-f-desc" rows="2" maxlength="300" placeholder="Detalhes da promoção..."></textarea></div>
+          <div class="campo-edit"><label>Status</label>
+            <select id="promos-f-status">
+              <option value="ativa">✅ Ativa</option>
+              <option value="inativa">❌ Inativa</option>
+            </select>
+          </div>
+          <input type="hidden" id="promos-f-idx"/>
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="salvarPromocaoItem()">💾 Salvar</button>
+            <button class="btn btn-cinza" onclick="fecharFormPromocao()">✕ Cancelar</button>
+          </div>
+        </div>
+        <div class="card-header">
+          <h2>📋 Lista de Promoções</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-laranja" onclick="abrirFormPromocao()">➕ Adicionar promoção</button>
+            <button class="btn btn-cinza" onclick="copiarListaPromocoes()">📋 Copiar lista</button>
+            <button class="btn" style="background:#1565c0;color:#fff" onclick="exportarPromocoesCSV()">⬇️ Exportar CSV</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Nome</th><th>Período</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="tabela-promocoes"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGULAMENTO DO SORTEIO (continuação) -->
+      <div class="card" style="border-left:4px solid #7b1fa2">
         <div class="card-header"><h2>&#x1F4DC; Regulamento — Sorteios Mensais</h2></div>
         <div class="card-body">
           <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de inscrição nos Sorteios Mensais.</div>
@@ -841,6 +886,68 @@ body { overflow-x: hidden; }
             <div class="hint">Quantidade mínima de picolés para fechar um pedido. Padrão: 100 unidades.</div>
           </div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações de Encomendas</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS / COMBOS -->
+    <div class="seção" id="sec-produtos">
+      <!-- form panel (hidden) -->
+      <div id="prod-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
+        <div style="font-weight:900;font-size:1rem;color:#e65100;margin-bottom:14px" id="prod-form-titulo">➕ Adicionar Produto</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Nome</label><input type="text" id="prod-f-nome" maxlength="80" placeholder="Ex: Caixa 5L – 2 Sabores"/></div>
+          <div class="campo-edit"><label>Categoria</label>
+            <select id="prod-f-cat">
+              <option value="caixas_enc">Caixa de Sorvete</option>
+              <option value="tortas_enc">Torta de Sorvete</option>
+              <option value="acrescimos">Acréscimo</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Preço (R$)</label><input type="number" id="prod-f-preco" min="0" step="0.5" placeholder="0.00"/></div>
+          <div class="campo-edit"><label>Máx. Sabores (caixas/tortas)</label><input type="number" id="prod-f-maxsab" min="1" max="10" placeholder="2"/></div>
+          <div class="campo-edit"><label>Estoque</label><input type="number" id="prod-f-estoque" min="0" placeholder="10"/></div>
+        </div>
+        <div class="campo-edit"><label>Status</label>
+          <select id="prod-f-status">
+            <option value="false">✅ Ativo (disponível)</option>
+            <option value="true">❌ Inativo (esgotado)</option>
+          </select>
+        </div>
+        <input type="hidden" id="prod-f-id"/>
+        <input type="hidden" id="prod-f-cat-orig"/>
+        <div class="btn-row">
+          <button class="btn btn-salvar" onclick="salvarProduto()">💾 Salvar</button>
+          <button class="btn btn-cinza" onclick="fecharFormProduto()">✕ Cancelar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>📦 Produtos / Combos</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-laranja" onclick="abrirFormProduto()">➕ Adicionar produto</button>
+            <button class="btn btn-cinza" onclick="copiarListaProdutos()">📋 Copiar lista</button>
+            <button class="btn" style="background:#1565c0;color:#fff" onclick="exportarProdutosCSV()">⬇️ Exportar CSV</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="filtros">
+            <select id="prod-filtro-cat" onchange="renderProdutosAdmin()">
+              <option value="">Todas as categorias</option>
+              <option value="caixas_enc">Caixas de Sorvete</option>
+              <option value="tortas_enc">Tortas de Sorvete</option>
+              <option value="acrescimos">Acréscimos</option>
+            </select>
+          </div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="tabela-produtos"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -1703,6 +1810,23 @@ Talento</textarea>
     </div>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
+      <!-- form panel para add/edit cliente -->
+      <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
+        <div style="font-weight:900;font-size:1rem;color:#e65100;margin-bottom:14px" id="cliente-form-titulo">➕ Adicionar Cliente</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Nome completo</label><input type="text" id="cli-f-nome" maxlength="100" placeholder="Nome do cliente"/></div>
+          <div class="campo-edit"><label>WhatsApp (somente números)</label><input type="tel" id="cli-f-cel" placeholder="16999999999" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Data de nascimento (AAAA-MM-DD)</label><input type="date" id="cli-f-nasc"/></div>
+          <div class="campo-edit"><label>Pontos</label><input type="number" id="cli-f-pontos" min="0" value="0" placeholder="0"/></div>
+        </div>
+        <input type="hidden" id="cli-f-cel-orig"/>
+        <div class="btn-row">
+          <button class="btn btn-salvar" onclick="salvarClienteForm()">💾 Salvar</button>
+          <button class="btn btn-cinza" onclick="fecharFormCliente()">✕ Cancelar</button>
+        </div>
+      </div>
       <div class="stats-row">
         <div class="stat-card"><div class="num" id="sc-total">-</div><div class="txt">Total</div></div>
         <div class="stat-card"><div class="num" id="sc-ativos">-</div><div class="txt">Ativos</div></div>
@@ -1710,7 +1834,7 @@ Talento</textarea>
         <div class="stat-card"><div class="num" id="sc-fraudes">-</div><div class="txt">Fraudes</div></div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn" style="background:#1565c0;color:#fff" onclick="cadastrarClienteManual()">➕ Cadastrar Manual</button></div></div>
+        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn btn-cinza" onclick="copiarListaClientes()">📋 Copiar lista</button><button class="btn" style="background:#1565c0;color:#fff" onclick="exportarClientesCSV()">⬇️ Exportar CSV</button><button class="btn btn-laranja" onclick="abrirFormCliente()">➕ Adicionar cliente</button></div></div>
         <div class="card-body">
           <div class="busca-wrap"><input type="search" id="busca-cliente" placeholder="Buscar por nome ou WhatsApp..." oninput="renderClientes()"/></div>
           <div class="tabela-wrap">
@@ -2355,8 +2479,8 @@ const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
-const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,pagClientes:0,senhaAdmin:null};
+const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json',promocoes:'dados/promocoes.json'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 const POR_PAGINA=50;
 async function ghGet(path){
   try{
@@ -2460,13 +2584,14 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  const[pr,cl,fi,en,prod,est]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.estrelas)]);
+  const[pr,cl,fi,en,prod,est,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.estrelas),ghGet(PATHS.promocoes)]);
   if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
   if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(est.content){try{STATE.estrelas=JSON.parse(est.content);}catch(e){STATE.estrelas=null;}STATE.estrelasSha=est.sha;}
+  if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
   ocultarLoading();
   renderDashboard();
   preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();
@@ -2479,6 +2604,7 @@ function irPara(seção,btn){
     'dashboard':      ['dashboard'],
     'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
     'encomendas-admin':['encomendas','sabores','estoque'],
+    'produtos-admin': ['produtos'],
     'promocao-admin': ['promoção','participantes'],
     'fidelidade-admin':['clientes','fidelidade','estrela'],
     'dicas-admin':    ['depoimentos'],
@@ -2500,7 +2626,8 @@ function irPara(seção,btn){
   if(ids.includes('encomendas'))renderEncomendas();
   if(ids.includes('sabores'))renderizarSaboresAdmin();
   if(ids.includes('estoque'))carregarEstoque();
-  if(ids.includes('promoção')){preencherPromoção();preencherSorteio();}
+  if(ids.includes('produtos'))renderProdutosAdmin();
+  if(ids.includes('promoção')){preencherPromoção();preencherSorteio();renderPromocoesTable();}
   if(ids.includes('participantes'))renderParticipantes();
   if(ids.includes('clientes')){renderClientes();renderDuplicidades();}
   if(ids.includes('fidelidade')){preencherFidelidade();renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
@@ -3481,6 +3608,7 @@ function renderClientes(){
       ${(c.tentativas_fraude||0)>0?`<button class="btn" style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${c.cel}')">🔄 Zerar tent.</button>`:''}
       <button class="btn" style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${c.cel}')">➕ Ponto</button>
       <button class="btn" style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${c.cel}')">✅ Código</button>
+      <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormCliente('${c.cel}')">✏️ Editar</button>
       <button class="btn" style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${c.cel}')">🗑️ Excluir</button>
     </td>
   </tr>`).join('');}
@@ -3680,30 +3808,7 @@ async function adminValidarCodigo(cel){
 /* Cadastrar cliente manualmente pelo admin (sem passar pelo formulário do site).
    Útil quando o cliente está presencialmente na loja. */
 async function cadastrarClienteManual(){
-  const nome=(prompt('Nome completo do cliente:')||'').trim();
-  if(nome.length<3){toast('Nome muito curto.','erro');return;}
-  const celRaw=(prompt('WhatsApp (somente números):')||'').replace(/\D/g,'');
-  if(celRaw.length<10){toast('WhatsApp inválido.','erro');return;}
-  const nasc=prompt('Data de nascimento (AAAA-MM-DD ou deixe em branco):')||'';
-  const clientes=STATE.clientes?.clientes||{};
-  if(clientes[celRaw]){toast(`Número ${celRaw} já está cadastrado.`,'aviso');return;}
-  const agora=new Date().toISOString();
-  const existentes=Object.keys(clientes);
-  let maxNum=0;
-  existentes.forEach(k=>{const m=k.match(/USR-2026-(\d+)/);if(m)maxNum=Math.max(maxNum,parseInt(m[1],10));});
-  const novoId='USR-2026-'+String(maxNum+1).padStart(4,'0');
-  clientes[celRaw]={
-    id_permanente:novoId,nome,cel:celRaw,dataNasc:nasc,
-    cadastro:agora,saldoPontos:0,codigosUsados:[],resgates:[],
-    totalPremios:0,totalCodigos:0,bloqueado:false,motivo_bloqueio:null,
-    tentativas_fraude:0,ultimo_acesso:agora,
-    historico_alteracoes:[{data:agora,tipo:'cadastro_manual',descricao:'Cadastro manual pelo admin na loja',por:'admin'}]
-  };
-  if(!STATE.clientes?.indice_celular)STATE.clientes.indice_celular={};
-  STATE.clientes.indice_celular[celRaw]=novoId;
-  STATE.clientes.clientes=clientes;
-  const ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: cadastro manual ${nome}`);
-  if(ok){toast(`✅ ${nome} cadastrado com ID ${novoId}. Salvo no GitHub.`,'sucesso');renderClientes();}
+  abrirFormCliente();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3928,7 +4033,7 @@ function renderCódigos(){
   if(!lista.length){document.getElementById('códigos-lista').innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhum código encontrado.</p>';document.getElementById('fid-pag-info').textContent='';return;}
   const max=200;
   const exibir=lista.slice(0,max);
-  let html=exibir.map(([cod,v])=>{const statusClass=v.status==='disponível'?'cod-status-ok':'cod-status-usado';const statusTxt=v.status==='disponível'?'Disponível':'Usado';const info=v.usadoPor?`por ${v.usadoPor}`:`lote ${v.lote||1}`;return`<div class="cod-item"><span class="cod-code">${cod}</span><span class="${statusClass}">${statusTxt}</span><span class="cod-info">${info}</span></div>`;}).join('');
+  let html=exibir.map(([cod,v])=>{const statusClass=v.status==='disponível'?'cod-status-ok':'cod-status-usado';const statusTxt=v.status==='disponível'?'Disponível':'Usado';const info=v.usadoPor?`por ${v.usadoPor}`:`lote ${v.lote||1}`;return`<div class="cod-item"><span class="cod-code">${cod}</span><span class="${statusClass}">${statusTxt}</span><span class="cod-info">${info}</span><button onclick="excluirCodigo('${cod}')" style="background:none;border:none;color:#c62828;font-size:.8rem;cursor:pointer;padding:2px 6px" title="Excluir código">🗑️</button></div>`;}).join('');
   document.getElementById('códigos-lista').innerHTML=html;
   document.getElementById('fid-pag-info').textContent=`Exibindo ${exibir.length} de ${lista.length} códigos`;
   atualizarStatsCódigos();
@@ -6130,6 +6235,430 @@ async function panicButton() {
   } else {
     toast('⚠️ Nenhuma estrela ativa hoje para desativar.', 'aviso');
   }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRODUTOS / COMBOS — ADMIN CRUD
+// ═══════════════════════════════════════════════════════════
+const PROD_CAT_LABELS = {caixas_enc:'Caixa de Sorvete',tortas_enc:'Torta de Sorvete',acrescimos:'Acréscimo'};
+
+function getProdutosList() {
+  const p = STATE.produtos || {};
+  const filtro = document.getElementById('prod-filtro-cat')?.value || '';
+  const cats = filtro ? [filtro] : ['caixas_enc','tortas_enc','acrescimos'];
+  let lista = [];
+  cats.forEach(cat => {
+    if(Array.isArray(p[cat])) p[cat].forEach(item => lista.push({...item, _cat: cat}));
+  });
+  return lista;
+}
+
+function renderProdutosAdmin() {
+  const lista = getProdutosList();
+  const tbody = document.getElementById('tabela-produtos');
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px">Nenhum produto cadastrado.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(item => {
+    const esg = item.esgotado || false;
+    const statusHtml = esg
+      ? '<span style="color:#c62828;font-weight:700">❌ Inativo</span>'
+      : '<span style="color:#2e7d32;font-weight:700">✅ Ativo</span>';
+    const preco = item['preço'] !== undefined ? item['preço'] : (item.preco || 0);
+    return `<tr>
+      <td style="font-weight:600">${item.nome}</td>
+      <td><span style="background:#fce4d6;color:#e65100;border-radius:10px;padding:2px 8px;font-size:.75rem;font-weight:700">${PROD_CAT_LABELS[item._cat]||item._cat}</span></td>
+      <td style="font-weight:700;color:#e65100">R$ ${Number(preco).toFixed(2)}</td>
+      <td>${item.estoque ?? '-'}</td>
+      <td>${statusHtml}</td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormProduto('${item._cat}','${item.id}')">✏️ Editar</button>
+        <button class="btn btn-vermelho" style="padding:4px 9px;font-size:.76rem" onclick="excluirProduto('${item._cat}','${item.id}')">🗑️ Excluir</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirFormProduto(cat, id) {
+  const panel = document.getElementById('prod-form-panel');
+  const tit = document.getElementById('prod-form-titulo');
+  if (!panel) return;
+  if (cat && id) {
+    const arr = STATE.produtos?.[cat] || [];
+    const item = arr.find(x => x.id === id);
+    if (!item) return;
+    tit.textContent = '✏️ Editar Produto';
+    document.getElementById('prod-f-nome').value = item.nome || '';
+    document.getElementById('prod-f-cat').value = cat;
+    const preco = item['preço'] !== undefined ? item['preço'] : (item.preco || 0);
+    document.getElementById('prod-f-preco').value = preco;
+    document.getElementById('prod-f-maxsab').value = item.maxSabores || '';
+    document.getElementById('prod-f-estoque').value = item.estoque ?? '';
+    document.getElementById('prod-f-status').value = String(item.esgotado || false);
+    document.getElementById('prod-f-id').value = id;
+    document.getElementById('prod-f-cat-orig').value = cat;
+  } else {
+    tit.textContent = '➕ Adicionar Produto';
+    document.getElementById('prod-f-nome').value = '';
+    document.getElementById('prod-f-cat').value = 'caixas_enc';
+    document.getElementById('prod-f-preco').value = '';
+    document.getElementById('prod-f-maxsab').value = '';
+    document.getElementById('prod-f-estoque').value = '';
+    document.getElementById('prod-f-status').value = 'false';
+    document.getElementById('prod-f-id').value = '';
+    document.getElementById('prod-f-cat-orig').value = '';
+  }
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fecharFormProduto() {
+  const panel = document.getElementById('prod-form-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+async function salvarProduto() {
+  const nome = (document.getElementById('prod-f-nome').value || '').trim();
+  if (!nome) { toast('Informe o nome do produto.','erro'); return; }
+  const cat = document.getElementById('prod-f-cat').value;
+  const preco = parseFloat(document.getElementById('prod-f-preco').value) || 0;
+  const maxSaboresVal = parseInt(document.getElementById('prod-f-maxsab').value);
+  const maxSabores = isNaN(maxSaboresVal) ? undefined : maxSaboresVal;
+  const estoqueVal = parseInt(document.getElementById('prod-f-estoque').value);
+  const esgotado = document.getElementById('prod-f-status').value === 'true';
+  const editId = document.getElementById('prod-f-id').value;
+  const catOrig = document.getElementById('prod-f-cat-orig').value;
+
+  if (!STATE.produtos) STATE.produtos = {};
+  ['caixas_enc','tortas_enc','acrescimos'].forEach(c => { if(!Array.isArray(STATE.produtos[c])) STATE.produtos[c] = []; });
+
+  if (editId && catOrig) {
+    const origArr = STATE.produtos[catOrig];
+    const idx = origArr.findIndex(x => x.id === editId);
+    if (idx > -1) origArr.splice(idx, 1);
+    const updated = {id: editId, nome, 'preço': preco, esgotado};
+    if (maxSabores) updated.maxSabores = maxSabores;
+    if (!isNaN(estoqueVal)) updated.estoque = estoqueVal;
+    if (!Array.isArray(STATE.produtos[cat])) STATE.produtos[cat] = [];
+    STATE.produtos[cat].push(updated);
+  } else {
+    const catArr = STATE.produtos[cat];
+    let maxId = 0;
+    catArr.forEach(x => { const n = parseInt((x.id||'').replace(/\D/g,'')); if(n > maxId) maxId = n; });
+    const prefix = cat === 'acrescimos' ? 'acr' : cat.replace('_enc','');
+    const newId = prefix + '_' + String(maxId+1).padStart(3,'0');
+    const novo = {id: newId, nome, 'preço': preco, esgotado};
+    if (maxSabores) novo.maxSabores = maxSabores;
+    if (!isNaN(estoqueVal)) novo.estoque = estoqueVal;
+    catArr.push(novo);
+  }
+
+  const ok = await salvarArquivo(PATHS.produtos, STATE.produtos, 'produtosSha', 'Admin: ' + (editId ? 'editar' : 'adicionar') + ' produto ' + nome);
+  if (ok) { fecharFormProduto(); renderProdutosAdmin(); }
+}
+
+function excluirProduto(cat, id) {
+  const arr = STATE.produtos?.[cat] || [];
+  const item = arr.find(x => x.id === id);
+  if (!item) return;
+  confirmarAcao(
+    'Excluir Produto',
+    `Tem certeza que deseja excluir <strong>${item.nome}</strong>?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita. O produto deixará de aparecer nas encomendas.</span>`,
+    'Sim, excluir produto',
+    async () => {
+      const idx = STATE.produtos[cat].findIndex(x => x.id === id);
+      if (idx > -1) STATE.produtos[cat].splice(idx, 1);
+      const ok = await salvarArquivo(PATHS.produtos, STATE.produtos, 'produtosSha', 'Admin: excluir produto ' + item.nome);
+      if (ok) { toast('🗑️ Produto excluído.','ok'); renderProdutosAdmin(); }
+    }
+  );
+}
+
+function copiarListaProdutos() {
+  const lista = getProdutosList();
+  if (!lista.length) { toast('Nenhum produto para copiar.','aviso'); return; }
+  const header = 'Nome;Categoria;Preço;Estoque;Status';
+  const rows = lista.map(x => {
+    const preco = x['preço'] !== undefined ? x['preço'] : (x.preco || 0);
+    return `${x.nome};${PROD_CAT_LABELS[x._cat]||x._cat};R$ ${Number(preco).toFixed(2)};${x.estoque??'-'};${x.esgotado?'Inativo':'Ativo'}`;
+  });
+  navigator.clipboard.writeText([header,...rows].join('\n')).then(()=>toast(`${lista.length} produtos copiados!`,'sucesso'));
+}
+
+function exportarProdutosCSV() {
+  const lista = getProdutosList();
+  if (!lista.length) { toast('Nenhum produto para exportar.','aviso'); return; }
+  const BOM = '\uFEFF';
+  const header = 'Nome,Categoria,Preço,Estoque,Status';
+  const rows = lista.map(x => {
+    const preco = x['preço'] !== undefined ? x['preço'] : (x.preco || 0);
+    return `"${(x.nome||'').replace(/"/g,'""')}","${PROD_CAT_LABELS[x._cat]||x._cat}",${Number(preco).toFixed(2)},${x.estoque??''},${x.esgotado?'Inativo':'Ativo'}`;
+  });
+  const csv = BOM + [header,...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `produtos_itapolitana_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast(`CSV com ${lista.length} produtos exportado!`,'sucesso');
+}
+
+// ═══════════════════════════════════════════════════════════
+// PROMOÇÕES — ADMIN CRUD
+// ═══════════════════════════════════════════════════════════
+function renderPromocoesTable() {
+  const lista = STATE.promocoes?.promocoes || [];
+  const tbody = document.getElementById('tabela-promocoes');
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#999;padding:20px">Nenhuma promoção cadastrada. Clique em "Adicionar promoção" para começar.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map((p, i) => {
+    const statusHtml = p.status === 'ativa'
+      ? '<span style="color:#2e7d32;font-weight:700">✅ Ativa</span>'
+      : '<span style="color:#999;font-weight:700">❌ Inativa</span>';
+    return `<tr style="${p.status==='ativa'?'':'opacity:.6'}">
+      <td style="font-weight:600">${p.nome}</td>
+      <td style="font-size:.82rem;color:#666">${p.periodo||'-'}</td>
+      <td>${statusHtml}</td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormPromocao(${i})">✏️ Editar</button>
+        <button class="btn btn-vermelho" style="padding:4px 9px;font-size:.76rem" onclick="excluirPromocaoItem(${i})">🗑️ Excluir</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirFormPromocao(idx) {
+  const panel = document.getElementById('promos-form-panel');
+  const tit = document.getElementById('promos-form-titulo');
+  if (!panel) return;
+  if (idx !== undefined) {
+    const p = STATE.promocoes?.promocoes?.[idx];
+    if (!p) return;
+    tit.textContent = '✏️ Editar Promoção';
+    document.getElementById('promos-f-nome').value = p.nome || '';
+    document.getElementById('promos-f-periodo').value = p.periodo || '';
+    document.getElementById('promos-f-desc').value = p.descricao || '';
+    document.getElementById('promos-f-status').value = p.status || 'ativa';
+    document.getElementById('promos-f-idx').value = idx;
+  } else {
+    tit.textContent = '➕ Nova Promoção';
+    document.getElementById('promos-f-nome').value = '';
+    document.getElementById('promos-f-periodo').value = '';
+    document.getElementById('promos-f-desc').value = '';
+    document.getElementById('promos-f-status').value = 'ativa';
+    document.getElementById('promos-f-idx').value = '';
+  }
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fecharFormPromocao() {
+  const panel = document.getElementById('promos-form-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+async function salvarPromocaoItem() {
+  const nome = (document.getElementById('promos-f-nome').value || '').trim();
+  if (!nome) { toast('Informe o nome da promoção.','erro'); return; }
+  const periodo = (document.getElementById('promos-f-periodo').value || '').trim();
+  const descricao = (document.getElementById('promos-f-desc').value || '').trim();
+  const status = document.getElementById('promos-f-status').value;
+  const idxRaw = document.getElementById('promos-f-idx').value;
+
+  if (!STATE.promocoes) STATE.promocoes = {promocoes: []};
+  if (!Array.isArray(STATE.promocoes.promocoes)) STATE.promocoes.promocoes = [];
+
+  if (idxRaw !== '') {
+    const idx = parseInt(idxRaw);
+    STATE.promocoes.promocoes[idx] = {nome, periodo, descricao, status};
+  } else {
+    STATE.promocoes.promocoes.push({nome, periodo, descricao, status});
+  }
+  const ok = await salvarArquivo(PATHS.promocoes, STATE.promocoes, 'promocoesSha', 'Admin: ' + (idxRaw !== '' ? 'editar' : 'adicionar') + ' promoção ' + nome);
+  if (ok) { fecharFormPromocao(); renderPromocoesTable(); }
+}
+
+function excluirPromocaoItem(idx) {
+  const p = STATE.promocoes?.promocoes?.[idx];
+  if (!p) return;
+  confirmarAcao(
+    'Excluir Promoção',
+    `Tem certeza que deseja excluir a promoção <strong>${p.nome}</strong>?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
+    'Sim, excluir promoção',
+    async () => {
+      STATE.promocoes.promocoes.splice(idx, 1);
+      const ok = await salvarArquivo(PATHS.promocoes, STATE.promocoes, 'promocoesSha', 'Admin: excluir promoção ' + p.nome);
+      if (ok) { toast('🗑️ Promoção excluída.','ok'); renderPromocoesTable(); }
+    }
+  );
+}
+
+function copiarListaPromocoes() {
+  const lista = STATE.promocoes?.promocoes || [];
+  if (!lista.length) { toast('Nenhuma promoção para copiar.','aviso'); return; }
+  const header = 'Nome;Período;Status';
+  const rows = lista.map(p => `${p.nome};${p.periodo||'-'};${p.status}`);
+  navigator.clipboard.writeText([header,...rows].join('\n')).then(()=>toast(`${lista.length} promoções copiadas!`,'sucesso'));
+}
+
+function exportarPromocoesCSV() {
+  const lista = STATE.promocoes?.promocoes || [];
+  if (!lista.length) { toast('Nenhuma promoção para exportar.','aviso'); return; }
+  const BOM = '\uFEFF';
+  const header = 'Nome,Período,Descrição,Status';
+  const rows = lista.map(p => `"${(p.nome||'').replace(/"/g,'""')}","${(p.periodo||'').replace(/"/g,'""')}","${(p.descricao||'').replace(/"/g,'""')}",${p.status}`);
+  const csv = BOM + [header,...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `promocoes_itapolitana_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast(`CSV com ${lista.length} promoções exportado!`,'sucesso');
+}
+
+// ═══════════════════════════════════════════════════════════
+// CLIENTES — FORM INLINE (substituição de prompt())
+// ═══════════════════════════════════════════════════════════
+function abrirFormCliente(cel) {
+  const panel = document.getElementById('cliente-form-panel');
+  const tit = document.getElementById('cliente-form-titulo');
+  if (!panel) return;
+  if (cel) {
+    const clientes = STATE.clientes?.clientes || {};
+    const c = clientes[cel];
+    if (!c) return;
+    tit.textContent = '✏️ Editar Cliente';
+    document.getElementById('cli-f-nome').value = c.nome || '';
+    document.getElementById('cli-f-cel').value = c.cel || cel;
+    document.getElementById('cli-f-nasc').value = c.dataNasc || '';
+    document.getElementById('cli-f-pontos').value = c.saldoPontos || 0;
+    document.getElementById('cli-f-cel-orig').value = cel;
+  } else {
+    tit.textContent = '➕ Adicionar Cliente';
+    document.getElementById('cli-f-nome').value = '';
+    document.getElementById('cli-f-cel').value = '';
+    document.getElementById('cli-f-nasc').value = '';
+    document.getElementById('cli-f-pontos').value = '0';
+    document.getElementById('cli-f-cel-orig').value = '';
+  }
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fecharFormCliente() {
+  const panel = document.getElementById('cliente-form-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+async function salvarClienteForm() {
+  const nome = (document.getElementById('cli-f-nome').value || '').trim();
+  if (nome.length < 3) { toast('Nome muito curto.','erro'); return; }
+  const celRaw = (document.getElementById('cli-f-cel').value || '').replace(/\D/g,'');
+  if (celRaw.length < 10) { toast('WhatsApp inválido.','erro'); return; }
+  const nasc = document.getElementById('cli-f-nasc').value || '';
+  const pontos = parseInt(document.getElementById('cli-f-pontos').value) || 0;
+  const celOrig = document.getElementById('cli-f-cel-orig').value;
+
+  if (!STATE.clientes) STATE.clientes = {clientes:{},indice_celular:{}};
+  if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
+  if (!STATE.clientes.indice_celular) STATE.clientes.indice_celular = {};
+
+  const clientes = STATE.clientes.clientes;
+  const agora = new Date().toISOString();
+
+  if (celOrig) {
+    const c = clientes[celOrig];
+    if (!c) { toast('Cliente não encontrado.','erro'); return; }
+    if (celRaw !== celOrig) {
+      if (clientes[celRaw] && celRaw !== celOrig) { toast('Novo WhatsApp já está em uso.','erro'); return; }
+      const updated = {...c, nome, cel: celRaw, dataNasc: nasc, saldoPontos: pontos};
+      updated.cel_anterior = [...(Array.isArray(c.cel_anterior) ? c.cel_anterior : []), celOrig];
+      updated.historico_alteracoes = [...(c.historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin — celular alterado de ' + celOrig + ' para ' + celRaw,por:'admin'}];
+      delete clientes[celOrig];
+      clientes[celRaw] = updated;
+      if (STATE.clientes.indice_celular[celOrig]) {
+        STATE.clientes.indice_celular[celRaw] = STATE.clientes.indice_celular[celOrig];
+        delete STATE.clientes.indice_celular[celOrig];
+      }
+    } else {
+      clientes[celOrig].nome = nome;
+      clientes[celOrig].dataNasc = nasc;
+      clientes[celOrig].saldoPontos = pontos;
+      clientes[celOrig].historico_alteracoes = [...(clientes[celOrig].historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin',por:'admin'}];
+    }
+  } else {
+    if (clientes[celRaw]) { toast('WhatsApp já está cadastrado.','aviso'); return; }
+    let maxNum = 0;
+    Object.values(clientes).forEach(v => { const m = (v.id_permanente||'').match(/USR-2026-(\d+)/); if(m) maxNum = Math.max(maxNum, parseInt(m[1],10)); });
+    const novoId = 'USR-2026-' + String(maxNum+1).padStart(4,'0');
+    clientes[celRaw] = {
+      id_permanente: novoId, nome, cel: celRaw, dataNasc: nasc,
+      cadastro: agora, saldoPontos: pontos, codigosUsados: [], resgates: [],
+      totalPremios: 0, totalCodigos: 0, bloqueado: false, motivo_bloqueio: null,
+      tentativas_fraude: 0, ultimo_acesso: agora,
+      historico_alteracoes: [{data:agora,tipo:'cadastro_manual',descricao:'Cadastro manual pelo admin',por:'admin'}]
+    };
+    STATE.clientes.indice_celular[celRaw] = novoId;
+  }
+
+  const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: ' + (celOrig ? 'editar' : 'cadastrar') + ' cliente ' + nome);
+  if (ok) { fecharFormCliente(); renderClientes(); toast('✅ ' + nome + ' salvo com sucesso!','sucesso'); }
+}
+
+function copiarListaClientes() {
+  const clientes = Object.values(STATE.clientes?.clientes || {});
+  if (!clientes.length) { toast('Nenhum cliente para copiar.','aviso'); return; }
+  const header = 'Nome;WhatsApp;Pontos;Cadastro;Status';
+  const rows = clientes.map(c => {
+    const cad = c.cadastro ? new Date(c.cadastro).toLocaleDateString('pt-BR') : '-';
+    const status = c.bloqueado ? 'Bloqueado' : c.fraude ? 'Fraude' : 'Ativo';
+    return `${c.nome};${c.cel};${c.saldoPontos||0};${cad};${status}`;
+  });
+  navigator.clipboard.writeText([header,...rows].join('\n')).then(()=>toast(`${clientes.length} clientes copiados!`,'sucesso'));
+}
+
+function exportarClientesCSV() {
+  const clientes = Object.values(STATE.clientes?.clientes || {});
+  if (!clientes.length) { toast('Nenhum cliente para exportar.','aviso'); return; }
+  const BOM = '\uFEFF';
+  const header = 'ID,Nome,WhatsApp,Data Nasc.,Pontos,Cadastro,Status';
+  const rows = clientes.map(c => {
+    const cad = c.cadastro ? new Date(c.cadastro).toLocaleDateString('pt-BR') : '-';
+    const status = c.bloqueado ? 'Bloqueado' : c.fraude ? 'Fraude' : 'Ativo';
+    const nasc = c.dataNasc ? c.dataNasc.split('-').reverse().join('/') : '-';
+    return `"${c.id_permanente||'-'}","${(c.nome||'').replace(/"/g,'""')}","${c.cel||''}","${nasc}",${c.saldoPontos||0},"${cad}","${status}"`;
+  });
+  const csv = BOM + [header,...rows].join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `clientes_itapolitana_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  toast(`CSV com ${clientes.length} clientes exportado!`,'sucesso');
+}
+
+// ═══════════════════════════════════════════════════════════
+// FIDELIDADE — EXCLUIR CÓDIGO INDIVIDUAL
+// ═══════════════════════════════════════════════════════════
+function excluirCodigo(cod) {
+  const v = STATE.fidelidade?.códigos?.[cod];
+  if (!v) return;
+  confirmarAcao(
+    'Excluir Código',
+    `Tem certeza que deseja excluir o código <strong>${cod}</strong>?<br><span style="font-size:.82rem;color:#666">Status: ${v.status} ${v.usadoPor?'· Usado por: '+v.usadoPor:''}</span><br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
+    'Sim, excluir código',
+    async () => {
+      delete STATE.fidelidade.códigos[cod];
+      STATE.fidelidade.liberados = Object.keys(STATE.fidelidade.códigos).length;
+      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir código ' + cod);
+      if (ok) { toast('Código excluído.','ok'); renderCódigos(); atualizarStatsCódigos(); fidRenderProgresso(); }
+    }
+  );
 }
 
 </script>
