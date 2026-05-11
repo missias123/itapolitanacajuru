@@ -533,206 +533,100 @@
   </header>
 
   <main>
-    <!-- 1) Cabeçalho amigável do Clube -->
-    <section class="card hero" aria-labelledby="titulo-clube">
+    <section class="card hero" id="secao-cabecalho-fid" aria-labelledby="titulo-clube">
       <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
       <h1 id="titulo-clube">Clube de Fidelidade Itapolitana</h1>
-      <p>Acumule pontos, consulte seu saldo e valide códigos em um fluxo simples no mobile.</p>
-      <span class="hero-badge">⚡ Fase de testes · Em breve totalmente online</span>
+      <p>Como funciona:</p>
+      <div class="itap-flow-list" style="margin-top:8px;">
+        <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Faça seu cadastro com nome, nascimento e WhatsApp.</p></div>
+        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>Faça login para ver seus pontos acumulados.</p></div>
+        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Digite códigos válidos e resgate seus prêmios.</p></div>
+      </div>
       <div class="itap-food-hero__actions" style="margin-top:14px;">
-        <button type="button" class="itap-food-hero__action itap-food-hero__action--primary" id="btn-abrir-cadastro">🎟️ Quero participar do Fidelidade</button>
-        <a href="#bloco-ja-cadastrado" class="itap-food-hero__action itap-food-hero__action--secondary">✅ Já sou cadastrado / Inserir código</a>
+        <button type="button" class="itap-food-hero__action itap-food-hero__action--primary" id="btn-mostrar-cadastro-fid">Fazer cadastro de fidelidade</button>
+        <button type="button" class="itap-food-hero__action itap-food-hero__action--secondary" id="btn-mostrar-login-fid">Já sou cadastrado / Digitar código</button>
         <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
       </div>
     </section>
 
-    <!-- ── DOIS CAMINHOS: Quero me cadastrar / Já sou cadastrado ── -->
-    <section class="card dois-caminhos" aria-label="Escolha como prosseguir">
-      <div class="dois-caminhos-grid">
+    <section class="card" id="secao-cadastro-fid" aria-labelledby="titulo-cadastro-fid" style="display:none;">
+      <h2 id="titulo-cadastro-fid" style="font-size:1.2rem;color:#1b5e20;margin-bottom:8px;">Cadastro de fidelidade</h2>
+      <p style="margin:0 0 8px;">Antes de participar, leia e aceite as regras do programa de fidelidade.</p>
+      <label for="cad-aceite" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
+        <input id="cad-aceite" type="checkbox" style="margin-top:2px;">
+        <span>Li e aceito as regras do programa de fidelidade.</span>
+      </label>
+      <p style="margin:0 0 12px;"><a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas" target="_blank" rel="noopener">Ver regras completas</a></p>
 
-        <!-- BLOCO 1: Novo cadastro -->
-        <div class="caminho-card caminho-novo">
-          <span class="caminho-icon" aria-hidden="true">🎟️</span>
-          <h3 class="caminho-titulo">Quero participar do Fidelidade</h3>
-          <p class="caminho-sub">Se é a sua primeira vez aqui, comece fazendo seu cadastro. Leva menos de 1 minuto e você já sai pronto para juntar pontos.</p>
-          <button type="button" class="btn btn-verde btn-block" id="btn-toggle-cadastro">🎟️ Fazer meu cadastro</button>
-        </div>
+      <div class="form-row">
+        <label for="cad-nome">Nome completo</label>
+        <input id="cad-nome" type="text" maxlength="100" placeholder="Digite seu nome completo" autocomplete="name">
 
-        <!-- BLOCO 2: Já cadastrado — SEMPRE visível -->
-        <div class="caminho-card caminho-existente" id="bloco-ja-cadastrado">
-          <span class="caminho-icon" aria-hidden="true">✅</span>
-          <h3 class="caminho-titulo">Já sou cadastrado / Inserir código</h3>
-          <p class="caminho-sub">Faça login com seus dados para ver seus pontos e registrar um código de fidelidade.</p>
+        <label for="cad-nascimento">Data de nascimento</label>
+        <input id="cad-nascimento" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday">
 
-          <div class="form-row">
-            <label for="cliente-nome">Nome completo</label>
-            <input id="cliente-nome" type="text" maxlength="100" placeholder="Digite seu nome completo cadastrado" autocomplete="name">
-            <label for="cliente-telefone">Celular cadastrado (WhatsApp)</label>
-            <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="Digite o mesmo número usado no cadastro" autocomplete="tel">
-            <label for="cliente-nascimento">Data de nascimento</label>
-            <input id="cliente-nascimento" type="date" autocomplete="bday">
-            <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:6px;">Entrar na minha fidelidade</button>
-          </div>
+        <label for="cad-tel-view">Celular (WhatsApp)</label>
+        <input id="cad-tel-view" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
 
-          <div class="form-row" id="form-codigo-wrap" style="display:none;margin-top:10px;">
-            <label for="cliente-codigo">Código de fidelidade</label>
-            <input id="cliente-codigo" type="text" maxlength="20" placeholder="Digite o código que recebeu na loja" style="text-transform:uppercase;">
-            <button class="btn btn-sec btn-block btn-validar-codigo" id="btn-registrar-ponto" style="margin-top:6px;">✅ Registrar código e somar pontos</button>
-          </div>
-
-          <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">
-            Faça login com nome, WhatsApp e data de nascimento para consultar seus pontos.
-          </div>
-          <div id="painel-resgate" style="display:none;margin-top:12px;" aria-live="polite"></div>
-          <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
-            💬 Resgatar meu prêmio via WhatsApp
-          </a>
-        </div>
-
+        <button class="btn btn-verde btn-block" id="btn-cadastrar-clube" style="margin-top:8px;">Fazer cadastro fidelidade</button>
       </div>
+
+      <div class="resultado" id="resultado-cliente" style="margin-top:12px;" role="status">Preencha os dados para fazer seu cadastro no clube.</div>
     </section>
 
-    <section class="card" aria-labelledby="titulo-resumo-regras">
-      <h2 id="titulo-resumo-regras" style="font-size:1.1rem;color:#C62828;margin-bottom:10px;">Resumo rápido do programa</h2>
-      <div class="itap-flow-list">
-        <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Compras acima de <strong>R$ 30,00</strong>, de segunda a sexta, geram 1 cupom.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>Cadastre-se com nome, WhatsApp, data de nascimento e aceite das regras.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Entre com seu WhatsApp, valide o código do cupom e acompanhe a progressão dos prêmios.</p></div>
+    <section class="card" id="secao-login-fid" aria-labelledby="titulo-login-fid" style="display:none;">
+      <h2 id="titulo-login-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Já sou cadastrado / Digitar código</h2>
+      <div class="form-row">
+        <label for="cliente-nome">Nome completo</label>
+        <input id="cliente-nome" type="text" maxlength="100" placeholder="Digite seu nome completo" autocomplete="name">
+
+        <label for="cliente-nascimento">Data de nascimento</label>
+        <input id="cliente-nascimento" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday">
+
+        <label for="cliente-telefone">Celular (WhatsApp)</label>
+        <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
+
+        <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:8px;">Entrar na minha fidelidade</button>
       </div>
+
+      <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">Faça login para consultar seus pontos e registrar códigos.</div>
+      <button class="btn btn-verde btn-block" id="btn-ir-cadastro-fidelidade" type="button" style="display:none;margin-top:10px;">Ir para cadastro de fidelidade</button>
     </section>
 
-    <!-- 2) Como funciona + cards de prêmios -->
-    <section class="card" aria-labelledby="titulo-como-funciona">
-      <h2 id="titulo-como-funciona" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Como funciona</h2>
+    <section class="card" id="secao-painel-fid" aria-labelledby="titulo-painel-fid" style="display:none;">
+      <h2 id="titulo-painel-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Meus pontos</h2>
+      <p id="painel-boas-vindas" style="margin:0 0 4px;">Bem-vindo(a)!</p>
+      <p id="painel-pontos" style="margin:0 0 10px;font-weight:700;">Você tem 0 pontos acumulados.</p>
 
-      <div class="steps">
-        <div class="step"><span class="step-num">1</span><p>Compre acima de <strong>R$ 30,00</strong>, de <strong>segunda a sexta</strong>.</p></div>
-        <div class="step"><span class="step-num">2</span><p>Receba um <strong>cupom com código</strong> na loja.</p></div>
-        <div class="step"><span class="step-num">3</span><p>Acesse o site e faça seu <strong>cadastro gratuito</strong>.</p></div>
-        <div class="step"><span class="step-num">4</span><p>Digite o código do cupom e acumule <strong>+1 ponto</strong>.</p></div>
+      <ul class="resgate-regras" style="margin-top:0;">
+        <li>Com 10 pontos, você ganha 1 Milk Shake de 300 ml.</li>
+        <li>Com 30 pontos, você ganha 1 caixa de sorvete com 7 bolas.</li>
+      </ul>
+
+      <div class="form-row" id="form-codigo-wrap" style="display:none;margin-top:10px;">
+        <label for="cliente-codigo">Código de fidelidade</label>
+        <input id="cliente-codigo" type="text" maxlength="20" placeholder="Digite o código que recebeu na loja" style="text-transform:uppercase;">
+        <button class="btn btn-sec btn-block btn-validar-codigo" id="btn-registrar-ponto" style="margin-top:6px;">Registrar código</button>
       </div>
 
-      <div class="premios">
-        <article class="premio milk">
-          <span class="premio-icon">🥤</span>
-          <span class="premio-pts">⭐ 10 pontos</span>
-          <span class="premio-nome">Milkshake 300ml grátis</span>
-        </article>
-        <article class="premio caixa">
-          <span class="premio-icon">🍨</span>
-          <span class="premio-pts">⭐ 30 pontos</span>
-          <span class="premio-nome">Caixa com 7 bolas grátis</span>
-        </article>
-      </div>
-
-      <!-- Barra de progresso (alimentada pelo fetch real) -->
-      <div class="progresso-wrap" id="progresso-wrap" aria-live="polite">
-        <div class="progresso-label">
-          <span>🥤 Milkshake (meta: 10 pts)</span>
-          <strong id="progresso-pts-texto">0 / 10 pts</strong>
-        </div>
-        <div class="progresso-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10" aria-label="Progresso para Milkshake">
-          <div class="progresso-bar-fill" id="progresso-fill"></div>
-        </div>
-
-        <div class="progresso-label" style="margin-top:10px;">
-          <span>🍨 Caixa 7 bolas (meta: 30 pts)</span>
-          <strong id="progresso-pts30-texto">0 / 30 pts</strong>
-        </div>
-        <div class="progresso-bar-bg" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="30" aria-label="Progresso para Caixa 7 bolas">
-          <div class="progresso-bar-fill" id="progresso-fill30"></div>
-        </div>
-
-        <p class="progresso-hint" id="progresso-hint">Entre com seu WhatsApp para ver seus pontos reais</p>
-      </div>
-    </section>
-
-    <!-- 3) Regras completas do programa — exibidas ANTES do formulário de cadastro -->
-    <section class="card" aria-labelledby="titulo-regras">
-      <h2 id="titulo-regras" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Regras completas do programa</h2>
-
-      <!-- O regulamento fica em <details> para melhorar UX mobile sem esconder conteúdo -->
-      <details class="regulamento" open>
-        <summary>📜 Ler regulamento completo do Clube de Fidelidade</summary>
-        <div class="reg-body">
-          <p><strong>1. DO PROGRAMA</strong><br>1.1. O Clube de Fidelidade Itapolitana é uma ação promocional gratuita da Sorveteria Itapolitana Cajuru.<br>1.2. O programa funciona por acúmulo de pontos via códigos de cupons distribuídos na loja.<br>1.3. Não há campanhas promocionais extras paralelas nesta fase.</p>
-
-          <p><strong>2. DA PARTICIPAÇÃO</strong><br>2.1. A participação exige cadastro no site oficial, com dados verdadeiros do cliente.<br>2.2. O participante deve informar um número de celular (WhatsApp) válido para identificação e contato.</p>
-
-          <p><strong>3. DOS CUPONS E PONTOS</strong><br>3.1. Compras acima de R$ 30,00, de segunda a sexta, geram 1 cupom com código.<br>3.2. Cada código válido inserido no site gera +1 ponto.<br>3.3. Pontos não expiram enquanto o programa estiver ativo.<br>3.4. Códigos inválidos, duplicados ou já utilizados não geram pontuação.</p>
-
-          <p><strong>4. DOS PRÊMIOS</strong><br>4.1. Com 10 pontos: 1 Milkshake 300ml grátis.<br>4.2. Com 30 pontos: 1 Caixa com 7 bolas de sorvete grátis.<br>4.3. O resgate é pessoal e pode exigir confirmação de cadastro para retirada.</p>
-
-          <p><strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>5.1. É proibido usar código de terceiros sem autorização, manipular sistema, automações, robôs ou qualquer tentativa de fraude.<br>5.2. Em caso de fraude, a conta pode ser bloqueada e excluída do programa, sem aviso prévio.</p>
-
-          <p><strong>6. DAS CRÍTICAS E CONDUTA</strong><br>6.1. O canal de atendimento deve ser usado com respeito e boa-fé.<br>6.2. Condutas ofensivas, abusivas ou ameaçadoras podem resultar em restrição de atendimento e participação.</p>
-
-          <p><strong>7. DAS ALTERAÇÕES E FASE DE TESTES</strong><br>7.1. O programa pode sofrer ajustes operacionais, de regras e de prêmios, com atualização nesta página.<br>7.2. A Itapolitana pode suspender ou encerrar o programa em caso de necessidade operacional.</p>
-
-          <p><strong>8. DO FORO</strong><br>8.1. Para eventuais controvérsias, fica eleito o foro da comarca de Cajuru/SP, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
-        </div>
-      </details>
-    </section>
-
-    <!-- 4) Formulário de cadastro — exibido ao clicar em "Fazer meu cadastro" -->
-    <section class="card" id="secao-cadastro" aria-labelledby="titulo-cadastro" style="display:none;">
-      <h2 id="titulo-cadastro" style="font-size:1.25rem;color:#1b5e20;margin-bottom:8px;">📝 Cadastro gratuito no Clube de Fidelidade</h2>
-      <!--
-        IDs críticos: cad-nome, cad-tel-view, cad-dia, cad-mes, cad-ano, cad-aceite, btn-cadastrar-clube
-        Sem atributo action/method: envio gerenciado 100% pelo JS (btn-cadastrar-clube listener).
-        Sem token: fallback via WhatsApp. Com token (itap_gh_token): salva direto no GitHub.
-      -->
-      <div class="cad-box visivel" id="form-cadastro-wrap">
-        <p class="cad-instrucao">Preencha os campos abaixo com seus dados reais. Use seu WhatsApp principal para receber as confirmações da loja.</p>
-
-        <div class="cad-row">
-          <label for="cad-nome">Nome completo</label>
-          <!-- ID cad-nome — não alterar: referenciado no JS de cadastro e no admin -->
-          <input id="cad-nome" type="text" placeholder="Informe seu nome completo" autocomplete="name" maxlength="100">
-        </div>
-
-        <div class="cad-row">
-          <label for="cad-tel-view">Celular (WhatsApp)</label>
-          <!-- ID cad-tel-view — não alterar: referenciado no JS de cadastro e no admin -->
-          <input id="cad-tel-view" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
-        </div>
-
-        <div class="cad-row">
-          <label>Data de nascimento</label>
-          <!-- IDs cad-dia, cad-mes, cad-ano — não alterar: usados no JS para montar dataNasc enviada ao admin -->
-          <div class="cad-nasc-grid">
-            <select id="cad-dia"><option value="">Dia</option></select>
-            <select id="cad-mes">
-              <option value="">Mês</option>
-              <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-              <option value="03">Março</option><option value="04">Abril</option>
-              <option value="05">Maio</option><option value="06">Junho</option>
-              <option value="07">Julho</option><option value="08">Agosto</option>
-              <option value="09">Setembro</option><option value="10">Outubro</option>
-              <option value="11">Novembro</option><option value="12">Dezembro</option>
-            </select>
-            <select id="cad-ano"><option value="">Ano</option></select>
-          </div>
-        </div>
-
-        <div class="cad-aceite-row">
-          <p class="cad-aceite-indicador">↓ Leia as regras acima e marque a caixa para continuar</p>
-          <!-- ID cad-aceite — não alterar: verificado no JS antes de enviar o cadastro -->
-          <label class="cad-aceite-label" for="cad-aceite">
-            <input id="cad-aceite" type="checkbox">
-            <span class="cad-aceite-visual" aria-hidden="true"></span>
-            <span class="cad-aceite-text">Li e aceito as <a href="#titulo-regras" onclick="document.querySelector('details.regulamento').open=true;">Regras do Clube de Fidelidade</a></span>
-          </label>
-        </div>
-
-        <!-- ID btn-cadastrar-clube — não alterar: listener de click dispara o envio ao admin -->
-        <button class="btn btn-verde" id="btn-cadastrar-clube">🎟️ Cadastrar no Clube</button>
-      </div>
-
-      <div class="resultado" id="resultado-cliente" style="margin-top:12px;" role="status">Preencha o formulário acima para se cadastrar gratuitamente no Clube de Fidelidade.</div>
-      <a id="btn-wpp-resgatar" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
+      <div id="painel-resgate" style="display:none;margin-top:12px;" aria-live="polite"></div>
+      <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
         💬 Resgatar meu prêmio via WhatsApp
       </a>
+    </section>
+
+    <section class="card" id="secao-regras-fid-completas" aria-labelledby="titulo-regras-fid-completas">
+      <h2 id="titulo-regras-fid-completas" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Regras completas do programa</h2>
+      <details class="regulamento">
+        <summary>📜 Ler regulamento completo do Clube de Fidelidade</summary>
+        <div class="reg-body">
+          <p><strong>1. DO PROGRAMA</strong><br>1.1. O Clube de Fidelidade Itapolitana é uma ação promocional gratuita da Sorveteria Itapolitana Cajuru.<br>1.2. O programa funciona por acúmulo de pontos via códigos de cupons distribuídos na loja.</p>
+          <p><strong>2. DA PARTICIPAÇÃO</strong><br>2.1. A participação exige cadastro no site oficial, com dados verdadeiros do cliente.<br>2.2. O participante deve informar um número de celular (WhatsApp) válido para identificação e contato.</p>
+          <p><strong>3. DOS CUPONS E PONTOS</strong><br>3.1. Compras acima de R$ 30,00, de segunda a sexta, geram 1 cupom com código.<br>3.2. Cada código válido inserido no site gera +1 ponto.<br>3.3. Códigos inválidos, duplicados ou já utilizados não geram pontuação.</p>
+          <p><strong>4. DOS PRÊMIOS</strong><br>4.1. Com 10 pontos: 1 Milkshake 300ml grátis.<br>4.2. Com 30 pontos: 1 Caixa com 7 bolas de sorvete grátis.<br>4.3. O resgate é pessoal e pode exigir confirmação de cadastro para retirada.</p>
+          <p><strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>5.1. É proibido usar código de terceiros sem autorização ou tentar fraude no sistema.<br>5.2. Em caso de fraude, a conta pode ser bloqueada e excluída do programa.</p>
+        </div>
+      </details>
     </section>
 
   </main>
