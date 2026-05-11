@@ -62,6 +62,93 @@
           .toLowerCase();
       }
 
+      function getGhToken() {
+        try { return localStorage.getItem('itap_gh_token') || ''; } catch (e) { return ''; }
+      }
+
+      function encodeJsonToB64(obj) {
+        var enc = new TextEncoder().encode(JSON.stringify(obj, null, 2));
+        var chunks = [];
+        var CHUNK = 8192;
+        for (var ci = 0; ci < enc.length; ci += CHUNK) {
+          chunks.push(String.fromCharCode.apply(null, enc.subarray(ci, ci + CHUNK)));
+        }
+        return btoa(chunks.join(''));
+      }
+
+      function localizarClientePorIdentidade(dados, nome, dataNasc) {
+        var clientes = (dados && dados.clientes) || {};
+        var alvoNome = normalizarNome(nome);
+        var alvoNasc = String(dataNasc || '').trim();
+        var ids = Object.keys(clientes);
+        for (var i = 0; i < ids.length; i++) {
+          var id = ids[i];
+          var c = clientes[id] || {};
+          var nomeOk = normalizarNome(c.nome) === alvoNome;
+          var nascOk = String(c.dataNasc || '').trim() === alvoNasc;
+          if (nomeOk && nascOk) return { id: id, cliente: c };
+        }
+        return null;
+      }
+
+      function atualizarCelularEIndice(dados, clienteId, novoCel, origem) {
+        var clientes = (dados && dados.clientes) || {};
+        var idx = (dados && dados.indice_celular) || {};
+        var cliente = clientes[clienteId];
+        if (!cliente) return false;
+
+        var celNovo = String(novoCel || '').replace(/\D/g, '');
+        var celAtual = String(cliente.cel || '').replace(/\D/g, '');
+        if (!celNovo) return false;
+
+        Object.keys(idx).forEach(function(celKey) {
+          if (idx[celKey] === clienteId && celKey !== celNovo) delete idx[celKey];
+        });
+        idx[celNovo] = clienteId;
+
+        if (celAtual === celNovo) {
+          dados.indice_celular = idx;
+          return false;
+        }
+
+        if (!Array.isArray(cliente.cel_anterior)) cliente.cel_anterior = [];
+        if (celAtual && cliente.cel_anterior.indexOf(celAtual) === -1) cliente.cel_anterior.push(celAtual);
+        cliente.cel = celNovo;
+        if (!Array.isArray(cliente.historico_alteracoes)) cliente.historico_alteracoes = [];
+        cliente.historico_alteracoes.push({
+          data: new Date().toISOString(),
+          tipo: 'celular_atualizado',
+          descricao: 'Celular atualizado para ' + celNovo,
+          por: origem || 'site'
+        });
+        dados.indice_celular = idx;
+        return true;
+      }
+
+      function salvarClientesNoGitHub(dados, mensagemCommit) {
+        var tk = getGhToken();
+        if (!tk) return Promise.resolve(false);
+        var CLIENTES_PATH = 'dados/clientes.json';
+        return fetch(GH_API + CLIENTES_PATH, {
+          headers: { 'Authorization': 'token ' + tk, 'Accept': 'application/vnd.github.v3+json' }
+        })
+          .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function(meta) {
+            var payload = {
+              message: mensagemCommit || 'Clube: atualizar clientes',
+              content: encodeJsonToB64(dados),
+              sha: meta.sha
+            };
+            return fetch(GH_API + CLIENTES_PATH, {
+              method: 'PUT',
+              headers: { 'Authorization': 'token ' + tk, 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          })
+          .then(function(r2) { return r2.ok; })
+          .catch(function() { return false; });
+      }
+
       function setResultado(msg, tipo) {
         if (!resultado) return;
         resultado.textContent = msg;
@@ -354,11 +441,8 @@
         if (inputTel) inputTel.value = mascaraTel(telRaw);
         /* atualiza barras de progresso */
         atualizarBarras(pontos || 0);
-        /* mostra campo de código se ainda não tem pontos suficientes para resgatar */
-        if (formCodigoWrap && (pontos || 0) < META_10) {
-          setResultado('Bem-vindo(a), ' + nomePrimeiro + '! 🎉 Cadastro confirmado. Insira o código do seu cupom abaixo para registrar seu primeiro ponto.', 'ok');
-          formCodigoWrap.style.display = 'grid';
-        }
+        if (formCodigoWrap) formCodigoWrap.style.display = 'none';
+        setResultado('Cadastro confirmado! Agora faça login em "Já sou cadastrado / Inserir código" para registrar pontos.', 'ok');
         /* scroll suave até o bloco "Já sou cadastrado" */
         var blocoJaCad = document.getElementById('bloco-ja-cadastrado');
         if (blocoJaCad) setTimeout(function() { blocoJaCad.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
@@ -414,7 +498,7 @@
         btn.textContent = 'Cadastrando…';
         setResultadoEl('resultado-cliente', 'Aguarde, registrando seu cadastro…', '');
 
-        var tk = (function(){ try { return localStorage.getItem('itap_gh_token') || ''; } catch(e){ return ''; } })();
+        var tk = getGhToken();
 
         if (!tk) {
           /* sem token → redireciona WhatsApp */
@@ -445,14 +529,27 @@
           var rawJson = new TextDecoder().decode(Uint8Array.from(atob(ghResp.content.replace(/\n/g,'')).split(''), function(c){return c.charCodeAt(0);}));
           var dados = JSON.parse(rawJson);
 
-          /* verificar duplicidade */
-          var idx = dados.indice_celular || {};
-          if (idx[telRaw]) {
-            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use o bloco "Já sou cadastrado" para entrar com seu celular e registrar pontos.', '');
-            btn.disabled = false;
-            btn.textContent = '🎟️ Cadastrar no Clube';
-            return;
+          /* verificar duplicidade por identidade lógica (nome + dataNasc) */
+          var duplicado = localizarClientePorIdentidade(dados, nome, dataNasc);
+          if (duplicado && duplicado.id) {
+            var houveTroca = atualizarCelularEIndice(dados, duplicado.id, telRaw, 'site_cadastro_reuso');
+            return salvarClientesNoGitHub(dados, 'Clube: reaproveitar cadastro ' + nome).then(function() {
+              _clienteAtual = dados.clientes[duplicado.id];
+              _nomeSessao = primeiroNome(_clienteAtual.nome || nome);
+              salvarSaldoEmCache(telRaw, Number(_clienteAtual.saldoPontos || 0), _clienteAtual.nome || nome);
+              atualizarBarras(Number(_clienteAtual.saldoPontos || 0));
+              setResultadoEl(
+                'resultado-cliente',
+                'Já existe um cadastro para esse nome e data de nascimento. Atualizamos o seu celular e você já pode usar a opção "Já sou cadastrado / Inserir código".',
+                'ok'
+              );
+              ocultarFormCadastro();
+              ativarAreaClientePosCadastro(telRaw, primeiroNome(_clienteAtual.nome || nome), Number(_clienteAtual.saldoPontos || 0));
+              return houveTroca;
+            });
           }
+
+          var idx = dados.indice_celular || {};
 
           /* gerar próximo ID */
           var existentes = Object.keys(dados.clientes || {});
@@ -487,13 +584,7 @@
           idx[telRaw] = novoId;
           dados.indice_celular = idx;
 
-          var enc = new TextEncoder().encode(JSON.stringify(dados, null, 2));
-          var chunks = [];
-          var CHUNK = 8192;
-          for (var ci = 0; ci < enc.length; ci += CHUNK) {
-            chunks.push(String.fromCharCode.apply(null, enc.subarray(ci, ci + CHUNK)));
-          }
-          var novoConteudo = btoa(chunks.join(''));
+          var novoConteudo = encodeJsonToB64(dados);
           return fetch(GH_API + CLIENTES_PATH, {
             method: 'PUT',
             headers: { 'Authorization': 'token ' + tk, 'Content-Type': 'application/json' },
@@ -504,11 +595,11 @@
             _nomeSessao = primeiroNome(nome);
             salvarSaldoEmCache(telRaw, 0, nome);
             atualizarBarras(0);
-            setResultadoEl('resultado-cliente', '🎉 Cadastro feito com sucesso, ' + primeiroNome(nome) + '! Para registrar seus pontos, use o bloco "Já sou cadastrado" abaixo com seu celular e o código da compra.', 'ok');
-            ocultarFormCadastro();
-            /* fluxo sequencial: cadastro → bloco "Já sou cadastrado" → digitar código */
-            ativarAreaClientePosCadastro(telRaw, primeiroNome(nome), 0);
-          });
+              setResultadoEl('resultado-cliente', '🎉 Cadastro feito com sucesso, ' + primeiroNome(nome) + '! Agora faça login em "Já sou cadastrado / Inserir código".', 'ok');
+              ocultarFormCadastro();
+              /* fluxo sequencial: cadastro → bloco "Já sou cadastrado" */
+              ativarAreaClientePosCadastro(telRaw, primeiroNome(nome), 0);
+            });
         })
         .catch(function(e) {
           setResultadoEl('resultado-cliente', '⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
@@ -577,28 +668,22 @@
 
         ghRawFetch('dados/clientes.json')
           .then(function(dados) {
-            var idx = dados.indice_celular || {};
-            var usrKey = idx[tel];
-
-            if (!usrKey || !dados.clientes[usrKey]) {
-              setResultado('Não encontramos cadastro com esses dados. Confira suas informações ou faça seu cadastro na opção "Quero participar do Fidelidade".', 'erro');
-              mostrarFormCadastro(tel);
+            var encontrado = localizarClientePorIdentidade(dados, nomeLogin, nascLogin);
+            if (!encontrado || !encontrado.id) {
+              setResultado('Não encontramos cadastro com esse nome e data de nascimento. Confira suas informações ou faça o cadastro na opção "Quero participar do Fidelidade".', 'erro');
               return;
             }
 
-            var cliente = dados.clientes[usrKey];
-            var nomeOk = normalizarNome(cliente.nome) === normalizarNome(nomeLogin);
-            var nascOk = String(cliente.dataNasc || '').trim() === nascLogin;
-            if (!nomeOk || !nascOk) {
-              setResultado('Não encontramos cadastro com esses dados. Confira suas informações ou faça seu cadastro na opção "Quero participar do Fidelidade".', 'erro');
-              return;
-            }
+            var clienteId = encontrado.id;
+            var cliente = dados.clientes[clienteId];
+            var celularAtualizado = atualizarCelularEIndice(dados, clienteId, tel, 'site_login');
 
             _clienteAtual = cliente;
             var pts = _clienteAtual.saldoPontos || 0;
             var nome = primeiroNome(_clienteAtual.nome);
             _nomeSessao = nome;
-            salvarSaldoEmCache(tel, pts, _clienteAtual.nome || nome);
+            var telCliente = _clienteAtual.cel || tel;
+            salvarSaldoEmCache(telCliente, pts, _clienteAtual.nome || nome);
 
             atualizarBarras(pts);
 
@@ -608,17 +693,23 @@
               return;
             }
 
-            var telCliente = _clienteAtual.cel || tel;
             renderPainelResgate(pts, _clienteAtual.nome, telCliente);
             formCodigoWrap.style.display = 'grid';
+            var prefixo = celularAtualizado
+              ? 'Bem-vindo(a), ' + nome + '! Atualizamos o seu celular. Esses são seus pontos.'
+              : 'Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados.';
 
-            if (pts >= META_30) {
-              setResultado('Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados. Já pode resgatar a Caixa 7 bolas ou um Milkshake.', 'ok');
-            } else if (pts >= META_10) {
-              setResultado('Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados. Já pode resgatar um Milkshake 300 ml.', 'ok');
-            } else {
-              setResultado('Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados. Faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
-            }
+            var commitMsg = 'Clube: atualizar celular login ' + (_clienteAtual.nome || nome);
+            var persistir = celularAtualizado ? salvarClientesNoGitHub(dados, commitMsg) : Promise.resolve(false);
+            return persistir.then(function() {
+              if (pts >= META_30) {
+                setResultado(prefixo + ' Você tem ' + pts + ' pontos acumulados. Já pode resgatar a Caixa 7 bolas ou um Milkshake.', 'ok');
+              } else if (pts >= META_10) {
+                setResultado(prefixo + ' Você tem ' + pts + ' pontos acumulados. Já pode resgatar um Milkshake 300 ml.', 'ok');
+              } else {
+                setResultado(prefixo + ' Você tem ' + pts + ' pontos acumulados. Faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
+              }
+            });
           })
           .catch(function() {
             if (tentarUsarSaldoCacheOffline(tel)) return;
