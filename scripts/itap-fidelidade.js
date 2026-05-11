@@ -39,6 +39,7 @@
   var btnWppResgatar = document.getElementById('btn-wpp-resgatar-consulta');
 
   var _clienteAtual = null;
+  var _clientesMemoria = null;
 
   function mascaraTel(v) {
     var d = (v || '').replace(/\D/g, '').slice(0, 11);
@@ -225,6 +226,19 @@
       });
   }
 
+  function atualizarClientesMemoria(dados) {
+    _clientesMemoria = JSON.parse(JSON.stringify(dados || { clientes: {}, indice_celular: {} }));
+  }
+
+  function obterClientesAtualizados() {
+    return ghRawFetch('dados/clientes.json').then(function(dados) {
+      if (!dados.clientes) dados.clientes = {};
+      if (!dados.indice_celular) dados.indice_celular = {};
+      atualizarClientesMemoria(dados);
+      return dados;
+    });
+  }
+
   function wppLink(texto) {
     return 'https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(texto);
   }
@@ -372,27 +386,20 @@
 
       var tk = getGhToken();
       if (!tk) {
-        var msg = '🎟️ *Cadastro no Clube de Fidelidade — Sorveteria Itapolitana Cajuru*\n\n' +
-          '*Nome:* ' + nome + '\n' +
-          '*WhatsApp:* ' + mascaraTel(telRaw) + '\n' +
-          '*Data de nascimento:* ' + dataBr + '\n\n' +
-          'Confirmo que li e aceito o regulamento do Clube de Fidelidade. ✅';
-        window.open(wppLink(msg), '_blank');
-        setResultadoCadastro('Cadastro enviado pelo WhatsApp. Assim que confirmado, use "Já sou cadastrado / Digitar código" para somar pontos.', 'ok');
+        setResultadoCadastro('⚠️ Não foi possível salvar seu cadastro agora. Tente novamente em instantes para gravar na base oficial do programa.', 'erro');
         btnCadastrar.disabled = false;
         btnCadastrar.textContent = 'Fazer cadastro fidelidade';
         return;
       }
 
-      ghRawFetch('dados/clientes.json')
+      obterClientesAtualizados()
         .then(function(dados) {
-          if (!dados.clientes) dados.clientes = {};
-          if (!dados.indice_celular) dados.indice_celular = {};
-
           var existente = localizarClientePorIdentidade(dados, nome, dataIso);
           if (existente && existente.id) {
             atualizarCelularEIndice(dados, existente.id, telRaw, 'site_cadastro_reuso');
-            return salvarClientesNoGitHub(dados, 'Clube: reaproveitar cadastro ' + nome).then(function() {
+            return salvarClientesNoGitHub(dados, 'Clube: reaproveitar cadastro ' + nome).then(function(ok) {
+              if (!ok) throw new Error('falha ao salvar atualização de cadastro');
+              atualizarClientesMemoria(dados);
               setResultadoCadastro('Cadastro feito com sucesso! Nas próximas compras, use a opção "Já sou cadastrado / Digitar código" para somar pontos.', 'ok');
               if (inputNome) inputNome.value = nome;
               if (inputNasc) inputNasc.value = dataBr;
@@ -435,7 +442,9 @@
           };
           dados.indice_celular[telRaw] = novoId;
 
-          return salvarClientesNoGitHub(dados, 'Clube: novo cadastro ' + nome).then(function() {
+          return salvarClientesNoGitHub(dados, 'Clube: novo cadastro ' + nome).then(function(okNovo) {
+            if (!okNovo) throw new Error('falha ao salvar novo cadastro');
+            atualizarClientesMemoria(dados);
             setResultadoCadastro('Cadastro feito com sucesso! Nas próximas compras, use a opção "Já sou cadastrado / Digitar código" para somar pontos.', 'ok');
             if (inputNome) inputNome.value = nome;
             if (inputNasc) inputNasc.value = dataBr;
@@ -483,9 +492,13 @@
       btnEntrar.textContent = 'Entrando...';
       if (btnIrCadastro) btnIrCadastro.style.display = 'none';
 
-      ghRawFetch('dados/clientes.json')
+      obterClientesAtualizados()
         .then(function(dados) {
           var encontrado = localizarClientePorIdentidade(dados, nomeLogin, nascIso);
+          if ((!encontrado || !encontrado.id) && _clientesMemoria) {
+            encontrado = localizarClientePorIdentidade(_clientesMemoria, nomeLogin, nascIso);
+            if (encontrado && encontrado.id) dados = _clientesMemoria;
+          }
 
           if (!encontrado || !encontrado.id) {
             setResultado('Não encontramos cadastro com estes dados. Por favor, faça seu cadastro no botão "Fazer cadastro fidelidade".', 'erro');
@@ -499,7 +512,9 @@
           var commitMsg = 'Clube: atualizar celular login ' + (cliente.nome || nomeLogin);
           var persistir = celularAtualizado ? salvarClientesNoGitHub(dados, commitMsg) : Promise.resolve(true);
 
-          return persistir.then(function() {
+          return persistir.then(function(okPersistir) {
+            if (!okPersistir) throw new Error('falha ao salvar atualização de celular no login');
+            atualizarClientesMemoria(dados);
             _clienteAtual = cliente;
             if (_clienteAtual.bloqueado) {
               setResultado('⚠️ Conta com restrição. Fale conosco pelo WhatsApp para regularizar.', 'erro');
