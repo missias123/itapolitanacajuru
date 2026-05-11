@@ -138,6 +138,15 @@
   }
   function _promoLimparRate() { localStorage.removeItem(_promoRateKey()); }
 
+  function normalizarNomePromo(nome) {
+    return String(nome || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
   async function enviarSorteioPromo() {
     // ── Honeypot anti-bot ──
     var hp = document.getElementById('sort-hp');
@@ -201,10 +210,38 @@
       var fid = JSON.parse(new TextDecoder('utf-8').decode(bytes));
       var inscritos = fid.sorteioInscritos || [];
       var celLimpo = cel.replace(/\D/g,'');
-      var nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
+      var nomeNorm = normalizarNomePromo(nome);
       var dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
+      var dataNascIso = ano + '-' + mes.padStart(2,'0') + '-' + dia.padStart(2,'0');
 
-      // ── 2a. Verificar duplicata por CELULAR ──
+      // ── 2a. Verificar identidade por NOME + DATA e atualizar celular, se mudou ──
+      var jaInscritoNomeData = inscritos.find(function(c) {
+        var cNome = normalizarNomePromo(c.nome || '');
+        return cNome === nomeNorm && c.dataNasc === dataNasc;
+      });
+      if (jaInscritoNomeData) {
+        var numExistenteNomeData = inscritos.indexOf(jaInscritoNomeData) + 1;
+        var celAtualInscricao = (jaInscritoNomeData.cel || '').replace(/\D/g, '');
+        if (celAtualInscricao === celLimpo) {
+          mostrarMsgSorteio('❌ Você já está cadastrado(a) neste sorteio. Número de inscrição: #' + String(numExistenteNomeData).padStart(3,'0'), 'aviso');
+          if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
+          return;
+        }
+        jaInscritoNomeData.cel = '(' + celLimpo.slice(0,2) + ') ' + celLimpo.slice(2,7) + '-' + celLimpo.slice(7);
+        jaInscritoNomeData.hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        fid.sorteioInscritos = inscritos;
+        var conteudoAtualizado = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
+        await fetch(_GH_FID, {
+          method: 'PUT',
+          headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Atualizar celular sorteio: ' + nome, content: conteudoAtualizado, sha: sha })
+        });
+        mostrarMsgSorteio('✅ Cadastro já existente encontrado. Atualizamos seu celular e mantivemos sua inscrição #' + String(numExistenteNomeData).padStart(3,'0') + '.', 'ok');
+        if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
+        return;
+      }
+
+      // ── 2b. Verificar duplicata por CELULAR (outro cadastro) ──
       var jaInscritoCel = inscritos.find(function(c) {
         return (c.cel || '').replace(/\D/g,'') === celLimpo;
       });
@@ -214,34 +251,32 @@
         if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
         return;
       }
-
-      // ── 2b. Verificar duplicata por NOME + DATA DE NASCIMENTO ──
-      var jaInscritoNomeData = inscritos.find(function(c) {
-        var cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
-        return cNome === nomeNorm && c.dataNasc === dataNasc;
-      });
-      if (jaInscritoNomeData) {
-        mostrarMsgSorteio('❌ Já existe um cadastro com este nome e data de nascimento neste sorteio. Cada pessoa pode se inscrever apenas uma vez. Se precisar de ajuda, entre em contato com a sorveteria.', 'aviso');
-        // Registrar tentativa suspeita
-        if (!fid.fraudesSorteio) fid.fraudesSorteio = [];
-        fid.fraudesSorteio.push({ nome: nome, cel: celLimpo, dataNasc: dataNasc, motivo: 'Duplicidade Nome+Data com celular diferente', data: new Date().toISOString() });
-        await fetch(_GH_FID, { method: 'PUT', headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'ALERTA: tentativa duplicata sorteio ' + nome, content: btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2)))), sha: sha }) }).catch(function(){});
-        if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
-        return;
-      }
       // 3. Adicionar novo inscrito
       var celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
       
-      // PASSO 3: Verificar se já existe na Fidelidade para herdar o ID
+      // PASSO 3: Verificar se já existe na Fidelidade para herdar o ID (nome + dataNasc)
       var idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+      var encontrouPorIdentidade = false;
       try {
         var cRes = await fetch('dados/clientes.json?t=' + Date.now());
         if (cRes.ok) {
           var cData = await cRes.json();
-          // Fix: clientes.json é indexado por USR-2026-xxxx, usar indice_celular para lookup por cel
-          var cKey = cData.indice_celular && cData.indice_celular[celLimpo];
-          if (cKey && cData.clientes && cData.clientes[cKey]) {
-            idUnico = cData.clientes[cKey].id || idUnico;
+          var clientesMap = cData.clientes || {};
+          var idsClientes = Object.keys(clientesMap);
+          for (var j = 0; j < idsClientes.length; j++) {
+            var cid = idsClientes[j];
+            var cli = clientesMap[cid] || {};
+            var cliNomeOk = normalizarNomePromo(cli.nome || '') === nomeNorm;
+            var cliNascOk = String(cli.dataNasc || '').trim() === dataNascIso;
+            if (cliNomeOk && cliNascOk) {
+              idUnico = cli.id_permanente || cli.id || cid;
+              encontrouPorIdentidade = true;
+              break;
+            }
+          }
+          if (!encontrouPorIdentidade) {
+            var cKey = cData.indice_celular && cData.indice_celular[celLimpo];
+            if (cKey && clientesMap[cKey]) idUnico = clientesMap[cKey].id_permanente || clientesMap[cKey].id || cKey;
           }
         }
       } catch(e) { console.warn('Erro ao buscar ID na fidelidade:', e); }

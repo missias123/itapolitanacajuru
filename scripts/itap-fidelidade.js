@@ -671,6 +671,7 @@
             var encontrado = localizarClientePorIdentidade(dados, nomeLogin, nascLogin);
             if (!encontrado || !encontrado.id) {
               setResultado('Não encontramos cadastro com esse nome e data de nascimento. Confira suas informações ou faça o cadastro na opção "Quero participar do Fidelidade".', 'erro');
+              mostrarFormCadastro(tel);
               return;
             }
 
@@ -697,7 +698,7 @@
             formCodigoWrap.style.display = 'grid';
             var prefixo = celularAtualizado
               ? 'Bem-vindo(a), ' + nome + '! Atualizamos o seu celular. Esses são seus pontos.'
-              : 'Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados.';
+              : 'Bem-vindo(a), ' + nome + '!';
 
             var commitMsg = 'Clube: atualizar celular login ' + (_clienteAtual.nome || nome);
             var persistir = celularAtualizado ? salvarClientesNoGitHub(dados, commitMsg) : Promise.resolve(false);
