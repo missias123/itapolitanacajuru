@@ -609,7 +609,7 @@
 
           var usados = _clienteAtual.codigosUsados || [];
           if (usados.indexOf(codigo) !== -1) {
-            setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+            setResultado('Você já usou este código anteriormente.', 'erro');
             return;
           }
 
@@ -623,7 +623,7 @@
           if (inputCodigo) inputCodigo.value = '';
         })
         .catch(function() {
-          setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+          setResultado('Erro ao validar código. Tente novamente.', 'erro');
         })
         .finally(function() {
           btnRegistrar.disabled = false;
