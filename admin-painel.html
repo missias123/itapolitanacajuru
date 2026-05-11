@@ -6577,7 +6577,8 @@ async function salvarClienteForm() {
     if (celRaw !== celOrig) {
       if (clientes[celRaw] && celRaw !== celOrig) { toast('Novo WhatsApp já está em uso.','erro'); return; }
       const updated = {...c, nome, cel: celRaw, dataNasc: nasc, saldoPontos: pontos};
-      updated.historico_alteracoes = [...(c.historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin',por:'admin'}];
+      updated.cel_anterior = [...(Array.isArray(c.cel_anterior) ? c.cel_anterior : []), celOrig];
+      updated.historico_alteracoes = [...(c.historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin — celular alterado de ' + celOrig + ' para ' + celRaw,por:'admin'}];
       delete clientes[celOrig];
       clientes[celRaw] = updated;
       if (STATE.clientes.indice_celular[celOrig]) {
