@@ -148,6 +148,15 @@
       .toLowerCase();
   }
 
+  function gerarIdHashPromo() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var arr = new Uint8Array(4);
+      window.crypto.getRandomValues(arr);
+      return Array.from(arr).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('').toUpperCase();
+    }
+    return Math.random().toString(36).slice(2, 10).toUpperCase();
+  }
+
   async function enviarSorteioPromo() {
     // ── Honeypot anti-bot ──
     var hp = document.getElementById('sort-hp');
@@ -255,7 +264,7 @@
         var agoraIso = new Date().toISOString();
         clientesMap[idUnico] = {
           id_permanente: idUnico,
-          id_hash: Math.random().toString(36).slice(2, 10).toUpperCase(),
+          id_hash: gerarIdHashPromo(),
           nome: nome,
           dataNasc: dataNascIso,
           cel: celLimpo,
