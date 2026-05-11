@@ -3820,9 +3820,63 @@ const RESPOSTAS={
   // ── PICOLÉS RECHEADOS ──
   'recheado':    '🍭 Picolés Recheados são nossa especialidade! Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
   // ── DEFAULT (FALLBACK PARA WHATSAPP) ──
-  'default':'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>horário · sabores · preços · picolé · açaí · milkshake · encomenda · fidelidade · promoções · localização · pagamento</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
+  'default':'Não entendi direitinho a sua pergunta 😅<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário<br>• Promoções<br>• Programa de Fidelidade<br>• Falar com atendente<br><br>Tente escrever o assunto (ex.: cardápio, localização, fidelidade) ou clique abaixo:<br><a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+tenho+uma+d%C3%BAvida+sobre+a+Sorveteria+Itapolitana" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar com atendente</a>'
 };
 window.RESPOSTAS = RESPOSTAS;
+const ITABOT_INTENTS = [
+  {
+    keywords: ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'iniciar', 'começo', 'inicio', 'início', 'menu', 'opções', 'opcoes'],
+    reply: 'Olá! Eu sou o Ita Bot, assistente virtual da Sorveteria Itapolitana.<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário de funcionamento<br>• Promoções<br>• Programa de Fidelidade<br>• Falar com atendente<br><br>Escreva o assunto ou o número da opção.'
+  },
+  {
+    keywords: ['fazer pedido', 'pedido', 'pedir', 'delivery', 'encomenda', 'comprar', 'quero pedir', 'telefone', 'zap', 'whatsapp', 'whats', 'número', 'numero'],
+    reply: 'Para fazer seu pedido agora, é só chamar a gente no WhatsApp:<br><a class="itabot-link-btn" href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+fazer+um+pedido+na+Sorveteria+Itapolitana" target="_blank" rel="noopener">💬 Fazer pedido no WhatsApp</a><br><br>Se preferir, você também pode ver o cardápio antes em:<br><a class="itabot-link-btn" href="encomendas.html">🍦 Ver cardápio</a>'
+  },
+  {
+    keywords: ['localização', 'localizacao', 'endereço', 'endereco', 'onde fica', 'onde', 'como chegar', 'como ir', 'mapa', 'maps', 'waze'],
+    reply: 'Estamos te esperando aqui:<br>Sorveteria Itapolitana<br>R. Cel. Manoel Caetano, 311 – Praça Largo São Bento – Centro<br>Cajuru/SP<br><br>Ver no mapa:<br><a class="itabot-link-btn" href="https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817" target="_blank" rel="noopener">📍 Abrir no Google Maps</a>'
+  },
+  {
+    keywords: ['horário', 'horario', 'horarios', 'horas', 'que horas abre', 'que horas fecha', 'funcionamento', 'funciona que dia', 'dias de funcionamento'],
+    reply: 'Nosso horário de funcionamento é:<br><br>Todos os dias: 10h às 22h<br><br>Em datas especiais pode haver alteração; se tiver dúvida, pergunte aqui ou no WhatsApp.'
+  },
+  {
+    keywords: ['cardápio', 'cardapio', 'menu', 'sabores', 'sorvetes', 'sorvete', 'açaí', 'acai', 'milk shake', 'milkshake', 'o que vocês vendem', 'produtos'],
+    reply: 'Nosso cardápio completo de sorvetes, açaí e milkshakes está aqui:<br><a class="itabot-link-btn" href="encomendas.html">🍦 Abrir cardápio</a><br><br>Você pode ver todos os sabores, tamanhos e preços nesse link.'
+  },
+  {
+    keywords: ['promoção', 'promocao', 'promoções', 'promocoes', 'ofertas', 'desconto', 'desconto hoje', 'tem alguma promoção', 'promo do dia'],
+    reply: 'Temos promoções especiais em sorvetes e milkshakes!<br><br>Você pode ver as promoções ativas nesta página:<br><a class="itabot-link-btn" href="promocao.html">🎁 Ver promoções</a>'
+  },
+  {
+    keywords: ['quero me cadastrar no fidelidade', 'fazer cadastro fidelidade', 'participar do programa', 'entrar no fidelidade'],
+    reply: 'Para se cadastrar no programa de fidelidade Itapolitana, é só acessar:<br><a class="itabot-link-btn" href="fidelidade.html">⭐ Cadastro fidelidade</a><br><br>Na página, clique em “Quero participar do Fidelidade” e preencha seus dados.'
+  },
+  {
+    keywords: ['registrar código', 'registrar cod', 'código de pontos', 'codigo de pontos', 'código fidelidade', 'codigo fidelidade', 'inserir código', 'inserir codigo', 'somar pontos'],
+    reply: 'Para registrar seu código de pontos:<br><br>• Acesse o programa de fidelidade<br>• Clique em “Já sou cadastrado / Inserir código”<br>• Faça login com seus dados<br>• Digite o código recebido na loja para somar 1 ponto<br><br><a class="itabot-link-btn" href="fidelidade.html">🎟️ Registrar código</a>'
+  },
+  {
+    keywords: ['como resgatar pontos', 'resgatar prêmio', 'resgatar premio', 'resgatar brinde', 'trocar pontos', 'usar pontos'],
+    reply: 'Para resgatar seus pontos do programa de fidelidade:<br><br>• Acesse o fidelidade e faça login<br>• Veja quantos pontos você tem<br>• 10 pontos → 1 Milk Shake de 300 ml<br>• 30 pontos → 1 caixa de sorvete com 7 bolas<br><br>Clique no botão de resgate para falar com a loja no WhatsApp e combinar retirada.<br><a class="itabot-link-btn" href="fidelidade.html">🎁 Resgatar no fidelidade</a>'
+  },
+  {
+    keywords: ['fidelidade', 'programa de fidelidade', 'pontos', 'juntar pontos', 'ganhar pontos', 'cadastro fidelidade', 'cartela', 'código de pontos', 'codigo de pontos', 'milhas', 'clube', 'cartãozinho', 'cartaozinho'],
+    reply: 'Temos um programa de fidelidade: a cada compra, você junta pontos e troca por sorvete.<br><br>Com 10 pontos, você ganha 1 Milk Shake de 300 ml.<br>Com 30 pontos, você ganha 1 caixa de sorvete com 7 bolas.<br><br>Para se cadastrar, ver seus pontos ou registrar um código, acesse:<br><a class="itabot-link-btn" href="fidelidade.html">⭐ Abrir fidelidade</a>'
+  },
+  {
+    keywords: ['falar com atendente', 'falar com humano', 'falar com pessoa', 'atendimento', 'suporte', 'quero falar com alguém', 'quero falar com alguem'],
+    reply: 'Sem problemas, posso te passar direto para nossa equipe 🙂<br><br>É só clicar neste link para falar com um atendente pelo WhatsApp:<br><a class="itabot-link-btn" href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+vim+pelo+site+da+Sorveteria+Itapolitana+e+quero+falar+com+um+atendente" target="_blank" rel="noopener">💬 Falar com atendente</a>'
+  },
+  {
+    keywords: ['instagram', 'insta', 'facebook', 'face', 'redes sociais', 'social', 'seguir vocês', 'seguir voces'],
+    reply: 'Você pode acompanhar as novidades da Sorveteria Itapolitana nas redes sociais:<br><br><a class="itabot-link-btn" href="https://www.instagram.com/sorveteriaitapolitanacajuru" target="_blank" rel="noopener">📸 Instagram</a><a class="itabot-link-btn" href="https://www.facebook.com/itapolitanacajuru/" target="_blank" rel="noopener">📘 Facebook</a>'
+  },
+  {
+    keywords: ['sobre vocês', 'sobre voces', 'quem são vocês', 'quem sao voces', 'história', 'historia', 'quem somos', 'sobre a sorveteria'],
+    reply: 'A Sorveteria Itapolitana prepara sorvetes, açaís e milkshakes com receitas especiais para a região.<br><br>Você pode saber mais sobre a nossa história e ver fotos da loja aqui:<br><a class="itabot-link-btn" href="sobre.html">🏪 Sobre a loja</a>'
+  }
+];
 // ItaBot: base de conhecimento consolidada a partir de TODO o site
 // Carrega FAQs dos módulos e mescla com as respostas existentes
 (function carregarFaqsItaBot() {
@@ -3961,6 +4015,9 @@ function addMsg(tipo, txt) {
 function getResp(msg) {
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const l = norm(msg);
+  for (const intent of ITABOT_INTENTS) {
+    if (intent.keywords.some(k => l.includes(norm(k)))) return intent.reply;
+  }
   for(const[k,r]of Object.entries(RESPOSTAS)){
     if(k!=='default' && l.includes(norm(k))){
       return typeof r==='function'?r():r;

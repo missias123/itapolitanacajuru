@@ -367,7 +367,7 @@
     'historia':      '🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos de tradição!',
     'artesanal':     '🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis!',
     'qualidade':     '🍦 Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
-    'default':       'Hmm, não encontrei isso aqui 😊<br>Tente perguntar sobre: <em>cardápio · horário · encomendas · fidelidade · promoções · picolé · açaí · milkshake · localização · pagamento · WhatsApp</em><br><br><a href="https://wa.me/5516996062046" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar no WhatsApp</a>'
+    'default':       'Não entendi direitinho a sua pergunta 😅<br>Posso te ajudar com: <em>cardápio e pedidos · endereço e horário · promoções · fidelidade · atendente</em><br><br><a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+tenho+uma+d%C3%BAvida+sobre+a+Sorveteria+Itapolitana" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar com atendente</a>'
   };
 
   /* ─── BASE DE CONHECIMENTO DO ITA BOT ───────────────────────────────────
@@ -385,140 +385,96 @@
        3. Defina a página/âncora correta em linkHref.
      ─────────────────────────────────────────────────────────────────────── */
   var itaBotKnowledge = [
-
-    // ── Intenção: Cardápio / Menu / Sabores de sorvete / Taças / Sobremesas ──
     {
-      keywords: ['cardápio', 'cardapio', 'menu', 'sabores', 'sabor', 'sorvetes', 'sorvete', 'gelado', 'gelados', 'casquinha', 'taça', 'taca', 'taças', 'tacas', 'sundae', 'banana split', 'sobremesa', 'isopor'],
-      answer: '🍦 Temos 35 sabores tipo artesanal! Chocolate, Nutella, Leite Ninho, Morango Trufado, Pistache, Ferrero Rocher, Kinder Ovo, Ovomaltine e muito mais. Para navegar no cardápio com foco em pedido, abra a área de Encomendas:',
-      linkText: '🍦 Abrir Cardápio / Encomendas',
-      linkHref: 'encomendas.html'
+      keywords: ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'iniciar', 'inicio', 'início', 'começo', 'menu', 'opções', 'opcoes'],
+      answer: 'Olá! Eu sou o Ita Bot, assistente virtual da Sorveteria Itapolitana. Posso te ajudar com: Cardápio e pedidos, Endereço e horário de funcionamento, Promoções, Programa de Fidelidade e Falar com atendente. Escreva o assunto ou o número da opção.'
     },
-
-    // ── Intenção: Açaí ──
     {
-      keywords: ['açaí', 'acai', 'açai', 'complemento açaí', 'complementos acai', 'topping acai'],
-      answer: '🫐 Açaí tipo artesanal em copos de 300ml (R$15), 360ml (R$16), 400ml (R$17) e 600ml (R$20). Personalize com frutas, cremes e chocolates! Também temos Açaí Promocional a partir de R$15. Veja no cardápio:',
-      linkText: '🫐 Ver Cardápio — Açaí',
-      linkHref: 'index.html'
+      keywords: ['fazer pedido', 'pedido', 'pedir', 'delivery', 'encomenda', 'encomendar', 'comprar', 'quero pedir', 'telefone', 'zap', 'whatsapp', 'whats', 'número', 'numero'],
+      answer: 'Para fazer seu pedido agora, é só chamar a gente no WhatsApp:',
+      linkText: '💬 Fazer pedido no WhatsApp',
+      linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+fazer+um+pedido+na+Sorveteria+Itapolitana',
+      external: true,
+      linkText2: '🍦 Ver cardápio',
+      linkHref2: 'encomendas.html'
     },
-
-    // ── Intenção: Milkshake ──
     {
-      keywords: ['milkshake', 'milk shake', 'milk'],
-      answer: '🥤 Milkshakes em copo transparente com tampa bolha! Tradicional: 300ml R$17 · 400ml R$20 · 500ml R$22 · 750ml R$28. Adicional Ovomaltine R$3,00. Veja no cardápio:',
-      linkText: '🥤 Ver Cardápio — Milkshakes',
-      linkHref: 'index.html'
-    },
-
-    // ── Intenção: Picolé (varejo e atacado) ──
-    {
-      keywords: ['picolé', 'picole', 'picolés', 'picoles', 'leitinho', 'esquimó', 'esquimo'],
-      answer: '🍭 Picolés: Fruta/Água R$2,50 · Leite sem recheio R$2,50 · Leite com recheio R$3,00 · Leite Ninho (o LEITINHO!) R$4,00 · Esquimó R$8,00. Atacado (mín. 100 un.) disponível via encomenda. Veja o cardápio ou encomende:',
-      linkText: '🍭 Ver Picolés / Fazer Encomenda',
-      linkHref: 'encomendas.html'
-    },
-
-    // ── Intenção: Promoções / Sorteio mensal ──
-    {
-      keywords: ['promoção', 'promocao', 'promoções', 'promocoes', 'sorteio', 'desconto', 'oferta', 'promo', 'ganhar', 'concorrer', 'grátis'],
-      answer: '🎉 Sorteio Mensal 2026: todo dia 01 sorteamos 1 caixa de 5L de sorvete — totalmente gratuito! Cadastre-se pelo site para concorrer. Também confira promoções especiais do dia:',
-      linkText: '🎉 Ver Promoções e Sorteio',
-      linkHref: 'promocao.html'
-    },
-
-    // ── Intenção: Encomendas / Pedidos / Festas e eventos ──
-    {
-      keywords: ['encomendar', 'encomenda', 'encomendas', 'pedido', 'pedir', 'reservar', 'torta', 'caixa', 'festa', 'evento', 'aniversário', 'aniversario', 'casamento', 'formatura', 'carrinho', 'atacado'],
-      answer: '📦 Trabalhamos com Torta de Sorvete (R$100), Caixa 5L (a partir de R$100), Caixa 10L (a partir de R$150), Picolés no atacado (mín. 100 un.) e Carrinho para Eventos. Prazo mínimo: 3 dias úteis + pagamento antecipado. Faça seu pedido online:',
-      linkText: '📦 Fazer Encomenda',
-      linkHref: 'encomendas.html'
-    },
-
-    // ── Intenção: Clube de Fidelidade / Pontos / Cupom / Prêmios ──
-    {
-      keywords: ['fidelidade', 'pontos', 'clube', 'cupom', 'cupons', 'prêmio', 'premio', 'resgatar', 'resgate', 'validar código', 'validar codigo'],
-      answer: '⭐ Clube de Fidelidade Itapolitana! Compre acima de R$30 de segunda a sexta → ganhe cupom → acumule pontos. Prêmios: 10 pontos = 1 bola de sorvete · 30 pontos = 1 caixa de 12 picolés. Programa gratuito, disponível a partir de maio/2026. Acesse:',
-      linkText: '⭐ Abrir Clube de Fidelidade',
-      linkHref: 'fidelidade.html'
-    },
-
-    // ── Intenção: Cadastro (fidelidade ou sorteio) ──
-    {
-      keywords: ['cadastro', 'cadastrar', 'cadastre', 'me cadastrar', 'quero me cadastrar'],
-      answer: '📝 Você pode se cadastrar gratuitamente no Clube de Fidelidade ou no Sorteio Mensal pelas páginas do menu. Acesse diretamente:',
-      linkText: '⭐ Clube de Fidelidade',
-      linkHref: 'fidelidade.html'
-    },
-
-    // ── Intenção: Horário de funcionamento ──
-    {
-      keywords: ['horário', 'horario', 'abre', 'fecha', 'aberto', 'aberta', 'fechado', 'fechada', 'funciona', 'funcionamento', 'hoje abre', 'hoje fecha', 'domingo', 'sábado', 'sabado', 'feriado', 'fim de semana'],
-      answer: '🕙 Funcionamos TODOS os dias (inclusive sábados, domingos e feriados), das 10h às 22h. Te esperamos! 🍦',
-      linkText: '🗺️ Ver localização e horário',
-      linkHref: 'index.html'
-    },
-
-    // ── Intenção: Endereço / Localização / Como chegar ──
-    {
-      keywords: ['endereço', 'endereco', 'localização', 'localizacao', 'onde fica', 'onde estão', 'como chegar', 'mapa', 'google maps', 'cajuru', 'santa cruz', 'cássia', 'cassia'],
-      answer: '📍 Estamos na R. Cel. Manoel Caetano, 311 – Praça Largo São Bento – Centro, Cajuru/SP. Atendemos também clientes de Santa Cruz da Esperança e Cássia dos Coqueiros. Veja no mapa:',
+      keywords: ['localização', 'localizacao', 'endereço', 'endereco', 'onde fica', 'onde', 'como chegar', 'como ir', 'mapa', 'maps', 'waze'],
+      answer: 'Estamos te esperando aqui: Sorveteria Itapolitana · R. Cel. Manoel Caetano, 311 – Praça Largo São Bento – Centro · Cajuru/SP. Ver no mapa:',
       linkText: '📍 Abrir no Google Maps',
       linkHref: 'https://www.google.com/maps/place/Sorveteria+A%C3%A7aiteria+Itapolitana+Cajuru/@-21.2776766,-47.3071817',
       external: true
     },
-
-    // ── Intenção: WhatsApp / Contato / Falar com atendente ──
     {
-      keywords: ['whatsapp', 'zap', 'wpp', 'contato', 'telefone', 'fone', 'falar', 'atendente', 'fale conosco', 'número'],
-      answer: '📱 Fale direto com a gente pelo WhatsApp para encomendas, dúvidas e eventos! Número: (16) 99606-2046 · Atendimento: todos os dias das 10h às 22h.',
-      linkText: '💬 Chamar no WhatsApp',
-      linkHref: 'https://wa.me/5516996062046',
-      external: true
+      keywords: ['horário', 'horario', 'horarios', 'horas', 'que horas abre', 'que horas fecha', 'funcionamento', 'funciona que dia', 'dias de funcionamento'],
+      answer: 'Nosso horário de funcionamento é: todos os dias, das 10h às 22h (inclusive sábados, domingos e feriados). Em datas especiais pode haver alteração; se tiver dúvida, pergunte aqui ou no WhatsApp.'
     },
-
-    // ── Intenção: Instagram / Redes sociais ──
     {
-      keywords: ['instagram', 'insta', 'redes sociais', 'seguir', 'novidades'],
-      answer: '📸 Siga nosso Instagram para ver novidades, promoções e novos sabores! Perfil: @sorveteriaitapolitanacajuru',
-      linkText: '📸 Abrir Instagram',
-      linkHref: 'https://www.instagram.com/sorveteriaitapolitanacajuru',
-      external: true
-    },
-
-    // ── Intenção: Formas de pagamento ──
-    {
-      keywords: ['pagamento', 'pagar', 'formas de pagamento', 'aceita cartão', 'aceita pix', 'aceita dinheiro', 'pix', 'crédito', 'credito', 'débito', 'debito', 'dinheiro'],
-      answer: '💳 Aceitamos Dinheiro, Pix, Cartão de Débito e Crédito. Para encomendas, o pagamento antecipado é obrigatório (conta o prazo de 3 dias úteis após o pagamento). Dúvidas? Fale conosco:',
-      linkText: '💬 Falar no WhatsApp',
-      linkHref: 'https://wa.me/5516996062046',
-      external: true
-    },
-
-    // ── Intenção: Não fazemos delivery ──
-    {
-      keywords: ['delivery', 'entrega', 'entregar', 'motoboy', 'ifood', 'rappi', 'uber eats', 'traz em casa', 'entregam'],
-      answer: '🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP. Para encomendas, a retirada é feita no local com prazo de 3 dias úteis. Veja como fazer pedidos:',
-      linkText: '📦 Ver Encomendas (retirada na loja)',
+      keywords: ['cardápio', 'cardapio', 'menu', 'sabores', 'sorvetes', 'sorvete', 'açaí', 'acai', 'milk shake', 'milkshake', 'o que vocês vendem', 'produtos'],
+      answer: 'Nosso cardápio completo de sorvetes, açaí e milkshakes está aqui. Você pode ver todos os sabores, tamanhos e preços nesse link:',
+      linkText: '🍦 Abrir cardápio',
       linkHref: 'encomendas.html'
     },
-
-    // ── Intenção: Opções diet / vegano / lactose ──
     {
-      keywords: ['diet', 'dieta', 'vegano', 'vegan', 'lactose', 'intolerante', 'diabético', 'diabetico', 'açúcar', 'acucar', 'sem açúcar', 'sem lactose'],
-      answer: '🌿 Temos Sorvete Diet (1 bola R$10,00). Para informações sobre opções veganas ou sem lactose, entre em contato — teremos prazer em orientá-lo!',
-      linkText: '💬 Consultar via WhatsApp',
-      linkHref: 'https://wa.me/5516996062046',
+      keywords: ['promoção', 'promocao', 'promocoes', 'promoções', 'ofertas', 'desconto', 'desconto hoje', 'tem alguma promoção', 'promo do dia'],
+      answer: 'Temos promoções especiais em sorvetes e milkshakes! Você pode ver as promoções ativas nesta página:',
+      linkText: '🎁 Ver promoções',
+      linkHref: 'promocao.html'
+    },
+    {
+      keywords: ['quero me cadastrar no fidelidade', 'fazer cadastro fidelidade', 'participar do programa', 'entrar no fidelidade'],
+      answer: 'Para se cadastrar no programa de fidelidade Itapolitana, é só acessar:',
+      linkText: '⭐ Cadastro no fidelidade',
+      linkHref: 'fidelidade.html'
+    },
+    {
+      keywords: ['registrar código', 'registrar cod', 'código de pontos', 'codigo de pontos', 'código fidelidade', 'codigo fidelidade', 'inserir código', 'inserir codigo', 'somar pontos'],
+      answer: 'Para registrar seu código de pontos, acesse o programa de fidelidade, clique em “Já sou cadastrado / Inserir código”, faça login e digite o código recebido na loja para somar 1 ponto.',
+      linkText: '🎟️ Registrar código no fidelidade',
+      linkHref: 'fidelidade.html'
+    },
+    {
+      keywords: ['como resgatar pontos', 'resgatar prêmio', 'resgatar premio', 'resgatar brinde', 'trocar pontos', 'usar pontos'],
+      answer: 'Para resgatar seus pontos, acesse o fidelidade e faça login. Com 10 pontos você pode resgatar 1 Milk Shake de 300 ml; com 30 pontos, 1 caixa de sorvete com 7 bolas. Depois, use o botão de resgate para falar com a loja no WhatsApp.',
+      linkText: '🎁 Resgatar no fidelidade',
+      linkHref: 'fidelidade.html'
+    },
+    {
+      keywords: ['fidelidade', 'programa de fidelidade', 'pontos', 'juntar pontos', 'ganhar pontos', 'cadastro fidelidade', 'cartela', 'clube', 'cartãozinho', 'cartaozinho', 'milhas'],
+      answer: 'Temos um programa de fidelidade: a cada compra, você junta pontos e troca por sorvete. Com 10 pontos, você ganha 1 Milk Shake de 300 ml. Com 30 pontos, você ganha 1 caixa de sorvete com 7 bolas. Para se cadastrar, ver seus pontos ou registrar um código, acesse:',
+      linkText: '⭐ Abrir programa de fidelidade',
+      linkHref: 'fidelidade.html'
+    },
+    {
+      keywords: ['falar com atendente', 'falar com humano', 'falar com pessoa', 'atendimento', 'suporte', 'quero falar com alguém', 'quero falar com alguem'],
+      answer: 'Sem problemas, posso te passar direto para nossa equipe.',
+      linkText: '💬 Falar com atendente',
+      linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+vim+pelo+site+da+Sorveteria+Itapolitana+e+quero+falar+com+um+atendente',
       external: true
     },
-
-    // ── Intenção: Preços / Valores gerais ──
     {
-      keywords: ['preço', 'precos', 'preços', 'quanto custa', 'quanto é', 'valor', 'valores', 'tabela de preços', 'tabela precos'],
-      answer: '💰 Valores: Sorvetes a partir de R$8,00 · Açaí a partir de R$15,00 · Milkshakes a partir de R$17,00 · Picolés a partir de R$2,50 · Taças a partir de R$20,00. Veja todos os preços no cardápio:',
-      linkText: '🍦 Ver Cardápio com Preços',
-      linkHref: 'index.html'
+      keywords: ['instagram', 'insta', 'facebook', 'face', 'redes sociais', 'social', 'seguir vocês', 'seguir voces'],
+      answer: 'Você pode acompanhar as novidades da Sorveteria Itapolitana nas redes sociais:',
+      linkText: '📸 Instagram',
+      linkHref: 'https://www.instagram.com/sorveteriaitapolitanacajuru',
+      external: true,
+      linkText2: '📘 Facebook',
+      linkHref2: 'https://www.facebook.com/itapolitanacajuru/',
+      external2: true
+    },
+    {
+      keywords: ['sobre vocês', 'sobre voces', 'quem são vocês', 'quem sao voces', 'história', 'historia', 'quem somos', 'sobre a sorveteria'],
+      answer: 'A Sorveteria Itapolitana prepara sorvetes, açaís e milkshakes com receitas especiais para Cajuru e região. Você pode saber mais sobre a nossa história e ver fotos da loja aqui:',
+      linkText: '🏪 Sobre a loja',
+      linkHref: 'sobre.html'
+    },
+    {
+      keywords: ['não entendi', 'nao entendi', 'ajuda', 'dúvida', 'duvida'],
+      answer: 'Não entendi direitinho a sua pergunta 😅 Posso te ajudar com: Cardápio e pedidos, Endereço e horário, Promoções, Programa de Fidelidade e Falar com atendente.',
+      linkText: '💬 Falar com atendente',
+      linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+tenho+uma+d%C3%BAvida+sobre+a+Sorveteria+Itapolitana',
+      external: true
     }
-
   ];
 
   /* Monta a resposta como DocumentFragment usando apenas DOM APIs (sem innerHTML).
@@ -536,6 +492,14 @@
       if (entry.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
       a.textContent = entry.linkText;
       frag.appendChild(a);
+    }
+    if (entry.linkHref2 && entry.linkText2) {
+      var a2 = document.createElement('a');
+      a2.href = entry.external2 ? entry.linkHref2 : (_base + entry.linkHref2);
+      a2.className = 'itabot-link-btn';
+      if (entry.external2) { a2.target = '_blank'; a2.rel = 'noopener noreferrer'; }
+      a2.textContent = entry.linkText2;
+      frag.appendChild(a2);
     }
     return frag;
   }

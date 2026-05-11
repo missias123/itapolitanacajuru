@@ -113,6 +113,7 @@
   // Token lido do localStorage (configurado pelo admin no painel)
   var _GH_TK_P = (function(){return localStorage.getItem('itap_gh_token')||'';})();
   var _GH_FID  = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/fidelidade.json';
+  var _GH_CLIENTES = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/clientes.json';
 
   // ═══ SEGURANÇA: Rate Limiting local (máx. 3 tentativas em 30 min por dispositivo) ═══
   function _promoRateKey() { return 'itap_promo_rate_' + (navigator.language||'') + (screen.width||''); }
@@ -137,6 +138,24 @@
     localStorage.setItem(key, JSON.stringify(dados));
   }
   function _promoLimparRate() { localStorage.removeItem(_promoRateKey()); }
+
+  function normalizarNomePromo(nome) {
+    return String(nome || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
+  function gerarIdHashPromo() {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var arr = new Uint8Array(4);
+      window.crypto.getRandomValues(arr);
+      return Array.from(arr).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('').toUpperCase();
+    }
+    return Math.random().toString(36).slice(2, 10).toUpperCase();
+  }
 
   async function enviarSorteioPromo() {
     // ── Honeypot anti-bot ──
@@ -201,10 +220,131 @@
       var fid = JSON.parse(new TextDecoder('utf-8').decode(bytes));
       var inscritos = fid.sorteioInscritos || [];
       var celLimpo = cel.replace(/\D/g,'');
-      var nomeNorm = nome.toLowerCase().replace(/\s+/g,' ').trim();
+      var nomeNorm = normalizarNomePromo(nome);
       var dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
+      var dataNascIso = ano + '-' + mes.padStart(2,'0') + '-' + dia.padStart(2,'0');
+      var celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
 
-      // ── 2a. Verificar duplicata por CELULAR ──
+      // ── 2a. Buscar/criar cliente por identidade (nome + dataNasc) e atualizar celular ──
+      var cResp = await fetch(_GH_CLIENTES + '?t=' + Date.now(), {
+        headers: { 'Authorization': 'token ' + _GH_TK_P, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (!cResp.ok) throw new Error('Erro ao consultar clientes: ' + cResp.status);
+      var cApi = await cResp.json();
+      var cSha = cApi.sha;
+      var cBin = atob(cApi.content.replace(/\n/g,''));
+      var cBytes = new Uint8Array(cBin.length);
+      for (var bi = 0; bi < cBin.length; bi++) cBytes[bi] = cBin.charCodeAt(bi);
+      var cData = JSON.parse(new TextDecoder('utf-8').decode(cBytes));
+      var clientesMap = cData.clientes || {};
+      var idxCel = cData.indice_celular || {};
+      var idUnico = null;
+      var clienteNovoCriado = false;
+      var celularClienteAtualizado = false;
+
+      var idsClientes = Object.keys(clientesMap);
+      for (var ci = 0; ci < idsClientes.length; ci++) {
+        var cid = idsClientes[ci];
+        var cli = clientesMap[cid] || {};
+        var cliNomeOk = normalizarNomePromo(cli.nome || '') === nomeNorm;
+        var cliNascOk = String(cli.dataNasc || '').trim() === dataNascIso;
+        if (cliNomeOk && cliNascOk) {
+          idUnico = cid;
+          break;
+        }
+      }
+
+      if (!idUnico) {
+        var maxNum = 0;
+        idsClientes.forEach(function(k) {
+          var m = k.match(/USR-2026-(\d+)/);
+          if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+        });
+        idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
+        var agoraIso = new Date().toISOString();
+        clientesMap[idUnico] = {
+          id_permanente: idUnico,
+          id_hash: gerarIdHashPromo(),
+          nome: nome,
+          dataNasc: dataNascIso,
+          cel: celLimpo,
+          cel_anterior: [],
+          cadastro: agoraIso,
+          saldoPontos: 0,
+          codigosUsados: [],
+          resgates: [],
+          totalPremios: 0,
+          totalCodigos: 0,
+          historico_alteracoes: [{ data: agoraIso, tipo: 'cadastro_promo', descricao: 'Cadastro originado na promoção', por: 'site' }],
+          bloqueado: false,
+          motivo_bloqueio: null,
+          tentativas_fraude: 0,
+          ultimo_acesso: agoraIso
+        };
+        clienteNovoCriado = true;
+      } else {
+        var cliExist = clientesMap[idUnico] || {};
+        var celAtualCli = String(cliExist.cel || '').replace(/\D/g,'');
+        if (celAtualCli !== celLimpo) {
+          if (!Array.isArray(cliExist.cel_anterior)) cliExist.cel_anterior = [];
+          if (celAtualCli && cliExist.cel_anterior.indexOf(celAtualCli) === -1) cliExist.cel_anterior.push(celAtualCli);
+          cliExist.cel = celLimpo;
+          if (!Array.isArray(cliExist.historico_alteracoes)) cliExist.historico_alteracoes = [];
+          cliExist.historico_alteracoes.push({
+            data: new Date().toISOString(),
+            tipo: 'celular_atualizado_promo',
+            descricao: 'Celular atualizado via cadastro da promoção',
+            por: 'site'
+          });
+          clientesMap[idUnico] = cliExist;
+          celularClienteAtualizado = true;
+        }
+      }
+
+      Object.keys(idxCel).forEach(function(celKey) {
+        if (idxCel[celKey] === idUnico && celKey !== celLimpo) delete idxCel[celKey];
+      });
+      idxCel[celLimpo] = idUnico;
+      cData.clientes = clientesMap;
+      cData.indice_celular = idxCel;
+
+      var cNovoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(cData, null, 2))));
+      var cSave = await fetch(_GH_CLIENTES, {
+        method: 'PUT',
+        headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Promo: sync cliente ' + nome, content: cNovoConteudo, sha: cSha })
+      });
+      if (!cSave.ok) throw new Error('Erro ao salvar clientes: ' + cSave.status);
+
+      // ── 2a. Verificar identidade por NOME + DATA e atualizar celular, se mudou ──
+      var jaInscritoNomeData = inscritos.find(function(c) {
+        var cNome = normalizarNomePromo(c.nome || '');
+        return cNome === nomeNorm && c.dataNasc === dataNasc;
+      });
+      if (jaInscritoNomeData) {
+        var numExistenteNomeData = inscritos.indexOf(jaInscritoNomeData) + 1;
+        var celAtualInscricao = (jaInscritoNomeData.cel || '').replace(/\D/g, '');
+        jaInscritoNomeData.id = idUnico;
+        if (celAtualInscricao === celLimpo) {
+          mostrarMsgSorteio('❌ Você já está cadastrado(a) neste sorteio. Número de inscrição: #' + String(numExistenteNomeData).padStart(3,'0'), 'aviso');
+          if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
+          return;
+        }
+        jaInscritoNomeData.cel = celFmt;
+        jaInscritoNomeData.hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        fid.sorteioInscritos = inscritos;
+        var conteudoAtualizado = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
+        await fetch(_GH_FID, {
+          method: 'PUT',
+          headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Atualizar celular sorteio: ' + nome, content: conteudoAtualizado, sha: sha })
+        });
+        mostrarMsgSorteio('Cadastro encontrado! Atualizamos seu número de celular. Sua participação na promoção foi registrada.', 'ok');
+        if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
+        return;
+      }
+
+      // ── 2b. Verificar duplicata por CELULAR (outro cadastro) ──
       var jaInscritoCel = inscritos.find(function(c) {
         return (c.cel || '').replace(/\D/g,'') === celLimpo;
       });
@@ -214,37 +354,7 @@
         if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
         return;
       }
-
-      // ── 2b. Verificar duplicata por NOME + DATA DE NASCIMENTO ──
-      var jaInscritoNomeData = inscritos.find(function(c) {
-        var cNome = (c.nome || '').toLowerCase().replace(/\s+/g,' ').trim();
-        return cNome === nomeNorm && c.dataNasc === dataNasc;
-      });
-      if (jaInscritoNomeData) {
-        mostrarMsgSorteio('❌ Já existe um cadastro com este nome e data de nascimento neste sorteio. Cada pessoa pode se inscrever apenas uma vez. Se precisar de ajuda, entre em contato com a sorveteria.', 'aviso');
-        // Registrar tentativa suspeita
-        if (!fid.fraudesSorteio) fid.fraudesSorteio = [];
-        fid.fraudesSorteio.push({ nome: nome, cel: celLimpo, dataNasc: dataNasc, motivo: 'Duplicidade Nome+Data com celular diferente', data: new Date().toISOString() });
-        await fetch(_GH_FID, { method: 'PUT', headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'ALERTA: tentativa duplicata sorteio ' + nome, content: btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2)))), sha: sha }) }).catch(function(){});
-        if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
-        return;
-      }
       // 3. Adicionar novo inscrito
-      var celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
-      
-      // PASSO 3: Verificar se já existe na Fidelidade para herdar o ID
-      var idUnico = 'USR-2026-' + Math.random().toString(36).substr(2, 4).toUpperCase();
-      try {
-        var cRes = await fetch('dados/clientes.json?t=' + Date.now());
-        if (cRes.ok) {
-          var cData = await cRes.json();
-          // Fix: clientes.json é indexado por USR-2026-xxxx, usar indice_celular para lookup por cel
-          var cKey = cData.indice_celular && cData.indice_celular[celLimpo];
-          if (cKey && cData.clientes && cData.clientes[cKey]) {
-            idUnico = cData.clientes[cKey].id || idUnico;
-          }
-        }
-      } catch(e) { console.warn('Erro ao buscar ID na fidelidade:', e); }
 
       inscritos.push({
         id: idUnico,
@@ -280,7 +390,13 @@
         '📲 Celular cadastrado com WhatsApp ativo\n\n' +
         'Estou ciente das regras e concordo com o regulamento do sorteio. 🎉';
       window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
-      mostrarMsgSorteio('✅ Cadastro confirmado! Seu número é #' + numStr + '. Envie a mensagem no WhatsApp para finalizar!', 'ok');
+      if (clienteNovoCriado) {
+        mostrarMsgSorteio('Cadastro realizado e participação na promoção registrada com sucesso!', 'ok');
+      } else if (celularClienteAtualizado) {
+        mostrarMsgSorteio('Cadastro encontrado! Atualizamos seu número de celular. Sua participação na promoção foi registrada.', 'ok');
+      } else {
+        mostrarMsgSorteio('✅ Cadastro confirmado! Seu número é #' + numStr + '. Envie a mensagem no WhatsApp para finalizar!', 'ok');
+      }
       // Limpar formulário
       document.getElementById('sort-nome').value = '';
       document.getElementById('sort-cel').value = '';

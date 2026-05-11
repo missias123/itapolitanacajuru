@@ -242,6 +242,36 @@
     .resultado.ok { background: #E8F5E9; border-color: #81C784; color: #1B5E20; }
     .resultado.erro { background: #FFEBEE; border-color: #EF9A9A; color: #B71C1C; }
 
+    /* ── PAINEL DE RESGATE (pós-login) ─────────────────── */
+    .resgate-wrap {
+      background: #FFF3E0;
+      border: 2px solid #FFD0A0;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    .resgate-pts-destaque {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #E65100;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .resgate-regras {
+      font-size: .83rem;
+      color: #555;
+      margin-bottom: 10px;
+      line-height: 1.5;
+      padding-left: 18px;
+    }
+    .resgate-regras li { margin-bottom: 3px; }
+    .resgate-btns { display: grid; gap: 8px; margin-top: 10px; }
+    .resgate-aviso {
+      font-size: .78rem;
+      color: #888;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
     /* ── FORMULÁRIO DE CADASTRO ─────────────────────── */
     .cad-box {
       background: #e8f5e9;
@@ -383,9 +413,32 @@
     .reg-body { padding: 14px; font-size: .9rem; color: #333; }
     .reg-body p { margin-bottom: 10px; }
 
+    /* ── DOIS CAMINHOS ──────────────────────────────────── */
+    .dois-caminhos-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+    .caminho-card {
+      border-radius: 14px;
+      padding: 18px 16px;
+      border: 2px solid;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .caminho-card.caminho-novo       { background: #E8F5E9; border-color: #2E7D32; }
+    .caminho-card.caminho-existente  { background: #FFF3E0; border-color: #E65100; }
+    .caminho-icon { font-size: 2rem; line-height: 1; }
+    .caminho-titulo { font-size: 1.1rem; font-weight: 900; margin: 0; }
+    .caminho-sub { font-size: .88rem; color: #555; margin: 0 0 4px; line-height: 1.5; }
+    .caminho-card.caminho-novo .caminho-titulo       { color: #1B5E20; }
+    .caminho-card.caminho-existente .caminho-titulo  { color: #BF360C; }
+
     @media (min-width: 760px) {
       main { padding: 22px 18px 40px; }
       .premios { grid-template-columns: 1fr 1fr; }
+      .dois-caminhos-grid { grid-template-columns: 1fr 1fr; }
     }
 
     /* RODAPÉ PADRÃO */
@@ -486,12 +539,56 @@
       <h1 id="titulo-clube">Clube de Fidelidade Itapolitana</h1>
       <p>Acumule pontos, consulte seu saldo e valide códigos em um fluxo simples no mobile.</p>
       <span class="hero-badge">⚡ Fase de testes · Em breve totalmente online</span>
-      <!-- Alteração para alinhar o fluxo de fidelidade da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
       <div class="itap-food-hero__actions" style="margin-top:14px;">
-        <a href="#titulo-cadastro" class="itap-food-hero__action itap-food-hero__action--primary btn-fidelidade-cadastro">🎟️ Fazer cadastro</a>
-        <a href="#titulo-area-cliente" class="itap-food-hero__action itap-food-hero__action--secondary">🔎 Consultar pontos</a>
-        <a href="#titulo-regras" class="itap-food-hero__action itap-food-hero__action--ghost">📜 Ver regras</a>
+        <button type="button" class="itap-food-hero__action itap-food-hero__action--primary" id="btn-abrir-cadastro">🎟️ Quero participar do Fidelidade</button>
+        <a href="#bloco-ja-cadastrado" class="itap-food-hero__action itap-food-hero__action--secondary">✅ Já sou cadastrado / Inserir código</a>
         <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
+      </div>
+    </section>
+
+    <!-- ── DOIS CAMINHOS: Quero me cadastrar / Já sou cadastrado ── -->
+    <section class="card dois-caminhos" aria-label="Escolha como prosseguir">
+      <div class="dois-caminhos-grid">
+
+        <!-- BLOCO 1: Novo cadastro -->
+        <div class="caminho-card caminho-novo">
+          <span class="caminho-icon" aria-hidden="true">🎟️</span>
+          <h3 class="caminho-titulo">Quero participar do Fidelidade</h3>
+          <p class="caminho-sub">Se é a sua primeira vez aqui, comece fazendo seu cadastro. Leva menos de 1 minuto e você já sai pronto para juntar pontos.</p>
+          <button type="button" class="btn btn-verde btn-block" id="btn-toggle-cadastro">🎟️ Fazer meu cadastro</button>
+        </div>
+
+        <!-- BLOCO 2: Já cadastrado — SEMPRE visível -->
+        <div class="caminho-card caminho-existente" id="bloco-ja-cadastrado">
+          <span class="caminho-icon" aria-hidden="true">✅</span>
+          <h3 class="caminho-titulo">Já sou cadastrado / Inserir código</h3>
+          <p class="caminho-sub">Faça login com seus dados para ver seus pontos e registrar um código de fidelidade.</p>
+
+          <div class="form-row">
+            <label for="cliente-nome">Nome completo</label>
+            <input id="cliente-nome" type="text" maxlength="100" placeholder="Digite seu nome completo cadastrado" autocomplete="name">
+            <label for="cliente-telefone">Celular cadastrado (WhatsApp)</label>
+            <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="Digite o mesmo número usado no cadastro" autocomplete="tel">
+            <label for="cliente-nascimento">Data de nascimento</label>
+            <input id="cliente-nascimento" type="date" autocomplete="bday">
+            <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:6px;">Entrar na minha fidelidade</button>
+          </div>
+
+          <div class="form-row" id="form-codigo-wrap" style="display:none;margin-top:10px;">
+            <label for="cliente-codigo">Código de fidelidade</label>
+            <input id="cliente-codigo" type="text" maxlength="20" placeholder="Digite o código que recebeu na loja" style="text-transform:uppercase;">
+            <button class="btn btn-sec btn-block btn-validar-codigo" id="btn-registrar-ponto" style="margin-top:6px;">✅ Registrar código e somar pontos</button>
+          </div>
+
+          <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">
+            Faça login com nome, WhatsApp e data de nascimento para consultar seus pontos.
+          </div>
+          <div id="painel-resgate" style="display:none;margin-top:12px;" aria-live="polite"></div>
+          <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
+            💬 Resgatar meu prêmio via WhatsApp
+          </a>
+        </div>
+
       </div>
     </section>
 
@@ -577,8 +674,8 @@
       </details>
     </section>
 
-    <!-- 4) Formulário de cadastro — exibido logo abaixo das regras -->
-    <section class="card" aria-labelledby="titulo-cadastro">
+    <!-- 4) Formulário de cadastro — exibido ao clicar em "Fazer meu cadastro" -->
+    <section class="card" id="secao-cadastro" aria-labelledby="titulo-cadastro" style="display:none;">
       <h2 id="titulo-cadastro" style="font-size:1.25rem;color:#1b5e20;margin-bottom:8px;">📝 Cadastro gratuito no Clube de Fidelidade</h2>
       <!--
         IDs críticos: cad-nome, cad-tel-view, cad-dia, cad-mes, cad-ano, cad-aceite, btn-cadastrar-clube
@@ -638,32 +735,6 @@
       </a>
     </section>
 
-    <!-- 5) Área do Cliente — consultar pontos e inserir código do cupom -->
-    <section class="card" aria-labelledby="titulo-area-cliente">
-      <h2 id="titulo-area-cliente" style="font-size:1.25rem;color:#C62828;margin-bottom:8px;">Área do Cliente — Consultar pontos</h2>
-      <p style="font-size:.9rem;color:#555;margin-bottom:12px;">Já é cadastrado? Digite seu WhatsApp para consultar seus pontos e inserir o código do cupom.</p>
-
-      <div class="cliente-grid">
-        <div class="form-row">
-          <label for="cliente-telefone">Telefone (WhatsApp)</label>
-          <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
-          <button class="btn btn-primary" id="btn-entrar">Entrar / Consultar meus pontos</button>
-        </div>
-
-        <div class="form-row" id="form-codigo-wrap" style="display:none;">
-          <label for="cliente-codigo">Inserir código do cupom</label>
-          <input id="cliente-codigo" type="text" maxlength="20" placeholder="Ex: ABC123XYZ" style="text-transform:uppercase;">
-          <button class="btn btn-sec btn-validar-codigo" id="btn-registrar-ponto">✅ Validar Código</button>
-        </div>
-      </div>
-
-      <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">
-        Olá! Entre com seu WhatsApp para consultar sua pontuação.
-      </div>
-      <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
-        💬 Resgatar meu prêmio via WhatsApp
-      </a>
-    </section>
   </main>
 
   <!-- RODAPÉ PADRÃO ITAPOLITANA -->

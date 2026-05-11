@@ -15,7 +15,9 @@
       var SALDO_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24h
 
       /* ── referências DOM ───────────────────────────────────────────── */
+      var inputNome         = document.getElementById('cliente-nome');
       var inputTel          = document.getElementById('cliente-telefone');
+      var inputNasc         = document.getElementById('cliente-nascimento');
       var inputCodigo       = document.getElementById('cliente-codigo');
       var btnEntrar         = document.getElementById('btn-entrar');
       var btnRegistrar      = document.getElementById('btn-registrar-ponto');
@@ -28,6 +30,11 @@
       var ptsTexto10        = document.getElementById('progresso-pts-texto');
       var ptsTexto30        = document.getElementById('progresso-pts30-texto');
       var progressoHint     = document.getElementById('progresso-hint');
+      /* novos: controle da seção de cadastro (oculta por padrão) */
+      var secaoCadastro     = document.getElementById('secao-cadastro');
+      var btnAbrirCadastro  = document.getElementById('btn-abrir-cadastro');
+      var btnToggleCadastro = document.getElementById('btn-toggle-cadastro');
+      var painelResgate     = document.getElementById('painel-resgate');
 
       /* estado da sessão */
       var _clienteAtual = null;
@@ -44,6 +51,102 @@
 
       function primeiroNome(nomeCompleto) {
         return (nomeCompleto || 'Cliente').split(' ')[0];
+      }
+
+      function normalizarNome(nome) {
+        return String(nome || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toLowerCase();
+      }
+
+      function getGhToken() {
+        try { return localStorage.getItem('itap_gh_token') || ''; } catch (e) { return ''; }
+      }
+
+      function encodeJsonToB64(obj) {
+        var enc = new TextEncoder().encode(JSON.stringify(obj, null, 2));
+        var chunks = [];
+        var CHUNK = 8192;
+        for (var ci = 0; ci < enc.length; ci += CHUNK) {
+          chunks.push(String.fromCharCode.apply(null, enc.subarray(ci, ci + CHUNK)));
+        }
+        return btoa(chunks.join(''));
+      }
+
+      function localizarClientePorIdentidade(dados, nome, dataNasc) {
+        var clientes = (dados && dados.clientes) || {};
+        var alvoNome = normalizarNome(nome);
+        var alvoNasc = String(dataNasc || '').trim();
+        var ids = Object.keys(clientes);
+        for (var i = 0; i < ids.length; i++) {
+          var id = ids[i];
+          var c = clientes[id] || {};
+          var nomeOk = normalizarNome(c.nome) === alvoNome;
+          var nascOk = String(c.dataNasc || '').trim() === alvoNasc;
+          if (nomeOk && nascOk) return { id: id, cliente: c };
+        }
+        return null;
+      }
+
+      function atualizarCelularEIndice(dados, clienteId, novoCel, origem) {
+        var clientes = (dados && dados.clientes) || {};
+        var idx = (dados && dados.indice_celular) || {};
+        var cliente = clientes[clienteId];
+        if (!cliente) return false;
+
+        var celNovo = String(novoCel || '').replace(/\D/g, '');
+        var celAtual = String(cliente.cel || '').replace(/\D/g, '');
+        if (!celNovo) return false;
+
+        Object.keys(idx).forEach(function(celKey) {
+          if (idx[celKey] === clienteId && celKey !== celNovo) delete idx[celKey];
+        });
+        idx[celNovo] = clienteId;
+
+        if (celAtual === celNovo) {
+          dados.indice_celular = idx;
+          return false;
+        }
+
+        if (!Array.isArray(cliente.cel_anterior)) cliente.cel_anterior = [];
+        if (celAtual && cliente.cel_anterior.indexOf(celAtual) === -1) cliente.cel_anterior.push(celAtual);
+        cliente.cel = celNovo;
+        if (!Array.isArray(cliente.historico_alteracoes)) cliente.historico_alteracoes = [];
+        cliente.historico_alteracoes.push({
+          data: new Date().toISOString(),
+          tipo: 'celular_atualizado',
+          descricao: 'Celular atualizado para ' + celNovo,
+          por: origem || 'site'
+        });
+        dados.indice_celular = idx;
+        return true;
+      }
+
+      function salvarClientesNoGitHub(dados, mensagemCommit) {
+        var tk = getGhToken();
+        if (!tk) return Promise.resolve(false);
+        var CLIENTES_PATH = 'dados/clientes.json';
+        return fetch(GH_API + CLIENTES_PATH, {
+          headers: { 'Authorization': 'token ' + tk, 'Accept': 'application/vnd.github.v3+json' }
+        })
+          .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+          .then(function(meta) {
+            var payload = {
+              message: mensagemCommit || 'Clube: atualizar clientes',
+              content: encodeJsonToB64(dados),
+              sha: meta.sha
+            };
+            return fetch(GH_API + CLIENTES_PATH, {
+              method: 'PUT',
+              headers: { 'Authorization': 'token ' + tk, 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+          })
+          .then(function(r2) { return r2.ok; })
+          .catch(function() { return false; });
       }
 
       function setResultado(msg, tipo) {
@@ -91,6 +194,52 @@
         if (!btnWppResgatar) return;
         btnWppResgatar.textContent = texto;
         btnWppResgatar.style.display = 'block';
+      }
+
+      /* ── Renderiza o painel de resgate pós-login ────────────────────────────
+         pts === null → esconde o painel (reset entre sessões).
+         pts >= 0    → mostra saldo, regras de resgate e botões condicionais de
+                       WhatsApp com a mensagem pré-preenchida (nome + celular). ── */
+      function renderPainelResgate(pts, nomeCompleto, tel) {
+        if (!painelResgate) return;
+        if (pts === null || pts === undefined) {
+          painelResgate.style.display = 'none';
+          painelResgate.innerHTML = '';
+          return;
+        }
+        var nomeExib = nomeCompleto || _nomeSessao || 'Cliente';
+        var telFormatado = mascaraTel(tel);
+        var pontosTxt = pts === 1 ? '1 ponto' : pts + ' pontos';
+
+        var html = '<div class="resgate-wrap">';
+        html += '<p class="resgate-pts-destaque">⭐ Você tem <strong>' + pontosTxt + '</strong> acumulados no programa de fidelidade Itapolitana.</p>';
+        html += '<ul class="resgate-regras">';
+        html += '<li>🥤 Com <strong>10 pontos</strong>, você pode resgatar 1 Milk Shake de 300 ml.</li>';
+        html += '<li>🍨 Com <strong>30 pontos</strong>, você pode resgatar 1 caixa de sorvete com 7 bolas.</li>';
+        html += '</ul>';
+
+        if (pts >= META_10) {
+          html += '<div class="resgate-btns">';
+          var msgMilk = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +
+            'Gostaria de resgatar 10 pontos do programa de fidelidade Itapolitana e ganhar um Milk Shake de 300 ml.\n' +
+            'Posso agendar para retirar em [DIA] às [HORA]?';
+          html += '<a class="btn btn-wpp btn-block" href="' + wppLink(msgMilk) + '" target="_blank" rel="noopener" style="display:block;">' +
+            '🥤 Resgatar 10 pontos \u2013 Milk Shake 300 ml</a>';
+          if (pts >= META_30) {
+            var msgCaixa = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +
+              'Gostaria de resgatar 30 pontos do programa de fidelidade Itapolitana e ganhar uma caixa de sorvete com 7 bolas.\n' +
+              'Posso agendar para retirar em [DIA] às [HORA]?';
+            html += '<a class="btn btn-primary btn-block" href="' + wppLink(msgCaixa) + '" target="_blank" rel="noopener" style="display:block;">' +
+              '🍨 Resgatar 30 pontos \u2013 Caixa 7 bolas</a>';
+          }
+          html += '</div>';
+          html += '<p class="resgate-aviso">Ao clicar em \'Resgatar\', vamos abrir uma conversa no WhatsApp da Itapolitana. ' +
+            'Você combina o dia e o horário para retirar seu brinde, e a equipe confere seus pontos no cadastro.</p>';
+        }
+
+        html += '</div>';
+        painelResgate.innerHTML = html;
+        painelResgate.style.display = 'block';
       }
 
       function chaveSaldoCache(tel) {
@@ -162,6 +311,7 @@
         );
         formCodigoWrap.style.display = 'none';
         if (btnWppResgatar) btnWppResgatar.style.display = 'none';
+        renderPainelResgate(pts, cache.nome || nome, tel);
         return true;
       }
 
@@ -273,6 +423,8 @@
          btn-registrar-ponto) está SEPARADO e NÃO foi alterado.
       ───────────────────────────────────────────────────────────────────── */
       function mostrarFormCadastro(tel) {
+        /* garante que a seção esteja visível antes de rolar */
+        if (secaoCadastro) secaoCadastro.style.display = '';
         var cadTelView = document.getElementById('cad-tel-view');
         if (cadTelView && tel && tel.trim()) cadTelView.value = mascaraTel(tel);
         /* formulário já está sempre visível; scroll suave até ele */
@@ -282,25 +434,24 @@
       }
 
       /* ── Fluxo sequencial: após cadastro bem-sucedido, direcionar automaticamente
-         o cliente para a Área do Cliente com o telefone pré-preenchido.
+         o cliente para o bloco "Já sou cadastrado" com o telefone pré-preenchido.
          "DIGITAR CÓDIGO" só aparece aqui dentro (nunca fora) — regra do programa. ── */
       function ativarAreaClientePosCadastro(telRaw, nomePrimeiro, pontos) {
-        /* pré-preenche o campo de login da Área do Cliente */
+        /* pré-preenche o campo de login do bloco "Já sou cadastrado" */
         if (inputTel) inputTel.value = mascaraTel(telRaw);
         /* atualiza barras de progresso */
         atualizarBarras(pontos || 0);
-        /* mostra campo de código se ainda não tem pontos suficientes para resgatar */
-        if (formCodigoWrap && (pontos || 0) < META_10) {
-          setResultado('Bem-vindo(a), ' + nomePrimeiro + '! 🎉 Cadastro confirmado. Insira o código do seu cupom abaixo para registrar seu primeiro ponto.', 'ok');
-          formCodigoWrap.style.display = 'grid';
-        }
-        /* scroll suave até a Área do Cliente */
-        var secArea = document.getElementById('titulo-area-cliente');
-        if (secArea) setTimeout(function() { secArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
+        if (formCodigoWrap) formCodigoWrap.style.display = 'none';
+        setResultado('Cadastro confirmado! Agora faça login em "Já sou cadastrado / Inserir código" para registrar pontos.', 'ok');
+        /* scroll suave até o bloco "Já sou cadastrado" */
+        var blocoJaCad = document.getElementById('bloco-ja-cadastrado');
+        if (blocoJaCad) setTimeout(function() { blocoJaCad.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
       }
 
       function ocultarFormCadastro() {
-        /* formulário permanece visível após cadastro — apenas limpa os campos */
+        /* oculta a seção de cadastro após envio bem-sucedido */
+        if (secaoCadastro) secaoCadastro.style.display = 'none';
+        /* limpa os campos para eventual novo uso */
         var campos = ['cad-nome', 'cad-tel-view', 'cad-dia', 'cad-mes', 'cad-ano'];
         campos.forEach(function(id) {
           var el = document.getElementById(id);
@@ -347,7 +498,7 @@
         btn.textContent = 'Cadastrando…';
         setResultadoEl('resultado-cliente', 'Aguarde, registrando seu cadastro…', '');
 
-        var tk = (function(){ try { return localStorage.getItem('itap_gh_token') || ''; } catch(e){ return ''; } })();
+        var tk = getGhToken();
 
         if (!tk) {
           /* sem token → redireciona WhatsApp */
@@ -357,7 +508,7 @@
             '*Data de nascimento:* ' + dia + '/' + mes + '/' + ano + '\n\n' +
             'Confirmo que li e aceito o Regulamento do Clube de Fidelidade. ✅';
           window.open('https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg), '_blank');
-          setResultadoEl('resultado-cliente', '✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
+          setResultadoEl('resultado-cliente', '✅ Pedido de cadastro enviado via WhatsApp! Aguarde a confirmação da loja. Depois use "Já sou cadastrado" para registrar seus pontos.', 'ok');
           ocultarFormCadastro();
           /* scroll até a Área do Cliente para o cliente aguardar a confirmação */
           var secAreaWpp = document.getElementById('titulo-area-cliente');
@@ -378,14 +529,27 @@
           var rawJson = new TextDecoder().decode(Uint8Array.from(atob(ghResp.content.replace(/\n/g,'')).split(''), function(c){return c.charCodeAt(0);}));
           var dados = JSON.parse(rawJson);
 
-          /* verificar duplicidade */
-          var idx = dados.indice_celular || {};
-          if (idx[telRaw]) {
-            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use a seção "Consultar pontos" abaixo para entrar.', '');
-            btn.disabled = false;
-            btn.textContent = '🎟️ Cadastrar no Clube';
-            return;
+          /* verificar duplicidade por identidade lógica (nome + dataNasc) */
+          var duplicado = localizarClientePorIdentidade(dados, nome, dataNasc);
+          if (duplicado && duplicado.id) {
+            var houveTroca = atualizarCelularEIndice(dados, duplicado.id, telRaw, 'site_cadastro_reuso');
+            return salvarClientesNoGitHub(dados, 'Clube: reaproveitar cadastro ' + nome).then(function() {
+              _clienteAtual = dados.clientes[duplicado.id];
+              _nomeSessao = primeiroNome(_clienteAtual.nome || nome);
+              salvarSaldoEmCache(telRaw, Number(_clienteAtual.saldoPontos || 0), _clienteAtual.nome || nome);
+              atualizarBarras(Number(_clienteAtual.saldoPontos || 0));
+              setResultadoEl(
+                'resultado-cliente',
+                'Já existe um cadastro para esse nome e data de nascimento. Atualizamos o seu celular e você já pode usar a opção "Já sou cadastrado / Inserir código".',
+                'ok'
+              );
+              ocultarFormCadastro();
+              ativarAreaClientePosCadastro(telRaw, primeiroNome(_clienteAtual.nome || nome), Number(_clienteAtual.saldoPontos || 0));
+              return houveTroca;
+            });
           }
+
+          var idx = dados.indice_celular || {};
 
           /* gerar próximo ID */
           var existentes = Object.keys(dados.clientes || {});
@@ -420,13 +584,7 @@
           idx[telRaw] = novoId;
           dados.indice_celular = idx;
 
-          var enc = new TextEncoder().encode(JSON.stringify(dados, null, 2));
-          var chunks = [];
-          var CHUNK = 8192;
-          for (var ci = 0; ci < enc.length; ci += CHUNK) {
-            chunks.push(String.fromCharCode.apply(null, enc.subarray(ci, ci + CHUNK)));
-          }
-          var novoConteudo = btoa(chunks.join(''));
+          var novoConteudo = encodeJsonToB64(dados);
           return fetch(GH_API + CLIENTES_PATH, {
             method: 'PUT',
             headers: { 'Authorization': 'token ' + tk, 'Content-Type': 'application/json' },
@@ -437,11 +595,11 @@
             _nomeSessao = primeiroNome(nome);
             salvarSaldoEmCache(telRaw, 0, nome);
             atualizarBarras(0);
-            setResultadoEl('resultado-cliente', '🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '!', 'ok');
-            ocultarFormCadastro();
-            /* fluxo sequencial: regulamento → cadastro → área do cliente → digitar código */
-            ativarAreaClientePosCadastro(telRaw, primeiroNome(nome), 0);
-          });
+              setResultadoEl('resultado-cliente', '🎉 Cadastro feito com sucesso, ' + primeiroNome(nome) + '! Agora faça login em "Já sou cadastrado / Inserir código".', 'ok');
+              ocultarFormCadastro();
+              /* fluxo sequencial: cadastro → bloco "Já sou cadastrado" */
+              ativarAreaClientePosCadastro(telRaw, primeiroNome(nome), 0);
+            });
         })
         .catch(function(e) {
           setResultadoEl('resultado-cliente', '⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
@@ -465,12 +623,33 @@
       }
       tentarRestaurarSessaoVisivel();
 
+      /* ── Abrir formulário de cadastro (oculto por padrão) ─────────── */
+      var SCROLL_DELAY_MS = 80; /* pequeno delay para o display:'' ser renderizado antes do scroll */
+      function abrirFormCadastro() {
+        if (secaoCadastro) {
+          secaoCadastro.style.display = '';
+          setTimeout(function() { secaoCadastro.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, SCROLL_DELAY_MS);
+        }
+      }
+      if (btnAbrirCadastro)  btnAbrirCadastro.addEventListener('click', abrirFormCadastro);
+      if (btnToggleCadastro) btnToggleCadastro.addEventListener('click', abrirFormCadastro);
+
       /* ── CONSULTAR PONTOS ────────────────────────────────────────────── */
       if (btnEntrar) {
       btnEntrar.addEventListener('click', function() {
+        var nomeLogin = (inputNome && inputNome.value ? inputNome.value : '').trim();
         var tel = inputTel.value.replace(/\D/g, '');
+        var nascLogin = (inputNasc && inputNasc.value ? inputNasc.value : '').trim();
+        if (!nomeLogin || nomeLogin.length < 3) {
+          setResultado('Informe seu nome completo para entrar na fidelidade.', 'erro');
+          return;
+        }
         if (!tel || tel.length < 10) {
           setResultado('Digite seu WhatsApp para continuar.', 'erro');
+          return;
+        }
+        if (!nascLogin) {
+          setResultado('Informe sua data de nascimento para entrar na fidelidade.', 'erro');
           return;
         }
 
@@ -485,25 +664,27 @@
         _clienteAtual = null;
         formCodigoWrap.style.display = 'none';
         if (btnWppResgatar) btnWppResgatar.style.display = 'none';
+        renderPainelResgate(null);
 
         ghRawFetch('dados/clientes.json')
           .then(function(dados) {
-            var idx = dados.indice_celular || {};
-            var usrKey = idx[tel];
-
-            if (!usrKey || !dados.clientes[usrKey]) {
-              /* telefone não cadastrado — redirecionar ao formulário acima */
-              setResultado('Número não encontrado. Use o formulário "Cadastro gratuito" acima para se inscrever no Clube!', 'erro');
-              /* pré-preenche o campo de telefone do formulário de cadastro */
+            var encontrado = localizarClientePorIdentidade(dados, nomeLogin, nascLogin);
+            if (!encontrado || !encontrado.id) {
+              setResultado('Não encontramos cadastro com esse nome e data de nascimento. Confira suas informações ou faça o cadastro na opção "Quero participar do Fidelidade".', 'erro');
               mostrarFormCadastro(tel);
               return;
             }
 
-            _clienteAtual = dados.clientes[usrKey];
+            var clienteId = encontrado.id;
+            var cliente = dados.clientes[clienteId];
+            var celularAtualizado = atualizarCelularEIndice(dados, clienteId, tel, 'site_login');
+
+            _clienteAtual = cliente;
             var pts = _clienteAtual.saldoPontos || 0;
             var nome = primeiroNome(_clienteAtual.nome);
             _nomeSessao = nome;
-            salvarSaldoEmCache(tel, pts, _clienteAtual.nome || nome);
+            var telCliente = _clienteAtual.cel || tel;
+            salvarSaldoEmCache(telCliente, pts, _clienteAtual.nome || nome);
 
             atualizarBarras(pts);
 
@@ -513,16 +694,23 @@
               return;
             }
 
-            if (pts >= META_30) {
-              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', você tem ' + pts + ' pontos e já pode resgatar a Caixa 7 bolas.', 'ok');
-              mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Caixa 7 bolas via WhatsApp');
-            } else if (pts >= META_10) {
-              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', você tem ' + pts + ' pontos e já pode resgatar um Milkshake 300ml.', 'ok');
-              mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Milkshake via WhatsApp');
-            } else {
-              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
-              formCodigoWrap.style.display = 'grid';
-            }
+            renderPainelResgate(pts, _clienteAtual.nome, telCliente);
+            formCodigoWrap.style.display = 'grid';
+            var prefixo = celularAtualizado
+              ? 'Bem-vindo(a), ' + nome + '! Atualizamos o seu celular. Esses são seus pontos.'
+              : 'Bem-vindo(a), ' + nome + '!';
+
+            var commitMsg = 'Clube: atualizar celular login ' + (_clienteAtual.nome || nome);
+            var persistir = celularAtualizado ? salvarClientesNoGitHub(dados, commitMsg) : Promise.resolve(false);
+            return persistir.then(function() {
+              if (pts >= META_30) {
+                setResultado(prefixo + ' Você tem ' + pts + ' pontos acumulados. Já pode resgatar a Caixa 7 bolas ou um Milkshake.', 'ok');
+              } else if (pts >= META_10) {
+                setResultado(prefixo + ' Você tem ' + pts + ' pontos acumulados. Já pode resgatar um Milkshake 300 ml.', 'ok');
+              } else {
+                setResultado(prefixo + ' Você tem ' + pts + ' pontos acumulados. Faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
+              }
+            });
           })
           .catch(function() {
             if (tentarUsarSaldoCacheOffline(tel)) return;
@@ -531,7 +719,7 @@
           })
           .finally(function() {
             btnEntrar.disabled = false;
-            btnEntrar.textContent = 'Entrar / Consultar meus pontos';
+            btnEntrar.textContent = 'Entrar na minha fidelidade';
           });
       }); // end btnEntrar click
       } // end if (btnEntrar)
@@ -542,13 +730,14 @@
          nunca fora — impede que qualquer pessoa tente adivinhar códigos aleatórios. ── */
       if (btnRegistrar) {
       btnRegistrar.addEventListener('click', function() {
-        var codigo = (inputCodigo.value || '').trim().toUpperCase();
-        if (!codigo) {
-          setResultado('Digite o código do cupom.', 'erro');
+        if (!_clienteAtual) {
+          setResultado('Antes de registrar um código, faça login na opção "Já sou cadastrado / Inserir código".', 'erro');
+          if (formCodigoWrap) formCodigoWrap.style.display = 'none';
           return;
         }
-        if (!_clienteAtual) {
-          setResultado('Entre com seu WhatsApp antes de registrar códigos.', 'erro');
+        var codigo = (inputCodigo.value || '').trim().toUpperCase();
+        if (!codigo) {
+          setResultado('Digite o código de fidelidade.', 'erro');
           return;
         }
 
@@ -626,7 +815,7 @@
           })
           .finally(function() {
             btnRegistrar.disabled = false;
-            btnRegistrar.textContent = '✅ Validar Código';
+            btnRegistrar.textContent = '✅ Registrar código e somar pontos';
           });
       }); // end btnRegistrar click
       } // end if (btnRegistrar)
