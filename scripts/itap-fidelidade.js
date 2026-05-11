@@ -602,7 +602,7 @@
               if (formCodigoWrap) formCodigoWrap.style.display = 'none';
               mostrarWppBtn(wppLink('Bloqueio no Clube Fidelidade. Nome: ' + (_clienteAtual.nome || '-')), '💬 Solicitar desbloqueio');
             } else {
-              setResultado('Código já utilizado. Confira o código com a loja.', 'erro');
+              setResultado('⚠️ Código já utilizado. Cada cupom vale apenas uma vez. (' + t2.total + '/3 tentativas)', 'erro');
             }
             return;
           }
