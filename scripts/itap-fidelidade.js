@@ -602,7 +602,7 @@
               if (formCodigoWrap) formCodigoWrap.style.display = 'none';
               mostrarWppBtn(wppLink('Bloqueio no Clube Fidelidade. Nome: ' + (_clienteAtual.nome || '-')), '💬 Solicitar desbloqueio');
             } else {
-              setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+              setResultado('Código já utilizado. Confira o código com a loja.', 'erro');
             }
             return;
           }
