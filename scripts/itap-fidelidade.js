@@ -109,11 +109,10 @@
     return String(ano) + '-' + String(mes).padStart(2, '0') + '-' + String(dia).padStart(2, '0');
   }
 
-  function formatIsoToBr(dataIso) {
-    var s = String(dataIso || '').trim();
-    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!m) return '';
-    return m[3] + '/' + m[2] + '/' + m[1];
+  function gerarIdHash() {
+    var b = new Uint8Array(4);
+    crypto.getRandomValues(b);
+    return Array.from(b).map(function(x) { return x.toString(16).padStart(2, '0'); }).join('').toUpperCase();
   }
 
   function localizarClientePorIdentidade(dados, nome, dataNascIso) {
@@ -417,7 +416,7 @@
 
           dados.clientes[novoId] = {
             id_permanente: novoId,
-            id_hash: Math.random().toString(16).slice(2, 10).toUpperCase(),
+            id_hash: gerarIdHash(),
             nome: nome,
             dataNasc: dataIso,
             cel: telRaw,
