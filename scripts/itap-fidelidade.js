@@ -32,6 +32,7 @@
       var secaoCadastro     = document.getElementById('secao-cadastro');
       var btnAbrirCadastro  = document.getElementById('btn-abrir-cadastro');
       var btnToggleCadastro = document.getElementById('btn-toggle-cadastro');
+      var painelResgate     = document.getElementById('painel-resgate');
 
       /* estado da sessão */
       var _clienteAtual = null;
@@ -95,6 +96,52 @@
         if (!btnWppResgatar) return;
         btnWppResgatar.textContent = texto;
         btnWppResgatar.style.display = 'block';
+      }
+
+      /* ── Renderiza o painel de resgate pós-login ────────────────────────────
+         pts === null → esconde o painel (reset entre sessões).
+         pts >= 0    → mostra saldo, regras de resgate e botões condicionais de
+                       WhatsApp com a mensagem pré-preenchida (nome + celular). ── */
+      function renderPainelResgate(pts, nomeCompleto, tel) {
+        if (!painelResgate) return;
+        if (pts === null || pts === undefined) {
+          painelResgate.style.display = 'none';
+          painelResgate.innerHTML = '';
+          return;
+        }
+        var nomeExib = nomeCompleto || _nomeSessao || 'Cliente';
+        var telFormatado = mascaraTel((tel || '').replace(/\D/g, ''));
+        var pontosTxt = pts === 1 ? '1 ponto' : pts + ' pontos';
+
+        var html = '<div class="resgate-wrap">';
+        html += '<p class="resgate-pts-destaque">⭐ Você tem <strong>' + pontosTxt + '</strong> acumulados no programa de fidelidade Itapolitana.</p>';
+        html += '<ul class="resgate-regras">';
+        html += '<li>🥤 Com <strong>10 pontos</strong>, você pode resgatar 1 Milk Shake de 300 ml.</li>';
+        html += '<li>🍨 Com <strong>30 pontos</strong>, você pode resgatar 1 caixa de sorvete com 7 bolas.</li>';
+        html += '</ul>';
+
+        if (pts >= META_10) {
+          html += '<div class="resgate-btns">';
+          var msgMilk = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +
+            'Gostaria de resgatar 10 pontos do programa de fidelidade Itapolitana e ganhar um Milk Shake de 300 ml.\n' +
+            'Posso agendar para retirar em [DIA] às [HORA]?';
+          html += '<a class="btn btn-wpp btn-block" href="' + wppLink(msgMilk) + '" target="_blank" rel="noopener" style="display:block;">' +
+            '🥤 Resgatar 10 pontos \u2013 Milk Shake 300 ml</a>';
+          if (pts >= META_30) {
+            var msgCaixa = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +
+              'Gostaria de resgatar 30 pontos do programa de fidelidade Itapolitana e ganhar uma caixa de sorvete com 7 bolas.\n' +
+              'Posso agendar para retirar em [DIA] às [HORA]?';
+            html += '<a class="btn btn-primary btn-block" href="' + wppLink(msgCaixa) + '" target="_blank" rel="noopener" style="display:block;">' +
+              '🍨 Resgatar 30 pontos \u2013 Caixa 7 bolas</a>';
+          }
+          html += '</div>';
+          html += '<p class="resgate-aviso">Ao clicar em \'Resgatar\', vamos abrir uma conversa no WhatsApp da Itapolitana. ' +
+            'Você combina o dia e o horário para retirar seu brinde, e a equipe confere seus pontos no cadastro.</p>';
+        }
+
+        html += '</div>';
+        painelResgate.innerHTML = html;
+        painelResgate.style.display = 'block';
       }
 
       function chaveSaldoCache(tel) {
@@ -166,6 +213,7 @@
         );
         formCodigoWrap.style.display = 'none';
         if (btnWppResgatar) btnWppResgatar.style.display = 'none';
+        renderPainelResgate(pts, cache.nome || nome, tel);
         return true;
       }
 
@@ -504,6 +552,7 @@
         _clienteAtual = null;
         formCodigoWrap.style.display = 'none';
         if (btnWppResgatar) btnWppResgatar.style.display = 'none';
+        renderPainelResgate(null);
 
         ghRawFetch('dados/clientes.json')
           .then(function(dados) {
@@ -532,14 +581,15 @@
               return;
             }
 
+            var telCliente = _clienteAtual.cel || tel;
+            renderPainelResgate(pts, _clienteAtual.nome, telCliente);
+
             if (pts >= META_30) {
-              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', você tem ' + pts + ' pontos e já pode resgatar a Caixa 7 bolas.', 'ok');
-              mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Caixa 7 bolas via WhatsApp');
+              setResultado('Login feito! ' + nome + ', você tem ' + pts + ' pontos — já pode resgatar a Caixa 7 bolas ou um Milkshake!', 'ok');
             } else if (pts >= META_10) {
-              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', você tem ' + pts + ' pontos e já pode resgatar um Milkshake 300ml.', 'ok');
-              mostrarWppBtn(wppLink('Clube Fidelidade - Quero resgatar meu prêmio!\nNome: ' + _clienteAtual.nome + '\nPontos: ' + pts), '💬 Resgatar Milkshake via WhatsApp');
+              setResultado('Login feito! ' + nome + ', você tem ' + pts + ' pontos — já pode resgatar um Milkshake 300 ml!', 'ok');
             } else {
-              setResultado('Login feito! Seus pontos foram carregados. ' + nome + ', faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
+              setResultado('Login feito! ' + nome + ', faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
               formCodigoWrap.style.display = 'grid';
             }
           })
