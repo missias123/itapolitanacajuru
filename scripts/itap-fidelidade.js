@@ -17,16 +17,16 @@
   var btnMostrarLogin = document.getElementById('btn-mostrar-login-fid');
   var btnIrCadastro = document.getElementById('btn-ir-cadastro-fidelidade');
 
-  var inputCadNome = document.getElementById('cad-nome');
-  var inputCadNasc = document.getElementById('cad-nascimento');
-  var inputCadTel = document.getElementById('cad-tel-view');
-  var inputCadAceite = document.getElementById('cad-aceite');
+  var inputCadNome = document.getElementById('fid-nome');
+  var inputCadNasc = document.getElementById('fid-data-nasc');
+  var inputCadTel = document.getElementById('fid-celular');
+  var inputCadAceite = document.getElementById('fid-aceite');
   var btnCadastrar = document.getElementById('btn-cadastrar-clube');
   var resultadoCadastro = document.getElementById('resultado-cliente');
 
-  var inputNome = document.getElementById('cliente-nome');
-  var inputNasc = document.getElementById('cliente-nascimento');
-  var inputTel = document.getElementById('cliente-telefone');
+  var inputNome = document.getElementById('fid-login-nome');
+  var inputNasc = document.getElementById('fid-login-data-nasc');
+  var inputTel = document.getElementById('fid-login-celular');
   var btnEntrar = document.getElementById('btn-entrar');
   var resultado = document.getElementById('resultado-consulta');
 
@@ -34,7 +34,7 @@
   var painelPontos = document.getElementById('painel-pontos');
   var painelResgate = document.getElementById('painel-resgate');
   var formCodigoWrap = document.getElementById('form-codigo-wrap');
-  var inputCodigo = document.getElementById('cliente-codigo');
+  var inputCodigo = document.getElementById('fid-codigo');
   var btnRegistrar = document.getElementById('btn-registrar-ponto');
   var btnWppResgatar = document.getElementById('btn-wpp-resgatar-consulta');
 
@@ -56,10 +56,6 @@
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase();
-  }
-
-  function primeiroNome(nomeCompleto) {
-    return (nomeCompleto || 'Cliente').split(' ')[0];
   }
 
   function setResultado(msg, tipo) {
@@ -318,10 +314,9 @@
     if (!cliente) return;
 
     var nome = cliente.nome || 'Cliente';
-    var nomeCurto = primeiroNome(nome);
     var pts = Number(cliente.saldoPontos || 0);
 
-    if (painelBoasVindas) painelBoasVindas.textContent = 'Bem-vindo(a), ' + nomeCurto + '!';
+    if (painelBoasVindas) painelBoasVindas.textContent = 'Bem-vindo(a), ' + nome + '!';
     if (painelPontos) painelPontos.textContent = 'Você tem ' + pts + ' pontos acumulados.';
 
     if (secaoPainel) secaoPainel.style.display = 'block';
@@ -629,7 +624,7 @@
             } else if (t.restantes === 0) {
               setResultado('❌ Código inválido. ' + t.total + '/3 tentativas usadas. ⚠️ Próxima tentativa bloqueará sua conta!', 'erro');
             } else {
-              setResultado('❌ Código inválido. ' + t.total + '/3 tentativas usadas. Restam ' + t.restantes + ' tentativa(s).', 'erro');
+              setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
             }
             return;
           }
@@ -642,14 +637,14 @@
               if (formCodigoWrap) formCodigoWrap.style.display = 'none';
               mostrarWppBtn(wppLink('Bloqueio no Clube Fidelidade. Nome: ' + (_clienteAtual.nome || '-')), '💬 Solicitar desbloqueio');
             } else {
-              setResultado('⚠️ Código já utilizado. Cada cupom vale apenas uma vez. (' + t2.total + '/3 tentativas)', 'erro');
+              setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
             }
             return;
           }
 
           var usados = _clienteAtual.codigosUsados || [];
           if (usados.indexOf(codigo) !== -1) {
-            setResultado('Você já usou este código anteriormente.', 'erro');
+            setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
             return;
           }
 
@@ -663,7 +658,7 @@
           if (inputCodigo) inputCodigo.value = '';
         })
         .catch(function() {
-          setResultado('Erro ao validar código. Tente novamente.', 'erro');
+          setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
         })
         .finally(function() {
           btnRegistrar.disabled = false;

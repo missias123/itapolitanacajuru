@@ -536,37 +536,43 @@
     <section class="card hero" id="secao-cabecalho-fid" aria-labelledby="titulo-clube">
       <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
       <h1 id="titulo-clube">Clube de Fidelidade Itapolitana</h1>
-      <p>Como funciona:</p>
+      <p>Junte pontos a cada compra e troque por Milk Shake e sorvete em caixa.<br>Um fluxo simples para cadastrar, consultar pontos e registrar códigos de cupom.</p>
+    </section>
+
+    <section class="card" id="secao-como-funciona-fid" aria-labelledby="titulo-como-funciona-fid">
+      <h2 id="titulo-como-funciona-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Como funciona</h2>
       <div class="itap-flow-list" style="margin-top:8px;">
         <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Faça seu cadastro com nome, nascimento e WhatsApp.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>Faça login para ver seus pontos acumulados.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Digite códigos válidos e resgate seus prêmios.</p></div>
+        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>A cada compra, peça seu código e registre aqui.</p></div>
+        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Junte pontos e troque por prêmios.</p></div>
       </div>
+    </section>
+
+    <section class="card" id="secao-acoes-fid" aria-label="Ações principais do clube">
       <div class="itap-food-hero__actions" style="margin-top:14px;">
         <button type="button" class="itap-food-hero__action itap-food-hero__action--primary" id="btn-mostrar-cadastro-fid">Fazer cadastro de fidelidade</button>
         <button type="button" class="itap-food-hero__action itap-food-hero__action--secondary" id="btn-mostrar-login-fid">Já sou cadastrado / Digitar código</button>
-        <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
       </div>
     </section>
 
     <section class="card" id="secao-cadastro-fid" aria-labelledby="titulo-cadastro-fid" style="display:none;">
-      <h2 id="titulo-cadastro-fid" style="font-size:1.2rem;color:#1b5e20;margin-bottom:8px;">Cadastro de fidelidade</h2>
+      <h2 id="titulo-cadastro-fid" style="font-size:1.2rem;color:#1b5e20;margin-bottom:8px;">Fazer cadastro de fidelidade</h2>
       <p style="margin:0 0 8px;">Antes de participar, leia e aceite as regras do programa de fidelidade.</p>
-      <label for="cad-aceite" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
-        <input id="cad-aceite" type="checkbox" style="margin-top:2px;">
+      <label for="fid-aceite" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
+        <input id="fid-aceite" type="checkbox" style="margin-top:2px;">
         <span>Li e aceito as regras do programa de fidelidade.</span>
       </label>
       <p style="margin:0 0 12px;"><a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas" target="_blank" rel="noopener">Ver regras completas</a></p>
 
       <div class="form-row">
-        <label for="cad-nome">Nome completo</label>
-        <input id="cad-nome" type="text" maxlength="100" placeholder="Digite seu nome completo" autocomplete="name">
+        <label for="fid-nome">Nome completo</label>
+        <input id="fid-nome" type="text" maxlength="100" placeholder="Digite seu nome completo como no cupom" autocomplete="name">
 
-        <label for="cad-nascimento">Data de nascimento</label>
-        <input id="cad-nascimento" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
+        <label for="fid-data-nasc">Data de nascimento</label>
+        <input id="fid-data-nasc" type="text" maxlength="10" placeholder="Digite sua data de nascimento (dd/mm/aaaa)" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
 
-        <label for="cad-tel-view">Celular (WhatsApp)</label>
-        <input id="cad-tel-view" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
+        <label for="fid-celular">Celular (WhatsApp)</label>
+        <input id="fid-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="Digite seu WhatsApp com DDD (ex.: 16 99999-0000)" autocomplete="tel">
 
         <button class="btn btn-verde btn-block" id="btn-cadastrar-clube" style="margin-top:8px;">Fazer cadastro fidelidade</button>
       </div>
@@ -575,16 +581,16 @@
     </section>
 
     <section class="card" id="secao-login-fid" aria-labelledby="titulo-login-fid" style="display:none;">
-      <h2 id="titulo-login-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Já sou cadastrado / Digitar código</h2>
+      <h2 id="titulo-login-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Já sou cadastrado</h2>
       <div class="form-row">
-        <label for="cliente-nome">Nome completo</label>
-        <input id="cliente-nome" type="text" maxlength="100" placeholder="Digite seu nome completo" autocomplete="name">
+        <label for="fid-login-nome">Nome completo</label>
+        <input id="fid-login-nome" type="text" maxlength="100" placeholder="Digite o mesmo nome usado no cadastro" autocomplete="name">
 
-        <label for="cliente-nascimento">Data de nascimento</label>
-        <input id="cliente-nascimento" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
+        <label for="fid-login-data-nasc">Data de nascimento</label>
+        <input id="fid-login-data-nasc" type="text" maxlength="10" placeholder="Digite sua data de nascimento (dd/mm/aaaa)" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
 
-        <label for="cliente-telefone">Celular (WhatsApp)</label>
-        <input id="cliente-telefone" type="tel" inputmode="numeric" maxlength="15" placeholder="(16) 99999-9999" autocomplete="tel">
+        <label for="fid-login-celular">Celular</label>
+        <input id="fid-login-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="Digite seu WhatsApp atual" autocomplete="tel">
 
         <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:8px;">Entrar na minha fidelidade</button>
       </div>
@@ -594,7 +600,7 @@
     </section>
 
     <section class="card" id="secao-painel-fid" aria-labelledby="titulo-painel-fid" style="display:none;">
-      <h2 id="titulo-painel-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Meus pontos</h2>
+      <h2 id="titulo-painel-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Minha fidelidade</h2>
       <p id="painel-boas-vindas" style="margin:0 0 4px;">Bem-vindo(a)!</p>
       <p id="painel-pontos" style="margin:0 0 10px;font-weight:700;">Você tem 0 pontos acumulados.</p>
 
@@ -604,8 +610,8 @@
       </ul>
 
       <div class="form-row" id="form-codigo-wrap" style="display:none;margin-top:10px;">
-        <label for="cliente-codigo">Código de fidelidade</label>
-        <input id="cliente-codigo" type="text" maxlength="20" placeholder="Digite o código que recebeu na loja" style="text-transform:uppercase;">
+        <label for="fid-codigo">Código de fidelidade</label>
+        <input id="fid-codigo" type="text" maxlength="20" placeholder="Digite o código do seu cupom de fidelidade" style="text-transform:uppercase;">
         <button class="btn btn-sec btn-block btn-validar-codigo" id="btn-registrar-ponto" style="margin-top:6px;">Registrar código</button>
       </div>
 
