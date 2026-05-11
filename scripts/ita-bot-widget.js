@@ -363,8 +363,6 @@
     'entrega':       '🚫 Não fazemos delivery. Para encomendas, a retirada é na loja com prazo de 3 dias úteis.',
     'motoboy':       '🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP.',
     'ifood':         '🚫 Não fazemos delivery. Atendemos somente na loja em Cajuru/SP.',
-    'icloud':        '☁️ Se o iCloud está cheio, vá em Ajustes > seu nome > iCloud > Gerenciar Armazenamento e revise 4 pontos: backups antigos, Fotos do iCloud, arquivos do iCloud Drive e anexos grandes do Mensagens/WhatsApp. Apague só o que você já tiver salvo em outro lugar. Se ainda faltar espaço, vale subir para 50 GB.',
-    'armazenamento do icloud': '☁️ Se o iCloud está cheio, vá em Ajustes > seu nome > iCloud > Gerenciar Armazenamento e revise 4 pontos: backups antigos, Fotos do iCloud, arquivos do iCloud Drive e anexos grandes do Mensagens/WhatsApp. Apague só o que você já tiver salvo em outro lugar. Se ainda faltar espaço, vale subir para 50 GB.',
     'anos':          '🍦 A Sorveteria Itapolitana está em Cajuru desde 2007 — mais de 19 anos de tradição e sabor!',
     'historia':      '🍦 A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos de tradição!',
     'artesanal':     '🍦 Nossos sorvetes são tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis!',
