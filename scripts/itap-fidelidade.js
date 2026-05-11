@@ -28,6 +28,10 @@
       var ptsTexto10        = document.getElementById('progresso-pts-texto');
       var ptsTexto30        = document.getElementById('progresso-pts30-texto');
       var progressoHint     = document.getElementById('progresso-hint');
+      /* novos: controle da seção de cadastro (oculta por padrão) */
+      var secaoCadastro     = document.getElementById('secao-cadastro');
+      var btnAbrirCadastro  = document.getElementById('btn-abrir-cadastro');
+      var btnToggleCadastro = document.getElementById('btn-toggle-cadastro');
 
       /* estado da sessão */
       var _clienteAtual = null;
@@ -273,6 +277,8 @@
          btn-registrar-ponto) está SEPARADO e NÃO foi alterado.
       ───────────────────────────────────────────────────────────────────── */
       function mostrarFormCadastro(tel) {
+        /* garante que a seção esteja visível antes de rolar */
+        if (secaoCadastro) secaoCadastro.style.display = '';
         var cadTelView = document.getElementById('cad-tel-view');
         if (cadTelView && tel && tel.trim()) cadTelView.value = mascaraTel(tel);
         /* formulário já está sempre visível; scroll suave até ele */
@@ -282,10 +288,10 @@
       }
 
       /* ── Fluxo sequencial: após cadastro bem-sucedido, direcionar automaticamente
-         o cliente para a Área do Cliente com o telefone pré-preenchido.
+         o cliente para o bloco "Já sou cadastrado" com o telefone pré-preenchido.
          "DIGITAR CÓDIGO" só aparece aqui dentro (nunca fora) — regra do programa. ── */
       function ativarAreaClientePosCadastro(telRaw, nomePrimeiro, pontos) {
-        /* pré-preenche o campo de login da Área do Cliente */
+        /* pré-preenche o campo de login do bloco "Já sou cadastrado" */
         if (inputTel) inputTel.value = mascaraTel(telRaw);
         /* atualiza barras de progresso */
         atualizarBarras(pontos || 0);
@@ -294,13 +300,15 @@
           setResultado('Bem-vindo(a), ' + nomePrimeiro + '! 🎉 Cadastro confirmado. Insira o código do seu cupom abaixo para registrar seu primeiro ponto.', 'ok');
           formCodigoWrap.style.display = 'grid';
         }
-        /* scroll suave até a Área do Cliente */
-        var secArea = document.getElementById('titulo-area-cliente');
-        if (secArea) setTimeout(function() { secArea.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
+        /* scroll suave até o bloco "Já sou cadastrado" */
+        var blocoJaCad = document.getElementById('bloco-ja-cadastrado');
+        if (blocoJaCad) setTimeout(function() { blocoJaCad.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 350);
       }
 
       function ocultarFormCadastro() {
-        /* formulário permanece visível após cadastro — apenas limpa os campos */
+        /* oculta a seção de cadastro após envio bem-sucedido */
+        if (secaoCadastro) secaoCadastro.style.display = 'none';
+        /* limpa os campos para eventual novo uso */
         var campos = ['cad-nome', 'cad-tel-view', 'cad-dia', 'cad-mes', 'cad-ano'];
         campos.forEach(function(id) {
           var el = document.getElementById(id);
@@ -357,7 +365,7 @@
             '*Data de nascimento:* ' + dia + '/' + mes + '/' + ano + '\n\n' +
             'Confirmo que li e aceito o Regulamento do Clube de Fidelidade. ✅';
           window.open('https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg), '_blank');
-          setResultadoEl('resultado-cliente', '✅ Seu pedido de cadastro foi enviado via WhatsApp! A loja confirmará em breve.', 'ok');
+          setResultadoEl('resultado-cliente', '✅ Pedido de cadastro enviado via WhatsApp! Aguarde a confirmação da loja. Depois use "Já sou cadastrado" para registrar seus pontos.', 'ok');
           ocultarFormCadastro();
           /* scroll até a Área do Cliente para o cliente aguardar a confirmação */
           var secAreaWpp = document.getElementById('titulo-area-cliente');
@@ -381,7 +389,7 @@
           /* verificar duplicidade */
           var idx = dados.indice_celular || {};
           if (idx[telRaw]) {
-            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use a seção "Consultar pontos" abaixo para entrar.', '');
+            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use o bloco "Já sou cadastrado" acima para entrar com seu celular e registrar pontos.', '');
             btn.disabled = false;
             btn.textContent = '🎟️ Cadastrar no Clube';
             return;
@@ -437,9 +445,9 @@
             _nomeSessao = primeiroNome(nome);
             salvarSaldoEmCache(telRaw, 0, nome);
             atualizarBarras(0);
-            setResultadoEl('resultado-cliente', '🎉 Cadastro realizado com sucesso! Bem-vindo(a), ' + primeiroNome(nome) + '!', 'ok');
+            setResultadoEl('resultado-cliente', '🎉 Cadastro feito com sucesso, ' + primeiroNome(nome) + '! Para registrar seus pontos, use o bloco "Já sou cadastrado" abaixo com seu celular e o código da compra.', 'ok');
             ocultarFormCadastro();
-            /* fluxo sequencial: regulamento → cadastro → área do cliente → digitar código */
+            /* fluxo sequencial: cadastro → bloco "Já sou cadastrado" → digitar código */
             ativarAreaClientePosCadastro(telRaw, primeiroNome(nome), 0);
           });
         })
@@ -464,6 +472,16 @@
         });
       }
       tentarRestaurarSessaoVisivel();
+
+      /* ── Abrir formulário de cadastro (oculto por padrão) ─────────── */
+      function abrirFormCadastro() {
+        if (secaoCadastro) {
+          secaoCadastro.style.display = '';
+          setTimeout(function() { secaoCadastro.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+        }
+      }
+      if (btnAbrirCadastro)  btnAbrirCadastro.addEventListener('click', abrirFormCadastro);
+      if (btnToggleCadastro) btnToggleCadastro.addEventListener('click', abrirFormCadastro);
 
       /* ── CONSULTAR PONTOS ────────────────────────────────────────────── */
       if (btnEntrar) {
@@ -492,8 +510,8 @@
             var usrKey = idx[tel];
 
             if (!usrKey || !dados.clientes[usrKey]) {
-              /* telefone não cadastrado — redirecionar ao formulário acima */
-              setResultado('Número não encontrado. Use o formulário "Cadastro gratuito" acima para se inscrever no Clube!', 'erro');
+              /* telefone não cadastrado — redirecionar ao formulário de cadastro */
+              setResultado('Não encontramos cadastro com esse celular. Confira o número ou use "Fazer meu cadastro" para se inscrever no Clube!', 'erro');
               /* pré-preenche o campo de telefone do formulário de cadastro */
               mostrarFormCadastro(tel);
               return;
