@@ -15,7 +15,9 @@
       var SALDO_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24h
 
       /* ── referências DOM ───────────────────────────────────────────── */
+      var inputNome         = document.getElementById('cliente-nome');
       var inputTel          = document.getElementById('cliente-telefone');
+      var inputNasc         = document.getElementById('cliente-nascimento');
       var inputCodigo       = document.getElementById('cliente-codigo');
       var btnEntrar         = document.getElementById('btn-entrar');
       var btnRegistrar      = document.getElementById('btn-registrar-ponto');
@@ -49,6 +51,15 @@
 
       function primeiroNome(nomeCompleto) {
         return (nomeCompleto || 'Cliente').split(' ')[0];
+      }
+
+      function normalizarNome(nome) {
+        return String(nome || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toLowerCase();
       }
 
       function setResultado(msg, tipo) {
@@ -535,9 +546,19 @@
       /* ── CONSULTAR PONTOS ────────────────────────────────────────────── */
       if (btnEntrar) {
       btnEntrar.addEventListener('click', function() {
+        var nomeLogin = (inputNome && inputNome.value ? inputNome.value : '').trim();
         var tel = inputTel.value.replace(/\D/g, '');
+        var nascLogin = (inputNasc && inputNasc.value ? inputNasc.value : '').trim();
+        if (!nomeLogin || nomeLogin.length < 3) {
+          setResultado('Informe seu nome completo para entrar na fidelidade.', 'erro');
+          return;
+        }
         if (!tel || tel.length < 10) {
           setResultado('Digite seu WhatsApp para continuar.', 'erro');
+          return;
+        }
+        if (!nascLogin) {
+          setResultado('Informe sua data de nascimento para entrar na fidelidade.', 'erro');
           return;
         }
 
@@ -560,14 +581,20 @@
             var usrKey = idx[tel];
 
             if (!usrKey || !dados.clientes[usrKey]) {
-              /* telefone não cadastrado — redirecionar ao formulário de cadastro */
-              setResultado('Não encontramos cadastro com esse celular. Confira o número ou use "Fazer meu cadastro" para se inscrever no Clube!', 'erro');
-              /* pré-preenche o campo de telefone do formulário de cadastro */
+              setResultado('Não encontramos cadastro com esses dados. Confira suas informações ou faça seu cadastro na opção "Quero participar do Fidelidade".', 'erro');
               mostrarFormCadastro(tel);
               return;
             }
 
-            _clienteAtual = dados.clientes[usrKey];
+            var cliente = dados.clientes[usrKey];
+            var nomeOk = normalizarNome(cliente.nome) === normalizarNome(nomeLogin);
+            var nascOk = String(cliente.dataNasc || '').trim() === nascLogin;
+            if (!nomeOk || !nascOk) {
+              setResultado('Não encontramos cadastro com esses dados. Confira suas informações ou faça seu cadastro na opção "Quero participar do Fidelidade".', 'erro');
+              return;
+            }
+
+            _clienteAtual = cliente;
             var pts = _clienteAtual.saldoPontos || 0;
             var nome = primeiroNome(_clienteAtual.nome);
             _nomeSessao = nome;
@@ -583,14 +610,14 @@
 
             var telCliente = _clienteAtual.cel || tel;
             renderPainelResgate(pts, _clienteAtual.nome, telCliente);
+            formCodigoWrap.style.display = 'grid';
 
             if (pts >= META_30) {
-              setResultado('Login feito! ' + nome + ', você tem ' + pts + ' pontos — já pode resgatar a Caixa 7 bolas ou um Milkshake!', 'ok');
+              setResultado('Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados. Já pode resgatar a Caixa 7 bolas ou um Milkshake.', 'ok');
             } else if (pts >= META_10) {
-              setResultado('Login feito! ' + nome + ', você tem ' + pts + ' pontos — já pode resgatar um Milkshake 300 ml!', 'ok');
+              setResultado('Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados. Já pode resgatar um Milkshake 300 ml.', 'ok');
             } else {
-              setResultado('Login feito! ' + nome + ', faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
-              formCodigoWrap.style.display = 'grid';
+              setResultado('Bem-vindo(a), ' + nome + '! Você tem ' + pts + ' pontos acumulados. Faltam ' + (META_10 - pts) + ' para o primeiro prêmio.', '');
             }
           })
           .catch(function() {
@@ -600,7 +627,7 @@
           })
           .finally(function() {
             btnEntrar.disabled = false;
-            btnEntrar.textContent = 'Entrar / Consultar meus pontos';
+            btnEntrar.textContent = 'Entrar na minha fidelidade';
           });
       }); // end btnEntrar click
       } // end if (btnEntrar)
@@ -611,13 +638,14 @@
          nunca fora — impede que qualquer pessoa tente adivinhar códigos aleatórios. ── */
       if (btnRegistrar) {
       btnRegistrar.addEventListener('click', function() {
-        var codigo = (inputCodigo.value || '').trim().toUpperCase();
-        if (!codigo) {
-          setResultado('Digite o código do cupom.', 'erro');
+        if (!_clienteAtual) {
+          setResultado('Antes de registrar um código, faça login na opção "Já sou cadastrado / Inserir código".', 'erro');
+          if (formCodigoWrap) formCodigoWrap.style.display = 'none';
           return;
         }
-        if (!_clienteAtual) {
-          setResultado('Entre com seu WhatsApp antes de registrar códigos.', 'erro');
+        var codigo = (inputCodigo.value || '').trim().toUpperCase();
+        if (!codigo) {
+          setResultado('Digite o código de fidelidade.', 'erro');
           return;
         }
 
@@ -695,7 +723,7 @@
           })
           .finally(function() {
             btnRegistrar.disabled = false;
-            btnRegistrar.textContent = '✅ Validar Código';
+            btnRegistrar.textContent = '✅ Registrar código e somar pontos';
           });
       }); // end btnRegistrar click
       } // end if (btnRegistrar)
