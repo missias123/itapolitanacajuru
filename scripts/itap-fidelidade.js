@@ -389,7 +389,7 @@
           /* verificar duplicidade */
           var idx = dados.indice_celular || {};
           if (idx[telRaw]) {
-            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use o bloco "Já sou cadastrado" acima para entrar com seu celular e registrar pontos.', '');
+            setResultadoEl('resultado-cliente', 'ℹ️ Este número já está cadastrado. Use o bloco "Já sou cadastrado" para entrar com seu celular e registrar pontos.', '');
             btn.disabled = false;
             btn.textContent = '🎟️ Cadastrar no Clube';
             return;
@@ -474,10 +474,11 @@
       tentarRestaurarSessaoVisivel();
 
       /* ── Abrir formulário de cadastro (oculto por padrão) ─────────── */
+      var SCROLL_DELAY_MS = 80; /* pequeno delay para o display:'' ser renderizado antes do scroll */
       function abrirFormCadastro() {
         if (secaoCadastro) {
           secaoCadastro.style.display = '';
-          setTimeout(function() { secaoCadastro.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+          setTimeout(function() { secaoCadastro.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, SCROLL_DELAY_MS);
         }
       }
       if (btnAbrirCadastro)  btnAbrirCadastro.addEventListener('click', abrirFormCadastro);
