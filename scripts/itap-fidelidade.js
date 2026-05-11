@@ -16,11 +16,13 @@
   var btnMostrarCadastro = document.getElementById('btn-mostrar-cadastro-fid');
   var btnMostrarLogin = document.getElementById('btn-mostrar-login-fid');
   var btnIrCadastro = document.getElementById('btn-ir-cadastro-fidelidade');
+  var etapaCadastroRegras = document.getElementById('cadastro-etapa-regras-fid');
+  var etapaCadastroForm = document.getElementById('cadastro-etapa-form-fid');
+  var btnAceitarRegras = document.getElementById('btn-aceitar-regras-fid');
 
   var inputCadNome = document.getElementById('fid-nome');
   var inputCadNasc = document.getElementById('fid-data-nasc');
   var inputCadTel = document.getElementById('fid-celular');
-  var inputCadAceite = document.getElementById('fid-aceite');
   var btnCadastrar = document.getElementById('btn-cadastrar-clube');
   var resultadoCadastro = document.getElementById('resultado-cliente');
 
@@ -40,6 +42,7 @@
 
   var _clienteAtual = null;
   var _clientesMemoria = null;
+  var _cadastroRegrasAceitas = false;
 
   function mascaraTel(v) {
     var d = (v || '').replace(/\D/g, '').slice(0, 11);
@@ -66,8 +69,21 @@
 
   function setResultadoCadastro(msg, tipo) {
     if (!resultadoCadastro) return;
-    resultadoCadastro.textContent = msg;
+    resultadoCadastro.style.display = msg ? 'block' : 'none';
+    resultadoCadastro.textContent = msg || '';
     resultadoCadastro.className = 'resultado' + (tipo ? ' ' + tipo : '');
+  }
+
+  function cadastroCamposValidos() {
+    var nome = (inputCadNome && inputCadNome.value ? inputCadNome.value : '').trim();
+    var dataBr = (inputCadNasc && inputCadNasc.value ? inputCadNasc.value : '').trim();
+    var telRaw = (inputCadTel && inputCadTel.value ? inputCadTel.value : '').replace(/\D/g, '');
+    return !!(nome && parseDataBrToIso(dataBr) && telRaw);
+  }
+
+  function atualizarEstadoBotaoCadastro() {
+    if (!btnCadastrar) return;
+    btnCadastrar.disabled = !(_cadastroRegrasAceitas && cadastroCamposValidos());
   }
 
   function getGhToken() {
@@ -298,6 +314,19 @@
     if (secaoCadastro) secaoCadastro.style.display = 'block';
     if (secaoLogin) secaoLogin.style.display = 'none';
     if (secaoPainel) secaoPainel.style.display = 'none';
+    _cadastroRegrasAceitas = false;
+    if (btnAceitarRegras) {
+      btnAceitarRegras.classList.remove('aceito');
+      btnAceitarRegras.disabled = false;
+      btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
+    }
+    if (etapaCadastroRegras) etapaCadastroRegras.style.display = 'block';
+    if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
+    if (btnCadastrar) {
+      btnCadastrar.disabled = true;
+      btnCadastrar.textContent = 'Executar cadastro';
+    }
+    setResultadoCadastro('', '');
     if (secaoCadastro) secaoCadastro.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -374,20 +403,31 @@
   if (btnMostrarCadastro) btnMostrarCadastro.addEventListener('click', mostrarSecaoCadastro);
   if (btnMostrarLogin) btnMostrarLogin.addEventListener('click', mostrarSecaoLogin);
   if (btnIrCadastro) btnIrCadastro.addEventListener('click', mostrarSecaoCadastro);
+  if (btnAceitarRegras) {
+    btnAceitarRegras.addEventListener('click', function() {
+      _cadastroRegrasAceitas = true;
+      if (etapaCadastroForm) etapaCadastroForm.style.display = 'grid';
+      btnAceitarRegras.classList.add('aceito');
+      btnAceitarRegras.textContent = 'Regras aceitas ✓';
+      atualizarEstadoBotaoCadastro();
+    });
+  }
+  if (inputCadNome) inputCadNome.addEventListener('input', atualizarEstadoBotaoCadastro);
+  if (inputCadNasc) inputCadNasc.addEventListener('input', atualizarEstadoBotaoCadastro);
+  if (inputCadTel) inputCadTel.addEventListener('input', atualizarEstadoBotaoCadastro);
 
   if (btnCadastrar) {
     btnCadastrar.addEventListener('click', function() {
       var nome = (inputCadNome && inputCadNome.value ? inputCadNome.value : '').trim();
       var dataBr = (inputCadNasc && inputCadNasc.value ? inputCadNasc.value : '').trim();
       var telRaw = (inputCadTel && inputCadTel.value ? inputCadTel.value : '').replace(/\D/g, '');
-      var aceite = !!(inputCadAceite && inputCadAceite.checked);
       var dataIso = parseDataBrToIso(dataBr);
 
-      if (!aceite) {
+      if (!_cadastroRegrasAceitas) {
         setResultadoCadastro('⚠️ Você precisa aceitar as regras do programa para se cadastrar.', 'erro');
         return;
       }
-      if (!nome || nome.length < 3) {
+      if (!nome) {
         setResultadoCadastro('⚠️ Informe seu nome completo.', 'erro');
         return;
       }
@@ -395,8 +435,8 @@
         setResultadoCadastro('⚠️ Informe uma data válida no formato dd/mm/aaaa.', 'erro');
         return;
       }
-      if (telRaw.length < 10) {
-        setResultadoCadastro('⚠️ Número de celular inválido. Informe um WhatsApp com DDD.', 'erro');
+      if (!telRaw) {
+        setResultadoCadastro('⚠️ Informe seu celular (WhatsApp).', 'erro');
         return;
       }
 
@@ -407,8 +447,8 @@
       var tk = getGhToken();
       if (!tk) {
         setResultadoCadastro('⚠️ Não foi possível salvar seu cadastro agora. Tente novamente em instantes para gravar na base oficial do programa.', 'erro');
-        btnCadastrar.disabled = false;
-        btnCadastrar.textContent = 'Fazer cadastro fidelidade';
+        btnCadastrar.textContent = 'Executar cadastro';
+        atualizarEstadoBotaoCadastro();
         return;
       }
 
@@ -420,15 +460,19 @@
             return salvarClientesNoGitHub(dados, 'Clube: reaproveitar cadastro ' + nome).then(function(ok) {
               if (!ok) throw new Error('falha ao salvar atualização de cadastro');
               atualizarClientesMemoria(dados);
-              setResultadoCadastro('Cadastro feito com sucesso! Nas próximas compras, use a opção "Já sou cadastrado / Digitar código" para somar pontos.', 'ok');
+              setResultadoCadastro("Cadastro feito com sucesso! Agora use a opção 'Já sou cadastrado / Digitar código' para registrar seus pontos.", 'ok');
               if (inputNome) inputNome.value = nome;
               if (inputNasc) inputNasc.value = dataBr;
               if (inputTel) inputTel.value = mascaraTel(telRaw);
-              if (inputCadAceite) inputCadAceite.checked = false;
               if (inputCadNome) inputCadNome.value = '';
               if (inputCadNasc) inputCadNasc.value = '';
               if (inputCadTel) inputCadTel.value = '';
-              mostrarSecaoLogin();
+              _cadastroRegrasAceitas = false;
+              if (btnAceitarRegras) {
+                btnAceitarRegras.classList.remove('aceito');
+                btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
+              }
+              if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
             });
           }
 
@@ -465,23 +509,27 @@
           return salvarClientesNoGitHub(dados, 'Clube: novo cadastro ' + nome).then(function(okNovo) {
             if (!okNovo) throw new Error('falha ao salvar novo cadastro');
             atualizarClientesMemoria(dados);
-            setResultadoCadastro('Cadastro feito com sucesso! Nas próximas compras, use a opção "Já sou cadastrado / Digitar código" para somar pontos.', 'ok');
+            setResultadoCadastro("Cadastro feito com sucesso! Agora use a opção 'Já sou cadastrado / Digitar código' para registrar seus pontos.", 'ok');
             if (inputNome) inputNome.value = nome;
             if (inputNasc) inputNasc.value = dataBr;
             if (inputTel) inputTel.value = mascaraTel(telRaw);
-            if (inputCadAceite) inputCadAceite.checked = false;
             if (inputCadNome) inputCadNome.value = '';
             if (inputCadNasc) inputCadNasc.value = '';
             if (inputCadTel) inputCadTel.value = '';
-            mostrarSecaoLogin();
+            _cadastroRegrasAceitas = false;
+            if (btnAceitarRegras) {
+              btnAceitarRegras.classList.remove('aceito');
+              btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
+            }
+            if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
           });
         })
         .catch(function(e) {
           setResultadoCadastro('⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
         })
         .finally(function() {
-          btnCadastrar.disabled = false;
-          btnCadastrar.textContent = 'Fazer cadastro fidelidade';
+          btnCadastrar.textContent = 'Executar cadastro';
+          atualizarEstadoBotaoCadastro();
         });
     });
   }
@@ -521,7 +569,7 @@
           }
 
           if (!encontrado || !encontrado.id) {
-            setResultado('Não encontramos cadastro com estes dados. Por favor, faça seu cadastro no botão "Fazer cadastro fidelidade".', 'erro');
+            setResultado('Não encontramos cadastro com estes dados. Por favor, use o botão "Quero participar do Clube de Fidelidade".', 'erro');
             if (btnIrCadastro) btnIrCadastro.style.display = 'block';
             return;
           }
