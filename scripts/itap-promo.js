@@ -528,3 +528,24 @@
         }
       });
   })();
+
+  // Carregar promoções adicionais de dados/promocoes.json
+  (function() {
+    var container = document.getElementById('promos-adicionais-lista');
+    if (!container) return;
+    fetch('dados/promocoes.json?v=' + Date.now())
+      .then(function(r) { return r.ok ? r.json() : {promocoes:[]}; })
+      .then(function(data) {
+        var lista = (data.promocoes || []).filter(function(p) { return p.status === 'ativa'; });
+        if (!lista.length) { container.style.display = 'none'; return; }
+        container.innerHTML = lista.map(function(p) {
+          return '<div class="promo-card" style="margin-bottom:16px">'
+            + '<div class="promo-content">'
+            + (p.periodo ? '<span class="promo-badge">' + p.periodo + '</span>' : '')
+            + '<h3 class="promo-title" style="font-size:18px">' + p.nome + '</h3>'
+            + (p.descricao ? '<p class="promo-desc">' + p.descricao + '</p>' : '')
+            + '</div></div>';
+        }).join('');
+      })
+      .catch(function() { container.style.display = 'none'; });
+  })();
