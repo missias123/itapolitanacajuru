@@ -74,6 +74,29 @@ test.describe('Ita Bot — Chat', () => {
     }
   });
 
+  test('Ita Bot orienta quando o usuário diz que o iCloud está cheio', async ({ page }) => {
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn, #chat-fab-btn, .itabot-btn').first();
+    if (await botBtn.isVisible()) {
+      await botBtn.click();
+      await page.waitForTimeout(600);
+
+      const inputMsg = page.locator('.chat-inp, #chat-dialog input[type="text"]').first();
+      await inputMsg.fill('estou recebendo mensagem que meu icloud ta cheio, veja como melhorar isto');
+
+      const sendBtn = page.locator('.chat-send, #chat-dialog button[type="submit"]').first();
+      if (await sendBtn.count() > 0) {
+        await sendBtn.click();
+      } else {
+        await inputMsg.press('Enter');
+      }
+
+      await expect(page.locator('.msg.bot').last()).toContainText('Gerenciar Armazenamento');
+      await expect(page.locator('.msg.bot').last()).toContainText('50 GB');
+    } else {
+      test.skip();
+    }
+  });
+
   test('sugestões rápidas do Ita Bot são clicáveis', async ({ page }) => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
