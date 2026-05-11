@@ -227,7 +227,12 @@
   }
 
   function atualizarClientesMemoria(dados) {
-    _clientesMemoria = JSON.parse(JSON.stringify(dados || { clientes: {}, indice_celular: {} }));
+    var origem = dados || { clientes: {}, indice_celular: {} };
+    if (typeof structuredClone === 'function') {
+      _clientesMemoria = structuredClone(origem);
+      return;
+    }
+    _clientesMemoria = JSON.parse(JSON.stringify(origem));
   }
 
   function obterClientesAtualizados() {
@@ -329,8 +334,16 @@
     _clienteAtual = null;
     if (secaoPainel) secaoPainel.style.display = 'none';
     if (formCodigoWrap) formCodigoWrap.style.display = 'none';
+    if (btnIrCadastro) btnIrCadastro.style.display = 'none';
     renderPainelResgate(null);
     esconderWppBtn();
+  }
+
+  function formatarDataInputBr(raw) {
+    var nums = String(raw || '').replace(/\D/g, '').slice(0, 8);
+    if (nums.length <= 2) return nums;
+    if (nums.length <= 4) return nums.slice(0, 2) + '/' + nums.slice(2);
+    return nums.slice(0, 2) + '/' + nums.slice(2, 4) + '/' + nums.slice(4);
   }
 
   if (inputCadTel) {
@@ -342,6 +355,18 @@
   if (inputTel) {
     inputTel.addEventListener('input', function() {
       inputTel.value = mascaraTel(inputTel.value);
+    });
+  }
+
+  if (inputCadNasc) {
+    inputCadNasc.addEventListener('input', function() {
+      inputCadNasc.value = formatarDataInputBr(inputCadNasc.value);
+    });
+  }
+
+  if (inputNasc) {
+    inputNasc.addEventListener('input', function() {
+      inputNasc.value = formatarDataInputBr(inputNasc.value);
     });
   }
 
