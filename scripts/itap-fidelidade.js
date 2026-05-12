@@ -26,7 +26,11 @@
   var inputCadNasc = document.getElementById('fid-data-nasc');
   var inputCadTel = document.getElementById('fid-celular');
   var btnCadastrar = document.getElementById('fid-executar-cadastro');
-  var resultadoCadastro = document.getElementById('fid-feedback-message') || document.getElementById('resultado-cliente');
+  var resultadoCadastroNovo = document.getElementById('fid-feedback-message');
+  var resultadoCadastro = resultadoCadastroNovo || document.getElementById('resultado-cliente');
+  if (!resultadoCadastroNovo && resultadoCadastro) {
+    console.warn('[fidelidade] Usando fallback de feedback legado (#resultado-cliente).');
+  }
 
   var inputNome = document.getElementById('fid-login-nome');
   var inputNasc = document.getElementById('fid-login-data-nasc');
@@ -77,12 +81,12 @@
   }
 
   function encaminharCadastroWhatsApp(nome, dataBr, telRaw) {
-    var telFmt = mascaraTel(telRaw);
+    var telefoneFormatado = mascaraTel(telRaw);
     var msg = [
       'Olá! Solicitação de cadastro no Clube de Fidelidade.',
       'Nome: ' + nome,
       'Nascimento: ' + dataBr,
-      'WhatsApp: ' + telFmt
+      'WhatsApp: ' + telefoneFormatado
     ].join('\n');
     setResultadoCadastro('✅ Seu pedido de cadastro foi enviado para nosso WhatsApp!', 'ok');
     try {
@@ -571,7 +575,8 @@
             resetarFormularioCadastro();
           });
         })
-        .catch(function() {
+        .catch(function(e) {
+          console.warn('[fidelidade] Falha ao salvar cadastro no backend; redirecionando para WhatsApp.', e);
           encaminharCadastroWhatsApp(nome, dataBr, telRaw);
         })
         .finally(function() {

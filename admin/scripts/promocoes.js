@@ -45,6 +45,23 @@
     return (el && el.value ? el.value : '').trim();
   }
 
+  function buildPromocaoPayload(nome, periodo, descricao, dataInicio, dataFim, produtosAfetados, regras, status) {
+    return {
+      nome: nome,
+      periodo: periodo,
+      descricao: descricao,
+      dataInicio: dataInicio,
+      dataFim: dataFim,
+      produtosAfetados: produtosAfetados,
+      regras: regras,
+      status: status
+    };
+  }
+
+  function escapeCsvField(value) {
+    return '"' + String(value || '').replace(/"/g, '""') + '"';
+  }
+
   function promoNomeValido() {
     return fieldValue('promo-nome').length >= 3;
   }
@@ -230,11 +247,12 @@
     if (!window.STATE.promocoes) window.STATE.promocoes = { promocoes: [] };
     if (!Array.isArray(window.STATE.promocoes.promocoes)) window.STATE.promocoes.promocoes = [];
 
+    var promocaoPayload = buildPromocaoPayload(nome, periodo, descricao, dataInicio, dataFim, produtosAfetados, regras, status);
     if (idxRaw !== '') {
       var idx = parseInt(idxRaw, 10);
-      window.STATE.promocoes.promocoes[idx] = { nome: nome, periodo: periodo, descricao: descricao, dataInicio: dataInicio, dataFim: dataFim, produtosAfetados: produtosAfetados, regras: regras, status: status };
+      window.STATE.promocoes.promocoes[idx] = promocaoPayload;
     } else {
-      window.STATE.promocoes.promocoes.push({ nome: nome, periodo: periodo, descricao: descricao, dataInicio: dataInicio, dataFim: dataFim, produtosAfetados: produtosAfetados, regras: regras, status: status });
+      window.STATE.promocoes.promocoes.push(promocaoPayload);
     }
 
     setPromoFeedback('Salvando promoção...', 'aviso');
@@ -261,7 +279,7 @@
         var ok = await window.salvarArquivo(window.PATHS.promocoes, window.STATE.promocoes, 'promocoesSha', 'Admin: excluir promoção ' + p.nome);
         if (ok) {
           setPromoFeedback('✅ Promoção excluída com sucesso.', 'ok');
-          if (typeof window.toast === 'function') window.toast('🗑️ Promoção excluída.','ok');
+          if (typeof window.toast === 'function') window.toast('🗑️ Promoção excluída.','sucesso');
           window.renderPromocoesTable();
         } else {
           setPromoFeedback('⚠️ Falha ao excluir promoção. Tente novamente.', 'erro');
@@ -292,7 +310,7 @@
     var BOM = '\uFEFF';
     var header = 'Nome,Período,Descrição,Status';
     var rows = lista.map(function(p) {
-      return '"' + (p.nome || '').replace(/"/g, '""') + '","' + (p.periodo || '').replace(/"/g, '""') + '","' + (p.descricao || '').replace(/"/g, '""') + '",' + p.status;
+      return [escapeCsvField(p.nome), escapeCsvField(p.periodo), escapeCsvField(p.descricao), escapeCsvField(p.status)].join(',');
     });
     var csv = BOM + [header].concat(rows).join('\n');
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
