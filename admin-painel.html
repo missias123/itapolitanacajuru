@@ -6479,7 +6479,7 @@ function renderPromocoesTable() {
     const statusHtml = p.status === 'ativa'
       ? '<span style="color:#2e7d32;font-weight:700">✅ Ativa</span>'
       : '<span style="color:#999;font-weight:700">❌ Inativa</span>';
-    const periodoExib = p.periodo || ((p.dataInicio || p.dataFim) ? `${p.dataInicio || '-'} até ${p.dataFim || '-'}` : '-');
+    const periodoExib = p.periodo || ((p.dataInicio || p.dataFim) ? getPromoPeriodo(p.dataInicio, p.dataFim) : '-');
     return `<tr style="${p.status==='ativa'?'':'opacity:.6'}">
       <td style="font-weight:600">${p.nome}</td>
       <td style="font-size:.82rem;color:#666">${periodoExib}</td>
@@ -6494,10 +6494,20 @@ function renderPromocoesTable() {
 
 let _promoFormListenersBound = false;
 
-function parsePromoDate(value) {
-  if (!value) return null;
-  const d = new Date(value + 'T00:00:00Z');
-  return Number.isNaN(d.getTime()) ? null : d;
+function normalizePromoDate(value) {
+  const raw = String(value || '').trim();
+  const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const ano = parseInt(m[1], 10);
+  const mes = parseInt(m[2], 10);
+  const dia = parseInt(m[3], 10);
+  const d = new Date(ano, mes - 1, dia);
+  if (d.getFullYear() !== ano || d.getMonth() !== (mes - 1) || d.getDate() !== dia) return null;
+  return raw;
+}
+
+function getPromoPeriodo(dataInicio, dataFim) {
+  return `${dataInicio || '-'} até ${dataFim || '-'}`;
 }
 
 function _promoNomeValido() {
@@ -6507,12 +6517,12 @@ function _promoDescricaoValida() {
   return ((document.getElementById('promo-descricao')?.value || '').trim().length >= 10);
 }
 function _promoDataInicioValida() {
-  return !!parsePromoDate(document.getElementById('promo-data-inicio')?.value || '');
+  return !!normalizePromoDate(document.getElementById('promo-data-inicio')?.value || '');
 }
 function _promoDataFimValida() {
-  const ini = parsePromoDate(document.getElementById('promo-data-inicio')?.value || '');
-  const fim = parsePromoDate(document.getElementById('promo-data-fim')?.value || '');
-  return !!(ini && fim && fim.getTime() >= ini.getTime());
+  const ini = normalizePromoDate(document.getElementById('promo-data-inicio')?.value || '');
+  const fim = normalizePromoDate(document.getElementById('promo-data-fim')?.value || '');
+  return !!(ini && fim && fim >= ini);
 }
 function _promoProdutosValidos() {
   return ((document.getElementById('promo-produtos-afetados')?.value || '').trim().length >= 1);
@@ -6656,7 +6666,7 @@ async function salvarPromocaoItem() {
   if (!_promoRegrasValidas()) { toast('Informe regras com no mínimo 5 caracteres.','erro'); return; }
   if (!_promoStatusValido()) { toast('Selecione o status da promoção.','erro'); return; }
 
-  const periodo = `${dataInicio} até ${dataFim}`;
+  const periodo = getPromoPeriodo(dataInicio, dataFim);
 
   if (!STATE.promocoes) STATE.promocoes = {promocoes: []};
   if (!Array.isArray(STATE.promocoes.promocoes)) STATE.promocoes.promocoes = [];
