@@ -866,12 +866,16 @@ function addCarrinho(item) {
 
 function atualizarBotãoCarrinho() {
   const total = carrinho.reduce((a,b)=>a+b.quantidade,0);
+  const totalValor = carrinho.reduce((a,b)=>a + (b.preço * b.quantidade), 0);
   const badge = document.getElementById('carrinho-badge');
   const btn = document.getElementById('btn-carrinho');
+  const totalEl = document.getElementById('carrinho-total');
   if (badge) badge.textContent = total;
+  if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.',',')}`;
   if (btn) {
-    btn.disabled = total === 0;
+    btn.disabled = false;
     btn.classList.toggle('ativo', total > 0);
+    btn.classList.toggle('vazio', total === 0);
   }
 }
 
