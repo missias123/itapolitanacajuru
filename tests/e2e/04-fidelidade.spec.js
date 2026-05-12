@@ -19,12 +19,32 @@ test.describe('Programa de Fidelidade', () => {
     await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
-    // Campo de busca por celular — ID ou name típicos
-    const celInput = page.locator('#fid-celular, input[name="celular"], input[placeholder*="celular"], input[placeholder*="telefone"]').first();
-    if (await celInput.count() > 0) {
-      await celInput.fill('16999999999');
+    const abrirCadastro = page.locator('#btn-mostrar-cadastro-fid');
+    const aceitarRegras = page.locator('#btn-aceitar-regras-fid');
+    const nomeInput = page.locator('#fid-nome');
+    const nascInput = page.locator('#fid-data-nasc');
+    const celInput = page.locator('#fid-celular');
+    const btnCadastro = page.locator('#fid-executar-cadastro');
+
+    if (await abrirCadastro.count() > 0 && await aceitarRegras.count() > 0 && await celInput.count() > 0) {
+      await abrirCadastro.click();
+      await expect(nomeInput).toBeDisabled();
+      await expect(nascInput).toBeDisabled();
+      await expect(celInput).toBeDisabled();
+      await expect(btnCadastro).toBeDisabled();
+
+      await aceitarRegras.click({ force: true });
+      await nomeInput.fill('Cliente Teste');
+      await expect(nascInput).toBeEnabled();
+
+      await nascInput.fill('01/01/2000');
+      await expect(celInput).toBeEnabled();
+
+      await celInput.fill('16999990000');
+      await expect(btnCadastro).toBeEnabled();
+
       const val = await celInput.inputValue();
-      expect(val).toBeTruthy();
+      expect(val).toContain('16');
     } else {
       test.skip();
     }
@@ -77,21 +97,24 @@ test.describe('Programa de Fidelidade', () => {
     await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
-    const celInput = page.locator('#fid-celular, input[name="celular"], input[placeholder*="celular"], input[placeholder*="telefone"]').first();
-    if (await celInput.count() > 0) {
-      // Inserir celular claramente inválido
-      await celInput.fill('00000000000');
+    const abrirCadastro = page.locator('#btn-mostrar-cadastro-fid');
+    const aceitarRegras = page.locator('#btn-aceitar-regras-fid');
+    const nomeInput = page.locator('#fid-nome');
+    const nascInput = page.locator('#fid-data-nasc');
+    const celInput = page.locator('#fid-celular');
+    const btnCadastro = page.locator('#fid-executar-cadastro');
 
-      // Encontrar botão de busca/consulta
-      const buscarBtn = page.locator('button').filter({ hasText: /buscar|consultar|verificar|entrar|acessar/i }).first();
-      if (await buscarBtn.count() > 0) {
-        await buscarBtn.click();
-        await page.waitForTimeout(800);
-      }
+    if (await abrirCadastro.count() > 0 && await celInput.count() > 0) {
+      await abrirCadastro.click();
+      await aceitarRegras.click({ force: true });
+      await nomeInput.fill('Cliente Teste');
+      await nascInput.fill('01/01/2000');
+      await celInput.fill('16000000000');
+      await page.waitForTimeout(500);
 
       // Não deve haver crash
       expect(jsErrors).toHaveLength(0);
-      // A página deve continuar respondendo
+      await expect(btnCadastro).toBeDisabled();
       await expect(page.locator('body')).toBeVisible();
     } else {
       test.skip();
