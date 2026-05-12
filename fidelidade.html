@@ -624,24 +624,24 @@
       <h2 id="titulo-login-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:12px;">Acesse sua fidelidade</h2>
       <div class="form-row" style="margin-bottom:6px;">
         <label for="fid-login-nome">Nome completo</label>
-        <input id="fid-login-nome" type="text" maxlength="100" placeholder="Nome como no documento (RG/CPF)" autocomplete="name">
-        <small class="form-text text-muted">Digite exatamente como no documento.</small>
+        <input id="fid-login-nome" type="text" maxlength="100" placeholder="Nome como no documento (RG/CPF)" autocomplete="name" aria-describedby="fid-login-nome-help">
+        <small class="form-text text-muted" id="fid-login-nome-help">Digite exatamente como no documento.</small>
       </div>
       <div id="login-wrap-data" class="login-field-reveal" style="display:none;">
         <div class="form-row" style="margin-bottom:6px;">
           <label for="fid-login-data-nasc">Data de nascimento</label>
-          <input id="fid-login-data-nasc" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
+          <input id="fid-login-data-nasc" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa" disabled aria-disabled="true" class="form-control-disabled">
           <small class="form-text text-muted">Digite sua data de nascimento.</small>
         </div>
       </div>
       <div id="login-wrap-cel" class="login-field-reveal" style="display:none;">
         <div class="form-row" style="margin-bottom:6px;">
           <label for="fid-login-celular">WhatsApp</label>
-          <input id="fid-login-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="(XX) XXXXX-XXXX" autocomplete="tel">
+          <input id="fid-login-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="(XX) XXXXX-XXXX" autocomplete="tel" disabled aria-disabled="true" class="form-control-disabled">
         </div>
       </div>
       <div id="login-wrap-btn" class="login-field-reveal" style="display:none;">
-        <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:4px;">Entrar no Meu Cadastro Fidelidade</button>
+        <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:4px;" disabled aria-disabled="true">Entrar no Meu Cadastro Fidelidade</button>
       </div>
       <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">Preencha os campos acima para acessar seus pontos.</div>
       <button class="btn btn-verde btn-block" id="btn-ir-cadastro-fidelidade" type="button" style="display:none;margin-top:10px;">Ir para cadastro de fidelidade</button>
@@ -772,6 +772,11 @@
       var wrapCel = document.getElementById('login-wrap-cel');
       var inCel = document.getElementById('fid-login-celular');
       var wrapBtn = document.getElementById('login-wrap-btn');
+      var btnEntrar = document.getElementById('btn-entrar');
+      var MIN_BIRTH_YEAR = 1900;
+      var MIN_PHONE_DIGITS = 11;
+      var CURRENT_YEAR = new Date().getFullYear();
+      var NAME_REGEX = /^[A-Za-z\u00C0-\u024F\s]{3,}$/;
       function revelar(el) {
         if (!el || el.style.display !== 'none') return;
         el.style.display = 'block';
@@ -781,36 +786,59 @@
         el.style.display = 'none';
       }
       function nomeValido(v) {
-        return /^[A-Za-z\u00C0-\u024F\s]{3,}$/.test(v.trim());
+        return NAME_REGEX.test(v.trim());
       }
       function dataValida(v) {
         if (v.length < 10) return false;
         var p = v.split('/');
         if (p.length !== 3) return false;
         var d = Number(p[0]), m = Number(p[1]), a = Number(p[2]);
-        if (!d || !m || !a || a < 1900 || a > new Date().getFullYear()) return false;
+        if (m < 1 || m > 12) return false;
+        if (!d || !m || !a || a < MIN_BIRTH_YEAR || a > CURRENT_YEAR) return false;
         var dt = new Date(a, m - 1, d);
         return dt.getFullYear() === a && dt.getMonth() === m - 1 && dt.getDate() === d;
       }
       function celValido(v) {
-        return v.replace(/\D/g, '').length >= 11;
+        return v.replace(/\D/g, '').length >= MIN_PHONE_DIGITS;
+      }
+      function setDisabledState(el, isDisabled) {
+        if (!el) return;
+        el.disabled = isDisabled;
+        el.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
       }
       function resetLogin() {
         ocultar(wrapData);
         ocultar(wrapCel);
         ocultar(wrapBtn);
         if (inNome) inNome.value = '';
-        if (inData) inData.value = '';
-        if (inCel) inCel.value = '';
+        if (inData) {
+          inData.value = '';
+          setDisabledState(inData, true);
+        }
+        if (inCel) {
+          inCel.value = '';
+          setDisabledState(inCel, true);
+        }
+        setDisabledState(btnEntrar, true);
       }
       if (inNome) {
         inNome.addEventListener('input', function () {
           if (nomeValido(inNome.value)) {
             revelar(wrapData);
+            setDisabledState(inData, false);
           } else {
             ocultar(wrapData);
             ocultar(wrapCel);
             ocultar(wrapBtn);
+            if (inData) {
+              inData.value = '';
+              setDisabledState(inData, true);
+            }
+            if (inCel) {
+              inCel.value = '';
+              setDisabledState(inCel, true);
+            }
+            setDisabledState(btnEntrar, true);
           }
         });
       }
@@ -818,9 +846,15 @@
         inData.addEventListener('input', function () {
           if (dataValida(inData.value)) {
             revelar(wrapCel);
+            setDisabledState(inCel, false);
           } else {
             ocultar(wrapCel);
             ocultar(wrapBtn);
+            if (inCel) {
+              inCel.value = '';
+              setDisabledState(inCel, true);
+            }
+            setDisabledState(btnEntrar, true);
           }
         });
       }
@@ -828,8 +862,10 @@
         inCel.addEventListener('input', function () {
           if (celValido(inCel.value)) {
             revelar(wrapBtn);
+            setDisabledState(btnEntrar, false);
           } else {
             ocultar(wrapBtn);
+            setDisabledState(btnEntrar, true);
           }
         });
       }
