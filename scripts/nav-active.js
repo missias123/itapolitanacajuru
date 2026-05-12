@@ -1,160 +1,169 @@
 /**
  * NAV ACTIVE — Sorveteria Itapolitana
- * Lógica: na página atual, remove o botão desta página do nav e insere
- * "🏠 TELA INICIAL" pulsante como PRIMEIRO botão.
- * Na tela inicial (index.html): nenhuma alteração.
+ * Objetivo: garantir menu superior SEMPRE completo e consistente em todas as páginas.
  */
 (function () {
   'use strict';
 
-  /* CSS do botão TELA INICIAL pulsante — injetado uma única vez */
+  var MENU_ITEMS = [
+    {
+      href: '#duvidas',
+      label: 'DÚVIDAS',
+      icon: '💬',
+      bg: 'background:linear-gradient(135deg,#1565C0,#0D47A1);',
+      action: 'duvidas'
+    },
+    {
+      href: 'index.html',
+      label: 'TELA INICIAL',
+      icon: '🏠',
+      bg: 'background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);'
+    },
+    {
+      href: 'promocao.html',
+      label: 'PROMOÇÃO',
+      icon: '🎉',
+      bg: 'background:linear-gradient(135deg,#E8000D,#C62828);'
+    },
+    {
+      href: 'dicas.html',
+      label: 'DICAS/DEPOIMENTOS',
+      icon: '⭐',
+      bg: 'background:linear-gradient(135deg,#00C853,#009624);'
+    },
+    {
+      href: 'fidelidade.html',
+      label: 'FIDELIDADE',
+      icon: '🎟️',
+      bg: 'background:linear-gradient(135deg,#E65100,#FF6D00);'
+    },
+    {
+      href: 'sobre.html',
+      label: 'QUEM SOMOS',
+      icon: '🏪',
+      bg: 'background:linear-gradient(135deg,#4A148C,#6A1B9A);'
+    },
+    {
+      href: 'index.html#cardapio',
+      label: 'CARDÁPIO',
+      icon: '🍦',
+      bg: 'background:linear-gradient(135deg,#8E24AA,#6A1B9A);'
+    },
+    {
+      href: 'encomendas.html',
+      label: 'ENCOMENDAS',
+      icon: '📦',
+      bg: 'background:linear-gradient(135deg,#0D47A1,#00288F);'
+    },
+    {
+      href: 'https://wa.me/5516996062046',
+      label: 'CONTATO',
+      icon: '💬',
+      bg: 'background:linear-gradient(135deg,#25D366,#128C7E);',
+      target: '_blank',
+      rel: 'noopener'
+    }
+  ];
+
   var CSS = [
     '@keyframes nav-home-pulse{',
-      '0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(0,0,0,.2),0 0 0 0 rgba(255,255,255,.6);}',
-      '50%{transform:scale(1.06);box-shadow:0 6px 20px rgba(0,0,0,.35),0 0 0 8px rgba(255,255,255,0);}',
+    '0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(0,0,0,.2),0 0 0 0 rgba(255,255,255,.5);}',
+    '50%{transform:scale(1.04);box-shadow:0 6px 20px rgba(0,0,0,.3),0 0 0 7px rgba(255,255,255,0);}',
     '}',
-    '.nav-home-btn{animation:nav-home-pulse 1.6s ease-in-out infinite !important;}',
-    '.nav-home-btn:hover,.nav-home-btn:focus{animation-play-state:paused !important;transform:translateY(-2px) scale(1.04) !important;}',
-    /* When nav has 5 children (secondary pages), last item stretches full width */
-    '.itap-header-nav:not(.itap-header-nav--show-all):has(> :nth-child(5)){grid-template-columns:repeat(2,1fr);}',
-    '.itap-header-nav:not(.itap-header-nav--show-all) > :nth-child(5):last-child{grid-column:1/-1;max-width:50%;margin:0 auto;width:100%;}',
-    '.itap-nav-btn--quem-somos-extra{display:none;}',
-    '.itap-header-nav.itap-header-nav--show-all{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}',
-    '.itap-header-nav.itap-header-nav--show-all .itap-nav-btn--quem-somos-extra{display:flex;}',
-    '.itap-header-nav.itap-header-nav--show-all > :nth-child(5):last-child{grid-column:auto;max-width:none;margin:0;width:auto;}',
-    '.itap-header-nav.itap-header-nav--show-all .itap-nav-btn{min-height:58px;}',
-    '@media (min-width:768px){.itap-header-nav.itap-header-nav--show-all{grid-template-columns:repeat(3,minmax(0,1fr));}}'
+    '.itap-header-nav.itap-header-nav--full{',
+    'grid-template-columns:repeat(2,minmax(0,1fr));',
+    'gap:7px;',
+    'max-height:min(62vh,430px);',
+    'overflow-y:auto;',
+    'padding-right:2px;',
+    '}',
+    '.itap-header-nav.itap-header-nav--full .itap-nav-btn{min-height:58px;}',
+    '.itap-header-nav.itap-header-nav--full .itap-nav-btn--home{animation:nav-home-pulse 1.8s ease-in-out infinite;}',
+    '.itap-header-nav.itap-header-nav--full .itap-nav-btn--home:hover,.itap-header-nav.itap-header-nav--full .itap-nav-btn--home:focus{animation-play-state:paused;}',
+    '@media (min-width:768px){.itap-header-nav.itap-header-nav--full{grid-template-columns:repeat(3,minmax(0,1fr));max-height:none;overflow:visible;padding-right:0;}}',
+    '@media (min-width:1100px){.itap-header-nav.itap-header-nav--full{grid-template-columns:repeat(5,minmax(0,1fr));}}'
   ].join('');
 
   function injectCSS() {
     if (document.getElementById('nav-active-css')) return;
-    var s = document.createElement('style');
-    s.id = 'nav-active-css';
-    s.textContent = CSS;
-    document.head.appendChild(s);
+    var style = document.createElement('style');
+    style.id = 'nav-active-css';
+    style.textContent = CSS;
+    document.head.appendChild(style);
   }
 
-  function run() {
-    /* Só actua em páginas com o header padrão (.itap-header-nav) */
-    var nav = document.querySelector('.itap-header-nav');
-    if (!nav) return;
-
-    /* Descobre o nome do ficheiro atual */
-    var path  = window.location.pathname;
-    var page  = path.split('/').pop() || 'index.html';
-    if (!page) page = 'index.html';
-
-    /* Tela inicial: sem alterações */
-    if (page === 'index.html' || page === '') return;
-
-    injectCSS();
-
-    /* Remove o botão da página atual (não pode clicar onde já está) */
-    var btns = nav.querySelectorAll('a.itap-nav-btn');
-    btns.forEach(function (a) {
-      var href = (a.getAttribute('href') || '').split('/').pop();
-      if (href === page) {
-        a.parentNode.removeChild(a);
-      }
-    });
-
-    /* Cria botão 🏠 TELA INICIAL pulsante */
-    var homeBtn = document.createElement('a');
-    homeBtn.href = 'index.html';
-    homeBtn.className = 'itap-nav-btn nav-home-btn';
-    homeBtn.setAttribute('style',
-      'background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);' +
-      'border-color:rgba(255,255,255,.6);'
-    );
-    homeBtn.setAttribute('aria-label', 'Voltar à Tela Inicial');
-    homeBtn.innerHTML =
-      '<span class="itap-nav-icon">🏠</span>' +
-      '<span class="itap-nav-label">TELA INICIAL</span>';
-
-    /* Insere como PRIMEIRO botão */
-    nav.insertBefore(homeBtn, nav.firstChild);
-
-    habilitarExpansaoQuemSomos(nav);
+  function descobrirPaginaAtual() {
+    var page = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    return page || 'index.html';
   }
 
-  function normalizarHref(href) {
-    var valor = String(href || '');
-    if (!valor) return '';
-    if (valor.indexOf('http') === 0) return valor;
-    return valor.split('/').pop();
+  function abrirDuvidas() {
+    if (typeof window._itabotAbrirItaBot === 'function') {
+      window._itabotAbrirItaBot();
+      return;
+    }
+    if (typeof window.abrirItaBot === 'function') {
+      window.abrirItaBot();
+      return;
+    }
+    var btn = document.querySelector('.ita-bot-duvidas-btn');
+    if (btn) btn.click();
   }
 
-  function criarBtnNavExtra(item) {
+  function criarBotao(item, paginaAtual) {
     var a = document.createElement('a');
     a.href = item.href;
-    a.className = 'itap-nav-btn itap-nav-btn--quem-somos-extra';
+    a.className = 'itap-nav-btn';
     a.setAttribute('style', item.bg + 'border-color:rgba(255,255,255,.6);');
+    if (item.label === 'TELA INICIAL') a.classList.add('itap-nav-btn--home');
+    if (item.action) a.dataset.navAction = item.action;
+    if (item.target) a.target = item.target;
+    if (item.rel) a.rel = item.rel;
+
+    var hrefPagina = (item.href || '').split('#')[0].toLowerCase();
+    if (hrefPagina === paginaAtual && hrefPagina !== '') {
+      a.setAttribute('aria-current', 'page');
+    }
+
     a.innerHTML =
       '<span class="itap-nav-icon">' + item.icon + '</span>' +
       '<span class="itap-nav-label">' + item.label + '</span>';
     return a;
   }
 
-  function habilitarExpansaoQuemSomos(nav) {
-    if (!nav) return;
-    if (nav.dataset.quemSomosExpandBound === '1') return;
-    nav.dataset.quemSomosExpandBound = '1';
-    /* "Quem Somos" aponta para sobre.html no site */
-    var trigger = nav.querySelector('a.itap-nav-btn[href$="sobre.html"]');
-    if (!trigger) return;
-
-    trigger.setAttribute('aria-haspopup', 'true');
-    trigger.setAttribute('aria-expanded', 'false');
-
-    var itens = [
-      { href: 'index.html', label: 'INÍCIO', icon: '🏠', bg: 'background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);' },
-      { href: 'index.html#cardapio', label: 'CARDÁPIO', icon: '🍦', bg: 'background:linear-gradient(135deg,#6A1B9A,#8E24AA);' },
-      { href: 'encomendas.html', label: 'ENCOMENDAS', icon: '🛒', bg: 'background:linear-gradient(135deg,#0D47A1,#00288F);' },
-      { href: 'promocao.html', label: 'PROMOÇÕES', icon: '🎉', bg: 'background:linear-gradient(135deg,#E8000D,#C62828);' },
-      { href: 'fidelidade.html', label: 'FIDELIDADE', icon: '🎟️', bg: 'background:linear-gradient(135deg,#E65100,#FF6D00);' },
-      { href: 'https://wa.me/5516996062046', label: 'CONTATO', icon: '💬', bg: 'background:linear-gradient(135deg,#25D366,#128C7E);' }
-    ];
-
-    var existentes = {};
-    nav.querySelectorAll('a.itap-nav-btn').forEach(function (a) {
-      existentes[normalizarHref(a.getAttribute('href'))] = true;
+  function montarMenuCompleto(nav) {
+    var paginaAtual = descobrirPaginaAtual();
+    nav.classList.add('itap-header-nav--full');
+    nav.innerHTML = '';
+    MENU_ITEMS.forEach(function (item) {
+      nav.appendChild(criarBotao(item, paginaAtual));
     });
-
-    itens.forEach(function (item) {
-      if (!existentes[normalizarHref(item.href)]) {
-        nav.appendChild(criarBtnNavExtra(item));
-      }
-    });
-
-    function abrirMenuCompleto() {
-      nav.classList.add('itap-header-nav--show-all');
-      trigger.setAttribute('aria-expanded', 'true');
-    }
-
-    function fecharMenuCompleto() {
-      nav.classList.remove('itap-header-nav--show-all');
-      trigger.setAttribute('aria-expanded', 'false');
-    }
-
-    trigger.addEventListener('mouseenter', abrirMenuCompleto);
-    trigger.addEventListener('focus', abrirMenuCompleto);
-    trigger.addEventListener('click', function (event) {
-      if (nav.classList.contains('itap-header-nav--show-all')) {
-        return;
-      } else {
-        event.preventDefault();
-        abrirMenuCompleto();
-      }
-    });
-
-    nav.addEventListener('mouseleave', fecharMenuCompleto);
   }
 
-  /* Executa assim que o DOM estiver pronto */
+  function bindEventos(nav) {
+    if (!nav || nav.dataset.navFullBound === '1') return;
+    nav.dataset.navFullBound = '1';
+    nav.addEventListener('click', function (event) {
+      var trigger = event.target.closest('a[data-nav-action="duvidas"]');
+      if (!trigger || !nav.contains(trigger)) return;
+      event.preventDefault();
+      abrirDuvidas();
+    });
+  }
+
+  function run() {
+    var navs = document.querySelectorAll('.itap-header-nav');
+    if (!navs.length) return;
+    injectCSS();
+    navs.forEach(function (nav) {
+      montarMenuCompleto(nav);
+      bindEventos(nav);
+    });
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', run);
   } else {
     run();
   }
-
 }());
