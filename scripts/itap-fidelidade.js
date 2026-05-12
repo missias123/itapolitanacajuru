@@ -8,6 +8,8 @@
   var META_10 = 10;
   var META_30 = 30;
   var STATUS_DISPONIVEL = 'disponível';
+  // DDD com 2 dígitos válidos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
+  var BRAZILIAN_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
 
   var secaoCadastro = document.getElementById('secao-cadastro-fid');
   var secaoLogin = document.getElementById('secao-login-fid');
@@ -23,7 +25,7 @@
   var inputCadNome = document.getElementById('fid-nome');
   var inputCadNasc = document.getElementById('fid-data-nasc');
   var inputCadTel = document.getElementById('fid-celular');
-  var btnCadastrar = document.getElementById('btn-cadastrar-clube');
+  var btnCadastrar = document.getElementById('fid-executar-cadastro');
   var resultadoCadastro = document.getElementById('resultado-cliente');
 
   var inputNome = document.getElementById('fid-login-nome');
@@ -74,16 +76,63 @@
     resultadoCadastro.className = 'resultado' + (tipo ? ' ' + tipo : '');
   }
 
-  function cadastroCamposValidos() {
+  function cadastroNomeValido() {
     var nome = (inputCadNome && inputCadNome.value ? inputCadNome.value : '').trim();
-    var dataBr = (inputCadNasc && inputCadNasc.value ? inputCadNasc.value : '').trim();
-    var telRaw = (inputCadTel && inputCadTel.value ? inputCadTel.value : '').replace(/\D/g, '');
-    return !!(nome && parseDataBrToIso(dataBr) && telRaw);
+    return nome.length >= 3;
   }
 
-  function atualizarEstadoBotaoCadastro() {
+  function cadastroDataValida() {
+    var dataBr = (inputCadNasc && inputCadNasc.value ? inputCadNasc.value : '').trim();
+    return !!parseDataBrToIso(dataBr);
+  }
+
+  function cadastroCelularValido() {
+    var telRaw = (inputCadTel && inputCadTel.value ? inputCadTel.value : '').replace(/\D/g, '');
+    return BRAZILIAN_MOBILE_REGEX.test(telRaw);
+  }
+
+  function cadastroCamposValidos() {
+    return cadastroNomeValido() && cadastroDataValida() && cadastroCelularValido();
+  }
+
+  function setCampoCadastroHabilitado(campo, habilitado) {
+    if (!campo) return;
+    campo.disabled = !habilitado;
+    campo.classList.toggle('form-control-disabled', !habilitado);
+  }
+
+  function atualizarFluxoCadastro() {
+    var nomeValido = cadastroNomeValido();
+    var dataValida = cadastroDataValida();
+    var podeEditarNome = _cadastroRegrasAceitas;
+    var podeEditarData = podeEditarNome && nomeValido;
+    var podeEditarCel = podeEditarData && dataValida;
+
+    setCampoCadastroHabilitado(inputCadNome, podeEditarNome);
+    setCampoCadastroHabilitado(inputCadNasc, podeEditarData);
+    setCampoCadastroHabilitado(inputCadTel, podeEditarCel);
+
     if (!btnCadastrar) return;
     btnCadastrar.disabled = !(_cadastroRegrasAceitas && cadastroCamposValidos());
+  }
+
+  function resetarFormularioCadastro() {
+    _cadastroRegrasAceitas = false;
+    if (inputCadNome) inputCadNome.value = '';
+    if (inputCadNasc) inputCadNasc.value = '';
+    if (inputCadTel) inputCadTel.value = '';
+    if (btnAceitarRegras) {
+      btnAceitarRegras.classList.remove('aceito');
+      btnAceitarRegras.disabled = false;
+      btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
+    }
+    if (etapaCadastroRegras) etapaCadastroRegras.style.display = 'block';
+    if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
+    if (btnCadastrar) {
+      btnCadastrar.disabled = true;
+      btnCadastrar.textContent = 'Executar cadastro';
+    }
+    atualizarFluxoCadastro();
   }
 
   function getGhToken() {
@@ -314,18 +363,7 @@
     if (secaoCadastro) secaoCadastro.style.display = 'block';
     if (secaoLogin) secaoLogin.style.display = 'none';
     if (secaoPainel) secaoPainel.style.display = 'none';
-    _cadastroRegrasAceitas = false;
-    if (btnAceitarRegras) {
-      btnAceitarRegras.classList.remove('aceito');
-      btnAceitarRegras.disabled = false;
-      btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
-    }
-    if (etapaCadastroRegras) etapaCadastroRegras.style.display = 'block';
-    if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
-    if (btnCadastrar) {
-      btnCadastrar.disabled = true;
-      btnCadastrar.textContent = 'Executar cadastro';
-    }
+    resetarFormularioCadastro();
     setResultadoCadastro('', '');
     if (secaoCadastro) secaoCadastro.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -409,12 +447,22 @@
       if (etapaCadastroForm) etapaCadastroForm.style.display = 'grid';
       btnAceitarRegras.classList.add('aceito');
       btnAceitarRegras.textContent = 'Regras aceitas ✓';
-      atualizarEstadoBotaoCadastro();
+      atualizarFluxoCadastro();
+      if (inputCadNome) inputCadNome.focus();
     });
   }
-  if (inputCadNome) inputCadNome.addEventListener('input', atualizarEstadoBotaoCadastro);
-  if (inputCadNasc) inputCadNasc.addEventListener('input', atualizarEstadoBotaoCadastro);
-  if (inputCadTel) inputCadTel.addEventListener('input', atualizarEstadoBotaoCadastro);
+  if (inputCadNome) {
+    inputCadNome.addEventListener('input', atualizarFluxoCadastro);
+    inputCadNome.addEventListener('change', atualizarFluxoCadastro);
+  }
+  if (inputCadNasc) {
+    inputCadNasc.addEventListener('input', atualizarFluxoCadastro);
+    inputCadNasc.addEventListener('change', atualizarFluxoCadastro);
+  }
+  if (inputCadTel) {
+    inputCadTel.addEventListener('input', atualizarFluxoCadastro);
+    inputCadTel.addEventListener('change', atualizarFluxoCadastro);
+  }
 
   if (btnCadastrar) {
     btnCadastrar.addEventListener('click', function() {
@@ -427,16 +475,16 @@
         setResultadoCadastro('⚠️ Você precisa aceitar as regras do programa para se cadastrar.', 'erro');
         return;
       }
-      if (!nome) {
-        setResultadoCadastro('⚠️ Informe seu nome completo.', 'erro');
+      if (!cadastroNomeValido()) {
+        setResultadoCadastro('⚠️ Informe seu nome completo com pelo menos 3 caracteres.', 'erro');
         return;
       }
       if (!dataIso) {
         setResultadoCadastro('⚠️ Informe uma data válida no formato dd/mm/aaaa.', 'erro');
         return;
       }
-      if (!telRaw) {
-        setResultadoCadastro('⚠️ Informe seu celular (WhatsApp).', 'erro');
+      if (!cadastroCelularValido()) {
+        setResultadoCadastro('⚠️ Informe um WhatsApp válido com DDD e 11 dígitos numéricos.', 'erro');
         return;
       }
 
@@ -448,7 +496,7 @@
       if (!tk) {
         setResultadoCadastro('⚠️ Não foi possível salvar seu cadastro agora. Tente novamente em instantes para gravar na base oficial do programa.', 'erro');
         btnCadastrar.textContent = 'Executar cadastro';
-        atualizarEstadoBotaoCadastro();
+        atualizarFluxoCadastro();
         return;
       }
 
@@ -464,15 +512,7 @@
               if (inputNome) inputNome.value = nome;
               if (inputNasc) inputNasc.value = dataBr;
               if (inputTel) inputTel.value = mascaraTel(telRaw);
-              if (inputCadNome) inputCadNome.value = '';
-              if (inputCadNasc) inputCadNasc.value = '';
-              if (inputCadTel) inputCadTel.value = '';
-              _cadastroRegrasAceitas = false;
-              if (btnAceitarRegras) {
-                btnAceitarRegras.classList.remove('aceito');
-                btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
-              }
-              if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
+              resetarFormularioCadastro();
             });
           }
 
@@ -513,15 +553,7 @@
             if (inputNome) inputNome.value = nome;
             if (inputNasc) inputNasc.value = dataBr;
             if (inputTel) inputTel.value = mascaraTel(telRaw);
-            if (inputCadNome) inputCadNome.value = '';
-            if (inputCadNasc) inputCadNasc.value = '';
-            if (inputCadTel) inputCadTel.value = '';
-            _cadastroRegrasAceitas = false;
-            if (btnAceitarRegras) {
-              btnAceitarRegras.classList.remove('aceito');
-              btnAceitarRegras.textContent = 'Li e aceito as regras do Clube de Fidelidade';
-            }
-            if (etapaCadastroForm) etapaCadastroForm.style.display = 'none';
+            resetarFormularioCadastro();
           });
         })
         .catch(function(e) {
@@ -529,10 +561,12 @@
         })
         .finally(function() {
           btnCadastrar.textContent = 'Executar cadastro';
-          atualizarEstadoBotaoCadastro();
+          atualizarFluxoCadastro();
         });
     });
   }
+
+  atualizarFluxoCadastro();
 
   if (btnEntrar) {
     btnEntrar.addEventListener('click', function() {

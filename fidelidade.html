@@ -226,6 +226,22 @@
       font-family: inherit;
     }
     input:focus { outline: none; border-color: #EF0129; }
+    input.form-control-disabled,
+    input:disabled {
+      background: #F5F5F5;
+      color: #78909C;
+      border-color: #CFD8DC;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+    .form-text {
+      display: block;
+      margin-top: -2px;
+      margin-bottom: 6px;
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+    .text-muted { color: #607D8B; }
 
     .btn-sec { background: linear-gradient(135deg, #E65100, #FF8F00); color: #fff; }
     .btn-wpp { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; margin-top: 6px; width: 100%; display: none; }
@@ -585,15 +601,18 @@
 
       <div class="form-row" id="cadastro-etapa-form-fid" style="display:none;margin-top:12px;">
         <label for="fid-nome">Nome completo</label>
-        <input id="fid-nome" type="text" maxlength="100" placeholder="Digite seu nome completo">
+        <input id="fid-nome" type="text" maxlength="100" placeholder="Seu nome completo (como no documento)" disabled class="form-control-disabled" aria-describedby="fid-nome-help">
+        <small class="form-text text-muted" id="fid-nome-help">Use o nome completo para vincular corretamente seus pontos.</small>
 
         <label for="fid-data-nasc">Data de nascimento</label>
-        <input id="fid-data-nasc" type="text" maxlength="10" placeholder="Digite sua data de nascimento (dd/mm/aaaa)" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
+        <input id="fid-data-nasc" type="text" maxlength="10" placeholder="Sua data de nascimento (DD/MM/AAAA, como no documento)" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa" disabled class="form-control-disabled" aria-describedby="fid-data-nasc-help">
+        <small class="form-text text-muted" id="fid-data-nasc-help">Usamos para identificar você de forma única no clube.</small>
 
         <label for="fid-celular">Celular (WhatsApp)</label>
-        <input id="fid-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="Digite seu WhatsApp com DDD">
+        <input id="fid-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="Seu WhatsApp com DDD (ex: 16 99999-0000)" disabled class="form-control-disabled" aria-describedby="fid-celular-help">
+        <small class="form-text text-muted" id="fid-celular-help">Receba novidades e pontos direto no seu WhatsApp.</small>
 
-        <button class="btn btn-verde btn-block" id="btn-cadastrar-clube" style="margin-top:8px;" disabled>Executar cadastro</button>
+        <button type="button" class="btn btn-verde btn-block" id="fid-executar-cadastro" style="margin-top:8px;" disabled>Executar cadastro</button>
       </div>
 
       <div class="resultado" id="resultado-cliente" style="margin-top:12px;display:none;" role="status"></div>
