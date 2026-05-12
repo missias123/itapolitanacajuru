@@ -7,7 +7,7 @@
 
   var MENU_ITEMS = [
     {
-      href: '#duvidas',
+      href: 'index.html#duvidas',
       label: 'DÚVIDAS',
       icon: '💬',
       bg: 'background:linear-gradient(135deg,#1565C0,#0D47A1);',
@@ -58,7 +58,7 @@
     {
       href: 'https://wa.me/5516996062046',
       label: 'CONTATO',
-      icon: '💬',
+      icon: '📞',
       bg: 'background:linear-gradient(135deg,#25D366,#128C7E);',
       target: '_blank',
       rel: 'noopener'
@@ -93,8 +93,12 @@
   }
 
   function descobrirPaginaAtual() {
-    var page = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    var page = (window.location.pathname.split('/').pop() || '').toLowerCase();
     return page || 'index.html';
+  }
+
+  function descobrirHashAtual() {
+    return (window.location.hash || '').toLowerCase();
   }
 
   function abrirDuvidas() {
@@ -107,7 +111,11 @@
       return;
     }
     var btn = document.querySelector('.ita-bot-duvidas-btn');
-    if (btn) btn.click();
+    if (btn) {
+      btn.click();
+      return;
+    }
+    console.warn('[itap-nav] Não foi possível abrir o botão DÚVIDAS nesta página.');
   }
 
   function criarBotao(item, paginaAtual) {
@@ -120,8 +128,12 @@
     if (item.target) a.target = item.target;
     if (item.rel) a.rel = item.rel;
 
-    var hrefPagina = (item.href || '').split('#')[0].toLowerCase();
-    if (hrefPagina === paginaAtual && hrefPagina !== '') {
+    var hashAtual = descobrirHashAtual();
+    var href = item.href || '';
+    var hrefPartes = href.split('#');
+    var hrefPagina = hrefPartes[0].toLowerCase();
+    var hrefHash = hrefPartes.length > 1 ? '#' + hrefPartes[1].toLowerCase() : '';
+    if (hrefPagina === paginaAtual && hrefPagina !== '' && (!hrefHash || hrefHash === hashAtual)) {
       a.setAttribute('aria-current', 'page');
     }
 
