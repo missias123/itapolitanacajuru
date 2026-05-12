@@ -1537,3 +1537,33 @@ function alterarAcréscimo(id, delta) {
   }
   atualizarBotãoCarrinho();
 }
+
+/* Seção expansível: Como Fazer Sua Encomenda */
+(function iniciarToggleComoEncomendar() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciarToggleComoEncomendar, { once: true });
+    return;
+  }
+
+  const btn = document.getElementById('btn-como-fazer-encomenda');
+  const conteudo = document.getElementById('conteudo-como-fazer-encomenda');
+  if (!btn || !conteudo || btn.dataset.toggleBound === '1') return;
+
+  btn.dataset.toggleBound = '1';
+  const textoPadrao = '📦 Como Fazer Sua Encomenda';
+  const textoAberto = '📦 Ocultar Instruções';
+
+  btn.addEventListener('click', function () {
+    const aberto = !conteudo.hasAttribute('hidden');
+    if (aberto) {
+      conteudo.setAttribute('hidden', '');
+      btn.textContent = textoPadrao;
+      btn.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
+    conteudo.removeAttribute('hidden');
+    btn.textContent = textoAberto;
+    btn.setAttribute('aria-expanded', 'true');
+  });
+})();
