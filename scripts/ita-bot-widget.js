@@ -225,7 +225,7 @@
     </div>
   </div>
 </div>
-<div class="chat-msgs ita-bot-body" id="duvidas-resposta" aria-live="polite">
+<div class="chat-msgs ita-bot-body" id="duvidas-resposta" aria-live="polite" role="log" aria-relevant="additions text">
   <div class="msg bot ita-bot-message-bot">Olá, sou o Ita Bot! Digite sua dúvida abaixo que eu te ajudo.</div>
 </div>
 <div class="chat-inp-row ita-bot-footer">
@@ -478,31 +478,17 @@
     }
   ];
 
-  /* Monta a resposta como DocumentFragment usando apenas DOM APIs (sem innerHTML).
-     UX: texto limpo em span + link-botão opcional. Segurança: textContent em cada nó. */
+  /* Monta payload seguro de resposta do bot (texto + links conhecidos). */
   function _itabotMontarResposta(entry) {
-    var frag = document.createDocumentFragment();
-    var span = document.createElement('span');
-    span.style.cssText = 'display:block;margin-bottom:10px;line-height:1.6';
-    span.textContent = entry.answer;
-    frag.appendChild(span);
-    if (entry.linkHref && entry.linkText) {
-      var a = document.createElement('a');
-      a.href = entry.external ? entry.linkHref : (_base + entry.linkHref);
-      a.className = 'itabot-link-btn';
-      if (entry.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
-      a.textContent = entry.linkText;
-      frag.appendChild(a);
-    }
-    if (entry.linkHref2 && entry.linkText2) {
-      var a2 = document.createElement('a');
-      a2.href = entry.external2 ? entry.linkHref2 : (_base + entry.linkHref2);
-      a2.className = 'itabot-link-btn';
-      if (entry.external2) { a2.target = '_blank'; a2.rel = 'noopener noreferrer'; }
-      a2.textContent = entry.linkText2;
-      frag.appendChild(a2);
-    }
-    return frag;
+    return {
+      answer: entry.answer || '',
+      linkText: entry.linkText || '',
+      linkHref: entry.linkHref || '',
+      external: !!entry.external,
+      linkText2: entry.linkText2 || '',
+      linkHref2: entry.linkHref2 || '',
+      external2: !!entry.external2
+    };
   }
 
   /* ─── Carrega FAQs dos JSON e mescla ─── */
@@ -533,14 +519,9 @@
   }());
 
   /* ─── Chat functions ─── */
-  /* Converte string em texto seguro no chat (sem reinterpretar HTML). */
-  function _itabotHtmlParaFragmento(html) {
-    var frag = document.createDocumentFragment();
-    var span = document.createElement('span');
-    span.style.cssText = 'display:block;line-height:1.6';
-    span.textContent = String(html || '').replace(/<[^>]*>/g, ' ').trim();
-    frag.appendChild(span);
-    return frag;
+  /* Normaliza conteúdo textual removendo tags HTML. */
+  function _itabotSanitizarTexto(html) {
+    return String(html || '').replace(/<[^>]*>/g, ' ').trim();
   }
   function _itabotScrollFim() {
     var el = document.getElementById('duvidas-resposta');
@@ -553,8 +534,26 @@
     if (!el) return;
     var msgEl = document.createElement('div');
     msgEl.className = 'msg ' + (tipo === 'user' ? 'user ita-bot-message-user' : 'bot ita-bot-message-bot');
-    if (conteudo instanceof DocumentFragment || conteudo instanceof Node) msgEl.appendChild(conteudo);
-    else msgEl.textContent = String(conteudo || '');
+    msgEl.setAttribute('role', 'article');
+    if (tipo === 'bot' && conteudo && typeof conteudo === 'object') {
+      var txt = document.createElement('span');
+      txt.style.cssText = 'display:block;margin-bottom:10px;line-height:1.6';
+      txt.textContent = conteudo.answer || '';
+      msgEl.appendChild(txt);
+      var addLink = function (linkText, linkHref, external) {
+        if (!linkText || !linkHref) return;
+        var a = document.createElement('a');
+        a.href = external ? linkHref : (_base + linkHref);
+        a.className = 'itabot-link-btn';
+        if (external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+        a.textContent = linkText;
+        msgEl.appendChild(a);
+      };
+      addLink(conteudo.linkText, conteudo.linkHref, conteudo.external);
+      addLink(conteudo.linkText2, conteudo.linkHref2, conteudo.external2);
+    } else {
+      msgEl.textContent = String(conteudo || '');
+    }
     el.appendChild(msgEl);
     _itabotScrollFim();
   }
@@ -569,7 +568,7 @@
       var entry = itaBotKnowledge[i];
       for (var j = 0; j < entry.keywords.length; j++) {
         if (l.indexOf(norm(entry.keywords[j])) !== -1) {
-          return _itabotMontarResposta(entry);  /* retorna DocumentFragment */
+          return _itabotMontarResposta(entry);
         }
       }
     }
@@ -578,14 +577,14 @@
     for (var k in RESPOSTAS) {
       if (k !== 'default' && l.indexOf(norm(k)) !== -1) {
         var r = typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
-        return _itabotHtmlParaFragmento(r);  /* converte HTML estático em DOM fragment */
+        return { answer: _itabotSanitizarTexto(r) };
       }
     }
 
     // 3) Resposta padrão quando nenhuma palavra-chave for reconhecida
     var d = RESPOSTAS['default'];
     var dHtml = typeof d === 'function' ? d() : d;
-    return _itabotHtmlParaFragmento(dHtml);
+    return { answer: _itabotSanitizarTexto(dHtml) };
   }
   window._itabotEnviarSug = function (btn) {
     var inp = document.getElementById('duvidas-pergunta');
