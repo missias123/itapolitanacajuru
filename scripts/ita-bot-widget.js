@@ -110,14 +110,13 @@
 
 /* === TELA DE DÚVIDAS minimalista em 3 blocos === */
 .chat-box{display:flex;flex-direction:column;height:100dvh!important;background:#fff}
-.chat-hdr{background:#fff;color:#1A0A00;border-bottom:1px solid #ECECEC;padding:10px 12px;display:flex;gap:8px}
-.chat-hdr-logo-row{border:0;padding:0;flex:1;justify-content:flex-start}
-.chat-hdr-main-row{display:flex;justify-content:flex-end}
-.chat-hdr-main-row>div:first-child,.chat-btn-home,.chat-hdr p,.chat-hdr h3{display:none!important}
-.chat-close{background:#F3F4F6;color:#111827;width:40px;height:40px;font-size:18px}
-#duvidas-resposta.chat-msgs{flex:1!important;min-height:40vh;padding:14px 16px;overflow-y:auto;background:#FAFAFA;font-size:15px;line-height:1.6;color:#111827}
+.chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);color:#fff;border-bottom:0;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.chat-hdr-logo-row{border-bottom:1px solid rgba(255,255,255,.22);padding-bottom:6px;flex:1;justify-content:flex-start}
+.chat-hdr-main-row{display:flex;align-items:center;justify-content:space-between}
+.chat-close{background:rgba(255,255,255,.2);color:#fff;width:44px;height:44px;font-size:20px}
+#duvidas-resposta.chat-msgs.ita-bot-body{flex:1!important;min-height:40vh;padding:14px 16px;overflow-y:auto;background:#FAFAFA;font-size:15px;line-height:1.6;color:#111827;display:flex;flex-direction:column;gap:10px}
 .chat-typing,.chat-sugs,.duvidas-chips-wrap,.chat-footer{display:none!important}
-.chat-inp-row{border-top:1px solid #ECECEC;background:#fff;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px}
+.chat-inp-row.ita-bot-footer{border-top:1px solid #ECECEC;background:#fff;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-shrink:0}
 #duvidas-pergunta.chat-inp{flex:1;border:2px solid #E5E7EB;border-radius:12px;padding:12px 14px;font-size:16px}
 .chat-send{width:auto;height:auto;min-width:92px;border-radius:12px;padding:0 14px;font-size:14px;font-weight:800}
 @media(max-width:600px){#duvidas-resposta.chat-msgs{font-size:14px}}
@@ -216,19 +215,21 @@
         </svg>
       </div>
       <div>
-        <h3 id="chat-hdr-titulo" style="font-size:15px;font-weight:900;margin:0;color:#fff">🤖 DÚVIDAS — Ita Bot</h3>
-        <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Cardápio, promoções, fidelidade e encomendas sem sair do fluxo</p>
+        <h3 id="chat-hdr-titulo" style="font-size:15px;font-weight:900;margin:0;color:#fff">Fale Conosco</h3>
+        <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Assistente Itapolitana · Responde na hora</p>
       </div>
     </div>
     <div class="chat-hdr-btns">
-      <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
       <button class="chat-btn-home" onclick="_itabotFecharChatDialog();window.location.href='${_base}index.html'" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
+      <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
     </div>
   </div>
 </div>
-<div class="chat-msgs" id="duvidas-resposta" aria-live="polite">Olá! 👋 Sou o <strong>Ita Bot</strong>.<br><br>Posso te levar direto para os fluxos principais:<br><br><a class="itabot-link-btn" href="${_base}encomendas.html">📦 Quero ver cardápio / encomendar</a><a class="itabot-link-btn" href="${_base}promocao.html">🎁 Quero ver promoções</a><a class="itabot-link-btn" href="${_base}fidelidade.html">⭐ Quero ver fidelidade</a></div>
-<div class="chat-inp-row">
-  <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida ou peça: cardápio, promoções, fidelidade..." type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
+<div class="chat-msgs ita-bot-body" id="duvidas-resposta" aria-live="polite" role="log" aria-relevant="additions text">
+  <div class="msg bot ita-bot-message-bot">Olá, sou o Ita Bot! Digite sua dúvida abaixo que eu te ajudo.</div>
+</div>
+<div class="chat-inp-row ita-bot-footer">
+  <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Campo para digitar sua dúvida para o Ita Bot"/>
   <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">Enviar</button>
 </div>
 </div>
@@ -477,31 +478,17 @@
     }
   ];
 
-  /* Monta a resposta como DocumentFragment usando apenas DOM APIs (sem innerHTML).
-     UX: texto limpo em span + link-botão opcional. Segurança: textContent em cada nó. */
+  /* Monta payload seguro de resposta do bot (texto + links conhecidos). */
   function _itabotMontarResposta(entry) {
-    var frag = document.createDocumentFragment();
-    var span = document.createElement('span');
-    span.style.cssText = 'display:block;margin-bottom:10px;line-height:1.6';
-    span.textContent = entry.answer;
-    frag.appendChild(span);
-    if (entry.linkHref && entry.linkText) {
-      var a = document.createElement('a');
-      a.href = entry.external ? entry.linkHref : (_base + entry.linkHref);
-      a.className = 'itabot-link-btn';
-      if (entry.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
-      a.textContent = entry.linkText;
-      frag.appendChild(a);
-    }
-    if (entry.linkHref2 && entry.linkText2) {
-      var a2 = document.createElement('a');
-      a2.href = entry.external2 ? entry.linkHref2 : (_base + entry.linkHref2);
-      a2.className = 'itabot-link-btn';
-      if (entry.external2) { a2.target = '_blank'; a2.rel = 'noopener noreferrer'; }
-      a2.textContent = entry.linkText2;
-      frag.appendChild(a2);
-    }
-    return frag;
+    return {
+      answer: entry.answer || '',
+      linkText: entry.linkText || '',
+      linkHref: entry.linkHref || '',
+      external: !!entry.external,
+      linkText2: entry.linkText2 || '',
+      linkHref2: entry.linkHref2 || '',
+      external2: !!entry.external2
+    };
   }
 
   /* ─── Carrega FAQs dos JSON e mescla ─── */
@@ -532,41 +519,43 @@
   }());
 
   /* ─── Chat functions ─── */
-  /* Converte string HTML (de RESPOSTAS/FAQ) em DocumentFragment seguro usando DOMParser.
-     RESPOSTAS vêm de dados estáticos do servidor, nunca do input do usuário. */
-  function _itabotHtmlParaFragmento(html) {
-    try {
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(html, 'text/html');
-      doc.querySelectorAll('script, style').forEach(function (n) { n.remove(); });
-      doc.querySelectorAll('*').forEach(function (n) {
-        var toRemove = [];
-        for (var i = 0; i < n.attributes.length; i++) {
-          var a = n.attributes[i];
-          if (/^on/i.test(a.name) || /javascript\s*:/i.test(a.value)) toRemove.push(a.name);
-        }
-        toRemove.forEach(function (name) { n.removeAttribute(name); });
-      });
-      var frag = document.createDocumentFragment();
-      Array.from(doc.body.childNodes).forEach(function (child) {
-        frag.appendChild(document.adoptNode(child));
-      });
-      return frag;
-    } catch (e) {
-      var frag2 = document.createDocumentFragment();
-      var span = document.createElement('span');
-      span.textContent = html.replace(/<[^>]*>/g, ' ').trim();
-      frag2.appendChild(span);
-      return frag2;
-    }
+  /* Normaliza conteúdo textual removendo tags HTML. */
+  function _itabotSanitizarTexto(html) {
+    return String(html || '').replace(/<[^>]*>/g, ' ').trim();
   }
-  /* Exibe um DocumentFragment na área de resposta (sem innerHTML, sem parseFromString aqui). */
-  function _itabotSetResposta(frag) {
+  function _itabotScrollFim() {
     var el = document.getElementById('duvidas-resposta');
     if (!el) return;
-    while (el.firstChild) { el.removeChild(el.firstChild); }
-    if (frag) { el.appendChild(frag); }
-    el.scrollTop = 0;
+    el.scrollTop = el.scrollHeight;
+  }
+  /* Adiciona mensagem ao histórico de conversa (usuário ou bot). */
+  function _itabotAdicionarMensagem(tipo, conteudo) {
+    var el = document.getElementById('duvidas-resposta');
+    if (!el) return;
+    var msgEl = document.createElement('div');
+    msgEl.className = 'msg ' + (tipo === 'user' ? 'user ita-bot-message-user' : 'bot ita-bot-message-bot');
+    msgEl.setAttribute('role', 'article');
+    if (tipo === 'bot' && conteudo && typeof conteudo === 'object') {
+      var txt = document.createElement('span');
+      txt.style.cssText = 'display:block;margin-bottom:10px;line-height:1.6';
+      txt.textContent = conteudo.answer || '';
+      msgEl.appendChild(txt);
+      var addLink = function (linkText, linkHref, external) {
+        if (!linkText || !linkHref) return;
+        var a = document.createElement('a');
+        a.href = external ? linkHref : (_base + linkHref);
+        a.className = 'itabot-link-btn';
+        if (external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+        a.textContent = linkText;
+        msgEl.appendChild(a);
+      };
+      addLink(conteudo.linkText, conteudo.linkHref, conteudo.external);
+      addLink(conteudo.linkText2, conteudo.linkHref2, conteudo.external2);
+    } else {
+      msgEl.textContent = String(conteudo || '');
+    }
+    el.appendChild(msgEl);
+    _itabotScrollFim();
   }
   /* Lookup: recebe msg do usuário, retorna DocumentFragment com dados estáticos.
      msg é usada SOMENTE como chave de busca — nunca incluída no conteúdo exibido. */
@@ -579,7 +568,7 @@
       var entry = itaBotKnowledge[i];
       for (var j = 0; j < entry.keywords.length; j++) {
         if (l.indexOf(norm(entry.keywords[j])) !== -1) {
-          return _itabotMontarResposta(entry);  /* retorna DocumentFragment */
+          return _itabotMontarResposta(entry);
         }
       }
     }
@@ -588,14 +577,14 @@
     for (var k in RESPOSTAS) {
       if (k !== 'default' && l.indexOf(norm(k)) !== -1) {
         var r = typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
-        return _itabotHtmlParaFragmento(r);  /* converte HTML estático em DOM fragment */
+        return { answer: _itabotSanitizarTexto(r) };
       }
     }
 
     // 3) Resposta padrão quando nenhuma palavra-chave for reconhecida
     var d = RESPOSTAS['default'];
     var dHtml = typeof d === 'function' ? d() : d;
-    return _itabotHtmlParaFragmento(dHtml);
+    return { answer: _itabotSanitizarTexto(dHtml) };
   }
   window._itabotEnviarSug = function (btn) {
     var inp = document.getElementById('duvidas-pergunta');
@@ -615,8 +604,9 @@
     if (!inp) return;
     var msg = inp.value.trim();
     if (!msg) return;
+    _itabotAdicionarMensagem('user', msg);
     inp.value = '';
-    _itabotSetResposta(_itabotGetResp(msg));
+    _itabotAdicionarMensagem('bot', _itabotGetResp(msg));
   }
   window._itabotEnviarChat = _itabotEnviarChat;
 
