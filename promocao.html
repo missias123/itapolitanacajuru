@@ -89,6 +89,7 @@
     .cd-num { display: block; font-size: 24px; font-weight: 900; color: #E65100; line-height: 1; }
     .cd-lab { font-size: 10px; font-weight: 700; color: #FB8C00; text-transform: uppercase; }
     #cd-encerrado { display: none; font-weight: 900; color: #E8000D; font-size: 18px; padding: 10px; }
+    #countdown-sorteio { margin-bottom: 16px; }
 
     /* CARD PRINCIPAL */
     .promo-card {
@@ -128,6 +129,90 @@
     }
     @media (min-width: 700px) {
       .ofertas-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    #banner-sorteio { margin-bottom: 16px; }
+    #texto-promocoes-sorteios {
+      background: linear-gradient(135deg, #fff7ee, #fff);
+      border: 1px solid #F5D7BC;
+      border-radius: 18px;
+      padding: 18px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(26,10,0,.08);
+    }
+    #texto-promocoes-sorteios h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.25rem, 5vw, 1.85rem);
+      line-height: 1.2;
+      color: #1A237E;
+      font-weight: 900;
+    }
+    #texto-promocoes-sorteios p {
+      margin: 0;
+      font-size: .95rem;
+      color: #5D4037;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+    #botoes-acao-promocao {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .promo-acao-btn {
+      min-height: 48px;
+      border-radius: 14px;
+      font-size: .94rem;
+      font-weight: 900;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px 14px;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,.16);
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .promo-acao-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    #btn-participar-agora { background: linear-gradient(135deg,#E65100,#FF6D00); }
+    #btn-ver-cardapio { background: linear-gradient(135deg,#0D47A1,#1565C0); }
+    #btn-fidelidade { background: linear-gradient(135deg,#2e7d32,#43a047); }
+    #passo-a-passo-promocao {
+      background: #fff;
+      border: 1px solid #F5D7BC;
+      border-radius: 18px;
+      padding: 18px 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(26,10,0,.08);
+      display: grid;
+      gap: 10px;
+    }
+    .passo-item-promocao {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #4E342E;
+      font-size: .9rem;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+    .passo-item-promocao .passo-numero {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg,#C62828,#E8000D);
+      box-shadow: 0 4px 12px rgba(232,0,13,.3);
+      flex-shrink: 0;
+    }
+    @media (min-width: 760px) {
+      #botoes-acao-promocao { grid-template-columns: repeat(3, minmax(0,1fr)); }
     }
 
     /* BOTÕES */
@@ -378,42 +463,19 @@ body { overflow-x: hidden; }
 </header>
 <!-- ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════════ -->
 <main id="conteudo-principal">
-<section class="itap-page-shell" aria-labelledby="promocao-hero-titulo">
-  <!-- Alteração para alinhar promoções da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
-  <div class="itap-food-hero">
-    <div class="itap-food-hero__inner">
-      <div>
-        <span class="itap-food-hero__eyebrow">Promoções + sorteios</span>
-        <h1 class="itap-food-hero__title" id="promocao-hero-titulo">Acompanhe as <strong>promoções ativas da Itapolitana</strong></h1>
-        <p class="itap-food-hero__description">Veja o sorteio do mês, cadastre-se sem confusão e volte para os fluxos principais do site com um toque.</p>
-        <div class="itap-food-hero__actions" style="margin-top:14px;">
-          <a href="#card-sorteio" class="itap-food-hero__action itap-food-hero__action--primary">🎁 Participar agora</a>
-          <a href="index.html#vc-wrap" class="itap-food-hero__action itap-food-hero__action--secondary">🍦 Ver cardápio</a>
-          <a href="fidelidade.html" class="itap-food-hero__action itap-food-hero__action--ghost">⭐ Ver fidelidade</a>
-          <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
-        </div>
-      </div>
-      <div class="itap-flow-list" aria-label="Fluxo da página de promoções">
-        <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Confira a campanha ativa e entenda rapidamente as regras.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>Aceite o regulamento e preencha o cadastro sem sair da página.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Volte ao cardápio, às encomendas ou ao clube fidelidade pelo mesmo topo.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
 <div class="container">
-<div class="countdown-box">
-<div class="countdown-title">⏳ Contagem Regressiva para o Sorteio:</div>
-<div class="countdown-grid" id="cd-row">
-<div class="cd-item"><span class="cd-num" id="cd-d">00</span><span class="cd-lab">Dias</span></div>
-<div class="cd-item"><span class="cd-num" id="cd-h">00</span><span class="cd-lab">Horas</span></div>
-<div class="cd-item"><span class="cd-num" id="cd-m">00</span><span class="cd-lab">Min</span></div>
-<div class="cd-item"><span class="cd-num" id="cd-s">00</span><span class="cd-lab">Seg</span></div>
+<div id="countdown-sorteio" class="countdown-box">
+  <div class="countdown-title">⏳ Próximo Sorteio Mensal em:</div>
+  <div class="countdown-grid" id="cd-row">
+    <div class="cd-item"><span class="cd-num" id="cd-d">00</span><span class="cd-lab">Dias</span></div>
+    <div class="cd-item"><span class="cd-num" id="cd-h">00</span><span class="cd-lab">Horas</span></div>
+    <div class="cd-item"><span class="cd-num" id="cd-m">00</span><span class="cd-lab">Min</span></div>
+    <div class="cd-item"><span class="cd-num" id="cd-s">00</span><span class="cd-lab">Seg</span></div>
+  </div>
+  <div id="cd-encerrado">SORTEIO EM ANDAMENTO! 🎰</div>
 </div>
-<div id="cd-encerrado">SORTEIO EM ANDAMENTO! 🎰</div>
 
-</div>
-<div class="promo-card">
+<div id="banner-sorteio" class="promo-card">
 <div style="background:linear-gradient(135deg,#E8000D,#FF6D00);text-align:center;padding:11px 16px;border-radius:0;">
   <p id="promo-banner-p" style="margin:0;color:#fff;font-size:clamp(13px,3.5vw,17px);font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,0.3);">
     🎉 Sorteios Mensais todo dia 01 🎉
@@ -426,6 +488,23 @@ body { overflow-x: hidden; }
 <p id="promo-desc-el" class="promo-desc">Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru. É rápido, fácil e 100% gratuito!</p>
 
 </div>
+</div>
+
+<div id="texto-promocoes-sorteios" aria-labelledby="promocao-hero-titulo">
+  <h1 id="promocao-hero-titulo">Promoções e Sorteios</h1>
+  <p>Acompanhe as promoções ativas da Itapolitana, veja o sorteio do mês e participe do cadastro em poucos passos. Tudo organizado para você navegar rápido entre promoções, cardápio e fidelidade.</p>
+</div>
+
+<div id="botoes-acao-promocao" aria-label="Ações principais da página de promoções">
+  <a id="btn-participar-agora" class="promo-acao-btn" href="#form-promocao-cliente">🎁 Participar Agora</a>
+  <a id="btn-ver-cardapio" class="promo-acao-btn" href="cardapio.html">🍦 Ver Cardápio</a>
+  <a id="btn-fidelidade" class="promo-acao-btn" href="fidelidade.html">⭐ Fidelidade</a>
+</div>
+
+<div id="passo-a-passo-promocao" aria-label="Passo a passo para participar das promoções">
+  <div class="passo-item-promocao"><span class="passo-numero">1</span><p>Cadastre-se no formulário abaixo para participar do sorteio mensal.</p></div>
+  <div class="passo-item-promocao"><span class="passo-numero">2</span><p>Acumule pontos em suas compras no programa fidelidade.</p></div>
+  <div class="passo-item-promocao"><span class="passo-numero">3</span><p>Concorra aos prêmios mensais e acompanhe as novas promoções.</p></div>
 </div>
 <!-- Promoções adicionais: renderizadas dinamicamente de dados/promocoes.json -->
 <div id="promos-adicionais-lista" style="margin-top:20px"></div>
