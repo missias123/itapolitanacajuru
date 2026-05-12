@@ -533,33 +533,14 @@
   }());
 
   /* ─── Chat functions ─── */
-  /* Converte string HTML (de RESPOSTAS/FAQ) em DocumentFragment seguro usando DOMParser.
-     RESPOSTAS vêm de dados estáticos do servidor, nunca do input do usuário. */
+  /* Converte string em texto seguro no chat (sem reinterpretar HTML). */
   function _itabotHtmlParaFragmento(html) {
-    try {
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(html, 'text/html');
-      doc.querySelectorAll('script, style').forEach(function (n) { n.remove(); });
-      doc.querySelectorAll('*').forEach(function (n) {
-        var toRemove = [];
-        for (var i = 0; i < n.attributes.length; i++) {
-          var a = n.attributes[i];
-          if (/^on/i.test(a.name) || /javascript\s*:/i.test(a.value)) toRemove.push(a.name);
-        }
-        toRemove.forEach(function (name) { n.removeAttribute(name); });
-      });
-      var frag = document.createDocumentFragment();
-      Array.from(doc.body.childNodes).forEach(function (child) {
-        frag.appendChild(document.adoptNode(child));
-      });
-      return frag;
-    } catch (e) {
-      var frag2 = document.createDocumentFragment();
-      var span = document.createElement('span');
-      span.textContent = html.replace(/<[^>]*>/g, ' ').trim();
-      frag2.appendChild(span);
-      return frag2;
-    }
+    var frag = document.createDocumentFragment();
+    var span = document.createElement('span');
+    span.style.cssText = 'display:block;line-height:1.6';
+    span.textContent = String(html || '').replace(/<[^>]*>/g, ' ').trim();
+    frag.appendChild(span);
+    return frag;
   }
   function _itabotScrollFim() {
     var el = document.getElementById('duvidas-resposta');
@@ -572,7 +553,7 @@
     if (!el) return;
     var msgEl = document.createElement('div');
     msgEl.className = 'msg ' + (tipo === 'user' ? 'user ita-bot-message-user' : 'bot ita-bot-message-bot');
-    if (conteudo instanceof Node) msgEl.appendChild(conteudo);
+    if (conteudo instanceof DocumentFragment || conteudo instanceof Node) msgEl.appendChild(conteudo);
     else msgEl.textContent = String(conteudo || '');
     el.appendChild(msgEl);
     _itabotScrollFim();

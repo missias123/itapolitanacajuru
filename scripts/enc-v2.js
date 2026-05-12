@@ -875,7 +875,9 @@ function atualizarBotãoCarrinho() {
   if (btn) {
     btn.disabled = false;
     btn.classList.toggle('ativo', total > 0);
-    btn.classList.toggle('vazio', total === 0);
+    const itensTxt = total === 1 ? '1 item' : `${total} itens`;
+    const totalTxt = totalEl ? totalEl.textContent : `R$ ${totalValor.toFixed(2).replace('.',',')}`;
+    btn.setAttribute('aria-label', `Abrir carrinho, ${itensTxt}, total ${totalTxt}`);
   }
 }
 
