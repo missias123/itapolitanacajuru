@@ -6496,7 +6496,7 @@ let _promoFormListenersBound = false;
 
 function parsePromoDate(value) {
   if (!value) return null;
-  const d = new Date(value + 'T00:00:00');
+  const d = new Date(value + 'T00:00:00Z');
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
@@ -6562,14 +6562,28 @@ function validatePromocaoForm() {
   const produtosOk = _promoProdutosValidos();
   const regrasOk = _promoRegrasValidas();
   const statusOk = _promoStatusValido();
+  const nomeHasValue = (elNome.value || '').trim() !== '';
+  const descHasValue = (elDesc.value || '').trim() !== '';
+  const inicioHasValue = (elInicio.value || '').trim() !== '';
+  const fimHasValue = (elFim.value || '').trim() !== '';
+  const produtosHasValue = (elProdutos.value || '').trim() !== '';
+  const regrasHasValue = (elRegras.value || '').trim() !== '';
+  const statusHasValue = (elStatus.value || '').trim() !== '';
 
-  setPromoFieldState(elNome, true, (elNome.value || '').trim() ? nomeOk : null);
-  setPromoFieldState(elDesc, nomeOk, nomeOk ? (((elDesc.value || '').trim() ? descOk : null)) : null);
-  setPromoFieldState(elInicio, nomeOk && descOk, (nomeOk && descOk) ? ((elInicio.value || '').trim() ? inicioOk : null) : null);
-  setPromoFieldState(elFim, nomeOk && descOk && inicioOk, (nomeOk && descOk && inicioOk) ? ((elFim.value || '').trim() ? fimOk : null) : null);
-  setPromoFieldState(elProdutos, nomeOk && descOk && inicioOk && fimOk, (nomeOk && descOk && inicioOk && fimOk) ? ((elProdutos.value || '').trim() ? produtosOk : null) : null);
-  setPromoFieldState(elRegras, nomeOk && descOk && inicioOk && fimOk && produtosOk, (nomeOk && descOk && inicioOk && fimOk && produtosOk) ? ((elRegras.value || '').trim() ? regrasOk : null) : null);
-  setPromoFieldState(elStatus, nomeOk && descOk && inicioOk && fimOk && produtosOk && regrasOk, (nomeOk && descOk && inicioOk && fimOk && produtosOk && regrasOk) ? (((elStatus.value || '').trim() ? statusOk : null)) : null);
+  const descEnabled = nomeOk;
+  const inicioEnabled = nomeOk && descOk;
+  const fimEnabled = inicioEnabled && inicioOk;
+  const produtosEnabled = fimEnabled && fimOk;
+  const regrasEnabled = produtosEnabled && produtosOk;
+  const statusEnabled = regrasEnabled && regrasOk;
+
+  setPromoFieldState(elNome, true, nomeHasValue ? nomeOk : null);
+  setPromoFieldState(elDesc, descEnabled, descEnabled ? (descHasValue ? descOk : null) : null);
+  setPromoFieldState(elInicio, inicioEnabled, inicioEnabled ? (inicioHasValue ? inicioOk : null) : null);
+  setPromoFieldState(elFim, fimEnabled, fimEnabled ? (fimHasValue ? fimOk : null) : null);
+  setPromoFieldState(elProdutos, produtosEnabled, produtosEnabled ? (produtosHasValue ? produtosOk : null) : null);
+  setPromoFieldState(elRegras, regrasEnabled, regrasEnabled ? (regrasHasValue ? regrasOk : null) : null);
+  setPromoFieldState(elStatus, statusEnabled, statusEnabled ? (statusHasValue ? statusOk : null) : null);
 
   elSalvar.disabled = !(nomeOk && descOk && inicioOk && fimOk && produtosOk && regrasOk && statusOk);
 }
