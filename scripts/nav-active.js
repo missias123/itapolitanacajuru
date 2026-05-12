@@ -130,10 +130,11 @@
 
     var hashAtual = descobrirHashAtual();
     var href = item.href || '';
-    var hrefPartes = href.split('#');
-    var hrefPagina = hrefPartes[0].toLowerCase();
+    var isExternal = /^https?:\/\//i.test(href);
+    var hrefPartes = isExternal ? [''] : href.split('#');
+    var hrefPagina = (hrefPartes[0] || '').toLowerCase();
     var hrefHash = hrefPartes.length > 1 ? '#' + hrefPartes[1].toLowerCase() : '';
-    if (hrefPagina === paginaAtual && hrefPagina !== '' && (!hrefHash || hrefHash === hashAtual)) {
+    if (hrefPagina === paginaAtual && (!hrefHash || hrefHash === hashAtual)) {
       a.setAttribute('aria-current', 'page');
     }
 
