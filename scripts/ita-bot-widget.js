@@ -311,7 +311,8 @@
     var preview = sabores.length > 0
       ? sabores.slice(0, 8).join(', ') + ' e mais ' + (sabores.length - 8) + '...'
       : 'Chocolate, Nutella, Morango Trufado, Pistache, Kinder Ovo e mais!';
-    var pMin = (precos && precos.casquinha_copo) ? 'R$ ' + precos.casquinha_copo['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
+    var cp0  = (precos && precos.casquinha_copo && precos.casquinha_copo['1 Bola'] != null) ? precos.casquinha_copo : null;
+    var pMin = cp0 ? 'R$ ' + cp0['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
     return {
       answer: '\ud83c\udf66 Temos ' + n + ' sabores tipo artesanal!\n\n\u2728 Destaques: ' + preview + '\n\n\ud83d\udcb0 A partir de ' + pMin + ' (1 bola na casquinha/copo).\nVer card\u00e1pio completo e fazer pedido:',
       linkText: '\ud83c\udf66 Ver todos os sabores',
@@ -334,7 +335,7 @@
   function _respPicoles() {
     var p = _prodData && _prodData.picoles;
     var fruta = (p && p.frutas_agua) ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',') : '2,50';
-    var leite = (p && p.leite_com_recheio) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
+    var leite = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
     var ninho = (p && p.leite_ninho) ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',') : '4,00';
     return {
       answer: '\ud83c\udf60 Picol\u00e9s tipo artesanal!\n\n\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Gro\u00e9selha, Lim\u00e3o, Melancia, Uva...)\n\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n\ud83c\udf3c Leite Ninho \u2014 R$ ' + ninho + '\n\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
@@ -357,8 +358,8 @@
   }
   function _respMilkshake() {
     var mk  = (_prodData && _prodData.milkshake && _prodData.milkshake.tradicional) ? _prodData.milkshake.tradicional : null;
-    var pMin = mk ? 'R$ ' + mk['300ml'].toFixed(2).replace('.', ',') : 'R$ 17,00';
-    var pMax = mk ? 'R$ ' + mk['750ml'].toFixed(2).replace('.', ',') : 'R$ 28,00';
+    var pMin = (mk && mk['300ml'] != null) ? 'R$ ' + mk['300ml'].toFixed(2).replace('.', ',') : 'R$ 17,00';
+    var pMax = (mk && mk['750ml'] != null) ? 'R$ ' + mk['750ml'].toFixed(2).replace('.', ',') : 'R$ 28,00';
     return {
       answer: '\ud83e\udd64 Milkshakes em copo transparente com tampa bolha!\n\nTradicional: 300ml ' + pMin + ' \u00b7 400ml R$ 20 \u00b7 500ml R$ 22 \u00b7 750ml ' + pMax + '\nTop: 360ml R$ 20 \u00b7 600ml R$ 24\n\n\u2795 Adicional Ovomaltine R$ 3,00!',
       linkText: '\ud83e\udd64 Ver card\u00e1pio',
@@ -393,9 +394,9 @@
     }
     if (!encontrado) return null;
     var precos = _prodData.sorvetes.precos;
-    var cp = (precos && precos.casquinha_copo) ? precos.casquinha_copo : null;
+    var cp = (precos && precos.casquinha_copo && precos.casquinha_copo['1 Bola'] != null) ? precos.casquinha_copo : null;
     var linhaPre = cp
-      ? '1 bola R$ ' + cp['1 Bola'].toFixed(2).replace('.', ',') + ' \u00b7 2 bolas R$ ' + cp['2 Bolas'].toFixed(2).replace('.', ',') + ' \u00b7 3 bolas R$ ' + cp['3 Bolas'].toFixed(2).replace('.', ',')
+      ? '1 bola R$ ' + cp['1 Bola'].toFixed(2).replace('.', ',') + ' \u00b7 2 bolas R$ ' + (cp['2 Bolas'] != null ? cp['2 Bolas'].toFixed(2).replace('.', ',') : '') + ' \u00b7 3 bolas R$ ' + (cp['3 Bolas'] != null ? cp['3 Bolas'].toFixed(2).replace('.', ',') : '')
       : 'a partir de R$ 8,00';
     return {
       answer: '\ud83c\udf66 Temos ' + encontrado + '! \ud83d\ude0b\n\nPre\u00e7os (casquinha/copo): ' + linhaPre + '\n\nGostaria de ver outras op\u00e7\u00f5es ou o card\u00e1pio completo?',
@@ -450,11 +451,18 @@
 
   /* ─── Busca assíncrona de pontos no clientes.json ─── */
   function _buscarPontosAsync(nome, dataStr) {
-    // Parseia DD/MM/AAAA → AAAA-MM-DD
+    // Parseia DD/MM/AAAA → AAAA-MM-DD com validação de numerais e faixas
     var dataNorm = null;
     var partes = dataStr.replace(/[.\-]/g, '/').split('/');
-    if (partes.length === 3 && partes[2].length === 4) {
-      dataNorm = partes[2] + '-' + partes[1].padStart(2, '0') + '-' + partes[0].padStart(2, '0');
+    if (partes.length === 3) {
+      var dd = parseInt(partes[0], 10);
+      var mm = parseInt(partes[1], 10);
+      var aaaa = parseInt(partes[2], 10);
+      if (!isNaN(dd) && !isNaN(mm) && !isNaN(aaaa) &&
+          dd >= 1 && dd <= 31 && mm >= 1 && mm <= 12 &&
+          aaaa >= 1900 && aaaa <= 2099 && String(partes[2]).length === 4) {
+        dataNorm = String(aaaa) + '-' + String(mm).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
+      }
     }
     if (!dataNorm) {
       _itabotOcultarTyping();
@@ -556,7 +564,7 @@
     }
 
     // Busca direta de sabor ("preço do sorvete de X", "tem sorvete de X", "flocos")
-    if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || l.indexOf('tem ') !== -1) {
+    if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
       var sf = _buscarSabor(msg);
       if (sf) return sf;
     }
