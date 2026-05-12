@@ -7,13 +7,6 @@
 
   var MENU_ITEMS = [
     {
-      href: 'index.html#duvidas',
-      label: 'DÚVIDAS',
-      icon: '💬',
-      bg: 'background:linear-gradient(135deg,#1565C0,#0D47A1);',
-      action: 'duvidas'
-    },
-    {
       href: 'index.html',
       label: 'TELA INICIAL',
       icon: '🏠',
@@ -44,24 +37,10 @@
       bg: 'background:linear-gradient(135deg,#4A148C,#6A1B9A);'
     },
     {
-      href: 'index.html#cardapio',
-      label: 'CARDÁPIO',
-      icon: '🍦',
-      bg: 'background:linear-gradient(135deg,#8E24AA,#6A1B9A);'
-    },
-    {
       href: 'encomendas.html',
       label: 'ENCOMENDAS',
       icon: '📦',
       bg: 'background:linear-gradient(135deg,#0D47A1,#00288F);'
-    },
-    {
-      href: 'https://wa.me/5516996062046',
-      label: 'CONTATO',
-      icon: '📞',
-      bg: 'background:linear-gradient(135deg,#25D366,#128C7E);',
-      target: '_blank',
-      rel: 'noopener'
     }
   ];
 
