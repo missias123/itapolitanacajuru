@@ -8,6 +8,7 @@
   var META_10 = 10;
   var META_30 = 30;
   var STATUS_DISPONIVEL = 'disponível';
+  var BRAZILIAN_MOBILE_REGEX = /^[1-9]{2}9\d{8}$/;
 
   var secaoCadastro = document.getElementById('secao-cadastro-fid');
   var secaoLogin = document.getElementById('secao-login-fid');
@@ -86,7 +87,7 @@
 
   function cadastroCelularValido() {
     var telRaw = (inputCadTel && inputCadTel.value ? inputCadTel.value : '').replace(/\D/g, '');
-    return /^[1-9]{2}9\d{8}$/.test(telRaw);
+    return BRAZILIAN_MOBILE_REGEX.test(telRaw);
   }
 
   function cadastroCamposValidos() {

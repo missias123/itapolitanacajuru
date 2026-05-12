@@ -33,7 +33,8 @@ test.describe('Programa de Fidelidade', () => {
       await expect(celInput).toBeDisabled();
       await expect(btnCadastro).toBeDisabled();
 
-      await aceitarRegras.click({ force: true });
+      await aceitarRegras.dispatchEvent('click');
+      await expect(nomeInput).toBeEnabled();
       await nomeInput.fill('Cliente Teste');
       await expect(nascInput).toBeEnabled();
 
@@ -106,7 +107,8 @@ test.describe('Programa de Fidelidade', () => {
 
     if (await abrirCadastro.count() > 0 && await celInput.count() > 0) {
       await abrirCadastro.click();
-      await aceitarRegras.click({ force: true });
+      await aceitarRegras.dispatchEvent('click');
+      await expect(nomeInput).toBeEnabled();
       await nomeInput.fill('Cliente Teste');
       await nascInput.fill('01/01/2000');
       await celInput.fill('16000000000');
