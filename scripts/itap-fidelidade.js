@@ -8,6 +8,7 @@
   var META_10 = 10;
   var META_30 = 30;
   var STATUS_DISPONIVEL = 'disponível';
+  // DDD com 2 dígitos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
   var BRAZILIAN_MOBILE_REGEX = /^[1-9]{2}9\d{8}$/;
 
   var secaoCadastro = document.getElementById('secao-cadastro-fid');
@@ -98,7 +99,6 @@
     if (!campo) return;
     campo.disabled = !habilitado;
     campo.classList.toggle('form-control-disabled', !habilitado);
-    campo.setAttribute('aria-disabled', habilitado ? 'false' : 'true');
   }
 
   function atualizarFluxoCadastro() {
