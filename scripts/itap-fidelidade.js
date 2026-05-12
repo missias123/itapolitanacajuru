@@ -8,8 +8,8 @@
   var META_10 = 10;
   var META_30 = 30;
   var STATUS_DISPONIVEL = 'disponível';
-  // DDD com 2 dígitos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
-  var BRAZILIAN_MOBILE_REGEX = /^[1-9]{2}9\d{8}$/;
+  // DDD com 2 dígitos válidos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
+  var BRAZILIAN_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
 
   var secaoCadastro = document.getElementById('secao-cadastro-fid');
   var secaoLogin = document.getElementById('secao-login-fid');
