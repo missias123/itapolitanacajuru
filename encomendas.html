@@ -1464,6 +1464,31 @@ html { scroll-behavior: smooth; }
   </div>
 </div>
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('btn-como-fazer-encomenda');
+  var conteudo = document.getElementById('conteudo-como-fazer-encomenda');
+  if (!btn || !conteudo || btn.dataset.toggleBound === '1') return;
+
+  btn.dataset.toggleBound = '1';
+  var textoPadrao = '📦 Como Fazer Sua Encomenda';
+  var textoAberto = '📦 Ocultar Instruções';
+
+  btn.addEventListener('click', function () {
+    var aberto = !conteudo.hasAttribute('hidden');
+    if (aberto) {
+      conteudo.setAttribute('hidden', '');
+      btn.textContent = textoPadrao;
+      btn.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
+    conteudo.removeAttribute('hidden');
+    btn.textContent = textoAberto;
+    btn.setAttribute('aria-expanded', 'true');
+  });
+});
+</script>
 
 <div class="container">
 <div class="categoria cat-caixas" id="caixas">

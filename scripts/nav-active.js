@@ -139,19 +139,15 @@
     trigger.addEventListener('mouseenter', abrirMenuCompleto);
     trigger.addEventListener('focus', abrirMenuCompleto);
     trigger.addEventListener('click', function (event) {
-      event.preventDefault();
       if (nav.classList.contains('itap-header-nav--show-all')) {
-        fecharMenuCompleto();
+        return;
       } else {
+        event.preventDefault();
         abrirMenuCompleto();
       }
     });
 
     nav.addEventListener('mouseleave', fecharMenuCompleto);
-    var onDocumentClick = function (event) {
-      if (!nav.contains(event.target)) fecharMenuCompleto();
-    };
-    document.addEventListener('click', onDocumentClick);
   }
 
   /* Executa assim que o DOM estiver pronto */
