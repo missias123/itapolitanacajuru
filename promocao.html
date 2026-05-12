@@ -147,13 +147,81 @@
       border: none;
       letter-spacing: .3px;
     }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; box-shadow: 0 8px 20px rgba(37,211,102,0.3); text-shadow: 0 1px 4px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4); }
-    .btn-outline { background: #F5F5F5; color: #444; border: 1px solid #ddd; }
-    
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+     .btn:active { transform: scale(0.97); }
+     .btn-primary { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; box-shadow: 0 8px 20px rgba(37,211,102,0.3); text-shadow: 0 1px 4px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4); }
+     .btn-outline { background: #F5F5F5; color: #444; border: 1px solid #ddd; }
+     .btn-block { width: 100%; }
+     .btn-success {
+       background: linear-gradient(135deg, #25D366, #128C7E);
+       color: #fff;
+       box-shadow: 0 8px 20px rgba(37,211,102,0.3);
+     }
+     .btn-success:disabled {
+       opacity: .65;
+       cursor: not-allowed;
+       box-shadow: none;
+     }
+     .form-row { display: grid; gap: 8px; }
+     .form-row label {
+       font-weight: 700;
+       font-size: .92rem;
+       color: #333;
+     }
+     .form-row input {
+       width: 100%;
+       border: 2px solid #E0E0E0;
+       border-radius: 10px;
+       padding: 12px;
+       font-size: 1rem;
+       font-family: inherit;
+     }
+     .form-row input:focus {
+       outline: none;
+       border-color: #2e7d32;
+       box-shadow: 0 0 0 3px rgba(46,125,50,.12);
+     }
+     .form-row input.form-control-disabled,
+     .form-row input:disabled {
+       background: #F5F5F5;
+       color: #78909C;
+       border-color: #CFD8DC;
+       cursor: not-allowed;
+       opacity: 1;
+       box-shadow: none;
+     }
+     .form-text {
+       display: block;
+       margin-top: -2px;
+       margin-bottom: 6px;
+       font-size: .78rem;
+       line-height: 1.45;
+     }
+     .text-muted { color: #607D8B; }
+     .alert {
+       border-radius: 12px;
+       padding: 12px 14px;
+       font-size: .88rem;
+       line-height: 1.6;
+     }
+     .alert-success {
+       background: #E8F5E9;
+       border: 1px solid #A5D6A7;
+       color: #1B5E20;
+     }
+     .alert-warning {
+       background: #FFEBEE;
+       border: 2px solid #C62828;
+       color: #4E342E;
+     }
+     .alert ul {
+       margin: 8px 0 0 18px;
+       padding: 0;
+     }
+     .mt-3 { margin-top: 12px; }
+     
+     .modal-overlay {
+       position: fixed;
+       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.7);
       display: none;
       z-index: 1000;
@@ -385,7 +453,7 @@ body { overflow-x: hidden; }
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#444;line-height:1.45;">
         <span style="min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px;background:#2e7d32;">2</span>
-        <span>Preencha o formulário com seu <strong>nome, WhatsApp e data de nascimento</strong></span>
+        <span>Preencha o formulário com seu <strong>nome, data de nascimento e WhatsApp</strong></span>
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:#444;line-height:1.45;">
         <span style="min-width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px;background:#2e7d32;">3</span>
@@ -447,42 +515,37 @@ body { overflow-x: hidden; }
         <h3 style="color:#fff;font-size:1rem;font-weight:900;margin:0;">📝 Cadastro para o Sorteio</h3>
       </div>
       <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
-        <div>
-          <label style="font-size:.82rem;font-weight:700;color:#333;display:block;margin-bottom:4px;">Nome completo <span style="font-size:.75rem;color:#c62828;font-weight:800;">&#128203; IDENTICO ao RG/CNH</span></label>
-          <input type="text" id="sort-nome" placeholder="Nome completo como no RG/CNH" maxlength="60" autocomplete="name" style="width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;font-family:'Poppins',sans-serif;box-sizing:border-box;outline:none;">
-          <div style="font-size:.75rem;color:#5d4037;margin-top:4px;">&#9888;&#65039; Informe o nome <strong>exatamente</strong> como consta no seu documento de identidade.</div>
-        </div>
-        <div>
-          <label style="font-size:.82rem;font-weight:700;color:#333;display:block;margin-bottom:4px;">WhatsApp (com DDD)</label>
-          <input type="tel" id="sort-cel" placeholder="(16) 99999-9999" maxlength="15" inputmode="numeric" oninput="mascaraTelPromo(this)" style="width:100%;padding:11px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;font-family:'Poppins',sans-serif;box-sizing:border-box;outline:none;">
-        </div>
-        <div>
-          <label style="font-size:.82rem;font-weight:700;color:#333;display:block;margin-bottom:4px;">Data de nascimento <span style="font-size:.75rem;color:#c62828;font-weight:800;">&#128203; IDENTICA ao RG/CNH</span></label>
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="sort-dia" placeholder="Dia" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;box-sizing:border-box;outline:none;">
-            <input type="text" id="sort-mes" placeholder="Mês" maxlength="2" inputmode="numeric" style="width:33%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;box-sizing:border-box;outline:none;">
-            <input type="text" id="sort-ano" placeholder="Ano" maxlength="4" inputmode="numeric" style="width:34%;text-align:center;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-weight:700;box-sizing:border-box;outline:none;">
+        <form id="form-promocao-cliente" class="form-row" novalidate>
+          <label for="promo-nome-cliente">Nome Completo</label>
+          <input id="promo-nome-cliente" type="text" maxlength="100" placeholder="Seu nome completo (como no documento)" autocomplete="name" aria-describedby="promo-nome-help">
+          <small class="form-text text-muted" id="promo-nome-help">Use o nome completo para validar sua participação.</small>
+
+          <label for="promo-data-nasc-cliente">Data de Nascimento</label>
+          <input id="promo-data-nasc-cliente" type="text" maxlength="10" placeholder="Sua data de nascimento (DD/MM/AAAA, como no documento)" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa" autocomplete="bday" disabled class="form-control-disabled" aria-describedby="promo-data-nasc-help">
+          <small class="form-text text-muted" id="promo-data-nasc-help">Usamos para identificar você e validar sua idade.</small>
+
+          <label for="promo-celular-cliente">Celular (WhatsApp)</label>
+          <input id="promo-celular-cliente" type="tel" inputmode="numeric" maxlength="15" placeholder="Seu WhatsApp com DDD (ex: 16 99999-0000)" autocomplete="tel" disabled class="form-control-disabled" aria-describedby="promo-celular-help">
+          <small class="form-text text-muted" id="promo-celular-help">Receba o resultado da promoção e informações importantes.</small>
+
+          <input type="text" id="promo-honeypot" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
+
+          <button type="button" id="promo-enviar-whatsapp" class="btn btn-success btn-block" disabled>💬 Enviar Cadastro via WhatsApp</button>
+          <div id="promo-feedback-message" class="alert" style="display:none;" role="status"></div>
+          <div id="promo-regras-retirada-premio" class="alert alert-warning mt-3" style="display:none;">
+            <p><strong>🚫 ATENCAO — RETIRADA DO PREMIO</strong></p>
+            <p>Para retirar o premio, o ganhador devera comparecer pessoalmente na sorveteria portando obrigatoriamente:</p>
+            <ul>
+              <li>📄 Documento oficial com foto (RG ou CNH) — original, nao sera aceita copia</li>
+              <li>👤 O nome completo no documento deve ser IDENTICO ao informado no cadastro</li>
+              <li>🎉 A data de nascimento no documento deve ser IDENTICA a informada no cadastro</li>
+              <li>📲 O celular cadastrado com WhatsApp ativo e acessivel no momento da retirada</li>
+            </ul>
+            <p>🚫 O PREMIO NAO SERA ENTREGUE em caso de divergencia entre o documento e os dados do cadastro.</p>
+            <p>Nao sera permitida retirada por terceiros. Sem excecoes e sem direito a recurso.</p>
+            <p>🔒 Seus dados são usados exclusivamente para o sorteio. Não compartilhamos com terceiros. <a href="politica-privacidade.html" style="color:#2e7d32;font-weight:700;">Política de Privacidade</a>.</p>
           </div>
-        </div>
-        <!-- Honeypot anti-bot: campo oculto, humanos nao preenchem -->
-        <input type="text" id="sort-hp" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
-        <!-- Aviso documento -->
-        <div style="background:#ffebee;border:2px solid #c62828;border-radius:10px;padding:12px 14px;font-size:.78rem;color:#4e342e;line-height:1.6">
-          <div style="font-size:.85rem;font-weight:900;color:#c62828;margin-bottom:6px;">&#128683; ATENCAO — RETIRADA DO PREMIO</div>
-          Para retirar o premio, o ganhador devera comparecer <strong>pessoalmente</strong> na sorveteria portando <strong>obrigatoriamente</strong>:
-          <ul style="margin:6px 0 0 14px;padding:0;">
-            <li style="margin-bottom:3px;">&#128196; <strong>Documento oficial com foto</strong> (RG ou CNH) — original, nao sera aceita copia</li>
-            <li style="margin-bottom:3px;">&#128100; O <strong>nome completo</strong> no documento deve ser <strong>IDENTICO</strong> ao informado no cadastro</li>
-            <li style="margin-bottom:3px;">&#127881; A <strong>data de nascimento</strong> no documento deve ser <strong>IDENTICA</strong> a informada no cadastro</li>
-            <li style="margin-bottom:3px;">&#128242; O <strong>celular cadastrado</strong> com WhatsApp ativo e acessivel no momento da retirada</li>
-          </ul>
-          <div style="background:#c62828;color:#fff;border-radius:7px;padding:7px 10px;margin-top:8px;font-weight:900;font-size:.78rem;text-align:center;line-height:1.5;">
-            &#128683; O PREMIO NAO SERA ENTREGUE em caso de divergencia entre o documento e os dados do cadastro.<br>Nao sera permitida retirada por terceiros. Sem excecoes e sem direito a recurso.
-          </div>
-        </div>
-        <button id="btn-enviar-sorteio-promo" style="width:100%;padding:14px;border:none;border-radius:14px;font-size:1rem;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 4px 16px rgba(37,211,102,.35);transition:.2s;" onclick="enviarSorteioPromo()">&#128172; Enviar Cadastro via WhatsApp</button>
-        <p style="font-size:11px;color:#888;text-align:center;margin-top:8px;line-height:1.5;">&#128274; Seus dados são usados exclusivamente para o sorteio. Não compartilhamos com terceiros. <a href="politica-privacidade.html" style="color:#2e7d32;font-weight:700;">Política de Privacidade</a>.</p>
-        <div id="msg-sorteio-inline" style="font-size:.85rem;font-weight:700;text-align:center;padding:8px;border-radius:8px;display:none;"></div>
+        </form>
       </div>
     </div>
   </div>
