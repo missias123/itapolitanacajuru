@@ -9,7 +9,7 @@
 ## 1. Páginas Públicas HTML
 
 ### `index.html` — Página Principal
-**Título:** Sorveteria Itapolitana Cajuru – Sorvete Artesanal e Açaí SP
+**Título:** Sorveteria Itapolitana Cajuru – Sorvete Tipo Artesanal e Açaí SP
 
 **Seções principais:**
 - Hero banner dinâmico (frases rotativas, badges, CTAs para cardápio e WhatsApp)

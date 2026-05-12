@@ -34,7 +34,7 @@ Relatórios são publicados como artefatos em `docs/relatorios/` com retenção 
 
 | # | Problema | Impacto | Status |
 |---|----------|---------|--------|
-| S1 | `<title>` presente e otimizado | "Sorveteria Itapolitana Cajuru – Sorvete Artesanal e Açaí SP" | ✅ OK |
+| S1 | `<title>` presente e otimizado | "Sorveteria Itapolitana Cajuru – Sorvete Tipo Artesanal e Açaí SP" | ✅ OK |
 | S2 | `<meta name="description">` presente | 160 chars, com palavras-chave primárias | ✅ OK |
 | S3 | `<link rel="canonical">` presente | `https://itapolitanacajuru.com.br/` | ✅ OK |
 | S4 | Schema.org `IceCreamShop` + `FoodEstablishment` + `Restaurant` | Markup rico para Google Knowledge Panel | ✅ OK — duplo schema no `<head>` e antes do `</style>` (consolidação futura recomendada) |

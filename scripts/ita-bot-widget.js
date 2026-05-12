@@ -186,7 +186,7 @@
     <img src="${logoSrc}" alt="Logo Sorveteria Itapolitana" class="chat-hdr-logo-img" loading="lazy" decoding="async">
     <div>
       <div class="chat-hdr-logo-text" id="chat-hdr-titulo">Itapolitana</div>
-      <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.8px;">Cajuru · SP · Sorvete Artesanal</div>
+      <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.8px;">Cajuru · SP · Tipo Artesanal</div>
     </div>
     <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
   </div>
