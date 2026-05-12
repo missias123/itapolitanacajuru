@@ -515,6 +515,8 @@
     .badge-conf .badge-icon{font-size:1.1rem;line-height:1;flex-shrink:0}
     .badges-confianca{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0 20px}
     @media(max-width:480px){.badge-conf{font-size:.73rem;padding:6px 11px}}
+    @keyframes loginSlideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .login-field-reveal{animation:loginSlideDown .3s ease both}
   </style>
 <script type="application/ld+json">
 {
@@ -619,21 +621,29 @@
     </section>
 
     <section class="card" id="secao-login-fid" aria-labelledby="titulo-login-fid" style="display:none;">
-      <h2 id="titulo-login-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Já sou cadastrado</h2>
-      <div class="form-row">
+      <h2 id="titulo-login-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:12px;">Acesse sua fidelidade</h2>
+      <div class="form-row" style="margin-bottom:6px;">
         <label for="fid-login-nome">Nome completo</label>
-        <input id="fid-login-nome" type="text" maxlength="100" placeholder="Digite o mesmo nome usado no cadastro" autocomplete="name">
-
-        <label for="fid-login-data-nasc">Data de nascimento</label>
-        <input id="fid-login-data-nasc" type="text" maxlength="10" placeholder="Digite sua data de nascimento (dd/mm/aaaa)" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa">
-
-        <label for="fid-login-celular">Celular</label>
-        <input id="fid-login-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="Digite seu WhatsApp atual" autocomplete="tel">
-
-        <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:8px;">Entrar na minha fidelidade</button>
+        <input id="fid-login-nome" type="text" maxlength="100" placeholder="Nome como no documento (RG/CPF)" autocomplete="name" aria-describedby="fid-login-nome-help">
+        <small class="form-text text-muted" id="fid-login-nome-help">Digite exatamente como no documento.</small>
       </div>
-
-      <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">Faça login para consultar seus pontos e registrar códigos.</div>
+      <div id="login-wrap-data" class="login-field-reveal" style="display:none;">
+        <div class="form-row" style="margin-bottom:6px;">
+          <label for="fid-login-data-nasc">Data de nascimento</label>
+          <input id="fid-login-data-nasc" type="text" maxlength="10" placeholder="dd/mm/aaaa" inputmode="numeric" autocomplete="bday" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa" disabled aria-disabled="true" class="form-control-disabled">
+          <small class="form-text text-muted">Digite sua data de nascimento.</small>
+        </div>
+      </div>
+      <div id="login-wrap-cel" class="login-field-reveal" style="display:none;">
+        <div class="form-row" style="margin-bottom:6px;">
+          <label for="fid-login-celular">WhatsApp</label>
+          <input id="fid-login-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="(XX) XXXXX-XXXX" autocomplete="tel" disabled aria-disabled="true" class="form-control-disabled">
+        </div>
+      </div>
+      <div id="login-wrap-btn" class="login-field-reveal" style="display:none;">
+        <button class="btn btn-primary btn-block" id="btn-entrar" style="margin-top:4px;" disabled aria-disabled="true">Entrar no Meu Cadastro Fidelidade</button>
+      </div>
+      <div class="resultado" id="resultado-consulta" style="margin-top:12px;" role="status">Preencha os campos acima para acessar seus pontos.</div>
       <button class="btn btn-verde btn-block" id="btn-ir-cadastro-fidelidade" type="button" style="display:none;margin-top:10px;">Ir para cadastro de fidelidade</button>
     </section>
 
@@ -752,5 +762,124 @@
   <script src="scripts/auto-fixer.js" defer></script>
   <script src="scripts/nav-active.js" defer></script>
   <script src="scripts/ita-bot-widget.js" defer></script>
+  <script>
+    (function () {
+      'use strict';
+      var secaoLogin = document.getElementById('secao-login-fid');
+      var inNome = document.getElementById('fid-login-nome');
+      var wrapData = document.getElementById('login-wrap-data');
+      var inData = document.getElementById('fid-login-data-nasc');
+      var wrapCel = document.getElementById('login-wrap-cel');
+      var inCel = document.getElementById('fid-login-celular');
+      var wrapBtn = document.getElementById('login-wrap-btn');
+      var btnEntrar = document.getElementById('btn-entrar');
+      var MIN_BIRTH_YEAR = 1900;
+      var MIN_PHONE_DIGITS = 11;
+      var CURRENT_YEAR = new Date().getFullYear();
+      var NAME_REGEX = /^[A-Za-z\u00C0-\u024F\s]{3,}$/;
+      function revelar(el) {
+        if (!el || el.style.display !== 'none') return;
+        el.style.display = 'block';
+      }
+      function ocultar(el) {
+        if (!el) return;
+        el.style.display = 'none';
+      }
+      function nomeValido(v) {
+        return NAME_REGEX.test(v.trim());
+      }
+      function dataValida(v) {
+        if (v.length < 10) return false;
+        var p = v.split('/');
+        if (p.length !== 3) return false;
+        var d = Number(p[0]), m = Number(p[1]), a = Number(p[2]);
+        if (m < 1 || m > 12) return false;
+        if (!d || !m || !a || a < MIN_BIRTH_YEAR || a > CURRENT_YEAR) return false;
+        var dt = new Date(a, m - 1, d);
+        return dt.getFullYear() === a && dt.getMonth() === m - 1 && dt.getDate() === d;
+      }
+      function celValido(v) {
+        return v.replace(/\D/g, '').length >= MIN_PHONE_DIGITS;
+      }
+      function setDisabledState(el, isDisabled) {
+        if (!el) return;
+        el.disabled = isDisabled;
+        el.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+      }
+      function resetLogin() {
+        ocultar(wrapData);
+        ocultar(wrapCel);
+        ocultar(wrapBtn);
+        if (inNome) inNome.value = '';
+        if (inData) {
+          inData.value = '';
+          setDisabledState(inData, true);
+        }
+        if (inCel) {
+          inCel.value = '';
+          setDisabledState(inCel, true);
+        }
+        setDisabledState(btnEntrar, true);
+      }
+      if (inNome) {
+        inNome.addEventListener('input', function () {
+          if (nomeValido(inNome.value)) {
+            revelar(wrapData);
+            setDisabledState(inData, false);
+          } else {
+            ocultar(wrapData);
+            ocultar(wrapCel);
+            ocultar(wrapBtn);
+            if (inData) {
+              inData.value = '';
+              setDisabledState(inData, true);
+            }
+            if (inCel) {
+              inCel.value = '';
+              setDisabledState(inCel, true);
+            }
+            setDisabledState(btnEntrar, true);
+          }
+        });
+      }
+      if (inData) {
+        inData.addEventListener('input', function () {
+          if (dataValida(inData.value)) {
+            revelar(wrapCel);
+            setDisabledState(inCel, false);
+          } else {
+            ocultar(wrapCel);
+            ocultar(wrapBtn);
+            if (inCel) {
+              inCel.value = '';
+              setDisabledState(inCel, true);
+            }
+            setDisabledState(btnEntrar, true);
+          }
+        });
+      }
+      if (inCel) {
+        inCel.addEventListener('input', function () {
+          if (celValido(inCel.value)) {
+            revelar(wrapBtn);
+            setDisabledState(btnEntrar, false);
+          } else {
+            ocultar(wrapBtn);
+            setDisabledState(btnEntrar, true);
+          }
+        });
+      }
+      if (secaoLogin) {
+        var obs = new MutationObserver(function (mutations) {
+          mutations.forEach(function (m) {
+            if (m.attributeName === 'style' && secaoLogin.style.display !== 'none') {
+              resetLogin();
+            }
+          });
+        });
+        obs.observe(secaoLogin, { attributes: true, attributeFilter: ['style'] });
+      }
+    }());
+  </script>
 </body>
 </html>
