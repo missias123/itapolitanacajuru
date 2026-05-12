@@ -260,6 +260,37 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .campo-edit input.campo-ok { border-color: #22c55e; }
 .campo-edit input.campo-erro,
 .campo-edit textarea.campo-erro { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
+.campo-edit .form-text {
+  display: block;
+  font-size: .76rem;
+  margin-top: 5px;
+  line-height: 1.35;
+}
+.campo-edit .text-muted { color: #6b7280; }
+.campo-edit input.form-control-disabled,
+.campo-edit textarea.form-control-disabled,
+.campo-edit select.form-control-disabled,
+.campo-edit input:disabled,
+.campo-edit textarea:disabled,
+.campo-edit select:disabled {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 1;
+}
+.campo-edit input.is-invalid,
+.campo-edit textarea.is-invalid,
+.campo-edit select.is-invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+}
+.campo-edit input.is-valid,
+.campo-edit textarea.is-valid,
+.campo-edit select.is-valid {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+}
 
 /* Contador de caracteres */
 .char-counter {
@@ -717,20 +748,50 @@ body { overflow-x: hidden; }
         <!-- form panel -->
         <div id="promos-form-panel" style="display:none;background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:16px;margin-bottom:14px">
           <div style="font-weight:800;color:#1565c0;margin-bottom:12px" id="promos-form-titulo">➕ Nova Promoção</div>
+          <div class="campo-edit">
+            <label for="promo-nome">Nome da Promoção</label>
+            <input type="text" id="promo-nome" maxlength="80" placeholder="Ex: Açaí em Dobro, Sorvete Família 5L"/>
+            <small class="form-text text-muted">Nome curto e chamativo para a promoção.</small>
+          </div>
+          <div class="campo-edit">
+            <label for="promo-descricao">Descrição da Promoção</label>
+            <textarea id="promo-descricao" rows="2" maxlength="300" placeholder="Ex: Compre 1 Açaí Pague 2, Desconto de 15% na Caixa de 5L"></textarea>
+            <small class="form-text text-muted">Detalhes da promoção para o cliente.</small>
+          </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="campo-edit"><label>Nome</label><input type="text" id="promos-f-nome" maxlength="80" placeholder="Ex: Desconto Especial no Milkshake"/></div>
-            <div class="campo-edit"><label>Período</label><input type="text" id="promos-f-periodo" maxlength="60" placeholder="Ex: Todo mês de maio"/></div>
+            <div class="campo-edit">
+              <label for="promo-data-inicio">Data de Início</label>
+              <input type="date" id="promo-data-inicio"/>
+              <small class="form-text text-muted">Data de início da validade da promoção.</small>
+            </div>
+            <div class="campo-edit">
+              <label for="promo-data-fim">Data de Fim</label>
+              <input type="date" id="promo-data-fim"/>
+              <small class="form-text text-muted">Data final da validade da promoção. Deve ser igual ou posterior à data de início.</small>
+            </div>
           </div>
-          <div class="campo-edit"><label>Descrição</label><textarea id="promos-f-desc" rows="2" maxlength="300" placeholder="Detalhes da promoção..."></textarea></div>
-          <div class="campo-edit"><label>Status</label>
-            <select id="promos-f-status">
-              <option value="ativa">✅ Ativa</option>
-              <option value="inativa">❌ Inativa</option>
+          <div class="campo-edit">
+            <label for="promo-produtos-afetados">Produtos Afetados</label>
+            <textarea id="promo-produtos-afetados" rows="2" maxlength="300" placeholder="Ex: Sorvete de Morango, Açaí 500ml"></textarea>
+            <small class="form-text text-muted">Quais produtos fazem parte desta promoção? (Liste ou selecione)</small>
+          </div>
+          <div class="campo-edit">
+            <label for="promo-regras">Regras Específicas</label>
+            <textarea id="promo-regras" rows="2" maxlength="300" placeholder="Ex: Válido apenas para retirada na loja, Não cumulativo com outras promoções"></textarea>
+            <small class="form-text text-muted">Condições adicionais para a promoção.</small>
+          </div>
+          <div class="campo-edit">
+            <label for="promo-status">Status</label>
+            <select id="promo-status">
+              <option value="">Selecione...</option>
+              <option value="ativa">Ativa</option>
+              <option value="inativa">Inativa</option>
             </select>
+            <small class="form-text text-muted">Define se a promoção está visível no site.</small>
           </div>
-          <input type="hidden" id="promos-f-idx"/>
+          <input type="hidden" id="promo-idx"/>
           <div class="btn-row">
-            <button class="btn btn-salvar" onclick="salvarPromocaoItem()">💾 Salvar</button>
+            <button type="button" class="btn btn-salvar" id="promo-salvar" onclick="salvarPromocaoItem()" disabled>💾 Salvar Promoção</button>
             <button class="btn btn-cinza" onclick="fecharFormPromocao()">✕ Cancelar</button>
           </div>
         </div>
@@ -6418,9 +6479,10 @@ function renderPromocoesTable() {
     const statusHtml = p.status === 'ativa'
       ? '<span style="color:#2e7d32;font-weight:700">✅ Ativa</span>'
       : '<span style="color:#999;font-weight:700">❌ Inativa</span>';
+    const periodoExib = p.periodo || ((p.dataInicio || p.dataFim) ? `${p.dataInicio || '-'} até ${p.dataFim || '-'}` : '-');
     return `<tr style="${p.status==='ativa'?'':'opacity:.6'}">
       <td style="font-weight:600">${p.nome}</td>
-      <td style="font-size:.82rem;color:#666">${p.periodo||'-'}</td>
+      <td style="font-size:.82rem;color:#666">${periodoExib}</td>
       <td>${statusHtml}</td>
       <td style="display:flex;gap:5px;flex-wrap:wrap">
         <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormPromocao(${i})">✏️ Editar</button>
@@ -6430,27 +6492,129 @@ function renderPromocoesTable() {
   }).join('');
 }
 
+let _promoFormListenersBound = false;
+
+function parsePromoDate(value) {
+  if (!value) return null;
+  const d = new Date(value + 'T00:00:00');
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function _promoNomeValido() {
+  return ((document.getElementById('promo-nome')?.value || '').trim().length >= 3);
+}
+function _promoDescricaoValida() {
+  return ((document.getElementById('promo-descricao')?.value || '').trim().length >= 10);
+}
+function _promoDataInicioValida() {
+  return !!parsePromoDate(document.getElementById('promo-data-inicio')?.value || '');
+}
+function _promoDataFimValida() {
+  const ini = parsePromoDate(document.getElementById('promo-data-inicio')?.value || '');
+  const fim = parsePromoDate(document.getElementById('promo-data-fim')?.value || '');
+  return !!(ini && fim && fim.getTime() >= ini.getTime());
+}
+function _promoProdutosValidos() {
+  return ((document.getElementById('promo-produtos-afetados')?.value || '').trim().length >= 1);
+}
+function _promoRegrasValidas() {
+  return ((document.getElementById('promo-regras')?.value || '').trim().length >= 5);
+}
+function _promoStatusValido() {
+  return !!(document.getElementById('promo-status')?.value || '').trim();
+}
+
+function setPromoFieldState(el, enabled, valid) {
+  if (!el) return;
+  el.disabled = !enabled;
+  el.classList.toggle('form-control-disabled', !enabled);
+  if (!enabled) {
+    el.classList.remove('is-valid', 'is-invalid');
+    return;
+  }
+  if (valid === true) {
+    el.classList.add('is-valid');
+    el.classList.remove('is-invalid');
+  } else if (valid === false) {
+    el.classList.add('is-invalid');
+    el.classList.remove('is-valid');
+  } else {
+    el.classList.remove('is-valid', 'is-invalid');
+  }
+}
+
+function validatePromocaoForm() {
+  const elNome = document.getElementById('promo-nome');
+  const elDesc = document.getElementById('promo-descricao');
+  const elInicio = document.getElementById('promo-data-inicio');
+  const elFim = document.getElementById('promo-data-fim');
+  const elProdutos = document.getElementById('promo-produtos-afetados');
+  const elRegras = document.getElementById('promo-regras');
+  const elStatus = document.getElementById('promo-status');
+  const elSalvar = document.getElementById('promo-salvar');
+
+  if (!elNome || !elDesc || !elInicio || !elFim || !elProdutos || !elRegras || !elStatus || !elSalvar) return;
+
+  const nomeOk = _promoNomeValido();
+  const descOk = _promoDescricaoValida();
+  const inicioOk = _promoDataInicioValida();
+  const fimOk = _promoDataFimValida();
+  const produtosOk = _promoProdutosValidos();
+  const regrasOk = _promoRegrasValidas();
+  const statusOk = _promoStatusValido();
+
+  setPromoFieldState(elNome, true, (elNome.value || '').trim() ? nomeOk : null);
+  setPromoFieldState(elDesc, nomeOk, nomeOk ? (((elDesc.value || '').trim() ? descOk : null)) : null);
+  setPromoFieldState(elInicio, nomeOk && descOk, (nomeOk && descOk) ? ((elInicio.value || '').trim() ? inicioOk : null) : null);
+  setPromoFieldState(elFim, nomeOk && descOk && inicioOk, (nomeOk && descOk && inicioOk) ? ((elFim.value || '').trim() ? fimOk : null) : null);
+  setPromoFieldState(elProdutos, nomeOk && descOk && inicioOk && fimOk, (nomeOk && descOk && inicioOk && fimOk) ? ((elProdutos.value || '').trim() ? produtosOk : null) : null);
+  setPromoFieldState(elRegras, nomeOk && descOk && inicioOk && fimOk && produtosOk, (nomeOk && descOk && inicioOk && fimOk && produtosOk) ? ((elRegras.value || '').trim() ? regrasOk : null) : null);
+  setPromoFieldState(elStatus, nomeOk && descOk && inicioOk && fimOk && produtosOk && regrasOk, (nomeOk && descOk && inicioOk && fimOk && produtosOk && regrasOk) ? (((elStatus.value || '').trim() ? statusOk : null)) : null);
+
+  elSalvar.disabled = !(nomeOk && descOk && inicioOk && fimOk && produtosOk && regrasOk && statusOk);
+}
+
+function bindPromocaoFormEvents() {
+  if (_promoFormListenersBound) return;
+  ['promo-nome', 'promo-descricao', 'promo-data-inicio', 'promo-data-fim', 'promo-produtos-afetados', 'promo-regras', 'promo-status']
+    .forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', validatePromocaoForm);
+      el.addEventListener('change', validatePromocaoForm);
+    });
+  _promoFormListenersBound = true;
+}
+
 function abrirFormPromocao(idx) {
   const panel = document.getElementById('promos-form-panel');
   const tit = document.getElementById('promos-form-titulo');
   if (!panel) return;
+  bindPromocaoFormEvents();
   if (idx !== undefined) {
     const p = STATE.promocoes?.promocoes?.[idx];
     if (!p) return;
     tit.textContent = '✏️ Editar Promoção';
-    document.getElementById('promos-f-nome').value = p.nome || '';
-    document.getElementById('promos-f-periodo').value = p.periodo || '';
-    document.getElementById('promos-f-desc').value = p.descricao || '';
-    document.getElementById('promos-f-status').value = p.status || 'ativa';
-    document.getElementById('promos-f-idx').value = idx;
+    document.getElementById('promo-nome').value = p.nome || '';
+    document.getElementById('promo-descricao').value = p.descricao || '';
+    document.getElementById('promo-data-inicio').value = p.dataInicio || '';
+    document.getElementById('promo-data-fim').value = p.dataFim || '';
+    document.getElementById('promo-produtos-afetados').value = p.produtosAfetados || '';
+    document.getElementById('promo-regras').value = p.regras || '';
+    document.getElementById('promo-status').value = p.status || '';
+    document.getElementById('promo-idx').value = idx;
   } else {
     tit.textContent = '➕ Nova Promoção';
-    document.getElementById('promos-f-nome').value = '';
-    document.getElementById('promos-f-periodo').value = '';
-    document.getElementById('promos-f-desc').value = '';
-    document.getElementById('promos-f-status').value = 'ativa';
-    document.getElementById('promos-f-idx').value = '';
+    document.getElementById('promo-nome').value = '';
+    document.getElementById('promo-descricao').value = '';
+    document.getElementById('promo-data-inicio').value = '';
+    document.getElementById('promo-data-fim').value = '';
+    document.getElementById('promo-produtos-afetados').value = '';
+    document.getElementById('promo-regras').value = '';
+    document.getElementById('promo-status').value = '';
+    document.getElementById('promo-idx').value = '';
   }
+  validatePromocaoForm();
   panel.style.display = 'block';
   panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -6461,21 +6625,33 @@ function fecharFormPromocao() {
 }
 
 async function salvarPromocaoItem() {
-  const nome = (document.getElementById('promos-f-nome').value || '').trim();
-  if (!nome) { toast('Informe o nome da promoção.','erro'); return; }
-  const periodo = (document.getElementById('promos-f-periodo').value || '').trim();
-  const descricao = (document.getElementById('promos-f-desc').value || '').trim();
-  const status = document.getElementById('promos-f-status').value;
-  const idxRaw = document.getElementById('promos-f-idx').value;
+  const nome = (document.getElementById('promo-nome').value || '').trim();
+  const descricao = (document.getElementById('promo-descricao').value || '').trim();
+  const dataInicio = (document.getElementById('promo-data-inicio').value || '').trim();
+  const dataFim = (document.getElementById('promo-data-fim').value || '').trim();
+  const produtosAfetados = (document.getElementById('promo-produtos-afetados').value || '').trim();
+  const regras = (document.getElementById('promo-regras').value || '').trim();
+  const status = document.getElementById('promo-status').value;
+  const idxRaw = document.getElementById('promo-idx').value;
+
+  if (!_promoNomeValido()) { toast('Informe o nome da promoção com pelo menos 3 caracteres.','erro'); return; }
+  if (!_promoDescricaoValida()) { toast('Descrição muito curta. Use no mínimo 10 caracteres.','erro'); return; }
+  if (!_promoDataInicioValida()) { toast('Informe uma data de início válida.','erro'); return; }
+  if (!_promoDataFimValida()) { toast('A data de fim deve ser igual ou posterior à data de início.','erro'); return; }
+  if (!_promoProdutosValidos()) { toast('Informe ao menos um produto afetado.','erro'); return; }
+  if (!_promoRegrasValidas()) { toast('Informe regras com no mínimo 5 caracteres.','erro'); return; }
+  if (!_promoStatusValido()) { toast('Selecione o status da promoção.','erro'); return; }
+
+  const periodo = `${dataInicio} até ${dataFim}`;
 
   if (!STATE.promocoes) STATE.promocoes = {promocoes: []};
   if (!Array.isArray(STATE.promocoes.promocoes)) STATE.promocoes.promocoes = [];
 
   if (idxRaw !== '') {
     const idx = parseInt(idxRaw);
-    STATE.promocoes.promocoes[idx] = {nome, periodo, descricao, status};
+    STATE.promocoes.promocoes[idx] = {nome, periodo, descricao, dataInicio, dataFim, produtosAfetados, regras, status};
   } else {
-    STATE.promocoes.promocoes.push({nome, periodo, descricao, status});
+    STATE.promocoes.promocoes.push({nome, periodo, descricao, dataInicio, dataFim, produtosAfetados, regras, status});
   }
   const ok = await salvarArquivo(PATHS.promocoes, STATE.promocoes, 'promocoesSha', 'Admin: ' + (idxRaw !== '' ? 'editar' : 'adicionar') + ' promoção ' + nome);
   if (ok) { fecharFormPromocao(); renderPromocoesTable(); }
