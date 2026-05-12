@@ -26,7 +26,11 @@
   var inputCadNasc = document.getElementById('fid-data-nasc');
   var inputCadTel = document.getElementById('fid-celular');
   var btnCadastrar = document.getElementById('fid-executar-cadastro');
-  var resultadoCadastro = document.getElementById('resultado-cliente');
+  var resultadoCadastroNovo = document.getElementById('fid-feedback-message');
+  var resultadoCadastro = resultadoCadastroNovo || document.getElementById('resultado-cliente');
+  if (!resultadoCadastroNovo && resultadoCadastro) {
+    console.warn('[fidelidade] Usando fallback de feedback legado (#resultado-cliente).');
+  }
 
   var inputNome = document.getElementById('fid-login-nome');
   var inputNasc = document.getElementById('fid-login-data-nasc');
@@ -74,6 +78,23 @@
     resultadoCadastro.style.display = msg ? 'block' : 'none';
     resultadoCadastro.textContent = msg || '';
     resultadoCadastro.className = 'resultado' + (tipo ? ' ' + tipo : '');
+  }
+
+  function encaminharCadastroWhatsApp(nome, dataBr, telRaw) {
+    var telefoneFormatado = mascaraTel(telRaw);
+    var msg = [
+      'Olá! Solicitação de cadastro no Clube de Fidelidade.',
+      'Nome: ' + nome,
+      'Nascimento: ' + dataBr,
+      'WhatsApp: ' + telefoneFormatado
+    ].join('\n');
+    setResultadoCadastro('✅ Seu pedido de cadastro foi enviado para nosso WhatsApp!', 'ok');
+    try {
+      window.open(wppLink(msg), '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      setResultadoCadastro('✅ Seu pedido de cadastro foi enviado para nosso WhatsApp! Se a aba não abriu, tente novamente.', 'ok');
+    }
+    resetarFormularioCadastro();
   }
 
   function cadastroNomeValido() {
@@ -494,9 +515,7 @@
 
       var tk = getGhToken();
       if (!tk) {
-        setResultadoCadastro('⚠️ Não foi possível salvar seu cadastro agora. Tente novamente em instantes para gravar na base oficial do programa.', 'erro');
-        btnCadastrar.textContent = 'Executar cadastro';
-        atualizarFluxoCadastro();
+        encaminharCadastroWhatsApp(nome, dataBr, telRaw);
         return;
       }
 
@@ -557,7 +576,8 @@
           });
         })
         .catch(function(e) {
-          setResultadoCadastro('⚠️ Erro ao cadastrar (' + e.message + '). Tente novamente.', 'erro');
+          console.warn('[fidelidade] Falha ao salvar cadastro no backend; redirecionando para WhatsApp.', e);
+          encaminharCadastroWhatsApp(nome, dataBr, telRaw);
         })
         .finally(function() {
           btnCadastrar.textContent = 'Executar cadastro';
