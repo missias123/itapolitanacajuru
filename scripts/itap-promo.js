@@ -53,21 +53,31 @@
   // SORTEIO MENSAL — FUNÇÕES COMPLETAS
   // ═══════════════════════════════════════════════════════════
   var WHATS_SORVETERIA = '5516996062046';
+  var PROMO_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
+  var formCadastroPromo = document.getElementById('form-promocao-cliente');
+  var inputPromoNome = document.getElementById('promo-nome-cliente');
+  var inputPromoData = document.getElementById('promo-data-nasc-cliente');
+  var inputPromoCelular = document.getElementById('promo-celular-cliente');
+  var inputPromoHp = document.getElementById('promo-honeypot');
+  var btnEnviarPromo = document.getElementById('promo-enviar-whatsapp');
+  var feedbackPromo = document.getElementById('promo-feedback-message');
+  var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
+  var _promoCadastroLiberado = false;
 
   function abrirRegrasSorteioPromo() {
     var bloco = document.getElementById('bloco-regras-sorteio-promo');
-    var form  = document.getElementById('form-sorteio-inline');
+    var form = document.getElementById('form-sorteio-inline');
     if (!bloco) return;
     bloco.style.display = bloco.style.display === 'none' ? 'block' : 'none';
     if (form) form.style.display = 'none';
     if (bloco.style.display === 'block') {
-      setTimeout(function() { bloco.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+      setTimeout(function() { bloco.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
     }
   }
 
   function verificarAceiteSorteioPromo() {
-    var cb   = document.getElementById('aceite-sorteio-inline');
-    var btn  = document.getElementById('btn-aceitar-sorteio-inline');
+    var cb = document.getElementById('aceite-sorteio-inline');
+    var btn = document.getElementById('btn-aceitar-sorteio-inline');
     var hint = document.getElementById('hint-aceite-sorteio');
     if (!cb || !btn) return;
     if (cb.checked) {
@@ -86,28 +96,178 @@
   function abrirFormSorteioPromo() {
     var form = document.getElementById('form-sorteio-inline');
     if (!form) return;
+    _promoCadastroLiberado = true;
     form.style.display = 'block';
-    setTimeout(function() { form.scrollIntoView({behavior:'smooth', block:'start'}); }, 100);
+    resetarFormularioPromo();
+    setTimeout(function() { form.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  }
+
+  function setCampoPromoHabilitado(campo, habilitado) {
+    if (!campo) return;
+    campo.disabled = !habilitado;
+    campo.classList.toggle('form-control-disabled', !habilitado);
+  }
+
+  function formatarCelularPromo(valor) {
+    var digitos = String(valor || '').replace(/\D/g, '').slice(0, 11);
+    if (digitos.length <= 2) return digitos;
+    if (digitos.length <= 6) return '(' + digitos.slice(0, 2) + ') ' + digitos.slice(2);
+    if (digitos.length <= 10) return '(' + digitos.slice(0, 2) + ') ' + digitos.slice(2, 6) + '-' + digitos.slice(6);
+    return '(' + digitos.slice(0, 2) + ') ' + digitos.slice(2, 7) + '-' + digitos.slice(7);
   }
 
   function mascaraTelPromo(el) {
-    var v = el.value.replace(/\D/g,'');
-    if (v.length > 11) v = v.slice(0,11);
-    if (v.length > 6)      v = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
-    else if (v.length > 2) v = '(' + v.slice(0,2) + ') ' + v.slice(2);
-    else if (v.length > 0) v = '(' + v;
-    el.value = v;
+    if (!el) return;
+    el.value = formatarCelularPromo(el.value);
+  }
+
+  function mascaraDataPromo(el) {
+    if (!el) return;
+    var digitos = String(el.value || '').replace(/\D/g, '').slice(0, 8);
+    if (digitos.length > 4) {
+      el.value = digitos.slice(0, 2) + '/' + digitos.slice(2, 4) + '/' + digitos.slice(4);
+    } else if (digitos.length > 2) {
+      el.value = digitos.slice(0, 2) + '/' + digitos.slice(2);
+    } else {
+      el.value = digitos;
+    }
+  }
+
+  function parseDataBrPromoToIso(dataBr) {
+    var valor = String(dataBr || '').trim();
+    var match = valor.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) return null;
+    var dia = parseInt(match[1], 10);
+    var mes = parseInt(match[2], 10);
+    var ano = parseInt(match[3], 10);
+    if (ano < 1900 || ano > new Date().getFullYear()) return null;
+    if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null;
+    var data = new Date(ano, mes - 1, dia);
+    if (data.getFullYear() !== ano || data.getMonth() !== (mes - 1) || data.getDate() !== dia) return null;
+    return String(ano) + '-' + String(mes).padStart(2, '0') + '-' + String(dia).padStart(2, '0');
+  }
+
+  function promoNomeValido() {
+    return !!(inputPromoNome && inputPromoNome.value.trim().length >= 3);
+  }
+
+  function promoDataValida() {
+    return !!(inputPromoData && parseDataBrPromoToIso(inputPromoData.value));
+  }
+
+  function promoCelularValido() {
+    var celular = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
+    return PROMO_MOBILE_REGEX.test(celular);
+  }
+
+  function promoCamposValidos() {
+    return promoNomeValido() && promoDataValida() && promoCelularValido();
   }
 
   function mostrarMsgSorteio(txt, tipo) {
-    var el = document.getElementById('msg-sorteio-inline');
-    if (!el) return;
-    el.textContent = txt;
-    el.style.display = 'block';
-    el.style.background = tipo === 'ok' ? '#e8f5e9' : '#fff3e0';
-    el.style.color = tipo === 'ok' ? '#2e7d32' : '#e65100';
-    el.style.border = tipo === 'ok' ? '1px solid #a5d6a7' : '1px solid #ffcc80';
-    setTimeout(function() { if (el.textContent === txt) el.style.display = 'none'; }, 5000);
+    if (!feedbackPromo) return;
+    if (!txt) {
+      feedbackPromo.style.display = 'none';
+      feedbackPromo.textContent = '';
+      feedbackPromo.className = 'alert';
+      return;
+    }
+    feedbackPromo.style.display = 'block';
+    feedbackPromo.textContent = txt;
+    feedbackPromo.className = 'alert ' + (tipo === 'ok' || tipo === 'info' ? 'alert-success' : 'alert-warning');
+  }
+
+  function exibirRegrasRetiradaPromo() {
+    if (regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'block';
+  }
+
+  function atualizarFluxoCadastroPromo() {
+    var podeEditarNome = _promoCadastroLiberado;
+    var podeEditarData = podeEditarNome && promoNomeValido();
+    var podeEditarCelular = podeEditarData && promoDataValida();
+
+    setCampoPromoHabilitado(inputPromoNome, podeEditarNome);
+    setCampoPromoHabilitado(inputPromoData, podeEditarData);
+    setCampoPromoHabilitado(inputPromoCelular, podeEditarCelular);
+
+    if (btnEnviarPromo) btnEnviarPromo.disabled = !(_promoCadastroLiberado && promoCamposValidos());
+  }
+
+  function resetarFormularioPromo(opcoes) {
+    var opts = opcoes || {};
+    if (inputPromoNome) inputPromoNome.value = '';
+    if (inputPromoData) inputPromoData.value = '';
+    if (inputPromoCelular) inputPromoCelular.value = '';
+    if (inputPromoHp) inputPromoHp.value = '';
+    if (!opts.manterFeedback) mostrarMsgSorteio('', '');
+    if (!opts.manterRegras && regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
+    if (btnEnviarPromo) {
+      btnEnviarPromo.disabled = true;
+      btnEnviarPromo.textContent = '💬 Enviar Cadastro via WhatsApp';
+    }
+    atualizarFluxoCadastroPromo();
+  }
+
+  function obterIdadePromo(dataIso) {
+    var partes = String(dataIso || '').split('-');
+    if (partes.length !== 3) return -1;
+    var hoje = new Date();
+    var nasc = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+    var idade = hoje.getFullYear() - nasc.getFullYear();
+    var antesAniversario = hoje.getMonth() < nasc.getMonth() || (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate());
+    if (antesAniversario) idade--;
+    return idade;
+  }
+
+  function montarMensagemWhatsappPromo(idUnico, numeroInscricao, nome, celFmt, dataNasc) {
+    return [
+      '🍦 *SORTEIO MENSAL — Sorveteria Itapolitana Cajuru*',
+      '',
+      '*ID Permanente:* ' + idUnico,
+      '*Número de Inscrição:* #' + numeroInscricao,
+      '*Nome:* ' + nome,
+      '*Celular:* ' + celFmt,
+      '*Data de nascimento:* ' + dataNasc,
+      '',
+      '⚠️ *ATENÇÃO IMPORTANTE:*',
+      'Os dados informados acima devem ser *idênticos* aos do seu documento oficial com foto (RG ou CNH).',
+      '',
+      '🚫 *O PRÊMIO NÃO SERÁ ENTREGUE* se o nome ou a data de nascimento do documento divergirem do cadastro.',
+      '',
+      'Para retirar o prêmio, apresente *pessoalmente*:',
+      '📄 Documento oficial com foto (RG ou CNH) — original',
+      '📲 Celular cadastrado com WhatsApp ativo',
+      '',
+      'Estou ciente das regras e concordo com o regulamento do sorteio. 🎉'
+    ].join('\n');
+  }
+
+  function montarMensagemWhatsappFallbackPromo(nome, celFmt, dataNasc) {
+    return [
+      'Olá! Quero participar do Sorteio Mensal da Sorveteria Itapolitana Cajuru.',
+      'Nome: ' + nome,
+      'Data de nascimento: ' + dataNasc,
+      'Celular: ' + celFmt,
+      '',
+      'Estou ciente das regras de retirada do prêmio e aguardo a confirmação do meu cadastro.'
+    ].join('\n');
+  }
+
+  function abrirWhatsAppPromo(msg) {
+    try {
+      window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank', 'noopener,noreferrer');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function finalizarCadastroPromo(msgFeedback, msgWhatsapp) {
+    exibirRegrasRetiradaPromo();
+    var abriuWhats = abrirWhatsAppPromo(msgWhatsapp);
+    mostrarMsgSorteio(abriuWhats ? msgFeedback : msgFeedback + ' Se o WhatsApp não abriu, tente novamente.', 'ok');
+    _promoLimparRate();
+    resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
   }
 
   // Token lido do localStorage (configurado pelo admin no painel)
@@ -158,81 +318,77 @@
   }
 
   async function enviarSorteioPromo() {
-    // ── Honeypot anti-bot ──
-    var hp = document.getElementById('sort-hp');
-    if (hp && hp.value) { mostrarMsgSorteio('Erro de validacao. Tente novamente.', 'aviso'); return; }
+    if (!_promoCadastroLiberado) return;
+    if (inputPromoHp && inputPromoHp.value) {
+      mostrarMsgSorteio('Erro de validacao. Tente novamente.', 'aviso');
+      return;
+    }
 
-    // ── Rate limiting ──
     var msgRate = _promoVerificarRate();
-    if (msgRate) { mostrarMsgSorteio(msgRate, 'aviso'); return; }
+    if (msgRate) {
+      mostrarMsgSorteio(msgRate, 'aviso');
+      return;
+    }
 
-    var nome = (document.getElementById('sort-nome').value || '').replace(/[<>&"'/\\]/g, '').trim();
-    var cel  = (document.getElementById('sort-cel').value || '').replace(/\D/g,'');
-    var dia  = (document.getElementById('sort-dia').value || '').trim();
-    var mes  = (document.getElementById('sort-mes').value || '').trim();
-    var ano  = (document.getElementById('sort-ano').value || '').trim();
+    var nome = (inputPromoNome && inputPromoNome.value ? inputPromoNome.value : '').replace(/[<>&"'/\\]/g, '').trim();
+    var dataNasc = inputPromoData ? inputPromoData.value.trim() : '';
+    var dataNascIso = parseDataBrPromoToIso(dataNasc);
+    var cel = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
 
-    // ── Validações completas ──
-    if (!nome || nome.length < 5) {
-      mostrarMsgSorteio('Informe seu nome completo (nome e sobrenome, mínimo 5 letras).', 'aviso'); return;
+    if (nome.length < 3) {
+      mostrarMsgSorteio('Informe seu nome completo com pelo menos 3 caracteres.', 'aviso');
+      return;
     }
-    if (nome.trim().split(/\s+/).length < 2) {
-      mostrarMsgSorteio('Informe nome e sobrenome completos.', 'aviso'); return;
+    if (!dataNascIso) {
+      mostrarMsgSorteio('Informe uma data de nascimento válida no formato dd/mm/aaaa.', 'aviso');
+      return;
     }
-    if (cel.length < 10 || cel.length > 11) {
-      mostrarMsgSorteio('Informe um celular válido com DDD (10 ou 11 dígitos).', 'aviso'); return;
+    if (!PROMO_MOBILE_REGEX.test(cel)) {
+      mostrarMsgSorteio('Informe um celular válido com DDD e 11 dígitos numéricos.', 'aviso');
+      return;
     }
-    var ddd = parseInt(cel.slice(0,2));
-    if (ddd < 11 || ddd > 99) {
-      mostrarMsgSorteio('DDD inválido. Informe um celular com DDD correto.', 'aviso'); return;
-    }
-    var diaInt = parseInt(dia), mesInt = parseInt(mes), anoInt = parseInt(ano);
-    if (!dia || !mes || !ano || ano.length < 4 || diaInt < 1 || diaInt > 31 || mesInt < 1 || mesInt > 12 || anoInt < 1900 || anoInt > new Date().getFullYear()) {
-      mostrarMsgSorteio('Informe uma data de nascimento válida (Dia, Mês e Ano).', 'aviso'); return;
-    }
-    // ── Validação de idade mínima (14 anos) ──
-    var hoje = new Date();
-    var nasc = new Date(anoInt, mesInt - 1, diaInt);
-    var idade = hoje.getFullYear() - nasc.getFullYear();
-    var antesAniv = hoje.getMonth() < nasc.getMonth() || (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate());
-    if (antesAniv) idade--;
-    if (idade < 14) {
-      mostrarMsgSorteio('E necessario ter no minimo 14 anos para participar do sorteio.', 'aviso'); return;
+    if (obterIdadePromo(dataNascIso) < 14) {
+      mostrarMsgSorteio('É necessário ter no mínimo 14 anos para participar do sorteio.', 'aviso');
+      return;
     }
 
     _promoRegistrarTentativa();
 
-    // Bloquear botão durante verificação
-    var btn = document.getElementById('btn-enviar-sorteio-promo');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Verificando...'; }
-    mostrarMsgSorteio('⏳ Verificando cadastro, aguarde...', 'ok');
+    if (btnEnviarPromo) {
+      btnEnviarPromo.disabled = true;
+      btnEnviarPromo.textContent = '⏳ Verificando...';
+    }
+    mostrarMsgSorteio('⏳ Verificando cadastro, aguarde...', 'info');
+    if (!_GH_TK_P) {
+      finalizarCadastroPromo(
+        '✅ Iniciamos o envio do seu cadastro via WhatsApp.',
+        montarMensagemWhatsappFallbackPromo(nome, formatarCelularPromo(cel), dataNasc)
+      );
+      return;
+    }
     try {
-      // 1. Ler fidelidade.json do GitHub
       var r = await fetch(_GH_FID + '?t=' + Date.now(), {
         headers: { 'Authorization': 'token ' + _GH_TK_P, 'Accept': 'application/vnd.github.v3+json' }
       });
       if (!r.ok) throw new Error('Erro ' + r.status);
       var d = await r.json();
       var sha = d.sha;
-      var bin = atob(d.content.replace(/\n/g,''));
+      var bin = atob(d.content.replace(/\n/g, ''));
       var bytes = new Uint8Array(bin.length);
       for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
       var fid = JSON.parse(new TextDecoder('utf-8').decode(bytes));
       var inscritos = fid.sorteioInscritos || [];
-      var celLimpo = cel.replace(/\D/g,'');
+      var celLimpo = cel;
       var nomeNorm = normalizarNomePromo(nome);
-      var dataNasc = dia.padStart(2,'0') + '/' + mes.padStart(2,'0') + '/' + ano;
-      var dataNascIso = ano + '-' + mes.padStart(2,'0') + '-' + dia.padStart(2,'0');
-      var celFmt = '(' + cel.slice(0,2) + ') ' + cel.slice(2,7) + '-' + cel.slice(7);
+      var celFmt = formatarCelularPromo(cel);
 
-      // ── 2a. Buscar/criar cliente por identidade (nome + dataNasc) e atualizar celular ──
       var cResp = await fetch(_GH_CLIENTES + '?t=' + Date.now(), {
         headers: { 'Authorization': 'token ' + _GH_TK_P, 'Accept': 'application/vnd.github.v3+json' }
       });
       if (!cResp.ok) throw new Error('Erro ao consultar clientes: ' + cResp.status);
       var cApi = await cResp.json();
       var cSha = cApi.sha;
-      var cBin = atob(cApi.content.replace(/\n/g,''));
+      var cBin = atob(cApi.content.replace(/\n/g, ''));
       var cBytes = new Uint8Array(cBin.length);
       for (var bi = 0; bi < cBin.length; bi++) cBytes[bi] = cBin.charCodeAt(bi);
       var cData = JSON.parse(new TextDecoder('utf-8').decode(cBytes));
@@ -257,8 +413,8 @@
       if (!idUnico) {
         var maxNum = 0;
         idsClientes.forEach(function(k) {
-          var m = k.match(/USR-2026-(\d+)/);
-          if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
+          var match = k.match(/USR-2026-(\d+)/);
+          if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
         });
         idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
         var agoraIso = new Date().toISOString();
@@ -316,45 +472,47 @@
       });
       if (!cSave.ok) throw new Error('Erro ao salvar clientes: ' + cSave.status);
 
-      // ── 2a. Verificar identidade por NOME + DATA e atualizar celular, se mudou ──
       var jaInscritoNomeData = inscritos.find(function(c) {
-        var cNome = normalizarNomePromo(c.nome || '');
-        return cNome === nomeNorm && c.dataNasc === dataNasc;
+        var nomeCadastrado = normalizarNomePromo(c.nome || '');
+        return nomeCadastrado === nomeNorm && c.dataNasc === dataNasc;
       });
       if (jaInscritoNomeData) {
         var numExistenteNomeData = inscritos.indexOf(jaInscritoNomeData) + 1;
+        var numeroExistente = String(numExistenteNomeData).padStart(3, '0');
         var celAtualInscricao = (jaInscritoNomeData.cel || '').replace(/\D/g, '');
         jaInscritoNomeData.id = idUnico;
-        if (celAtualInscricao === celLimpo) {
-          mostrarMsgSorteio('❌ Você já está cadastrado(a) neste sorteio. Número de inscrição: #' + String(numExistenteNomeData).padStart(3,'0'), 'aviso');
-          if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
-          return;
+        if (celAtualInscricao !== celLimpo) {
+          jaInscritoNomeData.cel = celFmt;
+          jaInscritoNomeData.hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          fid.sorteioInscritos = inscritos;
+          var conteudoAtualizado = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
+          var updateResp = await fetch(_GH_FID, {
+            method: 'PUT',
+            headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Atualizar celular sorteio: ' + nome, content: conteudoAtualizado, sha: sha })
+          });
+          if (!updateResp.ok) throw new Error('Erro ao atualizar inscrição existente: ' + updateResp.status);
+          finalizarCadastroPromo(
+            '✅ Cadastro encontrado! Atualizamos seu número de celular e registramos sua participação.',
+            montarMensagemWhatsappPromo(idUnico, numeroExistente, nome, celFmt, dataNasc)
+          );
+        } else {
+          finalizarCadastroPromo(
+            '✅ Sua participação já estava registrada. Reabrimos a confirmação pelo WhatsApp.',
+            montarMensagemWhatsappPromo(idUnico, numeroExistente, nome, celFmt, dataNasc)
+          );
         }
-        jaInscritoNomeData.cel = celFmt;
-        jaInscritoNomeData.hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-        fid.sorteioInscritos = inscritos;
-        var conteudoAtualizado = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
-        await fetch(_GH_FID, {
-          method: 'PUT',
-          headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: 'Atualizar celular sorteio: ' + nome, content: conteudoAtualizado, sha: sha })
-        });
-        mostrarMsgSorteio('Cadastro encontrado! Atualizamos seu número de celular. Sua participação na promoção foi registrada.', 'ok');
-        if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
         return;
       }
 
-      // ── 2b. Verificar duplicata por CELULAR (outro cadastro) ──
       var jaInscritoCel = inscritos.find(function(c) {
         return (c.cel || '').replace(/\D/g,'') === celLimpo;
       });
       if (jaInscritoCel) {
         var numExistente = inscritos.indexOf(jaInscritoCel) + 1;
         mostrarMsgSorteio('❌ Você já está cadastrado(a) neste sorteio com este celular! Número de inscrição: #' + String(numExistente).padStart(3,'0'), 'aviso');
-        if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
         return;
       }
-      // 3. Adicionar novo inscrito
 
       inscritos.push({
         id: idUnico,
@@ -362,11 +520,10 @@
         cel: celFmt,
         dataNasc: dataNasc,
         data: new Date().toLocaleDateString('pt-BR'),
-        hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})
+        hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
       });
       fid.sorteioInscritos = inscritos;
       var numInscricao = inscritos.length;
-      // 4. Salvar no GitHub
       var novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
       var resp = await fetch(_GH_FID, {
         method: 'PUT',
@@ -374,42 +531,72 @@
         body: JSON.stringify({ message: 'Inscrito no sorteio: ' + nome, content: novoConteudo, sha: sha })
       });
       if (!resp.ok) throw new Error('Erro ao salvar: ' + resp.status);
-      // 5. Abrir WhatsApp com número de inscrição
-      var numStr = String(numInscricao).padStart(3,'0');
-      var msg = '🍦 *SORTEIO MENSAL — Sorveteria Itapolitana Cajuru*\n\n' +
-        '*ID Permanente:* ' + idUnico + '\n' +
-        '*Número de Inscrição:* #' + numStr + '\n' +
-        '*Nome:* ' + nome + '\n' +
-        '*Celular:* ' + celFmt + '\n' +
-        '*Data de nascimento:* ' + dataNasc + '\n\n' +
-        '⚠️ *ATENÇÃO IMPORTANTE:*\n' +
-        'Os dados informados acima devem ser *idênticos* aos do seu documento oficial com foto (RG ou CNH).\n\n' +
-        '🚫 *O PRÊMIO NÃO SERÁ ENTREGUE* se o nome ou a data de nascimento do documento divergirem do cadastro.\n\n' +
-        'Para retirar o prêmio, apresente *pessoalmente*:\n' +
-        '📄 Documento oficial com foto (RG ou CNH) — original\n' +
-        '📲 Celular cadastrado com WhatsApp ativo\n\n' +
-        'Estou ciente das regras e concordo com o regulamento do sorteio. 🎉';
-      window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank');
+      var numStr = String(numInscricao).padStart(3, '0');
       if (clienteNovoCriado) {
-        mostrarMsgSorteio('Cadastro realizado e participação na promoção registrada com sucesso!', 'ok');
+        finalizarCadastroPromo(
+          '✅ Cadastro realizado e participação na promoção registrada com sucesso!',
+          montarMensagemWhatsappPromo(idUnico, numStr, nome, celFmt, dataNasc)
+        );
       } else if (celularClienteAtualizado) {
-        mostrarMsgSorteio('Cadastro encontrado! Atualizamos seu número de celular. Sua participação na promoção foi registrada.', 'ok');
+        finalizarCadastroPromo(
+          '✅ Cadastro encontrado! Atualizamos seu número de celular e registramos sua participação.',
+          montarMensagemWhatsappPromo(idUnico, numStr, nome, celFmt, dataNasc)
+        );
       } else {
-        mostrarMsgSorteio('✅ Cadastro confirmado! Seu número é #' + numStr + '. Envie a mensagem no WhatsApp para finalizar!', 'ok');
+        finalizarCadastroPromo(
+          '✅ Cadastro confirmado! Seu número é #' + numStr + '. Envie a mensagem no WhatsApp para finalizar!',
+          montarMensagemWhatsappPromo(idUnico, numStr, nome, celFmt, dataNasc)
+        );
       }
-      // Limpar formulário
-      document.getElementById('sort-nome').value = '';
-      document.getElementById('sort-cel').value = '';
-      document.getElementById('sort-dia').value = '';
-      document.getElementById('sort-mes').value = '';
-      document.getElementById('sort-ano').value = '';
     } catch(e) {
       console.error('[Itap] Erro no cadastro:', e);
-      mostrarMsgSorteio('⚠️ Erro ao verificar cadastro. Tente novamente em instantes.', 'aviso');
+      finalizarCadastroPromo(
+        '✅ Não foi possível concluir a etapa automática agora, mas iniciamos o envio via WhatsApp.',
+        montarMensagemWhatsappFallbackPromo(nome, formatarCelularPromo(cel), dataNasc)
+      );
     } finally {
-      if (btn) { btn.disabled = false; btn.textContent = '🎉 Cadastrar no Sorteio'; }
+      if (btnEnviarPromo) btnEnviarPromo.textContent = '💬 Enviar Cadastro via WhatsApp';
+      atualizarFluxoCadastroPromo();
     }
   }
+
+  (function inicializarFormularioClientePromo() {
+    if (!formCadastroPromo) return;
+
+    formCadastroPromo.addEventListener('submit', function(evento) {
+      evento.preventDefault();
+      enviarSorteioPromo();
+    });
+
+    if (inputPromoNome) {
+      ['input', 'change'].forEach(function(evt) {
+        inputPromoNome.addEventListener(evt, atualizarFluxoCadastroPromo);
+      });
+    }
+
+    if (inputPromoData) {
+      ['input', 'change'].forEach(function(evt) {
+        inputPromoData.addEventListener(evt, function() {
+          mascaraDataPromo(inputPromoData);
+          atualizarFluxoCadastroPromo();
+        });
+      });
+    }
+
+    if (inputPromoCelular) {
+      ['input', 'change'].forEach(function(evt) {
+        inputPromoCelular.addEventListener(evt, function() {
+          mascaraTelPromo(inputPromoCelular);
+          atualizarFluxoCadastroPromo();
+        });
+      });
+    }
+
+    if (btnEnviarPromo) btnEnviarPromo.addEventListener('click', enviarSorteioPromo);
+    if (regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
+    mostrarMsgSorteio('', '');
+    atualizarFluxoCadastroPromo();
+  })();
   // ═══════════════════════════════════════════════════════════
 
   function irParaSeção(id) {
