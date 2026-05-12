@@ -30,13 +30,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #333; line-height: 1.7; }
 
-    /* CABEÇALHO: logo + 2 botões */
+    /* CABEÇALHO: botão DÚVIDAS + navegação */
     .itap-s-header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:10px 14px 12px;position:relative;top:auto;z-index:1;box-shadow:0 4px 20px rgba(0,0,0,.25);width:100%;box-sizing:border-box;text-align:center;}
-    .itap-s-header img{width:64px;height:64px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 8px;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 14px rgba(0,0,0,.3);}
+    .itap-header-top{display:flex;justify-content:center;align-items:center;width:100%;margin-bottom:10px;}
+    .itap-header-duvidas{display:flex;justify-content:center;}
+    .ita-bot-duvidas-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 22px;min-height:40px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;border:2px solid rgba(255,255,255,.85);border-radius:999px;font-family:inherit;font-size:13px;font-weight:900;letter-spacing:.8px;line-height:1;cursor:pointer;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;animation:itabot-btn-pulse 1.8s ease-in-out infinite;}
+    .ita-bot-duvidas-btn:hover{filter:brightness(1.12);transform:scale(1.04);}
+    .ita-bot-duvidas-btn:focus-visible{outline:3px solid #FFD600;outline-offset:2px;}
+    @keyframes itabot-btn-pulse {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,.9), 0 4px 12px rgba(0,60,180,.35); }
+      50%       { box-shadow: 0 0 0 2px rgba(255,255,255,1), 0 0 18px rgba(0,80,220,.65), 0 0 32px rgba(0,80,220,.3); }
+    }
     .itap-s-nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
     .itap-s-btn{display:inline-flex;align-items:center;gap:7px;color:#fff;border-radius:14px;padding:11px 24px;font-size:13px;font-weight:900;text-decoration:none;border:2px solid rgba(255,255,255,.35);box-shadow:0 4px 12px rgba(0,0,0,.25);letter-spacing:.5px;text-transform:uppercase;transition:transform .15s,filter .15s;white-space:nowrap;}
     .itap-s-btn:hover{transform:translateY(-2px);filter:brightness(1.12);}
-    @media(max-width:480px){.itap-s-header img{width:54px;height:54px;}.itap-s-btn{font-size:12px;padding:8px 16px;}}
+    @media(max-width:480px){.itap-s-btn{font-size:12px;padding:8px 16px;}}
+    @media (prefers-reduced-motion: reduce) { .ita-bot-duvidas-btn { animation: none; box-shadow: 0 4px 12px rgba(0,60,180,.35); } }
 
     /* CONTEÚDO */
     .sobre-container { max-width: 800px; margin: 0 auto; padding: 20px 16px 40px; }
@@ -81,12 +90,19 @@
 </head>
 <body>
 
-<!-- CABEÇALHO: logo + 2 botões -->
+<!-- CABEÇALHO: botão DÚVIDAS + navegação -->
 <header class="itap-s-header">
-  <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="eager" fetchpriority="high" decoding="async" width="72" height="72">
+  <div class="itap-header-top">
+    <div class="itap-header-duvidas">
+      <button type="button" class="ita-bot-duvidas-btn" onclick="_itabotAbrirItaBot()" aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">💬 DÚVIDAS</button>
+    </div>
+  </div>
   <nav class="itap-s-nav" aria-label="Navegação">
     <a class="itap-s-btn" href="index.html" style="background:linear-gradient(135deg,#FF6D00,#E65100);">🏠 TELA INICIAL</a>
     <a class="itap-s-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);">🛒 ENCOMENDAS</a>
+    <a class="itap-s-btn" href="promocao.html" style="background:linear-gradient(135deg,#E8000D,#C62828);">🎉 PROMOÇÃO</a>
+    <a class="itap-s-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">⭐ DICAS/DEPOIMENTOS</a>
+    <a class="itap-s-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);">🎟️ FIDELIDADE</a>
   </nav>
 </header>
 
@@ -256,5 +272,6 @@
   </ul>
 </nav>
 
+<script src="scripts/ita-bot-widget.js" defer></script>
 </body>
 </html>
