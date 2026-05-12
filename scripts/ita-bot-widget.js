@@ -108,18 +108,20 @@
 @media(max-width:600px){.ita-bot-duvidas-btn{font-size:13px;padding:9px 22px}}
 @media(prefers-reduced-motion:reduce){.ita-bot-duvidas-btn{animation:none;box-shadow:0 4px 12px rgba(0,60,180,.35)}}
 
-/* === TELA DE DÚVIDAS minimalista em 3 blocos === */
-.chat-box{display:flex;flex-direction:column;height:100dvh!important;background:#fff}
-.chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);color:#fff;border-bottom:0;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
-.chat-hdr-logo-row{border-bottom:1px solid rgba(255,255,255,.22);padding-bottom:6px;flex:1;justify-content:flex-start}
-.chat-hdr-main-row{display:flex;align-items:center;justify-content:space-between}
-.chat-close{background:rgba(255,255,255,.2);color:#fff;width:44px;height:44px;font-size:20px}
-#duvidas-resposta.chat-msgs.ita-bot-body{flex:1!important;min-height:40vh;padding:14px 16px;overflow-y:auto;background:#FAFAFA;font-size:15px;line-height:1.6;color:#111827;display:flex;flex-direction:column;gap:10px}
+/* === TELA DE DÚVIDAS: logo → input → resposta === */
+.chat-box{display:flex;flex-direction:column;height:100dvh!important;background:#FAFAFA}
+.chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);color:#fff;border-bottom:0;padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.chat-hdr-logo-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.22)}
+.chat-close{background:rgba(255,255,255,.2);color:#fff;width:44px;height:44px;font-size:20px;flex-shrink:0;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.chat-close:hover{background:rgba(255,255,255,.32)}
+.chat-inp-row.ita-bot-footer{background:transparent;border:none;padding:0;display:flex;gap:8px;flex-shrink:0;align-items:stretch}
+#duvidas-pergunta.chat-inp{flex:1;border:2px solid rgba(255,255,255,.7);border-radius:14px;padding:13px 16px;font-size:16px;background:rgba(255,255,255,.97);color:#111;-webkit-appearance:none;appearance:none;min-height:48px;box-sizing:border-box}
+#duvidas-pergunta.chat-inp:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.35);outline:none}
+#duvidas-pergunta.chat-inp::placeholder{color:rgba(0,0,0,.38)}
+.chat-send{width:auto;height:auto;min-width:80px;min-height:48px;border-radius:14px;padding:0 16px;font-size:14px;font-weight:800;flex-shrink:0}
+#duvidas-resposta.chat-msgs.ita-bot-body{flex:1;min-height:0;padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));overflow-y:auto;background:#FAFAFA;font-size:15px;line-height:1.6;color:#111827;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
 .chat-typing,.chat-sugs,.duvidas-chips-wrap,.chat-footer{display:none!important}
-.chat-inp-row.ita-bot-footer{border-top:1px solid #ECECEC;background:#fff;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-shrink:0}
-#duvidas-pergunta.chat-inp{flex:1;border:2px solid #E5E7EB;border-radius:12px;padding:12px 14px;font-size:16px}
-.chat-send{width:auto;height:auto;min-width:92px;border-radius:12px;padding:0 14px;font-size:14px;font-weight:800}
-@media(max-width:600px){#duvidas-resposta.chat-msgs{font-size:14px}}
+@media(max-width:600px){#duvidas-resposta.chat-msgs.ita-bot-body{font-size:14px}#duvidas-pergunta.chat-inp{font-size:16px;padding:12px 14px}}
 
 `;
 
@@ -183,54 +185,18 @@
   <div class="chat-hdr-logo-row">
     <img src="${logoSrc}" alt="Logo Sorveteria Itapolitana" class="chat-hdr-logo-img" loading="lazy" decoding="async">
     <div>
-      <div class="chat-hdr-logo-text">Itapolitana</div>
+      <div class="chat-hdr-logo-text" id="chat-hdr-titulo">Itapolitana</div>
       <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.8px;">Cajuru · SP · Sorvete Artesanal</div>
     </div>
+    <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
   </div>
-  <div class="chat-hdr-main-row">
-    <div style="display:flex;align-items:center;gap:11px">
-      <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 27 68 57" width="36" height="36" aria-hidden="true">
-          <rect x="2" y="48" width="6" height="18" rx="3" fill="#D0D0E0"/>
-          <rect x="3" y="52" width="4" height="10" rx="2" fill="#B8B8CC"/>
-          <rect x="58" y="48" width="6" height="18" rx="3" fill="#D0D0E0"/>
-          <rect x="59" y="52" width="4" height="10" rx="2" fill="#B8B8CC"/>
-          <rect x="8" y="40" width="50" height="40" rx="13" fill="#E8E8F8"/>
-          <rect x="8" y="40" width="50" height="16" rx="13" fill="white" opacity=".22"/>
-          <rect x="8" y="53" width="50" height="3" fill="#E8E8F8"/>
-          <rect x="30" y="34" width="7" height="8" rx="2.5" fill="#C8C8D8"/>
-          <circle cx="33" cy="33" r="5.5" fill="#FFD700" stroke="#E8C000" stroke-width=".8"/>
-          <circle cx="31.5" cy="31.5" r="1.8" fill="white" opacity=".55"/>
-          <rect x="15" y="49" width="15" height="12" rx="4" fill="#1A1A2E"/>
-          <rect x="17" y="51" width="11" height="8" rx="3" fill="#FF6B35"/>
-          <circle cx="19" cy="53" r="2" fill="white" opacity=".8"/>
-          <rect x="36" y="49" width="15" height="12" rx="4" fill="#1A1A2E"/>
-          <rect x="38" y="51" width="11" height="8" rx="3" fill="#FF6B35"/>
-          <circle cx="40" cy="53" r="2" fill="white" opacity=".8"/>
-          <circle cx="33" cy="65" r="2.5" fill="#C0C0D0"/>
-          <path d="M19,71 Q33,80 47,71" stroke="#1A1A2E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <path d="M23,73 Q33,77 43,73" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <circle cx="12" cy="61" r="5.5" fill="#FFB0C8" opacity=".38"/>
-          <circle cx="54" cy="61" r="5.5" fill="#FFB0C8" opacity=".38"/>
-        </svg>
-      </div>
-      <div>
-        <h3 id="chat-hdr-titulo" style="font-size:15px;font-weight:900;margin:0;color:#fff">Fale Conosco</h3>
-        <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Assistente Itapolitana · Responde na hora</p>
-      </div>
-    </div>
-    <div class="chat-hdr-btns">
-      <button class="chat-btn-home" onclick="_itabotFecharChatDialog();window.location.href='${_base}index.html'" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
-      <button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
-    </div>
+  <div class="chat-inp-row ita-bot-footer">
+    <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Campo para digitar sua dúvida para o Ita Bot"/>
+    <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">Enviar</button>
   </div>
 </div>
 <div class="chat-msgs ita-bot-body" id="duvidas-resposta" aria-live="polite" role="log" aria-relevant="additions text">
-  <div class="msg bot ita-bot-message-bot">Olá, sou o Ita Bot! Digite sua dúvida abaixo que eu te ajudo.</div>
-</div>
-<div class="chat-inp-row ita-bot-footer">
-  <input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key==='Enter')_itabotEnviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Campo para digitar sua dúvida para o Ita Bot"/>
-  <button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">Enviar</button>
+  <div class="msg bot ita-bot-message-bot">Olá, sou o Ita Bot! 👋 Digite sua dúvida acima que eu te ajudo.</div>
 </div>
 </div>
 </div>`;
