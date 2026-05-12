@@ -97,6 +97,9 @@
 
   function habilitarExpansaoQuemSomos(nav) {
     if (!nav) return;
+    if (nav.dataset.quemSomosExpandBound === '1') return;
+    nav.dataset.quemSomosExpandBound = '1';
+    /* "Quem Somos" aponta para sobre.html no site */
     var trigger = nav.querySelector('a.itap-nav-btn[href$="sobre.html"]');
     if (!trigger) return;
 
@@ -145,9 +148,10 @@
     });
 
     nav.addEventListener('mouseleave', fecharMenuCompleto);
-    document.addEventListener('click', function (event) {
+    var onDocumentClick = function (event) {
       if (!nav.contains(event.target)) fecharMenuCompleto();
-    });
+    };
+    document.addEventListener('click', onDocumentClick);
   }
 
   /* Executa assim que o DOM estiver pronto */
