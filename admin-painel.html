@@ -4310,7 +4310,6 @@ async function liberarLoteFidelidade(){
   STATE.fidelidade.liberados=fim;
   STATE.fidelidade.última_atualização=new Date().toISOString();
   localStorage.setItem('fid_lote_admin',JSON.stringify({inicio:inicio+1,fim,codigos:novos,loteNum}));
-  fidMostrarAlerta(`⏳ Gerando ${FID_LOTE_SIZE} códigos e salvando no GitHub...`,'ok');
   const ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Fidelidade: Lote ${loteNum} liberado — ${fim.toLocaleString('pt-BR')}/${FID_TOTAL_BANCO.toLocaleString('pt-BR')} códigos`);
   if(btn)btn.disabled=false;
   fidRenderProgresso();

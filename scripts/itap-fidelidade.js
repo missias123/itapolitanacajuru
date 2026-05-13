@@ -838,8 +838,11 @@
               mapa.map[codigo].usadoPor = telCliente;
               mapa.map[codigo].usadoEm = agora;
               fid.usados = Number(fid.usados || 0) + 1;
-              fid.ultima_atualizacao = agora;
-              fid.última_atualização = agora;
+              if (Object.prototype.hasOwnProperty.call(fid, 'última_atualização')) {
+                fid.última_atualização = agora;
+              } else {
+                fid.ultima_atualizacao = agora;
+              }
 
               var pontosAntes = Number(cliente.saldoPontos || 0);
               cliente.codigosUsados.push(codigo);
