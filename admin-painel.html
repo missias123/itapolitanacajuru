@@ -1877,7 +1877,7 @@ Talento</textarea>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
       <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições da Fidelidade estão bloqueadas.
+        ⚠️ Modo somente leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições da Fidelidade estão bloqueadas.
       </div>
       <!-- form panel para add/edit cliente -->
       <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
@@ -1935,7 +1935,7 @@ Talento</textarea>
     <!-- FIDELIDADE -->
     <div class="seção" id="sec-fidelidade">
       <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições estão bloqueadas.
+        ⚠️ Modo somente leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições estão bloqueadas.
       </div>
       <div class="códigos-stats">
         <div class="cod-stat"><div class="cn" id="fid-total">-</div><div class="ct">Total Códigos</div></div>
@@ -2581,7 +2581,7 @@ function fidEnsureCodigos(){
   return{key,codigos:STATE.fidelidade[key]};
 }
 function fidIsReadOnly(){
-  // A aba Fidelidade reúne escrita em dois domínios (clientes.json e fidelidade.json);
+  // A aba Fidelidade requer escrita em dois domínios (clientes.json e fidelidade.json);
   // se um deles está sem SHA/token válido, tratamos toda a aba como somente leitura.
   return !STATE.fidelidadeSha || !STATE.clientesSha;
 }
@@ -2660,7 +2660,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   const bloqueado=fidPathReadOnly(path);
   if(bloqueado){
     fidApplyReadOnlyGuard();
-    toast('⚠️ Token ausente ou expirado. Não é possível editar dados da Fidelidade.','aviso');
+    toast('⚠️ Modo somente leitura ativo: token ausente ou expirado. Não é possível editar dados da Fidelidade.','aviso');
     return false;
   }
   mostrarLoading('Salvando no GitHub...');
@@ -4292,7 +4292,7 @@ async function liberarLoteFidelidade(){
   if(!fidRequireWrite())return;
   // Se STATE.fidelidade não carregou (token inválido), buscar via raw antes de gerar para não perder dados existentes
   if(!STATE.fidelidade){
-    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Tente recarregar o painel (verifique o token GitHub).','erro');
+    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Informe um token GitHub válido e recarregue o painel.','erro');
     return;
   }
   const atual=STATE.fidelidade.liberados||0;
