@@ -432,6 +432,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .fid-alerta{padding:10px 14px;border-radius:8px;font-size:.82rem;font-weight:700;margin-top:10px;display:none}
 .fid-alerta.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;display:block}
 .fid-alerta.erro{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;display:block}
+.is-disabled{opacity:.55;pointer-events:none;cursor:not-allowed}
 
 /* Erro de válidação inline */
 .erro-inline {
@@ -1875,6 +1876,9 @@ Talento</textarea>
     </div>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
+      <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
+        ⚠️ Modo somente leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições da Fidelidade estão bloqueadas.
+      </div>
       <!-- form panel para add/edit cliente -->
       <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
         <div style="font-weight:900;font-size:1rem;color:#e65100;margin-bottom:14px" id="cliente-form-titulo">➕ Adicionar Cliente</div>
@@ -1888,7 +1892,7 @@ Talento</textarea>
         </div>
         <input type="hidden" id="cli-f-cel-orig"/>
         <div class="btn-row">
-          <button class="btn btn-salvar" onclick="salvarClienteForm()">💾 Salvar</button>
+          <button class="btn btn-salvar" data-fid-write onclick="salvarClienteForm()">💾 Salvar</button>
           <button class="btn btn-cinza" onclick="fecharFormCliente()">✕ Cancelar</button>
         </div>
       </div>
@@ -1899,7 +1903,7 @@ Talento</textarea>
         <div class="stat-card"><div class="num" id="sc-fraudes">-</div><div class="txt">Fraudes</div></div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn btn-cinza" onclick="copiarListaClientes()">📋 Copiar lista</button><button class="btn" style="background:#1565c0;color:#fff" onclick="exportarClientesCSV()">⬇️ Exportar CSV</button><button class="btn btn-laranja" onclick="abrirFormCliente()">➕ Adicionar cliente</button></div></div>
+        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn btn-cinza" onclick="copiarListaClientes()">📋 Copiar lista</button><button class="btn" style="background:#1565c0;color:#fff" onclick="exportarClientesCSV()">⬇️ Exportar CSV</button><button class="btn btn-laranja" data-fid-write onclick="abrirFormCliente()">➕ Adicionar cliente</button></div></div>
         <div class="card-body">
           <div class="busca-wrap"><input type="search" id="busca-cliente" placeholder="Buscar por nome ou WhatsApp..." oninput="renderClientes()"/></div>
           <div class="tabela-wrap">
@@ -1930,6 +1934,12 @@ Talento</textarea>
 
     <!-- FIDELIDADE -->
     <div class="seção" id="sec-fidelidade">
+      <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
+        ⚠️ Modo somente leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições estão bloqueadas.
+      </div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn btn-cinza" id="btn-refresh-fidelidade" onclick="atualizarListaFidelidade()">🔄 Atualizar Lista</button>
+      </div>
       <div class="códigos-stats">
         <div class="cod-stat"><div class="cn" id="fid-total">-</div><div class="ct">Total Códigos</div></div>
         <div class="cod-stat"><div class="cn" id="fid-disponíveis" style="color:#2e7d32">-</div><div class="ct">Disponíveis</div></div>
@@ -1951,26 +1961,26 @@ Talento</textarea>
           </div>
           <div class="campo-edit"><label>Título da página Fidelidade</label><input type="text" id="fid-título" placeholder="Programa de Fidelidade"/></div>
           <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
+          <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
         </div>
       </div>
       <div class="card">
         <div class="card-header"><h2>&#x1F3AB; Gerador de Lotes de Códigos</h2></div>
         <div class="card-body">
           <div class="fid-info-box">
-            Banco total: <strong>100.000 códigos únicos e indecifráveis</strong>.<br>
+            Banco total: <strong>1.000.000 códigos únicos e indecifráveis</strong>.<br>
             Cada clique em <strong>“Liberar 100 Códigos”</strong> gera o próximo lote e salva automaticamente no GitHub.<br>
-            O contador avança: <strong>100/100.000 → 200/100.000 → 300/100.000...</strong><br>
+            O contador avança: <strong>100/1.000.000 → 200/1.000.000 → 300/1.000.000...</strong><br>
             Apenas códigos liberados são aceitos pelos clientes — sem impressão = sem validade.
           </div>
           <div class="fid-progresso-wrap">
             <div class="fid-progresso-titulo">Progresso do Banco de Códigos</div>
             <div class="fid-progresso-barra-bg"><div class="fid-progresso-barra" id="fid-prog-barra" style="width:0%"></div></div>
-            <div class="fid-progresso-texto" id="fid-prog-texto">0 / 100.000 códigos liberados</div>
+            <div class="fid-progresso-texto" id="fid-prog-texto">0 / 1.000.000 códigos liberados</div>
           </div>
           <div class="btn-row" style="margin-top:14px">
-            <button class="btn btn-laranja" onclick="liberarLoteFidelidade()" id="btn-liberar-lote">&#x1F3B2; Liberar 100 Códigos</button>
-            <button class="btn btn-vermelho" onclick="apagarTodosCodigos()">&#x1F5D1;&#xFE0F; Apagar Todos</button>
+            <button class="btn btn-laranja" data-fid-write onclick="liberarLoteFidelidade()" id="btn-liberar-lote">&#x1F3B2; Liberar 100 Códigos</button>
+            <button class="btn btn-vermelho" data-fid-write onclick="apagarTodosCodigos()">&#x1F5D1;&#xFE0F; Apagar Todos</button>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
@@ -2555,6 +2565,48 @@ const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRAN
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 const POR_PAGINA=50;
+function fidCodigosKey(){
+  if(!STATE.fidelidade)return'códigos';
+  if(STATE.fidelidade['códigos'])return'códigos';
+  if(STATE.fidelidade.codigos)return'codigos';
+  return'códigos';
+}
+function fidGetCodigos(){
+  if(!STATE.fidelidade)return{};
+  const key=fidCodigosKey();
+  const codigos=STATE.fidelidade[key];
+  return codigos&&typeof codigos==='object'?codigos:{};
+}
+function fidEnsureCodigos(){
+  if(!STATE.fidelidade)STATE.fidelidade={};
+  const key=fidCodigosKey();
+  if(!STATE.fidelidade[key]||typeof STATE.fidelidade[key]!=='object')STATE.fidelidade[key]={};
+  return{key,codigos:STATE.fidelidade[key]};
+}
+function fidIsReadOnly(){
+  // A aba Fidelidade requer escrita em dois domínios (clientes.json e fidelidade.json);
+  // se um deles está sem SHA/token válido, tratamos toda a aba como somente leitura.
+  return !STATE.fidelidadeSha || !STATE.clientesSha;
+}
+function fidPathReadOnly(path){
+  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!STATE.clientesSha);
+}
+const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
+function fidApplyReadOnlyGuard(){
+  const isReadOnly=fidIsReadOnly();
+  document.querySelectorAll('.fid-readonly-aviso').forEach(el=>{el.style.display=isReadOnly?'block':'none';});
+  document.querySelectorAll('[data-fid-write]').forEach(el=>{
+    const tag=(el.tagName||'').toUpperCase();
+    if(FID_DISABLEABLE_TAGS.includes(tag))el.disabled=isReadOnly;
+    el.classList.toggle('is-disabled',isReadOnly);
+  });
+}
+function fidRequireWrite(){
+  if(!fidIsReadOnly())return true;
+  fidApplyReadOnlyGuard();
+  toast('⚠️ Modo leitura ativo na Fidelidade. Atualize o token para editar.','aviso');
+  return false;
+}
 async function ghGet(path){
   try{
     const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:{'Authorization':'token '+getToken(),'Accept':'application/vnd.github.v3+json'}});
@@ -2608,6 +2660,12 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
+  const bloqueado=fidPathReadOnly(path);
+  if(bloqueado){
+    fidApplyReadOnlyGuard();
+    toast('⚠️ Modo somente leitura ativo: token ausente ou expirado. Não é possível editar dados da Fidelidade.','aviso');
+    return false;
+  }
   mostrarLoading('Salvando no GitHub...');
   console.log('[Admin] Salvando:', path, 'SHA:', STATE[shaKey]);
   const r=await ghPut(path,data,STATE[shaKey],msg);
@@ -2680,9 +2738,19 @@ async function carregarTudo(){
   if(banner)banner.style.display=semToken?'flex':'none';
   ocultarLoading();
   renderDashboard();
-  preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();
-  renderPreços();carregarEstoque();carregarTitulosCardapio();
-  renderizarSaboresAdmin();preencherCardapio();preencherDepoimentos();preencherFaleConosco();
+  try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}
+  try{preencherPromoção();}catch(e){console.error('[Admin] preencherPromoção',e);}
+  try{preencherConfig();}catch(e){console.error('[Admin] preencherConfig',e);}
+  try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
+  try{preencherSorteio();}catch(e){console.error('[Admin] preencherSorteio',e);}
+  try{renderPreços();}catch(e){console.error('[Admin] renderPreços',e);}
+  try{carregarEstoque();}catch(e){console.error('[Admin] carregarEstoque',e);}
+  try{carregarTitulosCardapio();}catch(e){console.error('[Admin] carregarTitulosCardapio',e);}
+  try{renderizarSaboresAdmin();}catch(e){console.error('[Admin] renderizarSaboresAdmin',e);}
+  try{preencherCardapio();}catch(e){console.error('[Admin] preencherCardapio',e);}
+  try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
+  try{preencherFaleConosco();}catch(e){console.error('[Admin] preencherFaleConosco',e);}
+  fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
   // Mapa: aba → lista de seções que compõem cada página do site
@@ -2715,9 +2783,17 @@ function irPara(seção,btn){
   if(ids.includes('produtos'))renderProdutosAdmin();
   if(ids.includes('promoção')){preencherPromoção();preencherSorteio();renderPromocoesTable();}
   if(ids.includes('participantes'))renderParticipantes();
-  if(ids.includes('clientes')){renderClientes();renderDuplicidades();}
-  if(ids.includes('fidelidade')){preencherFidelidade();renderCódigos();fidRenderProgresso();fidRenderLoteAtual();preencherEstrelas();}
+  if(ids.includes('clientes')){
+    try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] renderClientes',e);}
+  }
+  if(ids.includes('fidelidade')){
+    try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
+    try{renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
+    try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
+    try{preencherEstrelas();}catch(e){console.error('[Admin] preencherEstrelas',e);}
+  }
   if(ids.includes('estrela'))carregarEstrelas();
+  if(ids.includes('clientes')||ids.includes('fidelidade')||ids.includes('estrela'))fidApplyReadOnlyGuard();
   if(ids.includes('depoimentos'))preencherDepoimentos();
   if(ids.includes('qualidade'))atualizarScoresQualidade();
   // Scroll para o topo do conteúdo ao trocar de aba
@@ -2725,6 +2801,26 @@ function irPara(seção,btn){
   if(content)content.scrollTop=0;
 }
 
+async function atualizarListaFidelidade(){
+  const btn=document.getElementById('btn-refresh-fidelidade');
+  if(btn){btn.disabled=true;btn.textContent='Atualizando...';}
+  try{
+    const[cl,fi]=await Promise.all([ghGet(PATHS.clientes),ghGet(PATHS.fidelidade)]);
+    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
+    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
+    try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] atualizarListaFidelidade renderClientes',e);}
+    try{preencherFidelidade();}catch(e){console.error('[Admin] atualizarListaFidelidade preencherFidelidade',e);}
+    try{renderCódigos();}catch(e){console.error('[Admin] atualizarListaFidelidade renderCódigos',e);}
+    try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] atualizarListaFidelidade fidRender',e);}
+    fidApplyReadOnlyGuard();
+    toast('✅ Lista de Fidelidade atualizada com sucesso!','sucesso');
+  }catch(e){
+    console.error('[Admin] atualizarListaFidelidade',e);
+    toast('❌ Erro ao atualizar lista de Fidelidade.','erro');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar Lista';}
+  }
+}
 function atualizarScoresQualidade(){
   carregarMetricasQualidade();
 }
@@ -2870,7 +2966,7 @@ function renderDashboard(){
   const clientes=Object.values(STATE.clientes?.clientes||{});
   const ativos=clientes.filter(c=>!c.bloqueado).length;
   const bloqueados=clientes.filter(c=>c.bloqueado).length;
-  const códigos=STATE.fidelidade?.códigos||{};
+  const códigos=fidGetCodigos();
   const cupons=Object.keys(códigos).length;
   const encomendas=STATE.encomendas?.registros?.length||0;
   const promoAtiva=STATE.promo?.ativo?'SIM':'NÃO';
@@ -3711,13 +3807,13 @@ function renderClientes(){
     <td>${c.bloqueado?'<span style="color:#c62828;font-weight:700">Bloqueado</span>':c.fraude?'<span style="color:#f57c00;font-weight:700">Fraude</span>':'<span style="color:#2e7d32">Ativo</span>'}${(c.tentativas_fraude||0)>0?` <small style="color:#888">(${c.tentativas_fraude} tent.)</small>`:''}</td>
     <td style="display:flex;gap:5px;flex-wrap:wrap">
       ${c.bloqueado
-        ?`<button class="btn btn-verde" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',false)">🔓 Desbloquear</button>`
-        :`<button class="btn btn-vermelho" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',true)">🔒 Bloquear</button>`}
-      ${(c.tentativas_fraude||0)>0?`<button class="btn" style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${cKey}')">🔄 Zerar tent.</button>`:''}
-      <button class="btn" style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${cKey}')">➕ Ponto</button>
-      <button class="btn" style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${cKey}')">✅ Código</button>
-      <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormCliente('${cKey}')">✏️ Editar</button>
-      <button class="btn" style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${cKey}')">🗑️ Excluir</button>
+        ?`<button class="btn btn-verde" data-fid-write style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',false)">🔓 Desbloquear</button>`
+        :`<button class="btn btn-vermelho" data-fid-write style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',true)">🔒 Bloquear</button>`}
+      ${(c.tentativas_fraude||0)>0?`<button class="btn" data-fid-write style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${cKey}')">🔄 Zerar tent.</button>`:''}
+      <button class="btn" data-fid-write style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${cKey}')">➕ Ponto</button>
+      <button class="btn" data-fid-write style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${cKey}')">✅ Código</button>
+      <button class="btn btn-amarelo" data-fid-write style="padding:4px 9px;font-size:.76rem" onclick="abrirFormCliente('${cKey}')">✏️ Editar</button>
+      <button class="btn" data-fid-write style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${cKey}')">🗑️ Excluir</button>
     </td>
   </tr>`;
   }).join('');}
@@ -3725,6 +3821,7 @@ function renderClientes(){
   let pagHtml='';
   for(let i=0;i<paginas;i++)pagHtml+=`<button class="${i===pag?'ativo':''}" onclick="irPagClientes(${i})">${i+1}</button>`;
   pagDiv.innerHTML=pagHtml;
+  fidApplyReadOnlyGuard();
 }
 function irPagClientes(p){STATE.pagClientes=p;renderClientes();}
 
@@ -3753,9 +3850,9 @@ function renderDuplicidades() {
         <span style="color:${t.status==='Resolvido'?'#2e7d32':t.status==='Ignorado'?'#888':'#b71c1c'};font-weight:700">${t.status}</span>
         ${t.status==='Pendente revisao admin' ? `
           <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-verde" style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'atualizar','${t.celTentativa}')">Atualizar celular para ${t.celTentativa}</button>
-            <button class="btn" style="background:#607d8b;color:#fff;padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'ignorar','')">Ignorar (manter celular atual)</button>
-            <button class="btn btn-vermelho" style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'bloquear','')">Bloquear tentativa</button>
+            <button class="btn btn-verde" data-fid-write style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'atualizar','${t.celTentativa}')">Atualizar celular para ${t.celTentativa}</button>
+            <button class="btn" data-fid-write style="background:#607d8b;color:#fff;padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'ignorar','')">Ignorar (manter celular atual)</button>
+            <button class="btn btn-vermelho" data-fid-write style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'bloquear','')">Bloquear tentativa</button>
           </div>` : ''}
       </div>`).join('');
     return `<div style="background:#ffebee;border:1.5px solid #ef9a9a;border-radius:12px;padding:12px 14px;margin-bottom:12px">
@@ -3764,9 +3861,11 @@ function renderDuplicidades() {
       ${tentativas}
     </div>`;
   }).join('');
+  fidApplyReadOnlyGuard();
 }
 
 async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
+  if(!fidRequireWrite())return;
   const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const c = clientes[celOriginal];
   if (!c || !c.potencialDuplicidade) return;
@@ -3795,6 +3894,7 @@ async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
   renderDuplicidades();
 }
 async function toggleBloqueio(clienteId,bloquear){
+  if(!fidRequireWrite())return;
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   if(!clientes[clienteId])return;
   const c=clientes[clienteId];
@@ -3835,6 +3935,7 @@ async function toggleBloqueio(clienteId,bloquear){
 /* Adicionar ponto(s) manualmente para um cliente.
    Admin usa quando o cliente trouxe cupom físico ou houve erro no fluxo. */
 async function adicionarPontoManual(clienteId){
+  if(!fidRequireWrite())return;
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c)return;
@@ -3856,6 +3957,7 @@ async function adicionarPontoManual(clienteId){
 /* Zerar tentativas de código e desbloquear.
    Usar quando o cliente erroneamente foi bloqueado ou após confirmação pessoal. */
 async function zerarTentativas(clienteId){
+  if(!fidRequireWrite())return;
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c)return;
@@ -3875,6 +3977,7 @@ async function zerarTentativas(clienteId){
    Marca o código como usado em fidelidade.json E adiciona 1 ponto ao cliente em clientes.json.
    Ambas as mudanças são persistidas no GitHub para atualização imediata no site. */
 async function adminValidarCodigo(clienteId){
+  if(!fidRequireWrite())return;
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c)return;
@@ -4123,7 +4226,7 @@ async function embaralharEstrelas() {
   if (ok) preencherEstrelas();
 }
 function atualizarStatsCódigos(){
-  const códigos=STATE.fidelidade?.códigos||{};
+  const códigos=fidGetCodigos();
   const total=Object.keys(códigos).length;
   const disponíveis=Object.values(códigos).filter(c=>c.status==='disponível').length;
   const usados=Object.values(códigos).filter(c=>c.status==='usado').length;
@@ -4134,7 +4237,7 @@ function atualizarStatsCódigos(){
   document.getElementById('fid-liberados').textContent=liberados;
 }
 function renderCódigos(){
-  const códigos=STATE.fidelidade?.códigos||{};
+  const códigos=fidGetCodigos();
   const filtro=document.getElementById('fid-filtro-status').value;
   let lista=Object.entries(códigos);
   if(filtro)lista=lista.filter(([,v])=>v.status===filtro);
@@ -4142,15 +4245,17 @@ function renderCódigos(){
   if(!lista.length){document.getElementById('códigos-lista').innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhum código encontrado.</p>';document.getElementById('fid-pag-info').textContent='';return;}
   const max=200;
   const exibir=lista.slice(0,max);
-  let html=exibir.map(([cod,v])=>{const statusClass=v.status==='disponível'?'cod-status-ok':'cod-status-usado';const statusTxt=v.status==='disponível'?'Disponível':'Usado';const info=v.usadoPor?`por ${v.usadoPor}`:`lote ${v.lote||1}`;return`<div class="cod-item"><span class="cod-code">${cod}</span><span class="${statusClass}">${statusTxt}</span><span class="cod-info">${info}</span><button onclick="excluirCodigo('${cod}')" style="background:none;border:none;color:#c62828;font-size:.8rem;cursor:pointer;padding:2px 6px" title="Excluir código">🗑️</button></div>`;}).join('');
+  let html=exibir.map(([cod,v])=>{const statusClass=v.status==='disponível'?'cod-status-ok':'cod-status-usado';const statusTxt=v.status==='disponível'?'Disponível':'Usado';const info=v.usadoPor?`por ${v.usadoPor}`:`lote ${v.lote||1}`;return`<div class="cod-item"><span class="cod-code">${cod}</span><span class="${statusClass}">${statusTxt}</span><span class="cod-info">${info}</span><button data-fid-write onclick="excluirCodigo('${cod}')" style="background:none;border:none;color:#c62828;font-size:.8rem;cursor:pointer;padding:2px 6px" title="Excluir código">🗑️</button></div>`;}).join('');
   document.getElementById('códigos-lista').innerHTML=html;
   document.getElementById('fid-pag-info').textContent=`Exibindo ${exibir.length} de ${lista.length} códigos`;
   atualizarStatsCódigos();
+  fidApplyReadOnlyGuard();
 }
 // =====================================================
 // GERADOR DE LOTES DETERMINÍSTICO (mesmo algoritmo do fidelidade-admin.html)
 // =====================================================
-const FID_TOTAL_BANCO = 100000;
+// Capacidade histórica restaurada do banco de fidelidade: 1.000.000 códigos.
+const FID_TOTAL_BANCO = 1000000;
 const FID_LOTE_SIZE   = 100;
 const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
 // REGRA DOS CARACTERES PERMITIDOS NOS CUPONS (sem O,I,L,0,1 para evitar confusao visual):
@@ -4192,7 +4297,7 @@ function fidRenderProgresso(){
   const restante=FID_TOTAL_BANCO-n;
   if(btn){
     if(restante>0){btn.textContent=`🎲 Liberar 100 Códigos (${restante.toLocaleString('pt-BR')} restantes)`;btn.disabled=false;}
-    else{btn.textContent='✅ Banco Esgotado (100.000/100.000)';btn.disabled=true;}
+    else{btn.textContent='✅ Banco Esgotado (1.000.000/1.000.000)';btn.disabled=true;}
   }
 }
 function fidRenderLoteAtual(){
@@ -4204,17 +4309,18 @@ function fidRenderLoteAtual(){
   if(!wrap)return;
   wrap.style.display='block';
   if(info)info.textContent=`Lote ${lote.loteNum||'?'}: códigos ${lote.inicio} a ${lote.fim} de ${FID_TOTAL_BANCO.toLocaleString('pt-BR')}`;
-  const codigos=STATE.fidelidade?.códigos||{};
+  const codigos=fidGetCodigos();
   if(grid)grid.innerHTML=lote.codigos.map(c=>{const usado=codigos[c]&&codigos[c].status==='usado';return`<div class="fid-codigo-chip${usado?' usado':''}">${c}</div>`;}).join('');
 }
 async function liberarLoteFidelidade(){
+  if(!fidRequireWrite())return;
   // Se STATE.fidelidade não carregou (token inválido), buscar via raw antes de gerar para não perder dados existentes
   if(!STATE.fidelidade){
-    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Tente recarregar o painel (verifique o token GitHub).','erro');
+    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Informe um token GitHub válido no campo "GitHub Token" da tela de login e recarregue o painel.','erro');
     return;
   }
   const atual=STATE.fidelidade.liberados||0;
-  if(atual>=FID_TOTAL_BANCO){fidMostrarAlerta('⚠️ Todos os 100.000 códigos já foram liberados!','erro');return;}
+  if(atual>=FID_TOTAL_BANCO){fidMostrarAlerta('⚠️ Todos os 1.000.000 códigos já foram liberados!','erro');return;}
   const btn=document.getElementById('btn-liberar-lote');
   if(btn){btn.disabled=true;btn.innerHTML='<span class="fid-spinner"></span> Gerando e salvando...';
   }
@@ -4223,8 +4329,8 @@ async function liberarLoteFidelidade(){
   const loteNum=Math.ceil(fim/FID_LOTE_SIZE);
   const novos=[];
   for(let i=inicio;i<fim;i++)novos.push(fidGerarCodigo(i));
-  if(!STATE.fidelidade.códigos)STATE.fidelidade.códigos={};
-  novos.forEach((c,i)=>{STATE.fidelidade.códigos[c]={status:'disponível',idx:inicio+i,lote:loteNum};});
+  const fidData=fidEnsureCodigos();
+  novos.forEach((c,i)=>{fidData.codigos[c]={status:'disponível',idx:inicio+i,lote:loteNum};});
   STATE.fidelidade.liberados=fim;
   STATE.fidelidade.última_atualização=new Date().toISOString();
   localStorage.setItem('fid_lote_admin',JSON.stringify({inicio:inicio+1,fim,codigos:novos,loteNum}));
@@ -4238,13 +4344,15 @@ async function liberarLoteFidelidade(){
   else{fidMostrarAlerta('⚠️ Códigos gerados mas NÃO salvos no GitHub. Verifique a conexão.','erro');}
 }
 function apagarTodosCodigos(){
+  if(!fidRequireWrite())return;
   confirmarAcao(
     'Apagar Todos os Códigos',
     'Tem certeza que deseja apagar <strong>TODOS</strong> os códigos liberados?<br><br><span style="color:#c62828;font-weight:700">Esta ação é irreversível!</span>',
     'Sim, apagar todos',
     async () => {
       if(!STATE.fidelidade)STATE.fidelidade={liberados:0,códigos:{},clientes:{},fraudes:{}};
-      STATE.fidelidade.códigos={};
+      const fidData=fidEnsureCodigos();
+      STATE.fidelidade[fidData.key]={};
       STATE.fidelidade.liberados=0;
       STATE.fidelidade.última_atualização=new Date().toISOString();
       localStorage.removeItem('fid_lote_admin');
@@ -4431,6 +4539,7 @@ ${paginas.join('\n')}
   win.document.close();
 }
 async function salvarConfigFidelidade() {
+  if(!fidRequireWrite())return;
   if (!STATE.config) STATE.config = {};
   const c = STATE.config;
   
@@ -4467,7 +4576,7 @@ async function salvarConfigFidelidade() {
   }
 }
 function copiarCódigosDisponíveis(){
-  const códigos=STATE.fidelidade?.códigos||{};
+  const códigos=fidGetCodigos();
   const disponíveis=Object.keys(códigos).filter(k=>códigos[k].status==='disponível');
   if(!disponíveis.length){toast('Nenhum código disponível.','');return;}
   navigator.clipboard.writeText(disponíveis.join('\n')).then(()=>toast(`${disponíveis.length} códigos copiados!`,'sucesso'));
@@ -5891,6 +6000,7 @@ function excluirEncomenda(numPedido) {
 // EXCLUIR CLIENTE
 // ═══════════════════════════════════════════════════════════
 function excluirCliente(clienteId) {
+  if(!fidRequireWrite())return;
   const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const c = clientes[clienteId];
   if (!c) return;
@@ -6779,6 +6889,7 @@ function exportarPromocoesCSV() {
 // CLIENTES — FORM INLINE (substituição de prompt())
 // ═══════════════════════════════════════════════════════════
 function abrirFormCliente(clienteId) {
+  if(!fidRequireWrite())return;
   const panel = document.getElementById('cliente-form-panel');
   const tit = document.getElementById('cliente-form-titulo');
   if (!panel) return;
@@ -6810,6 +6921,7 @@ function fecharFormCliente() {
 }
 
 async function salvarClienteForm() {
+  if(!fidRequireWrite())return;
   const nome = (document.getElementById('cli-f-nome').value || '').trim();
   if (nome.length < 3) { toast('Nome muito curto.','erro'); return; }
   const celRaw = (document.getElementById('cli-f-cel').value || '').replace(/\D/g,'');
@@ -6904,15 +7016,18 @@ function exportarClientesCSV() {
 // FIDELIDADE — EXCLUIR CÓDIGO INDIVIDUAL
 // ═══════════════════════════════════════════════════════════
 function excluirCodigo(cod) {
-  const v = STATE.fidelidade?.códigos?.[cod];
+  if(!fidRequireWrite())return;
+  const codigos=fidGetCodigos();
+  const v = codigos[cod];
   if (!v) return;
   confirmarAcao(
     'Excluir Código',
     `Tem certeza que deseja excluir o código <strong>${cod}</strong>?<br><span style="font-size:.82rem;color:#666">Status: ${v.status} ${v.usadoPor?'· Usado por: '+v.usadoPor:''}</span><br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
     'Sim, excluir código',
     async () => {
-      delete STATE.fidelidade.códigos[cod];
-      STATE.fidelidade.liberados = Object.keys(STATE.fidelidade.códigos).length;
+      const fidData=fidEnsureCodigos();
+      delete fidData.codigos[cod];
+      STATE.fidelidade.liberados = Object.keys(fidData.codigos).length;
       const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir código ' + cod);
       if (ok) { toast('Código excluído.','ok'); renderCódigos(); atualizarStatsCódigos(); fidRenderProgresso(); }
     }
