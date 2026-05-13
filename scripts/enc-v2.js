@@ -870,8 +870,14 @@ function atualizarBotãoCarrinho() {
   const badge = document.getElementById('carrinho-badge');
   const btn = document.getElementById('btn-carrinho');
   const totalEl = document.getElementById('carrinho-total');
+  const labelEl = btn ? btn.querySelector('.btn-carrinho-fixo__label') : null;
   if (badge) badge.textContent = total;
   if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.',',')}`;
+  if (labelEl) {
+    labelEl.textContent = total > 0
+      ? `🛒 ${total === 1 ? '1 item' : total + ' itens'}`
+      : '🛒 Carrinho';
+  }
   if (btn) {
     btn.disabled = false;
     btn.classList.toggle('ativo', total > 0);
