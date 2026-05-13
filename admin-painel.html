@@ -1937,6 +1937,9 @@ Talento</textarea>
       <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
         ⚠️ Modo somente leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições estão bloqueadas.
       </div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn btn-cinza" id="btn-refresh-fidelidade" onclick="atualizarListaFidelidade()">🔄 Atualizar Lista</button>
+      </div>
       <div class="códigos-stats">
         <div class="cod-stat"><div class="cn" id="fid-total">-</div><div class="ct">Total Códigos</div></div>
         <div class="cod-stat"><div class="cn" id="fid-disponíveis" style="color:#2e7d32">-</div><div class="ct">Disponíveis</div></div>
@@ -2798,6 +2801,26 @@ function irPara(seção,btn){
   if(content)content.scrollTop=0;
 }
 
+async function atualizarListaFidelidade(){
+  const btn=document.getElementById('btn-refresh-fidelidade');
+  if(btn){btn.disabled=true;btn.textContent='Atualizando...';}
+  try{
+    const[cl,fi]=await Promise.all([ghGet(PATHS.clientes),ghGet(PATHS.fidelidade)]);
+    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
+    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
+    try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] atualizarListaFidelidade renderClientes',e);}
+    try{preencherFidelidade();}catch(e){console.error('[Admin] atualizarListaFidelidade preencherFidelidade',e);}
+    try{renderCódigos();}catch(e){console.error('[Admin] atualizarListaFidelidade renderCódigos',e);}
+    try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] atualizarListaFidelidade fidRender',e);}
+    fidApplyReadOnlyGuard();
+    toast('✅ Lista de Fidelidade atualizada com sucesso!','sucesso');
+  }catch(e){
+    console.error('[Admin] atualizarListaFidelidade',e);
+    toast('❌ Erro ao atualizar lista de Fidelidade.','erro');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar Lista';}
+  }
+}
 function atualizarScoresQualidade(){
   carregarMetricasQualidade();
 }
