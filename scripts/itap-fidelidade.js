@@ -314,7 +314,7 @@
       })
       .then(function(meta) {
         var payload = {
-          message: mensagemCommit || 'Clube: atualizar dados',
+          message: mensagemCommit,
           content: encodeJsonToB64(dados),
           sha: meta.sha
         };
@@ -334,10 +334,15 @@
 
   function salvarComRetry(salvarFn, tentativas) {
     var total = Math.max(1, Number(tentativas || 1));
-    return salvarFn().then(function(ok) {
-      if (ok || total <= 1) return ok;
-      return salvarComRetry(salvarFn, total - 1);
-    });
+    return salvarFn()
+      .then(function(ok) {
+        if (ok || total <= 1) return ok;
+        return salvarComRetry(salvarFn, total - 1);
+      })
+      .catch(function() {
+        if (total <= 1) return false;
+        return salvarComRetry(salvarFn, total - 1);
+      });
   }
 
   function obterMapaCodigos(fidelidade) {
@@ -859,6 +864,8 @@
               dadosClientes.indice_celular = dadosClientes.indice_celular || {};
               if (telCliente) dadosClientes.indice_celular[telCliente] = clienteId;
 
+              // Persistência em duas fases: marca código como usado e, na sequência, atualiza cliente.
+              // Em falha parcial (fase 2), mantemos feedback explícito para regularização no admin/WhatsApp.
               return salvarComRetry(function() {
                 return salvarFidelidadeNoGitHub(fid, 'Clube: marcar código como usado ' + codigo);
               }, 2).then(function(okFidelidade) {
@@ -886,7 +893,8 @@
                 });
               });
             })
-            .catch(function() {
+            .catch(function(err) {
+              console.error('[fidelidade] erro ao validar/aplicar código', err);
               setResultadoCodigo('⚠️ Não foi possível concluir a validação agora. Tente novamente em instantes.', 'erro');
               mostrarWppBtn(wppLink('Olá! Preciso de ajuda para validar meu código de fidelidade.\nNome: ' + (_clienteAtual.nome || '-') + '\nCódigo: ' + codigo), '💬 Pedir ajuda no WhatsApp');
             });

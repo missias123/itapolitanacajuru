@@ -4231,6 +4231,7 @@ function renderCódigos(){
 // =====================================================
 // GERADOR DE LOTES DETERMINÍSTICO (mesmo algoritmo do fidelidade-admin.html)
 // =====================================================
+// Capacidade histórica restaurada do banco de fidelidade: 1.000.000 códigos.
 const FID_TOTAL_BANCO = 1000000;
 const FID_LOTE_SIZE   = 100;
 const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
@@ -4292,7 +4293,7 @@ async function liberarLoteFidelidade(){
   if(!fidRequireWrite())return;
   // Se STATE.fidelidade não carregou (token inválido), buscar via raw antes de gerar para não perder dados existentes
   if(!STATE.fidelidade){
-    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Informe um token GitHub válido e recarregue o painel.','erro');
+    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Informe um token GitHub válido no campo "GitHub Token" da tela de login e recarregue o painel.','erro');
     return;
   }
   const atual=STATE.fidelidade.liberados||0;
