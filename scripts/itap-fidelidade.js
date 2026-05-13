@@ -75,16 +75,16 @@
   }
 
   /* Feedback visível no painel (abaixo do input de código), não na seção de login */
-  var _CORES_FEEDBACK = { ok: '#1b5e20', erro: '#b71c1c', aviso: '#e65100' };
-  var _BG_FEEDBACK    = { ok: '#e8f5e9', erro: '#ffebee', aviso: '#fff3e0' };
+  var FEEDBACK_COLORS = { ok: '#1b5e20', erro: '#b71c1c', aviso: '#e65100' };
+  var FEEDBACK_BACKGROUNDS = { ok: '#e8f5e9', erro: '#ffebee', aviso: '#fff3e0' };
   function setResultadoCodigo(msg, tipo) {
     if (!resultadoCodigo) { setResultado(msg, tipo); return; } // fallback se elemento não existir
     if (!msg) { resultadoCodigo.style.display = 'none'; resultadoCodigo.textContent = ''; return; }
     resultadoCodigo.textContent = msg;
     resultadoCodigo.style.display = 'block';
-    resultadoCodigo.style.color = _CORES_FEEDBACK[tipo] || '#333';
-    resultadoCodigo.style.background = _BG_FEEDBACK[tipo] || '#f5f5f5';
-    resultadoCodigo.style.border = '1.5px solid ' + (_CORES_FEEDBACK[tipo] || '#ccc');
+    resultadoCodigo.style.color = FEEDBACK_COLORS[tipo] || '#333';
+    resultadoCodigo.style.background = FEEDBACK_BACKGROUNDS[tipo] || '#f5f5f5';
+    resultadoCodigo.style.border = '1.5px solid ' + (FEEDBACK_COLORS[tipo] || '#ccc');
     // Scroll suave para que o usuário veja o feedback
     resultadoCodigo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }

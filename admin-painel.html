@@ -2542,6 +2542,7 @@ function getToken(){return localStorage.getItem('itap_gh_token')||'';}
 function atualizarToken(){
   const tok=(prompt('Cole o novo token GitHub (ghp_...):') || '').trim();
   if(!tok){toast('Token não alterado.','aviso');return;}
+  if(!tok.startsWith('ghp_')||tok.length<20){toast('Token inválido. Deve começar com "ghp_" e ter pelo menos 20 caracteres.','erro');return;}
   localStorage.setItem('itap_gh_token',tok);
   toast('Token salvo! Recarregando dados...','sucesso');
   setTimeout(()=>carregarTudo(),400);
@@ -2570,7 +2571,9 @@ async function ghGet(path){
     try{
       const r2=await fetch(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'});
       if(r2.ok){const c=await r2.json();return{content:c,sha:null,readonly:true};}
-    }catch(e2){}
+    }catch(e2){
+      console.warn('[admin] ghGet fallback falhou para',path,e2);
+    }
     return{content:null,sha:null};
   }
 }
