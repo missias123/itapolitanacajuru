@@ -1343,13 +1343,6 @@ html { scroll-behavior: smooth; }
   </div>
 </section>
 <style>
-/* Reserva espaço para: carrinho fixo + navegação mobile */
-:root {
-  --ux-final-cart-mobile-height: 64px;
-  --ux-final-mobile-nav-height: 68px;
-  --ux-final-safe-gap: 16px;
-  --ux-final-safe-bottom: calc(var(--ux-final-cart-mobile-height) + var(--ux-final-mobile-nav-height) + var(--ux-final-safe-gap));
-}
 @media (max-width: 768px) {
   .itap-anchor-strip--categorias {
     overflow-x: auto;
@@ -1365,9 +1358,6 @@ html { scroll-behavior: smooth; }
     scroll-snap-align: start;
     white-space: nowrap;
   }
-}
-@media (max-width: 768px) {
-  body { padding-bottom: calc(var(--ux-final-safe-bottom) + env(safe-area-inset-bottom, 0px)); }
 }
 .como-encomendar-wrapper { max-width: 800px; margin: 0 auto; }
 #btn-como-fazer-encomenda {
@@ -1870,41 +1860,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-<!-- Barra mobile fixa global (sem Ita Bot) -->
-<nav id="itap-mobile-nav" aria-label="Navegação rápida">
-  <ul class="itap-mobile-nav__list">
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="index.html">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">🏠</span>
-        <span class="itap-mobile-nav__label">Início</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="index.html#cardapio">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">🍦</span>
-        <span class="itap-mobile-nav__label">Cardápio</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="promocao.html">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">🎁</span>
-        <span class="itap-mobile-nav__label">Promoções</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="encomendas.html">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">📦</span>
-        <span class="itap-mobile-nav__label">Encomendas</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item itap-mobile-nav__item--cta">
-      <a class="itap-mobile-nav__link" href="https://wa.me/5516996062046" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">💬</span>
-        <span class="itap-mobile-nav__label">Contato</span>
-      </a>
-    </li>
-  </ul>
-</nav>
 
 <script src="scripts/site-loader.js" defer></script>
 
