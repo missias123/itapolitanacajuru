@@ -37,6 +37,7 @@
   var inputTel = document.getElementById('fid-login-celular');
   var btnEntrar = document.getElementById('btn-entrar');
   var resultado = document.getElementById('resultado-consulta');
+  var resultadoCodigo = document.getElementById('fid-codigo-feedback');
 
   var painelBoasVindas = document.getElementById('painel-boas-vindas');
   var painelPontos = document.getElementById('painel-pontos');
@@ -71,6 +72,21 @@
     if (!resultado) return;
     resultado.textContent = msg;
     resultado.className = 'resultado' + (tipo ? ' ' + tipo : '');
+  }
+
+  /* Feedback visível no painel (abaixo do input de código), não na seção de login */
+  var _CORES_FEEDBACK = { ok: '#1b5e20', erro: '#b71c1c', aviso: '#e65100' };
+  var _BG_FEEDBACK    = { ok: '#e8f5e9', erro: '#ffebee', aviso: '#fff3e0' };
+  function setResultadoCodigo(msg, tipo) {
+    if (!resultadoCodigo) { setResultado(msg, tipo); return; } // fallback se elemento não existir
+    if (!msg) { resultadoCodigo.style.display = 'none'; resultadoCodigo.textContent = ''; return; }
+    resultadoCodigo.textContent = msg;
+    resultadoCodigo.style.display = 'block';
+    resultadoCodigo.style.color = _CORES_FEEDBACK[tipo] || '#333';
+    resultadoCodigo.style.background = _BG_FEEDBACK[tipo] || '#f5f5f5';
+    resultadoCodigo.style.border = '1.5px solid ' + (_CORES_FEEDBACK[tipo] || '#ccc');
+    // Scroll suave para que o usuário veja o feedback
+    resultadoCodigo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function setResultadoCadastro(msg, tipo) {
@@ -407,8 +423,12 @@
     if (painelBoasVindas) painelBoasVindas.textContent = 'Bem-vindo(a), ' + nome + '!';
     if (painelPontos) painelPontos.textContent = 'Você tem ' + pts + ' pontos acumulados.';
 
+    // Ocultar seção de login para limpar a tela — usuário já está autenticado
+    if (secaoLogin) secaoLogin.style.display = 'none';
     if (secaoPainel) secaoPainel.style.display = 'block';
     if (formCodigoWrap) formCodigoWrap.style.display = 'grid';
+    // Limpar feedback anterior de código
+    setResultadoCodigo('', '');
 
     renderPainelResgate(pts, nome, cliente.cel || (inputTel ? inputTel.value.replace(/\D/g, '') : ''));
   }
@@ -686,19 +706,19 @@
   if (btnRegistrar) {
     btnRegistrar.addEventListener('click', function() {
       if (!_clienteAtual) {
-        setResultado('Antes de registrar código, faça login em "Já sou cadastrado / Digitar código".', 'erro');
+        setResultadoCodigo('Antes de registrar código, faça login em "Já sou cadastrado / Digitar código".', 'erro');
         if (formCodigoWrap) formCodigoWrap.style.display = 'none';
         return;
       }
 
       var codigo = (inputCodigo && inputCodigo.value ? inputCodigo.value : '').trim().toUpperCase();
       if (!codigo) {
-        setResultado('Digite o código de fidelidade.', 'erro');
+        setResultadoCodigo('Digite o código de fidelidade.', 'erro');
         return;
       }
 
       if (_clienteAtual.bloqueado || getTentativasCodigo() > MAX_TENT_CODIGO) {
-        setResultado('⛔ Conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
+        setResultadoCodigo('⛔ Conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
         mostrarWppBtn(wppLink('Minha conta no Clube Fidelidade está bloqueada. WhatsApp: ' + (_clienteAtual.cel || '')), '💬 Solicitar desbloqueio');
         if (formCodigoWrap) formCodigoWrap.style.display = 'none';
         return;
@@ -717,16 +737,16 @@
             if (t.bloqueado) {
               _clienteAtual.bloqueado = true;
               var telBloq = _clienteAtual.cel || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
-              setResultado('⛔ Código inválido. 4ª tentativa: conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
+              setResultadoCodigo('⛔ Código inválido. 4ª tentativa: conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
               if (formCodigoWrap) formCodigoWrap.style.display = 'none';
               mostrarWppBtn(
                 wppLink('Bloqueio no Clube Fidelidade após 4 tentativas incorretas.\nNome: ' + (_clienteAtual.nome || '-') + '\nWhatsApp: ' + mascaraTel(telBloq)),
                 '💬 Solicitar desbloqueio ao atendente'
               );
             } else if (t.restantes === 0) {
-              setResultado('❌ Código inválido. ' + t.total + '/3 tentativas usadas. ⚠️ Próxima tentativa bloqueará sua conta!', 'erro');
+              setResultadoCodigo('❌ Código inválido. ' + t.total + '/3 tentativas usadas. ⚠️ Próxima tentativa bloqueará sua conta!', 'erro');
             } else {
-              setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+              setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
             }
             return;
           }
@@ -735,18 +755,18 @@
             var t2 = incrementarTentativaCodigo();
             if (t2.bloqueado) {
               _clienteAtual.bloqueado = true;
-              setResultado('⛔ Código já utilizado. 4ª tentativa: conta bloqueada por segurança.', 'erro');
+              setResultadoCodigo('⛔ Código já utilizado. 4ª tentativa: conta bloqueada por segurança.', 'erro');
               if (formCodigoWrap) formCodigoWrap.style.display = 'none';
               mostrarWppBtn(wppLink('Bloqueio no Clube Fidelidade. Nome: ' + (_clienteAtual.nome || '-')), '💬 Solicitar desbloqueio');
             } else {
-              setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+              setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
             }
             return;
           }
 
           var usados = _clienteAtual.codigosUsados || [];
           if (usados.indexOf(codigo) !== -1) {
-            setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+            setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
             return;
           }
 
@@ -755,12 +775,12 @@
           var telCliente = _clienteAtual.cel || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
           var msg = 'Clube Fidelidade - Registrar ponto\nNome: ' + _clienteAtual.nome + '\nTel: ' + telCliente + '\nCódigo: ' + codigo + '\nPontos atuais: ' + pts;
 
-          setResultado('Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
+          setResultadoCodigo('✅ Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
           mostrarWppBtn(wppLink(msg), '💬 Enviar código para registrar ponto');
           if (inputCodigo) inputCodigo.value = '';
         })
         .catch(function() {
-          setResultado('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+          setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
         })
         .finally(function() {
           btnRegistrar.disabled = false;
