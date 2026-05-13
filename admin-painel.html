@@ -488,6 +488,11 @@ body { overflow-x: hidden; }
   </div>
 </div>
 <div id="admin-app">
+  <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c">
+    <span style="font-size:1.1rem">⚠️</span>
+    <span><strong>Token GitHub expirado ou inválido.</strong> Dados carregados em modo somente leitura — <strong>alterações não serão salvas</strong> até você atualizar o token.</span>
+    <button onclick="atualizarToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Atualizar Token</button>
+  </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -2534,6 +2539,14 @@ Talento</textarea>
 </div>
 <script>
 function getToken(){return localStorage.getItem('itap_gh_token')||'';}
+function atualizarToken(){
+  const tok=(prompt('Cole o novo token GitHub (ghp_...):') || '').trim();
+  if(!tok){toast('Token não alterado.','aviso');return;}
+  if(!tok.startsWith('ghp_')||tok.length<20){toast('Token inválido. Deve começar com "ghp_" e ter pelo menos 20 caracteres.','erro');return;}
+  localStorage.setItem('itap_gh_token',tok);
+  toast('Token salvo! Recarregando dados...','sucesso');
+  setTimeout(()=>carregarTudo(),400);
+}
 const GH_OWNER='missias123';
 const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
@@ -2553,7 +2566,16 @@ async function ghGet(path){
     for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
     const content=new TextDecoder('utf-8').decode(bytes);
     return{content:JSON.parse(content),sha:d.sha};
-  }catch(e){return{content:null,sha:null};}
+  }catch(e){
+    // Fallback: repo público — lê via URL raw (sem autenticação, sem SHA para salvar)
+    try{
+      const r2=await fetch(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'});
+      if(r2.ok){const c=await r2.json();return{content:c,sha:null,readonly:true};}
+    }catch(e2){
+      console.warn('[admin] ghGet fallback falhou para',path,e2);
+    }
+    return{content:null,sha:null};
+  }
 }
 async function ghPut(path,data,sha,msg){
   const MAX_TENTATIVAS = 3;
@@ -2652,6 +2674,10 @@ async function carregarTudo(){
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(est.content){try{STATE.estrelas=JSON.parse(est.content);}catch(e){STATE.estrelas=null;}STATE.estrelasSha=est.sha;}
   if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
+  // Avisar quando dados foram carregados via fallback (sem SHA = somente leitura, salvar vai falhar)
+  const semToken=[pr,cl,fi,en,prod,est,promos].some(r=>r.content&&r.readonly);
+  const banner=document.getElementById('aviso-token-expirado');
+  if(banner)banner.style.display=semToken?'flex':'none';
   ocultarLoading();
   renderDashboard();
   preencherHome();preencherPromoção();preencherConfig();preencherFidelidade();preencherSorteio();
@@ -3311,6 +3337,12 @@ async function alterarStatusEncomenda(idx,novoStatus){
   renderEncomendas();
 }
 function getClientes(){return Object.values(STATE.clientes?.clientes||STATE.fidelidade?.clientes||{});}
+/* Retorna a chave (USR-XXXX ou cel legado) de um objeto cliente no STATE */
+function obterChaveCliente(c){
+  const mapa=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const entrada=Object.entries(mapa).find(([,v])=>v===c);
+  return entrada?entrada[0]:(c.id_permanente||c.id||c.cel||'');
+}
 // ═══════════════════════════════════════════════════════════
 // PARTICIPANTES GERAL (Clube de Fidelidade + Sorteios Mensais)
 // ═══════════════════════════════════════════════════════════
@@ -3459,12 +3491,18 @@ function excluirParticipante(cel, tipo) {
         }
         
         // 2. Remover do Clube de Fidelidade (clientes.json ou fidelidade.json)
-        if (STATE.clientes?.clientes?.[celLimpo]) {
-          delete STATE.clientes.clientes[celLimpo];
+        // Busca por valor do campo cel (chaves são USR-XXXX, não o número do celular)
+        const entradaCliente = Object.entries(STATE.clientes?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
+        const entradaFid = !entradaCliente && Object.entries(STATE.fidelidade?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
+        if (entradaCliente) {
+          const [chaveCliente, cliObj] = entradaCliente;
+          delete STATE.clientes.clientes[chaveCliente];
+          if (STATE.clientes.indice_celular) delete STATE.clientes.indice_celular[celLimpo];
           const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
           if (ok) salvouAlgo = true;
-        } else if (STATE.fidelidade?.clientes?.[celLimpo]) {
-          delete STATE.fidelidade.clientes[celLimpo];
+        } else if (entradaFid) {
+          const [chaveFid] = entradaFid;
+          delete STATE.fidelidade.clientes[chaveFid];
           const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
           if (ok) salvouAlgo = true;
         }
@@ -3502,10 +3540,18 @@ async function adicionarParticipanteManual() {
     STATE.fidelidade.sorteioInscritos.push({ nome, cel, dataNasc: '', data: new Date().toLocaleDateString('pt-BR'), hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) });
     const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
   } else {
-    if (!STATE.clientes) STATE.clientes = { clientes: {} };
+    if (!STATE.clientes) STATE.clientes = { clientes: {}, indice_celular: {} };
     if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
-    if (STATE.clientes.clientes[celLimpo]) { toast('\u274c ' + STATE.clientes.clientes[celLimpo].nome + ' já está cadastrado(a) na fidelidade.', 'erro'); return; }
-    STATE.clientes.clientes[celLimpo] = { nome, cel: celLimpo, dataNasc: '', cadastro: new Date().toISOString(), saldoPontos: 0, codigosUsados: [], resgates: [], totalPremios: 0, totalCodigos: 0 };
+    if (!STATE.clientes.indice_celular) STATE.clientes.indice_celular = {};
+    // Verificar duplicata por valor do campo cel (chaves são USR-XXXX, não cel)
+    const jaFid = Object.values(STATE.clientes.clientes).find(v => String(v.cel||'').replace(/\D/g,'') === celLimpo);
+    if (jaFid) { toast('❌ ' + jaFid.nome + ' já está cadastrado(a) na fidelidade.', 'erro'); return; }
+    // Gerar ID USR-XXXX para o novo participante
+    let maxNum = 0;
+    Object.values(STATE.clientes.clientes).forEach(v => { const m = (v.id_permanente||'').match(/USR-2026-(\d+)/); if(m) maxNum = Math.max(maxNum, parseInt(m[1],10)); });
+    const novoId = 'USR-2026-' + String(maxNum+1).padStart(4,'0');
+    STATE.clientes.clientes[novoId] = { id_permanente: novoId, nome, cel: celLimpo, dataNasc: '', cadastro: new Date().toISOString(), saldoPontos: 0, codigosUsados: [], resgates: [], totalPremios: 0, totalCodigos: 0, bloqueado: false, tentativas_fraude: 0 };
+    STATE.clientes.indice_celular[celLimpo] = novoId;
     const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
   }
   document.getElementById('add-part-nome').value = '';
@@ -3655,7 +3701,9 @@ function renderClientes(){
   const slice=filtrados.slice(pag*POR_PAGINA,(pag+1)*POR_PAGINA);
   const tbody=document.getElementById('tabela-clientes');
   if(!slice.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:20px">Nenhum cliente encontrado.</td></tr>';}
-  else{tbody.innerHTML=slice.map(c=>`<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}">
+  else{tbody.innerHTML=slice.map(c=>{
+    const cKey=obterChaveCliente(c);
+    return `<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}">
     <td>${c.nome||'-'}</td>
     <td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td>
     <td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td>
@@ -3663,15 +3711,16 @@ function renderClientes(){
     <td>${c.bloqueado?'<span style="color:#c62828;font-weight:700">Bloqueado</span>':c.fraude?'<span style="color:#f57c00;font-weight:700">Fraude</span>':'<span style="color:#2e7d32">Ativo</span>'}${(c.tentativas_fraude||0)>0?` <small style="color:#888">(${c.tentativas_fraude} tent.)</small>`:''}</td>
     <td style="display:flex;gap:5px;flex-wrap:wrap">
       ${c.bloqueado
-        ?`<button class="btn btn-verde" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${c.cel}',false)">🔓 Desbloquear</button>`
-        :`<button class="btn btn-vermelho" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${c.cel}',true)">🔒 Bloquear</button>`}
-      ${(c.tentativas_fraude||0)>0?`<button class="btn" style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${c.cel}')">🔄 Zerar tent.</button>`:''}
-      <button class="btn" style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${c.cel}')">➕ Ponto</button>
-      <button class="btn" style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${c.cel}')">✅ Código</button>
-      <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormCliente('${c.cel}')">✏️ Editar</button>
-      <button class="btn" style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${c.cel}')">🗑️ Excluir</button>
+        ?`<button class="btn btn-verde" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',false)">🔓 Desbloquear</button>`
+        :`<button class="btn btn-vermelho" style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',true)">🔒 Bloquear</button>`}
+      ${(c.tentativas_fraude||0)>0?`<button class="btn" style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${cKey}')">🔄 Zerar tent.</button>`:''}
+      <button class="btn" style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${cKey}')">➕ Ponto</button>
+      <button class="btn" style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${cKey}')">✅ Código</button>
+      <button class="btn btn-amarelo" style="padding:4px 9px;font-size:.76rem" onclick="abrirFormCliente('${cKey}')">✏️ Editar</button>
+      <button class="btn" style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${cKey}')">🗑️ Excluir</button>
     </td>
-  </tr>`).join('');}
+  </tr>`;
+  }).join('');}
   const pagDiv=document.getElementById('pag-clientes');
   let pagHtml='';
   for(let i=0;i<paginas;i++)pagHtml+=`<button class="${i===pag?'ativo':''}" onclick="irPagClientes(${i})">${i+1}</button>`;
@@ -3745,35 +3794,35 @@ async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
   renderClientes();
   renderDuplicidades();
 }
-async function toggleBloqueio(cel,bloquear){
+async function toggleBloqueio(clienteId,bloquear){
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
-  if(!clientes[cel])return;
-  const c=clientes[cel];
+  if(!clientes[clienteId])return;
+  const c=clientes[clienteId];
   if(bloquear){
     // Exigir confirmação antes de bloquear
     confirmarAcao(
       'Bloquear Cliente',
-      `Tem certeza que deseja <strong>bloquear</strong> o cadastro de <strong>${c.nome||cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">O cliente não conseguirá mais acessar o clube de fidelidade até ser desbloqueado.</span>`,
+      `Tem certeza que deseja <strong>bloquear</strong> o cadastro de <strong>${c.nome||clienteId}</strong>?<br><small style="color:#888">Celular: ${c.cel||'-'}</small><br><br><span style="color:#c62828;font-weight:700">O cliente não conseguirá mais acessar o clube de fidelidade até ser desbloqueado.</span>`,
       'Sim, bloquear',
       async ()=>{
-        clientes[cel].bloqueado=true;
+        clientes[clienteId].bloqueado=true;
         let ok=false;
-        if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: bloquear ${cel}`);}
-        else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: bloquear ${cel}`);}
+        if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: bloquear ${c.nome||clienteId}`);}
+        else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: bloquear ${c.nome||clienteId}`);}
         if(ok)renderClientes();
       }
     );
   }else{
     /* Desbloquear: também zera tentativas_fraude para o cliente poder tentar novamente */
-    clientes[cel].bloqueado=false;
-    clientes[cel].tentativas_fraude=0;
-    clientes[cel].motivo_bloqueio=null;
+    clientes[clienteId].bloqueado=false;
+    clientes[clienteId].tentativas_fraude=0;
+    clientes[clienteId].motivo_bloqueio=null;
     const agora=new Date().toISOString();
-    if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
-    clientes[cel].historico_alteracoes.push({data:agora,tipo:'desbloqueio',descricao:'Conta desbloqueada e tentativas zeradas pelo admin',por:'admin'});
+    if(!clientes[clienteId].historico_alteracoes)clientes[clienteId].historico_alteracoes=[];
+    clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'desbloqueio',descricao:'Conta desbloqueada e tentativas zeradas pelo admin',por:'admin'});
     let ok=false;
-    if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${cel}`);}
-    else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${cel}`);}
+    if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${c.nome||clienteId}`);}
+    else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${c.nome||clienteId}`);}
     if(ok){toast('✅ Conta desbloqueada e tentativas zeradas. Mudança salva no GitHub.','sucesso');renderClientes();}
   }
 }
@@ -3785,51 +3834,51 @@ async function toggleBloqueio(cel,bloquear){
 
 /* Adicionar ponto(s) manualmente para um cliente.
    Admin usa quando o cliente trouxe cupom físico ou houve erro no fluxo. */
-async function adicionarPontoManual(cel){
+async function adicionarPontoManual(clienteId){
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
-  const c=clientes[cel];
+  const c=clientes[clienteId];
   if(!c)return;
-  const qtdStr=prompt(`➕ Adicionar pontos para ${c.nome}\nWhatsApp: ${cel}\nPontos atuais: ${c.saldoPontos||0}\n\nQuantidade a adicionar:`);
+  const qtdStr=prompt(`➕ Adicionar pontos para ${c.nome}\nWhatsApp: ${c.cel||'-'}\nPontos atuais: ${c.saldoPontos||0}\n\nQuantidade a adicionar:`);
   if(qtdStr===null)return;
   const n=parseInt(qtdStr,10);
   if(isNaN(n)||n<=0){toast('Quantidade inválida.','erro');return;}
   const motivo=prompt('Motivo ou código do cupom (opcional):')||'Adicionado manualmente pelo admin';
   const agora=new Date().toISOString();
-  clientes[cel].saldoPontos=(clientes[cel].saldoPontos||0)+n;
-  if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
-  clientes[cel].historico_alteracoes.push({data:agora,tipo:'ponto_manual',descricao:motivo,por:'admin',pontos:n});
+  clientes[clienteId].saldoPontos=(clientes[clienteId].saldoPontos||0)+n;
+  if(!clientes[clienteId].historico_alteracoes)clientes[clienteId].historico_alteracoes=[];
+  clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'ponto_manual',descricao:motivo,por:'admin',pontos:n});
   let ok=false;
   if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: +${n}pt para ${c.nome}`);}
   else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: +${n}pt para ${c.nome}`);}
-  if(ok){toast(`✅ +${n} ponto(s) para ${c.nome}. Novo saldo: ${clientes[cel].saldoPontos}. Salvo no GitHub.`,'sucesso');renderClientes();}
+  if(ok){toast(`✅ +${n} ponto(s) para ${c.nome}. Novo saldo: ${clientes[clienteId].saldoPontos}. Salvo no GitHub.`,'sucesso');renderClientes();}
 }
 
 /* Zerar tentativas de código e desbloquear.
    Usar quando o cliente erroneamente foi bloqueado ou após confirmação pessoal. */
-async function zerarTentativas(cel){
+async function zerarTentativas(clienteId){
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
-  const c=clientes[cel];
+  const c=clientes[clienteId];
   if(!c)return;
   const agora=new Date().toISOString();
-  clientes[cel].tentativas_fraude=0;
-  clientes[cel].bloqueado=false;
-  clientes[cel].motivo_bloqueio=null;
-  if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
-  clientes[cel].historico_alteracoes.push({data:agora,tipo:'reset_tentativas',descricao:'Tentativas zeradas e conta desbloqueada pelo admin',por:'admin'});
+  clientes[clienteId].tentativas_fraude=0;
+  clientes[clienteId].bloqueado=false;
+  clientes[clienteId].motivo_bloqueio=null;
+  if(!clientes[clienteId].historico_alteracoes)clientes[clienteId].historico_alteracoes=[];
+  clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'reset_tentativas',descricao:'Tentativas zeradas e conta desbloqueada pelo admin',por:'admin'});
   let ok=false;
-  if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: zerar tentativas ${cel}`);}
-  else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: zerar tentativas ${cel}`);}
+  if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: zerar tentativas ${c.nome||clienteId}`);}
+  else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: zerar tentativas ${c.nome||clienteId}`);}
   if(ok){toast('✅ Tentativas zeradas e conta desbloqueada. Salvo no GitHub.','sucesso');renderClientes();}
 }
 
 /* Validar código manualmente pelo admin.
    Marca o código como usado em fidelidade.json E adiciona 1 ponto ao cliente em clientes.json.
    Ambas as mudanças são persistidas no GitHub para atualização imediata no site. */
-async function adminValidarCodigo(cel){
+async function adminValidarCodigo(clienteId){
   const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
-  const c=clientes[cel];
+  const c=clientes[clienteId];
   if(!c)return;
-  const codigo=(prompt(`✅ Validar código para ${c.nome}\nWhatsApp: ${cel}\nPontos atuais: ${c.saldoPontos||0}\n\nDigite o código do cupom:`)||'').trim().toUpperCase();
+  const codigo=(prompt(`✅ Validar código para ${c.nome}\nWhatsApp: ${c.cel||'-'}\nPontos atuais: ${c.saldoPontos||0}\n\nDigite o código do cupom:`)||'').trim().toUpperCase();
   if(!codigo)return;
   const codigos=STATE.fidelidade?.['códigos']||STATE.fidelidade?.codigos||{};
   const entrada=codigos[codigo];
@@ -3840,16 +3889,16 @@ async function adminValidarCodigo(cel){
 
   /* registrar: +1 ponto, marcar código como usado, zerar tentativas de fraude */
   const agora=new Date().toISOString();
-  clientes[cel].saldoPontos=(clientes[cel].saldoPontos||0)+1;
-  clientes[cel].codigosUsados=[...usados,codigo];
-  clientes[cel].totalCodigos=(clientes[cel].totalCodigos||0)+1;
-  clientes[cel].tentativas_fraude=0;
-  if(!clientes[cel].historico_alteracoes)clientes[cel].historico_alteracoes=[];
-  clientes[cel].historico_alteracoes.push({data:agora,tipo:'codigo_validado_admin',descricao:`Código ${codigo} validado manualmente pelo admin`,por:'admin',pontos:1});
+  clientes[clienteId].saldoPontos=(clientes[clienteId].saldoPontos||0)+1;
+  clientes[clienteId].codigosUsados=[...usados,codigo];
+  clientes[clienteId].totalCodigos=(clientes[clienteId].totalCodigos||0)+1;
+  clientes[clienteId].tentativas_fraude=0;
+  if(!clientes[clienteId].historico_alteracoes)clientes[clienteId].historico_alteracoes=[];
+  clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'codigo_validado_admin',descricao:`Código ${codigo} validado manualmente pelo admin`,por:'admin',pontos:1});
 
   /* atualizar status do código em fidelidade.json */
   const chave=STATE.fidelidade?.['códigos']?'códigos':'codigos';
-  STATE.fidelidade[chave][codigo]=Object.assign({},entrada,{status:'usado',usadoPor:cel,usadoEm:agora});
+  STATE.fidelidade[chave][codigo]=Object.assign({},entrada,{status:'usado',usadoPor:c.cel||clienteId,usadoEm:agora});
 
   /* salvar clientes.json */
   let okC=false;
@@ -3859,7 +3908,7 @@ async function adminValidarCodigo(cel){
   const okF=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: código ${codigo} usado por ${c.nome}`);
 
   if(okC||okF){
-    toast(`✅ Código ${codigo} validado! ${c.nome} agora tem ${clientes[cel].saldoPontos} ponto(s). Salvo no GitHub.`,'sucesso');
+    toast(`✅ Código ${codigo} validado! ${c.nome} agora tem ${clientes[clienteId].saldoPontos} ponto(s). Salvo no GitHub.`,'sucesso');
     renderClientes();
     if(typeof renderCódigos==='function')renderCódigos();
   }
@@ -4159,7 +4208,11 @@ function fidRenderLoteAtual(){
   if(grid)grid.innerHTML=lote.codigos.map(c=>{const usado=codigos[c]&&codigos[c].status==='usado';return`<div class="fid-codigo-chip${usado?' usado':''}">${c}</div>`;}).join('');
 }
 async function liberarLoteFidelidade(){
-  if(!STATE.fidelidade)STATE.fidelidade={liberados:0,códigos:{},clientes:{},fraudes:{}};
+  // Se STATE.fidelidade não carregou (token inválido), buscar via raw antes de gerar para não perder dados existentes
+  if(!STATE.fidelidade){
+    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Tente recarregar o painel (verifique o token GitHub).','erro');
+    return;
+  }
   const atual=STATE.fidelidade.liberados||0;
   if(atual>=FID_TOTAL_BANCO){fidMostrarAlerta('⚠️ Todos os 100.000 códigos já foram liberados!','erro');return;}
   const btn=document.getElementById('btn-liberar-lote');
@@ -5837,24 +5890,26 @@ function excluirEncomenda(numPedido) {
 // ═══════════════════════════════════════════════════════════
 // EXCLUIR CLIENTE
 // ═══════════════════════════════════════════════════════════
-function excluirCliente(cel) {
+function excluirCliente(clienteId) {
   const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
-  const c = clientes[cel];
+  const c = clientes[clienteId];
   if (!c) return;
   confirmarAcao(
     'Excluir Cliente',
-    `Tem certeza que deseja excluir o cadastro de <strong>${c.nome || cel}</strong>?<br><small style="color:#888">Celular: ${cel}</small><br><br><span style="color:#c62828;font-weight:700">Todos os pontos e histórico serão perdidos. Esta ação não pode ser desfeita.</span>`,
+    `Tem certeza que deseja excluir o cadastro de <strong>${c.nome || clienteId}</strong>?<br><small style="color:#888">Celular: ${c.cel||'-'}</small><br><br><span style="color:#c62828;font-weight:700">Todos os pontos e histórico serão perdidos. Esta ação não pode ser desfeita.</span>`,
     'Sim, excluir cliente',
     async () => {
       let ok = false;
       if (STATE.clientes?.clientes) {
-        delete STATE.clientes.clientes[cel];
-        ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + cel);
+        delete STATE.clientes.clientes[clienteId];
+        // Remover do índice de celular também
+        if (STATE.clientes.indice_celular && c.cel) delete STATE.clientes.indice_celular[c.cel];
+        ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       } else {
-        delete STATE.fidelidade.clientes[cel];
-        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + cel);
+        delete STATE.fidelidade.clientes[clienteId];
+        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       }
-      if (ok) { toast('Cliente ' + (c.nome || cel) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
+      if (ok) { toast('Cliente ' + (c.nome || clienteId) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
     }
   );
 }
@@ -6723,20 +6778,20 @@ function exportarPromocoesCSV() {
 // ═══════════════════════════════════════════════════════════
 // CLIENTES — FORM INLINE (substituição de prompt())
 // ═══════════════════════════════════════════════════════════
-function abrirFormCliente(cel) {
+function abrirFormCliente(clienteId) {
   const panel = document.getElementById('cliente-form-panel');
   const tit = document.getElementById('cliente-form-titulo');
   if (!panel) return;
-  if (cel) {
+  if (clienteId) {
     const clientes = STATE.clientes?.clientes || {};
-    const c = clientes[cel];
+    const c = clientes[clienteId];
     if (!c) return;
     tit.textContent = '✏️ Editar Cliente';
     document.getElementById('cli-f-nome').value = c.nome || '';
-    document.getElementById('cli-f-cel').value = c.cel || cel;
+    document.getElementById('cli-f-cel').value = c.cel || '';
     document.getElementById('cli-f-nasc').value = c.dataNasc || '';
     document.getElementById('cli-f-pontos').value = c.saldoPontos || 0;
-    document.getElementById('cli-f-cel-orig').value = cel;
+    document.getElementById('cli-f-cel-orig').value = clienteId; // armazena chave USR-XXXX
   } else {
     tit.textContent = '➕ Adicionar Cliente';
     document.getElementById('cli-f-nome').value = '';
@@ -6761,7 +6816,7 @@ async function salvarClienteForm() {
   if (celRaw.length < 10) { toast('WhatsApp inválido.','erro'); return; }
   const nasc = document.getElementById('cli-f-nasc').value || '';
   const pontos = parseInt(document.getElementById('cli-f-pontos').value) || 0;
-  const celOrig = document.getElementById('cli-f-cel-orig').value;
+  const clienteIdOrig = document.getElementById('cli-f-cel-orig').value; // USR-XXXX key (vazio = novo cliente)
 
   if (!STATE.clientes) STATE.clientes = {clientes:{},indice_celular:{}};
   if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
@@ -6770,32 +6825,36 @@ async function salvarClienteForm() {
   const clientes = STATE.clientes.clientes;
   const agora = new Date().toISOString();
 
-  if (celOrig) {
-    const c = clientes[celOrig];
+  if (clienteIdOrig) {
+    // EDIÇÃO: clienteIdOrig é a chave USR-XXXX
+    const c = clientes[clienteIdOrig];
     if (!c) { toast('Cliente não encontrado.','erro'); return; }
-    if (celRaw !== celOrig) {
-      if (clientes[celRaw] && celRaw !== celOrig) { toast('Novo WhatsApp já está em uso.','erro'); return; }
-      const updated = {...c, nome, cel: celRaw, dataNasc: nasc, saldoPontos: pontos};
-      updated.cel_anterior = [...(Array.isArray(c.cel_anterior) ? c.cel_anterior : []), celOrig];
-      updated.historico_alteracoes = [...(c.historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin — celular alterado de ' + celOrig + ' para ' + celRaw,por:'admin'}];
-      delete clientes[celOrig];
-      clientes[celRaw] = updated;
-      if (STATE.clientes.indice_celular[celOrig]) {
-        STATE.clientes.indice_celular[celRaw] = STATE.clientes.indice_celular[celOrig];
-        delete STATE.clientes.indice_celular[celOrig];
-      }
+    const celAntigo = c.cel || '';
+    if (celRaw !== celAntigo) {
+      // Celular mudou: verificar duplicata por valor (não por chave)
+      const celDuplo = Object.entries(clientes).find(([k,v]) => k !== clienteIdOrig && String(v.cel||'').replace(/\D/g,'') === celRaw);
+      if (celDuplo) { toast('Novo WhatsApp já está em uso.','erro'); return; }
+      clientes[clienteIdOrig] = {...c, nome, cel: celRaw, dataNasc: nasc, saldoPontos: pontos,
+        cel_anterior: [...(Array.isArray(c.cel_anterior) ? c.cel_anterior : []), celAntigo],
+        historico_alteracoes: [...(c.historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin — celular alterado de ' + celAntigo + ' para ' + celRaw,por:'admin'}]
+      };
+      // Atualizar índice de celular
+      if (celAntigo) delete STATE.clientes.indice_celular[celAntigo];
+      STATE.clientes.indice_celular[celRaw] = clienteIdOrig;
     } else {
-      clientes[celOrig].nome = nome;
-      clientes[celOrig].dataNasc = nasc;
-      clientes[celOrig].saldoPontos = pontos;
-      clientes[celOrig].historico_alteracoes = [...(clientes[celOrig].historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin',por:'admin'}];
+      clientes[clienteIdOrig].nome = nome;
+      clientes[clienteIdOrig].dataNasc = nasc;
+      clientes[clienteIdOrig].saldoPontos = pontos;
+      clientes[clienteIdOrig].historico_alteracoes = [...(clientes[clienteIdOrig].historico_alteracoes||[]), {data:agora,tipo:'edicao_admin',descricao:'Edição manual pelo admin',por:'admin'}];
     }
   } else {
-    if (clientes[celRaw]) { toast('WhatsApp já está cadastrado.','aviso'); return; }
+    // NOVO CLIENTE: verificar duplicata por valor do campo cel
+    const celDuplo = Object.values(clientes).find(v => String(v.cel||'').replace(/\D/g,'') === celRaw);
+    if (celDuplo) { toast('WhatsApp já está cadastrado.','aviso'); return; }
     let maxNum = 0;
     Object.values(clientes).forEach(v => { const m = (v.id_permanente||'').match(/USR-2026-(\d+)/); if(m) maxNum = Math.max(maxNum, parseInt(m[1],10)); });
     const novoId = 'USR-2026-' + String(maxNum+1).padStart(4,'0');
-    clientes[celRaw] = {
+    clientes[novoId] = {  // chave USR-XXXX (não o celular)
       id_permanente: novoId, nome, cel: celRaw, dataNasc: nasc,
       cadastro: agora, saldoPontos: pontos, codigosUsados: [], resgates: [],
       totalPremios: 0, totalCodigos: 0, bloqueado: false, motivo_bloqueio: null,
@@ -6805,7 +6864,7 @@ async function salvarClienteForm() {
     STATE.clientes.indice_celular[celRaw] = novoId;
   }
 
-  const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: ' + (celOrig ? 'editar' : 'cadastrar') + ' cliente ' + nome);
+  const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: ' + (clienteIdOrig ? 'editar' : 'cadastrar') + ' cliente ' + nome);
   if (ok) { fecharFormCliente(); renderClientes(); toast('✅ ' + nome + ' salvo com sucesso!','sucesso'); }
 }
 
