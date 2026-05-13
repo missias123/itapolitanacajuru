@@ -96,50 +96,56 @@
     /* BOTÃO CARRINHO FIXO */
     .btn-carrinho-fixo {
       position: fixed;
-      /* POSIÇÃO: canto inferior direito, visível acima do cardápio */
-      bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+      bottom: calc(80px + env(safe-area-inset-bottom, 0px));
       right: 16px;
       left: auto;
       transform: none;
-      background: var(--amarelo);
-      color: #212121;
+      background: linear-gradient(135deg, #E65100, #FF6D00);
+      color: #fff;
       border: none;
       border-radius: 50px;
-      padding: 16px 32px;
-      font-size: 1.05rem;
+      padding: 14px 28px;
+      font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+      box-shadow: 0 6px 20px rgba(230, 81, 0, 0.45);
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       gap: 12px;
       z-index: 9997;
-      transition: opacity 0.2s, transform 0.2s;
+      transition: opacity 0.2s, transform 0.2s, filter 0.2s;
       min-width: 220px;
       max-width: 90vw;
       white-space: nowrap;
-      /* Evita menu de contexto e seleção de texto no celular */
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
     }
-    .btn-carrinho-fixo.ativo { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
     @keyframes popIn { from { opacity:0; transform:scale(0.7) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    @keyframes cartPulse {
+      0%, 100% { box-shadow: 0 6px 20px rgba(230,81,0,0.45), 0 0 0 0 rgba(230,81,0,0.35); }
+      50%       { box-shadow: 0 8px 28px rgba(230,81,0,0.6),  0 0 0 10px rgba(230,81,0,0); }
+    }
+    .btn-carrinho-fixo.ativo {
+      animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) forwards,
+                 cartPulse 2s ease-in-out 0.4s infinite;
+    }
+    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.04); filter: brightness(1.08); }
+    .btn-carrinho-fixo:not(:disabled):active { transform: scale(0.97); }
     .btn-carrinho-fixo .badge {
-      background: var(--vermelho);
-      color: white;
+      background: #fff;
+      color: #E65100;
       border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      width: 26px;
+      height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0.8rem;
-      font-weight: 700;
+      font-weight: 900;
       flex-shrink: 0;
     }
     .btn-carrinho-fixo__label {
@@ -161,26 +167,29 @@
       white-space: nowrap;
     }
     .btn-carrinho-fixo__total {
-      color: #1A0A00;
+      color: rgba(255,255,255,0.92);
       font-weight: 900;
     }
     @media (max-width: 640px) {
       .btn-carrinho-fixo {
-        left: 0;
-        right: 0;
-        width: 100%;
-        max-width: 100%;
+        left: 12px;
+        right: 12px;
+        width: calc(100% - 24px);
+        max-width: calc(100% - 24px);
         min-width: 0;
-        border-radius: 0;
-        bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+        border-radius: 14px;
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
         justify-content: space-between;
-        padding: 12px 16px;
+        padding: 14px 20px;
         gap: 10px;
       }
       .btn-carrinho-fixo__label,
       .btn-carrinho-fixo__meta {
         font-size: 0.92rem;
       }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-carrinho-fixo.ativo { animation: none; opacity: 1; transform: none; }
     }
 
     /* BANNER INFO */
@@ -1563,7 +1572,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 
 <button aria-label="Abrir carrinho" class="btn-carrinho-fixo" id="btn-carrinho" onclick="abrirCarrinho()" type="button">
-  <span class="btn-carrinho-fixo__label">🛒 Carrinho</span>
+  <span class="btn-carrinho-fixo__label">🛒 Ver Carrinho</span>
   <span class="btn-carrinho-fixo__meta"><span class="badge" id="carrinho-badge">0</span><span class="btn-carrinho-fixo__total" id="carrinho-total">R$ 0,00</span></span>
 </button>
 
