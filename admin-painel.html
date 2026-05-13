@@ -2588,12 +2588,13 @@ function fidIsReadOnly(){
 function fidPathReadOnly(path){
   return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!STATE.clientesSha);
 }
+const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
 function fidApplyReadOnlyGuard(){
   const isReadOnly=fidIsReadOnly();
   document.querySelectorAll('.fid-readonly-aviso').forEach(el=>{el.style.display=isReadOnly?'block':'none';});
   document.querySelectorAll('[data-fid-write]').forEach(el=>{
     const tag=(el.tagName||'').toUpperCase();
-    if(['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'].includes(tag))el.disabled=isReadOnly;
+    if(FID_DISABLEABLE_TAGS.includes(tag))el.disabled=isReadOnly;
     el.classList.toggle('is-disabled',isReadOnly);
   });
 }
@@ -2659,7 +2660,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   const bloqueado=fidPathReadOnly(path);
   if(bloqueado){
     fidApplyReadOnlyGuard();
-    toast('⚠️ Modo leitura ativo: token ausente ou expirado para editar dados da Fidelidade.','aviso');
+    toast('⚠️ Token ausente ou expirado. Não é possível editar dados da Fidelidade.','aviso');
     return false;
   }
   mostrarLoading('Salvando no GitHub...');
