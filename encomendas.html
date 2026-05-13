@@ -96,6 +96,7 @@
     /* BOTÃO CARRINHO FIXO */
     .btn-carrinho-fixo {
       position: fixed;
+      /* Desktop: 80px = margem estética acima do rodapé, sem nav mobile */
       bottom: calc(80px + env(safe-area-inset-bottom, 0px));
       right: 16px;
       left: auto;
@@ -130,8 +131,9 @@
       50%       { box-shadow: 0 8px 28px rgba(230,81,0,0.6),  0 0 0 10px rgba(230,81,0,0); }
     }
     .btn-carrinho-fixo.ativo {
+      /* popIn (0.35s) → cartPulse começa em 0.35s, sem sobreposição visível */
       animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) forwards,
-                 cartPulse 2s ease-in-out 0.4s infinite;
+                 cartPulse 2s ease-in-out 0.35s infinite;
     }
     .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.04); filter: brightness(1.08); }
     .btn-carrinho-fixo:not(:disabled):active { transform: scale(0.97); }
@@ -178,6 +180,7 @@
         max-width: calc(100% - 24px);
         min-width: 0;
         border-radius: 14px;
+        /* Mobile: 76px = 68px nav + 8px de respiro acima da barra de navegação */
         bottom: calc(76px + env(safe-area-inset-bottom, 0px));
         justify-content: space-between;
         padding: 14px 20px;
