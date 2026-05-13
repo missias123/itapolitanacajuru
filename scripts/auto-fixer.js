@@ -86,7 +86,6 @@
       'loading-overlay','painel','painel-admin',
       'pontos-atual','sorvetes-grid','progress-bar',
       'admin-lista','admin-busca','admin-paginacao',
-      'btn-reivindicar-estrela','secao-reivindicar-estrela'
     ];
     ids.forEach(id => {
       if (!existe(id)) {
