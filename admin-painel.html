@@ -2411,8 +2411,12 @@ async function validarToken(tok){
   if(!tok) return false;
   try{
     const r=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+tok,'X-GitHub-Api-Version':'2022-11-28'},cache:'no-store'});
+    if(!r.ok) console.warn('[Admin] validarToken: status',r.status);
     return r.ok;
-  }catch(e){return false;}
+  }catch(e){
+    console.warn('[Admin] validarToken: erro de rede',e.message);
+    return false;
+  }
 }
 
 // ── Helper: exibe erro visível numa seção quando dados não carregaram ──────────
@@ -2438,8 +2442,7 @@ function atualizarToken(){
   localStorage.setItem('itap_gh_token',tok);
   toast('Token salvo! Recarregando dados...','sucesso');
   setTimeout(()=>carregarTudo(),400);
-}
-const GH_OWNER='missias123';
+}const GH_OWNER='missias123';
 const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
