@@ -1877,7 +1877,7 @@ Talento</textarea>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
       <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo leitura ativo: token ausente/expirado. Você pode visualizar dados, mas edições da Fidelidade estão bloqueadas.
+        ⚠️ Modo leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições da Fidelidade estão bloqueadas.
       </div>
       <!-- form panel para add/edit cliente -->
       <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
@@ -1935,7 +1935,7 @@ Talento</textarea>
     <!-- FIDELIDADE -->
     <div class="seção" id="sec-fidelidade">
       <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo leitura ativo: token ausente/expirado. Você pode visualizar dados, mas edições estão bloqueadas.
+        ⚠️ Modo leitura ativo: token ausente ou expirado. Você pode visualizar dados, mas edições estão bloqueadas.
       </div>
       <div class="códigos-stats">
         <div class="cod-stat"><div class="cn" id="fid-total">-</div><div class="ct">Total Códigos</div></div>
@@ -2581,13 +2581,19 @@ function fidEnsureCodigos(){
   return{key,codigos:STATE.fidelidade[key]};
 }
 function fidIsReadOnly(){
+  // A aba Fidelidade reúne escrita em dois domínios (clientes.json e fidelidade.json);
+  // se um deles está sem SHA/token válido, tratamos toda a aba como somente leitura.
   return !STATE.fidelidadeSha || !STATE.clientesSha;
+}
+function fidPathReadOnly(path){
+  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!STATE.clientesSha);
 }
 function fidApplyReadOnlyGuard(){
   const isReadOnly=fidIsReadOnly();
   document.querySelectorAll('.fid-readonly-aviso').forEach(el=>{el.style.display=isReadOnly?'block':'none';});
   document.querySelectorAll('[data-fid-write]').forEach(el=>{
-    if('disabled' in el)el.disabled=isReadOnly;
+    const tag=(el.tagName||'').toUpperCase();
+    if(['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'].includes(tag))el.disabled=isReadOnly;
     el.classList.toggle('is-disabled',isReadOnly);
   });
 }
@@ -2650,10 +2656,10 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
-  const bloqueado=(path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!STATE.clientesSha);
+  const bloqueado=fidPathReadOnly(path);
   if(bloqueado){
     fidApplyReadOnlyGuard();
-    toast('⚠️ Modo leitura ativo: token ausente/expirado para editar dados da Fidelidade.','aviso');
+    toast('⚠️ Modo leitura ativo: token ausente ou expirado para editar dados da Fidelidade.','aviso');
     return false;
   }
   mostrarLoading('Salvando no GitHub...');
