@@ -48,6 +48,7 @@
   var btnWppResgatar = document.getElementById('btn-wpp-resgatar-consulta');
 
   var _clienteAtual = null;
+  var _clienteAtualId = null;
   var _clientesMemoria = null;
   var _cadastroRegrasAceitas = false;
 
@@ -293,11 +294,18 @@
   }
 
   function salvarClientesNoGitHub(dados, mensagemCommit) {
+    return salvarJsonNoGitHub('dados/clientes.json', dados, mensagemCommit || 'Clube: atualizar clientes');
+  }
+
+  function salvarFidelidadeNoGitHub(dados, mensagemCommit) {
+    return salvarJsonNoGitHub('dados/fidelidade.json', dados, mensagemCommit || 'Clube: atualizar fidelidade');
+  }
+
+  function salvarJsonNoGitHub(path, dados, mensagemCommit) {
     var tk = getGhToken();
     if (!tk) return Promise.resolve(false);
-    var CLIENTES_PATH = 'dados/clientes.json';
 
-    return fetch(GH_API + CLIENTES_PATH, {
+    return fetch(GH_API + path, {
       headers: { Authorization: 'token ' + tk, Accept: 'application/vnd.github.v3+json' }
     })
       .then(function(r) {
@@ -306,11 +314,11 @@
       })
       .then(function(meta) {
         var payload = {
-          message: mensagemCommit || 'Clube: atualizar clientes',
+          message: mensagemCommit || 'Clube: atualizar dados',
           content: encodeJsonToB64(dados),
           sha: meta.sha
         };
-        return fetch(GH_API + CLIENTES_PATH, {
+        return fetch(GH_API + path, {
           method: 'PUT',
           headers: { Authorization: 'token ' + tk, 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -322,6 +330,21 @@
       .catch(function() {
         return false;
       });
+  }
+
+  function salvarComRetry(salvarFn, tentativas) {
+    var total = Math.max(1, Number(tentativas || 1));
+    return salvarFn().then(function(ok) {
+      if (ok || total <= 1) return ok;
+      return salvarComRetry(salvarFn, total - 1);
+    });
+  }
+
+  function obterMapaCodigos(fidelidade) {
+    var fid = fidelidade && typeof fidelidade === 'object' ? fidelidade : {};
+    var key = fid['códigos'] && typeof fid['códigos'] === 'object' ? 'códigos' : 'codigos';
+    if (!fid[key] || typeof fid[key] !== 'object') fid[key] = {};
+    return { key: key, map: fid[key] };
   }
 
   function atualizarClientesMemoria(dados) {
@@ -435,6 +458,7 @@
 
   function resetarPainel() {
     _clienteAtual = null;
+    _clienteAtualId = null;
     if (secaoPainel) secaoPainel.style.display = 'none';
     if (formCodigoWrap) formCodigoWrap.style.display = 'none';
     if (btnIrCadastro) btnIrCadastro.style.display = 'none';
@@ -658,6 +682,7 @@
             if (!okPersistir) throw new Error('falha ao salvar atualização de celular no login');
             atualizarClientesMemoria(dados);
             _clienteAtual = cliente;
+            _clienteAtualId = clienteId;
             if (_clienteAtual.bloqueado) {
               setResultado('⚠️ Conta com restrição. Fale conosco pelo WhatsApp para regularizar.', 'erro');
               mostrarWppBtn(wppLink('Olá! Minha conta no Clube Fidelidade está bloqueada. Cel: ' + tel), '💬 Falar com atendente');
@@ -771,13 +796,97 @@
           }
 
           resetarTentativasCodigo();
-          var pts = _clienteAtual.saldoPontos || 0;
+          var tk = getGhToken();
           var telCliente = _clienteAtual.cel || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
-          var msg = 'Clube Fidelidade - Registrar ponto\nNome: ' + _clienteAtual.nome + '\nTel: ' + telCliente + '\nCódigo: ' + codigo + '\nPontos atuais: ' + pts;
+          if (!tk) {
+            setResultadoCodigo('⚠️ Código válido, mas não foi possível aplicar automaticamente sem token. Fale conosco para finalizar o registro.', 'aviso');
+            mostrarWppBtn(wppLink('Olá! Quero registrar meu código de fidelidade.\nNome: ' + (_clienteAtual.nome || '-') + '\nTel: ' + telCliente + '\nCódigo: ' + codigo), '💬 Enviar código para registrar ponto');
+            return;
+          }
 
-          setResultadoCodigo('✅ Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
-          mostrarWppBtn(wppLink(msg), '💬 Enviar código para registrar ponto');
-          if (inputCodigo) inputCodigo.value = '';
+          btnRegistrar.textContent = 'Aplicando código...';
+          setResultadoCodigo('⏳ Código válido. Salvando uso do código e atualizando seus pontos...', 'aviso');
+
+          return obterClientesAtualizados()
+            .then(function(dadosClientes) {
+              var clienteId = _clienteAtualId;
+              if (!clienteId || !dadosClientes.clientes[clienteId]) {
+                var encontrado = localizarClientePorIdentidade(
+                  dadosClientes,
+                  _clienteAtual.nome || (inputNome ? inputNome.value : ''),
+                  _clienteAtual.dataNasc || parseDataBrToIso(inputNasc ? inputNasc.value : '')
+                );
+                clienteId = encontrado && encontrado.id ? encontrado.id : null;
+              }
+              if (!clienteId || !dadosClientes.clientes[clienteId]) throw new Error('cliente-nao-encontrado');
+
+              var cliente = dadosClientes.clientes[clienteId];
+              if (!Array.isArray(cliente.codigosUsados)) cliente.codigosUsados = [];
+              if (cliente.codigosUsados.indexOf(codigo) !== -1) {
+                setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+                return;
+              }
+
+              var mapa = obterMapaCodigos(fid);
+              if (!mapa.map[codigo] || mapa.map[codigo].status !== STATUS_DISPONIVEL) {
+                setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+                return;
+              }
+
+              var agora = new Date().toISOString();
+              mapa.map[codigo].status = 'usado';
+              mapa.map[codigo].usadoPor = telCliente;
+              mapa.map[codigo].usadoEm = agora;
+              fid.usados = Number(fid.usados || 0) + 1;
+              fid.ultima_atualizacao = agora;
+              fid.última_atualização = agora;
+
+              var pontosAntes = Number(cliente.saldoPontos || 0);
+              cliente.codigosUsados.push(codigo);
+              cliente.saldoPontos = pontosAntes + 1;
+              cliente.totalCodigos = Number(cliente.totalCodigos || 0) + 1;
+              cliente.ultimo_acesso = agora;
+              if (!Array.isArray(cliente.historico_alteracoes)) cliente.historico_alteracoes = [];
+              cliente.historico_alteracoes.push({
+                data: agora,
+                tipo: 'codigo_validado_site',
+                descricao: 'Código validado no site: ' + codigo,
+                por: 'cliente'
+              });
+              dadosClientes.indice_celular = dadosClientes.indice_celular || {};
+              if (telCliente) dadosClientes.indice_celular[telCliente] = clienteId;
+
+              return salvarComRetry(function() {
+                return salvarFidelidadeNoGitHub(fid, 'Clube: marcar código como usado ' + codigo);
+              }, 2).then(function(okFidelidade) {
+                if (!okFidelidade) {
+                  setResultadoCodigo('⚠️ Código reconhecido, mas não foi possível salvar no momento. Tente novamente em instantes.', 'erro');
+                  return;
+                }
+
+                return salvarComRetry(function() {
+                  return salvarClientesNoGitHub(dadosClientes, 'Clube: registrar ponto via código ' + codigo);
+                }, 2).then(function(okClientes) {
+                  if (!okClientes) {
+                    setResultadoCodigo('⚠️ Código marcado como usado, mas houve falha ao atualizar seus pontos. Nossa equipe já pode validar pelo admin.', 'aviso');
+                    mostrarWppBtn(wppLink('Olá! Houve falha parcial no registro do meu código.\nNome: ' + (cliente.nome || '-') + '\nCódigo: ' + codigo), '💬 Solicitar regularização');
+                    return;
+                  }
+
+                  atualizarClientesMemoria(dadosClientes);
+                  _clienteAtual = cliente;
+                  _clienteAtualId = clienteId;
+                  esconderWppBtn();
+                  mostrarPainelCliente(cliente);
+                  setResultadoCodigo('✅ Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
+                  if (inputCodigo) inputCodigo.value = '';
+                });
+              });
+            })
+            .catch(function() {
+              setResultadoCodigo('⚠️ Não foi possível concluir a validação agora. Tente novamente em instantes.', 'erro');
+              mostrarWppBtn(wppLink('Olá! Preciso de ajuda para validar meu código de fidelidade.\nNome: ' + (_clienteAtual.nome || '-') + '\nCódigo: ' + codigo), '💬 Pedir ajuda no WhatsApp');
+            });
         })
         .catch(function() {
           setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
