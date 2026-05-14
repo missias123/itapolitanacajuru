@@ -2408,7 +2408,7 @@ function getToken(){return (localStorage.getItem('itap_gh_token')||'').trim();}
 function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   const tok=(tokenOverride||getToken()).trim();
   const headers={...extraHeaders};
-  if(tok)headers.Authorization='token '+tok;
+  if(tok)headers.Authorization='Bearer '+tok;
   return headers;
 }
 // GitHub classic PAT tokens are usually 40 chars (ghp_/gho_/ghu_/ghs_ + payload).
