@@ -2423,8 +2423,9 @@ function exibirStatusToken(){
   if(!tokenStatusElement)return;
   if(token&&expirationDate){
     const today=new Date();
-    const expDate=new Date(`${expirationDate}T23:59:59`);
-    const diffDays=Math.ceil((expDate.getTime()-today.getTime())/86400000);
+    const todayStart=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const expDate=new Date(`${expirationDate}T00:00:00`);
+    const diffDays=Math.floor((expDate.getTime()-todayStart.getTime())/86400000);
     if(diffDays>30){
       tokenStatusElement.innerHTML=`<p style="color:#2e7d32;margin:0">✅ Token válido. Expira em ${diffDays} dias (${expirationDate}).</p>`;
       return;
