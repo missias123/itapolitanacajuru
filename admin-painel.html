@@ -481,9 +481,16 @@ body { overflow-x: hidden; }
       <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">&#x1F441;&#xFE0F;</button>
     </div>
     <div class="inp-wrap" style="margin-top:8px">
-      <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"/>
+      <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"
+        oninput="validarCampoToken(this)"/>
     </div>
-    <div style="font-size:0.72rem;color:#aaa;margin-bottom:12px">O token é salvo apenas neste navegador, nunca no servidor.</div>
+    <div id="token-hint" style="display:none;font-size:0.74rem;color:#ef9a9a;margin-bottom:4px;padding:4px 8px;background:#2a0a0a;border-radius:6px">
+      ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
+    </div>
+    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O token é salvo apenas neste navegador, nunca no servidor.</div>
+    <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
+      Informe a senha do administrador. O token GitHub é opcional para escrita: sem token válido, o painel abre em modo somente leitura.
+    </div>
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Senha incorreta.</div>
   </div>
@@ -723,6 +730,7 @@ body { overflow-x: hidden; }
             </div>
             <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" maxlength="80" placeholder="Nome do vencedor"/><div class="hint">Max. 80 caracteres. Nome do vencedor do último sorteio realizado. Aparece no site.</div></div>
           </div>
+          <div class="campo-edit"><label>Data de encerramento das inscrições</label><input type="date" id="sort-datafim"/><div class="hint">Lista permanente até esta data. Quem se inscrever fica na lista até o encerramento. Sorteios continuam mensais. Deixe em branco para sem prazo definido.</div></div>
           <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" maxlength="500" placeholder="Notas internas sobre o sorteio..."></textarea><div class="hint">Anotações internas para o administrador. Não aparece no site. Max. 500 caracteres.</div></div>
           <div id="sort-msg" style="font-size:.85rem;font-weight:600;margin-top:8px"></div>
         </div>
@@ -735,6 +743,9 @@ body { overflow-x: hidden; }
           <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">&#x1F4F2; Copiar Lista</button>
         </div>
         <div class="card-body">
+          <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.85rem;color:#1b5e20">
+            📋 <strong>Lista permanente:</strong> quem se inscrever participa de <em>todos</em> os sorteios mensais até o encerramento (<span id="sort-datafim-exib">02/01/2027</span>). A lista <strong>não é zerada</strong> a cada mês.
+          </div>
           <div class="hint" style="margin-bottom:10px">&#x26A0;&#xFE0F; Estes são os clientes que enviaram solicitação de inscrição pelo WhatsApp. Confirme manualmente na agenda antes do sorteio.</div>
           <div id="sort-inscritos-lista" style="font-size:.82rem;color:#555;padding:10px;background:#f1f8e9;border-radius:8px;min-height:60px">
             <em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>
@@ -2404,6 +2415,13 @@ Talento</textarea>
   </div>
 </div>
 <script>
+// ────────────────────────────────────────────────────────────
+// Utilitário: escape HTML — evita XSS ao renderizar dados de usuário via innerHTML
+function esc(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 function getToken(){return (localStorage.getItem('itap_gh_token')||'').trim();}
 function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   const tok=(tokenOverride||getToken()).trim();
@@ -2431,6 +2449,14 @@ function tokenFormatoValido(tok){
 }
 
 // ── Validação proativa do token GitHub ────────────────────────────────────────
+// Feedback inline no campo de token da tela de login
+function validarCampoToken(input){
+  const v = input.value.trim();
+  const ok = !v || tokenFormatoValido(v);
+  const hint = document.getElementById('token-hint');
+  if (hint) hint.style.display = v && !ok ? 'block' : 'none';
+}
+
 async function validarToken(tok){
   const token=(tok||'').trim();
   if(!token) return false;
@@ -2485,6 +2511,14 @@ const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
+// Dirty-check: rastreia se há alterações não salvas na aba atual
+let adminDirty=false;
+function markDirty(){adminDirty=true;}
+function clearDirty(){adminDirty=false;}
+function checkDirty(){
+  if(!adminDirty)return true;
+  return confirm('⚠️ Há alterações não salvas nesta aba. Se sair agora elas serão perdidas.\n\nContinuar mesmo assim?');
+}
 const POR_PAGINA=50;
 function fidCodigosKey(){
   if(!STATE.fidelidade)return'códigos';
@@ -2593,6 +2627,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   ocultarLoading();
   if(r.ok){
     STATE[shaKey]=r.sha;
+    clearDirty(); // alterações salvas com sucesso
     toast('✅ Salvo com sucesso no GitHub!', 'sucesso');
     console.log('[Admin] Salvo com sucesso. Novo SHA:', r.sha);
     return true;
@@ -2685,6 +2720,7 @@ async function carregarTudo(){
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
+  if(!checkDirty())return; // avisa se há alterações não salvas
   // Mapa: aba → lista de seções que compõem cada página do site
   const sectionMap={
     'dashboard':      ['dashboard'],
@@ -2873,7 +2909,11 @@ function carregarMetricasQualidade(){
     if(todos.length===0){
       errosEl.innerHTML='<div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>';
     }else{
-      errosEl.innerHTML=todos.map(e=>`<div style="background:#161b22;border-left:4px solid #f44336;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#ef9a9a">${e.tipo||'ERRO'}: ${e.msg||e.url||''} ${e.arquivo?'— '+e.arquivo+':'+(e.linha||''):''}  <span style="color:#5c6bc0;font-size:10px">${e.ts?new Date(e.ts).toLocaleTimeString('pt-BR'):''}</span></div>`).join('');
+      errosEl.innerHTML=todos.map(e=>{
+        let tsStr='';
+        try{tsStr=e.ts?new Date(e.ts).toLocaleTimeString('pt-BR'):'';}catch(ex){}
+        return`<div style="background:#161b22;border-left:4px solid #f44336;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#ef9a9a">${esc(e.tipo||'ERRO')}: ${esc(e.msg||e.url||'')} ${e.arquivo?'— '+esc(e.arquivo)+':'+(+e.linha||''):''}  <span style="color:#5c6bc0;font-size:10px">${tsStr}</span></div>`;
+      }).join('');
     }
   }
 }
@@ -3458,8 +3498,8 @@ function renderParticipantes() {
     tbody.innerHTML = slice.map(p => `
       <tr>
         <td style="font-family:monospace;font-size:.75rem;font-weight:700;color:#666">${p.id || '-'}</td>
-        <td>${p.nome}</td>
-        <td><a href="https://wa.me/55${p.cel.replace(/\D/g,'')}" target="_blank" style="color:#e65100">${p.cel}</a></td>
+        <td>${esc(p.nome)}</td>
+        <td><a href="https://wa.me/55${p.cel.replace(/\D/g,'')}" target="_blank" style="color:#e65100">${esc(p.cel)}</a></td>
         <td><span style="background:${tipoCor[p.tipo]};color:#fff;border-radius:12px;padding:3px 10px;font-size:.75rem;font-weight:700">${tipoLabel[p.tipo]}</span></td>
         <td style="font-weight:700;color:#e8650a">${p.pontos}</td>
         <td style="font-size:.78rem">${p.cadastro ? (p.cadastro.includes('T') ? new Date(p.cadastro).toLocaleDateString('pt-BR') : p.cadastro) : '-'}</td>
@@ -3730,8 +3770,8 @@ function renderClientes(){
   else{tbody.innerHTML=slice.map(c=>{
     const cKey=obterChaveCliente(c);
     return `<tr style="${c.bloqueado?'background:#fff3f3':c.fraude?'background:#fff8e1':''}">
-    <td>${c.nome||'-'}</td>
-    <td><a href="https://wa.me/55${c.cel}" target="_blank" style="color:#e65100">${c.cel||'-'}</a></td>
+    <td>${esc(c.nome)||'-'}</td>
+    <td><a href="https://wa.me/55${(c.cel||'').replace(/\D/g,'')}" target="_blank" style="color:#e65100">${esc(c.cel)||'-'}</a></td>
     <td style="font-weight:700;color:#e65100">${c.saldoPontos||0}</td>
     <td style="font-size:.78rem">${c.cadastro?new Date(c.cadastro).toLocaleDateString('pt-BR'):'-'}</td>
     <td>${c.bloqueado?'<span style="color:#c62828;font-weight:700">Bloqueado</span>':c.fraude?'<span style="color:#f57c00;font-weight:700">Fraude</span>':'<span style="color:#2e7d32">Ativo</span>'}${(c.tentativas_fraude||0)>0?` <small style="color:#888">(${c.tentativas_fraude} tent.)</small>`:''}</td>
@@ -3776,8 +3816,8 @@ function renderDuplicidades() {
     const cadFmt  = c.cadastro ? new Date(c.cadastro).toLocaleDateString('pt-BR') : '-';
     const tentativas = c.potencialDuplicidade.map((t, i) => `
       <div style="background:#fff;border:1px solid #ffcdd2;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:.82rem">
-        <strong>Tentativa ${i+1}:</strong> Celular tentado: <code>${t.celTentativa}</code> &mdash; ${new Date(t.data).toLocaleDateString('pt-BR')} &mdash;
-        <span style="color:${t.status==='Resolvido'?'#2e7d32':t.status==='Ignorado'?'#888':'#b71c1c'};font-weight:700">${t.status}</span>
+        <strong>Tentativa ${i+1}:</strong> Celular tentado: <code>${esc(t.celTentativa)}</code> &mdash; ${new Date(t.data).toLocaleDateString('pt-BR')} &mdash;
+        <span style="color:${t.status==='Resolvido'?'#2e7d32':t.status==='Ignorado'?'#888':'#b71c1c'};font-weight:700">${esc(t.status)}</span>
         ${t.status==='Pendente revisao admin' ? `
           <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn btn-verde" data-fid-write style="padding:5px 10px;font-size:.78rem" onclick="resolverDuplicidade('${c.cel}',${i},'atualizar','${t.celTentativa}')">Atualizar celular para ${t.celTentativa}</button>
@@ -3786,8 +3826,8 @@ function renderDuplicidades() {
           </div>` : ''}
       </div>`).join('');
     return `<div style="background:#ffebee;border:1.5px solid #ef9a9a;border-radius:12px;padding:12px 14px;margin-bottom:12px">
-      <div style="font-weight:900;font-size:.9rem;color:#b71c1c">&#9888;&#65039; ${c.nome}</div>
-      <div style="font-size:.8rem;color:#555;margin-top:2px">Celular cadastrado: <strong>${c.cel}</strong> &mdash; Nasc.: ${nascFmt} &mdash; Cadastro: ${cadFmt}</div>
+      <div style="font-weight:900;font-size:.9rem;color:#b71c1c">&#9888;&#65039; ${esc(c.nome)}</div>
+      <div style="font-size:.8rem;color:#555;margin-top:2px">Celular cadastrado: <strong>${esc(c.cel)}</strong> &mdash; Nasc.: ${nascFmt} &mdash; Cadastro: ${cadFmt}</div>
       ${tentativas}
     </div>`;
   }).join('');
@@ -4008,13 +4048,14 @@ function copiarInscritosSorteio() {
 }
 
 async function salvarSorteio() {
-  const data   = document.getElementById('sort-data-prox').value;
-  const premio = document.getElementById('sort-premio').value.trim();
-  const status = document.getElementById('sort-status').value;
-  const venc   = document.getElementById('sort-vencedor').value.trim();
-  const obs    = document.getElementById('sort-obs').value.trim();
+  const data    = document.getElementById('sort-data-prox').value;
+  const premio  = document.getElementById('sort-premio').value.trim();
+  const status  = document.getElementById('sort-status').value;
+  const venc    = document.getElementById('sort-vencedor').value.trim();
+  const obs     = document.getElementById('sort-obs').value.trim();
+  const dataFim = document.getElementById('sort-datafim').value;
   if (!STATE.fidelidade) STATE.fidelidade = {};
-  STATE.fidelidade.sorteio = { dataProx: data, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
+  STATE.fidelidade.sorteio = { dataProx: data, dataFim, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
   const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
   if (ok) {
     const msg = document.getElementById('sort-msg');
@@ -4029,6 +4070,12 @@ function preencherSorteio() {
   const ss = document.getElementById('sort-status');    if (ss) ss.value = s.status || 'ativo';
   const sv = document.getElementById('sort-vencedor');  if (sv) sv.value = s.vencedor || '';
   const so = document.getElementById('sort-obs');       if (so) so.value = s.obs || '';
+  const sd = document.getElementById('sort-datafim');   if (sd) sd.value = s.dataFim || '';
+  const se = document.getElementById('sort-datafim-exib');
+  if (se && s.dataFim) {
+    const [y, m, d] = s.dataFim.split('-');
+    se.textContent = `${d}/${m}/${y}`;
+  }
   renderInscritosSorteio();
 }
 
@@ -5203,6 +5250,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Spellcheck e autocorreção em todos os campos
   if (typeof aplicarSpellcheck === 'function') aplicarSpellcheck();
   if (typeof aplicarAutocorrecao === 'function') aplicarAutocorrecao();
+
+  // 2. Dirty-check: qualquer digitação no admin-app marca como alterado
+  const adminApp = document.getElementById('admin-app');
+  if (adminApp) {
+    adminApp.addEventListener('input', e => {
+      // Ignora campos de busca/filtro (não são dados persistíveis)
+      const ignorePatterns = ['busca','filtro','search','pesquisa'];
+      const id = (e.target.id || '').toLowerCase();
+      if (!ignorePatterns.some(p => id.includes(p))) markDirty();
+    });
+  }
 
   // 2. Aguardar login para inicializar contadores e validações
   const _adminObserver = new MutationObserver(() => {

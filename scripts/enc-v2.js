@@ -198,6 +198,12 @@ var _nomeCliente = '';
 var _telCliente = '';
 var _endereçoCliente = '';
 
+// Valida número de telefone brasileiro: aceita apenas DDD (11–99) + 8 ou 9 dígitos
+function _telValido(tel) {
+  var digits = (tel || '').replace(/\D/g, '');
+  return /^(?:[1-9]{2})(?:9\d{8}|\d{8})$/.test(digits);
+}
+
 // ---- PILHA DE NAVEGAÇÃO DO MODAL DE PICOLÉS ----
 // Garante que cada tela empilha a anterior e o botão Voltar sempre vai para a tela imediatamente anterior
 var _picoléNavStack = []; // ex: ['tipos', 'sabores']
@@ -1158,7 +1164,7 @@ function verificarFormulario() {
   const barra = document.getElementById('barra-btn-finalizar');
   const texto = document.getElementById('texto-btn-finalizar');
   if (!btn) return;
-  const liberado = nome.length >= 3 && tel.length >= 8 && end.length >= 5;
+  const liberado = nome.length >= 3 && _telValido(tel) && end.length >= 5;
   btn.disabled = !liberado;
   btn.style.opacity = liberado ? '1' : '0.4';
   // Feedback visual corporativo
@@ -1193,7 +1199,7 @@ function finalizarPedido() {
   const end  = ((endEl  ? endEl.value  : '') || _endereçoCliente || '').trim();
   // Válidação de campos
   if (!nome || nome.length < 3) { showToast('⚠️ Preencha seu nome completo (mínimo 3 caracteres).', 'alerta'); return; }
-  if (!tel  || tel.length  < 8) { showToast('⚠️ Preencha seu WhatsApp com DDD.', 'alerta'); return; }
+  if (!tel  || !_telValido(tel)) { showToast('⚠️ Preencha seu WhatsApp com DDD válido (ex: 16 99999-9999).', 'alerta'); return; }
   if (!end  || end.length  < 5) { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
   if (carrinho.length === 0)    { showToast('⚠️ Carrinho vazio! Adicione produtos.', 'alerta'); return; }
   // Válidação de prazo mínimo (72 horas = 3 dias úteis)
@@ -1223,19 +1229,10 @@ function finalizarPedido() {
     if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
   }
   // SISTEMA DE NUMERAÇÃO DE PEDIDOS
-  // Formato: ITA-001-250225 (prefixo + sequência diária + data compacta)
-  // Sequência reinicia todo dia — armazenada no localStorage por data
-  let numPedido = `ITA-${Date.now().toString().slice(-6)}-${dd}${mm}${String(aaaa).slice(2)}`;
-  try {
-    const dataChave = `${dd}${mm}${String(aaaa).slice(2)}`; // ex: 250225
-    const chaveSeq = `itap_seq_${dataChave}`;
-    const seq = parseInt(localStorage.getItem(chaveSeq) || '0') + 1;
-    localStorage.setItem(chaveSeq, seq.toString());
-    const seqStr = String(seq).padStart(3, '0');
-    numPedido = `ITA-${seqStr}-${dataChave}`;
-  } catch(e) {
-    console.warn('[ITAP] Erro ao gerar sequência, usando fallback temporal:', e);
-  }
+  // Formato: ITA-140526-K7XQ (data compacta + sufixo aleatório 4 chars)
+  // Único por definição — sem dependência de localStorage compartilhado entre dispositivos
+  var _rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  let numPedido = `ITA-${dd}${mm}${String(aaaa).slice(2)}-${_rand}`;
   
   // EXECUTAR CONCLUSÃO COM PROTEÇÃO GLOBAL
   try {

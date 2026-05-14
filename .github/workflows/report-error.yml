@@ -1,0 +1,212 @@
+name: 🐛 Receptor de Erros de Frontend
+
+# Este workflow é acionado remotamente por uma função serverless/proxy
+# que recebe o erro do usuário e chama a GitHub API com repository_dispatch.
+#
+# Payload esperado em client_payload:
+# {
+#   "message":   "Mensagem do erro",
+#   "source":    "URL do arquivo JS com o erro",
+#   "lineno":    42,
+#   "colno":     10,
+#   "stack":     "Stack trace completo",
+#   "userAgent": "Mozilla/5.0 ...",
+#   "timestamp": "2026-05-14T18:00:00.000Z",
+#   "pageUrl":   "https://itapolitanacajuru.com.br/fidelidade.html"
+# }
+#
+# Para disparar manualmente via curl (requer PAT com escopo repo):
+#   curl -X POST \
+#     -H "Authorization: Bearer <PAT>" \
+#     -H "Content-Type: application/json" \
+#     -d '{"event_type":"frontend_error_reported","client_payload":{"message":"Teste","pageUrl":"https://itapolitanacajuru.com.br/","source":"index.html","lineno":1,"colno":1,"stack":"Error: Teste\n    at index.html:1","userAgent":"curl","timestamp":"2026-05-14T00:00:00Z"}}' \
+#     https://api.github.com/repos/missias123/itapolitanacajuru/dispatches
+
+on:
+  repository_dispatch:
+    types:
+      - frontend_error_reported
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Mensagem do erro (para teste manual)'
+        required: true
+        default: 'Erro de teste manual'
+      pageUrl:
+        description: 'URL da página onde ocorreu o erro'
+        required: false
+        default: 'https://itapolitanacajuru.com.br/'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create-error-issue:
+    name: 📝 Registrar Erro de Frontend como Issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📋 Extrair payload do erro
+        id: payload
+        run: |
+          # Suporta tanto repository_dispatch quanto workflow_dispatch (teste manual)
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "message=${{ github.event.client_payload.message }}"         >> $GITHUB_OUTPUT
+            echo "pageUrl=${{ github.event.client_payload.pageUrl }}"         >> $GITHUB_OUTPUT
+            echo "source=${{ github.event.client_payload.source }}"           >> $GITHUB_OUTPUT
+            echo "lineno=${{ github.event.client_payload.lineno }}"           >> $GITHUB_OUTPUT
+            echo "colno=${{ github.event.client_payload.colno }}"             >> $GITHUB_OUTPUT
+            echo "userAgent=${{ github.event.client_payload.userAgent }}"     >> $GITHUB_OUTPUT
+            echo "timestamp=${{ github.event.client_payload.timestamp }}"     >> $GITHUB_OUTPUT
+          else
+            echo "message=${{ github.event.inputs.message }}"                 >> $GITHUB_OUTPUT
+            echo "pageUrl=${{ github.event.inputs.pageUrl }}"                 >> $GITHUB_OUTPUT
+            echo "source=workflow_dispatch (teste manual)"                    >> $GITHUB_OUTPUT
+            echo "lineno=0"                                                    >> $GITHUB_OUTPUT
+            echo "colno=0"                                                     >> $GITHUB_OUTPUT
+            echo "userAgent=GitHub Actions (teste manual)"                    >> $GITHUB_OUTPUT
+            echo "timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)"                  >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔍 Verificar se já existe Issue semelhante
+        id: existing
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const msg = `${{ steps.payload.outputs.message }}`.substring(0, 60);
+            const page = `${{ steps.payload.outputs.pageUrl }}`;
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'bug,frontend',
+              per_page: 30,
+            });
+
+            // Verificar se já existe issue com mensagem similar (evita spam de duplicatas)
+            const similar = issues.data.find(i =>
+              i.title.includes(msg.substring(0, 40)) ||
+              (i.body && i.body.includes(page) && i.body.includes(msg.substring(0, 30)))
+            );
+
+            if (similar) {
+              console.log(`Issue similar já existe: #${similar.number}`);
+              core.setOutput('exists', 'true');
+              core.setOutput('issue_number', String(similar.number));
+            } else {
+              core.setOutput('exists', 'false');
+            }
+
+      - name: 📝 Criar Issue com detalhes do erro
+        if: steps.existing.outputs.exists != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message   = `${{ steps.payload.outputs.message }}`;
+            const pageUrl   = `${{ steps.payload.outputs.pageUrl }}`;
+            const source    = `${{ steps.payload.outputs.source }}`;
+            const lineno    = `${{ steps.payload.outputs.lineno }}`;
+            const colno     = `${{ steps.payload.outputs.colno }}`;
+            const userAgent = `${{ steps.payload.outputs.userAgent }}`;
+            const timestamp = `${{ steps.payload.outputs.timestamp }}`;
+            const stack     = `${{ github.event.client_payload.stack || 'Stack trace não disponível (workflow_dispatch)' }}`;
+
+            // Determinar a página afetada para adicionar contexto
+            const isAdmin     = pageUrl.includes('admin');
+            const isFidelidade = pageUrl.includes('fidelidade');
+            const isEncomendas = pageUrl.includes('encomendas');
+            const pageLabel   = isAdmin ? '🔐 Admin' : isFidelidade ? '🎟️ Fidelidade' : isEncomendas ? '📦 Encomendas' : '🏠 Home';
+
+            const shortMsg = message.substring(0, 80);
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            const body = [
+              `## 🐛 Erro de Frontend Detectado — ${pageLabel}`,
+              '',
+              `**Detectado em:** \`${timestamp}\``,
+              `**Página afetada:** [${pageUrl}](${pageUrl})`,
+              '',
+              '---',
+              '',
+              '### 🔍 Detalhes do Erro',
+              '',
+              '| Campo | Valor |',
+              '|-------|-------|',
+              `| **Mensagem** | \`${message.substring(0, 200)}\` |`,
+              `| **Arquivo** | \`${source}\` |`,
+              `| **Linha** | ${lineno} |`,
+              `| **Coluna** | ${colno} |`,
+              `| **User Agent** | \`${userAgent.substring(0, 120)}\` |`,
+              '',
+              '### 📋 Stack Trace',
+              '',
+              '```',
+              stack,
+              '```',
+              '',
+              '---',
+              '',
+              '### 🤖 Instruções para IA (Copilot / Claude / GPT)',
+              '',
+              '> Cole o bloco abaixo diretamente em uma conversa com o Copilot:',
+              '',
+              '```',
+              'Você é um tech lead sênior de front-end para a Sorveteria Itapolitana Cajuru.',
+              `Repositório: https://github.com/${{ github.repository }}`,
+              '',
+              'Um erro de JavaScript foi detectado no site em produção:',
+              `- Mensagem: ${message}`,
+              `- Arquivo: ${source}`,
+              `- Linha: ${lineno}, Coluna: ${colno}`,
+              `- Página: ${pageUrl}`,
+              `- Stack: ${stack}`,
+              '',
+              'INSTRUÇÕES:',
+              `1. Abra o arquivo ${source} no repositório.`,
+              `2. Navegue até a linha ${lineno} e analise o contexto.`,
+              '3. Corrija o erro seguindo estas regras obrigatórias:',
+              '   - NÃO truncar HTML (index.html, fidelidade.html, encomendas.html, etc.).',
+              '   - NÃO remover seções: hero, cardápio, promoções, fidelidade, rodapé.',
+              '   - NÃO alterar regras de negócio (Programa de Fidelidade, preços).',
+              '   - Manter o site responsivo em mobile, tablet e desktop.',
+              '4. Liste os arquivos alterados e o que foi corrigido.',
+              '```',
+              '',
+              '---',
+              '',
+              '| Recurso | Link |',
+              '|---------|------|',
+              `| 🔗 Workflow | [Ver run](${runUrl}) |`,
+              `| 📁 Repositório | [Abrir repo](https://github.com/${{ github.repository }}) |`,
+              '',
+              '---',
+              '',
+              '_Issue criada automaticamente pelo workflow `report-error.yml` via `repository_dispatch`._',
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🐛 [Frontend Error] ${shortMsg}`,
+              body,
+              labels: ['bug', 'frontend'],
+            });
+            console.log('✅ Issue de erro de frontend criada.');
+
+      - name: 💬 Adicionar comentário em issue existente
+        if: steps.existing.outputs.exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message   = `${{ steps.payload.outputs.message }}`;
+            const pageUrl   = `${{ steps.payload.outputs.pageUrl }}`;
+            const timestamp = `${{ steps.payload.outputs.timestamp }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number('${{ steps.existing.outputs.issue_number }}'),
+              body: `🔁 **Erro recorrente** em \`${timestamp}\`\n**Página:** ${pageUrl}\n**Mensagem:** \`${message.substring(0, 200)}\``,
+            });
+            console.log(`Comentário adicionado na issue #${{ steps.existing.outputs.issue_number }}`);
