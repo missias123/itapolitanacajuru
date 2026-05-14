@@ -2404,13 +2404,47 @@ Talento</textarea>
   </div>
 </div>
 <script>
-function getToken(){return localStorage.getItem('itap_gh_token')||'';}
+function getToken(){return (localStorage.getItem('itap_gh_token')||'').trim();}
+function getAuthHeaders(extraHeaders={}, tokenOverride=''){
+  const tok=(tokenOverride||getToken()).trim();
+  const headers={...extraHeaders};
+  if(tok)headers.Authorization='Bearer '+tok;
+  return headers;
+}
+// GitHub classic PAT tokens are usually 40 chars (ghp_/gho_/ghu_/ghs_ + payload).
+const MIN_CLASSIC_TOKEN_LENGTH=40;
+// Fine-grained PATs (github_pat_) are significantly longer; keep a safe minimum.
+const MIN_FINE_GRAINED_TOKEN_LENGTH=80;
+// Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
+function tokenFormatoValido(tok){
+  const t=(tok||'').trim();
+  const regras=[
+    {prefix:'github_pat_',minLen:MIN_FINE_GRAINED_TOKEN_LENGTH},
+    {prefix:'ghp_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
+    {prefix:'gho_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
+    {prefix:'ghu_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
+    {prefix:'ghs_',minLen:MIN_CLASSIC_TOKEN_LENGTH}
+  ];
+  if(regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen))return true;
+  // Legacy fallback: older classic token shapes can appear as 40-char alphanumeric strings.
+  return new RegExp(`^[a-zA-Z0-9]{${MIN_CLASSIC_TOKEN_LENGTH}}$`).test(t);
+}
 
 // ── Validação proativa do token GitHub ────────────────────────────────────────
 async function validarToken(tok){
-  if(!tok) return false;
+  const token=(tok||'').trim();
+  if(!token) return false;
+  if(!GH_OWNER||!GH_REPO){
+    console.warn('[Admin] validarToken: GH_OWNER/GH_REPO not configured');
+    return false;
+  }
   try{
-    const r=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+tok,'X-GitHub-Api-Version':'2022-11-28'},cache:'no-store'});
+    // Using /repos/{owner}/{repo} validates auth and confirms this token can access
+    // the exact repository used by the admin (avoids false positives from /user-only checks).
+    const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
+      headers:getAuthHeaders({'X-GitHub-Api-Version':GH_API_VERSION,'Accept':GH_API_ACCEPT},token),
+      cache:'no-store'
+    });
     if(!r.ok) console.warn('[Admin] validarToken: status',r.status);
     return r.ok;
   }catch(e){
@@ -2436,9 +2470,9 @@ async function recarregarTodosDados(){
 }
 
 function atualizarToken(){
-  const tok=(prompt('Cole o novo token GitHub (ghp_...):\n\nCrie um em: github.com/settings/tokens/new\n(escopo necessário: repo)') || '').trim();
+  const tok=(prompt('Cole o novo token GitHub (ghp_... ou github_pat_...):\n\nCrie um em: github.com/settings/tokens/new\n(escopo necessário: repo)') || '').trim();
   if(!tok){toast('Token não alterado.','aviso');return;}
-  if(!tok.startsWith('ghp_')||tok.length<20){toast('Token inválido. Deve começar com "ghp_" e ter pelo menos 20 caracteres.','erro');return;}
+  if(!tokenFormatoValido(tok)){toast('Token inválido. Use um PAT GitHub válido (ex.: ghp_... ou github_pat_...).','erro');return;}
   localStorage.setItem('itap_gh_token',tok);
   toast('Token salvo! Recarregando dados...','sucesso');
   setTimeout(()=>carregarTudo(),400);
@@ -2447,6 +2481,8 @@ const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
 const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
+const GH_API_ACCEPT='application/vnd.github+json';
+const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 const POR_PAGINA=50;
@@ -2494,7 +2530,7 @@ function fidRequireWrite(){
 }
 async function ghGet(path){
   try{
-    const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:{'Authorization':'token '+getToken(),'Accept':'application/vnd.github.v3+json'}});
+    const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})});
     if(r.status===404)return{content:null,sha:null};
     if(!r.ok)throw new Error(r.status);
     const d=await r.json();
@@ -2521,7 +2557,7 @@ async function ghPut(path,data,sha,msg){
       const content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
       const body={message:msg,content};
       if(sha)body.sha=sha;
-      const r=await fetch(GH_API+path,{method:'PUT',headers:{'Authorization':'token '+getToken(),'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const r=await fetch(GH_API+path,{method:'PUT',headers:getAuthHeaders({'Content-Type':'application/json'}),body:JSON.stringify(body)});
       // Rate limit (429) ou servidor temporariamente indisponível (503) → aguardar e tentar novamente
       if((r.status===429||r.status===503)&&tentativa<MAX_TENTATIVAS){
         const espera=tentativa*2000; // tentativa 1→2s, tentativa 2→4s
@@ -3090,14 +3126,14 @@ async function ghPutImagem(path, blob, msg) {
     // Buscar SHA atual do arquivo (se já existir)
     let sha = null;
     try {
-      const r = await fetch(GH_API + path, { headers: { 'Authorization': 'token ' + getToken() } });
+      const r = await fetch(GH_API + path, { headers: getAuthHeaders() });
       if (r.ok) { const d = await r.json(); sha = d.sha; }
     } catch(e) {}
     const body = { message: msg, content: base64 };
     if (sha) body.sha = sha;
     const r = await fetch(GH_API + path, {
       method: 'PUT',
-      headers: { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(body)
     });
     if (!r.ok) { const e = await r.json(); throw new Error(e.message); }
