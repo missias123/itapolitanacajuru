@@ -2411,15 +2411,17 @@ function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   if(tok)headers.Authorization='token '+tok;
   return headers;
 }
+const MIN_CLASSIC_TOKEN_LEN=40;
+const MIN_FINE_GRAINED_TOKEN_LEN=80;
 // Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
 function tokenFormatoValido(tok){
   const t=(tok||'').trim();
   const regras=[
-    {prefix:'github_pat_',minLen:80},
-    {prefix:'ghp_',minLen:30},
-    {prefix:'gho_',minLen:30},
-    {prefix:'ghu_',minLen:30},
-    {prefix:'ghs_',minLen:30}
+    {prefix:'github_pat_',minLen:MIN_FINE_GRAINED_TOKEN_LEN},
+    {prefix:'ghp_',minLen:MIN_CLASSIC_TOKEN_LEN},
+    {prefix:'gho_',minLen:MIN_CLASSIC_TOKEN_LEN},
+    {prefix:'ghu_',minLen:MIN_CLASSIC_TOKEN_LEN},
+    {prefix:'ghs_',minLen:MIN_CLASSIC_TOKEN_LEN}
   ];
   return regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen);
 }
@@ -2428,6 +2430,10 @@ function tokenFormatoValido(tok){
 async function validarToken(tok){
   const token=(tok||'').trim();
   if(!token) return false;
+  if(!GH_OWNER||!GH_REPO){
+    console.warn('[Admin] validarToken: GH_OWNER/GH_REPO não configurados');
+    return false;
+  }
   try{
     // Validates both authentication and repository access required by the admin panel.
     const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
