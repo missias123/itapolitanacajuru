@@ -65,6 +65,14 @@
   var _promoCadastroLiberado = false;
 
   function abrirRegrasSorteioPromo() {
+    if (window._sorteioEncerrado) {
+      var bloco = document.getElementById('bloco-regras-sorteio-promo');
+      if (bloco) {
+        bloco.style.display = 'block';
+        setTimeout(function() { bloco.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+      }
+      return;
+    }
     var bloco = document.getElementById('bloco-regras-sorteio-promo');
     var form = document.getElementById('form-sorteio-inline');
     if (!bloco) return;
@@ -319,6 +327,10 @@
 
   async function enviarSorteioPromo() {
     if (!_promoCadastroLiberado) return;
+    if (window._sorteioEncerrado) {
+      mostrarMsgSorteio('⛔ As inscrições para o sorteio foram encerradas em 02/01/2027. Obrigado pela participação!', 'aviso');
+      return;
+    }
     if (inputPromoHp && inputPromoHp.value) {
       mostrarMsgSorteio('Erro de validacao. Tente novamente.', 'aviso');
       return;
@@ -735,4 +747,56 @@
         }).join('');
       })
       .catch(function() { container.style.display = 'none'; });
+  })();
+
+  // ═══ VERIFICAR ENCERRAMENTO DA LISTA DE INSCRIÇÕES ═══
+  // Lê sorteio.dataFim e sorteio.status de fidelidade.json.
+  // Se hoje >= dataFim ou status === "encerrado", desabilita formulário e botão.
+  (function verificarEncerramentoSorteio() {
+    fetch('dados/fidelidade.json?v=' + Date.now())
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(fid) {
+        if (!fid) return;
+        var sorteio = fid.sorteio || {};
+        var hoje = new Date();
+        var encerrado = sorteio.status === 'encerrado';
+        if (!encerrado && sorteio.dataFim) {
+          var fim = new Date(sorteio.dataFim);
+          encerrado = !isNaN(fim.getTime()) && hoje >= fim;
+        }
+        if (!encerrado) return;
+
+        window._sorteioEncerrado = true;
+
+        // Oculta formulário e botões de inscrição
+        var formInline = document.getElementById('form-sorteio-inline');
+        if (formInline) formInline.style.display = 'none';
+
+        var btnAceitar = document.getElementById('btn-aceitar-sorteio-inline');
+        if (btnAceitar) { btnAceitar.disabled = true; btnAceitar.setAttribute('aria-disabled', 'true'); }
+
+        var btnParticip = document.getElementById('btn-quero-participar-sorteio');
+        if (btnParticip) {
+          btnParticip.textContent = '🔒 Inscrições encerradas';
+          btnParticip.style.background = '#757575';
+          btnParticip.style.cursor = 'default';
+          btnParticip.onclick = null;
+        }
+
+        // Exibe aviso de encerramento dentro do bloco de regras
+        var blocoRegras = document.getElementById('bloco-regras-sorteio-promo');
+        if (blocoRegras) {
+          var aviso = document.createElement('div');
+          aviso.style.cssText = 'background:#fff3e0;border:2px solid #e65100;border-radius:10px;padding:12px 16px;margin:10px 0;font-weight:700;color:#bf360c;text-align:center';
+          aviso.textContent = '🔒 As inscrições foram encerradas em 02/01/2027. Os participantes cadastrados continuam concorrendo até o último sorteio.';
+          blocoRegras.insertBefore(aviso, blocoRegras.firstChild);
+        }
+
+        // Atualiza o contador para não mostrar próximo sorteio
+        var cdRow = document.getElementById('cd-row');
+        var cdEncerrado = document.getElementById('cd-encerrado');
+        if (cdRow) cdRow.style.display = 'none';
+        if (cdEncerrado) { cdEncerrado.style.display = 'block'; cdEncerrado.textContent = '🔒 INSCRIÇÕES ENCERRADAS'; }
+      });
   })();

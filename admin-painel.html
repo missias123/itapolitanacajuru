@@ -730,6 +730,7 @@ body { overflow-x: hidden; }
             </div>
             <div class="campo-edit"><label>Vencedor do último sorteio</label><input type="text" id="sort-vencedor" maxlength="80" placeholder="Nome do vencedor"/><div class="hint">Max. 80 caracteres. Nome do vencedor do último sorteio realizado. Aparece no site.</div></div>
           </div>
+          <div class="campo-edit"><label>Data de encerramento das inscrições</label><input type="date" id="sort-datafim"/><div class="hint">Lista permanente até esta data. Quem se inscrever fica na lista até o encerramento. Sorteios continuam mensais. Deixe em branco para sem prazo definido.</div></div>
           <div class="campo-edit"><label>Observação interna</label><textarea id="sort-obs" rows="2" maxlength="500" placeholder="Notas internas sobre o sorteio..."></textarea><div class="hint">Anotações internas para o administrador. Não aparece no site. Max. 500 caracteres.</div></div>
           <div id="sort-msg" style="font-size:.85rem;font-weight:600;margin-top:8px"></div>
         </div>
@@ -742,6 +743,9 @@ body { overflow-x: hidden; }
           <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">&#x1F4F2; Copiar Lista</button>
         </div>
         <div class="card-body">
+          <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.85rem;color:#1b5e20">
+            📋 <strong>Lista permanente:</strong> quem se inscrever participa de <em>todos</em> os sorteios mensais até o encerramento (<span id="sort-datafim-exib">02/01/2027</span>). A lista <strong>não é zerada</strong> a cada mês.
+          </div>
           <div class="hint" style="margin-bottom:10px">&#x26A0;&#xFE0F; Estes são os clientes que enviaram solicitação de inscrição pelo WhatsApp. Confirme manualmente na agenda antes do sorteio.</div>
           <div id="sort-inscritos-lista" style="font-size:.82rem;color:#555;padding:10px;background:#f1f8e9;border-radius:8px;min-height:60px">
             <em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>
@@ -4044,13 +4048,14 @@ function copiarInscritosSorteio() {
 }
 
 async function salvarSorteio() {
-  const data   = document.getElementById('sort-data-prox').value;
-  const premio = document.getElementById('sort-premio').value.trim();
-  const status = document.getElementById('sort-status').value;
-  const venc   = document.getElementById('sort-vencedor').value.trim();
-  const obs    = document.getElementById('sort-obs').value.trim();
+  const data    = document.getElementById('sort-data-prox').value;
+  const premio  = document.getElementById('sort-premio').value.trim();
+  const status  = document.getElementById('sort-status').value;
+  const venc    = document.getElementById('sort-vencedor').value.trim();
+  const obs     = document.getElementById('sort-obs').value.trim();
+  const dataFim = document.getElementById('sort-datafim').value;
   if (!STATE.fidelidade) STATE.fidelidade = {};
-  STATE.fidelidade.sorteio = { dataProx: data, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
+  STATE.fidelidade.sorteio = { dataProx: data, dataFim, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
   const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
   if (ok) {
     const msg = document.getElementById('sort-msg');
@@ -4065,6 +4070,12 @@ function preencherSorteio() {
   const ss = document.getElementById('sort-status');    if (ss) ss.value = s.status || 'ativo';
   const sv = document.getElementById('sort-vencedor');  if (sv) sv.value = s.vencedor || '';
   const so = document.getElementById('sort-obs');       if (so) so.value = s.obs || '';
+  const sd = document.getElementById('sort-datafim');   if (sd) sd.value = s.dataFim || '';
+  const se = document.getElementById('sort-datafim-exib');
+  if (se && s.dataFim) {
+    const [y, m, d] = s.dataFim.split('-');
+    se.textContent = `${d}/${m}/${y}`;
+  }
   renderInscritosSorteio();
 }
 

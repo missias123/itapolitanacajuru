@@ -23,52 +23,64 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Renovar sorteio e reiniciar inscritos
+      - name: Renovar sorteio mensal (lista permanente)
         id: renovar
         run: |
           python3 - <<'PYEOF'
           import json, os
-          from datetime import date, timedelta
+          from datetime import date
 
           PATH = "dados/fidelidade.json"
           with open(PATH, encoding="utf-8") as f:
               fid = json.load(f)
 
           hoje = date.today()
-
-          # Próximo dia 01: se hoje é dia 01, próximo mês; senão próximo mês também
-          if hoje.month == 12:
-              prox = date(hoje.year + 1, 1, 1)
-          else:
-              prox = date(hoje.year, hoje.month + 1, 1)
-
           sorteio = fid.get("sorteio", {})
           data_anterior = sorteio.get("dataProx", "")
 
-          # Atualiza sorteio
-          sorteio["dataProx"] = prox.strftime("%Y-%m-%d")
-          sorteio["status"]   = "ativo"
-          sorteio["vencedor"] = ""
-          sorteio["obs"]      = f"Renovado automaticamente em {hoje.isoformat()}"
-          sorteio["atualizado"] = hoje.strftime("%Y-%m-%dT12:00:00.000Z")
-          fid["sorteio"] = sorteio
+          # Data de encerramento das inscrições (lista fecha em 02/01/2027)
+          data_fim_str = sorteio.get("dataFim", "2027-01-02")
+          data_fim = date.fromisoformat(data_fim_str)
 
-          # Zera lista de inscritos para o novo ciclo
-          inscritos_anteriores = len(fid.get("sorteioInscritos", []))
-          fid["sorteioInscritos"] = []
+          inscritos_total = len(fid.get("sorteioInscritos", []))
+
+          if hoje >= data_fim:
+              # Ciclo encerrado — apenas marca como encerrado, não renova
+              sorteio["status"]     = "encerrado"
+              sorteio["obs"]        = f"Lista encerrada em {data_fim_str}. Último sorteio realizado."
+              sorteio["atualizado"] = hoje.strftime("%Y-%m-%dT12:00:00.000Z")
+              fid["sorteio"] = sorteio
+              acao = "encerrado"
+              data_nova = data_anterior
+          else:
+              # Próximo dia 01
+              if hoje.month == 12:
+                  prox = date(hoje.year + 1, 1, 1)
+              else:
+                  prox = date(hoje.year, hoje.month + 1, 1)
+
+              # Atualiza apenas metadados — a lista de inscritos É MANTIDA
+              sorteio["dataProx"]   = prox.strftime("%Y-%m-%d")
+              sorteio["status"]     = "ativo"
+              sorteio["vencedor"]   = ""
+              sorteio["obs"]        = f"Sorteio mensal realizado em {hoje.isoformat()}. Lista permanente até {data_fim_str}."
+              sorteio["atualizado"] = hoje.strftime("%Y-%m-%dT12:00:00.000Z")
+              fid["sorteio"] = sorteio
+              acao = "renovado"
+              data_nova = prox.isoformat()
 
           with open(PATH, "w", encoding="utf-8") as f:
               json.dump(fid, f, ensure_ascii=False, indent=2)
               f.write("\n")
 
-          print(f"✅ Sorteio renovado: {data_anterior} → {prox.isoformat()}")
-          print(f"✅ Inscritos zerados: {inscritos_anteriores} participantes do ciclo anterior removidos")
+          print(f"✅ Sorteio {acao}: {data_anterior} → {data_nova}")
+          print(f"📋 Lista de inscritos mantida: {inscritos_total} participantes (lista fixa até {data_fim_str})")
 
-          # Exporta para o step seguinte
           with open(os.environ["GITHUB_OUTPUT"], "a") as gh:
               gh.write(f"data_anterior={data_anterior}\n")
-              gh.write(f"data_nova={prox.isoformat()}\n")
-              gh.write(f"inscritos_anteriores={inscritos_anteriores}\n")
+              gh.write(f"data_nova={data_nova}\n")
+              gh.write(f"inscritos_total={inscritos_total}\n")
+              gh.write(f"acao={acao}\n")
           PYEOF
 
       - name: Commit e push
@@ -78,16 +90,17 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dados/fidelidade.json
           git diff --cached --quiet && echo "Sem alterações." && exit 0
-          git commit -m "chore(sorteio): renovar ciclo mensal → ${{ steps.renovar.outputs.data_nova }} (anterior: ${{ steps.renovar.outputs.data_anterior }}, ${{ steps.renovar.outputs.inscritos_anteriores }} inscritos zerados)"
+          git commit -m "chore(sorteio): ${{ steps.renovar.outputs.acao }} ciclo mensal → ${{ steps.renovar.outputs.data_nova }} (${{ steps.renovar.outputs.inscritos_total }} inscritos mantidos)"
           git push
 
       - name: Resumo
         run: |
-          echo "### 🎟️ Sorteio Mensal Renovado" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎟️ Sorteio Mensal — ${{ steps.renovar.outputs.acao }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Campo | Valor |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Ciclo anterior encerrado | ${{ steps.renovar.outputs.data_anterior }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Novo prazo (próximo sorteio) | ${{ steps.renovar.outputs.data_nova }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Inscritos zerados | ${{ steps.renovar.outputs.inscritos_anteriores }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Status | ativo ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Ciclo anterior | ${{ steps.renovar.outputs.data_anterior }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Próximo sorteio | ${{ steps.renovar.outputs.data_nova }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Inscritos na lista (mantidos) | ${{ steps.renovar.outputs.inscritos_total }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lista encerra em | 02/01/2027 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ steps.renovar.outputs.acao }} ✅ |" >> $GITHUB_STEP_SUMMARY
