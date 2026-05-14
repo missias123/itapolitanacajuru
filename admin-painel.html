@@ -4613,7 +4613,27 @@ function adicionarSaborPicolé(cat) {
     const sid = 'pic_' + norm(cat) + '_' + norm(nome);
     const div = document.createElement('div');
     div.className = 'sabor-item';
-    div.innerHTML = '<span class="sabor-nome">' + nome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" checked onchange="toggleSaborPicolé(\'' + cat + '\',\'' + nome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status" id="status_' + sid + '">Disponível</span>';
+    const spanNome = document.createElement('span');
+    spanNome.className = 'sabor-nome';
+    spanNome.textContent = nome;
+    const label = document.createElement('label');
+    label.className = 'toggle';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.id = sid;
+    cb.checked = true;
+    cb.addEventListener('change', function() { toggleSaborPicolé(cat, nome, this.checked); });
+    const slider = document.createElement('span');
+    slider.className = 'toggle-slider';
+    label.appendChild(cb);
+    label.appendChild(slider);
+    const spanStatus = document.createElement('span');
+    spanStatus.className = 'sabor-status';
+    spanStatus.id = 'status_' + sid;
+    spanStatus.textContent = 'Disponível';
+    div.appendChild(spanNome);
+    div.appendChild(label);
+    div.appendChild(spanStatus);
     grid.appendChild(div);
   }
   inp.value = '';
