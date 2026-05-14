@@ -2411,7 +2411,9 @@ function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   if(tok)headers.Authorization='token '+tok;
   return headers;
 }
+// GitHub classic PAT tokens are usually 40 chars (ghp_/gho_/ghu_/ghs_ + payload).
 const MIN_CLASSIC_TOKEN_LEN=40;
+// Fine-grained PATs (github_pat_) are significantly longer; keep a safe minimum.
 const MIN_FINE_GRAINED_TOKEN_LEN=80;
 // Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
 function tokenFormatoValido(tok){
@@ -2423,7 +2425,9 @@ function tokenFormatoValido(tok){
     {prefix:'ghu_',minLen:MIN_CLASSIC_TOKEN_LEN},
     {prefix:'ghs_',minLen:MIN_CLASSIC_TOKEN_LEN}
   ];
-  return regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen);
+  if(regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen))return true;
+  // Legacy fallback: older classic token shapes can appear as 40-char alphanumeric strings.
+  return /^[a-zA-Z0-9]{40}$/.test(t);
 }
 
 // ── Validação proativa do token GitHub ────────────────────────────────────────
@@ -2435,7 +2439,8 @@ async function validarToken(tok){
     return false;
   }
   try{
-    // Validates both authentication and repository access required by the admin panel.
+    // Using /repos/{owner}/{repo} validates auth and confirms this token can access
+    // the exact repository used by the admin (avoids false positives from /user-only checks).
     const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
       headers:getAuthHeaders({'X-GitHub-Api-Version':GH_API_VERSION,'Accept':GH_API_ACCEPT},token),
       cache:'no-store'
