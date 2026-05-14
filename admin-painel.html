@@ -519,6 +519,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
     <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
+    <button class="nav-btn" onclick="irPara('estrela-admin',this)">🌟 Estrela Dourada</button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -2837,10 +2838,11 @@ function irPara(seção,btn){
     'encomendas-admin':['encomendas','sabores','estoque'],
     'produtos-admin': ['produtos'],
     'promocao-admin': ['promoção','participantes'],
-    'fidelidade-admin':['clientes','fidelidade','estrela'],
+    'fidelidade-admin':['clientes','fidelidade'],
     'dicas-admin':    ['depoimentos'],
     // acesso direto mantido para botão Qualidade do Dashboard
-    'qualidade':      ['qualidade']
+    'qualidade':      ['qualidade'],
+    'estrela-admin':  ['estrela']
   };
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
@@ -2868,7 +2870,8 @@ function irPara(seção,btn){
     try{renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
     try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
   }
-  if(ids.includes('clientes')||ids.includes('fidelidade'))fidApplyReadOnlyGuard();
+  if(ids.includes('estrela'))carregarEstrelas();
+  if(ids.includes('clientes')||ids.includes('fidelidade')||ids.includes('estrela'))fidApplyReadOnlyGuard();
   if(ids.includes('depoimentos'))preencherDepoimentos();
   if(ids.includes('qualidade'))atualizarScoresQualidade();
   // Scroll para o topo do conteúdo ao trocar de aba
