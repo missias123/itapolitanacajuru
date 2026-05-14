@@ -1,0 +1,101 @@
+name: Check Admin PAT Expiration
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check_pat_expiration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate secret and calculate days left
+        id: calc
+        shell: bash
+        env:
+          PAT_EXPIRATION_DATE: ${{ secrets.ADMIN_PAT_EXPIRATION_DATE }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${PAT_EXPIRATION_DATE:-}" ]; then
+            echo "::error::Secret ADMIN_PAT_EXPIRATION_DATE não definido."
+            exit 1
+          fi
+
+          if ! date -d "$PAT_EXPIRATION_DATE" +%s >/dev/null 2>&1; then
+            echo "::error::Formato inválido em ADMIN_PAT_EXPIRATION_DATE. Use YYYY-MM-DD."
+            exit 1
+          fi
+
+          expiration_ts=$(date -d "$PAT_EXPIRATION_DATE" +%s)
+          now_ts=$(date +%s)
+          diff_seconds=$((expiration_ts - now_ts))
+          days_left=$((diff_seconds / 86400))
+
+          echo "days_left=$days_left" >> "$GITHUB_OUTPUT"
+
+          if [ "$days_left" -le 30 ]; then
+            echo "should_alert=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_alert=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check existing open issue
+        if: steps.calc.outputs.should_alert == 'true'
+        id: existing
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = 'pat-expiration-admin-alert';
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            const found = issues.find(i => (i.body || '').includes(marker));
+            core.setOutput('exists', found ? 'true' : 'false');
+
+      - name: Open issue if PAT is near expiration
+        if: steps.calc.outputs.should_alert == 'true' && steps.existing.outputs.exists != 'true'
+        uses: actions/github-script@v7
+        env:
+          DAYS_LEFT: ${{ steps.calc.outputs.days_left }}
+          EXPIRATION_DATE: ${{ secrets.ADMIN_PAT_EXPIRATION_DATE }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const daysLeft = Number(process.env.DAYS_LEFT);
+            const expirationDate = process.env.EXPIRATION_DATE;
+
+            const statusText = daysLeft >= 0
+              ? `expira em **${daysLeft} dia(s)**`
+              : `já expirou há **${Math.abs(daysLeft)} dia(s)**`;
+
+            const title = `⚠️ Admin PAT: ${statusText}`;
+            const body = `
+            <!-- pat-expiration-admin-alert -->
+            O PAT do painel admin ${statusText} (data: **${expirationDate}**).
+
+            ## Ação necessária
+            1. Gerar novo fine-grained PAT (validade 1 ano).
+            2. Atualizar o token no painel admin.
+            3. Atualizar o secret \`ADMIN_PAT_EXPIRATION_DATE\` com a nova data (YYYY-MM-DD).
+
+            ## Link rápido
+            https://github.com/settings/personal-access-tokens/new
+            `.split('\n').map(l => l.trimStart()).join('\n').trim();
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body
+            });

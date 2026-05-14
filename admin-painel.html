@@ -483,6 +483,10 @@ body { overflow-x: hidden; }
     <div class="inp-wrap" style="margin-top:8px">
       <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"/>
     </div>
+    <div class="inp-wrap" style="margin-top:8px">
+      <input type="date" id="inp-gh-token-expiration" aria-label="Data de expiração do token GitHub"/>
+    </div>
+    <div id="token-status" style="font-size:.8rem;margin:8px 0 12px;text-align:left;"></div>
     <div style="font-size:0.72rem;color:#aaa;margin-bottom:12px">O token é salvo apenas neste navegador, nunca no servidor.</div>
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Senha incorreta.</div>
@@ -2405,6 +2409,39 @@ Talento</textarea>
 </div>
 <script>
 function getToken(){return (localStorage.getItem('itap_gh_token')||'').trim();}
+function getTokenExpiration(){return (localStorage.getItem('itap_gh_token_expiration')||'').trim();}
+function salvarTokenEExpiracao(token,expirationDate){
+  const tok=(token||'').trim();
+  const exp=(expirationDate||'').trim();
+  if(tok)localStorage.setItem('itap_gh_token',tok);
+  if(exp)localStorage.setItem('itap_gh_token_expiration',exp);
+}
+function exibirStatusToken(){
+  const token=getToken();
+  const expirationDate=getTokenExpiration();
+  const tokenStatusElement=document.getElementById('token-status');
+  if(!tokenStatusElement)return;
+  if(token&&expirationDate){
+    const today=new Date();
+    const expDate=new Date(`${expirationDate}T23:59:59`);
+    const diffDays=Math.ceil((expDate.getTime()-today.getTime())/86400000);
+    if(diffDays>30){
+      tokenStatusElement.innerHTML=`<p style="color:#2e7d32;margin:0">✅ Token válido. Expira em ${diffDays} dias (${expirationDate}).</p>`;
+      return;
+    }
+    if(diffDays>0){
+      tokenStatusElement.innerHTML=`<p style="color:#ef6c00;margin:0">⚠️ Token perto do vencimento: ${diffDays} dias (${expirationDate}).</p>`;
+      return;
+    }
+    tokenStatusElement.innerHTML=`<p style="color:#c62828;margin:0">❌ Token expirado (data: ${expirationDate}). Renove imediatamente.</p>`;
+    return;
+  }
+  if(token&&!expirationDate){
+    tokenStatusElement.innerHTML=`<p style="color:#ef6c00;margin:0">⚠️ Token salvo, mas sem data de expiração cadastrada.</p>`;
+    return;
+  }
+  tokenStatusElement.innerHTML=`<p style="color:#616161;margin:0">ℹ️ Nenhum token GitHub salvo.</p>`;
+}
 function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   const tok=(tokenOverride||getToken()).trim();
   const headers={...extraHeaders};
@@ -2473,7 +2510,8 @@ function atualizarToken(){
   const tok=(prompt('Cole o novo token GitHub (ghp_... ou github_pat_...):\n\nCrie um em: github.com/settings/tokens/new\n(escopo necessário: repo)') || '').trim();
   if(!tok){toast('Token não alterado.','aviso');return;}
   if(!tokenFormatoValido(tok)){toast('Token inválido. Use um PAT GitHub válido (ex.: ghp_... ou github_pat_...).','erro');return;}
-  localStorage.setItem('itap_gh_token',tok);
+  salvarTokenEExpiracao(tok,getTokenExpiration());
+  exibirStatusToken();
   toast('Token salvo! Recarregando dados...','sucesso');
   setTimeout(()=>carregarTudo(),400);
 }const GH_OWNER='missias123';
@@ -2616,7 +2654,9 @@ async function sha256(str) {
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
   const tok=document.getElementById('inp-gh-token').value.trim();
-  if(tok) localStorage.setItem('itap_gh_token',tok);
+  const exp=document.getElementById('inp-gh-token-expiration')?.value||'';
+  salvarTokenEExpiracao(tok,exp);
+  exibirStatusToken();
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   // Validação proativa do token antes de carregar
@@ -2682,6 +2722,13 @@ async function carregarTudo(){
   try{preencherCardapio();}catch(e){console.error('[Admin] preencherCardapio',e);}
   try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
   try{preencherFaleConosco();}catch(e){console.error('[Admin] preencherFaleConosco',e);}
+  try{renderEncomendas();}catch(e){console.error('[Admin] renderEncomendas',e);}
+  try{renderProdutosAdmin();}catch(e){console.error('[Admin] renderProdutosAdmin',e);}
+  try{renderParticipantes();}catch(e){console.error('[Admin] renderParticipantes',e);}
+  try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] renderClientes/renderDuplicidades',e);}
+  try{renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
+  try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRenderProgresso/fidRenderLoteAtual',e);}
+  exibirStatusToken();
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -5150,6 +5197,11 @@ function criarUploadImagem(containerId, opções) {
 // Padrão profissional: um único ponto de entrada
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
+  const tokenInput=document.getElementById('inp-gh-token');
+  if(tokenInput&&!tokenInput.value)tokenInput.value=getToken();
+  const expInput=document.getElementById('inp-gh-token-expiration');
+  if(expInput)expInput.value=getTokenExpiration();
+  exibirStatusToken();
 
   // 1. Spellcheck e autocorreção em todos os campos
   if (typeof aplicarSpellcheck === 'function') aplicarSpellcheck();
