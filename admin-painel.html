@@ -482,12 +482,7 @@ body { overflow-x: hidden; }
     </div>
     <div class="inp-wrap" style="margin-top:8px">
       <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"
-        oninput="
-          const v=this.value.trim();
-          const ok=!v||tokenFormatoValido(v);
-          const hint=document.getElementById('token-hint');
-          hint.style.display=v&&!ok?'block':'none';
-        "/>
+        oninput="validarCampoToken(this)"/>
     </div>
     <div id="token-hint" style="display:none;font-size:0.74rem;color:#ef9a9a;margin-bottom:4px;padding:4px 8px;background:#2a0a0a;border-radius:6px">
       ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
@@ -2450,6 +2445,14 @@ function tokenFormatoValido(tok){
 }
 
 // ── Validação proativa do token GitHub ────────────────────────────────────────
+// Feedback inline no campo de token da tela de login
+function validarCampoToken(input){
+  const v = input.value.trim();
+  const ok = !v || tokenFormatoValido(v);
+  const hint = document.getElementById('token-hint');
+  if (hint) hint.style.display = v && !ok ? 'block' : 'none';
+}
+
 async function validarToken(tok){
   const token=(tok||'').trim();
   if(!token) return false;
@@ -2505,11 +2508,11 @@ const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 // Dirty-check: rastreia se há alterações não salvas na aba atual
-let _adminDirty=false;
-function markDirty(){_adminDirty=true;}
-function clearDirty(){_adminDirty=false;}
+let adminDirty=false;
+function markDirty(){adminDirty=true;}
+function clearDirty(){adminDirty=false;}
 function checkDirty(){
-  if(!_adminDirty)return true;
+  if(!adminDirty)return true;
   return confirm('⚠️ Há alterações não salvas nesta aba. Se sair agora elas serão perdidas.\n\nContinuar mesmo assim?');
 }
 const POR_PAGINA=50;
@@ -2902,7 +2905,11 @@ function carregarMetricasQualidade(){
     if(todos.length===0){
       errosEl.innerHTML='<div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>';
     }else{
-      errosEl.innerHTML=todos.map(e=>`<div style="background:#161b22;border-left:4px solid #f44336;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#ef9a9a">${esc(e.tipo||'ERRO')}: ${esc(e.msg||e.url||'')} ${e.arquivo?'— '+esc(e.arquivo)+':'+(+e.linha||''):''}  <span style="color:#5c6bc0;font-size:10px">${e.ts?new Date(e.ts).toLocaleTimeString('pt-BR'):''}</span></div>`).join('');
+      errosEl.innerHTML=todos.map(e=>{
+        let tsStr='';
+        try{tsStr=e.ts?new Date(e.ts).toLocaleTimeString('pt-BR'):'';}catch(ex){}
+        return`<div style="background:#161b22;border-left:4px solid #f44336;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#ef9a9a">${esc(e.tipo||'ERRO')}: ${esc(e.msg||e.url||'')} ${e.arquivo?'— '+esc(e.arquivo)+':'+(+e.linha||''):''}  <span style="color:#5c6bc0;font-size:10px">${tsStr}</span></div>`;
+      }).join('');
     }
   }
 }
@@ -5238,9 +5245,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (adminApp) {
     adminApp.addEventListener('input', e => {
       // Ignora campos de busca/filtro (não são dados persistíveis)
-      const ignorar = ['busca','filtro','search','pesquisa'];
+      const ignorePatterns = ['busca','filtro','search','pesquisa'];
       const id = (e.target.id || '').toLowerCase();
-      if (!ignorar.some(p => id.includes(p))) markDirty();
+      if (!ignorePatterns.some(p => id.includes(p))) markDirty();
     });
   }
 
