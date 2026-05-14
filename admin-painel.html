@@ -2698,15 +2698,16 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  const[pr,cl,fi,en,prod,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
+  const[pr,cl,fi,en,prod,promos,cfg2]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes),ghGet(PATHS.config)]);
   if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
   if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
+  if(cfg2.content){STATE.config=cfg2.content;STATE.configSha=cfg2.sha;if(cfg2.content.senhaAdmin)STATE.senhaAdmin=cfg2.content.senhaAdmin;}
   // Avisar quando dados foram carregados via fallback (sem SHA = somente leitura, salvar vai falhar)
-  const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly);
+  const semToken=[pr,cl,fi,en,prod,promos,cfg2].some(r=>r.content&&r.readonly);
   const banner=document.getElementById('aviso-token-expirado');
   if(banner)banner.style.display=semToken?'flex':'none';
   ocultarLoading();
@@ -2729,6 +2730,7 @@ async function carregarTudo(){
   try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] renderClientes/renderDuplicidades',e);}
   try{renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
   try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRenderProgresso/fidRenderLoteAtual',e);}
+  try{if(typeof renderPromocoesTable==='function')renderPromocoesTable();}catch(e){console.error('[Admin] renderPromocoesTable',e);}
   exibirStatusToken();
   fidApplyReadOnlyGuard();
 }
@@ -4658,6 +4660,37 @@ function adicionarSaborSorvete() {
   STATE.produtos = prod;
   inp.value = '';
   renderizarSaboresAdmin();
+  toast(`Sabor "${nome}" adicionado! Salve para publicar no site.`, 'sucesso');
+}
+
+function adicionarSaborPicolé(cat) {
+  const inp = document.getElementById('novo_sab_' + cat);
+  if (!inp) return;
+  const nome = inp.value.trim();
+  if (!nome) { toast('Digite o nome do sabor.', 'erro'); return; }
+  if (nome.length > 30) { toast('Máx. 30 caracteres.', 'erro'); return; }
+  if (!/^[\p{L}\s'-]+$/u.test(nome)) { toast('Apenas letras, espaços e acentos.', 'erro'); return; }
+  const prod = STATE.produtos;
+  if (!prod) { toast('Dados não carregados. Aguarde.', 'erro'); return; }
+  const picoles = prod.picoles || prod.picolés;
+  if (!picoles || !picoles[cat]) { toast('Categoria não encontrada.', 'erro'); return; }
+  if (!Array.isArray(picoles[cat].sabores)) picoles[cat].sabores = [];
+  if (picoles[cat].sabores.some(s => (s.nome||'').toLowerCase() === nome.toLowerCase())) {
+    toast('Este sabor já existe nesta categoria!', 'erro'); return;
+  }
+  picoles[cat].sabores.push({ nome, esgotado: false });
+  // Adicionar item de toggle na grade estática da sec-sabores
+  const btn = inp.closest('.campo-edit');
+  const grid = btn && btn.previousElementSibling;
+  if (grid && grid.classList.contains('sabores-grid')) {
+    const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const sid = 'pic_' + norm(cat) + '_' + norm(nome);
+    const div = document.createElement('div');
+    div.className = 'sabor-item';
+    div.innerHTML = `<span class="sabor-nome">${nome}</span><label class="toggle"><input type="checkbox" id="${sid}" checked onchange="toggleSaborPicolé('${cat.replace(/'/g,"\\'")}','${nome.replace(/'/g,"\\'")}',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status" id="status_${sid}">Disponível</span>`;
+    grid.appendChild(div);
+  }
+  inp.value = '';
   toast(`Sabor "${nome}" adicionado! Salve para publicar no site.`, 'sucesso');
 }
 
