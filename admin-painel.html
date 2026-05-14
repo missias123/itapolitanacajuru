@@ -483,7 +483,7 @@ body { overflow-x: hidden; }
     <div class="inp-wrap" style="margin-top:8px">
       <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"
         onblur="validarCampoToken(this)"
-        onpaste="setTimeout(() => validarCampoToken(this), 100)"/>
+        onpaste="setTimeout(() => validarCampoToken(this), PASTE_VALIDATION_DELAY_MS)"/>
     </div>
     <div id="token-hint" style="display:none;font-size:0.74rem;color:#ef9a9a;margin-bottom:4px;padding:4px 8px;background:#2a0a0a;border-radius:6px">
       ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
@@ -2541,6 +2541,9 @@ function getAuthHeaders(extraHeaders={}, tokenOverride=''){
 const MIN_CLASSIC_TOKEN_LENGTH=40;
 // Fine-grained PATs (github_pat_) are significantly longer; keep a safe minimum.
 const MIN_FINE_GRAINED_TOKEN_LENGTH=80;
+const PASTE_VALIDATION_DELAY_MS=100;
+const IDLE_CALLBACK_TIMEOUT_MS=3000;
+const NON_ESSENTIAL_FALLBACK_DELAY_MS=2000;
 // Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
 function tokenFormatoValido(tok){
   const t=(tok||'').trim();
@@ -2556,13 +2559,17 @@ function tokenFormatoValido(tok){
   return new RegExp(`^[a-zA-Z0-9]{${MIN_CLASSIC_TOKEN_LENGTH}}$`).test(t);
 }
 
-// ── Validação proativa do token GitHub ────────────────────────────────────────
-// Feedback inline no campo de token da tela de login
-function validarCampoToken(input){
-  input.value = input.value
+function sanitizarTokenValor(v){
+  return (v||'')
     .trim()
     .replace(/[\u200B\u200C\u200D\uFEFF\u00A0]/g, '')
     .replace(/[\r\n\t]/g, '');
+}
+
+// ── Validação proativa do token GitHub ────────────────────────────────────────
+// Feedback inline no campo de token da tela de login
+function validarCampoToken(input){
+  input.value = sanitizarTokenValor(input.value);
   const v = input.value;
   const ok = !v || tokenFormatoValido(v);
   const hint = document.getElementById('token-hint');
@@ -2762,10 +2769,7 @@ async function sha256(str) {
 }
 async function entrar(){
   const campoToken=document.getElementById('inp-gh-token');
-  campoToken.value=campoToken.value
-    .trim()
-    .replace(/[\u200B\u200C\u200D\uFEFF\u00A0]/g, '')
-    .replace(/[\r\n\t]/g, '');
+  campoToken.value=sanitizarTokenValor(campoToken.value);
   const tok=campoToken.value;
   const senha=document.getElementById('inp-senha').value.trim();
   if(tok) localStorage.setItem('itap_gh_token',tok);
@@ -5374,9 +5378,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof ativarPortuguesPerfeito === 'function') ativarPortuguesPerfeito();
     };
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(executar, { timeout: 3000 });
+      requestIdleCallback(executar, { timeout: IDLE_CALLBACK_TIMEOUT_MS });
     } else {
-      setTimeout(executar, 2000);
+      setTimeout(executar, NON_ESSENTIAL_FALLBACK_DELAY_MS);
     }
   };
   agendarNaoEssenciais();
