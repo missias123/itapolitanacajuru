@@ -4591,6 +4591,35 @@ function toggleSaborPicolé(cat, sabor, ativo) {
   if (st) { st.textContent = ativo ? 'Disponível' : 'Esgotado'; st.className = 'sabor-status' + (ativo ? '' : ' esgotado'); }
 }
 
+function adicionarSaborPicolé(cat) {
+  const norm = s => s.replace(/\s+/g,'_').replace(/[()]/g,'').replace(/\//g,'_').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const inp = document.getElementById('novo_sab_' + cat);
+  if (!inp) { toast('Campo de entrada não encontrado.', 'erro'); return; }
+  const nome = inp.value.trim();
+  if (!nome) { toast('Digite o nome do sabor.', 'erro'); return; }
+  if (nome.length > 30) { toast('Máx. 30 caracteres.', 'erro'); return; }
+  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(nome)) { toast('Apenas letras, espaços e acentos.', 'erro'); return; }
+  const prod = STATE.produtos;
+  if (!prod) { toast('Dados não carregados. Aguarde.', 'erro'); return; }
+  const picoles = prod.picoles || prod.picolés || {};
+  const catData = picoles[cat];
+  if (!catData) { toast('Categoria não encontrada.', 'erro'); return; }
+  if (!Array.isArray(catData.sabores)) catData.sabores = [];
+  const nomes = catData.sabores.map(s => typeof s === 'object' ? s.nome : s);
+  if (nomes.some(s => s.toLowerCase() === nome.toLowerCase())) { toast('Este sabor já existe nesta categoria!', 'erro'); return; }
+  catData.sabores.push(nome);
+  const grid = inp.closest('.campo-edit') && inp.closest('.campo-edit').previousElementSibling;
+  if (grid && grid.classList.contains('sabores-grid')) {
+    const sid = 'pic_' + norm(cat) + '_' + norm(nome);
+    const div = document.createElement('div');
+    div.className = 'sabor-item';
+    div.innerHTML = '<span class="sabor-nome">' + nome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" checked onchange="toggleSaborPicolé(\'' + cat + '\',\'' + nome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status" id="status_' + sid + '">Disponível</span>';
+    grid.appendChild(div);
+  }
+  inp.value = '';
+  toast('Sabor "' + nome + '" adicionado! Salve para publicar no site.', 'sucesso');
+}
+
 function adicionarSaborSorvete() {
   const inp = document.getElementById('novo_sabor_sorvete');
   const nome = inp.value.trim();

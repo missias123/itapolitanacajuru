@@ -268,6 +268,44 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 
 ---
 
+## 🔑 Acesso ao Painel Administrativo
+
+**URL:** `https://itapolitanacajuru.com.br/admin-painel.html`
+
+### Fluxo de login real
+
+O admin usa **dois fatores independentes**: senha do painel e token GitHub para escrita.
+
+```
+1. Abrir admin-painel.html no navegador
+2. Informar a senha do administrador
+   └── A senha é verificada localmente via hash SHA-256 (definida em dados/config.json)
+3. (Opcional) Informar o GitHub Personal Access Token (PAT)
+   └── Formatos aceitos: github_pat_… (≥80 chars), ghp_… (≥40), gho_/ghu_/ghs_… (≥40)
+   └── Sem token válido → acesso em modo SOMENTE LEITURA
+4. Com token válido → acesso completo (leitura + escrita no GitHub API)
+```
+
+### Modos de operação
+
+| Modo | Condição | O que está disponível |
+|------|----------|-----------------------|
+| **Leitura** | Senha correta + sem token ou token inválido | Consulta de dados, visualização de clientes/fidelidade/promoções |
+| **Escrita** | Senha correta + token GitHub válido | Todas as operações (editar, salvar, publicar) |
+
+### Como criar / renovar o token GitHub (PAT)
+
+1. Acesse [github.com/settings/tokens](https://github.com/settings/tokens)
+2. Clique em **"Generate new token (classic)"**
+3. Marque o escopo **`repo`** (leitura e escrita no repositório)
+4. Copie o token gerado (começa com `github_pat_` ou `ghp_`)
+5. Cole no campo "Token GitHub" na tela de login do admin
+6. O token é salvo no `localStorage` do navegador para sessões futuras
+
+> **Atenção:** o token é sensível. Nunca compartilhe ou inclua em código-fonte.
+
+---
+
 ## 🚫 Regras de Ouro — O que NÃO alterar
 
 | Arquivo | Motivo |
