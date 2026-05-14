@@ -2412,22 +2412,22 @@ function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   return headers;
 }
 // GitHub classic PAT tokens are usually 40 chars (ghp_/gho_/ghu_/ghs_ + payload).
-const MIN_CLASSIC_TOKEN_LEN=40;
+const MIN_CLASSIC_TOKEN_LENGTH=40;
 // Fine-grained PATs (github_pat_) are significantly longer; keep a safe minimum.
-const MIN_FINE_GRAINED_TOKEN_LEN=80;
+const MIN_FINE_GRAINED_TOKEN_LENGTH=80;
 // Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
 function tokenFormatoValido(tok){
   const t=(tok||'').trim();
   const regras=[
-    {prefix:'github_pat_',minLen:MIN_FINE_GRAINED_TOKEN_LEN},
-    {prefix:'ghp_',minLen:MIN_CLASSIC_TOKEN_LEN},
-    {prefix:'gho_',minLen:MIN_CLASSIC_TOKEN_LEN},
-    {prefix:'ghu_',minLen:MIN_CLASSIC_TOKEN_LEN},
-    {prefix:'ghs_',minLen:MIN_CLASSIC_TOKEN_LEN}
+    {prefix:'github_pat_',minLen:MIN_FINE_GRAINED_TOKEN_LENGTH},
+    {prefix:'ghp_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
+    {prefix:'gho_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
+    {prefix:'ghu_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
+    {prefix:'ghs_',minLen:MIN_CLASSIC_TOKEN_LENGTH}
   ];
   if(regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen))return true;
   // Legacy fallback: older classic token shapes can appear as 40-char alphanumeric strings.
-  return /^[a-zA-Z0-9]{40}$/.test(t);
+  return new RegExp(`^[a-zA-Z0-9]{${MIN_CLASSIC_TOKEN_LENGTH}}$`).test(t);
 }
 
 // ── Validação proativa do token GitHub ────────────────────────────────────────
