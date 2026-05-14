@@ -481,7 +481,16 @@ body { overflow-x: hidden; }
       <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">&#x1F441;&#xFE0F;</button>
     </div>
     <div class="inp-wrap" style="margin-top:8px">
-      <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"/>
+      <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"
+        oninput="
+          const v=this.value.trim();
+          const ok=!v||tokenFormatoValido(v);
+          const hint=document.getElementById('token-hint');
+          hint.style.display=v&&!ok?'block':'none';
+        "/>
+    </div>
+    <div id="token-hint" style="display:none;font-size:0.74rem;color:#ef9a9a;margin-bottom:4px;padding:4px 8px;background:#2a0a0a;border-radius:6px">
+      ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
     </div>
     <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O token é salvo apenas neste navegador, nunca no servidor.</div>
     <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
@@ -2495,6 +2504,14 @@ const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
+// Dirty-check: rastreia se há alterações não salvas na aba atual
+let _adminDirty=false;
+function markDirty(){_adminDirty=true;}
+function clearDirty(){_adminDirty=false;}
+function checkDirty(){
+  if(!_adminDirty)return true;
+  return confirm('⚠️ Há alterações não salvas nesta aba. Se sair agora elas serão perdidas.\n\nContinuar mesmo assim?');
+}
 const POR_PAGINA=50;
 function fidCodigosKey(){
   if(!STATE.fidelidade)return'códigos';
@@ -2603,6 +2620,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   ocultarLoading();
   if(r.ok){
     STATE[shaKey]=r.sha;
+    clearDirty(); // alterações salvas com sucesso
     toast('✅ Salvo com sucesso no GitHub!', 'sucesso');
     console.log('[Admin] Salvo com sucesso. Novo SHA:', r.sha);
     return true;
@@ -2695,6 +2713,7 @@ async function carregarTudo(){
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
+  if(!checkDirty())return; // avisa se há alterações não salvas
   // Mapa: aba → lista de seções que compõem cada página do site
   const sectionMap={
     'dashboard':      ['dashboard'],
@@ -5213,6 +5232,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Spellcheck e autocorreção em todos os campos
   if (typeof aplicarSpellcheck === 'function') aplicarSpellcheck();
   if (typeof aplicarAutocorrecao === 'function') aplicarAutocorrecao();
+
+  // 2. Dirty-check: qualquer digitação no admin-app marca como alterado
+  const adminApp = document.getElementById('admin-app');
+  if (adminApp) {
+    adminApp.addEventListener('input', e => {
+      // Ignora campos de busca/filtro (não são dados persistíveis)
+      const ignorar = ['busca','filtro','search','pesquisa'];
+      const id = (e.target.id || '').toLowerCase();
+      if (!ignorar.some(p => id.includes(p))) markDirty();
+    });
+  }
 
   // 2. Aguardar login para inicializar contadores e validações
   const _adminObserver = new MutationObserver(() => {
