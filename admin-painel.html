@@ -31,8 +31,8 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .admin-header .logo-admin-header{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
 .btn-sair:hover{background:rgba(255,255,255,.35)}
-.admin-nav{background:#fff;border-bottom:2px solid #f0f2f5;padding:0 16px;display:flex;gap:4px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
-.nav-btn{padding:12px 16px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s;white-space:nowrap}
+.admin-nav{background:#fff;border-bottom:2px solid #f0f2f5;padding:4px 16px;display:flex;flex-wrap:wrap;gap:4px}
+.nav-btn{padding:10px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s}
 .nav-btn:hover{color:#e65100}
 .nav-btn.ativo{color:#e65100;border-bottom-color:#e65100}
 .btn-acao-rapida{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s,opacity .15s}
@@ -159,16 +159,13 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 /* Mobile admin */
 @media (max-width: 480px) {
   .admin-nav { 
-    overflow-x: auto !important; 
-    white-space: nowrap !important; 
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
+    flex-wrap: wrap !important;
+    padding: 4px 8px !important;
+    gap: 2px !important;
   }
-  .admin-nav::-webkit-scrollbar { display: none; }
   .nav-btn { 
     font-size: 0.75rem !important; 
     padding: 6px 10px !important;
-    min-width: auto !important;
   }
   .admin-header { 
     flex-direction: column !important; 
@@ -210,7 +207,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 
 /* Tablet admin */
 @media (min-width: 481px) and (max-width: 1024px) {
-  .admin-nav { overflow-x: auto; white-space: nowrap; }
+  .admin-nav { flex-wrap: wrap; gap: 3px; }
   .nav-btn { font-size: 0.82rem; padding: 7px 12px; }
   .admin-content, .sec-admin { padding: 16px 20px; }
   .dashboard-cards { grid-template-columns: repeat(3, 1fr); }
