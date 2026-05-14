@@ -206,7 +206,21 @@ const REGRAS = [
     categoria: 'Performance',
     critico: false,
     verificar(html) {
-      const imgs = extrairTags(html, /<img\s[^>]*src=["'][^"']+["']/i);
+      // Strip <script> blocks to avoid false positives from JS template literals
+      const stripBlock = (src, openTag, closeTag) => {
+        const parts = [];
+        let pos = 0;
+        while (pos < src.length) {
+          const start = src.toLowerCase().indexOf(openTag, pos);
+          if (start === -1) { parts.push(src.slice(pos)); break; }
+          parts.push(src.slice(pos, start));
+          const end = src.toLowerCase().indexOf(closeTag, start + openTag.length);
+          pos = end === -1 ? src.length : end + closeTag.length;
+        }
+        return parts.join('');
+      };
+      const semScript = stripBlock(html, '<script', '</script>');
+      const imgs = extrairTags(semScript, /<img\s[^>]*src=["'][^"']+["']/i);
       if (imgs.length === 0) return { ok: true, msg: 'Nenhuma imagem <img src> encontrada' };
       const semWebp = imgs.filter(m => !/\.webp["']/i.test(m[0])).length;
       const ok = semWebp === 0;

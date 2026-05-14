@@ -1,0 +1,53 @@
+name: Backup Automático dos Dados
+
+on:
+  schedule:
+    # Todo dia às 03:00 UTC (00:00 Brasília no horário padrão, UTC-3)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: Salvar backup dos dados/*.json
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Criar ou atualizar branch de backup
+        run: |
+          BACKUP_BRANCH="backups/dados"
+          DATE=$(date -u +"%Y-%m-%d")
+
+          # Verificar se branch de backup existe
+          if git ls-remote --heads origin "$BACKUP_BRANCH" | grep -q "$BACKUP_BRANCH"; then
+            git fetch origin "$BACKUP_BRANCH"
+            git checkout "$BACKUP_BRANCH"
+            git merge origin/main --no-edit --strategy-option=ours || true
+          else
+            git checkout -b "$BACKUP_BRANCH"
+          fi
+
+          # Criar pasta de backup com data de hoje
+          mkdir -p "backups/$DATE"
+          cp dados/*.json "backups/$DATE/" 2>/dev/null || true
+
+          # Manter apenas os últimos 30 backups (evitar crescimento infinito)
+          ls -1d backups/20*/ 2>/dev/null | sort | head -n -30 | xargs rm -rf || true
+
+          git add backups/
+          if git diff --staged --quiet; then
+            echo "Nenhuma alteração nos dados desde o último backup."
+          else
+            git commit -m "backup: dados de $DATE"
+            git push origin "$BACKUP_BRANCH"
+            echo "✅ Backup de $DATE salvo com sucesso em branch $BACKUP_BRANCH"
+          fi

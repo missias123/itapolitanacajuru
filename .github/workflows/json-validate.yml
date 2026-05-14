@@ -1,0 +1,41 @@
+name: Validar JSONs de Dados
+
+on:
+  push:
+    paths:
+      - 'dados/**/*.json'
+      - '*.json'
+  pull_request:
+    paths:
+      - 'dados/**/*.json'
+      - '*.json'
+
+jobs:
+  validate-json:
+    name: Verificar integridade dos JSONs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validar todos os JSONs em dados/
+        run: |
+          FAILED=0
+          for f in dados/*.json; do
+            if python3 -c "import json,sys; json.load(open('$f'))" 2>/dev/null; then
+              echo "✅ $f — válido"
+            else
+              echo "❌ $f — INVÁLIDO ou malformado"
+              python3 -c "import json,sys; json.load(open('$f'))" || true
+              FAILED=1
+            fi
+          done
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "🚨 Um ou mais arquivos JSON estão inválidos."
+            echo "Corrija-os antes de fazer merge para proteger o painel administrativo."
+            exit 1
+          fi
+          echo ""
+          echo "✅ Todos os JSONs de dados/ são válidos."
