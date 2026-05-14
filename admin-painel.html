@@ -2194,111 +2194,6 @@ Talento</textarea>
     </div>
 
     <!-- SEÇÃO ESTRELA DO DIA -->
-    <div class="seção" id="sec-estrela">
-      <div class="card">
-        <div class="card-header">
-          <h2>🌟 Configuração da Estrela do Dia</h2>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-vermelho" data-fid-write onclick="panicButton()" title="Desativa a estrela imediatamente em caso de erro">🚨 BOTÃO DE PÂNICO</button>
-            <button class="btn btn-verde" id="btn-atualizar-estrelas" onclick="carregarEstrelas()">🔄 Atualizar Agora</button>
-          </div>
-        </div>
-        <div class="card-body">
-          <!-- RELATÓRIO MENSAL -->
-          <div id="box-relatorio-estrela" style="background:#e3f2fd;border:2px solid #90caf9;border-radius:12px;padding:16px;margin-bottom:20px">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-              <h3 style="font-size:.9rem;color:#0d47a1;margin:0">📄 Relatório Mensal — Quem Ganhou a Estrela</h3>
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn btn-verde" onclick="gerarRelatorioEstrela()">📊 Gerar Relatório do Mês</button>
-                <button class="btn btn-vermelho" data-fid-write onclick="limparCicloEstrela()">🧹 Limpar Ciclo (Dia 01)</button>
-              </div>
-            </div>
-            <div id="relatorio-estrela-conteudo" style="font-size:.85rem;color:#333">
-              <p style="color:#999;text-align:center;padding:10px">Clique em “Gerar Relatório” para ver quem ganhou este mês.</p>
-            </div>
-          </div>
-
-          <!-- HISTÓRICO DE CAPTURAS -->  
-          <div style="background:#e8f5e9;border:2px solid #a5d6a7;border-radius:12px;padding:16px;margin-bottom:20px">
-            <h3 style="font-size:.9rem;color:#1b5e20;margin-bottom:10px">🏆 Histórico de Estrelas Capturadas</h3>
-            <div class="tabela-wrap">
-              <table class="tabela" id="tabela-capturas">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Horário Aparição</th>
-                    <th>Capturado Por</th>
-                    <th>Celular</th>
-                    <th>Capturado Em</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-capturas">
-                  <tr><td colspan="5" style="text-align:center;padding:20px;color:#888">Nenhuma captura registrada ainda.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div style="background:#fff8f0;border:2px solid #ffcc80;border-radius:12px;padding:16px;margin-bottom:20px">
-            <h3 style="font-size:.9rem;color:#bf360c;margin-bottom:10px">📅 Cronograma de Aparição (Dias e Horas Definidos)</h3>
-            <div class="tabela-wrap">
-              <table class="tabela" id="tabela-estrelas">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Horário</th>
-                    <th>Status</th>
-                    <th>Capturado Por</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-estrelas-agendadas">
-                  <!-- Preenchido via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="seção-título">Agendar Nova Estrela</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end">
-            <div class="campo-edit">
-              <label>Data</label>
-              <input type="date" id="estrela-data">
-            </div>
-            <div class="campo-edit">
-              <label>Horário (HH:MM)</label>
-              <input type="time" id="estrela-hora">
-            </div>
-            <div class="campo-edit">
-              <button class="btn btn-laranja" data-fid-write style="width:100%;margin-bottom:16px" onclick="agendarEstrela()">➕ Agendar Estrela</button>
-            </div>
-          </div>
-
-          <!-- ADICIONAR ESTRELA MANUALMENTE -->
-          <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:12px;padding:16px;margin-top:20px">
-            <h3 style="font-size:.9rem;color:#bf360c;margin-bottom:10px">➕ Adicionar Estrela Manualmente para Cliente</h3>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
-              <div style="flex:2;min-width:200px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Nome do Cliente</label>
-                <input type="text" id="add-estrela-nome" placeholder="Nome completo" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
-              </div>
-              <div style="flex:1;min-width:150px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">WhatsApp</label>
-                <input type="tel" id="add-estrela-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
-              </div>
-              <div style="flex:1;min-width:120px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Qtd Estrelas</label>
-                <input type="number" id="add-estrela-qtd" value="1" min="1" max="5" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
-              </div>
-              <button class="btn btn-laranja" data-fid-write onclick="adicionarEstrelaManual()" style="padding:11px 20px">➕ Adicionar Estrela</button>
-            </div>
-            <p style="font-size:.75rem;color:#888;margin-top:8px">Isso adicionará estrelas diretamente ao ranking do ciclo atual para este cliente.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="seção" id="sec-config">
       <div class="card">
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
@@ -2612,8 +2507,8 @@ const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
-const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json',promocoes:'dados/promocoes.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
+const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 // Dirty-check: rastreia se há alterações não salvas na aba atual
 let adminDirty=false;
 function markDirty(){adminDirty=true;}
