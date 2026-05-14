@@ -1,0 +1,235 @@
+name: 🟢 Uptime — Monitoramento de Disponibilidade
+
+on:
+  schedule:
+    # Verificar a cada hora
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: 🌐 Verificar disponibilidade do site
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    outputs:
+      site_up: ${{ steps.check_site.outputs.site_up }}
+      status_index: ${{ steps.check_site.outputs.status_index }}
+      status_fidelidade: ${{ steps.check_site.outputs.status_fidelidade }}
+      status_encomendas: ${{ steps.check_site.outputs.status_encomendas }}
+
+    steps:
+      - name: 🌐 Verificar páginas críticas
+        id: check_site
+        run: |
+          BASE="https://itapolitanacajuru.com.br"
+          PAGES=(
+            "$BASE/"
+            "$BASE/fidelidade.html"
+            "$BASE/encomendas.html"
+            "$BASE/dados/config.json"
+          )
+
+          ALL_OK=true
+
+          check_url() {
+            local URL="$1"
+            local CODE
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 --retry 2 --retry-delay 3 "$URL")
+            echo "$CODE"
+          }
+
+          echo "## 🟢 Resultados do Uptime Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Página | Status | Código |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          STATUS_INDEX=$(check_url "$BASE/")
+          STATUS_FID=$(check_url "$BASE/fidelidade.html")
+          STATUS_ENC=$(check_url "$BASE/encomendas.html")
+          STATUS_CFG=$(check_url "$BASE/dados/config.json")
+
+          for ROW in \
+            "Home ($BASE/),$STATUS_INDEX" \
+            "Fidelidade,$STATUS_FID" \
+            "Encomendas,$STATUS_ENC" \
+            "config.json,$STATUS_CFG"; do
+            PAGE=$(echo $ROW | cut -d',' -f1)
+            CODE=$(echo $ROW | cut -d',' -f2)
+            if [ "$CODE" = "200" ]; then
+              echo "| $PAGE | ✅ OK | $CODE |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $PAGE | ❌ FALHA | $CODE |" >> $GITHUB_STEP_SUMMARY
+              ALL_OK=false
+            fi
+          done
+
+          echo "status_index=$STATUS_INDEX"   >> $GITHUB_OUTPUT
+          echo "status_fidelidade=$STATUS_FID" >> $GITHUB_OUTPUT
+          echo "status_encomendas=$STATUS_ENC" >> $GITHUB_OUTPUT
+
+          if [ "$ALL_OK" = "true" ]; then
+            echo "site_up=true" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **Todas as páginas estão online.**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "site_up=false" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🚨 **Uma ou mais páginas estão fora do ar!**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ────────────────────────────────────────────────────────────────
+  # Criar issue quando o site cair
+  # ────────────────────────────────────────────────────────────────
+  open-issue:
+    name: 🚨 Criar Issue de Downtime
+    needs: check
+    runs-on: ubuntu-latest
+    if: needs.check.outputs.site_up == 'false'
+
+    steps:
+      - name: 🔍 Verificar se issue de downtime já está aberta
+        id: existing
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'alert,critical',
+              per_page: 20,
+            });
+            const downtime = issues.data.find(i =>
+              i.title.includes('Site fora do ar') || i.title.includes('Downtime')
+            );
+            if (downtime) {
+              console.log(`Issue de downtime já existe: #${downtime.number}`);
+              core.setOutput('exists', 'true');
+              core.setOutput('issue_number', String(downtime.number));
+            } else {
+              core.setOutput('exists', 'false');
+            }
+
+      - name: 🚨 Criar Issue de Downtime
+        if: steps.existing.outputs.exists != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const now = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+            const statusIndex     = '${{ needs.check.outputs.status_index }}';
+            const statusFidelidade = '${{ needs.check.outputs.status_fidelidade }}';
+            const statusEncomendas = '${{ needs.check.outputs.status_encomendas }}';
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            const emojiFor = (code) => code === '200' ? '✅' : '❌';
+
+            const body = [
+              '## 🚨 Site Fora do Ar — Alerta Automático',
+              '',
+              `**Detectado em:** ${now} (horário de Brasília)`,
+              `**Workflow:** [Ver logs](${runUrl})`,
+              '',
+              '---',
+              '',
+              '### 📊 Status das Páginas',
+              '',
+              '| Página | HTTP | Status |',
+              '|--------|------|--------|',
+              `| Home (/) | ${statusIndex} | ${emojiFor(statusIndex)} |`,
+              `| fidelidade.html | ${statusFidelidade} | ${emojiFor(statusFidelidade)} |`,
+              `| encomendas.html | ${statusEncomendas} | ${emojiFor(statusEncomendas)} |`,
+              '',
+              '---',
+              '',
+              '### 🛠️ Causas Prováveis',
+              '',
+              '1. **GitHub Pages fora do ar** — verifique em https://www.githubstatus.com/',
+              '2. **Deploy falhou** — verifique os workflows recentes em Actions',
+              '3. **Domínio custom desconfigurado** — verifique DNS do domínio `itapolitanacajuru.com.br`',
+              '',
+              '### ✅ Como Resolver',
+              '',
+              `1. Acesse https://github.com/${{ github.repository }}/actions e veja o último deploy`,
+              '2. Se o problema for GitHub Pages, aguarde a recuperação em https://www.githubstatus.com/',
+              '3. Se o problema persistir, force um redeploy via **Actions → Run workflow**',
+              '',
+              '---',
+              '',
+              '_Issue criada automaticamente pelo workflow `check-uptime.yml`_',
+              '_Esta issue será fechada automaticamente quando o site voltar ao ar._',
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Site fora do ar — Downtime detectado (${new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })})`,
+              body,
+              labels: ['alert', 'critical'],
+            });
+            console.log('✅ Issue de downtime criada.');
+
+      - name: 💬 Adicionar comentário em issue existente
+        if: steps.existing.outputs.exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const now = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number('${{ steps.existing.outputs.issue_number }}'),
+              body: `🔴 **${now}** — Site ainda fora do ar. [Ver log](${runUrl})`,
+            });
+
+  # ────────────────────────────────────────────────────────────────
+  # Fechar issue quando o site voltar ao ar
+  # ────────────────────────────────────────────────────────────────
+  close-issue:
+    name: ✅ Fechar Issue se Site Voltou ao Ar
+    needs: check
+    runs-on: ubuntu-latest
+    if: needs.check.outputs.site_up == 'true'
+
+    steps:
+      - name: 🔍 Procurar e fechar issues de downtime abertas
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'alert,critical',
+              per_page: 20,
+            });
+            const downtime = issues.data.filter(i =>
+              i.title.includes('Site fora do ar') || i.title.includes('Downtime')
+            );
+            if (!downtime.length) {
+              console.log('Nenhuma issue de downtime aberta. Tudo OK!');
+              return;
+            }
+            const now = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            for (const issue of downtime) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ **${now}** — Site voltou ao ar! Fechando automaticamente. [Ver log](${runUrl})`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+              console.log(`Issue #${issue.number} fechada.`);
+            }

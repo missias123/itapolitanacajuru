@@ -6,6 +6,7 @@ on:
       - "🔍 Quality Check — Lint + Auditoria de Código"
       - "🎭 E2E Tests — Playwright"
       - "🔦 Lighthouse + Axe Auditoria"
+      - "🚀 CI — Validação e Auto-Repair"
     types:
       - completed
 
@@ -42,6 +43,10 @@ jobs:
             echo "tipo=Auditoria (Lighthouse / Axe)" >> $GITHUB_OUTPUT
             echo "label=bug,performance,acessibilidade" >> $GITHUB_OUTPUT
             echo "emoji=🔦" >> $GITHUB_OUTPUT
+          elif echo "$WORKFLOW_NAME" | grep -qi "auto-repair\|validação"; then
+            echo "tipo=CI Auto-Repair" >> $GITHUB_OUTPUT
+            echo "label=bug,ci" >> $GITHUB_OUTPUT
+            echo "emoji=🚀" >> $GITHUB_OUTPUT
           else
             echo "tipo=CI Genérico" >> $GITHUB_OUTPUT
             echo "label=bug" >> $GITHUB_OUTPUT
