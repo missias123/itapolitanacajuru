@@ -2411,11 +2411,17 @@ function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   if(tok)headers.Authorization='token '+tok;
   return headers;
 }
-// Aceita formatos mais comuns de token GitHub (PAT clássico e fine-grained, além de tokens de app/oauth).
+// Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
 function tokenFormatoValido(tok){
   const t=(tok||'').trim();
-  if(t.length<20)return false;
-  return /^(ghp_|github_pat_|gho_|ghu_|ghs_)/.test(t);
+  const regras=[
+    {prefix:'github_pat_',minLen:80},
+    {prefix:'ghp_',minLen:30},
+    {prefix:'gho_',minLen:30},
+    {prefix:'ghu_',minLen:30},
+    {prefix:'ghs_',minLen:30}
+  ];
+  return regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen);
 }
 
 // ── Validação proativa do token GitHub ────────────────────────────────────────
@@ -2423,7 +2429,7 @@ async function validarToken(tok){
   const token=(tok||'').trim();
   if(!token) return false;
   try{
-    // Valida não só autenticação, mas também acesso ao repositório usado pelo painel.
+    // Validates both authentication and repository access required by the admin panel.
     const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
       headers:getAuthHeaders({'X-GitHub-Api-Version':'2022-11-28','Accept':'application/vnd.github+json'},token),
       cache:'no-store'
