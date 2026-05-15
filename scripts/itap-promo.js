@@ -697,34 +697,19 @@
       });
   })();
 
-  // Sincronismo com config.json global (Admin -> config.json -> promocao.html)
-  (function carregarConfigJson() {
+  // Atualizar links WhatsApp com número do config.json
+  (function atualizarWhatsApp() {
     fetch('dados/config.json?v=' + Date.now())
       .then(function(r) { return r.json(); })
       .catch(function() { return null; })
       .then(function(cfg) {
-        if (!cfg) return;
-        // promo-h1 (ID: promo-h1 -> config: promoH1)
-        var h1 = document.getElementById('promo-h1');
-        if (h1 && cfg.promoH1) h1.textContent = cfg.promoH1;
-        // promo-badge-el (ID: promo-badge-el -> config: promoBadge)
-        var badge = document.getElementById('promo-badge-el');
-        if (badge && cfg.promoBadge) badge.textContent = cfg.promoBadge;
-        // promo-titulo-el (ID: promo-titulo-el -> config: promoTituloEl)
-        var titulo = document.getElementById('promo-titulo-el');
-        if (titulo && cfg.promoTituloEl) titulo.textContent = cfg.promoTituloEl;
-        // promo-desc-el (ID: promo-desc-el -> config: promoDescEl)
-        var desc = document.getElementById('promo-desc-el');
-        if (desc && cfg.promoDescEl) desc.textContent = cfg.promoDescEl;
-        // WhatsApp
-        if (cfg.whatsapp) {
-          document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
-            try {
-              var url = new URL(a.href);
-              a.href = 'https://wa.me/' + cfg.whatsapp + (url.search || '');
-            } catch(e) {}
-          });
-        }
+        if (!cfg || !cfg.whatsapp) return;
+        document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
+          try {
+            var url = new URL(a.href);
+            a.href = 'https://wa.me/' + cfg.whatsapp + (url.search || '');
+          } catch(e) {}
+        });
       });
   })();
 
