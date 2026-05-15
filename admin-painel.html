@@ -32,15 +32,16 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
 .btn-sair:hover{background:rgba(255,255,255,.35)}
 .admin-nav,
-[class*="admin-tab"],
-[class*="nav-abas"],
-[id*="nav-admin"]{
-background:#fff;border-bottom:2px solid #f0f2f5;padding:4px 16px;display:flex;flex-wrap:wrap;gap:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
-@media (max-width:768px){
+.admin-tab-container,
+.nav-abas-wrapper{
+background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;overflow-x:visible;gap:4px;padding:8px}
+@media (max-width:480px){
   .admin-nav,
-  [class*="admin-tab"],
-  [class*="nav-abas"],
-  [id*="nav-admin"]{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .admin-tab-container,
+  .nav-abas-wrapper{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .admin-nav::-webkit-scrollbar,
+  .admin-tab-container::-webkit-scrollbar,
+  .nav-abas-wrapper::-webkit-scrollbar{display:none}
 }
 .nav-btn{padding:10px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s}
 .nav-btn:hover{color:#e65100}
