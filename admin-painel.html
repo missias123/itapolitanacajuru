@@ -2704,7 +2704,7 @@ async function carregarTudo(){
   mostrarLoading('Carregando dados...');
   const[pr,cl,fi,en,prod,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
   if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
-  if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
+  if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes.json — verifique token e rede');}
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
@@ -3412,7 +3412,7 @@ async function alterarStatusEncomenda(idx,novoStatus){
   const ok = await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
   renderEncomendas();
 }
-function getClientes(){return Object.values(STATE.clientes?.clientes||STATE.fidelidade?.clientes||{});}
+function getClientes(){if(!STATE.clientes?.clientes){console.warn('[FIDELIDADE] STATE.clientes não carregado');return[];}return Object.values(STATE.clientes.clientes);}
 /* Retorna a chave (USR-XXXX ou cel legado) de um objeto cliente no STATE */
 function obterChaveCliente(c){
   const mapa=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
@@ -3427,7 +3427,7 @@ if (!STATE.pagPart) STATE.pagPart = 0;
 
 function getParticipantesUnificados() {
   // Clientes do Clube de Fidelidade
-  const cliFid = Object.values(STATE.fidelidade?.clientes || STATE.clientes?.clientes || {});
+  const cliFid = Object.values(STATE.clientes?.clientes || STATE.fidelidade?.clientes || {});
   // Inscritos nos Sorteios Mensais
   const insSorteio = STATE.fidelidade?.sorteioInscritos || [];
 
@@ -5691,7 +5691,9 @@ function preencherDepoimentos() {
   container.innerHTML = lista.map((d, i) => `
     <div class="dep-item card" style="margin-bottom:15px; padding:15px; border:1px solid #eee">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-        <strong>Depoimento #${i+1}</s          <button class="btn btn-erro btn-sm" onclick="removerDepoimentoComConfirm(${i})">&#128465;&#65039; Remover</button>iv>
+        <strong>Depoimento #${i+1}</strong>
+        <button class="btn btn-erro btn-sm" onclick="removerDepoimentoComConfirm(${i})">&#128465;&#65039; Remover</button>
+      </div>
       <div class="campo-edit"><label>Nome do Cliente</label><input type="text" id="dep-nome-${i}" value="${d.nome}" placeholder="Ex: João Silva"/></div>
       <div class="campo-edit"><label>Texto do Depoimento</label><textarea id="dep-texto-${i}" rows="3">${d.texto}</textarea></div>
       <div class="campo-edit"><label>Estrelas (1-5)</label><input type="number" id="dep-estrelas-${i}" value="${d.estrelas}" min="1" max="5"/></div>
