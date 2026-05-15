@@ -31,7 +31,17 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .admin-header .logo-admin-header{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
 .btn-sair:hover{background:rgba(255,255,255,.35)}
-.admin-nav{background:#fff;border-bottom:2px solid #f0f2f5;padding:4px 16px;display:flex;flex-wrap:wrap;gap:4px}
+.admin-nav,
+[class*="admin-tab"],
+[class*="nav-abas"],
+[id*="nav-admin"]{
+background:#fff;border-bottom:2px solid #f0f2f5;padding:4px 16px;display:flex;flex-wrap:wrap;gap:.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;role:tablist}
+@media (max-width:768px){
+  .admin-nav,
+  [class*="admin-tab"],
+  [class*="nav-abas"],
+  [id*="nav-admin"]{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+}
 .nav-btn{padding:10px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s}
 .nav-btn:hover{color:#e65100}
 .nav-btn.ativo{color:#e65100;border-bottom-color:#e65100}
