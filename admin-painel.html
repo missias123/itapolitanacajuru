@@ -608,6 +608,8 @@ body { overflow-x: hidden; }
           <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(6)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
           <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(7)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
           <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(8)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+          <button onclick="irPara('rastreio-admin',document.querySelector('.nav-btn:nth-child(9)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span>Rastreio</span></button>
+          <button onclick="irPara('auditoria-admin',document.querySelector('.nav-btn:nth-child(10)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span>Auditoria</span></button>
         </div>
       </div>
       <!-- ABRIR NO SITE — links externos -->
@@ -619,6 +621,9 @@ body { overflow-x: hidden; }
           <a href="fidelidade.html" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
           <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
+          <a href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
+          <a href="galeria.html" target="_blank" class="link-site">&#x1F5BC;&#xFE0F; Galeria</a>
+          <a href="carrossel.html" target="_blank" class="link-site">&#x1F3A0; Carrossel</a>
           <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
         </div>
       </div>
@@ -2315,16 +2320,6 @@ Talento</textarea>
           <div class="campo-edit"><label>Título do Hero Fidelidade (ID: fid-hero-titulo)</label><input type="text" id="cfg-fid-hero-titulo" maxlength="80" placeholder="🎟️ Clube de Fidelidade Itapolitana"/><div class="hint">Título principal do banner da página de fidelidade. Max. 80 caracteres.</div></div>
           <div class="campo-edit"><label>Descrição do Hero Fidelidade (ID: fid-hero-desc)</label><textarea id="cfg-fid-hero-desc" rows="2" maxlength="160" placeholder="Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru."></textarea><div class="hint">Descrição abaixo do título no banner de fidelidade. Max. 160 caracteres.</div></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidHero()">&#x1F4BE; Salvar Hero Fidelidade</button></div>
-
-          <div class="seção-título">🎉 Página de Promoção — Textos</div>
-          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-            📌 <strong>IDs no site:</strong> <code>promo-h1</code>, <code>promo-badge-el</code>, <code>promo-titulo-el</code>, <code>promo-desc-el</code> (promocao.html). Alterar aqui muda os textos da página de promoção imediatamente ao salvar.
-          </div>
-          <div class="campo-edit"><label>Título H1 da Promoção (ID: promo-h1)</label><input type="text" id="cfg-promo-h1" maxlength="80" placeholder="🎉 Grande Sorteio Mensal"/><div class="hint">Título principal da página de promoção. Max. 80 caracteres.</div></div>
-          <div class="campo-edit"><label>Badge da Promoção (ID: promo-badge-el)</label><input type="text" id="cfg-promo-badge" maxlength="40" placeholder="🎁 Sorteio Mensal"/><div class="hint">Etiqueta verde de destaque. Max. 40 caracteres.</div></div>
-          <div class="campo-edit"><label>Título da Promoção (ID: promo-titulo-el)</label><input type="text" id="cfg-promo-titulo-el" maxlength="100" placeholder="Sua Chance de Ganhar 5 Litros de Pura Felicidade!"/><div class="hint">Título do card de promoção. Max. 100 caracteres.</div></div>
-          <div class="campo-edit"><label>Descrição da Promoção (ID: promo-desc-el)</label><textarea id="cfg-promo-desc-el" rows="3" maxlength="300" placeholder="Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru."></textarea><div class="hint">Descrição do card de promoção. Max. 300 caracteres.</div></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoTextos()">&#x1F4BE; Salvar Textos da Promoção</button></div>
 
           <div class="seção-título">&#x1F512; Segurança</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
@@ -4765,11 +4760,9 @@ function preencherConfig(){
   // Fidelidade Hero (IDs: fid-hero-titulo, fid-hero-desc)
   const fidHT=document.getElementById('cfg-fid-hero-titulo'); if(fidHT) fidHT.value=cfg.fidHeroTitulo||'🎟️ Clube de Fidelidade Itapolitana';
   const fidHD=document.getElementById('cfg-fid-hero-desc'); if(fidHD) fidHD.value=cfg.fidHeroDesc||'Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru.';
-  // Promoção Textos (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
-  const promoH1El=document.getElementById('cfg-promo-h1'); if(promoH1El) promoH1El.value=cfg.promoH1||'🎉 Grande Sorteio Mensal';
-  const promoBadgeEl=document.getElementById('cfg-promo-badge'); if(promoBadgeEl) promoBadgeEl.value=cfg.promoBadge||'🎁 Sorteio Mensal';
-  const promoTitEl=document.getElementById('cfg-promo-titulo-el'); if(promoTitEl) promoTitEl.value=cfg.promoTituloEl||'Sua Chance de Ganhar 5 Litros de Pura Felicidade!';
-  const promoDescElEl=document.getElementById('cfg-promo-desc-el'); if(promoDescElEl) promoDescElEl.value=cfg.promoDescEl||'Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru.';
+  // Configurações de Encomendas (enc-aviso, enc-min-picolés)
+  const encAv=document.getElementById('enc-aviso'); if(encAv) encAv.value=cfg.encomendaAviso||'';
+  const encMin=document.getElementById('enc-min-picolés'); if(encMin) encMin.value=cfg.encomendaMinPicoles??100;
 }
 async function salvarConfig(){
   const novaSenha=document.getElementById('cfg-nova-senha').value;
@@ -4802,6 +4795,9 @@ async function salvarConfig(){
   const seoTitEl=document.getElementById('cfg-seo-titulo'); if(seoTitEl) cfg.seoTitulo=seoTitEl.value.trim();
   const seoDesEl=document.getElementById('cfg-seo-descricao'); if(seoDesEl) cfg.seoDescricao=seoDesEl.value.trim();
   const seoPalEl=document.getElementById('cfg-seo-palavras'); if(seoPalEl) cfg.seoPalavrasChave=seoPalEl.value.trim();
+  // Configurações de Encomendas
+  const encAvEl=document.getElementById('enc-aviso'); if(encAvEl) cfg.encomendaAviso=encAvEl.value.trim();
+  const encMinEl=document.getElementById('enc-min-picolés'); if(encMinEl) cfg.encomendaMinPicoles=parseInt(encMinEl.value)||100;
   if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
@@ -4818,15 +4814,6 @@ async function salvarFidHero() {
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
-async function salvarPromoTextos() {
-  const cfg = STATE.config || {};
-  cfg.promoH1 = document.getElementById('cfg-promo-h1').value.trim();
-  cfg.promoBadge = document.getElementById('cfg-promo-badge').value.trim();
-  cfg.promoTituloEl = document.getElementById('cfg-promo-titulo-el').value.trim();
-  cfg.promoDescEl = document.getElementById('cfg-promo-desc-el').value.trim();
-  STATE.config = cfg;
-  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar textos promocao');
-}
 function toast(msg,tipo=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+tipo;setTimeout(()=>el.className='toast',3000);}
 function mostrarLoading(txt='Salvando...'){document.getElementById('loading-txt').textContent=txt;document.getElementById('loading-overlay').style.display='flex';}
 function ocultarLoading(){document.getElementById('loading-overlay').style.display='none';}

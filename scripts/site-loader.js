@@ -176,6 +176,13 @@
     const heroCtaWhats = document.getElementById('hero-cta-whats');
     if (heroCtaWhats && cfg.heroCtaWhats) heroCtaWhats.textContent = cfg.heroCtaWhats;
 
+    // ── Fidelidade Hero ─────────────────────────
+    const fidHeroTitulo = document.getElementById('fid-hero-titulo');
+    if (fidHeroTitulo && cfg.fidHeroTitulo) fidHeroTitulo.textContent = cfg.fidHeroTitulo;
+
+    const fidHeroDesc = document.getElementById('fid-hero-desc');
+    if (fidHeroDesc && cfg.fidHeroDesc) fidHeroDesc.textContent = cfg.fidHeroDesc;
+
     // ── Cardápio ───────────────────────────────
     const cardápioTítulo = document.getElementById('cardápio-título');
     if (cardápioTítulo && cfg.cardapioTitulo) cardápioTítulo.textContent = cfg.cardapioTitulo;
@@ -226,6 +233,29 @@
     }
     if (cfg.encomendaMinPicoles !== undefined) {
       window._MIN_PICOLES = cfg.encomendaMinPicoles;
+    }
+
+    // ── SEO: title + meta description + meta keywords ─────────────
+    if (cfg.seoTitulo) {
+      document.title = cfg.seoTitulo;
+    }
+    if (cfg.seoDescricao) {
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', cfg.seoDescricao);
+    }
+    if (cfg.seoPalavrasChave) {
+      let metaKw = document.querySelector('meta[name="keywords"]');
+      if (!metaKw) {
+        metaKw = document.createElement('meta');
+        metaKw.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKw);
+      }
+      metaKw.setAttribute('content', cfg.seoPalavrasChave);
     }
 
     // ── Disparar evento para outros scripts ────
