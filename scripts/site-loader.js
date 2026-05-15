@@ -235,6 +235,29 @@
       window._MIN_PICOLES = cfg.encomendaMinPicoles;
     }
 
+    // ── SEO: title + meta description + meta keywords ─────────────
+    if (cfg.seoTitulo) {
+      document.title = cfg.seoTitulo;
+    }
+    if (cfg.seoDescricao) {
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', cfg.seoDescricao);
+    }
+    if (cfg.seoPalavrasChave) {
+      let metaKw = document.querySelector('meta[name="keywords"]');
+      if (!metaKw) {
+        metaKw = document.createElement('meta');
+        metaKw.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKw);
+      }
+      metaKw.setAttribute('content', cfg.seoPalavrasChave);
+    }
+
     // ── Disparar evento para outros scripts ────
     window.dispatchEvent(new CustomEvent('siteConfigLoaded', { detail: cfg }));
   }
