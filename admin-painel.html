@@ -472,6 +472,60 @@ button, input[type="submit"], select {
 /* Evita scroll horizontal no celular */
 body { overflow-x: hidden; }
 
+/* ── MODAL GENÉRICO ─────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9990;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.3)}
+.modal-header{padding:18px 20px;border-bottom:2px solid #f0f2f5;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
+.modal-header h3{font-size:1rem;font-weight:900;color:#333}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#888;padding:4px}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:2px solid #f0f2f5;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+/* ── TIMELINE STATUS ─────────────────────────────────────── */
+.timeline{display:flex;gap:0;flex-wrap:wrap;margin:12px 0}
+.tl-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:70px;position:relative}
+.tl-step:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:3px;background:#e0e0e0;z-index:0}
+.tl-step.done:not(:last-child)::after{background:#2e7d32}
+.tl-dot{width:28px;height:28px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:.75rem;z-index:1;position:relative;transition:.2s}
+.tl-step.done .tl-dot{background:#2e7d32;color:#fff}
+.tl-step.current .tl-dot{background:#e65100;color:#fff;box-shadow:0 0 0 4px rgba(230,81,0,.2)}
+.tl-label{font-size:.65rem;text-align:center;margin-top:4px;color:#888;font-weight:600}
+.tl-step.done .tl-label{color:#2e7d32;font-weight:700}
+.tl-step.current .tl-label{color:#e65100;font-weight:800}
+/* ── BADGE CONTAGEM ──────────────────────────────────────── */
+.nav-badge{display:inline-block;background:#c62828;color:#fff;border-radius:10px;padding:1px 7px;font-size:.65rem;font-weight:800;margin-left:4px;vertical-align:middle}
+/* ── RASTREIO CLIENTE ───────────────────────────────────── */
+.rastreio-card{background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:24px;max-width:600px;margin:0 auto}
+.rastreio-num{font-size:1.5rem;font-weight:900;color:#1565c0;margin-bottom:4px}
+.rastreio-nome{font-size:1rem;font-weight:700;color:#333;margin-bottom:4px}
+.rastreio-data{font-size:.85rem;color:#888}
+.rastreio-itens-wrap{background:#f8f9fa;border-radius:8px;padding:12px;margin:12px 0}
+.rastreio-item{display:flex;justify-content:space-between;padding:4px 0;font-size:.85rem;border-bottom:1px solid #e0e0e0}
+.rastreio-item:last-child{border-bottom:none}
+.rastreio-total{display:flex;justify-content:space-between;font-weight:800;font-size:1rem;margin-top:10px;padding-top:10px;border-top:2px solid #e0e0e0}
+/* ── AUDITORIA ───────────────────────────────────────────── */
+.audit-card{background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid #888;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.audit-card.critica{border-color:#c62828;background:#fff5f5}
+.audit-card.alta{border-color:#e65100;background:#fff8f0}
+.audit-card.media{border-color:#f57c00;background:#fffde7}
+.audit-card.baixa{border-color:#43a047;background:#f1f8e9}
+.audit-badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:.72rem;font-weight:800;text-transform:uppercase}
+.audit-badge.critica{background:#c62828;color:#fff}
+.audit-badge.alta{background:#e65100;color:#fff}
+.audit-badge.media{background:#f57c00;color:#fff}
+.audit-badge.baixa{background:#43a047;color:#fff}
+.audit-vals{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;font-size:.85rem}
+.audit-val-admin{background:#e3f2fd;color:#0d47a1;padding:3px 10px;border-radius:6px;font-weight:700}
+.audit-val-site{background:#e8f5e9;color:#1b5e20;padding:3px 10px;border-radius:6px;font-weight:700}
+/* ── PONTOS MODAL ───────────────────────────────────────── */
+.hist-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f2f5;font-size:.82rem}
+.hist-item:last-child{border-bottom:none}
+.hist-tipo{padding:2px 8px;border-radius:8px;font-weight:700;font-size:.72rem;white-space:nowrap}
+.hist-tipo.bonus{background:#e8f5e9;color:#1b5e20}
+.hist-tipo.correcao{background:#e3f2fd;color:#0d47a1}
+.hist-tipo.resgate{background:#fff3e0;color:#e65100}
+.hist-tipo.expiracao{background:#fce4e4;color:#c62828}
+.hist-tipo.manual{background:#f3e5f5;color:#6a1b9a}
 </style>
 <!-- cache-bust:20260419_000000 -->
 </head>
@@ -529,6 +583,8 @@ body { overflow-x: hidden; }
     <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
     <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
+    <button class="nav-btn" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
+    <button class="nav-btn" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -936,15 +992,22 @@ body { overflow-x: hidden; }
     <!-- ENCOMENDAS -->
     <div class="seção" id="sec-encomendas">
       <div class="card">
-        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2></div>
+        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div>
         <div class="card-body">
+          <div class="busca-wrap" style="margin-bottom:10px"><input type="search" id="busca-encomenda" placeholder="Buscar por nº pedido, nome ou telefone..." oninput="renderEncomendas()"/></div>
           <div class="filtros">
             <select id="enc-filtro-status" onchange="renderEncomendas()">
               <option value="">Todos os status</option>
-              <option value="novo">Novo</option>
-              <option value="em_andamento">Em andamento</option>
-              <option value="concluído">Concluído</option>
-              <option value="cancelado">Cancelado</option>
+              <option value="novo">Novo 🔴</option>
+              <option value="pendente">Pendente ⏳</option>
+              <option value="confirmado">Confirmado ✅</option>
+              <option value="em_preparo">Em preparo 🍦</option>
+              <option value="pronto">Pronto 📦</option>
+              <option value="enviado">Enviado 🚚</option>
+              <option value="entregue">Entregue 🎉</option>
+              <option value="em_andamento">Em andamento 🟡</option>
+              <option value="concluído">Concluído 🟢</option>
+              <option value="cancelado">Cancelado ⚫</option>
             </select>
             <select id="enc-filtro-tipo" onchange="renderEncomendas()">
               <option value="">Todos os tipos</option>
@@ -2826,7 +2889,9 @@ function irPara(seção,btn){
     'fidelidade-admin':['clientes','fidelidade'],
     'dicas-admin':    ['depoimentos'],
     // acesso direto mantido para botão Qualidade do Dashboard
-    'qualidade':      ['qualidade']
+    'qualidade':      ['qualidade'],
+    'rastreio-admin': ['rastreio'],
+    'auditoria-admin':['auditoria']
   };
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
@@ -2857,6 +2922,8 @@ function irPara(seção,btn){
   if(ids.includes('clientes')||ids.includes('fidelidade'))fidApplyReadOnlyGuard();
   if(ids.includes('depoimentos'))preencherDepoimentos();
   if(ids.includes('qualidade'))atualizarScoresQualidade();
+  if(ids.includes('rastreio')){renderRastreioRecentes();}
+  if(ids.includes('auditoria')){executarAuditoria();}
   // Scroll para o topo do conteúdo ao trocar de aba
   const content=document.querySelector('.admin-content');
   if(content)content.scrollTop=0;
@@ -3414,61 +3481,171 @@ async function salvarPromoção(){
   }
   const okPromo = await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
 }
+// ─── ENCOMENDAS — LABELS/CORES COMPLETOS ───────────────────
+const ENC_STATUS_LABELS={
+  novo:'Novo 🔴',pendente:'Pendente ⏳',confirmado:'Confirmado ✅',
+  em_preparo:'Em preparo 🍦',pronto:'Pronto 📦',enviado:'Enviado 🚚',
+  entregue:'Entregue 🎉',em_andamento:'Em andamento 🟡',
+  concluído:'Concluído 🟢',cancelado:'Cancelado ⚫'
+};
+const ENC_STATUS_COR={
+  novo:'#FFEBEE',pendente:'#FFF8E1',confirmado:'#E8F5E9',em_preparo:'#FFF3E0',
+  pronto:'#E3F2FD',enviado:'#EDE7F6',entregue:'#E8F5E9',
+  em_andamento:'#FFF8E1',concluído:'#E8F5E9',cancelado:'#FAFAFA'
+};
+const ENC_STATUS_BORDA={
+  novo:'#D32F2F',pendente:'#F9A825',confirmado:'#2E7D32',em_preparo:'#E65100',
+  pronto:'#1565C0',enviado:'#6A1B9A',entregue:'#1B5E20',
+  em_andamento:'#F9A825',concluído:'#2E7D32',cancelado:'#9E9E9E'
+};
+// Sequência de status para a timeline
+const TIMELINE_PASSOS=['novo','confirmado','em_preparo','pronto','enviado','entregue'];
+const TIMELINE_LABELS=['Novo','Confirmado','Em preparo','Pronto','Enviado','Entregue'];
+const TIMELINE_ICONES=['🔴','✅','🍦','📦','🚚','🎉'];
+
 function renderEncomendas(){
   const registros=STATE.encomendas?.registros||[];
-  const filtroStatus=document.getElementById('enc-filtro-status').value;
-  const filtroTipo=document.getElementById('enc-filtro-tipo').value;
+  const filtroStatus=document.getElementById('enc-filtro-status')?.value||'';
+  const filtroTipo=document.getElementById('enc-filtro-tipo')?.value||'';
+  const busca=(document.getElementById('busca-encomenda')?.value||'').toLowerCase();
   let lista=registros.filter(e=>{
     if(filtroStatus&&e.status!==filtroStatus)return false;
     if(filtroTipo&&e.tipo!==filtroTipo)return false;
+    if(busca){
+      const haystack=[(e.num||''),(e.nome||''),(e.telefone||e.tel||'')].join(' ').toLowerCase();
+      if(!haystack.includes(busca))return false;
+    }
     return true;
   }).sort((a,b)=>new Date(b.data)-new Date(a.data));
-  if(!lista.length){document.getElementById('enc-lista').innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';return;}
-  const statusLabels={novo:'Novo 🔴',em_andamento:'Em andamento 🟡',concluído:'Concluído 🟢',cancelado:'Cancelado ⚫'};
-  const statusCores={novo:'#FFEBEE',em_andamento:'#FFF8E1',concluído:'#E8F5E9',cancelado:'#FAFAFA'};
-  const statusBorda={novo:'#D32F2F',em_andamento:'#F9A825',concluído:'#2E7D32',cancelado:'#9E9E9E'};
-  let html=lista.map((e)=>{
-    const idx=registros.indexOf(e);
-    const cor=statusCores[e.status]||'#fff';
-    const borda=statusBorda[e.status]||'#e65100';
+  const container=document.getElementById('enc-lista');
+  if(!lista.length){container.innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';return;}
+  let html=lista.map(e=>{
+    const cor=ENC_STATUS_COR[e.status]||'#fff';
+    const borda=ENC_STATUS_BORDA[e.status]||'#e65100';
     const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleString('pt-BR'):'-');
-    let itensHtml='';
-    if(e.itens&&e.itens.length>0){
-      itensHtml='<div style="margin:8px 0 4px;font-size:.82rem;color:#333;background:#f9f9f9;border-radius:8px;padding:8px 10px">';
-      e.itens.forEach(it=>{
-        const sub=(it.preço||0)*(it.qtd||1);
-        itensHtml+=`<div>▶ <strong>${it.nome}</strong> ×${it.qtd} — R$ ${sub.toFixed(2).replace('.',',')}`;
-        if(it.sabores&&it.sabores.length>0)itensHtml+=` <span style="color:#666">(${it.sabores.join(', ')})</span>`;
-        itensHtml+='</div>';
-      });
-      itensHtml+='</div>';
-    }
     const totalStr=e.total?`R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}`:'-';
+    const label=ENC_STATUS_LABELS[e.status]||e.status||'—';
+    const obsHtml=e.observacaoAdmin?`<div style="font-size:.78rem;color:#555;background:#fff9e6;border-radius:6px;padding:4px 8px;margin-top:6px">📝 ${esc(e.observacaoAdmin)}</div>`:'';
     return `<div style="background:${cor};border-left:5px solid ${borda};margin-bottom:14px;border-radius:10px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px">
         <div>
-          <div style="font-weight:900;font-size:1rem;color:#1A0A00">${e.nome||'Sem nome'}</div>
-          <div style="font-size:.8rem;color:#555">📱 ${e.telefone||e.tel||'-'} &nbsp;|  📅 ${dataStr}</div>
-          ${e.endereço?`<div style="font-size:.8rem;color:#555">📍 ${e.endereço}</div>`:''}
-          <div style="font-size:.78rem;color:#888">🔢 <strong>${e.num||'-'}</strong></div>
+          <div style="font-weight:900;font-size:1rem;color:#1A0A00">${esc(e.nome)||'Sem nome'}</div>
+          <div style="font-size:.8rem;color:#555">📱 ${esc(e.telefone||e.tel||'-')} &nbsp;|&nbsp;📅 ${dataStr}</div>
+          ${e.endereço?`<div style="font-size:.8rem;color:#555">📍 ${esc(e.endereço)}</div>`:''}
+          <div style="font-size:.78rem;color:#888;margin-top:2px">🔢 <strong>${esc(e.num||'-')}</strong> &nbsp;·&nbsp; <span style="background:${borda};color:#fff;padding:1px 8px;border-radius:8px;font-size:.7rem">${label}</span></div>
         </div>
         <div style="text-align:right">
           <div style="font-size:1.1rem;font-weight:900;color:#0D47A1">${totalStr}</div>
-          <span style="background:#E3F2FD;color:#0D47A1;border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700">${e.tipo||'Geral'}</span>
+          <span style="background:#E3F2FD;color:#0D47A1;border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700">${esc(e.tipo||'Geral')}</span>
         </div>
       </div>
-      ${itensHtml}
+      ${obsHtml}
       <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
-        <select onchange="alterarStatusEncomenda(${idx},this.value)" style="border-radius:8px;padding:5px 8px;font-size:.82rem;border:1px solid #ddd;flex:1;min-width:160px">
-          ${Object.entries(statusLabels).map(([k,v])=>`<option value="${k}" ${e.status===k?'selected':''}>${v}</option>`).join('')}
-        </select>
-        <button onclick="copiarPedidoAdmin('${e.num}')" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">📲 Copiar WhatsApp</button>
-        <button onclick="excluirEncomenda('${e.num}')" style="background:#c62828;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">🗑️ Excluir</button>
+        <button onclick="abrirModalEncomenda('${esc(e.num)}')" style="background:#1565c0;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;flex:1;min-width:120px">📋 Ver/Editar</button>
+        <button onclick="copiarPedidoAdmin('${esc(e.num)}')" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">📲 WhatsApp</button>
+        <button onclick="excluirEncomenda('${esc(e.num)}')" style="background:#c62828;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;font-weight:700;white-space:nowrap">🗑️</button>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('enc-lista').innerHTML=`<div style="font-size:.82rem;color:#666;margin-bottom:10px">${lista.length} encomenda(s)</div>`+html;
+  container.innerHTML=`<div style="font-size:.82rem;color:#666;margin-bottom:10px">${lista.length} encomenda(s)</div>`+html;
 }
+
+// ─── EXPORTAR CSV ENCOMENDAS ────────────────────────────────
+function exportarEncomendasCSV(){
+  const registros=STATE.encomendas?.registros||[];
+  if(!registros.length){toast('Nenhuma encomenda para exportar.','aviso');return;}
+  const BOM='\uFEFF';
+  const hdr='Nº Pedido,Data,Nome,Telefone,Tipo,Status,Total,Endereço';
+  const rows=registros.map(e=>{
+    const data=e.dataFormatada||(e.data?new Date(e.data).toLocaleDateString('pt-BR'):'-');
+    const total=e.total?parseFloat(e.total).toFixed(2):'-';
+    return `"${e.num||''}","${data}","${(e.nome||'').replace(/"/g,'""')}","${e.telefone||e.tel||''}","${e.tipo||''}","${e.status||''}","${total}","${(e.endereço||'').replace(/"/g,'""')}"`;
+  });
+  const csv=BOM+[hdr,...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`encomendas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);
+  toast(`CSV com ${registros.length} encomendas exportado!`,'sucesso');
+}
+
+// ─── MODAL ENCOMENDA DETALHADA ──────────────────────────────
+let _encModalNum=null;
+function abrirModalEncomenda(num){
+  const registros=STATE.encomendas?.registros||[];
+  const e=registros.find(r=>r.num===num);
+  if(!e){toast('Pedido não encontrado','erro');return;}
+  _encModalNum=num;
+  document.getElementById('me-num').textContent=num;
+  document.getElementById('me-nome').value=e.nome||'-';
+  document.getElementById('me-tel').value=e.telefone||e.tel||'-';
+  document.getElementById('me-end').value=e.endereço||'-';
+  const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleString('pt-BR'):'-');
+  document.getElementById('me-data').value=dataStr;
+  document.getElementById('me-status').value=e.status||'novo';
+  document.getElementById('me-obs').value=e.observacaoAdmin||'';
+  let itensHtml='';let totalCalc=0;
+  (e.itens||[]).forEach(it=>{
+    const sub=(it.preço||0)*(it.qtd||1);totalCalc+=sub;
+    const sabores=it.sabores&&it.sabores.length?` <small style="color:#666">(${esc(it.sabores.join(', '))})</small>`:'';
+    itensHtml+=`<div class="rastreio-item"><span><strong>${esc(it.nome)}</strong>${sabores} ×${it.qtd}</span><span>R$ ${sub.toFixed(2).replace('.',',')}</span></div>`;
+  });
+  document.getElementById('me-itens').innerHTML=itensHtml||'<p style="color:#888;font-size:.82rem">Sem itens.</p>';
+  const total=e.total||totalCalc;
+  document.getElementById('me-total').innerHTML=`<span style="font-weight:800">Total</span><span style="font-size:1.2rem;color:#1565c0">R$ ${parseFloat(total||0).toFixed(2).replace('.',',')}</span>`;
+  const hist=e.historicoStatus||[];
+  let histHtml=hist.length?hist.map(h=>`<div style="margin-bottom:6px">📌 <strong>${ENC_STATUS_LABELS[h.status]||h.status}</strong> — ${h.data?new Date(h.data).toLocaleString('pt-BR'):'-'} <span style="color:#888">${h.origem?'('+h.origem+')':''}</span></div>`).join(''):'<p style="color:#aaa">Nenhum histórico ainda.</p>';
+  document.getElementById('me-historico').innerHTML=histHtml;
+  atualizarTimelineModal();
+  document.getElementById('modal-encomenda').classList.add('show');
+}
+function fecharModalEncomenda(){document.getElementById('modal-encomenda').classList.remove('show');_encModalNum=null;}
+function atualizarTimelineModal(){
+  const statusAtual=document.getElementById('me-status')?.value||'novo';
+  const idxAtual=TIMELINE_PASSOS.indexOf(statusAtual);
+  const tl=document.getElementById('me-timeline');if(!tl)return;
+  tl.innerHTML=TIMELINE_PASSOS.map((s,i)=>{
+    let cls='tl-step';
+    if(i<idxAtual)cls+=' done';else if(i===idxAtual)cls+=' current';
+    return `<div class="${cls}"><div class="tl-dot">${TIMELINE_ICONES[i]}</div><div class="tl-label">${TIMELINE_LABELS[i]}</div></div>`;
+  }).join('');
+}
+async function salvarModalEncomenda(){
+  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura.','aviso');return;}
+  const registros=STATE.encomendas?.registros||[];
+  const idx=registros.findIndex(r=>r.num===_encModalNum);
+  if(idx===-1){toast('Pedido não encontrado','erro');return;}
+  const novoStatus=document.getElementById('me-status').value;
+  const obs=document.getElementById('me-obs').value.trim();
+  const statusAnterior=registros[idx].status;
+  registros[idx].status=novoStatus;
+  registros[idx].observacaoAdmin=obs;
+  if(novoStatus!==statusAnterior){
+    if(!registros[idx].historicoStatus)registros[idx].historicoStatus=[];
+    registros[idx].historicoStatus.push({status:novoStatus,data:new Date().toISOString(),origem:'admin'});
+  }
+  STATE.encomendas.registros=registros;
+  const ok=await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha',`Admin: pedido ${_encModalNum} → ${novoStatus}`);
+  if(ok){fecharModalEncomenda();renderEncomendas();toast(`✅ Pedido ${_encModalNum} atualizado!`,'sucesso');}
+}
+async function notificarClienteStatus(){
+  const registros=STATE.encomendas?.registros||[];
+  const e=registros.find(r=>r.num===_encModalNum);if(!e)return;
+  const status=document.getElementById('me-status').value;
+  const label=ENC_STATUS_LABELS[status]||status;
+  let msg=`🍦 *Sorveteria Itapolitana Cajuru*\n\nOlá, *${e.nome||'cliente'}*!\n\nSeu pedido *${e.num}* está com status:\n*${label}*\n`;
+  if(status==='confirmado')msg+=`\n✅ Pagamento confirmado! Estamos preparando seu pedido.`;
+  else if(status==='em_preparo')msg+=`\n🍦 Seu pedido está sendo produzido com muito carinho!`;
+  else if(status==='pronto')msg+=`\n📦 Seu pedido está pronto!`;
+  else if(status==='enviado')msg+=`\n🚚 Seu pedido saiu para entrega!`;
+  else if(status==='entregue')msg+=`\n🎉 Pedido entregue! Obrigado pela preferência!`;
+  if(e.observacaoAdmin)msg+=`\n\n📝 Obs.: ${e.observacaoAdmin}`;
+  const tel=(e.telefone||e.tel||'').replace(/\D/g,'');
+  if(tel){window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');}
+  else{navigator.clipboard.writeText(msg).then(()=>toast('Mensagem copiada!','sucesso'));}
+}
+
 function copiarPedidoAdmin(numPedido){
   const registros=STATE.encomendas?.registros||[];
   const e=registros.find(r=>r.num===numPedido);
@@ -3485,18 +3662,24 @@ function copiarPedidoAdmin(numPedido){
     });
   }
   if(e.total)txt+=`\n💰 TOTAL: R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}\n`;
-  txt+=`\n⏰ Produzido em até 3 dias úteis após confirmação do pagamento.\n`;
-  txt+=`💳 Pagamento antecipado obrigatório.`;
+  txt+=`\n⏰ Produzido em até 3 dias úteis após confirmação do pagamento.\n💳 Pagamento antecipado obrigatório.`;
   navigator.clipboard.writeText(txt).then(()=>toast('✅ Pedido copiado!','sucesso')).catch(()=>toast('Erro ao copiar','erro'));
 }
 async function alterarStatusEncomenda(idx,novoStatus){
   const registros=STATE.encomendas?.registros||[];
   if(!registros[idx])return;
+  const statusAnterior=registros[idx].status;
   registros[idx].status=novoStatus;
+  if(novoStatus!==statusAnterior){
+    if(!registros[idx].historicoStatus)registros[idx].historicoStatus=[];
+    registros[idx].historicoStatus.push({status:novoStatus,data:new Date().toISOString(),origem:'admin'});
+  }
   STATE.encomendas.registros=registros;
-  const ok = await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
+  const ok=await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha','Admin: atualizar status encomenda');
+  if(!ok)toast('Erro ao salvar status. Verifique o token.','erro');
   renderEncomendas();
 }
+
 function getClientes(){if(!STATE.clientes?.clientes){console.warn('[FIDELIDADE] STATE.clientes não carregado');return[];}return Object.values(STATE.clientes.clientes);}
 /* Retorna a chave (USR-XXXX ou cel legado) de um objeto cliente no STATE */
 function obterChaveCliente(c){
@@ -3875,7 +4058,7 @@ function renderClientes(){
         ?`<button class="btn btn-verde" data-fid-write style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',false)">🔓 Desbloquear</button>`
         :`<button class="btn btn-vermelho" data-fid-write style="padding:4px 9px;font-size:.76rem" onclick="toggleBloqueio('${cKey}',true)">🔒 Bloquear</button>`}
       ${(c.tentativas_fraude||0)>0?`<button class="btn" data-fid-write style="background:#7b1fa2;color:#fff;padding:4px 9px;font-size:.76rem" onclick="zerarTentativas('${cKey}')">🔄 Zerar tent.</button>`:''}
-      <button class="btn" data-fid-write style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adicionarPontoManual('${cKey}')">➕ Ponto</button>
+      <button class="btn" data-fid-write style="background:#1565c0;color:#fff;padding:4px 9px;font-size:.76rem" onclick="abrirModalPontos('${cKey}')">💰 Pontos</button>
       <button class="btn" data-fid-write style="background:#2e7d32;color:#fff;padding:4px 9px;font-size:.76rem" onclick="adminValidarCodigo('${cKey}')">✅ Código</button>
       <button class="btn btn-amarelo" data-fid-write style="padding:4px 9px;font-size:.76rem" onclick="abrirFormCliente('${cKey}')">✏️ Editar</button>
       <button class="btn" data-fid-write style="background:#c62828;color:#fff;padding:4px 9px;font-size:.76rem" onclick="excluirCliente('${cKey}')">🗑️ Excluir</button>
@@ -6688,6 +6871,280 @@ function excluirCodigo(cod) {
   );
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// MODAL AJUSTE DE PONTOS (Fidelidade – cliente)
+// ═══════════════════════════════════════════════════════════
+let _pontosClienteId = null;
+function abrirModalPontos(clienteId){
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const c=clientes[clienteId];
+  if(!c){toast('Cliente não encontrado','erro');return;}
+  _pontosClienteId=clienteId;
+  document.getElementById('mp-nome').textContent=c.nome||clienteId;
+  const saldo=c.saldoPontos||0;
+  document.getElementById('mp-saldo').textContent=saldo;
+  document.getElementById('mp-saldo-novo').textContent=saldo;
+  document.getElementById('mp-qtd').value='';
+  document.getElementById('mp-tipo').value='manual';
+  document.getElementById('mp-motivo').value='';
+  // Histórico
+  const hist=c.historico_alteracoes||[];
+  const filtrados=hist.filter(h=>h.pontos!==undefined||['ponto_manual','codigo_validado_admin','bonus','correcao','resgate','expiracao','manual'].includes(h.tipo));
+  const ultimos=filtrados.slice(-20).reverse();
+  let histHtml=ultimos.length?ultimos.map(h=>{
+    const tipo=h.tipo||'manual';
+    const pts=h.pontos!==undefined?(h.pontos>0?'+'+h.pontos:h.pontos):'';
+    const data=h.data?new Date(h.data).toLocaleString('pt-BR'):'-';
+    return `<div class="hist-item"><span class="hist-tipo ${tipo.includes('resgate')?'resgate':tipo.includes('expi')?'expiracao':tipo.includes('corr')?'correcao':tipo.includes('bonus')?'bonus':'manual'}">${tipo}</span><div style="flex:1"><div style="font-weight:600">${h.descricao||'—'}</div><div style="color:#888;font-size:.75rem">${data}</div></div>${pts?`<span style="font-weight:800;color:${pts.startsWith('+')?'#2e7d32':'#c62828'}">${pts} pts</span>`:''}</div>`;
+  }).join(''):'<p style="color:#aaa;font-size:.82rem;text-align:center;padding:10px">Nenhuma transação registrada.</p>';
+  document.getElementById('mp-historico').innerHTML=histHtml;
+  document.getElementById('modal-pontos').classList.add('show');
+}
+function fecharModalPontos(){document.getElementById('modal-pontos').classList.remove('show');_pontosClienteId=null;}
+function previewNovoPontos(){
+  const qtd=parseInt(document.getElementById('mp-qtd').value)||0;
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const c=clientes[_pontosClienteId];
+  const saldo=c?c.saldoPontos||0:0;
+  const novo=Math.max(0,saldo+qtd);
+  document.getElementById('mp-saldo-novo').textContent=novo;
+  document.getElementById('mp-saldo-novo').style.color=qtd>=0?'#2e7d32':'#c62828';
+}
+async function salvarModalPontos(){
+  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura.','aviso');return;}
+  const qtd=parseInt(document.getElementById('mp-qtd').value)||0;
+  if(qtd===0){toast('Informe uma quantidade diferente de 0.','aviso');return;}
+  const tipo=document.getElementById('mp-tipo').value;
+  const motivo=document.getElementById('mp-motivo').value.trim()||'Ajuste manual pelo admin';
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
+  const c=clientes[_pontosClienteId];
+  if(!c){toast('Cliente não encontrado','erro');return;}
+  const saldoAnterior=c.saldoPontos||0;
+  c.saldoPontos=Math.max(0,saldoAnterior+qtd);
+  const agora=new Date().toISOString();
+  if(!c.historico_alteracoes)c.historico_alteracoes=[];
+  c.historico_alteracoes.push({data:agora,tipo,descricao:motivo,por:'admin',pontos:qtd});
+  const ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: ajuste de pontos ${_pontosClienteId} (${qtd>0?'+':''}${qtd})`);
+  if(ok){fecharModalPontos();renderClientes();toast(`✅ Pontos ajustados! Novo saldo: ${c.saldoPontos}`,'sucesso');}
+}
+
+// ═══════════════════════════════════════════════════════════
+// RASTREIO — Minha Encomenda (como o cliente vê)
+// ═══════════════════════════════════════════════════════════
+function buscarRastreio(){
+  const busca=(document.getElementById('rastreio-busca')?.value||'').trim().toLowerCase();
+  const container=document.getElementById('rastreio-resultado');
+  if(!busca){container.innerHTML='<p style="color:#aaa;text-align:center;padding:30px">Digite o nº do pedido ou telefone.</p>';return;}
+  const registros=STATE.encomendas?.registros||[];
+  const e=registros.find(r=>{
+    const num=(r.num||'').toLowerCase();
+    const tel=(r.telefone||r.tel||'').replace(/\D/g,'');
+    return num===busca||num.includes(busca)||tel.endsWith(busca.replace(/\D/g,''));
+  });
+  if(!e){container.innerHTML='<div style="background:#ffebee;border-radius:12px;padding:20px;text-align:center;color:#c62828;font-weight:700">❌ Pedido não encontrado. Verifique o número ou telefone.</div>';return;}
+  container.innerHTML=renderRastreioCard(e);
+}
+function renderRastreioCard(e){
+  const statusAtual=e.status||'novo';
+  const idxAtual=TIMELINE_PASSOS.indexOf(statusAtual);
+  const tlHtml=TIMELINE_PASSOS.map((s,i)=>{
+    let cls='tl-step';
+    if(i<idxAtual)cls+=' done';else if(i===idxAtual)cls+=' current';
+    return `<div class="${cls}"><div class="tl-dot">${TIMELINE_ICONES[i]}</div><div class="tl-label">${TIMELINE_LABELS[i]}</div></div>`;
+  }).join('');
+  let itensHtml='';let totalCalc=0;
+  (e.itens||[]).forEach(it=>{
+    const sub=(it.preço||0)*(it.qtd||1);totalCalc+=sub;
+    const sabores=it.sabores&&it.sabores.length?`<br><small style="color:#888">${esc(it.sabores.join(', '))}</small>`:'';
+    itensHtml+=`<div class="rastreio-item"><span><strong>${esc(it.nome)}</strong>${sabores} ×${it.qtd}</span><span>R$ ${sub.toFixed(2).replace('.',',')}</span></div>`;
+  });
+  const total=e.total||totalCalc;
+  const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleString('pt-BR'):'-');
+  const label=ENC_STATUS_LABELS[statusAtual]||statusAtual;
+  const cor=ENC_STATUS_BORDA[statusAtual]||'#e65100';
+  return `<div class="rastreio-card">
+    <div class="rastreio-num">${esc(e.num||'-')}</div>
+    <div class="rastreio-nome">👤 ${esc(e.nome||'-')}</div>
+    <div class="rastreio-data">📅 ${dataStr} &nbsp;·&nbsp; 📱 ${esc(e.telefone||e.tel||'-')}</div>
+    ${e.endereço?`<div class="rastreio-data" style="margin-top:2px">📍 ${esc(e.endereço)}</div>`:''}
+    <div style="margin:14px 0;padding:10px 14px;background:${ENC_STATUS_COR[statusAtual]||'#f8f9fa'};border-left:4px solid ${cor};border-radius:8px">
+      <strong>Status atual:</strong> <span style="color:${cor};font-weight:800">${label}</span>
+    </div>
+    <div class="timeline" style="margin:16px 0">${tlHtml}</div>
+    <div class="rastreio-itens-wrap">${itensHtml||'<p style="color:#aaa">Sem itens.</p>'}</div>
+    <div class="rastreio-total"><span>Total do Pedido</span><span>R$ ${parseFloat(total||0).toFixed(2).replace('.',',')}</span></div>
+    <div style="margin-top:16px;text-align:center">
+      <button onclick="abrirModalEncomenda('${esc(e.num)}')" class="btn btn-laranja" style="width:100%">📋 Abrir no Admin</button>
+    </div>
+  </div>`;
+}
+function renderRastreioRecentes(){
+  const registros=(STATE.encomendas?.registros||[]).slice(0,10);
+  const container=document.getElementById('rastreio-recentes');
+  if(!container)return;
+  if(!registros.length){container.innerHTML='<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>';return;}
+  container.innerHTML=registros.map(e=>{
+    const cor=ENC_STATUS_BORDA[e.status]||'#888';
+    const label=ENC_STATUS_LABELS[e.status]||e.status||'—';
+    const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleDateString('pt-BR'):'-');
+    const totalStr=e.total?`R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}`:'-';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f2f5;cursor:pointer" onclick="document.getElementById('rastreio-busca').value='${esc(e.num)}';buscarRastreio()">
+      <div>
+        <div style="font-weight:700;color:#333;font-size:.88rem">${esc(e.num||'-')} — ${esc(e.nome||'-')}</div>
+        <div style="font-size:.75rem;color:#888">📅 ${dataStr} · ${esc(e.tipo||'geral')}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:#1565c0;font-size:.9rem">${totalStr}</div>
+        <span style="background:${cor};color:#fff;padding:1px 8px;border-radius:8px;font-size:.7rem">${label}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// AUDITORIA — Detector de inconsistências
+// ═══════════════════════════════════════════════════════════
+let _auditoriaResultados = [];
+function executarAuditoria(){
+  _auditoriaResultados=[];
+  const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
+  const clientes=STATE.clientes?.clientes||{};
+  const fidelidade=STATE.fidelidade||{};
+  const encomendas=STATE.encomendas?.registros||[];
+  // ── 1. Clientes com pontos negativos (não deveria ser possível)
+  if(!filtroMod||filtroMod==='clientes'){
+    Object.entries(clientes).forEach(([id,c])=>{
+      if((c.saldoPontos||0)<0){
+        _auditoriaResultados.push({modulo:'clientes',severidade:'alta',tipo:'pontos_negativos',titulo:`Pontos negativos: ${c.nome}`,descricao:`Cliente ${id} tem saldo de pontos negativo: ${c.saldoPontos}`,admin:c.saldoPontos,site:0,id,acao:'zerar_pontos',clienteId:id});
+      }
+    });
+    // ── 2. Clientes com muitas tentativas de fraude sem bloqueio
+    Object.entries(clientes).forEach(([id,c])=>{
+      if((c.tentativas_fraude||0)>=3&&!c.bloqueado){
+        _auditoriaResultados.push({modulo:'clientes',severidade:'critica',tipo:'fraude_sem_bloqueio',titulo:`Fraude não bloqueada: ${c.nome}`,descricao:`${c.tentativas_fraude} tentativas de fraude registradas mas conta não está bloqueada.`,admin:'não bloqueado',site:c.tentativas_fraude+' tentativas',id,clienteId:id});
+      }
+    });
+    // ── 3. Clientes duplicados por nome+nasc
+    const vistos={};
+    Object.entries(clientes).forEach(([id,c])=>{
+      const chave=`${(c.nome||'').trim().toLowerCase()}|${c.dataNasc||''}`;
+      if(chave.length>2){
+        if(vistos[chave]){
+          _auditoriaResultados.push({modulo:'clientes',severidade:'media',tipo:'duplicata_possivel',titulo:`Possível duplicata: ${c.nome}`,descricao:`IDs ${vistos[chave]} e ${id} têm mesmo nome e data de nascimento.`,admin:id,site:vistos[chave],id});
+        }else{vistos[chave]=id;}
+      }
+    });
+  }
+  // ── 4. Encomendas travadas em "novo" por mais de 3 dias
+  if(!filtroMod||filtroMod==='encomendas'){
+    const TRES_DIAS_MS=3*24*60*60*1000;
+    const tresDiasAtras=Date.now()-TRES_DIAS_MS;
+    encomendas.forEach(e=>{
+      if(e.status==='novo'&&e.data&&new Date(e.data).getTime()<tresDiasAtras){
+        _auditoriaResultados.push({modulo:'encomendas',severidade:'alta',tipo:'enc_travada',titulo:`Encomenda parada: ${e.num}`,descricao:`Pedido de ${e.nome} está com status "novo" há mais de 3 dias (${e.dataFormatada||e.data}).`,admin:'novo',site:'—',id:e.num});
+      }
+    });
+    // ── 5. Encomendas sem total registrado
+    encomendas.forEach(e=>{
+      if(!e.total&&e.total!==0){
+        _auditoriaResultados.push({modulo:'encomendas',severidade:'baixa',tipo:'enc_sem_total',titulo:`Encomenda sem total: ${e.num}`,descricao:`Pedido ${e.num} de ${e.nome} não tem valor total registrado.`,admin:'sem total',site:'—',id:e.num});
+      }
+    });
+  }
+  // ── 6. Fidelidade — códigos usados em clientes inexistentes
+  if(!filtroMod||filtroMod==='fidelidade'){
+    const codigos=fidelidade.códigos||fidelidade.codigos||{};
+    Object.entries(codigos).forEach(([cod,v])=>{
+      if(v.status==='usado'&&v.usadoPor){
+        const cel=(v.usadoPor||'').replace(/\D/g,'');
+        const achouCliente=Object.values(clientes).some(c=>(c.cel||'').replace(/\D/g,'')===cel);
+        if(!achouCliente&&cel){
+          _auditoriaResultados.push({modulo:'fidelidade',severidade:'media',tipo:'codigo_sem_cliente',titulo:`Código usado por cliente inexistente`,descricao:`Código ${cod} foi usado por ${v.usadoPor} mas esse telefone não existe nos clientes cadastrados.`,admin:v.usadoPor,site:'não cadastrado',id:cod});
+        }
+      }
+    });
+  }
+  renderAuditoria();
+}
+function renderAuditoria(){
+  const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
+  const filtroSev=document.getElementById('audit-filtro-sev')?.value||'';
+  let lista=_auditoriaResultados.filter(r=>{
+    if(filtroMod&&r.modulo!==filtroMod)return false;
+    if(filtroSev&&r.severidade!==filtroSev)return false;
+    return true;
+  });
+  // Ordenar por severidade
+  const sevOrd={critica:0,alta:1,media:2,baixa:3};
+  lista.sort((a,b)=>(sevOrd[a.severidade]||4)-(sevOrd[b.severidade]||4));
+  // Stats
+  const cnt={critica:0,alta:0,media:0,baixa:0};
+  _auditoriaResultados.forEach(r=>cnt[r.severidade]=(cnt[r.severidade]||0)+1);
+  document.getElementById('audit-cnt-critica').textContent=cnt.critica||0;
+  document.getElementById('audit-cnt-alta').textContent=cnt.alta||0;
+  document.getElementById('audit-cnt-media').textContent=cnt.media||0;
+  document.getElementById('audit-cnt-baixa').textContent=cnt.baixa||0;
+  document.getElementById('audit-cnt-total').textContent=_auditoriaResultados.length;
+  // Atualizar badge da nav
+  const badgeNav=document.getElementById('badge-audit-nav');
+  if(badgeNav){
+    const total=_auditoriaResultados.length;
+    badgeNav.textContent=total;
+    badgeNav.style.display=total>0?'inline-block':'none';
+  }
+  const container=document.getElementById('audit-lista');
+  if(!container)return;
+  if(!lista.length){
+    container.innerHTML=`<div style="background:#e8f5e9;border-radius:12px;padding:24px;text-align:center;color:#2e7d32;font-weight:700">✅ Nenhuma inconsistência encontrada nos filtros selecionados!</div>`;
+    return;
+  }
+  container.innerHTML=lista.map(r=>{
+    const acaoBtns=r.tipo==='fraude_sem_bloqueio'?`<button class="btn btn-vermelho" style="padding:5px 12px;font-size:.78rem" onclick="toggleBloqueio('${r.clienteId}',true)">🔒 Bloquear Agora</button>`
+      :r.tipo==='pontos_negativos'?`<button class="btn btn-laranja" style="padding:5px 12px;font-size:.78rem" onclick="zerarPontosNegativos('${r.clienteId}')">🔧 Zerar Pontos</button>`
+      :r.tipo==='enc_travada'?`<button class="btn" style="background:#1565c0;color:#fff;padding:5px 12px;font-size:.78rem" onclick="abrirModalEncomenda('${r.id}')">📋 Ver Encomenda</button>`
+      :'';
+    return `<div class="audit-card ${r.severidade}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+        <div>
+          <span class="audit-badge ${r.severidade}">${r.severidade}</span>
+          <span style="margin-left:8px;font-size:.75rem;color:#888;text-transform:uppercase">${r.modulo}</span>
+          <div style="font-weight:800;font-size:.92rem;color:#333;margin-top:4px">${esc(r.titulo)}</div>
+          <div style="font-size:.82rem;color:#555;margin-top:3px">${esc(r.descricao)}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;margin-top:4px">
+          ${acaoBtns}
+        </div>
+      </div>
+      <div class="audit-vals">
+        <span><strong>Admin:</strong> <span class="audit-val-admin">${esc(String(r.admin))}</span></span>
+        <span><strong>Site/Esperado:</strong> <span class="audit-val-site">${esc(String(r.site))}</span></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function exportarRelatorioAuditoria(){
+  if(!_auditoriaResultados.length){toast('Nenhuma inconsistência para exportar.','aviso');return;}
+  const data={geradoEm:new Date().toISOString(),totalInconsistencias:_auditoriaResultados.length,resultados:_auditoriaResultados};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`auditoria_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(url);
+  toast('Relatório exportado!','sucesso');
+}
+async function zerarPontosNegativos(clienteId){
+  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura.','aviso');return;}
+  const clientes=STATE.clientes?.clientes||{};
+  const c=clientes[clienteId];
+  if(!c)return;
+  c.saldoPontos=0;
+  if(!c.historico_alteracoes)c.historico_alteracoes=[];
+  c.historico_alteracoes.push({data:new Date().toISOString(),tipo:'correcao',descricao:'Pontos negativos zerados via auditoria',por:'admin',pontos:0});
+  const ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha','Admin: zerar pontos negativos '+clienteId);
+  if(ok){executarAuditoria();toast('Pontos zerados!','sucesso');}
+}
+
 </script>
 <script src="admin/scripts/promocoes.js" defer></script>
 
@@ -6701,6 +7158,171 @@ function excluirCodigo(cod) {
       <button onclick="_confirmarCancelar()" style="background:#f5f5f5;color:#333;border:2px solid #ddd;border-radius:10px;padding:10px 24px;font-size:.95rem;font-weight:700;cursor:pointer;min-width:120px">❌ Cancelar</button>
       <button id="modal-confirmar-btn" onclick="_confirmarOk()" style="background:#c62828;color:#fff;border:none;border-radius:10px;padding:10px 24px;font-size:.95rem;font-weight:700;cursor:pointer;min-width:120px">✅ Confirmar</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL ENCOMENDA DETALHADA ═══════════════ -->
+<div id="modal-encomenda" class="modal-overlay" onclick="if(event.target===this)fecharModalEncomenda()">
+  <div class="modal-box" style="max-width:680px">
+    <div class="modal-header">
+      <h3>📦 Detalhes do Pedido — <span id="me-num"></span></h3>
+      <button class="modal-close" onclick="fecharModalEncomenda()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Timeline -->
+      <div id="me-timeline" class="timeline"></div>
+      <!-- Info cliente -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+        <div class="campo-edit"><label>Cliente</label><input type="text" id="me-nome" readonly style="background:#f8f9fa"/></div>
+        <div class="campo-edit"><label>Telefone</label><input type="text" id="me-tel" readonly style="background:#f8f9fa"/></div>
+        <div class="campo-edit"><label>Endereço</label><input type="text" id="me-end" readonly style="background:#f8f9fa"/></div>
+        <div class="campo-edit"><label>Data do Pedido</label><input type="text" id="me-data" readonly style="background:#f8f9fa"/></div>
+      </div>
+      <!-- Itens -->
+      <div class="seção-título" style="margin-top:12px">🛒 Itens do Pedido</div>
+      <div id="me-itens" class="rastreio-itens-wrap"></div>
+      <div id="me-total" class="rastreio-total" style="margin-top:0"></div>
+      <!-- Status -->
+      <div class="seção-título" style="margin-top:14px">🔄 Alterar Status</div>
+      <div class="campo-edit">
+        <label>Novo status</label>
+        <select id="me-status" onchange="atualizarTimelineModal()">
+          <option value="novo">Novo 🔴</option>
+          <option value="pendente">Pendente ⏳</option>
+          <option value="confirmado">Confirmado ✅</option>
+          <option value="em_preparo">Em preparo 🍦</option>
+          <option value="pronto">Pronto 📦</option>
+          <option value="enviado">Enviado 🚚</option>
+          <option value="entregue">Entregue 🎉</option>
+          <option value="cancelado">Cancelado ⚫</option>
+        </select>
+      </div>
+      <!-- Observação interna -->
+      <div class="campo-edit">
+        <label>Observação interna (não visível ao cliente)</label>
+        <textarea id="me-obs" rows="3" placeholder="Ex.: Confirmado pagamento PIX às 14h, produzindo quinta..."></textarea>
+      </div>
+      <!-- Histórico de status -->
+      <div class="seção-título" style="margin-top:14px">📋 Histórico</div>
+      <div id="me-historico" style="max-height:200px;overflow-y:auto;background:#f8f9fa;border-radius:8px;padding:10px;font-size:.8rem;color:#444"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cinza" onclick="copiarPedidoAdmin(_encModalNum)">📲 WhatsApp</button>
+      <button class="btn btn-verde" onclick="notificarClienteStatus()">💬 Notificar Cliente</button>
+      <button class="btn btn-laranja" onclick="salvarModalEncomenda()">💾 Salvar</button>
+      <button class="btn btn-cinza" onclick="fecharModalEncomenda()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL PONTOS CLIENTE ═══════════════════ -->
+<div id="modal-pontos" class="modal-overlay" onclick="if(event.target===this)fecharModalPontos()">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <h3>💰 Ajuste de Pontos — <span id="mp-nome"></span></h3>
+      <button class="modal-close" onclick="fecharModalPontos()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="background:#e8f5e9;border-radius:10px;padding:12px 20px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:900;color:#2e7d32" id="mp-saldo">0</div>
+          <div style="font-size:.75rem;color:#555">Saldo atual</div>
+        </div>
+        <div style="background:#fff3e0;border-radius:10px;padding:12px 20px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:900;color:#e65100" id="mp-saldo-novo">0</div>
+          <div style="font-size:.75rem;color:#555">Novo saldo</div>
+        </div>
+      </div>
+      <div class="campo-edit">
+        <label>Quantidade (use negativo para débito)</label>
+        <input type="number" id="mp-qtd" placeholder="Ex: 5 ou -3" oninput="previewNovoPontos()"/>
+      </div>
+      <div class="campo-edit">
+        <label>Tipo do ajuste</label>
+        <select id="mp-tipo">
+          <option value="bonus">🎁 Bônus</option>
+          <option value="correcao">🔧 Correção</option>
+          <option value="resgate">🏆 Resgate</option>
+          <option value="expiracao">⏰ Expiração</option>
+          <option value="manual">✏️ Manual (admin)</option>
+        </select>
+      </div>
+      <div class="campo-edit">
+        <label>Motivo do ajuste</label>
+        <input type="text" id="mp-motivo" placeholder="Ex.: Compra de caixa 5L, resgate milkshake..."/>
+      </div>
+      <div class="seção-título" style="margin-top:12px">📋 Histórico de Transações</div>
+      <div id="mp-historico" style="max-height:220px;overflow-y:auto;background:#f8f9fa;border-radius:8px;padding:10px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-salvar" onclick="salvarModalPontos()">💾 Salvar Ajuste</button>
+      <button class="btn btn-cinza" onclick="fecharModalPontos()">✕ Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
+<div class="seção" id="sec-rastreio" style="display:none">
+  <div class="card">
+    <div class="card-header">
+      <h2>🔍 Rastreio de Encomenda</h2>
+      <span style="font-size:.8rem;color:#888">Consulta como o cliente vê o pedido</span>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <input type="text" id="rastreio-busca" style="flex:1;min-width:200px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none" placeholder="Digite nº do pedido (ITA-001-...) ou telefone..."/>
+        <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
+      </div>
+      <div id="rastreio-resultado">
+        <p style="color:#aaa;text-align:center;padding:30px;font-size:.9rem">Digite o número do pedido ou telefone para rastrear.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Últimas encomendas para acesso rápido -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><h2>⏱️ Encomendas Recentes</h2></div>
+    <div class="card-body" id="rastreio-recentes">
+      <p style="color:#aaa;font-size:.85rem">Carregando...</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEÇÃO AUDITORIA ════════════════════════ -->
+<div class="seção" id="sec-auditoria" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
+      <p style="font-size:.82rem;color:#888;margin-top:2px">Inconsistências detectadas automaticamente nos dados</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="audit-filtro-mod" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todos módulos</option>
+        <option value="clientes">Clientes</option>
+        <option value="encomendas">Encomendas</option>
+        <option value="fidelidade">Fidelidade</option>
+      </select>
+      <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todas severidades</option>
+        <option value="critica">Crítica</option>
+        <option value="alta">Alta</option>
+        <option value="media">Média</option>
+        <option value="baixa">Baixa</option>
+      </select>
+      <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
+      <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
+    </div>
+  </div>
+  <!-- Stats de auditoria -->
+  <div class="stats-row" id="audit-stats">
+    <div class="stat-card" style="border-color:#c62828"><div class="num" id="audit-cnt-critica" style="color:#c62828">0</div><div class="txt">Críticas</div></div>
+    <div class="stat-card" style="border-color:#e65100"><div class="num" id="audit-cnt-alta" style="color:#e65100">0</div><div class="txt">Altas</div></div>
+    <div class="stat-card" style="border-color:#f57c00"><div class="num" id="audit-cnt-media" style="color:#f57c00">0</div><div class="txt">Médias</div></div>
+    <div class="stat-card" style="border-color:#43a047"><div class="num" id="audit-cnt-baixa" style="color:#43a047">0</div><div class="txt">Baixas</div></div>
+    <div class="stat-card"><div class="num" id="audit-cnt-total">0</div><div class="txt">Total</div></div>
+  </div>
+  <!-- Lista de inconsistências -->
+  <div id="audit-lista">
+    <p style="color:#aaa;text-align:center;padding:30px">Clique em "Re-auditar" para detectar inconsistências.</p>
   </div>
 </div>
 
