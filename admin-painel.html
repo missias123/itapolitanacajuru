@@ -31,8 +31,19 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .admin-header .logo-admin-header{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
 .btn-sair:hover{background:rgba(255,255,255,.35)}
-.admin-nav{background:#fff;border-bottom:2px solid #f0f2f5;padding:0 16px;display:flex;gap:4px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
-.nav-btn{padding:12px 16px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s;white-space:nowrap}
+.admin-nav,
+.admin-tab-container,
+.nav-abas-wrapper{
+background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;overflow-x:visible;gap:4px;padding:8px}
+@media (max-width:480px){
+  .admin-nav,
+  .admin-tab-container,
+  .nav-abas-wrapper{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .admin-nav::-webkit-scrollbar,
+  .admin-tab-container::-webkit-scrollbar,
+  .nav-abas-wrapper::-webkit-scrollbar{display:none}
+}
+.nav-btn{padding:10px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s}
 .nav-btn:hover{color:#e65100}
 .nav-btn.ativo{color:#e65100;border-bottom-color:#e65100}
 .btn-acao-rapida{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s,opacity .15s}
@@ -159,16 +170,14 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 /* Mobile admin */
 @media (max-width: 480px) {
   .admin-nav { 
-    overflow-x: auto !important; 
-    white-space: nowrap !important; 
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding: 4px 8px !important;
+    gap: 2px !important;
   }
-  .admin-nav::-webkit-scrollbar { display: none; }
   .nav-btn { 
     font-size: 0.75rem !important; 
     padding: 6px 10px !important;
-    min-width: auto !important;
   }
   .admin-header { 
     flex-direction: column !important; 
@@ -210,7 +219,7 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 
 /* Tablet admin */
 @media (min-width: 481px) and (max-width: 1024px) {
-  .admin-nav { overflow-x: auto; white-space: nowrap; }
+  .admin-nav { flex-wrap: wrap; gap: 3px; }
   .nav-btn { font-size: 0.82rem; padding: 7px 12px; }
   .admin-content, .sec-admin { padding: 16px 20px; }
   .dashboard-cards { grid-template-columns: repeat(3, 1fr); }
@@ -496,7 +505,6 @@ body { overflow-x: hidden; }
   </div>
 </div>
 <div id="admin-app">
-  <div id="admin-restaura-aviso" style="display:none;position:fixed;right:14px;bottom:14px;z-index:9999;max-width:360px;background:#1b5e20;color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,.22);font-size:.84rem;line-height:1.45;border:2px solid rgba(255,255,255,.18)">✅ Restauração concluída: encontrados <strong>estrelas_ciclo.json</strong>, cronograma, histórico e códigos da aba Corrida das Estrelas no admin.</div>
   <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
     <span style="font-size:1.1rem">⚠️</span>
     <span><strong>Token GitHub expirado ou inválido.</strong> Dados em modo somente leitura — <strong>alterações não serão salvas</strong>. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Admin+Itapolitana" target="_blank" style="color:#bf360c;font-weight:700;text-decoration:underline">Criar novo token aqui ↗</a></span>
@@ -2198,111 +2206,6 @@ Talento</textarea>
     </div>
 
     <!-- SEÇÃO ESTRELA DO DIA -->
-    <div class="seção" id="sec-estrela">
-      <div class="card">
-        <div class="card-header">
-          <h2>🌟 Configuração da Estrela do Dia</h2>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-vermelho" data-fid-write onclick="panicButton()" title="Desativa a estrela imediatamente em caso de erro">🚨 BOTÃO DE PÂNICO</button>
-            <button class="btn btn-verde" id="btn-atualizar-estrelas" onclick="carregarEstrelas()">🔄 Atualizar Agora</button>
-          </div>
-        </div>
-        <div class="card-body">
-          <!-- RELATÓRIO MENSAL -->
-          <div id="box-relatorio-estrela" style="background:#e3f2fd;border:2px solid #90caf9;border-radius:12px;padding:16px;margin-bottom:20px">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-              <h3 style="font-size:.9rem;color:#0d47a1;margin:0">📄 Relatório Mensal — Quem Ganhou a Estrela</h3>
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn btn-verde" onclick="gerarRelatorioEstrela()">📊 Gerar Relatório do Mês</button>
-                <button class="btn btn-vermelho" data-fid-write onclick="limparCicloEstrela()">🧹 Limpar Ciclo (Dia 01)</button>
-              </div>
-            </div>
-            <div id="relatorio-estrela-conteudo" style="font-size:.85rem;color:#333">
-              <p style="color:#999;text-align:center;padding:10px">Clique em “Gerar Relatório” para ver quem ganhou este mês.</p>
-            </div>
-          </div>
-
-          <!-- HISTÓRICO DE CAPTURAS -->  
-          <div style="background:#e8f5e9;border:2px solid #a5d6a7;border-radius:12px;padding:16px;margin-bottom:20px">
-            <h3 style="font-size:.9rem;color:#1b5e20;margin-bottom:10px">🏆 Histórico de Estrelas Capturadas</h3>
-            <div class="tabela-wrap">
-              <table class="tabela" id="tabela-capturas">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Horário Aparição</th>
-                    <th>Capturado Por</th>
-                    <th>Celular</th>
-                    <th>Capturado Em</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-capturas">
-                  <tr><td colspan="5" style="text-align:center;padding:20px;color:#888">Nenhuma captura registrada ainda.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div style="background:#fff8f0;border:2px solid #ffcc80;border-radius:12px;padding:16px;margin-bottom:20px">
-            <h3 style="font-size:.9rem;color:#bf360c;margin-bottom:10px">📅 Cronograma de Aparição (Dias e Horas Definidos)</h3>
-            <div class="tabela-wrap">
-              <table class="tabela" id="tabela-estrelas">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Horário</th>
-                    <th>Status</th>
-                    <th>Capturado Por</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-estrelas-agendadas">
-                  <!-- Preenchido via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="seção-título">Agendar Nova Estrela</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:end">
-            <div class="campo-edit">
-              <label>Data</label>
-              <input type="date" id="estrela-data">
-            </div>
-            <div class="campo-edit">
-              <label>Horário (HH:MM)</label>
-              <input type="time" id="estrela-hora">
-            </div>
-            <div class="campo-edit">
-              <button class="btn btn-laranja" data-fid-write style="width:100%;margin-bottom:16px" onclick="agendarEstrela()">➕ Agendar Estrela</button>
-            </div>
-          </div>
-
-          <!-- ADICIONAR ESTRELA MANUALMENTE -->
-          <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:12px;padding:16px;margin-top:20px">
-            <h3 style="font-size:.9rem;color:#bf360c;margin-bottom:10px">➕ Adicionar Estrela Manualmente para Cliente</h3>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
-              <div style="flex:2;min-width:200px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Nome do Cliente</label>
-                <input type="text" id="add-estrela-nome" placeholder="Nome completo" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
-              </div>
-              <div style="flex:1;min-width:150px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">WhatsApp</label>
-                <input type="tel" id="add-estrela-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
-              </div>
-              <div style="flex:1;min-width:120px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Qtd Estrelas</label>
-                <input type="number" id="add-estrela-qtd" value="1" min="1" max="5" style="width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
-              </div>
-              <button class="btn btn-laranja" data-fid-write onclick="adicionarEstrelaManual()" style="padding:11px 20px">➕ Adicionar Estrela</button>
-            </div>
-            <p style="font-size:.75rem;color:#888;margin-top:8px">Isso adicionará estrelas diretamente ao ranking do ciclo atual para este cliente.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="seção" id="sec-config">
       <div class="card">
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
@@ -2616,8 +2519,8 @@ const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
-const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',estrelas:'estrelas_ciclo.json',promocoes:'dados/promocoes.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,estrelas:null,estrelasSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
+const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 // Dirty-check: rastreia se há alterações não salvas na aba atual
 let adminDirty=false;
 function markDirty(){adminDirty=true;}
@@ -2799,17 +2702,15 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  const[pr,cl,fi,en,prod,est,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.estrelas),ghGet(PATHS.promocoes)]);
+  const[pr,cl,fi,en,prod,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
   if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
   if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
-  if(est.content){STATE.estrelas=est.content;STATE.estrelasSha=est.sha;}
   if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-  atualizarAvisoRestauracaoAdmin();
   // Avisar quando dados foram carregados via fallback (sem SHA = somente leitura, salvar vai falhar)
-  const semToken=[pr,cl,fi,en,prod,est,promos].some(r=>r.content&&r.readonly);
+  const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly);
   const banner=document.getElementById('aviso-token-expirado');
   if(banner)banner.style.display=semToken?'flex':'none';
   ocultarLoading();
@@ -2837,7 +2738,7 @@ function irPara(seção,btn){
     'encomendas-admin':['encomendas','sabores','estoque'],
     'produtos-admin': ['produtos'],
     'promocao-admin': ['promoção','participantes'],
-    'fidelidade-admin':['clientes','fidelidade','estrela'],
+    'fidelidade-admin':['clientes','fidelidade'],
     'dicas-admin':    ['depoimentos'],
     // acesso direto mantido para botão Qualidade do Dashboard
     'qualidade':      ['qualidade']
@@ -6125,280 +6026,6 @@ function removerSaborComConfirm(nome, tipo) {
     'aviso'
   );
 }
-
-// ── ESTRELA DO DIA ──────────────────────────────────────────────────────────
-function atualizarAvisoRestauracaoAdmin(){
-  const el=document.getElementById('admin-restaura-aviso');
-  if(!el)return;
-  el.style.display=STATE.estrelas?'block':'none';
-}
-async function carregarEstrelas() {
-  mostrarLoading('Carregando cronograma de estrelas...');
-  try {
-    const dados = await ghGet(PATHS.estrelas);
-    if (!dados.content) throw new Error('Erro ao carregar arquivo');
-    STATE.estrelas = dados.content;
-    STATE.estrelasSha = dados.sha;
-    atualizarAvisoRestauracaoAdmin();
-    renderizarEstrelas();
-    const btnRefresh = document.getElementById('btn-atualizar-estrelas');
-    if (btnRefresh) {
-      btnRefresh.innerHTML = '✅ Atualizado!';
-      setTimeout(() => { btnRefresh.innerHTML = '🔄 Atualizar Agora'; }, 2000);
-    }
-  } catch (e) {
-    console.error(e);
-    toast('❌ Erro ao carregar estrelas', 'erro');
-    const btnRefresh = document.getElementById('btn-atualizar-estrelas');
-    if (btnRefresh) {
-      btnRefresh.innerHTML = '❌ Erro';
-      setTimeout(() => { btnRefresh.innerHTML = '🔄 Atualizar Agora'; }, 2000);
-    }
-  }
-  ocultarLoading();
-}
-function renderizarEstrelas() {
-  const lista = document.getElementById('lista-estrelas-agendadas');
-  const listaCapturas = document.getElementById('lista-capturas');
-  if (!lista || !STATE.estrelas || !STATE.estrelas.horariosDia) return;
-  const horarios = STATE.estrelas.horariosDia;
-  const ranking = STATE.estrelas.rankingAtual || {};
-  const nomesPorCel = {};
-  Object.values(ranking).forEach(u => { if (u.celular) nomesPorCel[u.celular] = u.nome; });
-  const html = Object.keys(horarios).sort().reverse().map(data => {
-    const h = horarios[data];
-    const foiCapturada = h.status === 'capturada' || h.status === 'capturado';
-    const statusClass = foiCapturada ? 'cod-status-usado' : 'cod-status-ok';
-    const statusTxt = foiCapturada ? '✅ Capturada' : '🌟 Disponível';
-    let capturadoPorTxt = '—';
-    if (foiCapturada && h.capturadoPor) {
-      const nome = nomesPorCel[h.capturadoPor] || '';
-      capturadoPorTxt = nome ? `<strong>${nome}</strong><br><small style="color:#888">${h.capturadoPor}</small>` : h.capturadoPor;
-    }
-    return `
-      <tr>
-        <td style="font-weight:700">${data.split('-').reverse().join('/')}</td>
-        <td style="font-family:monospace;font-weight:700;font-size:1.1rem">${h.horario || h.hora || '—'}</td>
-        <td class="${statusClass}">${statusTxt}</td>
-        <td style="font-size:.82rem">${capturadoPorTxt}</td>
-        <td style="display:flex;gap:4px;flex-wrap:wrap">
-          ${foiCapturada ? `<button class="btn btn-laranja btn-sm" data-fid-write onclick="resetarCaptura('${data}')" title="Resetar captura — volta para Disponível">🔄</button>` : ''}
-          <button class="btn btn-vermelho btn-sm" data-fid-write onclick="removerEstrela('${data}')">🗑️</button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-  lista.innerHTML = html || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888">Nenhuma estrela agendada.</td></tr>';
-  if (listaCapturas) {
-    const capturadas = Object.keys(horarios).filter(d => horarios[d].status === 'capturada' || horarios[d].status === 'capturado').sort().reverse();
-    if (capturadas.length === 0) {
-      listaCapturas.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888">Nenhuma captura registrada ainda.</td></tr>';
-    } else {
-      listaCapturas.innerHTML = capturadas.map(data => {
-        const h = horarios[data];
-        const nome = nomesPorCel[h.capturadoPor] || h.capturadoPor || '—';
-        const cel = h.capturadoPor || '—';
-        let capturadoEm = '—';
-        if (h.capturadoEm) {
-          try {
-            const dt = new Date(h.capturadoEm);
-            capturadoEm = dt.toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'});
-          } catch(e) { capturadoEm = h.capturadoEm; }
-        }
-        return `
-          <tr>
-            <td style="font-weight:700">${data.split('-').reverse().join('/')}</td>
-            <td style="font-family:monospace;font-weight:700">${h.horario || h.hora || '—'}</td>
-            <td style="font-weight:700;color:#1b5e20;display:flex;align-items:center;gap:8px">
-              <button class="btn btn-vermelho btn-sm" data-fid-write onclick="excluirCaptura('${data}')" title="Excluir este registro de captura">🗑️</button>
-              ${nome}
-            </td>
-            <td style="font-size:.82rem;color:#555">${cel}</td>
-            <td style="font-size:.82rem">${capturadoEm}</td>
-            <td></td>
-          </tr>
-        `;
-      }).join('');
-    }
-  }
-  fidApplyReadOnlyGuard();
-}
-async function adicionarEstrelaManual() {
-  if(!fidRequireWrite())return;
-  const nome = (document.getElementById('add-estrela-nome')?.value || '').trim();
-  const cel = (document.getElementById('add-estrela-cel')?.value || '').trim();
-  const qtd = parseInt(document.getElementById('add-estrela-qtd')?.value || '1',10);
-  const celLimpo = cel.replace(/\D/g,'');
-  if (!nome || celLimpo.length < 10) { toast('⚠️ Informe nome e celular válidos!', 'aviso'); return; }
-  if (!STATE.estrelas) STATE.estrelas = { rankingAtual:{}, horariosDia:{} };
-  if (!STATE.estrelas.rankingAtual) STATE.estrelas.rankingAtual = {};
-  if (!STATE.estrelas.rankingAtual[celLimpo]) {
-    STATE.estrelas.rankingAtual[celLimpo] = { nome, celular: celLimpo, estrelas: 0, capturas: [] };
-  }
-  STATE.estrelas.rankingAtual[celLimpo].estrelas += qtd;
-  STATE.estrelas.rankingAtual[celLimpo].capturas.push({ data: new Date().toISOString(), tipo: 'manual', qtd });
-  mostrarLoading('Adicionando estrela manual...');
-  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: adicionar estrela manual para ' + nome);
-  ocultarLoading();
-  if (ok) {
-    toast('✅ Estrela adicionada com sucesso!', 'sucesso');
-    document.getElementById('add-estrela-nome').value = '';
-    document.getElementById('add-estrela-cel').value = '';
-    renderizarEstrelas();
-  }
-}
-async function agendarEstrela() {
-  if(!fidRequireWrite())return;
-  const data = document.getElementById('estrela-data').value;
-  const hora = document.getElementById('estrela-hora').value;
-  if (!data || !hora) { toast('⚠️ Preencha data e hora!', 'aviso'); return; }
-  if (!STATE.estrelas) STATE.estrelas = { rankingAtual:{}, horariosDia:{} };
-  if (!STATE.estrelas.horariosDia) STATE.estrelas.horariosDia = {};
-  STATE.estrelas.horariosDia[data] = { horario: hora, status: 'disponivel', capturadoPor: null, capturadoEm: null };
-  mostrarLoading('Salvando agendamento...');
-  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: agendar estrela para ' + data + ' às ' + hora);
-  ocultarLoading();
-  if (ok) { toast('✅ Estrela agendada com sucesso!', 'sucesso'); renderizarEstrelas(); }
-}
-async function removerEstrela(data) {
-  if(!fidRequireWrite())return;
-  if (!confirm('Deseja remover a estrela do dia ' + data + '?')) return;
-  delete STATE.estrelas.horariosDia[data];
-  mostrarLoading('Removendo estrela...');
-  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: remover estrela do dia ' + data);
-  ocultarLoading();
-  if (ok) { toast('✅ Estrela removida!', 'sucesso'); renderizarEstrelas(); }
-}
-async function resetarCaptura(data) {
-  if(!fidRequireWrite())return;
-  if (!confirm('🔄 Resetar a captura do dia ' + data.split('-').reverse().join('/') + '?\n\nIsso vai marcar a estrela como Disponível novamente e apagar o registro de quem capturou.')) return;
-  if (STATE.estrelas.horariosDia[data]) {
-    STATE.estrelas.horariosDia[data].status = 'disponivel';
-    STATE.estrelas.horariosDia[data].capturadoPor = null;
-    STATE.estrelas.horariosDia[data].capturadoEm = null;
-  }
-  mostrarLoading('Resetando captura...');
-  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: resetar captura do dia ' + data);
-  ocultarLoading();
-  if (ok) { toast('✅ Captura resetada! Estrela disponível novamente.', 'sucesso'); renderizarEstrelas(); }
-}
-async function excluirCaptura(data) {
-  if(!fidRequireWrite())return;
-  if (!confirm('🗑️ Excluir o registro de captura do dia ' + data.split('-').reverse().join('/') + '?\n\nIsso vai remover o registro da tabela de histórico e marcar a estrela como Disponível novamente.')) return;
-  if (STATE.estrelas.horariosDia[data]) {
-    STATE.estrelas.horariosDia[data].status = 'disponivel';
-    STATE.estrelas.horariosDia[data].capturadoPor = null;
-    STATE.estrelas.horariosDia[data].capturadoEm = null;
-  }
-  mostrarLoading('Excluindo captura...');
-  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', 'Admin: excluir captura do dia ' + data);
-  ocultarLoading();
-  if (ok) { toast('✅ Captura excluída! Registro removido do histórico.', 'sucesso'); renderizarEstrelas(); }
-}
-function gerarRelatorioEstrela() {
-  if (!STATE.estrelas) { toast('⚠️ Dados não carregados. Clique em Atualizar Agora.', 'aviso'); return; }
-  const horarios = STATE.estrelas.horariosDia || {};
-  const ranking  = STATE.estrelas.rankingAtual || {};
-  const nomesPorCel = {};
-  Object.values(ranking).forEach(u => { if (u.celular) nomesPorCel[u.celular] = u.nome; });
-  const capturadas = Object.keys(horarios).filter(d => horarios[d].status === 'capturada' || horarios[d].status === 'capturado').sort();
-  const container = document.getElementById('relatorio-estrela-conteudo');
-  if (!container) return;
-  if (capturadas.length === 0) {
-    container.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Nenhuma estrela capturada ainda neste ciclo.</p>';
-    return;
-  }
-  const porMes = {};
-  capturadas.forEach(data => {
-    const mes = data.substring(0, 7);
-    if (!porMes[mes]) porMes[mes] = [];
-    porMes[mes].push(data);
-  });
-  let html = '';
-  Object.keys(porMes).sort().reverse().forEach(mes => {
-    const [ano, m] = mes.split('-');
-    const nomeMes = new Date(ano, parseInt(m,10)-1, 1).toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
-    html += `<div style="margin-bottom:20px"><div style="background:#0d47a1;color:#fff;padding:8px 14px;border-radius:8px 8px 0 0;font-weight:900;font-size:.88rem">📅 ${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} — ${porMes[mes].length} estrela(s) capturada(s)</div>`;
-    html += `<table style="width:100%;border-collapse:collapse;background:#fff;border-radius:0 0 8px 8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)"><thead><tr style="background:#e3f2fd;font-size:.8rem"><th style="padding:8px 10px;text-align:left">Data</th><th style="padding:8px 10px;text-align:left">Hora Aparição</th><th style="padding:8px 10px;text-align:left">Nome</th><th style="padding:8px 10px;text-align:left">WhatsApp</th><th style="padding:8px 10px;text-align:left">Capturada Em</th></tr></thead><tbody>`;
-    porMes[mes].forEach(data => {
-      const h = horarios[data];
-      const cel = h.capturadoPor || '—';
-      const nome = nomesPorCel[cel] || cel;
-      const horaAparicao = h.horario || h.hora || '—';
-      let capturadoEm = '—';
-      if (h.capturadoEm) {
-        try { capturadoEm = new Date(h.capturadoEm).toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'}); } catch(e) {}
-      }
-      const dataFmt = data.split('-').reverse().join('/');
-      const waLink = cel !== '—' ? `<a href="https://wa.me/55${cel.replace(/\D/g,'')}" target="_blank" style="color:#e65100;font-weight:700">${cel}</a>` : '—';
-      html += `<tr style="border-top:1px solid #e3f2fd;font-size:.82rem"><td style="padding:7px 10px;font-weight:700">${dataFmt}</td><td style="padding:7px 10px;font-family:monospace;font-weight:700;color:#0d47a1">${horaAparicao}</td><td style="padding:7px 10px;font-weight:700;color:#1b5e20">${nome}</td><td style="padding:7px 10px">${waLink}</td><td style="padding:7px 10px;color:#555">${capturadoEm}</td></tr>`;
-    });
-    html += `</tbody></table></div>`;
-  });
-  container.innerHTML = html;
-  toast('📊 Relatório gerado com sucesso!', 'sucesso');
-}
-async function limparCicloEstrela() {
-  if(!fidRequireWrite())return;
-  if (!STATE.estrelas) { toast('⚠️ Dados não carregados.', 'aviso'); return; }
-  if (!confirm('🧹 Limpar ciclo atual da Corrida das Estrelas?\n\nIsso vai manter o histórico de capturas, zerar o ranking e gerar novos horários para o próximo mês.')) return;
-  const hoje = new Date();
-  const mesAno = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
-  gerarRelatorioEstrela();
-  Object.keys(STATE.estrelas.rankingAtual || {}).forEach(cel => {
-    STATE.estrelas.rankingAtual[cel].estrelas = 0;
-    STATE.estrelas.rankingAtual[cel].ultimaCaptura = null;
-    STATE.estrelas.rankingAtual[cel].diaCaptura = null;
-  });
-  const proximo = new Date(hoje.getFullYear(), hoje.getMonth()+1, 1);
-  const anoP = proximo.getFullYear();
-  const mesP = proximo.getMonth()+1;
-  const diasNoMes = new Date(anoP, mesP, 0).getDate();
-  const novosHorarios = {};
-  Object.keys(STATE.estrelas.horariosDia || {}).forEach(data => {
-    const h = STATE.estrelas.horariosDia[data];
-    if (h.status === 'capturada' || h.status === 'capturado') novosHorarios[data] = h;
-  });
-  const horariosGerados = [];
-  for (let d = 1; d <= diasNoMes; d++) {
-    const data = `${anoP}-${String(mesP).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    let tentativas = 0, horario = null;
-    while (!horario && tentativas < 200) {
-      tentativas++;
-      const h = Math.floor(Math.random() * 12) + 10;
-      const m = Math.floor(Math.random() * 60);
-      const novo = h * 60 + m;
-      const semConflito = horariosGerados.every(x => Math.abs(x - novo) >= 60);
-      if (semConflito) { horario = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; horariosGerados.push(novo); }
-    }
-    novosHorarios[data] = { horario: horario || '14:00', status: 'disponivel', capturadoPor: null, capturadoEm: null };
-  }
-  STATE.estrelas.horariosDia = novosHorarios;
-  STATE.estrelas.cicloAtual = STATE.estrelas.cicloAtual || {};
-  STATE.estrelas.cicloAtual.mesAno = `${anoP}-${String(mesP).padStart(2,'0')}`;
-  STATE.estrelas.cicloAtual.dataInicio = proximo.toISOString();
-  STATE.estrelas.cicloAtual.dataFim = new Date(anoP, mesP, 1).toISOString();
-  STATE.estrelas.estrelaCapturada = { status: 'disponivel', capturadoPor: null, capturadoEm: null, tokenResgate: null, validadeToken: null };
-  mostrarLoading('Limpando ciclo e gerando novo mês...');
-  const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', `Admin: limpar ciclo ${mesAno} e iniciar ${anoP}-${String(mesP).padStart(2,'0')}`);
-  ocultarLoading();
-  if (ok) { toast('✅ Ciclo limpo e cronograma recriado.', 'sucesso'); renderizarEstrelas(); }
-}
-async function panicButton() {
-  if(!fidRequireWrite())return;
-  if (!confirm('🚨 ATENÇÃO: Isso desativará a estrela de hoje imediatamente. Deseja continuar?')) return;
-  const hoje = new Date().toISOString().split('T')[0];
-  if (STATE.estrelas?.horariosDia && STATE.estrelas.horariosDia[hoje]) {
-    STATE.estrelas.horariosDia[hoje].status = 'capturada';
-    mostrarLoading('Ativando pânico...');
-    const ok = await salvarArquivo(PATHS.estrelas, STATE.estrelas, 'estrelasSha', '🚨 ADMIN: BOTÃO DE PÂNICO ATIVADO');
-    ocultarLoading();
-    if (ok) { toast('🚨 Estrela desativada com sucesso!', 'sucesso'); renderizarEstrelas(); }
-  } else {
-    toast('⚠️ Nenhuma estrela ativa hoje para desativar.', 'aviso');
-  }
-}
-
 // ═══════════════════════════════════════════════════════════
 // PRODUTOS / COMBOS — ADMIN CRUD
 // ═══════════════════════════════════════════════════════════

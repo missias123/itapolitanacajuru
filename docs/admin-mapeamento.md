@@ -23,7 +23,6 @@ dados/ JSON files (main branch — público via GitHub Raw CDN)
   ├── dados/fidelidade.json   ← códigos e configurações do clube
   ├── dados/clientes.json     ← cadastros de clientes
   ├── dados/encomendas.json   ← pedidos de encomenda
-  └── estrelas_ciclo.json     ← ciclo atual da "Corrida das Estrelas"
   ↓  GET via GitHub Raw (sem autenticação)
 SITE (index.html, promocao.html, fidelidade.html, encomendas.html, dicas.html)
 ```
@@ -57,7 +56,6 @@ O admin é organizado em abas/seções. Cada módulo tem campos editáveis e um 
 | Encomendas | Listagem + troca de status | `encomendas.json` |
 | Clientes | Lista + bloqueio + deduplicação | `clientes.json` |
 | Fidelidade | Configuração prêmios, códigos, lote | `config.json` + `fidelidade.json` |
-| Corrida das Estrelas | Meta, horário, ranking | `estrelas_ciclo.json` |
 | Textos do Site | Hero Fidelidade, textos Promoção, SEO | `config.json` |
 | Configurações | WhatsApp, horário, endereço, CNPJ, senha | `config.json` |
 | Dicas/Depoimentos | Depoimentos + dicas | `config.json` |
@@ -162,13 +160,9 @@ Esta área tem **duas fontes de dados** (`promo.json` e `config.json`) lidas em 
 
 > ⚠️ **PONTO FRÁGIL:** A configuração de prêmios é salva **em dois arquivos** (`config.json` e `fidelidade.json`). Se uma das gravações falhar (race condition ou erro de rede), os dados ficam em estado inconsistente entre os dois arquivos.
 
-### 2.7 Módulo: CORRIDA DAS ESTRELAS
 
 | Campo no Admin | Arquivo | Onde aparece no site | Sincronizado? | Observações |
 |----------------|---------|----------------------|---------------|-------------|
-| Meta de estrelas | `estrelas_ciclo.json` | `fidelidade.html` (motor-estrelas-v2.js) | ✅ Sim | |
-| Horário de hoje | `estrelas_ciclo.json` | Token gerado via `motor-estrelas-v2.js` | ✅ Sim | |
-| Ranking (capturas) | `estrelas_ciclo.json` | `fidelidade.html` | ✅ Sim | |
 
 ### 2.8 Módulo: ENCOMENDAS
 
@@ -413,5 +407,4 @@ Estimativa: **~65% sincronizado**. Os fluxos críticos de negócio (cardápio, p
 | `dados/fidelidade.json` | ✅ (Fidelidade, códigos) | ✅ | `fidelidade.html` |
 | `dados/clientes.json` | ✅ (Clientes) | ✅ | `fidelidade.html` |
 | `dados/encomendas.json` | ✅ (Encomendas - status) | Escrito por | `enc-v2.js` (clientes fazem pedidos) |
-| `estrelas_ciclo.json` | ✅ (Corrida das Estrelas) | ✅ | `motor-estrelas-v2.js` |
 | `scripts/products.js` | ❌ (arquivo estático) | Fallback | `encomendas.html` |

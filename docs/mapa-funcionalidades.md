@@ -10,7 +10,6 @@
 | Página | URL | Descrição |
 |--------|-----|-----------|
 | Home | `/index.html` (ou `/`) | Página principal do site — hero, cardápio inline, promoções, info, Ita Bot, rodapé |
-| Fidelidade | `/fidelidade.html` | Programa de fidelidade + wizard caça à estrela |
 | Promoções | `/promocao.html` | Banner de promoção vigente |
 | Encomendas | `/encomendas.html` | Formulário de encomenda (tortas, eventos, etc.) |
 | Cardápio | `/carrossel.html` | Carrossel de fotos do cardápio |
@@ -85,21 +84,14 @@
 
 ---
 
-## 5. Caça à Estrela (Jogo)
 
 | Aspecto | Detalhes |
 |---------|----------|
-| Motor | `scripts/motor-estrelas-v2.js` |
-| Dados | `estrelas_ciclo.json` (raiz do repo) |
-| Ativação | Estrela aparece automaticamente no site quando `motorEstrelas.inicializar()` detecta uma estrela ativa no ciclo |
 | Token | Gerado pelo motor: formato `EST_xxx`, validade 8 minutos |
-| Fluxo do usuário | Usuário vê a estrela flutuante no site → Clica → Wizard na `fidelidade.html#caca-estrela` → Login/cadastro → Captura o prêmio |
 | Wizard (5 etapas) | Etapa 1: Clicar na estrela. Etapa 2: Inserir celular. Etapa 3: Confirmar identidade. Etapa 4: Confirmar resgate. Etapa 5: Tela de sucesso |
 | Testes | Verificar que não há erros JS, que o botão de captura aparece e que a tela não trava |
 
 ### Referência no Ita Bot (FAQ)
-- `mostrarResposta('estrela')` → abre resposta sobre caça à estrela
-- Link: `fidelidade.html#caca-estrela`
 
 ---
 
@@ -162,7 +154,6 @@
 - [ ] Clicar em todos os botões de navegação
 - [ ] Testar formulário de encomendas (campos vazios + campos preenchidos)
 - [ ] Testar wizard de fidelidade (inserir celular, validar código)
-- [ ] Testar wizard de caça à estrela
 - [ ] Verificar abertura e funcionamento do Ita Bot
 - [ ] Verificar manifest.json e registro do service worker
 - [ ] Verificar banner de cookies e comportamento do consent

@@ -44,10 +44,7 @@
 
 **Seções principais:**
 - Hero banner com chips de prêmios (10 pts = Milkshake 300ml · 30 pts = Caixa 7 Bolas)
-- Banner guia "Estrela Dourada Capturada" (aparece ao capturar estrela)
 - Seção reivindicar estrela (exibida dinamicamente)
-- Wizard linear da Estrela Dourada (cadastro/login ao capturar)
-- Seção de programas: Corrida das Estrelas + Sorteio Mensal
 - Painel do cliente (pontos, histórico de códigos, estrelas)
 - Card "Inserir Código" (validação de cupom)
 - Card "Histórico de Códigos"
@@ -55,7 +52,6 @@
 - Regulamento completo (accordion)
 
 **Funcionalidades JS ativas:**
-- `MotorEstrelasV2` (scripts/motor-estrelas-v2.js) — controle de estrelas
 - Sistema de login/cadastro via localStorage + GitHub API
 - Validação de cupons (busca em `dados/fidelidade_indice.json`)
 - Wizard de captura de estrela (etapas: captura → identificação → confirmação)
@@ -192,8 +188,6 @@
 
 ## 2. Scripts JS (`scripts/`)
 
-### `motor-estrelas-v2.js`
-**O que faz:** Sistema de gamificação "Corrida das Estrelas" (Caça à Estrela). Controla o aparecimento do mascote Itamanduá em horários surpresa, captura de estrelas, validação de vencedor mensal, integração com localStorage e GitHub API.  
 **Usado em:** `fidelidade.html`
 
 ### `products.js`
@@ -243,7 +237,6 @@
 | `faq_horarios_localizacao.json` | FAQs sobre horário, endereço, cidades, contato, delivery, pagamento | `index.html` (via loader ItaBot) | — |
 | `faq_cardapio.json` | FAQs sobre cardápio: sabores, açaí, picolés, milkshake, taças, sobremesas, dietas | `index.html` (via loader ItaBot) | — |
 | `faq_encomendas.json` | FAQs sobre encomendas: prazo, caixas, torta, atacado, carrinho, entrega | `index.html` (via loader ItaBot) | — |
-| `faq_fidelidade.json` | FAQs sobre fidelidade: pontos, prêmios, cupons, caça à estrela, sorteio natal | `index.html` (via loader ItaBot) | — |
 | `faq_sorteio_promocoes.json` | FAQs sobre sorteio mensal e promoções 2026 | `index.html` (via loader ItaBot) | — |
 
 ---
@@ -258,12 +251,9 @@
 - **Participantes:** mínimo 14 anos
 - **Dados:** `dados/clientes.json`, `dados/fidelidade_indice.json`, `dados/fidelidade_2026_XX.json`
 
-### Caça à Estrela / Itamanduá
-- **Como funciona:** o mascote Itamanduá aparece em horários surpresa na página de Fidelidade; o primeiro cliente a clicar captura a estrela
 - **Meta:** 5 estrelas = vencedor mensal
 - **Prêmio (vencedor único mensal):** escolhe entre Açaí Promocional 400ml · Milkshake · 5 Picolés Recheados
 - **Bônus anual:** os vencedores mensais (até 8 no ano) participam do Sorteio de Natal — Torta de Natal 3 Sabores
-- **Motor:** `scripts/motor-estrelas-v2.js` com horários definidos em `dados/fidelidade.json`
 
 ### Sorteio Mensal
 - **Prêmio:** 1 caixa de 5 litros de sorvete por mês
@@ -309,7 +299,6 @@
 | Encomendas recebidas | `dados/encomendas.json` | `admin-painel.html` | ✅ Completo |
 | Clientes fidelidade | `dados/clientes.json` | `fidelidade.html` | ✅ Completo |
 | Cupons de fidelidade | `dados/fidelidade_indice.json`, `dados/fidelidade_2026_XX.json` | `fidelidade.html` | ✅ Completo |
-| Motor de estrelas / Caça à Estrela | `dados/fidelidade.json` | `fidelidade.html` | ✅ Completo |
 | Banners / Carrossel | `dados/promo_banner.webp` + config | `carrossel.html`, `index.html` | ⚠️ Parcial |
 | FAQs do Ita Bot | `dados/faq_*.json` | `index.html` (async loader) | ✅ Completo |
 | Dicas e Depoimentos | admin-sync | `dicas.html` | ⚠️ Parcial |

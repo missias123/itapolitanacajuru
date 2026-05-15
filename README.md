@@ -253,7 +253,6 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 │   ├── itap-promo.js        ← Lógica do sorteio/promoção
 │   ├── products.js          ← Aux. de produtos (defer)
 │   ├── enc-v2.js            ← Fluxo de encomendas (defer)
-│   ├── motor-estrelas-v2.js ← Motor de estrelas (fidelidade)
 │   └── quality-guard.js     ← Guarda de qualidade (⚠️ NÃO ALTERAR)
 ├── dados/
 │   ├── config.json          ← Config geral (hero, footer, horário)

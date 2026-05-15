@@ -1,4 +1,0 @@
-(function () {
-  'use strict';
-  window.__ITAP_MASCOTE_DESATIVADO__ = true;
-}());
