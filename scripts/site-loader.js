@@ -125,14 +125,14 @@
     });
 
     // ── Menu principal (.itap-nav-label) ─────────
-    document.querySelectorAll('a[href]').forEach(a => {
+    document.querySelectorAll('.itap-header-nav a[href], .itap-nav-btn[href]').forEach(a => {
       const label = a.querySelector('.itap-nav-label');
       if (!label) return;
       const href = (a.getAttribute('href') || '').toLowerCase();
       if (href.includes('encomendas.html') && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
-      if (href.includes('promocao.html') && cfg.navPromocao) label.textContent = cfg.navPromocao;
-      if (href.includes('dicas.html') && cfg.navDicas) label.textContent = cfg.navDicas;
-      if (href.includes('fidelidade.html') && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
+      else if (href.includes('promocao.html') && cfg.navPromocao) label.textContent = cfg.navPromocao;
+      else if (href.includes('dicas.html') && cfg.navDicas) label.textContent = cfg.navDicas;
+      else if (href.includes('fidelidade.html') && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
     });
 
     // ── WhatsApp: todos os links wa.me ─────────

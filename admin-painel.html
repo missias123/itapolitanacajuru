@@ -4743,19 +4743,33 @@ function copiarCódigosDisponíveis(){
 }
 function atualizarAtalhosDashboard(cfg){
   const c=cfg||{};
-  const tRast=(c.adminDashRastreioTexto||'Rastreio').trim();
-  const tAud=(c.adminDashAuditoriaTexto||'Auditoria').trim();
-  const tSobre=(c.adminDashLinkSobreTexto||'🏪 Sobre').trim();
-  const uSobre=(c.adminDashLinkSobreUrl||'sobre.html').trim();
-  const tGal=(c.adminDashLinkGaleriaTexto||'🖼️ Galeria').trim();
-  const uGal=(c.adminDashLinkGaleriaUrl||'galeria.html').trim();
-  const tCar=(c.adminDashLinkCarrosselTexto||'🎠 Carrossel').trim();
-  const uCar=(c.adminDashLinkCarrosselUrl||'carrossel.html').trim();
-  const lbR=document.getElementById('dash-btn-rastreio-label'); if(lbR) lbR.textContent=tRast;
-  const lbA=document.getElementById('dash-btn-auditoria-label'); if(lbA) lbA.textContent=tAud;
-  const lkS=document.getElementById('dash-link-sobre'); if(lkS){lkS.textContent=tSobre; lkS.href=uSobre||'sobre.html';}
-  const lkG=document.getElementById('dash-link-galeria'); if(lkG){lkG.textContent=tGal; lkG.href=uGal||'galeria.html';}
-  const lkC=document.getElementById('dash-link-carrossel'); if(lkC){lkC.textContent=tCar; lkC.href=uCar||'carrossel.html';}
+  const normalizarTexto=(txt,padrao)=>esc(((txt||padrao||'').trim()||padrao||''));
+  const normalizarLink=(url,padrao,permitidos)=>{
+    const u=(url||'').trim();
+    if(!u) return padrao;
+    if(/^javascript:/i.test(u)||/^data:/i.test(u)||/^vbscript:/i.test(u)||/^\/\//.test(u)) return padrao;
+    const alvos=(permitidos||[]).map(v=>String(v).toLowerCase());
+    const limpo=u.toLowerCase();
+    if(alvos.includes(limpo)) return u;
+    if(/^https:\/\/itapolitanacajuru\.com\.br\//i.test(limpo)){
+      const path=limpo.replace(/^https:\/\/itapolitanacajuru\.com\.br\//,'');
+      if(alvos.includes(path)) return u;
+    }
+    return padrao;
+  };
+  const tRast=normalizarTexto(c.adminDashRastreioTexto,'Rastreio');
+  const tAud=normalizarTexto(c.adminDashAuditoriaTexto,'Auditoria');
+  const tSobre=normalizarTexto(c.adminDashLinkSobreTexto,'🏪 Sobre');
+  const uSobre=normalizarLink(c.adminDashLinkSobreUrl,'sobre.html',['sobre.html']);
+  const tGal=normalizarTexto(c.adminDashLinkGaleriaTexto,'🖼️ Galeria');
+  const uGal=normalizarLink(c.adminDashLinkGaleriaUrl,'galeria.html',['galeria.html']);
+  const tCar=normalizarTexto(c.adminDashLinkCarrosselTexto,'🎠 Carrossel');
+  const uCar=normalizarLink(c.adminDashLinkCarrosselUrl,'carrossel.html',['carrossel.html']);
+  const lbR=document.getElementById('dash-btn-rastreio-label'); if(lbR) lbR.innerHTML=tRast;
+  const lbA=document.getElementById('dash-btn-auditoria-label'); if(lbA) lbA.innerHTML=tAud;
+  const lkS=document.getElementById('dash-link-sobre'); if(lkS){lkS.innerHTML=tSobre; lkS.setAttribute('href',uSobre||'sobre.html');}
+  const lkG=document.getElementById('dash-link-galeria'); if(lkG){lkG.innerHTML=tGal; lkG.setAttribute('href',uGal||'galeria.html');}
+  const lkC=document.getElementById('dash-link-carrossel'); if(lkC){lkC.innerHTML=tCar; lkC.setAttribute('href',uCar||'carrossel.html');}
 }
 function preencherConfig(){
   const cfg=STATE.config||{};
