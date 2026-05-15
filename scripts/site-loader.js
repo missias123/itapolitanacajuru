@@ -124,6 +124,17 @@
       if (valor) el.href = valor;
     });
 
+    // ── Menu principal (.itap-nav-label) ─────────
+    document.querySelectorAll('a[href]').forEach(a => {
+      const label = a.querySelector('.itap-nav-label');
+      if (!label) return;
+      const href = (a.getAttribute('href') || '').toLowerCase();
+      if (href.includes('encomendas.html') && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
+      if (href.includes('promocao.html') && cfg.navPromocao) label.textContent = cfg.navPromocao;
+      if (href.includes('dicas.html') && cfg.navDicas) label.textContent = cfg.navDicas;
+      if (href.includes('fidelidade.html') && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
+    });
+
     // ── WhatsApp: todos os links wa.me ─────────
     if (cfg.whatsapp) {
       const wpp = cfg.whatsapp.replace(/\D/g, '');
@@ -232,7 +243,11 @@
       });
     }
     if (cfg.encomendaMinPicoles !== undefined) {
-      window._MIN_PICOLES = cfg.encomendaMinPicoles;
+      const minPicoles = Number(cfg.encomendaMinPicoles);
+      if (!Number.isNaN(minPicoles)) {
+        window.encomendaMinPicoles = minPicoles;
+        window._MIN_PICOLES = minPicoles; // compatibilidade retroativa
+      }
     }
 
     // ── SEO: title + meta description + meta keywords ─────────────

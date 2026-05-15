@@ -58,10 +58,11 @@
     .sobre-section ul li strong { color: #1A0A00; }
 
     /* STATS */
-    .sobre-stats { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 16px 0 0; }
-    .sobre-stat { text-align: center; background: linear-gradient(135deg, #C62828, #E8000D); color: #fff; border-radius: 14px; padding: 14px 20px; min-width: 90px; flex: 1; }
+    .sobre-stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin: 16px 0 0; }
+    .sobre-stat { text-align: center; background: linear-gradient(135deg, #C62828, #E8000D); color: #fff; border-radius: 14px; padding: 14px 12px; min-width: 0; overflow-wrap: anywhere; }
     .sobre-stat-num { font-size: 1.8rem; font-weight: 900; display: block; line-height: 1; }
-    .sobre-stat-label { font-size: 0.7rem; font-weight: 700; opacity: .9; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+    .sobre-stat-label { font-size: 0.7rem; font-weight: 700; opacity: .9; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; line-height: 1.35; }
+    @media(min-width:900px){.sobre-stats{grid-template-columns:repeat(4,minmax(0,1fr));}}
 
     /* DIFERENCIAIS */
     .diferenciais-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 4px; }
@@ -85,7 +86,7 @@
     .itap-footer-lnk{color:#fff;text-decoration:none;font-size:12px;font-weight:800;border-radius:30px;padding:7px 14px;display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);}
     .itap-footer-lnk:hover{background:rgba(255,255,255,.25);}
 
-    @media(max-width:480px){.sobre-section{padding:16px;}.sobre-stat{min-width:75px;padding:12px 14px;}.sobre-stat-num{font-size:1.5rem;}}
+    @media(max-width:480px){.sobre-section{padding:16px;}.sobre-stat{padding:12px 10px;}.sobre-stat-num{font-size:1.5rem;}}
   </style>
 </head>
 <body>
@@ -272,6 +273,7 @@
   </ul>
 </nav>
 
+<script src="scripts/site-loader.js" defer></script>
 <script src="scripts/ita-bot-widget.js" defer></script>
 </body>
 </html>

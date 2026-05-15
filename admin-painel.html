@@ -608,8 +608,8 @@ body { overflow-x: hidden; }
           <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(6)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
           <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(7)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
           <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(8)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
-          <button onclick="irPara('rastreio-admin',document.querySelector('.nav-btn:nth-child(9)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span>Rastreio</span></button>
-          <button onclick="irPara('auditoria-admin',document.querySelector('.nav-btn:nth-child(10)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span>Auditoria</span></button>
+          <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.querySelector('.nav-btn:nth-child(9)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
+          <button id="dash-btn-auditoria" onclick="irPara('auditoria-admin',document.querySelector('.nav-btn:nth-child(10)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span id="dash-btn-auditoria-label">Auditoria</span></button>
         </div>
       </div>
       <!-- ABRIR NO SITE — links externos -->
@@ -621,9 +621,9 @@ body { overflow-x: hidden; }
           <a href="fidelidade.html" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
           <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
-          <a href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
-          <a href="galeria.html" target="_blank" class="link-site">&#x1F5BC;&#xFE0F; Galeria</a>
-          <a href="carrossel.html" target="_blank" class="link-site">&#x1F3A0; Carrossel</a>
+          <a id="dash-link-sobre" href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
+          <a id="dash-link-galeria" href="galeria.html" target="_blank" class="link-site">&#x1F5BC;&#xFE0F; Galeria</a>
+          <a id="dash-link-carrossel" href="carrossel.html" target="_blank" class="link-site">&#x1F3A0; Carrossel</a>
           <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
         </div>
       </div>
@@ -2313,6 +2313,15 @@ Talento</textarea>
           <div class="campo-edit"><label class="label-obrigatório">Título da página (aparece na aba do navegador e no Google)</label><input type="text" id="cfg-seo-titulo" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés"/><div class="hint">&#x26A0;&#xFE0F; Máximo 60 caracteres. Inclua o nome da cidade. Exemplo: <em>Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés</em></div></div>
           <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete tipo artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
           <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete tipo artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
+          <div class="seção-título">🧭 Dashboard do Admin — Atalhos Editáveis</div>
+          <div class="campo-edit"><label>Botão rápido 🔍 Rastreio — texto</label><input type="text" id="cfg-dash-rastreio-texto" maxlength="30" placeholder="Rastreio"/></div>
+          <div class="campo-edit"><label>Botão rápido 🔎 Auditoria — texto</label><input type="text" id="cfg-dash-auditoria-texto" maxlength="30" placeholder="Auditoria"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — texto</label><input type="text" id="cfg-dash-sobre-texto" maxlength="40" placeholder="🏪 Sobre"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — URL</label><input type="text" id="cfg-dash-sobre-url" maxlength="120" placeholder="sobre.html"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — texto</label><input type="text" id="cfg-dash-galeria-texto" maxlength="40" placeholder="🖼️ Galeria"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — URL</label><input type="text" id="cfg-dash-galeria-url" maxlength="120" placeholder="galeria.html"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
           <div class="seção-título">🎟️ Página de Fidelidade — Hero Banner</div>
           <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
             📌 <strong>IDs no site:</strong> <code>fid-hero-titulo</code> e <code>fid-hero-desc</code> (fidelidade.html). Alterar aqui muda o banner da página de fidelidade imediatamente ao salvar.
@@ -4732,6 +4741,22 @@ function copiarCódigosDisponíveis(){
   if(!disponíveis.length){toast('Nenhum código disponível.','');return;}
   navigator.clipboard.writeText(disponíveis.join('\n')).then(()=>toast(`${disponíveis.length} códigos copiados!`,'sucesso'));
 }
+function atualizarAtalhosDashboard(cfg){
+  const c=cfg||{};
+  const tRast=(c.adminDashRastreioTexto||'Rastreio').trim();
+  const tAud=(c.adminDashAuditoriaTexto||'Auditoria').trim();
+  const tSobre=(c.adminDashLinkSobreTexto||'🏪 Sobre').trim();
+  const uSobre=(c.adminDashLinkSobreUrl||'sobre.html').trim();
+  const tGal=(c.adminDashLinkGaleriaTexto||'🖼️ Galeria').trim();
+  const uGal=(c.adminDashLinkGaleriaUrl||'galeria.html').trim();
+  const tCar=(c.adminDashLinkCarrosselTexto||'🎠 Carrossel').trim();
+  const uCar=(c.adminDashLinkCarrosselUrl||'carrossel.html').trim();
+  const lbR=document.getElementById('dash-btn-rastreio-label'); if(lbR) lbR.textContent=tRast;
+  const lbA=document.getElementById('dash-btn-auditoria-label'); if(lbA) lbA.textContent=tAud;
+  const lkS=document.getElementById('dash-link-sobre'); if(lkS){lkS.textContent=tSobre; lkS.href=uSobre||'sobre.html';}
+  const lkG=document.getElementById('dash-link-galeria'); if(lkG){lkG.textContent=tGal; lkG.href=uGal||'galeria.html';}
+  const lkC=document.getElementById('dash-link-carrossel'); if(lkC){lkC.textContent=tCar; lkC.href=uCar||'carrossel.html';}
+}
 function preencherConfig(){
   const cfg=STATE.config||{};
   document.getElementById('cfg-whatsapp').value=cfg.whatsapp||'5516996062046';
@@ -4757,6 +4782,16 @@ function preencherConfig(){
   const seoTit=document.getElementById('cfg-seo-titulo'); if(seoTit) seoTit.value=cfg.seoTitulo||'';
   const seoDes=document.getElementById('cfg-seo-descricao'); if(seoDes) seoDes.value=cfg.seoDescricao||'';
   const seoPal=document.getElementById('cfg-seo-palavras'); if(seoPal) seoPal.value=cfg.seoPalavrasChave||'';
+  // Dashboard (atalhos editáveis)
+  const dRt=document.getElementById('cfg-dash-rastreio-texto'); if(dRt) dRt.value=cfg.adminDashRastreioTexto||'Rastreio';
+  const dAt=document.getElementById('cfg-dash-auditoria-texto'); if(dAt) dAt.value=cfg.adminDashAuditoriaTexto||'Auditoria';
+  const dSt=document.getElementById('cfg-dash-sobre-texto'); if(dSt) dSt.value=cfg.adminDashLinkSobreTexto||'🏪 Sobre';
+  const dSu=document.getElementById('cfg-dash-sobre-url'); if(dSu) dSu.value=cfg.adminDashLinkSobreUrl||'sobre.html';
+  const dGt=document.getElementById('cfg-dash-galeria-texto'); if(dGt) dGt.value=cfg.adminDashLinkGaleriaTexto||'🖼️ Galeria';
+  const dGu=document.getElementById('cfg-dash-galeria-url'); if(dGu) dGu.value=cfg.adminDashLinkGaleriaUrl||'galeria.html';
+  const dCt=document.getElementById('cfg-dash-carrossel-texto'); if(dCt) dCt.value=cfg.adminDashLinkCarrosselTexto||'🎠 Carrossel';
+  const dCu=document.getElementById('cfg-dash-carrossel-url'); if(dCu) dCu.value=cfg.adminDashLinkCarrosselUrl||'carrossel.html';
+  atualizarAtalhosDashboard(cfg);
   // Fidelidade Hero (IDs: fid-hero-titulo, fid-hero-desc)
   const fidHT=document.getElementById('cfg-fid-hero-titulo'); if(fidHT) fidHT.value=cfg.fidHeroTitulo||'🎟️ Clube de Fidelidade Itapolitana';
   const fidHD=document.getElementById('cfg-fid-hero-desc'); if(fidHD) fidHD.value=cfg.fidHeroDesc||'Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru.';
@@ -4779,15 +4814,15 @@ async function salvarConfig(){
   cfg.endereco=document.getElementById('cfg-endereco').value.trim();
   cfg.enderecoCompleto=document.getElementById('cfg-endereço-completo').value.trim();
   cfg.googleMaps=document.getElementById('cfg-maps').value.trim();
-  cfg.horarioAbre=parseInt(document.getElementById('cfg-hora-abre').value)||10;
-  cfg.horarioFecha=parseInt(document.getElementById('cfg-hora-fecha').value)||22;
+  cfg.horarioAbre=parseInt(document.getElementById('cfg-hora-abre').value,10)||10;
+  cfg.horarioFecha=parseInt(document.getElementById('cfg-hora-fecha').value,10)||22;
   cfg.horario=document.getElementById('cfg-horario').value.trim();
   cfg.horarioDetalhado=document.getElementById('cfg-horário-det').value.trim();
   cfg.footerHorario=document.getElementById('cfg-footer-horário').value.trim();
   cfg.nomeEmpresa=document.getElementById('cfg-nome-empresa').value.trim();
   cfg.slogan=document.getElementById('cfg-slogan').value.trim();
   cfg.fundacao=document.getElementById('cfg-fundação').value.trim();
-  cfg.numSabores=parseInt(document.getElementById('cfg-num-sabores').value)||35;
+  cfg.numSabores=parseInt(document.getElementById('cfg-num-sabores').value,10)||35;
   cfg.cnpj=document.getElementById('cfg-CNPJ').value.trim();
   cfg.footerCopy=document.getElementById('cfg-footer-copy').value.trim();
   cfg.footerDev=document.getElementById('cfg-footer-dev').value.trim();
@@ -4795,9 +4830,19 @@ async function salvarConfig(){
   const seoTitEl=document.getElementById('cfg-seo-titulo'); if(seoTitEl) cfg.seoTitulo=seoTitEl.value.trim();
   const seoDesEl=document.getElementById('cfg-seo-descricao'); if(seoDesEl) cfg.seoDescricao=seoDesEl.value.trim();
   const seoPalEl=document.getElementById('cfg-seo-palavras'); if(seoPalEl) cfg.seoPalavrasChave=seoPalEl.value.trim();
+  // Dashboard (atalhos editáveis)
+  const dRtEl=document.getElementById('cfg-dash-rastreio-texto'); if(dRtEl) cfg.adminDashRastreioTexto=dRtEl.value.trim()||'Rastreio';
+  const dAtEl=document.getElementById('cfg-dash-auditoria-texto'); if(dAtEl) cfg.adminDashAuditoriaTexto=dAtEl.value.trim()||'Auditoria';
+  const dStEl=document.getElementById('cfg-dash-sobre-texto'); if(dStEl) cfg.adminDashLinkSobreTexto=dStEl.value.trim()||'🏪 Sobre';
+  const dSuEl=document.getElementById('cfg-dash-sobre-url'); if(dSuEl) cfg.adminDashLinkSobreUrl=dSuEl.value.trim()||'sobre.html';
+  const dGtEl=document.getElementById('cfg-dash-galeria-texto'); if(dGtEl) cfg.adminDashLinkGaleriaTexto=dGtEl.value.trim()||'🖼️ Galeria';
+  const dGuEl=document.getElementById('cfg-dash-galeria-url'); if(dGuEl) cfg.adminDashLinkGaleriaUrl=dGuEl.value.trim()||'galeria.html';
+  const dCtEl=document.getElementById('cfg-dash-carrossel-texto'); if(dCtEl) cfg.adminDashLinkCarrosselTexto=dCtEl.value.trim()||'🎠 Carrossel';
+  const dCuEl=document.getElementById('cfg-dash-carrossel-url'); if(dCuEl) cfg.adminDashLinkCarrosselUrl=dCuEl.value.trim()||'carrossel.html';
+  atualizarAtalhosDashboard(cfg);
   // Configurações de Encomendas
   const encAvEl=document.getElementById('enc-aviso'); if(encAvEl) cfg.encomendaAviso=encAvEl.value.trim();
-  const encMinEl=document.getElementById('enc-min-picolés'); if(encMinEl) cfg.encomendaMinPicoles=parseInt(encMinEl.value)||100;
+  const encMinEl=document.getElementById('enc-min-picolés'); if(encMinEl) cfg.encomendaMinPicoles=parseInt(encMinEl.value,10)||100;
   if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');

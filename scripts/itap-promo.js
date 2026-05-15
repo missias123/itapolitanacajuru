@@ -659,7 +659,7 @@
         if (!pr) return; // fallback: mantém hardcoded
 
         // Título do header (h1)
-        var h1 = document.getElementById('promo-h1');
+        var h1 = document.getElementById('promocao-hero-titulo') || document.getElementById('promo-h1');
         if (h1 && pr.headerTitulo) h1.textContent = pr.headerTitulo;
 
         // Frase do banner laranja
@@ -697,21 +697,25 @@
       });
   })();
 
-  // Atualizar links WhatsApp com número do config.json
-  (function atualizarWhatsApp() {
-    fetch('dados/config.json?v=' + Date.now())
-      .then(function(r) { return r.json(); })
-      .catch(function() { return null; })
-      .then(function(cfg) {
-        if (!cfg || !cfg.whatsapp) return;
-        document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
-          try {
-            var url = new URL(a.href);
-            a.href = 'https://wa.me/' + cfg.whatsapp + (url.search || '');
-          } catch(e) {}
-        });
-      });
-  })();
+  // Atualizar links WhatsApp usando a configuração centralizada do site-loader
+  function atualizarWhatsAppComConfig(cfg) {
+    if (!cfg || !cfg.whatsapp) return;
+    var numero = String(cfg.whatsapp).replace(/\D/g, '');
+    if (!numero) return;
+    document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
+      try {
+        var url = new URL(a.href);
+        a.href = 'https://wa.me/' + numero + (url.search || '');
+      } catch(e) {}
+    });
+  }
+
+  if (window.SITE_CONFIG) {
+    atualizarWhatsAppComConfig(window.SITE_CONFIG);
+  }
+  window.addEventListener('siteConfigLoaded', function(ev) {
+    atualizarWhatsAppComConfig(ev && ev.detail);
+  });
 
   // Carregar promoções adicionais de dados/promocoes.json
   (function() {
