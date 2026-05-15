@@ -329,9 +329,10 @@
 
   function aplicarSeoPorPagina(cfg) {
     const path = (window.location.pathname || '').toLowerCase();
+    const page = path.split('/').pop() || '';
     let seo = null;
-    if (path.endsWith('/fidelidade.html')) seo = cfg?.fidelidade;
-    else if (path.endsWith('/encomendas.html')) seo = cfg?.encomendas;
+    if (page === 'fidelidade.html') seo = cfg?.fidelidade;
+    else if (page === 'encomendas.html') seo = cfg?.encomendas;
     if (!seo) return;
     if (seo.seo_title) document.title = seo.seo_title;
     if (seo.seo_description) {

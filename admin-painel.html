@@ -5231,16 +5231,21 @@ function cmsSincronizarCamposLegados() {
   const r1 = Array.isArray(fid.recompensas) ? fid.recompensas[1] : null;
   if (r0) {
     cfg.premioMilkshake = r0.titulo || cfg.premioMilkshake || '';
-    cfg.pontosMilkshake = parseInt(r0.pontos, 10) || cfg.pontosMilkshake || 10;
+    cfg.pontosMilkshake = parseInt(r0.pontos, 10) || cfg.pontosMilkshake || CMS_DEFAULT_MILK_POINTS;
   }
   if (r1) {
     cfg.premioCaixa = r1.titulo || cfg.premioCaixa || '';
-    cfg.pontosCaixa = parseInt(r1.pontos, 10) || cfg.pontosCaixa || 30;
+    cfg.pontosCaixa = parseInt(r1.pontos, 10) || cfg.pontosCaixa || CMS_DEFAULT_BOX_POINTS;
   }
   cfg.encomendaAviso = enc.seo_description || cfg.encomendaAviso || '';
 }
 function cmsValidarUrl(url) {
-  try { new URL(url); return true; } catch (e) { return false; }
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch (e) {
+    return false;
+  }
 }
 async function cmsHandleHeroUpload(sectionKey, file) {
   if (!file) return;
