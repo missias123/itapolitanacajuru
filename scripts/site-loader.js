@@ -331,7 +331,7 @@
     const path = (window.location.pathname || '').toLowerCase();
     let seo = null;
     if (path.endsWith('/fidelidade.html')) seo = cfg?.fidelidade;
-    if (path.endsWith('/encomendas.html')) seo = cfg?.encomendas;
+    else if (path.endsWith('/encomendas.html')) seo = cfg?.encomendas;
     if (!seo) return;
     if (seo.seo_title) document.title = seo.seo_title;
     if (seo.seo_description) {
