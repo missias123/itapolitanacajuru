@@ -493,6 +493,7 @@ body { overflow-x: hidden; }
       <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"
         oninput="validarCampoToken(this)"/>
     </div>
+    <div id="token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
     <div id="token-hint" style="display:none;font-size:0.74rem;color:#ef9a9a;margin-bottom:4px;padding:4px 8px;background:#2a0a0a;border-radius:6px">
       ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
     </div>
@@ -514,7 +515,7 @@ body { overflow-x: hidden; }
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn-sair" onclick="recarregarTodosDados()" title="Recarregar todos os dados do GitHub agora">&#x1F504; Recarregar</button>
-      <a href="index.html" target="_blank" class="btn-sair" style="text-decoration:none">&#x1F310; Ver Site</a>
+      <a href="https://itapolitanacajuru.com.br/" target="_blank" class="btn-sair" style="text-decoration:none">&#x1F310; Ver Site</a>
       <button class="btn-sair" onclick="sair()">&#x1F6AA; Sair</button>
     </div>
   </div>
@@ -2432,7 +2433,10 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
-function getToken(){return (localStorage.getItem('itap_gh_token')||'').trim();}
+function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){console.warn('[Admin] localStorage indisponível (get)',e);return '';}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){console.warn('[Admin] localStorage indisponível (set)',e);return false;}}
+function lsRemove(k){try{localStorage.removeItem(k);return true;}catch(e){console.warn('[Admin] localStorage indisponível (remove)',e);return false;}}
+function getToken(){return lsGet('itap_gh_token').trim();}
 function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   const tok=(tokenOverride||getToken()).trim();
   const headers={...extraHeaders};
@@ -2464,7 +2468,27 @@ function validarCampoToken(input){
   const v = input.value.trim();
   const ok = !v || tokenFormatoValido(v);
   const hint = document.getElementById('token-hint');
+  const statusEl = document.getElementById('token-status');
   if (hint) hint.style.display = v && !ok ? 'block' : 'none';
+  if(statusEl){
+    if(!v) statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
+    else if(!ok) statusEl.textContent='⚠️ Token com formato inválido (não será salvo).';
+    else statusEl.textContent='✅ Token com formato válido.';
+  }
+}
+
+function preencherTokenSalvoNoLogin(){
+  const inp=document.getElementById('inp-gh-token');
+  const statusEl=document.getElementById('token-status');
+  if(!inp)return;
+  const tok=getToken();
+  if(tok){
+    inp.value=tok;
+    validarCampoToken(inp);
+    if(statusEl)statusEl.textContent='✅ Token carregado do navegador.';
+  }else if(statusEl){
+    statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
+  }
 }
 
 async function validarToken(tok){
@@ -2509,7 +2533,9 @@ function atualizarToken(){
   const tok=(prompt('Cole o novo token GitHub (ghp_... ou github_pat_...):\n\nCrie um em: github.com/settings/tokens/new\n(escopo necessário: repo)') || '').trim();
   if(!tok){toast('Token não alterado.','aviso');return;}
   if(!tokenFormatoValido(tok)){toast('Token inválido. Use um PAT GitHub válido (ex.: ghp_... ou github_pat_...).','erro');return;}
-  localStorage.setItem('itap_gh_token',tok);
+  if(!lsSet('itap_gh_token',tok)){toast('Não foi possível salvar o token no navegador. Verifique permissões de armazenamento.','erro');return;}
+  const inp=document.getElementById('inp-gh-token');
+  if(inp){inp.value=tok;validarCampoToken(inp);}
   toast('Token salvo! Recarregando dados...','sucesso');
   setTimeout(()=>carregarTudo(),400);
 }const GH_OWNER='missias123';
@@ -2660,8 +2686,22 @@ async function sha256(str) {
 }
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
-  const tok=document.getElementById('inp-gh-token').value.trim();
-  if(tok) localStorage.setItem('itap_gh_token',tok);
+  const tokenInput=document.getElementById('inp-gh-token');
+  const tok=(tokenInput?.value||'').trim();
+  if(tok){
+    if(!tokenFormatoValido(tok)){
+      document.getElementById('login-erro').innerHTML='⚠️ Formato do token inválido. Corrija antes de entrar.';
+      document.getElementById('login-erro').style.display='block';
+      return;
+    }
+    if(!lsSet('itap_gh_token',tok)){
+      document.getElementById('login-erro').innerHTML='⚠️ Não foi possível salvar o token no navegador.';
+      document.getElementById('login-erro').style.display='block';
+      return;
+    }
+  }else{
+    lsRemove('itap_gh_token');
+  }
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   // Validação proativa do token antes de carregar
@@ -5256,6 +5296,9 @@ function criarUploadImagem(containerId, opções) {
 // Padrão profissional: um único ponto de entrada
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
+
+  // 0. Carrega token salvo no navegador e mostra status ao usuário
+  try { preencherTokenSalvoNoLogin(); } catch(e) { console.warn('[Admin] preencherTokenSalvoNoLogin', e); }
 
   // 1. Spellcheck e autocorreção em todos os campos
   if (typeof aplicarSpellcheck === 'function') aplicarSpellcheck();
