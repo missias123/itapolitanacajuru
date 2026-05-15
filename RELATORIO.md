@@ -15,8 +15,6 @@
 ├── dicas.html               ← Dicas e conteúdo
 ├── fidelidade.html          ← Programa de fidelidade (wizard 5 passos)
 ├── admin-painel.html        ← Painel administrativo (NÃO ALTERAR)
-├── mascote.js               ← Mascote flutuante (ITA Bot)
-├── mascote.css              ← Estilos do mascote
 ├── dados/
 │   ├── config.json          ← Configurações gerais (hero, footer, horário)
 │   ├── produtos.json        ← Preços e sabores de todos os produtos
@@ -24,10 +22,8 @@
 │   ├── clientes.json        ← Cadastro de clientes (fidelidade)
 │   ├── fidelidade.json      ← Dados do programa de fidelidade
 │   └── encomendas.json      ← Pedidos de encomenda
-├── estrelas_ciclo.json      ← Ciclo de estrelas (fidelidade, raiz do projeto)
 ├── images/                  ← Imagens do site
 └── scripts/
-    ├── motor-estrelas-v2.js ← Motor do programa de fidelidade
     ├── site-loader.js       ← Carregador do site (defer)
     └── products.js          ← Auxiliar de produtos (defer)
 ```
@@ -176,9 +172,6 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 | Google Analytics (`gtag.js`) | `async` ✅ | Não bloqueante |
 | `scripts/site-loader.js` | `defer` ✅ | Não crítico |
 | `scripts/products.js` | `defer` ✅ | Não crítico |
-| `scripts/motor-estrelas-v2.js` | Carregado dinamicamente via JS após `DOMContentLoaded` ✅ | Fidelidade (não crítico) |
-| `mascote.js` | Carregado dinamicamente via JS (sequencial após motor-estrelas) ✅ | Chatbot/mascote (não crítico) |
-| `mascote.css` | `<link rel="stylesheet">` no `<head>` | **Candidato à otimização** — poderia ser carregado de forma assíncrona |
 | Scroll Reveal, LGPD, PWA | Inline ao final do `<body>` | Adequado (executam após parse) |
 | Frase rotativa (`setInterval`) | Inline, sem defer | **Candidato à otimização**: poderia aguardar `DOMContentLoaded` + idle |
 
@@ -286,7 +279,6 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 
 | Arquivo | Formulário / Área | IDs principais | Tem consentimento? |
 |---|---|---|---|
-| `fidelidade.html` | Wizard Estrela Dourada (5 passos: escolha → login/novo → reivindicar) | `wiz-cel-login`, `wiz-login-dia/mes/ano`, `wiz-nome`, `wiz-data`, `wiz-cel` | ❌ Não tinha — wizard usa dados pré-validados |
 | `fidelidade.html` | Bloco Regulamento Fidelidade (inline) | `aceite-fidelidade-inline`, `btn-aceitar-fidelidade-inline` | ✅ Aprimorado nesta PR |
 | `fidelidade.html` | Painel Cadastro Novo (`form-novo`) | `inp-nome`, `inp-data-nasc`, `inp-cel-novo`, `btn-cadastrar` | ✅ Adicionado nesta PR |
 | `fidelidade.html` | Painel Login (`form-login`) | `inp-cel-login`, `inp-login-dia/mes/ano` | — (login, não coleta novos dados) |
@@ -325,7 +317,6 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 
 ### 7.3 Sugestões futuras
 
-- **Wizard da Estrela Dourada**: Na etapa `wiz-e-cel` (último passo do cadastro novo), adicionar checkbox LGPD antes do botão "Confirmar Cadastro". Atualmente o wizard usa `wizCadastrar()` que chama `cadastrar()` internamente — basta adicionar um gate visual nessa etapa.
 - **Form-login**: Adicionar nota "Ao entrar, você concorda com nossa Política de Privacidade" (sem checkbox, pois é só login) para melhor transparência.
 - **`politica-privacidade.html`**: Verificar se a página existe; se não, criar uma versão simplificada com: finalidade dos dados, base legal (legítimo interesse / consentimento), retenção, direitos do titular (art. 18 LGPD), contato do responsável.
 

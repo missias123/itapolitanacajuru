@@ -51,7 +51,6 @@ Push/PR/Schedule
 | `02-botoes-navegacao.spec.js` | Clique nos botões do header, links WhatsApp, hero |
 | `03-formularios.spec.js` | Validação de campos obrigatórios, banner LGPD/cookies |
 | `04-fidelidade.spec.js` | Wizard de fidelidade, campo celular, botão "Validar Código" |
-| `05-caca-estrela.spec.js` | Motor de estrelas carrega, âncora existe, FAQ do bot funciona |
 | `06-itabot.spec.js` | Ita Bot abre/fecha, input de mensagem, sugestões rápidas |
 | `07-pwa.spec.js` | manifest.json, service worker, offline.html, apple-touch-icon |
 
@@ -149,7 +148,6 @@ Ao corrigir qualquer problema identificado pelas auditorias, **nunca**:
 
 - ❌ Truncar arquivos grandes (index.html tem ~4768 linhas — preservar tudo)
 - ❌ Remover seções: hero, cardápio, promoções, fidelidade, encomendas, rodapé
-- ❌ Alterar preços, regras do Programa de Fidelidade ou da Caça à Estrela
 - ❌ Commitar tokens ou credenciais no código
 
 Use `// TODO: confirmar regra com o proprietário` quando algo não estiver claro.
