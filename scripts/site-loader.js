@@ -123,6 +123,16 @@
       const valor = getValor(cfg, campo);
       if (valor) el.href = valor;
     });
+    document.querySelectorAll('[data-config-src]').forEach(el => {
+      const campo = el.getAttribute('data-config-src');
+      const valor = getValor(cfg, campo);
+      if (valor) el.src = valor;
+    });
+    document.querySelectorAll('[data-config-alt]').forEach(el => {
+      const campo = el.getAttribute('data-config-alt');
+      const valor = getValor(cfg, campo);
+      if (valor) el.alt = valor;
+    });
 
     // ── Menu principal (.itap-nav-label) ─────────
     document.querySelectorAll('.itap-header-nav a[href], .itap-nav-btn[href]').forEach(a => {
@@ -273,8 +283,66 @@
       metaKw.setAttribute('content', cfg.seoPalavrasChave);
     }
 
+    renderFidelidadeCollections(cfg);
+    renderEncomendasCollections(cfg);
+    aplicarSeoPorPagina(cfg);
+
     // ── Disparar evento para outros scripts ────
     window.dispatchEvent(new CustomEvent('siteConfigLoaded', { detail: cfg }));
+  }
+
+  function renderCollectionFromTemplate(containerSel, templateSel, items) {
+    const container = document.querySelector(containerSel);
+    const template = document.querySelector(templateSel);
+    if (!container || !template || !Array.isArray(items)) return;
+    container.innerHTML = '';
+    items.forEach(item => {
+      const node = template.content.cloneNode(true);
+      node.querySelectorAll('[data-item]').forEach(el => {
+        const key = el.getAttribute('data-item');
+        const value = item && item[key] !== undefined && item[key] !== null ? item[key] : '';
+        if (el.matches('img')) {
+          el.src = String(value || '');
+          const altKey = `${key.replace(/_url$/,'')}_alt`;
+          if (item && item[altKey]) el.alt = item[altKey];
+        } else {
+          el.textContent = String(value);
+        }
+      });
+      container.appendChild(node);
+    });
+  }
+
+  function renderFidelidadeCollections(cfg) {
+    const recompensas = cfg?.fidelidade?.recompensas || [];
+    const faq = cfg?.fidelidade?.faq || [];
+    renderCollectionFromTemplate('#fid-recompensas-list', '#tpl-fid-recompensa', recompensas);
+    renderCollectionFromTemplate('#fid-faq-list', '#tpl-fid-faq', faq);
+  }
+
+  function renderEncomendasCollections(cfg) {
+    const produtos = cfg?.encomendas?.produtos || [];
+    const faq = cfg?.encomendas?.faq || [];
+    renderCollectionFromTemplate('#enc-produtos-list', '#tpl-enc-produto', produtos);
+    renderCollectionFromTemplate('#enc-faq-list', '#tpl-enc-faq', faq);
+  }
+
+  function aplicarSeoPorPagina(cfg) {
+    const path = (window.location.pathname || '').toLowerCase();
+    let seo = null;
+    if (path.endsWith('/fidelidade.html')) seo = cfg?.fidelidade;
+    if (path.endsWith('/encomendas.html')) seo = cfg?.encomendas;
+    if (!seo) return;
+    if (seo.seo_title) document.title = seo.seo_title;
+    if (seo.seo_description) {
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', seo.seo_description);
+    }
   }
 
   // ═══════════════════════════════════════════════

@@ -1047,6 +1047,40 @@ body { overflow-x: hidden; }
       </div>
     </div>
 
+    <!-- ENCOMENDAS CMS -->
+    <div class="seção" id="sec-encomendas-cms">
+      <div class="card" style="border-left:4px solid #0d47a1">
+        <div class="card-header"><h2>📦 Encomendas (CMS)</h2></div>
+        <div class="card-body">
+          <div class="campo-edit"><label>Título principal</label><input id="enc-cms-titulo" type="text" data-bind="encomendas.titulo_principal" maxlength="120"/></div>
+          <div class="campo-edit"><label>Subtítulo</label><textarea id="enc-cms-subtitulo" data-bind="encomendas.subtitulo" rows="3"></textarea></div>
+          <div class="campo-edit"><label>CTA texto</label><input id="enc-cms-cta-texto" type="text" data-bind="encomendas.cta_texto" maxlength="80"/></div>
+          <div class="campo-edit"><label>CTA URL</label><input id="enc-cms-cta-url" type="url" data-bind="encomendas.cta_url"/></div>
+          <div class="campo-edit">
+            <label>Imagem hero</label>
+            <input id="enc-cms-hero-file" type="file" accept="image/*" onchange="cmsHandleHeroUpload('encomendas', this.files && this.files[0])"/>
+            <input id="enc-cms-hero-url" type="url" data-bind="encomendas.imagem_hero_url" placeholder="images/encomendas/hero.webp"/>
+            <input id="enc-cms-hero-alt" type="text" data-bind="encomendas.imagem_hero_alt" maxlength="140" placeholder="Texto alternativo da imagem"/>
+            <div class="hint">Upload opcional: converte para WebP e publica no GitHub ao salvar.</div>
+          </div>
+          <div class="campo-edit"><label>SEO title</label><input id="enc-cms-seo-title" type="text" data-bind="encomendas.seo_title" maxlength="120"/></div>
+          <div class="campo-edit"><label>SEO description</label><input id="enc-cms-seo-desc" type="text" data-bind="encomendas.seo_description" maxlength="180"/></div>
+
+          <div class="seção-título">Produtos</div>
+          <div id="enc-produtos-list"></div>
+          <div class="btn-row" style="justify-content:flex-start"><button class="btn btn-laranja" type="button" onclick="cmsAddItem('encomendas.produtos')">➕ Adicionar produto</button></div>
+
+          <div class="seção-título">FAQ Encomendas</div>
+          <div id="enc-faq-list"></div>
+          <div class="btn-row" style="justify-content:flex-start"><button class="btn btn-laranja" type="button" onclick="cmsAddItem('encomendas.faq')">➕ Adicionar FAQ</button></div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="cmsSalvarSecao('encomendas')">💾 Salvar Encomendas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- PRODUTOS / COMBOS -->
     <div class="seção" id="sec-produtos">
       <!-- form panel (hidden) -->
@@ -2121,6 +2155,40 @@ Talento</textarea>
       </div>
 
     </div>
+
+    <!-- FIDELIDADE CMS -->
+    <div class="seção" id="sec-fidelidade-cms">
+      <div class="card" style="border-left:4px solid #e65100">
+        <div class="card-header"><h2>🎟️ Fidelidade (CMS)</h2></div>
+        <div class="card-body">
+          <div class="campo-edit"><label>Título principal</label><input id="fid-cms-titulo" type="text" data-bind="fidelidade.titulo_principal" maxlength="120"/></div>
+          <div class="campo-edit"><label>Subtítulo</label><textarea id="fid-cms-subtitulo" data-bind="fidelidade.subtitulo" rows="3"></textarea></div>
+          <div class="campo-edit"><label>CTA texto</label><input id="fid-cms-cta-texto" type="text" data-bind="fidelidade.cta_texto" maxlength="80"/></div>
+          <div class="campo-edit"><label>CTA URL</label><input id="fid-cms-cta-url" type="url" data-bind="fidelidade.cta_url"/></div>
+          <div class="campo-edit">
+            <label>Imagem hero</label>
+            <input id="fid-cms-hero-file" type="file" accept="image/*" onchange="cmsHandleHeroUpload('fidelidade', this.files && this.files[0])"/>
+            <input id="fid-cms-hero-url" type="url" data-bind="fidelidade.imagem_hero_url" placeholder="images/fidelidade/hero.webp"/>
+            <input id="fid-cms-hero-alt" type="text" data-bind="fidelidade.imagem_hero_alt" maxlength="140" placeholder="Texto alternativo da imagem"/>
+            <div class="hint">Upload opcional: converte para WebP e publica no GitHub ao salvar.</div>
+          </div>
+          <div class="campo-edit"><label>SEO title</label><input id="fid-cms-seo-title" type="text" data-bind="fidelidade.seo_title" maxlength="120"/></div>
+          <div class="campo-edit"><label>SEO description</label><input id="fid-cms-seo-desc" type="text" data-bind="fidelidade.seo_description" maxlength="180"/></div>
+
+          <div class="seção-título">Recompensas</div>
+          <div id="fid-recompensas-list"></div>
+          <div class="btn-row" style="justify-content:flex-start"><button class="btn btn-laranja" type="button" onclick="cmsAddItem('fidelidade.recompensas')">➕ Adicionar recompensa</button></div>
+
+          <div class="seção-título">FAQ Fidelidade</div>
+          <div id="fid-faq-list"></div>
+          <div class="btn-row" style="justify-content:flex-start"><button class="btn btn-laranja" type="button" onclick="cmsAddItem('fidelidade.faq')">➕ Adicionar FAQ</button></div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" onclick="cmsSalvarSecao('fidelidade')">💾 Salvar Fidelidade</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- CONFIG -->
 
     <!-- QUALIDADE -->
@@ -2879,6 +2947,7 @@ async function carregarTudo(){
   try{preencherCardapio();}catch(e){console.error('[Admin] preencherCardapio',e);}
   try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
   try{preencherFaleConosco();}catch(e){console.error('[Admin] preencherFaleConosco',e);}
+  try{preencherCmsSections();}catch(e){console.error('[Admin] preencherCmsSections',e);}
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -2887,10 +2956,10 @@ function irPara(seção,btn){
   const sectionMap={
     'dashboard':      ['dashboard'],
     'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
-    'encomendas-admin':['encomendas','sabores','estoque'],
+    'encomendas-admin':['encomendas','encomendas-cms','sabores','estoque'],
     'produtos-admin': ['produtos'],
     'promocao-admin': ['promoção','participantes'],
-    'fidelidade-admin':['clientes','fidelidade'],
+    'fidelidade-admin':['clientes','fidelidade','fidelidade-cms'],
     'dicas-admin':    ['depoimentos'],
     // acesso direto mantido para botão Qualidade do Dashboard
     'qualidade':      ['qualidade'],
@@ -2910,6 +2979,7 @@ function irPara(seção,btn){
   if(ids.includes('fale-conosco'))preencherFaleConosco();
   if(ids.includes('config'))preencherConfig();
   if(ids.includes('encomendas'))renderEncomendas();
+  if(ids.includes('encomendas-cms'))preencherCmsSections();
   if(ids.includes('sabores'))renderizarSaboresAdmin();
   if(ids.includes('estoque'))carregarEstoque();
   if(ids.includes('produtos'))renderProdutosAdmin();
@@ -2923,6 +2993,7 @@ function irPara(seção,btn){
     try{renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
     try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
   }
+  if(ids.includes('fidelidade-cms'))preencherCmsSections();
   if(ids.includes('clientes')||ids.includes('fidelidade'))fidApplyReadOnlyGuard();
   if(ids.includes('depoimentos'))preencherDepoimentos();
   if(ids.includes('qualidade'))atualizarScoresQualidade();
@@ -4870,6 +4941,354 @@ async function salvarFidHero() {
   cfg.fidHeroDesc = document.getElementById('cfg-fid-hero-desc').value.trim();
   STATE.config = cfg;
   const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
+}
+
+// =====================================================================
+// CMS FULL-SITE (Fidelidade + Encomendas)
+// =====================================================================
+const CMS_SCHEMAS = {
+  'fidelidade.recompensas': {
+    container: '#fid-recompensas-list',
+    defaults: { titulo: '', descricao: '', imagem_url: '', imagem_alt: '', pontos: 10 }
+  },
+  'fidelidade.faq': {
+    container: '#fid-faq-list',
+    defaults: { pergunta: '', resposta: '' }
+  },
+  'encomendas.produtos': {
+    container: '#enc-produtos-list',
+    defaults: { nome: '', descricao: '', preco: 0, tamanhos: [], sabores: [], imagem_url: '', imagem_alt: '', prazo_antecedencia: 3 }
+  },
+  'encomendas.faq': {
+    container: '#enc-faq-list',
+    defaults: { pergunta: '', resposta: '' }
+  }
+};
+const CMS_SECAO_BINDINGS = {
+  fidelidade: {
+    titulo_principal: 'fid-cms-titulo',
+    subtitulo: 'fid-cms-subtitulo',
+    cta_texto: 'fid-cms-cta-texto',
+    cta_url: 'fid-cms-cta-url',
+    imagem_hero_url: 'fid-cms-hero-url',
+    imagem_hero_alt: 'fid-cms-hero-alt',
+    seo_title: 'fid-cms-seo-title',
+    seo_description: 'fid-cms-seo-desc'
+  },
+  encomendas: {
+    titulo_principal: 'enc-cms-titulo',
+    subtitulo: 'enc-cms-subtitulo',
+    cta_texto: 'enc-cms-cta-texto',
+    cta_url: 'enc-cms-cta-url',
+    imagem_hero_url: 'enc-cms-hero-url',
+    imagem_hero_alt: 'enc-cms-hero-alt',
+    seo_title: 'enc-cms-seo-title',
+    seo_description: 'enc-cms-seo-desc'
+  }
+};
+const CMS_HERO_UPLOAD = { fidelidade: null, encomendas: null };
+
+function cmsGet(obj, path) {
+  return String(path || '').split('.').reduce((acc, k) => (acc == null ? undefined : acc[k]), obj);
+}
+function cmsSet(obj, path, value) {
+  const parts = String(path || '').split('.');
+  const last = parts.pop();
+  let ref = obj;
+  parts.forEach(k => {
+    if (!ref[k] || typeof ref[k] !== 'object') ref[k] = {};
+    ref = ref[k];
+  });
+  ref[last] = value;
+}
+function cmsEnsureRoot() {
+  if (!STATE.config) STATE.config = {};
+  if (!STATE.config.fidelidade || typeof STATE.config.fidelidade !== 'object') STATE.config.fidelidade = {};
+  if (!STATE.config.encomendas || typeof STATE.config.encomendas !== 'object') STATE.config.encomendas = {};
+}
+function cmsNormalizeFromLegacy() {
+  cmsEnsureRoot();
+  const cfg = STATE.config;
+  const fid = cfg.fidelidade;
+  const enc = cfg.encomendas;
+  if (!fid.titulo_principal) fid.titulo_principal = cfg.fidHeroTitulo || cfg.fidelidadeTitulo || '🎟️ Clube de Fidelidade Itapolitana';
+  if (!fid.subtitulo) fid.subtitulo = cfg.fidHeroDesc || cfg.fidelidadeDescricao || 'Acumule pontos e troque por prêmios';
+  if (!fid.cta_texto) fid.cta_texto = 'Quero participar';
+  if (!fid.cta_url) fid.cta_url = 'https://itapolitanacajuru.com.br/fidelidade.html#secao-acoes-fid';
+  if (!fid.imagem_hero_url) fid.imagem_hero_url = 'images/logo.webp';
+  if (!fid.imagem_hero_alt) fid.imagem_hero_alt = 'Logo Sorveteria Itapolitana';
+  if (!fid.seo_title) fid.seo_title = cfg.seoTitulo || '';
+  if (!fid.seo_description) fid.seo_description = cfg.seoDescricao || '';
+  if (!Array.isArray(fid.recompensas) || !fid.recompensas.length) {
+    fid.recompensas = [
+      {
+        titulo: cfg.premioMilkshake || 'Milkshake 300ml',
+        descricao: `Resgate com ${parseInt(cfg.pontosMilkshake, 10) || 10} pontos`,
+        imagem_url: 'images/logo.webp',
+        imagem_alt: 'Recompensa de fidelidade',
+        pontos: parseInt(cfg.pontosMilkshake, 10) || 10
+      },
+      {
+        titulo: cfg.premioCaixa || 'Caixa 7 Bolas',
+        descricao: `Resgate com ${parseInt(cfg.pontosCaixa, 10) || 30} pontos`,
+        imagem_url: 'images/logo.webp',
+        imagem_alt: 'Recompensa de fidelidade',
+        pontos: parseInt(cfg.pontosCaixa, 10) || 30
+      }
+    ];
+  }
+  if (!Array.isArray(fid.faq)) fid.faq = [{ pergunta: 'Como acumulo pontos?', resposta: 'Cada código válido de cupom soma 1 ponto.' }];
+
+  if (!enc.titulo_principal) enc.titulo_principal = '📦 Encomendas Itapolitana';
+  if (!enc.subtitulo) enc.subtitulo = 'Monte seu pedido para retirar na loja';
+  if (!enc.cta_texto) enc.cta_texto = 'Fazer pedido';
+  if (!enc.cta_url) enc.cta_url = `https://wa.me/${String(cfg.whatsapp || '5516996062046').replace(/\D/g, '')}`;
+  if (!enc.imagem_hero_url) enc.imagem_hero_url = 'images/logo.webp';
+  if (!enc.imagem_hero_alt) enc.imagem_hero_alt = 'Produtos para encomenda';
+  if (!enc.seo_title) enc.seo_title = 'Encomendas | Itapolitana Cajuru';
+  if (!enc.seo_description) enc.seo_description = cfg.encomendaAviso || '';
+  if (!Array.isArray(enc.produtos)) {
+    enc.produtos = [{
+      nome: 'Caixa 5L - 2 sabores',
+      descricao: 'Ideal para festas',
+      preco: 89.9,
+      tamanhos: ['5L'],
+      sabores: ['Chocolate', 'Morango'],
+      imagem_url: 'images/logo.webp',
+      imagem_alt: 'Caixa 5 litros',
+      prazo_antecedencia: parseInt(cfg.encomendaMinPicoles, 10) || 3
+    }];
+  }
+  if (!Array.isArray(enc.faq)) enc.faq = [{ pergunta: 'Qual o prazo mínimo?', resposta: '3 dias úteis após confirmação.' }];
+}
+function cmsRenderItem(path, item, i) {
+  const safe = v => esc(v == null ? '' : v);
+  if (path === 'fidelidade.recompensas') {
+    return `<div class="card cms-item" style="margin:10px 0;padding:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo-edit"><label>Título</label><input type="text" data-cms-field="titulo" value="${safe(item.titulo)}"></div>
+        <div class="campo-edit"><label>Pontos</label><input type="number" min="1" max="9999" data-cms-field="pontos" value="${safe(item.pontos ?? 10)}"></div>
+      </div>
+      <div class="campo-edit"><label>Descrição</label><textarea rows="2" data-cms-field="descricao">${safe(item.descricao)}</textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo-edit"><label>Imagem URL</label><input type="url" data-cms-field="imagem_url" value="${safe(item.imagem_url)}"></div>
+        <div class="campo-edit"><label>Imagem ALT</label><input type="text" data-cms-field="imagem_alt" value="${safe(item.imagem_alt)}"></div>
+      </div>
+      <div class="btn-row" style="justify-content:flex-start">
+        <button type="button" class="btn btn-cinza" onclick="cmsMove('${path}',${i},-1)">⬆️</button>
+        <button type="button" class="btn btn-cinza" onclick="cmsMove('${path}',${i},1)">⬇️</button>
+        <button type="button" class="btn btn-vermelho" onclick="cmsRemove('${path}',${i})">🗑️ Remover</button>
+      </div>
+    </div>`;
+  }
+  if (path === 'encomendas.produtos') {
+    return `<div class="card cms-item" style="margin:10px 0;padding:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo-edit"><label>Nome</label><input type="text" data-cms-field="nome" value="${safe(item.nome)}"></div>
+        <div class="campo-edit"><label>Preço</label><input type="number" min="0" step="0.01" data-cms-field="preco" value="${safe(item.preco ?? 0)}"></div>
+      </div>
+      <div class="campo-edit"><label>Descrição</label><textarea rows="2" data-cms-field="descricao">${safe(item.descricao)}</textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo-edit"><label>Tamanhos (vírgula)</label><input type="text" data-cms-field="tamanhos" value="${safe(Array.isArray(item.tamanhos) ? item.tamanhos.join(', ') : '')}"></div>
+        <div class="campo-edit"><label>Sabores (vírgula)</label><input type="text" data-cms-field="sabores" value="${safe(Array.isArray(item.sabores) ? item.sabores.join(', ') : '')}"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="campo-edit"><label>Imagem URL</label><input type="url" data-cms-field="imagem_url" value="${safe(item.imagem_url)}"></div>
+        <div class="campo-edit"><label>Imagem ALT</label><input type="text" data-cms-field="imagem_alt" value="${safe(item.imagem_alt)}"></div>
+        <div class="campo-edit"><label>Prazo antecedência (dias)</label><input type="number" min="0" max="365" data-cms-field="prazo_antecedencia" value="${safe(item.prazo_antecedencia ?? 3)}"></div>
+      </div>
+      <div class="btn-row" style="justify-content:flex-start">
+        <button type="button" class="btn btn-cinza" onclick="cmsMove('${path}',${i},-1)">⬆️</button>
+        <button type="button" class="btn btn-cinza" onclick="cmsMove('${path}',${i},1)">⬇️</button>
+        <button type="button" class="btn btn-vermelho" onclick="cmsRemove('${path}',${i})">🗑️ Remover</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="card cms-item" style="margin:10px 0;padding:12px">
+    <div class="campo-edit"><label>Pergunta</label><input type="text" data-cms-field="pergunta" value="${safe(item.pergunta)}"></div>
+    <div class="campo-edit"><label>Resposta</label><textarea rows="2" data-cms-field="resposta">${safe(item.resposta)}</textarea></div>
+    <div class="btn-row" style="justify-content:flex-start">
+      <button type="button" class="btn btn-cinza" onclick="cmsMove('${path}',${i},-1)">⬆️</button>
+      <button type="button" class="btn btn-cinza" onclick="cmsMove('${path}',${i},1)">⬇️</button>
+      <button type="button" class="btn btn-vermelho" onclick="cmsRemove('${path}',${i})">🗑️ Remover</button>
+    </div>
+  </div>`;
+}
+function cmsRenderCollection(path) {
+  cmsEnsureRoot();
+  const schema = CMS_SCHEMAS[path];
+  if (!schema) return;
+  const list = cmsGet(STATE.config, path) || [];
+  const container = document.querySelector(schema.container);
+  if (!container) return;
+  container.innerHTML = list.map((item, i) => cmsRenderItem(path, item || {}, i)).join('');
+}
+function cmsReadCollection(path) {
+  const schema = CMS_SCHEMAS[path];
+  const container = document.querySelector(schema.container);
+  if (!container) return [];
+  const items = [];
+  container.querySelectorAll('.cms-item').forEach(itemEl => {
+    const obj = {};
+    itemEl.querySelectorAll('[data-cms-field]').forEach(fieldEl => {
+      const key = fieldEl.getAttribute('data-cms-field');
+      obj[key] = (fieldEl.value || '').trim();
+    });
+    if (path === 'fidelidade.recompensas') obj.pontos = parseInt(obj.pontos, 10) || 0;
+    if (path === 'encomendas.produtos') {
+      obj.preco = parseFloat(String(obj.preco || '0').replace(',', '.')) || 0;
+      obj.prazo_antecedencia = parseInt(obj.prazo_antecedencia, 10) || 0;
+      obj.tamanhos = String(obj.tamanhos || '').split(',').map(s => s.trim()).filter(Boolean);
+      obj.sabores = String(obj.sabores || '').split(',').map(s => s.trim()).filter(Boolean);
+    }
+    items.push(obj);
+  });
+  return items;
+}
+function cmsAddItem(path) {
+  cmsEnsureRoot();
+  const schema = CMS_SCHEMAS[path];
+  if (!schema) return;
+  const current = cmsReadCollection(path);
+  current.push(structuredClone(schema.defaults));
+  cmsSet(STATE.config, path, current);
+  cmsRenderCollection(path);
+}
+function cmsRemove(path, i) {
+  const current = cmsReadCollection(path);
+  current.splice(i, 1);
+  cmsSet(STATE.config, path, current);
+  cmsRenderCollection(path);
+}
+function cmsMove(path, i, dir) {
+  const current = cmsReadCollection(path);
+  const next = i + dir;
+  if (next < 0 || next >= current.length) return;
+  [current[i], current[next]] = [current[next], current[i]];
+  cmsSet(STATE.config, path, current);
+  cmsRenderCollection(path);
+}
+function cmsReadSectionFromForm(sectionKey) {
+  const bindings = CMS_SECAO_BINDINGS[sectionKey] || {};
+  const section = {};
+  Object.entries(bindings).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    section[key] = (el?.value || '').trim();
+  });
+  section.recompensas = sectionKey === 'fidelidade' ? cmsReadCollection('fidelidade.recompensas') : undefined;
+  section.faq = sectionKey === 'fidelidade' ? cmsReadCollection('fidelidade.faq') : cmsReadCollection('encomendas.faq');
+  if (sectionKey === 'encomendas') section.produtos = cmsReadCollection('encomendas.produtos');
+  return section;
+}
+function cmsSetSectionInForm(sectionKey, sectionData) {
+  const bindings = CMS_SECAO_BINDINGS[sectionKey] || {};
+  Object.entries(bindings).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = sectionData?.[key] || '';
+  });
+}
+function cmsValidar(sectionKey) {
+  const dados = cmsReadSectionFromForm(sectionKey);
+  const obrig = ['titulo_principal', 'subtitulo', 'cta_texto', 'cta_url', 'seo_title', 'seo_description'];
+  for (const k of obrig) {
+    if (!dados[k]) {
+      toast(`⚠️ Campo obrigatório ausente: ${k}`, 'erro');
+      return false;
+    }
+  }
+  try { new URL(dados.cta_url); } catch (e) { toast('⚠️ URL de CTA inválida.', 'erro'); return false; }
+  if (sectionKey === 'fidelidade') {
+    if (!Array.isArray(dados.recompensas) || !dados.recompensas.length) { toast('⚠️ Adicione ao menos 1 recompensa.', 'erro'); return false; }
+    if (!Array.isArray(dados.faq) || !dados.faq.length) { toast('⚠️ Adicione ao menos 1 FAQ da fidelidade.', 'erro'); return false; }
+    if (dados.recompensas.some(r => !r.titulo || !r.descricao || (parseInt(r.pontos, 10) || 0) <= 0)) {
+      toast('⚠️ Recompensas precisam de título, descrição e pontos > 0.', 'erro');
+      return false;
+    }
+  } else {
+    if (!Array.isArray(dados.produtos) || !dados.produtos.length) { toast('⚠️ Adicione ao menos 1 produto.', 'erro'); return false; }
+    if (!Array.isArray(dados.faq) || !dados.faq.length) { toast('⚠️ Adicione ao menos 1 FAQ de encomendas.', 'erro'); return false; }
+    if (dados.produtos.some(p => !p.nome || p.preco < 0 || p.prazo_antecedencia < 0)) {
+      toast('⚠️ Produtos precisam de nome, preço válido e prazo válido.', 'erro');
+      return false;
+    }
+  }
+  return true;
+}
+function cmsSincronizarCamposLegados() {
+  const cfg = STATE.config || {};
+  const fid = cfg.fidelidade || {};
+  const enc = cfg.encomendas || {};
+  cfg.fidHeroTitulo = fid.titulo_principal || cfg.fidHeroTitulo || '';
+  cfg.fidHeroDesc = fid.subtitulo || cfg.fidHeroDesc || '';
+  cfg.fidelidadeTitulo = fid.titulo_principal || cfg.fidelidadeTitulo || '';
+  cfg.fidelidadeDescricao = fid.subtitulo || cfg.fidelidadeDescricao || '';
+  const r0 = Array.isArray(fid.recompensas) ? fid.recompensas[0] : null;
+  const r1 = Array.isArray(fid.recompensas) ? fid.recompensas[1] : null;
+  if (r0) {
+    cfg.premioMilkshake = r0.titulo || cfg.premioMilkshake || '';
+    cfg.pontosMilkshake = parseInt(r0.pontos, 10) || cfg.pontosMilkshake || 10;
+  }
+  if (r1) {
+    cfg.premioCaixa = r1.titulo || cfg.premioCaixa || '';
+    cfg.pontosCaixa = parseInt(r1.pontos, 10) || cfg.pontosCaixa || 30;
+  }
+  cfg.encomendaAviso = enc.seo_description || cfg.encomendaAviso || '';
+}
+async function cmsHandleHeroUpload(sectionKey, file) {
+  if (!file) return;
+  processarImagem(file, 1600, 1000, 0.85, (info, erro) => {
+    if (erro) { toast(`❌ ${erro}`, 'erro'); return; }
+    CMS_HERO_UPLOAD[sectionKey] = info.blob;
+    const inputId = sectionKey === 'fidelidade' ? 'fid-cms-hero-url' : 'enc-cms-hero-url';
+    const input = document.getElementById(inputId);
+    if (input) input.value = URL.createObjectURL(info.blob);
+    toast('Imagem processada. Clique em salvar para publicar.', 'info');
+  });
+}
+async function cmsUploadHeroSeNecessario(sectionKey) {
+  const blob = CMS_HERO_UPLOAD[sectionKey];
+  if (!blob) return true;
+  const nomeArq = `images/cms/${sectionKey}-hero.webp`;
+  const result = await ghPutImagem(nomeArq, blob, `Admin: atualizar imagem hero ${sectionKey} CMS`);
+  if (!result.ok) {
+    toast(`❌ Falha no upload da imagem (${sectionKey}): ${result.erro || 'erro desconhecido'}`, 'erro');
+    return false;
+  }
+  const cfg = STATE.config || {};
+  const section = cfg[sectionKey] || {};
+  section.imagem_hero_url = `${nomeArq}?v=${Date.now()}`;
+  cfg[sectionKey] = section;
+  STATE.config = cfg;
+  CMS_HERO_UPLOAD[sectionKey] = null;
+  const inputId = sectionKey === 'fidelidade' ? 'fid-cms-hero-url' : 'enc-cms-hero-url';
+  const input = document.getElementById(inputId);
+  if (input) input.value = section.imagem_hero_url;
+  return true;
+}
+function preencherCmsSections() {
+  cmsNormalizeFromLegacy();
+  cmsSetSectionInForm('fidelidade', STATE.config.fidelidade || {});
+  cmsSetSectionInForm('encomendas', STATE.config.encomendas || {});
+  cmsRenderCollection('fidelidade.recompensas');
+  cmsRenderCollection('fidelidade.faq');
+  cmsRenderCollection('encomendas.produtos');
+  cmsRenderCollection('encomendas.faq');
+}
+async function cmsSalvarSecao(sectionKey) {
+  if (!STATE.config) STATE.config = {};
+  if (!cmsValidar(sectionKey)) return;
+  cmsNormalizeFromLegacy();
+  const dados = cmsReadSectionFromForm(sectionKey);
+  STATE.config[sectionKey] = dados;
+  const uploadOk = await cmsUploadHeroSeNecessario(sectionKey);
+  if (!uploadOk) return;
+  cmsSincronizarCamposLegados();
+  const ok = await salvarArquivo(PATHS.config, STATE.config, 'configSha', `Admin: atualizar ${sectionKey} CMS`);
+  if (ok) {
+    preencherCmsSections();
+    try { preencherFidelidade(); } catch (e) {}
+    try { preencherConfig(); } catch (e) {}
+  }
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)

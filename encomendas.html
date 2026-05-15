@@ -1337,8 +1337,9 @@ html { scroll-behavior: smooth; }
   📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança  ·  🏪 Retirada na loja  ·  ✨ Sorvete tipo artesanal desde 2007
 </div>
 <div class="hero">
-<h1>🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span></h1>
-<p>Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!</p>
+<img src="images/logo.webp" alt="Produtos para encomenda" data-config-src="encomendas.imagem_hero_url" data-config-alt="encomendas.imagem_hero_alt" style="width:74px;height:74px;border-radius:50%;object-fit:cover;box-shadow:0 4px 16px rgba(0,0,0,.28);margin-bottom:10px;">
+<h1 data-config="encomendas.titulo_principal">🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span></h1>
+<p data-config="encomendas.subtitulo">Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!</p>
 <div class="hero-badges">
 <span class="hero-badge">✨ tipo artesanal</span>
 <span class="hero-badge">🍦 35 Sabores</span>
@@ -1346,6 +1347,7 @@ html { scroll-behavior: smooth; }
 <span class="hero-badge">📦 Caixas 5L e 10L</span>
 <span class="hero-badge">🍭 Picolés Atacado</span>
 </div>
+<a href="https://wa.me/5516996062046" data-config="encomendas.cta_texto" data-config-href="encomendas.cta_url" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border-radius:50px;padding:12px 22px;margin-top:12px;font-weight:900;text-decoration:none;">Fazer pedido</a>
 <!-- Badge: sem delivery — Item 1 -->
 <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.45);border-radius:50px;padding:7px 18px;margin-top:14px;font-size:0.82rem;font-weight:800;color:#fff;letter-spacing:.2px;" role="note" aria-label="Informação sobre delivery">🚫 Não fazemos delivery &nbsp;·&nbsp; Encomende e retire na loja</div>
 </div>
@@ -1371,6 +1373,32 @@ html { scroll-behavior: smooth; }
       </div>
       <div class="itap-inline-note" style="margin-top:14px;">No celular, o carrinho fica sempre visível no rodapé para você finalizar o pedido pelo WhatsApp com rapidez.</div>
     </div>
+  </div>
+</section>
+<section style="max-width:860px;margin:0 auto;padding:0 16px 10px;">
+  <div style="background:#fff;border:1px solid #E3F2FD;border-radius:14px;padding:14px;">
+    <h2 style="font-size:1.1rem;color:#0D47A1;margin:0 0 10px;">Produtos em destaque</h2>
+    <div id="enc-produtos-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
+    <template id="tpl-enc-produto">
+      <article style="border:1px solid #e0e0e0;border-radius:12px;padding:10px;background:#fff;">
+        <img data-item="imagem_url" alt="" loading="lazy" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px;">
+        <h3 data-item="nome" style="margin:0 0 6px;font-size:1rem;color:#E65100"></h3>
+        <p data-item="descricao" style="margin:0 0 6px;font-size:.88rem;color:#37474F"></p>
+        <p style="margin:0;font-weight:800;color:#0D47A1">R$ <span data-item="preco"></span></p>
+      </article>
+    </template>
+  </div>
+</section>
+<section style="max-width:860px;margin:0 auto;padding:0 16px 10px;">
+  <div style="background:#fff;border:1px solid #FFE0B2;border-radius:14px;padding:14px;">
+    <h2 style="font-size:1.1rem;color:#E65100;margin:0 0 10px;">FAQ Encomendas</h2>
+    <div id="enc-faq-list"></div>
+    <template id="tpl-enc-faq">
+      <details style="border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:8px;">
+        <summary data-item="pergunta" style="font-weight:700;cursor:pointer;"></summary>
+        <p data-item="resposta" style="margin:8px 0 0;"></p>
+      </details>
+    </template>
   </div>
 </section>
 <style>

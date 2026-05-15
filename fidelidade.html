@@ -572,9 +572,9 @@
 
   <main>
     <section class="card hero" id="secao-cabecalho-fid" aria-labelledby="fid-hero-titulo">
-      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
-      <h1 id="fid-hero-titulo">Clube de Fidelidade Itapolitana</h1>
-      <p id="fid-hero-desc">Junte pontos a cada compra e troque por Milk Shake e sorvete em caixa.<br>Um fluxo simples para cadastrar, consultar pontos e registrar códigos de cupom.</p>
+      <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80" data-config-src="fidelidade.imagem_hero_url" data-config-alt="fidelidade.imagem_hero_alt">
+      <h1 id="fid-hero-titulo" data-config="fidelidade.titulo_principal">Clube de Fidelidade Itapolitana</h1>
+      <p id="fid-hero-desc" data-config="fidelidade.subtitulo">Junte pontos a cada compra e troque por Milk Shake e sorvete em caixa.<br>Um fluxo simples para cadastrar, consultar pontos e registrar códigos de cupom.</p>
     </section>
 
     <section class="card" id="secao-como-funciona-fid" aria-labelledby="titulo-como-funciona-fid">
@@ -592,6 +592,33 @@
         <button type="button" class="itap-food-hero__action itap-food-hero__action--primary" id="btn-mostrar-cadastro-fid">Quero participar do Clube de Fidelidade</button>
         <button type="button" class="itap-food-hero__action itap-food-hero__action--secondary" id="btn-mostrar-login-fid">Já sou cadastrado / Digitar código</button>
       </div>
+      <div style="margin-top:10px;text-align:center">
+        <a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-acoes-fid" data-config="fidelidade.cta_texto" data-config-href="fidelidade.cta_url" class="btn btn-wpp">Quero participar</a>
+      </div>
+    </section>
+
+    <section class="card" id="secao-recompensas-cms" aria-labelledby="titulo-recompensas-cms">
+      <h2 id="titulo-recompensas-cms" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">🎁 Recompensas</h2>
+      <div id="fid-recompensas-list"></div>
+      <template id="tpl-fid-recompensa">
+        <article style="border:1px solid #eee;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <img data-item="imagem_url" alt="" loading="lazy" style="width:56px;height:56px;object-fit:cover;border-radius:8px;margin-bottom:8px;">
+          <h3 data-item="titulo" style="margin:0 0 6px;color:#E65100"></h3>
+          <p data-item="descricao" style="margin:0 0 4px;"></p>
+          <strong><span data-item="pontos"></span> pontos</strong>
+        </article>
+      </template>
+    </section>
+
+    <section class="card" id="secao-faq-fidelidade-cms" aria-labelledby="titulo-faq-fidelidade-cms">
+      <h2 id="titulo-faq-fidelidade-cms" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">❓ FAQ Fidelidade</h2>
+      <div id="fid-faq-list"></div>
+      <template id="tpl-fid-faq">
+        <details style="border:1px solid #eee;border-radius:10px;padding:10px;margin-bottom:8px;">
+          <summary data-item="pergunta" style="font-weight:700;cursor:pointer;"></summary>
+          <p data-item="resposta" style="margin:8px 0 0;"></p>
+        </details>
+      </template>
     </section>
 
     <section class="card" id="secao-cadastro-fid" aria-labelledby="titulo-cadastro-fid" style="display:none;">
