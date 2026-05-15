@@ -493,6 +493,7 @@ body { overflow-x: hidden; }
       <input type="password" id="inp-gh-token" placeholder="GitHub Token (salvo no navegador)" autocomplete="off"
         oninput="validarCampoToken(this)"/>
     </div>
+    <div id="token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
     <div id="token-hint" style="display:none;font-size:0.74rem;color:#ef9a9a;margin-bottom:4px;padding:4px 8px;background:#2a0a0a;border-radius:6px">
       ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
     </div>
@@ -501,20 +502,21 @@ body { overflow-x: hidden; }
       Informe a senha do administrador. O token GitHub é opcional para escrita: sem token válido, o painel abre em modo somente leitura.
     </div>
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
+    <button class="btn-sair" style="width:100%;margin-top:8px" onclick="limparTokenSalvo()">🗑️ Limpar Token Salvo</button>
     <div class="login-erro" id="login-erro">&#x274C; Senha incorreta.</div>
   </div>
 </div>
 <div id="admin-app">
   <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
     <span style="font-size:1.1rem">⚠️</span>
-    <span><strong>Token GitHub expirado ou inválido.</strong> Dados em modo somente leitura — <strong>alterações não serão salvas</strong>. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Admin+Itapolitana" target="_blank" style="color:#bf360c;font-weight:700;text-decoration:underline">Criar novo token aqui ↗</a></span>
+    <span><strong>Token GitHub ausente, inválido ou sem permissão de escrita.</strong> Dados em modo somente leitura — <strong>alterações não serão salvas</strong>. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Admin+Itapolitana" target="_blank" style="color:#bf360c;font-weight:700;text-decoration:underline">Criar novo token aqui ↗</a></span>
     <button onclick="atualizarToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Atualizar Token</button>
   </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn-sair" onclick="recarregarTodosDados()" title="Recarregar todos os dados do GitHub agora">&#x1F504; Recarregar</button>
-      <a href="index.html" target="_blank" class="btn-sair" style="text-decoration:none">&#x1F310; Ver Site</a>
+      <a href="https://itapolitanacajuru.com.br/" target="_blank" class="btn-sair" style="text-decoration:none">&#x1F310; Ver Site</a>
       <button class="btn-sair" onclick="sair()">&#x1F6AA; Sair</button>
     </div>
   </div>
@@ -2432,7 +2434,10 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
-function getToken(){return (localStorage.getItem('itap_gh_token')||'').trim();}
+function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){console.warn('[Admin] localStorage indisponível (get)',e);return '';}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){console.warn('[Admin] localStorage indisponível (set)',e);return false;}}
+function lsRemove(k){try{localStorage.removeItem(k);return true;}catch(e){console.warn('[Admin] localStorage indisponível (remove)',e);return false;}}
+function getToken(){return lsGet('itap_gh_token').trim();}
 function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   const tok=(tokenOverride||getToken()).trim();
   const headers={...extraHeaders};
@@ -2464,15 +2469,47 @@ function validarCampoToken(input){
   const v = input.value.trim();
   const ok = !v || tokenFormatoValido(v);
   const hint = document.getElementById('token-hint');
+  const statusEl = document.getElementById('token-status');
   if (hint) hint.style.display = v && !ok ? 'block' : 'none';
+  if(statusEl){
+    if(!v) statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
+    else if(!ok) statusEl.textContent='⚠️ Token com formato inválido (não será salvo).';
+    else statusEl.textContent='✅ Token com formato válido.';
+  }
+}
+
+function preencherTokenSalvoNoLogin(){
+  const inp=document.getElementById('inp-gh-token');
+  const statusEl=document.getElementById('token-status');
+  if(!inp)return;
+  const tok=getToken();
+  if(tok){
+    inp.value=tok;
+    validarCampoToken(inp);
+    if(statusEl)statusEl.textContent='✅ Token carregado do navegador.';
+  }else if(statusEl){
+    statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
+  }
+}
+
+function limparTokenSalvo(){
+  lsRemove('itap_gh_token');
+  GH_WRITE_ALLOWED=false;
+  const inp=document.getElementById('inp-gh-token');
+  const statusEl=document.getElementById('token-status');
+  const hint=document.getElementById('token-hint');
+  if(inp) inp.value='';
+  if(hint) hint.style.display='none';
+  if(statusEl) statusEl.textContent='🧹 Token removido deste navegador.';
+  toast('Token removido com sucesso.','sucesso');
 }
 
 async function validarToken(tok){
   const token=(tok||'').trim();
-  if(!token) return false;
+  if(!token) return {ok:false,canWrite:false,reason:'ausente'};
   if(!GH_OWNER||!GH_REPO){
     console.warn('[Admin] validarToken: GH_OWNER/GH_REPO not configured');
-    return false;
+    return {ok:false,canWrite:false,reason:'repo_not_configured'};
   }
   try{
     // Using /repos/{owner}/{repo} validates auth and confirms this token can access
@@ -2481,11 +2518,22 @@ async function validarToken(tok){
       headers:getAuthHeaders({'X-GitHub-Api-Version':GH_API_VERSION,'Accept':GH_API_ACCEPT},token),
       cache:'no-store'
     });
-    if(!r.ok) console.warn('[Admin] validarToken: status',r.status);
-    return r.ok;
+    if(!r.ok){
+      console.warn('[Admin] validarToken: status',r.status);
+      return {ok:false,canWrite:false,reason:'invalid_or_expired',status:r.status};
+    }
+    let canWrite=false;
+    try{
+      const repoInfo=await r.json();
+      const perms=repoInfo&&repoInfo.permissions?repoInfo.permissions:{};
+      canWrite=Boolean(perms.push||perms.admin||perms.maintain);
+    }catch(e){
+      console.warn('[Admin] validarToken: não foi possível ler permissões',e?.message||e);
+    }
+    return {ok:true,canWrite,reason:canWrite?'ok':'missing_write_permission'};
   }catch(e){
     console.warn('[Admin] validarToken: erro de rede',e.message);
-    return false;
+    return {ok:false,canWrite:false,reason:'network_error'};
   }
 }
 
@@ -2509,9 +2557,18 @@ function atualizarToken(){
   const tok=(prompt('Cole o novo token GitHub (ghp_... ou github_pat_...):\n\nCrie um em: github.com/settings/tokens/new\n(escopo necessário: repo)') || '').trim();
   if(!tok){toast('Token não alterado.','aviso');return;}
   if(!tokenFormatoValido(tok)){toast('Token inválido. Use um PAT GitHub válido (ex.: ghp_... ou github_pat_...).','erro');return;}
-  localStorage.setItem('itap_gh_token',tok);
-  toast('Token salvo! Recarregando dados...','sucesso');
-  setTimeout(()=>carregarTudo(),400);
+  if(!lsSet('itap_gh_token',tok)){toast('Não foi possível salvar o token no navegador. Verifique permissões de armazenamento.','erro');return;}
+  const inp=document.getElementById('inp-gh-token');
+  if(inp){inp.value=tok;validarCampoToken(inp);}
+  toast('Token salvo! Validando permissões...','sucesso');
+  setTimeout(async ()=>{
+    const tokenStatus=await validarToken(tok);
+    GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite);
+    if(!GH_WRITE_ALLOWED){
+      toast('⚠️ Token sem escrita no repositório. Ajuste permissões para salvar alterações.','aviso');
+    }
+    carregarTudo();
+  },400);
 }const GH_OWNER='missias123';
 const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
@@ -2521,6 +2578,7 @@ const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
+let GH_WRITE_ALLOWED=false;
 // Dirty-check: rastreia se há alterações não salvas na aba atual
 let adminDirty=false;
 function markDirty(){adminDirty=true;}
@@ -2625,6 +2683,12 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
+  if(!GH_WRITE_ALLOWED){
+    const banner=document.getElementById('aviso-token-expirado');
+    if(banner)banner.style.display='flex';
+    toast('⚠️ Token sem permissão de escrita. Atualize o token para salvar alterações.','aviso');
+    return false;
+  }
   const bloqueado=fidPathReadOnly(path);
   if(bloqueado){
     fidApplyReadOnlyGuard();
@@ -2660,20 +2724,41 @@ async function sha256(str) {
 }
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
-  const tok=document.getElementById('inp-gh-token').value.trim();
-  if(tok) localStorage.setItem('itap_gh_token',tok);
+  const tokenInput=document.getElementById('inp-gh-token');
+  const tok=(tokenInput?.value||'').trim();
+  if(tok){
+    if(!tokenFormatoValido(tok)){
+      document.getElementById('login-erro').innerHTML='⚠️ Formato do token inválido. Corrija antes de entrar.';
+      document.getElementById('login-erro').style.display='block';
+      return;
+    }
+    if(!lsSet('itap_gh_token',tok)){
+      document.getElementById('login-erro').innerHTML='⚠️ Não foi possível salvar o token no navegador.';
+      document.getElementById('login-erro').style.display='block';
+      return;
+    }
+  }else{
+    lsRemove('itap_gh_token');
+  }
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   // Validação proativa do token antes de carregar
   const tokenAtual=getToken();
   if(tokenAtual){
-    const tokenOk=await validarToken(tokenAtual);
-    if(!tokenOk){
+    const tokenStatus=await validarToken(tokenAtual);
+    GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite);
+    if(!tokenStatus?.ok){
       // Mostra alerta no login sem bloquear — admin funciona em somente leitura
       const erroEl=document.getElementById('login-erro');
       erroEl.innerHTML='⚠️ Token GitHub inválido ou expirado. O admin abrirá em modo somente leitura. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Admin+Itapolitana" target="_blank" style="color:#c62828">Criar novo token ↗</a>';
       erroEl.style.display='block';
+    }else if(!tokenStatus?.canWrite){
+      const erroEl=document.getElementById('login-erro');
+      erroEl.innerHTML='⚠️ Token válido, mas sem permissão de escrita no repositório. O admin abrirá em modo somente leitura.';
+      erroEl.style.display='block';
     }
+  }else{
+    GH_WRITE_ALLOWED=false;
   }
   let cfg=await ghGet(PATHS.config);
   // Fallback: se API falhou (sem token salvo), tenta URL pública raw (repo público)
@@ -2710,7 +2795,7 @@ async function carregarTudo(){
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
   // Avisar quando dados foram carregados via fallback (sem SHA = somente leitura, salvar vai falhar)
-  const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly);
+  const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
   const banner=document.getElementById('aviso-token-expirado');
   if(banner)banner.style.display=semToken?'flex':'none';
   ocultarLoading();
@@ -5256,6 +5341,9 @@ function criarUploadImagem(containerId, opções) {
 // Padrão profissional: um único ponto de entrada
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
+
+  // 0. Carrega token salvo no navegador e mostra status ao usuário
+  try { preencherTokenSalvoNoLogin(); } catch(e) { console.warn('[Admin] preencherTokenSalvoNoLogin', e); }
 
   // 1. Spellcheck e autocorreção em todos os campos
   if (typeof aplicarSpellcheck === 'function') aplicarSpellcheck();
