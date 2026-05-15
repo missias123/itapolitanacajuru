@@ -176,6 +176,13 @@
     const heroCtaWhats = document.getElementById('hero-cta-whats');
     if (heroCtaWhats && cfg.heroCtaWhats) heroCtaWhats.textContent = cfg.heroCtaWhats;
 
+    // ── Fidelidade Hero ─────────────────────────
+    const fidHeroTitulo = document.getElementById('fid-hero-titulo');
+    if (fidHeroTitulo && cfg.fidHeroTitulo) fidHeroTitulo.textContent = cfg.fidHeroTitulo;
+
+    const fidHeroDesc = document.getElementById('fid-hero-desc');
+    if (fidHeroDesc && cfg.fidHeroDesc) fidHeroDesc.textContent = cfg.fidHeroDesc;
+
     // ── Cardápio ───────────────────────────────
     const cardápioTítulo = document.getElementById('cardápio-título');
     if (cardápioTítulo && cfg.cardapioTitulo) cardápioTítulo.textContent = cfg.cardapioTitulo;

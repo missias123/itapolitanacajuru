@@ -4770,6 +4770,9 @@ function preencherConfig(){
   const promoBadgeEl=document.getElementById('cfg-promo-badge'); if(promoBadgeEl) promoBadgeEl.value=cfg.promoBadge||'🎁 Sorteio Mensal';
   const promoTitEl=document.getElementById('cfg-promo-titulo-el'); if(promoTitEl) promoTitEl.value=cfg.promoTituloEl||'Sua Chance de Ganhar 5 Litros de Pura Felicidade!';
   const promoDescElEl=document.getElementById('cfg-promo-desc-el'); if(promoDescElEl) promoDescElEl.value=cfg.promoDescEl||'Participe agora do nosso sorteio exclusivo e concorra a uma caixa de 5L do sorvete mais amado de Cajuru.';
+  // Configurações de Encomendas (enc-aviso, enc-min-picolés)
+  const encAv=document.getElementById('enc-aviso'); if(encAv) encAv.value=cfg.encomendaAviso||'';
+  const encMin=document.getElementById('enc-min-picolés'); if(encMin) encMin.value=cfg.encomendaMinPicoles??100;
 }
 async function salvarConfig(){
   const novaSenha=document.getElementById('cfg-nova-senha').value;
@@ -4802,6 +4805,9 @@ async function salvarConfig(){
   const seoTitEl=document.getElementById('cfg-seo-titulo'); if(seoTitEl) cfg.seoTitulo=seoTitEl.value.trim();
   const seoDesEl=document.getElementById('cfg-seo-descricao'); if(seoDesEl) cfg.seoDescricao=seoDesEl.value.trim();
   const seoPalEl=document.getElementById('cfg-seo-palavras'); if(seoPalEl) cfg.seoPalavrasChave=seoPalEl.value.trim();
+  // Configurações de Encomendas
+  const encAvEl=document.getElementById('enc-aviso'); if(encAvEl) cfg.encomendaAviso=encAvEl.value.trim();
+  const encMinEl=document.getElementById('enc-min-picolés'); if(encMinEl) cfg.encomendaMinPicoles=parseInt(encMinEl.value)||100;
   if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
