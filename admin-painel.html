@@ -4965,6 +4965,8 @@ const CMS_SCHEMAS = {
   }
 };
 const CMS_IMAGE_BASE_PATH = 'images/cms';
+const CMS_DEFAULT_MILK_POINTS = 10;
+const CMS_DEFAULT_BOX_POINTS = 30;
 const CMS_SECAO_BINDINGS = {
   fidelidade: {
     titulo_principal: 'fid-cms-titulo',
@@ -5020,8 +5022,8 @@ function cmsNormalizeFromLegacy() {
   if (!fid.imagem_hero_alt) fid.imagem_hero_alt = 'Logo Sorveteria Itapolitana';
   if (!fid.seo_title) fid.seo_title = cfg.seoTitulo || '';
   if (!fid.seo_description) fid.seo_description = cfg.seoDescricao || '';
-  const pontosMilkLegacy = parseInt(cfg.pontosMilkshake, 10) || 10;
-  const pontosCaixaLegacy = parseInt(cfg.pontosCaixa, 10) || 30;
+  const pontosMilkLegacy = parseInt(cfg.pontosMilkshake, 10) || CMS_DEFAULT_MILK_POINTS;
+  const pontosCaixaLegacy = parseInt(cfg.pontosCaixa, 10) || CMS_DEFAULT_BOX_POINTS;
   if (!Array.isArray(fid.recompensas) || !fid.recompensas.length) {
     fid.recompensas = [
       {
@@ -5192,14 +5194,14 @@ function cmsSetSectionInForm(sectionKey, sectionData) {
 }
 function cmsValidar(sectionKey) {
   const dados = cmsReadSectionFromForm(sectionKey);
-  const obrig = ['titulo_principal', 'subtitulo', 'cta_texto', 'cta_url', 'seo_title', 'seo_description'];
-  for (const k of obrig) {
+  const camposObrigatorios = ['titulo_principal', 'subtitulo', 'cta_texto', 'cta_url', 'seo_title', 'seo_description'];
+  for (const k of camposObrigatorios) {
     if (!dados[k]) {
       toast(`⚠️ Campo obrigatório ausente: ${k}`, 'erro');
       return false;
     }
   }
-  if (!cmsUrlValida(dados.cta_url)) { toast('⚠️ URL de CTA inválida.', 'erro'); return false; }
+  if (!cmsValidarUrl(dados.cta_url)) { toast('⚠️ URL de CTA inválida.', 'erro'); return false; }
   if (sectionKey === 'fidelidade') {
     if (!Array.isArray(dados.recompensas) || !dados.recompensas.length) { toast('⚠️ Adicione ao menos 1 recompensa.', 'erro'); return false; }
     if (!Array.isArray(dados.faq) || !dados.faq.length) { toast('⚠️ Adicione ao menos 1 FAQ da fidelidade.', 'erro'); return false; }
@@ -5237,7 +5239,7 @@ function cmsSincronizarCamposLegados() {
   }
   cfg.encomendaAviso = enc.seo_description || cfg.encomendaAviso || '';
 }
-function cmsUrlValida(url) {
+function cmsValidarUrl(url) {
   try { new URL(url); return true; } catch (e) { return false; }
 }
 async function cmsHandleHeroUpload(sectionKey, file) {
@@ -5254,15 +5256,15 @@ async function cmsHandleHeroUpload(sectionKey, file) {
 async function cmsUploadHeroSeNecessario(sectionKey) {
   const blob = CMS_HERO_UPLOAD[sectionKey];
   if (!blob) return true;
-  const nomeArq = `${CMS_IMAGE_BASE_PATH}/${sectionKey}-hero.webp`;
-  const result = await ghPutImagem(nomeArq, blob, `Admin: atualizar imagem hero ${sectionKey} CMS`);
+  const imagePath = `${CMS_IMAGE_BASE_PATH}/${sectionKey}-hero.webp`;
+  const result = await ghPutImagem(imagePath, blob, `Admin: atualizar imagem hero ${sectionKey} CMS`);
   if (!result.ok) {
     toast(`❌ Falha no upload da imagem (${sectionKey}): ${result.erro || 'erro desconhecido'}`, 'erro');
     return false;
   }
   const cfg = STATE.config || {};
   const section = cfg[sectionKey] || {};
-  section.imagem_hero_url = `${nomeArq}?v=${Date.now()}`;
+  section.imagem_hero_url = `${imagePath}?v=${Date.now()}`;
   cfg[sectionKey] = section;
   STATE.config = cfg;
   CMS_HERO_UPLOAD[sectionKey] = null;
