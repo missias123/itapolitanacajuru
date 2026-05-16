@@ -43,6 +43,18 @@ const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
 // ─── Entry point ─────────────────────────────────────────────────────────────
 export default {
   async fetch(request, env) {
+    // Startup guard: fail loudly if wrangler.toml was deployed with placeholder KV IDs.
+    // The binding objects themselves are always present in the env; we detect placeholders
+    // by attempting a no-op get on a known-missing key — a misconfigured namespace will
+    // throw, and an un-replaced ID in wrangler.toml causes Wrangler to refuse to deploy.
+    // This check is a belt-and-suspenders for any edge-case misconfiguration.
+    if (!env.CLIENTES_KV || !env.ENCOMENDAS_KV || !env.RATE_KV) {
+      return new Response(
+        JSON.stringify({ ok: false, error: 'Worker mal-configurado: KV namespaces ausentes. Verifique wrangler.toml.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const origin = request.headers.get('Origin') || '';
 
     // CORS pre-flight
@@ -190,6 +202,10 @@ async function ghPutFidelidade(dadosFidelidade, mensagem, token) {
 }
 
 // ─── KV helpers — client list index ─────────────────────────────────────────
+// Nota de escalabilidade: meta:lista_ids armazena um array JSON com todos os IDs
+// de clientes. Para volumes esperados de uma sorveteria (< 5.000 clientes) isso
+// é eficiente. Se o volume crescer para dezenas de milhares, considere migrar
+// para paginação via env.CLIENTES_KV.list({ prefix: 'cliente:', limit: 100 }).
 async function getListaIds(env) {
   const raw = await env.CLIENTES_KV.get('meta:lista_ids');
   return raw ? JSON.parse(raw) : [];

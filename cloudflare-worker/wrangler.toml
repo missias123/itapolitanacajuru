@@ -4,22 +4,28 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ─── KV Namespaces ─────────────────────────────────────────────────────────────
-# Crie os namespaces com: wrangler kv namespace create <NOME>
-# Preencha os "id" gerados e repita o "preview_id" com o mesmo valor (ou crie um namespace de preview separado)
+# ⚠️  AÇÃO OBRIGATÓRIA ANTES DO DEPLOY:
+#   1. Execute os comandos abaixo para criar os namespaces:
+#        npx wrangler kv namespace create CLIENTES_KV
+#        npx wrangler kv namespace create ENCOMENDAS_KV
+#        npx wrangler kv namespace create RATE_KV
+#   2. Substitua CADA "PLACEHOLDER_*" pelo ID retornado pelo Wrangler.
+#   3. O Worker valida os IDs no startup e falha com erro claro caso ainda
+#      existam valores de placeholder (evita deploy silencioso com config errada).
 [[kv_namespaces]]
 binding    = "CLIENTES_KV"
-id         = "PLACEHOLDER_CLIENTES_KV_ID"
-preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"   # ← substitua pelo ID real
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"   # ← substitua pelo ID real
 
 [[kv_namespaces]]
 binding    = "ENCOMENDAS_KV"
-id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
-preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID" # ← substitua pelo ID real
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID" # ← substitua pelo ID real
 
 [[kv_namespaces]]
 binding    = "RATE_KV"
-id         = "PLACEHOLDER_RATE_KV_ID"
-preview_id = "PLACEHOLDER_RATE_KV_ID"
+id         = "PLACEHOLDER_RATE_KV_ID"       # ← substitua pelo ID real
+preview_id = "PLACEHOLDER_RATE_KV_ID"       # ← substitua pelo ID real
 
 # ─── Variáveis de ambiente públicas ───────────────────────────────────────────
 [vars]

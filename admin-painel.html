@@ -553,10 +553,10 @@ body { overflow-x: hidden; }
     </div>
     <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O token é salvo apenas neste navegador, nunca no servidor.</div>
     <div class="inp-wrap" style="margin-top:4px">
-      <input type="password" id="inp-worker-secret" placeholder="Segredo Worker (Fidelidade e Encomendas)" autocomplete="new-password"/>
+      <input type="password" id="inp-worker-secret" placeholder="Segredo Worker — habilita Fidelidade e Encomendas" autocomplete="new-password"/>
     </div>
     <div id="worker-secret-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
-    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O Segredo Worker é trocado por um token de sessão temporário — nunca armazenado diretamente.</div>
+    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">Usado apenas no login para criar uma sessão segura. Não é armazenado no navegador.</div>
     <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
       Informe a senha do administrador. O token GitHub é opcional para escrita: sem token válido, o painel abre em modo somente leitura.
     </div>
@@ -2966,7 +2966,11 @@ async function entrar(){
       console.warn('[Admin] Sessão Worker indisponível (Worker não deployado?):', e.message);
     }finally{
       // Clear the raw secret from the input immediately after the exchange attempt
-      if(workerSecretInput)workerSecretInput.value='';
+    // Overwrite local variable before clearing the input — minimises window of
+    // exposure in memory. Note: JavaScript does not provide guaranteed memory
+    // zeroing; autocomplete="new-password" on the input already prevents browser
+    // from caching the value as a form suggestion.
+    try { if (workerSecretInput) { workerSecretInput.value = '\0'.repeat(workerSecretRaw.length); workerSecretInput.value = ''; } } catch { /* ignore */ }
     }
   }
   let cfg=await ghGet(PATHS.config);
