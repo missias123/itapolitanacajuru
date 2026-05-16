@@ -3054,8 +3054,9 @@ async function carregarTudo(){
   mostrarLoading('Carregando dados...');
   let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null};
   try{
+    const fontes=['promo','clientes','fidelidade','encomendas','produtos','promocoes'];
     const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
-    resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',idx,'falhou:',r.reason);});
+    resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',fontes[idx]||idx,'falhou:',r.reason);});
     [pr,cl,fi,en,prod,promos]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
     if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
     // clientes e encomendas vêm do Worker (sha='worker' quando ok, null quando falhou)
