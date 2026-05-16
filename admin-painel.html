@@ -2745,6 +2745,10 @@ function getAdminToken(){return ssGet('itap_admin_token').trim();}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Session-Token':getAdminToken(),...extra};}
 async function fetchWithTimeout(url,options={},timeoutMs=10000){
   const controller=new AbortController();
+  if(options&&options.signal){
+    if(options.signal.aborted)controller.abort();
+    else options.signal.addEventListener('abort',()=>controller.abort(),{once:true});
+  }
   const timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
     return await fetch(url,{...options,signal:controller.signal});
@@ -3051,6 +3055,7 @@ async function carregarTudo(){
   let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null};
   try{
     const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
+    resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',idx,'falhou:',r.reason);});
     [pr,cl,fi,en,prod,promos]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
     if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
     // clientes e encomendas vêm do Worker (sha='worker' quando ok, null quando falhou)
