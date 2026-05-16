@@ -173,7 +173,7 @@
 
     // ── Hero ───────────────────────────────────
     const heroTítulo = document.getElementById('hero-título');
-    if (heroTítulo && cfg.heroTitulo) heroTítulo.innerHTML = cfg.heroTitulo;
+    if (heroTítulo && cfg.heroTitulo) heroTítulo.textContent = cfg.heroTitulo;
 
     const heroSub = document.getElementById('hero-subtítulo');
     if (heroSub && cfg.heroSubtitulo) heroSub.textContent = cfg.heroSubtitulo;
