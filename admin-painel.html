@@ -2799,8 +2799,8 @@ function fidEnsureCodigos(){
 }
 function fidIsReadOnly(){
   // Fidelidade (fidelidade.json) requires GitHub SHA+token.
-  // Clientes now go through the Worker — only require an active admin session token.
-  return !STATE.fidelidadeSha || !getAdminToken();
+  // Operações de clientes/encomendas validam sessão Worker por rota em fidPathReadOnly().
+  return !STATE.fidelidadeSha;
 }
 function fidPathReadOnly(path){
   return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!getAdminToken());
@@ -4275,6 +4275,33 @@ function copiarApenassorteio() {
 
 // ═══════════════════════════════════════════════════════════
 function renderClientes(){
+  const workerAtivo=Boolean(getAdminToken());
+  const clientesCarregados=Boolean(STATE.clientes?.clientes);
+  const tbodyAviso=document.getElementById('tabela-clientes');
+  if(!workerAtivo&&!clientesCarregados){
+    document.getElementById('sc-total').textContent='0';
+    document.getElementById('sc-ativos').textContent='0';
+    document.getElementById('sc-bloqueados').textContent='0';
+    document.getElementById('sc-fraudes').textContent='0';
+    if(tbodyAviso){
+      const tr=document.createElement('tr');
+      const td=document.createElement('td');
+      td.colSpan=6;
+      td.style.textAlign='left';
+      td.style.color='#0d47a1';
+      td.style.padding='14px';
+      td.style.background='#e3f2fd';
+      td.style.border='1px solid #bbdefb';
+      td.style.borderRadius='8px';
+      td.textContent='ℹ️ Sessão Worker inativa: a lista de clientes não pôde ser carregada. Faça login novamente e preencha o campo "Segredo Worker — habilita Fidelidade e Encomendas" para visualizar os cadastros.';
+      tr.appendChild(td);
+      tbodyAviso.replaceChildren(tr);
+    }
+    const pagDiv=document.getElementById('pag-clientes');
+    if(pagDiv)pagDiv.innerHTML='';
+    fidApplyReadOnlyGuard();
+    return;
+  }
   const clientes=getClientes();
   const busca=(document.getElementById('busca-cliente').value||'').toLowerCase();
   const filtrados=clientes.filter(c=>{if(!busca)return true;return(c.nome||'').toLowerCase().includes(busca)||(c.cel||'').includes(busca);}).sort((a,b)=>(a.cadastro||'')<(b.cadastro||'')?-1:1);
@@ -7778,7 +7805,7 @@ async function zerarPontosNegativos(clienteId){
 </div>
 
 <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
-<div class="seção" id="sec-rastreio" style="display:none">
+<div class="seção" id="sec-rastreio">
   <div class="card">
     <div class="card-header">
       <h2>🔍 Rastreio de Encomenda</h2>
@@ -7809,7 +7836,7 @@ async function zerarPontosNegativos(clienteId){
 </div>
 
 <!-- ═══════════════ SEÇÃO AUDITORIA ════════════════════════ -->
-<div class="seção" id="sec-auditoria" style="display:none">
+<div class="seção" id="sec-auditoria">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
     <div>
       <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
