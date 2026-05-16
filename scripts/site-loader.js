@@ -360,6 +360,44 @@
           el.appendChild(wrapper);
           return;
         }
+        if (layout === 'tip-card') {
+          const card = document.createElement('article');
+          card.className = className || 'itap-tip-card';
+          if (item && typeof item === 'object') {
+            const titulo = String(item.titulo || item.title || item.label || '');
+            const descricao = String(item.descricao || item.text || '');
+            const imagem = String(item.imagem || item.image || '');
+            const link = String(item.link || item.url || '');
+            if (imagem && urlSegura(imagem)) {
+              const img = document.createElement('img');
+              img.src = imagem;
+              img.alt = titulo || 'Dica';
+              card.appendChild(img);
+            }
+            if (titulo) {
+              const h = document.createElement('h3');
+              h.textContent = titulo;
+              card.appendChild(h);
+            }
+            if (descricao) {
+              const p = document.createElement('p');
+              p.textContent = descricao;
+              card.appendChild(p);
+            }
+            if (link && urlSegura(link)) {
+              const a = document.createElement('a');
+              a.href = link;
+              a.target = '_blank';
+              a.rel = 'noopener';
+              a.textContent = 'Saiba mais';
+              card.appendChild(a);
+            }
+          } else {
+            card.textContent = String(item ?? '');
+          }
+          el.appendChild(card);
+          return;
+        }
         const node = document.createElement(tag);
         if (className) node.className = className;
         if (item && typeof item === 'object') {

@@ -2083,6 +2083,13 @@ Talento</textarea>
           <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
           <div class="campo-edit"><label>Passos "Como funciona" (um por linha)</label><textarea id="fid-como-funciona-lista" rows="4" placeholder="Faça seu cadastro...&#10;A cada compra...&#10;Junte pontos..."></textarea></div>
           <div class="campo-edit"><label>Regras resumidas (uma por linha)</label><textarea id="fid-regras-resumo-lista" rows="5" placeholder="Cadastre-se com dados reais...&#10;Cada código válido soma 1 ponto..."></textarea></div>
+          <div class="seção-título">🔗 CTAs da Fidelidade</div>
+          <div class="campo-edit"><label>URL "Ver regras completas"</label><input type="url" id="fid-regras-url" placeholder="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas"/></div>
+          <div class="campo-edit"><label>URL "Resgatar prêmio via WhatsApp"</label><input type="url" id="fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/></div>
+          <div class="seção-título">🔎 SEO por Página</div>
+          <div class="campo-edit"><label>Fidelidade · Title</label><input type="text" id="fid-seo-titulo" maxlength="80" placeholder="Clube de Fidelidade | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Fidelidade · Meta Description</label><textarea id="fid-seo-descricao" rows="2" maxlength="180" placeholder="Acumule pontos e resgate prêmios no Clube de Fidelidade da Itapolitana em Cajuru."></textarea></div>
+          <div class="campo-edit"><label>Fidelidade · Keywords</label><input type="text" id="fid-seo-palavras" maxlength="220" placeholder="fidelidade cajuru, clube de pontos, sorveteria itapolitana"/></div>
           <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
         </div>
       </div>
@@ -2166,6 +2173,13 @@ Talento</textarea>
           </div>
         </div>
         <div class="card-body" style="padding:16px;background:#0d1117">
+          <div class="card" style="margin-bottom:16px;border-left:4px solid #3949ab;background:#f7fbff">
+            <div class="card-header"><h2>📝 Qualidade — Observações Internas</h2></div>
+            <div class="card-body">
+              <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="qualidade-observacoes" rows="4" placeholder="Registre decisões, pendências e anotações internas desta seção."></textarea></div>
+              <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+            </div>
+          </div>
 
           <!-- SCORES LIGHTHOUSE -->
           <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Scores Google Lighthouse</div>
@@ -2440,6 +2454,15 @@ Talento</textarea>
 
           <div class="seção-título" style="margin-top:20px">💡 Dicas da Sorveteria</div>
           <div class="campo-edit"><label>Dicas (uma por linha)</label><textarea id="dep-dicas" rows="6" placeholder="Experimente misturar sabores!&#10;O açaí fica ainda melhor com granola e mel.&#10;Peça a taça premium Unicórnio — é a mais pedida!"></textarea></div>
+          <div class="seção-título" style="margin-top:20px">📌 Dicas em Cards (Título, Descrição, Imagem, Link)</div>
+          <div id="dicas-lista"></div>
+          <div class="btn-row" style="margin-top:12px">
+            <button class="btn btn-verde" onclick="adicionarDicaItem()">➕ Adicionar Dica</button>
+          </div>
+          <div class="seção-título" style="margin-top:20px">🔎 SEO por Página</div>
+          <div class="campo-edit"><label>Dicas · Title</label><input type="text" id="cfg-seo-dicas-titulo" maxlength="80" placeholder="Depoimentos e Dicas | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Dicas · Meta Description</label><textarea id="cfg-seo-dicas-descricao" rows="2" maxlength="180" placeholder="Depoimentos e dicas essenciais da Itapolitana para eventos e dia a dia."></textarea></div>
+          <div class="campo-edit"><label>Dicas · Keywords</label><input type="text" id="cfg-seo-dicas-palavras" maxlength="220" placeholder="dicas sorvete cajuru, depoimentos itapolitana, eventos cajuru"/></div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarDepoimentos()">💾 Salvar Depoimentos</button></div>
         </div>
@@ -2910,6 +2933,7 @@ async function carregarTudo(){
   try{preencherCardapio();}catch(e){console.error('[Admin] preencherCardapio',e);}
   try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
   try{preencherFaleConosco();}catch(e){console.error('[Admin] preencherFaleConosco',e);}
+  try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais',e);}
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -2956,9 +2980,10 @@ function irPara(seção,btn){
   }
   if(ids.includes('clientes')||ids.includes('fidelidade'))fidApplyReadOnlyGuard();
   if(ids.includes('depoimentos'))preencherDepoimentos();
-  if(ids.includes('qualidade'))atualizarScoresQualidade();
+  if(ids.includes('qualidade')){atualizarScoresQualidade();preencherNotasOperacionais();}
   if(ids.includes('rastreio')){renderRastreioRecentes();}
   if(ids.includes('auditoria')){executarAuditoria();}
+  if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
   // Scroll para o topo do conteúdo ao trocar de aba
   const content=document.querySelector('.admin-content');
   if(content)content.scrollTop=0;
@@ -4416,6 +4441,17 @@ function preencherFidelidade(){
   if(fidComo) fidComo.value=Array.isArray(cfg.fidelidadeComoFunciona)?cfg.fidelidadeComoFunciona.join('\n'):'';
   const fidRegrasResumo=document.getElementById('fid-regras-resumo-lista');
   if(fidRegrasResumo) fidRegrasResumo.value=Array.isArray(cfg.fidelidadeRegrasResumo)?cfg.fidelidadeRegrasResumo.join('\n'):'';
+  const fidRegrasUrl=document.getElementById('fid-regras-url');
+  if(fidRegrasUrl) fidRegrasUrl.value=cfg.fidelidadeRegrasUrl||'';
+  const fidResgateUrl=document.getElementById('fid-resgate-url');
+  if(fidResgateUrl) fidResgateUrl.value=cfg.fidelidadeResgateWhatsappUrl||'';
+  const seoPg=cfg.seoPaginas||{};
+  const fidSeoTit=document.getElementById('fid-seo-titulo');
+  if(fidSeoTit) fidSeoTit.value=seoPg.fidelidade?.titulo||'';
+  const fidSeoDesc=document.getElementById('fid-seo-descricao');
+  if(fidSeoDesc) fidSeoDesc.value=seoPg.fidelidade?.descricao||'';
+  const fidSeoPal=document.getElementById('fid-seo-palavras');
+  if(fidSeoPal) fidSeoPal.value=seoPg.fidelidade?.palavrasChave||'';
   atualizarStatsCódigos();
 }
 
@@ -4753,6 +4789,20 @@ async function salvarConfigFidelidade() {
   c.fidelidadeDescricao = document.getElementById('fid-descrição').value.trim();
   c.fidelidadeComoFunciona = lerLinhasTextarea('fid-como-funciona-lista');
   c.fidelidadeRegrasResumo = lerLinhasTextarea('fid-regras-resumo-lista');
+  const fidRegrasUrlSafe = cmsLerUrlCampo('fid-regras-url', 'URL de regras da Fidelidade', {allowRelative:true});
+  if (fidRegrasUrlSafe===null) return;
+  const fidResgateUrlSafe = cmsLerUrlCampo('fid-resgate-url', 'URL de resgate via WhatsApp', {allowRelative:false});
+  if (fidResgateUrlSafe===null) return;
+  c.fidelidadeRegrasUrl = fidRegrasUrlSafe || '';
+  c.fidelidadeResgateWhatsappUrl = fidResgateUrlSafe || '';
+  c.seoPaginas = c.seoPaginas || {};
+  c.seoPaginas.fidelidade = c.seoPaginas.fidelidade || {};
+  const fidSeoTit = document.getElementById('fid-seo-titulo');
+  if (fidSeoTit) c.seoPaginas.fidelidade.titulo = fidSeoTit.value.trim();
+  const fidSeoDesc = document.getElementById('fid-seo-descricao');
+  if (fidSeoDesc) c.seoPaginas.fidelidade.descricao = fidSeoDesc.value.trim();
+  const fidSeoPal = document.getElementById('fid-seo-palavras');
+  if (fidSeoPal) c.seoPaginas.fidelidade.palavrasChave = fidSeoPal.value.trim();
   
   mostrarLoading('Salvando...');
   
@@ -6107,7 +6157,8 @@ function preencherDepoimentos() {
   const c = STATE.config || {};
   document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
   document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
-  document.getElementById('dep-dicas').value = (c.depDicas || []).join('\n');
+  const depDicas = Array.isArray(c.depDicas) ? c.depDicas : (c.depDica ? [c.depDica] : []);
+  document.getElementById('dep-dicas').value = depDicas.join('\n');
   
   const lista = c.depoimentos || [];
   const container = document.getElementById('dep-lista');
@@ -6150,12 +6201,52 @@ function preencherDepoimentos() {
       </div>
     </div>
   `).join('');
+  preencherDicasItens();
+  const seoPg = c.seoPaginas || {};
+  const seoDicasTit = document.getElementById('cfg-seo-dicas-titulo');
+  if (seoDicasTit) seoDicasTit.value = seoPg.dicas?.titulo || '';
+  const seoDicasDesc = document.getElementById('cfg-seo-dicas-descricao');
+  if (seoDicasDesc) seoDicasDesc.value = seoPg.dicas?.descricao || '';
+  const seoDicasPal = document.getElementById('cfg-seo-dicas-palavras');
+  if (seoDicasPal) seoDicasPal.value = seoPg.dicas?.palavrasChave || '';
 }
 
 function adicionarDepoimento() {
   if (!STATE.config.depoimentos) STATE.config.depoimentos = [];
   STATE.config.depoimentos.push({nome: '', texto: '', estrelas: 5});
   preencherDepoimentos();
+}
+
+function preencherDicasItens() {
+  const c = STATE.config || {};
+  const container = document.getElementById('dicas-lista');
+  if (!container) return;
+  const lista = Array.isArray(c.dicasItens) ? c.dicasItens : [];
+  container.innerHTML = lista.map((d, i) => `
+    <div class="card" style="margin-bottom:12px;padding:14px;border:1px solid #eee">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+        <strong>Dica #${i+1}</strong>
+        <button class="btn btn-erro btn-sm" onclick="removerDicaItem(${i})">&#128465;&#65039; Remover</button>
+      </div>
+      <div class="campo-edit"><label>Título</label><input type="text" id="dica-titulo-${i}" value="${esc(d.titulo || '')}" maxlength="100" placeholder="Ex.: Como conservar melhor seu sorvete"/></div>
+      <div class="campo-edit"><label>Descrição</label><textarea id="dica-desc-${i}" rows="3" maxlength="280" placeholder="Resumo da dica para aparecer no card.">${esc(d.descricao || '')}</textarea></div>
+      <div class="campo-edit"><label>Imagem (URL)</label><input type="url" id="dica-img-${i}" value="${esc(d.imagem || '')}" placeholder="https://... ou images/arquivo.webp"/></div>
+      <div class="campo-edit"><label>Link de destino</label><input type="url" id="dica-link-${i}" value="${esc(d.link || '')}" placeholder="https://..."/></div>
+    </div>
+  `).join('');
+}
+
+function adicionarDicaItem() {
+  if (!STATE.config) STATE.config = {};
+  if (!Array.isArray(STATE.config.dicasItens)) STATE.config.dicasItens = [];
+  STATE.config.dicasItens.push({ titulo: '', descricao: '', imagem: '', link: '' });
+  preencherDicasItens();
+}
+
+function removerDicaItem(i) {
+  if (!Array.isArray(STATE.config?.dicasItens)) return;
+  STATE.config.dicasItens.splice(i, 1);
+  preencherDicasItens();
 }
 
 function removerDepoimento(i) {
@@ -6193,6 +6284,7 @@ async function salvarDepoimentos() {
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
   c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
+  c.depDica = c.depDicas[0] || '';
   
   const lista = [];
   const container = document.getElementById('dep-lista');
@@ -6219,8 +6311,57 @@ async function salvarDepoimentos() {
     lista.push(dep);
   }
   c.depoimentos = lista;
+  const dicasItens = [];
+  const dicasSalvas = Array.isArray(c.dicasItens) ? c.dicasItens : [];
+  for (let i = 0; i < dicasSalvas.length; i++) {
+    const titulo = (document.getElementById(`dica-titulo-${i}`)?.value || '').trim();
+    const descricao = (document.getElementById(`dica-desc-${i}`)?.value || '').trim();
+    const imagemRaw = (document.getElementById(`dica-img-${i}`)?.value || '').trim();
+    const linkRaw = (document.getElementById(`dica-link-${i}`)?.value || '').trim();
+    const imagem = cmsValidarUrl(imagemRaw, {allowRelative:true, allowEmpty:true});
+    const link = cmsValidarUrl(linkRaw, {allowRelative:true, allowEmpty:true});
+    if (imagem===null || link===null) {
+      toast(`⚠️ URL inválida na dica #${i+1}. Use apenas links http/https.`, 'erro');
+      return;
+    }
+    if (!titulo && !descricao && !imagem && !link) continue;
+    dicasItens.push({ titulo, descricao, imagem, link });
+  }
+  c.dicasItens = dicasItens;
+  c.seoPaginas = c.seoPaginas || {};
+  c.seoPaginas.dicas = c.seoPaginas.dicas || {};
+  const seoDicasTit = document.getElementById('cfg-seo-dicas-titulo');
+  if (seoDicasTit) c.seoPaginas.dicas.titulo = seoDicasTit.value.trim();
+  const seoDicasDesc = document.getElementById('cfg-seo-dicas-descricao');
+  if (seoDicasDesc) c.seoPaginas.dicas.descricao = seoDicasDesc.value.trim();
+  const seoDicasPal = document.getElementById('cfg-seo-dicas-palavras');
+  if (seoDicasPal) c.seoPaginas.dicas.palavrasChave = seoDicasPal.value.trim();
   
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
+}
+
+function preencherNotasOperacionais(){
+  const cfg = STATE.config || {};
+  const obs = cfg.adminConteudoPaginas || {};
+  const q = document.getElementById('qualidade-observacoes');
+  if (q) q.value = obs.qualidade || '';
+  const r = document.getElementById('rastreio-observacoes');
+  if (r) r.value = obs.rastreio || '';
+  const a = document.getElementById('auditoria-observacoes');
+  if (a) a.value = obs.auditoria || '';
+}
+
+async function salvarNotasOperacionais(){
+  const cfg = STATE.config || {};
+  cfg.adminConteudoPaginas = cfg.adminConteudoPaginas || {};
+  const q = document.getElementById('qualidade-observacoes');
+  if (q) cfg.adminConteudoPaginas.qualidade = q.value.trim();
+  const r = document.getElementById('rastreio-observacoes');
+  if (r) cfg.adminConteudoPaginas.rastreio = r.value.trim();
+  const a = document.getElementById('auditoria-observacoes');
+  if (a) cfg.adminConteudoPaginas.auditoria = a.value.trim();
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar observacoes de qualidade/rastreio/auditoria');
 }
 
 // ── FALE CONOSCO ────────────────────────────────────────────────────────────
@@ -7423,6 +7564,11 @@ async function zerarPontosNegativos(clienteId){
       <span style="font-size:.8rem;color:#888">Consulta como o cliente vê o pedido</span>
     </div>
     <div class="card-body">
+      <div class="campo-edit">
+        <label>Observações Internas / Conteúdo da Página</label>
+        <textarea id="rastreio-observacoes" rows="3" placeholder="Registre orientações internas do rastreio para a equipe."></textarea>
+      </div>
+      <div class="btn-row" style="margin-bottom:12px"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
         <input type="text" id="rastreio-busca" style="flex:1;min-width:200px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none" placeholder="Digite nº do pedido (ITA-001-...) ou telefone..."/>
         <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
@@ -7464,6 +7610,13 @@ async function zerarPontosNegativos(clienteId){
       </select>
       <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
       <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>📝 Auditoria — Observações Internas</h2></div>
+    <div class="card-body">
+      <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="auditoria-observacoes" rows="3" placeholder="Registre decisões da auditoria, ações pendentes e histórico resumido."></textarea></div>
+      <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
     </div>
   </div>
   <!-- Stats de auditoria -->
