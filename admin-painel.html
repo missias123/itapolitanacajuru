@@ -2672,10 +2672,10 @@ async function validarToken(tok){
   try{
     // Using /repos/{owner}/{repo} validates auth and confirms this token can access
     // the exact repository used by the admin (avoids false positives from /user-only checks).
-    const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
+    const r=await fetchWithTimeout(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
       headers:getAuthHeaders({'X-GitHub-Api-Version':GH_API_VERSION,'Accept':GH_API_ACCEPT},token),
       cache:'no-store'
-    });
+    },8000);
     if(!r.ok){
       console.warn('[Admin] validarToken: status',r.status);
       return {ok:false,canWrite:false,reason:'invalid_or_expired',status:r.status};
@@ -2743,9 +2743,25 @@ const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
 // Admin session token (exchanged at login — raw secret never stored in storage)
 function getAdminToken(){return ssGet('itap_admin_token').trim();}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Session-Token':getAdminToken(),...extra};}
+async function fetchWithTimeout(url,options={},timeoutMs=10000){
+  if(options&&options.signal&&options.signal.aborted)throw new Error('Abortado antes do fetch');
+  const controller=new AbortController();
+  if(options&&options.signal){
+    options.signal.addEventListener('abort',()=>controller.abort(),{once:true});
+  }
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    return await fetch(url,{...options,signal:controller.signal});
+  }catch(e){
+    if(e&&e.name==='AbortError')throw new Error(`Timeout ${timeoutMs}ms em ${url}`);
+    throw e;
+  }finally{
+    clearTimeout(timer);
+  }
+}
 async function workerGet(endpoint){
   try{
-    const r=await fetch(ITAP_WORKER_API+endpoint,{headers:workerAdminHeaders()});
+    const r=await fetchWithTimeout(ITAP_WORKER_API+endpoint,{headers:workerAdminHeaders()},7000);
     if(!r.ok)throw new Error('HTTP '+r.status);
     return{content:await r.json(),sha:'worker'};
   }catch(e){
@@ -2758,7 +2774,7 @@ async function workerSalvar(endpoint,data,method='PUT'){
   if(!token){toast('⚠️ Sessão Worker expirada ou não iniciada. Faça login novamente para salvar dados de Fidelidade/Encomendas.','aviso');return false;}
   mostrarLoading('Salvando no Worker...');
   try{
-    const r=await fetch(ITAP_WORKER_API+endpoint,{method,headers:workerAdminHeaders(),body:JSON.stringify(data)});
+    const r=await fetchWithTimeout(ITAP_WORKER_API+endpoint,{method,headers:workerAdminHeaders(),body:JSON.stringify(data)},12000);
     ocultarLoading();
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}
     clearDirty();
@@ -2797,6 +2813,15 @@ function fidEnsureCodigos(){
   if(!STATE.fidelidade[key]||typeof STATE.fidelidade[key]!=='object')STATE.fidelidade[key]={};
   return{key,codigos:STATE.fidelidade[key]};
 }
+function ensureSafeState(){
+  if(!STATE.clientes||typeof STATE.clientes!=='object')STATE.clientes={clientes:{},indice_celular:{}};
+  else if(!STATE.clientes.clientes||typeof STATE.clientes.clientes!=='object')STATE.clientes.clientes={};
+  if(!STATE.encomendas||typeof STATE.encomendas!=='object')STATE.encomendas={registros:[]};
+  else if(!Array.isArray(STATE.encomendas.registros))STATE.encomendas.registros=[];
+  if(!STATE.fidelidade||typeof STATE.fidelidade!=='object')STATE.fidelidade={};
+  if(!STATE.promocoes||typeof STATE.promocoes!=='object')STATE.promocoes={promocoes:[]};
+  else if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
+}
 function fidIsReadOnly(){
   // Fidelidade (fidelidade.json) requires GitHub SHA+token.
   // Operações de clientes/encomendas validam sessão Worker por rota em fidPathReadOnly().
@@ -2826,7 +2851,7 @@ function fidRequireWrite(){
 }
 async function ghGetRepo(path){
   try{
-    const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})});
+    const r=await fetchWithTimeout(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})},9000);
     if(r.status===404)return{content:null,sha:null};
     if(!r.ok)throw new Error(r.status);
     const d=await r.json();
@@ -2838,7 +2863,7 @@ async function ghGetRepo(path){
   }catch(e){
     // Fallback: repo público — lê via URL raw (sem autenticação, sem SHA para salvar)
     try{
-      const r2=await fetch(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'});
+      const r2=await fetchWithTimeout(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'},7000);
       if(r2.ok){const c=await r2.json();return{content:c,sha:null,readonly:true};}
     }catch(e2){
       console.warn('[admin] ghGet fallback falhou para',path,e2);
@@ -2977,11 +3002,11 @@ async function entrar(){
   // Exchange Worker secret for a session token (raw secret is NEVER stored — only the ephemeral token)
   if(workerSecretRaw){
     try{
-      const sessionResp=await fetch(ITAP_WORKER_API+'/api/admin/session',{
+      const sessionResp=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({secret:workerSecretRaw})
-      });
+      },8000);
       const sessionData=await sessionResp.json().catch(()=>({}));
       if(sessionResp.ok&&sessionData.token){
         ssSet('itap_admin_token',sessionData.token);
@@ -3004,7 +3029,7 @@ async function entrar(){
   // Fallback: se API falhou (sem token salvo), tenta URL pública raw (repo público)
   if(!cfg.content){
     try{
-      const r=await fetch(GH_RAW+PATHS.config+'?t='+Date.now());
+      const r=await fetchWithTimeout(GH_RAW+PATHS.config+'?t='+Date.now(),{},7000);
       if(r.ok){const d=await r.json();cfg={content:d,sha:null};}
     }catch(e){}
   }
@@ -3027,22 +3052,33 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  const[pr,cl,fi,en,prod,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
-  if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
-  // clientes e encomendas vêm do Worker (sha='worker' quando ok, null quando falhou)
-  if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes — verifique Segredo Worker e rede');}
-  if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
-  if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
-  if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
-  if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-  // Banner GitHub: apenas para dados não-PII (promo, fidelidade, produtos, promos)
-  const semToken=[pr,fi,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
-  const banner=document.getElementById('aviso-token-expirado');
-  if(banner)banner.style.display=semToken?'flex':'none';
-  // Banner Worker session: mostrar quando sessão inativa
-  const bannerWorker=document.getElementById('aviso-worker-secret');
-  if(bannerWorker)bannerWorker.style.display=getAdminToken()?'none':'flex';
-  ocultarLoading();
+  let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null};
+  try{
+    const fontes=['promo','clientes','fidelidade','encomendas','produtos','promocoes'];
+    const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
+    resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',fontes[idx],'falhou:',r.reason);});
+    [pr,cl,fi,en,prod,promos]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
+    if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
+    // clientes e encomendas vêm do Worker (sha='worker' quando ok, null quando falhou)
+    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes — verifique Segredo Worker e rede');}
+    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
+    if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
+    if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
+    if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
+    // Banner GitHub: apenas para dados não-PII (promo, fidelidade, produtos, promos)
+    const semToken=[pr,fi,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    const banner=document.getElementById('aviso-token-expirado');
+    if(banner)banner.style.display=semToken?'flex':'none';
+    // Banner Worker session: mostrar quando sessão inativa
+    const bannerWorker=document.getElementById('aviso-worker-secret');
+    if(bannerWorker)bannerWorker.style.display=getAdminToken()?'none':'flex';
+  }catch(e){
+    console.error('[BOOT] carregarTudo falhou',e);
+    toast('⚠️ Falha ao carregar parte dos dados. Verifique conexão/segredos e tente Recarregar.','aviso');
+  }finally{
+    ocultarLoading();
+  }
+  ensureSafeState();
   renderDashboard();
   try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}
   try{preencherPromoção();}catch(e){console.error('[Admin] preencherPromoção',e);}
