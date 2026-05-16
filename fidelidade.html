@@ -573,13 +573,13 @@
   <main>
     <section class="card hero" id="secao-cabecalho-fid" aria-labelledby="fid-hero-titulo">
       <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
-      <h1 id="fid-hero-titulo">Clube de Fidelidade Itapolitana</h1>
-      <p id="fid-hero-desc">Junte pontos a cada compra e troque por Milk Shake e sorvete em caixa.<br>Um fluxo simples para cadastrar, consultar pontos e registrar códigos de cupom.</p>
+      <h1 id="fid-hero-titulo" data-config="fidHeroTitulo">Clube de Fidelidade Itapolitana</h1>
+      <p id="fid-hero-desc" data-config="fidHeroDesc">Junte pontos a cada compra e troque por Milk Shake e sorvete em caixa.<br>Um fluxo simples para cadastrar, consultar pontos e registrar códigos de cupom.</p>
     </section>
 
     <section class="card" id="secao-como-funciona-fid" aria-labelledby="titulo-como-funciona-fid">
       <h2 id="titulo-como-funciona-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Como funciona</h2>
-      <div class="itap-flow-list" style="margin-top:8px;">
+      <div class="itap-flow-list" style="margin-top:8px;" data-config-collection="fidelidadeComoFunciona" data-item-layout="flow-step" data-item-class="itap-flow-step">
         <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Faça seu cadastro com nome, nascimento e WhatsApp.</p></div>
         <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>A cada compra, peça seu código e registre aqui.</p></div>
         <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Junte pontos e troque por prêmios.</p></div>
@@ -597,8 +597,13 @@
     <section class="card" id="secao-cadastro-fid" aria-labelledby="titulo-cadastro-fid" style="display:none;">
       <h2 id="titulo-cadastro-fid" style="font-size:1.2rem;color:#1b5e20;margin-bottom:8px;">Regras do Clube de Fidelidade</h2>
       <div id="cadastro-etapa-regras-fid">
-        <p style="margin:0 0 10px;">1) Cadastre-se com dados reais e atualizados.<br>2) Cada código válido de cupom soma 1 ponto.<br>3) Com <span data-pontos-milk>10 pontos</span>: <span data-prêmio-milk>1 milk shake 300ml</span>. Com <span data-pontos-caixa>30 pontos</span>: <span data-prêmio-caixa>1 caixa de sorvete com 7 bolas</span>.<br>4) Códigos inválidos, duplicados ou de terceiros podem bloquear sua conta.</p>
-        <p style="margin:0 0 12px;"><a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas" target="_blank" rel="noopener">Ver regras completas</a></p>
+        <ul style="margin:0 0 10px 18px;" data-config-collection="fidelidadeRegrasResumo" data-item-tag="li">
+          <li>Cadastre-se com dados reais e atualizados.</li>
+          <li>Cada código válido de cupom soma 1 ponto.</li>
+          <li>Com <span data-pontos-milk>10 pontos</span>: <span data-prêmio-milk>1 milk shake 300ml</span>.</li>
+          <li>Com <span data-pontos-caixa>30 pontos</span>: <span data-prêmio-caixa>1 caixa de sorvete com 7 bolas</span>.</li>
+        </ul>
+        <p style="margin:0 0 12px;"><a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas" data-config-href="fidelidadeRegrasUrl" target="_blank" rel="noopener">Ver regras completas</a></p>
         <button type="button" class="btn btn-primary btn-block btn-aceite-pulsante" id="btn-aceitar-regras-fid">Li e aceito as regras do Clube de Fidelidade</button>
       </div>
 
@@ -667,7 +672,7 @@
       <div id="fid-codigo-feedback" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.93rem;font-weight:600" role="status" aria-live="polite"></div>
 
       <div id="painel-resgate" style="display:none;margin-top:12px;" aria-live="polite"></div>
-      <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
+      <a id="btn-wpp-resgatar-consulta" class="btn btn-wpp" href="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio%20do%20Clube%20de%20Fidelidade!" data-config-href="fidelidadeResgateWhatsappUrl" target="_blank" rel="noopener" style="display:none;" aria-label="Resgatar prêmio via WhatsApp">
         💬 Resgatar meu prêmio via WhatsApp
       </a>
     </section>

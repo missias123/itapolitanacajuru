@@ -1520,6 +1520,8 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
 }
 #nav-cardapio-fixo.visivel { display: flex; align-items: center; gap: 8px; }
+/* Segurança de UX: evita sobreposição do botão "Voltar" no carrossel/home quando o cardápio não está aberto */
+body:not(.cardapio-aberto) #nav-cardapio-fixo { display: none !important; }
 
 /* Botão VOLTAR dentro da barra fixa */
 #nav-btn-voltar {

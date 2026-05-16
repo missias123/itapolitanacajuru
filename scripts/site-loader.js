@@ -107,7 +107,7 @@
           el.value = valor;
         } else if (el.tagName === 'A') {
           if (campo.toLowerCase().includes('link') || campo.toLowerCase().includes('url')) {
-            el.href = valor;
+            definirHrefSeguro(el, valor);
           } else {
             el.textContent = valor;
           }
@@ -121,18 +121,21 @@
     document.querySelectorAll('[data-config-href]').forEach(el => {
       const campo = el.getAttribute('data-config-href');
       const valor = getValor(cfg, campo);
-      if (valor) el.href = valor;
+      definirHrefSeguro(el, valor);
     });
+
+    // ── Coleções dinâmicas ─────────────────────
+    renderCollections(cfg);
 
     // ── Menu principal (.itap-nav-label) ─────────
     document.querySelectorAll('.itap-header-nav a[href], .itap-nav-btn[href]').forEach(a => {
       const label = a.querySelector('.itap-nav-label');
       if (!label) return;
-      const href = (a.getAttribute('href') || '').toLowerCase();
-      if (href.includes('encomendas.html') && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
-      else if (href.includes('promocao.html') && cfg.navPromocao) label.textContent = cfg.navPromocao;
-      else if (href.includes('dicas.html') && cfg.navDicas) label.textContent = cfg.navDicas;
-      else if (href.includes('fidelidade.html') && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
+      const page = extrairNomePagina(a.getAttribute('href') || '');
+      if (page === 'encomendas.html' && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
+      else if (page === 'promocao.html' && cfg.navPromocao) label.textContent = cfg.navPromocao;
+      else if (page === 'dicas.html' && cfg.navDicas) label.textContent = cfg.navDicas;
+      else if (page === 'fidelidade.html' && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
     });
 
     // ── WhatsApp: todos os links wa.me ─────────
@@ -215,23 +218,29 @@
     if (footerHorário && cfg.footerHorario) footerHorário.innerHTML = cfg.footerHorario.replace(/\n/g, '<br>');
 
     // ── Fidelidade: pontos e prêmios ───────────
-    if (cfg.pontosMilkshake !== undefined) {
-      window._META_MILK  = cfg.pontosMilkshake;
-      window._META_CAIXA = cfg.pontosCaixa || 30;
-      window._PREMIO_MILK  = cfg.premioMilkshake || cfg.prêmioMilkshake || 'Milkshake 300ml';
-      window._PREMIO_CAIXA = cfg.premioCaixa || cfg.prêmioCaixa || 'Caixa 7 Bolas';
+    if (cfg.pontosMilkshake !== undefined || cfg.pontosCaixa !== undefined || cfg.premioMilkshake || cfg.prêmioMilkshake || cfg.premioCaixa || cfg.prêmioCaixa) {
+      const pontosMilk = parseNumero(cfg.pontosMilkshake);
+      const pontosCaixa = parseNumero(cfg.pontosCaixa);
+      if (pontosMilk !== null) window._META_MILK = pontosMilk;
+      if (pontosCaixa !== null) window._META_CAIXA = pontosCaixa;
+      if (cfg.premioMilkshake || cfg.prêmioMilkshake) window._PREMIO_MILK = cfg.premioMilkshake || cfg.prêmioMilkshake;
+      if (cfg.premioCaixa || cfg.prêmioCaixa) window._PREMIO_CAIXA = cfg.premioCaixa || cfg.prêmioCaixa;
       // Atualizar elementos de fidelidade se existirem
+      const pontosMilkTxt = pontosMilk !== null ? `${pontosMilk} pontos` : null;
+      const pontosCaixaTxt = pontosCaixa !== null ? `${pontosCaixa} pontos` : null;
+      const premioMilkTxt = cfg.premioMilkshake || cfg.prêmioMilkshake || null;
+      const premioCaixaTxt = cfg.premioCaixa || cfg.prêmioCaixa || null;
       document.querySelectorAll('[data-pontos-milk]').forEach(el => {
-        el.textContent = cfg.pontosMilkshake + ' pontos';
+        if (pontosMilkTxt) el.textContent = pontosMilkTxt;
       });
       document.querySelectorAll('[data-pontos-caixa]').forEach(el => {
-        el.textContent = cfg.pontosCaixa + ' pontos';
+        if (pontosCaixaTxt) el.textContent = pontosCaixaTxt;
       });
       document.querySelectorAll('[data-prêmio-milk]').forEach(el => {
-        el.textContent = cfg.premioMilkshake || cfg.prêmioMilkshake || 'Milkshake 300ml';
+        if (premioMilkTxt) el.textContent = premioMilkTxt;
       });
       document.querySelectorAll('[data-prêmio-caixa]').forEach(el => {
-        el.textContent = cfg.premioCaixa || cfg.prêmioCaixa || 'Caixa 7 Bolas';
+        if (premioCaixaTxt) el.textContent = premioCaixaTxt;
       });
     }
 
@@ -251,26 +260,31 @@
     }
 
     // ── SEO: title + meta description + meta keywords ─────────────
-    if (cfg.seoTitulo) {
-      document.title = cfg.seoTitulo;
+    const pageKey = obterPaginaAtual();
+    const seoPagina = (cfg.seoPaginas && cfg.seoPaginas[pageKey]) || {};
+    const seoTitulo = seoPagina.titulo || cfg.seoTitulo;
+    const seoDescricao = seoPagina.descricao || cfg.seoDescricao;
+    const seoPalavras = seoPagina.palavrasChave || cfg.seoPalavrasChave;
+    if (seoTitulo) {
+      document.title = seoTitulo;
     }
-    if (cfg.seoDescricao) {
+    if (seoDescricao) {
       let metaDesc = document.querySelector('meta[name="description"]');
       if (!metaDesc) {
         metaDesc = document.createElement('meta');
         metaDesc.setAttribute('name', 'description');
         document.head.appendChild(metaDesc);
       }
-      metaDesc.setAttribute('content', cfg.seoDescricao);
+      metaDesc.setAttribute('content', seoDescricao);
     }
-    if (cfg.seoPalavrasChave) {
+    if (seoPalavras) {
       let metaKw = document.querySelector('meta[name="keywords"]');
       if (!metaKw) {
         metaKw = document.createElement('meta');
         metaKw.setAttribute('name', 'keywords');
         document.head.appendChild(metaKw);
       }
-      metaKw.setAttribute('content', cfg.seoPalavrasChave);
+      metaKw.setAttribute('content', seoPalavras);
     }
 
     // ── Disparar evento para outros scripts ────
@@ -286,6 +300,91 @@
       if (acc === undefined || acc === null) return undefined;
       return acc[k];
     }, obj);
+  }
+
+  function parseNumero(valor) {
+    const n = Number(valor);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function extrairNomePagina(href) {
+    if (!href) return '';
+    try {
+      const url = new URL(href, window.location.origin);
+      const clean = (url.pathname || '').replace(/\/+$/, '');
+      const parts = clean.split('/');
+      return (parts[parts.length - 1] || 'index.html').toLowerCase();
+    } catch(e) {
+      return '';
+    }
+  }
+
+  function obterPaginaAtual() {
+    const nome = extrairNomePagina(window.location.pathname || '');
+    if (!nome || nome === 'index.html') return 'home';
+    if (nome === 'encomendas.html') return 'encomendas';
+    if (nome === 'fidelidade.html') return 'fidelidade';
+    if (nome === 'promocao.html') return 'promocao';
+    if (nome === 'dicas.html') return 'dicas';
+    if (nome === 'sobre.html') return 'sobre';
+    if (nome === 'galeria.html') return 'galeria';
+    if (nome === 'carrossel.html') return 'carrossel';
+    return nome.replace('.html', '');
+  }
+
+  function renderCollections(cfg) {
+    document.querySelectorAll('[data-config-collection]').forEach(el => {
+      const campo = el.getAttribute('data-config-collection');
+      const dados = getValor(cfg, campo);
+      if (!Array.isArray(dados)) return;
+
+      const tagRaw = (el.getAttribute('data-item-tag') || 'div').toLowerCase();
+      const allowedTags = new Set(['div', 'span', 'li', 'p', 'small', 'strong']);
+      const tag = allowedTags.has(tagRaw) ? tagRaw : 'div';
+      const className = el.getAttribute('data-item-class') || '';
+      const layout = (el.getAttribute('data-item-layout') || '').toLowerCase();
+      el.innerHTML = '';
+      dados.forEach((item, idx) => {
+        if (layout === 'flow-step') {
+          const wrapper = document.createElement('div');
+          wrapper.className = className || 'itap-flow-step';
+          const stepNum = document.createElement('span');
+          stepNum.className = 'itap-flow-step__num';
+          stepNum.textContent = String(idx + 1);
+          const stepText = document.createElement('p');
+          stepText.textContent = item && typeof item === 'object'
+            ? String(item.text || item.label || item.titulo || item.descricao || '')
+            : String(item ?? '');
+          wrapper.appendChild(stepNum);
+          wrapper.appendChild(stepText);
+          el.appendChild(wrapper);
+          return;
+        }
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (item && typeof item === 'object') {
+          node.textContent = item.text || item.label || item.titulo || item.descricao || '';
+        } else {
+          node.textContent = String(item ?? '');
+        }
+        el.appendChild(node);
+      });
+    });
+  }
+
+  function urlSegura(url) {
+    if (!url) return false;
+    try {
+      const alvo = new URL(url, window.location.origin);
+      return alvo.protocol === 'http:' || alvo.protocol === 'https:';
+    } catch(e) {
+      return false;
+    }
+  }
+
+  function definirHrefSeguro(el, valor) {
+    if (!el || !valor) return;
+    if (urlSegura(valor)) el.setAttribute('href', valor);
   }
 
   // ═══════════════════════════════════════════════
