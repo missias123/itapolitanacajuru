@@ -360,6 +360,46 @@
           el.appendChild(wrapper);
           return;
         }
+        if (layout === 'gallery-card') {
+          const src = extrairImagemSegura(item && typeof item === 'object' ? item.src : item);
+          if (!src) return;
+          const card = document.createElement('div');
+          card.className = className || 'gallery-item';
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = item && typeof item === 'object'
+            ? String(item.alt || item.legenda || item.caption || 'Imagem da galeria')
+            : 'Imagem da galeria';
+          img.loading = idx === 0 ? 'eager' : 'lazy';
+          img.decoding = 'async';
+          const overlay = document.createElement('div');
+          overlay.className = 'gallery-overlay';
+          const text = document.createElement('p');
+          text.textContent = item && typeof item === 'object'
+            ? String(item.caption || item.legenda || item.alt || '')
+            : '';
+          overlay.appendChild(text);
+          card.appendChild(img);
+          card.appendChild(overlay);
+          el.appendChild(card);
+          return;
+        }
+        if (layout === 'swiper-slide') {
+          const src = extrairImagemSegura(item && typeof item === 'object' ? item.src : item);
+          if (!src) return;
+          const slide = document.createElement('div');
+          slide.className = className || 'swiper-slide';
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = item && typeof item === 'object'
+            ? String(item.alt || item.legenda || 'Banner da Sorveteria Itapolitana')
+            : 'Banner da Sorveteria Itapolitana';
+          img.loading = idx === 0 ? 'eager' : 'lazy';
+          img.decoding = 'async';
+          slide.appendChild(img);
+          el.appendChild(slide);
+          return;
+        }
         const node = document.createElement(tag);
         if (className) node.className = className;
         if (item && typeof item === 'object') {
@@ -384,7 +424,22 @@
 
   function definirHrefSeguro(el, valor) {
     if (!el || !valor) return;
-    if (urlSegura(valor)) el.setAttribute('href', valor);
+    const raw = String(valor || '').trim();
+    if (!raw) return;
+    if (/^\s*(javascript|data|vbscript)\s*:/i.test(raw) || /^\s*\/\//.test(raw)) return;
+    if (urlSegura(raw) || (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(raw))) {
+      el.setAttribute('href', raw);
+    }
+  }
+
+  function extrairImagemSegura(valor) {
+    const raw = String(valor || '').trim();
+    if (!raw) return '';
+    if (/^\s*(javascript|data|vbscript)\s*:/i.test(raw) || /^\s*\/\//.test(raw)) return '';
+    if (urlSegura(raw)) return raw;
+    if (raw.startsWith('/')) return raw;
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(raw)) return '';
+    return raw;
   }
 
   // ═══════════════════════════════════════════════

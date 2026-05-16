@@ -44,7 +44,12 @@
     .itap-s-nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
     .itap-s-btn{display:inline-flex;align-items:center;gap:7px;color:#fff;border-radius:14px;padding:11px 24px;font-size:13px;font-weight:900;text-decoration:none;border:2px solid rgba(255,255,255,.35);box-shadow:0 4px 12px rgba(0,0,0,.25);letter-spacing:.5px;text-transform:uppercase;transition:transform .15s,filter .15s;white-space:nowrap;}
     .itap-s-btn:hover{transform:translateY(-2px);filter:brightness(1.12);}
-    @media(max-width:480px){.itap-s-btn{font-size:12px;padding:8px 16px;}}
+    @media(max-width:700px){
+      .itap-s-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}
+      .itap-s-btn{width:100%;justify-content:center;padding:10px 8px;min-width:0}
+    }
+    @media(max-width:480px){.itap-s-btn{font-size:11px;padding:8px 6px;}}
+    @media(max-width:360px){.itap-s-nav{grid-template-columns:1fr;}}
     @media (prefers-reduced-motion: reduce) { .ita-bot-duvidas-btn { animation: none; box-shadow: 0 4px 12px rgba(0,60,180,.35); } }
 
     /* CONTEÚDO */
@@ -117,14 +122,14 @@
 <div class="sobre-container">
 
   <div class="sobre-section">
-    <h2>🏪 Quem Somos</h2>
-    <p>Desde <strong>2007</strong>, a <strong>Sorveteria Itapolitana</strong> escreve, colher a colher, a história do sorvete em Cajuru, SP. O que começou como um sonho de levar alegria e sabor à cidade se transformou em tradição — e em parte da memória afetiva de gerações de cajurenses.</p>
-    <p>Estamos localizados na <strong>R. Cel. Manoel Caetano, 311 – Praça Largo São Bento</strong>, no coração de Cajuru, e atendemos clientes de toda a cidade e região.</p>
+    <h2 data-config="sobreTitulo">🏪 Quem Somos</h2>
+    <p data-config="sobreIntro1">Desde <strong>2007</strong>, a <strong>Sorveteria Itapolitana</strong> escreve, colher a colher, a história do sorvete em Cajuru, SP. O que começou como um sonho de levar alegria e sabor à cidade se transformou em tradição — e em parte da memória afetiva de gerações de cajurenses.</p>
+    <p data-config="sobreIntro2">Estamos localizados na <strong>R. Cel. Manoel Caetano, 311 – Praça Largo São Bento</strong>, no coração de Cajuru, e atendemos clientes de toda a cidade e região.</p>
     <div class="sobre-stats">
-      <div class="sobre-stat"><span class="sobre-stat-num">19+</span><span class="sobre-stat-label">Anos de Tradição</span></div>
-      <div class="sobre-stat"><span class="sobre-stat-num">35+</span><span class="sobre-stat-label">Sabores Artesanais</span></div>
-      <div class="sobre-stat"><span class="sobre-stat-num">4,8</span><span class="sobre-stat-label">Nota no Google</span></div>
-      <div class="sobre-stat"><span class="sobre-stat-num">100%</span><span class="sobre-stat-label">Feito com Amor</span></div>
+      <div class="sobre-stat"><span class="sobre-stat-num" data-config="sobreStat1Num">19+</span><span class="sobre-stat-label" data-config="sobreStat1Label">Anos de Tradição</span></div>
+      <div class="sobre-stat"><span class="sobre-stat-num" data-config="sobreStat2Num">35+</span><span class="sobre-stat-label" data-config="sobreStat2Label">Sabores Artesanais</span></div>
+      <div class="sobre-stat"><span class="sobre-stat-num" data-config="sobreStat3Num">4,8</span><span class="sobre-stat-label" data-config="sobreStat3Label">Nota no Google</span></div>
+      <div class="sobre-stat"><span class="sobre-stat-num" data-config="sobreStat4Num">100%</span><span class="sobre-stat-label" data-config="sobreStat4Label">Feito com Amor</span></div>
     </div>
   </div>
 
@@ -206,11 +211,11 @@
   </div>
 
   <div class="sobre-cta-box">
-    <h2>🍦 Vem Provar!</h2>
-    <p>Conheça o cardápio completo ou fale diretamente com a sorveteria pelo WhatsApp — rápido, fácil e sem complicação.</p>
+    <h2 data-config="sobreCtaTitulo">🍦 Vem Provar!</h2>
+    <p data-config="sobreCtaDescricao">Conheça o cardápio completo ou fale diretamente com a sorveteria pelo WhatsApp — rápido, fácil e sem complicação.</p>
     <div class="sobre-cta-btns">
-      <a class="cta-btn-secondary" href="encomendas.html">🍦 Ver nosso cardápio</a>
-      <a class="cta-btn-primary" href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+falar+com+a+sorveteria." target="_blank" rel="noopener noreferrer">💬 Falar com a sorveteria</a>
+      <a class="cta-btn-secondary" href="encomendas.html" data-config="sobreCtaCardapioTexto">🍦 Ver nosso cardápio</a>
+      <a class="cta-btn-primary" href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+falar+com+a+sorveteria." data-config="sobreCtaWhatsTexto" data-config-href="sobreCtaWhatsUrl" target="_blank" rel="noopener noreferrer">💬 Falar com a sorveteria</a>
     </div>
   </div>
 

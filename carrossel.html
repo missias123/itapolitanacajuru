@@ -83,10 +83,10 @@
 <body>
   <!-- A11y: título visível apenas para leitores de tela e motores de busca -->
   <h1 class="sr-only">Carrossel de Fotos – Sorveteria Itapolitana Cajuru</h1>
-  <a class="itp-back-link" href="index.html">← Voltar ao site</a>
+  <a class="itp-back-link" id="carrossel-back-link" href="index.html" data-config="carrosselLinkTexto" data-config-href="carrosselLinkUrl">← Voltar ao site</a>
 
   <div class="itp-slider swiper">
-    <div class="swiper-wrapper">
+    <div class="swiper-wrapper" data-config-collection="banners" data-item-layout="swiper-slide" data-item-class="swiper-slide">
 
       <div class="swiper-slide">
         <img src="images/carrossel/v3_b1_acai.webp"
@@ -211,6 +211,29 @@
         window.addEventListener('resize', ajustarAltura);
         swiper.on('slideChangeTransitionEnd', ajustarAltura);
       });
+
+      function syncAfterConfig(cfg) {
+        try {
+          var back = document.getElementById('carrossel-back-link');
+          if (back) {
+            var embutido = window.self !== window.top;
+            var mostrar = cfg && cfg.carrosselMostrarVoltar !== false;
+            back.style.display = (!embutido && mostrar) ? '' : 'none';
+          }
+        } catch (e) {}
+        setTimeout(function () {
+          if (swiper && typeof swiper.update === 'function') {
+            swiper.update();
+            if (typeof swiper.slideToLoop === 'function') swiper.slideToLoop(0, 0, false);
+          }
+          ajustarAltura();
+        }, 60);
+      }
+
+      window.addEventListener('siteConfigLoaded', function (ev) {
+        syncAfterConfig(ev && ev.detail ? ev.detail : null);
+      });
+      syncAfterConfig(window.SITE_CONFIG || null);
 
     }());
   </script>
