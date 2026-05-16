@@ -144,7 +144,7 @@ function mergeClientes(clientesData, vinculosData) {
 
     merged[novoId] = {
       id_permanente:        novoId,
-      id_hash:              '',           // sem hash — será regenerado pelo Worker se necessário
+      id_hash:              '',           // sem hash — será regenerado automaticamente pelo Worker na importação (handleBulkPutClientes)
       nome:                 c.nome  ?? 'Sem Nome',
       dataNasc:             c.dataNasc ?? '',
       cel,

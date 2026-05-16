@@ -37,8 +37,8 @@ const RATE_LIMITS = {
   'post-enc':      { max: 10, windowMs: 3_600_000 },
   'resgatar':      { max: 10, windowMs: 3_600_000 },
 };
-const MAX_FRAUD_ATTEMPTS = 4; // Block client after this many invalid code attempts
-const SESSION_TTL = 7200;    // Admin session lifetime: 2 hours
+const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
+const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 export default {
@@ -219,6 +219,18 @@ function matchIdentidade(cliente, nome, dataNasc) {
     String(cliente.dataNasc ?? '').trim() === String(dataNasc ?? '').trim();
 }
 
+/**
+ * generateIdHash — random 4-byte hex identifier stored on each client record.
+ * Used by the public resgate endpoint to verify the caller owns the account
+ * without transmitting PII.  Not a cryptographic secret — just a lightweight
+ * anti-guessing measure.
+ */
+function generateIdHash() {
+  const b = new Uint8Array(4);
+  crypto.getRandomValues(b);
+  return Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
 // Minimal public view of a client (no full history)
 function sanitizarClientePublico(c) {
   return {
@@ -385,6 +397,7 @@ async function handlePostCliente(request, env) {
     return jsonResp({ ok: false, error: 'Nome inválido (mínimo 3 caracteres)' }, 400);
   if (!dataNasc || !/^\d{4}-\d{2}-\d{2}$/.test(dataNasc))
     return jsonResp({ ok: false, error: 'Data de nascimento inválida (formato esperado: AAAA-MM-DD)' }, 400);
+  // Brazilian cell phone: 2-digit area code (DDD 11-99) + digit 9 + 8 digits = 11 total
   if (!cel || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(cel))
     return jsonResp({ ok: false, error: 'Celular inválido (11 dígitos no formato DD9XXXX-XXXX)' }, 400);
 
@@ -402,15 +415,8 @@ async function handlePostCliente(request, env) {
   contador += 1;
   const novoId = `USR-2026-${String(contador).padStart(4, '0')}`;
 
-  // Generate id_hash deterministically from novoId + cel
-  const hashBuf = await crypto.subtle.digest(
-    'SHA-256', new TextEncoder().encode(novoId + cel)
-  );
-  const idHash = Array.from(new Uint8Array(hashBuf))
-    .slice(0, 4)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
-    .toUpperCase();
+  // Generate id_hash — lightweight random token used by the public resgate endpoint
+  const idHash = generateIdHash();
 
   const agora = new Date().toISOString();
   const novoCliente = {
@@ -612,11 +618,7 @@ async function handleBulkPutClientes(request, env) {
       const c = clientes[id];
       if (!c || typeof c !== 'object') return;
       // Auto-generate id_hash if missing (clients migrated from backup)
-      if (!c.id_hash) {
-        const b = new Uint8Array(4);
-        crypto.getRandomValues(b);
-        c.id_hash = Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
-      }
+      if (!c.id_hash) c.id_hash = generateIdHash();
       await env.CLIENTES_KV.put(`cliente:${id}`, JSON.stringify(c));
       const cel = String(c.cel ?? '').replace(/\D/g, '');
       if (cel) await env.CLIENTES_KV.put(`idx:cel:${cel}`, id);
@@ -848,7 +850,7 @@ async function handleResgatarCodigo(request, env) {
   // Helper to increment fraud attempts and persist
   const incrementarTentativas = async () => {
     cliente.tentativas_fraude = (cliente.tentativas_fraude || 0) + 1;
-    if (cliente.tentativas_fraude >= MAX_FRAUD_ATTEMPTS) cliente.bloqueado = true;
+    if (cliente.tentativas_fraude >= MAX_INVALID_CODE_ATTEMPTS) cliente.bloqueado = true;
     await env.CLIENTES_KV.put(`cliente:${clienteId}`, JSON.stringify(cliente));
     return cliente.tentativas_fraude;
   };
@@ -879,12 +881,14 @@ async function handleResgatarCodigo(request, env) {
     fidelidade.ultima_atualizacao = agora;
   }
 
+  let githubOk = true;
   if (env.GITHUB_TOKEN) {
     try {
       await ghPutFidelidade(fidelidade, `Site: código ${codigo} usado — ${clienteId}`, env.GITHUB_TOKEN);
     } catch (e) {
-      // Non-fatal: code may get double-claimed in an edge case, admin can fix
+      // Non-fatal: code may get double-claimed in an edge case, admin can fix via panel
       console.error('[Worker] Falha ao gravar fidelidade.json no GitHub:', e.message);
+      githubOk = false;
     }
   }
 
@@ -908,8 +912,9 @@ async function handleResgatarCodigo(request, env) {
   await env.CLIENTES_KV.put(`cliente:${clienteId}`, JSON.stringify(cliente));
 
   return jsonResp({
-    ok:      true,
-    pontos:  cliente.saldoPontos,
-    message: `Código registrado! Você agora tem ${cliente.saldoPontos} ponto(s).`,
+    ok:             true,
+    pontos:         cliente.saldoPontos,
+    partialSuccess: !githubOk, // true = points credited but fidelidade.json not updated in GitHub yet
+    message:        `Código registrado! Você agora tem ${cliente.saldoPontos} ponto(s).`,
   });
 }

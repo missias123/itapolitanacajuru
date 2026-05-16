@@ -128,11 +128,11 @@ Este é o mesmo valor definido em `ADMIN_SECRET` (passo 4).
 | PATCH  | `/api/clientes/:id`           | Admin   | Atualizar dados do cliente          |
 | DELETE | `/api/clientes/:id`           | Admin   | Remover cliente                     |
 | POST   | `/api/admin/session`          | -       | Trocar ADMIN_SECRET por token de sessão |
-| GET    | `/api/clientes`               | Admin   | Listar clientes                     |
+| GET    | `/api/clientes`               | Admin   | Listar todos os clientes            |
 | POST   | `/api/clientes`               | Público | Cadastrar novo cliente              |
 | POST   | `/api/clientes/login`         | Público | Login do cliente (retorna dados)    |
-| GET    | `/api/clientes/:id`           | Admin   | Ver cliente                         |
-| PATCH  | `/api/clientes/:id`           | Admin   | Atualizar cliente                   |
+| GET    | `/api/clientes/:id`           | Admin   | Buscar cliente por ID               |
+| PATCH  | `/api/clientes/:id`           | Admin   | Atualizar dados do cliente          |
 | DELETE | `/api/clientes/:id`           | Admin   | Remover cliente                     |
 | PUT    | `/api/clientes/bulk`          | Admin   | Substituir coleção completa         |
 | POST   | `/api/encomendas`             | Público | Enviar pedido de encomenda          |

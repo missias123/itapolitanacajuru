@@ -642,7 +642,11 @@
               _clienteAtual.totalCodigos = (_clienteAtual.totalCodigos || 0) + 1;
               esconderWppBtn();
               mostrarPainelCliente(_clienteAtual);
-              setResultadoCodigo('✅ Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
+              if (res.partialSuccess) {
+                setResultadoCodigo('✅ Ponto registrado! Avise a loja para confirmar o código ' + codigo + ' no painel caso veja duplicidade.', 'aviso');
+              } else {
+                setResultadoCodigo('✅ Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
+              }
               if (inputCodigo) inputCodigo.value = '';
             })
             .catch(function(err) {
