@@ -569,10 +569,10 @@ body { overflow-x: hidden; }
   <div style="width:min(420px,100%);background:#161b22;border:1px solid #30363d;border-radius:18px;padding:22px;box-shadow:0 24px 48px rgba(0,0,0,.35)">
     <h3 style="margin:0 0 8px;font-size:1.05rem;color:#fff">🔐 Ativar Sessão Worker</h3>
     <p style="margin:0 0 14px;font-size:.86rem;line-height:1.5;color:#c9d1d9">Informe o Segredo Worker para liberar Fidelidade e Encomendas nesta aba sem sair do admin.</p>
-    <input type="password" id="worker-secret-modal-input" placeholder="Segredo Worker" autocomplete="new-password" onkeydown="if(event.key==='Enter')reativarSessaoWorker()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #30363d;background:#0d1117;color:#fff;outline:none"/>
+    <input type="password" id="worker-secret-modal-input" aria-label="Segredo Worker" placeholder="Segredo Worker" autocomplete="new-password" onkeydown="if(event.key==='Enter')reativarSessaoWorker()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #30363d;background:#0d1117;color:#fff;outline:none"/>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
       <button onclick="fecharModalSessaoWorker()" style="background:#30363d;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700">Cancelar</button>
-      <button onclick="reativarSessaoWorker()" style="background:#1565c0;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700">Ativar</button>
+      <button onclick="reativarSessaoWorker()" aria-label="Ativar Sessão Worker" style="background:#1565c0;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700">Ativar</button>
     </div>
   </div>
 </div>
@@ -2688,14 +2688,14 @@ function atualizarBannerSessaoWorker(ativo=Boolean(getAdminToken())){
   const bannerWorker=document.getElementById('aviso-worker-secret');
   if(bannerWorker)bannerWorker.style.display=ativo?'none':'flex';
 }
-const WORKER_MODAL_FOCUS_DELAY_MS=30;
+const WORKER_MODAL_FOCUS_DELAY_MILLIS=30;
 function abrirModalSessaoWorker(){
   const modal=document.getElementById('worker-secret-modal');
   const input=document.getElementById('worker-secret-modal-input');
   if(!modal||!input)return;
   modal.style.display='flex';
   input.value='';
-  setTimeout(()=>input.focus(),WORKER_MODAL_FOCUS_DELAY_MS);
+  setTimeout(()=>input.focus(),WORKER_MODAL_FOCUS_DELAY_MILLIS);
 }
 function fecharModalSessaoWorker(){
   const modal=document.getElementById('worker-secret-modal');
@@ -2822,9 +2822,6 @@ async function iniciarSessaoWorker(secret){
   }finally{
     try{
       if(workerSecretInput){
-        // Best-effort cleanup only: JavaScript strings are immutable, so this does
-        // not guarantee memory zeroing; it only narrows the exposure window in the UI.
-        workerSecretInput.value='\0'.repeat(workerSecretRaw.length);
         workerSecretInput.value='';
       }
     }catch{}
@@ -3103,7 +3100,7 @@ async function entrar(){
     document.getElementById('login-erro').style.display='block';
     return;
   }
-  // Suporta senha em SHA-256 (novo) OU em texto puro (legado — até o PR ser mergeado no main)
+  // Suporta senha em SHA-256 (novo) OU em texto puro (legado para compatibilidade)
   const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
   if(!senhaOk){
     ocultarLoading();
