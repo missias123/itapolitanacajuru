@@ -86,81 +86,7 @@
   <a class="itp-back-link" href="index.html">← Voltar ao site</a>
 
   <div class="itp-slider swiper">
-    <div class="swiper-wrapper">
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b1_acai.webp"
-             alt="Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru"
-             loading="eager" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b2_unicornio.webp"
-             alt="Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b3_nutella.webp"
-             alt="Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b4_ovomaltine.webp"
-             alt="Picolé Ovomaltine Novo — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b5_eventos.webp"
-             alt="Picolés para Eventos — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b6_maracuja_diet.webp"
-             alt="Maracujá Diet + Leite Ninho — Venha Experimentar — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b7_escolha_favorito.webp"
-             alt="Escolha o Seu Favorito — Taça Suja, Milkshake, Açaí e Sorvete — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1536" height="1024"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b8_sorvetes_montanha.webp"
-             alt="Sorvetes tipo artesanal em sabores variados — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1365" height="910"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b9_brownie_sorvete.webp"
-             alt="Brownie com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1080" height="1350"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b10_petit_gateau.webp"
-             alt="Petit Gateau com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1365" height="910"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b11_cascao_3bolas.webp"
-             alt="Cascão com 3 Bolas de Sorvete — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1365" height="910"/>
-      </div>
-
-      <div class="swiper-slide">
-        <img src="images/carrossel/v3_b12_vitrine_produtos.webp"
-             alt="Sorvete, Milkshake, Picolé e Taça — Sorveteria Itapolitana Cajuru"
-             loading="lazy" decoding="async" width="1365" height="910"/>
-      </div>
-
-    </div>
+    <div class="swiper-wrapper" id="itp-carrossel-wrapper"></div>
 
     <div class="swiper-pagination" role="tablist" aria-label="Banners"></div>
   </div>
@@ -171,45 +97,106 @@
       'use strict';
 
       if (typeof window.Swiper !== 'function') return;
+      var CONFIG_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/config.json';
+      var DEFAULT_BANNERS = [
+        { src: 'images/carrossel/v3_b1_acai.webp', alt: 'Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b2_unicornio.webp', alt: 'Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b3_nutella.webp', alt: 'Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b4_ovomaltine.webp', alt: 'Picolé Ovomaltine Novo — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b5_eventos.webp', alt: 'Picolés para Eventos — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b6_maracuja_diet.webp', alt: 'Maracujá Diet + Leite Ninho — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b7_escolha_favorito.webp', alt: 'Escolha o Seu Favorito — Taça Suja, Milkshake, Açaí e Sorvete — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b8_sorvetes_montanha.webp', alt: 'Sorvetes tipo artesanal em sabores variados — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b9_brownie_sorvete.webp', alt: 'Brownie com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b10_petit_gateau.webp', alt: 'Petit Gateau com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b11_cascao_3bolas.webp', alt: 'Cascão com 3 Bolas de Sorvete — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b12_vitrine_produtos.webp', alt: 'Sorvete, Milkshake, Picolé e Taça — Sorveteria Itapolitana Cajuru' }
+      ];
 
-      var swiper = new Swiper('.itp-slider', {
-        loop: true,
-        autoplay: {
-          delay: 3000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true
-        },
-        speed: 800,
-        effect: 'slide',
-        grabCursor: true,
-        keyboard: { enabled: true, onlyInViewport: true },
-        touchRatio: 1,
-        touchAngle: 45,
-        pagination: { el: '.swiper-pagination', clickable: true },
-        a11y: {
-          prevSlideMessage: 'Banner anterior',
-          nextSlideMessage: 'Próximo banner'
-        }
-      });
+      function bannerSrcSeguro(src) {
+        var s = String(src || '').trim();
+        if (!s) return '';
+        if (/^https?:\/\//i.test(s)) return s;
+        return s.replace(/^\/+/, '');
+      }
 
-      /*
-       * Ajuste automático da altura do iframe no site pai
-       * Envia a altura real da imagem para o index.html redimensionar o iframe
-       */
-      function ajustarAltura() {
-        var img = document.querySelector('.swiper-slide-active img');
-        if (img && img.naturalHeight > 0) {
-          var h = img.getBoundingClientRect().height;
-          if (h > 0) {
-            window.parent.postMessage({ itpCrsHeight: Math.ceil(h) }, '*');
-          }
+      function montarSlides(banners) {
+        var wrap = document.getElementById('itp-carrossel-wrapper');
+        if (!wrap) return;
+        wrap.innerHTML = '';
+        banners.forEach(function (b, i) {
+          var src = bannerSrcSeguro(b.src);
+          if (!src) return;
+          var slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = String(b.alt || 'Banner Sorveteria Itapolitana Cajuru');
+          img.setAttribute('loading', i === 0 ? 'eager' : 'lazy');
+          img.setAttribute('decoding', 'async');
+          img.setAttribute('width', '1536');
+          img.setAttribute('height', '1024');
+          slide.appendChild(img);
+          wrap.appendChild(slide);
+        });
+      }
+
+      async function carregarBannersConfig() {
+        try {
+          var r = await fetch(CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' });
+          if (!r.ok) throw new Error('config indisponível');
+          var cfg = await r.json();
+          var banners = Array.isArray(cfg && cfg.banners) ? cfg.banners : [];
+          banners = banners
+            .filter(function (b) { return b && typeof b === 'object' && String(b.src || '').trim(); })
+            .slice(0, 20);
+          return banners.length ? banners : DEFAULT_BANNERS;
+        } catch (e) {
+          return DEFAULT_BANNERS;
         }
       }
 
-      window.addEventListener('load', function () {
-        setTimeout(ajustarAltura, 200);
-        window.addEventListener('resize', ajustarAltura);
-        swiper.on('slideChangeTransitionEnd', ajustarAltura);
+      carregarBannersConfig().then(function (banners) {
+        montarSlides(banners);
+        var swiper = new Swiper('.itp-slider', {
+          loop: true,
+          autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+          },
+          speed: 800,
+          effect: 'slide',
+          grabCursor: true,
+          keyboard: { enabled: true, onlyInViewport: true },
+          touchRatio: 1,
+          touchAngle: 45,
+          pagination: { el: '.swiper-pagination', clickable: true },
+          a11y: {
+            prevSlideMessage: 'Banner anterior',
+            nextSlideMessage: 'Próximo banner'
+          }
+        });
+
+        /*
+         * Ajuste automático da altura do iframe no site pai
+         * Envia a altura real da imagem para o index.html redimensionar o iframe
+         */
+        function ajustarAltura() {
+          var img = document.querySelector('.swiper-slide-active img');
+          if (img && img.naturalHeight > 0) {
+            var h = img.getBoundingClientRect().height;
+            if (h > 0) {
+              window.parent.postMessage({ itpCrsHeight: Math.ceil(h) }, '*');
+            }
+          }
+        }
+
+        window.addEventListener('load', function () {
+          setTimeout(ajustarAltura, 200);
+          window.addEventListener('resize', ajustarAltura);
+          swiper.on('slideChangeTransitionEnd', ajustarAltura);
+        });
       });
 
     }());

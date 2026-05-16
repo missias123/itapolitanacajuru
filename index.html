@@ -3015,12 +3015,12 @@ function voltarTemas() {
 <div class="chat-typing" id="chat-typing"><span></span><span></span><span></span></div>
 <div class="chat-sugs" id="chat-sugs-container" style="display:flex;gap:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;-ms-overflow-style:none;">
       <style>#chat-sugs-container::-webkit-scrollbar { display: none; }</style>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Horário</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Como encomendar</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Sabores</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Preços</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Localização</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Picolés</button>
+      <button class="sug" id="chat-sug-1" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Horário</button>
+      <button class="sug" id="chat-sug-2" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Como encomendar</button>
+      <button class="sug" id="chat-sug-3" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Sabores</button>
+      <button class="sug" id="chat-sug-4" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Preços</button>
+      <button class="sug" id="chat-sug-5" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Localização</button>
+      <button class="sug" id="chat-sug-6" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Picolés</button>
     </div>
     <!-- KEYWORD CHIPS — sempre visíveis, clique insere e envia a pergunta -->
     <div class="duvidas-chips-wrap" id="duvidas-chips-wrap">
@@ -4016,9 +4016,88 @@ function addMsg(tipo, txt) {
   m.scrollTop = m.scrollHeight;
 }
 
+function chatLojaAbertaAgora() {
+  const agora = new Date();
+  const horaAtual = agora.getHours() + (agora.getMinutes() / 60);
+  const abre  = window.ITAP_HORA_ABRE  !== undefined ? window.ITAP_HORA_ABRE  : 10;
+  const fecha = window.ITAP_HORA_FECHA !== undefined ? window.ITAP_HORA_FECHA : 22;
+  return horaAtual >= abre && horaAtual < fecha;
+}
+
+function sanitizarHtmlRicoChat(html) {
+  const permitido = new Set(['BR', 'STRONG', 'EM', 'B', 'I', 'A']);
+  const tpl = document.createElement('template');
+  tpl.innerHTML = String(html || '').replace(/\n/g, '<br>');
+
+  function hrefSeguro(raw) {
+    const href = String(raw || '').trim();
+    if (!href) return '';
+    if (href.startsWith('#')) return href;
+    try {
+      const u = new URL(href, window.location.origin);
+      if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
+    } catch(e) {}
+    return '';
+  }
+
+  function limparNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) return document.createTextNode(node.textContent || '');
+    if (node.nodeType !== Node.ELEMENT_NODE) return document.createTextNode('');
+    const tag = node.tagName.toUpperCase();
+    if (!permitido.has(tag)) {
+      const frag = document.createDocumentFragment();
+      Array.from(node.childNodes).forEach(child => frag.appendChild(limparNode(child)));
+      return frag;
+    }
+    const el = document.createElement(tag.toLowerCase());
+    if (tag === 'A') {
+      const href = hrefSeguro(node.getAttribute('href'));
+      if (href) {
+        el.setAttribute('href', href);
+        el.setAttribute('class', 'itabot-link-btn');
+        if (/^https?:\/\//i.test(href)) {
+          el.setAttribute('target', '_blank');
+          el.setAttribute('rel', 'noopener');
+        }
+      }
+    }
+    Array.from(node.childNodes).forEach(child => el.appendChild(limparNode(child)));
+    return el;
+  }
+
+  const out = document.createElement('div');
+  Array.from(tpl.content.childNodes).forEach(node => out.appendChild(limparNode(node)));
+  return out.innerHTML;
+}
+
+function renderChatSugestoes(sugestoes) {
+  const container = document.getElementById('chat-sugs-container');
+  if (!container) return;
+  const padrao = ['Horário', 'Como encomendar', 'Sabores', 'Preços', 'Localização', 'Picolés'];
+  const lista = (Array.isArray(sugestoes) ? sugestoes : [])
+    .map(s => String(s || '').trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  while (lista.length < 6) lista.push(padrao[lista.length]);
+  container.innerHTML = '<style>#chat-sugs-container::-webkit-scrollbar { display: none; }</style>';
+  lista.forEach(function(txt, i) {
+    const btn = document.createElement('button');
+    btn.className = 'sug';
+    btn.id = 'chat-sug-' + (i + 1);
+    btn.type = 'button';
+    btn.setAttribute('style', 'background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;');
+    btn.textContent = txt;
+    btn.onclick = function() { enviarSug(btn); };
+    container.appendChild(btn);
+  });
+}
+
 function getResp(msg) {
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const l = norm(msg);
+  if (!chatLojaAbertaAgora() && /(pedido|pedir|encomenda|atendente|whats|whatsapp|comprar|falar)/i.test(l)) {
+    return window.ITAP_CHAT_FORA_HORARIO || 'Estamos fechados agora. Retornaremos em breve!';
+  }
   for (const intent of ITABOT_INTENTS) {
     if (intent.keywords.some(k => l.includes(norm(k)))) return intent.reply;
   }
@@ -4467,15 +4546,11 @@ function aplicarConfig(c) {
   const chatHdrSub = document.getElementById('chat-hdr-sub');
   if (chatHdrSub && c.chatHdrSub) chatHdrSub.textContent = c.chatHdrSub;
   const chatMsgInicio = document.getElementById('chat-msg-inicio');
-  if (chatMsgInicio && c.chatMsgInicio) chatMsgInicio.textContent = c.chatMsgInicio;
+  if (chatMsgInicio && c.chatMsgInicio) chatMsgInicio.innerHTML = sanitizarHtmlRicoChat(c.chatMsgInicio);
+  window.ITAP_CHAT_FORA_HORARIO = c.chatForaHorario || c.fcChatFora || window.ITAP_CHAT_FORA_HORARIO || '';
 
   // --- CHAT SUGESTÕES (botões rápidos) ---
-  if (c.chatSugestoes && Array.isArray(c.chatSugestoes)) {
-    c.chatSugestoes.forEach(function(txt, i) {
-      var el = document.getElementById('chat-sug-' + (i + 1));
-      if (el) el.textContent = txt;
-    });
-  }
+  renderChatSugestoes(c.chatSugestoes);
 
   // --- PROMO FAB LABEL ---
   // (o FAB lê fabLabel diretamente de promo.json; este campo não é mais necessário aqui)

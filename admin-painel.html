@@ -692,6 +692,10 @@ body { overflow-x: hidden; }
               <div class="hint">Descreva o que aparece na foto. Importante para SEO e acessibilidade. Max. 120 caracteres.</div>
             </div>
             <div class="btn-row"><button class="btn btn-salvar" onclick="adicionarBannerCarrossel()">&#x2795; Adicionar ao Carrossel</button></div>
+            <div class="seção-título" style="margin-top:16px">📚 Banners Existentes (ordem, alt e exclusão)</div>
+            <div class="hint" style="margin-bottom:10px">A ordem exibida aqui é a ordem do <code>carrossel.html</code>. Use ↑/↓ para reordenar, edite o ALT e clique em Salvar Lista.</div>
+            <div id="home-banners-lista" style="display:grid;gap:10px"></div>
+            <div class="btn-row"><button class="btn btn-salvar" onclick="salvarBannersCarrossel()">💾 Salvar Lista de Banners</button></div>
           </div>
 
           <div class="seção-título">🔄 Strip Sensorial (faixa animada)</div>
@@ -1080,6 +1084,18 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
           <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
+          <div class="campo-edit"><label>Promoção · Title</label><input type="text" id="cfg-seo-promo-titulo" maxlength="80" placeholder="Promoções | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Promoção · Meta Description</label><textarea id="cfg-seo-promo-descricao" rows="2" maxlength="180" placeholder="Sorteios e promoções ativas da Itapolitana em Cajuru."></textarea></div>
+          <div class="campo-edit"><label>Promoção · Keywords</label><input type="text" id="cfg-seo-promo-palavras" maxlength="220" placeholder="promoção sorveteria cajuru, sorteio itapolitana"/></div>
+          <div class="campo-edit"><label>Sobre · Title</label><input type="text" id="cfg-seo-sobre-titulo" maxlength="80" placeholder="Sobre a Itapolitana | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Sobre · Meta Description</label><textarea id="cfg-seo-sobre-descricao" rows="2" maxlength="180" placeholder="Conheça a história e a tradição da Itapolitana em Cajuru."></textarea></div>
+          <div class="campo-edit"><label>Sobre · Keywords</label><input type="text" id="cfg-seo-sobre-palavras" maxlength="220" placeholder="sobre itapolitana cajuru, história sorveteria cajuru"/></div>
+          <div class="campo-edit"><label>Galeria · Title</label><input type="text" id="cfg-seo-galeria-titulo" maxlength="80" placeholder="Galeria | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Galeria · Meta Description</label><textarea id="cfg-seo-galeria-descricao" rows="2" maxlength="180" placeholder="Fotos dos produtos e da loja Itapolitana em Cajuru."></textarea></div>
+          <div class="campo-edit"><label>Galeria · Keywords</label><input type="text" id="cfg-seo-galeria-palavras" maxlength="220" placeholder="galeria sorveteria cajuru, fotos itapolitana"/></div>
+          <div class="campo-edit"><label>Carrossel · Title</label><input type="text" id="cfg-seo-carrossel-titulo" maxlength="80" placeholder="Carrossel | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Carrossel · Meta Description</label><textarea id="cfg-seo-carrossel-descricao" rows="2" maxlength="180" placeholder="Banners e destaques visuais da Itapolitana em Cajuru."></textarea></div>
+          <div class="campo-edit"><label>Carrossel · Keywords</label><input type="text" id="cfg-seo-carrossel-palavras" maxlength="220" placeholder="carrossel sorveteria cajuru, banners itapolitana"/></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações de Encomendas</button></div>
         </div>
       </div>
@@ -2518,9 +2534,9 @@ Talento</textarea>
           <div class="campo-edit"><label>Texto do botão flutuante Chat (ID: chat-fab-texto)</label><input type="text" id="fc-chat-fab" maxlength="30" placeholder="💬 Fale Conosco"/><div class="hint">Texto do botão verde fixo no canto inferior esquerdo.</div></div>
           <div class="campo-edit"><label>Título do Chat (ID: chat-hdr-titulo)</label><input type="text" id="fc-chat-hdr-titulo" maxlength="40" placeholder="💬 Fale Conosco"/><div class="hint">Título exibido no cabeçalho do chat.</div></div>
           <div class="campo-edit"><label>Subtexto do Chat (ID: chat-hdr-sub)</label><input type="text" id="fc-chat-hdr-sub" maxlength="60" placeholder="Assistente Itapolitana · Responde na hora"/><div class="hint">Linha de apoio no cabeçalho do chat.</div></div>
-          <div class="campo-edit"><label>Mensagem inicial do assistente (ID: chat-msg-inicio)</label><input type="text" id="fc-chat-inicio" maxlength="120" placeholder="Olá! 👋 Sou o assistente da Sorveteria Itapolitana. Como posso te ajudar?"/><div class="hint">Primeira mensagem que aparece ao abrir o chat.</div></div>
+          <div class="campo-edit"><label>Mensagem inicial do assistente (ID: chat-msg-inicio) — textarea estruturado</label><textarea id="fc-chat-inicio" rows="6" maxlength="1200" placeholder="Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana!&#10;&#10;Posso te levar direto para os fluxos principais:&#10;&#10;&lt;a class=&quot;itabot-link-btn&quot; href=&quot;encomendas.html&quot;&gt;📦 Quero ver cardápio / encomendar&lt;/a&gt;"></textarea><div class="hint">Aceita texto com quebras de linha e marcação rica segura (&lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, &lt;a href&gt;).</div></div>
           <div class="campo-edit"><label>Sugestões rápidas — 6 botões (IDs: chat-sug-1 a chat-sug-6, um por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário&#10;Como encomendar&#10;Sabores&#10;Preços&#10;Localização&#10;Picolés"></textarea><div class="hint">Exatamente 6 linhas. Cada linha = 1 botão de sugestão no chat.</div></div>
-          <div class="campo-edit"><label>Mensagem fora do horário</label><input type="text" id="fc-chat-fora" maxlength="120" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar fora do horário de funcionamento.</div></div>
+          <div class="campo-edit"><label>Mensagem fora do horário do Chat (config.chatForaHorario)</label><input type="text" id="fc-chat-fora" maxlength="220" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar sobre atendimento/pedido fora do horário de funcionamento.</div></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarChat()">&#x1F4BE; Salvar Chat</button></div>
 
           <div class="seção-título" style="margin-top:20px">🍦 Botão Clube de Fidelidade (FAB)</div>
@@ -2531,11 +2547,10 @@ Talento</textarea>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarClubeFab()">&#x1F4BE; Salvar Botão Clube</button></div>
 
           <div class="seção-título" style="margin-top:20px">📢 Botão Promoção (FAB)</div>
-          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-            📌 <strong>ID no site:</strong> <code>promo-fab-label</code>. Botão flutuante de promoção no topo da página.
+          <div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            ✅ Edição consolidada na aba <strong>Promoção Ativa</strong>, campo <strong>Texto do botão flutuante (FAB)</strong> (<code>promo-fab</code> / <code>promo.json.fabLabel</code>).<br>
+            Este bloco foi mantido apenas para referência e não possui edição para evitar duplicidade.
           </div>
-          <div class="campo-edit"><label>Label do FAB Promoção (ID: promo-fab-label)</label><input type="text" id="fc-promo-fab-label" maxlength="30" placeholder="🎉 SORTEIO!"/><div class="hint">Texto principal do botão flutuante de promoção.</div></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoFab()">&#x1F4BE; Salvar FAB Promoção</button></div>
 
           <div class="seção-título" style="margin-top:20px">💬 Modais do Cardápio</div>
           <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
@@ -3287,6 +3302,7 @@ function preencherHome(){
   document.getElementById('home-carrinho-label1').value=cfg.carrinhoLabel1||'🛒 Carrinho para Eventos';
   document.getElementById('home-carrinho-label2').value=cfg.carrinhoLabel2||'Toque para consultar';
   document.getElementById('home-carrinho-whats').value=cfg.carrinhoWhatsMsg||'Olá! Gostaria de consultar a disponibilidade do carrinho para eventos.';
+  renderListaBannersCarrossel();
 }
 async function salvarHome(){
   // Validação antes de salvar (padrão iFood/Shopify: guardar com feedback inline)
@@ -3569,33 +3585,105 @@ async function adicionarBannerCarrossel() {
   const nomeArq = `images/carrossel/banner-${ts}.webp`;
   mostrarLoading('Enviando banner para o carrossel...');
   try {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const b64 = e.target.result.split(',')[1];
-      const result = await ghPutImagem(nomeArq, b64, 'Admin: adicionar banner ao carrossel');
-      ocultarLoading();
-      if (result.ok) {
-        // Adicionar ao carrossel.html via atualização do JSON de banners
-        if (!STATE.config.banners) STATE.config.banners = [];
-        STATE.config.banners.push({ src: nomeArq, alt: altText, ts });
-        const ok = await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
-        if (ok) { toast('✅ Banner adicionado ao carrossel!', 'ok'); }
-        _bannerBlobPendente = null;
-        _bannerInfoPendente = null;
-        const previewWrap = document.getElementById('home-banner-preview-wrap');
-        if (previewWrap) previewWrap.classList.remove('ativo');
-        const altInput = document.getElementById('home-banner-alt');
-        if (altInput) altInput.value = '';
-        const fileInput = document.getElementById('home-banner-input');
-        if (fileInput) fileInput.value = '';
-      } else {
-        toast('❌ Erro ao enviar banner: ' + (result.erro || 'falha'), 'erro');
+    const result = await ghPutImagem(nomeArq, _bannerBlobPendente, 'Admin: adicionar banner ao carrossel');
+    ocultarLoading();
+    if (result.ok) {
+      // Adicionar ao carrossel.html via atualização do JSON de banners
+      if (!STATE.config.banners) STATE.config.banners = [];
+      STATE.config.banners.push({ src: nomeArq, alt: altText, ts });
+      const ok = await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
+      if (ok) {
+        renderListaBannersCarrossel();
+        toast('✅ Banner adicionado ao carrossel!', 'ok');
       }
-    };
-    reader.readAsDataURL(_bannerBlobPendente);
+      _bannerBlobPendente = null;
+      _bannerInfoPendente = null;
+      const previewWrap = document.getElementById('home-banner-preview-wrap');
+      if (previewWrap) previewWrap.classList.remove('ativo');
+      const altInput = document.getElementById('home-banner-alt');
+      if (altInput) altInput.value = '';
+      const fileInput = document.getElementById('home-banner-input');
+      if (fileInput) fileInput.value = '';
+    } else {
+      toast('❌ Erro ao enviar banner: ' + (result.erro || 'falha'), 'erro');
+    }
   } catch(e) {
     ocultarLoading();
     toast('❌ Erro ao enviar banner: ' + e.message, 'erro');
+  }
+}
+
+function obterBannersCarrossel(){
+  const c = STATE.config || {};
+  if (!Array.isArray(c.banners)) c.banners = [];
+  c.banners = c.banners
+    .filter(b => b && typeof b === 'object' && String(b.src || '').trim())
+    .map((b, i) => ({
+      src: String(b.src || '').trim(),
+      alt: String(b.alt || `Banner ${i + 1} — Sorveteria Itapolitana Cajuru`).trim(),
+      ts: b.ts || Date.now()
+    }));
+  return c.banners;
+}
+
+function renderListaBannersCarrossel(){
+  const wrap = document.getElementById('home-banners-lista');
+  if (!wrap) return;
+  const banners = obterBannersCarrossel();
+  if (!banners.length) {
+    wrap.innerHTML = '<div style="padding:12px;border:1px dashed #cfd8dc;border-radius:10px;background:#fafafa;color:#546e7a;font-size:.82rem">Nenhum banner em <code>config.banners[]</code> ainda.</div>';
+    return;
+  }
+  wrap.innerHTML = banners.map((b, i) => {
+    const srcEsc = esc(b.src);
+    const altEsc = esc(b.alt || '');
+    const srcPreview = srcEsc.startsWith('http') ? srcEsc : ('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/' + srcEsc);
+    return `<div style="display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid #eceff1;border-radius:10px;background:#fff">
+      <img src="${srcPreview}" alt="${altEsc}" style="width:86px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #e0e0e0" loading="lazy" decoding="async" onerror="this.style.opacity=.35"/>
+      <div>
+        <div style="font-size:.75rem;color:#546e7a;margin-bottom:4px">#${i + 1} · <code>${srcEsc}</code></div>
+        <input type="text" value="${altEsc}" maxlength="120" onchange="atualizarAltBannerCarrossel(${i}, this.value)" style="width:100%;padding:8px 10px;border:1px solid #cfd8dc;border-radius:8px" placeholder="Texto alternativo (alt)"/>
+      </div>
+      <div style="display:grid;gap:6px">
+        <button class="btn btn-cinza" style="padding:6px 10px" onclick="moverBannerCarrossel(${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="btn btn-cinza" style="padding:6px 10px" onclick="moverBannerCarrossel(${i},1)" ${i===banners.length-1?'disabled':''}>↓</button>
+        <button class="btn btn-excluir" style="padding:6px 10px" onclick="removerBannerCarrossel(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function atualizarAltBannerCarrossel(idx, valor){
+  const banners = obterBannersCarrossel();
+  if (!banners[idx]) return;
+  banners[idx].alt = String(valor || '').trim();
+}
+
+function moverBannerCarrossel(idx, dir){
+  const banners = obterBannersCarrossel();
+  const novoIdx = idx + dir;
+  if (!banners[idx] || !banners[novoIdx]) return;
+  const tmp = banners[idx];
+  banners[idx] = banners[novoIdx];
+  banners[novoIdx] = tmp;
+  renderListaBannersCarrossel();
+}
+
+function removerBannerCarrossel(idx){
+  const banners = obterBannersCarrossel();
+  if (!banners[idx]) return;
+  banners.splice(idx, 1);
+  renderListaBannersCarrossel();
+}
+
+async function salvarBannersCarrossel(){
+  const c = STATE.config || {};
+  c.banners = obterBannersCarrossel();
+  STATE.config = c;
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar lista de banners do carrossel');
+  if (ok) {
+    renderListaBannersCarrossel();
+    toast('✅ Lista de banners salva com sucesso!', 'ok');
   }
 }
 
@@ -5041,6 +5129,18 @@ function preencherConfig(){
   const seoEncTit=document.getElementById('cfg-seo-enc-titulo'); if(seoEncTit) seoEncTit.value=seoPg.encomendas?.titulo||'';
   const seoEncDes=document.getElementById('cfg-seo-enc-descricao'); if(seoEncDes) seoEncDes.value=seoPg.encomendas?.descricao||'';
   const seoEncPal=document.getElementById('cfg-seo-enc-palavras'); if(seoEncPal) seoEncPal.value=seoPg.encomendas?.palavrasChave||'';
+  const seoProTit=document.getElementById('cfg-seo-promo-titulo'); if(seoProTit) seoProTit.value=seoPg.promocao?.titulo||'';
+  const seoProDes=document.getElementById('cfg-seo-promo-descricao'); if(seoProDes) seoProDes.value=seoPg.promocao?.descricao||'';
+  const seoProPal=document.getElementById('cfg-seo-promo-palavras'); if(seoProPal) seoProPal.value=seoPg.promocao?.palavrasChave||'';
+  const seoSobTit=document.getElementById('cfg-seo-sobre-titulo'); if(seoSobTit) seoSobTit.value=seoPg.sobre?.titulo||'';
+  const seoSobDes=document.getElementById('cfg-seo-sobre-descricao'); if(seoSobDes) seoSobDes.value=seoPg.sobre?.descricao||'';
+  const seoSobPal=document.getElementById('cfg-seo-sobre-palavras'); if(seoSobPal) seoSobPal.value=seoPg.sobre?.palavrasChave||'';
+  const seoGalTit=document.getElementById('cfg-seo-galeria-titulo'); if(seoGalTit) seoGalTit.value=seoPg.galeria?.titulo||'';
+  const seoGalDes=document.getElementById('cfg-seo-galeria-descricao'); if(seoGalDes) seoGalDes.value=seoPg.galeria?.descricao||'';
+  const seoGalPal=document.getElementById('cfg-seo-galeria-palavras'); if(seoGalPal) seoGalPal.value=seoPg.galeria?.palavrasChave||'';
+  const seoCarTit=document.getElementById('cfg-seo-carrossel-titulo'); if(seoCarTit) seoCarTit.value=seoPg.carrossel?.titulo||'';
+  const seoCarDes=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDes) seoCarDes.value=seoPg.carrossel?.descricao||'';
+  const seoCarPal=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPal) seoCarPal.value=seoPg.carrossel?.palavrasChave||'';
   // Configurações de Encomendas (enc-aviso, enc-min-picolés)
   const encAv=document.getElementById('enc-aviso'); if(encAv) encAv.value=cfg.encomendaAviso||'';
   const encMin=document.getElementById('enc-min-picolés'); if(encMin) encMin.value=cfg.encomendaMinPicoles??100;
@@ -5105,12 +5205,28 @@ async function salvarConfig(){
   cfg.seoPaginas=cfg.seoPaginas||{};
   cfg.seoPaginas.fidelidade=cfg.seoPaginas.fidelidade||{};
   cfg.seoPaginas.encomendas=cfg.seoPaginas.encomendas||{};
+  cfg.seoPaginas.promocao=cfg.seoPaginas.promocao||{};
+  cfg.seoPaginas.sobre=cfg.seoPaginas.sobre||{};
+  cfg.seoPaginas.galeria=cfg.seoPaginas.galeria||{};
+  cfg.seoPaginas.carrossel=cfg.seoPaginas.carrossel||{};
   const seoFidTitEl=document.getElementById('cfg-seo-fid-titulo'); if(seoFidTitEl) cfg.seoPaginas.fidelidade.titulo=seoFidTitEl.value.trim();
   const seoFidDesEl=document.getElementById('cfg-seo-fid-descricao'); if(seoFidDesEl) cfg.seoPaginas.fidelidade.descricao=seoFidDesEl.value.trim();
   const seoFidPalEl=document.getElementById('cfg-seo-fid-palavras'); if(seoFidPalEl) cfg.seoPaginas.fidelidade.palavrasChave=seoFidPalEl.value.trim();
   const seoEncTitEl=document.getElementById('cfg-seo-enc-titulo'); if(seoEncTitEl) cfg.seoPaginas.encomendas.titulo=seoEncTitEl.value.trim();
   const seoEncDesEl=document.getElementById('cfg-seo-enc-descricao'); if(seoEncDesEl) cfg.seoPaginas.encomendas.descricao=seoEncDesEl.value.trim();
   const seoEncPalEl=document.getElementById('cfg-seo-enc-palavras'); if(seoEncPalEl) cfg.seoPaginas.encomendas.palavrasChave=seoEncPalEl.value.trim();
+  const seoProTitEl=document.getElementById('cfg-seo-promo-titulo'); if(seoProTitEl) cfg.seoPaginas.promocao.titulo=seoProTitEl.value.trim();
+  const seoProDesEl=document.getElementById('cfg-seo-promo-descricao'); if(seoProDesEl) cfg.seoPaginas.promocao.descricao=seoProDesEl.value.trim();
+  const seoProPalEl=document.getElementById('cfg-seo-promo-palavras'); if(seoProPalEl) cfg.seoPaginas.promocao.palavrasChave=seoProPalEl.value.trim();
+  const seoSobTitEl=document.getElementById('cfg-seo-sobre-titulo'); if(seoSobTitEl) cfg.seoPaginas.sobre.titulo=seoSobTitEl.value.trim();
+  const seoSobDesEl=document.getElementById('cfg-seo-sobre-descricao'); if(seoSobDesEl) cfg.seoPaginas.sobre.descricao=seoSobDesEl.value.trim();
+  const seoSobPalEl=document.getElementById('cfg-seo-sobre-palavras'); if(seoSobPalEl) cfg.seoPaginas.sobre.palavrasChave=seoSobPalEl.value.trim();
+  const seoGalTitEl=document.getElementById('cfg-seo-galeria-titulo'); if(seoGalTitEl) cfg.seoPaginas.galeria.titulo=seoGalTitEl.value.trim();
+  const seoGalDesEl=document.getElementById('cfg-seo-galeria-descricao'); if(seoGalDesEl) cfg.seoPaginas.galeria.descricao=seoGalDesEl.value.trim();
+  const seoGalPalEl=document.getElementById('cfg-seo-galeria-palavras'); if(seoGalPalEl) cfg.seoPaginas.galeria.palavrasChave=seoGalPalEl.value.trim();
+  const seoCarTitEl=document.getElementById('cfg-seo-carrossel-titulo'); if(seoCarTitEl) cfg.seoPaginas.carrossel.titulo=seoCarTitEl.value.trim();
+  const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
+  const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
   if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
@@ -6493,11 +6609,9 @@ function preencherFaleConosco() {
   // --- Chat Sugestões (IDs: chat-sug-1 a chat-sug-6) ---
   const sugs = c.chatSugestoes || c.fcChatOpcoes || ['Horário','Como encomendar','Sabores','Preços','Localização','Picolés'];
   document.getElementById('fc-chat-opcoes').value = sugs.join('\n');
-  document.getElementById('fc-chat-fora').value = c.fcChatFora || 'Estamos fechados agora. Retornaremos em breve!';
+  document.getElementById('fc-chat-fora').value = c.chatForaHorario || c.fcChatFora || 'Estamos fechados agora. Retornaremos em breve!';
   // --- Clube FAB (ID: clube-fab-texto) ---
   document.getElementById('fc-clube-fab').value = c.clubeFabTexto || '🍦 Clube Itapolitana';
-  // --- Promo FAB (ID: promo-fab-label) ---
-  document.getElementById('fc-promo-fab-label').value = c.promoFabLabel || '🎉 SORTEIO!';
   // --- Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub) ---
   document.getElementById('fc-modal-sorvetes-titulo').value = c.modalSaboresTitulo || 'Sabores Disponíveis';
   document.getElementById('fc-modal-sorvetes-sub').value = c.modalSaboresSub || 'Informe o sabor desejado ao fazer seu pedido na loja';
@@ -6532,13 +6646,22 @@ async function salvarModalFaleConosco() {
 // Salvar Chat (IDs: chat-fab-texto, chat-hdr-titulo, chat-hdr-sub, chat-msg-inicio, chat-sug-1..6)
 async function salvarChat() {
   const c = STATE.config;
+  const sugestoes = document.getElementById('fc-chat-opcoes').value
+    .split('\n')
+    .map(s => s.trim())
+    .filter(Boolean);
+  if (sugestoes.length !== 6) {
+    toast('⚠️ As sugestões rápidas devem ter exatamente 6 linhas preenchidas.', 'erro');
+    return;
+  }
   c.chatFabTexto = document.getElementById('fc-chat-fab').value.trim();
   c.chatHdrTitulo = document.getElementById('fc-chat-hdr-titulo').value.trim();
   c.chatHdrSub = document.getElementById('fc-chat-hdr-sub').value.trim();
   c.chatMsgInicio = document.getElementById('fc-chat-inicio').value.trim();
-  c.chatSugestoes = document.getElementById('fc-chat-opcoes').value.split('\n').map(s => s.trim()).filter(s => s);
+  c.chatSugestoes = sugestoes;
   c.fcChatOpcoes = c.chatSugestoes; // compatibilidade retroativa
-  c.fcChatFora = document.getElementById('fc-chat-fora').value.trim();
+  c.chatForaHorario = document.getElementById('fc-chat-fora').value.trim();
+  c.fcChatFora = c.chatForaHorario; // compatibilidade retroativa
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar chat e sugestoes');
 }
 
@@ -6547,13 +6670,6 @@ async function salvarClubeFab() {
   const c = STATE.config;
   c.clubeFabTexto = document.getElementById('fc-clube-fab').value.trim();
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
-}
-
-// Salvar Promo FAB (ID: promo-fab-label)
-async function salvarPromoFab() {
-  const c = STATE.config;
-  c.promoFabLabel = document.getElementById('fc-promo-fab-label').value.trim();
-  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar promo fab');
 }
 
 // Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
