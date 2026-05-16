@@ -34,6 +34,9 @@
 <meta content="Encomendas de Sorvete Tipo Artesanal para Festas e Eventos | Sorveteria Itapolitana Cajuru" property="og:title"/>
 <meta content="Encomende tortas de sorvete, caixas de sorvete, picolés e acréscimos para festas e eventos em Cajuru/SP. Faça seu pedido via WhatsApp na Sorveteria Itapolitana!" property="og:description"/>
 <meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="Sorveteria Itapolitana Cajuru" property="og:site_name"/>
 <meta content="pt_BR" property="og:locale"/>
 <link href="manifest.json" rel="manifest"/>
 <link href="/apple-touch-icon.png" rel="apple-touch-icon"/>
@@ -1292,8 +1295,8 @@ html { scroll-behavior: smooth; }
 .security-seal-text { font-size: 9px; color: #FBD100; font-weight: 700; text-align: center; line-height: 1.2; }
 </style>
 <!-- cache-bust:20260408_111640 -->
-  <link rel="stylesheet" href="css/itap-shared.css">
-  <link rel="stylesheet" href="css/itap-refinements.css">
+  <link rel="stylesheet" href="css/itap-shared.min.css">
+  <link rel="stylesheet" href="css/itap-refinements.min.css">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -1720,16 +1723,21 @@ document.addEventListener('DOMContentLoaded', function () {
 <div data-encomenda-aviso>Sua encomenda será <strong>produzida em até 3 dias úteis</strong> após a <strong>confirmação do pagamento</strong> via WhatsApp.</div>
 <div style="margin-top:6px;font-size:0.8rem;opacity:0.9;">📲 Após enviar o pedido, aguarde o contato da sorveteria para confirmar e realizar o pagamento antecipado.</div>
 </div>
+<!-- Honeypot anti-bot: visualmente oculto, leitores de tela ignoram, bots preenchem -->
+<div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+  <label for="enc-website">Website</label>
+  <input type="text" id="enc-website" name="website" tabindex="-1" autocomplete="off"/>
+</div>
 <div class="form-grupo">
-<label>👤 Seu Nome Completo *</label>
+<label for="cliente-nome">👤 Seu Nome Completo *</label>
 <input autocomplete="name" id="cliente-nome" maxlength="80" oninput="_nomeCliente=this.value; verificarFormulario()" placeholder="Ex: João da Silva" type="text"/>
 </div>
 <div class="form-grupo">
-<label>📱 Seu WhatsApp *</label>
+<label for="cliente-tel">📱 Seu WhatsApp *</label>
 <input autocomplete="tel" id="cliente-tel" inputmode="tel" maxlength="15" oninput="var v=this.value.replace(/\D/g,''); if(v.length<=11) this.value=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3').replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3'); _telCliente=this.value; verificarFormulario()" placeholder="Ex: (16) 99999-9999" type="text"/>
 </div>
 <div class="form-grupo">
-<label>📍 Endereço para Entrega *</label>
+<label for="cliente-endereço">📍 Endereço para Entrega *</label>
 <input autocomplete="street-address" id="cliente-endereço" maxlength="150" oninput="_endereçoCliente=this.value; verificarFormulario()" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" type="text"/>
 </div>
 <div class="botãoes-etapa-dados">

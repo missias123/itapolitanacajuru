@@ -1182,6 +1182,8 @@ function verificarFormulario() {
 }
 
 function finalizarPedido() {
+  // Honeypot anti-bot: campo oculto preenchido indica automação — bloquear silenciosamente
+  if ((document.getElementById('enc-website')?.value || '') !== '') return;
   // CHECKOUT CORPORATIVO — Padrão de produção
   // Válidação robusta + loading staté + fallback garantido
   const _totalPicFinal = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);

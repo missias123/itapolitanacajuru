@@ -173,7 +173,7 @@
 
     // ── Hero ───────────────────────────────────
     const heroTítulo = document.getElementById('hero-título');
-    if (heroTítulo && cfg.heroTitulo) heroTítulo.innerHTML = cfg.heroTitulo;
+    if (heroTítulo && cfg.heroTitulo) heroTítulo.textContent = cfg.heroTitulo;
 
     const heroSub = document.getElementById('hero-subtítulo');
     if (heroSub && cfg.heroSubtitulo) heroSub.textContent = cfg.heroSubtitulo;
@@ -215,7 +215,10 @@
     if (footerDev && cfg.footerDev) footerDev.textContent = cfg.footerDev;
 
     const footerHorário = document.getElementById('footer-horário');
-    if (footerHorário && cfg.footerHorario) footerHorário.innerHTML = cfg.footerHorario.replace(/\n/g, '<br>');
+    if (footerHorário && cfg.footerHorario) {
+      footerHorário.style.whiteSpace = 'pre-line';
+      footerHorário.textContent = cfg.footerHorario;
+    }
 
     // ── Fidelidade: pontos e prêmios ───────────
     if (cfg.pontosMilkshake !== undefined || cfg.pontosCaixa !== undefined || cfg.premioMilkshake || cfg.prêmioMilkshake || cfg.premioCaixa || cfg.prêmioCaixa) {
@@ -358,6 +361,44 @@
           wrapper.appendChild(stepNum);
           wrapper.appendChild(stepText);
           el.appendChild(wrapper);
+          return;
+        }
+        if (layout === 'tip-card') {
+          const card = document.createElement('article');
+          card.className = className || 'itap-tip-card';
+          if (item && typeof item === 'object') {
+            const titulo = String(item.titulo || item.title || item.label || '');
+            const descricao = String(item.descricao || item.text || '');
+            const imagem = String(item.imagem || item.image || '');
+            const link = String(item.link || item.url || '');
+            if (imagem && urlSegura(imagem)) {
+              const img = document.createElement('img');
+              img.src = imagem;
+              img.alt = titulo ? `Imagem da dica: ${titulo}` : 'Dica da Sorveteria Itapolitana';
+              card.appendChild(img);
+            }
+            if (titulo) {
+              const h = document.createElement('h3');
+              h.textContent = titulo;
+              card.appendChild(h);
+            }
+            if (descricao) {
+              const p = document.createElement('p');
+              p.textContent = descricao;
+              card.appendChild(p);
+            }
+            if (link && urlSegura(link)) {
+              const a = document.createElement('a');
+              a.href = link;
+              a.target = '_blank';
+              a.rel = 'noopener';
+              a.textContent = 'Saiba mais';
+              card.appendChild(a);
+            }
+          } else {
+            card.textContent = String(item ?? '');
+          }
+          el.appendChild(card);
           return;
         }
         const node = document.createElement(tag);

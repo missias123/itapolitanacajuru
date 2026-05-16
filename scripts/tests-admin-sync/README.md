@@ -53,3 +53,44 @@ Para usar como check de auditoria (não bloqueante):
   run: node scripts/tests-admin-sync/audit-admin-site.js
   continue-on-error: true  # não bloqueia o deploy
 ```
+
+## Cenários simulados — Admin (carga, edição e salvamento)
+
+### 1) Encomendas
+- Abrir aba **Encomendas** e validar carga de `encomendaAviso`, `encomendaMinPicoles`, hero, CTAs e SEO.
+- Editar valores e salvar.
+- Reabrir aba e confirmar persistência.
+- Validar no `encomendas.html` atualização do aviso e SEO (title/description/keywords).
+
+### 2) Produtos
+- Abrir aba **Produtos** e validar tabela carregada.
+- Criar produto, editar produto existente e excluir produto.
+- Salvar, recarregar painel e confirmar persistência em `dados/produtos.json`.
+- Validar reflexo no fluxo de encomendas/cardápio.
+
+### 3) Fidelidade
+- Abrir aba **Fidelidade** e validar carga de prêmios, passos, regras, URLs e SEO.
+- Alterar campos e salvar.
+- Reabrir aba e confirmar persistência.
+- Validar no `fidelidade.html` atualização de CTAs (regras/resgate) e SEO.
+
+### 4) Dicas
+- Abrir aba **Dicas** e validar carga de `depTitulo`, `depSubtitulo`, depoimentos e `dicasItens`.
+- Adicionar, editar e remover cards de dicas (título/descrição/imagem/link).
+- Salvar e recarregar painel.
+- Validar no `dicas.html` renderização dos cards dinâmicos e SEO da página.
+
+### 5) Qualidade
+- Abrir aba **Qualidade** e validar carga de observações internas.
+- Editar observações e salvar.
+- Reabrir aba e confirmar persistência em `config.adminConteudoPaginas.qualidade`.
+
+### 6) Rastreio
+- Abrir aba **Rastreio** e validar carga de observações internas.
+- Editar observações e salvar.
+- Reabrir aba e confirmar persistência em `config.adminConteudoPaginas.rastreio`.
+
+### 7) Auditoria
+- Abrir aba **Auditoria** e validar carga de observações internas.
+- Editar observações e salvar.
+- Reabrir aba e confirmar persistência em `config.adminConteudoPaginas.auditoria`.
