@@ -6157,6 +6157,7 @@ function preencherDepoimentos() {
   const c = STATE.config || {};
   document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
   document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
+  // Compatibilidade retroativa: versões antigas salvavam apenas depDica (string).
   const depDicas = Array.isArray(c.depDicas) ? c.depDicas : (c.depDica ? [c.depDica] : []);
   document.getElementById('dep-dicas').value = depDicas.join('\n');
   
@@ -6284,6 +6285,7 @@ async function salvarDepoimentos() {
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
   c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
+  // Mantém depDica para não quebrar consumidores legados durante migração.
   c.depDica = c.depDicas[0] || '';
   
   const lista = [];
@@ -6318,6 +6320,7 @@ async function salvarDepoimentos() {
     const descricao = (document.getElementById(`dica-desc-${i}`)?.value || '').trim();
     const imagemRaw = (document.getElementById(`dica-img-${i}`)?.value || '').trim();
     const linkRaw = (document.getElementById(`dica-link-${i}`)?.value || '').trim();
+    // allowRelative=true permite imagens locais versionadas no próprio repositório (ex.: images/dicas/x.webp).
     const imagem = cmsValidarUrl(imagemRaw, {allowRelative:true, allowEmpty:true});
     const link = cmsValidarUrl(linkRaw, {allowRelative:true, allowEmpty:true});
     if (imagem===null || link===null) {

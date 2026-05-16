@@ -371,7 +371,7 @@
             if (imagem && urlSegura(imagem)) {
               const img = document.createElement('img');
               img.src = imagem;
-              img.alt = titulo || 'Dica';
+              img.alt = titulo || 'Imagem ilustrativa da dica';
               card.appendChild(img);
             }
             if (titulo) {
