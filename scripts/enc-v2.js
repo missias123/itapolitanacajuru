@@ -6,52 +6,28 @@
 // Admin salva → produtos.json → site lê (padrão profissional)
 // =====================================================
 const ITAP_PRODUTOS_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json';
-// API GitHub para salvar pedidos no encomendas.json
-const _GH_TK = (function(){return localStorage.getItem('itap_gh_token')||'';})();
+// Backend seguro — pedidos PII enviados ao Worker, não gravados direto no GitHub
+const ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+// Token GitHub mantido apenas para atualização de estoque (produtos.json — sem PII)
+const _GH_TK  = (function(){return localStorage.getItem('itap_gh_token')||'';})();
 const _GH_API = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';
 
-// Envia o pedido para dados/encomendas.json no GitHub
-async function enviarPedidoGitHub(pedido) {
+// Envia o pedido ao Worker (backend seguro — sem gravação direta no GitHub)
+async function enviarPedidoWorker(pedido) {
   try {
-    // 1. Ler SHA e conteúdo atual
-    const r = await fetch(_GH_API + 'dados/encomendas.json?t=' + Date.now(), {
-      headers: { 'Authorization': 'token ' + _GH_TK, 'Accept': 'application/vnd.github.v3+json' }
+    const resp = await fetch(ITAP_WORKER_API + '/api/encomendas', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(pedido),
     });
-    if (!r.ok) throw new Error('Leitura falhou: ' + r.status);
-    const d = await r.json();
-    const sha = d.sha;
-    // Decodificar conteúdo atual
-    const bin = atob(d.content.replace(/\n/g, ''));
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    let atual;
-    try {
-      atual = JSON.parse(new TextDecoder('utf-8').decode(bytes));
-    } catch(e) {
-      atual = { registros: [] };
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error('Worker retornou ' + resp.status + ': ' + (err.error || ''));
     }
-    // Garantir estrutura correta
-    if (!atual.registros) atual.registros = [];
-    // 2. Adicionar novo pedido no início
-    atual.registros.unshift(pedido);
-    // Manter no máximo 200 registros
-    if (atual.registros.length > 200) atual.registros.length = 200;
-    // 3. Salvar de volta
-    const novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(atual, null, 2))));
-    const resp = await fetch(_GH_API + 'dados/encomendas.json', {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + _GH_TK, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: 'Novo pedido: ' + pedido.num,
-        content: novoConteudo,
-        sha: sha
-      })
-    });
-    if (!resp.ok) throw new Error('Gravação falhou: ' + resp.status);
-    console.log('[Itap] Pedido salvo no GitHub ✅', pedido.num);
+    console.log('[Itap] Pedido registrado no Worker ✅', pedido.num);
     return true;
   } catch(e) {
-    console.warn('[Itap] Erro ao salvar pedido no GitHub:', e.message);
+    console.warn('[Itap] Erro ao enviar pedido ao Worker:', e.message);
     return false;
   }
 }
@@ -1305,10 +1281,10 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
       if (pedidos.length > 50) pedidos.length = 50;
       localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
     } catch(e) { console.warn('[ITAP] Erro ao salvar histórico local:', e); }
-    // Enviar pedido para o GitHub (admin recebe em tempo real)
-    enviarPedidoGitHub(pedidoObj).then(ok => {
+    // Registrar pedido no backend seguro (Worker)
+    enviarPedidoWorker(pedidoObj).then(ok => {
       if (ok) console.log('[Itap] Pedido registrado no admin ✅');
-      else console.warn('[Itap] Pedido não chegou ao admin — apenas no localStorage');
+      else console.warn('[Itap] Pedido não chegou ao admin — disponível apenas no localStorage');
     });
 
     const numEl = document.getElementById('num-pedido');

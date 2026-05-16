@@ -1,0 +1,36 @@
+name = "itapolitana-api"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ─── KV Namespaces ─────────────────────────────────────────────────────────────
+# Crie os namespaces com: wrangler kv namespace create <NOME>
+# Preencha os "id" gerados e repita o "preview_id" com o mesmo valor (ou crie um namespace de preview separado)
+[[kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+
+[[kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+
+[[kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
+# ─── Variáveis de ambiente públicas ───────────────────────────────────────────
+[vars]
+ENVIRONMENT = "production"
+
+# ─── Segredos (NÃO colocar valores aqui — use wrangler secret put) ──────────
+# wrangler secret put ADMIN_SECRET
+# wrangler secret put GITHUB_TOKEN
+
+# ─── Rota personalizada ───────────────────────────────────────────────────────
+# Após configurar o domínio no Cloudflare, defina a rota:
+# [[routes]]
+# pattern  = "api.itapolitanacajuru.com.br/*"
+# zone_name = "itapolitanacajuru.com.br"

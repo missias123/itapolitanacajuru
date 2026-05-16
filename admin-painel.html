@@ -552,6 +552,11 @@ body { overflow-x: hidden; }
       ⚠️ Formato inválido. Use um token GitHub: <code style="font-size:.72rem">ghp_...</code>, <code style="font-size:.72rem">gho_...</code> ou <code style="font-size:.72rem">github_pat_...</code>
     </div>
     <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O token é salvo apenas neste navegador, nunca no servidor.</div>
+    <div class="inp-wrap" style="margin-top:4px">
+      <input type="password" id="inp-worker-secret" placeholder="Segredo Worker (Fidelidade e Encomendas)" autocomplete="off"/>
+    </div>
+    <div id="worker-secret-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
+    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O segredo Worker é gerado no deploy do Cloudflare (ADMIN_SECRET). Salvo somente neste navegador.</div>
     <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
       Informe a senha do administrador. O token GitHub é opcional para escrita: sem token válido, o painel abre em modo somente leitura.
     </div>
@@ -565,6 +570,10 @@ body { overflow-x: hidden; }
     <span style="font-size:1.1rem">⚠️</span>
     <span><strong>Token GitHub ausente, inválido ou sem permissão de escrita.</strong> Dados em modo somente leitura — <strong>alterações não serão salvas</strong>. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Admin+Itapolitana" target="_blank" style="color:#bf360c;font-weight:700;text-decoration:underline">Criar novo token aqui ↗</a></span>
     <button onclick="atualizarToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Atualizar Token</button>
+  </div>
+  <div id="aviso-worker-secret" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
+    <span style="font-size:1rem">ℹ️</span>
+    <span><strong>Segredo Worker não configurado</strong> — Fidelidade e Encomendas em <strong>modo somente leitura</strong>. Configure o Segredo Worker na próxima vez que fizer login.</span>
   </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
@@ -2611,18 +2620,27 @@ function preencherTokenSalvoNoLogin(){
   }else if(statusEl){
     statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
   }
+  // Pre-fill Worker secret if saved
+  const wsInp=document.getElementById('inp-worker-secret');
+  const wsStatus=document.getElementById('worker-secret-status');
+  const ws=getWorkerSecret();
+  if(wsInp&&ws){wsInp.value=ws;if(wsStatus)wsStatus.textContent='✅ Segredo Worker carregado do navegador.';}
+  else if(wsStatus){wsStatus.textContent='ℹ️ Segredo Worker não configurado — Fidelidade e Encomendas somente leitura.';}
 }
 
 function limparTokenSalvo(){
   lsRemove('itap_gh_token');
+  lsRemove('itap_worker_secret');
   GH_WRITE_ALLOWED=false;
   const inp=document.getElementById('inp-gh-token');
+  const ws=document.getElementById('inp-worker-secret');
   const statusEl=document.getElementById('token-status');
   const hint=document.getElementById('token-hint');
   if(inp) inp.value='';
+  if(ws) ws.value='';
   if(hint) hint.style.display='none';
   if(statusEl) statusEl.textContent='🧹 Token removido deste navegador.';
-  toast('Token removido com sucesso.','sucesso');
+  toast('Token e segredo Worker removidos com sucesso.','sucesso');
 }
 
 async function validarToken(tok){
@@ -2700,6 +2718,38 @@ const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
 let GH_WRITE_ALLOWED=false;
+
+// ── Cloudflare Worker API (PII: clientes, encomendas) ─────────────────────────
+const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
+function getWorkerSecret(){return lsGet('itap_worker_secret').trim();}
+function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Admin-Secret':getWorkerSecret(),...extra};}
+async function workerGet(endpoint){
+  try{
+    const r=await fetch(ITAP_WORKER_API+endpoint,{headers:workerAdminHeaders()});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return{content:await r.json(),sha:'worker'};
+  }catch(e){
+    console.error('[Admin] workerGet falhou:',endpoint,e.message);
+    return{content:null,sha:null};
+  }
+}
+async function workerSalvar(endpoint,data,method='PUT'){
+  const secret=getWorkerSecret();
+  if(!secret){toast('⚠️ Segredo Worker não configurado. Configure na tela de login para salvar dados de Fidelidade/Encomendas.','aviso');return false;}
+  mostrarLoading('Salvando no Worker...');
+  try{
+    const r=await fetch(ITAP_WORKER_API+endpoint,{method,headers:workerAdminHeaders(),body:JSON.stringify(data)});
+    ocultarLoading();
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}
+    clearDirty();
+    toast('✅ Salvo com sucesso!','sucesso');
+    return true;
+  }catch(e){
+    ocultarLoading();
+    toast('❌ Erro ao salvar no Worker: '+e.message,'erro');
+    return false;
+  }
+}
 // Dirty-check: rastreia se há alterações não salvas na aba atual
 let adminDirty=false;
 function markDirty(){adminDirty=true;}
@@ -2728,12 +2778,12 @@ function fidEnsureCodigos(){
   return{key,codigos:STATE.fidelidade[key]};
 }
 function fidIsReadOnly(){
-  // A aba Fidelidade requer escrita em dois domínios (clientes.json e fidelidade.json);
-  // se um deles está sem SHA/token válido, tratamos toda a aba como somente leitura.
-  return !STATE.fidelidadeSha || !STATE.clientesSha;
+  // Fidelidade (fidelidade.json) requires GitHub SHA+token.
+  // Clientes now go through the Worker — only require Worker secret.
+  return !STATE.fidelidadeSha || !getWorkerSecret();
 }
 function fidPathReadOnly(path){
-  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!STATE.clientesSha);
+  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!getWorkerSecret());
 }
 const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
 function fidApplyReadOnlyGuard(){
@@ -2748,10 +2798,16 @@ function fidApplyReadOnlyGuard(){
 function fidRequireWrite(){
   if(!fidIsReadOnly())return true;
   fidApplyReadOnlyGuard();
-  toast('⚠️ Modo leitura ativo na Fidelidade. Atualize o token para editar.','aviso');
+  const msg=!STATE.fidelidadeSha
+    ? '⚠️ Modo leitura ativo na Fidelidade. Atualize o token GitHub para editar.'
+    : '⚠️ Modo leitura ativo. Configure o Segredo Worker para editar dados de clientes.';
+  toast(msg,'aviso');
   return false;
 }
 async function ghGet(path){
+  // PII paths → Worker (sem GitHub)
+  if(path===PATHS.clientes) return workerGet('/api/clientes');
+  if(path===PATHS.encomendas) return workerGet('/api/encomendas');
   try{
     const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})});
     if(r.status===404)return{content:null,sha:null};
@@ -2804,6 +2860,9 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
+  // PII paths → Worker API (não gravar no GitHub)
+  if(path===PATHS.clientes) return workerSalvar('/api/clientes/bulk',data);
+  if(path===PATHS.encomendas) return workerSalvar('/api/encomendas/bulk',data);
   if(!GH_WRITE_ALLOWED){
     const banner=document.getElementById('aviso-token-expirado');
     if(banner)banner.style.display='flex';
@@ -2847,6 +2906,11 @@ async function entrar(){
   const senha=document.getElementById('inp-senha').value;
   const tokenInput=document.getElementById('inp-gh-token');
   const tok=(tokenInput?.value||'').trim();
+  const workerSecretInput=document.getElementById('inp-worker-secret');
+  const workerSecret=(workerSecretInput?.value||'').trim();
+  // Save Worker secret to localStorage (optional — only needed for clientes/encomendas)
+  if(workerSecret){lsSet('itap_worker_secret',workerSecret);}
+  else{lsRemove('itap_worker_secret');}
   if(tok){
     if(!tokenFormatoValido(tok)){
       document.getElementById('login-erro').innerHTML='⚠️ Formato do token inválido. Corrija antes de entrar.';
@@ -2910,15 +2974,19 @@ async function carregarTudo(){
   mostrarLoading('Carregando dados...');
   const[pr,cl,fi,en,prod,promos]=await Promise.all([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
   if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
-  if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes.json — verifique token e rede');}
+  // clientes e encomendas vêm do Worker (sha='worker' quando ok, null quando falhou)
+  if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes — verifique Segredo Worker e rede');}
   if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
   if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
   if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
   if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-  // Avisar quando dados foram carregados via fallback (sem SHA = somente leitura, salvar vai falhar)
-  const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+  // Banner GitHub: apenas para dados não-PII (promo, fidelidade, produtos, promos)
+  const semToken=[pr,fi,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
   const banner=document.getElementById('aviso-token-expirado');
   if(banner)banner.style.display=semToken?'flex':'none';
+  // Banner Worker secret: mostrar quando não configurado
+  const bannerWorker=document.getElementById('aviso-worker-secret');
+  if(bannerWorker)bannerWorker.style.display=getWorkerSecret()?'none':'flex';
   ocultarLoading();
   renderDashboard();
   try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}
@@ -2993,7 +3061,7 @@ async function atualizarListaFidelidade(){
   const btn=document.getElementById('btn-refresh-fidelidade');
   if(btn){btn.disabled=true;btn.textContent='Atualizando...';}
   try{
-    const[cl,fi]=await Promise.all([ghGet(PATHS.clientes),ghGet(PATHS.fidelidade)]);
+    const[cl,fi]=await Promise.all([workerGet('/api/clientes'),ghGet(PATHS.fidelidade)]);
     if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
     if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
     try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] atualizarListaFidelidade renderClientes',e);}
