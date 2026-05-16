@@ -6158,6 +6158,7 @@ function preencherDepoimentos() {
   document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
   document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
   // Compatibilidade retroativa: versões antigas salvavam apenas depDica (string).
+  // Pode ser removido após confirmar que todos os config.json em produção usam depDicas (array).
   const depDicas = Array.isArray(c.depDicas) ? c.depDicas : (c.depDica ? [c.depDica] : []);
   document.getElementById('dep-dicas').value = depDicas.join('\n');
   
@@ -6286,6 +6287,7 @@ async function salvarDepoimentos() {
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
   c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
   // Mantém depDica para não quebrar consumidores legados durante migração.
+  // Remover após confirmar que nenhum script externo lê config.depDica diretamente.
   c.depDica = c.depDicas[0] || '';
   
   const lista = [];
