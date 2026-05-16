@@ -2688,13 +2688,14 @@ function atualizarBannerSessaoWorker(ativo=Boolean(getAdminToken())){
   const bannerWorker=document.getElementById('aviso-worker-secret');
   if(bannerWorker)bannerWorker.style.display=ativo?'none':'flex';
 }
+const WORKER_MODAL_FOCUS_DELAY_MS=30;
 function abrirModalSessaoWorker(){
   const modal=document.getElementById('worker-secret-modal');
   const input=document.getElementById('worker-secret-modal-input');
   if(!modal||!input)return;
   modal.style.display='flex';
   input.value='';
-  setTimeout(()=>input.focus(),30);
+  setTimeout(()=>input.focus(),WORKER_MODAL_FOCUS_DELAY_MS);
 }
 function fecharModalSessaoWorker(){
   const modal=document.getElementById('worker-secret-modal');
@@ -2821,6 +2822,8 @@ async function iniciarSessaoWorker(secret){
   }finally{
     try{
       if(workerSecretInput){
+        // Best-effort cleanup only: JavaScript strings are immutable, so this does
+        // not guarantee memory zeroing; it only narrows the exposure window in the UI.
         workerSecretInput.value='\0'.repeat(workerSecretRaw.length);
         workerSecretInput.value='';
       }
@@ -2970,7 +2973,7 @@ async function ghGet(path){
   }
   return ghGetRepo(path);
 }
-let configLoadPromise=null;
+let _configLoadPromise=null;
 function aplicarConfigAdmin(cfg){
   if(cfg&&cfg.content){
     STATE.config=cfg.content;
@@ -2980,17 +2983,20 @@ function aplicarConfigAdmin(cfg){
   return cfg;
 }
 async function carregarConfigAdmin(forceRefresh=false){
+  // Quando config.json cai no fallback público raw, o conteúdo vem sem SHA.
+  // Se depois houver token GitHub disponível, refazemos a leitura autenticada
+  // para recuperar o SHA e permitir salvamento normal no admin.
   const deveAtualizarConfigComToken=Boolean(getToken()&&STATE.config&&STATE.configSha===null);
-  if(forceRefresh||!configLoadPromise||deveAtualizarConfigComToken){
-    configLoadPromise=ghGetRepo(PATHS.config)
+  if(forceRefresh||!_configLoadPromise||deveAtualizarConfigComToken){
+    _configLoadPromise=ghGetRepo(PATHS.config)
       .then(aplicarConfigAdmin)
       .catch(e=>{
         console.warn('[Admin] carregarConfigAdmin falhou',e);
         return{content:null,sha:null};
       });
   }
-  const cfg=await configLoadPromise;
-  if(!cfg?.content)configLoadPromise=null;
+  const cfg=await _configLoadPromise;
+  if(!cfg?.content)_configLoadPromise=null;
   return cfg;
 }
 async function ghPut(path,data,sha,msg){
