@@ -36,6 +36,7 @@ const RATE_LIMITS = {
   'post-enc':      { max: 10, windowMs: 3_600_000 },
   'resgatar':      { max: 10, windowMs: 3_600_000 },
 };
+const MAX_FRAUD_ATTEMPTS = 4; // Block client after this many invalid code attempts
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 export default {
@@ -325,7 +326,7 @@ async function handlePostCliente(request, env) {
   if (!dataNasc || !/^\d{4}-\d{2}-\d{2}$/.test(dataNasc))
     return jsonResp({ ok: false, error: 'Data de nascimento inválida (formato esperado: AAAA-MM-DD)' }, 400);
   if (!cel || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(cel))
-    return jsonResp({ ok: false, error: 'Celular inválido (DDD + 9 dígitos)' }, 400);
+    return jsonResp({ ok: false, error: 'Celular inválido (11 dígitos no formato DD9XXXX-XXXX)' }, 400);
 
   // Fast-path: check by cel index
   const idByCel = await env.CLIENTES_KV.get(`idx:cel:${cel}`);
@@ -486,16 +487,17 @@ async function handlePatchCliente(id, request, env) {
     'motivo_bloqueio', 'tentativas_fraude', 'historico_alteracoes', 'resgates',
     'totalPremios', 'totalCodigos', 'cel_anterior',
   ];
+  // Capture the current cel before applying the patch (used for index cleanup below)
+  const celAntes = String(c.cel ?? '').replace(/\D/g, '');
   camposPermitidos.forEach(k => {
     if (Object.prototype.hasOwnProperty.call(body, k)) c[k] = body[k];
   });
 
   // Keep cel index in sync if cel changed
   if (body.cel !== undefined) {
-    const celNovo  = String(body.cel).replace(/\D/g, '');
-    const celVelho = String(c._cel_original ?? '').replace(/\D/g, '');
-    if (celNovo !== celVelho && celVelho) {
-      await env.CLIENTES_KV.delete(`idx:cel:${celVelho}`);
+    const celNovo = String(body.cel).replace(/\D/g, '');
+    if (celNovo !== celAntes && celAntes) {
+      await env.CLIENTES_KV.delete(`idx:cel:${celAntes}`);
       await env.CLIENTES_KV.put(`idx:cel:${celNovo}`, id);
     }
   }
@@ -780,7 +782,7 @@ async function handleResgatarCodigo(request, env) {
   // Helper to increment fraud attempts and persist
   const incrementarTentativas = async () => {
     cliente.tentativas_fraude = (cliente.tentativas_fraude || 0) + 1;
-    if (cliente.tentativas_fraude >= 4) cliente.bloqueado = true;
+    if (cliente.tentativas_fraude >= MAX_FRAUD_ATTEMPTS) cliente.bloqueado = true;
     await env.CLIENTES_KV.put(`cliente:${clienteId}`, JSON.stringify(cliente));
     return cliente.tentativas_fraude;
   };

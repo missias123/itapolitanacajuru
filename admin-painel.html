@@ -2567,6 +2567,10 @@ function esc(str) {
 function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){console.warn('[Admin] localStorage indisponível (get)',e);return '';}}
 function lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){console.warn('[Admin] localStorage indisponível (set)',e);return false;}}
 function lsRemove(k){try{localStorage.removeItem(k);return true;}catch(e){console.warn('[Admin] localStorage indisponível (remove)',e);return false;}}
+// sessionStorage — usado para dados de sessão sensíveis (ex.: Worker secret) que não devem persistir
+function ssGet(k){try{return sessionStorage.getItem(k)||'';}catch(e){return '';}}
+function ssSet(k,v){try{sessionStorage.setItem(k,v);return true;}catch(e){return false;}}
+function ssRemove(k){try{sessionStorage.removeItem(k);return true;}catch(e){return false;}}
 function getToken(){return lsGet('itap_gh_token').trim();}
 function getAuthHeaders(extraHeaders={}, tokenOverride=''){
   const tok=(tokenOverride||getToken()).trim();
@@ -2721,7 +2725,7 @@ let GH_WRITE_ALLOWED=false;
 
 // ── Cloudflare Worker API (PII: clientes, encomendas) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
-function getWorkerSecret(){return lsGet('itap_worker_secret').trim();}
+function getWorkerSecret(){return ssGet('itap_worker_secret').trim();}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Admin-Secret':getWorkerSecret(),...extra};}
 async function workerGet(endpoint){
   try{
@@ -2909,8 +2913,8 @@ async function entrar(){
   const workerSecretInput=document.getElementById('inp-worker-secret');
   const workerSecret=(workerSecretInput?.value||'').trim();
   // Save Worker secret to localStorage (optional — only needed for clientes/encomendas)
-  if(workerSecret){lsSet('itap_worker_secret',workerSecret);}
-  else{lsRemove('itap_worker_secret');}
+  if(workerSecret){ssSet('itap_worker_secret',workerSecret);}
+  else{ssRemove('itap_worker_secret');}
   if(tok){
     if(!tokenFormatoValido(tok)){
       document.getElementById('login-erro').innerHTML='⚠️ Formato do token inválido. Corrija antes de entrar.';
