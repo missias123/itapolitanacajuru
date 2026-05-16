@@ -127,6 +127,13 @@ Este é o mesmo valor definido em `ADMIN_SECRET` (passo 4).
 | GET    | `/api/clientes/:id`           | Admin   | Buscar cliente por ID               |
 | PATCH  | `/api/clientes/:id`           | Admin   | Atualizar dados do cliente          |
 | DELETE | `/api/clientes/:id`           | Admin   | Remover cliente                     |
+| POST   | `/api/admin/session`          | -       | Trocar ADMIN_SECRET por token de sessão |
+| GET    | `/api/clientes`               | Admin   | Listar clientes                     |
+| POST   | `/api/clientes`               | Público | Cadastrar novo cliente              |
+| POST   | `/api/clientes/login`         | Público | Login do cliente (retorna dados)    |
+| GET    | `/api/clientes/:id`           | Admin   | Ver cliente                         |
+| PATCH  | `/api/clientes/:id`           | Admin   | Atualizar cliente                   |
+| DELETE | `/api/clientes/:id`           | Admin   | Remover cliente                     |
 | PUT    | `/api/clientes/bulk`          | Admin   | Substituir coleção completa         |
 | POST   | `/api/encomendas`             | Público | Enviar pedido de encomenda          |
 | GET    | `/api/encomendas`             | Admin   | Listar todos os pedidos             |
@@ -135,7 +142,17 @@ Este é o mesmo valor definido em `ADMIN_SECRET` (passo 4).
 | PUT    | `/api/encomendas/bulk`        | Admin   | Substituir coleção completa         |
 | POST   | `/api/fidelidade/resgatar`    | Público | Resgatar código de fidelidade       |
 
-**Autenticação admin:** header `X-Itap-Admin-Secret: <ADMIN_SECRET>`
+### Autenticação admin — fluxo de sessão (recomendado)
+
+O `ADMIN_SECRET` **nunca deve ser armazenado no browser** — apenas usado na tela de login:
+
+1. O admin insere o `ADMIN_SECRET` no campo "Segredo Worker" do `admin-painel.html`
+2. O frontend chama `POST /api/admin/session` com `{ "secret": "<ADMIN_SECRET>" }`
+3. O Worker verifica o segredo e retorna um **token de sessão temporário** (expira em 2h)
+4. O frontend armazena apenas o token de sessão em `sessionStorage`
+5. Todas as rotas admin usam o header `X-Itap-Session-Token: <token>`
+
+**Autenticação direta (scripts/CLI):** header `X-Itap-Admin-Secret: <ADMIN_SECRET>` ainda é aceito para uso em scripts de migração e ferramentas CLI.
 
 ---
 

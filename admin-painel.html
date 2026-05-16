@@ -553,10 +553,10 @@ body { overflow-x: hidden; }
     </div>
     <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O token é salvo apenas neste navegador, nunca no servidor.</div>
     <div class="inp-wrap" style="margin-top:4px">
-      <input type="password" id="inp-worker-secret" placeholder="Segredo Worker (Fidelidade e Encomendas)" autocomplete="off"/>
+      <input type="password" id="inp-worker-secret" placeholder="Segredo Worker (Fidelidade e Encomendas)" autocomplete="new-password"/>
     </div>
     <div id="worker-secret-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
-    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O segredo Worker é gerado no deploy do Cloudflare (ADMIN_SECRET). Salvo somente neste navegador.</div>
+    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">O Segredo Worker é trocado por um token de sessão temporário — nunca armazenado diretamente.</div>
     <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
       Informe a senha do administrador. O token GitHub é opcional para escrita: sem token válido, o painel abre em modo somente leitura.
     </div>
@@ -573,7 +573,7 @@ body { overflow-x: hidden; }
   </div>
   <div id="aviso-worker-secret" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
     <span style="font-size:1rem">ℹ️</span>
-    <span><strong>Segredo Worker não configurado</strong> — Fidelidade e Encomendas em <strong>modo somente leitura</strong>. Configure o Segredo Worker na próxima vez que fizer login.</span>
+    <span><strong>Sessão Worker inativa</strong> — Fidelidade e Encomendas em <strong>modo somente leitura</strong>. Insira o Segredo Worker na tela de login para iniciar uma sessão segura.</span>
   </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
@@ -2624,17 +2624,17 @@ function preencherTokenSalvoNoLogin(){
   }else if(statusEl){
     statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
   }
-  // Pre-fill Worker secret if saved
-  const wsInp=document.getElementById('inp-worker-secret');
+  // Show Worker session status (session token is never pre-filled — expires on tab close)
   const wsStatus=document.getElementById('worker-secret-status');
-  const ws=getWorkerSecret();
-  if(wsInp&&ws){wsInp.value=ws;if(wsStatus)wsStatus.textContent='✅ Segredo Worker carregado do navegador.';}
-  else if(wsStatus){wsStatus.textContent='ℹ️ Segredo Worker não configurado — Fidelidade e Encomendas somente leitura.';}
+  const hasSession=Boolean(getAdminToken());
+  if(wsStatus)wsStatus.textContent=hasSession
+    ?'✅ Sessão Worker ativa nesta aba.'
+    :'ℹ️ Insira o Segredo Worker para ativar Fidelidade e Encomendas no admin.';
 }
 
 function limparTokenSalvo(){
   lsRemove('itap_gh_token');
-  lsRemove('itap_worker_secret');
+  ssRemove('itap_admin_token');
   GH_WRITE_ALLOWED=false;
   const inp=document.getElementById('inp-gh-token');
   const ws=document.getElementById('inp-worker-secret');
@@ -2644,7 +2644,7 @@ function limparTokenSalvo(){
   if(ws) ws.value='';
   if(hint) hint.style.display='none';
   if(statusEl) statusEl.textContent='🧹 Token removido deste navegador.';
-  toast('Token e segredo Worker removidos com sucesso.','sucesso');
+  toast('Token e sessão Worker removidos com sucesso.','sucesso');
 }
 
 async function validarToken(tok){
@@ -2725,8 +2725,9 @@ let GH_WRITE_ALLOWED=false;
 
 // ── Cloudflare Worker API (PII: clientes, encomendas) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
-function getWorkerSecret(){return ssGet('itap_worker_secret').trim();}
-function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Admin-Secret':getWorkerSecret(),...extra};}
+// Admin session token (exchanged at login — raw secret never stored in storage)
+function getAdminToken(){return ssGet('itap_admin_token').trim();}
+function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Session-Token':getAdminToken(),...extra};}
 async function workerGet(endpoint){
   try{
     const r=await fetch(ITAP_WORKER_API+endpoint,{headers:workerAdminHeaders()});
@@ -2738,8 +2739,8 @@ async function workerGet(endpoint){
   }
 }
 async function workerSalvar(endpoint,data,method='PUT'){
-  const secret=getWorkerSecret();
-  if(!secret){toast('⚠️ Segredo Worker não configurado. Configure na tela de login para salvar dados de Fidelidade/Encomendas.','aviso');return false;}
+  const token=getAdminToken();
+  if(!token){toast('⚠️ Sessão Worker expirada ou não iniciada. Faça login novamente para salvar dados de Fidelidade/Encomendas.','aviso');return false;}
   mostrarLoading('Salvando no Worker...');
   try{
     const r=await fetch(ITAP_WORKER_API+endpoint,{method,headers:workerAdminHeaders(),body:JSON.stringify(data)});
@@ -2783,11 +2784,11 @@ function fidEnsureCodigos(){
 }
 function fidIsReadOnly(){
   // Fidelidade (fidelidade.json) requires GitHub SHA+token.
-  // Clientes now go through the Worker — only require Worker secret.
-  return !STATE.fidelidadeSha || !getWorkerSecret();
+  // Clientes now go through the Worker — only require an active admin session token.
+  return !STATE.fidelidadeSha || !getAdminToken();
 }
 function fidPathReadOnly(path){
-  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!getWorkerSecret());
+  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!getAdminToken());
 }
 const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
 function fidApplyReadOnlyGuard(){
@@ -2804,7 +2805,7 @@ function fidRequireWrite(){
   fidApplyReadOnlyGuard();
   const msg=!STATE.fidelidadeSha
     ? '⚠️ Modo leitura ativo na Fidelidade. Atualize o token GitHub para editar.'
-    : '⚠️ Modo leitura ativo. Configure o Segredo Worker para editar dados de clientes.';
+    : '⚠️ Sessão Worker inativa. Faça login novamente para editar dados de clientes.';
   toast(msg,'aviso');
   return false;
 }
@@ -2911,10 +2912,7 @@ async function entrar(){
   const tokenInput=document.getElementById('inp-gh-token');
   const tok=(tokenInput?.value||'').trim();
   const workerSecretInput=document.getElementById('inp-worker-secret');
-  const workerSecret=(workerSecretInput?.value||'').trim();
-  // Save Worker secret to localStorage (optional — only needed for clientes/encomendas)
-  if(workerSecret){ssSet('itap_worker_secret',workerSecret);}
-  else{ssRemove('itap_worker_secret');}
+  const workerSecretRaw=(workerSecretInput?.value||'').trim();
   if(tok){
     if(!tokenFormatoValido(tok)){
       document.getElementById('login-erro').innerHTML='⚠️ Formato do token inválido. Corrija antes de entrar.';
@@ -2948,6 +2946,28 @@ async function entrar(){
     }
   }else{
     GH_WRITE_ALLOWED=false;
+  }
+  // Exchange Worker secret for a session token (raw secret is NEVER stored — only the ephemeral token)
+  if(workerSecretRaw){
+    try{
+      const sessionResp=await fetch(ITAP_WORKER_API+'/api/admin/session',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({secret:workerSecretRaw})
+      });
+      const sessionData=await sessionResp.json().catch(()=>({}));
+      if(sessionResp.ok&&sessionData.token){
+        ssSet('itap_admin_token',sessionData.token);
+        console.log('[Admin] Sessão Worker iniciada. Expira em',sessionData.expiresIn,'s.');
+      }else{
+        console.warn('[Admin] Sessão Worker: falha na troca —',sessionData.error||sessionResp.status);
+      }
+    }catch(e){
+      console.warn('[Admin] Sessão Worker indisponível (Worker não deployado?):', e.message);
+    }finally{
+      // Clear the raw secret from the input immediately after the exchange attempt
+      if(workerSecretInput)workerSecretInput.value='';
+    }
   }
   let cfg=await ghGet(PATHS.config);
   // Fallback: se API falhou (sem token salvo), tenta URL pública raw (repo público)
@@ -2988,9 +3008,9 @@ async function carregarTudo(){
   const semToken=[pr,fi,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
   const banner=document.getElementById('aviso-token-expirado');
   if(banner)banner.style.display=semToken?'flex':'none';
-  // Banner Worker secret: mostrar quando não configurado
+  // Banner Worker session: mostrar quando sessão inativa
   const bannerWorker=document.getElementById('aviso-worker-secret');
-  if(bannerWorker)bannerWorker.style.display=getWorkerSecret()?'none':'flex';
+  if(bannerWorker)bannerWorker.style.display=getAdminToken()?'none':'flex';
   ocultarLoading();
   renderDashboard();
   try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}

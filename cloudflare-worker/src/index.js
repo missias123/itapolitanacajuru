@@ -33,10 +33,12 @@ const GH_FIDELIDADE_PATH = 'dados/fidelidade.json';
 const RATE_LIMITS = {
   'post-cliente':  { max: 10, windowMs: 3_600_000 },
   'login':         { max: 20, windowMs: 3_600_000 },
+  'admin-login':   { max: 10, windowMs: 3_600_000 },
   'post-enc':      { max: 10, windowMs: 3_600_000 },
   'resgatar':      { max: 10, windowMs: 3_600_000 },
 };
 const MAX_FRAUD_ATTEMPTS = 4; // Block client after this many invalid code attempts
+const SESSION_TTL = 7200;    // Admin session lifetime: 2 hours
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 export default {
@@ -57,13 +59,13 @@ export default {
   },
 };
 
-// ─── CORS helpers ─────────────────────────────────────────────────────────────
+// ─── CORS headers — also expose session token header ──────────────────────────
 function buildCorsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin':  allowed,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-Itap-Admin-Secret',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Itap-Admin-Secret, X-Itap-Session-Token',
     'Access-Control-Max-Age':       '86400',
     'Vary':                         'Origin',
   };
@@ -85,7 +87,26 @@ function jsonResp(data, status = 200) {
 }
 
 // ─── Auth helpers ─────────────────────────────────────────────────────────────
-function isAdmin(request, env) {
+/**
+ * isAdmin — checks for a valid admin session token (preferred) or direct secret (fallback).
+ *
+ * Session flow (recommended):
+ *   1. Client calls POST /api/admin/session with the raw ADMIN_SECRET
+ *   2. Worker verifies the secret and returns a short-lived random session token
+ *   3. Client stores the session token and uses X-Itap-Session-Token on all requests
+ *   4. Session token is stored in RATE_KV with SESSION_TTL expiry
+ *
+ * Direct secret (fallback — for non-browser callers such as migration scripts):
+ *   X-Itap-Admin-Secret: <raw ADMIN_SECRET>
+ */
+async function isAdmin(request, env) {
+  // Preferred: session token (random, ephemeral — never the raw secret)
+  const sessionToken = request.headers.get('X-Itap-Session-Token') || '';
+  if (sessionToken) {
+    const valid = await env.RATE_KV.get(`session:${sessionToken}`);
+    if (valid === '1') return true;
+  }
+  // Fallback: direct ADMIN_SECRET (for migration scripts and CLI tools)
   const secret = request.headers.get('X-Itap-Admin-Secret') || '';
   return Boolean(secret && env.ADMIN_SECRET && secret === env.ADMIN_SECRET);
 }
@@ -236,6 +257,10 @@ async function router(request, env) {
     return jsonResp({ ok: true, ts: Date.now(), version: '1.0.0' });
   }
 
+  // ── Admin session exchange ─────────────────────────────────────────────────
+  if (path === '/api/admin/session' && method === 'POST')
+    return handleAdminSession(request, env);
+
   // ── Clientes ──────────────────────────────────────────────────────────────
   if (path === '/api/clientes' && method === 'POST')
     return handlePostCliente(request, env);
@@ -244,12 +269,12 @@ async function router(request, env) {
     return handleLoginCliente(request, env);
 
   if (path === '/api/clientes/bulk' && method === 'PUT') {
-    if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleBulkPutClientes(request, env);
   }
 
   if (path === '/api/clientes' && method === 'GET') {
-    if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleGetClientes(env);
   }
 
@@ -257,15 +282,15 @@ async function router(request, env) {
   if (mCliente) {
     const id = decodeURIComponent(mCliente[1]);
     if (method === 'GET') {
-      if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+      if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
       return handleGetCliente(id, env);
     }
     if (method === 'PATCH') {
-      if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+      if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
       return handlePatchCliente(id, request, env);
     }
     if (method === 'DELETE') {
-      if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+      if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
       return handleDeleteCliente(id, env);
     }
   }
@@ -275,12 +300,12 @@ async function router(request, env) {
     return handlePostEncomenda(request, env);
 
   if (path === '/api/encomendas/bulk' && method === 'PUT') {
-    if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleBulkPutEncomendas(request, env);
   }
 
   if (path === '/api/encomendas' && method === 'GET') {
-    if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleGetEncomendas(env);
   }
 
@@ -288,11 +313,11 @@ async function router(request, env) {
   if (mEnc) {
     const id = decodeURIComponent(mEnc[1]);
     if (method === 'PATCH') {
-      if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+      if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
       return handlePatchEncomenda(id, request, env);
     }
     if (method === 'DELETE') {
-      if (!isAdmin(request, env)) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+      if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
       return handleDeleteEncomenda(id, env);
     }
   }
@@ -302,6 +327,41 @@ async function router(request, env) {
     return handleResgatarCodigo(request, env);
 
   return jsonResp({ ok: false, error: 'Rota não encontrada' }, 404);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HANDLERS — AUTENTICAÇÃO ADMIN
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * POST /api/admin/session — troca o ADMIN_SECRET por um token de sessão temporário.
+ *
+ * O token de sessão é um valor aleatório armazenado no RATE_KV com TTL de SESSION_TTL segundos.
+ * O frontend armazena APENAS o token de sessão (nunca o ADMIN_SECRET em si).
+ */
+async function handleAdminSession(request, env) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'admin-login');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login. Aguarde uma hora.' }, 429);
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const secret = sanitizeString(body.secret || '', 200);
+  if (!secret || !env.ADMIN_SECRET || secret !== env.ADMIN_SECRET) {
+    await registrarAudit(env, 'admin_login_fail', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
+    return jsonResp({ ok: false, error: 'Credenciais inválidas' }, 401);
+  }
+
+  // Generate a cryptographically random 256-bit session token
+  const tokenBytes = new Uint8Array(32);
+  crypto.getRandomValues(tokenBytes);
+  const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+
+  await env.RATE_KV.put(`session:${token}`, '1', { expirationTtl: SESSION_TTL });
+  await registrarAudit(env, 'admin_login_ok', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
+
+  return jsonResp({ ok: true, token, expiresIn: SESSION_TTL });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -544,13 +604,19 @@ async function handleBulkPutClientes(request, env) {
     }
   }
 
-  // Upsert all provided clients
+  // Upsert all provided clients — auto-generate id_hash for imported clients that lack one
   const BATCH = 25;
   for (let i = 0; i < ids.length; i += BATCH) {
     const lote = ids.slice(i, i + BATCH);
     await Promise.all(lote.map(async id => {
       const c = clientes[id];
       if (!c || typeof c !== 'object') return;
+      // Auto-generate id_hash if missing (clients migrated from backup)
+      if (!c.id_hash) {
+        const b = new Uint8Array(4);
+        crypto.getRandomValues(b);
+        c.id_hash = Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+      }
       await env.CLIENTES_KV.put(`cliente:${id}`, JSON.stringify(c));
       const cel = String(c.cel ?? '').replace(/\D/g, '');
       if (cel) await env.CLIENTES_KV.put(`idx:cel:${cel}`, id);
