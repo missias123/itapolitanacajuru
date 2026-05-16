@@ -1042,6 +1042,35 @@ body { overflow-x: hidden; }
             <input type="number" id="enc-min-picolés" value="100" min="1" max="1000" placeholder="100"/>
             <div class="hint">Quantidade mínima de picolés para fechar um pedido. Padrão: 100 unidades.</div>
           </div>
+          <div class="seção-título">🧩 CMS da Página Encomendas</div>
+          <div class="campo-edit">
+            <label>Título do Hero (H1)</label>
+            <input type="text" id="enc-hero-titulo" maxlength="100" placeholder="🛒 Cardápio e Encomendas Itapolitana Cajuru"/>
+          </div>
+          <div class="campo-edit">
+            <label>Descrição do Hero</label>
+            <textarea id="enc-hero-desc" rows="3" maxlength="240" placeholder="Sorvete tipo artesanal em caixa, tortas geladas..."></textarea>
+          </div>
+          <div class="campo-edit">
+            <label>Badges do Hero (um por linha)</label>
+            <textarea id="enc-hero-badges" rows="5" placeholder="✨ tipo artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
+          </div>
+          <div class="seção-título">🔗 CTAs da Fidelidade</div>
+          <div class="campo-edit">
+            <label>URL "Ver regras completas" (Fidelidade)</label>
+            <input type="url" id="cfg-fid-regras-url" placeholder="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas"/>
+          </div>
+          <div class="campo-edit">
+            <label>URL "Resgatar prêmio via WhatsApp" (Fidelidade)</label>
+            <input type="url" id="cfg-fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/>
+          </div>
+          <div class="seção-título">🔎 SEO por Página</div>
+          <div class="campo-edit"><label>Fidelidade · Title</label><input type="text" id="cfg-seo-fid-titulo" maxlength="80" placeholder="Clube de Fidelidade | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Fidelidade · Meta Description</label><textarea id="cfg-seo-fid-descricao" rows="2" maxlength="180" placeholder="Acumule pontos..."></textarea></div>
+          <div class="campo-edit"><label>Fidelidade · Keywords</label><input type="text" id="cfg-seo-fid-palavras" maxlength="220" placeholder="fidelidade cajuru, clube de pontos"/></div>
+          <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
+          <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações de Encomendas</button></div>
         </div>
       </div>
@@ -2052,6 +2081,8 @@ Talento</textarea>
           </div>
           <div class="campo-edit"><label>Título da página Fidelidade</label><input type="text" id="fid-título" placeholder="Programa de Fidelidade"/></div>
           <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
+          <div class="campo-edit"><label>Passos "Como funciona" (um por linha)</label><textarea id="fid-como-funciona-lista" rows="4" placeholder="Faça seu cadastro...&#10;A cada compra...&#10;Junte pontos..."></textarea></div>
+          <div class="campo-edit"><label>Regras resumidas (uma por linha)</label><textarea id="fid-regras-resumo-lista" rows="5" placeholder="Cadastre-se com dados reais...&#10;Cada código válido soma 1 ponto..."></textarea></div>
           <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
         </div>
       </div>
@@ -4381,6 +4412,10 @@ function preencherFidelidade(){
   document.getElementById('fid-pts-caixa').value=cfg.pontosCaixa||30;
   document.getElementById('fid-título').value=cfg.fidelidadeTitulo||'Programa de Fidelidade';
   document.getElementById('fid-descrição').value=cfg.fidelidadeDescricao||'Acumule pontos e ganhe prêmios incriveis!';
+  const fidComo=document.getElementById('fid-como-funciona-lista');
+  if(fidComo) fidComo.value=Array.isArray(cfg.fidelidadeComoFunciona)?cfg.fidelidadeComoFunciona.join('\n'):'';
+  const fidRegrasResumo=document.getElementById('fid-regras-resumo-lista');
+  if(fidRegrasResumo) fidRegrasResumo.value=Array.isArray(cfg.fidelidadeRegrasResumo)?cfg.fidelidadeRegrasResumo.join('\n'):'';
   atualizarStatsCódigos();
 }
 
@@ -4705,11 +4740,19 @@ async function salvarConfigFidelidade() {
   
   // Capturar valores dos campos
   c.premioMilkshake = document.getElementById('fid-prêmio-milk-nome').value.trim();
-  c.pontosMilkshake = parseInt(document.getElementById('fid-pts-milk').value) || 10;
+  const ptsMilkInput = parseInt(document.getElementById('fid-pts-milk').value, 10);
+  c.pontosMilkshake = Number.isFinite(ptsMilkInput) && ptsMilkInput > 0
+    ? ptsMilkInput
+    : (Number.isFinite(Number(c.pontosMilkshake)) ? Number(c.pontosMilkshake) : 10);
   c.premioCaixa = document.getElementById('fid-prêmio-caixa-nome').value.trim();
-  c.pontosCaixa = parseInt(document.getElementById('fid-pts-caixa').value) || 30;
+  const ptsCaixaInput = parseInt(document.getElementById('fid-pts-caixa').value, 10);
+  c.pontosCaixa = Number.isFinite(ptsCaixaInput) && ptsCaixaInput > 0
+    ? ptsCaixaInput
+    : (Number.isFinite(Number(c.pontosCaixa)) ? Number(c.pontosCaixa) : 30);
   c.fidelidadeTitulo = document.getElementById('fid-título').value.trim();
   c.fidelidadeDescricao = document.getElementById('fid-descrição').value.trim();
+  c.fidelidadeComoFunciona = lerLinhasTextarea('fid-como-funciona-lista');
+  c.fidelidadeRegrasResumo = lerLinhasTextarea('fid-regras-resumo-lista');
   
   mostrarLoading('Salvando...');
   
@@ -4771,6 +4814,37 @@ function atualizarAtalhosDashboard(cfg){
   const lkG=document.getElementById('dash-link-galeria'); if(lkG){lkG.innerHTML=tGal; lkG.setAttribute('href',uGal||'galeria.html');}
   const lkC=document.getElementById('dash-link-carrossel'); if(lkC){lkC.innerHTML=tCar; lkC.setAttribute('href',uCar||'carrossel.html');}
 }
+function lerLinhasTextarea(id){
+  const el=document.getElementById(id);
+  if(!el)return[];
+  return (el.value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+}
+function cmsValidarUrl(valor,opts={}){
+  const op=Object.assign({allowRelative:true,allowEmpty:true},opts||{});
+  const raw=(valor||'').trim();
+  if(!raw)return op.allowEmpty?'':null;
+  const blocked=/^\s*(javascript|data|vbscript)\s*:/i.test(raw)||/^\s*\/\//.test(raw);
+  if(blocked)return null;
+  if(!op.allowRelative&&/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(raw)===false)return null;
+  try{
+    const url=new URL(raw,window.location.origin);
+    if(url.protocol!=='http:'&&url.protocol!=='https:')return null;
+    return raw;
+  }catch(e){
+    return null;
+  }
+}
+function cmsLerUrlCampo(id,label,opts){
+  const el=document.getElementById(id);
+  if(!el)return'';
+  const safe=cmsValidarUrl(el.value,opts||{});
+  if(safe===null){
+    toast(`⚠️ ${label} inválida. Use apenas links http/https.`, 'erro');
+    el.focus();
+    return null;
+  }
+  return safe;
+}
 function preencherConfig(){
   const cfg=STATE.config||{};
   document.getElementById('cfg-whatsapp').value=cfg.whatsapp||'5516996062046';
@@ -4809,6 +4883,18 @@ function preencherConfig(){
   // Fidelidade Hero (IDs: fid-hero-titulo, fid-hero-desc)
   const fidHT=document.getElementById('cfg-fid-hero-titulo'); if(fidHT) fidHT.value=cfg.fidHeroTitulo||'🎟️ Clube de Fidelidade Itapolitana';
   const fidHD=document.getElementById('cfg-fid-hero-desc'); if(fidHD) fidHD.value=cfg.fidHeroDesc||'Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru.';
+  const encHeroTit=document.getElementById('enc-hero-titulo'); if(encHeroTit) encHeroTit.value=cfg.encomendasHeroTitulo||'';
+  const encHeroDesc=document.getElementById('enc-hero-desc'); if(encHeroDesc) encHeroDesc.value=cfg.encomendasHeroDescricao||'';
+  const encHeroBadges=document.getElementById('enc-hero-badges'); if(encHeroBadges) encHeroBadges.value=Array.isArray(cfg.encomendasHeroBadges)?cfg.encomendasHeroBadges.join('\n'):'';
+  const fidRegrasUrl=document.getElementById('cfg-fid-regras-url'); if(fidRegrasUrl) fidRegrasUrl.value=cfg.fidelidadeRegrasUrl||'';
+  const fidResgateUrl=document.getElementById('cfg-fid-resgate-url'); if(fidResgateUrl) fidResgateUrl.value=cfg.fidelidadeResgateWhatsappUrl||'';
+  const seoPg=cfg.seoPaginas||{};
+  const seoFidTit=document.getElementById('cfg-seo-fid-titulo'); if(seoFidTit) seoFidTit.value=seoPg.fidelidade?.titulo||'';
+  const seoFidDes=document.getElementById('cfg-seo-fid-descricao'); if(seoFidDes) seoFidDes.value=seoPg.fidelidade?.descricao||'';
+  const seoFidPal=document.getElementById('cfg-seo-fid-palavras'); if(seoFidPal) seoFidPal.value=seoPg.fidelidade?.palavrasChave||'';
+  const seoEncTit=document.getElementById('cfg-seo-enc-titulo'); if(seoEncTit) seoEncTit.value=seoPg.encomendas?.titulo||'';
+  const seoEncDes=document.getElementById('cfg-seo-enc-descricao'); if(seoEncDes) seoEncDes.value=seoPg.encomendas?.descricao||'';
+  const seoEncPal=document.getElementById('cfg-seo-enc-palavras'); if(seoEncPal) seoEncPal.value=seoPg.encomendas?.palavrasChave||'';
   // Configurações de Encomendas (enc-aviso, enc-min-picolés)
   const encAv=document.getElementById('enc-aviso'); if(encAv) encAv.value=cfg.encomendaAviso||'';
   const encMin=document.getElementById('enc-min-picolés'); if(encMin) encMin.value=cfg.encomendaMinPicoles??100;
@@ -4820,14 +4906,22 @@ async function salvarConfig(){
   if(novaSenha&&novaSenha.length<6){toast('⚠️ A senha deve ter pelo menos 6 caracteres.','erro');return;}
   const whats=document.getElementById('cfg-whatsapp').value.trim().replace(/\D/g,'');
   if(whats&&(whats.length<10||whats.length>13)){toast('⚠️ Número de WhatsApp inválido. Use o formato com DDD: (16) 99999-9999.','erro');document.getElementById('cfg-whatsapp').focus();return;}
+  const instagramSafe=cmsLerUrlCampo('cfg-instagram-url','URL do Instagram',{allowRelative:false});
+  if(instagramSafe===null)return;
+  const mapsSafe=cmsLerUrlCampo('cfg-maps','Link Google Maps',{allowRelative:false});
+  if(mapsSafe===null)return;
+  const fidRegrasUrlSafe=cmsLerUrlCampo('cfg-fid-regras-url','URL de regras da Fidelidade',{allowRelative:true});
+  if(fidRegrasUrlSafe===null)return;
+  const fidResgateUrlSafe=cmsLerUrlCampo('cfg-fid-resgate-url','URL de resgate via WhatsApp',{allowRelative:false});
+  if(fidResgateUrlSafe===null)return;
   const cfg=STATE.config||{};
   cfg.whatsapp=document.getElementById('cfg-whatsapp').value.trim();
   cfg.whatsappFormatado=document.getElementById('cfg-whats-fmt').value.trim();
   cfg.instagram=document.getElementById('cfg-instagram').value.trim();
-  cfg.instagramUrl=document.getElementById('cfg-instagram-url').value.trim();
+  cfg.instagramUrl=instagramSafe;
   cfg.endereco=document.getElementById('cfg-endereco').value.trim();
   cfg.enderecoCompleto=document.getElementById('cfg-endereço-completo').value.trim();
-  cfg.googleMaps=document.getElementById('cfg-maps').value.trim();
+  cfg.googleMaps=mapsSafe;
   cfg.horarioAbre=parseInt(document.getElementById('cfg-hora-abre').value,10)||10;
   cfg.horarioFecha=parseInt(document.getElementById('cfg-hora-fecha').value,10)||22;
   cfg.horario=document.getElementById('cfg-horario').value.trim();
@@ -4857,6 +4951,20 @@ async function salvarConfig(){
   // Configurações de Encomendas
   const encAvEl=document.getElementById('enc-aviso'); if(encAvEl) cfg.encomendaAviso=encAvEl.value.trim();
   const encMinEl=document.getElementById('enc-min-picolés'); if(encMinEl) cfg.encomendaMinPicoles=parseInt(encMinEl.value,10)||100;
+  const encHeroTitEl=document.getElementById('enc-hero-titulo'); if(encHeroTitEl) cfg.encomendasHeroTitulo=encHeroTitEl.value.trim();
+  const encHeroDescEl=document.getElementById('enc-hero-desc'); if(encHeroDescEl) cfg.encomendasHeroDescricao=encHeroDescEl.value.trim();
+  cfg.encomendasHeroBadges=lerLinhasTextarea('enc-hero-badges');
+  cfg.fidelidadeRegrasUrl=fidRegrasUrlSafe||'';
+  cfg.fidelidadeResgateWhatsappUrl=fidResgateUrlSafe||'';
+  cfg.seoPaginas=cfg.seoPaginas||{};
+  cfg.seoPaginas.fidelidade=cfg.seoPaginas.fidelidade||{};
+  cfg.seoPaginas.encomendas=cfg.seoPaginas.encomendas||{};
+  const seoFidTitEl=document.getElementById('cfg-seo-fid-titulo'); if(seoFidTitEl) cfg.seoPaginas.fidelidade.titulo=seoFidTitEl.value.trim();
+  const seoFidDesEl=document.getElementById('cfg-seo-fid-descricao'); if(seoFidDesEl) cfg.seoPaginas.fidelidade.descricao=seoFidDesEl.value.trim();
+  const seoFidPalEl=document.getElementById('cfg-seo-fid-palavras'); if(seoFidPalEl) cfg.seoPaginas.fidelidade.palavrasChave=seoFidPalEl.value.trim();
+  const seoEncTitEl=document.getElementById('cfg-seo-enc-titulo'); if(seoEncTitEl) cfg.seoPaginas.encomendas.titulo=seoEncTitEl.value.trim();
+  const seoEncDesEl=document.getElementById('cfg-seo-enc-descricao'); if(seoEncDesEl) cfg.seoPaginas.encomendas.descricao=seoEncDesEl.value.trim();
+  const seoEncPalEl=document.getElementById('cfg-seo-enc-palavras'); if(seoEncPalEl) cfg.seoPaginas.encomendas.palavrasChave=seoEncPalEl.value.trim();
   if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
