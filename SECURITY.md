@@ -19,7 +19,13 @@ O arquivo `dados/clientes.json` armazena dados pessoais dos participantes do Clu
 
 **Este arquivo está acessível publicamente** por estar em um repositório GitHub Pages. Isso representa um risco de conformidade com a LGPD (Lei nº 13.709/2018).
 
-### Mitigações Imediatas (em produção)
+### Mitigação Aplicada (16/05/2026)
+
+✅ **PII removido dos arquivos expostos**: os dados reais de clientes e encomendas foram apagados dos arquivos `dados/clientes.json`, `dados/encomendas.json` e `dados/vinculos_clientes.json`. Todos foram substituídos por estruturas vazias compatíveis com o código existente.
+
+> ⚠️ Esta é uma mitigação de emergência. Novos dados inseridos pelo painel admin voltarão a ficar expostos publicamente enquanto o repositório permanecer público. A solução definitiva é a migração para um backend seguro (ver seção abaixo).
+
+### Mitigações Adicionais Recomendadas
 
 1. **Repositório Privado**: Migrar o repositório para privado no GitHub. O GitHub Pages suporta repositórios privados em planos pagos. Isso impede o acesso público direto ao JSON.
 
@@ -41,8 +47,9 @@ Qualquer uma dessas opções elimina a exposição de PII em repositório públi
 
 | Arquivo | Conteúdo | Exposição | Risco |
 |---|---|---|---|
-| `dados/clientes.json` | PII (nome, cel, nasc.) | Público (GitHub Pages) | **Alto** |
-| `dados/encomendas.json` | Pedidos + telefone | Público | **Alto** |
+| `dados/clientes.json` | PII (nome, cel, nasc.) — **vazio após 16/05/2026** | Público (GitHub Pages) | **Alto** (ver aviso acima) |
+| `dados/encomendas.json` | Pedidos + telefone — **vazio após 16/05/2026** | Público | **Alto** (ver aviso acima) |
+| `dados/vinculos_clientes.json` | Vínculo nome+cel — **vazio após 16/05/2026** | Público | **Alto** (ver aviso acima) |
 | `dados/config.json` | Configurações do site | Público | Baixo (sem senhas em texto claro) |
 | `dados/fidelidade*.json` | Códigos de pontos | Público | Médio |
 
