@@ -2824,10 +2824,7 @@ function fidRequireWrite(){
   toast(msg,'aviso');
   return false;
 }
-async function ghGet(path){
-  // PII paths → Worker (sem GitHub)
-  if(path===PATHS.clientes) return workerGet('/api/clientes');
-  if(path===PATHS.encomendas) return workerGet('/api/encomendas');
+async function ghGetRepo(path){
   try{
     const r=await fetch(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})});
     if(r.status===404)return{content:null,sha:null};
@@ -2848,6 +2845,21 @@ async function ghGet(path){
     }
     return{content:null,sha:null};
   }
+}
+async function ghGet(path){
+  // PII paths: tenta Worker primeiro; fallback de leitura para GitHub evita abas vazias no admin.
+  if(path===PATHS.clientes||path===PATHS.encomendas){
+    const endpoint=path===PATHS.clientes?'/api/clientes':'/api/encomendas';
+    const viaWorker=await workerGet(endpoint);
+    if(viaWorker.content)return viaWorker;
+    const viaGithub=await ghGetRepo(path);
+    if(viaGithub.content){
+      console.warn('[Admin] Worker indisponível para',path,'— usando fallback de leitura via GitHub.');
+      return{...viaGithub,readonly:true};
+    }
+    return viaWorker;
+  }
+  return ghGetRepo(path);
 }
 async function ghPut(path,data,sha,msg){
   const MAX_TENTATIVAS = 3;
@@ -3749,6 +3761,8 @@ const TIMELINE_ICONES=['🔴','✅','🍦','📦','🚚','🎉'];
 
 function renderEncomendas(){
   const registros=STATE.encomendas?.registros||[];
+  const workerAtivo=Boolean(getAdminToken());
+  const semRegistrosOriginais=!registros.length;
   const filtroStatus=document.getElementById('enc-filtro-status')?.value||'';
   const filtroTipo=document.getElementById('enc-filtro-tipo')?.value||'';
   const busca=(document.getElementById('busca-encomenda')?.value||'').toLowerCase();
@@ -3762,7 +3776,14 @@ function renderEncomendas(){
     return true;
   }).sort((a,b)=>new Date(b.data)-new Date(a.data));
   const container=document.getElementById('enc-lista');
-  if(!lista.length){container.innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';return;}
+  if(!lista.length){
+    if(semRegistrosOriginais&&!workerAtivo){
+      container.innerHTML='<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45">ℹ️ Sessão Worker inativa: os registros de Encomendas não foram carregados nesta sessão. Faça login novamente e preencha o campo <strong>"Segredo Worker — habilita Fidelidade e Encomendas"</strong>. Se o Worker estiver indisponível, o admin tenta mostrar apenas o último snapshot de leitura disponível.</div>';
+      return;
+    }
+    container.innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';
+    return;
+  }
   let html=lista.map(e=>{
     const cor=ENC_STATUS_COR[e.status]||'#fff';
     const borda=ENC_STATUS_BORDA[e.status]||'#e65100';
@@ -7524,9 +7545,15 @@ function renderRastreioCard(e){
 }
 function renderRastreioRecentes(){
   const registros=(STATE.encomendas?.registros||[]).slice(0,10);
+  const workerAtivo=Boolean(getAdminToken());
   const container=document.getElementById('rastreio-recentes');
   if(!container)return;
-  if(!registros.length){container.innerHTML='<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>';return;}
+  if(!registros.length){
+    container.innerHTML=workerAtivo
+      ?'<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'
+      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Sessão Worker inativa: não foi possível listar Encomendas Recentes.</div>';
+    return;
+  }
   container.innerHTML=registros.map(e=>{
     const cor=ENC_STATUS_BORDA[e.status]||'#888';
     const label=ENC_STATUS_LABELS[e.status]||e.status||'—';
@@ -7552,7 +7579,8 @@ let _auditoriaResultados = [];
 function executarAuditoria(){
   _auditoriaResultados=[];
   const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
-  const clientes=STATE.clientes?.clientes||{};
+  const clientesCarregados=Boolean(STATE.clientes?.clientes&&typeof STATE.clientes.clientes==='object');
+  const clientes=clientesCarregados?STATE.clientes.clientes:{};
   const fidelidade=STATE.fidelidade||{};
   const encomendas=STATE.encomendas?.registros||[];
   // ── 1. Clientes com pontos negativos (não deveria ser possível)
@@ -7596,7 +7624,7 @@ function executarAuditoria(){
     });
   }
   // ── 6. Fidelidade — códigos usados em clientes inexistentes
-  if(!filtroMod||filtroMod==='fidelidade'){
+  if((!filtroMod||filtroMod==='fidelidade')&&clientesCarregados){
     const codigos=fidelidade.códigos||fidelidade.codigos||{};
     Object.entries(codigos).forEach(([cod,v])=>{
       if(v.status==='usado'&&v.usadoPor){
@@ -7613,6 +7641,9 @@ function executarAuditoria(){
 function renderAuditoria(){
   const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
   const filtroSev=document.getElementById('audit-filtro-sev')?.value||'';
+  const workerAtivo=Boolean(getAdminToken());
+  const clientesCarregados=Boolean(STATE.clientes?.clientes&&typeof STATE.clientes.clientes==='object');
+  const encomendasCarregadas=Array.isArray(STATE.encomendas?.registros);
   let lista=_auditoriaResultados.filter(r=>{
     if(filtroMod&&r.modulo!==filtroMod)return false;
     if(filtroSev&&r.severidade!==filtroSev)return false;
@@ -7639,6 +7670,13 @@ function renderAuditoria(){
   const container=document.getElementById('audit-lista');
   if(!container)return;
   if(!lista.length){
+    if(!workerAtivo&&(!clientesCarregados||!encomendasCarregadas)){
+      container.innerHTML=`<div style="background:#e3f2fd;border:1px solid #bbdefb;border-radius:12px;padding:20px;color:#0d47a1;font-size:.84rem;line-height:1.5">
+        ℹ️ <strong>Sessão Worker inativa.</strong> A Auditoria está com escopo reduzido porque os dados de Clientes/Encomendas não foram carregados nesta sessão.<br>
+        Faça login novamente e preencha o campo <strong>"Segredo Worker — habilita Fidelidade e Encomendas"</strong> para auditoria completa.
+      </div>`;
+      return;
+    }
     container.innerHTML=`<div style="background:#e8f5e9;border-radius:12px;padding:24px;text-align:center;color:#2e7d32;font-weight:700">✅ Nenhuma inconsistência encontrada nos filtros selecionados!</div>`;
     return;
   }
