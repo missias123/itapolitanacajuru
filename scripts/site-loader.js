@@ -332,43 +332,34 @@
     return nome.replace('.html', '');
   }
 
-  function escapeHtml(valor) {
-    return String(valor)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
   function renderCollections(cfg) {
     document.querySelectorAll('[data-config-collection]').forEach(el => {
       const campo = el.getAttribute('data-config-collection');
       const dados = getValor(cfg, campo);
       if (!Array.isArray(dados)) return;
 
-      const templateSel = el.getAttribute('data-config-template');
-      const template = templateSel ? document.querySelector(templateSel) : null;
-      if (template && 'innerHTML' in template) {
-        const tpl = template.innerHTML || '';
-        el.innerHTML = dados.map((item, i) => {
-          if (item && typeof item === 'object') {
-            return tpl.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (_, chave) => {
-              if (chave === 'index') return String(i + 1);
-              const val = getValor(item, chave);
-              return val === undefined || val === null ? '' : escapeHtml(val);
-            });
-          }
-          return tpl.replace(/\{\{\s*value\s*\}\}/g, escapeHtml(item ?? ''))
-            .replace(/\{\{\s*index\s*\}\}/g, String(i + 1));
-        }).join('');
-        return;
-      }
-
-      const tag = (el.getAttribute('data-item-tag') || 'div').toLowerCase();
+      const tagRaw = (el.getAttribute('data-item-tag') || 'div').toLowerCase();
+      const allowedTags = new Set(['div', 'span', 'li', 'p', 'small', 'strong']);
+      const tag = allowedTags.has(tagRaw) ? tagRaw : 'div';
       const className = el.getAttribute('data-item-class') || '';
+      const layout = (el.getAttribute('data-item-layout') || '').toLowerCase();
       el.innerHTML = '';
-      dados.forEach((item) => {
+      dados.forEach((item, idx) => {
+        if (layout === 'flow-step') {
+          const wrapper = document.createElement('div');
+          wrapper.className = className || 'itap-flow-step';
+          const stepNum = document.createElement('span');
+          stepNum.className = 'itap-flow-step__num';
+          stepNum.textContent = String(idx + 1);
+          const stepText = document.createElement('p');
+          stepText.textContent = item && typeof item === 'object'
+            ? String(item.text || item.label || item.titulo || item.descricao || '')
+            : String(item ?? '');
+          wrapper.appendChild(stepNum);
+          wrapper.appendChild(stepText);
+          el.appendChild(wrapper);
+          return;
+        }
         const node = document.createElement(tag);
         if (className) node.className = className;
         if (item && typeof item === 'object') {
