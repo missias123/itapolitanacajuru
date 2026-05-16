@@ -215,7 +215,10 @@
     if (footerDev && cfg.footerDev) footerDev.textContent = cfg.footerDev;
 
     const footerHorário = document.getElementById('footer-horário');
-    if (footerHorário && cfg.footerHorario) footerHorário.innerHTML = cfg.footerHorario.replace(/\n/g, '<br>');
+    if (footerHorário && cfg.footerHorario) {
+      footerHorário.style.whiteSpace = 'pre-line';
+      footerHorário.textContent = cfg.footerHorario;
+    }
 
     // ── Fidelidade: pontos e prêmios ───────────
     if (cfg.pontosMilkshake !== undefined || cfg.pontosCaixa !== undefined || cfg.premioMilkshake || cfg.prêmioMilkshake || cfg.premioCaixa || cfg.prêmioCaixa) {

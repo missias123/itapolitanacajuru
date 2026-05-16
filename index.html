@@ -2085,8 +2085,8 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <!-- cache-bust:20260408_111640 -->
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
   <link rel="alternate" hreflang="pt-BR" href="https://itapolitanacajuru.com.br/" />
-    <link rel="stylesheet" href="css/itap-shared.css">
-    <link rel="stylesheet" href="css/itap-refinements.css">
+    <link rel="stylesheet" href="css/itap-shared.min.css">
+    <link rel="stylesheet" href="css/itap-refinements.min.css">
 
     </head>
 <body>
@@ -2600,7 +2600,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div style="margin-bottom:16px;background:rgba(255,255,255,0.1);padding:clamp(12px,3vw,15px);border-radius:12px;border:1px solid rgba(255,255,255,0.2);">
   <div style="font-size:clamp(12px,3vw,14px);color:#FBD100;font-weight:900;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;">⏰ Nosso Horário</div>
   <div style="font-size:clamp(12px,2.5vw,13px);color:#fff;font-weight:700;line-height:1.4;">
-    <span id="footer-horário">Todos os dias: 10h às 22h<br/>
+    <span id="footer-horário" style="white-space: pre-line">Todos os dias: 10h às 22h
     Segunda a Domingo</span>
   </div>
   <div style="margin-top:10px;display:flex;align-items:center;justify-content:center;">
@@ -2773,6 +2773,11 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
     </div>
 
     <!-- Campo livre -->
+    <!-- Honeypot anti-bot: visualmente oculto, leitores de tela ignoram, bots preenchem -->
+    <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+      <label for="fale-url">Website</label>
+      <input type="text" id="fale-url" name="url" tabindex="-1" autocomplete="off"/>
+    </div>
     <label class="fale-label" id="fale-label-nome" for="fale-nome">Seu nome (opcional)</label>
     <input class="fale-input" id="fale-nome" maxlength="60" placeholder="Ex: Maria Silva" type="text" autocomplete="name"/>
     <label class="fale-label" id="fale-label-msg" for="fale-msg">Sua mensagem</label>
@@ -3947,6 +3952,8 @@ function abrirFaleConosco() {
   if (d) { d.showModal(); _travarPagina(); }
 }
 function enviarFaleConosco(){
+  // Honeypot: se o campo oculto foi preenchido, é bot — rejeitar silenciosamente
+  if ((document.getElementById('fale-url')?.value || '') !== '') return;
   const nome=(document.getElementById('fale-nome').value||'').trim();
   const msg=(document.getElementById('fale-msg').value||'').trim();
   if(!msg){alert('Por favor, escreva sua mensagem.');return;}
