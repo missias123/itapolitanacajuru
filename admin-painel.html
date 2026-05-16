@@ -2401,7 +2401,7 @@ Talento</textarea>
           <div class="campo-edit">
             <label>Itens da galeria (1 por linha: <code>imagem | alt | legenda</code>)</label>
             <textarea id="cfg-galeria-itens" rows="8" placeholder="images/sorvetes-montanha.webp | Sorvetes tipo artesanal | Sorvetes Tipo Artesanais&#10;images/logo.webp | Logo da Sorveteria Itapolitana | Nossa Marca"></textarea>
-            <div class="hint">Use caminhos relativos (images/...) ou URLs http/https. Ordem das linhas = ordem da galeria.</div>
+            <div class="hint">Use caminhos relativos (images/...) ou URLs http/https. Apenas a imagem é obrigatória; alt e legenda são opcionais. Ordem das linhas = ordem da galeria.</div>
           </div>
 
           <div class="seção-título">🎠 Página Carrossel (carrossel.html)</div>
@@ -4877,6 +4877,7 @@ function lerLinhasTextarea(id){
   if(!el)return[];
   return (el.value||'').split('\n').map(s=>s.trim()).filter(Boolean);
 }
+const CMS_GALERIA_SEPARADOR=' | ';
 function cmsSerializarGaleriaItens(itens){
   if(!Array.isArray(itens))return'';
   return itens.map(item=>{
@@ -4884,7 +4885,9 @@ function cmsSerializarGaleriaItens(itens){
     const src=String(item.src||'').trim();
     const alt=String(item.alt||'').trim();
     const caption=String(item.caption||item.legenda||'').trim();
-    return [src,alt,caption].join(' | ').replace(/\s+\|\s+\|\s*$/,'');
+    const partes=[src,alt,caption];
+    while(partes.length&&partes[partes.length-1]==='')partes.pop();
+    return partes.join(CMS_GALERIA_SEPARADOR);
   }).filter(Boolean).join('\n');
 }
 function cmsLerGaleriaItensTextarea(id){
@@ -4899,7 +4902,7 @@ function cmsLerGaleriaItensTextarea(id){
     if(srcSafe===null)continue;
     itens.push({
       src:srcSafe,
-      alt:(partes[1]||'Galeria Itapolitana').slice(0,120),
+      alt:(partes[1]||'Imagem da galeria').slice(0,120),
       caption:(partes[2]||'').slice(0,120)
     });
   }
