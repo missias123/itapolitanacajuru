@@ -4284,7 +4284,18 @@ function renderClientes(){
     document.getElementById('sc-bloqueados').textContent='0';
     document.getElementById('sc-fraudes').textContent='0';
     if(tbodyAviso){
-      tbodyAviso.innerHTML='<tr><td colspan="6" style="text-align:left;color:#0d47a1;padding:14px;background:#e3f2fd;border:1px solid #bbdefb;border-radius:8px">ℹ️ Sessão Worker inativa: a lista de clientes não pôde ser carregada. Faça login novamente e preencha o campo <strong>Segredo Worker — habilita Fidelidade e Encomendas</strong> para visualizar os cadastros.</td></tr>';
+      const tr=document.createElement('tr');
+      const td=document.createElement('td');
+      td.colSpan=6;
+      td.style.textAlign='left';
+      td.style.color='#0d47a1';
+      td.style.padding='14px';
+      td.style.background='#e3f2fd';
+      td.style.border='1px solid #bbdefb';
+      td.style.borderRadius='8px';
+      td.textContent='ℹ️ Sessão Worker inativa: a lista de clientes não pôde ser carregada. Faça login novamente e preencha o campo "Segredo Worker — habilita Fidelidade e Encomendas" para visualizar os cadastros.';
+      tr.appendChild(td);
+      tbodyAviso.replaceChildren(tr);
     }
     const pagDiv=document.getElementById('pag-clientes');
     if(pagDiv)pagDiv.innerHTML='';
