@@ -2806,6 +2806,15 @@ function fidEnsureCodigos(){
   if(!STATE.fidelidade[key]||typeof STATE.fidelidade[key]!=='object')STATE.fidelidade[key]={};
   return{key,codigos:STATE.fidelidade[key]};
 }
+function ensureSafeState(){
+  if(!STATE.clientes||typeof STATE.clientes!=='object')STATE.clientes={clientes:{},indice_celular:{}};
+  if(!STATE.clientes.clientes||typeof STATE.clientes.clientes!=='object')STATE.clientes.clientes={};
+  if(!STATE.encomendas||typeof STATE.encomendas!=='object')STATE.encomendas={registros:[]};
+  if(!Array.isArray(STATE.encomendas.registros))STATE.encomendas.registros=[];
+  if(!STATE.fidelidade||typeof STATE.fidelidade!=='object')STATE.fidelidade={};
+  if(!STATE.promocoes||typeof STATE.promocoes!=='object')STATE.promocoes={promocoes:[]};
+  if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
+}
 function fidIsReadOnly(){
   // Fidelidade (fidelidade.json) requires GitHub SHA+token.
   // Operações de clientes/encomendas validam sessão Worker por rota em fidPathReadOnly().
@@ -3059,13 +3068,7 @@ async function carregarTudo(){
   }finally{
     ocultarLoading();
   }
-  if(!STATE.clientes||typeof STATE.clientes!=='object')STATE.clientes={clientes:{},indice_celular:{}};
-  if(!STATE.clientes.clientes||typeof STATE.clientes.clientes!=='object')STATE.clientes.clientes={};
-  if(!STATE.encomendas||typeof STATE.encomendas!=='object')STATE.encomendas={registros:[]};
-  if(!Array.isArray(STATE.encomendas.registros))STATE.encomendas.registros=[];
-  if(!STATE.fidelidade||typeof STATE.fidelidade!=='object')STATE.fidelidade={};
-  if(!STATE.promocoes||typeof STATE.promocoes!=='object')STATE.promocoes={promocoes:[]};
-  if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
+  ensureSafeState();
   renderDashboard();
   try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}
   try{preencherPromoção();}catch(e){console.error('[Admin] preencherPromoção',e);}
