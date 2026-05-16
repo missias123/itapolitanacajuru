@@ -134,8 +134,6 @@
           img.alt = String(b.alt || 'Banner Sorveteria Itapolitana Cajuru');
           img.setAttribute('loading', i === 0 ? 'eager' : 'lazy');
           img.setAttribute('decoding', 'async');
-          img.setAttribute('width', '1536');
-          img.setAttribute('height', '1024');
           slide.appendChild(img);
           wrap.appendChild(slide);
         });
@@ -143,7 +141,7 @@
 
       async function carregarBannersConfig() {
         try {
-          var r = await fetch(CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' });
+          var r = await fetch(CONFIG_URL, { cache: 'no-cache' });
           if (!r.ok) throw new Error('config indisponível');
           var cfg = await r.json();
           var banners = Array.isArray(cfg && cfg.banners) ? cfg.banners : [];

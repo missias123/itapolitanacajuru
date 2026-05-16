@@ -4035,7 +4035,7 @@ function sanitizarHtmlRicoChat(html) {
     if (href.startsWith('#')) return href;
     try {
       const u = new URL(href, window.location.origin);
-      if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
+        if (u.protocol === 'https:') return u.href;
     } catch(e) {}
     return '';
   }
@@ -4057,7 +4057,7 @@ function sanitizarHtmlRicoChat(html) {
         el.setAttribute('class', 'itabot-link-btn');
         if (/^https?:\/\//i.test(href)) {
           el.setAttribute('target', '_blank');
-          el.setAttribute('rel', 'noopener');
+          el.setAttribute('rel', 'noopener noreferrer');
         }
       }
     }
