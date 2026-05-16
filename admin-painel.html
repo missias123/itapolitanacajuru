@@ -6289,10 +6289,9 @@ async function salvarDepoimentos() {
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
   c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
-  // Campo legado "depDica" (singular) mantido apenas para evitar quebra de consumidores externos
-  // (ex.: site-loader ou scripts de auditoria) que ainda referenciem a chave singular.
-  // Pode ser removido quando: (1) todos os ambientes tiverem salvo pelo menos uma vez com este
-  // admin atualizado; e (2) nenhum script externo referenciar config.depDica diretamente.
+  // Campo legado "depDica" (singular) mantido para compatibilidade com consumidores externos.
+  // Remoção prevista: após confirmar que TODOS os ambientes salvaram com "depDicas" (array)
+  // e que nenhum script lê config.depDica — remover na próxima versão principal do admin (v9+).
   c.depDica = c.depDicas[0] || '';
   
   const lista = [];
