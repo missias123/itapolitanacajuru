@@ -2126,14 +2126,14 @@ body.cardapio-aberto { padding-bottom: 80px; }
     <button type="button" class="ita-bot-duvidas-btn"
             id="ita-bot-duvidas"
             onclick="abrirItaBot()"
-            aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">💬 DÚVIDAS</button>
+            aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog"><span id="chat-fab-texto">💬 DÚVIDAS</span></button>
   </div>
 </div>
 <nav class="itap-header-nav" aria-label="Menu principal">
 <a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);color:#fff;"><span class="itap-nav-icon">🛒</span><span class="itap-nav-label" style="color:#fff;">ENCOMENDAS</span></a>
-<a class="itap-nav-btn" href="promocao.html" id="nav-promo-btn" style="background:linear-gradient(135deg,#E8000D,#C62828);color:#fff;"><span class="itap-nav-icon">🎉</span><span class="itap-nav-label" style="color:#fff;">PROMOÇÃO</span></a>
+<a class="itap-nav-btn" href="promocao.html" id="nav-promo-btn" style="background:linear-gradient(135deg,#E8000D,#C62828);color:#fff;"><span class="itap-nav-icon">🎉</span><span class="itap-nav-label" id="promo-fab-label" style="color:#fff;">PROMOÇÃO</span></a>
 <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);color:#fff;"><span class="itap-nav-icon">⭐</span><span class="itap-nav-label" style="color:#fff;">DICAS/DEPOIMENTOS</span></a>
-<a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;"><span class="itap-nav-icon">🎟️</span><span class="itap-nav-label" style="color:#fff;">FIDELIDADE</span></a>
+<a class="itap-nav-btn" href="fidelidade.html" style="background:linear-gradient(135deg,#E65100,#FF6D00);color:#fff;"><span class="itap-nav-icon">🎟️</span><span class="itap-nav-label" id="clube-fab-texto" style="color:#fff;">FIDELIDADE</span></a>
 <a class="itap-nav-btn" href="sobre.html" style="background:linear-gradient(135deg,#4A148C,#6A1B9A);color:#fff;"><span class="itap-nav-icon">🏪</span><span class="itap-nav-label" style="color:#fff;">QUEM SOMOS</span></a>
 </nav>
 </div></header>
@@ -3010,12 +3010,12 @@ function voltarTemas() {
 <div class="chat-typing" id="chat-typing"><span></span><span></span><span></span></div>
 <div class="chat-sugs" id="chat-sugs-container" style="display:flex;gap:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;-ms-overflow-style:none;">
       <style>#chat-sugs-container::-webkit-scrollbar { display: none; }</style>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Horário</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Como encomendar</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Sabores</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Preços</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Localização</button>
-      <button class="sug" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Picolés</button>
+      <button class="sug" id="chat-sug-1" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Horário</button>
+      <button class="sug" id="chat-sug-2" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Como encomendar</button>
+      <button class="sug" id="chat-sug-3" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Sabores</button>
+      <button class="sug" id="chat-sug-4" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Preços</button>
+      <button class="sug" id="chat-sug-5" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Localização</button>
+      <button class="sug" id="chat-sug-6" onclick="enviarSug(this)" type="button" style="background:#FFF5F5;color:#E8000D;border:1.5px solid #FFEBEE;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;">Picolés</button>
     </div>
     <!-- KEYWORD CHIPS — sempre visíveis, clique insere e envia a pergunta -->
     <div class="duvidas-chips-wrap" id="duvidas-chips-wrap">
@@ -4470,8 +4470,11 @@ function aplicarConfig(c) {
     });
   }
 
-  // --- PROMO FAB LABEL ---
-  // (o FAB lê fabLabel diretamente de promo.json; este campo não é mais necessário aqui)
+  // --- CLUBE / PROMO LABELS ---
+  const clubeFabTexto = document.getElementById('clube-fab-texto');
+  if (clubeFabTexto && c.clubeFabTexto) clubeFabTexto.textContent = c.clubeFabTexto;
+  const promoFabLabel = document.getElementById('promo-fab-label');
+  if (promoFabLabel && c.promoFabLabel) promoFabLabel.textContent = c.promoFabLabel;
 
   // Salvar no localStorage como fallback
   try { localStorage.setItem('itap_config_cache', JSON.stringify(c)); } catch(e) {}
