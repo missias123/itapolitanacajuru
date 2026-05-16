@@ -371,7 +371,7 @@
             if (imagem && urlSegura(imagem)) {
               const img = document.createElement('img');
               img.src = imagem;
-              img.alt = titulo || 'imagem da dica';
+              img.alt = titulo ? `Imagem da dica: ${titulo}` : 'Dica da Sorveteria Itapolitana';
               card.appendChild(img);
             }
             if (titulo) {

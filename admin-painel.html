@@ -6157,8 +6157,11 @@ function preencherDepoimentos() {
   const c = STATE.config || {};
   document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
   document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
-  // Compatibilidade retroativa: versões antigas salvavam apenas depDica (string).
-  // Pode ser removido após confirmar que todos os config.json em produção usam depDicas (array).
+  // Estratégia de migração: config.json antigos salvavam uma única string em "depDica".
+  // O novo formato usa o array "depDicas". A leitura aceita os dois formatos para garantir
+  // que configs salvos antes da migração continuem funcionando sem perda de dados.
+  // Remoção segura: após confirmar via auditoria (scripts/tests-admin-sync) que todos os
+  // ambientes de produção já salvaram pelo menos uma vez com o novo formato (depDicas array).
   const depDicas = Array.isArray(c.depDicas) ? c.depDicas : (c.depDica ? [c.depDica] : []);
   document.getElementById('dep-dicas').value = depDicas.join('\n');
   
@@ -6286,8 +6289,10 @@ async function salvarDepoimentos() {
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
   c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
-  // Mantém depDica para não quebrar consumidores legados durante migração.
-  // Remover após confirmar que nenhum script externo lê config.depDica diretamente.
+  // Campo legado "depDica" (singular) mantido apenas para evitar quebra de consumidores externos
+  // (ex.: site-loader ou scripts de auditoria) que ainda referenciem a chave singular.
+  // Pode ser removido quando: (1) todos os ambientes tiverem salvo pelo menos uma vez com este
+  // admin atualizado; e (2) nenhum script externo referenciar config.depDica diretamente.
   c.depDica = c.depDicas[0] || '';
   
   const lista = [];
