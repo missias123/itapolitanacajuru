@@ -21,6 +21,18 @@ test.describe('AUDITORIA VISUAL COMPLETA — Admin Painel Itapolitana', () => {
     await expect(page.locator('button:has-text("Entrar no Admin")')).toBeVisible();
   });
 
+  test('[LOGIN] botão de olho alterna visibilidade do token GitHub PAT', async ({ page }) => {
+    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
+    const tokenInput = page.locator('#inp-gh-token');
+    const eyeBtn = page.locator('#eye-btn-token');
+    await expect(eyeBtn).toBeVisible();
+    await expect(tokenInput).toHaveAttribute('type', 'password');
+    await eyeBtn.click();
+    await expect(tokenInput).toHaveAttribute('type', 'text');
+    await eyeBtn.click();
+    await expect(tokenInput).toHaveAttribute('type', 'password');
+  });
+
   test('[LOGIN] senha errada exibe mensagem de erro', async ({ page }) => {
     await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
     await page.fill('#inp-senha', 'senhaErrada123');

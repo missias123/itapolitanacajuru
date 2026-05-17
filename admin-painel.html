@@ -545,6 +545,7 @@ body { overflow-x: hidden; }
     </div>
     <div class="inp-wrap" style="margin-top:8px">
       <input type="password" id="inp-gh-token" aria-label="Token GitHub" placeholder="Token GitHub PAT (opcional para salvar)" autocomplete="off" oninput="validarCampoToken(this)" onkeydown="if(event.key==='Enter')entrar()"/>
+      <button class="eye" onclick="toggleGhToken()" id="eye-btn-token" aria-label="Mostrar/ocultar token">&#x1F441;&#xFE0F;</button>
     </div>
     <div id="token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 4px;min-height:1.1em">ℹ️ Sem token válido, o admin entra em modo somente leitura.</div>
     <div id="token-hint" style="display:none;font-size:0.72rem;color:#ffd54f;margin:0 0 6px">⚠️ Formato inválido. Use um PAT válido (`ghp_...` ou `github_pat_...`).</div>
@@ -3145,6 +3146,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   return false;
 }
 function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
+function toggleGhToken(){const i=document.getElementById('inp-gh-token');i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
