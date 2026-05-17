@@ -585,7 +585,7 @@ body { overflow-x: hidden; }
   <div id="aviso-worker-secret" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
     <span style="font-size:1rem">ℹ️</span>
     <span><strong>Sessão Worker inativa</strong> — Fidelidade e Encomendas em <strong>modo somente leitura</strong>. Ative agora com o Segredo Worker para iniciar uma sessão segura nesta aba.</span>
-    <button onclick="abrirModalSessaoWorker()" style="margin-left:auto;background:#1565c0;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700">🔐 Ativar Sessão Worker</button>
+    <button onclick="abrirModalSessaoWorker()" aria-label="Ativar Sessão Worker" style="margin-left:auto;background:#1565c0;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700">🔐 Ativar Sessão Worker</button>
   </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
@@ -2680,7 +2680,7 @@ function limparTokenSalvo(){
 function atualizarStatusSessaoWorker(msg,tipo='info'){
   const wsStatus=document.getElementById('worker-secret-status');
   if(!wsStatus)return;
-  const cores={info:'#9ccc65',success:'#9ccc65',warning:'#ffd54f',error:'#ef9a9a'};
+  const cores={info:'#90caf9',success:'#9ccc65',warning:'#ffd54f',error:'#ef9a9a'};
   wsStatus.style.color=cores[tipo]||cores.info;
   wsStatus.textContent=msg||'';
 }
@@ -3091,8 +3091,6 @@ async function entrar(){
   if(!senha){document.getElementById('login-erro').style.display='block';return;}
   mostrarLoading('Verificando...');
   const tokenAtual=getToken();
-  const tokenStatusPromise=tokenAtual?validarToken(tokenAtual):Promise.resolve(null);
-  const workerSessionPromise=workerSecretRaw?iniciarSessaoWorker(workerSecretRaw):Promise.resolve({ok:Boolean(getAdminToken())});
   const[cfg,senhaHash]=await Promise.all([carregarConfigAdmin(),sha256(senha)]);
   if(!cfg.content){
     ocultarLoading();
@@ -3108,6 +3106,8 @@ async function entrar(){
     document.getElementById('login-erro').style.display='block';
     return;
   }
+  const tokenStatusPromise=tokenAtual?validarToken(tokenAtual):Promise.resolve(null);
+  const workerSessionPromise=workerSecretRaw?iniciarSessaoWorker(workerSecretRaw):Promise.resolve({ok:Boolean(getAdminToken())});
   if(tokenAtual){
     const tokenStatus=await tokenStatusPromise;
     GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite);
