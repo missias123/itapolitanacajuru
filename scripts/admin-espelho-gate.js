@@ -75,7 +75,7 @@ rows.forEach((row) => {
     failures
   );
 
-  const adminIdRegex = new RegExp(`id=["']${escapeRegExp(row.adminId)}["']`);
+  const adminIdRegex = new RegExp(`id\\s*=\\s*(["'])?${escapeRegExp(row.adminId)}\\1?(?=[\\s>])`);
   if (!adminIdRegex.test(adminHtml)) {
     failures.push(`${prefix} adminId não encontrado em admin-painel.html: ${row.adminId}`);
   }

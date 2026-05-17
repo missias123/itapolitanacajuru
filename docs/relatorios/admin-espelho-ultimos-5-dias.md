@@ -1,11 +1,12 @@
 # Relatório Operacional — Últimos 5 dias (Admin ↔ Site)
 
-Gerado em: 2026-05-17T17:40:49.919Z
+Gerado em: 2026-05-17T17:44:36.277Z
 
 Status do incidente "Admin não editável / Espelho quebrado": **sem dados**
 
 ## Commits (últimos 5 dias)
 
+- `c8d863e` | 2026-05-17T17:41:04Z | copilot-swe-agent[bot] | feat: endurecer espelho admin-site e auditoria operacional 5 dias
 - `9b1c2be` | 2026-05-17T17:34:23Z | copilot-swe-agent[bot] | feat(ci): adicionar gate admin-site e auditorias de espelho
 - `8b51676` | 2026-05-17T14:02:21-03:00 | missias123 | Merge pull request #109 from missias123/copilot/remove-cloudflare-worker-secret
 - `f88339e` | 2026-05-17T16:56:38Z | copilot-swe-agent[bot] | fix(admin): remover exigencia de Segredo Worker e restaurar fluxo senha+PAT

@@ -12,7 +12,12 @@ function exec(cmd) {
 }
 
 function getCommits() {
-  const raw = exec(`git --no-pager log --since="${DAYS} days ago" --pretty=format:"%h|%ad|%an|%s" --date=iso-strict`);
+  const safeDays = Number.isInteger(DAYS) && DAYS > 0 && DAYS <= 30 ? DAYS : 5;
+  const raw = cp.execFileSync(
+    'git',
+    ['--no-pager', 'log', `--since=${safeDays} days ago`, '--pretty=format:%h|%ad|%an|%s', '--date=iso-strict'],
+    { encoding: 'utf8', cwd: ROOT }
+  ).trim();
   if (!raw) return [];
   return raw.split('\n').map((line) => {
     const [sha, date, author, subject] = line.split('|');
@@ -26,7 +31,7 @@ async function getWorkflowRuns() {
   const [owner, name] = repo.split('/');
   if (!token || !owner || !name) return [];
   const since = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000).toISOString();
-  const url = `https://api.github.com/repos/${owner}/${name}/actions/runs?per_page=100&created=>=${since}`;
+  const url = `https://api.github.com/repos/${owner}/${name}/actions/runs?per_page=100&created=%3E${encodeURIComponent(since)}`;
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
