@@ -560,7 +560,7 @@ body { overflow-x: hidden; }
 <div id="admin-app">
   <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
     <span style="font-size:1.1rem">⚠️</span>
-    <span><strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.</span>
+    <span id="aviso-token-expirado-msg"><strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.</span>
     <button onclick="atualizarToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Informar Token</button>
   </div>
   <div id="aviso-worker-secret" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
@@ -3102,7 +3102,9 @@ async function entrar(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub PAT para salvar alterações.','aviso');
-  carregarTudo();
+  await carregarTudo();
+  const btnPaginaInicial=document.querySelector('.nav-btn:nth-child(2)');
+  irPara('pagina-inicial',btnPaginaInicial);
 }
 async function reativarSessaoWorker(){
   const input=document.getElementById('worker-secret-modal-input');
@@ -3147,10 +3149,30 @@ async function carregarTudo(){
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura ou o token não está válido
+    const falhasCarregamento=[
+      [PATHS.promo,pr],
+      [PATHS.clientes,cl],
+      [PATHS.fidelidade,fi],
+      [PATHS.encomendas,en],
+      [PATHS.produtos,prod],
+      [PATHS.promocoes,promos]
+    ].filter(([,resp])=>!resp.content).map(([path])=>path);
+    if(falhasCarregamento.length){
+      toast(`⚠️ Falha ao carregar: ${falhasCarregamento.join(', ')}. Alguns campos podem ficar vazios até recarregar.`,'aviso');
+    }
+    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
     const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    const avisoComFalhas=Boolean(falhasCarregamento.length);
     const banner=document.getElementById('aviso-token-expirado');
-    if(banner)banner.style.display=semToken?'flex':'none';
+    const bannerMsg=document.getElementById('aviso-token-expirado-msg');
+    if(banner){
+      banner.style.display=(semToken||avisoComFalhas)?'flex':'none';
+    }
+    if(bannerMsg){
+      bannerMsg.innerHTML=avisoComFalhas
+        ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. Arquivos: ${falhasCarregamento.map(esc).join(', ')}.`
+        :'<strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.';
+    }
     // Banner: mostrar quando token de escrita não está válido
     atualizarBannerSessaoWorker(GH_WRITE_ALLOWED);
   }catch(e){
