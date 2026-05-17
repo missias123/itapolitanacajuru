@@ -225,10 +225,23 @@ npx eslint@8 scripts/*.js
 npx htmlhint@1 index.html fidelidade.html encomendas.html promocao.html \
   carrossel.html dicas.html offline.html --config .htmlhintrc
 
+# Segurança: tokens reais expostos no código
+node scripts/check-exposed-tokens.js
+
+# Gate Admin ↔ Site (Matriz Espelho)
+node scripts/admin-espelho-gate.js
+
 # Validar JSONs
 node -e "JSON.parse(require('fs').readFileSync('dados/config.json','utf8')); console.log('OK')"
 node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); console.log('OK')"
 ```
+
+### Auditoria específica para saber se o Admin está refletindo no Site
+
+- Fonte da matriz obrigatória: `dados/admin_espelho_matrix.json`
+- Validador: `scripts/admin-espelho-gate.js`
+- Relatório gerado: `docs/relatorios/admin-espelho-gate.md`
+- Resultado esperado: **falha do CI** se um campo editável do admin não tiver chave canônica + reflexo real no site.
 
 ---
 

@@ -5,10 +5,12 @@ on:
     paths:
       - 'dados/config.json'
       - 'dados/content_map.json'
+      - 'dados/admin_espelho_matrix.json'
   pull_request:
     paths:
       - 'dados/config.json'
       - 'dados/content_map.json'
+      - 'dados/admin_espelho_matrix.json'
   workflow_dispatch:
 
 jobs:
@@ -56,6 +58,10 @@ jobs:
       - name: Validar JSON sem erros de sintaxe
         run: |
           for f in dados/config.json dados/content_map.json dados/produtos.json \
-                   dados/promo.json dados/promocoes.json dados/encomendas.json; do
+                   dados/promo.json dados/promocoes.json dados/encomendas.json \
+                   dados/admin_espelho_matrix.json; do
             node -e "JSON.parse(require('fs').readFileSync('$f','utf8')); console.log('✅ $f OK')" || exit 1
           done
+
+      - name: Gate Admin ↔ Site (Matriz Espelho)
+        run: node scripts/admin-espelho-gate.js

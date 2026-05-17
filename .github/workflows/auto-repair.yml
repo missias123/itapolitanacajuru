@@ -30,12 +30,10 @@ jobs:
 
       - name: Verificar tokens expostos no código
         run: |
-          echo "🔒 Verificando tokens e senhas hardcoded..."
-          if grep -rn "ghp_\|github_pat_\|ghs_" --include="*.html" --include="*.js" . 2>/dev/null | grep -v ".git"; then
-            echo "❌ BLOQUEADO: Token GitHub encontrado no código!"
-            exit 1
-          fi
-          echo "✅ Nenhum token exposto encontrado."
+          node scripts/check-exposed-tokens.js
+
+      - name: Gate Admin ↔ Site (Matriz Espelho)
+        run: node scripts/admin-espelho-gate.js
 
       - name: Verificar JS em páginas HTML
         id: repair
