@@ -471,7 +471,7 @@ async function handleAdminGitHubFilePut(request, env) {
   }
 
   const sha = sanitizeString(body.sha || '', 120);
-  const message = sanitizeString(body.message || `Admin: atualizar ${path}`, 180) || `Admin: atualizar ${path}`;
+  const message = sanitizeString(body.message || `Admin: atualizar ${path}`, 180);
   const saved = await ghPutJsonFile(path, body.data, message, env.GITHUB_TOKEN, sha);
   await registrarAudit(env, 'admin_repo_put', path, { via: 'worker' });
   return jsonResp({ ok: true, path, sha: saved.sha });

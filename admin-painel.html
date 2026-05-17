@@ -544,7 +544,7 @@ body { overflow-x: hidden; }
       <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">&#x1F441;&#xFE0F;</button>
     </div>
     <div class="inp-wrap" style="margin-top:8px">
-      <input type="password" id="inp-worker-secret" placeholder="Segredo Worker — libera o admin completo" autocomplete="new-password" onkeydown="if(event.key==='Enter')entrar()"/>
+      <input type="password" id="inp-worker-secret" aria-label="Segredo Worker" placeholder="Segredo Worker — libera o admin completo" autocomplete="new-password" onkeydown="if(event.key==='Enter')entrar()"/>
     </div>
     <div id="worker-secret-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
     <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">Use sua senha do admin + o Segredo Worker para liberar o painel inteiro nesta aba. O segredo não é armazenado no navegador.</div>
@@ -2631,18 +2631,6 @@ function validarCampoToken(input){
 }
 
 function preencherTokenSalvoNoLogin(){
-  const inp=document.getElementById('inp-gh-token');
-  const statusEl=document.getElementById('token-status');
-  if(inp){
-    const tok=getToken();
-    if(tok){
-      inp.value=tok;
-      validarCampoToken(inp);
-      if(statusEl)statusEl.textContent='✅ Token carregado do navegador.';
-    }else if(statusEl){
-      statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
-    }
-  }
   const hasSession=Boolean(getAdminToken());
   GH_WRITE_ALLOWED=hasSession;
   atualizarStatusSessaoWorker(hasSession
