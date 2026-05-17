@@ -560,7 +560,7 @@ body { overflow-x: hidden; }
 <div id="admin-app">
   <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
     <span style="font-size:1.1rem">⚠️</span>
-    <span><strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.</span>
+    <span id="aviso-token-expirado-msg"><strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.</span>
     <button onclick="atualizarToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Informar Token</button>
   </div>
   <div id="aviso-worker-secret" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
@@ -578,7 +578,7 @@ body { overflow-x: hidden; }
   </div>
   <div class="admin-nav">
     <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Dashboard</button>
-    <button class="nav-btn" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+    <button class="nav-btn" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
     <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
     <button class="nav-btn" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
     <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
@@ -3102,7 +3102,9 @@ async function entrar(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub PAT para salvar alterações.','aviso');
-  carregarTudo();
+  await carregarTudo();
+  const btnPaginaInicial=document.getElementById('nav-btn-pagina-inicial');
+  irPara('pagina-inicial',btnPaginaInicial);
 }
 async function reativarSessaoWorker(){
   const input=document.getElementById('worker-secret-modal-input');
@@ -3147,10 +3149,30 @@ async function carregarTudo(){
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura ou o token não está válido
+    const falhasCarregamento=[
+      [PATHS.promo,pr],
+      [PATHS.clientes,cl],
+      [PATHS.fidelidade,fi],
+      [PATHS.encomendas,en],
+      [PATHS.produtos,prod],
+      [PATHS.promocoes,promos]
+    ].filter(([,resp])=>!resp.content).map(([path])=>path);
+    if(falhasCarregamento.length){
+      toast(`⚠️ Falha ao carregar: ${falhasCarregamento.join(', ')}. Alguns campos podem ficar vazios até recarregar.`,'aviso');
+    }
+    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
     const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    const avisoComFalhas=Boolean(falhasCarregamento.length);
     const banner=document.getElementById('aviso-token-expirado');
-    if(banner)banner.style.display=semToken?'flex':'none';
+    const bannerMsg=document.getElementById('aviso-token-expirado-msg');
+    if(banner){
+      banner.style.display=(semToken||avisoComFalhas)?'flex':'none';
+    }
+    if(bannerMsg){
+      bannerMsg.innerHTML=avisoComFalhas
+        ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. Arquivos: ${falhasCarregamento.map(esc).join(', ')}.`
+        :'<strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.';
+    }
     // Banner: mostrar quando token de escrita não está válido
     atualizarBannerSessaoWorker(GH_WRITE_ALLOWED);
   }catch(e){
@@ -3604,14 +3626,16 @@ async function salvarPreços(){
 }
 function preencherPromoção(){
   const pr=STATE.promo||{};
+  const tituloPromo=pr.titulo??pr.título??'';
+  const descricaoPromo=pr.descricao??pr.descrição??'';
   document.getElementById('promo-ativo').checked=!!pr.ativo;
   // Campos do header da página promoção.html
   const pht=document.getElementById('promo-header-titulo'); if(pht) pht.value=pr.headerTitulo||'';
   const pbf=document.getElementById('promo-banner-frase'); if(pbf) pbf.value=pr.bannerFrase||'';
   const pbg=document.getElementById('promo-badge'); if(pbg) pbg.value=pr.badge||'';
   // Campos do card principal
-  document.getElementById('promo-título').value=pr.título||'';
-  document.getElementById('promo-descrição').value=pr.descrição||'';
+  document.getElementById('promo-título').value=tituloPromo;
+  document.getElementById('promo-descrição').value=descricaoPromo;
   document.getElementById('promo-btn').value=pr.btnTexto||'';
   document.getElementById('promo-link').value=pr.link||'';
   document.getElementById('promo-datafim').value=pr.dataFim||'';
@@ -3828,8 +3852,12 @@ async function salvarPromoção(){
   const pbf=document.getElementById('promo-banner-frase'); if(pbf) pr.bannerFrase=pbf.value.trim();
   const pbg=document.getElementById('promo-badge'); if(pbg) pr.badge=pbg.value.trim();
   // Campos do card principal
-  pr.título=document.getElementById('promo-título').value.trim();
-  pr.descrição=document.getElementById('promo-descrição').value.trim();
+  const tituloPromo=document.getElementById('promo-título').value.trim();
+  const descricaoPromo=document.getElementById('promo-descrição').value.trim();
+  pr.titulo=tituloPromo;
+  pr.descricao=descricaoPromo;
+  delete pr.título;
+  delete pr.descrição;
   pr.btnTexto=document.getElementById('promo-btn').value.trim();
   pr.link=document.getElementById('promo-link').value.trim();
   pr.dataFim=document.getElementById('promo-datafim').value;
@@ -3853,6 +3881,16 @@ async function salvarPromoção(){
     }
   }
   const okPromo = await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
+  if(!okPromo)return;
+  const cfg=STATE.config||{};
+  cfg.promocaoAtiva=Boolean(pr.ativo);
+  cfg.promoH1=tituloPromo;
+  cfg.promoTituloEl=tituloPromo;
+  cfg.promoDescEl=descricaoPromo;
+  cfg.promoBadge=pr.badge||'';
+  cfg.promoFabLabel=pr.fabLabel||cfg.promoFabLabel||'';
+  STATE.config=cfg;
+  await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
 }
 // ─── ENCOMENDAS — LABELS/CORES COMPLETOS ───────────────────
 const ENC_STATUS_LABELS={
