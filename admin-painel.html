@@ -1003,8 +1003,50 @@ body { overflow-x: hidden; }
 
     <!-- ENCOMENDAS -->
     <div class="seção" id="sec-encomendas">
+      <!-- FORMULÁRIO NOVA ENCOMENDA -->
+      <div id="enc-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
+        <div style="font-weight:900;font-size:1rem;color:#e65100;margin-bottom:14px" id="enc-form-titulo">➕ Nova Encomenda</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Nome do Cliente *</label><input type="text" id="enc-f-nome" maxlength="100" placeholder="Nome completo"/></div>
+          <div class="campo-edit"><label>Telefone / WhatsApp *</label><input type="tel" id="enc-f-tel" placeholder="(16) 99999-9999"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit">
+            <label>Tipo de Encomenda *</label>
+            <select id="enc-f-tipo">
+              <option value="picolés">Picolés (Atacado)</option>
+              <option value="caixa">Sorvete em Caixa</option>
+              <option value="torta">Torta de Sorvete</option>
+              <option value="misto">Pedido Misto</option>
+              <option value="isopor">Isopor de Viagem</option>
+              <option value="carrinho">Carrinho para Eventos</option>
+            </select>
+          </div>
+          <div class="campo-edit">
+            <label>Status Inicial</label>
+            <select id="enc-f-status">
+              <option value="novo">Novo 🔴</option>
+              <option value="pendente">Pendente ⏳</option>
+              <option value="confirmado">Confirmado ✅</option>
+              <option value="em_preparo">Em preparo 🍦</option>
+            </select>
+          </div>
+        </div>
+        <div class="campo-edit"><label>Endereço de Entrega (opcional)</label><input type="text" id="enc-f-end" maxlength="200" placeholder="Rua, número, bairro — ou 'Retirar na loja'"/></div>
+        <div class="campo-edit"><label>Descrição dos Itens</label><textarea id="enc-f-itens" rows="3" maxlength="500" placeholder="Ex: 100 picolés sabor morango, 50 picolés sabor limão..."></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Valor Total (R$)</label><input type="number" id="enc-f-total" min="0" step="0.01" placeholder="0.00"/></div>
+          <div class="campo-edit"><label>Data de Entrega Prevista</label><input type="date" id="enc-f-data-entrega"/></div>
+        </div>
+        <div class="campo-edit"><label>Observações</label><textarea id="enc-f-obs" rows="2" maxlength="300" placeholder="Informações internas sobre o pedido..."></textarea></div>
+        <input type="hidden" id="enc-f-num"/>
+        <div class="btn-row">
+          <button class="btn btn-salvar" onclick="salvarFormEncomenda()">💾 Salvar Encomenda</button>
+          <button class="btn btn-cinza" onclick="fecharFormEncomenda()">✕ Cancelar</button>
+        </div>
+      </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div>
+        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()">➕ Nova Encomenda</button><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div></div>
         <div class="card-body">
           <div class="busca-wrap" style="margin-bottom:10px"><input type="search" id="busca-encomenda" placeholder="Buscar por nº pedido, nome ou telefone..." oninput="renderEncomendas()"/></div>
           <div class="filtros">
@@ -2422,34 +2464,58 @@ Talento</textarea>
           <div class="campo-edit"><label>Texto do botão "Ver Picolés"</label><input type="text" id="card-picoles-btn" maxlength="30" placeholder="🧊 Ver Sabores de Picolés"/></div>
 
           <div class="seção-título" style="margin-top:20px">🫐 Açaí em Promoção</div>
-          <div class="campo-edit"><label>Combos de promoção (um por linha, ex: 400ml - R$ 10,00)</label><textarea id="card-açaí-promo-combos" rows="8" placeholder="400ml - R$ 10,00&#10;500ml - R$ 13,00&#10;700ml - R$ 17,00"></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-açaí-promo-btn" maxlength="30" placeholder="🫐 Ver Combos em Promoção"/></div>
+          <div class="hint" style="margin-bottom:10px">Cada combo tem nome, descrição curta e preço. Padrão iFood: nome direto + destaque do tamanho.</div>
+          <div id="card-açaí-promo-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPromoCombo()">➕ Adicionar Combo</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-açaí-promo-btn" maxlength="30" placeholder="🫐 Ver Combos em Promoção"/></div>
 
-          <div class="seção-título" style="margin-top:20px">🍇 Açaí Tipo Artesanal</div>
-          <div class="campo-edit"><label>Tamanhos disponíveis (um por linha, ex: 300ml - R$ 12,00)</label><textarea id="card-açaí-tamanhos" rows="5" placeholder="300ml - R$ 12,00&#10;400ml - R$ 15,00&#10;500ml - R$ 18,00&#10;600ml - R$ 22,00"></textarea></div>
-          <div class="campo-edit"><label>Complementos disponíveis (um por linha)</label><textarea id="card-açaí-complementos" rows="8" placeholder="Granola&#10;Leite em Pó&#10;Paçoca&#10;Morango&#10;Banana&#10;Mel"></textarea></div>
+          <div class="seção-título" style="margin-top:20px">🍇 Açaí Tipo Artesanal — Tamanhos e Preços</div>
+          <div class="hint" style="margin-bottom:10px">Padrão Baskin-Robbins: cada tamanho como item independente com preço próprio.</div>
+          <div id="card-açaí-tamanhos-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPrecoRow('card-açaí-tamanhos-tabela','Ex: 400ml')">➕ Adicionar Tamanho</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Complementos disponíveis (um por linha)</label><textarea id="card-açaí-complementos" rows="8" placeholder="Granola&#10;Leite em Pó&#10;Paçoca&#10;Morango&#10;Banana&#10;Mel"></textarea></div>
           <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-açaí-btn" maxlength="30" placeholder="🍇 Montar Meu Açaí"/></div>
 
           <div class="seção-título" style="margin-top:20px">🥤 Milkshakes</div>
-          <div class="campo-edit"><label>Sabores disponíveis (um por linha)</label><textarea id="card-milk-sabores" rows="8" placeholder="Chocolate&#10;Morango&#10;Baunilha&#10;Ovomaltine&#10;Nutella"></textarea></div>
-          <div class="campo-edit"><label>Tamanhos e preços (um por linha)</label><textarea id="card-milk-tamanhos" rows="4" placeholder="Tradicional 400ml&#10;Top 500ml"></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-milk-btn" maxlength="30" placeholder="🥤 Ver Milkshakes"/></div>
+          <div class="campo-edit"><label>Sabores disponíveis (um por linha)</label><textarea id="card-milk-sabores" rows="5" placeholder="Chocolate&#10;Morango&#10;Baunilha&#10;Ovomaltine&#10;Nutella"></textarea></div>
+          <div class="campo-edit">
+            <label>Acréscimo Ovomaltine (R$)</label>
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;color:#888">R$</span><input type="number" id="card-milk-adicional-ovomaltine" min="0" step="0.5" value="3" style="width:80px;padding:8px;border:1.5px solid #ddd;border-radius:8px"/><span style="font-size:.82rem;color:#aaa">cobrado quando cliente pede Ovomaltine extra</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div>
+              <div style="font-weight:700;font-size:.85rem;color:#555;margin-bottom:6px">Tamanhos Tradicional</div>
+              <div id="card-milk-trad-tabela"></div>
+              <button class="btn btn-verde" style="margin-top:6px;padding:5px 12px;font-size:.82rem" onclick="addCardapioPrecoRow('card-milk-trad-tabela','Ex: 400ml')">➕ Tamanho</button>
+            </div>
+            <div>
+              <div style="font-weight:700;font-size:.85rem;color:#555;margin-bottom:6px">Tamanhos Top</div>
+              <div id="card-milk-top-tabela"></div>
+              <button class="btn btn-verde" style="margin-top:6px;padding:5px 12px;font-size:.82rem" onclick="addCardapioPrecoRow('card-milk-top-tabela','Ex: 600ml')">➕ Tamanho</button>
+            </div>
+          </div>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-milk-btn" maxlength="30" placeholder="🥤 Ver Milkshakes"/></div>
 
           <div class="seção-título" style="margin-top:20px">🍧 Taças Tradicionais</div>
-          <div class="campo-edit"><label>Taças disponíveis (uma por linha, ex: Colegial - 2 bolas)</label><textarea id="card-tacas-lista" rows="6" placeholder="Colegial - 2 bolas&#10;Sundae - 3 bolas&#10;Banana Split - 3 bolas + banana&#10;Copa do Mundo - 4 bolas"></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-tacas-btn" maxlength="30" placeholder="🍧 Ver Taças"/></div>
+          <div class="hint" style="margin-bottom:10px">Padrão McDonald's: cada taça como item com nome e preço próprio.</div>
+          <div id="card-tacas-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPrecoRow('card-tacas-tabela','Ex: Colegial')">➕ Adicionar Taça</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-tacas-btn" maxlength="30" placeholder="🍧 Ver Taças"/></div>
 
           <div class="seção-título" style="margin-top:20px">👑 Taças Premium (Taças Sujas)</div>
-          <div class="campo-edit"><label>Taças Premium disponíveis (uma por linha)</label><textarea id="card-tacas-p-lista" rows="6" placeholder="Prestígio&#10;Kit Kat&#10;Unicórnio&#10;Oreo&#10;Ferrero Rocher"></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-tacas-p-btn" maxlength="30" placeholder="👑 Ver Taças Premium"/></div>
+          <div id="card-tacas-p-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPrecoRow('card-tacas-p-tabela','Ex: Unicórnio')">➕ Adicionar Taça Premium</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-tacas-p-btn" maxlength="30" placeholder="👑 Ver Taças Premium"/></div>
 
           <div class="seção-título" style="margin-top:20px">🧊 Isopores de Viagem</div>
-          <div class="campo-edit"><label>Tamanhos disponíveis (um por linha)</label><textarea id="card-iso-lista" rows="4" placeholder="Isopore 2L&#10;Isopore 5L&#10;Isopore 10L&#10;Isopore 15L"></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-iso-btn" maxlength="30" placeholder="🧊 Ver Isopores"/></div>
+          <div id="card-iso-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPrecoRow('card-iso-tabela','Ex: 4 Bolas')">➕ Adicionar Isopore</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-iso-btn" maxlength="30" placeholder="🧊 Ver Isopores"/></div>
 
           <div class="seção-título" style="margin-top:20px">🍨 Sobremesas Geladas</div>
-          <div class="campo-edit"><label>Sobremesas disponíveis (uma por linha)</label><textarea id="card-sobremesas-lista" rows="6" placeholder="Fondue de Chocolate&#10;Petit Gâteau&#10;Brownie com Sorvete&#10;Waffle com Sorvete"></textarea></div>
-          <div class="campo-edit"><label>Texto do botão</label><input type="text" id="card-sobremesas-btn" maxlength="30" placeholder="🍨 Ver Sobremesas"/></div>
+          <div id="card-sobremesas-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPrecoRow('card-sobremesas-tabela','Ex: Brownie com Sorvete')">➕ Adicionar Sobremesa</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-sobremesas-btn" maxlength="30" placeholder="🍨 Ver Sobremesas"/></div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarCardápio()">💾 Salvar Cardápio</button></div>
         </div>
@@ -3356,7 +3422,7 @@ async function atualizarListaFidelidade(){
   const btn=document.getElementById('btn-refresh-fidelidade');
   if(btn){btn.disabled=true;btn.textContent='Atualizando...';}
   try{
-    const[cl,fi]=await Promise.all([workerGet('/api/clientes'),ghGet(PATHS.fidelidade)]);
+    const[cl,fi]=await Promise.all([ghGet(PATHS.clientes),ghGet(PATHS.fidelidade)]);
     if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
     if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
     try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] atualizarListaFidelidade renderClientes',e);}
@@ -4033,11 +4099,10 @@ function renderEncomendas(){
   }).sort((a,b)=>new Date(b.data)-new Date(a.data));
   const container=document.getElementById('enc-lista');
   if(!lista.length){
-    if(semRegistrosOriginais&&!workerAtivo){
-      container.innerHTML='<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45">ℹ️ Modo somente leitura: sem token GitHub com escrita, os registros de Encomendas podem ficar desatualizados. Informe um PAT válido para liberar sincronização e salvamento completos.</div>';
-      return;
-    }
-    container.innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';
+    const msgSomenteLeitura=semRegistrosOriginais&&!workerAtivo
+      ?'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45;margin-bottom:12px">ℹ️ Informe um token GitHub PAT válido para liberar edição e salvamento de encomendas.</div>'
+      :'';
+    container.innerHTML=msgSomenteLeitura+'<div style="text-align:center;padding:30px 10px"><div style="font-size:2.5rem;margin-bottom:10px">📦</div><p style="color:#888;margin-bottom:16px">Nenhuma encomenda cadastrada ainda.</p><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()" style="font-size:.95rem;padding:10px 24px">➕ Adicionar Encomenda</button></div>';
     return;
   }
   let html=lista.map(e=>{
@@ -4089,6 +4154,100 @@ function exportarEncomendasCSV(){
   a.href=url;a.download=`encomendas_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();URL.revokeObjectURL(url);
   toast(`CSV com ${registros.length} encomendas exportado!`,'sucesso');
+}
+
+// ─── FORMULÁRIO NOVA / EDITAR ENCOMENDA ─────────────────────
+function _gerarNumEncomenda(){
+  const d=new Date();
+  const base=`ENC-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  const registros=STATE.encomendas?.registros||[];
+  const seq=registros.filter(r=>(r.num||'').startsWith(base)).length+1;
+  return base+'-'+String(seq).padStart(3,'0');
+}
+function abrirFormNovaEncomenda(){
+  if(!GH_WRITE_ALLOWED){toast('Informe um token GitHub PAT válido para adicionar encomendas.','aviso');return;}
+  const tit=document.getElementById('enc-form-titulo');
+  if(tit)tit.textContent='➕ Nova Encomenda';
+  document.getElementById('enc-f-nome').value='';
+  document.getElementById('enc-f-tel').value='';
+  document.getElementById('enc-f-tipo').value='caixa';
+  document.getElementById('enc-f-status').value='novo';
+  document.getElementById('enc-f-end').value='';
+  document.getElementById('enc-f-itens').value='';
+  document.getElementById('enc-f-total').value='';
+  document.getElementById('enc-f-data-entrega').value='';
+  document.getElementById('enc-f-obs').value='';
+  document.getElementById('enc-f-num').value='';
+  const panel=document.getElementById('enc-form-panel');
+  if(panel){panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+function abrirFormEditarEncomenda(num){
+  if(!GH_WRITE_ALLOWED){toast('Informe um token GitHub PAT válido para editar encomendas.','aviso');return;}
+  const registros=STATE.encomendas?.registros||[];
+  const e=registros.find(r=>r.num===num);
+  if(!e){toast('Pedido não encontrado.','erro');return;}
+  const tit=document.getElementById('enc-form-titulo');
+  if(tit)tit.textContent='✏️ Editar Encomenda — '+esc(num);
+  document.getElementById('enc-f-nome').value=e.nome||'';
+  document.getElementById('enc-f-tel').value=e.telefone||e.tel||'';
+  document.getElementById('enc-f-tipo').value=e.tipo||'caixa';
+  document.getElementById('enc-f-status').value=e.status||'novo';
+  document.getElementById('enc-f-end').value=e.endereço||'';
+  document.getElementById('enc-f-itens').value=Array.isArray(e.itens)?e.itens.map(it=>`${it.nome} x${it.qtd||1}`).join('\n'):(e.descricao||'');
+  document.getElementById('enc-f-total').value=e.total||'';
+  document.getElementById('enc-f-data-entrega').value=e.dataEntrega||'';
+  document.getElementById('enc-f-obs').value=e.observacaoAdmin||'';
+  document.getElementById('enc-f-num').value=num;
+  const panel=document.getElementById('enc-form-panel');
+  if(panel){panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+function fecharFormEncomenda(){
+  const panel=document.getElementById('enc-form-panel');
+  if(panel)panel.style.display='none';
+}
+async function salvarFormEncomenda(){
+  if(!GH_WRITE_ALLOWED){toast('Informe um token GitHub PAT válido para salvar.','aviso');return;}
+  const nome=(document.getElementById('enc-f-nome').value||'').trim();
+  if(!nome){toast('Informe o nome do cliente.','erro');document.getElementById('enc-f-nome').focus();return;}
+  const tel=(document.getElementById('enc-f-tel').value||'').trim();
+  if(!tel){toast('Informe o telefone.','erro');document.getElementById('enc-f-tel').focus();return;}
+  const tipo=document.getElementById('enc-f-tipo').value;
+  const status=document.getElementById('enc-f-status').value;
+  const endereço=(document.getElementById('enc-f-end').value||'').trim();
+  const descricao=(document.getElementById('enc-f-itens').value||'').trim();
+  const totalRaw=parseFloat(document.getElementById('enc-f-total').value)||0;
+  const dataEntrega=document.getElementById('enc-f-data-entrega').value||'';
+  const obs=(document.getElementById('enc-f-obs').value||'').trim();
+  const numExistente=document.getElementById('enc-f-num').value;
+
+  if(!STATE.encomendas)STATE.encomendas={registros:[]};
+  if(!Array.isArray(STATE.encomendas.registros))STATE.encomendas.registros=[];
+
+  const agora=new Date();
+  if(numExistente){
+    // Edição
+    const idx=STATE.encomendas.registros.findIndex(r=>r.num===numExistente);
+    if(idx===-1){toast('Pedido não encontrado.','erro');return;}
+    const prev=STATE.encomendas.registros[idx];
+    if(prev.status!==status){
+      if(!prev.historicoStatus)prev.historicoStatus=[];
+      prev.historicoStatus.push({status,data:agora.toISOString(),origem:'admin'});
+    }
+    STATE.encomendas.registros[idx]={...prev,nome,telefone:tel,tipo,status,endereço,descricao,total:totalRaw,dataEntrega,observacaoAdmin:obs};
+  }else{
+    // Novo
+    const num=_gerarNumEncomenda();
+    STATE.encomendas.registros.unshift({
+      num,nome,telefone:tel,tipo,status,endereço,descricao,
+      total:totalRaw,dataEntrega,observacaoAdmin:obs,
+      data:agora.toISOString(),
+      dataFormatada:agora.toLocaleString('pt-BR'),
+      historicoStatus:[{status,data:agora.toISOString(),origem:'admin'}],
+      origem:'admin'
+    });
+  }
+  const ok=await salvarArquivo(PATHS.encomendas,STATE.encomendas,'encomendasSha',numExistente?`Admin: editar pedido ${numExistente}`:`Admin: nova encomenda ${nome}`);
+  if(ok){fecharFormEncomenda();renderEncomendas();toast(numExistente?`✅ Pedido ${numExistente} atualizado!`:`✅ Encomenda criada com sucesso!`,'sucesso');}
 }
 
 // ─── MODAL ENCOMENDA DETALHADA ──────────────────────────────
@@ -6557,6 +6716,88 @@ async function salvarTitulosCardapio() {
 }
 
 // ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
+// ── CARDÁPIO — TABELAS DE PREÇO (padrão iFood/Baskin-Robbins) ────────────────
+function _precoRowHTML(nome, preco, placeholder) {
+  const n = String(nome||'').replace(/"/g,'&quot;');
+  const p = Number(preco||0).toFixed(2);
+  return `<div class="preco-row" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+    <input type="text" class="preco-nome" value="${n}" placeholder="${placeholder||'Nome do item'}" style="flex:2;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:.9rem;background:#fafafa"/>
+    <div style="display:flex;align-items:center;gap:4px;background:#fff8f0;border:1.5px solid #f0c070;border-radius:8px;padding:5px 10px">
+      <span style="font-size:.78rem;color:#999;font-weight:700">R$</span>
+      <input type="number" class="preco-valor" value="${p}" min="0" step="0.5" style="width:65px;border:none;outline:none;font-size:.95rem;font-weight:900;color:#e65100;background:transparent;text-align:right"/>
+    </div>
+    <button class="btn btn-erro btn-sm" onclick="this.closest('.preco-row').remove()" title="Remover item" style="padding:5px 9px">🗑️</button>
+  </div>`;
+}
+function renderCardapioPrecoTabela(containerId, obj, placeholder) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const items = Object.entries(obj||{});
+  el.innerHTML = items.length
+    ? items.map(([nome,preco]) => _precoRowHTML(nome, preco, placeholder)).join('')
+    : `<p style="color:#bbb;font-size:.82rem;padding:6px 2px">Nenhum item ainda — clique em ➕ Adicionar abaixo.</p>`;
+}
+function addCardapioPrecoRow(containerId, placeholder) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const p = el.querySelector('p');
+  if (p) p.remove();
+  el.insertAdjacentHTML('beforeend', _precoRowHTML('', 0, placeholder||'Nome'));
+  el.querySelectorAll('.preco-nome').forEach((inp,_,arr)=>{ if(inp===arr[arr.length-1]) inp.focus(); });
+}
+function readCardapioPrecoTabela(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return {};
+  const obj = {};
+  el.querySelectorAll('.preco-row').forEach(row => {
+    const nome = (row.querySelector('.preco-nome')?.value||'').trim();
+    const preco = parseFloat(row.querySelector('.preco-valor')?.value||'0')||0;
+    if (nome) obj[nome] = preco;
+  });
+  return obj;
+}
+// Açaí Promo — 3 colunas: Tamanho/Nome | Descrição | Preço
+function _promoComboRowHTML(nome, desc, preco) {
+  const n = String(nome||'').replace(/"/g,'&quot;');
+  const d = String(desc||'').replace(/"/g,'&quot;');
+  const p = Number(preco||0).toFixed(2);
+  return `<div class="promo-combo-row" style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+    <input type="text" class="combo-nome" value="${n}" placeholder="Ex: 400ml" style="flex:1;min-width:80px;padding:7px 9px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:.88rem;background:#fafafa"/>
+    <input type="text" class="combo-desc" value="${d}" placeholder="Descrição curta (opcional)" style="flex:2;min-width:120px;padding:7px 9px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:.88rem;background:#fafafa"/>
+    <div style="display:flex;align-items:center;gap:4px;background:#fff8f0;border:1.5px solid #f0c070;border-radius:8px;padding:5px 10px">
+      <span style="font-size:.78rem;color:#999;font-weight:700">R$</span>
+      <input type="number" class="combo-preco" value="${p}" min="0" step="0.5" style="width:60px;border:none;outline:none;font-size:.95rem;font-weight:900;color:#e65100;background:transparent;text-align:right"/>
+    </div>
+    <button class="btn btn-erro btn-sm" onclick="this.closest('.promo-combo-row').remove()" title="Remover" style="padding:5px 9px">🗑️</button>
+  </div>`;
+}
+function renderCardapioPromoTabela(containerId, lista) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = (lista&&lista.length)
+    ? lista.map(i => _promoComboRowHTML(i.nome, i.desc, i.preco)).join('')
+    : `<p style="color:#bbb;font-size:.82rem;padding:6px 2px">Nenhum combo ainda — clique em ➕ Adicionar abaixo.</p>`;
+}
+function addCardapioPromoCombo() {
+  const el = document.getElementById('card-açaí-promo-tabela');
+  if (!el) return;
+  const p = el.querySelector('p'); if (p) p.remove();
+  el.insertAdjacentHTML('beforeend', _promoComboRowHTML('','',0));
+  el.querySelectorAll('.combo-nome').forEach((inp,_,arr)=>{ if(inp===arr[arr.length-1]) inp.focus(); });
+}
+function readCardapioPromoTabela() {
+  const el = document.getElementById('card-açaí-promo-tabela');
+  if (!el) return [];
+  const arr = [];
+  el.querySelectorAll('.promo-combo-row').forEach(row => {
+    const nome = (row.querySelector('.combo-nome')?.value||'').trim();
+    const desc = (row.querySelector('.combo-desc')?.value||'').trim();
+    const preco = parseFloat(row.querySelector('.combo-preco')?.value||'0')||0;
+    if (nome) arr.push({nome, desc, preco});
+  });
+  return arr;
+}
+
 function preencherCardapio() {
   const p = STATE.produtos;
   if (!p) {
@@ -6578,21 +6819,17 @@ function preencherCardapio() {
     if (p.picoles.esquimós) document.getElementById('card-picoles-esquimo').value = (p.picoles.esquimós.sabores || []).join('\n');
   }
 
-  // Açaí Promoção
-  if (p.acai_promocao) {
-    document.getElementById('card-açaí-promo-combos').value = p.acai_promocao.map(i => `${i.nome} - ${i.desc} - R$ ${i.preco.toFixed(2).replace('.',',')}`).join('\n');
-  }
+  // Açaí Promoção — tabela 3 colunas
+  renderCardapioPromoTabela('card-açaí-promo-tabela', p.acai_promocao || []);
 
-  // Açaí Tipo Artesanal
+  // Açaí Tipo Artesanal — tabela 2 colunas
   if (p.acai) {
-    if (p.acai.copos) {
-      document.getElementById('card-açaí-tamanhos').value = Object.entries(p.acai.copos).map(([tam, preco]) => `${tam} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
-    }
+    renderCardapioPrecoTabela('card-açaí-tamanhos-tabela', p.acai.copos || {}, 'Ex: 400ml');
     if (p.acai.complementos) {
       let comps = [];
       Object.entries(p.acai.complementos).forEach(([cat, dados]) => {
-        comps.push(`--- ${cat.toUpperCase()} (R$ ${dados.preco.toFixed(2).replace('.',',')}) ---`);
-        comps = comps.concat(dados.itens);
+        comps.push(`--- ${cat.toUpperCase()} (R$ ${Number(dados.preco||0).toFixed(2).replace('.',',')}) ---`);
+        comps = comps.concat(dados.itens||[]);
       });
       document.getElementById('card-açaí-complementos').value = comps.join('\n');
     }
@@ -6600,32 +6837,26 @@ function preencherCardapio() {
 
   // Milkshakes
   if (p.milkshake) {
-    if (p.milkshake.tradicional) {
-      document.getElementById('card-milk-tamanhos').value = Object.entries(p.milkshake.tradicional).map(([tam, preco]) => `Tradicional ${tam} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
-    }
+    if (Array.isArray(p.milkshake.sabores)) document.getElementById('card-milk-sabores').value = p.milkshake.sabores.join('\n');
+    renderCardapioPrecoTabela('card-milk-trad-tabela', p.milkshake.tradicional || {}, 'Ex: 400ml');
+    renderCardapioPrecoTabela('card-milk-top-tabela', p.milkshake.top || {}, 'Ex: 600ml');
+    const ov = document.getElementById('card-milk-adicional-ovomaltine');
+    if (ov) ov.value = p.milkshake.adicional_ovomaltine || 3;
   }
 
-  // Taças
+  // Taças — tabelas 2 colunas
   if (p.tacas) {
-    if (p.tacas.tradicionais) {
-      document.getElementById('card-tacas-lista').value = Object.entries(p.tacas.tradicionais).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
-    }
-    if (p.tacas.sujas) {
-      document.getElementById('card-tacas-p-lista').value = Object.entries(p.tacas.sujas).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
-    }
+    renderCardapioPrecoTabela('card-tacas-tabela', p.tacas.tradicionais || {}, 'Ex: Colegial');
+    renderCardapioPrecoTabela('card-tacas-p-tabela', p.tacas.sujas || {}, 'Ex: Unicórnio');
   }
 
   // Isopores
-  if (p.isopores_viagem) {
-    document.getElementById('card-iso-lista').value = Object.entries(p.isopores_viagem).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
-  }
+  renderCardapioPrecoTabela('card-iso-tabela', p.isopores_viagem || {}, 'Ex: 4 Bolas');
 
   // Sobremesas
-  if (p.sobremesas) {
-    document.getElementById('card-sobremesas-lista').value = Object.entries(p.sobremesas).map(([nome, preco]) => `${nome} - R$ ${preco.toFixed(2).replace('.',',')}`).join('\n');
-  }
+  renderCardapioPrecoTabela('card-sobremesas-tabela', p.sobremesas || {}, 'Ex: Fondue');
 
-  // Títulos e Botões (do config.json)
+  // Botões e textos (config)
   const c = STATE.config || {};
   document.getElementById('card-sorvetes-btn').value = c.cardSorvetesBtn || '🍦 Ver 35 Sabores';
   document.getElementById('card-sorvetes-desc').value = c.cardSorvetesDesc || 'Cremoso, gelado, irresistível · 35 sabores pra você escolher';
@@ -6644,10 +6875,10 @@ async function salvarCardápio() {
   const c = STATE.config;
   if (!p || !c) return;
 
-  // Atualizar Sabores de Sorvete
-  p.sorvetes.sabores = document.getElementById('card-sorvetes-sabores').value.split('\n').map(s => s.trim()).filter(s => s);
+  // Sorvetes
+  if (p.sorvetes) p.sorvetes.sabores = document.getElementById('card-sorvetes-sabores').value.split('\n').map(s => s.trim()).filter(s => s);
 
-  // Atualizar Picolés
+  // Picolés
   if (p.picoles) {
     if (p.picoles.frutas_agua) p.picoles.frutas_agua.sabores = document.getElementById('card-picoles-fruta').value.split('\n').map(s => s.trim()).filter(s => s);
     if (p.picoles.leite_sem_recheio) p.picoles.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s => s.trim()).filter(s => s);
@@ -6656,7 +6887,58 @@ async function salvarCardápio() {
     if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s => s.trim()).filter(s => s);
   }
 
-  // Atualizar Títulos e Botões no Config
+  // Açaí Promoção — formato: "Nome - Desc - R$ 10,00"
+  p.acai_promocao = document.getElementById('card-açaí-promo-combos').value
+    .split('\n').map(s=>s.trim()).filter(s=>s)
+    .map(linha => {
+      const parts = linha.split(' - ');
+      const preco = parseFloat((parts[parts.length-1]||'').replace(/R\$\s*/,'').replace(',','.')) || 0;
+    // Sorvetes
+  if (p.sorvetes) p.sorvetes.sabores = document.getElementById('card-sorvetes-sabores').value.split('\n').map(s=>s.trim()).filter(s=>s);
+
+  // Picolés
+  if (p.picoles) {
+    if (p.picoles.frutas_agua) p.picoles.frutas_agua.sabores = document.getElementById('card-picoles-fruta').value.split('\n').map(s=>s.trim()).filter(s=>s);
+    if (p.picoles.leite_sem_recheio) p.picoles.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s=>s.trim()).filter(s=>s);
+    if (p.picoles.leite_com_recheio) p.picoles.leite_com_recheio.sabores = document.getElementById('card-picoles-recheado').value.split('\n').map(s=>s.trim()).filter(s=>s);
+    if (p.picoles.leite_ninho) p.picoles.leite_ninho.sabores = document.getElementById('card-picoles-ninho').value.split('\n').map(s=>s.trim()).filter(s=>s);
+    if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s=>s.trim()).filter(s=>s);
+  }
+
+  // Açaí Promoção — tabela 3 colunas
+  p.acai_promocao = readCardapioPromoTabela();
+
+  // Açaí Tamanhos — tabela 2 colunas
+  if (!p.acai) p.acai = {};
+  const coposAcai = readCardapioPrecoTabela('card-açaí-tamanhos-tabela');
+  if (Object.keys(coposAcai).length) p.acai.copos = coposAcai;
+
+  // Milkshake sabores + tamanhos — tabelas
+  if (!p.milkshake) p.milkshake = {};
+  p.milkshake.sabores = document.getElementById('card-milk-sabores').value.split('\n').map(s=>s.trim()).filter(s=>s);
+  const milkTrad = readCardapioPrecoTabela('card-milk-trad-tabela');
+  if (Object.keys(milkTrad).length) p.milkshake.tradicional = milkTrad;
+  const milkTop = readCardapioPrecoTabela('card-milk-top-tabela');
+  if (Object.keys(milkTop).length) p.milkshake.top = milkTop;
+  const ovomaltineVal = parseFloat(document.getElementById('card-milk-adicional-ovomaltine')?.value||'3')||0;
+  p.milkshake.adicional_ovomaltine = ovomaltineVal;
+
+  // Taças — tabelas 2 colunas
+  if (!p.tacas) p.tacas = {};
+  const tacasTrad = readCardapioPrecoTabela('card-tacas-tabela');
+  if (Object.keys(tacasTrad).length) p.tacas.tradicionais = tacasTrad;
+  const tacasSujas = readCardapioPrecoTabela('card-tacas-p-tabela');
+  if (Object.keys(tacasSujas).length) p.tacas.sujas = tacasSujas;
+
+  // Isopores
+  const iso = readCardapioPrecoTabela('card-iso-tabela');
+  if (Object.keys(iso).length) p.isopores_viagem = iso;
+
+  // Sobremesas
+  const sob = readCardapioPrecoTabela('card-sobremesas-tabela');
+  if (Object.keys(sob).length) p.sobremesas = sob;
+
+  // Botões e textos (config)
   c.cardSorvetesBtn = document.getElementById('card-sorvetes-btn').value.trim();
   c.cardSorvetesDesc = document.getElementById('card-sorvetes-desc').value.trim();
   c.cardPicolesBtn = document.getElementById('card-picoles-btn').value.trim();
@@ -6669,7 +6951,7 @@ async function salvarCardápio() {
   c.cardSobremesasBtn = document.getElementById('card-sobremesas-btn').value.trim();
 
   mostrarLoading('Salvando Cardápio...');
-  const ok1 = await salvarArquivo(PATHS.produtos, p, 'produtosSha', 'Admin: atualizar sabores do cardápio');
+  const ok1 = await salvarArquivo(PATHS.produtos, p, 'produtosSha', 'Admin: atualizar cardápio completo');
   const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar botões do cardápio');
   ocultarLoading();
 
@@ -6693,7 +6975,8 @@ function preencherDepoimentos() {
   const container = document.getElementById('dep-lista');
   if (!container) return;
   
-  container.innerHTML = lista.map((d, i) => `
+  container.innerHTML = lista.length
+    ? lista.map((d, i) => `
     <div class="dep-item card" style="margin-bottom:15px; padding:15px; border:1px solid #eee">
       <div style="display:flex; justify-content:space-between; margin-bottom:10px">
         <strong>Depoimento #${i+1}</strong>
@@ -6729,7 +7012,8 @@ function preencherDepoimentos() {
         <div class="hint">✅ Foto circular exibida ao lado do nome no depoimento. Deixe em branco para usar avatar padrão.</div>
       </div>
     </div>
-  `).join('');
+  `).join('')
+    : '<div style="text-align:center;padding:24px 10px;background:#fff8f0;border-radius:10px;border:1.5px dashed #ffcc80"><div style="font-size:2rem;margin-bottom:8px">💬</div><p style="color:#888;margin-bottom:12px">Nenhum depoimento cadastrado ainda.</p><p style="font-size:.82rem;color:#aaa">Clique em <strong>➕ Adicionar Depoimento</strong> abaixo para criar o primeiro.</p></div>';
   preencherDicasItens();
   const seoPg = c.seoPaginas || {};
   const seoDicasTit = document.getElementById('cfg-seo-dicas-titulo');
@@ -6751,7 +7035,8 @@ function preencherDicasItens() {
   const container = document.getElementById('dicas-lista');
   if (!container) return;
   const lista = Array.isArray(c.dicasItens) ? c.dicasItens : [];
-  container.innerHTML = lista.map((d, i) => `
+  container.innerHTML = lista.length
+    ? lista.map((d, i) => `
     <div class="card" style="margin-bottom:12px;padding:14px;border:1px solid #eee">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
         <strong>Dica #${i+1}</strong>
@@ -6762,7 +7047,8 @@ function preencherDicasItens() {
       <div class="campo-edit"><label>Imagem (URL)</label><input type="url" id="dica-img-${i}" value="${esc(d.imagem || '')}" placeholder="https://... ou images/arquivo.webp"/></div>
       <div class="campo-edit"><label>Link de destino</label><input type="url" id="dica-link-${i}" value="${esc(d.link || '')}" placeholder="https://..."/></div>
     </div>
-  `).join('');
+  `).join('')
+    : '<div style="text-align:center;padding:24px 10px;background:#fff8f0;border-radius:10px;border:1.5px dashed #ffcc80"><div style="font-size:2rem;margin-bottom:8px">💡</div><p style="color:#888;margin-bottom:12px">Nenhuma dica cadastrada ainda.</p><p style="font-size:.82rem;color:#aaa">Clique em <strong>➕ Adicionar Dica</strong> abaixo para criar a primeira.</p></div>';
 }
 
 function adicionarDicaItem() {
