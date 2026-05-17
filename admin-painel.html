@@ -578,7 +578,7 @@ body { overflow-x: hidden; }
   </div>
   <div class="admin-nav">
     <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Dashboard</button>
-    <button class="nav-btn" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+    <button class="nav-btn" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
     <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
     <button class="nav-btn" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
     <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
@@ -3103,7 +3103,7 @@ async function entrar(){
   document.getElementById('admin-app').style.display='block';
   if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub PAT para salvar alterações.','aviso');
   await carregarTudo();
-  const btnPaginaInicial=document.querySelector('.nav-btn:nth-child(2)');
+  const btnPaginaInicial=document.getElementById('nav-btn-pagina-inicial');
   irPara('pagina-inicial',btnPaginaInicial);
 }
 async function reativarSessaoWorker(){
@@ -3855,9 +3855,9 @@ async function salvarPromoção(){
   const tituloPromo=document.getElementById('promo-título').value.trim();
   const descricaoPromo=document.getElementById('promo-descrição').value.trim();
   pr.titulo=tituloPromo;
-  pr.título=tituloPromo;
   pr.descricao=descricaoPromo;
-  pr.descrição=descricaoPromo;
+  delete pr.título;
+  delete pr.descrição;
   pr.btnTexto=document.getElementById('promo-btn').value.trim();
   pr.link=document.getElementById('promo-link').value.trim();
   pr.dataFim=document.getElementById('promo-datafim').value;
