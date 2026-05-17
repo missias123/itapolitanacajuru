@@ -274,6 +274,7 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 ### Fluxo de login real
 
 O admin usa **dois fatores independentes**: senha do painel e token GitHub para escrita.
+Não depende de conta Cloudflare para uso normal.
 
 ```
 1. Abrir admin-painel.html no navegador

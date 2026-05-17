@@ -544,39 +544,29 @@ body { overflow-x: hidden; }
       <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">&#x1F441;&#xFE0F;</button>
     </div>
     <div class="inp-wrap" style="margin-top:8px">
-      <input type="password" id="inp-worker-secret" aria-label="Segredo Worker" placeholder="Segredo Worker — libera o admin completo" autocomplete="new-password" onkeydown="if(event.key==='Enter')entrar()"/>
+      <input type="password" id="inp-gh-token" aria-label="Token GitHub" placeholder="Token GitHub PAT (opcional para salvar)" autocomplete="off" oninput="validarCampoToken(this)" onkeydown="if(event.key==='Enter')entrar()"/>
     </div>
+    <div id="token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 4px;min-height:1.1em">ℹ️ Sem token válido, o admin entra em modo somente leitura.</div>
+    <div id="token-hint" style="display:none;font-size:0.72rem;color:#ffd54f;margin:0 0 6px">⚠️ Formato inválido. Use um PAT válido (`ghp_...` ou `github_pat_...`).</div>
     <div id="worker-secret-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em"></div>
-    <div style="font-size:0.72rem;color:#aaa;margin-bottom:6px">Use sua senha do admin + o Segredo Worker para liberar o painel inteiro nesta aba. O segredo não é armazenado no navegador.</div>
     <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
-      O Segredo Worker cria a sessão segura de escrita para Página Inicial, Encomendas, Produtos, Promoção, Fidelidade, Dicas, Qualidade, Rastreio e Auditoria.
+      Entre com sua senha para acessar o painel. Informe um token GitHub PAT válido para habilitar edição e salvamento.
     </div>
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
-    <button class="btn-sair" style="width:100%;margin-top:8px" onclick="limparTokenSalvo()">🧹 Limpar Sessão</button>
-    <div class="login-erro" id="login-erro">&#x274C; Informe a senha do administrador e o Segredo Worker.</div>
-  </div>
-</div>
-<div id="worker-secret-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
-  <div style="width:min(420px,100%);background:#161b22;border:1px solid #30363d;border-radius:18px;padding:22px;box-shadow:0 24px 48px rgba(0,0,0,.35)">
-    <h3 style="margin:0 0 8px;font-size:1.05rem;color:#fff">🔐 Ativar Sessão Worker</h3>
-    <p style="margin:0 0 14px;font-size:.86rem;line-height:1.5;color:#c9d1d9">Informe o Segredo Worker para liberar o admin completo nesta aba sem sair do painel.</p>
-    <input type="password" id="worker-secret-modal-input" aria-label="Segredo Worker" placeholder="Segredo Worker" autocomplete="new-password" onkeydown="if(event.key==='Enter')reativarSessaoWorker()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #30363d;background:#0d1117;color:#fff;outline:none"/>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px">
-      <button onclick="fecharModalSessaoWorker()" style="background:#30363d;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700">Cancelar</button>
-      <button onclick="reativarSessaoWorker()" aria-label="Ativar Sessão Worker" style="background:#1565c0;color:#fff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700">Ativar</button>
-    </div>
+    <button class="btn-sair" style="width:100%;margin-top:8px" onclick="limparTokenSalvo()">🧹 Limpar Token Salvo</button>
+    <div class="login-erro" id="login-erro">&#x274C; Informe a senha do administrador.</div>
   </div>
 </div>
 <div id="admin-app">
   <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
     <span style="font-size:1.1rem">⚠️</span>
-    <span><strong>Admin em modo somente leitura.</strong> As alterações do site não serão salvas nesta aba até a sessão segura do Worker estar ativa e pronta para gravar no GitHub.</span>
-    <button onclick="abrirModalSessaoWorker()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔐 Reativar Sessão</button>
+    <span><strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.</span>
+    <button onclick="atualizarToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Informar Token</button>
   </div>
   <div id="aviso-worker-secret" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
     <span style="font-size:1rem">ℹ️</span>
-    <span><strong>Sessão Worker inativa</strong> — o admin inteiro está em <strong>modo somente leitura</strong>. Ative agora com o Segredo Worker para liberar o site todo nesta aba.</span>
-    <button onclick="abrirModalSessaoWorker()" aria-label="Ativar Sessão Worker" style="margin-left:auto;background:#1565c0;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700">🔐 Ativar Sessão Worker</button>
+    <span><strong>Token GitHub não validado</strong> — o admin permanece em <strong>modo somente leitura</strong> até receber um PAT com permissão de escrita.</span>
+    <button onclick="atualizarToken()" aria-label="Informar token GitHub" style="margin-left:auto;background:#1565c0;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700">🔑 Informar Token</button>
   </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
@@ -2025,7 +2015,7 @@ Talento</textarea>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
       <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo somente leitura ativo: a Sessão Worker não está pronta para escrita. Você pode visualizar dados, mas as edições estão bloqueadas.
+        ⚠️ Modo somente leitura ativo: token GitHub sem escrita. Você pode visualizar dados, mas as edições estão bloqueadas.
       </div>
       <!-- form panel para add/edit cliente -->
       <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
@@ -2083,7 +2073,7 @@ Talento</textarea>
     <!-- FIDELIDADE -->
     <div class="seção" id="sec-fidelidade">
       <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo somente leitura ativo: a Sessão Worker não está pronta para escrita. Você pode visualizar dados, mas as edições estão bloqueadas.
+        ⚠️ Modo somente leitura ativo: token GitHub sem escrita. Você pode visualizar dados, mas as edições estão bloqueadas.
       </div>
       <div class="btn-row" style="margin-bottom:10px">
         <button class="btn btn-cinza" id="btn-refresh-fidelidade" onclick="atualizarListaFidelidade()">🔄 Atualizar Lista</button>
@@ -2631,13 +2621,21 @@ function validarCampoToken(input){
 }
 
 function preencherTokenSalvoNoLogin(){
-  const hasSession=Boolean(getAdminToken());
-  GH_WRITE_ALLOWED=hasSession;
-  atualizarStatusSessaoWorker(hasSession
-    ?'✅ Sessão Worker ativa nesta aba.'
-    :'ℹ️ Insira o Segredo Worker para ativar o admin completo nesta aba.'
-  ,hasSession?'success':'info');
-  atualizarBannerSessaoWorker(hasSession);
+  const inp=document.getElementById('inp-gh-token');
+  const token=getToken();
+  if(inp&&token){
+    inp.value=token;
+    validarCampoToken(inp);
+  }else if(inp){
+    validarCampoToken(inp);
+  }
+  const tokenValido=Boolean(token&&tokenFormatoValido(token));
+  GH_WRITE_ALLOWED=tokenValido;
+  atualizarStatusSessaoWorker(tokenValido
+    ?'✅ Token GitHub carregado nesta aba.'
+    :'ℹ️ Sem token válido, o admin funciona em modo somente leitura.'
+  ,tokenValido?'success':'info');
+  atualizarBannerSessaoWorker(tokenValido);
 }
 
 function limparTokenSalvo(){
@@ -2645,16 +2643,14 @@ function limparTokenSalvo(){
   ssRemove('itap_admin_token');
   GH_WRITE_ALLOWED=false;
   const inp=document.getElementById('inp-gh-token');
-  const ws=document.getElementById('inp-worker-secret');
   const statusEl=document.getElementById('token-status');
   const hint=document.getElementById('token-hint');
   if(inp) inp.value='';
-  if(ws) ws.value='';
   if(hint) hint.style.display='none';
   if(statusEl) statusEl.textContent='🧹 Token removido deste navegador.';
-  atualizarStatusSessaoWorker('ℹ️ Insira o Segredo Worker para ativar o admin completo nesta aba.','info');
+  atualizarStatusSessaoWorker('ℹ️ Entre com senha para consultar. Informe um token para habilitar salvamento.','info');
   atualizarBannerSessaoWorker(false);
-  toast('Sessão limpa com sucesso.','sucesso');
+  toast('Token removido com sucesso.','sucesso');
 }
 
 function atualizarStatusSessaoWorker(msg,tipo='info'){
@@ -2664,7 +2660,7 @@ function atualizarStatusSessaoWorker(msg,tipo='info'){
   wsStatus.style.color=cores[tipo]||cores.info;
   wsStatus.textContent=msg||'';
 }
-function atualizarBannerSessaoWorker(ativo=Boolean(getAdminToken())){
+function atualizarBannerSessaoWorker(ativo=Boolean(getToken()&&tokenFormatoValido(getToken()))){
   const bannerWorker=document.getElementById('aviso-worker-secret');
   if(bannerWorker)bannerWorker.style.display=ativo?'none':'flex';
 }
@@ -2723,7 +2719,7 @@ function adminMostrarErroCarregamento(containerId, nomeArquivo){
   if(!el)return;
   el.innerHTML=`<div style="background:#ffebee;border-left:4px solid #c62828;padding:14px 18px;border-radius:8px;margin:12px 0;font-size:.85rem;color:#b71c1c">
     ⚠️ <strong>Erro ao carregar dados.</strong> O arquivo <code>${nomeArquivo}</code> não foi carregado ou está inválido.<br>
-    <strong>O que fazer:</strong> reative a Sessão Worker e tente <button onclick="recarregarTodosDados()" style="background:#c62828;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:.82rem">🔄 Recarregar</button>.
+    <strong>O que fazer:</strong> verifique conexão/token GitHub e tente <button onclick="recarregarTodosDados()" style="background:#c62828;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:.82rem">🔄 Recarregar</button>.
   </div>`;
 }
 
@@ -2761,60 +2757,42 @@ const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:nu
 let GH_WRITE_ALLOWED=false;
 const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
 
-// ── Cloudflare Worker API (PII + escrita admin) ───────────────────────────────
+// ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
-// Admin session token (exchanged at login — raw secret never stored in storage)
-function getAdminToken(){return ssGet('itap_admin_token').trim();}
+// Mantém o nome legado para evitar refatoração ampla no arquivo.
+function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','X-Itap-Session-Token':getAdminToken(),...extra};}
 function workerRepoPathAllowed(path){return WORKER_GH_PATHS.has(path);}
-function invalidarSessaoWorker(msg='⚠️ Sessão Worker expirada. Ative novamente para continuar editando.'){
+function invalidarSessaoWorker(msg='⚠️ Token GitHub inválido ou expirado. Atualize o token para continuar editando.'){
+  lsRemove('itap_gh_token');
   ssRemove('itap_admin_token');
   GH_WRITE_ALLOWED=false;
   atualizarStatusSessaoWorker(msg,'warning');
   atualizarBannerSessaoWorker(false);
 }
 async function iniciarSessaoWorker(secret){
-  const workerSecretInput=document.getElementById('inp-worker-secret');
-  const workerSecretRaw=(secret||'').trim();
-  if(!workerSecretRaw){
-    atualizarStatusSessaoWorker('ℹ️ Insira o Segredo Worker para ativar o admin completo nesta aba.','info');
-    atualizarBannerSessaoWorker(Boolean(getAdminToken()));
-    return{ok:false,error:'Segredo Worker ausente'};
+  const token=(secret||'').trim();
+  if(!token){
+    atualizarStatusSessaoWorker('ℹ️ Informe um token GitHub válido para habilitar escrita.','info');
+    atualizarBannerSessaoWorker(Boolean(getToken()&&tokenFormatoValido(getToken())));
+    return{ok:false,error:'Token ausente'};
   }
-  try{
-    const sessionResp=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({secret:workerSecretRaw})
-    },8000);
-    const sessionData=await sessionResp.json().catch(()=>({}));
-    if(sessionResp.ok&&sessionData.token){
-      if(!ssSet('itap_admin_token',sessionData.token)){
-        throw new Error('Não foi possível salvar a sessão segura nesta aba. Verifique se o armazenamento da sessão está liberado no navegador.');
-      }
-      GH_WRITE_ALLOWED=true;
-      atualizarStatusSessaoWorker('✅ Sessão Worker ativa nesta aba.','success');
-      atualizarBannerSessaoWorker(true);
-      console.log('[Admin] Sessão Worker iniciada. Expira em',sessionData.expiresIn,'s.');
-      return{ok:true,token:sessionData.token,expiresIn:sessionData.expiresIn};
-    }
-    const erro=sessionData.error||('HTTP '+sessionResp.status);
-    console.warn('[Admin] Sessão Worker: falha na troca —',erro);
-    atualizarStatusSessaoWorker(`⚠️ ${erro}`,'warning');
-    atualizarBannerSessaoWorker(Boolean(getAdminToken()));
-    return{ok:false,error:erro,status:sessionResp.status};
-  }catch(e){
-    console.warn('[Admin] Sessão Worker indisponível (Worker não deployado?):', e.message);
-    atualizarStatusSessaoWorker('⚠️ Não foi possível iniciar a sessão Worker agora.','warning');
-    atualizarBannerSessaoWorker(Boolean(getAdminToken()));
-    return{ok:false,error:e.message};
-  }finally{
-    try{
-      if(workerSecretInput){
-        workerSecretInput.value='';
-      }
-    }catch{}
+  if(!tokenFormatoValido(token)){
+    atualizarStatusSessaoWorker('⚠️ Token com formato inválido.','warning');
+    atualizarBannerSessaoWorker(false);
+    return{ok:false,error:'Formato inválido'};
   }
+  const tokenStatus=await validarToken(token);
+  GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite);
+  if(!GH_WRITE_ALLOWED){
+    atualizarStatusSessaoWorker('⚠️ Token sem permissão de escrita.','warning');
+    atualizarBannerSessaoWorker(false);
+    return{ok:false,error:'Sem escrita'};
+  }
+  if(!lsSet('itap_gh_token',token))return{ok:false,error:'Falha ao salvar token'};
+  atualizarStatusSessaoWorker('✅ Token GitHub validado para escrita.','success');
+  atualizarBannerSessaoWorker(true);
+  return{ok:true,token};
 }
 async function fetchWithTimeout(url,options={},timeoutMs=10000){
   if(options&&options.signal&&options.signal.aborted)throw new Error('Abortado antes do fetch');
@@ -2846,8 +2824,8 @@ async function workerGet(endpoint){
 }
 async function workerSalvar(endpoint,data,method='PUT'){
   const token=getAdminToken();
-  if(!token){toast('⚠️ Sessão Worker expirada ou não iniciada. Use “Ativar Sessão Worker” para liberar o admin inteiro.','aviso');return false;}
-  mostrarLoading('Salvando no Worker...');
+  if(!token){toast('⚠️ Token GitHub ausente, inválido ou sem escrita. Informe um PAT válido para liberar salvamento no admin.','aviso');return false;}
+  mostrarLoading('Salvando no GitHub...');
   try{
     const r=await fetchWithTimeout(ITAP_WORKER_API+endpoint,{method,headers:workerAdminHeaders(),body:JSON.stringify(data)},12000);
     ocultarLoading();
@@ -2859,7 +2837,7 @@ async function workerSalvar(endpoint,data,method='PUT'){
     return true;
   }catch(e){
     ocultarLoading();
-    toast('❌ Erro ao salvar no Worker: '+e.message,'erro');
+    toast('❌ Erro ao salvar no GitHub: '+e.message,'erro');
     return false;
   }
 }
@@ -2879,8 +2857,8 @@ async function workerGetRepo(path){
 }
 async function workerSalvarRepo(path,data,sha,msg){
   const token=getAdminToken();
-  if(!token)return{ok:false,erro:'Sessão Worker expirada ou não iniciada.'};
-  mostrarLoading('Salvando no Worker...');
+  if(!token)return{ok:false,erro:'Token GitHub ausente, inválido ou sem escrita.'};
+  mostrarLoading('Salvando no GitHub...');
   try{
     const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/github-file',{
       method:'PUT',
@@ -2935,12 +2913,11 @@ function ensureSafeState(){
   else if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
 }
 function fidIsReadOnly(){
-  // Fidelidade (fidelidade.json) requires GitHub SHA+token.
-  // Operações de clientes/encomendas validam sessão Worker por rota em fidPathReadOnly().
+  // Fidelidade (fidelidade.json) requer SHA + token com escrita.
   return !STATE.fidelidadeSha;
 }
 function fidPathReadOnly(path){
-  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!getAdminToken());
+  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!GH_WRITE_ALLOWED);
 }
 const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
 function fidApplyReadOnlyGuard(){
@@ -2956,8 +2933,8 @@ function fidRequireWrite(){
   if(!fidIsReadOnly())return true;
   fidApplyReadOnlyGuard();
   const msg=!STATE.fidelidadeSha
-    ? '⚠️ Modo leitura ativo. Reative a Sessão Worker para editar esta área do admin.'
-    : '⚠️ Sessão Worker inativa. Use “Ativar Sessão Worker” para editar esta área do admin.';
+    ? '⚠️ Modo leitura ativo. Informe um token GitHub válido para editar esta área do admin.'
+    : '⚠️ Token GitHub sem escrita. Atualize o token para editar esta área do admin.';
   toast(msg,'aviso');
   return false;
 }
@@ -2984,22 +2961,6 @@ async function ghGetRepo(path){
   }
 }
 async function ghGet(path){
-  // PII paths: tenta Worker primeiro; fallback de leitura para GitHub evita abas vazias no admin.
-  if(path===PATHS.clientes||path===PATHS.encomendas){
-    const endpoint=path===PATHS.clientes?'/api/clientes':'/api/encomendas';
-    const viaWorker=await workerGet(endpoint);
-    if(viaWorker.content)return viaWorker;
-    const viaGithub=await ghGetRepo(path);
-    if(viaGithub.content){
-      console.warn('[Admin] Worker indisponível para',path,'— usando fallback de leitura via GitHub.');
-      return{...viaGithub,readonly:true};
-    }
-    return viaWorker;
-  }
-  if(workerRepoPathAllowed(path)){
-    const viaWorker=await workerGetRepo(path);
-    if(viaWorker.content)return viaWorker;
-  }
   return ghGetRepo(path);
 }
 let _configLoadPromise=null;
@@ -3056,23 +3017,20 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
-  // PII paths → Worker API (não gravar no GitHub)
-  if(path===PATHS.clientes) return workerSalvar('/api/clientes/bulk',data);
-  if(path===PATHS.encomendas) return workerSalvar('/api/encomendas/bulk',data);
-  if(!workerRepoPathAllowed(path)||!getAdminToken()||!GH_WRITE_ALLOWED){
+  if(!getToken()||!GH_WRITE_ALLOWED){
     const banner=document.getElementById('aviso-token-expirado');
     if(banner)banner.style.display='flex';
-    toast('⚠️ Sessão Worker inativa. Reative para salvar alterações.','aviso');
+    toast('⚠️ Modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
     return false;
   }
   const bloqueado=fidPathReadOnly(path);
   if(bloqueado){
     fidApplyReadOnlyGuard();
-    toast('⚠️ Modo somente leitura ativo. Reative a Sessão Worker para editar esta área.','aviso');
+    toast('⚠️ Modo somente leitura ativo. Informe um token GitHub válido para editar esta área.','aviso');
     return false;
   }
   console.log('[Admin] Salvando:', path, 'SHA:', STATE[shaKey]);
-  const r=await workerSalvarRepo(path,data,STATE[shaKey],msg);
+  const r=await ghPut(path,data,STATE[shaKey],msg);
   if(r.ok){
     STATE[shaKey]=r.sha;
     clearDirty();
@@ -3096,10 +3054,10 @@ async function sha256(str) {
 }
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
-  const workerSecretRaw=(document.getElementById('inp-worker-secret')?.value||'').trim();
+  const tokenInput=(document.getElementById('inp-gh-token')?.value||'').trim();
   const loginErro=document.getElementById('login-erro');
-  if(!senha||(!workerSecretRaw&&!getAdminToken())){
-    loginErro.innerHTML='&#x274C; Informe a senha do administrador e o Segredo Worker.';
+  if(!senha){
+    loginErro.innerHTML='&#x274C; Informe a senha do administrador.';
     loginErro.style.display='block';
     return;
   }
@@ -3118,38 +3076,52 @@ async function entrar(){
     loginErro.style.display='block';
     return;
   }
-  const sessao=workerSecretRaw?await iniciarSessaoWorker(workerSecretRaw):{ok:Boolean(getAdminToken())};
-  if(!sessao.ok){
-    ocultarLoading();
-    loginErro.innerHTML='⚠️ Não foi possível ativar a Sessão Worker. Confira o Segredo Worker e tente novamente.';
-    loginErro.style.display='block';
-    return;
+  let tokenStatus={ok:false,canWrite:false,reason:'ausente'};
+  let tokenAtual=getToken();
+  if(tokenInput){
+    if(!tokenFormatoValido(tokenInput)){
+      GH_WRITE_ALLOWED=false;
+      tokenAtual='';
+      lsRemove('itap_gh_token');
+      toast('⚠️ Token com formato inválido. Você entrou em modo somente leitura.','aviso');
+    }else{
+      lsSet('itap_gh_token',tokenInput);
+      tokenAtual=tokenInput;
+    }
   }
-  GH_WRITE_ALLOWED=true;
+  if(tokenAtual){
+    tokenStatus=await validarToken(tokenAtual);
+  }
+  GH_WRITE_ALLOWED=Boolean(tokenStatus.ok&&tokenStatus.canWrite);
+  atualizarStatusSessaoWorker(GH_WRITE_ALLOWED
+    ?'✅ Token GitHub validado. Edição e salvamento liberados.'
+    :'ℹ️ Token ausente/inválido. Admin em modo somente leitura.'
+  ,GH_WRITE_ALLOWED?'success':'info');
   ocultarLoading();
   loginErro.style.display='none';
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
+  if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub PAT para salvar alterações.','aviso');
   carregarTudo();
 }
 async function reativarSessaoWorker(){
   const input=document.getElementById('worker-secret-modal-input');
   const secret=(input?.value||'').trim();
   if(!secret){
-    toast('Informe o Segredo Worker para continuar.','aviso');
+    toast('Informe um token GitHub válido para continuar.','aviso');
     if(input)input.focus();
     return;
   }
-  mostrarLoading('Ativando sessão Worker...');
+  mostrarLoading('Validando token GitHub...');
   try{
     const sessao=await iniciarSessaoWorker(secret);
     if(!sessao.ok){
-      toast('⚠️ Não foi possível ativar a sessão Worker. Confira o segredo e tente novamente.','aviso');
+      toast('⚠️ Não foi possível validar o token GitHub para escrita. Confira o PAT e tente novamente.','aviso');
       if(input)input.focus();
       return;
     }
     fecharModalSessaoWorker();
-    toast('✅ Sessão Worker ativada nesta aba!','sucesso');
+    toast('✅ Token GitHub validado nesta aba!','sucesso');
   }finally{
     ocultarLoading();
   }
@@ -3170,21 +3142,20 @@ async function carregarTudo(){
     resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',fontes[idx],'falhou:',r.reason);});
     [pr,cl,fi,en,prod,promos]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
     if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
-    // clientes e encomendas vêm do Worker (sha='worker' quando ok, null quando falhou)
-    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes — verifique Segredo Worker e rede');}
+    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes');}
     if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura ou a sessão não está ativa
-    const semToken=[pr,fi,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura ou o token não está válido
+    const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
     const banner=document.getElementById('aviso-token-expirado');
     if(banner)banner.style.display=semToken?'flex':'none';
-    // Banner Worker session: mostrar quando sessão inativa
-    atualizarBannerSessaoWorker(Boolean(getAdminToken()));
+    // Banner: mostrar quando token de escrita não está válido
+    atualizarBannerSessaoWorker(GH_WRITE_ALLOWED);
   }catch(e){
     console.error('[BOOT] carregarTudo falhou',e);
-    toast('⚠️ Falha ao carregar parte dos dados. Verifique conexão/segredos e tente Recarregar.','aviso');
+    toast('⚠️ Falha ao carregar parte dos dados. Verifique a conexão/token e tente Recarregar.','aviso');
   }finally{
     ocultarLoading();
   }
@@ -3924,7 +3895,7 @@ function renderEncomendas(){
   const container=document.getElementById('enc-lista');
   if(!lista.length){
     if(semRegistrosOriginais&&!workerAtivo){
-      container.innerHTML='<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45">ℹ️ Sessão Worker inativa: os registros de Encomendas não foram carregados nesta sessão. Faça login novamente e preencha o campo <strong>"Segredo Worker — habilita Fidelidade e Encomendas"</strong>. Se o Worker estiver indisponível, o admin tenta mostrar apenas o último snapshot de leitura disponível.</div>';
+      container.innerHTML='<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45">ℹ️ Modo somente leitura: sem token GitHub com escrita, os registros de Encomendas podem ficar desatualizados. Informe um PAT válido para liberar sincronização e salvamento completos.</div>';
       return;
     }
     container.innerHTML='<p style="color:#999;text-align:center;padding:20px">Nenhuma encomenda encontrada.</p>';
@@ -4460,7 +4431,7 @@ function renderClientes(){
       td.style.background='#e3f2fd';
       td.style.border='1px solid #bbdefb';
       td.style.borderRadius='8px';
-      td.textContent='ℹ️ Sessão Worker inativa: a lista de clientes não pôde ser carregada. Faça login novamente e preencha o campo "Segredo Worker — habilita Fidelidade e Encomendas" para visualizar os cadastros.';
+      td.textContent='ℹ️ Modo somente leitura: a lista de clientes não pôde ser carregada por falta de token GitHub com escrita. Informe um PAT válido para liberar sincronização completa.';
       tr.appendChild(td);
       tbodyAviso.replaceChildren(tr);
     }
@@ -4925,7 +4896,7 @@ async function liberarLoteFidelidade(){
   if(!fidRequireWrite())return;
   // Se STATE.fidelidade não carregou, evitar gerar lote sem a versão atual do arquivo
   if(!STATE.fidelidade){
-    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Reative a Sessão Worker e recarregue o painel antes de liberar um novo lote.','erro');
+    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Verifique o token GitHub e recarregue o painel antes de liberar um novo lote.','erro');
     return;
   }
   const atual=STATE.fidelidade.liberados||0;
@@ -7698,7 +7669,7 @@ function renderRastreioRecentes(){
   if(!registros.length){
     container.innerHTML=workerAtivo
       ?'<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'
-      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Sessão Worker inativa: não foi possível listar Encomendas Recentes.</div>';
+      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Modo somente leitura: não foi possível listar Encomendas Recentes sem token GitHub com escrita.</div>';
     return;
   }
   container.innerHTML=registros.map(e=>{
@@ -7819,8 +7790,8 @@ function renderAuditoria(){
   if(!lista.length){
     if(!workerAtivo&&(!clientesCarregados||!encomendasCarregadas)){
       container.innerHTML=`<div style="background:#e3f2fd;border:1px solid #bbdefb;border-radius:12px;padding:20px;color:#0d47a1;font-size:.84rem;line-height:1.5">
-        ℹ️ <strong>Sessão Worker inativa.</strong> A Auditoria está com escopo reduzido porque os dados de Clientes/Encomendas não foram carregados nesta sessão.<br>
-        Faça login novamente e preencha o campo <strong>"Segredo Worker — habilita Fidelidade e Encomendas"</strong> para auditoria completa.
+        ℹ️ <strong>Modo somente leitura.</strong> A Auditoria está com escopo reduzido porque os dados de Clientes/Encomendas não foram carregados nesta sessão.<br>
+        Informe um token GitHub PAT com escrita para auditoria completa.
       </div>`;
       return;
     }
