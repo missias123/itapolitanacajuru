@@ -3159,7 +3159,7 @@ async function entrar(){
     return;
   }
   mostrarLoading('Verificando...');
-  const[cfg,,senhaHash]=await Promise.all([carregarConfigAdmin(),carregarAuth(),sha256(senha)]);
+  const[cfg,_,senhaHash]=await Promise.all([carregarConfigAdmin(),carregarAuth(),sha256(senha)]);
   if(!cfg.content){
     ocultarLoading();
     loginErro.innerHTML='⚠️ Não foi possível carregar a configuração do admin. Verifique a conexão e tente novamente.';
@@ -5531,7 +5531,7 @@ async function salvarConfig(){
   delete cfg.senhaAdmin;
   if(novaSenha){
     const novaHash=await sha256(novaSenha);
-    const authData=Object.assign({},STATE.auth||{},{senhaAdmin:novaHash});
+    const authData={...(STATE.auth||{}),senhaAdmin:novaHash};
     const okAuth=await salvarArquivo(PATHS.auth,authData,'authSha','Admin: atualizar senha');
     if(okAuth)STATE.senhaAdmin=novaHash;
   }
