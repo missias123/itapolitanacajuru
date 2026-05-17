@@ -282,7 +282,9 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 
 ## 🔑 Acesso ao Painel Administrativo
 
-**URL:** `https://itapolitanacajuru.com.br/admin-painel.html`
+**URLs válidas:**
+- `https://itapolitanacajuru.com.br/admin` (atalho estável com redirecionamento)
+- `https://itapolitanacajuru.com.br/admin-painel.html` (URL canônica do painel)
 
 ### Fluxo de login real
 
@@ -290,7 +292,7 @@ O admin usa **dois fatores independentes**: senha do painel e token GitHub para 
 Não depende de conta Cloudflare para uso normal.
 
 ```
-1. Abrir admin-painel.html no navegador
+1. Abrir `/admin` (ou `admin-painel.html`) no navegador
 2. Informar a senha do administrador
    └── A senha é verificada localmente via hash SHA-256 (definida em dados/config.json)
 3. (Opcional) Informar o GitHub Personal Access Token (PAT)
