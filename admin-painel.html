@@ -3626,14 +3626,16 @@ async function salvarPreços(){
 }
 function preencherPromoção(){
   const pr=STATE.promo||{};
+  const tituloPromo=pr.titulo??pr.título??'';
+  const descricaoPromo=pr.descricao??pr.descrição??'';
   document.getElementById('promo-ativo').checked=!!pr.ativo;
   // Campos do header da página promoção.html
   const pht=document.getElementById('promo-header-titulo'); if(pht) pht.value=pr.headerTitulo||'';
   const pbf=document.getElementById('promo-banner-frase'); if(pbf) pbf.value=pr.bannerFrase||'';
   const pbg=document.getElementById('promo-badge'); if(pbg) pbg.value=pr.badge||'';
   // Campos do card principal
-  document.getElementById('promo-título').value=pr.título||'';
-  document.getElementById('promo-descrição').value=pr.descrição||'';
+  document.getElementById('promo-título').value=tituloPromo;
+  document.getElementById('promo-descrição').value=descricaoPromo;
   document.getElementById('promo-btn').value=pr.btnTexto||'';
   document.getElementById('promo-link').value=pr.link||'';
   document.getElementById('promo-datafim').value=pr.dataFim||'';
@@ -3850,8 +3852,12 @@ async function salvarPromoção(){
   const pbf=document.getElementById('promo-banner-frase'); if(pbf) pr.bannerFrase=pbf.value.trim();
   const pbg=document.getElementById('promo-badge'); if(pbg) pr.badge=pbg.value.trim();
   // Campos do card principal
-  pr.título=document.getElementById('promo-título').value.trim();
-  pr.descrição=document.getElementById('promo-descrição').value.trim();
+  const tituloPromo=document.getElementById('promo-título').value.trim();
+  const descricaoPromo=document.getElementById('promo-descrição').value.trim();
+  pr.titulo=tituloPromo;
+  pr.título=tituloPromo;
+  pr.descricao=descricaoPromo;
+  pr.descrição=descricaoPromo;
   pr.btnTexto=document.getElementById('promo-btn').value.trim();
   pr.link=document.getElementById('promo-link').value.trim();
   pr.dataFim=document.getElementById('promo-datafim').value;
@@ -3875,6 +3881,16 @@ async function salvarPromoção(){
     }
   }
   const okPromo = await salvarArquivo(PATHS.promo,pr,'promoSha','Admin: atualizar promoção');
+  if(!okPromo)return;
+  const cfg=STATE.config||{};
+  cfg.promocaoAtiva=Boolean(pr.ativo);
+  cfg.promoH1=tituloPromo;
+  cfg.promoTituloEl=tituloPromo;
+  cfg.promoDescEl=descricaoPromo;
+  cfg.promoBadge=pr.badge||'';
+  cfg.promoFabLabel=pr.fabLabel||cfg.promoFabLabel||'';
+  STATE.config=cfg;
+  await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
 }
 // ─── ENCOMENDAS — LABELS/CORES COMPLETOS ───────────────────
 const ENC_STATUS_LABELS={
