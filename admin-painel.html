@@ -6887,24 +6887,6 @@ async function salvarCardápio() {
     if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s => s.trim()).filter(s => s);
   }
 
-  // Açaí Promoção — formato: "Nome - Desc - R$ 10,00"
-  p.acai_promocao = document.getElementById('card-açaí-promo-combos').value
-    .split('\n').map(s=>s.trim()).filter(s=>s)
-    .map(linha => {
-      const parts = linha.split(' - ');
-      const preco = parseFloat((parts[parts.length-1]||'').replace(/R\$\s*/,'').replace(',','.')) || 0;
-    // Sorvetes
-  if (p.sorvetes) p.sorvetes.sabores = document.getElementById('card-sorvetes-sabores').value.split('\n').map(s=>s.trim()).filter(s=>s);
-
-  // Picolés
-  if (p.picoles) {
-    if (p.picoles.frutas_agua) p.picoles.frutas_agua.sabores = document.getElementById('card-picoles-fruta').value.split('\n').map(s=>s.trim()).filter(s=>s);
-    if (p.picoles.leite_sem_recheio) p.picoles.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s=>s.trim()).filter(s=>s);
-    if (p.picoles.leite_com_recheio) p.picoles.leite_com_recheio.sabores = document.getElementById('card-picoles-recheado').value.split('\n').map(s=>s.trim()).filter(s=>s);
-    if (p.picoles.leite_ninho) p.picoles.leite_ninho.sabores = document.getElementById('card-picoles-ninho').value.split('\n').map(s=>s.trim()).filter(s=>s);
-    if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s=>s.trim()).filter(s=>s);
-  }
-
   // Açaí Promoção — tabela 3 colunas
   p.acai_promocao = readCardapioPromoTabela();
 
