@@ -5,13 +5,13 @@
  *   • clientes.json  → CLIENTES_KV
  *   • encomendas.json → ENCOMENDAS_KV
  *
- * fidelidade.json continua no GitHub para leitura pública (códigos não são PII),
- * mas as gravações (marcar código como usado) são feitas por este Worker usando
- * GITHUB_TOKEN armazenado como segredo no Cloudflare.
+ * Os demais JSONs editáveis do admin continuam no GitHub, mas as leituras/gravações
+ * administrativas também passam por este Worker usando GITHUB_TOKEN armazenado
+ * como segredo no Cloudflare.
  *
  * Variáveis de ambiente obrigatórias (wrangler secret put):
  *   ADMIN_SECRET   — segredo compartilhado para rotas protegidas do admin
- *   GITHUB_TOKEN   — PAT do GitHub com escopo "repo" (para gravar fidelidade.json)
+ *   GITHUB_TOKEN   — PAT do GitHub com escopo "repo" (para o admin inteiro)
  *
  * KV Namespaces:
  *   CLIENTES_KV    — dados de clientes
@@ -28,7 +28,15 @@ const ALLOWED_ORIGINS = [
 
 const GH_RAW  = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/';
 const GH_API  = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';
-const GH_FIDELIDADE_PATH = 'dados/fidelidade.json';
+const GH_ADMIN_JSON_PATHS = Object.freeze({
+  config:      'dados/config.json',
+  produtos:    'dados/produtos.json',
+  promo:       'dados/promo.json',
+  fidelidade:  'dados/fidelidade.json',
+  promocoes:   'dados/promocoes.json',
+});
+const GH_ADMIN_PATH_SET = new Set(Object.values(GH_ADMIN_JSON_PATHS));
+const GH_FIDELIDADE_PATH = GH_ADMIN_JSON_PATHS.fidelidade;
 
 const RATE_LIMITS = {
   'post-cliente':  { max: 10, windowMs: 3_600_000 },
@@ -172,32 +180,65 @@ function encodeBase64(str) {
   return btoa(binary);
 }
 
-// ─── GitHub helper — write fidelidade.json ────────────────────────────────────
-async function ghPutFidelidade(dadosFidelidade, mensagem, token) {
-  // 1. Get current SHA
-  const r1 = await fetch(GH_API + GH_FIDELIDADE_PATH, {
+function decodeBase64Utf8(base64) {
+  const binary = atob(String(base64 || '').replace(/\n/g, ''));
+  const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function isAllowedAdminRepoPath(path) {
+  return GH_ADMIN_PATH_SET.has(path);
+}
+
+async function ghGetJsonFile(path, token) {
+  const r = await fetch(GH_API + path, {
     headers: {
       Authorization: `token ${token}`,
       Accept:        'application/vnd.github.v3+json',
     },
   });
-  if (!r1.ok) throw new Error(`GET fidelidade.json: HTTP ${r1.status}`);
-  const meta    = await r1.json();
-  const content = encodeBase64(JSON.stringify(dadosFidelidade, null, 2));
+  if (!r.ok) throw new Error(`GET ${path}: HTTP ${r.status}`);
+  const meta = await r.json();
+  return {
+    sha: meta.sha || '',
+    content: JSON.parse(decodeBase64Utf8(meta.content || '')),
+  };
+}
 
-  // 2. Put updated content
-  const r2 = await fetch(GH_API + GH_FIDELIDADE_PATH, {
+async function ghPutJsonFile(path, data, mensagem, token, sha = '') {
+  const body = {
+    message: sanitizeString(mensagem || `Admin: atualizar ${path}`, 180) || `Admin: atualizar ${path}`,
+    content: encodeBase64(JSON.stringify(data, null, 2)),
+  };
+  if (sha) {
+    body.sha = sha;
+  } else {
+    try {
+      const atual = await ghGetJsonFile(path, token);
+      if (atual.sha) body.sha = atual.sha;
+    } catch (e) {
+      if (!String(e.message || '').includes('HTTP 404')) throw e;
+    }
+  }
+  const r = await fetch(GH_API + path, {
     method:  'PUT',
     headers: {
       Authorization:  `token ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ message: mensagem, content, sha: meta.sha }),
+    body: JSON.stringify(body),
   });
-  if (!r2.ok) {
-    const e = await r2.json().catch(() => ({}));
-    throw new Error(e.message || `PUT fidelidade.json: HTTP ${r2.status}`);
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    throw new Error(e.message || `PUT ${path}: HTTP ${r.status}`);
   }
+  const resp = await r.json().catch(() => ({}));
+  return { ok: true, sha: resp?.content?.sha || body.sha || '' };
+}
+
+// ─── GitHub helper — write fidelidade.json ────────────────────────────────────
+async function ghPutFidelidade(dadosFidelidade, mensagem, token) {
+  await ghPutJsonFile(GH_FIDELIDADE_PATH, dadosFidelidade, mensagem, token);
   return true;
 }
 
@@ -288,6 +329,16 @@ async function router(request, env) {
   // ── Admin session exchange ─────────────────────────────────────────────────
   if (path === '/api/admin/session' && method === 'POST')
     return handleAdminSession(request, env);
+
+  if (path === '/api/admin/github-file' && method === 'GET') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handleAdminGitHubFileGet(url.searchParams.get('path'), env);
+  }
+
+  if (path === '/api/admin/github-file' && method === 'PUT') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handleAdminGitHubFilePut(request, env);
+  }
 
   // ── Clientes ──────────────────────────────────────────────────────────────
   if (path === '/api/clientes' && method === 'POST')
@@ -390,6 +441,40 @@ async function handleAdminSession(request, env) {
   await registrarAudit(env, 'admin_login_ok', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
 
   return jsonResp({ ok: true, token, expiresIn: SESSION_TTL });
+}
+
+async function handleAdminGitHubFileGet(pathRaw, env) {
+  const path = sanitizeString(pathRaw || '', 120).replace(/^\/+/, '');
+  if (!isAllowedAdminRepoPath(path)) {
+    return jsonResp({ ok: false, error: 'Arquivo não permitido' }, 400);
+  }
+  if (!env.GITHUB_TOKEN) {
+    return jsonResp({ ok: false, error: 'GITHUB_TOKEN não configurado no Worker' }, 500);
+  }
+  const file = await ghGetJsonFile(path, env.GITHUB_TOKEN);
+  return jsonResp({ ok: true, path, sha: file.sha, content: file.content });
+}
+
+async function handleAdminGitHubFilePut(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const path = sanitizeString(body.path || '', 120).replace(/^\/+/, '');
+  if (!isAllowedAdminRepoPath(path)) {
+    return jsonResp({ ok: false, error: 'Arquivo não permitido' }, 400);
+  }
+  if (!Object.prototype.hasOwnProperty.call(body, 'data')) {
+    return jsonResp({ ok: false, error: 'Campo data é obrigatório' }, 400);
+  }
+  if (!env.GITHUB_TOKEN) {
+    return jsonResp({ ok: false, error: 'GITHUB_TOKEN não configurado no Worker' }, 500);
+  }
+
+  const sha = sanitizeString(body.sha || '', 120);
+  const message = sanitizeString(body.message || `Admin: atualizar ${path}`, 180) || `Admin: atualizar ${path}`;
+  const saved = await ghPutJsonFile(path, body.data, message, env.GITHUB_TOKEN, sha);
+  await registrarAudit(env, 'admin_repo_put', path, { via: 'worker' });
+  return jsonResp({ ok: true, path, sha: saved.sha });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

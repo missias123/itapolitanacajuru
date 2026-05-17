@@ -50,7 +50,7 @@ Cada comando retornará um `id`. Abra `wrangler.toml` e substitua os `PLACEHOLDE
 # Segredo admin — use uma senha longa e aleatória (mín. 32 chars)
 npx wrangler secret put ADMIN_SECRET
 
-# Token GitHub com escopo "repo" — para marcar códigos de fidelidade como usados
+# Token GitHub com escopo "repo" — para o admin inteiro gravar os JSONs do site
 # Gere em: https://github.com/settings/tokens/new?scopes=repo&description=Itapolitana+Worker
 npx wrangler secret put GITHUB_TOKEN
 ```
@@ -111,8 +111,11 @@ node migrate-data.js \
 
 ## 8. Atualizar o painel admin
 
-No **Painel Administrativo**, insira o segredo Worker no campo **"Segredo Worker"** da tela de login.  
-Este é o mesmo valor definido em `ADMIN_SECRET` (passo 4).
+No **Painel Administrativo**, faça login usando apenas:
+- **Senha do administrador**
+- **Segredo Worker**
+
+O campo **"Segredo Worker"** usa exatamente o valor definido em `ADMIN_SECRET` (passo 4) e libera a escrita do admin inteiro nesta aba.
 
 ---
 
@@ -135,6 +138,8 @@ Este é o mesmo valor definido em `ADMIN_SECRET` (passo 4).
 | PATCH  | `/api/clientes/:id`           | Admin   | Atualizar dados do cliente          |
 | DELETE | `/api/clientes/:id`           | Admin   | Remover cliente                     |
 | PUT    | `/api/clientes/bulk`          | Admin   | Substituir coleção completa         |
+| GET    | `/api/admin/github-file?path=...` | Admin | Ler JSONs do site via Worker        |
+| PUT    | `/api/admin/github-file`      | Admin   | Salvar JSONs do site via Worker     |
 | POST   | `/api/encomendas`             | Público | Enviar pedido de encomenda          |
 | GET    | `/api/encomendas`             | Admin   | Listar todos os pedidos             |
 | PATCH  | `/api/encomendas/:id`         | Admin   | Atualizar status/observação         |
@@ -150,7 +155,7 @@ O `ADMIN_SECRET` **nunca deve ser armazenado no browser** — apenas usado na te
 2. O frontend chama `POST /api/admin/session` com `{ "secret": "<ADMIN_SECRET>" }`
 3. O Worker verifica o segredo e retorna um **token de sessão temporário** (expira em 2h)
 4. O frontend armazena apenas o token de sessão em `sessionStorage`
-5. Todas as rotas admin usam o header `X-Itap-Session-Token: <token>`
+5. Todas as rotas admin usam o header `X-Itap-Session-Token: <token>`, inclusive leituras e gravações dos JSONs do site
 
 **Autenticação direta (scripts/CLI):** header `X-Itap-Admin-Secret: <ADMIN_SECRET>` ainda é aceito para uso em scripts de migração e ferramentas CLI.
 
