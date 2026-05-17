@@ -545,6 +545,7 @@ body { overflow-x: hidden; }
     </div>
     <div class="inp-wrap" style="margin-top:8px">
       <input type="password" id="inp-gh-token" aria-label="Token GitHub" placeholder="Token GitHub PAT (opcional para salvar)" autocomplete="off" oninput="validarCampoToken(this)" onkeydown="if(event.key==='Enter')entrar()"/>
+      <button class="eye" onclick="toggleGhToken()" id="eye-btn-token" aria-label="Mostrar/ocultar token">&#x1F441;&#xFE0F;</button>
     </div>
     <div id="token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 4px;min-height:1.1em">ℹ️ Sem token válido, o admin entra em modo somente leitura.</div>
     <div id="token-hint" style="display:none;font-size:0.72rem;color:#ffd54f;margin:0 0 6px">⚠️ Formato inválido. Use um PAT válido (`ghp_...` ou `github_pat_...`).</div>
@@ -3145,6 +3146,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   return false;
 }
 function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
+function toggleGhToken(){const i=document.getElementById('inp-gh-token');i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -5727,8 +5729,11 @@ function renderizarPicolésAdmin() {
     const nome     = pp.nome || cat;
     const sabores  = Array.isArray(pp.sabores) ? pp.sabores : [];
     const saboresHtml = sabores.map(s => {
-      const sid = 'pic_' + norm(cat) + '_' + norm(s.nome);
-      return '<div class="sabor-item ' + (s.esgotado ? 'esgotado' : '') + '"><span class="sabor-nome">' + s.nome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" ' + (s.esgotado ? '' : 'checked') + ' onchange="toggleSaborPicolé(\'' + cat + '\',\'' + s.nome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status ' + (s.esgotado ? 'esgotado' : '') + '" id="status_' + sid + '">' + (s.esgotado ? 'Esgotado' : 'Disponível') + '</span></div>';
+      const snome = typeof s === 'string' ? s : (s && s.nome ? s.nome : '');
+      const sesgotado = typeof s === 'object' && s ? (s.esgotado || false) : false;
+      if (!snome) return '';
+      const sid = 'pic_' + norm(cat) + '_' + norm(snome);
+      return '<div class="sabor-item ' + (sesgotado ? 'esgotado' : '') + '"><span class="sabor-nome">' + snome + '</span><label class="toggle"><input type="checkbox" id="' + sid + '" ' + (sesgotado ? '' : 'checked') + ' onchange="toggleSaborPicolé(\'' + cat + '\',\'' + snome + '\',this.checked)"/><span class="toggle-slider"></span></label><span class="sabor-status ' + (sesgotado ? 'esgotado' : '') + '" id="status_' + sid + '">' + (sesgotado ? 'Esgotado' : 'Disponível') + '</span></div>';
     }).join('');
     html += '<div class="estoque-card ' + (esgotado ? 'esgotado' : '') + '"><div class="estoque-header"><span class="estoque-nome">🍭 ' + nome + '</span><span class="estoque-preço-badge">Varejo R$ ' + pVarejo.toFixed(2).replace('.',',') + ' | Atacado R$ ' + pAtacado.toFixed(2).replace('.',',') + '</span></div><div class="estoque-campos"><div class="campo-edit"><label>Preço Varejo (Cardápio)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_varejo" value="' + pVarejo + '" min="0" step="0.1"/></div><div class="hint">Preço unitário no cardápio da loja.</div></div><div class="campo-edit"><label>Preço Atacado (Encomendas)</label><div class="preço-inp"><span>R$</span><input type="number" id="pic_' + cat + '_atacado" value="' + pAtacado + '" min="0" step="0.1"/></div><div class="hint">Preço por unidade em encomendas (mín. 100 un.).</div></div><div class="campo-edit"><label>Estoque total (0 a 200)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoquePicolé(\'' + cat + '\',-1)">-</button><input type="number" id="pic_' + cat + '_estoque" value="' + estoque + '" min="0" max="200" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoquePicolé(\'' + cat + '\',1)">+</button></div><div class="hint">0 = Esgotado. Max. 200.</div></div></div><div class="seção-título" style="font-size:.78rem;margin:12px 0 8px">Sabores desta categoria</div><div class="sabores-grid">' + saboresHtml + '</div></div>';
   }
@@ -8102,6 +8107,5 @@ async function zerarPontosNegativos(clienteId){
 </div>
 
 
-</div><!-- /admin-app -->
 </body>
 </html>
