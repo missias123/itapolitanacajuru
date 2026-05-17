@@ -207,7 +207,7 @@ async function ghGetJsonFile(path, token) {
 
 async function ghPutJsonFile(path, data, mensagem, token, sha = '') {
   const body = {
-    message: sanitizeString(mensagem || `Admin: atualizar ${path}`, 180) || `Admin: atualizar ${path}`,
+    message: sanitizeString(mensagem || `Admin: atualizar ${path}`, 180),
     content: encodeBase64(JSON.stringify(data, null, 2)),
   };
   if (sha) {

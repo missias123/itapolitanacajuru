@@ -2644,7 +2644,7 @@ function preencherTokenSalvoNoLogin(){
     }
   }
   const hasSession=Boolean(getAdminToken());
-  GH_WRITE_ALLOWED=hasSession||GH_WRITE_ALLOWED;
+  GH_WRITE_ALLOWED=hasSession;
   atualizarStatusSessaoWorker(hasSession
     ?'✅ Sessão Worker ativa nesta aba.'
     :'ℹ️ Insira o Segredo Worker para ativar o admin completo nesta aba.'
@@ -2849,7 +2849,7 @@ async function workerGet(endpoint){
     const r=await fetchWithTimeout(ITAP_WORKER_API+endpoint,{headers:workerAdminHeaders()},7000);
     if(r.status===401){invalidarSessaoWorker();throw new Error('HTTP 401');}
     if(!r.ok)throw new Error('HTTP '+r.status);
-    GH_WRITE_ALLOWED=Boolean(getAdminToken())||GH_WRITE_ALLOWED;
+    GH_WRITE_ALLOWED=Boolean(getAdminToken());
     return{content:await r.json(),sha:'worker'};
   }catch(e){
     console.error('[Admin] workerGet falhou:',endpoint,e.message);
@@ -3071,9 +3071,7 @@ async function salvarArquivo(path,data,shaKey,msg){
   // PII paths → Worker API (não gravar no GitHub)
   if(path===PATHS.clientes) return workerSalvar('/api/clientes/bulk',data);
   if(path===PATHS.encomendas) return workerSalvar('/api/encomendas/bulk',data);
-  const podeSalvarViaWorker=workerRepoPathAllowed(path)&&Boolean(getAdminToken());
-  const podeSalvarViaGithub=!getAdminToken()&&GH_WRITE_ALLOWED;
-  if(!podeSalvarViaWorker&&!podeSalvarViaGithub){
+  if(!workerRepoPathAllowed(path)||!getAdminToken()||!GH_WRITE_ALLOWED){
     const banner=document.getElementById('aviso-token-expirado');
     if(banner)banner.style.display='flex';
     toast('⚠️ Sessão Worker inativa. Reative para salvar alterações.','aviso');
@@ -3086,9 +3084,7 @@ async function salvarArquivo(path,data,shaKey,msg){
     return false;
   }
   console.log('[Admin] Salvando:', path, 'SHA:', STATE[shaKey]);
-  const r=workerRepoPathAllowed(path)&&getAdminToken()
-    ?await workerSalvarRepo(path,data,STATE[shaKey],msg)
-    :await ghPut(path,data,STATE[shaKey],msg);
+  const r=await workerSalvarRepo(path,data,STATE[shaKey],msg);
   if(r.ok){
     STATE[shaKey]=r.sha;
     clearDirty();
