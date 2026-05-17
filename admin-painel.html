@@ -2830,8 +2830,8 @@ const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
-const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
-const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0,senhaAdmin:null};
+const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json',auth:'dados/auth.json'};
+const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,auth:null,authSha:null,pagClientes:0,senhaAdmin:null};
 let GH_WRITE_ALLOWED=false;
 const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
 
@@ -3046,9 +3046,28 @@ function aplicarConfigAdmin(cfg){
   if(cfg&&cfg.content){
     STATE.config=cfg.content;
     STATE.configSha=cfg.sha;
-    if(cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;
   }
   return cfg;
+}
+let _authLoadPromise=null;
+function aplicarAuth(result){
+  if(result&&result.content){
+    STATE.auth=result.content;
+    STATE.authSha=result.sha;
+    if(result.content.senhaAdmin)STATE.senhaAdmin=result.content.senhaAdmin;
+  }
+  return result;
+}
+async function carregarAuth(forceRefresh=false){
+  if(forceRefresh||!_authLoadPromise){
+    _authLoadPromise=ghGet(PATHS.auth)
+      .then(aplicarAuth)
+      .catch(e=>{
+        console.warn('[Admin] carregarAuth falhou',e);
+        return{content:null,sha:null};
+      });
+  }
+  return _authLoadPromise;
 }
 async function carregarConfigAdmin(forceRefresh=false){
   const deveAtualizarConfig=Boolean(getAdminToken()&&STATE.config&&STATE.configSha===null);
@@ -3140,7 +3159,7 @@ async function entrar(){
     return;
   }
   mostrarLoading('Verificando...');
-  const[cfg,senhaHash]=await Promise.all([carregarConfigAdmin(),sha256(senha)]);
+  const[cfg,,senhaHash]=await Promise.all([carregarConfigAdmin(),carregarAuth(),sha256(senha)]);
   if(!cfg.content){
     ocultarLoading();
     loginErro.innerHTML='⚠️ Não foi possível carregar a configuração do admin. Verifique a conexão e tente novamente.';
@@ -5509,13 +5528,17 @@ async function salvarConfig(){
   const seoCarTitEl=document.getElementById('cfg-seo-carrossel-titulo'); if(seoCarTitEl) cfg.seoPaginas.carrossel.titulo=seoCarTitEl.value.trim();
   const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
   const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
-  if(novaSenha)cfg.senhaAdmin=await sha256(novaSenha);
+  delete cfg.senhaAdmin;
+  if(novaSenha){
+    const novaHash=await sha256(novaSenha);
+    const authData=Object.assign({},STATE.auth||{},{senhaAdmin:novaHash});
+    const okAuth=await salvarArquivo(PATHS.auth,authData,'authSha','Admin: atualizar senha');
+    if(okAuth)STATE.senhaAdmin=novaHash;
+  }
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
-  if(ok){document.getElementById('cfg-nova-senha').value='';document.getElementById('cfg-conf-senha').value='';if(novaSenha)STATE.senhaAdmin=await sha256(novaSenha);}
+  if(ok){document.getElementById('cfg-nova-senha').value='';document.getElementById('cfg-conf-senha').value='';}
 }
-
-// Salvar Hero Fidelidade (IDs: fid-hero-titulo, fid-hero-desc)
 async function salvarFidHero() {
   const cfg = STATE.config || {};
   cfg.fidHeroTitulo = document.getElementById('cfg-fid-hero-titulo').value.trim();
