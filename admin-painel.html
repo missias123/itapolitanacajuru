@@ -577,16 +577,16 @@ body { overflow-x: hidden; }
     </div>
   </div>
   <div class="admin-nav">
-    <button class="nav-btn ativo" onclick="irPara('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-btn ativo" id="nav-btn-dashboard" onclick="irPara('dashboard',this)">📊 Dashboard</button>
     <button class="nav-btn" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
-    <button class="nav-btn" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
-    <button class="nav-btn" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
-    <button class="nav-btn" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
-    <button class="nav-btn" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
-    <button class="nav-btn" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
-    <button class="nav-btn" onclick="irPara('qualidade',this)">📊 Qualidade</button>
-    <button class="nav-btn" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
-    <button class="nav-btn" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
+    <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+    <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
+    <button class="nav-btn" id="nav-btn-promocao" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
+    <button class="nav-btn" id="nav-btn-fidelidade" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
+    <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
+    <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
+    <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
+    <button class="nav-btn" id="nav-btn-auditoria" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
   </div>
   <div class="admin-content">
     <!-- DASHBOARD -->
@@ -603,15 +603,15 @@ body { overflow-x: hidden; }
       <div class="card" style="margin-bottom:16px">
         <div class="card-header"><h2>⚡ Ações Rápidas — Editar Seções</h2></div>
         <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
-          <button onclick="irPara('pagina-inicial',document.querySelector('.nav-btn:nth-child(2)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
-          <button onclick="irPara('encomendas-admin',document.querySelector('.nav-btn:nth-child(3)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
-          <button onclick="irPara('produtos-admin',document.querySelector('.nav-btn:nth-child(3)').nextElementSibling)" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
-          <button onclick="irPara('promocao-admin',document.querySelector('.nav-btn:nth-child(5)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
-          <button onclick="irPara('fidelidade-admin',document.querySelector('.nav-btn:nth-child(6)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
-          <button onclick="irPara('dicas-admin',document.querySelector('.nav-btn:nth-child(7)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
-          <button onclick="irPara('qualidade',document.querySelector('.nav-btn:nth-child(8)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
-          <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.querySelector('.nav-btn:nth-child(9)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
-          <button id="dash-btn-auditoria" onclick="irPara('auditoria-admin',document.querySelector('.nav-btn:nth-child(10)'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span id="dash-btn-auditoria-label">Auditoria</span></button>
+          <button onclick="irPara('pagina-inicial',document.getElementById('nav-btn-pagina-inicial'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
+          <button onclick="irPara('encomendas-admin',document.getElementById('nav-btn-encomendas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
+          <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
+          <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
+          <button onclick="irPara('fidelidade-admin',document.getElementById('nav-btn-fidelidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
+          <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
+          <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+          <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.getElementById('nav-btn-rastreio'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
+          <button id="dash-btn-auditoria" onclick="irPara('auditoria-admin',document.getElementById('nav-btn-auditoria'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span id="dash-btn-auditoria-label">Auditoria</span></button>
         </div>
       </div>
       <!-- ABRIR NO SITE — links externos -->
@@ -2563,8 +2563,86 @@ Talento</textarea>
 
     </div>
   </div>
+
+    <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
+    <div class="seção" id="sec-rastreio">
+  <div class="card">
+    <div class="card-header">
+      <h2>🔍 Rastreio de Encomenda</h2>
+      <span style="font-size:.8rem;color:#888">Consulta como o cliente vê o pedido</span>
+    </div>
+    <div class="card-body">
+      <div class="campo-edit">
+        <label>Observações Internas / Conteúdo da Página</label>
+        <textarea id="rastreio-observacoes" rows="3" placeholder="Registre orientações internas do rastreio para a equipe."></textarea>
+      </div>
+      <div class="btn-row" style="margin-bottom:12px"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <input type="text" id="rastreio-busca" style="flex:1;min-width:200px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none" placeholder="Digite nº do pedido (ITA-001-...) ou telefone..."/>
+        <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
+      </div>
+      <div id="rastreio-resultado">
+        <p style="color:#aaa;text-align:center;padding:30px;font-size:.9rem">Digite o número do pedido ou telefone para rastrear.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Últimas encomendas para acesso rápido -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><h2>⏱️ Encomendas Recentes</h2></div>
+    <div class="card-body" id="rastreio-recentes">
+      <p style="color:#aaa;font-size:.85rem">Carregando...</p>
+    </div>
+  </div>
 </div>
-<script>
+
+<!-- ═══════════════ SEÇÃO AUDITORIA ════════════════════════ -->
+<div class="seção" id="sec-auditoria">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
+      <p style="font-size:.82rem;color:#888;margin-top:2px">Inconsistências detectadas automaticamente nos dados</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="audit-filtro-mod" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todos módulos</option>
+        <option value="clientes">Clientes</option>
+        <option value="encomendas">Encomendas</option>
+        <option value="fidelidade">Fidelidade</option>
+      </select>
+      <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todas severidades</option>
+        <option value="critica">Crítica</option>
+        <option value="alta">Alta</option>
+        <option value="media">Média</option>
+        <option value="baixa">Baixa</option>
+      </select>
+      <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
+      <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>📝 Auditoria — Observações Internas</h2></div>
+    <div class="card-body">
+      <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="auditoria-observacoes" rows="3" placeholder="Registre decisões da auditoria, ações pendentes e histórico resumido."></textarea></div>
+      <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+    </div>
+  </div>
+  <!-- Stats de auditoria -->
+  <div class="stats-row" id="audit-stats">
+    <div class="stat-card" style="border-color:#c62828"><div class="num" id="audit-cnt-critica" style="color:#c62828">0</div><div class="txt">Críticas</div></div>
+    <div class="stat-card" style="border-color:#e65100"><div class="num" id="audit-cnt-alta" style="color:#e65100">0</div><div class="txt">Altas</div></div>
+    <div class="stat-card" style="border-color:#f57c00"><div class="num" id="audit-cnt-media" style="color:#f57c00">0</div><div class="txt">Médias</div></div>
+    <div class="stat-card" style="border-color:#43a047"><div class="num" id="audit-cnt-baixa" style="color:#43a047">0</div><div class="txt">Baixas</div></div>
+    <div class="stat-card"><div class="num" id="audit-cnt-total">0</div><div class="txt">Total</div></div>
+  </div>
+  <!-- Lista de inconsistências -->
+  <div id="audit-lista">
+    <p style="color:#aaa;text-align:center;padding:30px">Clique em "Re-auditar" para detectar inconsistências.</p>
+  </div>
+</div>
+
+</div>
+</div>
 // ────────────────────────────────────────────────────────────
 // Utilitário: escape HTML — evita XSS ao renderizar dados de usuário via innerHTML
 function esc(str) {
@@ -3246,7 +3324,8 @@ function irPara(seção,btn){
   if(ids.includes('rastreio')){renderRastreioRecentes();}
   if(ids.includes('auditoria')){executarAuditoria();}
   if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
-  // Scroll para o topo do conteúdo ao trocar de aba
+  // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
+  window.scrollTo({top:0,behavior:'auto'});
   const content=document.querySelector('.admin-content');
   if(content)content.scrollTop=0;
 }
@@ -7998,82 +8077,6 @@ async function zerarPontosNegativos(clienteId){
   </div>
 </div>
 
-<!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
-<div class="seção" id="sec-rastreio">
-  <div class="card">
-    <div class="card-header">
-      <h2>🔍 Rastreio de Encomenda</h2>
-      <span style="font-size:.8rem;color:#888">Consulta como o cliente vê o pedido</span>
-    </div>
-    <div class="card-body">
-      <div class="campo-edit">
-        <label>Observações Internas / Conteúdo da Página</label>
-        <textarea id="rastreio-observacoes" rows="3" placeholder="Registre orientações internas do rastreio para a equipe."></textarea>
-      </div>
-      <div class="btn-row" style="margin-bottom:12px"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-        <input type="text" id="rastreio-busca" style="flex:1;min-width:200px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none" placeholder="Digite nº do pedido (ITA-001-...) ou telefone..."/>
-        <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
-      </div>
-      <div id="rastreio-resultado">
-        <p style="color:#aaa;text-align:center;padding:30px;font-size:.9rem">Digite o número do pedido ou telefone para rastrear.</p>
-      </div>
-    </div>
-  </div>
-  <!-- Últimas encomendas para acesso rápido -->
-  <div class="card" style="margin-top:16px">
-    <div class="card-header"><h2>⏱️ Encomendas Recentes</h2></div>
-    <div class="card-body" id="rastreio-recentes">
-      <p style="color:#aaa;font-size:.85rem">Carregando...</p>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════ SEÇÃO AUDITORIA ════════════════════════ -->
-<div class="seção" id="sec-auditoria">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
-    <div>
-      <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
-      <p style="font-size:.82rem;color:#888;margin-top:2px">Inconsistências detectadas automaticamente nos dados</p>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <select id="audit-filtro-mod" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
-        <option value="">Todos módulos</option>
-        <option value="clientes">Clientes</option>
-        <option value="encomendas">Encomendas</option>
-        <option value="fidelidade">Fidelidade</option>
-      </select>
-      <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
-        <option value="">Todas severidades</option>
-        <option value="critica">Crítica</option>
-        <option value="alta">Alta</option>
-        <option value="media">Média</option>
-        <option value="baixa">Baixa</option>
-      </select>
-      <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
-      <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:16px">
-    <div class="card-header"><h2>📝 Auditoria — Observações Internas</h2></div>
-    <div class="card-body">
-      <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="auditoria-observacoes" rows="3" placeholder="Registre decisões da auditoria, ações pendentes e histórico resumido."></textarea></div>
-      <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
-    </div>
-  </div>
-  <!-- Stats de auditoria -->
-  <div class="stats-row" id="audit-stats">
-    <div class="stat-card" style="border-color:#c62828"><div class="num" id="audit-cnt-critica" style="color:#c62828">0</div><div class="txt">Críticas</div></div>
-    <div class="stat-card" style="border-color:#e65100"><div class="num" id="audit-cnt-alta" style="color:#e65100">0</div><div class="txt">Altas</div></div>
-    <div class="stat-card" style="border-color:#f57c00"><div class="num" id="audit-cnt-media" style="color:#f57c00">0</div><div class="txt">Médias</div></div>
-    <div class="stat-card" style="border-color:#43a047"><div class="num" id="audit-cnt-baixa" style="color:#43a047">0</div><div class="txt">Baixas</div></div>
-    <div class="stat-card"><div class="num" id="audit-cnt-total">0</div><div class="txt">Total</div></div>
-  </div>
-  <!-- Lista de inconsistências -->
-  <div id="audit-lista">
-    <p style="color:#aaa;text-align:center;padding:30px">Clique em "Re-auditar" para detectar inconsistências.</p>
-  </div>
-</div>
 
 </div><!-- /admin-app -->
 </body>
