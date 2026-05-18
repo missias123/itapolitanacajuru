@@ -2561,6 +2561,8 @@ Talento</textarea>
         <div class="card-header"><h2>⭐ Dicas e Depoimentos</h2><button class="btn btn-salvar" onclick="salvarDepoimentos()">💾 Salvar</button></div>
         <div class="card-body">
           <div class="seção-título">📝 Texto Introdutório da Página</div>
+          <div class="campo-edit"><label>H1 Principal (Título da Página)</label><input type="text" id="dicas-h1" maxlength="80" placeholder="Dicas Essenciais da Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal (H1) exibido no topo da página Dicas.</div></div>
+          <div class="campo-edit"><label>Parágrafo Introdutório</label><textarea id="dicas-intro" rows="3" maxlength="400" placeholder="Escolher o sorvete certo para uma festa..."></textarea><div class="hint">Texto introdutório após o H1. Pode conter HTML (ex: &lt;strong&gt;).</div></div>
           <div class="campo-edit"><label>Título da seção de depoimentos</label><input type="text" id="dep-titulo" maxlength="60" placeholder="O que nossos clientes dizem"/></div>
           <div class="campo-edit"><label>Subtítulo / chamada</label><input type="text" id="dep-subtitulo" maxlength="100" placeholder="Veja o que quem já provou tem a dizer sobre a Itapolitana"/></div>
 
@@ -7499,6 +7501,14 @@ async function salvarCardápio() {
 // ── DEPOIMENTOS ─────────────────────────────────────────────────────────────
 function preencherDepoimentos() {
   const c = STATE.config || {};
+
+  // Novos campos Fase 3.2 - dicasPagina
+  const dp = c.dicasPagina || {};
+  const dicasH1El = document.getElementById('dicas-h1');
+  if (dicasH1El) dicasH1El.value = dp.h1 || 'Dicas Essenciais da Sorveteria Itapolitana Cajuru';
+  const dicasIntroEl = document.getElementById('dicas-intro');
+  if (dicasIntroEl) dicasIntroEl.value = dp.intro || '';
+
   document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
   document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
   // Estratégia de migração: config.json antigos salvavam uma única string em "depDica".
@@ -7631,6 +7641,14 @@ async function salvarDepoimentos() {
     return;
   }
   const c = STATE.config;
+
+  // Novos campos Fase 3.2 - dicasPagina
+  c.dicasPagina = c.dicasPagina || {};
+  const dicasH1El = document.getElementById('dicas-h1');
+  if (dicasH1El) c.dicasPagina.h1 = dicasH1El.value.trim();
+  const dicasIntroEl = document.getElementById('dicas-intro');
+  if (dicasIntroEl) c.dicasPagina.intro = dicasIntroEl.value.trim();
+
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
   c.depDicas = document.getElementById('dep-dicas').value.split('\n').map(s => s.trim()).filter(s => s);
