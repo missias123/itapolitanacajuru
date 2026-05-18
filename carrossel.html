@@ -143,6 +143,9 @@
         montarSlides(banners);
         var swiper = new Swiper('.itp-slider', {
           loop: true,
+          observer: true,
+          observeParents: true,
+          observeSlideChildren: true,
           autoplay: {
             delay: 3000,
             disableOnInteraction: false,
@@ -160,6 +163,15 @@
             nextSlideMessage: 'Próximo banner'
           }
         });
+        function ensureAutoplay(){
+          if(!swiper||!swiper.autoplay)return;
+          if(document.hidden)return;
+          if(!swiper.autoplay.running)swiper.autoplay.start();
+        }
+        document.addEventListener('visibilitychange', ensureAutoplay);
+        window.addEventListener('focus', ensureAutoplay, { passive: true });
+        window.addEventListener('pageshow', ensureAutoplay, { passive: true });
+        window.addEventListener('touchend', () => { setTimeout(ensureAutoplay, 120); }, { passive: true });
 
         /*
          * Ajuste automático da altura do iframe no site pai
