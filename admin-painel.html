@@ -2776,6 +2776,7 @@ function preencherTokenSalvoNoLogin(){
   }
   const tokenValido=Boolean(token&&tokenFormatoValido(token));
   GH_WRITE_ALLOWED=tokenValido;
+  GH_TOKEN_CAN_WRITE=null;
   atualizarStatusSessaoWorker(tokenValido
     ?'✅ Token GitHub carregado nesta aba.'
     :'ℹ️ Sem token válido, o admin funciona em modo somente leitura.'
@@ -2787,6 +2788,7 @@ function limparTokenSalvo(){
   lsRemove('itap_gh_token');
   ssRemove('itap_admin_token');
   GH_WRITE_ALLOWED=false;
+  GH_TOKEN_CAN_WRITE=null;
   const inp=document.getElementById('inp-gh-token');
   const statusEl=document.getElementById('token-status');
   const hint=document.getElementById('token-hint');
@@ -2844,17 +2846,24 @@ async function validarToken(tok){
       return {ok:false,canWrite:false,reason:'invalid_or_expired',status:r.status};
     }
     let canWrite=false;
+    let permissaoConfirmada=false;
     try{
       const repoInfo=await r.json();
       const perms=repoInfo&&repoInfo.permissions?repoInfo.permissions:{};
+      permissaoConfirmada=Object.keys(perms).length>0;
       canWrite=Boolean(perms.push||perms.admin||perms.maintain);
     }catch(e){
       console.warn('[Admin] validarToken: não foi possível ler permissões',e?.message||e);
     }
-    return {ok:true,canWrite,reason:canWrite?'ok':'missing_write_permission'};
+    return{
+      ok:true,
+      canWrite:permissaoConfirmada?canWrite:null,
+      reason:canWrite?'ok':(permissaoConfirmada?'missing_write_permission':'permissions_unknown')
+    };
   }catch(e){
     console.warn('[Admin] validarToken: erro de rede',e.message);
-    return {ok:false,canWrite:false,reason:'network_error'};
+    // Evita falso bloqueio em instabilidade de rede; o salvamento confirma no retorno da API.
+    return {ok:true,canWrite:null,reason:'network_error_unverified'};
   }
 }
 
@@ -2884,9 +2893,14 @@ function atualizarToken(){
   toast('Token salvo! Validando permissões...','sucesso');
   setTimeout(async ()=>{
     const tokenStatus=await validarToken(tok);
-    GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite);
+    GH_TOKEN_CAN_WRITE=tokenStatus?.canWrite===true?true:(tokenStatus?.canWrite===false?false:null);
+    GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite!==false);
     if(!GH_WRITE_ALLOWED){
       toast('⚠️ Token sem escrita no repositório. Ajuste permissões para salvar alterações.','aviso');
+    }else if(tokenStatus?.reason==='network_error_unverified'){
+      toast('⚠️ Token aceito, mas a validação de escrita falhou por rede. Tentaremos salvar normalmente.','aviso');
+    }else if(tokenStatus?.canWrite===null){
+      toast('✅ Token aceito. Permissão de escrita não confirmada, mas edição foi liberada.','sucesso');
     }
     carregarTudo();
   },400);
@@ -2900,6 +2914,23 @@ const GH_API_VERSION='2022-11-28';
 const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json',auth:'dados/auth.json'};
 const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,auth:null,authSha:null,pagClientes:0,senhaAdmin:null};
 let GH_WRITE_ALLOWED=false;
+let GH_TOKEN_CAN_WRITE=null;
+const PATH_SHA_KEYS={
+  [PATHS.produtos]:'produtosSha',
+  [PATHS.promo]:'promoSha',
+  [PATHS.clientes]:'clientesSha',
+  [PATHS.fidelidade]:'fidelidadeSha',
+  [PATHS.encomendas]:'encomendasSha',
+  [PATHS.config]:'configSha',
+  [PATHS.promocoes]:'promocoesSha',
+  [PATHS.auth]:'authSha'
+};
+function pathShaKey(path){return PATH_SHA_KEYS[path]||null;}
+function pathPrecisaSha(path){return Boolean(pathShaKey(path));}
+function pathEstaSemSha(path){
+  const key=pathShaKey(path);
+  return Boolean(key)&&!STATE[key];
+}
 const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
@@ -2912,6 +2943,7 @@ function invalidarSessaoWorker(msg='⚠️ Token GitHub inválido ou expirado. A
   lsRemove('itap_gh_token');
   ssRemove('itap_admin_token');
   GH_WRITE_ALLOWED=false;
+  GH_TOKEN_CAN_WRITE=null;
   atualizarStatusSessaoWorker(msg,'warning');
   atualizarBannerSessaoWorker(false);
 }
@@ -2928,7 +2960,8 @@ async function iniciarSessaoWorker(secret){
     return{ok:false,error:'Formato inválido'};
   }
   const tokenStatus=await validarToken(token);
-  GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite);
+  GH_TOKEN_CAN_WRITE=tokenStatus?.canWrite===true?true:(tokenStatus?.canWrite===false?false:null);
+  GH_WRITE_ALLOWED=Boolean(tokenStatus?.ok&&tokenStatus?.canWrite!==false);
   if(!GH_WRITE_ALLOWED){
     atualizarStatusSessaoWorker('⚠️ Token sem permissão de escrita.','warning');
     atualizarBannerSessaoWorker(false);
@@ -3194,6 +3227,14 @@ async function salvarArquivo(path,data,shaKey,msg){
     toast('⚠️ Modo somente leitura ativo. Informe um token GitHub válido para editar esta área.','aviso');
     return false;
   }
+  if(pathPrecisaSha(path)&&pathEstaSemSha(path)){
+    const banner=document.getElementById('aviso-token-expirado');
+    if(banner)banner.style.display='flex';
+    const arquivo=path.replace(/^dados\//,'');
+    toast(`⚠️ Não foi possível salvar ${arquivo}: SHA ausente. Recarregue os dados e valide o token.`,'aviso');
+    console.warn('[ADMIN][SAVE_BLOCKED_NO_SHA]',{path,shaKey,sha:STATE[shaKey],ghWriteAllowed:GH_WRITE_ALLOWED,ghTokenCanWrite:GH_TOKEN_CAN_WRITE});
+    return false;
+  }
   console.log('[Admin] Salvando:', path, 'SHA:', STATE[shaKey]);
   const r=await ghPut(path,data,STATE[shaKey],msg);
   if(r.ok){
@@ -3247,6 +3288,7 @@ async function entrar(){
   if(tokenInput){
     if(!tokenFormatoValido(tokenInput)){
       GH_WRITE_ALLOWED=false;
+      GH_TOKEN_CAN_WRITE=null;
       tokenAtual='';
       lsRemove('itap_gh_token');
       toast('⚠️ Token com formato inválido. Você entrou em modo somente leitura.','aviso');
@@ -3258,11 +3300,19 @@ async function entrar(){
   if(tokenAtual){
     tokenStatus=await validarToken(tokenAtual);
   }
-  GH_WRITE_ALLOWED=Boolean(tokenStatus.ok&&tokenStatus.canWrite);
-  atualizarStatusSessaoWorker(GH_WRITE_ALLOWED
-    ?'✅ Token GitHub validado. Edição e salvamento liberados.'
-    :'ℹ️ Token ausente/inválido. Admin em modo somente leitura.'
-  ,GH_WRITE_ALLOWED?'success':'info');
+  GH_TOKEN_CAN_WRITE=tokenStatus?.canWrite===true?true:(tokenStatus?.canWrite===false?false:null);
+  GH_WRITE_ALLOWED=Boolean(tokenStatus.ok&&tokenStatus.canWrite!==false);
+  const msgToken=!tokenAtual
+    ?'ℹ️ Token ausente/inválido. Admin em modo somente leitura.'
+    :GH_WRITE_ALLOWED
+      ?(tokenStatus.reason==='network_error_unverified'
+        ?'⚠️ Token aceito, mas a validação de escrita falhou por rede. Tentaremos salvar normalmente.'
+        :tokenStatus.canWrite===null
+          ?'✅ Token aceito. Permissão de escrita não confirmada, mas edição foi liberada.'
+          :'✅ Token GitHub validado. Edição e salvamento liberados.')
+      :'⚠️ Token validado, mas sem escrita no repositório. Admin em modo somente leitura.';
+  atualizarStatusSessaoWorker(msgToken,GH_WRITE_ALLOWED?'success':'info');
+  console.info('[ADMIN][TOKEN]',{ok:tokenStatus.ok,canWrite:tokenStatus.canWrite,reason:tokenStatus.reason,ghWriteAllowed:GH_WRITE_ALLOWED});
   ocultarLoading();
   loginErro.style.display='none';
   document.getElementById('login-screen').style.display='none';
@@ -3326,9 +3376,29 @@ async function carregarTudo(){
     if(falhasCarregamento.length){
       toast(`⚠️ Falha ao carregar: ${falhasCarregamento.join(', ')}. Alguns campos podem ficar vazios até recarregar.`,'aviso');
     }
+    const arquivosSemSha=[
+      [PATHS.promo,pr],
+      [PATHS.clientes,cl],
+      [PATHS.fidelidade,fi],
+      [PATHS.encomendas,en],
+      [PATHS.produtos,prod],
+      [PATHS.promocoes,promos]
+    ].filter(([_,resp])=>Boolean(resp?.content)&&!resp?.sha).map(([path])=>path);
+    if(arquivosSemSha.length){
+      console.warn('[ADMIN][SHA] Arquivos carregados sem SHA:',arquivosSemSha);
+      toast(`⚠️ Arquivos sem SHA (somente leitura parcial): ${arquivosSemSha.join(', ')}.`,'aviso');
+    }
+    console.table([
+      {arquivo:PATHS.promo,sha:Boolean(STATE.promoSha),readonly:Boolean(pr?.readonly),carregado:Boolean(pr?.content)},
+      {arquivo:PATHS.clientes,sha:Boolean(STATE.clientesSha),readonly:Boolean(cl?.readonly),carregado:Boolean(cl?.content)},
+      {arquivo:PATHS.fidelidade,sha:Boolean(STATE.fidelidadeSha),readonly:Boolean(fi?.readonly),carregado:Boolean(fi?.content)},
+      {arquivo:PATHS.encomendas,sha:Boolean(STATE.encomendasSha),readonly:Boolean(en?.readonly),carregado:Boolean(en?.content)},
+      {arquivo:PATHS.produtos,sha:Boolean(STATE.produtosSha),readonly:Boolean(prod?.readonly),carregado:Boolean(prod?.content)},
+      {arquivo:PATHS.promocoes,sha:Boolean(STATE.promocoesSha),readonly:Boolean(promos?.readonly),carregado:Boolean(promos?.content)}
+    ]);
     // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
     const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
-    const avisoComFalhas=Boolean(falhasCarregamento.length);
+    const avisoComFalhas=Boolean(falhasCarregamento.length||arquivosSemSha.length);
     const banner=document.getElementById('aviso-token-expirado');
     const bannerMsg=document.getElementById('aviso-token-expirado-msg');
     if(banner){
@@ -3336,7 +3406,7 @@ async function carregarTudo(){
     }
     if(bannerMsg){
       bannerMsg.innerHTML=avisoComFalhas
-        ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. Arquivos: ${falhasCarregamento.map(esc).join(', ')}.`
+        ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. ${falhasCarregamento.length?`Falha ao carregar: ${falhasCarregamento.map(esc).join(', ')}. `:''}${arquivosSemSha.length?`Sem SHA: ${arquivosSemSha.map(esc).join(', ')}.`:''}`
         :'<strong>Admin em modo somente leitura.</strong> Informe um token GitHub PAT válido para liberar edição e salvamento no repositório.';
     }
     // Banner: mostrar quando token de escrita não está válido
