@@ -25,7 +25,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<meta name="description" content="Faça sua encomenda de sorvetes artesanais, tortas geladas e açaí na Itapolitana Cajuru. Retire na loja. Cardápio completo online."/>
+<meta name="description" content="Faça sua encomenda de sorvetes artesanais, tortas geladas e açaí na Itapolitana Cajuru. Retire na loja. Cardápio completo online." data-config="seoPaginas.encomendas.descricao"/>
 <meta content="encomenda sorvete Cajuru, torta de sorvete Cajuru, caixa de sorvete Cajuru, picolé atacado Cajuru, festa sorvete Cajuru, Itapolitana encomendas, sorvete para eventos Cajuru" name="keywords"/>
 <meta content="index, follow" name="robots"/>
 <link href="https://itapolitanacajuru.com.br/encomendas.html" rel="canonical"/>
@@ -41,7 +41,7 @@
 <link href="manifest.json" rel="manifest"/>
 <link href="/apple-touch-icon.png" rel="apple-touch-icon"/>
 <link rel="preload" as="image" href="images/carrinho-picole.webp" type="image/webp" fetchpriority="high"/>
-<title>Encomendas | Sorveteria Itapolitana Cajuru</title>
+<title data-config="seoPaginas.encomendas.titulo">Encomendas | Sorveteria Itapolitana Cajuru</title>
 
 <style>
     body { position: relative; }
@@ -1341,9 +1341,9 @@ html { scroll-behavior: smooth; }
   📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança  ·  🏪 Retirada na loja  ·  ✨ Sorvete tipo artesanal desde 2007
 </div>
 <div class="hero">
-<h1 id="enc-hero-titulo" data-config="encomendasHeroTitulo">🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span></h1>
-<p id="enc-hero-desc" data-config="encomendasHeroDescricao">Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!</p>
-<div class="hero-badges" data-config-collection="encomendasHeroBadges" data-item-tag="span" data-item-class="hero-badge">
+<h1 id="enc-hero-titulo" data-config="encomendasPagina.heroTitulo">🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span></h1>
+<p id="enc-hero-desc" data-config="encomendasPagina.heroDescricao">Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!</p>
+<div class="hero-badges" data-config-collection="encomendasPagina.heroBadges" data-item-tag="span" data-item-class="hero-badge">
 <span class="hero-badge">✨ tipo artesanal</span>
 <span class="hero-badge">🍦 35 Sabores</span>
 <span class="hero-badge">🎂 Tortas Especiais</span>
@@ -1943,5 +1943,54 @@ document.addEventListener('DOMContentLoaded', function () {
     </li>
   </ul>
 </nav>
+<script>
+// Carregamento dinâmico de encomendas.html via config.json
+(function() {
+  'use strict';
+
+  fetch('/dados/config.json')
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) {
+      // SEO
+      var titleEl = document.querySelector('title[data-config="seoPaginas.encomendas.titulo"]');
+      if (titleEl && cfg.seoPaginas && cfg.seoPaginas.encomendas && cfg.seoPaginas.encomendas.titulo) {
+        titleEl.textContent = cfg.seoPaginas.encomendas.titulo;
+      }
+
+      var descEl = document.querySelector('meta[data-config="seoPaginas.encomendas.descricao"]');
+      if (descEl && cfg.seoPaginas && cfg.seoPaginas.encomendas && cfg.seoPaginas.encomendas.descricao) {
+        descEl.setAttribute('content', cfg.seoPaginas.encomendas.descricao);
+      }
+
+      // Conteúdo da página encomendas
+      var ep = cfg.encomendasPagina || {};
+
+      var heroTituloEl = document.querySelector('[data-config="encomendasPagina.heroTitulo"]');
+      if (heroTituloEl && ep.heroTitulo) {
+        heroTituloEl.innerHTML = ep.heroTitulo;
+      }
+
+      var heroDescEl = document.querySelector('[data-config="encomendasPagina.heroDescricao"]');
+      if (heroDescEl && ep.heroDescricao) {
+        heroDescEl.textContent = ep.heroDescricao;
+      }
+
+      // Hero Badges
+      var badgesContainer = document.querySelector('[data-config-collection="encomendasPagina.heroBadges"]');
+      if (badgesContainer && ep.heroBadges && Array.isArray(ep.heroBadges)) {
+        badgesContainer.innerHTML = '';
+        ep.heroBadges.forEach(function(badge) {
+          var span = document.createElement('span');
+          span.className = 'hero-badge';
+          span.textContent = badge;
+          badgesContainer.appendChild(span);
+        });
+      }
+    })
+    .catch(function(err) {
+      console.error('[Encomendas] Erro ao carregar config.json:', err);
+    });
+})();
+</script>
 </body>
 </html>

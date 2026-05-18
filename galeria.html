@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fotos da Sorveteria Itapolitana Cajuru – Sorvetes e Açaí</title>
-    <meta name="description" content="Veja as fotos dos sorvetes tipo artesanal, açaí, picolés e do espaço da Sorveteria Itapolitana de Cajuru/SP. Desde 2007, sabor e cremosidade em cada taça!"/>
+    <title data-config="seoPaginas.galeria.titulo">Fotos da Sorveteria Itapolitana Cajuru – Sorvetes e Açaí</title>
+    <meta name="description" content="Veja as fotos dos sorvetes tipo artesanal, açaí, picolés e do espaço da Sorveteria Itapolitana de Cajuru/SP. Desde 2007, sabor e cremosidade em cada taça!" data-config="seoPaginas.galeria.descricao"/>
     <meta name="robots" content="index, follow"/>
     <link rel="canonical" href="https://itapolitanacajuru.com.br/galeria.html"/>
     <meta property="og:type" content="website"/>
@@ -133,17 +133,10 @@
 <!-- ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════════ -->
 <main id="conteudo-principal">
     <div class="gallery-container">
-        <h1>📸 Galeria – Sorveteria Itapolitana Cajuru</h1>
-        <p style="color:#666;margin-bottom:20px;font-size:0.9rem;">Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.</p>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="images/sorvetes-montanha.webp" alt="Sorvetes tipo artesanal empilhados – Sorveteria Itapolitana Cajuru" loading="lazy" decoding="async">
-                <div class="gallery-overlay"><p>Sorvetes Tipo Artesanais</p></div>
-            </div>
-            <div class="gallery-item">
-                <img src="images/logo.webp" alt="Logo da Sorveteria Itapolitana Cajuru – Desde 2007" loading="lazy" decoding="async">
-                <div class="gallery-overlay"><p>Nossa Marca</p></div>
-            </div>
+        <h1 data-config="galeriaPagina.h1">📸 Galeria – Sorveteria Itapolitana Cajuru</h1>
+        <p style="color:#666;margin-bottom:20px;font-size:0.9rem;" data-config="galeriaPagina.descricao">Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.</p>
+        <div class="gallery-grid" id="galeria-grid" data-config-collection="galeriaPagina.imagens" data-item-layout="gallery-item">
+            <!-- Imagens carregadas dinamicamente via config.json -->
 </div>
 </div>
 </main>
@@ -229,5 +222,66 @@
 <script src="scripts/nav-active.js"></script>
 <script src="scripts/site-loader.js" defer></script>
 <script src="scripts/ita-bot-widget.js" defer></script>
+<script>
+// Carregamento dinâmico de galeria.html via config.json
+(function() {
+  'use strict';
+
+  fetch('/dados/config.json')
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) {
+      // SEO
+      var titleEl = document.querySelector('title[data-config="seoPaginas.galeria.titulo"]');
+      if (titleEl && cfg.seoPaginas && cfg.seoPaginas.galeria && cfg.seoPaginas.galeria.titulo) {
+        titleEl.textContent = cfg.seoPaginas.galeria.titulo;
+      }
+
+      var descEl = document.querySelector('meta[data-config="seoPaginas.galeria.descricao"]');
+      if (descEl && cfg.seoPaginas && cfg.seoPaginas.galeria && cfg.seoPaginas.galeria.descricao) {
+        descEl.setAttribute('content', cfg.seoPaginas.galeria.descricao);
+      }
+
+      // H1 e Descrição
+      var h1El = document.querySelector('[data-config="galeriaPagina.h1"]');
+      if (h1El && cfg.galeriaPagina && cfg.galeriaPagina.h1) {
+        h1El.textContent = cfg.galeriaPagina.h1;
+      }
+
+      var descPagEl = document.querySelector('[data-config="galeriaPagina.descricao"]');
+      if (descPagEl && cfg.galeriaPagina && cfg.galeriaPagina.descricao) {
+        descPagEl.textContent = cfg.galeriaPagina.descricao;
+      }
+
+      // Grid de Imagens
+      var gridEl = document.getElementById('galeria-grid');
+      if (gridEl && cfg.galeriaPagina && cfg.galeriaPagina.imagens && Array.isArray(cfg.galeriaPagina.imagens)) {
+        gridEl.innerHTML = '';
+        cfg.galeriaPagina.imagens.forEach(function(img) {
+          var itemDiv = document.createElement('div');
+          itemDiv.className = 'gallery-item';
+
+          var imgEl = document.createElement('img');
+          imgEl.src = img.url || '';
+          imgEl.alt = img.alt || '';
+          imgEl.loading = 'lazy';
+          imgEl.decoding = 'async';
+
+          var overlayDiv = document.createElement('div');
+          overlayDiv.className = 'gallery-overlay';
+          var overlayP = document.createElement('p');
+          overlayP.textContent = img.titulo || '';
+          overlayDiv.appendChild(overlayP);
+
+          itemDiv.appendChild(imgEl);
+          itemDiv.appendChild(overlayDiv);
+          gridEl.appendChild(itemDiv);
+        });
+      }
+    })
+    .catch(function(err) {
+      console.error('[Galeria] Erro ao carregar config.json:', err);
+    });
+})();
+</script>
 </body>
 </html>
