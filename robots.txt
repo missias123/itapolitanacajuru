@@ -1,16 +1,48 @@
+# Robots.txt — Sorveteria Itapolitana Cajuru
+# https://itapolitanacajuru.com.br
+
 User-agent: *
 Allow: /
 Disallow: /admin-painel.html
-Disallow: /dados/auth.json
 Disallow: /admin-novo.html
 Disallow: /admin.html
+Disallow: /admin/
 Disallow: /fidelidade-admin.html
+Disallow: /dados/auth.json
+Disallow: /dados/clientes.json
+Disallow: /dados/encomendas.json
 Disallow: /admin-painel.bak2.html
 Disallow: /admin-painel.bak3.html
 Disallow: /validation-report.html
 Disallow: /painel-qualidade.html
-# IMPORTANTE: liberar rastreamento de assets e dados públicos necessários para renderizar páginas
-# (bloqueios amplos como /dados/ podem quebrar renderização/descoberta por buscadores)
-# Se houver arquivos sensíveis em /dados/, mova-os para uma rota privada.
+Disallow: /tests/
+Disallow: /test-results/
+Disallow: /docs/relatorios/
+Disallow: /scripts/check-exposed-tokens.js
+Disallow: /scripts/admin-espelho-gate.js
+Disallow: /scripts/auditoria-robusta-admin.js
+
+# Bloquear bots de IA que fazem scraping massivo
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+# Crawl-delay para bots genéricos (proteção contra scraping agressivo)
+User-agent: *
+Crawl-delay: 2
 
 Sitemap: https://itapolitanacajuru.com.br/sitemap.xml

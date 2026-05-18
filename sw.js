@@ -7,8 +7,8 @@
  * (ex.: itapolitana-v8 / assets-v8). O evento 'activate' apaga versões antigas.
  */
 
-const CACHE_NAME   = 'itapolitana-v7';
-const ASSETS_CACHE = 'assets-v7';
+const CACHE_NAME   = 'itapolitana-v8';
+const ASSETS_CACHE = 'assets-v8';
 
 const CRITICAL_ASSETS = [
   '/',
@@ -16,6 +16,10 @@ const CRITICAL_ASSETS = [
   '/fidelidade.html',
   '/encomendas.html',
   '/promocao.html',
+  '/sobre.html',
+  '/galeria.html',
+  '/dicas.html',
+  '/404.html',
   '/manifest.json',
   '/css/design-system.min.css',
   '/scripts/quality-guard.js',
