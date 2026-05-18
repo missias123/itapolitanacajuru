@@ -3059,10 +3059,10 @@ function ensureSafeState(){
 }
 function fidIsReadOnly(){
   // Fidelidade (fidelidade.json) requer SHA + token com escrita.
-  return !STATE.fidelidadeSha;
+  return !tokenFormatoValido(getToken())||!STATE.fidelidadeSha;
 }
 function fidPathReadOnly(path){
-  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!GH_WRITE_ALLOWED);
+  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!tokenFormatoValido(getToken()));
 }
 const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
 function fidApplyReadOnlyGuard(){
@@ -3113,6 +3113,7 @@ function aplicarConfigAdmin(cfg){
   if(cfg&&cfg.content){
     STATE.config=cfg.content;
     STATE.configSha=cfg.sha;
+    if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;
   }
   return cfg;
 }
@@ -3181,7 +3182,7 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
-  if(!getToken()||!GH_WRITE_ALLOWED){
+  if(!tokenFormatoValido(getToken())){
     const banner=document.getElementById('aviso-token-expirado');
     if(banner)banner.style.display='flex';
     toast('⚠️ Modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
@@ -6435,8 +6436,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 2. Aguardar login para inicializar contadores e validações
   const _adminObserver = new MutationObserver(() => {
-    const painel = document.getElementById('painel');
-    if (painel && painel.style.display !== 'none') {
+    const adminAppLogin=document.getElementById('admin-app');
+    if(adminAppLogin&&adminAppLogin.style.display!=='none'){
       setTimeout(() => {
         if (typeof initContadores === 'function') initContadores();
         if (typeof initVálidacaoWhatsApp === 'function') initVálidacaoWhatsApp();
@@ -7047,13 +7048,6 @@ function removerDicaItem(i) {
   if (!Array.isArray(STATE.config?.dicasItens)) return;
   STATE.config.dicasItens.splice(i, 1);
   preencherDicasItens();
-}
-
-function removerDepoimento(i) {
-  if (confirm('Deseja remover este depoimento?')) {
-    STATE.config.depoimentos.splice(i, 1);
-    preencherDepoimentos();
-  }
 }
 
 // Armazena fotos de depoimentos pendentes de upload (base64 WebP)
