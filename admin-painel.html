@@ -3505,25 +3505,27 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null};
+  let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null},cfg={content:null,sha:null};
   try{
-    const fontes=['promo','clientes','fidelidade','encomendas','produtos','promocoes'];
-    const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes)]);
+    const fontes=['promo','clientes','fidelidade','encomendas','produtos','promocoes','config'];
+    const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes),ghGet(PATHS.config)]);
     resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',fontes[idx],'falhou:',r.reason);});
-    [pr,cl,fi,en,prod,promos]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
+    [pr,cl,fi,en,prod,promos,cfg]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
     if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
     if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes');}
     if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
+    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}else{console.error('[BOOT] Falha ao carregar config');}
     const falhasCarregamento=[
       [PATHS.promo,pr],
       [PATHS.clientes,cl],
       [PATHS.fidelidade,fi],
       [PATHS.encomendas,en],
       [PATHS.produtos,prod],
-      [PATHS.promocoes,promos]
+      [PATHS.promocoes,promos],
+      [PATHS.config,cfg]
     ].filter(([,resp])=>!resp.content).map(([path])=>path);
     if(falhasCarregamento.length){
       toast(`⚠️ Falha ao carregar: ${falhasCarregamento.join(', ')}. Alguns campos podem ficar vazios até recarregar.`,'aviso');
@@ -3534,7 +3536,8 @@ async function carregarTudo(){
       [PATHS.fidelidade,fi],
       [PATHS.encomendas,en],
       [PATHS.produtos,prod],
-      [PATHS.promocoes,promos]
+      [PATHS.promocoes,promos],
+      [PATHS.config,cfg]
     ].filter(([_,resp])=>Boolean(resp?.content)&&!resp?.sha).map(([path])=>path);
     if(arquivosSemSha.length){
       console.warn('[ADMIN][SHA] Arquivos carregados sem SHA:',arquivosSemSha);
@@ -3546,10 +3549,11 @@ async function carregarTudo(){
       {arquivo:PATHS.fidelidade,sha:Boolean(STATE.fidelidadeSha),readonly:Boolean(fi?.readonly),carregado:Boolean(fi?.content)},
       {arquivo:PATHS.encomendas,sha:Boolean(STATE.encomendasSha),readonly:Boolean(en?.readonly),carregado:Boolean(en?.content)},
       {arquivo:PATHS.produtos,sha:Boolean(STATE.produtosSha),readonly:Boolean(prod?.readonly),carregado:Boolean(prod?.content)},
-      {arquivo:PATHS.promocoes,sha:Boolean(STATE.promocoesSha),readonly:Boolean(promos?.readonly),carregado:Boolean(promos?.content)}
+      {arquivo:PATHS.promocoes,sha:Boolean(STATE.promocoesSha),readonly:Boolean(promos?.readonly),carregado:Boolean(promos?.content)},
+      {arquivo:PATHS.config,sha:Boolean(STATE.configSha),readonly:Boolean(cfg?.readonly),carregado:Boolean(cfg?.content)}
     ]);
     // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
-    const semToken=[pr,cl,fi,en,prod,promos].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    const semToken=[pr,cl,fi,en,prod,promos,cfg].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
     const avisoComFalhas=Boolean(falhasCarregamento.length||arquivosSemSha.length);
     const banner=document.getElementById('aviso-token-expirado');
     const bannerMsg=document.getElementById('aviso-token-expirado-msg');
