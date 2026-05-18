@@ -3614,28 +3614,40 @@ function irPara(seção,btn){
     'rastreio-admin': ['rastreio'],
     'auditoria-admin':['auditoria']
   };
+  console.log(`[irPara] Navegando para: ${seção}`);
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
   const ids=sectionMap[seção]||[seção];
-  ids.forEach(id=>{const el=document.getElementById('sec-'+id);if(el)el.classList.add('ativo');});
+  console.log(`[irPara] IDs das seções a ativar:`, ids);
+  ids.forEach(id=>{
+    const el=document.getElementById('sec-'+id);
+    if(el){
+      el.classList.add('ativo');
+      console.log(`[irPara] ✓ Seção ativada: sec-${id}`);
+    }else{
+      console.error(`[irPara] ✗ Seção NÃO encontrada: sec-${id}`);
+    }
+  });
   if(btn)btn.classList.add('ativo');
   // Inicializar funções necessárias para cada seção visível
-  if(ids.includes('home'))preencherHome();
-  if(ids.includes('preços'))renderPreços();
-  if(ids.includes('cardapio-titulos'))carregarTitulosCardapio();
-  if(ids.includes('cardápio'))preencherCardapio();
-  if(ids.includes('fale-conosco'))preencherFaleConosco();
-  if(ids.includes('config'))preencherConfig();
-  if(ids.includes('encomendas'))renderEncomendas();
-  if(ids.includes('sabores'))renderizarSaboresAdmin();
-  if(ids.includes('estoque'))carregarEstoque();
-  if(ids.includes('produtos'))renderProdutosAdmin();
-  if(ids.includes('promoção')){preencherPromoção();preencherSorteio();renderPromocoesTable();}
-  if(ids.includes('participantes'))renderParticipantes();
+  if(ids.includes('home')){console.log('[irPara] Inicializando HOME');preencherHome();}
+  if(ids.includes('preços')){console.log('[irPara] Inicializando PREÇOS');renderPreços();}
+  if(ids.includes('cardapio-titulos')){console.log('[irPara] Inicializando CARDAPIO TITULOS');carregarTitulosCardapio();}
+  if(ids.includes('cardápio')){console.log('[irPara] Inicializando CARDÁPIO');preencherCardapio();}
+  if(ids.includes('fale-conosco')){console.log('[irPara] Inicializando FALE CONOSCO');preencherFaleConosco();}
+  if(ids.includes('config')){console.log('[irPara] Inicializando CONFIG');preencherConfig();}
+  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');renderEncomendas();}
+  if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');renderizarSaboresAdmin();}
+  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');carregarEstoque();}
+  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');renderProdutosAdmin();}
+  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');preencherPromoção();preencherSorteio();renderPromocoesTable();}
+  if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');renderParticipantes();}
   if(ids.includes('clientes')){
+    console.log('[irPara] Inicializando CLIENTES');
     try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] renderClientes',e);}
   }
   if(ids.includes('fidelidade')){
+    console.log('[irPara] Inicializando FIDELIDADE');
     try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
     try{renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
     try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
@@ -3645,14 +3657,14 @@ function irPara(seção,btn){
     }
   }
   if(ids.includes('clientes')||ids.includes('fidelidade'))fidApplyReadOnlyGuard();
-  if(ids.includes('depoimentos'))preencherDepoimentos();
-  if(ids.includes('sobre'))carregarSobre();
-  if(ids.includes('carrossel-config'))carregarCarrosselConfig();
-  if(ids.includes('galeria'))carregarGaleria();
-  if(ids.includes('encomendas-config'))carregarEncomendas();
-  if(ids.includes('qualidade')){atualizarScoresQualidade();preencherNotasOperacionais();}
-  if(ids.includes('rastreio')){renderRastreioRecentes();}
-  if(ids.includes('auditoria')){executarAuditoria();}
+  if(ids.includes('depoimentos')){console.log('[irPara] Inicializando DEPOIMENTOS');preencherDepoimentos();}
+  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');carregarSobre();}
+  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');carregarCarrosselConfig();}
+  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');carregarGaleria();}
+  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');carregarEncomendas();}
+  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');atualizarScoresQualidade();preencherNotasOperacionais();}
+  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');renderRastreioRecentes();}
+  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');executarAuditoria();}
   if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
   // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
   window.scrollTo({top:0,behavior:'auto'});
@@ -4381,7 +4393,9 @@ const TIMELINE_LABELS=['Novo','Confirmado','Em preparo','Pronto','Enviado','Entr
 const TIMELINE_ICONES=['🔴','✅','🍦','📦','🚚','🎉'];
 
 function renderEncomendas(){
+  console.log('[renderEncomendas] Iniciando...');
   const registros=STATE.encomendas?.registros||[];
+  console.log('[renderEncomendas] Registros encontrados:', registros.length);
   const workerAtivo=Boolean(getAdminToken());
   const semRegistrosOriginais=!registros.length;
   const filtroStatus=document.getElementById('enc-filtro-status')?.value||'';
@@ -7536,7 +7550,9 @@ async function salvarCardápio() {
 
 // ── DEPOIMENTOS ─────────────────────────────────────────────────────────────
 function preencherDepoimentos() {
+  console.log('[preencherDepoimentos] Iniciando...');
   const c = STATE.config || {};
+  console.log('[preencherDepoimentos] STATE.config:', c);
 
   // Novos campos Fase 3.2 - dicasPagina
   const dp = c.dicasPagina || {};
@@ -7554,11 +7570,15 @@ function preencherDepoimentos() {
   // ambientes de produção já salvaram pelo menos uma vez com o novo formato (depDicas array).
   const depDicas = Array.isArray(c.depDicas) ? c.depDicas : (c.depDica ? [c.depDica] : []);
   document.getElementById('dep-dicas').value = depDicas.join('\n');
-  
+
   const lista = c.depoimentos || [];
+  console.log('[preencherDepoimentos] Depoimentos encontrados:', lista.length);
   const container = document.getElementById('dep-lista');
-  if (!container) return;
-  
+  if (!container) {
+    console.error('[preencherDepoimentos] Elemento #dep-lista NÃO encontrado!');
+    return;
+  }
+
   container.innerHTML = lista.length
     ? lista.map((d, i) => `
     <div class="dep-item card" style="margin-bottom:15px; padding:15px; border:1px solid #eee">
@@ -7598,6 +7618,7 @@ function preencherDepoimentos() {
     </div>
   `).join('')
     : '<div style="text-align:center;padding:24px 10px;background:#fff8f0;border-radius:10px;border:1.5px dashed #ffcc80"><div style="font-size:2rem;margin-bottom:8px">💬</div><p style="color:#888;margin-bottom:12px">Nenhum depoimento cadastrado ainda.</p><p style="font-size:.82rem;color:#aaa">Clique em <strong>➕ Adicionar Depoimento</strong> abaixo para criar o primeiro.</p></div>';
+  console.log('[preencherDepoimentos] Conteúdo renderizado. Lista vazia?', lista.length === 0);
   preencherDicasItens();
   const seoPg = c.seoPaginas || {};
   const seoDicasTit = document.getElementById('cfg-seo-dicas-titulo');
@@ -7606,6 +7627,7 @@ function preencherDepoimentos() {
   if (seoDicasDesc) seoDicasDesc.value = seoPg.dicas?.descricao || '';
   const seoDicasPal = document.getElementById('cfg-seo-dicas-palavras');
   if (seoDicasPal) seoDicasPal.value = seoPg.dicas?.palavrasChave || '';
+  console.log('[preencherDepoimentos] Concluído com sucesso!');
 }
 
 function adicionarDepoimento() {
