@@ -2692,6 +2692,28 @@ Talento</textarea>
       </div>
     </div>
 
+    <!-- ═══════════════ SEÇÃO GALERIA (Página galeria.html) ═══════ -->
+    <div class="seção" id="sec-galeria">
+      <div class="card">
+        <div class="card-header"><h2>📸 Galeria — Configurações</h2><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+            📌 <strong>Sobre a galeria:</strong> Configure o título, descrição e metadados SEO da página galeria.html. Campos salvos em <code>dados/config.json → galeriaPagina{}</code> e <code>seoPaginas.galeria{}</code>.
+          </div>
+
+          <div class="seção-título">🏷️ Metadados SEO</div>
+          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-galeria-titulo" maxlength="80" placeholder="Galeria | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
+          <div class="campo-edit"><label>Descrição Meta (SEO)</label><textarea id="cfg-seo-galeria-descricao" rows="2" maxlength="160" placeholder="Fotos dos produtos e da loja Itapolitana em Cajuru."></textarea><div class="hint">Descrição exibida nos resultados de busca do Google (máx. 160 caracteres).</div></div>
+
+          <div class="seção-título" style="margin-top:20px">📄 Conteúdo da Página</div>
+          <div class="campo-edit"><label>H1 da Galeria</label><input type="text" id="galeria-h1" maxlength="120" placeholder="📸 Galeria – Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal exibido na página da galeria.</div></div>
+          <div class="campo-edit"><label>Descrição</label><textarea id="galeria-descricao" rows="2" maxlength="200" placeholder="Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP."></textarea><div class="hint">Texto descritivo exibido abaixo do título da galeria.</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar Galeria</button></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
     <div class="seção" id="sec-rastreio">
   <div class="card">
@@ -3496,6 +3518,7 @@ async function carregarTudo(){
   try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais',e);}
   try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre',e);}
   try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}
+  try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -5913,6 +5936,53 @@ async function salvarCarrosselConfig() {
   cfg.carrosselConfig.transitionSpeed = parseInt(document.getElementById('carrossel-transition-speed').value) || 800;
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar configurações do carrossel');
+}
+
+// =====================================================================
+// GALERIA — Carregar e salvar configurações de galeria.html
+// =====================================================================
+function carregarGaleria() {
+  const cfg = STATE.config || {};
+  const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
+  const gp = cfg.galeriaPagina || {};
+
+  const tituloEl = document.getElementById('cfg-seo-galeria-titulo');
+  if (tituloEl) tituloEl.value = seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru';
+
+  const descEl = document.getElementById('cfg-seo-galeria-descricao');
+  if (descEl) descEl.value = seo.descricao || 'Fotos dos produtos e da loja Itapolitana em Cajuru.';
+
+  const h1El = document.getElementById('galeria-h1');
+  if (h1El) h1El.value = gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru';
+
+  const descPagEl = document.getElementById('galeria-descricao');
+  if (descPagEl) descPagEl.value = gp.descricao || 'Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.';
+}
+
+async function salvarGaleria() {
+  const cfg = STATE.config || {};
+
+  // Garantir que seoPaginas.galeria existe
+  if (!cfg.seoPaginas) cfg.seoPaginas = {};
+  if (!cfg.seoPaginas.galeria) cfg.seoPaginas.galeria = {};
+
+  const tituloEl = document.getElementById('cfg-seo-galeria-titulo');
+  if (tituloEl) cfg.seoPaginas.galeria.titulo = tituloEl.value.trim();
+
+  const descEl = document.getElementById('cfg-seo-galeria-descricao');
+  if (descEl) cfg.seoPaginas.galeria.descricao = descEl.value.trim();
+
+  // Garantir que galeriaPagina existe
+  if (!cfg.galeriaPagina) cfg.galeriaPagina = {};
+
+  const h1El = document.getElementById('galeria-h1');
+  if (h1El) cfg.galeriaPagina.h1 = h1El.value.trim();
+
+  const descPagEl = document.getElementById('galeria-descricao');
+  if (descPagEl) cfg.galeriaPagina.descricao = descPagEl.value.trim();
+
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar galeria');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
