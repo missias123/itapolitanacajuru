@@ -2714,6 +2714,28 @@ Talento</textarea>
       </div>
     </div>
 
+    <!-- ═══════════════ SEÇÃO ENCOMENDAS (Página encomendas.html) ═══════ -->
+    <div class="seção" id="sec-encomendas-config">
+      <div class="card">
+        <div class="card-header"><h2>🛒 Encomendas — Configurações</h2><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+            📌 <strong>Sobre encomendas:</strong> Configure o banner hero, badges e metadados SEO da página encomendas.html. Campos salvos em <code>dados/config.json → encomendasPagina{}</code> e <code>seoPaginas.encomendas{}</code>.
+          </div>
+
+          <div class="seção-título">🏷️ Metadados SEO</div>
+          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-encomendas-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
+          <div class="campo-edit"><label>Descrição Meta (SEO)</label><textarea id="cfg-seo-encomendas-descricao" rows="2" maxlength="160" placeholder="Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP."></textarea><div class="hint">Descrição exibida nos resultados de busca do Google (máx. 160 caracteres).</div></div>
+
+          <div class="seção-título" style="margin-top:20px">🎯 Hero Banner</div>
+          <div class="campo-edit"><label>Título Hero (permite HTML)</label><input type="text" id="encomendas-hero-titulo" maxlength="150" placeholder="🛒 Cardápio e Encomendas <span class=&quot;destaque&quot;>Itapolitana Cajuru</span>"/><div class="hint">Título principal do hero. Pode conter HTML para estilização (ex: &lt;span class="destaque"&gt;).</div></div>
+          <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos..."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar Encomendas</button></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
     <div class="seção" id="sec-rastreio">
   <div class="card">
@@ -3519,6 +3541,7 @@ async function carregarTudo(){
   try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre',e);}
   try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}
   try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}
+  try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -5983,6 +6006,53 @@ async function salvarGaleria() {
 
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar galeria');
+}
+
+// =====================================================================
+// ENCOMENDAS — Carregar e salvar configurações de encomendas.html
+// =====================================================================
+function carregarEncomendas() {
+  const cfg = STATE.config || {};
+  const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
+  const ep = cfg.encomendasPagina || {};
+
+  const tituloEl = document.getElementById('cfg-seo-encomendas-titulo');
+  if (tituloEl) tituloEl.value = seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru';
+
+  const descEl = document.getElementById('cfg-seo-encomendas-descricao');
+  if (descEl) descEl.value = seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.';
+
+  const heroTituloEl = document.getElementById('encomendas-hero-titulo');
+  if (heroTituloEl) heroTituloEl.value = ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>';
+
+  const heroDescEl = document.getElementById('encomendas-hero-descricao');
+  if (heroDescEl) heroDescEl.value = ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!';
+}
+
+async function salvarEncomendas() {
+  const cfg = STATE.config || {};
+
+  // Garantir que seoPaginas.encomendas existe
+  if (!cfg.seoPaginas) cfg.seoPaginas = {};
+  if (!cfg.seoPaginas.encomendas) cfg.seoPaginas.encomendas = {};
+
+  const tituloEl = document.getElementById('cfg-seo-encomendas-titulo');
+  if (tituloEl) cfg.seoPaginas.encomendas.titulo = tituloEl.value.trim();
+
+  const descEl = document.getElementById('cfg-seo-encomendas-descricao');
+  if (descEl) cfg.seoPaginas.encomendas.descricao = descEl.value.trim();
+
+  // Garantir que encomendasPagina existe
+  if (!cfg.encomendasPagina) cfg.encomendasPagina = {};
+
+  const heroTituloEl = document.getElementById('encomendas-hero-titulo');
+  if (heroTituloEl) cfg.encomendasPagina.heroTitulo = heroTituloEl.value.trim();
+
+  const heroDescEl = document.getElementById('encomendas-hero-descricao');
+  if (heroDescEl) cfg.encomendasPagina.heroDescricao = heroDescEl.value.trim();
+
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar encomendas');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
