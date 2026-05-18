@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico de Abas do Admin - Itapolitana Cajuru</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 {
+      color: #58a6ff;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #8b949e;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .section {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      color: #58a6ff;
+      font-size: 18px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status.aguardando { background: #1f6feb; color: white; }
+    .status.testando { background: #f0883e; color: white; }
+    .status.sucesso { background: #238636; color: white; }
+    .status.erro { background: #da3633; color: white; }
+    .log-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 15px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .log-line { margin: 2px 0; }
+    .log-line.success { color: #3fb950; }
+    .log-line.error { color: #f85149; }
+    .log-line.warning { color: #d29922; }
+    .log-line.info { color: #58a6ff; }
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-right: 10px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #2ea043; }
+    button:disabled {
+      background: #21262d;
+      color: #8b949e;
+      cursor: not-allowed;
+    }
+    .test-result {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 10px;
+      margin: 8px 0;
+      padding: 10px;
+      background: #0d1117;
+      border-radius: 4px;
+    }
+    .test-label {
+      color: #8b949e;
+      font-weight: 600;
+    }
+    .test-value {
+      color: #c9d1d9;
+    }
+    .copy-btn {
+      background: #21262d;
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+    .copy-btn:hover { background: #30363d; }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      background: white;
+      margin-top: 15px;
+    }
+    .alert {
+      background: #1f6feb;
+      border-left: 4px solid #58a6ff;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 6px;
+    }
+    .alert strong { display: block; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Diagnóstico de Abas do Admin-Painel</h1>
+    <div class="subtitle">Ferramenta de diagnóstico para identificar problemas de visibilidade nas abas Fidelidade, Dicas, Encomendas e Qualidade</div>
+
+    <div class="alert">
+      <strong>📋 Instruções:</strong>
+      1. Clique em "Iniciar Diagnóstico Completo"<br>
+      2. Aguarde a conclusão de todos os testes<br>
+      3. Copie o relatório completo usando o botão "Copiar Relatório"<br>
+      4. Compartilhe o relatório com o desenvolvedor
+    </div>
+
+    <div class="section">
+      <h2>
+        ⚙️ Controles
+        <span class="status aguardando" id="status-geral">Aguardando</span>
+      </h2>
+      <button onclick="iniciarDiagnostico()" id="btn-iniciar">🚀 Iniciar Diagnóstico Completo</button>
+      <button onclick="copiarRelatorio()" id="btn-copiar" disabled>📋 Copiar Relatório</button>
+      <button onclick="limparLogs()" id="btn-limpar">🗑️ Limpar Logs</button>
+    </div>
+
+    <div class="section">
+      <h2>📊 Testes de Abas</h2>
+      <div id="testes-abas"></div>
+    </div>
+
+    <div class="section">
+      <h2>📝 Logs de Console</h2>
+      <div class="log-box" id="console-logs">Aguardando início do diagnóstico...</div>
+    </div>
+
+    <div class="section">
+      <h2>📄 Relatório Completo</h2>
+      <div class="log-box" id="relatorio-completo">O relatório será gerado após a conclusão dos testes.</div>
+    </div>
+
+    <div class="section">
+      <h2>🖥️ Preview do Admin-Painel</h2>
+      <iframe id="admin-iframe" src="https://itapolitanacajuru.com.br/admin-painel.html" style="display:none;"></iframe>
+      <p style="color:#8b949e; font-size:12px;">O iframe será utilizado durante os testes (não visível)</p>
+    </div>
+  </div>
+
+  <script>
+    let logs = [];
+    let relatorio = [];
+    let testesCompletos = 0;
+    const totalTestes = 4;
+
+    function log(mensagem, tipo = 'info') {
+      const timestamp = new Date().toLocaleTimeString('pt-BR');
+      const classe = tipo === 'error' ? 'error' : tipo === 'success' ? 'success' : tipo === 'warning' ? 'warning' : 'info';
+      logs.push({ timestamp, mensagem, tipo: classe });
+
+      const logBox = document.getElementById('console-logs');
+      const linha = document.createElement('div');
+      linha.className = `log-line ${classe}`;
+      linha.textContent = `[${timestamp}] ${mensagem}`;
+      logBox.appendChild(linha);
+      logBox.scrollTop = logBox.scrollHeight;
+
+      console.log(`[${timestamp}] ${mensagem}`);
+    }
+
+    function adicionarAoRelatorio(texto) {
+      relatorio.push(texto);
+      document.getElementById('relatorio-completo').textContent = relatorio.join('\n');
+    }
+
+    function limparLogs() {
+      logs = [];
+      relatorio = [];
+      testesCompletos = 0;
+      document.getElementById('console-logs').innerHTML = 'Logs limpos.';
+      document.getElementById('relatorio-completo').textContent = 'Aguardando novos testes...';
+      document.getElementById('testes-abas').innerHTML = '';
+      document.getElementById('status-geral').textContent = 'Aguardando';
+      document.getElementById('status-geral').className = 'status aguardando';
+      document.getElementById('btn-copiar').disabled = true;
+    }
+
+    function copiarRelatorio() {
+      const texto = document.getElementById('relatorio-completo').textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert('✅ Relatório copiado para a área de transferência!');
+      }).catch(err => {
+        alert('❌ Erro ao copiar: ' + err);
+      });
+    }
+
+    async function testarAba(nomeAba, idBotao, idsSecoesEsperadas) {
+      log(`═══════════════════════════════════════`, 'info');
+      log(`Testando aba: ${nomeAba}`, 'info');
+      adicionarAoRelatorio(`\n=== TESTE: ${nomeAba.toUpperCase()} ===`);
+
+      const container = document.getElementById('testes-abas');
+      const testeDiv = document.createElement('div');
+      testeDiv.id = `teste-${nomeAba}`;
+      testeDiv.innerHTML = `
+        <h3 style="color:#58a6ff; margin:15px 0 10px 0;">${nomeAba}</h3>
+        <div class="test-result">
+          <div class="test-label">Status:</div>
+          <div class="test-value"><span class="status testando">Testando...</span></div>
+        </div>
+        <div id="resultado-${nomeAba}"></div>
+      `;
+      container.appendChild(testeDiv);
+
+      try {
+        const iframe = document.getElementById('admin-iframe');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const iframeWindow = iframe.contentWindow;
+
+        // Aguardar carregamento do iframe
+        await new Promise(resolve => {
+          if (iframe.contentDocument.readyState === 'complete') {
+            resolve();
+          } else {
+            iframe.onload = resolve;
+          }
+        });
+
+        log(`✓ Iframe carregado`, 'success');
+
+        // Interceptar console.log do iframe
+        const consoleLogs = [];
+        const originalLog = iframeWindow.console.log;
+        const originalError = iframeWindow.console.error;
+
+        iframeWindow.console.log = function(...args) {
+          const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+          consoleLogs.push({ tipo: 'log', msg });
+          log(`  [IFRAME LOG] ${msg}`, 'info');
+          originalLog.apply(this, args);
+        };
+
+        iframeWindow.console.error = function(...args) {
+          const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+          consoleLogs.push({ tipo: 'error', msg });
+          log(`  [IFRAME ERROR] ${msg}`, 'error');
+          originalError.apply(this, args);
+        };
+
+        // Procurar botão da aba
+        const botao = iframeDoc.querySelector(`[onclick*="${idBotao}"]`);
+        if (!botao) {
+          throw new Error(`Botão não encontrado: ${idBotao}`);
+        }
+        log(`✓ Botão encontrado: ${idBotao}`, 'success');
+
+        // Clicar no botão
+        botao.click();
+        log(`✓ Clique executado no botão ${nomeAba}`, 'success');
+
+        // Aguardar renderização
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Verificar seções ativas
+        const resultados = [];
+        for (const idSecao of idsSecoesEsperadas) {
+          const secao = iframeDoc.getElementById(`sec-${idSecao}`);
+          if (!secao) {
+            resultados.push({ id: idSecao, encontrada: false, ativa: false, visivel: false, conteudo: '' });
+            log(`  ✗ Seção NÃO encontrada: sec-${idSecao}`, 'error');
+          } else {
+            const ativa = secao.classList.contains('ativo');
+            const estilo = iframeWindow.getComputedStyle(secao);
+            const visivel = estilo.display !== 'none' && estilo.visibility !== 'hidden' && estilo.opacity !== '0';
+            const conteudo = secao.innerText.substring(0, 100).trim();
+
+            resultados.push({ id: idSecao, encontrada: true, ativa, visivel, conteudo });
+
+            if (ativa && visivel) {
+              log(`  ✓ Seção OK: sec-${idSecao} (ativa e visível)`, 'success');
+            } else if (ativa && !visivel) {
+              log(`  ⚠ Seção ATIVA mas NÃO VISÍVEL: sec-${idSecao}`, 'warning');
+            } else if (!ativa && visivel) {
+              log(`  ⚠ Seção VISÍVEL mas NÃO ATIVA: sec-${idSecao}`, 'warning');
+            } else {
+              log(`  ✗ Seção inativa e invisível: sec-${idSecao}`, 'error');
+            }
+          }
+        }
+
+        // Construir resultado
+        let statusFinal = 'sucesso';
+        const divResultado = document.getElementById(`resultado-${nomeAba}`);
+        let html = '';
+
+        resultados.forEach(r => {
+          if (!r.encontrada || !r.ativa || !r.visivel) statusFinal = 'erro';
+
+          html += `
+            <div class="test-result">
+              <div class="test-label">Seção: sec-${r.id}</div>
+              <div class="test-value">
+                ${r.encontrada ? '✓ Encontrada' : '✗ NÃO Encontrada'} |
+                ${r.ativa ? '✓ Ativa' : '✗ Inativa'} |
+                ${r.visivel ? '✓ Visível' : '✗ Invisível'}
+              </div>
+            </div>
+          `;
+
+          adicionarAoRelatorio(`Seção sec-${r.id}: Encontrada=${r.encontrada}, Ativa=${r.ativa}, Visível=${r.visivel}`);
+          if (r.conteudo) {
+            adicionarAoRelatorio(`  Conteúdo (primeiros 100 chars): ${r.conteudo}`);
+          }
+        });
+
+        // Adicionar logs do console ao resultado
+        if (consoleLogs.length > 0) {
+          html += `<div class="test-result"><div class="test-label">Logs do Console:</div><div class="test-value">${consoleLogs.length} mensagens</div></div>`;
+          adicionarAoRelatorio(`\nLogs do Console (${consoleLogs.length} mensagens):`);
+          consoleLogs.forEach(l => {
+            adicionarAoRelatorio(`  [${l.tipo}] ${l.msg}`);
+          });
+        }
+
+        divResultado.innerHTML = html;
+
+        // Atualizar status
+        const statusSpan = testeDiv.querySelector('.status');
+        statusSpan.className = `status ${statusFinal}`;
+        statusSpan.textContent = statusFinal === 'sucesso' ? 'Sucesso' : 'Erro';
+
+        adicionarAoRelatorio(`Status Final: ${statusFinal === 'sucesso' ? 'SUCESSO' : 'ERRO'}`);
+
+        // Restaurar console
+        iframeWindow.console.log = originalLog;
+        iframeWindow.console.error = originalError;
+
+        testesCompletos++;
+        if (testesCompletos === totalTestes) {
+          finalizarDiagnostico();
+        }
+
+      } catch (erro) {
+        log(`✗ Erro ao testar ${nomeAba}: ${erro.message}`, 'error');
+        adicionarAoRelatorio(`ERRO: ${erro.message}`);
+
+        const divResultado = document.getElementById(`resultado-${nomeAba}`);
+        divResultado.innerHTML = `<div style="color:#f85149;">Erro: ${erro.message}</div>`;
+
+        const statusSpan = document.getElementById(`teste-${nomeAba}`).querySelector('.status');
+        statusSpan.className = 'status erro';
+        statusSpan.textContent = 'Erro';
+
+        testesCompletos++;
+        if (testesCompletos === totalTestes) {
+          finalizarDiagnostico();
+        }
+      }
+    }
+
+    async function iniciarDiagnostico() {
+      document.getElementById('btn-iniciar').disabled = true;
+      document.getElementById('status-geral').textContent = 'Testando...';
+      document.getElementById('status-geral').className = 'status testando';
+
+      limparLogs();
+
+      log('═══════════════════════════════════════', 'info');
+      log('INICIANDO DIAGNÓSTICO COMPLETO', 'info');
+      log('═══════════════════════════════════════', 'info');
+
+      adicionarAoRelatorio('═══════════════════════════════════════════════════════════════');
+      adicionarAoRelatorio('RELATÓRIO DE DIAGNÓSTICO - ABAS DO ADMIN-PAINEL');
+      adicionarAoRelatorio('Gerado em: ' + new Date().toLocaleString('pt-BR'));
+      adicionarAoRelatorio('URL: https://itapolitanacajuru.com.br/admin-painel.html');
+      adicionarAoRelatorio('═══════════════════════════════════════════════════════════════');
+
+      // Mostrar iframe
+      document.getElementById('admin-iframe').style.display = 'block';
+
+      // Executar testes sequencialmente
+      await testarAba('Fidelidade', 'fidelidade-admin', ['clientes', 'fidelidade']);
+      await new Promise(r => setTimeout(r, 1000));
+
+      await testarAba('Dicas', 'dicas-admin', ['depoimentos']);
+      await new Promise(r => setTimeout(r, 1000));
+
+      await testarAba('Encomendas', 'encomendas-config-admin', ['encomendas-config']);
+      await new Promise(r => setTimeout(r, 1000));
+
+      await testarAba('Qualidade', 'qualidade', ['qualidade']);
+    }
+
+    function finalizarDiagnostico() {
+      log('═══════════════════════════════════════', 'info');
+      log('DIAGNÓSTICO CONCLUÍDO!', 'success');
+      log('═══════════════════════════════════════', 'info');
+
+      adicionarAoRelatorio('\n═══════════════════════════════════════════════════════════════');
+      adicionarAoRelatorio('DIAGNÓSTICO CONCLUÍDO');
+      adicionarAoRelatorio('═══════════════════════════════════════════════════════════════');
+
+      document.getElementById('status-geral').textContent = 'Concluído';
+      document.getElementById('status-geral').className = 'status sucesso';
+      document.getElementById('btn-iniciar').disabled = false;
+      document.getElementById('btn-copiar').disabled = false;
+
+      // Ocultar iframe
+      document.getElementById('admin-iframe').style.display = 'none';
+
+      alert('✅ Diagnóstico concluído! Use o botão "Copiar Relatório" para compartilhar os resultados.');
+    }
+  </script>
+</body>
+</html>
