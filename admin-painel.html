@@ -7144,6 +7144,10 @@ function processarFotoDepoimento(file, idx) {
 }
 
 async function salvarDepoimentos() {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para salvar depoimentos.', 'aviso');
+    return;
+  }
   const c = STATE.config;
   c.depTitulo = document.getElementById('dep-titulo').value.trim();
   c.depSubtitulo = document.getElementById('dep-subtitulo').value.trim();
@@ -7152,7 +7156,7 @@ async function salvarDepoimentos() {
   // Remoção prevista: após confirmar que TODOS os ambientes salvaram com "depDicas" (array)
   // e que nenhum script lê config.depDica — remover na próxima versão principal do admin (v9+).
   c.depDica = c.depDicas[0] || '';
-  
+
   const lista = [];
   const container = document.getElementById('dep-lista');
   const itens = container.querySelectorAll('.dep-item');
@@ -7507,6 +7511,10 @@ function renderProdutosAdmin() {
 }
 
 function abrirFormProduto(cat, id) {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para editar produtos.', 'aviso');
+    return;
+  }
   const panel = document.getElementById('prod-form-panel');
   const tit = document.getElementById('prod-form-titulo');
   if (!panel) return;
@@ -7545,6 +7553,10 @@ function fecharFormProduto() {
 }
 
 async function salvarProduto() {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para salvar produtos.', 'aviso');
+    return;
+  }
   const nome = (document.getElementById('prod-f-nome').value || '').trim();
   if (!nome) { toast('Informe o nome do produto.','erro'); return; }
   const cat = document.getElementById('prod-f-cat').value;
@@ -7585,6 +7597,10 @@ async function salvarProduto() {
 }
 
 function excluirProduto(cat, id) {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para excluir produtos.', 'aviso');
+    return;
+  }
   const arr = STATE.produtos?.[cat] || [];
   const item = arr.find(x => x.id === id);
   if (!item) return;
@@ -7777,6 +7793,10 @@ function bindPromocaoFormEvents() {
 }
 
 function abrirFormPromocao(idx) {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para editar promoções.', 'aviso');
+    return;
+  }
   const panel = document.getElementById('promos-form-panel');
   const tit = document.getElementById('promos-form-titulo');
   if (!panel) return;
@@ -7815,6 +7835,10 @@ function fecharFormPromocao() {
 }
 
 async function salvarPromocaoItem() {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para salvar promoções.', 'aviso');
+    return;
+  }
   const nome = (document.getElementById('promo-nome').value || '').trim();
   const descricao = (document.getElementById('promo-descricao').value || '').trim();
   const dataInicio = (document.getElementById('promo-data-inicio').value || '').trim();
@@ -7848,6 +7872,10 @@ async function salvarPromocaoItem() {
 }
 
 function excluirPromocaoItem(idx) {
+  if (!GH_WRITE_ALLOWED) {
+    toast('⚠️ Token GitHub sem permissão de escrita. Atualize o token para excluir promoções.', 'aviso');
+    return;
+  }
   const p = STATE.promocoes?.promocoes?.[idx];
   if (!p) return;
   confirmarAcao(
