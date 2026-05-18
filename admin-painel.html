@@ -2146,6 +2146,23 @@ Talento</textarea>
           <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
           <div class="campo-edit"><label>Passos "Como funciona" (um por linha)</label><textarea id="fid-como-funciona-lista" rows="4" placeholder="Faça seu cadastro...&#10;A cada compra...&#10;Junte pontos..."></textarea></div>
           <div class="campo-edit"><label>Regras resumidas (uma por linha)</label><textarea id="fid-regras-resumo-lista" rows="5" placeholder="Cadastre-se com dados reais...&#10;Cada código válido soma 1 ponto..."></textarea></div>
+
+          <div class="seção-título">📝 Textos da Página Fidelidade</div>
+          <div class="campo-edit"><label>Título "Como funciona"</label><input type="text" id="fidelidade-como-funciona-titulo" maxlength="100" placeholder="Como funciona"/><div class="hint">H2 da seção Como Funciona.</div></div>
+          <div class="campo-edit"><label>Título seção "Quero participar"</label><input type="text" id="fidelidade-acao-titulo" maxlength="120" placeholder="Quero participar do Clube de Fidelidade"/><div class="hint">H2 da seção de ações principais.</div></div>
+          <div class="campo-edit"><label>Botão "Quero participar"</label><input type="text" id="fidelidade-btn-cadastro" maxlength="120" placeholder="Quero participar do Clube de Fidelidade"/><div class="hint">Texto do botão de cadastro.</div></div>
+          <div class="campo-edit"><label>Botão "Já sou cadastrado"</label><input type="text" id="fidelidade-btn-login" maxlength="120" placeholder="Já sou cadastrado / Digitar código"/><div class="hint">Texto do botão de login.</div></div>
+          <div class="campo-edit"><label>Título "Regras do Clube"</label><input type="text" id="fidelidade-regras-titulo" maxlength="100" placeholder="Regras do Clube de Fidelidade"/><div class="hint">H2 da seção de cadastro/regras.</div></div>
+          <div class="campo-edit"><label>Botão "Li e aceito"</label><input type="text" id="fidelidade-btn-aceitar-regras" maxlength="120" placeholder="Li e aceito as regras do Clube de Fidelidade"/><div class="hint">Texto do botão de aceitação de regras.</div></div>
+          <div class="campo-edit"><label>Título "Regras completas"</label><input type="text" id="fidelidade-regulamento-titulo" maxlength="100" placeholder="Regras completas do programa"/><div class="hint">H2 da seção de regras completas.</div></div>
+          <div class="campo-edit"><label>Summary "Ler regulamento"</label><input type="text" id="fidelidade-regulamento-summary" maxlength="120" placeholder="📜 Ler regulamento completo do Clube de Fidelidade"/><div class="hint">Texto do summary do details de regulamento.</div></div>
+
+          <div class="seção-título">🔎 SEO da Página Fidelidade</div>
+          <div class="campo-edit"><label>Título SEO (&lt;title&gt;)</label><input type="text" id="cfg-seo-fidelidade-titulo" maxlength="80" placeholder="Clube de Fidelidade | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador.</div></div>
+          <div class="campo-edit"><label>Meta Description</label><textarea id="cfg-seo-fidelidade-descricao" rows="2" maxlength="160" placeholder="Acumule pontos por código nos cupons da Itapolitana Cajuru e troque por prêmios. Cadastre-se no Clube de Fidelidade."></textarea><div class="hint">Descrição SEO (máx. 160 caracteres).</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidelidadePagina()">💾 Salvar Textos da Página Fidelidade</button></div>
+
           <div class="seção-título">🔗 CTAs da Fidelidade</div>
           <div class="campo-edit"><label>URL "Ver regras completas"</label><input type="url" id="fid-regras-url" placeholder="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas"/></div>
           <div class="campo-edit"><label>URL "Resgatar prêmio via WhatsApp"</label><input type="url" id="fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/></div>
@@ -3545,6 +3562,7 @@ async function carregarTudo(){
   try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}
   try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}
   try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}
+  try{carregarFidelidadePagina();}catch(e){console.error('[Admin] carregarFidelidadePagina',e);}
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -6059,6 +6077,89 @@ async function salvarEncomendas() {
 
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar encomendas');
+}
+
+// =====================================================================
+// FIDELIDADE PÁGINA — Carregar e salvar textos de fidelidade.html
+// =====================================================================
+function carregarFidelidadePagina() {
+  const cfg = STATE.config || {};
+  const seo = (cfg.seoPaginas && cfg.seoPaginas.fidelidade) || {};
+  const fp = cfg.fidelidadePagina || {};
+
+  const tituloEl = document.getElementById('cfg-seo-fidelidade-titulo');
+  if (tituloEl) tituloEl.value = seo.titulo || 'Clube de Fidelidade | Sorveteria Itapolitana Cajuru';
+
+  const descEl = document.getElementById('cfg-seo-fidelidade-descricao');
+  if (descEl) descEl.value = seo.descricao || 'Acumule pontos por código nos cupons da Itapolitana Cajuru e troque por prêmios. Cadastre-se no Clube de Fidelidade.';
+
+  const comoFuncTitEl = document.getElementById('fidelidade-como-funciona-titulo');
+  if (comoFuncTitEl) comoFuncTitEl.value = fp.comoFuncionaTitulo || 'Como funciona';
+
+  const acaoTitEl = document.getElementById('fidelidade-acao-titulo');
+  if (acaoTitEl) acaoTitEl.value = fp.acaoTitulo || 'Quero participar do Clube de Fidelidade';
+
+  const btnCadEl = document.getElementById('fidelidade-btn-cadastro');
+  if (btnCadEl) btnCadEl.value = fp.btnCadastro || 'Quero participar do Clube de Fidelidade';
+
+  const btnLogEl = document.getElementById('fidelidade-btn-login');
+  if (btnLogEl) btnLogEl.value = fp.btnLogin || 'Já sou cadastrado / Digitar código';
+
+  const regrasTitEl = document.getElementById('fidelidade-regras-titulo');
+  if (regrasTitEl) regrasTitEl.value = fp.regrasTitulo || 'Regras do Clube de Fidelidade';
+
+  const btnAceitEl = document.getElementById('fidelidade-btn-aceitar-regras');
+  if (btnAceitEl) btnAceitEl.value = fp.btnAceitarRegras || 'Li e aceito as regras do Clube de Fidelidade';
+
+  const regTitEl = document.getElementById('fidelidade-regulamento-titulo');
+  if (regTitEl) regTitEl.value = fp.regulamentoTitulo || 'Regras completas do programa';
+
+  const regSumEl = document.getElementById('fidelidade-regulamento-summary');
+  if (regSumEl) regSumEl.value = fp.regulamentoSummary || '📜 Ler regulamento completo do Clube de Fidelidade';
+}
+
+async function salvarFidelidadePagina() {
+  const cfg = STATE.config || {};
+
+  // Garantir que seoPaginas.fidelidade existe
+  if (!cfg.seoPaginas) cfg.seoPaginas = {};
+  if (!cfg.seoPaginas.fidelidade) cfg.seoPaginas.fidelidade = {};
+
+  const tituloEl = document.getElementById('cfg-seo-fidelidade-titulo');
+  if (tituloEl) cfg.seoPaginas.fidelidade.titulo = tituloEl.value.trim();
+
+  const descEl = document.getElementById('cfg-seo-fidelidade-descricao');
+  if (descEl) cfg.seoPaginas.fidelidade.descricao = descEl.value.trim();
+
+  // Garantir que fidelidadePagina existe
+  if (!cfg.fidelidadePagina) cfg.fidelidadePagina = {};
+
+  const comoFuncTitEl = document.getElementById('fidelidade-como-funciona-titulo');
+  if (comoFuncTitEl) cfg.fidelidadePagina.comoFuncionaTitulo = comoFuncTitEl.value.trim();
+
+  const acaoTitEl = document.getElementById('fidelidade-acao-titulo');
+  if (acaoTitEl) cfg.fidelidadePagina.acaoTitulo = acaoTitEl.value.trim();
+
+  const btnCadEl = document.getElementById('fidelidade-btn-cadastro');
+  if (btnCadEl) cfg.fidelidadePagina.btnCadastro = btnCadEl.value.trim();
+
+  const btnLogEl = document.getElementById('fidelidade-btn-login');
+  if (btnLogEl) cfg.fidelidadePagina.btnLogin = btnLogEl.value.trim();
+
+  const regrasTitEl = document.getElementById('fidelidade-regras-titulo');
+  if (regrasTitEl) cfg.fidelidadePagina.regrasTitulo = regrasTitEl.value.trim();
+
+  const btnAceitEl = document.getElementById('fidelidade-btn-aceitar-regras');
+  if (btnAceitEl) cfg.fidelidadePagina.btnAceitarRegras = btnAceitEl.value.trim();
+
+  const regTitEl = document.getElementById('fidelidade-regulamento-titulo');
+  if (regTitEl) cfg.fidelidadePagina.regulamentoTitulo = regTitEl.value.trim();
+
+  const regSumEl = document.getElementById('fidelidade-regulamento-summary');
+  if (regSumEl) cfg.fidelidadePagina.regulamentoSummary = regSumEl.value.trim();
+
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar fidelidade página');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
