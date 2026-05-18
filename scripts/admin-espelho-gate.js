@@ -36,6 +36,19 @@ function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function getNestedValue(obj, path) {
+  const parts = path.split('.');
+  let current = obj;
+  for (const part of parts) {
+    if (current && typeof current === 'object' && Object.prototype.hasOwnProperty.call(current, part)) {
+      current = current[part];
+    } else {
+      return undefined;
+    }
+  }
+  return current;
+}
+
 const matrix = readJson(MATRIX_PATH);
 const rows = Array.isArray(matrix.campos) ? matrix.campos : [];
 const adminHtml = readFile(ADMIN_PATH);
@@ -69,8 +82,9 @@ rows.forEach((row) => {
   }
 
   const sourceJson = readJson(sourceAbs);
+  const configValue = getNestedValue(sourceJson, row.configKey);
   ensure(
-    Object.prototype.hasOwnProperty.call(sourceJson, row.configKey),
+    configValue !== undefined,
     `${prefix} configKey não encontrado em ${row.sourceFile}: ${row.configKey}`,
     failures
   );

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carrossel – Sorveteria Itapolitana</title>
+  <title data-config="seoPaginas.carrossel.titulo">Carrossel – Sorveteria Itapolitana</title>
 
   <link
     rel="stylesheet"
@@ -68,7 +68,7 @@
 </head>
 <body>
   <!-- A11y: título visível apenas para leitores de tela e motores de busca -->
-  <h1 class="sr-only">Carrossel de Fotos – Sorveteria Itapolitana Cajuru</h1>
+  <h1 class="sr-only" data-config="carrosselConfig.h1">Carrossel de Fotos – Sorveteria Itapolitana Cajuru</h1>
 
   <div class="itp-slider swiper">
     <div class="swiper-wrapper" id="itp-carrossel-wrapper"></div>
@@ -141,17 +141,41 @@
 
       carregarBannersConfig().then(function (banners) {
         montarSlides(banners);
+
+        // Carregar configurações dinâmicas
+        var autoplayDelay = 3000;
+        var transitionSpeed = 800;
+        try {
+          var titleEl = document.querySelector('title[data-config]');
+          var h1El = document.querySelector('h1[data-config]');
+          fetch(CONFIG_URL, { cache: 'no-cache' })
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(cfg) {
+              if (cfg) {
+                if (cfg.seoPaginas && cfg.seoPaginas.carrossel && cfg.seoPaginas.carrossel.titulo && titleEl) {
+                  titleEl.textContent = cfg.seoPaginas.carrossel.titulo;
+                }
+                if (cfg.carrosselConfig) {
+                  if (cfg.carrosselConfig.h1 && h1El) h1El.textContent = cfg.carrosselConfig.h1;
+                  if (typeof cfg.carrosselConfig.autoplayDelay === 'number') autoplayDelay = cfg.carrosselConfig.autoplayDelay;
+                  if (typeof cfg.carrosselConfig.transitionSpeed === 'number') transitionSpeed = cfg.carrosselConfig.transitionSpeed;
+                }
+              }
+            })
+            .catch(function(){});
+        } catch(e){}
+
         var swiper = new Swiper('.itp-slider', {
           loop: true,
           observer: true,
           observeParents: true,
           observeSlideChildren: true,
           autoplay: {
-            delay: 3000,
+            delay: autoplayDelay,
             disableOnInteraction: false,
             pauseOnMouseEnter: true
           },
-          speed: 800,
+          speed: transitionSpeed,
           effect: 'slide',
           grabCursor: true,
           keyboard: { enabled: true, onlyInViewport: true },
