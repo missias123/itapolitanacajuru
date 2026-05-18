@@ -99,6 +99,35 @@
 
     // ── Atributos data-config ──────────────────
     // Qualquer elemento com data-config="campo" recebe o valor automaticamente
+    // Tags HTML seguras permitidas em campos de texto rico
+    const SAFE_TAGS = ['STRONG', 'EM', 'B', 'I', 'BR', 'SPAN', 'A'];
+    function sanitizeHTML(str) {
+      const temp = document.createElement('div');
+      temp.innerHTML = String(str);
+      temp.querySelectorAll('*').forEach(node => {
+        if (!SAFE_TAGS.includes(node.tagName)) {
+          node.replaceWith(document.createTextNode(node.textContent));
+        } else {
+          // Remover atributos perigosos (onclick, onerror, etc)
+          [...node.attributes].forEach(attr => {
+            if (attr.name.startsWith('on') || attr.name === 'style' && attr.value.includes('expression')) {
+              node.removeAttribute(attr.name);
+            }
+          });
+          // Para links, garantir que href é seguro
+          if (node.tagName === 'A') {
+            const href = node.getAttribute('href') || '';
+            if (href.startsWith('javascript:') || href.startsWith('data:')) {
+              node.removeAttribute('href');
+            }
+          }
+        }
+      });
+      // Remover scripts injetados
+      temp.querySelectorAll('script,iframe,object,embed').forEach(n => n.remove());
+      return temp.innerHTML;
+    }
+
     document.querySelectorAll('[data-config]').forEach(el => {
       const campo = el.getAttribute('data-config');
       const valor = getValor(cfg, campo);
@@ -111,6 +140,9 @@
           } else {
             el.textContent = valor;
           }
+        } else if (el.hasAttribute('data-config-html') || campo.toLowerCase().includes('texto')) {
+          // Campos de texto rico: permitir HTML seguro (strong, em, br, span)
+          el.innerHTML = sanitizeHTML(valor);
         } else {
           el.textContent = valor;
         }
