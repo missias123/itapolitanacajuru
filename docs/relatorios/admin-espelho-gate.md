@@ -1,6 +1,6 @@
 # Gate Admin ↔ Site (Matriz Espelho)
 
-Gerado em: 2026-05-18T14:23:26.534Z
+Gerado em: 2026-05-18T15:20:43.843Z
 
 - Campos avaliados: **12**
 - Falhas: **0**
