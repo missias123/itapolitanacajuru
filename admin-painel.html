@@ -5300,11 +5300,36 @@ function preencherFidelidade(){
   if(fidRegrasUrl) fidRegrasUrl.value=cfg.fidelidadeRegrasUrl||'';
   const fidResgateUrl=document.getElementById('fid-resgate-url');
   if(fidResgateUrl) fidResgateUrl.value=cfg.fidelidadeResgateWhatsappUrl||'';
+
+  // Novos campos Fase 3.2
+  const fp=cfg.fidelidadePagina||{};
+  const fidComoTit=document.getElementById('fidelidade-como-funciona-titulo');
+  if(fidComoTit) fidComoTit.value=fp.comoFuncionaTitulo||'Como funciona';
+  const fidAcaoTit=document.getElementById('fidelidade-acao-titulo');
+  if(fidAcaoTit) fidAcaoTit.value=fp.acaoTitulo||'Quero participar do Clube de Fidelidade';
+  const fidBtnCad=document.getElementById('fidelidade-btn-cadastro');
+  if(fidBtnCad) fidBtnCad.value=fp.btnCadastro||'Quero participar do Clube de Fidelidade';
+  const fidBtnLog=document.getElementById('fidelidade-btn-login');
+  if(fidBtnLog) fidBtnLog.value=fp.btnLogin||'Já sou cadastrado / Digitar código';
+  const fidRegraTit=document.getElementById('fidelidade-regras-titulo');
+  if(fidRegraTit) fidRegraTit.value=fp.regrasTitulo||'Regras do Clube de Fidelidade';
+  const fidBtnAceite=document.getElementById('fidelidade-btn-aceitar-regras');
+  if(fidBtnAceite) fidBtnAceite.value=fp.btnAceitarRegras||'Li e aceito as regras do Clube de Fidelidade';
+  const fidRegTit=document.getElementById('fidelidade-regulamento-titulo');
+  if(fidRegTit) fidRegTit.value=fp.regulamentoTitulo||'Regras completas do programa';
+  const fidRegSum=document.getElementById('fidelidade-regulamento-summary');
+  if(fidRegSum) fidRegSum.value=fp.regulamentoSummary||'📜 Ler regulamento completo do Clube de Fidelidade';
+
   const seoPg=cfg.seoPaginas||{};
-  const fidSeoTit=document.getElementById('fid-seo-titulo');
+  const fidSeoTit=document.getElementById('cfg-seo-fidelidade-titulo');
   if(fidSeoTit) fidSeoTit.value=seoPg.fidelidade?.titulo||'';
-  const fidSeoDesc=document.getElementById('fid-seo-descricao');
+  const fidSeoDesc=document.getElementById('cfg-seo-fidelidade-descricao');
   if(fidSeoDesc) fidSeoDesc.value=seoPg.fidelidade?.descricao||'';
+
+  const fidSeoTitOld=document.getElementById('fid-seo-titulo');
+  if(fidSeoTitOld) fidSeoTitOld.value=seoPg.fidelidade?.titulo||'';
+  const fidSeoDescOld=document.getElementById('fid-seo-descricao');
+  if(fidSeoDescOld) fidSeoDescOld.value=seoPg.fidelidade?.descricao||'';
   const fidSeoPal=document.getElementById('fid-seo-palavras');
   if(fidSeoPal) fidSeoPal.value=seoPg.fidelidade?.palavrasChave||'';
   atualizarStatsCódigos();
@@ -5628,7 +5653,7 @@ async function salvarConfigFidelidade() {
   if(!fidRequireWrite())return;
   if (!STATE.config) STATE.config = {};
   const c = STATE.config;
-  
+
   // Capturar valores dos campos
   c.premioMilkshake = document.getElementById('fid-prêmio-milk-nome').value.trim();
   const ptsMilkInput = parseInt(document.getElementById('fid-pts-milk').value, 10);
@@ -5650,17 +5675,42 @@ async function salvarConfigFidelidade() {
   if (fidResgateUrlSafe===null) return;
   c.fidelidadeRegrasUrl = fidRegrasUrlSafe || '';
   c.fidelidadeResgateWhatsappUrl = fidResgateUrlSafe || '';
+
+  // Novos campos Fase 3.2
+  c.fidelidadePagina = c.fidelidadePagina || {};
+  const fidComoTit=document.getElementById('fidelidade-como-funciona-titulo');
+  if(fidComoTit) c.fidelidadePagina.comoFuncionaTitulo = fidComoTit.value.trim();
+  const fidAcaoTit=document.getElementById('fidelidade-acao-titulo');
+  if(fidAcaoTit) c.fidelidadePagina.acaoTitulo = fidAcaoTit.value.trim();
+  const fidBtnCad=document.getElementById('fidelidade-btn-cadastro');
+  if(fidBtnCad) c.fidelidadePagina.btnCadastro = fidBtnCad.value.trim();
+  const fidBtnLog=document.getElementById('fidelidade-btn-login');
+  if(fidBtnLog) c.fidelidadePagina.btnLogin = fidBtnLog.value.trim();
+  const fidRegraTit=document.getElementById('fidelidade-regras-titulo');
+  if(fidRegraTit) c.fidelidadePagina.regrasTitulo = fidRegraTit.value.trim();
+  const fidBtnAceite=document.getElementById('fidelidade-btn-aceitar-regras');
+  if(fidBtnAceite) c.fidelidadePagina.btnAceitarRegras = fidBtnAceite.value.trim();
+  const fidRegTit=document.getElementById('fidelidade-regulamento-titulo');
+  if(fidRegTit) c.fidelidadePagina.regulamentoTitulo = fidRegTit.value.trim();
+  const fidRegSum=document.getElementById('fidelidade-regulamento-summary');
+  if(fidRegSum) c.fidelidadePagina.regulamentoSummary = fidRegSum.value.trim();
+
   c.seoPaginas = c.seoPaginas || {};
   c.seoPaginas.fidelidade = c.seoPaginas.fidelidade || {};
-  const fidSeoTit = document.getElementById('fid-seo-titulo');
+  const fidSeoTit = document.getElementById('cfg-seo-fidelidade-titulo');
   if (fidSeoTit) c.seoPaginas.fidelidade.titulo = fidSeoTit.value.trim();
-  const fidSeoDesc = document.getElementById('fid-seo-descricao');
+  const fidSeoDesc = document.getElementById('cfg-seo-fidelidade-descricao');
   if (fidSeoDesc) c.seoPaginas.fidelidade.descricao = fidSeoDesc.value.trim();
+
+  const fidSeoTitOld = document.getElementById('fid-seo-titulo');
+  if (fidSeoTitOld) c.seoPaginas.fidelidade.titulo = fidSeoTitOld.value.trim();
+  const fidSeoDescOld = document.getElementById('fid-seo-descricao');
+  if (fidSeoDescOld) c.seoPaginas.fidelidade.descricao = fidSeoDescOld.value.trim();
   const fidSeoPal = document.getElementById('fid-seo-palavras');
   if (fidSeoPal) c.seoPaginas.fidelidade.palavrasChave = fidSeoPal.value.trim();
-  
+
   mostrarLoading('Salvando...');
-  
+
   // Sincronizar com o STATE.fidelidade se necessário (para o site ler de um lugar só)
   let ok1 = true;
   if (STATE.fidelidade) {
@@ -5671,7 +5721,7 @@ async function salvarConfigFidelidade() {
     STATE.fidelidade.config.pontosCaixa = c.pontosCaixa;
     STATE.fidelidade.config.titulo = c.fidelidadeTitulo;
     STATE.fidelidade.config.descricao = c.fidelidadeDescricao;
-    
+
     ok1 = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: sincronizar textos da fidelidade');
   }
   
