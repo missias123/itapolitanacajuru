@@ -757,7 +757,21 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Link do botão</label><input type="url" id="promo-link" placeholder="https://"/><div class="hint">Cole o link completo começando com https://. Ex: https://www.instagram.com/itapolitana</div></div>
           <div class="campo-edit"><label>Data de encerramento (opcional)</label><input type="datetime-local" id="promo-datafim"/><div class="hint">Deixe em branco para promoção sem prazo</div></div>
           <div class="campo-edit"><label>Texto do botão flutuante (FAB)</label><input type="text" id="promo-fab" maxlength="15" placeholder="SORTEIO!"/><div class="hint">Max. 15 caracteres. Texto curto e impactante. Aparece no canto inferior direito do site.</div></div>
-          
+
+          <!-- NOVOS CAMPOS FASE 3.2 - Botões de Ação -->
+          <div class="seção-título" style="margin-top:20px">⚡ Botões de Ação da Página</div>
+          <div class="campo-edit"><label>Texto botão "Participar"</label><input type="text" id="promocao-btn-participar" maxlength="50" placeholder="🎁 Quero Participar do Sorteio"/><div class="hint">Botão principal para participar do sorteio.</div></div>
+          <div class="campo-edit"><label>Texto botão "Cardápio"</label><input type="text" id="promocao-btn-cardapio" maxlength="50" placeholder="🍦 Ver Cardápio"/><div class="hint">Botão para visualizar o cardápio completo.</div></div>
+          <div class="campo-edit"><label>Texto botão "Fidelidade"</label><input type="text" id="promocao-btn-fidelidade" maxlength="50" placeholder="⭐ Fidelidade"/><div class="hint">Botão para acessar o programa de fidelidade.</div></div>
+
+          <!-- NOVOS CAMPOS FASE 3.2 - Banner e SEO -->
+          <div class="seção-título" style="margin-top:20px">📣 Banner Superior</div>
+          <div class="campo-edit"><label>Texto do banner (faixa laranja)</label><input type="text" id="promocao-banner-texto" maxlength="60" placeholder="🎉 Sorteios Mensais todo dia 01 🎉"/><div class="hint">Texto em destaque na faixa superior do card de promoção.</div></div>
+
+          <div class="seção-título" style="margin-top:20px">🔎 SEO da Página Promoção</div>
+          <div class="campo-edit"><label>Título SEO (&lt;title&gt;)</label><input type="text" id="cfg-seo-promocao-titulo" maxlength="80" placeholder="Promoções e Sorteios | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador.</div></div>
+          <div class="campo-edit"><label>Meta Description</label><textarea id="cfg-seo-promocao-descricao" rows="2" maxlength="160" placeholder="Promoções especiais e sorteios da Sorveteria Itapolitana em Cajuru/SP. Participe e ganhe prêmios deliciosos!"></textarea><div class="hint">Descrição SEO (máx. 160 caracteres).</div></div>
+
           <!-- CAMPO DE IMAGEM DA PROMOÇÃO -->
           <div class="campo-edit" style="margin-top:16px">
             <label>🖼️ Imagem da Promoção</label>
@@ -4015,6 +4029,25 @@ function preencherPromoção(){
   document.getElementById('promo-link').value=pr.link||'';
   document.getElementById('promo-datafim').value=pr.dataFim||'';
   document.getElementById('promo-fab').value=pr.fabLabel||'';
+
+  // Novos campos Fase 3.2 - promocaoPagina
+  const cfg=STATE.config||{};
+  const pp=cfg.promocaoPagina||{};
+  const promoBtnPart=document.getElementById('promocao-btn-participar');
+  if(promoBtnPart) promoBtnPart.value=pp.btnParticipar||'🎁 Quero Participar do Sorteio';
+  const promoBtnCard=document.getElementById('promocao-btn-cardapio');
+  if(promoBtnCard) promoBtnCard.value=pp.btnCardapio||'🍦 Ver Cardápio';
+  const promoBtnFid=document.getElementById('promocao-btn-fidelidade');
+  if(promoBtnFid) promoBtnFid.value=pp.btnFidelidade||'⭐ Fidelidade';
+  const promoBanner=document.getElementById('promocao-banner-texto');
+  if(promoBanner) promoBanner.value=pp.bannerTexto||'🎉 Sorteios Mensais todo dia 01 🎉';
+
+  // Novos campos Fase 3.2 - SEO
+  const seoPg=cfg.seoPaginas||{};
+  const promoSeoTit=document.getElementById('cfg-seo-promocao-titulo');
+  if(promoSeoTit) promoSeoTit.value=seoPg.promocao?.titulo||'';
+  const promoSeoDesc=document.getElementById('cfg-seo-promocao-descricao');
+  if(promoSeoDesc) promoSeoDesc.value=seoPg.promocao?.descricao||'';
 }
 // Upload de imagem binária para o GitHub (converte Blob para base64)
 async function ghPutImagem(path, blob, msg) {
@@ -4264,6 +4297,26 @@ async function salvarPromoção(){
   cfg.promoDescEl=descricaoPromo;
   cfg.promoBadge=pr.badge||'';
   cfg.promoFabLabel=pr.fabLabel||cfg.promoFabLabel||'';
+
+  // Novos campos Fase 3.2 - promocaoPagina
+  cfg.promocaoPagina = cfg.promocaoPagina || {};
+  const promoBtnPart = document.getElementById('promocao-btn-participar');
+  if (promoBtnPart) cfg.promocaoPagina.btnParticipar = promoBtnPart.value.trim();
+  const promoBtnCard = document.getElementById('promocao-btn-cardapio');
+  if (promoBtnCard) cfg.promocaoPagina.btnCardapio = promoBtnCard.value.trim();
+  const promoBtnFid = document.getElementById('promocao-btn-fidelidade');
+  if (promoBtnFid) cfg.promocaoPagina.btnFidelidade = promoBtnFid.value.trim();
+  const promoBanner = document.getElementById('promocao-banner-texto');
+  if (promoBanner) cfg.promocaoPagina.bannerTexto = promoBanner.value.trim();
+
+  // Novos campos Fase 3.2 - SEO
+  cfg.seoPaginas = cfg.seoPaginas || {};
+  cfg.seoPaginas.promocao = cfg.seoPaginas.promocao || {};
+  const promoSeoTit = document.getElementById('cfg-seo-promocao-titulo');
+  if (promoSeoTit) cfg.seoPaginas.promocao.titulo = promoSeoTit.value.trim();
+  const promoSeoDesc = document.getElementById('cfg-seo-promocao-descricao');
+  if (promoSeoDesc) cfg.seoPaginas.promocao.descricao = promoSeoDesc.value.trim();
+
   STATE.config=cfg;
   await salvarArquivo(PATHS.config,cfg,'configSha','Admin: sincronizar promoção com config');
 }
