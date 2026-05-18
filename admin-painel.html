@@ -710,6 +710,16 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Botão Dicas/Depoimentos — Texto</label><input type="text" id="home-nav-dicas" maxlength="20" placeholder="DICAS/DEPOIMENTOS"/><div class="hint">Texto do botão verde ⭐ no menu. Max. 20 caracteres.</div></div>
           <div class="campo-edit"><label>Botão Fidelidade — Texto</label><input type="text" id="home-nav-fidelidade" maxlength="20" placeholder="FIDELIDADE"/><div class="hint">Texto do botão laranja 🎟️ no menu. Max. 20 caracteres.</div></div>
 
+          <!-- CAMPOS FASE FINAL - Campos Críticos da Página Inicial -->
+          <div class="seção-título" style="margin-top:24px">⭐ Campos Críticos da Página Inicial</div>
+          <div class="campo-edit"><label>Hero H1 Principal</label><input type="text" id="index-hero-h1-principal" maxlength="120" placeholder="Sorvetes tipo artesanais em Cajuru, picolés diferenciados e Açaí Natureon"/><div class="hint">Título H1 principal do hero. Max. 120 caracteres. Pode conter HTML (ex: &lt;span&gt;). Este é o título principal da página inicial e impacta fortemente no SEO.</div></div>
+          <div class="campo-edit"><label>Hero Descrição Principal</label><textarea id="index-hero-descricao-principal" rows="3" maxlength="250" placeholder="Do nosso balcão aqui em Cajuru para a sua casa: sorvete tipo artesanal, picolés diferenciados e o melhor açaí da região, com pedido rápido pelo WhatsApp."></textarea><div class="hint">Descrição principal do hero. Max. 250 caracteres. Aparece logo abaixo do H1 principal.</div></div>
+          <div class="campo-edit"><label>Strip Sensorial Texto</label><input type="text" id="index-strip-sensorial-texto" maxlength="150" placeholder="🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · tipo artesanal · 🍦"/><div class="hint">Texto da faixa animada horizontal (strip sensorial). Max. 150 caracteres. Use · para separar palavras.</div></div>
+          <div class="campo-edit"><label>Cardápio H2 Título</label><input type="text" id="index-cardapio-h2-titulo" maxlength="120" placeholder="🍦 Cardápio Itapolitana: sorvetes tipo artesanais, picolés diferenciados e Açaí Natureon em Cajuru"/><div class="hint">Título H2 da seção do cardápio. Max. 120 caracteres. Importante para SEO e estrutura da página.</div></div>
+          <div class="campo-edit"><label>Hero Badge Açaí</label><input type="text" id="index-hero-badge-acai" maxlength="80" placeholder="🍇 O melhor açaí de Cajuru — Natureon!"/><div class="hint">Badge do açaí Natureon no hero. Max. 80 caracteres. Destaca o diferencial do açaí na seção hero.</div></div>
+          <div class="campo-edit"><label>Horário Status Texto</label><input type="text" id="index-horario-status-texto" maxlength="60" placeholder="Aberto agora · Fecha às 22h"/><div class="hint">Texto do status de horário exibido na página. Max. 60 caracteres. Ex: "Aberto agora · Fecha às 22h" ou "Fechado · Abre às 10h".</div></div>
+          <div class="campo-edit"><label>Quem Somos Título</label><input type="text" id="index-quem-somos-titulo" maxlength="40" placeholder="Quem somos"/><div class="hint">Título da seção "Quem Somos" na página inicial. Max. 40 caracteres.</div></div>
+
           <div class="seção-título">🛒 Carrinho para Eventos</div>
           <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
             📌 <strong>IDs no site:</strong> <code>carrinho-label1</code> e <code>carrinho-label2</code>. Alterar aqui muda os textos do cartão do carrinho na página inicial imediatamente ao salvar.
@@ -3840,6 +3850,15 @@ function preencherHome(){
   document.getElementById('home-nav-promocao').value=cfg.navPromocao||'PROMOÇÃO';
   document.getElementById('home-nav-dicas').value=cfg.navDicas||'DICAS/DEPOIMENTOS';
   document.getElementById('home-nav-fidelidade').value=cfg.navFidelidade||'FIDELIDADE';
+  // Campos Críticos da Página Inicial (Fase Final)
+  const idxPag=cfg.indexPagina||{};
+  document.getElementById('index-hero-h1-principal').value=idxPag.heroH1Principal||'';
+  document.getElementById('index-hero-descricao-principal').value=idxPag.heroDescricaoPrincipal||'';
+  document.getElementById('index-strip-sensorial-texto').value=idxPag.stripSensorialTexto||'';
+  document.getElementById('index-cardapio-h2-titulo').value=idxPag.cardapioH2Titulo||'';
+  document.getElementById('index-hero-badge-acai').value=idxPag.heroBadgeAcai||'';
+  document.getElementById('index-horario-status-texto').value=idxPag.horarioStatusTexto||'';
+  document.getElementById('index-quem-somos-titulo').value=idxPag.quemSomosTitulo||'';
   // Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
   document.getElementById('home-carrinho-label1').value=cfg.carrinhoLabel1||'🛒 Carrinho para Eventos';
   document.getElementById('home-carrinho-label2').value=cfg.carrinhoLabel2||'Toque para consultar';
@@ -3867,6 +3886,15 @@ async function salvarHome(){
   cfg.navPromocao=document.getElementById('home-nav-promocao').value.trim()||'PROMOÇÃO';
   cfg.navDicas=document.getElementById('home-nav-dicas').value.trim()||'DICAS/DEPOIMENTOS';
   cfg.navFidelidade=document.getElementById('home-nav-fidelidade').value.trim()||'FIDELIDADE';
+  // Campos Críticos da Página Inicial (Fase Final)
+  if(!cfg.indexPagina)cfg.indexPagina={};
+  cfg.indexPagina.heroH1Principal=document.getElementById('index-hero-h1-principal').value.trim();
+  cfg.indexPagina.heroDescricaoPrincipal=document.getElementById('index-hero-descricao-principal').value.trim();
+  cfg.indexPagina.stripSensorialTexto=document.getElementById('index-strip-sensorial-texto').value.trim();
+  cfg.indexPagina.cardapioH2Titulo=document.getElementById('index-cardapio-h2-titulo').value.trim();
+  cfg.indexPagina.heroBadgeAcai=document.getElementById('index-hero-badge-acai').value.trim();
+  cfg.indexPagina.horarioStatusTexto=document.getElementById('index-horario-status-texto').value.trim();
+  cfg.indexPagina.quemSomosTitulo=document.getElementById('index-quem-somos-titulo').value.trim();
   // Carrinho para Eventos (IDs: carrinho-label1, carrinho-label2)
   cfg.carrinhoLabel1=document.getElementById('home-carrinho-label1').value.trim()||'🛒 Carrinho para Eventos';
   cfg.carrinhoLabel2=document.getElementById('home-carrinho-label2').value.trim()||'Toque para consultar';
