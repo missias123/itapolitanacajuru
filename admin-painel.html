@@ -2871,6 +2871,24 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+function adminById(id, ctx){
+  const el=document.getElementById(id);
+  if(!el) console.warn(`[${ctx}] Elemento não encontrado: #${id}`);
+  return el;
+}
+function adminSetValue(id, value, ctx){
+  const el=adminById(id, ctx);
+  if(!el) return false;
+  // inputs/textarea
+  if('value' in el){ el.value = (value == null ? '' : String(value)); return true; }
+  // fallback (ex.: div/span)
+  el.textContent = (value == null ? '' : String(value));
+  return true;
+}
+function adminSetTextareaLines(id, lines, ctx){
+  const v=Array.isArray(lines) ? lines.filter(Boolean).join('\n') : (lines == null ? '' : String(lines));
+  return adminSetValue(id, v, ctx);
+}
 function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){console.warn('[Admin] localStorage indisponível (get)',e);return '';}}
 function lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){console.warn('[Admin] localStorage indisponível (set)',e);return false;}}
 function lsRemove(k){try{localStorage.removeItem(k);return true;}catch(e){console.warn('[Admin] localStorage indisponível (remove)',e);return false;}}
@@ -3616,14 +3634,37 @@ function irPara(seção,btn){
     console.log('[irPara] Inicializando DEPOIMENTOS');
     try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
   }
-  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');carregarSobre();}
-  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');carregarCarrosselConfig();}
-  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');carregarGaleria();}
-  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');carregarEncomendas();}
-  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');atualizarScoresQualidade();preencherNotasOperacionais();}
-  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');renderRastreioRecentes();}
-  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');executarAuditoria();}
-  if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
+  if(ids.includes('sobre')){
+    console.log('[irPara] Inicializando SOBRE');
+    try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre (irPara)',e);}
+  }
+  if(ids.includes('carrossel-config')){
+    console.log('[irPara] Inicializando CARROSSEL');
+    try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig (irPara)',e);}
+  }
+  if(ids.includes('galeria')){
+    console.log('[irPara] Inicializando GALERIA');
+    try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria (irPara)',e);}
+  }
+  if(ids.includes('encomendas-config')){
+    console.log('[irPara] Inicializando ENCOMENDAS CONFIG');
+    try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas (irPara)',e);}
+  }
+  if(ids.includes('qualidade')){
+    console.log('[irPara] Inicializando QUALIDADE');
+    try{atualizarScoresQualidade();}catch(e){console.error('[Admin] atualizarScoresQualidade (irPara)',e);}
+    try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais (irPara)',e);}
+  }
+  if(ids.includes('rastreio')){
+    console.log('[irPara] Inicializando RASTREIO');
+    try{renderRastreioRecentes();}catch(e){console.error('[Admin] renderRastreioRecentes (irPara)',e);}
+    try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais (irPara)',e);}
+  }
+  if(ids.includes('auditoria')){
+    console.log('[irPara] Inicializando AUDITORIA');
+    try{executarAuditoria();}catch(e){console.error('[Admin] executarAuditoria (irPara)',e);}
+    try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais (irPara)',e);}
+  }
   // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
   window.scrollTo({top:0,behavior:'auto'});
   const content=document.querySelector('.admin-content');
@@ -6034,24 +6075,32 @@ async function salvarFidHero() {
 // SOBRE — Carregar e salvar página sobre.html
 // =====================================================================
 function carregarSobre() {
-  const cfg = STATE.config || {};
-  const sp = cfg.sobrePagina || {};
-  document.getElementById('sobre-quem-somos-ano').value = sp.quemSomosAno || '2007';
-  document.getElementById('sobre-quem-somos-endereco').value = sp.quemSomosEndereco || '';
-  document.getElementById('sobre-quem-somos-cidade').value = sp.quemSomosCidade || 'Cajuru, SP';
-  document.getElementById('sobre-quem-somos-texto1').value = sp.quemSomosTexto1 || '';
-  document.getElementById('sobre-quem-somos-texto2').value = sp.quemSomosTexto2 || '';
-  document.getElementById('sobre-stat-anos-trad').value = sp.statAnosTrad || '19+';
-  document.getElementById('sobre-stat-sabores').value = sp.statSabores || '35+';
-  document.getElementById('sobre-stat-nota-google').value = sp.statNotaGoogle || '4,8';
-  document.getElementById('sobre-stat-amor').value = sp.statAmor || '100%';
-  document.getElementById('sobre-historia-titulo').value = sp.historiaTitulo || '📖 Nossa História';
-  document.getElementById('sobre-historia-texto1').value = sp.historiaTexto1 || '';
-  document.getElementById('sobre-historia-texto2').value = sp.historiaTexto2 || '';
-  document.getElementById('sobre-fazemos-titulo').value = sp.fazemosTitulo || '🍦 O que fazemos';
-  document.getElementById('sobre-fazemos-texto').value = sp.fazemosTexto || '';
-  document.getElementById('sobre-cta-titulo').value = sp.ctaTitulo || '🍦 Vem Provar!';
-  document.getElementById('sobre-cta-texto').value = sp.ctaTexto || '';
+  const ctx='carregarSobre';
+  console.log('[carregarSobre] Iniciando preenchimento da seção Sobre');
+  try{
+    const cfg = STATE.config || {};
+    // Compatibilidade: aceitar formatos alternativos de config caso existam
+    const sp = cfg.sobrePagina || (cfg.sobre && (cfg.sobre.pagina || cfg.sobre)) || {};
+    adminSetValue('sobre-quem-somos-ano', sp.quemSomosAno ?? cfg.fundacao ?? '2007', ctx);
+    adminSetValue('sobre-quem-somos-endereco', sp.quemSomosEndereco ?? cfg.enderecoCompleto ?? '', ctx);
+    adminSetValue('sobre-quem-somos-cidade', sp.quemSomosCidade ?? 'Cajuru, SP', ctx);
+    adminSetValue('sobre-quem-somos-texto1', sp.quemSomosTexto1 ?? '', ctx);
+    adminSetValue('sobre-quem-somos-texto2', sp.quemSomosTexto2 ?? '', ctx);
+    adminSetValue('sobre-stat-anos-trad', sp.statAnosTrad ?? '19+', ctx);
+    adminSetValue('sobre-stat-sabores', sp.statSabores ?? (cfg.numSabores ? (String(cfg.numSabores) + '+') : '35+'), ctx);
+    adminSetValue('sobre-stat-nota-google', sp.statNotaGoogle ?? '4,8', ctx);
+    adminSetValue('sobre-stat-amor', sp.statAmor ?? '100%', ctx);
+    adminSetValue('sobre-historia-titulo', sp.historiaTitulo ?? '📖 Nossa História', ctx);
+    adminSetValue('sobre-historia-texto1', sp.historiaTexto1 ?? '', ctx);
+    adminSetValue('sobre-historia-texto2', sp.historiaTexto2 ?? '', ctx);
+    adminSetValue('sobre-fazemos-titulo', sp.fazemosTitulo ?? '🍦 O que fazemos', ctx);
+    adminSetValue('sobre-fazemos-texto', sp.fazemosTexto ?? '', ctx);
+    adminSetValue('sobre-cta-titulo', sp.ctaTitulo ?? '🍦 Vem Provar!', ctx);
+    adminSetValue('sobre-cta-texto', sp.ctaTexto ?? '', ctx);
+    console.log('[carregarSobre] Seção Sobre preenchida');
+  }catch(e){
+    console.error('[carregarSobre] Falha ao preencher seção Sobre', e);
+  }
 }
 async function salvarSobre() {
   const cfg = STATE.config || {};
@@ -6184,24 +6233,21 @@ function carregarGaleria() {
   try {
     const cfg = STATE.config || {};
     const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
-    const gp = cfg.galeriaPagina || {};
+    // Compatibilidade: aceitar formatos alternativos
+    const gp = cfg.galeriaPagina || cfg.galeria || {};
 
-    const tituloEl = document.getElementById('cfg-seo-galeria-titulo');
-    if (tituloEl) tituloEl.value = seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru';
+    adminSetValue('cfg-seo-galeria-titulo', seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru', 'carregarGaleria');
 
-    const descEl = document.getElementById('cfg-seo-galeria-descricao');
-    if (descEl) descEl.value = seo.descricao || 'Fotos dos produtos e da loja Itapolitana em Cajuru.';
+    adminSetValue('cfg-seo-galeria-descricao', seo.descricao || 'Fotos dos produtos e da loja Itapolitana em Cajuru.', 'carregarGaleria');
 
-    const h1El = document.getElementById('galeria-h1');
-    if (h1El) h1El.value = gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru';
+    adminSetValue('galeria-h1', gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru', 'carregarGaleria');
 
-    const descPagEl = document.getElementById('galeria-descricao');
-    if (descPagEl) descPagEl.value = gp.descricao || 'Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.';
-    renderGaleriaImagensEditor(gp.imagens);
+    adminSetValue('galeria-descricao', gp.descricao || 'Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.', 'carregarGaleria');
+    const imagens = gp.imagens ?? cfg.galeriaImagens ?? [];
+    renderGaleriaImagensEditor(imagens);
     console.log('[carregarGaleria] Seção Galeria carregada com sucesso');
   } catch (e) {
     console.error('[carregarGaleria] Falha ao carregar seção Galeria', e);
-    throw e;
   }
 }
 
@@ -6238,24 +6284,28 @@ async function salvarGaleria() {
 // ENCOMENDAS — Carregar e salvar configurações de encomendas.html
 // =====================================================================
 function carregarEncomendas() {
-  const cfg = STATE.config || {};
-  const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
-  const ep = cfg.encomendasPagina || {};
+  const ctx='carregarEncomendas';
+  console.log('[carregarEncomendas] Iniciando preenchimento de encomendas.html (config)');
+  try{
+    const cfg = STATE.config || {};
+    const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
+    // Compatibilidade: aceitar formatos alternativos/legados
+    const ep = cfg.encomendasPagina || cfg.encomendas || {};
 
-  const tituloEl = document.getElementById('cfg-seo-encomendas-titulo');
-  if (tituloEl) tituloEl.value = seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru';
+    adminSetValue('cfg-seo-encomendas-titulo', seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru', ctx);
+    adminSetValue('cfg-seo-encomendas-descricao', seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.', ctx);
 
-  const descEl = document.getElementById('cfg-seo-encomendas-descricao');
-  if (descEl) descEl.value = seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.';
+    const heroTitulo = ep.heroTitulo ?? cfg.encomendasHeroTitulo ?? '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>';
+    const heroDescricao = ep.heroDescricao ?? cfg.encomendasHeroDescricao ?? 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!';
+    const heroBadges = ep.heroBadges ?? cfg.encomendasHeroBadges ?? [];
 
-  const heroTituloEl = document.getElementById('encomendas-hero-titulo');
-  if (heroTituloEl) heroTituloEl.value = ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>';
-
-  const heroDescEl = document.getElementById('encomendas-hero-descricao');
-  if (heroDescEl) heroDescEl.value = ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!';
-
-  const heroBadgesEl = document.getElementById('encomendas-hero-badges');
-  if (heroBadgesEl) heroBadgesEl.value = Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : '';
+    adminSetValue('encomendas-hero-titulo', heroTitulo, ctx);
+    adminSetValue('encomendas-hero-descricao', heroDescricao, ctx);
+    adminSetTextareaLines('encomendas-hero-badges', heroBadges, ctx);
+    console.log('[carregarEncomendas] Seção Encomendas Config preenchida');
+  }catch(e){
+    console.error('[carregarEncomendas] Falha ao preencher seção Encomendas Config', e);
+  }
 }
 
 async function salvarEncomendas() {
@@ -8793,14 +8843,20 @@ function renderRastreioCard(e){
   </div>`;
 }
 function renderRastreioRecentes(){
-  const registros=(STATE.encomendas?.registros||[]).slice(0,10);
-  const workerAtivo=Boolean(getAdminToken());
   const container=document.getElementById('rastreio-recentes');
   if(!container)return;
+  const workerAtivo=Boolean(getAdminToken());
+  const carregado=Boolean(STATE.encomendas&&Array.isArray(STATE.encomendas.registros));
+  if(!carregado){
+    container.innerHTML='<div style="background:#ffebee;border:1px solid #ffcdd2;color:#b71c1c;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">⚠️ Dados de <code>dados/encomendas.json</code> não foram carregados. Use “🔄 Recarregar Dados”.</div>';
+    return;
+  }
+  const registros=(STATE.encomendas.registros||[]).slice(0,10);
   if(!registros.length){
-    container.innerHTML=workerAtivo
-      ?'<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'
-      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Modo somente leitura: não foi possível listar Encomendas Recentes. Adicione um token GitHub.</div>';
+    const hint=!workerAtivo
+      ?'<div style="margin-top:10px;background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:10px;font-size:.82rem;line-height:1.45">ℹ️ Você está em modo somente leitura (sem token GitHub). Para editar/salvar encomendas, informe um token.</div>'
+      :'';
+    container.innerHTML='<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'+hint;
     return;
   }
   container.innerHTML=registros.map(e=>{
