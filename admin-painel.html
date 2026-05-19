@@ -6034,24 +6034,44 @@ async function salvarFidHero() {
 // SOBRE — Carregar e salvar página sobre.html
 // =====================================================================
 function carregarSobre() {
-  const cfg = STATE.config || {};
-  const sp = cfg.sobrePagina || {};
-  document.getElementById('sobre-quem-somos-ano').value = sp.quemSomosAno || '2007';
-  document.getElementById('sobre-quem-somos-endereco').value = sp.quemSomosEndereco || '';
-  document.getElementById('sobre-quem-somos-cidade').value = sp.quemSomosCidade || 'Cajuru, SP';
-  document.getElementById('sobre-quem-somos-texto1').value = sp.quemSomosTexto1 || '';
-  document.getElementById('sobre-quem-somos-texto2').value = sp.quemSomosTexto2 || '';
-  document.getElementById('sobre-stat-anos-trad').value = sp.statAnosTrad || '19+';
-  document.getElementById('sobre-stat-sabores').value = sp.statSabores || '35+';
-  document.getElementById('sobre-stat-nota-google').value = sp.statNotaGoogle || '4,8';
-  document.getElementById('sobre-stat-amor').value = sp.statAmor || '100%';
-  document.getElementById('sobre-historia-titulo').value = sp.historiaTitulo || '📖 Nossa História';
-  document.getElementById('sobre-historia-texto1').value = sp.historiaTexto1 || '';
-  document.getElementById('sobre-historia-texto2').value = sp.historiaTexto2 || '';
-  document.getElementById('sobre-fazemos-titulo').value = sp.fazemosTitulo || '🍦 O que fazemos';
-  document.getElementById('sobre-fazemos-texto').value = sp.fazemosTexto || '';
-  document.getElementById('sobre-cta-titulo').value = sp.ctaTitulo || '🍦 Vem Provar!';
-  document.getElementById('sobre-cta-texto').value = sp.ctaTexto || '';
+  console.log('[carregarSobre] Iniciando carregamento da seção Sobre');
+  try {
+    const cfg = STATE.config || {};
+    const sp = cfg.sobrePagina || {};
+    let preenchidos = 0;
+
+    const setVal = (id, valor) => {
+      const el = document.getElementById(id);
+      if (!el) {
+        console.warn('[carregarSobre] Campo não encontrado no DOM:', id);
+        return false;
+      }
+      el.value = valor;
+      return true;
+    };
+
+    preenchidos += setVal('sobre-quem-somos-ano', sp.quemSomosAno || '2007') ? 1 : 0;
+    preenchidos += setVal('sobre-quem-somos-endereco', sp.quemSomosEndereco || '') ? 1 : 0;
+    preenchidos += setVal('sobre-quem-somos-cidade', sp.quemSomosCidade || 'Cajuru, SP') ? 1 : 0;
+    preenchidos += setVal('sobre-quem-somos-texto1', sp.quemSomosTexto1 || '') ? 1 : 0;
+    preenchidos += setVal('sobre-quem-somos-texto2', sp.quemSomosTexto2 || '') ? 1 : 0;
+    preenchidos += setVal('sobre-stat-anos-trad', sp.statAnosTrad || '19+') ? 1 : 0;
+    preenchidos += setVal('sobre-stat-sabores', sp.statSabores || '35+') ? 1 : 0;
+    preenchidos += setVal('sobre-stat-nota-google', sp.statNotaGoogle || '4,8') ? 1 : 0;
+    preenchidos += setVal('sobre-stat-amor', sp.statAmor || '100%') ? 1 : 0;
+    preenchidos += setVal('sobre-historia-titulo', sp.historiaTitulo || '📖 Nossa História') ? 1 : 0;
+    preenchidos += setVal('sobre-historia-texto1', sp.historiaTexto1 || '') ? 1 : 0;
+    preenchidos += setVal('sobre-historia-texto2', sp.historiaTexto2 || '') ? 1 : 0;
+    preenchidos += setVal('sobre-fazemos-titulo', sp.fazemosTitulo || '🍦 O que fazemos') ? 1 : 0;
+    preenchidos += setVal('sobre-fazemos-texto', sp.fazemosTexto || '') ? 1 : 0;
+    preenchidos += setVal('sobre-cta-titulo', sp.ctaTitulo || '🍦 Vem Provar!') ? 1 : 0;
+    preenchidos += setVal('sobre-cta-texto', sp.ctaTexto || '') ? 1 : 0;
+
+    console.log('[carregarSobre] Seção Sobre carregada com sucesso. Campos preenchidos:', preenchidos);
+  } catch (e) {
+    console.error('[carregarSobre] Falha ao carregar seção Sobre', e);
+    throw e;
+  }
 }
 async function salvarSobre() {
   const cfg = STATE.config || {};
@@ -6238,24 +6258,38 @@ async function salvarGaleria() {
 // ENCOMENDAS — Carregar e salvar configurações de encomendas.html
 // =====================================================================
 function carregarEncomendas() {
-  const cfg = STATE.config || {};
-  const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
-  const ep = cfg.encomendasPagina || {};
+  console.log('[carregarEncomendas] Iniciando carregamento da seção Pág. Encomendas');
+  try {
+    const cfg = STATE.config || {};
+    const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
+    const ep = cfg.encomendasPagina || {};
+    let preenchidos = 0;
 
-  const tituloEl = document.getElementById('cfg-seo-encomendas-titulo');
-  if (tituloEl) tituloEl.value = seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru';
+    const tituloEl = document.getElementById('cfg-seo-encomendas-titulo');
+    if (tituloEl) { tituloEl.value = seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru'; preenchidos++; }
+    else console.warn('[carregarEncomendas] Campo não encontrado no DOM: cfg-seo-encomendas-titulo');
 
-  const descEl = document.getElementById('cfg-seo-encomendas-descricao');
-  if (descEl) descEl.value = seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.';
+    const descEl = document.getElementById('cfg-seo-encomendas-descricao');
+    if (descEl) { descEl.value = seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.'; preenchidos++; }
+    else console.warn('[carregarEncomendas] Campo não encontrado no DOM: cfg-seo-encomendas-descricao');
 
-  const heroTituloEl = document.getElementById('encomendas-hero-titulo');
-  if (heroTituloEl) heroTituloEl.value = ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>';
+    const heroTituloEl = document.getElementById('encomendas-hero-titulo');
+    if (heroTituloEl) { heroTituloEl.value = ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>'; preenchidos++; }
+    else console.warn('[carregarEncomendas] Campo não encontrado no DOM: encomendas-hero-titulo');
 
-  const heroDescEl = document.getElementById('encomendas-hero-descricao');
-  if (heroDescEl) heroDescEl.value = ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!';
+    const heroDescEl = document.getElementById('encomendas-hero-descricao');
+    if (heroDescEl) { heroDescEl.value = ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!'; preenchidos++; }
+    else console.warn('[carregarEncomendas] Campo não encontrado no DOM: encomendas-hero-descricao');
 
-  const heroBadgesEl = document.getElementById('encomendas-hero-badges');
-  if (heroBadgesEl) heroBadgesEl.value = Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : '';
+    const heroBadgesEl = document.getElementById('encomendas-hero-badges');
+    if (heroBadgesEl) { heroBadgesEl.value = Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : ''; preenchidos++; }
+    else console.warn('[carregarEncomendas] Campo não encontrado no DOM: encomendas-hero-badges');
+
+    console.log('[carregarEncomendas] Seção Pág. Encomendas carregada com sucesso. Campos preenchidos:', preenchidos);
+  } catch (e) {
+    console.error('[carregarEncomendas] Falha ao carregar seção Pág. Encomendas', e);
+    throw e;
+  }
 }
 
 async function salvarEncomendas() {
@@ -8793,32 +8827,39 @@ function renderRastreioCard(e){
   </div>`;
 }
 function renderRastreioRecentes(){
-  const registros=(STATE.encomendas?.registros||[]).slice(0,10);
-  const workerAtivo=Boolean(getAdminToken());
-  const container=document.getElementById('rastreio-recentes');
-  if(!container)return;
-  if(!registros.length){
-    container.innerHTML=workerAtivo
-      ?'<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'
-      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Modo somente leitura: não foi possível listar Encomendas Recentes. Adicione um token GitHub.</div>';
-    return;
+  try {
+    const registros=(STATE.encomendas?.registros||[]).slice(0,10);
+    const container=document.getElementById('rastreio-recentes');
+    if(!container)return;
+    console.log('[renderRastreioRecentes] registros encontrados:', registros.length);
+    if(!registros.length){
+      const modoSomenteLeitura = !Boolean(getAdminToken());
+      container.innerHTML =
+        '<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>' +
+        (modoSomenteLeitura
+          ? '<div style="margin-top:8px;background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;border-radius:10px;padding:10px;font-size:.78rem;line-height:1.45">ℹ️ Modo somente leitura: para <strong>criar/editar</strong> encomendas, adicione um token GitHub. Para <strong>consultar</strong>, este painel funciona mesmo sem token.</div>'
+          : '');
+      return;
+    }
+    container.innerHTML=registros.map(e=>{
+      const cor=ENC_STATUS_BORDA[e.status]||'#888';
+      const label=ENC_STATUS_LABELS[e.status]||e.status||'—';
+      const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleDateString('pt-BR'):'-');
+      const totalStr=e.total?`R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}`:'-';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f2f5;cursor:pointer" onclick="document.getElementById('rastreio-busca').value='${esc(e.num)}';buscarRastreio()">
+        <div>
+          <div style="font-weight:700;color:#333;font-size:.88rem">${esc(e.num||'-')} — ${esc(e.nome||'-')}</div>
+          <div style="font-size:.75rem;color:#888">📅 ${dataStr} · ${esc(e.tipo||'geral')}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:#1565c0;font-size:.9rem">${totalStr}</div>
+          <span style="background:${cor};color:#fff;padding:1px 8px;border-radius:8px;font-size:.7rem">${label}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('[renderRastreioRecentes] Falha ao renderizar encomendas recentes', e);
   }
-  container.innerHTML=registros.map(e=>{
-    const cor=ENC_STATUS_BORDA[e.status]||'#888';
-    const label=ENC_STATUS_LABELS[e.status]||e.status||'—';
-    const dataStr=e.dataFormatada||(e.data?new Date(e.data).toLocaleDateString('pt-BR'):'-');
-    const totalStr=e.total?`R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}`:'-';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f2f5;cursor:pointer" onclick="document.getElementById('rastreio-busca').value='${esc(e.num)}';buscarRastreio()">
-      <div>
-        <div style="font-weight:700;color:#333;font-size:.88rem">${esc(e.num||'-')} — ${esc(e.nome||'-')}</div>
-        <div style="font-size:.75rem;color:#888">📅 ${dataStr} · ${esc(e.tipo||'geral')}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-weight:700;color:#1565c0;font-size:.9rem">${totalStr}</div>
-        <span style="background:${cor};color:#fff;padding:1px 8px;border-radius:8px;font-size:.7rem">${label}</span>
-      </div>
-    </div>`;
-  }).join('');
 }
 
 // ═══════════════════════════════════════════════════════════
