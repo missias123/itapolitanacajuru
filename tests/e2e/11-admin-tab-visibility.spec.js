@@ -25,6 +25,94 @@ test.describe('Admin Panel - Tab Visibility Tests', () => {
     await page.waitForSelector('#admin-app', { state: 'visible', timeout: 15000 });
   });
 
+  test('Aba Sobre deve mostrar conteúdo visível', async ({ page }) => {
+    console.log('[TEST] Testando aba Sobre...');
+
+    await page.click('#nav-btn-sobre');
+    await page.waitForTimeout(1000);
+
+    const secSobre = page.locator('#sec-sobre');
+    await expect(secSobre).toHaveClass(/ativo/);
+    await expect(secSobre).toBeVisible();
+
+    await page.screenshot({
+      path: path.join(__dirname, '../test-results/sobre-tab.png'),
+      fullPage: true
+    });
+
+    await expect(page.locator('#sobre-quem-somos-ano')).toBeVisible();
+    await expect(page.locator('#sobre-quem-somos-texto1')).toBeVisible();
+    await expect(page.locator('button:has-text("Salvar Página Sobre")')).toBeVisible();
+
+    console.log('[TEST] ✓ Aba Sobre mostra conteúdo');
+  });
+
+  test('Aba Galeria deve mostrar conteúdo visível', async ({ page }) => {
+    console.log('[TEST] Testando aba Galeria...');
+
+    await page.click('#nav-btn-galeria');
+    await page.waitForTimeout(1000);
+
+    const secGaleria = page.locator('#sec-galeria');
+    await expect(secGaleria).toHaveClass(/ativo/);
+    await expect(secGaleria).toBeVisible();
+
+    await page.screenshot({
+      path: path.join(__dirname, '../test-results/galeria-tab.png'),
+      fullPage: true
+    });
+
+    await expect(page.locator('#cfg-seo-galeria-titulo')).toBeVisible();
+    await expect(page.locator('#galeria-h1')).toBeVisible();
+    await expect(page.locator('button:has-text("Salvar Galeria")')).toBeVisible();
+
+    console.log('[TEST] ✓ Aba Galeria mostra conteúdo');
+  });
+
+  test('Aba Pág. Encomendas deve mostrar conteúdo visível', async ({ page }) => {
+    console.log('[TEST] Testando aba Pág. Encomendas...');
+
+    await page.click('#nav-btn-encomendas-config');
+    await page.waitForTimeout(1000);
+
+    const secEncomendasConfig = page.locator('#sec-encomendas-config');
+    await expect(secEncomendasConfig).toHaveClass(/ativo/);
+    await expect(secEncomendasConfig).toBeVisible();
+
+    await page.screenshot({
+      path: path.join(__dirname, '../test-results/encomendas-config-tab.png'),
+      fullPage: true
+    });
+
+    await expect(page.locator('#cfg-seo-encomendas-titulo')).toBeVisible();
+    await expect(page.locator('#encomendas-hero-titulo')).toBeVisible();
+    await expect(page.locator('button:has-text("Salvar Encomendas")')).toBeVisible();
+
+    console.log('[TEST] ✓ Aba Pág. Encomendas mostra conteúdo');
+  });
+
+  test('Aba Rastreio deve mostrar conteúdo visível', async ({ page }) => {
+    console.log('[TEST] Testando aba Rastreio...');
+
+    await page.click('#nav-btn-rastreio');
+    await page.waitForTimeout(1000);
+
+    const secRastreio = page.locator('#sec-rastreio');
+    await expect(secRastreio).toHaveClass(/ativo/);
+    await expect(secRastreio).toBeVisible();
+
+    await page.screenshot({
+      path: path.join(__dirname, '../test-results/rastreio-tab.png'),
+      fullPage: true
+    });
+
+    await expect(page.locator('#rastreio-busca')).toBeVisible();
+    await expect(page.locator('#rastreio-resultado')).toBeVisible();
+    await expect(page.locator('#rastreio-recentes')).toBeVisible();
+
+    console.log('[TEST] ✓ Aba Rastreio mostra conteúdo');
+  });
+
   test('Aba Fidelidade deve mostrar conteúdo visível', async ({ page }) => {
     console.log('[TEST] Testando aba Fidelidade...');
 
@@ -138,7 +226,19 @@ test.describe('Admin Panel - Tab Visibility Tests', () => {
       }
     });
 
-    // Navegar por todas as abas problemáticas
+    // Navegar por todas as abas problemáticas / sensíveis a regressão
+    await page.click('#nav-btn-sobre');
+    await page.waitForTimeout(500);
+
+    await page.click('#nav-btn-galeria');
+    await page.waitForTimeout(500);
+
+    await page.click('#nav-btn-encomendas-config');
+    await page.waitForTimeout(500);
+
+    await page.click('#nav-btn-rastreio');
+    await page.waitForTimeout(500);
+
     await page.click('#nav-btn-fidelidade');
     await page.waitForTimeout(500);
 
