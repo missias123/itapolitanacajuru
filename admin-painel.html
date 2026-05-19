@@ -3575,10 +3575,10 @@ function irPara(seção,btn){
   if(ids.includes('cardápio')){console.log('[irPara] Inicializando CARDÁPIO');preencherCardapio();}
   if(ids.includes('fale-conosco')){console.log('[irPara] Inicializando FALE CONOSCO');preencherFaleConosco();}
   if(ids.includes('config')){console.log('[irPara] Inicializando CONFIG');preencherConfig();}
-  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');renderEncomendas();}
-  if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');renderizarSaboresAdmin();}
-  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');carregarEstoque();}
-  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');renderProdutosAdmin();}
+  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');try{renderEncomendas();}catch(e){console.error('[Admin] renderEncomendas',e);}}
+  if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');try{renderizarSaboresAdmin();}catch(e){console.error('[Admin] renderizarSaboresAdmin',e);}}
+  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');try{carregarEstoque();}catch(e){console.error('[Admin] carregarEstoque',e);}}
+  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');try{renderProdutosAdmin();}catch(e){console.error('[Admin] renderProdutosAdmin',e);}}
   if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');preencherPromoção();preencherSorteio();renderPromocoesTable();}
   if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');renderParticipantes();}
   if(ids.includes('clientes')){
@@ -3604,10 +3604,10 @@ function irPara(seção,btn){
   if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');carregarCarrosselConfig();}
   if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');carregarGaleria();}
   if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');carregarEncomendas();}
-  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');atualizarScoresQualidade();preencherNotasOperacionais();}
-  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');renderRastreioRecentes();}
-  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');executarAuditoria();}
-  if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
+  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');try{atualizarScoresQualidade();}catch(e){console.error('[Admin] atualizarScoresQualidade',e);}try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais',e);}}
+  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');try{renderRastreioRecentes();}catch(e){console.error('[Admin] renderRastreioRecentes',e);}}
+  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');try{executarAuditoria();}catch(e){console.error('[Admin] executarAuditoria',e);}}
+  if(ids.includes('rastreio')||ids.includes('auditoria')){try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais(rastreio/auditoria)',e);}}
   // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
   window.scrollTo({top:0,behavior:'auto'});
   const content=document.querySelector('.admin-content');
@@ -5333,12 +5333,12 @@ function copiarSorteio(){
 }
 function preencherFidelidade(){
   const cfg=STATE.config||{};
-  document.getElementById('fid-prêmio-milk-nome').value=cfg.premioMilkshake||'Milkshake 300ml';
-  document.getElementById('fid-pts-milk').value=cfg.pontosMilkshake||10;
-  document.getElementById('fid-prêmio-caixa-nome').value=cfg.premioCaixa||'Caixa 7 Bolas';
-  document.getElementById('fid-pts-caixa').value=cfg.pontosCaixa||30;
-  document.getElementById('fid-título').value=cfg.fidelidadeTitulo||'Programa de Fidelidade';
-  document.getElementById('fid-descrição').value=cfg.fidelidadeDescricao||'Acumule pontos e ganhe prêmios incriveis!';
+  const fidMilkNome=document.getElementById('fid-prêmio-milk-nome');if(fidMilkNome)fidMilkNome.value=cfg.premioMilkshake||'Milkshake 300ml';
+  const fidMilkPts=document.getElementById('fid-pts-milk');if(fidMilkPts)fidMilkPts.value=cfg.pontosMilkshake||10;
+  const fidCaixaNome=document.getElementById('fid-prêmio-caixa-nome');if(fidCaixaNome)fidCaixaNome.value=cfg.premioCaixa||'Caixa 7 Bolas';
+  const fidCaixaPts=document.getElementById('fid-pts-caixa');if(fidCaixaPts)fidCaixaPts.value=cfg.pontosCaixa||30;
+  const fidTituloEl=document.getElementById('fid-título');if(fidTituloEl)fidTituloEl.value=cfg.fidelidadeTitulo||'Programa de Fidelidade';
+  const fidDescEl=document.getElementById('fid-descrição');if(fidDescEl)fidDescEl.value=cfg.fidelidadeDescricao||'Acumule pontos e ganhe prêmios incriveis!';
   const fidComo=document.getElementById('fid-como-funciona-lista');
   if(fidComo) fidComo.value=Array.isArray(cfg.fidelidadeComoFunciona)?cfg.fidelidadeComoFunciona.join('\n'):'';
   const fidRegrasResumo=document.getElementById('fid-regras-resumo-lista');
@@ -5389,10 +5389,10 @@ function atualizarStatsCódigos(){
   const disponíveis=Object.values(códigos).filter(c=>c.status==='disponível').length;
   const usados=Object.values(códigos).filter(c=>c.status==='usado').length;
   const liberados=STATE.fidelidade?.liberados||0;
-  document.getElementById('fid-total').textContent=total;
-  document.getElementById('fid-disponíveis').textContent=disponíveis;
-  document.getElementById('fid-usados').textContent=usados;
-  document.getElementById('fid-liberados').textContent=liberados;
+  const fidTotalEl=document.getElementById('fid-total');if(fidTotalEl)fidTotalEl.textContent=total;
+  const fidDispEl=document.getElementById('fid-disponíveis');if(fidDispEl)fidDispEl.textContent=disponíveis;
+  const fidUsadosEl=document.getElementById('fid-usados');if(fidUsadosEl)fidUsadosEl.textContent=usados;
+  const fidLiberEl=document.getElementById('fid-liberados');if(fidLiberEl)fidLiberEl.textContent=liberados;
 }
 function renderCódigos(){
   const códigos=fidGetCodigos();
@@ -7503,15 +7503,18 @@ function preencherDepoimentos() {
   const dicasIntroEl = document.getElementById('dicas-intro');
   if (dicasIntroEl) dicasIntroEl.value = dp.intro || '';
 
-  document.getElementById('dep-titulo').value = c.depTitulo || 'O que nossos clientes dizem';
-  document.getElementById('dep-subtitulo').value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
+  const depTituloEl = document.getElementById('dep-titulo');
+  if (depTituloEl) depTituloEl.value = c.depTitulo || 'O que nossos clientes dizem';
+  const depSubtituloEl = document.getElementById('dep-subtitulo');
+  if (depSubtituloEl) depSubtituloEl.value = c.depSubtitulo || 'Confira as avaliações de quem já provou e amou nossos sorvetes e açaís.';
   // Estratégia de migração: config.json antigos salvavam uma única string em "depDica".
   // O novo formato usa o array "depDicas". A leitura aceita os dois formatos para garantir
   // que configs salvos antes da migração continuem funcionando sem perda de dados.
   // Remoção segura: após confirmar via auditoria (scripts/tests-admin-sync) que todos os
   // ambientes de produção já salvaram pelo menos uma vez com o novo formato (depDicas array).
   const depDicas = Array.isArray(c.depDicas) ? c.depDicas : (c.depDica ? [c.depDica] : []);
-  document.getElementById('dep-dicas').value = depDicas.join('\n');
+  const depDicasEl = document.getElementById('dep-dicas');
+  if (depDicasEl) depDicasEl.value = depDicas.join('\n');
 
   const lista = c.depoimentos || [];
   console.log('[preencherDepoimentos] Depoimentos encontrados:', lista.length);
