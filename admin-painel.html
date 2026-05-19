@@ -2216,6 +2216,7 @@ Talento</textarea>
             <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
             <div class="btn-row" style="margin-top:16px">
               <button class="btn btn-laranja" onclick="gerarPDFLote()">&#x1F4C4; Imprimir Etiquetas PDF (99,1&times;38,1 mm)</button>
+              <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (99,0&times;55,8 mm)</button>
             </div>
           </div>
         </div>
@@ -5539,6 +5540,123 @@ function apagarTodosCodigos(){
       if(ok)fidMostrarAlerta('🗑️ Todos os códigos apagados do GitHub.','ok');
     }
   );
+}
+async function fidEnsureJsPDF(){
+  const existing = (window.jspdf && typeof window.jspdf.jsPDF === 'function')
+    ? window.jspdf.jsPDF
+    : (typeof window.jsPDF === 'function' ? window.jsPDF : null);
+  if(existing) return existing;
+  if(fidEnsureJsPDF._loading) return fidEnsureJsPDF._loading;
+  fidEnsureJsPDF._loading = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
+    script.async = true;
+    script.onload = () => {
+      const jsPDF = (window.jspdf && typeof window.jspdf.jsPDF === 'function')
+        ? window.jspdf.jsPDF
+        : (typeof window.jsPDF === 'function' ? window.jsPDF : null);
+      if(!jsPDF) reject(new Error('jsPDF carregou, mas não expôs jsPDF no window.'));
+      else resolve(jsPDF);
+    };
+    script.onerror = () => reject(new Error('Falha ao carregar jsPDF via CDN.'));
+    document.head.appendChild(script);
+  });
+  return fidEnsureJsPDF._loading;
+}
+function fidColetarCodigosParaEtiquetas(){
+  const lote = JSON.parse(localStorage.getItem('fid_lote_admin') || 'null');
+  if(lote && Array.isArray(lote.codigos) && lote.codigos.length){
+    return { codigos: lote.codigos.slice(), origem: 'lote', lote };
+  }
+  const codigosConfig = STATE.config?.fidelidade?.codigos;
+  if(Array.isArray(codigosConfig) && codigosConfig.length){
+    return { codigos: codigosConfig.slice(), origem: 'config', lote: null };
+  }
+  const codigosObj = fidGetCodigos();
+  const lista = Object.entries(codigosObj)
+    .filter(([, v]) => v && (v.status === 'disponível' || v.status === 'disponivel'))
+    .sort((a, b) => ((a[1].idx || 0) - (b[1].idx || 0)))
+    .map(([cod]) => cod);
+  if(lista.length){
+    return { codigos: lista, origem: 'disponiveis', lote: null };
+  }
+  const placeholders = Array.from({ length: 10 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
+  return { codigos: placeholders, origem: 'placeholder', lote: null };
+}
+function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
+  doc.setFontSize(baseSizePt);
+  const w = doc.getTextWidth(text);
+  if(w <= maxWidthMm) return baseSizePt;
+  const scaled = Math.floor(baseSizePt * (maxWidthMm / w));
+  return Math.max(minSizePt, scaled);
+}
+async function gerarPdfEtiquetasFidelidade(){
+  let jsPDF;
+  try{
+    jsPDF = await fidEnsureJsPDF();
+  }catch(err){
+    console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
+    toast('Falha ao carregar a biblioteca de PDF (jsPDF). Verifique sua conexão e tente novamente.','erro');
+    return;
+  }
+
+  const { codigos, origem, lote } = fidColetarCodigosParaEtiquetas();
+  if(!codigos.length){
+    toast('Nenhum código encontrado para gerar etiquetas.','erro');
+    return;
+  }
+
+  const ETQ_W = 99.0;
+  const ETQ_H = 55.8;
+  const COLS = 2;
+  const ROWS = 5;
+  const ETQ_POR_PAGINA = COLS * ROWS;
+
+  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const gapX = (pageW - (COLS * ETQ_W)) / (COLS + 1);
+  const gapY = (pageH - (ROWS * ETQ_H)) / (ROWS + 1);
+
+  const desenharBordas = true;
+  const paddingX = 6;
+  const maxTextW = ETQ_W - (paddingX * 2);
+  const baseFont = 28;
+  const minFont = 14;
+
+  for(let i = 0; i < codigos.length; i++){
+    if(i > 0 && i % ETQ_POR_PAGINA === 0) doc.addPage();
+
+    const idx = i % ETQ_POR_PAGINA;
+    const row = Math.floor(idx / COLS);
+    const col = idx % COLS;
+    const x = gapX + col * (ETQ_W + gapX);
+    const y = gapY + row * (ETQ_H + gapY);
+
+    if(desenharBordas){
+      doc.setDrawColor(200, 200, 200);
+      doc.setLineWidth(0.15);
+      doc.rect(x, y, ETQ_W, ETQ_H);
+    }
+
+    const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
+    if(!codigo) continue;
+
+    doc.setTextColor(20, 20, 20);
+    doc.setFont('courier', 'bold');
+    const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
+    doc.setFontSize(fontSize);
+    const dim = doc.getTextDimensions(codigo);
+    const textX = x + (ETQ_W / 2);
+    const textY = y + (ETQ_H + dim.h) / 2;
+    doc.text(codigo, textX, textY, { align: 'center' });
+  }
+
+  const hoje = new Date().toISOString().slice(0, 10);
+  const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
+  const filename = `etiquetas-fidelidade-99x55_8${loteTag}-${origem}-${hoje}.pdf`;
+  doc.save(filename);
+  toast('PDF de etiquetas gerado com sucesso.','ok');
 }
 function gerarPDFLote(){
   const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
