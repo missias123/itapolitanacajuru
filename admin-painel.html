@@ -3521,7 +3521,7 @@ async function carregarTudo(){
   try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
   try{preencherSorteio();}catch(e){console.error('[Admin] preencherSorteio',e);}
   try{renderPreços();}catch(e){console.error('[Admin] renderPreços',e);}
-  try{carregarEstoque();}catch(e){console.error('[Admin] carregarEstoque',e);}
+  try{renderizarEstoqueAdmin();}catch(e){console.error('[Admin] renderizarEstoqueAdmin',e);}
   try{carregarTitulosCardapio();}catch(e){console.error('[Admin] carregarTitulosCardapio',e);}
   try{renderizarSaboresAdmin();}catch(e){console.error('[Admin] renderizarSaboresAdmin',e);}
   try{preencherCardapio();}catch(e){console.error('[Admin] preencherCardapio',e);}
@@ -3577,7 +3577,7 @@ function irPara(seção,btn){
   if(ids.includes('config')){console.log('[irPara] Inicializando CONFIG');preencherConfig();}
   if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');renderEncomendas();}
   if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');renderizarSaboresAdmin();}
-  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');carregarEstoque();}
+  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');renderizarEstoqueAdmin();}
   if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');renderProdutosAdmin();}
   if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');preencherPromoção();preencherSorteio();renderPromocoesTable();}
   if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');renderParticipantes();}
@@ -6086,21 +6086,28 @@ async function salvarCarrosselConfig() {
 // GALERIA — Carregar e salvar configurações de galeria.html
 // =====================================================================
 function carregarGaleria() {
-  const cfg = STATE.config || {};
-  const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
-  const gp = cfg.galeriaPagina || {};
+  console.log('[carregarGaleria] Iniciando carregamento da seção Galeria');
+  try {
+    const cfg = STATE.config || {};
+    const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
+    const gp = cfg.galeriaPagina || {};
 
-  const tituloEl = document.getElementById('cfg-seo-galeria-titulo');
-  if (tituloEl) tituloEl.value = seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru';
+    const tituloEl = document.getElementById('cfg-seo-galeria-titulo');
+    if (tituloEl) tituloEl.value = seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru';
 
-  const descEl = document.getElementById('cfg-seo-galeria-descricao');
-  if (descEl) descEl.value = seo.descricao || 'Fotos dos produtos e da loja Itapolitana em Cajuru.';
+    const descEl = document.getElementById('cfg-seo-galeria-descricao');
+    if (descEl) descEl.value = seo.descricao || 'Fotos dos produtos e da loja Itapolitana em Cajuru.';
 
-  const h1El = document.getElementById('galeria-h1');
-  if (h1El) h1El.value = gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru';
+    const h1El = document.getElementById('galeria-h1');
+    if (h1El) h1El.value = gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru';
 
-  const descPagEl = document.getElementById('galeria-descricao');
-  if (descPagEl) descPagEl.value = gp.descricao || 'Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.';
+    const descPagEl = document.getElementById('galeria-descricao');
+    if (descPagEl) descPagEl.value = gp.descricao || 'Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.';
+    console.log('[carregarGaleria] Seção Galeria carregada com sucesso');
+  } catch (e) {
+    console.error('[carregarGaleria] Falha ao carregar seção Galeria', e);
+    throw e;
+  }
 }
 
 async function salvarGaleria() {
@@ -6513,6 +6520,17 @@ async function salvarSabores() {
 // =====================================================================
 // Helper: lê preço normalizando chaves 'preço' (com acento) e 'preco' (legado localStorage)
 function _normPreço(obj, fallback) { return obj.preço || obj.preco || fallback; }
+function renderizarEstoqueAdmin() {
+  console.log('[renderizarEstoqueAdmin] Iniciando carregamento da seção Estoque');
+  try {
+    carregarEstoque();
+    console.log('[renderizarEstoqueAdmin] Seção Estoque carregada com sucesso');
+  } catch (e) {
+    console.error('[renderizarEstoqueAdmin] Falha ao carregar seção Estoque', e);
+    throw e;
+  }
+}
+
 function carregarEstoque() {
   const prod = STATE.produtos;
   const CAIXAS_IDS = ['cx5l_2s','cx5l_3s','cx10l_2s','cx10l_3s'];
