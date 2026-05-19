@@ -2211,12 +2211,14 @@ Talento</textarea>
             <button class="btn btn-vermelho" data-fid-write onclick="apagarTodosCodigos()">&#x1F5D1;&#xFE0F; Apagar Todos</button>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (99,0&times;55,8 mm)</button>
+          </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
             <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
             <div class="btn-row" style="margin-top:16px">
               <button class="btn btn-laranja" onclick="gerarPDFLote()">&#x1F4C4; Imprimir Etiquetas PDF (99,1&times;38,1 mm)</button>
-              <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (99,0&times;55,8 mm)</button>
             </div>
           </div>
         </div>
@@ -3638,12 +3640,12 @@ function irPara(seção,btn){
     console.log('[irPara] Inicializando DEPOIMENTOS');
     try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
   }
-  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');carregarSobre();}
-  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');carregarCarrosselConfig();}
-  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');carregarGaleria();}
-  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');carregarEncomendas();}
+  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre',e);}}
+  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}}
+  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}}
+  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}}
   if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');atualizarScoresQualidade();preencherNotasOperacionais();}
-  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');renderRastreioRecentes();}
+  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');try{renderRastreioRecentes();}catch(e){console.error('[Admin] renderRastreioRecentes',e);}}
   if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');executarAuditoria();}
   if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
   // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
@@ -5569,18 +5571,38 @@ async function fidEnsureJsPDF(){
   if(existing) return existing;
   if(fidEnsureJsPDF._loading) return fidEnsureJsPDF._loading;
   fidEnsureJsPDF._loading = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
-    script.async = true;
-    script.onload = () => {
-      const jsPDF = (window.jspdf && typeof window.jspdf.jsPDF === 'function')
-        ? window.jspdf.jsPDF
-        : (typeof window.jsPDF === 'function' ? window.jsPDF : null);
-      if(!jsPDF) reject(new Error('jsPDF carregou, mas não expôs jsPDF no window.'));
-      else resolve(jsPDF);
+    const urls = [
+      'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js',
+      'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js'
+    ];
+    const tryLoad = (idx) => {
+      const src = urls[idx];
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      const cleanup = () => { try{ script.remove(); }catch(e){} };
+      script.onload = () => {
+        const jsPDF = (window.jspdf && typeof window.jspdf.jsPDF === 'function')
+          ? window.jspdf.jsPDF
+          : (typeof window.jsPDF === 'function' ? window.jsPDF : null);
+        if(jsPDF){ cleanup(); resolve(jsPDF); return; }
+        cleanup();
+        if(idx + 1 < urls.length) tryLoad(idx + 1);
+        else reject(new Error('jsPDF carregou, mas não expôs jsPDF no window.'));
+      };
+      script.onerror = () => {
+        cleanup();
+        if(idx + 1 < urls.length) tryLoad(idx + 1);
+        else reject(new Error('Falha ao carregar jsPDF (CDNs indisponíveis).'));
+      };
+      document.head.appendChild(script);
     };
-    script.onerror = () => reject(new Error('Falha ao carregar jsPDF via CDN.'));
-    document.head.appendChild(script);
+    tryLoad(0);
+  });
+  fidEnsureJsPDF._loading = fidEnsureJsPDF._loading.catch(err => {
+    fidEnsureJsPDF._loading = null;
+    throw err;
   });
   return fidEnsureJsPDF._loading;
 }
@@ -5666,7 +5688,16 @@ function fidColetarCodigosParaEtiquetas(){
     @media print{
       body{background:#fff}
       .barra,.wrap{display:none !important}
-      .folha{break-after:page}
+      .folha{
+        margin:0 !important;
+        page-break-after:always;
+        break-after:page;
+        break-inside:avoid;
+      }
+      .folha:last-child{
+        page-break-after:auto;
+        break-after:auto;
+      }
     }
     @page{size:A4;margin:0}
     .folha{
@@ -5718,9 +5749,9 @@ function fidColetarCodigosParaEtiquetas(){
   </div>
   <div class="wrap" style="font-size:12px;color:#555">Dica: no diálogo de impressão, selecione “Salvar como PDF”.</div>
   ${folhasHtml}
-  <script>setTimeout(()=>{try{window.focus()}catch(e){}},0)<\\/script>
 </body></html>`);
    win.document.close();
+   try{ win.focus(); }catch(e){}
  }
  async function gerarPdfEtiquetasFidelidade(){
   let jsPDF;
@@ -6304,7 +6335,16 @@ async function salvarFidHero() {
 // =====================================================================
 // SOBRE — Carregar e salvar página sobre.html
 // =====================================================================
+function ensureConfigBeforeSection(sectionLabel, onReady){
+  if(STATE.config) return true;
+  toast(`⚠️ Config ainda não carregou para ${sectionLabel}. Tentando recarregar...`,'aviso');
+  carregarConfigAdmin(true)
+    .then(() => { try{ onReady(); }catch(e){} })
+    .catch(e => console.warn(`[Admin] Falha ao recarregar config (${sectionLabel})`, e));
+  return false;
+}
 function carregarSobre() {
+  if(!ensureConfigBeforeSection('Sobre', carregarSobre)) return;
   const cfg = STATE.config || {};
   const sp = cfg.sobrePagina || {};
   prefillLog('[carregarSobre] cfg.sobrePagina', sp);
@@ -6454,6 +6494,7 @@ function removerImagemGaleria(idx) {
 function carregarGaleria() {
   console.log('[carregarGaleria] Iniciando carregamento da seção Galeria');
   try {
+    if(!ensureConfigBeforeSection('Galeria', carregarGaleria)) return;
     const cfg = STATE.config || {};
     const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
     const gp = cfg.galeriaPagina || {};
@@ -6519,6 +6560,7 @@ async function salvarGaleria() {
 // =====================================================================
 function carregarEncomendas() {
   try {
+    if(!ensureConfigBeforeSection('Pág. Encomendas', carregarEncomendas)) return;
     const cfg = STATE.config || {};
     const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
     const ep = cfg.encomendasPagina || {};
