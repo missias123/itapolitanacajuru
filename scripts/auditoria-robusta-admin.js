@@ -9,6 +9,20 @@ function log(categoria, problema, severidade, detalhes) {
   REPORT.push({ categoria, problema, severidade, detalhes });
 }
 
+function getNestedValue(obj, pathStr) {
+  if (!pathStr) return undefined;
+  const parts = String(pathStr).split('.');
+  let current = obj;
+  for (const part of parts) {
+    if (current && typeof current === 'object' && Object.prototype.hasOwnProperty.call(current, part)) {
+      current = current[part];
+    } else {
+      return undefined;
+    }
+  }
+  return current;
+}
+
 console.log('🔍 AUDITORIA ROBUSTA: Problemas que Impedem Exibição/Edição do Site no Admin\n');
 
 // 1. PROBLEMAS DE CONECTIVIDADE E CARREGAMENTO
@@ -31,7 +45,7 @@ console.log(`  ℹ️  1.2 Recursos CSS: ${cssRefs.length}, JS: ${jsRefs.length}
 
 // 1.3 Verificar lógica de autenticação
 const hasPasswordValidation = adminHtml.includes('senhaAdmin') && adminHtml.includes('SHA-256');
-const hasPATValidation = adminHtml.includes('github.com/api') || adminHtml.includes('pat-github');
+const hasPATValidation = adminHtml.includes('api.github.com') || adminHtml.includes('GITHUB_PAT');
 const hasWorkerSecret = adminHtml.includes('Worker Secret') || adminHtml.includes('ADMIN_SECRET');
 
 if (!hasPasswordValidation) {
@@ -134,14 +148,26 @@ console.log('\n4️⃣  MAPEAMENTO (admin_espelho_matrix.json)');
 
 if (config && matrix) {
   const camposMatriz = matrix.campos || [];
-  const chavesConfig = Object.keys(config);
 
   // 4.1 Verificar configKeys ausentes
   let configKeysMissing = 0;
+  const cacheSource = new Map();
   camposMatriz.forEach(campo => {
-    if (!chavesConfig.includes(campo.configKey)) {
+    const sourceRel = String(campo.sourceFile || 'dados/config.json');
+    const sourceAbs = path.join(ROOT, sourceRel);
+    let sourceJson = cacheSource.get(sourceRel);
+    if (!sourceJson) {
+      try {
+        sourceJson = JSON.parse(fs.readFileSync(sourceAbs, 'utf8'));
+      } catch (e) {
+        sourceJson = null;
+      }
+      cacheSource.set(sourceRel, sourceJson);
+    }
+    const valor = sourceJson ? getNestedValue(sourceJson, campo.configKey) : undefined;
+    if (valor === undefined) {
       configKeysMissing++;
-      log('4.1', `configKey ausente em config.json`, 'ALTA', `Campo: ${campo.id}, configKey: ${campo.configKey}`);
+      log('4.1', `configKey ausente em ${sourceRel}`, 'ALTA', `Campo: ${campo.id}, configKey: ${campo.configKey}`);
     }
   });
 
@@ -173,22 +199,23 @@ if (config && matrix) {
 // 5. COBERTURA GERAL
 console.log('\n5️⃣  COBERTURA GERAL');
 
-// Páginas HTML no site
-const paginasHtml = [
-  'index.html', 'promocao.html', 'fidelidade.html', 'dicas.html',
-  'encomendas.html', 'sobre.html', 'galeria.html', 'carrossel.html',
-  'politica-privacidade.html', 'offline.html'
+// Páginas que devem ter seção dedicada no admin (espelho)
+const paginasEsperadas = [
+  { pagina: 'index.html', secoes: ['sec-home'] },
+  { pagina: 'sobre.html', secoes: ['sec-sobre'] },
+  { pagina: 'galeria.html', secoes: ['sec-galeria'] },
+  { pagina: 'carrossel.html', secoes: ['sec-carrossel-config'] },
+  { pagina: 'encomendas.html', secoes: ['sec-encomendas-config'] },
+  { pagina: 'fidelidade.html', secoes: ['sec-clientes', 'sec-fidelidade'] },
+  { pagina: 'dicas.html', secoes: ['sec-depoimentos'] },
+  { pagina: 'promocao.html', secoes: ['sec-promoção'] }
 ];
 
 let paginasSemSecao = [];
 
-paginasHtml.forEach(pagina => {
-  const nomeSecao = pagina.replace('.html', '').replace('index', 'home');
-  const secaoId = `sec-${nomeSecao}`;
-
-  if (!adminHtml.includes(`id="${secaoId}"`)) {
-    paginasSemSecao.push(pagina);
-  }
+paginasEsperadas.forEach(({ pagina, secoes }) => {
+  const ok = secoes.some((secaoId) => adminHtml.includes(`id="${secaoId}"`));
+  if (!ok) paginasSemSecao.push(pagina);
 });
 
 if (paginasSemSecao.length > 0) {

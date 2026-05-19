@@ -2751,6 +2751,11 @@ Talento</textarea>
 	          <div class="campo-edit"><label>H1 da Galeria</label><input type="text" id="galeria-h1" maxlength="120" placeholder="📸 Galeria – Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal exibido na página da galeria.</div></div>
 	          <div class="campo-edit"><label>Descrição</label><textarea id="galeria-descricao" rows="2" maxlength="200" placeholder="Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP."></textarea><div class="hint">Texto descritivo exibido abaixo do título da galeria.</div></div>
 
+	          <div class="seção-título" style="margin-top:20px">🖼️ Imagens da Galeria</div>
+	          <div class="hint" style="margin-bottom:10px">Cada item = 1 imagem na grade. Preencha URL (relativa do repo ou https://), texto alternativo (alt) e um título curto.</div>
+	          <div id="galeria-imagens-lista"></div>
+	          <div class="btn-row" style="margin-top:10px"><button class="btn btn-verde" type="button" onclick="adicionarImagemGaleria()">➕ Adicionar Imagem</button></div>
+
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar Galeria</button></div>
         </div>
       </div>
@@ -2772,6 +2777,7 @@ Talento</textarea>
           <div class="seção-título" style="margin-top:20px">🎯 Hero Banner</div>
           <div class="campo-edit"><label>Título Hero (permite HTML)</label><input type="text" id="encomendas-hero-titulo" maxlength="150" placeholder="🛒 Cardápio e Encomendas <span class=&quot;destaque&quot;>Itapolitana Cajuru</span>"/><div class="hint">Título principal do hero. Pode conter HTML para estilização (ex: &lt;span class="destaque"&gt;).</div></div>
           <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos..."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
+          <div class="campo-edit"><label>Badges do Hero (um por linha)</label><textarea id="encomendas-hero-badges" rows="5" maxlength="300" placeholder="✨ tipo artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea><div class="hint">Badges exibidos abaixo do hero (uma linha = um badge).</div></div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar Encomendas</button></div>
         </div>
@@ -6095,6 +6101,84 @@ async function salvarCarrosselConfig() {
 // =====================================================================
 // GALERIA — Carregar e salvar configurações de galeria.html
 // =====================================================================
+function renderGaleriaImagensEditor(imagens) {
+  const wrap = document.getElementById('galeria-imagens-lista');
+  if (!wrap) return;
+  const lista = Array.isArray(imagens) ? imagens : [];
+  if (lista.length === 0) {
+    wrap.innerHTML = '<div class="hint" style="margin:6px 0">Nenhuma imagem cadastrada. Clique em “Adicionar Imagem”.</div>';
+    return;
+  }
+  wrap.innerHTML = lista.map((img, i) => {
+    const url = esc((img && img.url) || '');
+    const alt = esc((img && img.alt) || '');
+    const titulo = esc((img && img.titulo) || '');
+    const preview = url
+      ? (url.startsWith('http') ? url : ('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/' + url))
+      : '';
+    return `<div data-galeria-img-row="1" style="display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:start;padding:10px;border:1px solid #eceff1;border-radius:12px;background:#fff;margin-bottom:10px">
+      <div>
+        ${preview ? `<img src="${preview}" alt="${alt}" style="width:86px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #e0e0e0" loading="lazy" decoding="async" onerror="this.style.opacity=.35"/>` : `<div style="width:86px;height:58px;border-radius:8px;border:1px dashed #cfd8dc;display:flex;align-items:center;justify-content:center;color:#90a4ae;font-weight:800;font-size:.72rem">IMG</div>`}
+      </div>
+      <div>
+        <div class="campo-edit" style="margin:0 0 8px">
+          <label>URL</label>
+          <input type="text" id="galeria-img-url-${i}" value="${url}" placeholder="images/..." style="width:100%"/>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="campo-edit" style="margin:0">
+            <label>Alt (acessibilidade/SEO)</label>
+            <input type="text" id="galeria-img-alt-${i}" value="${alt}" maxlength="160" placeholder="Texto alternativo"/>
+          </div>
+          <div class="campo-edit" style="margin:0">
+            <label>Título (opcional)</label>
+            <input type="text" id="galeria-img-titulo-${i}" value="${titulo}" maxlength="80" placeholder="Título curto"/>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;gap:6px">
+        <button class="btn btn-excluir" type="button" style="padding:6px 10px" onclick="removerImagemGaleria(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function lerGaleriaImagensDoDom() {
+  const wrap = document.getElementById('galeria-imagens-lista');
+  if (!wrap) return null;
+  const rows = wrap.querySelectorAll('[data-galeria-img-row="1"]');
+  const out = [];
+  rows.forEach((row, i) => {
+    const url = (document.getElementById(`galeria-img-url-${i}`)?.value || '').trim();
+    const alt = (document.getElementById(`galeria-img-alt-${i}`)?.value || '').trim();
+    const titulo = (document.getElementById(`galeria-img-titulo-${i}`)?.value || '').trim();
+    if (!url) return;
+    out.push({ url, alt, titulo });
+  });
+  return out;
+}
+
+function adicionarImagemGaleria() {
+  const cfg = STATE.config || {};
+  if (!cfg.galeriaPagina) cfg.galeriaPagina = {};
+  const imgs = Array.isArray(cfg.galeriaPagina.imagens) ? cfg.galeriaPagina.imagens : [];
+  imgs.push({ url: '', alt: '', titulo: '' });
+  cfg.galeriaPagina.imagens = imgs;
+  STATE.config = cfg;
+  renderGaleriaImagensEditor(imgs);
+}
+
+function removerImagemGaleria(idx) {
+  const cfg = STATE.config || {};
+  if (!cfg.galeriaPagina) cfg.galeriaPagina = {};
+  const imgs = Array.isArray(cfg.galeriaPagina.imagens) ? cfg.galeriaPagina.imagens : [];
+  if (!imgs[idx]) return;
+  imgs.splice(idx, 1);
+  cfg.galeriaPagina.imagens = imgs;
+  STATE.config = cfg;
+  renderGaleriaImagensEditor(imgs);
+}
+
 function carregarGaleria() {
   console.log('[carregarGaleria] Iniciando carregamento da seção Galeria');
   try {
@@ -6113,6 +6197,7 @@ function carregarGaleria() {
 
     const descPagEl = document.getElementById('galeria-descricao');
     if (descPagEl) descPagEl.value = gp.descricao || 'Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP.';
+    renderGaleriaImagensEditor(gp.imagens);
     console.log('[carregarGaleria] Seção Galeria carregada com sucesso');
   } catch (e) {
     console.error('[carregarGaleria] Falha ao carregar seção Galeria', e);
@@ -6142,6 +6227,9 @@ async function salvarGaleria() {
   const descPagEl = document.getElementById('galeria-descricao');
   if (descPagEl) cfg.galeriaPagina.descricao = descPagEl.value.trim();
 
+  const imagens = lerGaleriaImagensDoDom();
+  if (imagens) cfg.galeriaPagina.imagens = imagens;
+
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar galeria');
 }
@@ -6165,6 +6253,9 @@ function carregarEncomendas() {
 
   const heroDescEl = document.getElementById('encomendas-hero-descricao');
   if (heroDescEl) heroDescEl.value = ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!';
+
+  const heroBadgesEl = document.getElementById('encomendas-hero-badges');
+  if (heroBadgesEl) heroBadgesEl.value = Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : '';
 }
 
 async function salvarEncomendas() {
@@ -6188,6 +6279,9 @@ async function salvarEncomendas() {
 
   const heroDescEl = document.getElementById('encomendas-hero-descricao');
   if (heroDescEl) cfg.encomendasPagina.heroDescricao = heroDescEl.value.trim();
+
+  const heroBadgesEl = document.getElementById('encomendas-hero-badges');
+  if (heroBadgesEl) cfg.encomendasPagina.heroBadges = lerLinhasTextarea('encomendas-hero-badges');
 
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar encomendas');
