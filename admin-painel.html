@@ -2081,7 +2081,7 @@ Talento</textarea>
     <!-- CLIENTES -->
     <div class="seção" id="sec-clientes">
       <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo somente leitura ativo: sessão Worker inativa. Você pode visualizar dados, mas as edições estão bloqueadas.
+        ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
       </div>
       <!-- form panel para add/edit cliente -->
       <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
@@ -2139,7 +2139,7 @@ Talento</textarea>
     <!-- FIDELIDADE -->
     <div class="seção" id="sec-fidelidade">
       <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo somente leitura ativo: sessão Worker inativa. Você pode visualizar dados, mas as edições estão bloqueadas.
+        ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
       </div>
       <div class="btn-row" style="margin-bottom:10px">
         <button class="btn btn-cinza" id="btn-refresh-fidelidade" onclick="atualizarListaFidelidade()">🔄 Atualizar Lista</button>
@@ -2952,6 +2952,9 @@ function atualizarBannerGitHubToken(ativo=GH_WRITE_ALLOWED){
   const bannerExpired=document.getElementById('aviso-token-expirado');
   if(bannerExpired)bannerExpired.style.display=ativo?'none':'flex';
 }
+// Mantém compatibilidade com código legado
+function atualizarStatusSessaoWorker(msg,tipo){atualizarStatusGitHubToken(msg,tipo);}
+function atualizarBannerSessaoWorker(ativo){atualizarBannerGitHubToken(ativo);}
 const GITHUB_TOKEN_MODAL_FOCUS_DELAY_MILLIS=30;
 function abrirModalGitHubToken(){
   const modal=document.getElementById('github-token-modal');
@@ -3029,8 +3032,8 @@ async function recarregarTodosDados(){
 }
 
 function atualizarToken(){
-  // Legado: redireciona para o modal de sessão Worker
-  abrirModalSessaoWorker();
+  // Legado: redireciona para o modal de token GitHub
+  abrirModalGitHubToken();
 }const GH_OWNER='missias123';
 const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
@@ -3084,44 +3087,10 @@ function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo
 // Mantém compatibilidade com código legado
 function invalidarSessaoWorker(msg){invalidarTokenGitHub(msg);}
 async function iniciarSessaoWorker(secret){
-  const segredo=(secret||'').trim();
-  if(!segredo){
-    atualizarStatusSessaoWorker('ℹ️ Informe o segredo Worker para habilitar escrita.','info');
-    atualizarBannerSessaoWorker(false);
-    return{ok:false,error:'Segredo ausente'};
-  }
-  try{
-    const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({secret:segredo})
-    },10000);
-    if(r.ok){
-      const d=await r.json();
-      if(d.ok&&d.token){
-        ssSet('itap_worker_session',d.token);
-        WORKER_SESSION_TOKEN=d.token;
-        GH_WRITE_ALLOWED=true;
-        atualizarStatusSessaoWorker('✅ Sessão Worker ativa. Edição e salvamento liberados.','success');
-        atualizarBannerSessaoWorker(true);
-        return{ok:true,token:d.token};
-      }
-    }
-    if(r.status===401){
-      atualizarStatusSessaoWorker('⚠️ Segredo Worker incorreto.','warning');
-    }else if(r.status===429){
-      atualizarStatusSessaoWorker('⚠️ Muitas tentativas. Aguarde.','error');
-    }else{
-      atualizarStatusSessaoWorker('⚠️ Erro ao conectar ao Worker.','error');
-    }
-    atualizarBannerSessaoWorker(false);
-    return{ok:false,error:'Falha na sessão'};
-  }catch(e){
-    console.error('[ADMIN][SESSION]',e.message);
-    atualizarStatusSessaoWorker('⚠️ Falha de conexão com o Worker.','error');
-    atualizarBannerSessaoWorker(false);
-    return{ok:false,error:e.message};
-  }
+  // Função legada mantida apenas para compatibilidade
+  // Agora redireciona para validação de token GitHub
+  console.warn('[Admin] iniciarSessaoWorker é legado. Use token GitHub diretamente.');
+  return{ok:false,error:'Função descontinuada. Use token GitHub.'};
 }
 async function fetchWithTimeout(url,options={},timeoutMs=10000){
   if(options&&options.signal&&options.signal.aborted)throw new Error('Abortado antes do fetch');
@@ -3140,70 +3109,27 @@ async function fetchWithTimeout(url,options={},timeoutMs=10000){
   }
 }
 async function workerGet(endpoint){
-  try{
-    const r=await fetchWithTimeout(ITAP_WORKER_API+endpoint,{headers:workerAdminHeaders()},7000);
-    if(r.status===401){invalidarSessaoWorker();throw new Error('HTTP 401');}
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    GH_WRITE_ALLOWED=Boolean(getAdminToken());
-    return{content:await r.json(),sha:'worker'};
-  }catch(e){
-    console.error('[Admin] workerGet falhou:',endpoint,e.message);
-    return{content:null,sha:null};
-  }
+  // Função legada - não mais utilizada, pois carregamos direto do GitHub
+  console.warn('[Admin] workerGet é legado. Dados carregados via GitHub Raw/API.');
+  return{content:null,sha:null};
 }
 async function workerSalvar(endpoint,data,method='PUT'){
-  const token=getAdminToken();
-  if(!token){toast('⚠️ Sessão Worker inativa. Inicie uma sessão para liberar salvamento no admin.','aviso');return false;}
-  mostrarLoading('Salvando no GitHub...');
-  try{
-    const r=await fetchWithTimeout(ITAP_WORKER_API+endpoint,{method,headers:workerAdminHeaders(),body:JSON.stringify(data)},12000);
-    ocultarLoading();
-    if(r.status===401){invalidarSessaoWorker();throw new Error('Sessão expirada');}
-    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}
-    GH_WRITE_ALLOWED=true;
-    clearDirty();
-    toast('✅ Salvo com sucesso!','sucesso');
-    return true;
-  }catch(e){
-    ocultarLoading();
-    toast('❌ Erro ao salvar no GitHub: '+e.message,'erro');
-    return false;
-  }
+  // Função legada - não mais utilizada, salvamos direto via GitHub API
+  console.warn('[Admin] workerSalvar é legado. Use salvarArquivo() que usa GitHub API.');
+  toast('⚠️ Função descontinuada. Os dados são salvos diretamente via GitHub API.','aviso');
+  return false;
 }
 async function workerGetRepo(path){
-  if(!workerRepoPathAllowed(path)||!getAdminToken())return{content:null,sha:null};
-  try{
-    const r=await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/github-file?path=${encodeURIComponent(path)}`,{headers:workerAdminHeaders({'Accept':'application/json'})},9000);
-    if(r.status===401){invalidarSessaoWorker();throw new Error('HTTP 401');}
-    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}
-    const d=await r.json();
-    GH_WRITE_ALLOWED=true;
-    return{content:d.content,sha:d.sha};
-  }catch(e){
-    console.warn('[Admin] workerGetRepo falhou para',path,e.message);
-    return{content:null,sha:null};
-  }
+  // Função legada - não mais utilizada
+  console.warn('[Admin] workerGetRepo é legado. Dados carregados via GitHub API.');
+  return{content:null,sha:null};
 }
 async function workerSalvarRepo(path,data,sha,msg){
+  // Função legada - não mais utilizada, redirecionada para ghPut
+  console.warn('[Admin] workerSalvarRepo é legado. Usando GitHub API diretamente via ghPut.');
   const token=getAdminToken();
-  if(!token)return{ok:false,erro:'Sessão Worker inativa ou expirada.'};
-  mostrarLoading('Salvando no GitHub...');
-  try{
-    const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/github-file',{
-      method:'PUT',
-      headers:workerAdminHeaders(),
-      body:JSON.stringify({path,data,sha,message:msg})
-    },12000);
-    ocultarLoading();
-    if(r.status===401){invalidarSessaoWorker();throw new Error('Sessão expirada');}
-    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}
-    const resp=await r.json().catch(()=>({}));
-    GH_WRITE_ALLOWED=true;
-    return{ok:true,sha:resp.sha||sha};
-  }catch(e){
-    ocultarLoading();
-    return{ok:false,erro:e.message};
-  }
+  if(!token)return{ok:false,erro:'Token GitHub inativo ou expirado.'};
+  return await ghPut(path,data,sha,msg);
 }
 // Dirty-check: rastreia se há alterações não salvas na aba atual
 let adminDirty=false;
@@ -3242,7 +3168,7 @@ function ensureSafeState(){
   else if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
 }
 function fidIsReadOnly(){
-  // Fidelidade (fidelidade.json) requer sessão Worker ativa + SHA.
+  // Fidelidade (fidelidade.json) requer token GitHub ativo + SHA.
   return !GH_WRITE_ALLOWED||!STATE.fidelidadeSha;
 }
 function fidPathReadOnly(path){
@@ -3262,8 +3188,8 @@ function fidRequireWrite(){
   if(!fidIsReadOnly())return true;
   fidApplyReadOnlyGuard();
   const msg=!STATE.fidelidadeSha
-    ? '⚠️ Modo leitura ativo. Inicie uma sessão Worker para editar esta área do admin.'
-    : '⚠️ Sessão Worker inativa. Reative a sessão para editar esta área do admin.';
+    ? '⚠️ Modo leitura ativo. Adicione um token GitHub para editar esta área do admin.'
+    : '⚠️ Token GitHub inativo. Adicione um novo token para editar esta área do admin.';
   toast(msg,'aviso');
   return false;
 }
@@ -3577,10 +3503,10 @@ async function carregarTudo(){
     if(bannerMsg){
       bannerMsg.innerHTML=avisoComFalhas
         ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. ${falhasCarregamento.length?`Falha ao carregar: ${falhasCarregamento.map(esc).join(', ')}. `:''}${arquivosSemSha.length?`Sem SHA: ${arquivosSemSha.map(esc).join(', ')}.`:''}`
-        :'<strong>Admin em modo somente leitura.</strong> Inicie uma sessão Worker para liberar edição e salvamento.';
+        :'<strong>Admin em modo somente leitura.</strong> Adicione um token GitHub para liberar edição e salvamento.';
     }
     // Banner: mostrar quando token de escrita não está válido
-    atualizarBannerSessaoWorker(GH_WRITE_ALLOWED);
+    atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
   }catch(e){
     console.error('[BOOT] carregarTudo falhou',e);
     toast('⚠️ Falha ao carregar parte dos dados. Verifique a conexão/token e tente Recarregar.','aviso');
@@ -4429,7 +4355,7 @@ function renderEncomendas(){
   const container=document.getElementById('enc-lista');
   if(!lista.length){
     const msgSomenteLeitura=semRegistrosOriginais&&!workerAtivo
-      ?'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45;margin-bottom:12px">ℹ️ Inicie uma sessão Worker para liberar edição e salvamento de encomendas.</div>'
+      ?'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:14px;font-size:.84rem;line-height:1.45;margin-bottom:12px">ℹ️ Adicione um token GitHub para liberar edição e salvamento de encomendas.</div>'
       :'';
     container.innerHTML=msgSomenteLeitura+'<div style="text-align:center;padding:30px 10px"><div style="font-size:2.5rem;margin-bottom:10px">📦</div><p style="color:#888;margin-bottom:16px">Nenhuma encomenda cadastrada ainda.</p><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()" style="font-size:.95rem;padding:10px 24px">➕ Adicionar Encomenda</button></div>';
     return;
@@ -4494,7 +4420,7 @@ function _gerarNumEncomenda(){
   return base+'-'+String(seq).padStart(3,'0');
 }
 function abrirFormNovaEncomenda(){
-  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Inicie uma sessão Worker para adicionar encomendas.','aviso');return;}
+  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Adicione um token GitHub para adicionar encomendas.','aviso');return;}
   const tit=document.getElementById('enc-form-titulo');
   if(tit)tit.textContent='➕ Nova Encomenda';
   document.getElementById('enc-f-nome').value='';
@@ -4511,7 +4437,7 @@ function abrirFormNovaEncomenda(){
   if(panel){panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'start'});}
 }
 function abrirFormEditarEncomenda(num){
-  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Inicie uma sessão Worker para editar encomendas.','aviso');return;}
+  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Adicione um token GitHub para editar encomendas.','aviso');return;}
   const registros=STATE.encomendas?.registros||[];
   const e=registros.find(r=>r.num===num);
   if(!e){toast('Pedido não encontrado.','erro');return;}
@@ -4535,7 +4461,7 @@ function fecharFormEncomenda(){
   if(panel)panel.style.display='none';
 }
 async function salvarFormEncomenda(){
-  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Inicie uma sessão Worker para salvar.','aviso');return;}
+  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Adicione um token GitHub para salvar.','aviso');return;}
   const nome=(document.getElementById('enc-f-nome').value||'').trim();
   if(!nome){toast('Informe o nome do cliente.','erro');document.getElementById('enc-f-nome').focus();return;}
   const tel=(document.getElementById('enc-f-tel').value||'').trim();
@@ -5058,7 +4984,7 @@ function renderClientes(){
       td.style.background='#e3f2fd';
       td.style.border='1px solid #bbdefb';
       td.style.borderRadius='8px';
-      td.textContent='ℹ️ Modo somente leitura: a lista de clientes não pôde ser carregada. Inicie uma sessão Worker para liberar sincronização completa.';
+      td.textContent='ℹ️ Modo somente leitura: a lista de clientes não pôde ser carregada. Adicione um token GitHub para liberar sincronização completa.';
       tr.appendChild(td);
       tbodyAviso.replaceChildren(tr);
     }
@@ -7711,7 +7637,7 @@ function processarFotoDepoimento(file, idx) {
 
 async function salvarDepoimentos() {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para salvar depoimentos.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para salvar depoimentos.', 'aviso');
     return;
   }
   const c = STATE.config;
@@ -8086,7 +8012,7 @@ function renderProdutosAdmin() {
 
 function abrirFormProduto(cat, id) {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para editar produtos.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para editar produtos.', 'aviso');
     return;
   }
   const panel = document.getElementById('prod-form-panel');
@@ -8128,7 +8054,7 @@ function fecharFormProduto() {
 
 async function salvarProduto() {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para salvar produtos.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para salvar produtos.', 'aviso');
     return;
   }
   const nome = (document.getElementById('prod-f-nome').value || '').trim();
@@ -8172,7 +8098,7 @@ async function salvarProduto() {
 
 function excluirProduto(cat, id) {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para excluir produtos.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para excluir produtos.', 'aviso');
     return;
   }
   const arr = STATE.produtos?.[cat] || [];
@@ -8368,7 +8294,7 @@ function bindPromocaoFormEvents() {
 
 function abrirFormPromocao(idx) {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para editar promoções.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para editar promoções.', 'aviso');
     return;
   }
   const panel = document.getElementById('promos-form-panel');
@@ -8410,7 +8336,7 @@ function fecharFormPromocao() {
 
 async function salvarPromocaoItem() {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para salvar promoções.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para salvar promoções.', 'aviso');
     return;
   }
   const nome = (document.getElementById('promo-nome').value || '').trim();
@@ -8447,7 +8373,7 @@ async function salvarPromocaoItem() {
 
 function excluirPromocaoItem(idx) {
   if (!GH_WRITE_ALLOWED) {
-    toast('⚠️ Modo somente leitura. Inicie uma sessão Worker para excluir promoções.', 'aviso');
+    toast('⚠️ Modo somente leitura. Adicione um token GitHub para excluir promoções.', 'aviso');
     return;
   }
   const p = STATE.promocoes?.promocoes?.[idx];
@@ -8752,7 +8678,7 @@ function renderRastreioRecentes(){
   if(!registros.length){
     container.innerHTML=workerAtivo
       ?'<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'
-      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Modo somente leitura: não foi possível listar Encomendas Recentes. Inicie uma sessão Worker.</div>';
+      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Modo somente leitura: não foi possível listar Encomendas Recentes. Adicione um token GitHub.</div>';
     return;
   }
   container.innerHTML=registros.map(e=>{
@@ -8874,7 +8800,7 @@ function renderAuditoria(){
     if(!workerAtivo&&(!clientesCarregados||!encomendasCarregadas)){
       container.innerHTML=`<div style="background:#e3f2fd;border:1px solid #bbdefb;border-radius:12px;padding:20px;color:#0d47a1;font-size:.84rem;line-height:1.5">
         ℹ️ <strong>Modo somente leitura.</strong> A Auditoria está com escopo reduzido porque os dados de Clientes/Encomendas não foram carregados nesta sessão.<br>
-        Inicie uma sessão Worker para auditoria completa.
+        Adicione um token GitHub para auditoria completa.
       </div>`;
       return;
     }
