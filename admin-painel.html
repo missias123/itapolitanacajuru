@@ -2875,6 +2875,27 @@ function esc(str) {
 function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){console.warn('[Admin] localStorage indisponível (get)',e);return '';}}
 function lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){console.warn('[Admin] localStorage indisponível (set)',e);return false;}}
 function lsRemove(k){try{localStorage.removeItem(k);return true;}catch(e){console.warn('[Admin] localStorage indisponível (remove)',e);return false;}}
+// Debug (prefill): habilite com localStorage.setItem('itap_admin_prefill_debug','1')
+const PREFILL_DEBUG = (lsGet('itap_admin_prefill_debug') === '1');
+function prefillLog(...args){ if(PREFILL_DEBUG) console.log(...args); }
+function setFieldValue(id, value, ctx=''){
+  try{
+    const el=document.getElementById(id);
+    if(!el){
+      prefillLog('[prefill] elemento não encontrado', { id, ctx });
+      return false;
+    }
+    if(!('value' in el)){
+      prefillLog('[prefill] elemento sem .value', { id, tag: el.tagName, ctx });
+      return false;
+    }
+    el.value = (value == null ? '' : String(value));
+    return true;
+  }catch(e){
+    console.error('[prefill] erro ao preencher campo', { id, ctx, err: e });
+    return false;
+  }
+}
 // sessionStorage — usado para dados de sessão sensíveis (ex.: GitHub token) que não devem persistir
 function ssGet(k){try{return sessionStorage.getItem(k)||'';}catch(e){return '';}}
 function ssSet(k,v){try{sessionStorage.setItem(k,v);return true;}catch(e){return false;}}
@@ -6154,22 +6175,23 @@ async function salvarFidHero() {
 function carregarSobre() {
   const cfg = STATE.config || {};
   const sp = cfg.sobrePagina || {};
-  document.getElementById('sobre-quem-somos-ano').value = sp.quemSomosAno || '2007';
-  document.getElementById('sobre-quem-somos-endereco').value = sp.quemSomosEndereco || '';
-  document.getElementById('sobre-quem-somos-cidade').value = sp.quemSomosCidade || 'Cajuru, SP';
-  document.getElementById('sobre-quem-somos-texto1').value = sp.quemSomosTexto1 || '';
-  document.getElementById('sobre-quem-somos-texto2').value = sp.quemSomosTexto2 || '';
-  document.getElementById('sobre-stat-anos-trad').value = sp.statAnosTrad || '19+';
-  document.getElementById('sobre-stat-sabores').value = sp.statSabores || '35+';
-  document.getElementById('sobre-stat-nota-google').value = sp.statNotaGoogle || '4,8';
-  document.getElementById('sobre-stat-amor').value = sp.statAmor || '100%';
-  document.getElementById('sobre-historia-titulo').value = sp.historiaTitulo || '📖 Nossa História';
-  document.getElementById('sobre-historia-texto1').value = sp.historiaTexto1 || '';
-  document.getElementById('sobre-historia-texto2').value = sp.historiaTexto2 || '';
-  document.getElementById('sobre-fazemos-titulo').value = sp.fazemosTitulo || '🍦 O que fazemos';
-  document.getElementById('sobre-fazemos-texto').value = sp.fazemosTexto || '';
-  document.getElementById('sobre-cta-titulo').value = sp.ctaTitulo || '🍦 Vem Provar!';
-  document.getElementById('sobre-cta-texto').value = sp.ctaTexto || '';
+  prefillLog('[carregarSobre] cfg.sobrePagina', sp);
+  setFieldValue('sobre-quem-somos-ano', sp.quemSomosAno || '2007', 'sobre.quemSomosAno');
+  setFieldValue('sobre-quem-somos-endereco', sp.quemSomosEndereco || '', 'sobre.quemSomosEndereco');
+  setFieldValue('sobre-quem-somos-cidade', sp.quemSomosCidade || 'Cajuru, SP', 'sobre.quemSomosCidade');
+  setFieldValue('sobre-quem-somos-texto1', sp.quemSomosTexto1 || '', 'sobre.quemSomosTexto1');
+  setFieldValue('sobre-quem-somos-texto2', sp.quemSomosTexto2 || '', 'sobre.quemSomosTexto2');
+  setFieldValue('sobre-stat-anos-trad', sp.statAnosTrad || '19+', 'sobre.statAnosTrad');
+  setFieldValue('sobre-stat-sabores', sp.statSabores || '35+', 'sobre.statSabores');
+  setFieldValue('sobre-stat-nota-google', sp.statNotaGoogle || '4,8', 'sobre.statNotaGoogle');
+  setFieldValue('sobre-stat-amor', sp.statAmor || '100%', 'sobre.statAmor');
+  setFieldValue('sobre-historia-titulo', sp.historiaTitulo || '📖 Nossa História', 'sobre.historiaTitulo');
+  setFieldValue('sobre-historia-texto1', sp.historiaTexto1 || '', 'sobre.historiaTexto1');
+  setFieldValue('sobre-historia-texto2', sp.historiaTexto2 || '', 'sobre.historiaTexto2');
+  setFieldValue('sobre-fazemos-titulo', sp.fazemosTitulo || '🍦 O que fazemos', 'sobre.fazemosTitulo');
+  setFieldValue('sobre-fazemos-texto', sp.fazemosTexto || '', 'sobre.fazemosTexto');
+  setFieldValue('sobre-cta-titulo', sp.ctaTitulo || '🍦 Vem Provar!', 'sobre.ctaTitulo');
+  setFieldValue('sobre-cta-texto', sp.ctaTexto || '', 'sobre.ctaTexto');
 }
 async function salvarSobre() {
   const cfg = STATE.config || {};
@@ -6303,12 +6325,17 @@ function carregarGaleria() {
     const cfg = STATE.config || {};
     const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
     const gp = cfg.galeriaPagina || {};
+    prefillLog('[carregarGaleria] seoPaginas.galeria', seo);
+    prefillLog('[carregarGaleria] galeriaPagina', gp);
 
     const tituloEl = document.getElementById('cfg-seo-galeria-titulo');
     if (tituloEl) tituloEl.value = seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru';
 
     const descEl = document.getElementById('cfg-seo-galeria-descricao');
     if (descEl) descEl.value = seo.descricao || 'Fotos dos produtos e da loja Itapolitana em Cajuru.';
+
+    const palavrasEl = document.getElementById('cfg-seo-galeria-palavras');
+    if (palavrasEl) palavrasEl.value = seo.palavrasChave || '';
 
     const h1El = document.getElementById('galeria-h1');
     if (h1El) h1El.value = gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru';
@@ -6336,6 +6363,9 @@ async function salvarGaleria() {
   const descEl = document.getElementById('cfg-seo-galeria-descricao');
   if (descEl) cfg.seoPaginas.galeria.descricao = descEl.value.trim();
 
+  const palavrasEl = document.getElementById('cfg-seo-galeria-palavras');
+  if (palavrasEl) cfg.seoPaginas.galeria.palavrasChave = palavrasEl.value.trim();
+
   // Garantir que galeriaPagina existe
   if (!cfg.galeriaPagina) cfg.galeriaPagina = {};
 
@@ -6356,24 +6386,22 @@ async function salvarGaleria() {
 // ENCOMENDAS — Carregar e salvar configurações de encomendas.html
 // =====================================================================
 function carregarEncomendas() {
-  const cfg = STATE.config || {};
-  const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
-  const ep = cfg.encomendasPagina || {};
+  try {
+    const cfg = STATE.config || {};
+    const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
+    const ep = cfg.encomendasPagina || {};
+    prefillLog('[carregarEncomendas] seoPaginas.encomendas', seo);
+    prefillLog('[carregarEncomendas] encomendasPagina', ep);
 
-  const tituloEl = document.getElementById('cfg-seo-encomendas-titulo');
-  if (tituloEl) tituloEl.value = seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru';
-
-  const descEl = document.getElementById('cfg-seo-encomendas-descricao');
-  if (descEl) descEl.value = seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.';
-
-  const heroTituloEl = document.getElementById('encomendas-hero-titulo');
-  if (heroTituloEl) heroTituloEl.value = ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>';
-
-  const heroDescEl = document.getElementById('encomendas-hero-descricao');
-  if (heroDescEl) heroDescEl.value = ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!';
-
-  const heroBadgesEl = document.getElementById('encomendas-hero-badges');
-  if (heroBadgesEl) heroBadgesEl.value = Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : '';
+    setFieldValue('cfg-seo-encomendas-titulo', seo.titulo || 'Encomendas | Sorveteria Itapolitana Cajuru', 'encomendas.seo.titulo');
+    setFieldValue('cfg-seo-encomendas-descricao', seo.descricao || 'Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP.', 'encomendas.seo.descricao');
+    setFieldValue('encomendas-hero-titulo', ep.heroTitulo || '🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span>', 'encomendas.hero.titulo');
+    setFieldValue('encomendas-hero-descricao', ep.heroDescricao || 'Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!', 'encomendas.hero.descricao');
+    setFieldValue('encomendas-hero-badges', Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : '', 'encomendas.hero.badges');
+  } catch (e) {
+    console.error('[carregarEncomendas] Falha ao carregar seção Encomendas', e);
+    throw e;
+  }
 }
 
 async function salvarEncomendas() {
@@ -7953,14 +7981,16 @@ async function salvarDepoimentos() {
 }
 
 function preencherNotasOperacionais(){
-  const cfg = STATE.config || {};
-  const obs = cfg.adminConteudoPaginas || {};
-  const q = document.getElementById('qualidade-observacoes');
-  if (q) q.value = obs.qualidade || '';
-  const r = document.getElementById('rastreio-observacoes');
-  if (r) r.value = obs.rastreio || '';
-  const a = document.getElementById('auditoria-observacoes');
-  if (a) a.value = obs.auditoria || '';
+  try{
+    const cfg = STATE.config || {};
+    const obs = cfg.adminConteudoPaginas || {};
+    prefillLog('[preencherNotasOperacionais] adminConteudoPaginas', obs);
+    setFieldValue('qualidade-observacoes', obs.qualidade || '', 'notas.qualidade');
+    setFieldValue('rastreio-observacoes', obs.rastreio || '', 'notas.rastreio');
+    setFieldValue('auditoria-observacoes', obs.auditoria || '', 'notas.auditoria');
+  }catch(e){
+    console.error('[Admin] preencherNotasOperacionais',e);
+  }
 }
 
 async function salvarNotasOperacionais(){
