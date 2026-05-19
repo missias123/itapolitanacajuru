@@ -27,6 +27,11 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
   });
 
   test('should load Sobre section and populate all fields', async ({ page }) => {
+    const cfgResp = await page.request.get('/dados/config.json');
+    expect(cfgResp.ok()).toBeTruthy();
+    const cfg = await cfgResp.json();
+    const sp = cfg.sobrePagina || {};
+
     // Click on Sobre nav button
     await page.click('#nav-btn-sobre');
 
@@ -57,13 +62,33 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       '#sobre-cta-texto'
     ];
 
+    const expected = {
+      '#sobre-quem-somos-ano': sp.quemSomosAno,
+      '#sobre-quem-somos-endereco': sp.quemSomosEndereco,
+      '#sobre-quem-somos-cidade': sp.quemSomosCidade,
+      '#sobre-quem-somos-texto1': sp.quemSomosTexto1,
+      '#sobre-quem-somos-texto2': sp.quemSomosTexto2,
+      '#sobre-stat-anos-trad': sp.statAnosTrad,
+      '#sobre-stat-sabores': sp.statSabores,
+      '#sobre-stat-nota-google': sp.statNotaGoogle,
+      '#sobre-stat-amor': sp.statAmor,
+      '#sobre-historia-titulo': sp.historiaTitulo,
+      '#sobre-historia-texto1': sp.historiaTexto1,
+      '#sobre-historia-texto2': sp.historiaTexto2,
+      '#sobre-fazemos-titulo': sp.fazemosTitulo,
+      '#sobre-fazemos-texto': sp.fazemosTexto,
+      '#sobre-cta-titulo': sp.ctaTitulo,
+      '#sobre-cta-texto': sp.ctaTexto
+    };
+
     for (const fieldId of fields) {
       const field = await page.locator(fieldId);
       await expect(field).toBeVisible();
-
-      // Verify field has a value (default or loaded from config)
       const value = await field.inputValue();
       console.log(`${fieldId}: "${value}"`);
+      if (expected[fieldId] !== undefined) {
+        expect(value).toBe(String(expected[fieldId]));
+      }
     }
 
     // Verify save button is present
@@ -72,6 +97,12 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
   });
 
   test('should load Galeria section and populate all fields', async ({ page }) => {
+    const cfgResp = await page.request.get('/dados/config.json');
+    expect(cfgResp.ok()).toBeTruthy();
+    const cfg = await cfgResp.json();
+    const seo = (cfg.seoPaginas && cfg.seoPaginas.galeria) || {};
+    const gp = cfg.galeriaPagina || {};
+
     // Click on Galeria nav button
     await page.click('#nav-btn-galeria');
 
@@ -86,9 +117,18 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
     const fields = [
       '#cfg-seo-galeria-titulo',
       '#cfg-seo-galeria-descricao',
+      '#cfg-seo-galeria-palavras',
       '#galeria-h1',
       '#galeria-descricao'
     ];
+
+    const expected = {
+      '#cfg-seo-galeria-titulo': seo.titulo,
+      '#cfg-seo-galeria-descricao': seo.descricao,
+      '#cfg-seo-galeria-palavras': seo.palavrasChave,
+      '#galeria-h1': gp.h1,
+      '#galeria-descricao': gp.descricao
+    };
 
     for (const fieldId of fields) {
       const field = await page.locator(fieldId);
@@ -97,6 +137,9 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       // Verify field has a value (default or loaded from config)
       const value = await field.inputValue();
       console.log(`${fieldId}: "${value}"`);
+      if (expected[fieldId] !== undefined) {
+        expect(value).toBe(String(expected[fieldId]));
+      }
     }
 
     // Verify save button is present
@@ -105,6 +148,12 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
   });
 
   test('should load Pág. Encomendas section and populate all fields', async ({ page }) => {
+    const cfgResp = await page.request.get('/dados/config.json');
+    expect(cfgResp.ok()).toBeTruthy();
+    const cfg = await cfgResp.json();
+    const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
+    const ep = cfg.encomendasPagina || {};
+
     // Click on Pág. Encomendas nav button
     await page.click('#nav-btn-encomendas-config');
 
@@ -120,8 +169,17 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       '#cfg-seo-encomendas-titulo',
       '#cfg-seo-encomendas-descricao',
       '#encomendas-hero-titulo',
-      '#encomendas-hero-descricao'
+      '#encomendas-hero-descricao',
+      '#encomendas-hero-badges'
     ];
+
+    const expected = {
+      '#cfg-seo-encomendas-titulo': seo.titulo,
+      '#cfg-seo-encomendas-descricao': seo.descricao,
+      '#encomendas-hero-titulo': ep.heroTitulo,
+      '#encomendas-hero-descricao': ep.heroDescricao,
+      '#encomendas-hero-badges': Array.isArray(ep.heroBadges) ? ep.heroBadges.join('\n') : ''
+    };
 
     for (const fieldId of fields) {
       const field = await page.locator(fieldId);
@@ -130,6 +188,9 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       // Verify field has a value (default or loaded from config)
       const value = await field.inputValue();
       console.log(`${fieldId}: "${value}"`);
+      if (expected[fieldId] !== undefined) {
+        expect(value).toBe(String(expected[fieldId]));
+      }
 	    }
 
 	    // Verify save button is present
