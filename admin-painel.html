@@ -5604,20 +5604,146 @@ function fidColetarCodigosParaEtiquetas(){
   const placeholders = Array.from({ length: 10 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
-function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
+ function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
   doc.setFontSize(baseSizePt);
   const w = doc.getTextWidth(text);
   if(w <= maxWidthMm) return baseSizePt;
   const scaled = Math.floor(baseSizePt * (maxWidthMm / w));
   return Math.max(minSizePt, scaled);
-}
-async function gerarPdfEtiquetasFidelidade(){
+ }
+ function fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow }){
+   // A4 em mm (portrait): 210 × 297
+   const A4_W = 210;
+   const A4_H = 297;
+   const totalW = (cols * etqW) + ((cols - 1) * gapCol);
+   const totalH = (rows * etqH) + ((rows - 1) * gapRow);
+   const marginX = (A4_W - totalW) / 2;
+   const marginY = (A4_H - totalH) / 2;
+   return { A4_W, A4_H, totalW, totalH, marginX, marginY };
+ }
+ function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
+   const ETQ_POR_PAGINA = cols * rows;
+   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
+   const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
+   const hoje = new Date().toISOString().slice(0, 10);
+   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
+   const titulo = `Etiquetas Fidelidade (99×55,8)${loteTag} — ${origem} — ${hoje}`;
+
+   const layout = fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow });
+   if(layout.marginX < 0 || layout.marginY < 0){
+     toast('Layout inválido: as etiquetas não cabem em A4 com os gaps configurados.','erro');
+     return;
+   }
+
+   const win = window.open('', '_blank');
+   if(!win){ toast('Permita pop-ups para gerar o PDF.','erro'); return; }
+
+   const pages = Math.ceil(lista.length / ETQ_POR_PAGINA);
+   const folhasHtml = Array.from({ length: pages }, (_, p) => {
+     const start = p * ETQ_POR_PAGINA;
+     const slice = lista.slice(start, start + ETQ_POR_PAGINA);
+     const etqs = slice.map(cod => {
+       const safe = esc(cod);
+       return `<div class="etq ${safe ? '' : 'etq-vazia'}"><div class="etq-cod">${safe || ''}</div></div>`;
+     }).join('');
+     return `<section class="folha"><div class="grid">${etqs}</div></section>`;
+   }).join('');
+
+   win.document.write(`<!doctype html>
+<html lang="pt-BR"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(titulo)}</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif}
+    .barra{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;background:#1565c0;color:#fff}
+    .barra .meta{font-size:12px;opacity:.9}
+    .btn{border:none;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+    .btn-print{background:#fff;color:#1565c0}
+    .btn-fechar{background:rgba(255,255,255,.18);color:#fff}
+    .wrap{padding:16px}
+    @media print{
+      body{background:#fff}
+      .barra,.wrap{display:none !important}
+      .folha{break-after:page}
+    }
+    @page{size:A4;margin:0}
+    .folha{
+      width:${layout.A4_W}mm;
+      height:${layout.A4_H}mm;
+      margin:0 auto 16px;
+      background:#fff;
+      page-break-after:always;
+      padding:${layout.marginY}mm ${layout.marginX}mm;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(${cols}, ${etqW}mm);
+      grid-template-rows:repeat(${rows}, ${etqH}mm);
+      gap:${gapRow}mm ${gapCol}mm;
+    }
+    .etq{
+      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
+      border-radius:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:6mm;
+      color:#141414;
+    }
+    .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
+    .etq-cod{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace;
+      font-weight:900;
+      font-size:22pt;
+      letter-spacing:.4pt;
+      text-align:center;
+      width:100%;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+  </style>
+</head><body>
+  <div class="barra">
+    <div>
+      <div style="font-weight:900">${esc(titulo)}</div>
+      <div class="meta">${lista.filter(Boolean).length} códigos · ${pages} folha${pages>1?'s':''} · ${cols}×${rows} etiquetas/folha · ${etqW}×${etqH} mm</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+      <button class="btn btn-fechar" onclick="window.close()">✕ Fechar</button>
+    </div>
+  </div>
+  <div class="wrap" style="font-size:12px;color:#555">Dica: no diálogo de impressão, selecione “Salvar como PDF”.</div>
+  ${folhasHtml}
+  <script>setTimeout(()=>{try{window.focus()}catch(e){}},0)<\\/script>
+</body></html>`);
+   win.document.close();
+ }
+ async function gerarPdfEtiquetasFidelidade(){
   let jsPDF;
   try{
     jsPDF = await fidEnsureJsPDF();
   }catch(err){
     console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
-    toast('Falha ao carregar a biblioteca de PDF (jsPDF). Verifique sua conexão e tente novamente.','erro');
+    toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
+    try{
+      const payload = fidColetarCodigosParaEtiquetas();
+      gerarPdfEtiquetasFidelidadeViaPrint({
+        ...payload,
+        etqW: 99.0,
+        etqH: 55.8,
+        cols: 2,
+        rows: 5,
+        gapCol: 2.0,
+        gapRow: 2.0,
+        desenharBordas: true
+      });
+    }catch(e){
+      console.error('[Fidelidade] Falha ao abrir versão de impressão:', e);
+    }
     return;
   }
 
@@ -5634,10 +5760,16 @@ async function gerarPdfEtiquetasFidelidade(){
   const ETQ_POR_PAGINA = COLS * ROWS;
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const gapX = (pageW - (COLS * ETQ_W)) / (COLS + 1);
-  const gapY = (pageH - (ROWS * ETQ_H)) / (ROWS + 1);
+  // Layout exato: 2 colunas × 5 linhas (10 etiquetas por A4)
+  // Etiqueta: 99,0 × 55,8 mm
+  // Espaçamento: 2 mm (horizontal e vertical), margens calculadas automaticamente.
+  const GAP_COL = 2.0;
+  const GAP_ROW = 2.0;
+  const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
+  if(layout.marginX < 0 || layout.marginY < 0){
+    toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
+    return;
+  }
 
   const desenharBordas = true;
   const paddingX = 6;
@@ -5645,14 +5777,15 @@ async function gerarPdfEtiquetasFidelidade(){
   const baseFont = 28;
   const minFont = 14;
 
-  for(let i = 0; i < codigos.length; i++){
+  const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
+  for(let i = 0; i < totalSlots; i++){
     if(i > 0 && i % ETQ_POR_PAGINA === 0) doc.addPage();
 
     const idx = i % ETQ_POR_PAGINA;
     const row = Math.floor(idx / COLS);
     const col = idx % COLS;
-    const x = gapX + col * (ETQ_W + gapX);
-    const y = gapY + row * (ETQ_H + gapY);
+    const x = layout.marginX + col * (ETQ_W + GAP_COL);
+    const y = layout.marginY + row * (ETQ_H + GAP_ROW);
 
     if(desenharBordas){
       doc.setDrawColor(200, 200, 200);
@@ -5667,10 +5800,9 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.setFont('courier', 'bold');
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    const dim = doc.getTextDimensions(codigo);
     const textX = x + (ETQ_W / 2);
-    const textY = y + (ETQ_H + dim.h) / 2;
-    doc.text(codigo, textX, textY, { align: 'center' });
+    const textY = y + (ETQ_H / 2);
+    doc.text(codigo, textX, textY, { align: 'center', baseline: 'middle' });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
@@ -7228,6 +7360,14 @@ function criarUploadImagem(containerId, opções) {
 // Padrão profissional: um único ponto de entrada
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
+
+  // 0. Guard: remove qualquer texto "solto" no <body> (bug clássico quando algo fica fora de <script>/<style>)
+  // Isso evita aparecer texto indesejado abaixo do painel admin em caso de regressões de marcação.
+  try{
+    const soltos = Array.from(document.body.childNodes)
+      .filter(n => n && n.nodeType === Node.TEXT_NODE && (n.textContent || '').trim().length);
+    soltos.forEach(n => n.remove());
+  }catch(e){}
 
   // 0. Carrega a sessão já ativa nesta aba e mostra o status ao usuário
   try { preencherTokenSalvoNoLogin(); } catch(e) { console.warn('[Admin] preencherTokenSalvoNoLogin', e); }
