@@ -61,6 +61,65 @@ failures.push(...uniqueViolations(rows, 'id'));
 failures.push(...uniqueViolations(rows, 'adminId'));
 failures.push(...uniqueViolations(rows, 'configKey'));
 
+function collectDataConfigKeysFromHtml(absPath) {
+  const content = readFile(absPath);
+  const keys = new Set();
+  const re = /data-config(?:-href|-alt|-collection)?="([^"]+)"/g;
+  let match = null;
+  while ((match = re.exec(content))) {
+    const key = String(match[1] || '').trim();
+    if (!key) continue;
+    keys.add(key);
+  }
+  return keys;
+}
+
+function buildMatrixKey(sourceFile, configKey) {
+  return `${sourceFile}::${configKey}`;
+}
+
+function assertSiteKeysAreInMatrix() {
+  const matrixKeys = new Set(
+    rows
+      .filter((r) => r && typeof r.sourceFile === 'string' && typeof r.configKey === 'string')
+      .map((r) => buildMatrixKey(r.sourceFile, r.configKey))
+  );
+
+  const pagesToScan = [
+    'index.html',
+    'sobre.html',
+    'galeria.html',
+    'carrossel.html',
+    'encomendas.html',
+    'fidelidade.html',
+    'dicas.html',
+    'promocao.html'
+  ];
+
+  const missing = [];
+  pagesToScan.forEach((page) => {
+    const abs = path.join(ROOT, page);
+    if (!fs.existsSync(abs)) return;
+    const keys = collectDataConfigKeysFromHtml(abs);
+    for (const rawKey of keys) {
+      if (rawKey.startsWith('promo.')) {
+        const promoKey = rawKey.slice('promo.'.length);
+        const mk = buildMatrixKey('dados/promo.json', promoKey);
+        if (!matrixKeys.has(mk)) missing.push(`${page}: ${rawKey} -> dados/promo.json:${promoKey}`);
+        continue;
+      }
+      const mk = buildMatrixKey('dados/config.json', rawKey);
+      if (!matrixKeys.has(mk)) missing.push(`${page}: ${rawKey} -> dados/config.json:${rawKey}`);
+    }
+  });
+
+  if (missing.length) {
+    missing.forEach((m) => failures.push(`[scan] chave do site sem matriz: ${m}`));
+  }
+}
+
+assertSiteKeysAreInMatrix();
+
 rows.forEach((row) => {
   const prefix = `[${row.id || 'sem-id'}]`;
   const targetAbs = path.join(ROOT, row.targetFile || '');
