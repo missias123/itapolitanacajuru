@@ -254,14 +254,53 @@ if (REPORT.length > 0) {
 
 // Salvar relatório JSON
 const reportPath = path.join(ROOT, 'docs/relatorios/auditoria-robusta-admin.json');
-fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-fs.writeFileSync(reportPath, JSON.stringify({
-  timestamp: new Date().toISOString(),
-  total: REPORT.length,
-  porSeveridade,
-  problemas: REPORT
-}, null, 2));
+const nextComparable = JSON.stringify(
+  {
+    total: REPORT.length,
+    porSeveridade,
+    problemas: REPORT
+  },
+  null,
+  2
+);
 
-console.log(`\n✅ Relatório salvo em: docs/relatorios/auditoria-robusta-admin.json`);
+let shouldWrite = true;
+if (fs.existsSync(reportPath)) {
+  try {
+    const current = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+    const currentComparable = JSON.stringify(
+      {
+        total: current.total,
+        porSeveridade: current.porSeveridade,
+        problemas: current.problemas
+      },
+      null,
+      2
+    );
+    shouldWrite = currentComparable !== nextComparable;
+  } catch {
+    shouldWrite = true;
+  }
+}
+
+if (shouldWrite) {
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(
+    reportPath,
+    JSON.stringify(
+      {
+        timestamp: new Date().toISOString(),
+        total: REPORT.length,
+        porSeveridade,
+        problemas: REPORT
+      },
+      null,
+      2
+    )
+  );
+  console.log(`\n✅ Relatório atualizado em: docs/relatorios/auditoria-robusta-admin.json`);
+} else {
+  console.log(`\nℹ️  Relatório inalterado: docs/relatorios/auditoria-robusta-admin.json`);
+}
 
 process.exit(REPORT.filter(r => r.severidade === 'CRÍTICA').length > 0 ? 1 : 0);
