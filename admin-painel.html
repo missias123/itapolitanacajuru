@@ -2212,7 +2212,7 @@ Talento</textarea>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (99,0&times;55,8 mm)</button>
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (21/A4 · 63,5&times;38,1 mm)</button>
           </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
@@ -5623,7 +5623,7 @@ function fidColetarCodigosParaEtiquetas(){
   if(lista.length){
     return { codigos: lista, origem: 'disponiveis', lote: null };
   }
-  const placeholders = Array.from({ length: 10 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
+  const placeholders = Array.from({ length: 21 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
  function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
@@ -5649,7 +5649,7 @@ function fidColetarCodigosParaEtiquetas(){
    const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
    const hoje = new Date().toISOString().slice(0, 10);
    const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-   const titulo = `Etiquetas Fidelidade (99×55,8)${loteTag} — ${origem} — ${hoje}`;
+   const titulo = `Etiquetas Fidelidade (63,5×38,1)${loteTag} — ${origem} — ${hoje}`;
 
    const layout = fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow });
    if(layout.marginX < 0 || layout.marginY < 0){
@@ -5714,25 +5714,25 @@ function fidColetarCodigosParaEtiquetas(){
       grid-template-rows:repeat(${rows}, ${etqH}mm);
       gap:${gapRow}mm ${gapCol}mm;
     }
-    .etq{
-      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
-      border-radius:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:6mm;
-      color:#141414;
-    }
+	    .etq{
+	      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
+	      border-radius:0;
+	      display:flex;
+	      align-items:center;
+	      justify-content:center;
+	      padding:3mm;
+	      color:#141414;
+	    }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
-    .etq-cod{
-      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace;
-      font-weight:900;
-      font-size:22pt;
-      letter-spacing:.4pt;
-      text-align:center;
-      width:100%;
-      overflow:hidden;
-      white-space:nowrap;
+	    .etq-cod{
+	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace;
+	      font-weight:900;
+	      font-size:18pt;
+	      letter-spacing:.4pt;
+	      text-align:center;
+	      width:100%;
+	      overflow:hidden;
+	      white-space:nowrap;
       text-overflow:ellipsis;
     }
   </style>
@@ -5761,20 +5761,20 @@ function fidColetarCodigosParaEtiquetas(){
     console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
     toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
     try{
-      const payload = fidColetarCodigosParaEtiquetas();
-      gerarPdfEtiquetasFidelidadeViaPrint({
-        ...payload,
-        etqW: 99.0,
-        etqH: 55.8,
-        cols: 2,
-        rows: 5,
-        gapCol: 2.0,
-        gapRow: 2.0,
-        desenharBordas: true
-      });
-    }catch(e){
-      console.error('[Fidelidade] Falha ao abrir versão de impressão:', e);
-    }
+	      const payload = fidColetarCodigosParaEtiquetas();
+	      gerarPdfEtiquetasFidelidadeViaPrint({
+	        ...payload,
+	        etqW: 63.5,
+	        etqH: 38.1,
+	        cols: 3,
+	        rows: 7,
+	        gapCol: 0.0,
+	        gapRow: 0.0,
+	        desenharBordas: true
+	      });
+	    }catch(e){
+	      console.error('[Fidelidade] Falha ao abrir versão de impressão:', e);
+	    }
     return;
   }
 
@@ -5784,18 +5784,18 @@ function fidColetarCodigosParaEtiquetas(){
     return;
   }
 
-  const ETQ_W = 99.0;
-  const ETQ_H = 55.8;
-  const COLS = 2;
-  const ROWS = 5;
+  const ETQ_W = 63.5;
+  const ETQ_H = 38.1;
+  const COLS = 3;
+  const ROWS = 7;
   const ETQ_POR_PAGINA = COLS * ROWS;
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  // Layout exato: 2 colunas × 5 linhas (10 etiquetas por A4)
-  // Etiqueta: 99,0 × 55,8 mm
-  // Espaçamento: 2 mm (horizontal e vertical), margens calculadas automaticamente.
-  const GAP_COL = 2.0;
-  const GAP_ROW = 2.0;
+  // Layout exato: 3 colunas × 7 linhas (21 etiquetas por A4)
+  // Etiqueta: 63,5 × 38,1 mm
+  // Espaçamento: 0 mm (horizontal e vertical), margens centralizadas automaticamente.
+  const GAP_COL = 0.0;
+  const GAP_ROW = 0.0;
   const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
   if(layout.marginX < 0 || layout.marginY < 0){
     toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
@@ -5803,10 +5803,10 @@ function fidColetarCodigosParaEtiquetas(){
   }
 
   const desenharBordas = true;
-  const paddingX = 6;
+  const paddingX = 4;
   const maxTextW = ETQ_W - (paddingX * 2);
-  const baseFont = 28;
-  const minFont = 14;
+  const baseFont = 22;
+  const minFont = 10;
 
   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
   for(let i = 0; i < totalSlots; i++){
@@ -5838,7 +5838,7 @@ function fidColetarCodigosParaEtiquetas(){
 
   const hoje = new Date().toISOString().slice(0, 10);
   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-  const filename = `etiquetas-fidelidade-99x55_8${loteTag}-${origem}-${hoje}.pdf`;
+  const filename = `etiquetas-fidelidade-63_5x38_1${loteTag}-${origem}-${hoje}.pdf`;
   doc.save(filename);
   toast('PDF de etiquetas gerado com sucesso.','ok');
 }
@@ -9124,13 +9124,13 @@ function renderRastreioCard(e){
 }
 function renderRastreioRecentes(){
   const registros=(STATE.encomendas?.registros||[]).slice(0,10);
-  const workerAtivo=Boolean(getAdminToken());
+  const isReadOnly=!GH_WRITE_ALLOWED;
   const container=document.getElementById('rastreio-recentes');
   if(!container)return;
   if(!registros.length){
-    container.innerHTML=workerAtivo
-      ?'<p style="color:#aaa;font-size:.85rem">Nenhuma encomenda ainda.</p>'
-      :'<div style="background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Modo somente leitura: não foi possível listar Encomendas Recentes. Adicione um token GitHub.</div>';
+    container.innerHTML=
+      '<p style="color:#aaa;font-size:.85rem;margin:0">Nenhuma encomenda ainda.</p>'+
+      (isReadOnly?'<div style="margin-top:10px;background:#e3f2fd;border:1px solid #bbdefb;color:#0d47a1;border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45">ℹ️ Você está em modo somente leitura (sem token GitHub). A listagem funciona, mas você não conseguirá salvar alterações.</div>':'');
     return;
   }
   container.innerHTML=registros.map(e=>{
