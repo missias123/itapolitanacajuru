@@ -7,21 +7,32 @@ const { test, expect } = require('@playwright/test');
  * Segue exatamente os passos de validação manual solicitados.
  */
 
-const ADMIN_URL = 'http://localhost:8080/admin-painel.html';
-const TEST_PASSWORD = '12345678';
+async function obterSenhaAdmin(request) {
+  const [cfgResp, authResp] = await Promise.all([
+    request.get('/dados/config.json'),
+    request.get('/dados/auth.json')
+  ]);
+  expect(cfgResp.ok()).toBeTruthy();
+  expect(authResp.ok()).toBeTruthy();
+  const cfg = await cfgResp.json();
+  const auth = await authResp.json();
+  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+}
 
 test.describe('🔍 AUDITORIA VISUAL - Sobre, Galeria, Pág. Encomendas', () => {
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     console.log('📍 Passo 1: Abrir admin no navegador');
-    await page.goto(ADMIN_URL);
+    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
 
     console.log('📍 Passo 2: Fazer login com senha');
-    await page.fill('#inp-senha', TEST_PASSWORD);
-    await page.click('button:has-text("Entrar")');
+    const senhaAdmin = await obterSenhaAdmin(request);
+    await page.fill('#inp-senha', senhaAdmin);
+    await page.click('button:has-text("Entrar no Admin")');
 
     // Aguardar carregamento completo
-    await page.waitForTimeout(2000);
+    await page.waitForSelector('#admin-app', { state: 'visible', timeout: 15000 });
+    await page.waitForTimeout(500);
   });
 
   test('✅ a) 🏪 SOBRE - Validação Visual Completa', async ({ page }) => {
@@ -278,13 +289,12 @@ test.describe('🔍 AUDITORIA VISUAL - Sobre, Galeria, Pág. Encomendas', () => 
       path: 'test-results/auditoria-encomendas-editado.png',
       fullPage: true
     });
-    console.log('📸 Screenshot capturado: auditoria-encomendas-editado.png');
+	    console.log('📸 Screenshot capturado: auditoria-encomendas-editado.png');
 
-    // Verificar botão salvar
-    const btnSalvar = await page.locator('button:has-text("💾 Salvar")');
-    const btnVisible = await btnSalvar.isVisible();
-    expect(btnVisible).toBe(true);
-    console.log('✅ Botão "💾 Salvar" está VISÍVEL');
+	    // Verificar botão salvar
+	    const btnSalvar = page.locator('#sec-encomendas-config button:has-text("💾 Salvar Encomendas")');
+	    await expect(btnSalvar).toBeVisible();
+	    console.log('✅ Botão "💾 Salvar Encomendas" está VISÍVEL');
 
     // Restaurar
     await campoTeste.fill(valorOriginal);

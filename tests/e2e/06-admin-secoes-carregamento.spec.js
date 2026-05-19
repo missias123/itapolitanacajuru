@@ -6,54 +6,49 @@
 
 const { test, expect } = require('@playwright/test');
 
+async function obterSenhaAdmin(request) {
+  const [cfgResp, authResp] = await Promise.all([
+    request.get('/dados/config.json'),
+    request.get('/dados/auth.json')
+  ]);
+  expect(cfgResp.ok()).toBeTruthy();
+  expect(authResp.ok()).toBeTruthy();
+  const cfg = await cfgResp.json();
+  const auth = await authResp.json();
+  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+}
+
+async function fazerLogin(page, request) {
+  const senhaAdmin = await obterSenhaAdmin(request);
+  await page.fill('#inp-senha', senhaAdmin);
+  await page.click('button:has-text("Entrar no Admin")');
+  await expect(page.locator('#admin-app')).toBeVisible({ timeout: 15000 });
+}
+
 test.describe('Admin - Carregamento de Seções', () => {
   test.beforeEach(async ({ page }) => {
-    // Interceptar carregamento de config.json para garantir que ele aconteça
-    let configLoaded = false;
-    await page.route('**/dados/config.json', async route => {
-      configLoaded = true;
-      await route.continue();
-    });
-
     // Navegar para a página de login do admin
-    await page.goto('/admin-painel.html');
+    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
 
     // Aguardar o formulário de login aparecer
-    await page.waitForSelector('#login-senha', { timeout: 5000 });
+    await page.waitForSelector('#inp-senha', { timeout: 10000 });
   });
 
-  test('deve carregar config.json ao fazer login', async ({ page }) => {
-    // Preencher senha (usando hash SHA-256 padrão para testes)
-    await page.fill('#login-senha', 'senha_admin_teste');
+  test('deve carregar config.json ao fazer login', async ({ page, request }) => {
+    // Fazer login (deve carregar a configuração como parte do bootstrap do admin)
+    await fazerLogin(page, request);
 
-    // Monitorar requisições
-    const requests = [];
-    page.on('request', request => {
-      if (request.url().includes('config.json')) {
-        requests.push(request.url());
-      }
-    });
-
-    // Tentar fazer login (pode falhar pela senha, mas deve tentar carregar config)
-    await page.click('button[onclick*="fazerLogin"]');
-
-    // Aguardar um pouco para requisições acontecerem
-    await page.waitForTimeout(2000);
-
-    // Verificar se config.json foi requisitado
-    expect(requests.length).toBeGreaterThan(0);
-    expect(requests[0]).toContain('config.json');
+    // Verificar se STATE.config foi preenchido
+    await expect
+      .poll(() => page.evaluate(() => !!window.STATE?.config), { timeout: 15000 })
+      .toBe(true);
   });
 
-  test('deve preencher STATE.config após carregarTudo()', async ({ page }) => {
-    // Verificar no console se STATE.config foi preenchido
-    const stateConfig = await page.evaluate(() => {
-      return typeof window.STATE !== 'undefined' && window.STATE.config !== null;
-    });
-
-    // Se não estiver logado, STATE pode não estar disponível ainda
-    // Isso é esperado, o importante é que o código não quebre
-    expect(typeof stateConfig).toBe('boolean');
+  test('deve preencher STATE.config após carregarTudo()', async ({ page, request }) => {
+    await fazerLogin(page, request);
+    await expect
+      .poll(() => page.evaluate(() => !!window.STATE?.config), { timeout: 15000 })
+      .toBe(true);
   });
 
   test.describe('Seções após login (simulado)', () => {
@@ -108,17 +103,17 @@ test.describe('Admin - Carregamento de Seções', () => {
       await expect(secaoFidelidade).toBeAttached();
 
       // Verificar elementos específicos de fidelidade
-      const fidelidadeTitulo = await page.locator('#fidelidade-titulo');
-      await expect(fidelidadeTitulo).toBeAttached();
+      const premioMilkInput = await page.locator('#fid-prêmio-milk-nome');
+      await expect(premioMilkInput).toBeAttached();
     });
 
     test('Seção Encomendas deve ter conteúdo', async ({ page }) => {
       const secaoEncomendas = await page.locator('#sec-encomendas');
       await expect(secaoEncomendas).toBeAttached();
 
-      // Verificar tabela de encomendas
-      const tabelaEncomendas = await page.locator('#tabela-encomendas');
-      await expect(tabelaEncomendas).toBeAttached();
+      // Verificar lista de encomendas
+      const listaEncomendas = await page.locator('#enc-lista');
+      await expect(listaEncomendas).toBeAttached();
     });
 
     test('Seção Qualidade deve ter conteúdo', async ({ page }) => {
@@ -134,10 +129,10 @@ test.describe('Admin - Carregamento de Seções', () => {
     });
   });
 
-  test('Navegação entre seções deve funcionar', async ({ page }) => {
-    // Verificar se os botões de navegação existem
-    const btnFidelidade = await page.locator('#nav-btn-fidelidade');
-    await expect(btnFidelidade).toBeAttached();
+    test('Navegação entre seções deve funcionar', async ({ page }) => {
+      // Verificar se os botões de navegação existem
+      const btnFidelidade = await page.locator('#nav-btn-fidelidade');
+      await expect(btnFidelidade).toBeAttached();
 
     const btnDicas = await page.locator('#nav-btn-dicas');
     await expect(btnDicas).toBeAttached();
@@ -148,10 +143,10 @@ test.describe('Admin - Carregamento de Seções', () => {
     const btnQualidade = await page.locator('#nav-btn-qualidade');
     await expect(btnQualidade).toBeAttached();
 
-    // Verificar se a função irPara existe
-    const irParaExists = await page.evaluate(() => {
-      return typeof window.irPara === 'function';
-    });
+      // Verificar se a função irPara existe
+      const irParaExists = await page.evaluate(() => {
+        return typeof window.irPara === 'function';
+      });
 
     // irPara pode não estar disponível antes do login
     expect(typeof irParaExists).toBe('boolean');

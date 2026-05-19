@@ -13,21 +13,21 @@ async function fazerLogin(page) {
 test.describe('AUDITORIA VISUAL COMPLETA — Admin Painel Itapolitana', () => {
 
   // ── TELA DE LOGIN ────────────────────────────────────────────────
-  test('[LOGIN] tela de login aparece com campos de senha e PAT', async ({ page }) => {
-    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('#login-screen')).toBeVisible();
-    await expect(page.locator('#inp-senha')).toBeVisible();
-    await expect(page.locator('#inp-gh-token')).toBeVisible();
-    await expect(page.locator('button:has-text("Entrar no Admin")')).toBeVisible();
-  });
+	  test('[LOGIN] tela de login aparece com campos de senha e PAT', async ({ page }) => {
+	    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
+	    await expect(page.locator('#login-screen')).toBeVisible();
+	    await expect(page.locator('#inp-senha')).toBeVisible();
+	    await expect(page.locator('#inp-github-token')).toBeVisible();
+	    await expect(page.locator('button:has-text("Entrar no Admin")')).toBeVisible();
+	  });
 
-  test('[LOGIN] botão de olho alterna visibilidade do token GitHub PAT', async ({ page }) => {
-    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
-    const tokenInput = page.locator('#inp-gh-token');
-    const eyeBtn = page.locator('#eye-btn-token');
-    await expect(eyeBtn).toBeVisible();
-    await expect(tokenInput).toHaveAttribute('type', 'password');
-    await eyeBtn.click();
+	  test('[LOGIN] botão de olho alterna visibilidade do token GitHub PAT', async ({ page }) => {
+	    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
+	    const tokenInput = page.locator('#inp-github-token');
+	    const eyeBtn = page.locator('#eye-btn-token');
+	    await expect(eyeBtn).toBeVisible();
+	    await expect(tokenInput).toHaveAttribute('type', 'password');
+	    await eyeBtn.click();
     await expect(tokenInput).toHaveAttribute('type', 'text');
     await eyeBtn.click();
     await expect(tokenInput).toHaveAttribute('type', 'password');

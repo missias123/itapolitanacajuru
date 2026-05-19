@@ -1,19 +1,32 @@
 const { test, expect } = require('@playwright/test');
 
-const ADMIN_URL = 'http://localhost:8080/admin-painel.html';
-const TEST_PASSWORD = '12345678';
+async function obterSenhaAdmin(request) {
+  const [cfgResp, authResp] = await Promise.all([
+    request.get('/dados/config.json'),
+    request.get('/dados/auth.json')
+  ]);
+  expect(cfgResp.ok()).toBeTruthy();
+  expect(authResp.ok()).toBeTruthy();
+  const cfg = await cfgResp.json();
+  const auth = await authResp.json();
+  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+}
 
 test.describe('Admin Panel - Sections Loading', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     // Navigate to admin panel
-    await page.goto(ADMIN_URL);
+    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
 
     // Login
-    await page.fill('#inp-senha', TEST_PASSWORD);
-    await page.click('button:has-text("Entrar")');
+    const senhaAdmin = await obterSenhaAdmin(request);
+    await page.fill('#inp-senha', senhaAdmin);
+    await page.click('button:has-text("Entrar no Admin")');
 
     // Wait for dashboard to load
-    await page.waitForSelector('#sec-dashboard.ativo', { timeout: 10000 });
+    await page.waitForSelector('#admin-app', { state: 'visible', timeout: 15000 });
+    await expect
+      .poll(() => page.evaluate(() => !!window.STATE?.config), { timeout: 15000 })
+      .toBe(true);
   });
 
   test('should load Fidelidade section when clicked', async ({ page }) => {
@@ -21,15 +34,15 @@ test.describe('Admin Panel - Sections Loading', () => {
     await page.click('#nav-btn-fidelidade');
 
     // Wait for section to become active
-    await page.waitForSelector('#sec-fidelidade.ativo', { timeout: 5000 });
+    await page.waitForSelector('#sec-clientes.ativo', { timeout: 10000 });
 
     // Verify the section is visible
-    const sectionVisible = await page.isVisible('#sec-fidelidade');
+    const sectionVisible = await page.isVisible('#sec-clientes');
     expect(sectionVisible).toBe(true);
 
-    // Check if preencherFidelidade function was called (fields should be populated)
-    const premioMilkInput = await page.locator('#fid-prêmio-milk-nome');
-    await expect(premioMilkInput).toBeVisible();
+    // Verificar se a tabela de clientes está presente
+    const tabelaClientes = await page.locator('#tabela-clientes');
+    await expect(tabelaClientes).toBeAttached();
   });
 
   test('should load Depoimentos section when clicked', async ({ page }) => {
@@ -59,8 +72,8 @@ test.describe('Admin Panel - Sections Loading', () => {
     const sectionVisible = await page.isVisible('#sec-encomendas');
     expect(sectionVisible).toBe(true);
 
-    // Check if renderEncomendas was called (container should be present)
-    const container = await page.locator('#encomendas-container');
+    // Check if lista de encomendas existe
+    const container = await page.locator('#enc-lista');
     await expect(container).toBeVisible();
   });
 
@@ -91,9 +104,9 @@ test.describe('Admin Panel - Sections Loading', () => {
     const sectionVisible = await page.isVisible('#sec-produtos');
     expect(sectionVisible).toBe(true);
 
-    // Check if products container is present
-    const container = await page.locator('#produtos-container');
-    await expect(container).toBeVisible();
+    // Check if tabela de produtos existe
+    const tabela = await page.locator('#tabela-produtos');
+    await expect(tabela).toBeAttached();
   });
 
   test('should verify STATE and config are loaded', async ({ page }) => {

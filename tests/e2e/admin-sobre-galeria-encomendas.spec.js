@@ -1,19 +1,29 @@
 const { test, expect } = require('@playwright/test');
 
-const ADMIN_URL = 'http://localhost:8080/admin-painel.html';
-const TEST_PASSWORD = '12345678';
+async function obterSenhaAdmin(request) {
+  const [cfgResp, authResp] = await Promise.all([
+    request.get('/dados/config.json'),
+    request.get('/dados/auth.json')
+  ]);
+  expect(cfgResp.ok()).toBeTruthy();
+  expect(authResp.ok()).toBeTruthy();
+  const cfg = await cfgResp.json();
+  const auth = await authResp.json();
+  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+}
 
 test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     // Navigate to admin panel
-    await page.goto(ADMIN_URL);
+    await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
 
     // Login
-    await page.fill('#inp-senha', TEST_PASSWORD);
-    await page.click('button:has-text("Entrar")');
+    const senhaAdmin = await obterSenhaAdmin(request);
+    await page.fill('#inp-senha', senhaAdmin);
+    await page.click('button:has-text("Entrar no Admin")');
 
     // Wait for dashboard to load
-    await page.waitForSelector('#sec-dashboard.ativo', { timeout: 10000 });
+    await page.waitForSelector('#admin-app', { state: 'visible', timeout: 15000 });
   });
 
   test('should load Sobre section and populate all fields', async ({ page }) => {
@@ -120,12 +130,12 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       // Verify field has a value (default or loaded from config)
       const value = await field.inputValue();
       console.log(`${fieldId}: "${value}"`);
-    }
+	    }
 
-    // Verify save button is present
-    const saveBtn = await page.locator('button:has-text("💾 Salvar")');
-    await expect(saveBtn).toBeVisible();
-  });
+	    // Verify save button is present
+	    const saveBtn = page.locator('#sec-encomendas-config button:has-text("💾 Salvar Encomendas")');
+	    await expect(saveBtn).toBeVisible();
+	  });
 
   test('should verify carregarSobre, carregarGaleria, carregarEncomendas functions exist', async ({ page }) => {
     // Execute diagnostic commands in console
@@ -191,7 +201,7 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
     expect(consoleErrors.length).toBe(0);
   });
 
-  test('should verify all sections can be edited (fields are not disabled)', async ({ page }) => {
+	  test('should verify all sections can be edited (fields are not disabled)', async ({ page }) => {
     const sections = [
       {
         btn: '#nav-btn-sobre',
@@ -210,7 +220,7 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       }
     ];
 
-    for (const section of sections) {
+	    for (const section of sections) {
       // Click section
       await page.click(section.btn);
       await page.waitForSelector(`${section.sectionId}.ativo`, { timeout: 5000 });
@@ -220,15 +230,28 @@ test.describe('Admin Panel - Sobre, Galeria, Pág. Encomendas Sections', () => {
       const isDisabled = await field.isDisabled();
       expect(isDisabled).toBe(false);
 
-      // Try to type in the field
-      await field.focus();
-      const initialValue = await field.inputValue();
-      await field.fill(initialValue + ' TESTE');
-      const newValue = await field.inputValue();
-      expect(newValue).toContain('TESTE');
+	      // Try to type in the field
+	      await field.focus();
+	      const initialValue = await field.inputValue();
+	      const maxLengthRaw = await field.getAttribute('maxlength');
+	      const maxLength = maxLengthRaw ? Number.parseInt(maxLengthRaw, 10) : null;
 
-      // Restore original value
-      await field.fill(initialValue);
-    }
-  });
+	      let candidateValue = initialValue;
+	      if (Number.isFinite(maxLength) && maxLength > 0) {
+	        const base = String(initialValue || '').padEnd(maxLength, '0').slice(0, maxLength);
+	        const last = base.charAt(maxLength - 1);
+	        const replacement = last === '0' ? '1' : '0';
+	        candidateValue = base.slice(0, maxLength - 1) + replacement;
+	      } else {
+	        candidateValue = String(initialValue || '') + ' TESTE';
+	      }
+
+	      await field.fill(candidateValue);
+	      const updatedValue = await field.inputValue();
+	      expect(updatedValue).toBe(candidateValue);
+
+	      // Restore original value
+	      await field.fill(initialValue);
+	    }
+	  });
 });

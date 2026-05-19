@@ -116,10 +116,14 @@
           });
           // Para links, garantir que href é seguro
           if (node.tagName === 'A') {
-            const href = node.getAttribute('href') || '';
-            if (href.startsWith('javascript:') || href.startsWith('data:')) {
-              node.removeAttribute('href');
+            const href = (node.getAttribute('href') || '').trim();
+            let protocol = '';
+            try {
+              protocol = new URL(href, document.baseURI).protocol.replace(':', '').toLowerCase();
+            } catch (_) {
+              protocol = '';
             }
+            if (protocol === 'javascript' || protocol === 'data') node.removeAttribute('href');
           }
         }
       });
