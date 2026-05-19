@@ -64,10 +64,10 @@ failures.push(...uniqueViolations(rows, 'configKey'));
 function collectDataConfigKeysFromHtml(absPath) {
   const content = readFile(absPath);
   const keys = new Set();
-  const re = /data-config(?:-href|-alt|-collection)?="([^"]+)"/g;
+  const re = /data-config(?:-href|-alt|-collection)?=(["'])([^"']+)\1/g;
   let match = null;
   while ((match = re.exec(content))) {
-    const key = String(match[1] || '').trim();
+    const key = String(match[2] || '').trim();
     if (!key) continue;
     keys.add(key);
   }
@@ -159,6 +159,10 @@ rows.forEach((row) => {
   }
 });
 
+function normalizeReport(content) {
+  return String(content || '').replace(/^Gerado em: .*$/m, 'Gerado em: __STAMP__');
+}
+
 const stamp = new Date().toISOString();
 const lines = [];
 lines.push('# Gate Admin ↔ Site (Matriz Espelho)');
@@ -187,8 +191,17 @@ if (warnings.length) {
   lines.push('');
 }
 
-fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
-fs.writeFileSync(REPORT_PATH, lines.join('\n') + '\n', 'utf8');
+const nextReport = lines.join('\n') + '\n';
+const shouldWriteReport = (() => {
+  if (!fs.existsSync(REPORT_PATH)) return true;
+  const current = readFile(REPORT_PATH);
+  return normalizeReport(current) !== normalizeReport(nextReport);
+})();
+
+if (shouldWriteReport) {
+  fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
+  fs.writeFileSync(REPORT_PATH, nextReport, 'utf8');
+}
 
 if (failures.length > 0) {
   console.error(`❌ Gate Admin ↔ Site falhou com ${failures.length} problema(s).`);
