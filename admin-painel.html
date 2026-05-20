@@ -2248,14 +2248,78 @@ Talento</textarea>
           <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de cadastro do Clube de Fidelidade. O cliente precisa aceitar para prosseguir.</div>
           <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
             <strong>Versão atual ativa no site:</strong><br>
-            1. Do Programa — Compras acima de R$ 30,00 ganham cupom<br>
-            2. Da Participação — Mínimo 14 anos, cadastro único<br>
-            3. Dos Cupons — Validade 60/30 dias, 1 ponto por código<br>
+            1. Do Programa — Cada cupom vale R$10 em compras e confere 0,5 ponto<br>
+            2. Da Participação — Cadastro obrigatório com dados verdadeiros<br>
+            3. Dos Cupons — Cada código válido = +0,5 ponto<br>
             4. Dos Prêmios — 10pts Milkshake / 30pts Caixa 7 Bolas<br>
             5. Das Proibições — Fraude = cancelamento permanente<br>
-            6. Das Críticas — Críticas infundadas = bloqueio definitivo<br>
-            7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
-            8. Do Foro — Comarca de Cajuru — SP
+            6. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
+            7. Do Foro — Comarca de Cajuru — SP
+          </div>
+        </div>
+      </div>
+
+      <!-- GERENCIAMENTO DE SORTEIOS -->
+      <div class="card" style="border-left:4px solid #9c27b0">
+        <div class="card-header"><h2>🎁 Gerenciamento de Sorteios</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:12px">Configure sorteios mensais para engajar clientes cadastrados no programa de fidelidade.</div>
+
+          <div class="seção-título">🎯 Sorteio Atual</div>
+          <div class="campo-edit"><label>Status do Sorteio</label>
+            <select id="sorteio-status">
+              <option value="ativo">🟢 Ativo</option>
+              <option value="pausado">🟡 Pausado</option>
+              <option value="encerrado">🔴 Encerrado</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Data Próximo Sorteio</label><input type="date" id="sorteio-data-prox"/></div>
+            <div class="campo-edit"><label>Data Fim Inscrições</label><input type="date" id="sorteio-data-fim"/></div>
+          </div>
+          <div class="campo-edit"><label>Prêmio do Sorteio</label><input type="text" id="sorteio-premio" placeholder="Ex: 1 caixa de 5 litros de sorvete tipo artesanal" maxlength="200"/></div>
+          <div class="campo-edit"><label>Vencedor (deixe vazio se ainda não foi sorteado)</label><input type="text" id="sorteio-vencedor" placeholder="Nome do vencedor"/></div>
+          <div class="campo-edit"><label>Observações</label><textarea id="sorteio-obs" rows="3" placeholder="Observações sobre o sorteio atual"></textarea></div>
+
+          <div class="seção-título">📊 Estatísticas do Sorteio</div>
+          <div class="stats-row">
+            <div class="stat-card"><div class="num" id="sorteio-inscritos">-</div><div class="txt">Inscritos</div></div>
+            <div class="stat-card"><div class="num" id="sorteio-dias-restantes">-</div><div class="txt">Dias Restantes</div></div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" data-fid-write onclick="salvarConfigSorteio()">💾 Salvar Configuração do Sorteio</button>
+            <button class="btn btn-cinza" onclick="copiarSorteio()">🎲 Copiar Lista de Inscritos para Sorteio</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGRAS DE PONTUAÇÃO -->
+      <div class="card" style="border-left:4px solid #1976d2">
+        <div class="card-header"><h2>⚙️ Regras de Pontuação</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:12px">Configure o valor de cada cupom e quantos pontos ele confere ao cliente.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit">
+              <label>Pontos por Cupom/Código</label>
+              <input type="number" id="pontos-por-codigo" step="0.1" min="0.1" max="10" placeholder="0.5"/>
+              <div class="hint">Quantos pontos cada código/cupom vale (ex: 0.5)</div>
+            </div>
+            <div class="campo-edit">
+              <label>Valor Monetário por Cupom (R$)</label>
+              <input type="number" id="valor-por-codigo" step="1" min="1" max="100" placeholder="10"/>
+              <div class="hint">Quanto cada cupom representa em compras (ex: R$ 10,00)</div>
+            </div>
+          </div>
+
+          <div class="campo-edit">
+            <label>Descrição da Regra (exibida para o cliente)</label>
+            <input type="text" id="descricao-regra-pontos" maxlength="200" placeholder="Cada cupom representa R$10 em compras e confere 0,5 ponto ao cadastrar"/>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" data-fid-write onclick="salvarRegrasPontuacao()">💾 Salvar Regras de Pontuação</button>
           </div>
         </div>
       </div>
@@ -5489,6 +5553,10 @@ function preencherFidelidade(){
   const fidSeoPal=document.getElementById('fid-seo-palavras');
   if(fidSeoPal) fidSeoPal.value=seoPg.fidelidade?.palavrasChave||'';
   atualizarStatsCódigos();
+
+  // Carregar configurações de sorteios e pontuação
+  try { carregarConfigSorteio(); } catch(e) { console.error('[Admin] Erro ao carregar sorteio', e); }
+  try { carregarRegrasPontuacao(); } catch(e) { console.error('[Admin] Erro ao carregar regras pontuação', e); }
 }
 
 
@@ -6828,6 +6896,131 @@ async function salvarFidelidadePagina() {
 
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar fidelidade página');
+}
+
+// =====================================================================
+// SORTEIOS — Carregar e salvar configuração de sorteios
+// =====================================================================
+function carregarConfigSorteio() {
+  const fid = STATE.fidelidade || {};
+  const sorteio = fid.sorteio || {};
+
+  const statusEl = document.getElementById('sorteio-status');
+  if (statusEl) statusEl.value = sorteio.status || 'ativo';
+
+  const dataProxEl = document.getElementById('sorteio-data-prox');
+  if (dataProxEl) dataProxEl.value = sorteio.dataProx || '';
+
+  const dataFimEl = document.getElementById('sorteio-data-fim');
+  if (dataFimEl) dataFimEl.value = sorteio.dataFim || '';
+
+  const premioEl = document.getElementById('sorteio-premio');
+  if (premioEl) premioEl.value = sorteio.premio || '1 caixa de 5 litros de sorvete tipo artesanal';
+
+  const vencedorEl = document.getElementById('sorteio-vencedor');
+  if (vencedorEl) vencedorEl.value = sorteio.vencedor || '';
+
+  const obsEl = document.getElementById('sorteio-obs');
+  if (obsEl) obsEl.value = sorteio.obs || '';
+
+  // Estatísticas
+  const inscritos = (fid.sorteioInscritos || []).length;
+  const inscritosEl = document.getElementById('sorteio-inscritos');
+  if (inscritosEl) inscritosEl.textContent = inscritos;
+
+  // Calcular dias restantes
+  const diasEl = document.getElementById('sorteio-dias-restantes');
+  if (diasEl && sorteio.dataProx) {
+    const hoje = new Date();
+    const dataProx = new Date(sorteio.dataProx);
+    const diff = Math.ceil((dataProx - hoje) / (1000 * 60 * 60 * 24));
+    diasEl.textContent = diff > 0 ? diff : '0';
+  } else if (diasEl) {
+    diasEl.textContent = '-';
+  }
+}
+
+async function salvarConfigSorteio() {
+  if (!fidRequireWrite()) return;
+
+  const fid = STATE.fidelidade || {};
+  if (!fid.sorteio) fid.sorteio = {};
+
+  const statusEl = document.getElementById('sorteio-status');
+  if (statusEl) fid.sorteio.status = statusEl.value;
+
+  const dataProxEl = document.getElementById('sorteio-data-prox');
+  if (dataProxEl) fid.sorteio.dataProx = dataProxEl.value;
+
+  const dataFimEl = document.getElementById('sorteio-data-fim');
+  if (dataFimEl) fid.sorteio.dataFim = dataFimEl.value;
+
+  const premioEl = document.getElementById('sorteio-premio');
+  if (premioEl) fid.sorteio.premio = premioEl.value.trim();
+
+  const vencedorEl = document.getElementById('sorteio-vencedor');
+  if (vencedorEl) fid.sorteio.vencedor = vencedorEl.value.trim();
+
+  const obsEl = document.getElementById('sorteio-obs');
+  if (obsEl) fid.sorteio.obs = obsEl.value.trim();
+
+  fid.sorteio.atualizado = new Date().toISOString();
+
+  STATE.fidelidade = fid;
+  await salvarArquivo(PATHS.fidelidade, fid, 'fidelidadeSha', 'Admin: atualizar sorteio');
+  toast('Configuração do sorteio salva com sucesso!', 'ok');
+  carregarConfigSorteio();
+}
+
+// =====================================================================
+// REGRAS DE PONTUAÇÃO — Carregar e salvar
+// =====================================================================
+function carregarRegrasPontuacao() {
+  const fid = STATE.fidelidade || {};
+  const config = fid.config || {};
+
+  const ptsEl = document.getElementById('pontos-por-codigo');
+  if (ptsEl) ptsEl.value = config.pontosPorCodigo || 0.5;
+
+  const valorEl = document.getElementById('valor-por-codigo');
+  if (valorEl) valorEl.value = config.valorMonetarioPorCodigo || 10;
+
+  const descEl = document.getElementById('descricao-regra-pontos');
+  if (descEl) descEl.value = config.descricaoRegra || 'Cada cupom representa R$10 em compras e confere 0,5 ponto ao cadastrar';
+}
+
+async function salvarRegrasPontuacao() {
+  if (!fidRequireWrite()) return;
+
+  const fid = STATE.fidelidade || {};
+  if (!fid.config) fid.config = {};
+
+  const ptsEl = document.getElementById('pontos-por-codigo');
+  if (ptsEl) {
+    const val = parseFloat(ptsEl.value);
+    fid.config.pontosPorCodigo = Number.isFinite(val) && val > 0 ? val : 0.5;
+  }
+
+  const valorEl = document.getElementById('valor-por-codigo');
+  if (valorEl) {
+    const val = parseFloat(valorEl.value);
+    fid.config.valorMonetarioPorCodigo = Number.isFinite(val) && val > 0 ? val : 10;
+  }
+
+  const descEl = document.getElementById('descricao-regra-pontos');
+  if (descEl) fid.config.descricaoRegra = descEl.value.trim();
+
+  STATE.fidelidade = fid;
+  await salvarArquivo(PATHS.fidelidade, fid, 'fidelidadeSha', 'Admin: atualizar regras de pontuação');
+  toast('Regras de pontuação salvas com sucesso!', 'ok');
+  carregarRegrasPontuacao();
+
+  // Também atualizar no config.json para sincronização com o site
+  const cfg = STATE.config || {};
+  cfg.fidelidadePontosPorCodigo = fid.config.pontosPorCodigo;
+  cfg.fidelidadeValorPorCodigo = fid.config.valorMonetarioPorCodigo;
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: sincronizar regras de pontuação');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
