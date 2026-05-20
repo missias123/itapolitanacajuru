@@ -2192,6 +2192,139 @@ Talento</textarea>
           <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
         </div>
       </div>
+
+      <!-- NOVA SEÇÃO: CONFIGURAÇÕES DO PROGRAMA DE FIDELIDADE -->
+      <div class="card" style="border-left:4px solid #1b5e20">
+        <div class="card-header"><h2>⚙️ Configurações do Programa de Fidelidade</h2></div>
+        <div class="card-body">
+          <div class="fid-info-box" style="background:#e8f5e9;border-color:#4caf50;margin-bottom:14px">
+            <strong>Regra de Pontuação:</strong> Configure aqui a conversão de valor em reais para pontos.<br>
+            <strong>Padrão atual:</strong> 0,5 ponto a cada R$10,00 em compras.
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div class="campo-edit">
+              <label>Pontos por R$ 10,00</label>
+              <input type="number" id="fid-config-pontos-por-10" step="0.1" min="0" max="10" placeholder="0.5" value="0.5"/>
+              <div class="hint">Quantos pontos o cliente ganha a cada R$10,00 gastos.</div>
+            </div>
+            <div class="campo-edit">
+              <label>Valor mínimo da compra (R$)</label>
+              <input type="number" id="fid-config-valor-minimo" min="1" max="1000" placeholder="10" value="10"/>
+              <div class="hint">Valor mínimo em reais para gerar cupom.</div>
+            </div>
+          </div>
+
+          <div style="background:#fff3e0;border:1.5px solid #ffb74d;border-radius:8px;padding:12px;margin-bottom:12px;font-size:.85rem">
+            <strong>Exemplo de cálculo:</strong><br>
+            • Compra de R$30,00 → 30 ÷ 10 = 3 → 3 × 0,5 = <strong>1,5 ponto</strong><br>
+            • Compra de R$50,00 → 50 ÷ 10 = 5 → 5 × 0,5 = <strong>2,5 pontos</strong><br>
+            • Compra de R$100,00 → 100 ÷ 10 = 10 → 10 × 0,5 = <strong>5 pontos</strong>
+          </div>
+
+          <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigPrograma()">💾 Salvar Configurações do Programa</button></div>
+        </div>
+      </div>
+
+      <!-- GERENCIAMENTO DE CLIENTES E PONTOS -->
+      <div class="card">
+        <div class="card-header">
+          <h2>👥 Gerenciamento de Clientes e Pontos</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" id="fid-busca-cliente" placeholder="Buscar por CPF ou Nome..." style="min-width:250px;padding:6px 10px;border-radius:6px;border:1px solid #ccc"/>
+            <button class="btn btn-primary" onclick="buscarCliente()" style="padding:6px 14px;font-size:.9rem">🔍 Buscar</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="fid-cliente-detalhes" style="display:none">
+            <div class="fid-info-box" style="background:#f3f4f6;margin-bottom:14px">
+              <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px">
+                <div>
+                  <div style="font-size:.75rem;color:#666;text-transform:uppercase;font-weight:700">Cliente</div>
+                  <div id="fid-cliente-nome" style="font-weight:700;margin-top:2px">—</div>
+                  <div id="fid-cliente-cpf" style="font-size:.85rem;color:#666;margin-top:2px">—</div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:.75rem;color:#666;text-transform:uppercase;font-weight:700">Pontos Acumulados</div>
+                  <div id="fid-cliente-pontos" style="font-size:2rem;font-weight:900;color:#1b5e20;margin-top:4px">0</div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:.75rem;color:#666;text-transform:uppercase;font-weight:700">Cupons Cadastrados</div>
+                  <div id="fid-cliente-cupons-total" style="font-size:2rem;font-weight:900;color:#e65100;margin-top:4px">0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="seção-título">📜 Histórico de Cupons</div>
+            <div style="max-height:300px;overflow-y:auto;border:1px solid #e0e0e0;border-radius:8px">
+              <table style="width:100%;border-collapse:collapse">
+                <thead style="background:#f5f5f5;position:sticky;top:0">
+                  <tr>
+                    <th style="padding:8px;text-align:left;font-size:.8rem;border-bottom:2px solid #ddd">Código</th>
+                    <th style="padding:8px;text-align:center;font-size:.8rem;border-bottom:2px solid #ddd">Pontos</th>
+                    <th style="padding:8px;text-align:left;font-size:.8rem;border-bottom:2px solid #ddd">Data Cadastro</th>
+                    <th style="padding:8px;text-align:center;font-size:.8rem;border-bottom:2px solid #ddd">Sorteio</th>
+                  </tr>
+                </thead>
+                <tbody id="fid-cliente-cupons-lista">
+                  <tr><td colspan="4" style="text-align:center;padding:20px;color:#999">Nenhum cupom cadastrado.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="fid-cliente-nao-encontrado" style="text-align:center;padding:40px 20px;color:#999">
+            Digite um CPF ou nome no campo acima e clique em Buscar.
+          </div>
+        </div>
+      </div>
+
+      <!-- SORTEIOS MENSAIS -->
+      <div class="card" style="border-left:4px solid #d32f2f">
+        <div class="card-header"><h2>🎰 Gerenciamento de Sorteios Mensais</h2></div>
+        <div class="card-body">
+          <div class="fid-info-box" style="background:#ffebee;border-color:#ef5350;margin-bottom:14px">
+            <strong>Como funciona:</strong> Cada cupom cadastrado no mês dá direito a 1 (uma) participação no sorteio mensal.<br>
+            O sorteio é realizado no primeiro dia útil do mês seguinte. O vencedor é contatado pelo WhatsApp cadastrado.
+          </div>
+
+          <div class="seção-título">🗓️ Próximo Sorteio</div>
+          <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:14px;margin-bottom:14px">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div class="campo-edit">
+                <label>Mês de referência</label>
+                <input type="month" id="fid-sorteio-mes" value=""/>
+              </div>
+              <div class="campo-edit">
+                <label>Prêmio</label>
+                <input type="text" id="fid-sorteio-premio" placeholder="Ex: 1 caixa de 5 litros" maxlength="100"/>
+              </div>
+              <div style="display:flex;align-items:flex-end">
+                <button class="btn btn-laranja btn-block" onclick="realizarSorteio()" style="height:36px">🎲 Realizar Sorteio</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="seção-título">🏆 Histórico de Sorteios</div>
+          <div style="max-height:400px;overflow-y:auto;border:1px solid #e0e0e0;border-radius:8px">
+            <table style="width:100%;border-collapse:collapse">
+              <thead style="background:#f5f5f5;position:sticky;top:0">
+                <tr>
+                  <th style="padding:8px;text-align:left;font-size:.8rem;border-bottom:2px solid #ddd">Mês</th>
+                  <th style="padding:8px;text-align:left;font-size:.8rem;border-bottom:2px solid #ddd">Prêmio</th>
+                  <th style="padding:8px;text-align:left;font-size:.8rem;border-bottom:2px solid #ddd">Vencedor</th>
+                  <th style="padding:8px;text-align:left;font-size:.8rem;border-bottom:2px solid #ddd">Cupom Sorteado</th>
+                  <th style="padding:8px;text-align:center;font-size:.8rem;border-bottom:2px solid #ddd">Data Sorteio</th>
+                </tr>
+              </thead>
+              <tbody id="fid-sorteios-lista">
+                <tr><td colspan="5" style="text-align:center;padding:20px;color:#999">Nenhum sorteio realizado.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header"><h2>&#x1F3AB; Gerador de Lotes de Códigos</h2></div>
         <div class="card-body">
