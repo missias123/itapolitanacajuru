@@ -402,11 +402,19 @@ async function router(request, env) {
   }
 
   // ── Fidelidade ────────────────────────────────────────────────────────────
-  if (path === '/api/fidelidade/verificar-numero' && method === 'POST')
-    return handleVerificarNumeroCupom(request, env);
+  if (path === '/api/fidelidade/verificar-codigo' && method === 'POST')
+    return handleVerificarCodigoCupom(request);
 
+  // Compatibilidade retroativa com endpoint antigo
+  if (path === '/api/fidelidade/verificar-numero' && method === 'POST')
+    return handleVerificarCodigoCupom(request);
+
+  if (path === '/api/fidelidade/cadastrar' && method === 'POST')
+    return handleCadastrarCupomPorCodigo(request, env);
+
+  // Compatibilidade retroativa com endpoint antigo
   if (path === '/api/fidelidade/cadastrar-cupom' && method === 'POST')
-    return handleCadastrarCupom(request, env);
+    return handleCadastrarCupomPorCodigo(request, env);
 
   if (path === '/api/fidelidade/resgatar' && method === 'POST')
     return handleResgatarCodigo(request, env);
@@ -904,7 +912,7 @@ async function handleBulkPutEncomendas(request, env) {
 // HANDLERS — FIDELIDADE
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const CUPOM_REGEX = /^ITA#\d{4,6}$/;
+const CODIGO_SECRETO_REGEX = /^[A-Z0-9!@#$%^&*?+\-]{10}$/;
 
 function padCupomNumero(numeroSequencial) {
   return `ITA#${String(numeroSequencial).padStart(4, '0')}`;
@@ -955,6 +963,15 @@ function montarIndiceCupons(fid) {
   return cupons;
 }
 
+function montarIndiceCuponsPorCodigo(fid) {
+  const porNumero = montarIndiceCupons(fid);
+  const porCodigo = {};
+  Object.values(porNumero).forEach((cupom) => {
+    porCodigo[cupom.codigo_secreto] = cupom;
+  });
+  return porCodigo;
+}
+
 async function carregarFidelidadeDoGitHub() {
   const r = await fetch(`${GH_RAW}${GH_FIDELIDADE_PATH}?t=${Date.now()}`);
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -978,16 +995,16 @@ function atualizarRegistroCupomNoCodigo(fid, cupomData) {
 }
 
 /**
- * POST /api/fidelidade/verificar-numero
- * Body: { numero_cupom }
+ * POST /api/fidelidade/verificar-codigo
+ * Body: { codigo_secreto }
  */
-async function handleVerificarNumeroCupom(request) {
+async function handleVerificarCodigoCupom(request) {
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
 
-  const numeroCupom = sanitizeString(body.numero_cupom, 20).toUpperCase();
-  if (!CUPOM_REGEX.test(numeroCupom)) {
-    return jsonResp({ ok: false, encontrado: false, disponivel: false, error: 'Formato inválido. Use ITA#0000 ou superior.' }, 400);
+  const codigoSecreto = sanitizeString(body.codigo_secreto, 20).toUpperCase();
+  if (!CODIGO_SECRETO_REGEX.test(codigoSecreto)) {
+    return jsonResp({ ok: true, encontrado: false, disponivel: false });
   }
 
   let fidelidade;
@@ -997,7 +1014,7 @@ async function handleVerificarNumeroCupom(request) {
     return jsonResp({ ok: false, error: 'Não foi possível verificar cupons agora.' }, 503);
   }
 
-  const cupom = montarIndiceCupons(fidelidade)[numeroCupom];
+  const cupom = montarIndiceCuponsPorCodigo(fidelidade)[codigoSecreto];
   if (!cupom) return jsonResp({ ok: true, encontrado: false, disponivel: false });
 
   return jsonResp({
@@ -1005,17 +1022,14 @@ async function handleVerificarNumeroCupom(request) {
     encontrado: true,
     disponivel: cupom.status === 'disponivel',
     status: cupom.status,
-    lote: cupom.lote,
-    numero_cupom: cupom.numero_cupom,
-    numero_sequencial: cupom.numero_sequencial,
   });
 }
 
 /**
- * POST /api/fidelidade/cadastrar-cupom
- * Body: { clienteId, idHash, numero_cupom, numero_lote }
+ * POST /api/fidelidade/cadastrar
+ * Body: { clienteId, idHash, codigo_secreto, lote }
  */
-async function handleCadastrarCupom(request, env) {
+async function handleCadastrarCupomPorCodigo(request, env) {
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rl = await checkRateLimit(env, ip, 'resgatar');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas.' }, 429);
@@ -1025,14 +1039,14 @@ async function handleCadastrarCupom(request, env) {
 
   const clienteId = sanitizeString(body.clienteId, 30);
   const idHash = sanitizeString(body.idHash, 10).toUpperCase();
-  const numeroCupom = sanitizeString(body.numero_cupom, 20).toUpperCase();
-  const numeroLote = Number(body.numero_lote);
+  const codigoSecreto = sanitizeString(body.codigo_secreto, 20).toUpperCase();
+  const numeroLote = Number(body.lote);
 
-  if (!clienteId || !idHash || !numeroCupom || !Number.isFinite(numeroLote)) {
+  if (!clienteId || !idHash || !codigoSecreto || !Number.isFinite(numeroLote)) {
     return jsonResp({ ok: false, error: 'Dados incompletos' }, 400);
   }
-  if (!CUPOM_REGEX.test(numeroCupom) || numeroLote <= 0) {
-    return jsonResp({ ok: false, error: 'Dados de cupom inválidos' }, 400);
+  if (!CODIGO_SECRETO_REGEX.test(codigoSecreto) || numeroLote <= 0) {
+    return jsonResp({ ok: false, tipo: 'dados_invalidos', mensagem: '❌ Código ou número de lote incorreto.' }, 422);
   }
 
   const cliente = await env.CLIENTES_KV.get(`cliente:${clienteId}`, 'json');
@@ -1047,16 +1061,16 @@ async function handleCadastrarCupom(request, env) {
     return jsonResp({ ok: false, tipo: 'erro_servidor', error: 'Não foi possível validar cupom agora. Tente em instantes.' }, 503);
   }
 
-  const cupons = montarIndiceCupons(fidelidade);
-  const cupom = cupons[numeroCupom];
+  const cupons = montarIndiceCuponsPorCodigo(fidelidade);
+  const cupom = cupons[codigoSecreto];
   if (!cupom) {
-    return jsonResp({ ok: false, tipo: 'cupom_nao_encontrado', error: 'Número de cupom não encontrado' }, 404);
+    return jsonResp({ ok: false, sucesso: false, tipo: 'cupom_nao_encontrado', mensagem: '❌ Código ou número de lote incorreto.' }, 422);
   }
   if (cupom.lote !== Math.floor(numeroLote)) {
-    return jsonResp({ ok: false, tipo: 'lote_incorreto', error: 'Número do lote incorreto. Verifique seu cupom físico.' }, 400);
+    return jsonResp({ ok: false, sucesso: false, tipo: 'lote_incorreto', mensagem: '❌ Código ou número de lote incorreto.' }, 422);
   }
   if (cupom.status !== 'disponivel') {
-    return jsonResp({ ok: false, tipo: 'ja_cadastrado', error: 'Este cupom já foi cadastrado anteriormente' }, 409);
+    return jsonResp({ ok: false, sucesso: false, tipo: 'ja_cadastrado', mensagem: '⚠️ Este cupom já foi utilizado' }, 409);
   }
 
   const agora = new Date().toISOString();
@@ -1086,8 +1100,9 @@ async function handleCadastrarCupom(request, env) {
 
   return jsonResp({
     ok: true,
-    message: `🎉 Cupom ${cupom.numero_cupom} do Lote ${cupom.lote} cadastrado com sucesso!`,
-    numero_cupom: cupom.numero_cupom,
+    sucesso: true,
+    mensagem: '🎉 Cupom cadastrado com sucesso!',
+    referencia: cupom.numero_cupom,
     lote: cupom.lote,
     codigo_secreto: cupom.codigo_secreto,
   });

@@ -6,9 +6,9 @@
   // Clientes e autenticação passam pelo Worker seguro
   var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
   var WPP_NUM = '5516996062046';
-  var META_10 = 10;
+  var META_10 = 15;
   var META_30 = 30;
-  var CUPOM_REGEX = /^ITA#\d{4,6}$/;
+  var REGEX_CODIGO = /^[A-Z0-9!@#$%^&*?+\-]{10}$/;
   // DDD com 2 dígitos válidos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
   var BRAZILIAN_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
 
@@ -44,9 +44,9 @@
   var painelPontos = document.getElementById('painel-pontos');
   var painelResgate = document.getElementById('painel-resgate');
   var formCodigoWrap = document.getElementById('form-codigo-wrap');
-  var inputNumeroCupom = document.getElementById('numero_cupom');
+  var inputCodigoSecreto = document.getElementById('codigo_secreto');
   var blocoLote = document.getElementById('bloco-lote');
-  var inputNumeroLote = document.getElementById('numero_lote');
+  var inputLoteCupom = document.getElementById('lote_cupom');
   var msgStatusCupom = document.getElementById('msg-status');
   var btnRegistrar = document.getElementById('btn-registrar-ponto');
   var btnWppResgatar = document.getElementById('btn-wpp-resgatar-consulta');
@@ -207,25 +207,25 @@
   }
 
 
-  /** Verifica número ITA#0000 e disponibilidade para cadastro */
-  function verificarNumeroCupomWorker(numeroCupom) {
-    return fetch(ITAP_WORKER_API + '/api/fidelidade/verificar-numero', {
+  /** Verifica código secreto e disponibilidade para cadastro */
+  function verificarCodigoCupomWorker(codigoSecreto) {
+    return fetch(ITAP_WORKER_API + '/api/fidelidade/verificar-codigo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ numero_cupom: numeroCupom })
+      body: JSON.stringify({ codigo_secreto: codigoSecreto })
     }).then(function(r) { return r.json(); });
   }
 
-  /** Cadastra cupom por número+lote para cliente autenticado */
-  function cadastrarCupomWorker(clienteId, idHash, numeroCupom, numeroLote) {
-    return fetch(ITAP_WORKER_API + '/api/fidelidade/cadastrar-cupom', {
+  /** Cadastra cupom por codigo_secreto+lote para cliente autenticado */
+  function cadastrarCupomWorker(clienteId, idHash, codigoSecreto, lote) {
+    return fetch(ITAP_WORKER_API + '/api/fidelidade/cadastrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clienteId: clienteId,
         idHash: idHash,
-        numero_cupom: numeroCupom,
-        numero_lote: numeroLote
+        codigo_secreto: codigoSecreto,
+        lote: lote
       })
     }).then(function(r) { return r.json(); });
   }
@@ -262,10 +262,10 @@
       html += '<div class="resgate-btns">';
 
       var msgMilk = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +
-        'Gostaria de resgatar 10 pontos do programa de fidelidade Itapolitana e ganhar um Milk Shake de 300 ml.\n' +
+        'Gostaria de resgatar 15 pontos do programa de fidelidade Itapolitana e ganhar um Milk Shake de 300 ml.\n' +
         'Posso agendar para retirar em [DIA] às [HORA]?';
       html += '<a class="btn btn-wpp btn-block" href="' + wppLink(msgMilk) + '" target="_blank" rel="noopener" style="display:block;">' +
-        'Resgatar 10 pontos – Milk Shake 300 ml</a>';
+        'Resgatar 15 pontos – Milk Shake 300 ml</a>';
 
       if (pts >= META_30) {
         var msgCaixa = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +
@@ -362,9 +362,9 @@
     });
   }
 
-  if (inputNumeroCupom) {
-    inputNumeroCupom.addEventListener('input', function() {
-      inputNumeroCupom.value = inputNumeroCupom.value.toUpperCase();
+  if (inputCodigoSecreto) {
+    inputCodigoSecreto.addEventListener('input', function() {
+      inputCodigoSecreto.value = inputCodigoSecreto.value.toUpperCase();
     });
   }
 
@@ -529,74 +529,78 @@
     _cupomVerificadoAtual = null;
     if (blocoLote) {
       blocoLote.style.display = 'none';
-      blocoLote.style.opacity = '0';
     }
     if (msgStatusCupom) {
       msgStatusCupom.textContent = '';
       msgStatusCupom.style.color = '';
     }
-    if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '';
-    if (inputNumeroLote) inputNumeroLote.value = '';
+    if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '';
+    if (inputLoteCupom) inputLoteCupom.value = '';
   }
 
-  if (inputNumeroCupom) {
-    inputNumeroCupom.addEventListener('input', debounce(function() {
+  if (inputCodigoSecreto) {
+    inputCodigoSecreto.addEventListener('input', debounce(function() {
       var valor = (this.value || '').trim().toUpperCase();
       this.value = valor;
       limparEstadoCupomNumero();
-      if (!CUPOM_REGEX.test(valor)) return;
+      if (!REGEX_CODIGO.test(valor)) {
+        if (valor.length >= 10 && msgStatusCupom) {
+          this.style.borderColor = '#dc3545';
+          msgStatusCupom.textContent = '❌ Código não encontrado';
+          msgStatusCupom.style.color = '#dc3545';
+        }
+        return;
+      }
       if (msgStatusCupom) {
-        msgStatusCupom.textContent = '⏳ Verificando número do cupom...';
+        msgStatusCupom.textContent = '⏳ Verificando código do cupom...';
         msgStatusCupom.style.color = '#333';
       }
-      verificarNumeroCupomWorker(valor)
+      verificarCodigoCupomWorker(valor)
         .then(function(data) {
           if (!data || data.ok === false) {
-            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
+            if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#dc3545';
             if (msgStatusCupom) {
-              msgStatusCupom.textContent = '❌ Número de cupom não encontrado';
+              msgStatusCupom.textContent = '❌ Código não encontrado';
               msgStatusCupom.style.color = '#dc3545';
             }
             return;
           }
           if (data.encontrado && data.disponivel) {
             _cupomVerificadoAtual = {
-              numero_cupom: valor,
-              numero_sequencial: data.numero_sequencial,
-              lote: data.lote
+              codigo_secreto: valor
             };
-            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#28a745';
+            if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#28a745';
             if (msgStatusCupom) {
               msgStatusCupom.textContent = '✅ Cupom encontrado! Informe o número do lote:';
               msgStatusCupom.style.color = '#28a745';
             }
             if (blocoLote) {
               blocoLote.style.display = 'block';
-              setTimeout(function() { blocoLote.style.opacity = '1'; }, 10);
+              blocoLote.style.animation = 'fadeIn 0.3s ease';
             }
-            if (inputNumeroLote) inputNumeroLote.focus();
+            if (inputLoteCupom) inputLoteCupom.focus();
           } else if (data.encontrado && !data.disponivel) {
-            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#ffc107';
+            if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#ffc107';
             if (msgStatusCupom) {
-              msgStatusCupom.textContent = '⚠️ Este cupom já foi cadastrado anteriormente';
+              msgStatusCupom.textContent = '⚠️ Este cupom já foi utilizado';
               msgStatusCupom.style.color = '#856404';
             }
           } else {
-            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
+            if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#dc3545';
             if (msgStatusCupom) {
-              msgStatusCupom.textContent = '❌ Número de cupom não encontrado';
+              msgStatusCupom.textContent = '❌ Código não encontrado';
               msgStatusCupom.style.color = '#dc3545';
             }
           }
         })
         .catch(function() {
-          if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
+          if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#dc3545';
           if (msgStatusCupom) {
-            msgStatusCupom.textContent = '⚠️ Não foi possível verificar o cupom agora. Tente novamente.';
+            msgStatusCupom.textContent = '⚠️ Não foi possível verificar o código agora. Tente novamente.';
             msgStatusCupom.style.color = '#dc3545';
           }
         });
-    }, 700));
+    }, 600));
   }
 
   if (btnRegistrar) {
@@ -607,18 +611,18 @@
         return;
       }
 
-      var numeroCupom = (inputNumeroCupom && inputNumeroCupom.value ? inputNumeroCupom.value : '').trim().toUpperCase();
-      var numeroLote = Number(inputNumeroLote && inputNumeroLote.value ? inputNumeroLote.value : 0);
-      if (!numeroCupom) {
-        setResultadoCodigo('Digite o número do cupom no formato ITA#0000.', 'erro');
+      var codigoSecreto = (inputCodigoSecreto && inputCodigoSecreto.value ? inputCodigoSecreto.value : '').trim().toUpperCase();
+      var numeroLote = Number(inputLoteCupom && inputLoteCupom.value ? inputLoteCupom.value : 0);
+      if (!codigoSecreto) {
+        setResultadoCodigo('Digite o código secreto do cupom.', 'erro');
         return;
       }
-      if (!CUPOM_REGEX.test(numeroCupom)) {
-        setResultadoCodigo('Formato inválido. Use ITA#0000.', 'erro');
+      if (!REGEX_CODIGO.test(codigoSecreto)) {
+        setResultadoCodigo('Código inválido.', 'erro');
         return;
       }
-      if (!_cupomVerificadoAtual || _cupomVerificadoAtual.numero_cupom !== numeroCupom) {
-        setResultadoCodigo('Verifique o número do cupom antes de cadastrar.', 'erro');
+      if (!_cupomVerificadoAtual || _cupomVerificadoAtual.codigo_secreto !== codigoSecreto) {
+        setResultadoCodigo('Verifique o código do cupom antes de cadastrar.', 'erro');
         return;
       }
       if (!Number.isFinite(numeroLote) || numeroLote <= 0) {
@@ -648,15 +652,15 @@
 
       setResultadoCodigo('⏳ Validando cupom e lote...', 'aviso');
 
-      cadastrarCupomWorker(clienteId, idHash, numeroCupom, numeroLote)
+      cadastrarCupomWorker(clienteId, idHash, codigoSecreto, numeroLote)
         .then(function(res) {
           if (!res || !res.ok) {
             if (res && res.tipo === 'lote_incorreto') {
-              setResultadoCodigo('❌ Número do lote incorreto. Verifique seu cupom físico.', 'erro');
+              setResultadoCodigo('❌ Código ou número de lote incorreto.', 'erro');
             } else if (res && res.tipo === 'ja_cadastrado') {
-              setResultadoCodigo('⚠️ Este cupom já foi cadastrado anteriormente.', 'aviso');
+              setResultadoCodigo('⚠️ Este cupom já foi utilizado.', 'aviso');
             } else if (res && res.tipo === 'cupom_nao_encontrado') {
-              setResultadoCodigo('❌ Número de cupom não encontrado.', 'erro');
+              setResultadoCodigo('❌ Código não encontrado.', 'erro');
             } else if (res && res.tipo === 'bloqueado') {
               setResultadoCodigo('⚠️ Conta bloqueada. Fale conosco para regularizar.', 'erro');
             } else {
@@ -665,16 +669,15 @@
             return;
           }
 
-          setResultadoCodigo(res.message || ('🎉 Cupom ' + numeroCupom + ' cadastrado com sucesso!'), 'ok');
-          if (inputNumeroLote) inputNumeroLote.value = '';
+          setResultadoCodigo(res.mensagem || res.message || '🎉 Cupom cadastrado com sucesso!', 'ok');
+          if (inputLoteCupom) inputLoteCupom.value = '';
           _cupomVerificadoAtual = null;
           if (blocoLote) {
             blocoLote.style.display = 'none';
-            blocoLote.style.opacity = '0';
           }
-          if (inputNumeroCupom) {
-            inputNumeroCupom.value = '';
-            inputNumeroCupom.style.borderColor = '';
+          if (inputCodigoSecreto) {
+            inputCodigoSecreto.value = '';
+            inputCodigoSecreto.style.borderColor = '';
           }
           if (msgStatusCupom) {
             msgStatusCupom.textContent = '';
