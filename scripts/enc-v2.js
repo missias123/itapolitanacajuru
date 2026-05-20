@@ -1392,7 +1392,7 @@ function showToast(msg, tipo='sucesso') {
   t.className = `toast ativo ${tipo}`;
   setTimeout(()=>t.classList.remove('ativo'), 3200);
 }
-function toggleSeção(id) {
+function toggleSecao(id) {
   const el = document.getElementById(id);
   if (!el) return;
   const jaAberto = el.classList.contains('aberto');
@@ -1433,6 +1433,7 @@ function toggleSeção(id) {
     }, 50);
   }
 }
+window.toggleSecao = toggleSecao;
 
 
 // ---- ACRÉSCIMOS (sincronizado com admin - itap_acréscimos) ----
