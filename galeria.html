@@ -227,8 +227,21 @@
 (function() {
   'use strict';
 
-  fetch('/dados/config.json')
-    .then(function(r) { return r.json(); })
+  function obterConfig() {
+    var tentativas = ['/dados/config.json', 'dados/config.json', './dados/config.json'];
+    return tentativas.reduce(function(promise, url) {
+      return promise.catch(function() {
+        return fetch(url, { cache: 'no-store' }).then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status + ' em ' + url);
+          return r.json();
+        });
+      });
+    }, Promise.reject()).catch(function(err) {
+      throw (err || new Error('Falha ao carregar config.json'));
+    });
+  }
+
+  obterConfig()
     .then(function(cfg) {
       // SEO
       var titleEl = document.querySelector('title[data-config="seoPaginas.galeria.titulo"]');
@@ -279,7 +292,7 @@
       }
     })
     .catch(function(err) {
-      console.error('[Galeria] Erro ao carregar config.json:', err);
+      console.warn('[Galeria] Falha ao carregar config.json; mantendo estado padrão da página.', err);
     });
 })();
 </script>
