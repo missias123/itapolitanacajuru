@@ -1954,7 +1954,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function obterConfig() {
     var tentativas = ['/dados/config.json', 'dados/config.json', './dados/config.json'];
-    var ultimoErro = null;
     return tentativas.reduce(function(promise, url) {
       return promise.catch(function() {
         return fetch(url, { cache: 'no-store' }).then(function(r) {
@@ -1963,8 +1962,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       });
     }, Promise.reject()).catch(function(err) {
-      ultimoErro = err;
-      throw (ultimoErro || new Error('Falha ao carregar config.json'));
+      throw (err || new Error('Falha ao carregar config.json'));
     });
   }
 
