@@ -9522,6 +9522,8 @@ function executarAuditoria(){
   const clientes=clientesCarregados?STATE.clientes.clientes:{};
   const fidelidade=STATE.fidelidade||{};
   const encomendas=STATE.encomendas?.registros||[];
+  const cfg=STATE.config||null;
+  const textoPreenchido=v=>String(v??'').trim().length>0;
   // ── 1. Clientes com pontos negativos (não deveria ser possível)
   if(!filtroMod||filtroMod==='clientes'){
     Object.entries(clientes).forEach(([id,c])=>{
@@ -9574,6 +9576,92 @@ function executarAuditoria(){
         }
       }
     });
+  }
+  // ── 7. Editabilidade (Sobre / Galeria / Encomendas / Rastreio / Auditoria)
+  if(!filtroMod){
+    if(!cfg){
+      _auditoriaResultados.push({
+        modulo:'fidelidade',
+        severidade:'critica',
+        tipo:'config_nao_carregada',
+        titulo:'Configuração não carregada no Admin',
+        descricao:'dados/config.json não foi carregado; campos de Sobre/Galeria/Encomendas podem aparecer vazios.',
+        admin:'STATE.config vazio',
+        site:'indefinido',
+        id:'config'
+      });
+    }else{
+      const sp=cfg.sobrePagina||{};
+      const gp=cfg.galeriaPagina||{};
+      const ep=cfg.encomendasPagina||{};
+      const no=cfg.notasOperacionais||{};
+      const imgs=Array.isArray(gp.imagens)?gp.imagens:[];
+      const heroBadges=Array.isArray(ep.heroBadges)?ep.heroBadges:[];
+
+      if(!textoPreenchido(sp.quemSomosTexto1)&&!textoPreenchido(sp.historiaTexto1)&&!textoPreenchido(sp.fazemosTexto)){
+        _auditoriaResultados.push({
+          modulo:'encomendas',
+          severidade:'alta',
+          tipo:'sobre_vazio',
+          titulo:'Seção Sobre com conteúdo insuficiente',
+          descricao:'Campos principais da página Sobre estão vazios no config (quemSomos/história/o que fazemos).',
+          admin:'sobrePagina',
+          site:'pode aparecer vazio',
+          id:'sobrePagina'
+        });
+      }
+
+      if(!textoPreenchido(gp.h1)||!textoPreenchido(gp.descricao)||imgs.length===0){
+        _auditoriaResultados.push({
+          modulo:'encomendas',
+          severidade:'alta',
+          tipo:'galeria_incompleta',
+          titulo:'Galeria sem conteúdo completo',
+          descricao:`Valide galeriaPagina.h1, galeriaPagina.descricao e imagens (atual: ${imgs.length}).`,
+          admin:'galeriaPagina',
+          site:'galeria incompleta',
+          id:'galeriaPagina'
+        });
+      }
+
+      if(!textoPreenchido(ep.heroTitulo)||!textoPreenchido(ep.heroDescricao)||heroBadges.length===0){
+        _auditoriaResultados.push({
+          modulo:'encomendas',
+          severidade:'alta',
+          tipo:'encomendas_pagina_incompleta',
+          titulo:'Página de Encomendas com conteúdo insuficiente',
+          descricao:`Valide encomendasPagina.heroTitulo, heroDescricao e heroBadges (atual: ${heroBadges.length}).`,
+          admin:'encomendasPagina',
+          site:'hero incompleto',
+          id:'encomendasPagina'
+        });
+      }
+
+      if(!textoPreenchido(no.rastreio)){
+        _auditoriaResultados.push({
+          modulo:'encomendas',
+          severidade:'baixa',
+          tipo:'rastreio_observacoes_vazio',
+          titulo:'Rastreio sem observações internas',
+          descricao:'Campo "rastreio-observacoes" está vazio em notasOperacionais.rastreio.',
+          admin:'notasOperacionais.rastreio vazio',
+          site:'n/a',
+          id:'rastreio'
+        });
+      }
+      if(!textoPreenchido(no.auditoria)){
+        _auditoriaResultados.push({
+          modulo:'encomendas',
+          severidade:'baixa',
+          tipo:'auditoria_observacoes_vazio',
+          titulo:'Auditoria sem observações internas',
+          descricao:'Campo "auditoria-observacoes" está vazio em notasOperacionais.auditoria.',
+          admin:'notasOperacionais.auditoria vazio',
+          site:'n/a',
+          id:'auditoria'
+        });
+      }
+    }
   }
   renderAuditoria();
 }
