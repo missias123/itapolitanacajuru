@@ -716,11 +716,13 @@ function enviarParaManus() {
 // Função para limpar cache de métricas antigas
 function resetarMetricas() {
   try {
+    localStorage.removeItem('itap_quality_guard');
+    localStorage.removeItem('itap_recent_pages');
     // Limpar todas as chaves relacionadas a métricas
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && (k.includes('vitals') || k.includes('cls') || k.includes('lcp') || k.includes('qualidade') || k.includes('memoria') || k.includes('erros') || k.includes('recursos'))) {
+      if (k && (k.includes('vitals') || k.includes('cls') || k.includes('lcp') || k.includes('qualidade') || k.includes('quality_guard') || k.includes('memoria') || k.includes('erros') || k.includes('recursos'))) {
         keysToRemove.push(k);
       }
     }

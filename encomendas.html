@@ -1521,7 +1521,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <div class="container">
 <div class="categoria cat-caixas" id="caixas">
-<div class="categoria-header" onclick="toggleSeção('conteudo-caixas')">
+<div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🍦</span>
 <div class="categoria-info">
@@ -1537,7 +1537,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <div class="categoria cat-tortas" id="tortas">
-<div class="categoria-header" onclick="toggleSeção('conteudo-tortas')">
+<div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🎂</span>
 <div class="categoria-info">
@@ -1553,7 +1553,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <div class="categoria cat-picolés" id="picolés">
-<div class="categoria-header" onclick="toggleSeção('conteudo-picolés')">
+<div class="categoria-header" onclick="toggleSecao('conteudo-picolés')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🍭</span>
 <div class="categoria-info">
@@ -1577,7 +1577,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <div class="categoria cat-acréscimos" id="acréscimos">
-<div class="categoria-header" onclick="toggleSeção('conteudo-acréscimos')">
+<div class="categoria-header" onclick="toggleSecao('conteudo-acréscimos')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🍪</span>
 <div class="categoria-info">
@@ -1997,10 +1997,11 @@ document.addEventListener('DOMContentLoaded', function () {
 })();
 
 // Função para expandir/colapsar categorias de produtos
-function toggleSeção(id) {
+function toggleSecao(id) {
   var conteudo = document.getElementById(id);
+  if (!conteudo) return;
   var header = conteudo.previousElementSibling;
-  var icon = header.querySelector('.toggle-icon');
+  var icon = header ? header.querySelector('.toggle-icon') : null;
 
   if (conteudo.style.display === 'none') {
     conteudo.style.display = 'block';
@@ -2010,6 +2011,8 @@ function toggleSeção(id) {
     if (icon) icon.textContent = '▶';
   }
 }
+window.toggleSecao = toggleSecao;
+window['toggleSeção'] = toggleSecao;
 </script>
 </body>
 </html>

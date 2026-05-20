@@ -320,6 +320,14 @@
   // 3. CAPTURA DE RECURSOS 404
   // ═══════════════════════════════════════════════════════
   const recursos_404 = [];
+  function deveIgnorarRecursoExterno(url) {
+    if (!url) return true;
+    return (
+      url.indexOf('googletagmanager.com/gtm.js') !== -1 ||
+      url.indexOf('googletagmanager.com/ns.html') !== -1 ||
+      url.indexOf('google-analytics.com') !== -1
+    );
+  }
   
   // Interceptar erros de carregamento de recursos
   window.addEventListener('error', function(e) {
@@ -327,6 +335,7 @@
       const tag = e.target.tagName.toLowerCase();
       const src = e.target.src || e.target.href || '';
       if (src && (tag === 'img' || tag === 'script' || tag === 'link')) {
+        if (deveIgnorarRecursoExterno(src)) return;
         const recurso = {
           tipo: '404',
           tag: tag,
