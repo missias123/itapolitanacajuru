@@ -5593,13 +5593,19 @@ function renderCódigos(){
 // Banco enumerado de fidelidade: ITA#001 LOTE1 até ITA#100.000 LOTE1000.
 const FID_TOTAL_BANCO = 100000;
 const FID_LOTE_SIZE   = 100;
-function fidFormatarCodigoSequencial(numero){
-  const n = Math.max(1, Number(numero) || 1);
-  const sufixo = n < 1000 ? String(n).padStart(3, '0') : n.toLocaleString('pt-BR');
+/**
+ * Formata o número sequencial no padrão pedido pelo negócio:
+ * ITA#001 ... ITA#999 ... ITA#1.000 ... ITA#100.000.
+ * @param {number} numeroSequencial
+ * @returns {string}
+ */
+function fidFormatarCodigoSequencial(numeroSequencial){
+  const n = Math.max(1, Number(numeroSequencial) || 1);
+  const sufixo = n.toLocaleString('pt-BR', { minimumIntegerDigits: 3, useGrouping: n >= 1000 });
   return `ITA#${sufixo}`;
 }
-function fidGerarCodigo(idx,loteNum){
-  return `${fidFormatarCodigoSequencial(idx + 1)} LOTE${loteNum}`;
+function fidGerarCodigo(codigoIndex,loteNum){
+  return `${fidFormatarCodigoSequencial(codigoIndex + 1)} LOTE${loteNum}`;
 }
 function fidMostrarAlerta(msg,tipo){
   const el=document.getElementById('fid-alerta-lote');
