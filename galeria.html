@@ -237,7 +237,8 @@
         });
       });
     }, Promise.reject()).catch(function(err) {
-      throw (err || new Error('Falha ao carregar config.json'));
+      if (err) throw err;
+      throw new Error('Falha ao carregar config.json');
     });
   }
 
