@@ -326,9 +326,8 @@
       const parsed = new URL(url, window.location.href);
       const host = parsed.hostname.toLowerCase();
       const path = parsed.pathname.toLowerCase();
-      const ehGtm = (host === 'googletagmanager.com' || host === 'www.googletagmanager.com')
-        && (path === '/gtm.js' || path === '/ns.html');
-      const ehGa = host === 'google-analytics.com' || host === 'www.google-analytics.com';
+      const ehGtm = host.endsWith('googletagmanager.com') && (path === '/gtm.js' || path === '/ns.html');
+      const ehGa = host.endsWith('google-analytics.com');
       return ehGtm || ehGa;
     } catch(e) {
       return false;
