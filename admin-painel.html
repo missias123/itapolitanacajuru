@@ -5796,14 +5796,14 @@ function fidColetarCodigosParaEtiquetas(){
 	      flex-direction:column;
 	      align-items:center;
 	      justify-content:center;
-	      padding:3mm;
+	      padding:2mm;
 	      color:#141414;
 	    }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
 	    .etq-header{
 	      font-family:Helvetica,Arial,sans-serif;
 	      font-weight:400;
-	      font-size:8pt;
+	      font-size:10pt;
 	      color:#323232;
 	      text-align:center;
 	      margin-bottom:2mm;
@@ -5811,7 +5811,7 @@ function fidColetarCodigosParaEtiquetas(){
 	    .etq-cod{
 	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 	      font-weight:900;
-	      font-size:18pt;
+	      font-size:22pt;
 	      letter-spacing:.4pt;
 	      text-align:center;
 	      width:100%;
@@ -5827,7 +5827,7 @@ function fidColetarCodigosParaEtiquetas(){
     .etq-footer-1{
       font-family:Helvetica,Arial,sans-serif;
       font-weight:400;
-      font-size:7pt;
+      font-size:9pt;
       color:#323232;
       text-align:center;
       margin-top:1mm;
@@ -5835,7 +5835,7 @@ function fidColetarCodigosParaEtiquetas(){
     .etq-footer-2{
       font-family:Helvetica,Arial,sans-serif;
       font-weight:700;
-      font-size:7.5pt;
+      font-size:9.5pt;
       color:#000;
       text-align:center;
       margin-top:0.5mm;
@@ -5908,8 +5908,9 @@ function fidColetarCodigosParaEtiquetas(){
   }
 
   const desenharBordas = true;
-  const paddingX = 6;
-  const paddingY = 6;
+  // Padding otimizado: 2mm conforme especificação para máximo aproveitamento de espaço
+  const paddingX = 2;
+  const paddingY = 2;
 
   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
   for(let i = 0; i < totalSlots; i++){
@@ -5930,51 +5931,56 @@ function fidColetarCodigosParaEtiquetas(){
     const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
     if(!codigo) continue;
 
-    // Conteúdo multi-linha da etiqueta:
-    // Linha 1: "Programa de Fidelidade"
-    // Linha 2: [CÓDIGO GRANDE NEGRITADO]
-    // Linha 3: "Cadastre no Site"
-    // Linha 4: "ITAPOLITANACAJURU.COM.BR"
+    // ═══════════════════════════════════════════════════════════════
+    // CONTEÚDO OTIMIZADO DA ETIQUETA (10/A4 · 92,5×51,4 mm)
+    // ───────────────────────────────────────────────────────────────
+    // Área útil: 88.5 × 47.4 mm (padding 2mm em cada lado)
+    // Linha 1: "Programa de Fidelidade" (10pt, otimizado)
+    // Linha 2: [CÓDIGO GRANDE NEGRITADO] (28pt máx, dinâmico)
+    // Linha 3: "Cadastre no Site" (9pt, otimizado)
+    // Linha 4: "ITAPOLITANACAJURU.COM.BR" (9.5pt negrito, otimizado)
+    // ═══════════════════════════════════════════════════════════════
 
     const centerX = x + (ETQ_W / 2);
-    const topY = y + paddingY;
+    const usableHeight = ETQ_H - (2 * paddingY); // 47.4 mm
 
-    // Linha 1: "Programa de Fidelidade"
+    // Linha 1: "Programa de Fidelidade" (topo)
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(10); // Otimizado: 8pt → 10pt
     doc.setTextColor(50, 50, 50);
-    doc.text('Programa de Fidelidade', centerX, topY + 3, { align: 'center' });
+    const line1Y = y + paddingY + 4;
+    doc.text('Programa de Fidelidade', centerX, line1Y, { align: 'center' });
 
-    // Linha 2: Código (grande e negritado)
+    // Linha 2: Código (grande, negrito, centralizado verticalmente)
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
-    const maxTextW = ETQ_W - (paddingX * 2);
-    const baseFont = 24;
-    const minFont = 12;
+    const maxTextW = ETQ_W - (paddingX * 2); // 88.5 mm
+    const baseFont = 28; // Otimizado: 24pt → 28pt
+    const minFont = 14;  // Otimizado: 12pt → 14pt
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    const codeY = y + (ETQ_H / 2);
+    const codeY = y + (ETQ_H / 2) + 1; // Ligeiramente abaixo do centro para equilíbrio visual
     doc.text(codigo, centerX, codeY, { align: 'center', baseline: 'middle' });
 
     // Linha 3: "Cadastre no Site"
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
+    doc.setFontSize(9); // Otimizado: 7pt → 9pt
     doc.setTextColor(50, 50, 50);
     const bottomY = y + ETQ_H - paddingY;
-    doc.text('Cadastre no Site', centerX, bottomY - 7, { align: 'center' });
+    doc.text('Cadastre no Site', centerX, bottomY - 8, { align: 'center' });
 
-    // Linha 4: "ITAPOLITANACAJURU.COM.BR"
+    // Linha 4: "ITAPOLITANACAJURU.COM.BR" (negrito para destaque)
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
+    doc.setFontSize(9.5); // Otimizado: 7.5pt → 9.5pt
     doc.setTextColor(0, 0, 0);
     doc.text('ITAPOLITANACAJURU.COM.BR', centerX, bottomY - 2, { align: 'center' });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-  const filename = `etiquetas-fidelidade-99_1x38_1${loteTag}-${origem}-${hoje}.pdf`;
+  const filename = `etiquetas-fidelidade-92_5x51_4${loteTag}-${origem}-${hoje}.pdf`;
   doc.save(filename);
-  toast('PDF de etiquetas gerado com sucesso.','ok');
+  toast('PDF de etiquetas (10/A4 · 92,5×51,4 mm) gerado com sucesso.','ok');
 }
 function gerarPDFLote(){
   const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
