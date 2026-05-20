@@ -581,20 +581,85 @@
   <main>
     <section class="card hero" id="secao-cabecalho-fid" aria-labelledby="fid-hero-titulo">
       <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="hero-logo" loading="eager" width="80" height="80">
-      <h1 id="fid-hero-titulo" data-config="fidHeroTitulo">Clube de Fidelidade Itapolitana</h1>
-      <p id="fid-hero-desc" data-config="fidHeroDesc">Junte pontos a cada compra e troque por Milk Shake e sorvete em caixa.<br>Um fluxo simples para cadastrar, consultar pontos e registrar códigos de cupom.</p>
-    </section>
-
-    <section class="card" id="secao-como-funciona-fid" aria-labelledby="titulo-como-funciona-fid">
-      <h2 id="titulo-como-funciona-fid" data-config="fidelidadePagina.comoFuncionaTitulo" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Como funciona</h2>
-      <div class="itap-flow-list" style="margin-top:8px;" data-config-collection="fidelidadeComoFunciona" data-item-layout="flow-step" data-item-class="itap-flow-step">
-        <div class="itap-flow-step"><span class="itap-flow-step__num">1</span><p>Faça seu cadastro com nome, nascimento e WhatsApp.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">2</span><p>A cada compra, peça seu código e registre aqui.</p></div>
-        <div class="itap-flow-step"><span class="itap-flow-step__num">3</span><p>Junte pontos e troque por prêmios.</p></div>
+      <h1 id="fid-hero-titulo" data-config="fidHeroTitulo">Sua Fidelidade Vale Muito na Itapolitana Cajuru!</h1>
+      <p id="fid-hero-desc" data-config="fidHeroDesc">Acumule pontos a cada compra, troque por prêmios e concorra a sorteios mensais!<br>A cada R$10,00 em compras, você ganha 0,5 ponto.</p>
+      <div class="itap-food-hero__actions" style="margin-top:18px;">
+        <button type="button" class="itap-food-hero__action itap-food-hero__action--primary btn-fidelidade-cadastro" onclick="document.getElementById('secao-cadastro-cupom-fid').scrollIntoView({behavior:'smooth'})">Cadastre seu Cupom Agora!</button>
+        <button type="button" class="itap-food-hero__action itap-food-hero__action--ghost" onclick="document.getElementById('secao-como-funciona-fid').scrollIntoView({behavior:'smooth'})">Ver Regras</button>
       </div>
     </section>
 
-    <section class="card" id="secao-acoes-fid" aria-label="Ações principais do clube">
+    <section class="card" id="secao-como-funciona-fid" aria-labelledby="titulo-como-funciona-fid">
+      <h2 id="titulo-como-funciona-fid" data-config="fidelidadePagina.comoFuncionaTitulo" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">É Fácil Participar e Ganhar!</h2>
+      <div class="itap-flow-list" style="margin-top:8px;" data-config-collection="fidelidadeComoFunciona" data-item-layout="flow-step" data-item-class="itap-flow-step">
+        <div class="itap-flow-step">
+          <span class="itap-flow-step__num">1</span>
+          <div>
+            <p style="font-weight:700;margin-bottom:4px;">Compre</p>
+            <p style="font-size:.9rem;">Faça suas compras em qualquer unidade da Itapolitana Cajuru.</p>
+          </div>
+        </div>
+        <div class="itap-flow-step">
+          <span class="itap-flow-step__num">2</span>
+          <div>
+            <p style="font-weight:700;margin-bottom:4px;">Ganhe Pontos</p>
+            <p style="font-size:.9rem;">A cada R$10,00 em compras, você ganha 0,5 ponto.<br><strong>Exemplo:</strong> Comprando R$30,00, você ganha 1,5 ponto.</p>
+          </div>
+        </div>
+        <div class="itap-flow-step">
+          <span class="itap-flow-step__num">3</span>
+          <div>
+            <p style="font-weight:700;margin-bottom:4px;">Receba um Cupom</p>
+            <p style="font-size:.9rem;">Para cada compra, você receberá um cupom físico com um código único.</p>
+          </div>
+        </div>
+        <div class="itap-flow-step">
+          <span class="itap-flow-step__num">4</span>
+          <div>
+            <p style="font-weight:700;margin-bottom:4px;">Cadastre no Site</p>
+            <p style="font-size:.9rem;">Acesse esta página e utilize o formulário abaixo para cadastrar o código do seu cupom.</p>
+          </div>
+        </div>
+        <div class="itap-flow-step">
+          <span class="itap-flow-step__num">5</span>
+          <div>
+            <p style="font-weight:700;margin-bottom:4px;">Acumule e Concorra</p>
+            <p style="font-size:.9rem;">Seus pontos serão somados automaticamente ao seu CPF. Cada cupom cadastrado também te dá uma chance em nossos sorteios mensais!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="secao-cadastro-cupom-fid" aria-labelledby="titulo-cadastro-cupom-fid">
+      <h2 id="titulo-cadastro-cupom-fid" style="font-size:1.2rem;color:#1b5e20;margin-bottom:12px;">Ative seu Cupom e Comece a Pontuar!</h2>
+      <p style="margin-bottom:14px;font-size:.95rem;color:#555;">Cadastre o código do seu cupom e informe seu CPF para acumular pontos e participar dos sorteios mensais.</p>
+
+      <div class="form-row" style="margin-bottom:10px;">
+        <label for="fid-cupom-codigo">Código do Cupom</label>
+        <input id="fid-cupom-codigo" type="text" maxlength="20" placeholder="Digite o código do cupom" style="text-transform:uppercase;" autocomplete="off" required>
+        <small class="form-text text-muted">Digite o código exatamente como aparece no seu cupom físico.</small>
+      </div>
+
+      <div class="form-row" style="margin-bottom:10px;">
+        <label for="fid-cupom-cpf">Seu CPF</label>
+        <input id="fid-cupom-cpf" type="text" maxlength="14" placeholder="XXX.XXX.XXX-XX" inputmode="numeric" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" required>
+        <small class="form-text text-muted">Informe seu CPF para identificação e acúmulo de pontos.</small>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-cadastrar-cupom" style="margin-top:14px;">Cadastrar Cupom</button>
+
+      <div class="resultado" id="fid-cupom-feedback" style="margin-top:14px;display:none;" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card" id="secao-meus-pontos-sorteios-fid" aria-labelledby="titulo-meus-pontos-sorteios-fid">
+      <h2 id="titulo-meus-pontos-sorteios-fid" style="font-size:1.2rem;color:#C62828;margin-bottom:8px;">Consulte Seus Pontos e Sorteios</h2>
+      <p style="font-size:.95rem;color:#666;">Em breve, você poderá consultar seu saldo de pontos, histórico de cupons e os resultados dos sorteios mensais diretamente por aqui!</p>
+      <p style="margin-top:10px;font-size:.9rem;">
+        <a href="https://wa.me/5516996062046?text=Olá! Gostaria de consultar meus pontos do programa de fidelidade." target="_blank" rel="noopener" class="btn btn-wpp" style="display:inline-block;">💬 Consultar via WhatsApp</a>
+      </p>
+    </section>
+
+    <section class="card" id="secao-acoes-fid" aria-label="Ações principais do clube" style="display:none;">
       <h2 data-config="fidelidadePagina.acaoTitulo" style="font-size:1.2rem;color:#C62828;margin:0 0 10px;">Quero participar do Clube de Fidelidade</h2>
       <div class="itap-food-hero__actions" style="margin-top:14px;">
         <button type="button" data-config="fidelidadePagina.btnCadastro" class="itap-food-hero__action itap-food-hero__action--primary" id="btn-mostrar-cadastro-fid">Quero participar do Clube de Fidelidade</button>
@@ -606,10 +671,11 @@
       <h2 id="titulo-cadastro-fid" data-config="fidelidadePagina.regrasTitulo" style="font-size:1.2rem;color:#1b5e20;margin-bottom:8px;">Regras do Clube de Fidelidade</h2>
       <div id="cadastro-etapa-regras-fid">
         <ul style="margin:0 0 10px 18px;" data-config-collection="fidelidadeRegrasResumo" data-item-tag="li">
-          <li>Cadastre-se com dados reais e atualizados.</li>
-          <li>Cada código válido de cupom soma 1 ponto.</li>
+          <li>Cadastre seu CPF e código de cupom após cada compra.</li>
+          <li>A cada R$10,00 em compras, você ganha 0,5 ponto automaticamente.</li>
           <li>Com <span data-pontos-milk>10 pontos</span>: <span data-prêmio-milk>1 milk shake 300ml</span>.</li>
           <li>Com <span data-pontos-caixa>30 pontos</span>: <span data-prêmio-caixa>1 caixa de sorvete com 7 bolas</span>.</li>
+          <li>Cada cupom cadastrado te dá uma chance nos sorteios mensais!</li>
         </ul>
         <p style="margin:0 0 12px;"><a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas" data-config-href="fidelidadeRegrasUrl" target="_blank" rel="noopener">Ver regras completas</a></p>
         <button type="button" data-config="fidelidadePagina.btnAceitarRegras" class="btn btn-primary btn-block btn-aceite-pulsante" id="btn-aceitar-regras-fid">Li e aceito as regras do Clube de Fidelidade</button>
@@ -692,9 +758,10 @@
         <div class="reg-body">
           <p><strong>1. DO PROGRAMA</strong><br>1.1. O Clube de Fidelidade Itapolitana é uma ação promocional gratuita da Sorveteria Itapolitana Cajuru.<br>1.2. O programa funciona por acúmulo de pontos via códigos de cupons distribuídos na loja.</p>
           <p><strong>2. DA PARTICIPAÇÃO</strong><br>2.1. A participação exige cadastro no site oficial, com dados verdadeiros do cliente.<br>2.2. O participante deve informar um número de celular (WhatsApp) válido para identificação e contato.</p>
-          <p><strong>3. DOS CUPONS E PONTOS</strong><br>3.1. Compras acima de R$ 30,00, de segunda a sexta, geram 1 cupom com código.<br>3.2. Cada código válido inserido no site gera +1 ponto.<br>3.3. Códigos inválidos, duplicados ou já utilizados não geram pontuação.</p>
-          <p><strong>4. DOS PRÊMIOS</strong><br>4.1. Com 10 pontos: 1 Milkshake 300ml grátis.<br>4.2. Com 30 pontos: 1 Caixa com 7 bolas de sorvete grátis.<br>4.3. O resgate é pessoal e pode exigir confirmação de cadastro para retirada.</p>
-          <p><strong>5. DAS PROIBIÇÕES E FRAUDES</strong><br>5.1. É proibido usar código de terceiros sem autorização ou tentar fraude no sistema.<br>5.2. Em caso de fraude, a conta pode ser bloqueada e excluída do programa.</p>
+          <p><strong>3. DOS CUPONS E PONTOS</strong><br>3.1. A cada R$10,00 em compras, o cliente ganha 0,5 ponto no programa de fidelidade.<br>3.2. Compras acima de R$ 10,00 geram cupom com código único.<br>3.3. Cada código válido inserido no site gera +0,5 ponto por cada R$10,00 da compra.<br>3.4. Códigos inválidos, duplicados ou já utilizados não geram pontuação.<br>3.5. Os pontos são acumulados no CPF informado no momento do cadastro do cupom.</p>
+          <p><strong>4. DOS SORTEIOS MENSAIS</strong><br>4.1. Cada cupom cadastrado no mês dá direito a 1 (uma) participação no sorteio mensal.<br>4.2. O sorteio é realizado no primeiro dia útil do mês seguinte.<br>4.3. O vencedor será contatado pelo WhatsApp cadastrado.<br>4.4. Cupons já utilizados em sorteios anteriores não participam novamente.</p>
+          <p><strong>5. DOS PRÊMIOS</strong><br>5.1. Com 10 pontos: 1 Milkshake 300ml grátis.<br>5.2. Com 30 pontos: 1 Caixa com 7 bolas de sorvete grátis.<br>5.3. O resgate é pessoal e pode exigir confirmação de CPF para retirada.</p>
+          <p><strong>6. DAS PROIBIÇÕES E FRAUDES</strong><br>6.1. É proibido usar código ou CPF de terceiros sem autorização ou tentar fraude no sistema.<br>6.2. Em caso de fraude, a conta pode ser bloqueada e excluída do programa.</p>
         </div>
       </details>
     </section>
@@ -778,6 +845,106 @@
   <script src="scripts/auto-fixer.js" defer></script>
   <script src="scripts/nav-active.js" defer></script>
   <script src="scripts/ita-bot-widget.js" defer></script>
+
+  <!-- Script de cadastro de cupom com regra de 0,5 ponto por R$10 -->
+  <script>
+    (function() {
+      'use strict';
+      var btnCadastrarCupom = document.getElementById('btn-cadastrar-cupom');
+      var inputCodigo = document.getElementById('fid-cupom-codigo');
+      var inputCpf = document.getElementById('fid-cupom-cpf');
+      var feedback = document.getElementById('fid-cupom-feedback');
+
+      function mascaraCPF(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        if (v.length <= 3) return v;
+        if (v.length <= 6) return v.slice(0, 3) + '.' + v.slice(3);
+        if (v.length <= 9) return v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6);
+        return v.slice(0, 3) + '.' + v.slice(3, 6) + '.' + v.slice(6, 9) + '-' + v.slice(9);
+      }
+
+      function setFeedback(msg, tipo) {
+        if (!feedback) return;
+        feedback.textContent = msg;
+        feedback.className = 'resultado' + (tipo ? ' ' + tipo : '');
+        feedback.style.display = msg ? 'block' : 'none';
+        if (msg) feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      if (inputCpf) {
+        inputCpf.addEventListener('input', function() {
+          inputCpf.value = mascaraCPF(inputCpf.value);
+        });
+      }
+
+      if (inputCodigo) {
+        inputCodigo.addEventListener('input', function() {
+          inputCodigo.value = inputCodigo.value.toUpperCase();
+        });
+      }
+
+      if (btnCadastrarCupom) {
+        btnCadastrarCupom.addEventListener('click', function() {
+          var codigo = (inputCodigo && inputCodigo.value ? inputCodigo.value : '').trim().toUpperCase();
+          var cpf = (inputCpf && inputCpf.value ? inputCpf.value : '').replace(/\D/g, '');
+
+          if (!codigo || codigo.length < 6) {
+            setFeedback('⚠️ Digite um código de cupom válido.', 'erro');
+            return;
+          }
+
+          if (!cpf || cpf.length !== 11) {
+            setFeedback('⚠️ Informe um CPF válido com 11 dígitos.', 'erro');
+            return;
+          }
+
+          btnCadastrarCupom.disabled = true;
+          btnCadastrarCupom.textContent = 'Cadastrando...';
+          setFeedback('Aguarde, validando seu cupom...', '');
+
+          // Call backend API endpoint to register the coupon
+          var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+          fetch(ITAP_WORKER_API + '/api/fidelidade/cadastrar-cupom', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ codigoCupom: codigo, cpfCliente: cpf })
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(function(res) {
+            if (!res.ok) {
+              if (res.tipo === 'codigo_invalido') {
+                setFeedback('❌ Código de cupom inválido. Por favor, verifique e tente novamente.', 'erro');
+              } else if (res.tipo === 'codigo_ja_usado') {
+                setFeedback('❌ Este cupom já foi utilizado. Verifique seus cupons ou entre em contato.', 'erro');
+              } else if (res.tipo === 'cpf_nao_encontrado') {
+                setFeedback('⚠️ CPF não encontrado. Registramos seus dados e em breve entraremos em contato.', 'aviso');
+              } else {
+                setFeedback('⚠️ ' + (res.error || 'Erro ao processar cupom.'), 'erro');
+              }
+              return;
+            }
+            // Success!
+            var pontos = res.pontos || 0.5;
+            setFeedback('✅ Cupom cadastrado com sucesso! Você ganhou ' + pontos + ' ponto(s) e já está concorrendo ao sorteio do mês!', 'ok');
+            if (inputCodigo) inputCodigo.value = '';
+            if (inputCpf) inputCpf.value = '';
+          })
+          .catch(function(err) {
+            console.error('[fidelidade] Erro ao cadastrar cupom:', err);
+            setFeedback('⚠️ Não foi possível processar agora. Tente novamente em instantes ou entre em contato via WhatsApp.', 'erro');
+          })
+          .finally(function() {
+            btnCadastrarCupom.disabled = false;
+            btnCadastrarCupom.textContent = 'Cadastrar Cupom';
+          });
+        });
+      }
+    })();
+  </script>
+
   <script>
     (function () {
       'use strict';
