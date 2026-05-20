@@ -567,7 +567,7 @@
             };
             if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#28a745';
             if (msgStatusCupom) {
-              msgStatusCupom.innerHTML = '✅ Cupom encontrado! Informe o número do lote:';
+              msgStatusCupom.textContent = '✅ Cupom encontrado! Informe o número do lote:';
               msgStatusCupom.style.color = '#28a745';
             }
             if (blocoLote) {
@@ -578,13 +578,13 @@
           } else if (data.encontrado && !data.disponivel) {
             if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#ffc107';
             if (msgStatusCupom) {
-              msgStatusCupom.innerHTML = '⚠️ Este cupom já foi cadastrado anteriormente';
+              msgStatusCupom.textContent = '⚠️ Este cupom já foi cadastrado anteriormente';
               msgStatusCupom.style.color = '#856404';
             }
           } else {
             if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
             if (msgStatusCupom) {
-              msgStatusCupom.innerHTML = '❌ Número de cupom não encontrado';
+              msgStatusCupom.textContent = '❌ Número de cupom não encontrado';
               msgStatusCupom.style.color = '#dc3545';
             }
           }
@@ -592,7 +592,7 @@
         .catch(function() {
           if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
           if (msgStatusCupom) {
-            msgStatusCupom.innerHTML = '⚠️ Não foi possível verificar o cupom agora. Tente novamente.';
+            msgStatusCupom.textContent = '⚠️ Não foi possível verificar o cupom agora. Tente novamente.';
             msgStatusCupom.style.color = '#dc3545';
           }
         });

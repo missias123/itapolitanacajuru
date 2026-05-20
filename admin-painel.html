@@ -5766,7 +5766,7 @@ function fidColetarItensParaEtiquetas(){
     if(!info || !Number.isFinite(Number(info.idx))) return;
     const seq = Number(info.idx) + 1;
     porCodigo[codigo] = {
-      numeroCupom: `ITA#${String(seq).padStart(4,'0')}`,
+      numeroCupom: fidFormatarCodigoSequencial(seq),
       numeroSequencial: seq,
       lote: Number(info.lote) || Math.max(1, Math.ceil(seq / 100))
     };
@@ -5777,7 +5777,7 @@ function fidColetarItensParaEtiquetas(){
     const seqFallback = idx + 1;
     return {
       codigo: txt,
-      numeroCupom: meta?.numeroCupom || `ITA#${String(seqFallback).padStart(4,'0')}`,
+      numeroCupom: meta?.numeroCupom || fidFormatarCodigoSequencial(seqFallback),
       lote: meta?.lote || payload.lote?.loteNum || Math.max(1, Math.ceil(seqFallback / 100))
     };
   });
