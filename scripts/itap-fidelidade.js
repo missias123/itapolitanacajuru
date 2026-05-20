@@ -55,6 +55,7 @@
   var _clienteAtualId = null;
   var _cadastroRegrasAceitas = false;
   var _cupomVerificadoAtual = null;
+  var _verificacaoCodigoSeq = 0;
 
   function mascaraTel(v) {
     var d = (v || '').replace(/\D/g, '').slice(0, 11);
@@ -542,11 +543,12 @@
     inputCodigoSecreto.addEventListener('input', debounce(function() {
       var valor = (this.value || '').trim().toUpperCase();
       this.value = valor;
+      var seqAtual = ++_verificacaoCodigoSeq;
       limparEstadoCupomNumero();
       if (!REGEX_CODIGO.test(valor)) {
         if (valor.length >= 10 && msgStatusCupom) {
           this.style.borderColor = '#dc3545';
-          msgStatusCupom.textContent = '❌ Código não encontrado';
+          msgStatusCupom.textContent = '❌ Formato de código inválido';
           msgStatusCupom.style.color = '#dc3545';
         }
         return;
@@ -557,6 +559,7 @@
       }
       verificarCodigoCupomWorker(valor)
         .then(function(data) {
+          if (seqAtual !== _verificacaoCodigoSeq) return;
           if (!data || data.ok === false) {
             if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#dc3545';
             if (msgStatusCupom) {
@@ -594,6 +597,7 @@
           }
         })
         .catch(function() {
+          if (seqAtual !== _verificacaoCodigoSeq) return;
           if (inputCodigoSecreto) inputCodigoSecreto.style.borderColor = '#dc3545';
           if (msgStatusCupom) {
             msgStatusCupom.textContent = '⚠️ Não foi possível verificar o código agora. Tente novamente.';
