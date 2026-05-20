@@ -2212,7 +2212,7 @@ Talento</textarea>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (10/A4 · 92,5&times;51,4 mm)</button>
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (14/A4 · 99,1&times;38,1 mm)</button>
           </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
@@ -5937,12 +5937,12 @@ function fidColetarCodigosParaEtiquetas(){
 	      const payload = fidColetarCodigosParaEtiquetas();
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
-	        etqW: 92.5,
-	        etqH: 51.4,
+	        etqW: 99.1,
+	        etqH: 38.1,
 	        cols: 2,
-	        rows: 5,
-	        gapCol: 5,
-	        gapRow: 5,
+	        rows: 7,
+	        gapCol: 3,
+	        gapRow: 3,
 	        desenharBordas: true
 	      });
 	    }catch(e){
@@ -5957,18 +5957,18 @@ function fidColetarCodigosParaEtiquetas(){
     return;
   }
 
-  const ETQ_W = 92.5;
-  const ETQ_H = 51.4;
+  const ETQ_W = 99.1;
+  const ETQ_H = 38.1;
   const COLS = 2;
-  const ROWS = 5;
+  const ROWS = 7;
   const ETQ_POR_PAGINA = COLS * ROWS;
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  // Layout exato: 2 colunas × 5 linhas (10 etiquetas por A4)
-  // Etiqueta: 92,5 × 51,4 mm
-  // Espaçamento: 5 mm horizontal, 5 mm vertical
-  const GAP_COL = 5;
-  const GAP_ROW = 5;
+  // Layout exato: 2 colunas × 7 linhas (14 etiquetas por A4)
+  // Etiqueta: 99,1 × 38,1 mm
+  // Espaçamento: 3 mm horizontal, 3 mm vertical
+  const GAP_COL = 3;
+  const GAP_ROW = 3;
   const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
   if(layout.marginX < 0 || layout.marginY < 0){
     toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
@@ -6000,9 +6000,9 @@ function fidColetarCodigosParaEtiquetas(){
     if(!codigo) continue;
 
     // ═══════════════════════════════════════════════════════════════
-    // CONTEÚDO OTIMIZADO DA ETIQUETA (10/A4 · 92,5×51,4 mm)
+    // CONTEÚDO OTIMIZADO DA ETIQUETA (14/A4 · 99,1×38,1 mm)
     // ───────────────────────────────────────────────────────────────
-    // Área útil: 88.5 × 47.4 mm (padding 2mm em cada lado)
+    // Área útil: 95.1 × 34.1 mm (padding 2mm em cada lado)
     // Linha 1: "Programa de Fidelidade" (10pt, otimizado)
     // Linha 2: [CÓDIGO GRANDE NEGRITADO] (28pt máx, dinâmico)
     // Linha 3: "Cadastre no Site" (9pt, otimizado)
@@ -6010,7 +6010,7 @@ function fidColetarCodigosParaEtiquetas(){
     // ═══════════════════════════════════════════════════════════════
 
     const centerX = x + (ETQ_W / 2);
-    const usableHeight = ETQ_H - (2 * paddingY); // 47.4 mm
+    const usableHeight = ETQ_H - (2 * paddingY); // 34.1 mm
 
     // Linha 1: "Programa de Fidelidade" (topo)
     doc.setFont('helvetica', 'normal');
@@ -6022,7 +6022,7 @@ function fidColetarCodigosParaEtiquetas(){
     // Linha 2: Código (grande, negrito, centralizado verticalmente)
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
-    const maxTextW = ETQ_W - (paddingX * 2); // 88.5 mm
+    const maxTextW = ETQ_W - (paddingX * 2); // 95.1 mm
     const baseFont = 28; // Otimizado: 24pt → 28pt
     const minFont = 14;  // Otimizado: 12pt → 14pt
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
