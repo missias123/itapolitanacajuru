@@ -5589,7 +5589,7 @@ function renderCódigos(){
 // =====================================================
 // GERADOR DE LOTES DETERMINÍSTICO (mesmo algoritmo do fidelidade-admin.html)
 // =====================================================
-// Banco enumerado de fidelidade: ITA#001 até ITA#100.000.
+// Banco enumerado de fidelidade: ITA#001 LOTE1 até ITA#100.000 LOTE1000.
 const FID_TOTAL_BANCO = 100000;
 const FID_LOTE_SIZE   = 100;
 function fidFormatarCodigoSequencial(numero){
@@ -5597,8 +5597,8 @@ function fidFormatarCodigoSequencial(numero){
   const sufixo = n < 1000 ? String(n).padStart(3, '0') : n.toLocaleString('pt-BR');
   return `ITA#${sufixo}`;
 }
-function fidGerarCodigo(idx){
-  return fidFormatarCodigoSequencial(idx + 1);
+function fidGerarCodigo(idx,loteNum){
+  return `${fidFormatarCodigoSequencial(idx + 1)} LOTE${loteNum}`;
 }
 function fidMostrarAlerta(msg,tipo){
   const el=document.getElementById('fid-alerta-lote');
@@ -5649,7 +5649,7 @@ async function liberarLoteFidelidade(){
   const fim=Math.min(atual+FID_LOTE_SIZE,FID_TOTAL_BANCO);
   const loteNum=Math.ceil(fim/FID_LOTE_SIZE);
   const novos=[];
-  for(let i=inicio;i<fim;i++)novos.push(fidGerarCodigo(i));
+  for(let i=inicio;i<fim;i++)novos.push(fidGerarCodigo(i,loteNum));
   const fidData=fidEnsureCodigos();
   novos.forEach((c,i)=>{fidData.codigos[c]={status:'disponível',idx:inicio+i,lote:loteNum};});
   STATE.fidelidade.liberados=fim;
