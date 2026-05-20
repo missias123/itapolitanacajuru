@@ -2196,15 +2196,15 @@ Talento</textarea>
         <div class="card-header"><h2>&#x1F3AB; Gerador de Lotes de Códigos</h2></div>
         <div class="card-body">
           <div class="fid-info-box">
-            Banco total: <strong>1.000.000 códigos únicos e indecifráveis</strong>.<br>
+            Banco total: <strong>100.000 códigos enumerados</strong>.<br>
             Cada clique em <strong>“Liberar 100 Códigos”</strong> gera o próximo lote e salva automaticamente no GitHub.<br>
-            O contador avança: <strong>100/1.000.000 → 200/1.000.000 → 300/1.000.000...</strong><br>
+            O contador avança: <strong>100/100.000 → 200/100.000 → 300/100.000...</strong><br>
             Apenas códigos liberados são aceitos pelos clientes — sem impressão = sem validade.
           </div>
           <div class="fid-progresso-wrap">
             <div class="fid-progresso-titulo">Progresso do Banco de Códigos</div>
             <div class="fid-progresso-barra-bg"><div class="fid-progresso-barra" id="fid-prog-barra" style="width:0%"></div></div>
-            <div class="fid-progresso-texto" id="fid-prog-texto">0 / 1.000.000 códigos liberados</div>
+            <div class="fid-progresso-texto" id="fid-prog-texto">0 / 100.000 códigos liberados</div>
           </div>
           <div class="btn-row" style="margin-top:14px">
             <button class="btn btn-laranja" data-fid-write onclick="liberarLoteFidelidade()" id="btn-liberar-lote">&#x1F3B2; Liberar 100 Códigos</button>
@@ -5589,30 +5589,16 @@ function renderCódigos(){
 // =====================================================
 // GERADOR DE LOTES DETERMINÍSTICO (mesmo algoritmo do fidelidade-admin.html)
 // =====================================================
-// Capacidade histórica restaurada do banco de fidelidade: 1.000.000 códigos.
-const FID_TOTAL_BANCO = 1000000;
+// Banco enumerado de fidelidade: ITA#001 até ITA#100.000.
+const FID_TOTAL_BANCO = 100000;
 const FID_LOTE_SIZE   = 100;
-const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
-// REGRA DOS CARACTERES PERMITIDOS NOS CUPONS (sem O,I,L,0,1 para evitar confusao visual):
-// Letra O=parece 0 | Letra I=parece 1/L | Letra L=parece 1/I | Num 0=parece O | Num 1=parece I/L
-// Especiais mantidos para aumentar entropia e dificultar fraude.
-  // @validador-ignore-next-line
-  const FID_CHARS       = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
+function fidFormatarCodigoSequencial(numero){
+  const n = Math.max(1, Number(numero) || 1);
+  const sufixo = n < 1000 ? String(n).padStart(3, '0') : n.toLocaleString('pt-BR');
+  return `ITA#${sufixo}`;
+}
 function fidGerarCodigo(idx){
-  const s=FID_SALT;
-  let a=idx+1,b=0;
-  for(let i=0;i<s.length;i++)b+=s.charCodeAt(i);
-  let x=(a*1664525+1013904223)>>>0;
-  x=(x^(x>>>11))>>>0;
-  x=(x+(b*22695477+1))>>>0;
-  x=(x^(x>>>16))>>>0;
-  x=(x*2246822519)>>>0;
-  x=(x^(x>>>13))>>>0;
-  x=(x*3266489917)>>>0;
-  x=(x^(x>>>16))>>>0;
-  let c='';
-  for(let i=0;i<10;i++){x=(x*1664525+1013904223+i*31+a*7)>>>0;x=(x^(x>>>15))>>>0;c+=FID_CHARS[x%FID_CHARS.length];}
-  return c;
+  return fidFormatarCodigoSequencial(idx + 1);
 }
 function fidMostrarAlerta(msg,tipo){
   const el=document.getElementById('fid-alerta-lote');
@@ -5632,7 +5618,7 @@ function fidRenderProgresso(){
   const restante=FID_TOTAL_BANCO-n;
   if(btn){
     if(restante>0){btn.textContent=`🎲 Liberar 100 Códigos (${restante.toLocaleString('pt-BR')} restantes)`;btn.disabled=false;}
-    else{btn.textContent='✅ Banco Esgotado (1.000.000/1.000.000)';btn.disabled=true;}
+    else{btn.textContent=`✅ Banco Esgotado (${FID_TOTAL_BANCO.toLocaleString('pt-BR')}/${FID_TOTAL_BANCO.toLocaleString('pt-BR')})`;btn.disabled=true;}
   }
 }
 function fidRenderLoteAtual(){
@@ -5655,7 +5641,7 @@ async function liberarLoteFidelidade(){
     return;
   }
   const atual=STATE.fidelidade.liberados||0;
-  if(atual>=FID_TOTAL_BANCO){fidMostrarAlerta('⚠️ Todos os 1.000.000 códigos já foram liberados!','erro');return;}
+  if(atual>=FID_TOTAL_BANCO){fidMostrarAlerta(`⚠️ Todos os ${FID_TOTAL_BANCO.toLocaleString('pt-BR')} códigos já foram liberados!`,'erro');return;}
   const btn=document.getElementById('btn-liberar-lote');
   if(btn){btn.disabled=true;btn.innerHTML='<span class="fid-spinner"></span> Gerando e salvando...';
   }
