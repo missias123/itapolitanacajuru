@@ -2212,7 +2212,7 @@ Talento</textarea>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (21/A4 · 63,5&times;38,1 mm)</button>
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (10/A4 · 97,5&times;51,4 mm)</button>
           </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
@@ -5623,7 +5623,7 @@ function fidColetarCodigosParaEtiquetas(){
   if(lista.length){
     return { codigos: lista, origem: 'disponiveis', lote: null };
   }
-  const placeholders = Array.from({ length: 21 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
+  const placeholders = Array.from({ length: 100 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
  function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
@@ -5649,7 +5649,7 @@ function fidColetarCodigosParaEtiquetas(){
    const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
    const hoje = new Date().toISOString().slice(0, 10);
    const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-   const titulo = `Etiquetas Fidelidade (63,5×38,1)${loteTag} — ${origem} — ${hoje}`;
+   const titulo = `Etiquetas Fidelidade (${etqW}×${etqH})${loteTag} — ${origem} — ${hoje}`;
 
    const layout = fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow });
    if(layout.marginX < 0 || layout.marginY < 0){
@@ -5666,7 +5666,13 @@ function fidColetarCodigosParaEtiquetas(){
      const slice = lista.slice(start, start + ETQ_POR_PAGINA);
      const etqs = slice.map(cod => {
        const safe = esc(cod);
-       return `<div class="etq ${safe ? '' : 'etq-vazia'}"><div class="etq-cod">${safe || ''}</div></div>`;
+       if(!safe) return '<div class="etq etq-vazia"></div>';
+       return `<div class="etq">
+         <div class="etq-header">Programa de Fidelidade</div>
+         <div class="etq-cod">${safe}</div>
+         <div class="etq-footer-1">Cadastre no Site</div>
+         <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
+       </div>`;
      }).join('');
      return `<section class="folha"><div class="grid">${etqs}</div></section>`;
    }).join('');
@@ -5718,14 +5724,23 @@ function fidColetarCodigosParaEtiquetas(){
 	      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
 	      border-radius:0;
 	      display:flex;
+	      flex-direction:column;
 	      align-items:center;
 	      justify-content:center;
 	      padding:3mm;
 	      color:#141414;
 	    }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
+	    .etq-header{
+	      font-family:Helvetica,Arial,sans-serif;
+	      font-weight:400;
+	      font-size:8pt;
+	      color:#323232;
+	      text-align:center;
+	      margin-bottom:2mm;
+	    }
 	    .etq-cod{
-	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace;
+	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 	      font-weight:900;
 	      font-size:18pt;
 	      letter-spacing:.4pt;
@@ -5733,7 +5748,28 @@ function fidColetarCodigosParaEtiquetas(){
 	      width:100%;
 	      overflow:hidden;
 	      white-space:nowrap;
-      text-overflow:ellipsis;
+        text-overflow:ellipsis;
+        margin:3mm 0;
+        flex:1;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+    .etq-footer-1{
+      font-family:Helvetica,Arial,sans-serif;
+      font-weight:400;
+      font-size:7pt;
+      color:#323232;
+      text-align:center;
+      margin-top:1mm;
+    }
+    .etq-footer-2{
+      font-family:Helvetica,Arial,sans-serif;
+      font-weight:700;
+      font-size:7.5pt;
+      color:#000;
+      text-align:center;
+      margin-top:0.5mm;
     }
   </style>
 </head><body>
@@ -5747,7 +5783,7 @@ function fidColetarCodigosParaEtiquetas(){
       <button class="btn btn-fechar" onclick="window.close()">✕ Fechar</button>
     </div>
   </div>
-  <div class="wrap" style="font-size:12px;color:#555">Dica: no diálogo de impressão, selecione “Salvar como PDF”.</div>
+  <div class="wrap" style="font-size:12px;color:#555">Dica: no diálogo de impressão, selecione "Salvar como PDF".</div>
   ${folhasHtml}
 </body></html>`);
    win.document.close();
@@ -5764,12 +5800,12 @@ function fidColetarCodigosParaEtiquetas(){
 	      const payload = fidColetarCodigosParaEtiquetas();
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
-	        etqW: 63.5,
-	        etqH: 38.1,
-	        cols: 3,
-	        rows: 7,
-	        gapCol: 0.0,
-	        gapRow: 0.0,
+	        etqW: 97.5,
+	        etqH: 51.4,
+	        cols: 2,
+	        rows: 5,
+	        gapCol: 5.0,
+	        gapRow: 5.0,
 	        desenharBordas: true
 	      });
 	    }catch(e){
@@ -5784,18 +5820,18 @@ function fidColetarCodigosParaEtiquetas(){
     return;
   }
 
-  const ETQ_W = 63.5;
-  const ETQ_H = 38.1;
-  const COLS = 3;
-  const ROWS = 7;
+  const ETQ_W = 97.5;
+  const ETQ_H = 51.4;
+  const COLS = 2;
+  const ROWS = 5;
   const ETQ_POR_PAGINA = COLS * ROWS;
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  // Layout exato: 3 colunas × 7 linhas (21 etiquetas por A4)
-  // Etiqueta: 63,5 × 38,1 mm
-  // Espaçamento: 0 mm (horizontal e vertical), margens centralizadas automaticamente.
-  const GAP_COL = 0.0;
-  const GAP_ROW = 0.0;
+  // Layout exato: 2 colunas × 5 linhas (10 etiquetas por A4)
+  // Etiqueta: 97,5 × 51,4 mm
+  // Espaçamento: 5 mm (horizontal e vertical), margens centralizadas automaticamente.
+  const GAP_COL = 5.0;
+  const GAP_ROW = 5.0;
   const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
   if(layout.marginX < 0 || layout.marginY < 0){
     toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
@@ -5803,10 +5839,8 @@ function fidColetarCodigosParaEtiquetas(){
   }
 
   const desenharBordas = true;
-  const paddingX = 4;
-  const maxTextW = ETQ_W - (paddingX * 2);
-  const baseFont = 22;
-  const minFont = 10;
+  const paddingX = 6;
+  const paddingY = 6;
 
   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
   for(let i = 0; i < totalSlots; i++){
@@ -5827,18 +5861,49 @@ function fidColetarCodigosParaEtiquetas(){
     const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
     if(!codigo) continue;
 
-    doc.setTextColor(20, 20, 20);
+    // Conteúdo multi-linha da etiqueta:
+    // Linha 1: "Programa de Fidelidade"
+    // Linha 2: [CÓDIGO GRANDE NEGRITADO]
+    // Linha 3: "Cadastre no Site"
+    // Linha 4: "ITAPOLITANACAJURU.COM.BR"
+
+    const centerX = x + (ETQ_W / 2);
+    const topY = y + paddingY;
+
+    // Linha 1: "Programa de Fidelidade"
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(50, 50, 50);
+    doc.text('Programa de Fidelidade', centerX, topY + 3, { align: 'center' });
+
+    // Linha 2: Código (grande e negritado)
     doc.setFont('courier', 'bold');
+    doc.setTextColor(0, 0, 0);
+    const maxTextW = ETQ_W - (paddingX * 2);
+    const baseFont = 24;
+    const minFont = 12;
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    const textX = x + (ETQ_W / 2);
-    const textY = y + (ETQ_H / 2);
-    doc.text(codigo, textX, textY, { align: 'center', baseline: 'middle' });
+    const codeY = y + (ETQ_H / 2);
+    doc.text(codigo, centerX, codeY, { align: 'center', baseline: 'middle' });
+
+    // Linha 3: "Cadastre no Site"
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(50, 50, 50);
+    const bottomY = y + ETQ_H - paddingY;
+    doc.text('Cadastre no Site', centerX, bottomY - 7, { align: 'center' });
+
+    // Linha 4: "ITAPOLITANACAJURU.COM.BR"
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(0, 0, 0);
+    doc.text('ITAPOLITANACAJURU.COM.BR', centerX, bottomY - 2, { align: 'center' });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-  const filename = `etiquetas-fidelidade-63_5x38_1${loteTag}-${origem}-${hoje}.pdf`;
+  const filename = `etiquetas-fidelidade-97_5x51_4${loteTag}-${origem}-${hoje}.pdf`;
   doc.save(filename);
   toast('PDF de etiquetas gerado com sucesso.','ok');
 }
