@@ -5763,12 +5763,37 @@ function fidColetarCodigosParaEtiquetas(){
   const placeholders = Array.from({ length: 100 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
- function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
+function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
   doc.setFontSize(baseSizePt);
   const w = doc.getTextWidth(text);
   if(w <= maxWidthMm) return baseSizePt;
   const scaled = Math.floor(baseSizePt * (maxWidthMm / w));
   return Math.max(minSizePt, scaled);
+ }
+ const FID_LOGO_MARCA_DAGUA_SRC = 'images/logo.webp';
+ async function fidGetLogoMarcaDaguaDataUrl(){
+   if(fidGetLogoMarcaDaguaDataUrl._cache !== undefined) return fidGetLogoMarcaDaguaDataUrl._cache;
+   const data = await new Promise((resolve) => {
+     const img = new Image();
+     img.crossOrigin = 'anonymous';
+     img.onload = () => {
+       try{
+         const canvas = document.createElement('canvas');
+         canvas.width = img.naturalWidth || 512;
+         canvas.height = img.naturalHeight || 512;
+         const ctx = canvas.getContext('2d');
+         if(!ctx){ resolve(null); return; }
+         ctx.drawImage(img, 0, 0);
+         resolve(canvas.toDataURL('image/png'));
+       }catch(_e){
+         resolve(null);
+       }
+     };
+     img.onerror = () => resolve(null);
+     img.src = FID_LOGO_MARCA_DAGUA_SRC;
+   });
+   fidGetLogoMarcaDaguaDataUrl._cache = data;
+   return data;
  }
  function fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow }){
    // A4 em mm (portrait): 210 × 297
@@ -5801,17 +5826,24 @@ function fidColetarCodigosParaEtiquetas(){
    const folhasHtml = Array.from({ length: pages }, (_, p) => {
      const start = p * ETQ_POR_PAGINA;
      const slice = lista.slice(start, start + ETQ_POR_PAGINA);
-     const etqs = slice.map(cod => {
-       const safe = esc(cod);
-       if(!safe) return '<div class="etq etq-vazia"></div>';
-       return `<div class="etq">
-         <div class="etq-header">Programa de Fidelidade</div>
-         <div class="etq-cod">${safe}</div>
-         <div class="etq-footer-1">Cadastre no Site</div>
-         <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
-       </div>`;
-     }).join('');
-     return `<section class="folha"><div class="grid">${etqs}</div></section>`;
+      const etqs = slice.map(cod => {
+        const safe = esc(cod);
+        if(!safe) return '<div class="etq etq-vazia"></div>';
+        return `<div class="etq">
+          <img class="etq-watermark" src="${FID_LOGO_MARCA_DAGUA_SRC}" alt="" aria-hidden="true">
+          <div class="etq-conteudo">
+            <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
+            <div class="etq-divisor"></div>
+            <div class="etq-cod">${safe}</div>
+            <div class="etq-divisor"></div>
+            <div class="etq-footer-1">Cadastre no Nosso APP</div>
+            <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
+            <div class="etq-divisor etq-divisor-laranja"></div>
+            <div class="etq-sorteios">🎉 SORTEIOS MENSAIS 🎉</div>
+          </div>
+        </div>`;
+      }).join('');
+      return `<section class="folha"><div class="grid">${etqs}</div></section>`;
    }).join('');
 
    win.document.write(`<!doctype html>
@@ -5857,36 +5889,63 @@ function fidColetarCodigosParaEtiquetas(){
       grid-template-rows:repeat(${rows}, ${etqH}mm);
       gap:${gapRow}mm ${gapCol}mm;
     }
-	    .etq{
-	      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
-	      border-radius:0;
-	      display:flex;
-	      flex-direction:column;
-	      align-items:center;
-	      justify-content:center;
-	      padding:2mm;
-	      color:#141414;
-	    }
+ 	    .etq{
+ 	      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
+ 	      border-radius:0;
+ 	      position:relative;
+ 	      overflow:hidden;
+ 	      color:#141414;
+ 	      padding:2mm;
+ 	    }
+      .etq-watermark{
+        position:absolute;
+        width:35mm;
+        height:35mm;
+        left:50%;
+        top:50%;
+        transform:translate(-50%,-50%);
+        opacity:.08;
+        z-index:0;
+        object-fit:contain;
+        pointer-events:none;
+      }
+      .etq-conteudo{
+        position:relative;
+        z-index:1;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+      }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
-	    .etq-header{
-	      font-family:Helvetica,Arial,sans-serif;
-	      font-weight:400;
-	      font-size:10pt;
-	      color:#323232;
-	      text-align:center;
-	      margin-bottom:2mm;
-	    }
-	    .etq-cod{
-	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-	      font-weight:900;
-	      font-size:22pt;
-	      letter-spacing:.4pt;
-	      text-align:center;
-	      width:100%;
-	      overflow:hidden;
-	      white-space:nowrap;
+ 	    .etq-header{
+ 	      font-family:Helvetica,Arial,sans-serif;
+ 	      font-weight:800;
+ 	      font-size:10pt;
+ 	      color:#e8470a;
+ 	      text-align:center;
+ 	      margin:0 0 1.2mm 0;
+ 	    }
+      .etq-divisor{
+        width:100%;
+        border-top:0.25mm solid #d8d8d8;
+        margin:0 0 1.4mm 0;
+      }
+      .etq-divisor-laranja{
+        border-top-color:#e8470a;
+        margin:1.2mm 0 0.8mm 0;
+      }
+ 	    .etq-cod{
+ 	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+ 	      font-weight:900;
+ 	      font-size:18pt;
+ 	      letter-spacing:.2pt;
+ 	      text-align:center;
+ 	      width:100%;
+ 	      overflow:hidden;
+ 	      white-space:nowrap;
         text-overflow:ellipsis;
-        margin:3mm 0;
+        margin:0 0 1.4mm 0;
         flex:1;
         display:flex;
         align-items:center;
@@ -5895,18 +5954,30 @@ function fidColetarCodigosParaEtiquetas(){
     .etq-footer-1{
       font-family:Helvetica,Arial,sans-serif;
       font-weight:400;
-      font-size:9pt;
-      color:#323232;
+      font-size:8pt;
+      color:#333;
       text-align:center;
-      margin-top:1mm;
+      margin-top:0;
     }
     .etq-footer-2{
       font-family:Helvetica,Arial,sans-serif;
       font-weight:700;
-      font-size:9.5pt;
-      color:#000;
+      font-size:7pt;
+      color:#666;
       text-align:center;
-      margin-top:0.5mm;
+      margin-top:0.4mm;
+      letter-spacing:0.2pt;
+    }
+    .etq-sorteios{
+      width:100%;
+      background:#e8470a;
+      color:#fff;
+      font-family:Helvetica,Arial,sans-serif;
+      font-weight:800;
+      font-size:8.2pt;
+      text-align:center;
+      padding:1mm 0;
+      line-height:1;
     }
   </style>
 </head><body>
@@ -5976,9 +6047,9 @@ function fidColetarCodigosParaEtiquetas(){
   }
 
   const desenharBordas = true;
-  // Padding otimizado: 2mm conforme especificação para máximo aproveitamento de espaço
   const paddingX = 2;
   const paddingY = 2;
+  const logoDataUrl = await fidGetLogoMarcaDaguaDataUrl();
 
   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
   for(let i = 0; i < totalSlots; i++){
@@ -6010,38 +6081,59 @@ function fidColetarCodigosParaEtiquetas(){
     // ═══════════════════════════════════════════════════════════════
 
     const centerX = x + (ETQ_W / 2);
-    const usableHeight = ETQ_H - (2 * paddingY); // 47.4 mm
+    const centerY = y + (ETQ_H / 2);
+    const innerX = x + paddingX;
+    const innerW = ETQ_W - (paddingX * 2);
 
-    // Linha 1: "Programa de Fidelidade" (topo)
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10); // Otimizado: 8pt → 10pt
-    doc.setTextColor(50, 50, 50);
-    const line1Y = y + paddingY + 4;
-    doc.text('Programa de Fidelidade', centerX, line1Y, { align: 'center' });
+    if(logoDataUrl){
+      try{
+        if(typeof doc.GState === 'function' && typeof doc.setGState === 'function'){
+          doc.setGState(new doc.GState({ opacity: 0.08 }));
+        }
+        doc.addImage(logoDataUrl, 'PNG', centerX - 17.5, centerY - 17.5, 35, 35, undefined, 'FAST');
+        if(typeof doc.GState === 'function' && typeof doc.setGState === 'function'){
+          doc.setGState(new doc.GState({ opacity: 1 }));
+        }
+      }catch(_e){}
+    }
 
-    // Linha 2: Código (grande, negrito, centralizado verticalmente)
+    doc.setDrawColor(216, 216, 216);
+    doc.setLineWidth(0.15);
+    doc.line(innerX, y + 9, innerX + innerW, y + 9);
+    doc.line(innerX, y + 28.6, innerX + innerW, y + 28.6);
+    doc.setDrawColor(232, 71, 10);
+    doc.line(innerX, y + 40.2, innerX + innerW, y + 40.2);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(232, 71, 10);
+    doc.text('PROGRAMA DE FIDELIDADE', centerX, y + 6.6, { align: 'center' });
+
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
-    const maxTextW = ETQ_W - (paddingX * 2); // 88.5 mm
-    const baseFont = 28; // Otimizado: 24pt → 28pt
-    const minFont = 14;  // Otimizado: 12pt → 14pt
+    const maxTextW = innerW;
+    const baseFont = 18;
+    const minFont = 12;
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    const codeY = y + (ETQ_H / 2) + 1; // Ligeiramente abaixo do centro para equilíbrio visual
-    doc.text(codigo, centerX, codeY, { align: 'center', baseline: 'middle' });
+    doc.text(codigo, centerX, y + 20.2, { align: 'center', baseline: 'middle' });
 
-    // Linha 3: "Cadastre no Site"
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9); // Otimizado: 7pt → 9pt
-    doc.setTextColor(50, 50, 50);
-    const bottomY = y + ETQ_H - paddingY;
-    doc.text('Cadastre no Site', centerX, bottomY - 8, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setTextColor(51, 51, 51);
+    doc.text('Cadastre no Nosso APP', centerX, y + 34.6, { align: 'center' });
 
-    // Linha 4: "ITAPOLITANACAJURU.COM.BR" (negrito para destaque)
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.5); // Otimizado: 7.5pt → 9.5pt
-    doc.setTextColor(0, 0, 0);
-    doc.text('ITAPOLITANACAJURU.COM.BR', centerX, bottomY - 2, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(102, 102, 102);
+    doc.text('ITAPOLITANACAJURU.COM.BR', centerX, y + 38.4, { align: 'center' });
+
+    doc.setFillColor(232, 71, 10);
+    doc.rect(innerX, y + 41.2, innerW, 6.8, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.text('🎉 SORTEIOS MENSAIS 🎉', centerX, y + 45.9, { align: 'center' });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
