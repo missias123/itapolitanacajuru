@@ -2,14 +2,12 @@
 (function() {
   'use strict';
 
-  var GH_RAW = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/';
   // fidelidade.json (códigos) permanece no GitHub — sem PII
   // Clientes e autenticação passam pelo Worker seguro
   var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
   var WPP_NUM = '5516996062046';
   var META_10 = 10;
   var META_30 = 30;
-  var STATUS_DISPONIVEL = 'disponível';
   // DDD com 2 dígitos válidos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
   var BRAZILIAN_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
 
@@ -45,13 +43,17 @@
   var painelPontos = document.getElementById('painel-pontos');
   var painelResgate = document.getElementById('painel-resgate');
   var formCodigoWrap = document.getElementById('form-codigo-wrap');
-  var inputCodigo = document.getElementById('fid-codigo');
+  var inputNumeroCupom = document.getElementById('numero_cupom');
+  var blocoLote = document.getElementById('bloco-lote');
+  var inputNumeroLote = document.getElementById('numero_lote');
+  var msgStatusCupom = document.getElementById('msg-status');
   var btnRegistrar = document.getElementById('btn-registrar-ponto');
   var btnWppResgatar = document.getElementById('btn-wpp-resgatar-consulta');
 
   var _clienteAtual = null;
   var _clienteAtualId = null;
   var _cadastroRegrasAceitas = false;
+  var _cupomVerificadoAtual = null;
 
   function mascaraTel(v) {
     var d = (v || '').replace(/\D/g, '').slice(0, 11);
@@ -165,13 +167,6 @@
     atualizarFluxoCadastro();
   }
 
-  function getGhToken() {
-    try {
-      return localStorage.getItem('itap_gh_token') || '';
-    } catch (e) {
-      return '';
-    }
-  }
   function parseDataBrToIso(dataBr) {
     var v = String(dataBr || '').trim();
     var m = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
@@ -210,44 +205,29 @@
     }).then(function(r) { return r.json(); });
   }
 
-  /** Resgata código de fidelidade via Worker (valida código + atualiza pontos no KV) */
-  function resgatarCodigoWorker(clienteId, idHash, codigo) {
-    return fetch(ITAP_WORKER_API + '/api/fidelidade/resgatar', {
-      method:  'POST',
+
+  /** Verifica número ITA#0000 e disponibilidade para cadastro */
+  function verificarNumeroCupomWorker(numeroCupom) {
+    return fetch(ITAP_WORKER_API + '/api/fidelidade/verificar-numero', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ clienteId: clienteId, idHash: idHash, codigo: codigo })
+      body: JSON.stringify({ numero_cupom: numeroCupom })
     }).then(function(r) { return r.json(); });
   }
 
-  // ── fidelidade.json leitura (ainda via GitHub — dados não-PII) ────────────
-
-  function ghRawFetch(path) {
-    var apiUrl = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/' + path;
-    var tk = getGhToken();
-    var opts = { cache: 'no-store' };
-    if (tk) opts.headers = { Authorization: 'token ' + tk, Accept: 'application/vnd.github.v3+json' };
-
-    return fetch(apiUrl, opts)
-      .then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
+  /** Cadastra cupom por número+lote para cliente autenticado */
+  function cadastrarCupomWorker(clienteId, idHash, numeroCupom, numeroLote) {
+    return fetch(ITAP_WORKER_API + '/api/fidelidade/cadastrar-cupom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clienteId: clienteId,
+        idHash: idHash,
+        numero_cupom: numeroCupom,
+        numero_lote: numeroLote
       })
-      .then(function(ghResp) {
-        if (!ghResp.content) throw new Error('conteudo ausente');
-        var raw = new TextDecoder().decode(Uint8Array.from(atob(ghResp.content.replace(/\n/g, '')).split(''), function(c) {
-          return c.charCodeAt(0);
-        }));
-        return JSON.parse(raw);
-      })
-      .catch(function() {
-        return fetch(GH_RAW + path + '?t=' + Date.now(), { cache: 'no-store' })
-          .then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
-          });
-      });
+    }).then(function(r) { return r.json(); });
   }
-
 
   function wppLink(texto) {
     return 'https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(texto);
@@ -529,18 +509,94 @@
     return parseInt(localStorage.getItem(TENT_COD_PREFIX + tel) || '0', 10);
   }
 
-  function incrementarTentativaCodigo() {
-    var tel = (_clienteAtual && _clienteAtual.cel) || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
-    if (!tel) return { total: 0, bloqueado: false, restantes: MAX_TENT_CODIGO };
-    var total = parseInt(localStorage.getItem(TENT_COD_PREFIX + tel) || '0', 10) + 1;
-    localStorage.setItem(TENT_COD_PREFIX + tel, String(total));
-    var bloqueado = total > MAX_TENT_CODIGO;
-    return { total: total, bloqueado: bloqueado, restantes: Math.max(0, MAX_TENT_CODIGO - total) };
-  }
-
   function resetarTentativasCodigo() {
     var tel = (_clienteAtual && _clienteAtual.cel) || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
     if (tel) localStorage.removeItem(TENT_COD_PREFIX + tel);
+  }
+
+  function debounce(fn, ms) {
+    var t;
+    return function() {
+      var args = arguments;
+      var ctx = this;
+      clearTimeout(t);
+      t = setTimeout(function() { fn.apply(ctx, args); }, ms);
+    };
+  }
+
+  function limparEstadoCupomNumero() {
+    _cupomVerificadoAtual = null;
+    if (blocoLote) {
+      blocoLote.style.display = 'none';
+      blocoLote.style.opacity = '0';
+    }
+    if (msgStatusCupom) {
+      msgStatusCupom.textContent = '';
+      msgStatusCupom.style.color = '';
+    }
+    if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '';
+    if (inputNumeroLote) inputNumeroLote.value = '';
+  }
+
+  if (inputNumeroCupom) {
+    var regexCupom = /^ITA#\d{4}$/;
+    inputNumeroCupom.addEventListener('input', debounce(function() {
+      var valor = (this.value || '').trim().toUpperCase();
+      this.value = valor;
+      limparEstadoCupomNumero();
+      if (!regexCupom.test(valor)) return;
+      if (msgStatusCupom) {
+        msgStatusCupom.textContent = '⏳ Verificando número do cupom...';
+        msgStatusCupom.style.color = '#333';
+      }
+      verificarNumeroCupomWorker(valor)
+        .then(function(data) {
+          if (!data || data.ok === false) {
+            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
+            if (msgStatusCupom) {
+              msgStatusCupom.textContent = '❌ Número de cupom não encontrado';
+              msgStatusCupom.style.color = '#dc3545';
+            }
+            return;
+          }
+          if (data.encontrado && data.disponivel) {
+            _cupomVerificadoAtual = {
+              numero_cupom: valor,
+              numero_sequencial: data.numero_sequencial,
+              lote: data.lote
+            };
+            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#28a745';
+            if (msgStatusCupom) {
+              msgStatusCupom.innerHTML = '✅ Cupom encontrado! Informe o número do lote:';
+              msgStatusCupom.style.color = '#28a745';
+            }
+            if (blocoLote) {
+              blocoLote.style.display = 'block';
+              setTimeout(function() { blocoLote.style.opacity = '1'; }, 10);
+            }
+            if (inputNumeroLote) inputNumeroLote.focus();
+          } else if (data.encontrado && !data.disponivel) {
+            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#ffc107';
+            if (msgStatusCupom) {
+              msgStatusCupom.innerHTML = '⚠️ Este cupom já foi cadastrado anteriormente';
+              msgStatusCupom.style.color = '#856404';
+            }
+          } else {
+            if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
+            if (msgStatusCupom) {
+              msgStatusCupom.innerHTML = '❌ Número de cupom não encontrado';
+              msgStatusCupom.style.color = '#dc3545';
+            }
+          }
+        })
+        .catch(function() {
+          if (inputNumeroCupom) inputNumeroCupom.style.borderColor = '#dc3545';
+          if (msgStatusCupom) {
+            msgStatusCupom.innerHTML = '⚠️ Não foi possível verificar o cupom agora. Tente novamente.';
+            msgStatusCupom.style.color = '#dc3545';
+          }
+        });
+    }, 700));
   }
 
   if (btnRegistrar) {
@@ -551,9 +607,22 @@
         return;
       }
 
-      var codigo = (inputCodigo && inputCodigo.value ? inputCodigo.value : '').trim().toUpperCase();
-      if (!codigo) {
-        setResultadoCodigo('Digite o código de fidelidade.', 'erro');
+      var numeroCupom = (inputNumeroCupom && inputNumeroCupom.value ? inputNumeroCupom.value : '').trim().toUpperCase();
+      var numeroLote = Number(inputNumeroLote && inputNumeroLote.value ? inputNumeroLote.value : 0);
+      if (!numeroCupom) {
+        setResultadoCodigo('Digite o número do cupom no formato ITA#0000.', 'erro');
+        return;
+      }
+      if (!/^ITA#\d{4}$/.test(numeroCupom)) {
+        setResultadoCodigo('Formato inválido. Use ITA#0000.', 'erro');
+        return;
+      }
+      if (!_cupomVerificadoAtual || _cupomVerificadoAtual.numero_cupom !== numeroCupom) {
+        setResultadoCodigo('Verifique o número do cupom antes de cadastrar.', 'erro');
+        return;
+      }
+      if (!Number.isFinite(numeroLote) || numeroLote <= 0) {
+        setResultadoCodigo('Informe o número do lote para continuar.', 'erro');
         return;
       }
 
@@ -565,102 +634,60 @@
       }
 
       btnRegistrar.disabled = true;
-      btnRegistrar.textContent = 'Validando...';
+      btnRegistrar.textContent = 'Cadastrando...';
 
-      ghRawFetch('dados/fidelidade.json')
-        .then(function(fid) {
-          var codigos = fid['códigos'] || fid.codigos || {};
-          var entrada = codigos[codigo];
+      resetarTentativasCodigo();
+      var clienteId = _clienteAtualId;
+      var idHash = (_clienteAtual && _clienteAtual.id_hash) || '';
+      if (!clienteId || !idHash) {
+        setResultadoCodigo('⚠️ Sessão expirada. Faça login novamente.', 'erro');
+        btnRegistrar.disabled = false;
+        btnRegistrar.textContent = 'Cadastrar cupom';
+        return;
+      }
 
-          if (!entrada) {
-            var t = incrementarTentativaCodigo();
-            if (t.bloqueado) {
-              _clienteAtual.bloqueado = true;
-              var telBloq = _clienteAtual.cel || (inputTel ? inputTel.value.replace(/\D/g, '') : '');
-              setResultadoCodigo('⛔ Código inválido. 4ª tentativa: conta bloqueada por segurança. Fale conosco via WhatsApp para regularizar.', 'erro');
-              if (formCodigoWrap) formCodigoWrap.style.display = 'none';
-              mostrarWppBtn(
-                wppLink('Bloqueio no Clube Fidelidade após 4 tentativas incorretas.\nNome: ' + (_clienteAtual.nome || '-') + '\nWhatsApp: ' + mascaraTel(telBloq)),
-                '💬 Solicitar desbloqueio ao atendente'
-              );
-            } else if (t.restantes === 0) {
-              setResultadoCodigo('❌ Código inválido. ' + t.total + '/3 tentativas usadas. ⚠️ Próxima tentativa bloqueará sua conta!', 'erro');
+      setResultadoCodigo('⏳ Validando cupom e lote...', 'aviso');
+
+      cadastrarCupomWorker(clienteId, idHash, numeroCupom, numeroLote)
+        .then(function(res) {
+          if (!res || !res.ok) {
+            if (res && res.tipo === 'lote_incorreto') {
+              setResultadoCodigo('❌ Número do lote incorreto. Verifique seu cupom físico.', 'erro');
+            } else if (res && res.tipo === 'ja_cadastrado') {
+              setResultadoCodigo('⚠️ Este cupom já foi cadastrado anteriormente.', 'aviso');
+            } else if (res && res.tipo === 'cupom_nao_encontrado') {
+              setResultadoCodigo('❌ Número de cupom não encontrado.', 'erro');
+            } else if (res && res.tipo === 'bloqueado') {
+              setResultadoCodigo('⚠️ Conta bloqueada. Fale conosco para regularizar.', 'erro');
             } else {
-              setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+              setResultadoCodigo('⚠️ Não foi possível cadastrar o cupom agora. Tente novamente.', 'erro');
             }
             return;
           }
 
-          if (entrada.status !== STATUS_DISPONIVEL) {
-            var t2 = incrementarTentativaCodigo();
-            if (t2.bloqueado) {
-              _clienteAtual.bloqueado = true;
-              setResultadoCodigo('⛔ Código já utilizado. 4ª tentativa: conta bloqueada por segurança.', 'erro');
-              if (formCodigoWrap) formCodigoWrap.style.display = 'none';
-              mostrarWppBtn(wppLink('Bloqueio no Clube Fidelidade. Nome: ' + (_clienteAtual.nome || '-')), '💬 Solicitar desbloqueio');
-            } else {
-              setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
-            }
-            return;
+          setResultadoCodigo(res.message || ('🎉 Cupom ' + numeroCupom + ' cadastrado com sucesso!'), 'ok');
+          if (inputNumeroLote) inputNumeroLote.value = '';
+          _cupomVerificadoAtual = null;
+          if (blocoLote) {
+            blocoLote.style.display = 'none';
+            blocoLote.style.opacity = '0';
           }
-
-          var usados = _clienteAtual.codigosUsados || [];
-          if (usados.indexOf(codigo) !== -1) {
-            setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
-            return;
+          if (inputNumeroCupom) {
+            inputNumeroCupom.value = '';
+            inputNumeroCupom.style.borderColor = '';
           }
-
-          resetarTentativasCodigo();
-          var clienteId = _clienteAtualId;
-          var idHash = (_clienteAtual && _clienteAtual.id_hash) || '';
-
-          if (!clienteId || !idHash) {
-            setResultadoCodigo('⚠️ Sessão expirada. Faça login novamente.', 'erro');
-            return;
+          if (msgStatusCupom) {
+            msgStatusCupom.textContent = '';
+            msgStatusCupom.style.color = '';
           }
-
-          btnRegistrar.textContent = 'Aplicando código...';
-          setResultadoCodigo('⏳ Verificando código e atualizando seus pontos...', 'aviso');
-
-          resgatarCodigoWorker(clienteId, idHash, codigo)
-            .then(function(res) {
-              if (!res.ok) {
-                if (res.tipo === 'bloqueado') {
-                  setResultadoCodigo('⚠️ Conta bloqueada. Fale conosco para regularizar.', 'erro');
-                  mostrarWppBtn(wppLink('Olá! Minha conta no Clube Fidelidade está bloqueada.'), '💬 Falar com atendente');
-                } else if (res.tipo === 'invalido' || res.tipo === 'ja_usado' || res.tipo === 'ja_usado_global') {
-                  setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
-                } else {
-                  setResultadoCodigo('⚠️ Não foi possível validar o código agora. Tente novamente em instantes.', 'erro');
-                }
-                return;
-              }
-              // Update local state with new points
-              _clienteAtual.saldoPontos = res.pontos;
-              if (!Array.isArray(_clienteAtual.codigosUsados)) _clienteAtual.codigosUsados = [];
-              _clienteAtual.codigosUsados.push(codigo);
-              _clienteAtual.totalCodigos = (_clienteAtual.totalCodigos || 0) + 1;
-              esconderWppBtn();
-              mostrarPainelCliente(_clienteAtual);
-              if (res.partialSuccess) {
-                setResultadoCodigo('✅ Ponto registrado! Avise a loja para confirmar o código ' + codigo + ' no painel caso veja duplicidade.', 'aviso');
-              } else {
-                setResultadoCodigo('✅ Código registrado com sucesso! Seus pontos foram atualizados.', 'ok');
-              }
-              if (inputCodigo) inputCodigo.value = '';
-            })
-            .catch(function(err) {
-              console.error('[fidelidade] erro ao validar/aplicar código via Worker', err);
-              setResultadoCodigo('⚠️ Não foi possível concluir a validação agora. Tente novamente em instantes.', 'erro');
-              mostrarWppBtn(wppLink('Olá! Preciso de ajuda para validar meu código de fidelidade.\nNome: ' + (_clienteAtual.nome || '-') + '\nCódigo: ' + codigo), '💬 Pedir ajuda no WhatsApp');
-            })
         })
-        .catch(function() {
-          setResultadoCodigo('Código inválido ou já usado. Confira o código com a loja.', 'erro');
+        .catch(function(err) {
+          console.error('[fidelidade] erro ao cadastrar cupom via Worker', err);
+          setResultadoCodigo('⚠️ Não foi possível concluir o cadastro agora. Tente novamente em instantes.', 'erro');
         })
         .finally(function() {
           btnRegistrar.disabled = false;
-          btnRegistrar.textContent = 'Registrar código';
+          btnRegistrar.textContent = 'Cadastrar cupom';
         });
     });
   }

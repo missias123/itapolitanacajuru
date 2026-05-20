@@ -5757,6 +5757,31 @@ function fidColetarCodigosParaEtiquetas(){
   const placeholders = Array.from({ length: 100 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
+function fidColetarItensParaEtiquetas(){
+  const payload = fidColetarCodigosParaEtiquetas();
+  const codigosObj = fidGetCodigos();
+  const porCodigo = {};
+  Object.entries(codigosObj).forEach(([codigo, info]) => {
+    if(!info || !Number.isFinite(Number(info.idx))) return;
+    const seq = Number(info.idx) + 1;
+    porCodigo[codigo] = {
+      numeroCupom: `ITA#${String(seq).padStart(4,'0')}`,
+      numeroSequencial: seq,
+      lote: Number(info.lote) || Math.max(1, Math.ceil(seq / 100))
+    };
+  });
+  const itens = payload.codigos.map((codigo, idx) => {
+    const txt = String(codigo || '').trim();
+    const meta = porCodigo[txt];
+    const seqFallback = idx + 1;
+    return {
+      codigo: txt,
+      numeroCupom: meta?.numeroCupom || `ITA#${String(seqFallback).padStart(4,'0')}`,
+      lote: meta?.lote || payload.lote?.loteNum || Math.max(1, Math.ceil(seqFallback / 100))
+    };
+  });
+  return { ...payload, itens };
+}
  /**
   * Ajusta o tamanho da fonte para caber na largura máxima informada (em mm).
   * @param {object} doc Instância jsPDF.
@@ -5809,10 +5834,19 @@ function fidColetarCodigosParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
- function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
-   const ETQ_POR_PAGINA = cols * rows;
-   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
-   const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
+function gerarPdfEtiquetasFidelidadeViaPrint({ itens, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
+  const ETQ_POR_PAGINA = cols * rows;
+  const baseItens = Array.isArray(itens) ? itens : [];
+  const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(baseItens.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
+  const lista = Array.from({ length: totalSlots }, (_, i) => {
+    const it = baseItens[i];
+    if(!it)return null;
+    return {
+      codigo: String(it.codigo || '').trim(),
+      numeroCupom: String(it.numeroCupom || '').trim(),
+      lote: Number(it.lote) || 1
+    };
+  });
    const hoje = new Date().toISOString().slice(0, 10);
    const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
    const titulo = `Etiquetas Fidelidade (${etqW}×${etqH})${loteTag} — ${origem} — ${hoje}`;
@@ -5829,17 +5863,20 @@ function fidColetarCodigosParaEtiquetas(){
    const pages = Math.ceil(lista.length / ETQ_POR_PAGINA);
    const folhasHtml = Array.from({ length: pages }, (_, p) => {
      const start = p * ETQ_POR_PAGINA;
-     const slice = lista.slice(start, start + ETQ_POR_PAGINA);
-      const etqs = slice.map(cod => {
-        const safe = esc(cod);
-        if(!safe) return '<div class="etq etq-vazia"></div>';
-        return `<div class="etq">
-          <img class="etq-watermark" src="${FID_LOGO_MARCA_DAGUA_SRC}" alt="" aria-hidden="true">
-          <div class="etq-conteudo">
-            <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
-            <div class="etq-divisor"></div>
-            <div class="etq-cod">${safe}</div>
-            <div class="etq-divisor"></div>
+      const slice = lista.slice(start, start + ETQ_POR_PAGINA);
+       const etqs = slice.map(item => {
+         const safe = esc(item?.codigo || '');
+         if(!safe) return '<div class="etq etq-vazia"></div>';
+         const numeroCupom = esc(item.numeroCupom || '');
+         const loteNum = Number(item.lote) || 1;
+         return `<div class="etq">
+           <img class="etq-watermark" src="${FID_LOGO_MARCA_DAGUA_SRC}" alt="" aria-hidden="true">
+           <div class="etq-conteudo">
+             <div class="etq-header">● PROGRAMA DE FIDELIDADE ●</div>
+             <div class="etq-meta"><span>${numeroCupom}</span><span>LOTE ${loteNum}</span></div>
+             <div class="etq-divisor"></div>
+             <div class="etq-cod">${safe}</div>
+             <div class="etq-divisor"></div>
             <div class="etq-footer-1">Cadastre no Nosso APP</div>
             <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
             <div class="etq-divisor etq-divisor-laranja"></div>
@@ -5922,14 +5959,24 @@ function fidColetarCodigosParaEtiquetas(){
         align-items:center;
       }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
- 	    .etq-header{
+     .etq-header{
  	      font-family:Helvetica,Arial,sans-serif;
  	      font-weight:800;
  	      font-size:10pt;
  	      color:#e8470a;
  	      text-align:center;
- 	      margin:0 0 1.2mm 0;
- 	    }
+      margin:0 0 1.2mm 0;
+     }
+    .etq-meta{
+      width:100%;
+      display:flex;
+      justify-content:space-between;
+      font-family:Helvetica,Arial,sans-serif;
+      font-weight:700;
+      font-size:8pt;
+      color:#333;
+      margin:0 0 1.1mm 0;
+    }
       .etq-divisor{
         width:100%;
         border-top:0.25mm solid #d8d8d8;
@@ -6008,8 +6055,8 @@ function fidColetarCodigosParaEtiquetas(){
   }catch(err){
     console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
     toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
-    try{
-	      const payload = fidColetarCodigosParaEtiquetas();
+	    try{
+	      const payload = fidColetarItensParaEtiquetas();
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
 	        etqW: 92.5,
@@ -6026,8 +6073,8 @@ function fidColetarCodigosParaEtiquetas(){
     return;
   }
 
-  const { codigos, origem, lote } = fidColetarCodigosParaEtiquetas();
-  if(!codigos.length){
+  const { itens, origem, lote } = fidColetarItensParaEtiquetas();
+  if(!itens.length){
     toast('Nenhum código encontrado para gerar etiquetas.','erro');
     return;
   }
@@ -6055,7 +6102,7 @@ function fidColetarCodigosParaEtiquetas(){
   const paddingY = 2;
   const logoDataUrl = await fidGetLogoMarcaDaguaDataUrl();
 
-  const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
+  const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(itens.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
   for(let i = 0; i < totalSlots; i++){
     if(i > 0 && i % ETQ_POR_PAGINA === 0) doc.addPage();
 
@@ -6071,8 +6118,11 @@ function fidColetarCodigosParaEtiquetas(){
       doc.rect(x, y, ETQ_W, ETQ_H);
     }
 
-    const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
+    const item = itens[i] || null;
+    const codigo = item ? String(item.codigo || '').trim() : '';
     if(!codigo) continue;
+    const numeroCupom = item?.numeroCupom || `ITA#${String(i + 1).padStart(4,'0')}`;
+    const loteEtiqueta = Number(item?.lote) || Math.max(1, Math.ceil((i + 1) / 100));
 
     // ═══════════════════════════════════════════════════════════════
     // CONTEÚDO OTIMIZADO DA ETIQUETA (10/A4 · 92,5×51,4 mm)
@@ -6111,9 +6161,13 @@ function fidColetarCodigosParaEtiquetas(){
     doc.line(innerX, y + 40.2, innerX + innerW, y + 40.2);
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(232, 71, 10);
-    doc.text('PROGRAMA DE FIDELIDADE', centerX, y + 6.6, { align: 'center' });
+    doc.text('● PROGRAMA DE FIDELIDADE ●', centerX, y + 6.1, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setTextColor(51, 51, 51);
+    doc.text(numeroCupom, innerX, y + 8, { align: 'left' });
+    doc.text(`LOTE ${loteEtiqueta}`, innerX + innerW, y + 8, { align: 'right' });
 
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);

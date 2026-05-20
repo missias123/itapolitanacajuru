@@ -672,9 +672,17 @@
       </ul>
 
       <div class="form-row" id="form-codigo-wrap" style="display:none;margin-top:10px;">
-        <label for="fid-codigo">Código de fidelidade</label>
-        <input id="fid-codigo" type="text" maxlength="20" placeholder="Digite o código do seu cupom de fidelidade" style="text-transform:uppercase;" autocomplete="off">
-        <button class="btn btn-sec btn-block btn-validar-codigo" id="btn-registrar-ponto" style="margin-top:6px;">Registrar código</button>
+        <label for="numero_cupom">🎟️ Digite o número do seu cupom</label>
+        <input id="numero_cupom" type="text" maxlength="8" placeholder="ITA#0000" style="text-transform:uppercase;" autocomplete="off">
+
+        <div id="msg-status" style="margin-top:8px;"></div>
+
+        <div id="bloco-lote" style="display:none;opacity:0;transition:opacity .4s ease;margin-top:10px;">
+          <label for="numero_lote">📦 Número do lote</label>
+          <input id="numero_lote" type="number" min="1" step="1" placeholder="Digite o número do lote..." autocomplete="off">
+          <small class="form-text text-muted" style="display:block;margin-top:4px;">💡 O número do lote está impresso no seu cupom físico.</small>
+          <button class="btn btn-sec btn-block btn-validar-codigo" id="btn-registrar-ponto" style="margin-top:8px;">Cadastrar cupom</button>
+        </div>
       </div>
 
       <div id="fid-codigo-feedback" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:.93rem;font-weight:600" role="status" aria-live="polite"></div>

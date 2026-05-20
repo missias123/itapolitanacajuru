@@ -402,6 +402,12 @@ async function router(request, env) {
   }
 
   // ── Fidelidade ────────────────────────────────────────────────────────────
+  if (path === '/api/fidelidade/verificar-numero' && method === 'POST')
+    return handleVerificarNumeroCupom(request, env);
+
+  if (path === '/api/fidelidade/cadastrar-cupom' && method === 'POST')
+    return handleCadastrarCupom(request, env);
+
   if (path === '/api/fidelidade/resgatar' && method === 'POST')
     return handleResgatarCodigo(request, env);
 
@@ -898,6 +904,195 @@ async function handleBulkPutEncomendas(request, env) {
 // HANDLERS — FIDELIDADE
 // ═══════════════════════════════════════════════════════════════════════════════
 
+const CUPOM_REGEX = /^ITA#\d{4}$/;
+
+function padCupomNumero(numeroSequencial) {
+  return `ITA#${String(numeroSequencial).padStart(4, '0')}`;
+}
+
+function normalizarStatusCupom(status) {
+  const s = String(status || '').toLowerCase().trim();
+  if (s === 'disponível' || s === 'disponivel' || s === '') return 'disponivel';
+  if (s === 'cadastrado') return 'cadastrado';
+  if (s === 'usado') return 'usado';
+  return 'disponivel';
+}
+
+function getCodigosFidelidade(fid) {
+  const chave = Object.prototype.hasOwnProperty.call(fid, 'códigos') ? 'códigos' : 'codigos';
+  const codigos = fid[chave] ?? {};
+  return { chave, codigos };
+}
+
+function montarIndiceCupons(fid) {
+  const { chave, codigos } = getCodigosFidelidade(fid);
+  const entries = Object.entries(codigos)
+    .filter(([, value]) => value && Number.isFinite(Number(value.idx)))
+    .sort((a, b) => Number(a[1].idx) - Number(b[1].idx));
+
+  const cupons = {};
+  for (const [codigoSecreto, payload] of entries) {
+    const numeroSequencial = Number(payload.idx) + 1;
+    const numeroCupom = padCupomNumero(numeroSequencial);
+    const statusLegacy = normalizarStatusCupom(payload.status);
+    const statusCupom = normalizarStatusCupom(payload.status_cupom || payload.statusCupom || statusLegacy);
+    cupons[numeroCupom] = {
+      id: numeroSequencial,
+      numero_cupom: numeroCupom,
+      numero_sequencial: numeroSequencial,
+      lote: Number(payload.lote) || Math.max(1, Math.ceil(numeroSequencial / 100)),
+      codigo_secreto: codigoSecreto,
+      status: statusCupom,
+      usuario_id: payload.usuario_id || payload.usuarioId || null,
+      cadastrado_em: payload.cadastrado_em || payload.cadastradoEm || null,
+      usado_em: payload.usado_em || payload.usadoEm || null,
+      created_at: payload.created_at || payload.createdAt || null,
+      updated_at: payload.updated_at || payload.updatedAt || null,
+      _chave: chave,
+      _ref: payload,
+    };
+  }
+  return cupons;
+}
+
+async function carregarFidelidadeDoGitHub() {
+  const r = await fetch(`${GH_RAW}${GH_FIDELIDADE_PATH}?t=${Date.now()}`);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+function atualizarRegistroCupomNoCodigo(fid, cupomData) {
+  const { codigos } = getCodigosFidelidade(fid);
+  const alvo = codigos[cupomData.codigo_secreto];
+  if (!alvo) return false;
+
+  alvo.numero_cupom = cupomData.numero_cupom;
+  alvo.numero_sequencial = cupomData.numero_sequencial;
+  alvo.status_cupom = cupomData.status;
+  alvo.usuario_id = cupomData.usuario_id;
+  alvo.cadastrado_em = cupomData.cadastrado_em;
+  alvo.usado_em = cupomData.usado_em;
+  alvo.created_at = cupomData.created_at;
+  alvo.updated_at = cupomData.updated_at;
+  return true;
+}
+
+/**
+ * POST /api/fidelidade/verificar-numero
+ * Body: { numero_cupom }
+ */
+async function handleVerificarNumeroCupom(request) {
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const numeroCupom = sanitizeString(body.numero_cupom, 20).toUpperCase();
+  if (!CUPOM_REGEX.test(numeroCupom)) {
+    return jsonResp({ ok: false, encontrado: false, disponivel: false, error: 'Formato inválido. Use ITA#0000.' }, 400);
+  }
+
+  let fidelidade;
+  try {
+    fidelidade = await carregarFidelidadeDoGitHub();
+  } catch {
+    return jsonResp({ ok: false, error: 'Não foi possível verificar cupons agora.' }, 503);
+  }
+
+  const cupom = montarIndiceCupons(fidelidade)[numeroCupom];
+  if (!cupom) return jsonResp({ ok: true, encontrado: false, disponivel: false });
+
+  return jsonResp({
+    ok: true,
+    encontrado: true,
+    disponivel: cupom.status === 'disponivel',
+    status: cupom.status,
+    lote: cupom.lote,
+    numero_cupom: cupom.numero_cupom,
+    numero_sequencial: cupom.numero_sequencial,
+  });
+}
+
+/**
+ * POST /api/fidelidade/cadastrar-cupom
+ * Body: { clienteId, idHash, numero_cupom, numero_lote }
+ */
+async function handleCadastrarCupom(request, env) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'resgatar');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas.' }, 429);
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const clienteId = sanitizeString(body.clienteId, 30);
+  const idHash = sanitizeString(body.idHash, 10).toUpperCase();
+  const numeroCupom = sanitizeString(body.numero_cupom, 20).toUpperCase();
+  const numeroLote = Number(body.numero_lote);
+
+  if (!clienteId || !idHash || !numeroCupom || !Number.isFinite(numeroLote)) {
+    return jsonResp({ ok: false, error: 'Dados incompletos' }, 400);
+  }
+  if (!CUPOM_REGEX.test(numeroCupom) || numeroLote <= 0) {
+    return jsonResp({ ok: false, error: 'Dados de cupom inválidos' }, 400);
+  }
+
+  const cliente = await env.CLIENTES_KV.get(`cliente:${clienteId}`, 'json');
+  if (!cliente) return jsonResp({ ok: false, tipo: 'nao_encontrado', error: 'Cliente não encontrado' }, 404);
+  if (cliente.id_hash !== idHash) return jsonResp({ ok: false, tipo: 'auth', error: 'Autenticação inválida' }, 401);
+  if (cliente.bloqueado) return jsonResp({ ok: false, tipo: 'bloqueado', error: 'Conta bloqueada' });
+
+  let fidelidade;
+  try {
+    fidelidade = await carregarFidelidadeDoGitHub();
+  } catch {
+    return jsonResp({ ok: false, tipo: 'erro_servidor', error: 'Não foi possível validar cupom agora. Tente em instantes.' }, 503);
+  }
+
+  const cupons = montarIndiceCupons(fidelidade);
+  const cupom = cupons[numeroCupom];
+  if (!cupom) {
+    return jsonResp({ ok: false, tipo: 'cupom_nao_encontrado', error: 'Número de cupom não encontrado' }, 404);
+  }
+  if (cupom.lote !== Math.floor(numeroLote)) {
+    return jsonResp({ ok: false, tipo: 'lote_incorreto', error: 'Número do lote incorreto. Verifique seu cupom físico.' }, 400);
+  }
+  if (cupom.status !== 'disponivel') {
+    return jsonResp({ ok: false, tipo: 'ja_cadastrado', error: 'Este cupom já foi cadastrado anteriormente' }, 409);
+  }
+
+  const agora = new Date().toISOString();
+  cupom.status = 'cadastrado';
+  cupom.usuario_id = clienteId;
+  cupom.cadastrado_em = agora;
+  cupom.updated_at = agora;
+  if (!cupom.created_at) cupom.created_at = agora;
+
+  const okAtualizou = atualizarRegistroCupomNoCodigo(fidelidade, cupom);
+  if (!okAtualizou) {
+    return jsonResp({ ok: false, tipo: 'erro_integridade', error: 'Falha ao atualizar cupom no banco de fidelidade.' }, 500);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(fidelidade, 'última_atualização')) {
+    fidelidade['última_atualização'] = agora;
+  } else {
+    fidelidade.ultima_atualizacao = agora;
+  }
+
+  try {
+    await ghPutFidelidade(fidelidade, `Site: cupom ${cupom.numero_cupom} cadastrado — ${clienteId}`, env.GITHUB_TOKEN);
+  } catch (e) {
+    console.error('[Worker] Falha ao salvar cadastro de cupom em fidelidade.json:', e.message);
+    return jsonResp({ ok: false, tipo: 'erro_servidor', error: 'Não foi possível salvar o cadastro do cupom agora.' }, 503);
+  }
+
+  return jsonResp({
+    ok: true,
+    message: `🎉 Cupom ${cupom.numero_cupom} do Lote ${cupom.lote} cadastrado com sucesso!`,
+    numero_cupom: cupom.numero_cupom,
+    lote: cupom.lote,
+    codigo_secreto: cupom.codigo_secreto,
+  });
+}
+
 /**
  * POST /api/fidelidade/resgatar — resgate de código de fidelidade
  *
@@ -975,6 +1170,11 @@ async function handleResgatarCodigo(request, env) {
   // 3. Mark code as used in fidelidade.json via GitHub API
   const agora = new Date().toISOString();
   fidelidade[chave][codigo] = { ...entrada, status: 'usado', usadoPor: cliente.cel || clienteId, usadoEm: agora };
+  if (Object.prototype.hasOwnProperty.call(fidelidade[chave][codigo], 'status_cupom')) {
+    fidelidade[chave][codigo].status_cupom = 'usado';
+    fidelidade[chave][codigo].usado_em = agora;
+    fidelidade[chave][codigo].updated_at = agora;
+  }
   fidelidade.usados = (fidelidade.usados || 0) + 1;
   if (Object.prototype.hasOwnProperty.call(fidelidade, 'última_atualização')) {
     fidelidade['última_atualização'] = agora;
