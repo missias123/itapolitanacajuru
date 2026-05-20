@@ -6371,6 +6371,249 @@ async function salvarConfigFidelidade() {
     toast('Configurações de fidelidade salvas e sincronizadas!', 'sucesso');
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOVAS FUNÇÕES DO PROGRAMA DE FIDELIDADE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Salvar configurações do programa (pontoPorCupom, valorMinimo) */
+async function salvarConfigPrograma() {
+  if (!fidRequireWrite()) return;
+  if (!STATE.fidelidade) STATE.fidelidade = {};
+  if (!STATE.fidelidade.config) STATE.fidelidade.config = {};
+
+  const pontosPor10 = document.getElementById('fid-config-pontos-por-10');
+  const valorMin = document.getElementById('fid-config-valor-minimo');
+
+  if (pontosPor10) STATE.fidelidade.config.pontosPorDez = parseFloat(pontosPor10.value) || 0.5;
+  if (valorMin) STATE.fidelidade.config.valorMinimo = parseInt(valorMin.value, 10) || 10;
+
+  mostrarLoading('Salvando configurações do programa...');
+  const ok = await salvarArquivo(
+    PATHS.fidelidade,
+    STATE.fidelidade,
+    'fidelidadeSha',
+    'Admin: atualizar configurações do programa de fidelidade (0,5 ponto por R$10)'
+  );
+  ocultarLoading();
+  if (ok) toast('✅ Configurações do programa salvas com sucesso!', 'sucesso');
+  else toast('❌ Erro ao salvar configurações.', 'erro');
+}
+
+/** Buscar cliente por CPF ou Nome e exibir detalhes */
+async function buscarCliente() {
+  const inputBusca = document.getElementById('fid-busca-cliente');
+  const detalhes = document.getElementById('fid-cliente-detalhes');
+  const naoEncontrado = document.getElementById('fid-cliente-nao-encontrado');
+
+  if (!inputBusca) return;
+
+  const busca = inputBusca.value.trim().toUpperCase();
+  if (!busca || busca.length < 3) {
+    toast('Digite pelo menos 3 caracteres para buscar.', 'aviso');
+    return;
+  }
+
+  mostrarLoading('Buscando cliente...');
+
+  try {
+    // Call Worker API to search for client
+    const ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+    const res = await fetch(ITAP_WORKER_API + '/api/fidelidade/buscar-cliente', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ busca: busca })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+
+    if (!data.found || !data.cliente) {
+      if (detalhes) detalhes.style.display = 'none';
+      if (naoEncontrado) {
+        naoEncontrado.style.display = 'block';
+        naoEncontrado.innerHTML = '<p style="color:#d32f2f;font-weight:700">Cliente não encontrado.</p><p style="color:#666;margin-top:8px">Tente buscar por CPF completo ou nome.</p>';
+      }
+      ocultarLoading();
+      return;
+    }
+
+    const cliente = data.cliente;
+
+    // Exibir detalhes do cliente
+    if (detalhes) detalhes.style.display = 'block';
+    if (naoEncontrado) naoEncontrado.style.display = 'none';
+
+    const elNome = document.getElementById('fid-cliente-nome');
+    const elCpf = document.getElementById('fid-cliente-cpf');
+    const elPontos = document.getElementById('fid-cliente-pontos');
+    const elCuponsTotal = document.getElementById('fid-cliente-cupons-total');
+    const elCuponsLista = document.getElementById('fid-cliente-cupons-lista');
+
+    if (elNome) elNome.textContent = cliente.nome || '—';
+    if (elCpf) elCpf.textContent = 'CPF: ' + (cliente.cpf || '—');
+    if (elPontos) elPontos.textContent = (cliente.pontos || 0).toFixed(1);
+    if (elCuponsTotal) elCuponsTotal.textContent = (cliente.cupons || []).length;
+
+    // Renderizar histórico de cupons
+    if (elCuponsLista) {
+      if (!cliente.cupons || cliente.cupons.length === 0) {
+        elCuponsLista.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999">Nenhum cupom cadastrado.</td></tr>';
+      } else {
+        let html = '';
+        cliente.cupons.forEach(function(cupom) {
+          const codigo = cupom.codigo || '—';
+          const pontos = (cupom.pontos || 0).toFixed(1);
+          const data = cupom.dataCadastro ? new Date(cupom.dataCadastro).toLocaleDateString('pt-BR') : '—';
+          const sorteio = cupom.sorteio || '—';
+          html += '<tr>';
+          html += '<td style="padding:8px;border-bottom:1px solid #eee;font-family:monospace">' + esc(codigo) + '</td>';
+          html += '<td style="padding:8px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#1b5e20">' + pontos + '</td>';
+          html += '<td style="padding:8px;border-bottom:1px solid #eee">' + data + '</td>';
+          html += '<td style="padding:8px;border-bottom:1px solid #eee;text-align:center">' + esc(sorteio) + '</td>';
+          html += '</tr>';
+        });
+        elCuponsLista.innerHTML = html;
+      }
+    }
+  } catch (err) {
+    console.error('[fidelidade] Erro ao buscar cliente:', err);
+    toast('⚠️ Erro ao buscar cliente. Verifique a conexão.', 'erro');
+    if (detalhes) detalhes.style.display = 'none';
+    if (naoEncontrado) {
+      naoEncontrado.style.display = 'block';
+      naoEncontrado.innerHTML = '<p style="color:#d32f2f">Erro ao buscar cliente.</p>';
+    }
+  } finally {
+    ocultarLoading();
+  }
+}
+
+/** Realizar sorteio mensal */
+async function realizarSorteio() {
+  if (!fidRequireWrite()) return;
+
+  const inputMes = document.getElementById('fid-sorteio-mes');
+  const inputPremio = document.getElementById('fid-sorteio-premio');
+
+  if (!inputMes || !inputPremio) {
+    toast('⚠️ Campos de sorteio não encontrados.', 'erro');
+    return;
+  }
+
+  const mes = inputMes.value.trim();
+  const premio = inputPremio.value.trim();
+
+  if (!mes) {
+    toast('⚠️ Selecione o mês de referência do sorteio.', 'aviso');
+    return;
+  }
+
+  if (!premio) {
+    toast('⚠️ Informe o prêmio do sorteio.', 'aviso');
+    return;
+  }
+
+  const confirmacao = confirm('Confirma a realização do sorteio do mês ' + mes + '?\nPrêmio: ' + premio + '\n\nEsta ação não pode ser desfeita.');
+  if (!confirmacao) return;
+
+  mostrarLoading('Realizando sorteio...');
+
+  try {
+    // Call Worker API to perform raffle
+    const ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+    const res = await fetch(ITAP_WORKER_API + '/api/fidelidade/realizar-sorteio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mes: mes, premio: premio })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      toast('⚠️ ' + (data.error || 'Erro ao realizar sorteio.'), 'erro');
+      return;
+    }
+
+    // Exibir resultado do sorteio
+    const vencedor = data.vencedor || {};
+    const cupomSorteado = data.cupomSorteado || '—';
+
+    toast('🎉 Sorteio realizado com sucesso!', 'sucesso');
+
+    alert(
+      '🏆 SORTEIO REALIZADO\n\n' +
+      'Mês: ' + mes + '\n' +
+      'Prêmio: ' + premio + '\n' +
+      'Cupom sorteado: ' + cupomSorteado + '\n' +
+      'Vencedor: ' + (vencedor.nome || '—') + '\n' +
+      'CPF: ' + (vencedor.cpf || '—') + '\n\n' +
+      'Entre em contato com o vencedor pelo WhatsApp cadastrado.'
+    );
+
+    // Limpar campos
+    if (inputMes) inputMes.value = '';
+    if (inputPremio) inputPremio.value = '';
+
+    // Recarregar lista de sorteios
+    carregarHistoricoSorteios();
+
+  } catch (err) {
+    console.error('[fidelidade] Erro ao realizar sorteio:', err);
+    toast('⚠️ Erro ao realizar sorteio. Verifique a conexão.', 'erro');
+  } finally {
+    ocultarLoading();
+  }
+}
+
+/** Carregar histórico de sorteios */
+async function carregarHistoricoSorteios() {
+  const listaSorteios = document.getElementById('fid-sorteios-lista');
+  if (!listaSorteios) return;
+
+  try {
+    const ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+    const res = await fetch(ITAP_WORKER_API + '/api/fidelidade/listar-sorteios');
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+
+    if (!data.sorteios || data.sorteios.length === 0) {
+      listaSorteios.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999">Nenhum sorteio realizado.</td></tr>';
+      return;
+    }
+
+    let html = '';
+    data.sorteios.forEach(function(sorteio) {
+      const mes = sorteio.mes || '—';
+      const premio = sorteio.premio || '—';
+      const vencedor = sorteio.vencedor ? (sorteio.vencedor.nome + ' (CPF: ' + sorteio.vencedor.cpf + ')') : '—';
+      const cupom = sorteio.cupomSorteado || '—';
+      const data = sorteio.dataSorteio ? new Date(sorteio.dataSorteio).toLocaleDateString('pt-BR') : '—';
+
+      html += '<tr>';
+      html += '<td style="padding:8px;border-bottom:1px solid #eee">' + esc(mes) + '</td>';
+      html += '<td style="padding:8px;border-bottom:1px solid #eee">' + esc(premio) + '</td>';
+      html += '<td style="padding:8px;border-bottom:1px solid #eee">' + esc(vencedor) + '</td>';
+      html += '<td style="padding:8px;border-bottom:1px solid #eee;font-family:monospace">' + esc(cupom) + '</td>';
+      html += '<td style="padding:8px;border-bottom:1px solid #eee;text-align:center">' + data + '</td>';
+      html += '</tr>';
+    });
+
+    listaSorteios.innerHTML = html;
+
+  } catch (err) {
+    console.error('[fidelidade] Erro ao carregar histórico de sorteios:', err);
+    listaSorteios.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#d32f2f">Erro ao carregar sorteios.</td></tr>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+
 function copiarCódigosDisponíveis(){
   const códigos=fidGetCodigos();
   const disponíveis=Object.keys(códigos).filter(k=>códigos[k].status==='disponível');
