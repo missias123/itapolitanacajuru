@@ -5945,17 +5945,17 @@ function fidColetarCodigosParaEtiquetas(){
         border-top-color:#e8470a;
         margin:1.2mm 0 0.8mm 0;
       }
- 	    .etq-cod{
- 	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
- 	      font-weight:900;
- 	      font-size:18pt;
- 	      letter-spacing:.2pt;
- 	      text-align:center;
- 	      width:100%;
- 	      overflow:hidden;
- 	      white-space:nowrap;
+  	    .etq-cod{
+  	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  	      font-weight:900;
+  	      font-size:22pt;
+  	      letter-spacing:.2pt;
+  	      text-align:center;
+  	      width:100%;
+  	      overflow:hidden;
+  	      white-space:nowrap;
         text-overflow:ellipsis;
-        margin:0 0 1.4mm 0;
+        margin:0;
         flex:1;
         display:flex;
         align-items:center;
@@ -6122,11 +6122,12 @@ function fidColetarCodigosParaEtiquetas(){
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
     const maxTextW = innerW;
-    const baseFont = 18;
-    const minFont = 12;
+    const baseFont = 24;
+    const minFont = 14;
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    doc.text(codigo, centerX, y + 20.2, { align: 'center', baseline: 'middle' });
+    const codigoCenterY = y + ((9 + 28.6) / 2);
+    doc.text(codigo, centerX, codigoCenterY, { align: 'center', baseline: 'middle' });
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
