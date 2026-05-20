@@ -6107,10 +6107,12 @@ function fidColetarCodigosParaEtiquetas(){
       }catch(_e){}
     }
 
+    const linhaTopoCodigoY = y + 9;
+    const linhaBaseCodigoY = y + 28.6;
     doc.setDrawColor(216, 216, 216);
     doc.setLineWidth(0.15);
-    doc.line(innerX, y + 9, innerX + innerW, y + 9);
-    doc.line(innerX, y + 28.6, innerX + innerW, y + 28.6);
+    doc.line(innerX, linhaTopoCodigoY, innerX + innerW, linhaTopoCodigoY);
+    doc.line(innerX, linhaBaseCodigoY, innerX + innerW, linhaBaseCodigoY);
     doc.setDrawColor(232, 71, 10);
     doc.line(innerX, y + 40.2, innerX + innerW, y + 40.2);
 
@@ -6126,7 +6128,7 @@ function fidColetarCodigosParaEtiquetas(){
     const minFont = 14;
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    const codigoCenterY = y + ((9 + 28.6) / 2);
+    const codigoCenterY = (linhaTopoCodigoY + linhaBaseCodigoY) / 2;
     doc.text(codigo, centerX, codigoCenterY, { align: 'center', baseline: 'middle' });
 
     doc.setFont('helvetica', 'normal');
