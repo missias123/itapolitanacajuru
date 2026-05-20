@@ -2214,6 +2214,7 @@ Talento</textarea>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div class="btn-row" style="margin-top:16px">
             <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (10/A4 · 92,5&times;51,4 mm)</button>
+            <button class="btn btn-cinza" onclick="abrirPreviewEtiquetaFidelidade()">👁️ Preview HTML (1 etiqueta)</button>
           </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
@@ -5834,7 +5835,7 @@ function fidColetarItensParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
-function gerarPdfEtiquetasFidelidadeViaPrint({ itens, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
+ function gerarPdfEtiquetasFidelidadeViaPrint({ itens, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
   const ETQ_POR_PAGINA = cols * rows;
   const baseItens = Array.isArray(itens) ? itens : [];
   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(baseItens.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
@@ -6046,7 +6047,23 @@ function gerarPdfEtiquetasFidelidadeViaPrint({ itens, origem, lote, etqW, etqH, 
   ${folhasHtml}
 </body></html>`);
    win.document.close();
-   try{ win.focus(); }catch(e){}
+    try{ win.focus(); }catch(e){}
+  }
+ function abrirPreviewEtiquetaFidelidade(){
+   const payload = fidColetarItensParaEtiquetas();
+   const item = payload.itens.find(it => it && it.codigo) || { codigo: 'VH*BCCQFN%', numeroCupom: 'ITA#0001', lote: 1 };
+   gerarPdfEtiquetasFidelidadeViaPrint({
+     itens: [item],
+     origem: 'preview',
+     lote: payload.lote,
+     etqW: 92.5,
+     etqH: 51.4,
+     cols: 1,
+     rows: 1,
+     gapCol: 0,
+     gapRow: 0,
+     desenharBordas: true
+   });
  }
  async function gerarPdfEtiquetasFidelidade(){
   let jsPDF;

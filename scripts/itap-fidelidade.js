@@ -361,9 +361,9 @@
     });
   }
 
-  if (inputCodigo) {
-    inputCodigo.addEventListener('input', function() {
-      inputCodigo.value = inputCodigo.value.toUpperCase();
+  if (inputNumeroCupom) {
+    inputNumeroCupom.addEventListener('input', function() {
+      inputNumeroCupom.value = inputNumeroCupom.value.toUpperCase();
     });
   }
 
