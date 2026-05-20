@@ -33,13 +33,15 @@
   }
 
   /* ─── CSS ─── */
-  var css = '#chat-dialog{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);overflow:hidden}' +
-'#chat-dialog.aberto{display:flex;animation:itabot-in .22s ease-out}' +
-'@keyframes itabot-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}' +
-'@media(prefers-reduced-motion:reduce){@keyframes itabot-in{from{opacity:0}to{opacity:1}}}' +
-'.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden}' +
-'@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(740px,calc(100dvh - 42px));border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
-'.chat-hdr{background:linear-gradient(135deg,#FF6B35,#C62828);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
+  var css = ':root{--itabot-kb-offset:0px}' +
+ 'html.itabot-open,body.itabot-open{position:fixed;width:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}' +
+ '#chat-dialog{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);overflow:hidden}' +
+ '#chat-dialog.aberto{display:flex;animation:itabot-in .22s ease-out}' +
+ '@keyframes itabot-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}' +
+ '@media(prefers-reduced-motion:reduce){@keyframes itabot-in{from{opacity:0}to{opacity:1}}}' +
+ '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
+ '@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:420px;height:min(740px,calc(100dvh - 42px));border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
+ '.chat-hdr{background:linear-gradient(135deg,#e8470a,#ff6b35);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
 '.chat-hdr-logo-img{width:42px;height:42px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(255,255,255,.3);flex-shrink:0}' +
 '.chat-hdr-info{flex:1;min-width:0}' +
 '.chat-hdr-title{font-size:14px;font-weight:900;color:#FBD100;letter-spacing:.8px;text-shadow:0 1px 3px rgba(0,0,0,.3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
@@ -49,7 +51,7 @@
 '@media(prefers-reduced-motion:reduce){.chat-hdr-online{animation:none}}' +
 '.chat-close{background:rgba(255,255,255,.18);border:none;border-radius:50%;width:40px;height:40px;min-width:40px;color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .15s}' +
 '.chat-close:hover{background:rgba(255,255,255,.32)}' +
-'.chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:14px 12px 8px;display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}' +
+ '.chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:14px 12px calc(8px + var(--itabot-kb-offset));display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}' +
 '.msg{max-width:84%;padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.6;animation:msg-in .22s ease-out;word-break:break-word}' +
 '@keyframes msg-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
 '@media(prefers-reduced-motion:reduce){@keyframes msg-in{from{opacity:0}to{opacity:1}}}' +
@@ -66,7 +68,8 @@
 '.itabot-chip:active{transform:scale(.95)}' +
 '.itabot-link-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:900;letter-spacing:.3px;margin-top:8px;min-height:46px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;word-break:break-word;box-sizing:border-box}' +
 '.itabot-link-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.itabot-link-btn:active{transform:scale(.97)}' +
-'.chat-inp-row{padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #E5E7EB;background:#fff;flex-shrink:0;align-items:center}' +
+ '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;transform:translateY(calc(var(--itabot-kb-offset) * -1));transition:transform .22s ease}' +
+ '.chat-inp-row{padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #E5E7EB;background:#fff;flex-shrink:0;align-items:center;position:relative}' +
 '.chat-inp{flex:1;padding:11px 16px;border:2px solid #E5E7EB;border-radius:24px;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box;background:#F8F9FA;color:#111;-webkit-appearance:none;appearance:none}' +
 '.chat-inp:focus{border-color:#E8000D;box-shadow:0 0 0 3px rgba(232,0,13,.12);background:#fff}' +
 '.chat-inp::placeholder{color:rgba(0,0,0,.38)}' +
@@ -130,11 +133,12 @@
   '<div class="chat-msgs" id="duvidas-resposta" aria-live="polite" role="log" aria-relevant="additions text">' +
   '<div class="chat-typing" id="itabot-typing"><span></span><span></span><span></span></div>' +
   '</div>' +
-  '<div class="chat-inp-row">' +
+  '<div class="chat-controls" id="itabot-chat-controls">' +
+  '<div class="chat-inp-row" id="itabot-input-area">' +
   '<input class="chat-inp" id="duvidas-pergunta" onkeydown="if(event.key===\'Enter\')_itabotEnviarChat()"' +
-  ' placeholder="Digite sua d\u00favida aqui\u2026" type="text" autocomplete="off" spellcheck="false" aria-label="Campo para digitar sua d\u00favida"/>' +
+  ' onfocus="_itabotHandleInputFocus()" placeholder="Digite sua d\u00favida aqui\u2026" type="text" autocomplete="off" spellcheck="false" aria-label="Campo para digitar sua d\u00favida"/>' +
   '<button class="chat-send" onclick="_itabotEnviarChat()" type="button" aria-label="Enviar mensagem">\u27a4</button>' +
-  '</div>' +
+  '</div></div>' +
   '</div></div>';
 
   var container = document.createElement('div');
@@ -157,19 +161,17 @@
 
   /* ─── Page-lock helpers ─── */
   function _itabotTravarPagina() {
-    if (document.body.style.position === 'fixed') return;
+    if (document.body.classList.contains('itabot-open')) return;
     _scrollY = window.scrollY;
-    document.body.style.position  = 'fixed';
+    document.documentElement.classList.add('itabot-open');
+    document.body.classList.add('itabot-open');
     document.body.style.top       = '-' + _scrollY + 'px';
-    document.body.style.width     = '100%';
-    document.body.style.overflowY = 'scroll';
   }
   function _itabotLiberarPagina() {
-    if (document.body.style.position !== 'fixed') return;
-    document.body.style.position  = '';
+    if (!document.body.classList.contains('itabot-open')) return;
+    document.documentElement.classList.remove('itabot-open');
+    document.body.classList.remove('itabot-open');
     document.body.style.top       = '';
-    document.body.style.width     = '';
-    document.body.style.overflowY = '';
     window.scrollTo(0, _scrollY);
   }
 
@@ -177,12 +179,17 @@
   function _itabotAbrirItaBot() {
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.add('aberto'); d.removeAttribute('aria-hidden'); d.setAttribute('aria-modal', 'true'); _itabotTravarPagina(); }
+    _itabotAtualizarViewport();
     if (!_saudacao) { setTimeout(_itabotMostrarSaudacao, 320); }
-    setTimeout(function () { var inp = document.getElementById('duvidas-pergunta'); if (inp) inp.focus(); }, 160);
+    setTimeout(function () {
+      var inp = document.getElementById('duvidas-pergunta');
+      if (inp) { inp.focus(); _itabotHandleInputFocus(); }
+    }, 160);
   }
   function _itabotFecharChatDialog() {
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
+    document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
   }
   window._itabotAbrirItaBot     = _itabotAbrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
@@ -198,8 +205,30 @@
   }
   function _itabotScrollFim() {
     var el = document.getElementById('duvidas-resposta');
-    if (el) { el.scrollTop = el.scrollHeight; }
+    setTimeout(function () {
+      if (el) { el.scrollTop = el.scrollHeight; }
+    }, 300);
   }
+  function _itabotAtualizarViewport() {
+    var dialog = document.getElementById('chat-dialog');
+    if (!dialog || !dialog.classList.contains('aberto')) return;
+    var vv = window.visualViewport;
+    var offsetBottom = 0;
+    if (vv) {
+      offsetBottom = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    }
+    document.documentElement.style.setProperty('--itabot-kb-offset', offsetBottom + 'px');
+    _itabotScrollFim();
+  }
+  function _itabotHandleInputFocus() {
+    _itabotAtualizarViewport();
+    _itabotScrollFim();
+  }
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', _itabotAtualizarViewport);
+    window.visualViewport.addEventListener('scroll', _itabotAtualizarViewport);
+  }
+  window._itabotHandleInputFocus = _itabotHandleInputFocus;
 
   /* ─── Carregamento assíncrono de dados ─── */
   function _itabotCarregarDados() {

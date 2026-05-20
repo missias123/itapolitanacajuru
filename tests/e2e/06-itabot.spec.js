@@ -121,4 +121,80 @@ test.describe('Ita Bot — Chat', () => {
       test.skip();
     }
   });
+
+  test('home mobile mantém input visível acima do offset do teclado', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn').first();
+    await expect(botBtn).toBeVisible({ timeout: 8000 });
+    await botBtn.click();
+    await page.waitForTimeout(600);
+
+    const inputMsg = page.locator('#chat-inp').first();
+    await inputMsg.focus();
+    await page.evaluate(() => {
+      document.documentElement.style.setProperty('--chat-kb-offset', '260px');
+    });
+    await page.waitForTimeout(350);
+
+    const inputArea = page.locator('#chat-input-area');
+    const box = await inputArea.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.y).toBeLessThan(844 - 260);
+  });
+
+  test('widget mobile move o composer ao aplicar offset de teclado', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/dicas.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1200);
+
+    const botBtn = page.locator('.ita-bot-duvidas-btn, #ita-bot-trigger').first();
+    await expect(botBtn).toBeVisible({ timeout: 8000 });
+    await botBtn.click();
+    await page.waitForTimeout(600);
+
+    const inputMsg = page.locator('#duvidas-pergunta').first();
+    await inputMsg.focus();
+    await page.evaluate(() => {
+      document.documentElement.style.setProperty('--itabot-kb-offset', '260px');
+    });
+    await page.waitForTimeout(350);
+
+    const inputArea = page.locator('#itabot-input-area');
+    const box = await inputArea.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.y).toBeLessThan(844 - 260);
+  });
+
+  test('chat permanece utilizável em 3 aparelhos (mobile, tablet e desktop)', async ({ page }) => {
+    const cenarios = [
+      { nome: 'mobile', viewport: { width: 390, height: 844 } },
+      { nome: 'tablet', viewport: { width: 820, height: 1180 } },
+      { nome: 'desktop', viewport: { width: 1280, height: 900 } },
+    ];
+
+    for (const cenario of cenarios) {
+      await page.setViewportSize(cenario.viewport);
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(1200);
+
+      const botBtn = page.locator('#ita-bot-duvidas, .ita-bot-duvidas-btn').first();
+      await expect(botBtn, `Botão do chat invisível em ${cenario.nome}`).toBeVisible({ timeout: 8000 });
+      await botBtn.click();
+      await page.waitForTimeout(600);
+
+      const dialog = page.locator('#chat-dialog .chat-box').first();
+      const input = page.locator('#chat-inp').first();
+      await expect(dialog, `Dialog invisível em ${cenario.nome}`).toBeVisible();
+      await expect(input, `Input invisível em ${cenario.nome}`).toBeVisible();
+
+      const [dialogBox, inputBox] = await Promise.all([dialog.boundingBox(), input.boundingBox()]);
+      expect(dialogBox, `Dialog sem box em ${cenario.nome}`).not.toBeNull();
+      expect(inputBox, `Input sem box em ${cenario.nome}`).not.toBeNull();
+      expect(inputBox.y + inputBox.height, `Input fora do dialog em ${cenario.nome}`).toBeLessThanOrEqual(dialogBox.y + dialogBox.height);
+
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(250);
+    }
+  });
 });
