@@ -326,10 +326,12 @@
       const parsed = new URL(url, window.location.href);
       const host = parsed.hostname.toLowerCase();
       const path = parsed.pathname.toLowerCase();
-      const ehGtm = host.endsWith('googletagmanager.com') && (path === '/gtm.js' || path === '/ns.html');
-      const ehGa = host.endsWith('google-analytics.com');
+      const ehHostGtm = /(^|\.)googletagmanager\.com$/.test(host);
+      const ehHostGa = /(^|\.)google-analytics\.com$/.test(host);
+      const ehGtm = ehHostGtm && (path === '/gtm.js' || path === '/ns.html');
+      const ehGa = ehHostGa;
       return ehGtm || ehGa;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   }

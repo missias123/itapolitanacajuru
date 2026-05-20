@@ -2001,7 +2001,8 @@ function toggleSecao(id) {
   var conteudo = document.getElementById(id);
   if (!conteudo) return;
   var header = conteudo.previousElementSibling;
-  var icon = header ? header.querySelector('.toggle-icon') : null;
+  if (!header) return;
+  var icon = header.querySelector('.toggle-icon');
 
   if (conteudo.style.display === 'none') {
     conteudo.style.display = 'block';
