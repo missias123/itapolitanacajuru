@@ -5600,8 +5600,9 @@ const FID_LOTE_SIZE   = 100;
  * @returns {string}
  */
 function fidFormatarCodigoSequencial(numeroSequencial){
-  const n = Math.max(1, Number(numeroSequencial) || 1);
-  const sufixo = n.toLocaleString('pt-BR', { minimumIntegerDigits: 3, useGrouping: n >= 1000 });
+  const nBruto = Number(numeroSequencial);
+  const n = Number.isFinite(nBruto) && nBruto > 0 ? Math.floor(nBruto) : 1;
+  const sufixo = n < 1000 ? String(n).padStart(3, '0') : n.toLocaleString('pt-BR');
   return `ITA#${sufixo}`;
 }
 function fidGerarCodigo(codigoIndex,loteNum){
