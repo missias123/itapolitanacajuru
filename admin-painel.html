@@ -2212,7 +2212,7 @@ Talento</textarea>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (14/A4 · 99,1&times;38,1 mm)</button>
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (21/A4 · 63,5&times;38,1 mm)</button>
           </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
@@ -2413,7 +2413,7 @@ Talento</textarea>
               <button onclick="admQualSetInput('Melhorar o design visual do site')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🎨 Melhorar Design</button>
             </div>
             <div style="display:flex;gap:8px">
-              <input id="adm-manus-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
+              <input id="adm-copiloto-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
               <button onclick="admQualEnviarCopiloto()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Copiloto</button>
             </div>
           </div>
@@ -3805,66 +3805,87 @@ function carregarMetricasQualidade(){
   }
 }
 function admQualSetInput(texto){
-  const el=document.getElementById('adm-manus-input');
+  const el=document.getElementById('adm-copiloto-input');
   if(el){el.value=texto;el.focus();}
 }
 function admQualEnviarCopiloto(){
-  const el=document.getElementById('adm-manus-input');
+  const el=document.getElementById('adm-copiloto-input');
   if(!el)return;
-  const textoUsuario=el.value.trim();
-  if(!textoUsuario){
-    toast('Por favor, descreva o que deseja melhorar ou corrigir.','aviso');
+  const solicitacao=el.value.trim();
+  if(!solicitacao){
+    toast('⚠️ Por favor, descreva o que você quer melhorar ou corrigir.','erro');
     return;
   }
 
-  // Coletar dados completos para envio ao Copiloto
-  const dadosCompletos={
-    timestamp: new Date().toISOString(),
-    textoSolicitacao: textoUsuario,
-    urlAtual: window.location.href,
-    navegador: {
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-      language: navigator.language,
-      cookiesHabilitados: navigator.cookieEnabled,
-      online: navigator.onLine
-    },
-    stateConfig: JSON.parse(JSON.stringify(STATE.config||{})),
-    errosConsole: window.ADMIN_CONSOLE_LOGS||[],
-    metricas: {
-      clientes: Object.keys(STATE.clientes?.clientes||{}).length,
-      encomendas: STATE.encomendas?.registros?.length||0,
-      produtos: STATE.produtos?.produtos?.length||0,
-      fidelidade: Object.keys(fidGetCodigos()).length
-    },
-    ghWriteAllowed: GH_WRITE_ALLOWED
-  };
+  // Coletar os 8 itens de dados estruturados
+  const timestamp=new Date().toISOString();
+  const url=window.location.href;
+  const navegador=navigator.userAgent;
+  const stateConfig=JSON.stringify(STATE.config||{},null,2);
+  const errosConsole=window._errosConsole||[];
+  const metricas=(()=>{
+    try{
+      return JSON.parse(localStorage.getItem('itap_quality_guard')||'{}');
+    }catch(e){
+      return {};
+    }
+  })();
+  const githubWritePermitido=GH_WRITE_ALLOWED||false;
 
-  // Exibir dados estruturados no console
-  console.group('📤 ENVIO AO COPILOTO — Dados Coletados');
-  console.log('🕒 Timestamp:', dadosCompletos.timestamp);
-  console.log('📝 Solicitação do Usuário:', dadosCompletos.textoSolicitacao);
-  console.log('🌐 URL Atual:', dadosCompletos.urlAtual);
-  console.log('💻 Navegador:', dadosCompletos.navegador);
-  console.log('⚙️ STATE.config:', dadosCompletos.stateConfig);
-  console.log('❌ Erros do Console:', dadosCompletos.errosConsole);
-  console.log('📊 Métricas:', dadosCompletos.metricas);
-  console.log('🔐 GitHub Write Permitido:', dadosCompletos.ghWriteAllowed);
-  console.log('📦 Dados Completos (JSON):', JSON.stringify(dadosCompletos, null, 2));
-  console.groupEnd();
+  // Formatar saída estruturada
+  const dadosEstruturados=`
+╔═══════════════════════════════════════════════════════════════╗
+║  📊 SOLICITAÇÃO AO COPILOTO — FERRAMENTA QUALIDADE            ║
+╚═══════════════════════════════════════════════════════════════╝
 
-  // Copiar dados para área de transferência
-  const jsonFormatado=JSON.stringify(dadosCompletos, null, 2);
+⏰ MARCA DE TEMPO
+${timestamp}
+
+📝 SOLICITAÇÃO DO USUÁRIO
+${solicitacao}
+
+🌐 URL ATUAL
+${url}
+
+🖥️ NAVEGADOR
+${navegador}
+
+⚙️ STATE.config (Configurações do Sistema)
+${stateConfig}
+
+❌ ERROS DO CONSOLE (Últimos capturados)
+${errosConsole.length>0?JSON.stringify(errosConsole,null,2):'Nenhum erro capturado'}
+
+📈 MÉTRICAS DE QUALIDADE (LocalStorage)
+${JSON.stringify(metricas,null,2)}
+
+🔐 GITHUB WRITE PERMITIDO
+${githubWritePermitido?'✅ SIM':'❌ NÃO'}
+
+╔═══════════════════════════════════════════════════════════════╗
+║  FIM DOS DADOS ESTRUTURADOS                                   ║
+╚═══════════════════════════════════════════════════════════════╝
+`;
+
+  // Exibir no console
+  console.log('%c📊 DADOS ESTRUTURADOS PARA O COPILOTO','background:#3949ab;color:#fff;font-size:14px;font-weight:bold;padding:8px 16px;border-radius:4px');
+  console.log(dadosEstruturados);
+
+  // Copiar para área de transferência
   if(navigator.clipboard){
-    navigator.clipboard.writeText(jsonFormatado).then(()=>{
-      toast('✅ Solicitação enviada ao Copiloto com sucesso!\n\nDados coletados e copiados para a área de transferência.\nVeja os detalhes completos no console do navegador (F12).','ok');
-      el.value='';
-    }).catch(()=>{
-      toast('⚠️ Dados coletados (veja no console F12).\nNão foi possível copiar automaticamente.','aviso');
+    navigator.clipboard.writeText(dadosEstruturados).then(()=>{
+      toast('✅ Solicitação enviada ao Copiloto com sucesso! Dados copiados para área de transferência.','sucesso');
+      console.log('%c✅ Dados copiados para área de transferência!','background:#00c853;color:#fff;font-size:12px;padding:4px 8px;border-radius:3px');
+    }).catch(err=>{
+      console.error('Erro ao copiar para área de transferência:',err);
+      toast('⚠️ Dados exibidos no console. Cole manualmente no Copiloto.','aviso');
     });
   }else{
-    toast('⚠️ Dados coletados e exibidos no console (F12).\nCopie manualmente se necessário.','aviso');
+    toast('ℹ️ Dados exibidos no console. Copie e cole no Copiloto.','aviso');
   }
+
+  // Limpar campo
+  el.value='';
 }
 
 function renderDashboard(){
@@ -5848,12 +5869,12 @@ function fidColetarCodigosParaEtiquetas(){
 	      const payload = fidColetarCodigosParaEtiquetas();
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
-	        etqW: 99.1,
+	        etqW: 63.5,
 	        etqH: 38.1,
-	        cols: 2,
+	        cols: 3,
 	        rows: 7,
-	        gapCol: 3.0,
-	        gapRow: 3.0,
+	        gapCol: 2.5,
+	        gapRow: 0,
 	        desenharBordas: true
 	      });
 	    }catch(e){
@@ -5868,18 +5889,18 @@ function fidColetarCodigosParaEtiquetas(){
     return;
   }
 
-  const ETQ_W = 99.1;
+  const ETQ_W = 63.5;
   const ETQ_H = 38.1;
-  const COLS = 2;
+  const COLS = 3;
   const ROWS = 7;
   const ETQ_POR_PAGINA = COLS * ROWS;
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  // Layout exato: 2 colunas × 7 linhas (14 etiquetas por A4)
-  // Etiqueta: 99,1 × 38,1 mm
-  // Espaçamento: 3 mm (horizontal e vertical), margens centralizadas automaticamente.
-  const GAP_COL = 3.0;
-  const GAP_ROW = 3.0;
+  // Layout exato: 3 colunas × 7 linhas (21 etiquetas por A4)
+  // Etiqueta: 63,5 × 38,1 mm
+  // Espaçamento: 2,5 mm horizontal, 0 mm vertical (padrão A4 21 etiquetas)
+  const GAP_COL = 2.5;
+  const GAP_ROW = 0;
   const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
   if(layout.marginX < 0 || layout.marginY < 0){
     toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
