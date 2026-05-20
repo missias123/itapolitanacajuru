@@ -11,11 +11,13 @@
   gtag('config', 'G-S6TCMLQLQF');
 </script>
 <!-- Google Tag Manager -->
+<!-- GTM temporariamente desabilitado - requer configuração válida
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-K7L8M9N');</script>
+-->
 <!-- End Google Tag Manager -->
 <meta charset="utf-8"/>
   <link rel="dns-prefetch" href="https://raw.githubusercontent.com"/>
@@ -1301,7 +1303,9 @@ html { scroll-behavior: smooth; }
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
+<!-- GTM temporariamente desabilitado - requer configuração válida
 <noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
+-->
 <!-- End Google Tag Manager (noscript) -->
 
 <!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
@@ -1991,6 +1995,21 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('[Encomendas] Erro ao carregar config.json:', err);
     });
 })();
+
+// Função para expandir/colapsar categorias de produtos
+function toggleSeção(id) {
+  var conteudo = document.getElementById(id);
+  var header = conteudo.previousElementSibling;
+  var icon = header.querySelector('.toggle-icon');
+
+  if (conteudo.style.display === 'none') {
+    conteudo.style.display = 'block';
+    if (icon) icon.textContent = '▼';
+  } else {
+    conteudo.style.display = 'none';
+    if (icon) icon.textContent = '▶';
+  }
+}
 </script>
 </body>
 </html>
