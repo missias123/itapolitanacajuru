@@ -5763,7 +5763,16 @@ function fidColetarCodigosParaEtiquetas(){
   const placeholders = Array.from({ length: 100 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
-function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
+ /**
+  * Ajusta o tamanho da fonte para caber na largura máxima informada (em mm).
+  * @param {object} doc Instância jsPDF.
+  * @param {string} text Texto a ser renderizado.
+  * @param {number} maxWidthMm Largura máxima disponível em milímetros.
+  * @param {number} baseSizePt Tamanho base da fonte em pt.
+  * @param {number} minSizePt Menor tamanho permitido em pt.
+  * @returns {number} Tamanho final da fonte em pt.
+  */
+ function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
   doc.setFontSize(baseSizePt);
   const w = doc.getTextWidth(text);
   if(w <= maxWidthMm) return baseSizePt;
@@ -5771,8 +5780,9 @@ function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
   return Math.max(minSizePt, scaled);
  }
  const FID_LOGO_MARCA_DAGUA_SRC = 'images/logo.webp';
+ let fidLogoMarcaDaguaDataUrlCache;
  async function fidGetLogoMarcaDaguaDataUrl(){
-   if(fidGetLogoMarcaDaguaDataUrl._cache !== undefined) return fidGetLogoMarcaDaguaDataUrl._cache;
+   if(fidLogoMarcaDaguaDataUrlCache !== undefined) return fidLogoMarcaDaguaDataUrlCache;
    const data = await new Promise((resolve) => {
      const img = new Image();
      img.crossOrigin = 'anonymous';
@@ -5792,7 +5802,7 @@ function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
      img.onerror = () => resolve(null);
      img.src = FID_LOGO_MARCA_DAGUA_SRC;
    });
-   fidGetLogoMarcaDaguaDataUrl._cache = data;
+   fidLogoMarcaDaguaDataUrlCache = data;
    return data;
  }
  function fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow }){
