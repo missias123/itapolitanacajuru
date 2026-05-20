@@ -2400,8 +2400,8 @@ Talento</textarea>
             </a>
           </div>
 
-          <!-- FERRAMENTA MANUS -->
-          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Manus — Solicitar Melhoria</div>
+          <!-- FERRAMENTA COPILOTO -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Copiloto — Solicitar Melhoria</div>
           <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px">
             <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:10px">🤖 O que você quer melhorar no site hoje?</div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
@@ -2413,8 +2413,8 @@ Talento</textarea>
               <button onclick="admQualSetInput('Melhorar o design visual do site')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🎨 Melhorar Design</button>
             </div>
             <div style="display:flex;gap:8px">
-              <input id="adm-manus-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
-              <button onclick="admQualEnviarManus()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Manus</button>
+              <input id="adm-copiloto-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
+              <button onclick="admQualEnviarCopiloto()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Copiloto</button>
             </div>
           </div>
 
@@ -3805,17 +3805,86 @@ function carregarMetricasQualidade(){
   }
 }
 function admQualSetInput(texto){
-  const el=document.getElementById('adm-manus-input');
+  const el=document.getElementById('adm-copiloto-input');
   if(el){el.value=texto;el.focus();}
 }
-function admQualEnviarManus(){
-  const el=document.getElementById('adm-manus-input');
+function admQualEnviarCopiloto(){
+  const el=document.getElementById('adm-copiloto-input');
   if(!el)return;
-  const texto=el.value.trim();
-  if(!texto)return;
+  const solicitacao=el.value.trim();
+  if(!solicitacao){
+    toast('⚠️ Por favor, descreva o que você quer melhorar ou corrigir.','erro');
+    return;
+  }
+
+  // Coletar os 8 itens de dados estruturados
+  const timestamp=new Date().toISOString();
+  const url=window.location.href;
+  const navegador=navigator.userAgent;
+  const stateConfig=JSON.stringify(STATE.config||{},null,2);
+  const errosConsole=window._errosConsole||[];
+  const metricas=(()=>{
+    try{
+      return JSON.parse(localStorage.getItem('itap_quality_guard')||'{}');
+    }catch(e){
+      return {};
+    }
+  })();
+  const githubWritePermitido=GH_WRITE_ALLOWED||false;
+
+  // Formatar saída estruturada
+  const dadosEstruturados=`
+╔═══════════════════════════════════════════════════════════════╗
+║  📊 SOLICITAÇÃO AO COPILOTO — FERRAMENTA QUALIDADE            ║
+╚═══════════════════════════════════════════════════════════════╝
+
+⏰ MARCA DE TEMPO
+${timestamp}
+
+📝 SOLICITAÇÃO DO USUÁRIO
+${solicitacao}
+
+🌐 URL ATUAL
+${url}
+
+🖥️ NAVEGADOR
+${navegador}
+
+⚙️ STATE.config (Configurações do Sistema)
+${stateConfig}
+
+❌ ERROS DO CONSOLE (Últimos capturados)
+${errosConsole.length>0?JSON.stringify(errosConsole,null,2):'Nenhum erro capturado'}
+
+📈 MÉTRICAS DE QUALIDADE (LocalStorage)
+${JSON.stringify(metricas,null,2)}
+
+🔐 GITHUB WRITE PERMITIDO
+${githubWritePermitido?'✅ SIM':'❌ NÃO'}
+
+╔═══════════════════════════════════════════════════════════════╗
+║  FIM DOS DADOS ESTRUTURADOS                                   ║
+╚═══════════════════════════════════════════════════════════════╝
+`;
+
+  // Exibir no console
+  console.log('%c📊 DADOS ESTRUTURADOS PARA O COPILOTO','background:#3949ab;color:#fff;font-size:14px;font-weight:bold;padding:8px 16px;border-radius:4px');
+  console.log(dadosEstruturados);
+
+  // Copiar para área de transferência
   if(navigator.clipboard){
-    navigator.clipboard.writeText(texto).then(()=>{alert('✅ Mensagem copiada!\n\nCole no chat do Manus:\n\n"'+texto+'"');});
-  }else{alert('Copie e envie ao Manus:\n\n"'+texto+'"');}
+    navigator.clipboard.writeText(dadosEstruturados).then(()=>{
+      toast('✅ Solicitação enviada ao Copiloto com sucesso! Dados copiados para área de transferência.','sucesso');
+      console.log('%c✅ Dados copiados para área de transferência!','background:#00c853;color:#fff;font-size:12px;padding:4px 8px;border-radius:3px');
+    }).catch(err=>{
+      console.error('Erro ao copiar para área de transferência:',err);
+      toast('⚠️ Dados exibidos no console. Cole manualmente no Copiloto.','aviso');
+    });
+  }else{
+    toast('ℹ️ Dados exibidos no console. Copie e cole no Copiloto.','aviso');
+  }
+
+  // Limpar campo
   el.value='';
 }
 
