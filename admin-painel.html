@@ -2217,9 +2217,6 @@ Talento</textarea>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
             <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
-            <div class="btn-row" style="margin-top:16px">
-              <button class="btn btn-laranja" onclick="gerarPDFLote()">&#x1F4C4; Imprimir Etiquetas PDF (99,1&times;38,1 mm)</button>
-            </div>
           </div>
         </div>
       </div>
@@ -2248,14 +2245,78 @@ Talento</textarea>
           <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de cadastro do Clube de Fidelidade. O cliente precisa aceitar para prosseguir.</div>
           <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
             <strong>Versão atual ativa no site:</strong><br>
-            1. Do Programa — Compras acima de R$ 30,00 ganham cupom<br>
-            2. Da Participação — Mínimo 14 anos, cadastro único<br>
-            3. Dos Cupons — Validade 60/30 dias, 1 ponto por código<br>
+            1. Do Programa — Cada cupom vale R$10 em compras e confere 0,5 ponto<br>
+            2. Da Participação — Cadastro obrigatório com dados verdadeiros<br>
+            3. Dos Cupons — Cada código válido = +0,5 ponto<br>
             4. Dos Prêmios — 10pts Milkshake / 30pts Caixa 7 Bolas<br>
             5. Das Proibições — Fraude = cancelamento permanente<br>
-            6. Das Críticas — Críticas infundadas = bloqueio definitivo<br>
-            7. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
-            8. Do Foro — Comarca de Cajuru — SP
+            6. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
+            7. Do Foro — Comarca de Cajuru — SP
+          </div>
+        </div>
+      </div>
+
+      <!-- GERENCIAMENTO DE SORTEIOS -->
+      <div class="card" style="border-left:4px solid #9c27b0">
+        <div class="card-header"><h2>🎁 Gerenciamento de Sorteios</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:12px">Configure sorteios mensais para engajar clientes cadastrados no programa de fidelidade.</div>
+
+          <div class="seção-título">🎯 Sorteio Atual</div>
+          <div class="campo-edit"><label>Status do Sorteio</label>
+            <select id="sorteio-status">
+              <option value="ativo">🟢 Ativo</option>
+              <option value="pausado">🟡 Pausado</option>
+              <option value="encerrado">🔴 Encerrado</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Data Próximo Sorteio</label><input type="date" id="sorteio-data-prox"/></div>
+            <div class="campo-edit"><label>Data Fim Inscrições</label><input type="date" id="sorteio-data-fim"/></div>
+          </div>
+          <div class="campo-edit"><label>Prêmio do Sorteio</label><input type="text" id="sorteio-premio" placeholder="Ex: 1 caixa de 5 litros de sorvete tipo artesanal" maxlength="200"/></div>
+          <div class="campo-edit"><label>Vencedor (deixe vazio se ainda não foi sorteado)</label><input type="text" id="sorteio-vencedor" placeholder="Nome do vencedor"/></div>
+          <div class="campo-edit"><label>Observações</label><textarea id="sorteio-obs" rows="3" placeholder="Observações sobre o sorteio atual"></textarea></div>
+
+          <div class="seção-título">📊 Estatísticas do Sorteio</div>
+          <div class="stats-row">
+            <div class="stat-card"><div class="num" id="sorteio-inscritos">-</div><div class="txt">Inscritos</div></div>
+            <div class="stat-card"><div class="num" id="sorteio-dias-restantes">-</div><div class="txt">Dias Restantes</div></div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" data-fid-write onclick="salvarConfigSorteio()">💾 Salvar Configuração do Sorteio</button>
+            <button class="btn btn-cinza" onclick="copiarSorteio()">🎲 Copiar Lista de Inscritos para Sorteio</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGRAS DE PONTUAÇÃO -->
+      <div class="card" style="border-left:4px solid #1976d2">
+        <div class="card-header"><h2>⚙️ Regras de Pontuação</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:12px">Configure o valor de cada cupom e quantos pontos ele confere ao cliente.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit">
+              <label>Pontos por Cupom/Código</label>
+              <input type="number" id="pontos-por-codigo" step="0.1" min="0.1" max="10" placeholder="0.5"/>
+              <div class="hint">Quantos pontos cada código/cupom vale (ex: 0.5)</div>
+            </div>
+            <div class="campo-edit">
+              <label>Valor Monetário por Cupom (R$)</label>
+              <input type="number" id="valor-por-codigo" step="1" min="1" max="100" placeholder="10"/>
+              <div class="hint">Quanto cada cupom representa em compras (ex: R$ 10,00)</div>
+            </div>
+          </div>
+
+          <div class="campo-edit">
+            <label>Descrição da Regra (exibida para o cliente)</label>
+            <input type="text" id="descricao-regra-pontos" maxlength="200" placeholder="Cada cupom representa R$10 em compras e confere 0,5 ponto ao cadastrar"/>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" data-fid-write onclick="salvarRegrasPontuacao()">💾 Salvar Regras de Pontuação</button>
           </div>
         </div>
       </div>
@@ -3630,6 +3691,9 @@ function irPara(seção,btn){
     try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
     try{if(typeof renderCódigos==='function')renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
     try{if(typeof fidRenderProgresso==='function')fidRenderProgresso();if(typeof fidRenderLoteAtual==='function')fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
+    try{if(typeof carregarConfigSorteio==='function')carregarConfigSorteio();}catch(e){console.error('[Admin] carregarConfigSorteio',e);}
+    try{if(typeof carregarRegrasPontuacao==='function')carregarRegrasPontuacao();}catch(e){console.error('[Admin] carregarRegrasPontuacao',e);}
+    try{if(typeof carregarFidelidadePagina==='function')carregarFidelidadePagina();}catch(e){console.error('[Admin] carregarFidelidadePagina',e);}
     const secFidelidade=document.getElementById('sec-fidelidade');
     if(seção==='fidelidade-admin'&&secFidelidade){
       secFidelidade.scrollIntoView({behavior:'smooth',block:'start'});
@@ -5489,6 +5553,10 @@ function preencherFidelidade(){
   const fidSeoPal=document.getElementById('fid-seo-palavras');
   if(fidSeoPal) fidSeoPal.value=seoPg.fidelidade?.palavrasChave||'';
   atualizarStatsCódigos();
+
+  // Carregar configurações de sorteios e pontuação
+  try { carregarConfigSorteio(); } catch(e) { console.error('[Admin] Erro ao carregar sorteio', e); }
+  try { carregarRegrasPontuacao(); } catch(e) { console.error('[Admin] Erro ao carregar regras pontuação', e); }
 }
 
 
@@ -5981,178 +6049,6 @@ function fidColetarCodigosParaEtiquetas(){
   const filename = `etiquetas-fidelidade-92_5x51_4${loteTag}-${origem}-${hoje}.pdf`;
   doc.save(filename);
   toast('PDF de etiquetas (10/A4 · 92,5×51,4 mm) gerado com sucesso.','ok');
-}
-function gerarPDFLote(){
-  const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
-  if(!lote||!lote.codigos||!lote.codigos.length){toast('Nenhum lote gerado ainda.','erro');return;}
-
-  // ═══════════════════════════════════════════════════════════════
-  // ESPECIFICAÇÃO DE LAYOUT — Etiqueta 99,1 × 38,1 mm (Pimaco 6181 / Avery L7163)
-  // ---------------------------------------------------------------
-  // Folha A4 : 210 × 297 mm
-  // Colunas  : 2   |  Linhas : 7   →  14 etiquetas por folha
-  // Etiqueta : 99,1 mm × 38,1 mm
-  // Margens  : Esq 4 mm | Dir 4 mm | Sup 15 mm | Inf 15 mm
-  // Gap H    : 2 mm     | Gap V   : 0 mm
-  //
-  // Verificação de largura : 2×99,1 + 1×2 + 4+4 = 208,2 mm ≤ 210 mm ✓
-  // Verificação de altura  : 7×38,1 + 0   + 15+15 = 296,7 mm ≤ 297 mm ✓
-  // ═══════════════════════════════════════════════════════════════
-
-  const ETQ_POR_PAGINA = 14; // 2 colunas × 7 linhas
-  const total = lote.codigos.length;
-  const numPaginas = Math.ceil(total / ETQ_POR_PAGINA);
-
-  // Completar último lote com etiquetas em branco
-  const codigos = lote.codigos.slice();
-  while(codigos.length % ETQ_POR_PAGINA !== 0) codigos.push(null);
-
-  // Gerar HTML de cada etiqueta
-  const etiquetasHTML = codigos.map((cod, i) => {
-    if(!cod) return '<div class="etiqueta etiqueta-vazia"></div>';
-    const num = lote.inicio + i;
-    return `<div class="etiqueta">
-  <div class="eta-titulo">Programa de Fidelidade</div>
-  <div class="eta-codigo">${cod}</div>
-  <div class="eta-instrucao">Apresente este c&#xF3;digo no caixa.</div>
-</div>`;
-  });
-
-  // Dividir em páginas
-  const paginas = [];
-  for(let p = 0; p < numPaginas; p++){
-    const fatia = etiquetasHTML.slice(p * ETQ_POR_PAGINA, (p+1) * ETQ_POR_PAGINA);
-    paginas.push(`<div class="folha">${fatia.join('')}</div>`);
-  }
-
-  const win = window.open('','_blank');
-  if(!win){ toast('Permita pop-ups para gerar o PDF.','erro'); return; }
-
-  win.document.write(`<!DOCTYPE html>
-<html lang="pt-BR"><head>
-<meta charset="utf-8">
-<title>Etiquetas Fidelidade \u2014 Lote ${lote.loteNum}</title>
-<style>
-  /* ── Reset ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body { font-family: Arial, Helvetica, sans-serif; background: #f5f5f5; }
-
-  /* ── Barra de ação (some no print) ── */
-  .barra-acao {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #1565C0;
-    color: #fff;
-    padding: 12px 20px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .barra-acao h2 { font-size: 15px; font-weight: 700; }
-  .barra-acao p  { font-size: 12px; opacity: .85; }
-  .btn-print {
-    background: #E65100; color: #fff; border: none;
-    padding: 10px 28px; border-radius: 8px;
-    font-size: 15px; font-weight: 700; cursor: pointer;
-    white-space: nowrap;
-    box-shadow: 0 3px 10px rgba(0,0,0,.25);
-  }
-  .btn-print:hover { background: #BF360C; }
-
-  /* ── Folha A4 ── */
-  .folha {
-    width: 210mm;
-    height: 297mm;
-    /* Margens: Sup 15mm | Dir 4mm | Inf 15mm | Esq 4mm */
-    padding: 15mm 4mm 15mm 4mm;
-    display: grid;
-    grid-template-columns: repeat(2, 99.1mm);
-    grid-template-rows: repeat(7, 38.1mm);
-    column-gap: 2mm;
-    row-gap: 0mm;
-    background: #fff;
-    margin: 20px auto;
-    box-shadow: 0 4px 20px rgba(0,0,0,.15);
-    page-break-after: always;
-    overflow: hidden;
-  }
-
-  /* ── Etiqueta individual ── */
-  .etiqueta {
-    width: 99.1mm;
-    height: 38.1mm;
-    border: 0.4mm dashed #c0c0c0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2mm 4mm;
-    overflow: hidden;
-    background: #fff;
-    gap: 0.8mm;
-  }
-  .etiqueta-vazia {
-    border: 0.4mm dashed #ebebeb;
-    background: #fafafa;
-  }
-
-  /* ── Conteúdo da etiqueta ── */
-  .eta-titulo {
-    font-size: 8pt;
-    font-weight: 700;
-    color: #1565C0;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
-  }
-  .eta-codigo {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 18pt;
-    font-weight: 900;
-    color: #111;
-    letter-spacing: 3px;
-    text-align: center;
-    line-height: 1;
-  }
-  .eta-instrucao {
-    font-size: 7pt;
-    color: #666;
-    text-align: center;
-    line-height: 1.3;
-  }
-
-  /* ── Print: esconder barra, remover sombras ── */
-  @media print {
-    html, body { background: #fff !important; }
-    .barra-acao { display: none !important; }
-    .folha {
-      margin: 0 !important;
-      box-shadow: none !important;
-      page-break-after: always;
-    }
-    /* Garantir que o navegador use o tamanho A4 correto */
-    @page {
-      size: A4 portrait;
-      margin: 0;
-    }
-  }
-</style>
-</head><body>
-
-<div class="barra-acao">
-  <div>
-    <h2>&#x1F3AB; Etiquetas de Fidelidade &mdash; Lote ${lote.loteNum}</h2>
-    <p>${total} c&oacute;digos &middot; ${numPaginas} folha${numPaginas>1?'s':''} A4 &middot; 14 etiquetas/folha &middot; 99,1 &times; 38,1 mm &middot; C&oacute;digos ${lote.inicio}&ndash;${lote.fim}</p>
-  </div>
-  <button class="btn-print" onclick="window.print()">&#x1F5A8;&#xFE0F; Imprimir / Salvar PDF</button>
-</div>
-
-${paginas.join('\n')}
-
-</body></html>`);
-  win.document.close();
 }
 async function salvarConfigFidelidade() {
   if(!fidRequireWrite())return;
@@ -6828,6 +6724,131 @@ async function salvarFidelidadePagina() {
 
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar fidelidade página');
+}
+
+// =====================================================================
+// SORTEIOS — Carregar e salvar configuração de sorteios
+// =====================================================================
+function carregarConfigSorteio() {
+  const fid = STATE.fidelidade || {};
+  const sorteio = fid.sorteio || {};
+
+  const statusEl = document.getElementById('sorteio-status');
+  if (statusEl) statusEl.value = sorteio.status || 'ativo';
+
+  const dataProxEl = document.getElementById('sorteio-data-prox');
+  if (dataProxEl) dataProxEl.value = sorteio.dataProx || '';
+
+  const dataFimEl = document.getElementById('sorteio-data-fim');
+  if (dataFimEl) dataFimEl.value = sorteio.dataFim || '';
+
+  const premioEl = document.getElementById('sorteio-premio');
+  if (premioEl) premioEl.value = sorteio.premio || '1 caixa de 5 litros de sorvete tipo artesanal';
+
+  const vencedorEl = document.getElementById('sorteio-vencedor');
+  if (vencedorEl) vencedorEl.value = sorteio.vencedor || '';
+
+  const obsEl = document.getElementById('sorteio-obs');
+  if (obsEl) obsEl.value = sorteio.obs || '';
+
+  // Estatísticas
+  const inscritos = (fid.sorteioInscritos || []).length;
+  const inscritosEl = document.getElementById('sorteio-inscritos');
+  if (inscritosEl) inscritosEl.textContent = inscritos;
+
+  // Calcular dias restantes
+  const diasEl = document.getElementById('sorteio-dias-restantes');
+  if (diasEl && sorteio.dataProx) {
+    const hoje = new Date();
+    const dataProx = new Date(sorteio.dataProx);
+    const diff = Math.ceil((dataProx - hoje) / (1000 * 60 * 60 * 24));
+    diasEl.textContent = diff > 0 ? diff : '0';
+  } else if (diasEl) {
+    diasEl.textContent = '-';
+  }
+}
+
+async function salvarConfigSorteio() {
+  if (!fidRequireWrite()) return;
+
+  const fid = STATE.fidelidade || {};
+  if (!fid.sorteio) fid.sorteio = {};
+
+  const statusEl = document.getElementById('sorteio-status');
+  if (statusEl) fid.sorteio.status = statusEl.value;
+
+  const dataProxEl = document.getElementById('sorteio-data-prox');
+  if (dataProxEl) fid.sorteio.dataProx = dataProxEl.value;
+
+  const dataFimEl = document.getElementById('sorteio-data-fim');
+  if (dataFimEl) fid.sorteio.dataFim = dataFimEl.value;
+
+  const premioEl = document.getElementById('sorteio-premio');
+  if (premioEl) fid.sorteio.premio = premioEl.value.trim();
+
+  const vencedorEl = document.getElementById('sorteio-vencedor');
+  if (vencedorEl) fid.sorteio.vencedor = vencedorEl.value.trim();
+
+  const obsEl = document.getElementById('sorteio-obs');
+  if (obsEl) fid.sorteio.obs = obsEl.value.trim();
+
+  fid.sorteio.atualizado = new Date().toISOString();
+
+  STATE.fidelidade = fid;
+  await salvarArquivo(PATHS.fidelidade, fid, 'fidelidadeSha', 'Admin: atualizar sorteio');
+  toast('Configuração do sorteio salva com sucesso!', 'ok');
+  carregarConfigSorteio();
+}
+
+// =====================================================================
+// REGRAS DE PONTUAÇÃO — Carregar e salvar
+// =====================================================================
+function carregarRegrasPontuacao() {
+  const fid = STATE.fidelidade || {};
+  const config = fid.config || {};
+
+  const ptsEl = document.getElementById('pontos-por-codigo');
+  if (ptsEl) ptsEl.value = config.pontosPorCodigo || 0.5;
+
+  const valorEl = document.getElementById('valor-por-codigo');
+  if (valorEl) valorEl.value = config.valorMonetarioPorCodigo || 10;
+
+  const descEl = document.getElementById('descricao-regra-pontos');
+  if (descEl) descEl.value = config.descricaoRegra || 'Cada cupom representa R$10 em compras e confere 0,5 ponto ao cadastrar';
+}
+
+async function salvarRegrasPontuacao() {
+  if (!fidRequireWrite()) return;
+
+  const fid = STATE.fidelidade || {};
+  if (!fid.config) fid.config = {};
+
+  const ptsEl = document.getElementById('pontos-por-codigo');
+  if (ptsEl) {
+    const val = parseFloat(ptsEl.value);
+    fid.config.pontosPorCodigo = Number.isFinite(val) && val > 0 ? val : 0.5;
+  }
+
+  const valorEl = document.getElementById('valor-por-codigo');
+  if (valorEl) {
+    const val = parseFloat(valorEl.value);
+    fid.config.valorMonetarioPorCodigo = Number.isFinite(val) && val > 0 ? val : 10;
+  }
+
+  const descEl = document.getElementById('descricao-regra-pontos');
+  if (descEl) fid.config.descricaoRegra = descEl.value.trim();
+
+  STATE.fidelidade = fid;
+  await salvarArquivo(PATHS.fidelidade, fid, 'fidelidadeSha', 'Admin: atualizar regras de pontuação');
+  toast('Regras de pontuação salvas com sucesso!', 'ok');
+  carregarRegrasPontuacao();
+
+  // Também atualizar no config.json para sincronização com o site
+  const cfg = STATE.config || {};
+  cfg.fidelidadePontosPorCodigo = fid.config.pontosPorCodigo;
+  cfg.fidelidadeValorPorCodigo = fid.config.valorMonetarioPorCodigo;
+  STATE.config = cfg;
+  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: sincronizar regras de pontuação');
 }
 
 // Salvar Textos da Promoção (IDs: promo-h1, promo-badge-el, promo-titulo-el, promo-desc-el)
