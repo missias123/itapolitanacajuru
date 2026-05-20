@@ -2400,8 +2400,8 @@ Talento</textarea>
             </a>
           </div>
 
-          <!-- FERRAMENTA MANUS -->
-          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Manus — Solicitar Melhoria</div>
+          <!-- FERRAMENTA COPILOTO -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Copiloto — Solicitar Melhoria</div>
           <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px">
             <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:10px">🤖 O que você quer melhorar no site hoje?</div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
@@ -2414,7 +2414,7 @@ Talento</textarea>
             </div>
             <div style="display:flex;gap:8px">
               <input id="adm-manus-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
-              <button onclick="admQualEnviarManus()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Manus</button>
+              <button onclick="admQualEnviarCopiloto()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Copiloto</button>
             </div>
           </div>
 
@@ -3808,15 +3808,63 @@ function admQualSetInput(texto){
   const el=document.getElementById('adm-manus-input');
   if(el){el.value=texto;el.focus();}
 }
-function admQualEnviarManus(){
+function admQualEnviarCopiloto(){
   const el=document.getElementById('adm-manus-input');
   if(!el)return;
-  const texto=el.value.trim();
-  if(!texto)return;
+  const textoUsuario=el.value.trim();
+  if(!textoUsuario){
+    toast('Por favor, descreva o que deseja melhorar ou corrigir.','aviso');
+    return;
+  }
+
+  // Coletar dados completos para envio ao Copiloto
+  const dadosCompletos={
+    timestamp: new Date().toISOString(),
+    textoSolicitacao: textoUsuario,
+    urlAtual: window.location.href,
+    navegador: {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      cookiesHabilitados: navigator.cookieEnabled,
+      online: navigator.onLine
+    },
+    stateConfig: JSON.parse(JSON.stringify(STATE.config||{})),
+    errosConsole: window.ADMIN_CONSOLE_LOGS||[],
+    metricas: {
+      clientes: Object.keys(STATE.clientes?.clientes||{}).length,
+      encomendas: STATE.encomendas?.registros?.length||0,
+      produtos: STATE.produtos?.produtos?.length||0,
+      fidelidade: Object.keys(fidGetCodigos()).length
+    },
+    ghWriteAllowed: GH_WRITE_ALLOWED
+  };
+
+  // Exibir dados estruturados no console
+  console.group('📤 ENVIO AO COPILOTO — Dados Coletados');
+  console.log('🕒 Timestamp:', dadosCompletos.timestamp);
+  console.log('📝 Solicitação do Usuário:', dadosCompletos.textoSolicitacao);
+  console.log('🌐 URL Atual:', dadosCompletos.urlAtual);
+  console.log('💻 Navegador:', dadosCompletos.navegador);
+  console.log('⚙️ STATE.config:', dadosCompletos.stateConfig);
+  console.log('❌ Erros do Console:', dadosCompletos.errosConsole);
+  console.log('📊 Métricas:', dadosCompletos.metricas);
+  console.log('🔐 GitHub Write Permitido:', dadosCompletos.ghWriteAllowed);
+  console.log('📦 Dados Completos (JSON):', JSON.stringify(dadosCompletos, null, 2));
+  console.groupEnd();
+
+  // Copiar dados para área de transferência
+  const jsonFormatado=JSON.stringify(dadosCompletos, null, 2);
   if(navigator.clipboard){
-    navigator.clipboard.writeText(texto).then(()=>{alert('✅ Mensagem copiada!\n\nCole no chat do Manus:\n\n"'+texto+'"');});
-  }else{alert('Copie e envie ao Manus:\n\n"'+texto+'"');}
-  el.value='';
+    navigator.clipboard.writeText(jsonFormatado).then(()=>{
+      toast('✅ Solicitação enviada ao Copiloto com sucesso!\n\nDados coletados e copiados para a área de transferência.\nVeja os detalhes completos no console do navegador (F12).','ok');
+      el.value='';
+    }).catch(()=>{
+      toast('⚠️ Dados coletados (veja no console F12).\nNão foi possível copiar automaticamente.','aviso');
+    });
+  }else{
+    toast('⚠️ Dados coletados e exibidos no console (F12).\nCopie manualmente se necessário.','aviso');
+  }
 }
 
 function renderDashboard(){
