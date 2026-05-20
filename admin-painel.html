@@ -2894,6 +2894,8 @@ Talento</textarea>
         <option value="clientes">Clientes</option>
         <option value="encomendas">Encomendas</option>
         <option value="fidelidade">Fidelidade</option>
+        <option value="sobre">Sobre</option>
+        <option value="galeria">Galeria</option>
       </select>
       <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
         <option value="">Todas severidades</option>
@@ -9600,7 +9602,7 @@ function executarAuditoria(){
 
       if(!textoPreenchido(sp.quemSomosTexto1)&&!textoPreenchido(sp.historiaTexto1)&&!textoPreenchido(sp.fazemosTexto)){
         _auditoriaResultados.push({
-          modulo:'encomendas',
+          modulo:'sobre',
           severidade:'alta',
           tipo:'sobre_vazio',
           titulo:'Seção Sobre com conteúdo insuficiente',
@@ -9613,7 +9615,7 @@ function executarAuditoria(){
 
       if(!textoPreenchido(gp.h1)||!textoPreenchido(gp.descricao)||imgs.length===0){
         _auditoriaResultados.push({
-          modulo:'encomendas',
+          modulo:'galeria',
           severidade:'alta',
           tipo:'galeria_incompleta',
           titulo:'Galeria sem conteúdo completo',
