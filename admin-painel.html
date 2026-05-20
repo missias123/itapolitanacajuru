@@ -2210,14 +2210,15 @@ Talento</textarea>
             <button class="btn btn-laranja" data-fid-write onclick="liberarLoteFidelidade()" id="btn-liberar-lote">&#x1F3B2; Liberar 100 Códigos</button>
             <button class="btn btn-vermelho" data-fid-write onclick="apagarTodosCodigos()">&#x1F5D1;&#xFE0F; Apagar Todos</button>
           </div>
-          <div class="fid-alerta" id="fid-alerta-lote"></div>
-          <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (21/A4 · 63,5&times;38,1 mm)</button>
-          </div>
-          <div id="fid-lote-wrap" style="display:none;margin-top:16px">
-            <div class="fid-lote-info" id="fid-lote-info"></div>
-            <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
-            <div class="btn-row" style="margin-top:16px">
+	          <div class="fid-alerta" id="fid-alerta-lote"></div>
+	          <div class="btn-row" style="margin-top:16px">
+	            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (21/A4 · 63,5&times;38,1 mm)</button>
+	            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidadeA4_10_100()">&#x1F4C4; Gerar PDF (100 códigos · 10/A4 · 101,6&times;50,8 mm)</button>
+	          </div>
+	          <div id="fid-lote-wrap" style="display:none;margin-top:16px">
+	            <div class="fid-lote-info" id="fid-lote-info"></div>
+	            <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
+	            <div class="btn-row" style="margin-top:16px">
               <button class="btn btn-laranja" onclick="gerarPDFLote()">&#x1F4C4; Imprimir Etiquetas PDF (99,1&times;38,1 mm)</button>
             </div>
           </div>
@@ -5606,11 +5607,11 @@ async function fidEnsureJsPDF(){
   });
   return fidEnsureJsPDF._loading;
 }
-function fidColetarCodigosParaEtiquetas(){
-  const lote = JSON.parse(localStorage.getItem('fid_lote_admin') || 'null');
-  if(lote && Array.isArray(lote.codigos) && lote.codigos.length){
-    return { codigos: lote.codigos.slice(), origem: 'lote', lote };
-  }
+	function fidColetarCodigosParaEtiquetas(){
+	  const lote = JSON.parse(localStorage.getItem('fid_lote_admin') || 'null');
+	  if(lote && Array.isArray(lote.codigos) && lote.codigos.length){
+	    return { codigos: lote.codigos.slice(), origem: 'lote', lote };
+	  }
   const codigosConfig = STATE.config?.fidelidade?.codigos;
   if(Array.isArray(codigosConfig) && codigosConfig.length){
     return { codigos: codigosConfig.slice(), origem: 'config', lote: null };
@@ -5623,9 +5624,43 @@ function fidColetarCodigosParaEtiquetas(){
   if(lista.length){
     return { codigos: lista, origem: 'disponiveis', lote: null };
   }
-  const placeholders = Array.from({ length: 21 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
-  return { codigos: placeholders, origem: 'placeholder', lote: null };
-}
+	  const placeholders = Array.from({ length: 21 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
+	  return { codigos: placeholders, origem: 'placeholder', lote: null };
+	}
+	function fidColetar100CodigosParaA4(){
+	  const cfg = STATE.config || {};
+	  if(!cfg.fidelidade || typeof cfg.fidelidade !== 'object') cfg.fidelidade = {};
+	  const codigosConfig = cfg.fidelidade.codigos;
+	  if(Array.isArray(codigosConfig) && codigosConfig.length){
+	    const lista = codigosConfig.map(c => (c == null ? '' : String(c).trim())).filter(Boolean);
+	    if(lista.length >= 100){
+	      cfg.fidelidade.codigos = lista.slice(0, 100);
+	      STATE.config = cfg;
+	      return { codigos: lista.slice(0, 100), origem: 'config-100', lote: null };
+	    }
+	  }
+	  const lote = JSON.parse(localStorage.getItem('fid_lote_admin') || 'null');
+	  if(lote && Array.isArray(lote.codigos) && lote.codigos.length){
+	    const lista = lote.codigos.map(c => (c == null ? '' : String(c).trim())).filter(Boolean);
+	    if(lista.length >= 100){
+	      cfg.fidelidade.codigos = lista.slice(0, 100);
+	      STATE.config = cfg;
+	      return { codigos: lista.slice(0, 100), origem: 'lote-100', lote };
+	    }
+	  }
+	  const codigosObj = fidGetCodigos();
+	  const lista = Object.entries(codigosObj)
+	    .filter(([, v]) => v && (v.status === 'disponível' || v.status === 'disponivel'))
+	    .sort((a, b) => ((a[1].idx || 0) - (b[1].idx || 0)))
+	    .map(([cod]) => (cod == null ? '' : String(cod).trim()))
+	    .filter(Boolean);
+	  if(lista.length >= 100){
+	    cfg.fidelidade.codigos = lista.slice(0, 100);
+	    STATE.config = cfg;
+	    return { codigos: lista.slice(0, 100), origem: 'disponiveis-100', lote: null };
+	  }
+	  return { codigos: lista, origem: lista.length ? 'disponiveis-parcial' : 'vazio', lote: null };
+	}
  function fidFitTextSizeMm(doc, text, maxWidthMm, baseSizePt, minSizePt){
   doc.setFontSize(baseSizePt);
   const w = doc.getTextWidth(text);
@@ -5643,13 +5678,15 @@ function fidColetarCodigosParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
- function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
-   const ETQ_POR_PAGINA = cols * rows;
-   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
-   const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
-   const hoje = new Date().toISOString().slice(0, 10);
-   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-   const titulo = `Etiquetas Fidelidade (63,5×38,1)${loteTag} — ${origem} — ${hoje}`;
+	 function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas, tituloOverride }){
+	   const ETQ_POR_PAGINA = cols * rows;
+	   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
+	   const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
+	   const hoje = new Date().toISOString().slice(0, 10);
+	   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
+	   const titulo = (typeof tituloOverride === 'string' && tituloOverride.trim())
+	     ? tituloOverride.trim()
+	     : `Etiquetas Fidelidade (${String(etqW).replace('.',',')}×${String(etqH).replace('.',',')})${loteTag} — ${origem} — ${hoje}`;
 
    const layout = fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow });
    if(layout.marginX < 0 || layout.marginY < 0){
@@ -5753,11 +5790,11 @@ function fidColetarCodigosParaEtiquetas(){
    win.document.close();
    try{ win.focus(); }catch(e){}
  }
- async function gerarPdfEtiquetasFidelidade(){
-  let jsPDF;
-  try{
-    jsPDF = await fidEnsureJsPDF();
-  }catch(err){
+	async function gerarPdfEtiquetasFidelidade(){
+	  let jsPDF;
+	  try{
+	    jsPDF = await fidEnsureJsPDF();
+	  }catch(err){
     console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
     toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
     try{
@@ -5839,9 +5876,102 @@ function fidColetarCodigosParaEtiquetas(){
   const hoje = new Date().toISOString().slice(0, 10);
   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
   const filename = `etiquetas-fidelidade-63_5x38_1${loteTag}-${origem}-${hoje}.pdf`;
-  doc.save(filename);
-  toast('PDF de etiquetas gerado com sucesso.','ok');
-}
+	  doc.save(filename);
+	  toast('PDF de etiquetas gerado com sucesso.','ok');
+	}
+	async function gerarPdfEtiquetasFidelidadeA4_10_100(){
+	  const payload = fidColetar100CodigosParaA4();
+	  if(!payload.codigos || payload.codigos.length < 100){
+	    toast(`⚠️ Preciso de 100 códigos para gerar o PDF (encontrado: ${payload.codigos ? payload.codigos.length : 0}). Use “Liberar 100 Códigos” primeiro.`, 'aviso');
+	    return;
+	  }
+	  const codigos = payload.codigos.slice(0, 100);
+	  const origem = payload.origem || 'desconhecida';
+	  const lote = payload.lote || null;
+
+	  const ETQ_W = 101.6;
+	  const ETQ_H = 50.8;
+	  const COLS = 2;
+	  const ROWS = 5;
+	  const ETQ_POR_PAGINA = COLS * ROWS; // 10
+	  const GAP_COL = 0.0;
+	  const GAP_ROW = 0.0;
+	  const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
+	  if(layout.marginX < 0 || layout.marginY < 0){
+	    toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
+	    return;
+	  }
+
+	  const hoje = new Date().toISOString().slice(0, 10);
+	  const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
+	  const tituloOverride = `Etiquetas Fidelidade (101,6×50,8)${loteTag} — ${origem} — ${hoje}`;
+
+	  let jsPDF;
+	  try{
+	    jsPDF = await fidEnsureJsPDF();
+	  }catch(err){
+	    console.error('[Fidelidade] Erro ao carregar jsPDF (10/A4):', err);
+	    toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
+	    try{
+	      gerarPdfEtiquetasFidelidadeViaPrint({
+	        codigos,
+	        origem,
+	        lote,
+	        etqW: ETQ_W,
+	        etqH: ETQ_H,
+	        cols: COLS,
+	        rows: ROWS,
+	        gapCol: GAP_COL,
+	        gapRow: GAP_ROW,
+	        desenharBordas: false,
+	        tituloOverride
+	      });
+	    }catch(e){
+	      console.error('[Fidelidade] Falha ao abrir versão de impressão (10/A4):', e);
+	      toast('❌ Falha ao abrir versão de impressão do PDF.','erro');
+	    }
+	    return;
+	  }
+
+	  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+	  const desenharBordas = false;
+	  const paddingX = 6;
+	  const maxTextW = ETQ_W - (paddingX * 2);
+	  const baseFont = 24;
+	  const minFont = 10;
+	  const totalSlots = 100; // 10 folhas × 10 etiquetas
+
+	  for(let i = 0; i < totalSlots; i++){
+	    if(i > 0 && i % ETQ_POR_PAGINA === 0) doc.addPage();
+
+	    const idx = i % ETQ_POR_PAGINA;
+	    const row = Math.floor(idx / COLS);
+	    const col = idx % COLS;
+	    const x = layout.marginX + col * (ETQ_W + GAP_COL);
+	    const y = layout.marginY + row * (ETQ_H + GAP_ROW);
+
+	    if(desenharBordas){
+	      doc.setDrawColor(220, 220, 220);
+	      doc.setLineWidth(0.15);
+	      doc.rect(x, y, ETQ_W, ETQ_H);
+	    }
+
+	    const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
+	    if(!codigo) continue;
+
+	    doc.setTextColor(20, 20, 20);
+	    doc.setFont('courier', 'bold');
+	    const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
+	    doc.setFontSize(fontSize);
+	    const textX = x + (ETQ_W / 2);
+	    const textY = y + (ETQ_H / 2);
+	    doc.text(codigo, textX, textY, { align: 'center', baseline: 'middle' });
+	  }
+
+	  const filename = `etiquetas-fidelidade-101_6x50_8${loteTag}-${origem}-${hoje}.pdf`;
+	  doc.save(filename);
+	  toast('PDF (10/A4 · 101,6×50,8) gerado com sucesso.','ok');
+	}
 function gerarPDFLote(){
   const lote=JSON.parse(localStorage.getItem('fid_lote_admin')||'null');
   if(!lote||!lote.codigos||!lote.codigos.length){toast('Nenhum lote gerado ainda.','erro');return;}
