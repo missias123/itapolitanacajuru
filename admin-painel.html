@@ -2212,7 +2212,7 @@ Talento</textarea>
           </div>
           <div class="fid-alerta" id="fid-alerta-lote"></div>
           <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (21/A4 · 63,5&times;38,1 mm)</button>
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (10/A4 · 92,5&times;51,4 mm)</button>
           </div>
           <div id="fid-lote-wrap" style="display:none;margin-top:16px">
             <div class="fid-lote-info" id="fid-lote-info"></div>
@@ -5869,12 +5869,12 @@ function fidColetarCodigosParaEtiquetas(){
 	      const payload = fidColetarCodigosParaEtiquetas();
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
-	        etqW: 63.5,
-	        etqH: 38.1,
-	        cols: 3,
-	        rows: 7,
-	        gapCol: 2.5,
-	        gapRow: 0,
+	        etqW: 92.5,
+	        etqH: 51.4,
+	        cols: 2,
+	        rows: 5,
+	        gapCol: 5,
+	        gapRow: 5,
 	        desenharBordas: true
 	      });
 	    }catch(e){
@@ -5889,18 +5889,18 @@ function fidColetarCodigosParaEtiquetas(){
     return;
   }
 
-  const ETQ_W = 63.5;
-  const ETQ_H = 38.1;
-  const COLS = 3;
-  const ROWS = 7;
+  const ETQ_W = 92.5;
+  const ETQ_H = 51.4;
+  const COLS = 2;
+  const ROWS = 5;
   const ETQ_POR_PAGINA = COLS * ROWS;
 
   const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-  // Layout exato: 3 colunas × 7 linhas (21 etiquetas por A4)
-  // Etiqueta: 63,5 × 38,1 mm
-  // Espaçamento: 2,5 mm horizontal, 0 mm vertical (padrão A4 21 etiquetas)
-  const GAP_COL = 2.5;
-  const GAP_ROW = 0;
+  // Layout exato: 2 colunas × 5 linhas (10 etiquetas por A4)
+  // Etiqueta: 92,5 × 51,4 mm
+  // Espaçamento: 5 mm horizontal, 5 mm vertical
+  const GAP_COL = 5;
+  const GAP_ROW = 5;
   const layout = fidCalcularLayoutEtiquetasA4({ etqW: ETQ_W, etqH: ETQ_H, cols: COLS, rows: ROWS, gapCol: GAP_COL, gapRow: GAP_ROW });
   if(layout.marginX < 0 || layout.marginY < 0){
     toast('Layout inválido: as etiquetas não cabem em A4 com o espaçamento configurado.','erro');
