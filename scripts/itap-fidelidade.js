@@ -6,7 +6,7 @@
   // Clientes e autenticação passam pelo Worker seguro
   var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
   var WPP_NUM = '5516996062046';
-  var META_10 = 15;
+  var META_MILKSHAKE = 15;
   var META_30 = 30;
   var REGEX_CODIGO = /^[A-Z0-9!@#$%^&*?+\-]{10}$/;
   // DDD com 2 dígitos válidos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
@@ -258,7 +258,7 @@
     var telFormatado = mascaraTel(tel);
     var html = '<div class="resgate-wrap">';
 
-    if (pts >= META_10) {
+    if (pts >= META_MILKSHAKE) {
       html += '<div class="resgate-btns">';
 
       var msgMilk = 'Olá, sou ' + nomeExib + ', meu celular é ' + telFormatado + '.\n' +

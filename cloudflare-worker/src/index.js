@@ -1045,7 +1045,7 @@ async function handleCadastrarCupomPorCodigo(request, env) {
   if (!clienteId || !idHash || !codigoSecreto || !Number.isFinite(numeroLote)) {
     return jsonResp({ ok: false, error: 'Dados incompletos' }, 400);
   }
-  if (!CODIGO_SECRETO_REGEX.test(codigoSecreto) || numeroLote <= 0) {
+  if (!CODIGO_SECRETO_REGEX.test(codigoSecreto) || numeroLote <= 0 || !Number.isInteger(numeroLote)) {
     return jsonResp({ ok: false, tipo: 'dados_invalidos', mensagem: '❌ Código ou número de lote incorreto.' }, 422);
   }
 
@@ -1066,7 +1066,7 @@ async function handleCadastrarCupomPorCodigo(request, env) {
   if (!cupom) {
     return jsonResp({ ok: false, sucesso: false, tipo: 'cupom_nao_encontrado', mensagem: '❌ Código ou número de lote incorreto.' }, 422);
   }
-  if (cupom.lote !== Math.floor(numeroLote)) {
+  if (cupom.lote !== numeroLote) {
     return jsonResp({ ok: false, sucesso: false, tipo: 'lote_incorreto', mensagem: '❌ Código ou número de lote incorreto.' }, 422);
   }
   if (cupom.status !== 'disponivel') {

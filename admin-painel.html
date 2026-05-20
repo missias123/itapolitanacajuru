@@ -5596,7 +5596,7 @@ const FID_TOTAL_BANCO = 100000;
 const FID_LOTE_SIZE   = 100;
 /**
  * Formata o número sequencial no padrão pedido pelo negócio:
- * ITA#001 ... ITA#999 ... ITA#1.000 ... ITA#100.000.
+ * ITA#0001 ... ITA#9999 ... ITA#100000.
  * @param {number} numeroSequencial
  * @returns {string}
  */
@@ -5606,7 +5606,7 @@ function fidFormatarCodigoSequencial(numeroSequencial){
   const sufixo = String(n).padStart(4, '0');
   return `ITA#${sufixo}`;
 }
-function fidGerarCodigo(codigoIndex,loteNum){
+function fidGerarCodigoComLote(codigoIndex,loteNum){
   return `${fidFormatarCodigoSequencial(codigoIndex + 1)} LOTE${loteNum}`;
 }
 function fidMostrarAlerta(msg,tipo){
@@ -5658,7 +5658,7 @@ async function liberarLoteFidelidade(){
   const fim=Math.min(atual+FID_LOTE_SIZE,FID_TOTAL_BANCO);
   const loteNum=Math.ceil(fim/FID_LOTE_SIZE);
   const novos=[];
-  for(let i=inicio;i<fim;i++)novos.push(fidGerarCodigo(i,loteNum));
+  for(let i=inicio;i<fim;i++)novos.push(fidGerarCodigoComLote(i,loteNum));
   const fidData=fidEnsureCodigos();
   novos.forEach((c,i)=>{fidData.codigos[c]={status:'disponível',idx:inicio+i,lote:loteNum};});
   STATE.fidelidade.liberados=fim;
