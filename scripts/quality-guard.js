@@ -321,12 +321,18 @@
   // ═══════════════════════════════════════════════════════
   const recursos_404 = [];
   function deveIgnorarRecursoExterno(url) {
-    if (!url) return true;
-    return (
-      url.indexOf('googletagmanager.com/gtm.js') !== -1 ||
-      url.indexOf('googletagmanager.com/ns.html') !== -1 ||
-      url.indexOf('google-analytics.com') !== -1
-    );
+    if (!url) return false;
+    try {
+      const parsed = new URL(url, window.location.href);
+      const host = parsed.hostname.toLowerCase();
+      const path = parsed.pathname.toLowerCase();
+      const ehGtm = (host === 'googletagmanager.com' || host === 'www.googletagmanager.com')
+        && (path === '/gtm.js' || path === '/ns.html');
+      const ehGa = host === 'google-analytics.com' || host === 'www.google-analytics.com';
+      return ehGtm || ehGa;
+    } catch(e) {
+      return false;
+    }
   }
   
   // Interceptar erros de carregamento de recursos

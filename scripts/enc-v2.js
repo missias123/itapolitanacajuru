@@ -1434,7 +1434,6 @@ function toggleSecao(id) {
   }
 }
 window.toggleSecao = toggleSecao;
-window['toggleSeção'] = toggleSecao;
 
 
 // ---- ACRÉSCIMOS (sincronizado com admin - itap_acréscimos) ----
