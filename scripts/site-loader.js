@@ -22,6 +22,8 @@
   const CONFIG_PATH = 'dados/config.json';
   const CACHE_KEY   = 'itap_site_config';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutos
+  const LOCAL_FETCH_TIMEOUT_MS = 5000;
+  const RAW_FETCH_TIMEOUT_MS = 6000;
 
   // ═══════════════════════════════════════════════
   // ESTADO GLOBAL
@@ -96,11 +98,11 @@
     const stamp = Date.now();
 
     // 1) Preferir o arquivo local publicado no próprio domínio (fonte canônica em produção)
-    const local = await fetchJsonComTimeout('/' + CONFIG_PATH + '?t=' + stamp, 5000);
+    const local = await fetchJsonComTimeout('/' + CONFIG_PATH + '?t=' + stamp, LOCAL_FETCH_TIMEOUT_MS);
     if (local) return local;
 
     // 2) Fallback para RAW do GitHub (resiliência em ambientes sem arquivo local)
-    return await fetchJsonComTimeout(GH_RAW + CONFIG_PATH + '?t=' + stamp, 6000);
+    return await fetchJsonComTimeout(GH_RAW + CONFIG_PATH + '?t=' + stamp, RAW_FETCH_TIMEOUT_MS);
   }
 
   // ═══════════════════════════════════════════════
