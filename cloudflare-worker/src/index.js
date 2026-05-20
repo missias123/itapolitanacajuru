@@ -904,7 +904,7 @@ async function handleBulkPutEncomendas(request, env) {
 // HANDLERS — FIDELIDADE
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const CUPOM_REGEX = /^ITA#\d{4}$/;
+const CUPOM_REGEX = /^ITA#\d{4,6}$/;
 
 function padCupomNumero(numeroSequencial) {
   return `ITA#${String(numeroSequencial).padStart(4, '0')}`;
@@ -987,7 +987,7 @@ async function handleVerificarNumeroCupom(request) {
 
   const numeroCupom = sanitizeString(body.numero_cupom, 20).toUpperCase();
   if (!CUPOM_REGEX.test(numeroCupom)) {
-    return jsonResp({ ok: false, encontrado: false, disponivel: false, error: 'Formato inválido. Use ITA#0000.' }, 400);
+    return jsonResp({ ok: false, encontrado: false, disponivel: false, error: 'Formato inválido. Use ITA#0000 ou superior.' }, 400);
   }
 
   let fidelidade;

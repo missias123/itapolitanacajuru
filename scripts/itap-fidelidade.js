@@ -8,6 +8,7 @@
   var WPP_NUM = '5516996062046';
   var META_10 = 10;
   var META_30 = 30;
+  var CUPOM_REGEX = /^ITA#\d{4,6}$/;
   // DDD com 2 dígitos válidos (11-99) + nono dígito 9 + mais 8 números = 11 dígitos.
   var BRAZILIAN_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
 
@@ -539,12 +540,11 @@
   }
 
   if (inputNumeroCupom) {
-    var regexCupom = /^ITA#\d{4}$/;
     inputNumeroCupom.addEventListener('input', debounce(function() {
       var valor = (this.value || '').trim().toUpperCase();
       this.value = valor;
       limparEstadoCupomNumero();
-      if (!regexCupom.test(valor)) return;
+      if (!CUPOM_REGEX.test(valor)) return;
       if (msgStatusCupom) {
         msgStatusCupom.textContent = '⏳ Verificando número do cupom...';
         msgStatusCupom.style.color = '#333';
@@ -613,7 +613,7 @@
         setResultadoCodigo('Digite o número do cupom no formato ITA#0000.', 'erro');
         return;
       }
-      if (!/^ITA#\d{4}$/.test(numeroCupom)) {
+      if (!CUPOM_REGEX.test(numeroCupom)) {
         setResultadoCodigo('Formato inválido. Use ITA#0000.', 'erro');
         return;
       }

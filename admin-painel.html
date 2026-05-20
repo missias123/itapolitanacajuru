@@ -5603,7 +5603,7 @@ const FID_LOTE_SIZE   = 100;
 function fidFormatarCodigoSequencial(numeroSequencial){
   const nBruto = Number(numeroSequencial);
   const n = Number.isFinite(nBruto) && nBruto > 0 ? Math.floor(nBruto) : 1;
-  const sufixo = n < 1000 ? String(n).padStart(3, '0') : n.toLocaleString('pt-BR');
+  const sufixo = String(n).padStart(4, '0');
   return `ITA#${sufixo}`;
 }
 function fidGerarCodigo(codigoIndex,loteNum){
