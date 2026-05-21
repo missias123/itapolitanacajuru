@@ -4034,7 +4034,7 @@ function handleChatInputFocus() {
 
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', atualizarChatViewport);
-  window.visualViewport.addEventListener('scroll', atualizarChatViewport);
+  window.visualViewport.addEventListener('scroll', atualizarChatViewport, { passive: true });
 }
 
 function enviarChat() {
@@ -5230,7 +5230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  window.addEventListener('scroll', revealOnScroll);
+  window.addEventListener('scroll', revealOnScroll, { passive: true });
   revealOnScroll(); // Trigger on load
 });
 
