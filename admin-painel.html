@@ -5805,7 +5805,8 @@ function fidColetarCodigosParaEtiquetas(){
   const scaled = Math.floor(baseSizePt * (maxWidthMm / w));
   return Math.max(minSizePt, scaled);
  }
- const FID_LOGO_MARCA_DAGUA_SRC = 'images/logo.webp';
+  const FID_LOGO_MARCA_DAGUA_SRC = 'images/logo.webp';
+  const FID_TEXTO_SORTEIOS = '* SORTEIOS MENSAIS *';
  let fidLogoMarcaDaguaDataUrlCache;
  async function fidGetLogoMarcaDaguaDataUrl(){
    if(fidLogoMarcaDaguaDataUrlCache !== undefined) return fidLogoMarcaDaguaDataUrlCache;
@@ -5874,15 +5875,15 @@ function fidColetarCodigosParaEtiquetas(){
            <div class="etq-lateral etq-lateral-right">${seqTxt}</div>
            <div class="etq-conteudo">
              <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
-             <div class="etq-lote-corpo">${loteTxt}</div>
+             <div class="etq-lote-corpo" aria-label="Lote do cupom">${loteTxt}</div>
              <div class="etq-divisor"></div>
              <div class="etq-cod">${safe}</div>
              <div class="etq-divisor"></div>
              <div class="etq-footer-1">Cadastre no Nosso APP</div>
              <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
-             <div class="etq-seq-corpo">${seqTxt}</div>
+             <div class="etq-seq-corpo" aria-label="Número de sequência do cupom">${seqTxt}</div>
              <div class="etq-divisor etq-divisor-laranja"></div>
-             <div class="etq-sorteios">🎉 SORTEIOS MENSAIS 🎉</div>
+             <div class="etq-sorteios">${FID_TEXTO_SORTEIOS}</div>
            </div>
          </div>`;
       }).join('');
@@ -6228,7 +6229,7 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.4);
-    doc.text('🎉 SORTEIOS MENSAIS 🎉', centerX, y + 46.1, { align: 'center', charSpace: 0.22 });
+    doc.text(FID_TEXTO_SORTEIOS, centerX, y + 46.1, { align: 'center' });
 
     // Laterais: Lote e Número Sequencial
     doc.setTextColor(122, 122, 122);
