@@ -583,7 +583,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
-    <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🛒 Pág. Encomendas</button>
+    <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🧩 Site Encomendas</button>
     <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
     <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
     <button class="nav-btn" id="nav-btn-auditoria" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
@@ -5764,6 +5764,32 @@ function fidColetarCodigosParaEtiquetas(){
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
  /**
+  * Monta metadados laterais (lote e número sequencial) para cada etiqueta.
+  * Prioriza dados persistidos em fidelidade.códigos (lote/idx) e usa fallback do lote atual quando disponível.
+  * @param {string[]} codigos Lista de códigos na ordem de impressão.
+  * @param {{loteNum?: number, inicio?: number}|null} lote Dados do último lote liberado (quando houver).
+  * @returns {{loteTexto:string, sequenciaTexto:string}[]} Metadados alinhados por índice da lista de códigos.
+  */
+ function fidMontarMetadadosEtiquetas(codigos, lote){
+  const codigosObj = fidGetCodigos();
+  return codigos.map((codigo, i) => {
+    const clean = String(codigo || '').trim();
+    if(!clean) return { loteTexto: '', sequenciaTexto: '' };
+    const meta = codigosObj[clean] || {};
+    const loteNum = Number(meta.lote || lote?.loteNum || 0);
+    let numeroSequencial = Number.isFinite(Number(meta.idx)) ? (Number(meta.idx) + 1) : NaN;
+    if(!Number.isFinite(numeroSequencial) && lote && Number.isFinite(Number(lote.inicio))){
+      numeroSequencial = Number(lote.inicio) + i;
+    }
+    return {
+      loteTexto: loteNum > 0 ? `LOTE ${String(loteNum).padStart(2, '0')}` : 'LOTE --',
+      sequenciaTexto: Number.isFinite(numeroSequencial) && numeroSequencial > 0
+        ? `Nº ${String(numeroSequencial).padStart(4, '0')}`
+        : 'Nº ----'
+    };
+  });
+ }
+ /**
   * Ajusta o tamanho da fonte para caber na largura máxima informada (em mm).
   * @param {object} doc Instância jsPDF.
   * @param {string} text Texto a ser renderizado.
@@ -5815,7 +5841,7 @@ function fidColetarCodigosParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
- function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
+ function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, metadados, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
    const ETQ_POR_PAGINA = cols * rows;
    const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
    const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
@@ -5836,11 +5862,16 @@ function fidColetarCodigosParaEtiquetas(){
    const folhasHtml = Array.from({ length: pages }, (_, p) => {
      const start = p * ETQ_POR_PAGINA;
      const slice = lista.slice(start, start + ETQ_POR_PAGINA);
-      const etqs = slice.map(cod => {
-        const safe = esc(cod);
-        if(!safe) return '<div class="etq etq-vazia"></div>';
-        return `<div class="etq">
+       const etqs = slice.map((cod, idxLocal) => {
+         const meta = metadados[start + idxLocal] || {};
+         const loteTxt = esc(meta.loteTexto || 'LOTE --');
+         const seqTxt = esc(meta.sequenciaTexto || 'Nº ----');
+         const safe = esc(cod);
+         if(!safe) return '<div class="etq etq-vazia"></div>';
+         return `<div class="etq">
           <img class="etq-watermark" src="${FID_LOGO_MARCA_DAGUA_SRC}" alt="" aria-hidden="true">
+          <div class="etq-lateral etq-lateral-left">${loteTxt}</div>
+          <div class="etq-lateral etq-lateral-right">${seqTxt}</div>
           <div class="etq-conteudo">
             <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
             <div class="etq-divisor"></div>
@@ -5928,6 +5959,22 @@ function fidColetarCodigosParaEtiquetas(){
         align-items:center;
       }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
+      .etq-lateral{
+        position:absolute;
+        top:50%;
+        transform:translateY(-50%);
+        writing-mode:vertical-rl;
+        text-orientation:mixed;
+        font-family:Helvetica,Arial,sans-serif;
+        font-weight:800;
+        font-size:6.3pt;
+        letter-spacing:.1pt;
+        color:#7a7a7a;
+        z-index:1;
+        line-height:1;
+      }
+      .etq-lateral-left{ left:0.8mm; }
+      .etq-lateral-right{ right:0.8mm; transform:translateY(-50%) rotate(180deg); }
  	    .etq-header{
  	      font-family:Helvetica,Arial,sans-serif;
  	      font-weight:800;
@@ -6007,7 +6054,7 @@ function fidColetarCodigosParaEtiquetas(){
    win.document.close();
    try{ win.focus(); }catch(e){}
  }
- async function gerarPdfEtiquetasFidelidade(){
+async function gerarPdfEtiquetasFidelidade(){
   let jsPDF;
   try{
     jsPDF = await fidEnsureJsPDF();
@@ -6016,8 +6063,10 @@ function fidColetarCodigosParaEtiquetas(){
     toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
     try{
 	      const payload = fidColetarCodigosParaEtiquetas();
+        const metadados = fidMontarMetadadosEtiquetas(payload.codigos, payload.lote);
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
+          metadados,
 	        etqW: 92.5,
 	        etqH: 51.4,
 	        cols: 2,
@@ -6033,6 +6082,7 @@ function fidColetarCodigosParaEtiquetas(){
   }
 
   const { codigos, origem, lote } = fidColetarCodigosParaEtiquetas();
+  const metadados = fidMontarMetadadosEtiquetas(codigos, lote);
   if(!codigos.length){
     toast('Nenhum código encontrado para gerar etiquetas.','erro');
     return;
@@ -6079,6 +6129,7 @@ function fidColetarCodigosParaEtiquetas(){
 
     const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
     if(!codigo) continue;
+    const metaEtiqueta = metadados[i] || {};
 
     // ═══════════════════════════════════════════════════════════════
     // CONTEÚDO OTIMIZADO DA ETIQUETA (10/A4 · 92,5×51,4 mm)
@@ -6144,6 +6195,13 @@ function fidColetarCodigosParaEtiquetas(){
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
     doc.text('🎉 SORTEIOS MENSAIS 🎉', centerX, y + 45.9, { align: 'center' });
+
+    // Laterais: Lote e Número Sequencial
+    doc.setTextColor(122, 122, 122);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.4);
+    doc.text(metaEtiqueta.loteTexto || 'LOTE --', x + 1.6, centerY, { align: 'center', angle: 90 });
+    doc.text(metaEtiqueta.sequenciaTexto || 'Nº ----', x + ETQ_W - 1.6, centerY, { align: 'center', angle: -90 });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
@@ -6698,7 +6756,7 @@ async function salvarGaleria() {
 // =====================================================================
 function carregarEncomendas() {
   try {
-    if(!ensureConfigBeforeSection('Pág. Encomendas', carregarEncomendas)) return;
+    if(!ensureConfigBeforeSection('Site Encomendas', carregarEncomendas)) return;
     const cfg = STATE.config || {};
     const seo = (cfg.seoPaginas && cfg.seoPaginas.encomendas) || {};
     const ep = cfg.encomendasPagina || {};
