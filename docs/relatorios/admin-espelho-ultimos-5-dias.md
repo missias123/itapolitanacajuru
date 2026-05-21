@@ -1,11 +1,79 @@
 # Relatório Operacional — Últimos 5 dias (Admin ↔ Site)
 
-Gerado em: 2026-05-20T08:26:26.155Z
+Gerado em: 2026-05-21T08:32:08.935Z
 
 Status do incidente "Admin não editável / Espelho quebrado": **não resolvido**
 
 ## Commits (últimos 5 dias)
 
+- `5e6c5e0` | 2026-05-21T03:49:22Z | missias123 | Merge pull request #165 from missias123/copilot/fix-cupom-rodape-alinhamento
+- `9e404a5` | 2026-05-21T03:48:11Z | copilot-swe-agent[bot] | fix: cupom - CLUBE ITAPOLITANA, layout perfeito, SORTEIOS na barra, Cadastre negrito
+- `68bca07` | 2026-05-21T03:32:31Z | missias123 | Merge pull request #164 from missias123/copilot/auditar-cupom-texto
+- `f7e0567` | 2026-05-21T03:30:16Z | copilot-swe-agent[bot] | refactor: concluir manutencao final do cupom
+- `5c93fcf` | 2026-05-21T03:28:56Z | copilot-swe-agent[bot] | refactor: extrair constantes finais do cupom
+- `b511b0c` | 2026-05-21T03:27:45Z | copilot-swe-agent[bot] | chore: limpar revisão automatica do cupom
+- `773714c` | 2026-05-21T03:26:29Z | copilot-swe-agent[bot] | chore: concluir revisão final do cupom
+- `be07b70` | 2026-05-21T03:25:05Z | copilot-swe-agent[bot] | feat: finalizar cupom premium do PDF
+- `c65a66f` | 2026-05-21T03:21:28Z | copilot-swe-agent[bot] | feat: finalizar refinamento visual do cupom
+- `91890d4` | 2026-05-21T03:19:02Z | copilot-swe-agent[bot] | feat: refinar layout base do cupom PDF
+- `a5101c9` | 2026-05-21T03:12:38Z | missias123 | Merge pull request #163 from missias123/copilot/update-pdf-cupom-layout
+- `90a08bb` | 2026-05-21T03:09:39Z | copilot-swe-agent[bot] | fix: alinhar etiquetas fidelidade ao layout da imagem base
+- `b386594` | 2026-05-21T03:00:11Z | missias123 | Merge pull request #162 from missias123/copilot/generate-pdf-fidelity-coupons
+- `c75abc7` | 2026-05-21T02:58:46Z | copilot-swe-agent[bot] | fix: ajustar aumento exato de 25 por cento no codigo central
+- `fc9edeb` | 2026-05-21T02:57:16Z | copilot-swe-agent[bot] | fix: aumentar apenas fonte do codigo central nas etiquetas de fidelidade
+- `cbf356b` | 2026-05-21T02:45:39Z | missias123 | Merge pull request #161 from missias123/copilot/revert-layout-changes-update-font-size
+- `cbee385` | 2026-05-21T02:44:18Z | copilot-swe-agent[bot] | docs: adicionar check-tipo-artesanal.js no README como validação obrigatória
+- `6f1d283` | 2026-05-21T02:43:51Z | copilot-swe-agent[bot] | fix: substituir artesanal→tipo artesanal em todo site + script de validação permanente
+- `fa3ab01` | 2026-05-21T02:40:54Z | copilot-swe-agent[bot] | plan: corrigir artesanal→tipo artesanal em todo o site + criar regra de validação
+- `3d0c831` | 2026-05-21T02:35:06Z | copilot-swe-agent[bot] | fix: btn min-height 44px, H1 sobre.html, PDF layout completo + fonte central +22%
+- `5eca3a5` | 2026-05-21T02:30:09Z | copilot-swe-agent[bot] | plan: restaurar layout completo cupons + aumentar fonte central +22%
+- `eea6eae` | 2026-05-21T02:08:15Z | missias123 | Merge pull request #160 from missias123/copilot/request-pdf-fidelidade
+- `7439c18` | 2026-05-21T02:02:45Z | copilot-swe-agent[bot] | chore: remover capturas temporarias da validacao visual
+- `09555b4` | 2026-05-21T02:02:31Z | copilot-swe-agent[bot] | fix(admin): restaurar abas em branco após dicas
+- `be88887` | 2026-05-21T01:52:37Z | copilot-swe-agent[bot] | fix(admin): evitar abas vazias e padronizar cupom/pdf fidelidade
+- `d40a835` | 2026-05-21T01:49:28Z | copilot-swe-agent[bot] | fix(admin): estabiliza abas do painel e ajusta PDF/código de fidelidade
+- `cc8f545` | 2026-05-21T00:33:16Z | missias123 | Merge pull request #159 from missias123/copilot/optimize-coupon-layout-pdf
+- `cc776b7` | 2026-05-21T00:32:25Z | copilot-swe-agent[bot] | fix: manter lote e sequência dentro da área do cupom no PDF
+- `d7c42c1` | 2026-05-21T00:28:53Z | copilot-swe-agent[bot] | feat: otimizar layout das etiquetas de fidelidade no PDF
+- `5a0a015` | 2026-05-21T00:15:10Z | missias123 | Merge pull request #158 from missias123/copilot/fix-front-end-pages-issues
+- `b4a7f56` | 2026-05-21T00:01:16Z | copilot-swe-agent[bot] | refactor: padronizar nomes de metadados sequenciais das etiquetas
+- `86cce28` | 2026-05-21T00:00:14Z | copilot-swe-agent[bot] | docs: adicionar jsdoc da geracao de metadados de etiquetas fidelidade
+- `955ce9c` | 2026-05-20T23:58:49Z | copilot-swe-agent[bot] | feat: adicionar lote e numero sequencial nas laterais das etiquetas fidelidade
+- `830c431` | 2026-05-20T23:57:06Z | copilot-swe-agent[bot] | chore: planejar lote e sequencia nas laterais dos cupons
+- `1085e7b` | 2026-05-20T23:47:42Z | copilot-swe-agent[bot] | refactor: renomear aba para Site Encomendas no admin
+- `77e9290` | 2026-05-20T23:46:14Z | copilot-swe-agent[bot] | chore: planejar renomeacao de abas de encomendas no admin
+- `bdb4616` | 2026-05-20T23:43:18Z | copilot-swe-agent[bot] | fix: priorizar config local no site-loader com fallback robusto
+- `0772de0` | 2026-05-20T23:43:02Z | copilot-swe-agent[bot] | chore: planejar auditoria front-end de encomendas e loader de config
+- `9d198b8` | 2026-05-20T22:01:15Z | missias123 | Admin: atualizar fidelidade página
+- `6ba58f3` | 2026-05-20T22:01:10Z | missias123 | Admin: atualizar fidelidade página
+- `1d24419` | 2026-05-20T21:13:48Z | missias123 | Merge pull request #156 from missias123/copilot/find-bug
+- `8343acc` | 2026-05-20T21:10:34Z | copilot-swe-agent[bot] | chore(admin): refina utilitários do PDF conforme code review
+- `8c910ed` | 2026-05-20T21:08:56Z | copilot-swe-agent[bot] | feat(admin): reformula layout do PDF de etiquetas de fidelidade com marca d'água
+- `df3158d` | 2026-05-20T20:24:00Z | copilot-swe-agent[bot] | fix: ajustar ita bot para teclado mobile e 3 aparelhos
+- `0247e5a` | 2026-05-20T20:06:45Z | copilot-swe-agent[bot] | fix: endurecer filtro de domínio no quality guard
+- `234b314` | 2026-05-20T20:05:29Z | copilot-swe-agent[bot] | chore: refinar filtros de domínio e limpeza de cache de qualidade
+- `6de605c` | 2026-05-20T20:04:19Z | copilot-swe-agent[bot] | refactor: ajustar filtros de quality guard e limpeza de cache
+- `73cbff4` | 2026-05-20T20:02:39Z | copilot-swe-agent[bot] | fix: corrigir toggle da encomendas e limpeza de erros no painel de qualidade
+- `b4d20c9` | 2026-05-20T19:17:57Z | missias123 | Merge pull request #155 from missias123/claude/fix-pdf-label-count-discrepancy
+- `5f5b635` | 2026-05-20T18:58:35Z | anthropic-code-agent[bot] | fix: corrigir todas dimensões de etiquetas para 10/folha (92,5×51,4mm)
+- `f980166` | 2026-05-20T18:53:19Z | anthropic-code-agent[bot] | fix: atualizar mensagem toast e filename para 99.1x38.1mm
+- `de0ca06` | 2026-05-20T18:52:54Z | anthropic-code-agent[bot] | feat: alterar etiquetas fidelidade para 14/folha (99.1×38.1mm)
+- `4d11080` | 2026-05-20T18:45:52Z | missias123 | Merge pull request #154 from missias123/claude/implementacao-programa-fidelidade-again
+- `2253e34` | 2026-05-20T17:52:09Z | anthropic-code-agent[bot] | feat: adicionar gerenciamento de sorteios e regras de pontuação no admin
+- `acee235` | 2026-05-20T17:46:44Z | anthropic-code-agent[bot] | feat: remover funcionalidade PDF 14 etiquetas, manter apenas 10
+- `e2d6d95` | 2026-05-20T17:31:15Z | anthropic-code-agent[bot] | feat: adicionar gerenciamento sorteios e regras pontuação no admin
+- `2037117` | 2026-05-20T17:29:02Z | anthropic-code-agent[bot] | feat: atualizar regra pontuação 0,5 ponto por R$10 em fidelidade
+- `36597a1` | 2026-05-20T17:14:40Z | missias123 | Merge pull request #153 from missias123/claude/run-lighthouse-audit
+- `e8b7746` | 2026-05-20T17:10:13Z | anthropic-code-agent[bot] | feat: otimizar PDF etiquetas fidelidade 10/A4 com máximo aproveitamento de espaço
+- `e221b13` | 2026-05-20T16:57:19Z | anthropic-code-agent[bot] | docs: adicionar resumo completo da auditoria Lighthouse
+- `160a4f2` | 2026-05-20T16:55:56Z | anthropic-code-agent[bot] | feat: executar auditoria Lighthouse completa e atualizar scores no painel
+- `656f46a` | 2026-05-20T16:48:45Z | missias123 | Merge pull request #152 from missias123/claude/update-modulo-qualidade-ferramenta-copilot
+- `e5616c2` | 2026-05-20T16:34:27Z | anthropic-code-agent[bot] | feat: implementar coleta automática de 8 categorias de dados
+- `b9ab29d` | 2026-05-20T15:59:21Z | missias123 | Merge pull request #151 from missias123/claude/resolucao-inconsistencias-erros-integracao
+- `cfe8286` | 2026-05-20T15:55:52Z | anthropic-code-agent[bot] | docs: adicionar relatório técnico completo da resolução
+- `c2e5463` | 2026-05-20T15:52:29Z | anthropic-code-agent[bot] | fix: desabilitar GTM (404) em index, promocao, dicas, fidelidade
+- `40c29c1` | 2026-05-20T15:50:21Z | anthropic-code-agent[bot] | fix: corrigir nomenclatura Copiloto e layout PDF etiquetas (21→10 por A4)
+- `116e1e7` | 2026-05-20T08:26:26Z | github-actions[bot] | docs: atualizar relatório admin últimos 5 dias [skip ci]
 - `acc604c` | 2026-05-20T02:58:05Z | missias123 | Merge pull request #150 from missias123/claude/audit-user-experience-integration
 - `ef29a5a` | 2026-05-20T02:57:03Z | copilot-swe-agent[bot] | merge: resolve conflicts with origin/main
 - `7ba63eb` | 2026-05-20T02:51:13Z | anthropic-code-agent[bot] | docs: auditoria forense completa das 6 abas do admin-painel - todas funcionais
@@ -18,137 +86,69 @@ Status do incidente "Admin não editável / Espelho quebrado": **não resolvido*
 - `210bdb8` | 2026-05-20T02:12:09Z | anthropic-code-agent[bot] | Fix toggleSeção undefined error and disable invalid GTM
 - `a87574a` | 2026-05-20T02:06:30Z | anthropic-code-agent[bot] | Update label layout to 14 per A4 (2×7, 99.1×38.1mm)
 - `e5969af` | 2026-05-20T01:48:24Z | missias123 | Merge pull request #148 from missias123/claude/audit-empty-tabs-admin-panel
-- `cfca55f` | 2026-05-20T01:11:57Z | anthropic-code-agent[bot] | Add forensic audit tooling for admin panel tab validation
-- `4494e79` | 2026-05-20T01:09:19Z | anthropic-code-agent[bot] | feat: criar arquivos JSON base para persistência de dados (submissões, carrinhos, pedidos)
-- `6d732d6` | 2026-05-20T01:00:17Z | missias123 | Merge pull request #147 from missias123/claude/generate-fidelity-label-pdf
-- `4c35387` | 2026-05-20T00:42:51Z | anthropic-code-agent[bot] | feat(admin): implement 10-label fidelity PDF (2×5, 97.5×51.4mm, multi-line format)
-- `529b85c` | 2026-05-19T23:15:56Z | missias123 | Merge pull request #146 from missias123/codex/audit-admin-panel-forensic
-- `417c9ba` | 2026-05-19T23:06:18Z | openai-code-agent[bot] | fix(admin): etiquetas fidelidade 21/A4 63.5x38.1
-- `2fda9ca` | 2026-05-19T22:36:08Z | missias123 | Merge pull request #145 from missias123/codex/resolucao-pendencias-criticas
-- `7b05381` | 2026-05-19T22:29:08Z | openai-code-agent[bot] | fix(admin): etiquetas PDF e abas + remover vazamento de texto
-- `1222e2b` | 2026-05-19T21:53:09Z | missias123 | Merge pull request #144 from missias123/codex/fix-pdf-generation-and-admin-panel
-- `2cba670` | 2026-05-19T21:24:49Z | openai-code-agent[bot] | fix: PDF etiquetas 99x55,8 + guard texto solto
-- `21802c0` | 2026-05-19T20:59:34Z | openai-code-agent[bot] | test: cobrir abas Sobre/Galeria/Encomendas/Rastreio
-- `0e6a0a4` | 2026-05-19T20:38:11Z | missias123 | Merge pull request #143 from missias123/codex/audit-empty-fields-about-gallery-orders-tracking
-- `989d3f3` | 2026-05-19T20:24:11Z | openai-code-agent[bot] | fix(admin): prefill de SEO keywords na Galeria
-- `1de599e` | 2026-05-19T19:56:28Z | missias123 | Merge pull request #142 from missias123/codex/generate-fidelity-label-pdf
-- `4086194` | 2026-05-19T19:53:39Z | openai-code-agent[bot] | Admin: gerar PDF de etiquetas de fidelidade (A4, 10 por folha, 99×55,8mm)
-- `7a35b20` | 2026-05-19T19:42:43Z | openai-code-agent[bot] | chore: validações baseline ok
-- `0be634c` | 2026-05-19T18:56:04Z | missias123 | Merge pull request #140 from missias123/codex/139-administracao-completa-espelhamento-site
-- `42714ce` | 2026-05-19T18:50:09Z | openai-code-agent[bot] | chore: tornar auditorias determinísticas e robustas
-- `59c1cb6` | 2026-05-19T18:36:24Z | missias123 | Merge pull request #139 from missias123/codex/138-auditoria-forense-painel-administrativo
-- `456769f` | 2026-05-19T18:31:58Z | openai-code-agent[bot] | fix: completar espelho Admin↔Site (coleções, promo e gate)
-- `b0161f8` | 2026-05-19T17:59:10Z | missias123 | Merge pull request #138 from missias123/codex/auditoria-forense-admin-painel
-- `704149c` | 2026-05-19T17:58:31Z | openai-code-agent[bot] | Changes before error encountered
-- `bbbd6f2` | 2026-05-19T17:01:19Z | openai-code-agent[bot] | chore: iniciar auditoria baseline
-- `40c89f0` | 2026-05-19T14:54:09Z | missias123 | Merge pull request #137 from missias123/copilot/associar-renderizar-estoque-admin
-- `783b53d` | 2026-05-19T14:16:17Z | missias123 | Merge pull request #136 from missias123/copilot/fix-admin-panel-button
-- `b916c26` | 2026-05-19T14:14:36Z | copilot-swe-agent[bot] | fix: criar renderizarEstoqueAdmin e integrar carregamento por abas
-- `827735c` | 2026-05-19T14:01:42Z | Manus AI | Fix: Forçar versão limpa do Admin Painel com Token GitHub
-- `2e690bd` | 2026-05-19T14:01:24Z | Manus AI | Revert: Admin Painel para modelo Token GitHub direto (sem Worker)
-- `f160c6b` | 2026-05-19T08:28:06Z | github-actions[bot] | docs: atualizar relatório admin últimos 5 dias [skip ci]
-- `1032992` | 2026-05-19T00:27:54Z | missias123 | Merge pull request #134 from missias123/claude/update-worker-sessions-to-github-token
-- `e51d4f6` | 2026-05-19T00:23:55Z | anthropic-code-agent[bot] | fix: Atualizar última referência "sessão Worker" para "token GitHub"
-- `29c62a5` | 2026-05-19T00:10:17Z | anthropic-code-agent[bot] | fix: Atualizar mensagens de erro e funções legadas
-- `41cef31` | 2026-05-19T00:08:28Z | anthropic-code-agent[bot] | feat: Substituir Worker session por GitHub token authentication
-- `f38b09a` | 2026-05-18T23:26:56Z | Manus AI | fix(site-loader): usar innerHTML com sanitização para campos de texto rico (data-config)
-- `c41aee1` | 2026-05-18T23:25:26Z | Manus AI | Merge branch 'claude/fix-tab-visibility-issues'
-- `01e96b1` | 2026-05-18T23:22:29Z | Manus AI | feat(security): headers enterprise, robots.txt anti-scraping, sitemap atualizado, 404 customizado, PWA v8
-- `89426c0` | 2026-05-18T23:06:45Z | Manus AI | feat(admin): substituir token GitHub por sessão Worker
-- `28e0a09` | 2026-05-18T22:43:06Z | MISSIAS | fix: corrigir visibilidade e inicialização das abas Fidelidade, Dicas, Encomendas e Qualidade
-- `f0ad0e5` | 2026-05-18T22:33:12Z | anthropic-code-agent[bot] | Adicionar ferramenta de diagnóstico visual para abas do admin-painel
-- `e99d210` | 2026-05-18T22:18:35Z | anthropic-code-agent[bot] | Changes before error encountered
-- `aa0720b` | 2026-05-18T21:16:30Z | anthropic-code-agent[bot] | Adicionar teste e documentação para debug de visibilidade das abas
-- `e328965` | 2026-05-18T21:15:29Z | anthropic-code-agent[bot] | Adicionar logging detalhado para debug de visibilidade das abas
-- `5e7a6d3` | 2026-05-18T18:01:32-03:00 | missias123 | Merge pull request #133 from missias123/claude/analisar-campos-admin-editaveis
-- `86bfa2d` | 2026-05-18T20:53:20Z | anthropic-code-agent[bot] | Adicionar teste de auditoria visual completa para seções Sobre, Galeria e Pág. Encomendas
-- `20dd6fe` | 2026-05-18T20:45:43Z | anthropic-code-agent[bot] | Mover teste de diagnóstico para diretório e2e
-- `3014de5` | 2026-05-18T20:41:26Z | anthropic-code-agent[bot] | Adicionar teste de diagnóstico para seções Sobre, Galeria e Pág. Encomendas
-- `f7829cb` | 2026-05-18T20:40:36Z | anthropic-code-agent[bot] | Adicionar chamadas de preenchimento para Sobre, Galeria e Pág. Encomendas no irPara()
-- `b273934` | 2026-05-18T17:32:53-03:00 | missias123 | Merge pull request #132 from missias123/claude/diagnostic-check-config-loading
-- `890a5be` | 2026-05-18T20:32:09Z | anthropic-code-agent[bot] | Add comprehensive admin sections loading diagnostic test
-- `c67caae` | 2026-05-18T20:26:50Z | anthropic-code-agent[bot] | test: Add comprehensive admin sections loading diagnostic test
-- `ae86fba` | 2026-05-18T17:16:43-03:00 | missias123 | Merge pull request #131 from missias123/claude/check-admin-access
-- `9d40b30` | 2026-05-18T20:02:50Z | anthropic-code-agent[bot] | test: Add automated validation for admin sections loading (Fidelidade, Dicas, Encomendas, Qualidade)
-- `4858155` | 2026-05-18T19:57:40Z | anthropic-code-agent[bot] | fix: Load config.json in carregarTudo() to populate Dicas, Fidelidade, Encomendas sections
-- `adb2513` | 2026-05-18T16:33:10-03:00 | missias123 | Merge pull request #130 from missias123/claude/finalizar-auditoria-fase-2
-- `42ec18e` | 2026-05-18T19:23:06Z | anthropic-code-agent[bot] | docs: Complete documentation for Admin Panel Robust Audit (76 fields, 88% coverage)
-- `5b14095` | 2026-05-18T19:21:33Z | anthropic-code-agent[bot] | docs: Documentação completa da Auditoria Robusta do Admin-Painel
-- `f2e5af5` | 2026-05-18T19:11:33Z | anthropic-code-agent[bot] | Admin Panel Audit: Complete site-admin synchronization across 76 fields and 8 pages
-- `dfddd6a` | 2026-05-18T18:50:25Z | anthropic-code-agent[bot] | feat(index): integração completa Fase Final (+7 campos) — 76 campos, 0 falhas, ~88% cobertura
-- `d44815f` | 2026-05-18T18:35:56Z | anthropic-code-agent[bot] | feat(dicas): integração completa Fase 3.2 (+4 campos) — FASE COMPLETA
-- `c595b7a` | 2026-05-18T18:33:39Z | anthropic-code-agent[bot] | feat(promocao): integração completa Fase 3.2 (+6 campos)
-- `a0095f5` | 2026-05-18T18:30:20Z | anthropic-code-agent[bot] | feat(fidelidade): integração completa Fase 3.2 (+10 campos)
-- `5d7d4f6` | 2026-05-18T18:23:16Z | anthropic-code-agent[bot] | feat(fidelidade): integração completa Fase 3.2 (+10 campos)
-- `2fb5fb9` | 2026-05-18T18:12:19Z | anthropic-code-agent[bot] | feat(galeria): adicionar integração completa admin↔site (Fase 3.1 completa)
-- `e4e5e91` | 2026-05-18T18:08:15Z | anthropic-code-agent[bot] | feat(encomendas): adicionar integração completa admin↔site (Fase 3.1 completa)
-- `6fad101` | 2026-05-18T18:07:03Z | anthropic-code-agent[bot] | feat(galeria): adicionar integração completa admin↔site (Fase 3.1 completa)
-- `87e0f0b` | 2026-05-18T18:03:01Z | anthropic-code-agent[bot] | feat(encomendas): adicionar integração completa admin↔site (Fase 3.1 completa)
-- `accaacc` | 2026-05-18T18:00:32Z | anthropic-code-agent[bot] | feat(galeria): adicionar integração completa admin↔site (Fase 3.1)
-- `712159d` | 2026-05-18T14:43:45-03:00 | missias123 | Merge pull request #129 from missias123/claude/update-admin-panel-audit-phase-1
 
 ## Workflow runs (últimos 5 dias)
 
-- 2026-05-20T08:26:10Z | 📈 Relatório Admin — Últimos 5 dias | `.github/workflows/admin-5dias-report.yml` | in_progress/null | run 26150735848 | https://github.com/missias123/itapolitanacajuru/actions/runs/26150735848
-- 2026-05-20T07:37:33Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26148458150 | https://github.com/missias123/itapolitanacajuru/actions/runs/26148458150
-- 2026-05-20T06:51:57Z | Backup Automático dos Dados | `.github/workflows/json-backup.yml` | completed/failure | run 26146464323 | https://github.com/missias123/itapolitanacajuru/actions/runs/26146464323
-- 2026-05-20T06:40:43Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26146002887 | https://github.com/missias123/itapolitanacajuru/actions/runs/26146002887
-- 2026-05-20T06:37:20Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26145865709 | https://github.com/missias123/itapolitanacajuru/actions/runs/26145865709
-- 2026-05-20T06:15:08Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26145006272 | https://github.com/missias123/itapolitanacajuru/actions/runs/26145006272
-- 2026-05-20T06:08:24Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/success | run 26144762253 | https://github.com/missias123/itapolitanacajuru/actions/runs/26144762253
-- 2026-05-20T05:09:09Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26142672959 | https://github.com/missias123/itapolitanacajuru/actions/runs/26142672959
-- 2026-05-20T03:05:01Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26138695013 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138695013
-- 2026-05-20T03:05:00Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/action_required | run 26138694221 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138694221
-- 2026-05-20T02:58:29Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/action_required | run 26138487829 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138487829
-- 2026-05-20T02:58:27Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26138486637 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138486637
-- 2026-05-20T02:58:08Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26138477188 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138477188
-- 2026-05-20T02:58:08Z | Validar JSONs de Dados | `.github/workflows/json-validate.yml` | completed/success | run 26138477137 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138477137
-- 2026-05-20T02:58:08Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26138477153 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138477153
-- 2026-05-20T02:58:08Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26138477176 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138477176
-- 2026-05-20T02:58:08Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26138477152 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138477152
-- 2026-05-20T02:58:08Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/success | run 26138477174 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138477174
-- 2026-05-20T02:58:07Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26138476592 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138476592
-- 2026-05-20T02:57:13Z | Validar JSONs de Dados | `.github/workflows/json-validate.yml` | completed/success | run 26138448798 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138448798
-- 2026-05-20T02:57:13Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26138448783 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138448783
-- 2026-05-20T02:57:13Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26138448786 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138448786
-- 2026-05-20T02:57:13Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26138448769 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138448769
-- 2026-05-20T02:57:13Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26138448801 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138448801
-- 2026-05-20T02:57:13Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/success | run 26138448785 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138448785
-- 2026-05-20T02:55:07Z | Addressing comment on PR #150 | `dynamic/copilot-swe-agent/copilot` | completed/cancelled | run 26138382525 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138382525
-- 2026-05-20T02:45:52Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/failure | run 26138094609 | https://github.com/missias123/itapolitanacajuru/actions/runs/26138094609
-- 2026-05-20T02:36:24Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/failure | run 26137795174 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137795174
-- 2026-05-20T02:29:57Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26137589489 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137589489
-- 2026-05-20T02:28:49Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26137554579 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137554579
-- 2026-05-20T02:27:23Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26137508863 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137508863
-- 2026-05-20T02:23:09Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/failure | run 26137372904 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137372904
-- 2026-05-20T02:21:57Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26137335012 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137335012
-- 2026-05-20T02:21:39Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26137325121 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137325121
-- 2026-05-20T02:21:39Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26137325071 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137325071
-- 2026-05-20T02:21:39Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26137325132 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137325132
-- 2026-05-20T02:21:39Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26137325082 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137325082
-- 2026-05-20T02:21:39Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26137325103 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137325103
-- 2026-05-20T02:21:38Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26137324853 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137324853
-- 2026-05-20T02:15:25Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/failure | run 26137128381 | https://github.com/missias123/itapolitanacajuru/actions/runs/26137128381
-- 2026-05-20T02:10:31Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/failure | run 26136972866 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136972866
-- 2026-05-20T02:08:24Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26136907620 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136907620
-- 2026-05-20T02:04:49Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26136796696 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136796696
-- 2026-05-20T02:02:28Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26136724855 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136724855
-- 2026-05-20T01:59:07Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26136614520 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136614520
-- 2026-05-20T01:56:27Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26136528687 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136528687
-- 2026-05-20T01:55:19Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26136492001 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136492001
-- 2026-05-20T01:48:47Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26136283996 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136283996
-- 2026-05-20T01:48:26Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26136273526 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136273526
-- 2026-05-20T01:48:26Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26136273529 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136273529
-- 2026-05-20T01:48:26Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26136273058 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136273058
-- 2026-05-20T01:48:26Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26136273528 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136273528
-- 2026-05-20T01:48:26Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26136273540 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136273540
-- 2026-05-20T01:48:26Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26136273524 | https://github.com/missias123/itapolitanacajuru/actions/runs/26136273524
-- 2026-05-20T01:08:49Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26135013229 | https://github.com/missias123/itapolitanacajuru/actions/runs/26135013229
-- 2026-05-20T01:07:23Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26134969452 | https://github.com/missias123/itapolitanacajuru/actions/runs/26134969452
-- 2026-05-20T01:07:23Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26134969523 | https://github.com/missias123/itapolitanacajuru/actions/runs/26134969523
-- 2026-05-20T01:04:54Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26134889821 | https://github.com/missias123/itapolitanacajuru/actions/runs/26134889821
-- 2026-05-20T01:02:06Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/success | run 26134801348 | https://github.com/missias123/itapolitanacajuru/actions/runs/26134801348
-- 2026-05-20T01:00:52Z | Running Claude | `dynamic/agents/anthropic-code-agent` | completed/cancelled | run 26134761335 | https://github.com/missias123/itapolitanacajuru/actions/runs/26134761335
+- 2026-05-21T08:31:52Z | 📈 Relatório Admin — Últimos 5 dias | `.github/workflows/admin-5dias-report.yml` | in_progress/null | run 26214871930 | https://github.com/missias123/itapolitanacajuru/actions/runs/26214871930
+- 2026-05-21T07:42:50Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/failure | run 26212606990 | https://github.com/missias123/itapolitanacajuru/actions/runs/26212606990
+- 2026-05-21T06:56:49Z | Backup Automático dos Dados | `.github/workflows/json-backup.yml` | completed/failure | run 26210593763 | https://github.com/missias123/itapolitanacajuru/actions/runs/26210593763
+- 2026-05-21T06:43:12Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26210043076 | https://github.com/missias123/itapolitanacajuru/actions/runs/26210043076
+- 2026-05-21T06:39:44Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26209905626 | https://github.com/missias123/itapolitanacajuru/actions/runs/26209905626
+- 2026-05-21T06:19:32Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26209124417 | https://github.com/missias123/itapolitanacajuru/actions/runs/26209124417
+- 2026-05-21T06:11:06Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26208820015 | https://github.com/missias123/itapolitanacajuru/actions/runs/26208820015
+- 2026-05-21T05:12:41Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26206835298 | https://github.com/missias123/itapolitanacajuru/actions/runs/26206835298
+- 2026-05-21T04:07:00Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/action_required | run 26204813110 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204813110
+- 2026-05-21T04:07:00Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/action_required | run 26204813114 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204813114
+- 2026-05-21T04:07:00Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/action_required | run 26204813115 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204813115
+- 2026-05-21T04:07:00Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/action_required | run 26204813112 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204813112
+- 2026-05-21T04:07:00Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/action_required | run 26204813113 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204813113
+- 2026-05-21T04:04:00Z | Running Copilot cloud agent | `dynamic/copilot-swe-agent/copilot` | completed/success | run 26204722721 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204722721
+- 2026-05-21T03:57:04Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26204515826 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204515826
+- 2026-05-21T03:52:33Z | Running Copilot cloud agent | `dynamic/copilot-swe-agent/copilot` | completed/success | run 26204380223 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204380223
+- 2026-05-21T03:49:48Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26204297293 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204297293
+- 2026-05-21T03:49:25Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26204286054 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204286054
+- 2026-05-21T03:49:25Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26204286056 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204286056
+- 2026-05-21T03:49:25Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26204286042 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204286042
+- 2026-05-21T03:49:25Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26204286095 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204286095
+- 2026-05-21T03:49:25Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26204286055 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204286055
+- 2026-05-21T03:49:24Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26204285688 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204285688
+- 2026-05-21T03:40:21Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26204017959 | https://github.com/missias123/itapolitanacajuru/actions/runs/26204017959
+- 2026-05-21T03:36:27Z | Running Copilot cloud agent | `dynamic/copilot-swe-agent/copilot` | completed/success | run 26203906132 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203906132
+- 2026-05-21T03:32:52Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26203801122 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203801122
+- 2026-05-21T03:32:34Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26203792450 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203792450
+- 2026-05-21T03:32:34Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26203792448 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203792448
+- 2026-05-21T03:32:34Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/failure | run 26203792449 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203792449
+- 2026-05-21T03:32:34Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26203792447 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203792447
+- 2026-05-21T03:32:34Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26203792461 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203792461
+- 2026-05-21T03:32:33Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26203792047 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203792047
+- 2026-05-21T03:21:08Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26203446277 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203446277
+- 2026-05-21T03:16:05Z | Running Copilot cloud agent | `dynamic/copilot-swe-agent/copilot` | completed/success | run 26203296800 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203296800
+- 2026-05-21T03:13:03Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26203203579 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203203579
+- 2026-05-21T03:12:41Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26203192771 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203192771
+- 2026-05-21T03:12:41Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26203192770 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203192770
+- 2026-05-21T03:12:41Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26203192746 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203192746
+- 2026-05-21T03:12:41Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26203192793 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203192793
+- 2026-05-21T03:12:41Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26203192772 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203192772
+- 2026-05-21T03:12:40Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26203192405 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203192405
+- 2026-05-21T03:07:59Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26203050717 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203050717
+- 2026-05-21T03:07:16Z | Running Copilot cloud agent | `dynamic/copilot-swe-agent/copilot` | completed/success | run 26203029083 | https://github.com/missias123/itapolitanacajuru/actions/runs/26203029083
+- 2026-05-21T03:00:40Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26202830317 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202830317
+- 2026-05-21T03:00:14Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26202814769 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202814769
+- 2026-05-21T03:00:14Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26202815261 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202815261
+- 2026-05-21T03:00:14Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26202815284 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202815284
+- 2026-05-21T03:00:14Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/failure | run 26202815260 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202815260
+- 2026-05-21T03:00:14Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26202815263 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202815263
+- 2026-05-21T03:00:14Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26202815262 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202815262
+- 2026-05-21T02:55:16Z | Running Copilot cloud agent | `dynamic/copilot-swe-agent/copilot` | completed/success | run 26202668971 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202668971
+- 2026-05-21T02:53:28Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26202614384 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202614384
+- 2026-05-21T02:46:04Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26202388792 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202388792
+- 2026-05-21T02:45:42Z | Validar JSONs de Dados | `.github/workflows/json-validate.yml` | completed/success | run 26202377872 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377872
+- 2026-05-21T02:45:42Z | 🗂️ Consistência Site-Admin | `.github/workflows/content-consistency.yml` | completed/success | run 26202377878 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377878
+- 2026-05-21T02:45:42Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26202377876 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377876
+- 2026-05-21T02:45:42Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26202377936 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377936
+- 2026-05-21T02:45:42Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/failure | run 26202377873 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377873
+- 2026-05-21T02:45:42Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26202377935 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377935
+- 2026-05-21T02:45:42Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26202377875 | https://github.com/missias123/itapolitanacajuru/actions/runs/26202377875
 
 ## Critério de aceite funcional final
 
