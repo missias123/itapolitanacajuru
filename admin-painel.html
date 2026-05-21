@@ -5942,7 +5942,8 @@ function fidColetarCodigosParaEtiquetas(){
          <span class="etq-crop etq-crop-tr" aria-hidden="true"></span>
          <span class="etq-crop etq-crop-bl" aria-hidden="true"></span>
          <span class="etq-crop etq-crop-br" aria-hidden="true"></span>
-          ${logoWatermark ? `<div class="etq-watermarks" aria-hidden="true">
+          <div class="etq-lateral-yhwh" aria-hidden="true"><span>Y</span><span>H</span><span>W</span><span>H</span></div>
+           ${logoWatermark ? `<div class="etq-watermarks" aria-hidden="true">
             <img class="etq-watermark etq-watermark-a" src="${esc(logoWatermark)}" alt="">
             <img class="etq-watermark etq-watermark-b" src="${esc(logoWatermark)}" alt="">
             <img class="etq-watermark etq-watermark-c" src="${esc(logoWatermark)}" alt="">
@@ -5956,6 +5957,7 @@ function fidColetarCodigosParaEtiquetas(){
                <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
               <div class="etq-seq-corpo">${seqStr}</div>
             </div>
+            <div class="etq-spacer"></div>
             <div class="etq-sorteios">${esc(FID_TEXTO_SORTEIOS)}</div>
           </div>
         </div>`;
@@ -6090,15 +6092,40 @@ function fidColetarCodigosParaEtiquetas(){
         overflow:hidden;
       }
       .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
+        .etq-lateral-yhwh{
+          position:absolute;
+          left:1.1mm;
+          top:50%;
+          transform:translateY(-50%);
+          z-index:2;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          gap:0.45mm;
+          font-family:"Arial Black","Segoe UI",Arial,sans-serif;
+          font-weight:900;
+          font-size:7.8pt;
+          line-height:1;
+          letter-spacing:0.15pt;
+          color:#b71c1c;
+          text-shadow:0 0 0.2mm rgba(255,140,0,.45);
+          pointer-events:none;
+          user-select:none;
+          opacity:.92;
+        }
+        .etq-lateral-yhwh span{display:block}
     	    .etq-header{
     	      font-family:"Arial Black","Segoe UI",Arial,sans-serif;
-    	      font-weight:800;
-    	      font-size:10.2pt;
+    	      font-weight:900;
+    	      font-size:13pt;
               line-height:1;
-    	      color:#de4a16;
+    	      color:#FF8C00;
     	      text-align:center;
-              letter-spacing:0.18pt;
-      	      margin:0 0 0.45mm 0;
+              letter-spacing:0.4pt;
+              -webkit-text-stroke:1.5px #C62828;
+              paint-order:stroke fill;
+      	      margin:0 0 0.5mm 0;
     	    }
       .etq-lote-corpo{
         width:100%;
@@ -6112,13 +6139,14 @@ function fidColetarCodigosParaEtiquetas(){
       }
         .etq-cod-wrap{
           width:100%;
-          flex:1;
+          flex:0 0 auto;
           min-height:18mm;
           display:flex;
           align-items:center;
           justify-content:center;
-          margin:-1.55mm 0 1.2mm 0;
+          margin:-1mm 0 1mm 0;
         }
+        .etq-spacer{flex:1 1 auto;min-height:0;}
      	    .etq-cod-central{
      	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
      	      font-weight:900;
@@ -6149,17 +6177,16 @@ function fidColetarCodigosParaEtiquetas(){
        display:flex;
        align-items:center;
        justify-content:center;
-       padding-right:17mm;
-       margin-bottom:1.5mm;
+       margin-bottom:1mm;
      }
      .etq-footer-2{
-       font-family:"Segoe UI Semibold","Segoe UI",Arial,Helvetica,sans-serif;
-       font-weight:700;
-       font-size:7.3pt;
-       color:#5e6470;
+       font-family:"Arial Black","Segoe UI",Arial,Helvetica,sans-serif;
+       font-weight:900;
+       font-size:8.5pt;
+       color:#252525;
        text-align:center;
        width:100%;
-       letter-spacing:0.25pt;
+       letter-spacing:0.4pt;
        white-space:nowrap;
        overflow:hidden;
        text-overflow:ellipsis;
@@ -6304,15 +6331,30 @@ async function gerarPdfEtiquetasFidelidade(){
       }
     }
 
+    // — Lateral vertical "YHWH" —
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.8);
+    doc.setTextColor(183, 28, 28);
+    const yhwhLetters = ['Y', 'H', 'W', 'H'];
+    const yhwhStepMm = 3.6;
+    const yhwhX = innerX + 1.2;
+    const yhwhStartY = y + (ETQ_H / 2) - ((yhwhLetters.length - 1) * yhwhStepMm / 2);
+    yhwhLetters.forEach((letter, idx) => {
+      doc.text(letter, yhwhX, yhwhStartY + (idx * yhwhStepMm), { align: 'left', baseline: 'middle' });
+    });
+
     // — Cabeçalho "CLUBE ITAPOLITANA" —
-    const hdrFontPt = 10.2;
+    const hdrFontPt = 13.0;
     const hdrFontMm = hdrFontPt * PT;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(hdrFontPt);
-    doc.setTextColor(222, 74, 22);
+    doc.setTextColor(255, 140, 0);
+    doc.setDrawColor(198, 40, 40);
+    doc.setLineWidth(0.35);
     const yHdr = yTop + hdrFontMm;
     doc.text('CLUBE ITAPOLITANA', centerX, yHdr,
-             { align: 'center', baseline: 'alphabetic' });
+             { align: 'center', baseline: 'alphabetic', renderingMode: 'fillThenStroke' });
+    doc.setLineWidth(0.2);
 
     // — Lote no topo (central) —
     const loteTexto = meta.loteTexto || 'LOTE --';
@@ -6327,9 +6369,9 @@ async function gerarPdfEtiquetasFidelidade(){
     const sorteioBarH  = 5.0;                          // barra laranja (fundo)
     const ySorteioTop  = yBot  - sorteioBarH;          // topo da barra laranja
     const yF2          = ySorteioTop - 1.5;            // baseline URL / Nº (1,5 mm acima da barra)
-    const yCadastro    = yF2 - (7.3 * PT) - 1.5;      // baseline "Cadastre" (1,5 mm acima do texto URL)
+    const yCadastro    = yF2 - (8.8 * PT) - 3.0;      // baseline "Cadastre" (subido — mais espaço acima da URL)
     const codeAreaTop  = yLote + 0.65;                 // código começa após o lote
-    const codeAreaBot  = yCadastro - (8.4 * PT) - 1.2; // código termina 1,2 mm acima de "Cadastre"
+    const codeAreaBot  = yCadastro - (8.8 * PT) - 1.2; // código termina 1,2 mm acima de "Cadastre"
     const yCode        = ((codeAreaTop + codeAreaBot) / 2) - FID_ETQ_CODE_SHIFT_UP_MM;
 
     doc.setFont('courier', 'bold');
@@ -6344,7 +6386,7 @@ async function gerarPdfEtiquetasFidelidade(){
 
     // — Rodapé "Cadastre no Nosso APP" —
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.4);
+    doc.setFontSize(8.8);
     doc.setTextColor(53, 53, 53);
     doc.text('Cadastre no Nosso APP', centerX, yCadastro,
              { align: 'center', baseline: 'alphabetic' });
@@ -6355,15 +6397,12 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.setFontSize(FID_ETQ_SEQ_FONT_PT);
     const seqRightX = x + ETQ_W - 2.2;
     const seqWidth = doc.getTextWidth(seqTexto);
-    const urlRightLimit = seqRightX - seqWidth - 1.6;
-    const urlLeftLimit = innerX + 1.2;
-    const urlMaxWidth = Math.max(FID_ETQ_URL_MIN_WIDTH_MM, urlRightLimit - urlLeftLimit);
-    const urlCenterX = urlLeftLimit + (urlMaxWidth / 2);
     const urlText = 'ITAPOLITANACAJURU.COM.BR';
-    const urlFontSize = fidFitTextSizeMm(doc, urlText, urlMaxWidth, FID_ETQ_URL_FONT_BASE_PT, FID_ETQ_URL_FONT_MIN_PT);
+    const urlMaxWidth = innerW - seqWidth - 2;
+    const urlFontSize = fidFitTextSizeMm(doc, urlText, urlMaxWidth, 8.8, FID_ETQ_URL_FONT_MIN_PT);
     doc.setFontSize(urlFontSize);
-    doc.setTextColor(94, 100, 112);
-    doc.text(urlText, urlCenterX, yF2, { align: 'center', baseline: 'alphabetic' });
+    doc.setTextColor(34, 40, 49);
+    doc.text(urlText, centerX, yF2, { align: 'center', baseline: 'alphabetic' });
     doc.setFontSize(FID_ETQ_SEQ_FONT_PT);
     doc.setTextColor(37, 37, 37);
     doc.text(seqTexto, seqRightX, yF2, { align: 'right', baseline: 'alphabetic' });
