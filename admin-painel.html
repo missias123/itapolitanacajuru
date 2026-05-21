@@ -5768,22 +5768,24 @@ function fidColetarCodigosParaEtiquetas(){
   * Prioriza dados persistidos em fidelidade.códigos (lote/idx) e usa fallback do lote atual quando disponível.
   * @param {string[]} codigos Lista de códigos na ordem de impressão.
   * @param {{loteNum?: number, inicio?: number}|null} lote Dados do último lote liberado (quando houver).
-  * @returns {{loteTexto:string, seqTexto:string}[]} Metadados alinhados por índice da lista de códigos.
+  * @returns {{loteTexto:string, sequenciaTexto:string}[]} Metadados alinhados por índice da lista de códigos.
   */
  function fidMontarMetadadosEtiquetas(codigos, lote){
   const codigosObj = fidGetCodigos();
   return codigos.map((codigo, i) => {
     const clean = String(codigo || '').trim();
-    if(!clean) return { loteTexto: '', seqTexto: '' };
+    if(!clean) return { loteTexto: '', sequenciaTexto: '' };
     const meta = codigosObj[clean] || {};
     const loteNum = Number(meta.lote || lote?.loteNum || 0);
-    let seq = Number.isFinite(Number(meta.idx)) ? (Number(meta.idx) + 1) : NaN;
-    if(!Number.isFinite(seq) && lote && Number.isFinite(Number(lote.inicio))){
-      seq = Number(lote.inicio) + i;
+    let numeroSequencial = Number.isFinite(Number(meta.idx)) ? (Number(meta.idx) + 1) : NaN;
+    if(!Number.isFinite(numeroSequencial) && lote && Number.isFinite(Number(lote.inicio))){
+      numeroSequencial = Number(lote.inicio) + i;
     }
     return {
       loteTexto: loteNum > 0 ? `LOTE ${String(loteNum).padStart(2, '0')}` : 'LOTE --',
-      seqTexto: Number.isFinite(seq) && seq > 0 ? `Nº ${String(seq).padStart(4, '0')}` : 'Nº ----'
+      sequenciaTexto: Number.isFinite(numeroSequencial) && numeroSequencial > 0
+        ? `Nº ${String(numeroSequencial).padStart(4, '0')}`
+        : 'Nº ----'
     };
   });
  }
@@ -5863,7 +5865,7 @@ function fidColetarCodigosParaEtiquetas(){
        const etqs = slice.map((cod, idxLocal) => {
          const meta = metadados[start + idxLocal] || {};
          const loteTxt = esc(meta.loteTexto || 'LOTE --');
-         const seqTxt = esc(meta.seqTexto || 'Nº ----');
+         const seqTxt = esc(meta.sequenciaTexto || 'Nº ----');
          const safe = esc(cod);
          if(!safe) return '<div class="etq etq-vazia"></div>';
          return `<div class="etq">
@@ -6199,7 +6201,7 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6.4);
     doc.text(metaEtiqueta.loteTexto || 'LOTE --', x + 1.6, centerY, { align: 'center', angle: 90 });
-    doc.text(metaEtiqueta.seqTexto || 'Nº ----', x + ETQ_W - 1.6, centerY, { align: 'center', angle: -90 });
+    doc.text(metaEtiqueta.sequenciaTexto || 'Nº ----', x + ETQ_W - 1.6, centerY, { align: 'center', angle: -90 });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
