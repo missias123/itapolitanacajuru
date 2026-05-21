@@ -5615,6 +5615,8 @@ const FID_ETQ_CODE_FONT_BASE_PT = 39.375;
 const FID_ETQ_CODE_FONT_MIN_PT = 24.375;
 const FID_ETQ_URL_FONT_BASE_PT = 7.3;
 const FID_ETQ_URL_FONT_MIN_PT = 6.4;
+const FID_ETQ_URL_MIN_WIDTH_MM = 18;
+const FID_ETQ_SEQ_FONT_PT = 9.4;
 // Fração máxima segura da altura útil do campo do código para evitar que o texto encoste no cabeçalho/rodapé.
 const FID_ETQ_CODE_MAX_HEIGHT_RATIO = 0.78;
 const FID_WATERMARK_OPACITY = 0.08;
@@ -5883,7 +5885,6 @@ function fidColetarCodigosParaEtiquetas(){
           canvas.height = img.naturalHeight || 512;
           const ctx = canvas.getContext('2d');
           if(!ctx){ resolve(null); return; }
-          ctx.globalAlpha = FID_WATERMARK_OPACITY;
           ctx.drawImage(img, 0, 0);
           resolve(canvas.toDataURL('image/png'));
         }catch(_e){
@@ -6056,6 +6057,7 @@ function fidColetarCodigosParaEtiquetas(){
         position:absolute;
         width:18mm;
         height:18mm;
+        opacity:${FID_WATERMARK_OPACITY};
         object-fit:contain;
       }
       .etq-watermark-a{
@@ -6285,13 +6287,20 @@ async function gerarPdfEtiquetasFidelidade(){
     const PT = 0.352778; // mm per pt
 
     if(logoWatermark){
+      const labelHeight = ETQ_H;
       const watermarkUsableHeight = ETQ_H - FID_ETQ_WATERMARK_TOP_PADDING_MM - FID_ETQ_WATERMARK_BOTTOM_PADDING_MM;
+      if(typeof doc.GState === 'function' && typeof doc.setGState === 'function'){
+        doc.setGState(new doc.GState({ opacity: FID_WATERMARK_OPACITY }));
+      }
       FID_ETQ_WATERMARK_POSITIONS.forEach(({ relX, relY, relSize, rotation }) => {
-        const wmSize = Math.min(innerW, ETQ_H) * relSize;
+        const wmSize = Math.min(innerW, labelHeight) * relSize;
         const wmX = innerX + (innerW * relX);
         const wmY = y + FID_ETQ_WATERMARK_TOP_PADDING_MM + (watermarkUsableHeight * relY);
         doc.addImage(logoWatermark, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST', rotation);
       });
+      if(typeof doc.GState === 'function' && typeof doc.setGState === 'function'){
+        doc.setGState(new doc.GState({ opacity: 1 }));
+      }
     }
 
     // — Cabeçalho "PROGRAMA DE FIDELIDADE" —
@@ -6343,20 +6352,19 @@ async function gerarPdfEtiquetasFidelidade(){
     // — URL + Nº sequencial (mesma linha) —
     const seqTexto = meta.sequenciaTexto || 'Nº ----';
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.4);
+    doc.setFontSize(FID_ETQ_SEQ_FONT_PT);
     const seqRightX = x + ETQ_W - 2.2;
     const seqWidth = doc.getTextWidth(seqTexto);
     const urlRightLimit = seqRightX - seqWidth - 1.6;
     const urlLeftLimit = innerX + 1.2;
-    const urlMaxWidth = Math.max(18, urlRightLimit - urlLeftLimit);
+    const urlMaxWidth = Math.max(FID_ETQ_URL_MIN_WIDTH_MM, urlRightLimit - urlLeftLimit);
     const urlCenterX = urlLeftLimit + (urlMaxWidth / 2);
     const urlText = 'ITAPOLITANACAJURU.COM.BR';
     const urlFontSize = fidFitTextSizeMm(doc, urlText, urlMaxWidth, FID_ETQ_URL_FONT_BASE_PT, FID_ETQ_URL_FONT_MIN_PT);
-    const seqFontSize = 9.4;
     doc.setFontSize(urlFontSize);
     doc.setTextColor(94, 100, 112);
     doc.text(urlText, urlCenterX, yF2, { align: 'center', baseline: 'alphabetic' });
-    doc.setFontSize(seqFontSize);
+    doc.setFontSize(FID_ETQ_SEQ_FONT_PT);
     doc.setTextColor(37, 37, 37);
     doc.text(seqTexto, seqRightX, yF2, { align: 'right', baseline: 'alphabetic' });
 
