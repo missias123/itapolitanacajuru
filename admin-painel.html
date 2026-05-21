@@ -2732,9 +2732,6 @@ Talento</textarea>
       </div>
     </div>
 
-    </div>
-  </div>
-
     <!-- ═══════════════ SEÇÃO SOBRE (Página sobre.html) ═══════ -->
     <div class="seção" id="sec-sobre">
       <div class="card">
@@ -3638,9 +3635,12 @@ async function carregarTudo(){
 }
 function irPara(seção,btn){
   if(!checkDirty())return; // avisa se há alterações não salvas
-  const safeInit=(rotulo,fn)=>{
+  const safeInit=(tabName,fn)=>{
     try{fn();}
-    catch(e){console.error(`[irPara] Falha ao inicializar ${rotulo}: ${e?.message||e}`,e);}
+    catch(e){
+      console.error(`[irPara] Falha ao inicializar ${tabName}: ${e?.message||e}`,e);
+      toast(`⚠️ Erro ao abrir a aba ${tabName}. Veja o console para detalhes.`,'erro');
+    }
   };
   // Mapa: aba → lista de seções que compõem cada página do site
   const sectionMap={
@@ -5607,8 +5607,11 @@ const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
 const FID_CODE_BASE_LENGTH = 7;
 const FID_CHARS_BASE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const FID_CHARS_DIGITS = '23456789';
+// Tamanho do código na versão fallback de impressão.
 const FID_ETQ_CODE_FONT_PRINT_PT = 31.8;
+// Tamanho base do código no jsPDF.
 const FID_ETQ_CODE_FONT_BASE_PT = 31.5;
+// Tamanho mínimo do código no jsPDF quando precisar reduzir para caber.
 const FID_ETQ_CODE_FONT_MIN_PT = 19.5;
 function fidGerarCodigo(idx){
   const s=FID_SALT;
@@ -5861,7 +5864,7 @@ function fidColetarCodigosParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
-  function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, metadados, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
+  function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
    const ETQ_POR_PAGINA = cols * rows;
    const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
    const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
@@ -6091,12 +6094,10 @@ async function gerarPdfEtiquetasFidelidade(){
   }catch(err){
     console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
     toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
-    try{
+	    try{
 	      const payload = fidColetarCodigosParaEtiquetas();
-        const metadados = fidMontarMetadadosEtiquetas(payload.codigos, payload.lote);
 	      gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
-          metadados,
 	        etqW: 92.5,
 	        etqH: 51.4,
 	        cols: 2,
