@@ -5608,11 +5608,11 @@ const FID_CODE_BASE_LENGTH = 7;
 const FID_CHARS_BASE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const FID_CHARS_DIGITS = '23456789';
 // Tamanho do código na versão fallback de impressão.
-const FID_ETQ_CODE_FONT_PRINT_PT = 31.8;
+const FID_ETQ_CODE_FONT_PRINT_PT = 38.8;  // original 31.8pt, +22%
 // Tamanho base do código no jsPDF.
-const FID_ETQ_CODE_FONT_BASE_PT = 31.5;
+const FID_ETQ_CODE_FONT_BASE_PT = 38.5;   // original 31.5pt, +22%
 // Tamanho mínimo do código no jsPDF quando precisar reduzir para caber.
-const FID_ETQ_CODE_FONT_MIN_PT = 19.5;
+const FID_ETQ_CODE_FONT_MIN_PT = 24.0;    // original 19.5pt, +23%
 function fidGerarCodigo(idx){
   const s=FID_SALT;
   let a=idx+1,b=0;
@@ -5881,20 +5881,32 @@ function fidColetarCodigosParaEtiquetas(){
    const win = window.open('', '_blank');
    if(!win){ toast('Permita pop-ups para gerar o PDF.','erro'); return; }
 
+   const metadados = fidMontarMetadadosEtiquetas(lista, lote);
    const pages = Math.ceil(lista.length / ETQ_POR_PAGINA);
    const folhasHtml = Array.from({ length: pages }, (_, p) => {
      const start = p * ETQ_POR_PAGINA;
      const slice = lista.slice(start, start + ETQ_POR_PAGINA);
-        const etqs = slice.map((cod) => {
-          const safe = esc(cod);
-          if(!safe) return '<div class="etq etq-vazia"></div>';
-           return `<div class="etq">
-            <div class="etq-conteudo">
-              <div class="etq-cod-central">${safe}</div>
-            </div>
-          </div>`;
-       }).join('');
-      return `<section class="folha"><div class="grid">${etqs}</div></section>`;
+     const etqs = slice.map((cod, j) => {
+       const safe = esc(cod);
+       const idx = start + j;
+       const meta = metadados[idx] || {};
+       const loteStr = meta.loteTexto ? esc(meta.loteTexto) : '';
+       const seqStr  = meta.sequenciaTexto ? esc(meta.sequenciaTexto) : '';
+       if(!safe) return '<div class="etq etq-vazia"></div>';
+       return `<div class="etq">
+         ${loteStr ? `<div class="etq-lateral etq-lateral-left">${loteStr}</div>` : ''}
+         ${seqStr  ? `<div class="etq-lateral etq-lateral-right">${seqStr}</div>`  : ''}
+         <div class="etq-conteudo">
+           <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
+           <div class="etq-divisor etq-divisor-laranja"></div>
+           <div class="etq-cod-central">${safe}</div>
+           <div class="etq-divisor"></div>
+           <div class="etq-footer-1">Cadastre no Nosso APP</div>
+           <div class="etq-footer-2">itapolitanacajuru.com.br</div>
+         </div>
+       </div>`;
+     }).join('');
+     return `<section class="folha"><div class="grid">${etqs}</div></section>`;
    }).join('');
 
    win.document.write(`<!doctype html>
@@ -6157,19 +6169,83 @@ async function gerarPdfEtiquetasFidelidade(){
 
     const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
     if(!codigo) continue;
+    const meta = metadados[i] || {};
     const centerX = x + (ETQ_W / 2);
-    const centerY = y + (ETQ_H / 2);
-    const innerX = x + paddingX;
-    const innerW = ETQ_W - (paddingX * 2);
+    const innerX  = x + paddingX;
+    const innerW  = ETQ_W - (paddingX * 2);
+    const paddingY = 2;
+    const yTop = y + paddingY;
+    const yBot = y + ETQ_H - paddingY;
+    const PT = 0.352778; // mm per pt
+
+    // — Laterais (LOTE esquerda / Nº direita, texto vertical) —
+    const latFontPt = 6.3;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(latFontPt);
+    doc.setTextColor(122, 122, 122);
+    if(meta.loteTexto){
+      doc.text(meta.loteTexto, x + latFontPt * PT * 0.6, y + ETQ_H / 2,
+               { angle: 90, align: 'center', baseline: 'middle' });
+    }
+    if(meta.sequenciaTexto){
+      doc.text(meta.sequenciaTexto, x + ETQ_W - latFontPt * PT * 0.6, y + ETQ_H / 2,
+               { angle: -90, align: 'center', baseline: 'middle' });
+    }
+
+    // — Cabeçalho "PROGRAMA DE FIDELIDADE" —
+    const hdrFontPt = 11.2;
+    const hdrFontMm = hdrFontPt * PT;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(hdrFontPt);
+    doc.setTextColor(232, 71, 10);
+    const yHdr = yTop + hdrFontMm;
+    doc.text('PROGRAMA DE FIDELIDADE', centerX, yHdr,
+             { align: 'center', baseline: 'alphabetic' });
+
+    // — Divisor laranja —
+    const yDivOrange = yHdr + 0.5;
+    doc.setDrawColor(232, 71, 10);
+    doc.setLineWidth(0.088); // 0.25mm
+    doc.line(innerX, yDivOrange, innerX + innerW, yDivOrange);
+    const yAfterOrange = yDivOrange + 0.6;
+
+    // — Área do código central —
+    const f1Mm = 9 * PT; // footer-1
+    const f2Mm = 8 * PT; // footer-2
+    const footerH = 1.5 + f1Mm + 0.5 + f2Mm; // divisor + f1 + gap + f2
+    const codeAreaTop = yAfterOrange;
+    const codeAreaBot = yBot - footerH;
+    const yCode = (codeAreaTop + codeAreaBot) / 2;
 
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
     const maxTextW = innerW - 2;
-    const baseFont = FID_ETQ_CODE_FONT_BASE_PT;
-    const minFont = FID_ETQ_CODE_FONT_MIN_PT;
-    const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
+    const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW,
+                                     FID_ETQ_CODE_FONT_BASE_PT, FID_ETQ_CODE_FONT_MIN_PT);
     doc.setFontSize(fontSize);
-    doc.text(codigo, centerX, centerY, { align: 'center', baseline: 'middle' });
+    doc.text(codigo, centerX, yCode, { align: 'center', baseline: 'middle' });
+
+    // — Divisor cinza —
+    const yDivPlain = codeAreaBot + 0.3;
+    doc.setDrawColor(216, 216, 216);
+    doc.setLineWidth(0.088);
+    doc.line(innerX, yDivPlain, innerX + innerW, yDivPlain);
+
+    // — Rodapé "Cadastre no Nosso APP" —
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(51, 51, 51);
+    const yF1 = yDivPlain + 1.2 + f1Mm * 0.7;
+    doc.text('Cadastre no Nosso APP', centerX, yF1,
+             { align: 'center', baseline: 'alphabetic' });
+
+    // — URL —
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(102, 102, 102);
+    const yF2 = yF1 + f2Mm + 0.2;
+    doc.text('itapolitanacajuru.com.br', centerX, yF2,
+             { align: 'center', baseline: 'alphabetic' });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
