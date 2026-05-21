@@ -5763,6 +5763,13 @@ function fidColetarCodigosParaEtiquetas(){
   const placeholders = Array.from({ length: 100 }, (_, i) => `CÓDIGO ${String(i + 1).padStart(3, '0')}`);
   return { codigos: placeholders, origem: 'placeholder', lote: null };
 }
+ /**
+  * Monta metadados laterais (lote e número sequencial) para cada etiqueta.
+  * Prioriza dados persistidos em fidelidade.códigos (lote/idx) e usa fallback do lote atual quando disponível.
+  * @param {string[]} codigos Lista de códigos na ordem de impressão.
+  * @param {{loteNum?: number, inicio?: number}|null} lote Dados do último lote liberado (quando houver).
+  * @returns {{loteTexto:string, seqTexto:string}[]} Metadados alinhados por índice da lista de códigos.
+  */
  function fidMontarMetadadosEtiquetas(codigos, lote){
   const codigosObj = fidGetCodigos();
   return codigos.map((codigo, i) => {
