@@ -5868,7 +5868,7 @@ function fidColetarCodigosParaEtiquetas(){
           const ctx = canvas.getContext('2d');
           if(!ctx){ resolve(null); return; }
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.globalAlpha = 0.11;
+          ctx.globalAlpha = 0.08;
           ctx.drawImage(img, 0, 0);
           resolve(canvas.toDataURL('image/png'));
         }catch(_e){
@@ -5926,7 +5926,11 @@ function fidColetarCodigosParaEtiquetas(){
          <span class="etq-crop etq-crop-tr" aria-hidden="true"></span>
          <span class="etq-crop etq-crop-bl" aria-hidden="true"></span>
          <span class="etq-crop etq-crop-br" aria-hidden="true"></span>
-          ${logoWatermark ? `<img class="etq-watermark" src="${esc(logoWatermark)}" alt="">` : ''}
+          ${logoWatermark ? `<div class="etq-watermarks" aria-hidden="true">
+            <img class="etq-watermark etq-watermark-a" src="${esc(logoWatermark)}" alt="">
+            <img class="etq-watermark etq-watermark-b" src="${esc(logoWatermark)}" alt="">
+            <img class="etq-watermark etq-watermark-c" src="${esc(logoWatermark)}" alt="">
+          </div>` : ''}
           <div class="etq-conteudo">
              <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
              <div class="etq-lote-corpo">${loteStr}</div>
@@ -6026,17 +6030,38 @@ function fidColetarCodigosParaEtiquetas(){
         border-right:0.25mm solid #9d9d9d;
         border-bottom:0.25mm solid #9d9d9d;
       }
+      .etq-watermarks{
+        position:absolute;
+        inset:2.6mm 2.4mm 3.8mm 2.4mm;
+        z-index:0;
+        pointer-events:none;
+        overflow:hidden;
+      }
       .etq-watermark{
         position:absolute;
-        width:38mm;
-        height:38mm;
-        left:50%;
-        top:49%;
-        transform:translate(-50%,-50%);
+        width:18mm;
+        height:18mm;
         opacity:1;
-        z-index:0;
         object-fit:contain;
-        pointer-events:none;
+      }
+      .etq-watermark-a{
+        left:5%;
+        top:12%;
+        transform:rotate(-12deg);
+      }
+      .etq-watermark-b{
+        left:38%;
+        top:36%;
+        width:17mm;
+        height:17mm;
+        transform:rotate(-4deg);
+      }
+      .etq-watermark-c{
+        right:4%;
+        bottom:10%;
+        width:16mm;
+        height:16mm;
+        transform:rotate(10deg);
       }
       .etq-conteudo{
         position:relative;
@@ -6246,10 +6271,16 @@ async function gerarPdfEtiquetasFidelidade(){
     const PT = 0.352778; // mm per pt
 
     if(logoWatermark){
-      const wmSize = Math.min(innerW * 0.55, ETQ_H * 0.72);
-      const wmX = centerX - (wmSize / 2);
-      const wmY = y + ((ETQ_H - wmSize) / 2) - 1.2;
-      doc.addImage(logoWatermark, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST');
+      [
+        { relX: 0.08, relY: 0.12, relSize: 0.22, rotation: -12 },
+        { relX: 0.39, relY: 0.36, relSize: 0.2, rotation: -4 },
+        { relX: 0.71, relY: 0.58, relSize: 0.18, rotation: 10 }
+      ].forEach(({ relX, relY, relSize, rotation }) => {
+        const wmSize = Math.min(innerW, ETQ_H) * relSize;
+        const wmX = innerX + (innerW * relX);
+        const wmY = y + 3 + ((ETQ_H - 6) * relY);
+        doc.addImage(logoWatermark, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST', rotation);
+      });
     }
 
     // — Cabeçalho "PROGRAMA DE FIDELIDADE" —
