@@ -5613,6 +5613,10 @@ const FID_ETQ_CODE_FONT_PRINT_PT = 39.75;
 const FID_ETQ_CODE_FONT_BASE_PT = 39.375;
 // Tamanho mínimo do código no jsPDF quando precisar reduzir para caber (+25% vs 19.5pt).
 const FID_ETQ_CODE_FONT_MIN_PT = 24.375;
+const FID_ETQ_URL_FONT_BASE_PT = 7.3;
+const FID_ETQ_URL_FONT_MIN_PT = 6.4;
+// Fração máxima segura da altura útil do campo do código para evitar que o texto encoste no cabeçalho/rodapé.
+const FID_ETQ_CODE_MAX_HEIGHT_RATIO = 0.78;
 const FID_ETQ_CODE_SHIFT_UP_MM = 1.8;
 const FID_ETQ_CROP_LEN_MM = 2.2;
 const FID_ETQ_CROP_GAP_MM = 0.8;
@@ -5867,7 +5871,6 @@ function fidColetarCodigosParaEtiquetas(){
           canvas.height = img.naturalHeight || 512;
           const ctx = canvas.getContext('2d');
           if(!ctx){ resolve(null); return; }
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 0.08;
           ctx.drawImage(img, 0, 0);
           resolve(canvas.toDataURL('image/png'));
@@ -5994,7 +5997,7 @@ function fidColetarCodigosParaEtiquetas(){
   	      border:${desenharBordas ? '0.25mm solid #d0d0d0' : 'none'};
   	      border-radius:0;
   	      position:relative;
-  	      overflow:visible;
+  	      overflow:hidden;
   	      color:#141414;
   	      padding:2mm;
           background:#fff;
@@ -6317,7 +6320,7 @@ async function gerarPdfEtiquetasFidelidade(){
     const maxTextW = innerW - 2;
     const fontSize = Math.min(
       fidFitTextSizeMm(doc, codigo, maxTextW, FID_ETQ_CODE_FONT_BASE_PT, FID_ETQ_CODE_FONT_MIN_PT),
-      Math.max(FID_ETQ_CODE_FONT_MIN_PT, Math.floor(((codeAreaBot - codeAreaTop) / PT) * 0.78))
+      Math.max(FID_ETQ_CODE_FONT_MIN_PT, Math.floor(((codeAreaBot - codeAreaTop) / PT) * FID_ETQ_CODE_MAX_HEIGHT_RATIO))
     );
     doc.setFontSize(fontSize);
     doc.text(codigo, centerX, yCode, { align: 'center', baseline: 'middle' });
@@ -6340,7 +6343,7 @@ async function gerarPdfEtiquetasFidelidade(){
     const urlMaxWidth = Math.max(18, urlRightLimit - urlLeftLimit);
     const urlCenterX = urlLeftLimit + (urlMaxWidth / 2);
     const urlText = 'ITAPOLITANACAJURU.COM.BR';
-    doc.setFontSize(fidFitTextSizeMm(doc, urlText, urlMaxWidth, 7.3, 6.4));
+    doc.setFontSize(fidFitTextSizeMm(doc, urlText, urlMaxWidth, FID_ETQ_URL_FONT_BASE_PT, FID_ETQ_URL_FONT_MIN_PT));
     doc.setTextColor(94, 100, 112);
     doc.text(urlText, urlCenterX, yF2, { align: 'center', baseline: 'alphabetic' });
     doc.setFontSize(9.4);
