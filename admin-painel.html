@@ -5840,6 +5840,10 @@ function fidColetarCodigosParaEtiquetas(){
   const scaled = Math.floor(baseSizePt * (maxWidthMm / w));
   return Math.max(minSizePt, scaled);
   }
+ function fidMaxFontSizeForHeightMm(heightMm, minSizePt, ratio = FID_ETQ_CODE_MAX_HEIGHT_RATIO){
+  const mmPerPt = 0.352778;
+  return Math.max(minSizePt, Math.floor((heightMm / mmPerPt) * ratio));
+ }
  function fidDrawCropMarks(doc, x, y, w, h, lenMm, gapMm){
   doc.setDrawColor(150, 150, 150);
   doc.setLineWidth(0.12);
@@ -6044,7 +6048,6 @@ function fidColetarCodigosParaEtiquetas(){
         position:absolute;
         width:18mm;
         height:18mm;
-        opacity:1;
         object-fit:contain;
       }
       .etq-watermark-a{
@@ -6320,7 +6323,7 @@ async function gerarPdfEtiquetasFidelidade(){
     const maxTextW = innerW - 2;
     const fontSize = Math.min(
       fidFitTextSizeMm(doc, codigo, maxTextW, FID_ETQ_CODE_FONT_BASE_PT, FID_ETQ_CODE_FONT_MIN_PT),
-      Math.max(FID_ETQ_CODE_FONT_MIN_PT, Math.floor(((codeAreaBot - codeAreaTop) / PT) * FID_ETQ_CODE_MAX_HEIGHT_RATIO))
+      fidMaxFontSizeForHeightMm(codeAreaBot - codeAreaTop, FID_ETQ_CODE_FONT_MIN_PT)
     );
     doc.setFontSize(fontSize);
     doc.text(codigo, centerX, yCode, { align: 'center', baseline: 'middle' });
@@ -6343,10 +6346,12 @@ async function gerarPdfEtiquetasFidelidade(){
     const urlMaxWidth = Math.max(18, urlRightLimit - urlLeftLimit);
     const urlCenterX = urlLeftLimit + (urlMaxWidth / 2);
     const urlText = 'ITAPOLITANACAJURU.COM.BR';
-    doc.setFontSize(fidFitTextSizeMm(doc, urlText, urlMaxWidth, FID_ETQ_URL_FONT_BASE_PT, FID_ETQ_URL_FONT_MIN_PT));
+    const urlFontSize = fidFitTextSizeMm(doc, urlText, urlMaxWidth, FID_ETQ_URL_FONT_BASE_PT, FID_ETQ_URL_FONT_MIN_PT);
+    const seqFontSize = 9.4;
+    doc.setFontSize(urlFontSize);
     doc.setTextColor(94, 100, 112);
     doc.text(urlText, urlCenterX, yF2, { align: 'center', baseline: 'alphabetic' });
-    doc.setFontSize(9.4);
+    doc.setFontSize(seqFontSize);
     doc.setTextColor(37, 37, 37);
     doc.text(seqTexto, seqRightX, yF2, { align: 'right', baseline: 'alphabetic' });
 
