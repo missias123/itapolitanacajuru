@@ -473,9 +473,9 @@ const linkWhats = `https://wa.me/${config.whatsapp}?text=Olá!`;
 **Exemplo de bom SEO:**
 ```json
 {
-  "seoTitulo": "Sorveteria Itapolitana Cajuru – Sorvete Artesanal | Desde 2007",
+  "seoTitulo": "Sorveteria Itapolitana Cajuru – Sorvete Tipo Artesanal | Desde 2007",
   "seoDescricao": "Sorveteria Itapolitana em Cajuru/SP: sorvete tipo artesanal cremoso com 35 sabores, açaí, picolés e tortas geladas. Encomendas para festas. Desde 2007!",
-  "seoPalavrasChave": "sorveteria cajuru, sorvete artesanal, açaí cajuru, picolé cajuru, torta sorvete"
+  "seoPalavrasChave": "sorveteria cajuru, sorvete tipo artesanal, açaí cajuru, picolé cajuru, torta sorvete"
 }
 ```
 

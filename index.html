@@ -2156,7 +2156,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div style="width:100%;max-width:520px;background:rgba(255,255,255,0.88);border-radius:20px;padding:24px 20px 20px;box-shadow:0 4px 24px rgba(0,0,0,0.10);backdrop-filter:blur(4px);">
 <div class="sabores-badge" id="hero-badge">✨ 35 sabores tipo artesanal — feitos com ingredientes selecionados</div>
 <div data-config="indexPagina.heroBadgeAcai" style="margin:10px auto 8px;max-width:420px;background:linear-gradient(135deg,#4A148C,#7B1FA2);border:1px solid #CE93D8;border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:800;color:#F3E5F5;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.6);">🍇 O melhor açaí de Cajuru — Natureon!</div>
-<div class="frase-sensorial" id="frase-rotativa">🍦 "Peça seus sorvetes artesanais Itapolitana com fluxo rápido e sem confusão."</div>
+<div class="frase-sensorial" id="frase-rotativa">🍦 "Peça seus sorvetes tipo artesanais Itapolitana com fluxo rápido e sem confusão."</div>
 <h1 id="hero-título" data-config="indexPagina.heroH1Principal">Sorvetes tipo artesanais em Cajuru, picolés diferenciados e <span class="destaque-texto">Açaí Natureon</span></h1>
 <p id="hero-descrição" data-config="indexPagina.heroDescricaoPrincipal">Do nosso balcão aqui em Cajuru para a sua casa: sorvete tipo artesanal, picolés diferenciados e o melhor açaí da região, com pedido rápido pelo WhatsApp.</p>
 <div style="display:flex;align-items:center;justify-content:center;gap:6px;background:#FFF3E0;border:1.5px solid #FFCCBC;border-radius:10px;padding:8px 14px;margin-top:10px;font-size:0.82rem;font-weight:700;color:#BF360C;" role="note" aria-label="Aviso sobre entregas programadas futuras">🚚 Breve teremos entregas programadas, feitas 2h antes</div></div>
@@ -4034,7 +4034,7 @@ function handleChatInputFocus() {
 
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', atualizarChatViewport);
-  window.visualViewport.addEventListener('scroll', atualizarChatViewport);
+  window.visualViewport.addEventListener('scroll', atualizarChatViewport, { passive: true });
 }
 
 function enviarChat() {
@@ -5230,7 +5230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  window.addEventListener('scroll', revealOnScroll);
+  window.addEventListener('scroll', revealOnScroll, { passive: true });
   revealOnScroll(); // Trigger on load
 });
 

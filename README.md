@@ -231,6 +231,9 @@ node scripts/check-exposed-tokens.js
 # Gate Admin ↔ Site (Matriz Espelho)
 node scripts/admin-espelho-gate.js
 
+# Regra "tipo artesanal" — OBRIGATÓRIO: nunca usar "artesanal" sem "tipo"
+node scripts/check-tipo-artesanal.js
+
 # Validar JSONs
 node -e "JSON.parse(require('fs').readFileSync('dados/config.json','utf8')); console.log('OK')"
 node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); console.log('OK')"
