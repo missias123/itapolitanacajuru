@@ -1,12 +1,10 @@
 # Gate Admin ↔ Site (Matriz Espelho)
 
-Gerado em: 2026-05-21T02:34:16.963Z
+Gerado em: 2026-05-21T02:43:37.700Z
 
 - Campos avaliados: **90**
-- Falhas: **1**
+- Falhas: **0**
 - Avisos: **0**
 
-## Falhas
-
-- [scan] chave do site sem matriz: sobre.html: sobrePagina.tituloPrincipal -> dados/config.json:sobrePagina.tituloPrincipal
+✅ Nenhuma falha na matriz espelho.
 

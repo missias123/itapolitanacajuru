@@ -96,7 +96,7 @@ if(ids.includes('depoimentos')){
 4. `sobre-quem-somos-texto1` - Parágrafo 1
 5. `sobre-quem-somos-texto2` - Parágrafo 2
 6. `sobre-stat-anos-trad` - Anos de tradição
-7. `sobre-stat-sabores` - Sabores artesanais
+7. `sobre-stat-sabores` - Sabores tipo artesanais
 8. `sobre-stat-nota-google` - Nota Google
 9. `sobre-stat-amor` - % Amor
 10. `sobre-historia-titulo` - Título História
