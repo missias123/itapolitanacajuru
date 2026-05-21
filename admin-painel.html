@@ -5617,6 +5617,14 @@ const FID_ETQ_URL_FONT_BASE_PT = 7.3;
 const FID_ETQ_URL_FONT_MIN_PT = 6.4;
 // Fração máxima segura da altura útil do campo do código para evitar que o texto encoste no cabeçalho/rodapé.
 const FID_ETQ_CODE_MAX_HEIGHT_RATIO = 0.78;
+const FID_WATERMARK_OPACITY = 0.08;
+const FID_ETQ_WATERMARK_TOP_PADDING_MM = 3;
+const FID_ETQ_WATERMARK_BOTTOM_PADDING_MM = 3;
+const FID_ETQ_WATERMARK_POSITIONS = [
+  { relX: 0.08, relY: 0.12, relSize: 0.22, rotation: -12 },
+  { relX: 0.39, relY: 0.36, relSize: 0.2, rotation: -4 },
+  { relX: 0.71, relY: 0.58, relSize: 0.18, rotation: 10 }
+];
 const FID_ETQ_CODE_SHIFT_UP_MM = 1.8;
 const FID_ETQ_CROP_LEN_MM = 2.2;
 const FID_ETQ_CROP_GAP_MM = 0.8;
@@ -5840,7 +5848,7 @@ function fidColetarCodigosParaEtiquetas(){
   const scaled = Math.floor(baseSizePt * (maxWidthMm / w));
   return Math.max(minSizePt, scaled);
   }
- function fidMaxFontSizeForHeightMm(heightMm, minSizePt, ratio = FID_ETQ_CODE_MAX_HEIGHT_RATIO){
+ function fidCalculateMaxFontSizeForHeight(heightMm, minSizePt, ratio = FID_ETQ_CODE_MAX_HEIGHT_RATIO){
   const mmPerPt = 0.352778;
   return Math.max(minSizePt, Math.floor((heightMm / mmPerPt) * ratio));
  }
@@ -5875,7 +5883,7 @@ function fidColetarCodigosParaEtiquetas(){
           canvas.height = img.naturalHeight || 512;
           const ctx = canvas.getContext('2d');
           if(!ctx){ resolve(null); return; }
-          ctx.globalAlpha = 0.08;
+          ctx.globalAlpha = FID_WATERMARK_OPACITY;
           ctx.drawImage(img, 0, 0);
           resolve(canvas.toDataURL('image/png'));
         }catch(_e){
@@ -6277,14 +6285,11 @@ async function gerarPdfEtiquetasFidelidade(){
     const PT = 0.352778; // mm per pt
 
     if(logoWatermark){
-      [
-        { relX: 0.08, relY: 0.12, relSize: 0.22, rotation: -12 },
-        { relX: 0.39, relY: 0.36, relSize: 0.2, rotation: -4 },
-        { relX: 0.71, relY: 0.58, relSize: 0.18, rotation: 10 }
-      ].forEach(({ relX, relY, relSize, rotation }) => {
+      const watermarkUsableHeight = ETQ_H - FID_ETQ_WATERMARK_TOP_PADDING_MM - FID_ETQ_WATERMARK_BOTTOM_PADDING_MM;
+      FID_ETQ_WATERMARK_POSITIONS.forEach(({ relX, relY, relSize, rotation }) => {
         const wmSize = Math.min(innerW, ETQ_H) * relSize;
         const wmX = innerX + (innerW * relX);
-        const wmY = y + 3 + ((ETQ_H - 6) * relY);
+        const wmY = y + FID_ETQ_WATERMARK_TOP_PADDING_MM + (watermarkUsableHeight * relY);
         doc.addImage(logoWatermark, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST', rotation);
       });
     }
@@ -6323,7 +6328,7 @@ async function gerarPdfEtiquetasFidelidade(){
     const maxTextW = innerW - 2;
     const fontSize = Math.min(
       fidFitTextSizeMm(doc, codigo, maxTextW, FID_ETQ_CODE_FONT_BASE_PT, FID_ETQ_CODE_FONT_MIN_PT),
-      fidMaxFontSizeForHeightMm(codeAreaBot - codeAreaTop, FID_ETQ_CODE_FONT_MIN_PT)
+      fidCalculateMaxFontSizeForHeight(codeAreaBot - codeAreaTop, FID_ETQ_CODE_FONT_MIN_PT)
     );
     doc.setFontSize(fontSize);
     doc.text(codigo, centerX, yCode, { align: 'center', baseline: 'middle' });
