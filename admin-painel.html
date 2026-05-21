@@ -3638,6 +3638,10 @@ async function carregarTudo(){
 }
 function irPara(seção,btn){
   if(!checkDirty())return; // avisa se há alterações não salvas
+  const safeInit=(rotulo,fn)=>{
+    try{fn();}
+    catch(e){console.error(`[irPara] Falha ao inicializar ${rotulo}`,e);}
+  };
   // Mapa: aba → lista de seções que compõem cada página do site
   const sectionMap={
     'dashboard':      ['dashboard'],
@@ -3670,21 +3674,24 @@ function irPara(seção,btn){
   });
   if(btn)btn.classList.add('ativo');
   // Inicializar funções necessárias para cada seção visível
-  if(ids.includes('home')){console.log('[irPara] Inicializando HOME');preencherHome();}
-  if(ids.includes('preços')){console.log('[irPara] Inicializando PREÇOS');renderPreços();}
-  if(ids.includes('cardapio-titulos')){console.log('[irPara] Inicializando CARDAPIO TITULOS');carregarTitulosCardapio();}
-  if(ids.includes('cardápio')){console.log('[irPara] Inicializando CARDÁPIO');preencherCardapio();}
-  if(ids.includes('fale-conosco')){console.log('[irPara] Inicializando FALE CONOSCO');preencherFaleConosco();}
-  if(ids.includes('config')){console.log('[irPara] Inicializando CONFIG');preencherConfig();}
-  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');renderEncomendas();}
-  if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');renderizarSaboresAdmin();}
-  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');renderizarEstoqueAdmin();}
-  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');renderProdutosAdmin();}
-  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');preencherPromoção();preencherSorteio();renderPromocoesTable();}
-  if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');renderParticipantes();}
+  if(ids.includes('home')){console.log('[irPara] Inicializando HOME');safeInit('HOME',()=>preencherHome());}
+  if(ids.includes('preços')){console.log('[irPara] Inicializando PREÇOS');safeInit('PREÇOS',()=>renderPreços());}
+  if(ids.includes('cardapio-titulos')){console.log('[irPara] Inicializando CARDAPIO TITULOS');safeInit('CARDAPIO TITULOS',()=>carregarTitulosCardapio());}
+  if(ids.includes('cardápio')){console.log('[irPara] Inicializando CARDÁPIO');safeInit('CARDÁPIO',()=>preencherCardapio());}
+  if(ids.includes('fale-conosco')){console.log('[irPara] Inicializando FALE CONOSCO');safeInit('FALE CONOSCO',()=>preencherFaleConosco());}
+  if(ids.includes('config')){console.log('[irPara] Inicializando CONFIG');safeInit('CONFIG',()=>preencherConfig());}
+  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');safeInit('ENCOMENDAS',()=>renderEncomendas());}
+  if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');safeInit('SABORES',()=>renderizarSaboresAdmin());}
+  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');safeInit('ESTOQUE',()=>renderizarEstoqueAdmin());}
+  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');safeInit('PRODUTOS',()=>renderProdutosAdmin());}
+  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');safeInit('PROMOÇÃO',()=>{preencherPromoção();preencherSorteio();renderPromocoesTable();});}
+  if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');safeInit('PARTICIPANTES',()=>renderParticipantes());}
   if(ids.includes('clientes')){
     console.log('[irPara] Inicializando CLIENTES');
-    try{renderClientes();if(typeof renderDuplicidades==='function')renderDuplicidades();}catch(e){console.error('[Admin] renderClientes',e);}
+    safeInit('CLIENTES',()=>{
+      renderClientes();
+      if(typeof renderDuplicidades==='function')renderDuplicidades();
+    });
   }
   if(ids.includes('fidelidade')){
     console.log('[irPara] Inicializando FIDELIDADE');
@@ -3704,14 +3711,14 @@ function irPara(seção,btn){
     console.log('[irPara] Inicializando DEPOIMENTOS');
     try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
   }
-  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre',e);}}
-  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}}
-  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}}
-  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}}
-  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');atualizarScoresQualidade();preencherNotasOperacionais();}
-  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');try{renderRastreioRecentes();}catch(e){console.error('[Admin] renderRastreioRecentes',e);}}
-  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');executarAuditoria();}
-  if(ids.includes('rastreio')||ids.includes('auditoria'))preencherNotasOperacionais();
+  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');safeInit('SOBRE',()=>carregarSobre());}
+  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');safeInit('CARROSSEL',()=>carregarCarrosselConfig());}
+  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');safeInit('GALERIA',()=>carregarGaleria());}
+  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');safeInit('ENCOMENDAS CONFIG',()=>carregarEncomendas());}
+  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');safeInit('QUALIDADE',()=>{atualizarScoresQualidade();preencherNotasOperacionais();});}
+  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');safeInit('RASTREIO',()=>renderRastreioRecentes());}
+  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');safeInit('AUDITORIA',()=>executarAuditoria());}
+  if(ids.includes('rastreio')||ids.includes('auditoria'))safeInit('NOTAS OPERACIONAIS',()=>preencherNotasOperacionais());
   // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
   window.scrollTo({top:0,behavior:'auto'});
   const content=document.querySelector('.admin-content');
@@ -5594,10 +5601,10 @@ const FID_TOTAL_BANCO = 1000000;
 const FID_LOTE_SIZE   = 100;
 const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
 // REGRA DOS CARACTERES PERMITIDOS NOS CUPONS (sem O,I,L,0,1 para evitar confusao visual):
-// Letra O=parece 0 | Letra I=parece 1/L | Letra L=parece 1/I | Num 0=parece O | Num 1=parece I/L
-// Especiais mantidos para aumentar entropia e dificultar fraude.
-  // @validador-ignore-next-line
-  const FID_CHARS       = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789#$@!%&*?+'; // 40 chars — sem O,I,L,0,1
+// Formato fixo do cupom: XXXXXXX#D& (ex.: 7ANXBZQ#6&)
+// 7 chars base + '#' + 1 dígito + '&'
+const FID_CHARS_BASE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+const FID_CHARS_DIGITS = '23456789';
 function fidGerarCodigo(idx){
   const s=FID_SALT;
   let a=idx+1,b=0;
@@ -5610,9 +5617,16 @@ function fidGerarCodigo(idx){
   x=(x^(x>>>13))>>>0;
   x=(x*3266489917)>>>0;
   x=(x^(x>>>16))>>>0;
-  let c='';
-  for(let i=0;i<10;i++){x=(x*1664525+1013904223+i*31+a*7)>>>0;x=(x^(x>>>15))>>>0;c+=FID_CHARS[x%FID_CHARS.length];}
-  return c;
+  let parteBase='';
+  for(let i=0;i<7;i++){
+    x=(x*1664525+1013904223+i*31+a*7)>>>0;
+    x=(x^(x>>>15))>>>0;
+    parteBase+=FID_CHARS_BASE[x%FID_CHARS_BASE.length];
+  }
+  x=(x*1664525+1013904223+7*31+a*7)>>>0;
+  x=(x^(x>>>15))>>>0;
+  const digito=FID_CHARS_DIGITS[x%FID_CHARS_DIGITS.length];
+  return `${parteBase}#${digito}&`;
 }
 function fidMostrarAlerta(msg,tipo){
   const el=document.getElementById('fid-alerta-lote');
@@ -5863,30 +5877,15 @@ function fidColetarCodigosParaEtiquetas(){
    const folhasHtml = Array.from({ length: pages }, (_, p) => {
      const start = p * ETQ_POR_PAGINA;
      const slice = lista.slice(start, start + ETQ_POR_PAGINA);
-       const etqs = slice.map((cod, idxLocal) => {
-         const meta = metadados[start + idxLocal] || {};
-         const loteTxt = esc(meta.loteTexto || 'LOTE --');
-         const seqTxt = esc(meta.sequenciaTexto || 'Nº ----');
-         const safe = esc(cod);
-         if(!safe) return '<div class="etq etq-vazia"></div>';
-          return `<div class="etq">
-           <img class="etq-watermark" src="${FID_LOGO_MARCA_DAGUA_SRC}" alt="" aria-hidden="true">
-           <div class="etq-lateral etq-lateral-left">${loteTxt}</div>
-           <div class="etq-lateral etq-lateral-right">${seqTxt}</div>
-           <div class="etq-conteudo">
-             <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
-             <div class="etq-lote-corpo" aria-label="Lote do cupom">${loteTxt}</div>
-             <div class="etq-divisor"></div>
-             <div class="etq-cod">${safe}</div>
-             <div class="etq-divisor"></div>
-             <div class="etq-footer-1">Cadastre no Nosso APP</div>
-             <div class="etq-footer-2">ITAPOLITANACAJURU.COM.BR</div>
-             <div class="etq-seq-corpo" aria-label="Número de sequência do cupom">${seqTxt}</div>
-             <div class="etq-divisor etq-divisor-laranja"></div>
-             <div class="etq-sorteios">${FID_TEXTO_SORTEIOS}</div>
-           </div>
-         </div>`;
-      }).join('');
+        const etqs = slice.map((cod) => {
+          const safe = esc(cod);
+          if(!safe) return '<div class="etq etq-vazia"></div>';
+           return `<div class="etq">
+            <div class="etq-conteudo">
+              <div class="etq-cod-central">${safe}</div>
+            </div>
+          </div>`;
+       }).join('');
       return `<section class="folha"><div class="grid">${etqs}</div></section>`;
    }).join('');
 
@@ -5960,6 +5959,7 @@ function fidColetarCodigosParaEtiquetas(){
         display:flex;
         flex-direction:column;
         align-items:center;
+        justify-content:center;
       }
     .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
       .etq-lateral{
@@ -6005,14 +6005,14 @@ function fidColetarCodigosParaEtiquetas(){
         border-top-color:#e8470a;
         margin:0.5mm 0 0.6mm 0;
       }
-  	    .etq-cod{
-  	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  	      font-weight:900;
-  	      font-size:21.2pt;
-  	      letter-spacing:.25pt;
-  	      text-align:center;
-  	      width:100%;
-  	      overflow:hidden;
+   	    .etq-cod-central{
+   	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+   	      font-weight:900;
+   	      font-size:31.8pt;
+   	      letter-spacing:.25pt;
+   	      text-align:center;
+   	      width:100%;
+   	      overflow:hidden;
   	      white-space:nowrap;
         text-overflow:ellipsis;
         margin:0 0 0.8mm 0;
@@ -6133,9 +6133,6 @@ async function gerarPdfEtiquetasFidelidade(){
 
   const desenharBordas = true;
   const paddingX = 2;
-  const paddingY = 2;
-  const logoDataUrl = await fidGetLogoMarcaDaguaDataUrl();
-
   const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
   for(let i = 0; i < totalSlots; i++){
     if(i > 0 && i % ETQ_POR_PAGINA === 0) doc.addPage();
@@ -6154,89 +6151,19 @@ async function gerarPdfEtiquetasFidelidade(){
 
     const codigo = codigos[i] == null ? '' : String(codigos[i]).trim();
     if(!codigo) continue;
-    const metaEtiqueta = metadados[i] || {};
-
-    // ═══════════════════════════════════════════════════════════════
-    // CONTEÚDO OTIMIZADO DA ETIQUETA (10/A4 · 92,5×51,4 mm)
-    // ───────────────────────────────────────────────────────────────
-    // Área útil: 88.5 × 47.4 mm (padding 2mm em cada lado)
-    // Linha 1: "Programa de Fidelidade" (10pt, otimizado)
-    // Linha 2: [CÓDIGO GRANDE NEGRITADO] (28pt máx, dinâmico)
-    // Linha 3: "Cadastre no Site" (9pt, otimizado)
-    // Linha 4: "ITAPOLITANACAJURU.COM.BR" (9.5pt negrito, otimizado)
-    // ═══════════════════════════════════════════════════════════════
-
     const centerX = x + (ETQ_W / 2);
     const centerY = y + (ETQ_H / 2);
     const innerX = x + paddingX;
     const innerW = ETQ_W - (paddingX * 2);
 
-    if(logoDataUrl){
-      try{
-        if(typeof doc.GState === 'function' && typeof doc.setGState === 'function'){
-          doc.setGState(new doc.GState({ opacity: 0.08 }));
-        }
-        doc.addImage(logoDataUrl, 'PNG', centerX - 17.5, centerY - 17.5, 35, 35, undefined, 'FAST');
-        if(typeof doc.GState === 'function' && typeof doc.setGState === 'function'){
-          doc.setGState(new doc.GState({ opacity: 1 }));
-        }
-      }catch(_e){}
-    }
-
-    doc.setDrawColor(216, 216, 216);
-    doc.setLineWidth(0.15);
-    doc.line(innerX, y + 13.4, innerX + innerW, y + 13.4);
-    doc.line(innerX, y + 31.2, innerX + innerW, y + 31.2);
-    doc.line(innerX, y + 41.2, innerX + innerW, y + 41.2);
-    doc.setDrawColor(232, 71, 10);
-    doc.line(innerX, y + 42.1, innerX + innerW, y + 42.1);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11.2);
-    doc.setTextColor(232, 71, 10);
-    doc.text('PROGRAMA DE FIDELIDADE', centerX, y + 6.1, { align: 'center' });
-
-    doc.setTextColor(34, 34, 34);
-    doc.setFontSize(13.2);
-    doc.text(metaEtiqueta.loteTexto || 'LOTE --', centerX, y + 10.6, { align: 'center' });
-
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
-    const maxTextW = innerW;
-    const baseFont = 21;
-    const minFont = 13;
+    const maxTextW = innerW - 2;
+    const baseFont = 31.5;
+    const minFont = 19.5;
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
-    doc.text(codigo, centerX, y + 22.4, { align: 'center', baseline: 'middle' });
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(51, 51, 51);
-    doc.text('Cadastre no Nosso APP', centerX, y + 35.4, { align: 'center' });
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(102, 102, 102);
-    doc.text('ITAPOLITANACAJURU.COM.BR', centerX, y + 38.9, { align: 'center' });
-
-    doc.setTextColor(31, 31, 31);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13.2);
-    doc.text(metaEtiqueta.sequenciaTexto || 'Nº ----', innerX + innerW - 0.9, y + 40.3, { align: 'right' });
-
-    doc.setFillColor(232, 71, 10);
-    doc.rect(innerX, y + 42.3, innerW, 5.9, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9.4);
-    doc.text(FID_TEXTO_SORTEIOS, centerX, y + 46.1, { align: 'center' });
-
-    // Laterais: Lote e Número Sequencial
-    doc.setTextColor(122, 122, 122);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(6.4);
-    doc.text(metaEtiqueta.loteTexto || 'LOTE --', x + 1.6, centerY, { align: 'center', angle: 90 });
-    doc.text(metaEtiqueta.sequenciaTexto || 'Nº ----', x + ETQ_W - 1.6, centerY, { align: 'center', angle: -90 });
+    doc.text(codigo, centerX, centerY, { align: 'center', baseline: 'middle' });
   }
 
   const hoje = new Date().toISOString().slice(0, 10);
