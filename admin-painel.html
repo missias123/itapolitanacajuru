@@ -5948,7 +5948,7 @@ function fidColetarCodigosParaEtiquetas(){
             <img class="etq-watermark etq-watermark-c" src="${esc(logoWatermark)}" alt="">
           </div>` : ''}
           <div class="etq-conteudo">
-             <div class="etq-header">PROGRAMA DE FIDELIDADE</div>
+             <div class="etq-header">CLUBE ITAPOLITANA</div>
              <div class="etq-lote-corpo">${loteStr}</div>
              <div class="etq-cod-wrap"><div class="etq-cod-central">${safe}</div></div>
              <div class="etq-footer-1">Cadastre no Nosso APP</div>
@@ -6117,7 +6117,7 @@ function fidColetarCodigosParaEtiquetas(){
           display:flex;
           align-items:center;
           justify-content:center;
-          margin:-1.55mm 0 0.35mm 0;
+          margin:-1.55mm 0 1.2mm 0;
         }
      	    .etq-cod-central{
      	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
@@ -6135,12 +6135,12 @@ function fidColetarCodigosParaEtiquetas(){
      }
      .etq-footer-1{
        font-family:"Segoe UI",Arial,Helvetica,sans-serif;
-       font-weight:400;
+       font-weight:700;
        font-size:8.4pt;
        color:#353535;
        text-align:center;
        margin-top:0;
-       margin-bottom:0.45mm;
+       margin-bottom:1.5mm;
      }
      .etq-footer-row{
        width:100%;
@@ -6150,6 +6150,7 @@ function fidColetarCodigosParaEtiquetas(){
        align-items:center;
        justify-content:center;
        padding-right:17mm;
+       margin-bottom:1.5mm;
      }
      .etq-footer-2{
        font-family:"Segoe UI Semibold","Segoe UI",Arial,Helvetica,sans-serif;
@@ -6180,12 +6181,12 @@ function fidColetarCodigosParaEtiquetas(){
        color:#fff;
        font-family:"Arial Black","Segoe UI",Arial,sans-serif;
        font-weight:800;
-       font-size:8pt;
-       letter-spacing:0.3pt;
+       font-size:9.5pt;
+       letter-spacing:0.5pt;
        text-align:center;
-       padding:0.75mm 0 0.68mm 0;
+       padding:1.5mm 0;
        line-height:1;
-       margin-top:0.55mm;
+       margin-top:0;
      }
   </style>
 </head><body>
@@ -6303,14 +6304,14 @@ async function gerarPdfEtiquetasFidelidade(){
       }
     }
 
-    // — Cabeçalho "PROGRAMA DE FIDELIDADE" —
+    // — Cabeçalho "CLUBE ITAPOLITANA" —
     const hdrFontPt = 10.2;
     const hdrFontMm = hdrFontPt * PT;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(hdrFontPt);
     doc.setTextColor(222, 74, 22);
     const yHdr = yTop + hdrFontMm;
-    doc.text('PROGRAMA DE FIDELIDADE', centerX, yHdr,
+    doc.text('CLUBE ITAPOLITANA', centerX, yHdr,
              { align: 'center', baseline: 'alphabetic' });
 
     // — Lote no topo (central) —
@@ -6321,16 +6322,15 @@ async function gerarPdfEtiquetasFidelidade(){
     const yLote = yHdr + (11.8 * PT * 0.95) + 0.8;
     doc.text(loteTexto, centerX, yLote, { align: 'center', baseline: 'alphabetic' });
 
-    // — Área do código central —
-    const f1Mm = 8.6 * PT;
-    const f2Mm = 7.55 * PT;
-    const sorteioBarH = 3.25;
-    const ySorteioTop = yBot - sorteioBarH;
-    const yF2 = ySorteioTop - 0.95;
-    const yF1 = yF2 - f1Mm - 0.55;
-    const codeAreaTop = yLote + 0.65;
-    const codeAreaBot = yF1 - 0.85;
-    const yCode = ((codeAreaTop + codeAreaBot) / 2) - FID_ETQ_CODE_SHIFT_UP_MM;
+    // — Layout preciso do cupom (bottom-up, totalmente calculado) —
+    // Etiqueta: 92,5 × 51,4 mm · padding 2 mm · área útil 47,4 mm altura
+    const sorteioBarH  = 5.0;                          // barra laranja (fundo)
+    const ySorteioTop  = yBot  - sorteioBarH;          // topo da barra laranja
+    const yF2          = ySorteioTop - 1.5;            // baseline URL / Nº (1,5 mm acima da barra)
+    const yCadastro    = yF2 - (7.3 * PT) - 1.5;      // baseline "Cadastre" (1,5 mm acima do texto URL)
+    const codeAreaTop  = yLote + 0.65;                 // código começa após o lote
+    const codeAreaBot  = yCadastro - (8.4 * PT) - 1.2; // código termina 1,2 mm acima de "Cadastre"
+    const yCode        = ((codeAreaTop + codeAreaBot) / 2) - FID_ETQ_CODE_SHIFT_UP_MM;
 
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
@@ -6343,10 +6343,10 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.text(codigo, centerX, yCode, { align: 'center', baseline: 'middle' });
 
     // — Rodapé "Cadastre no Nosso APP" —
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.4);
     doc.setTextColor(53, 53, 53);
-    doc.text('Cadastre no Nosso APP', centerX, yF1,
+    doc.text('Cadastre no Nosso APP', centerX, yCadastro,
              { align: 'center', baseline: 'alphabetic' });
 
     // — URL + Nº sequencial (mesma linha) —
@@ -6372,9 +6372,9 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.setFillColor(232, 71, 10);
     doc.rect(innerX, ySorteioTop, innerW, sorteioBarH, 'F');
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(9.5);
     doc.setTextColor(255, 255, 255);
-    doc.text(FID_TEXTO_SORTEIOS, centerX, ySorteioTop + (sorteioBarH / 2) + 1.0,
+    doc.text(FID_TEXTO_SORTEIOS, centerX, ySorteioTop + (sorteioBarH / 2),
              { align: 'center', baseline: 'middle' });
   }
 
