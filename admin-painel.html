@@ -5942,7 +5942,8 @@ function fidColetarCodigosParaEtiquetas(){
          <span class="etq-crop etq-crop-tr" aria-hidden="true"></span>
          <span class="etq-crop etq-crop-bl" aria-hidden="true"></span>
          <span class="etq-crop etq-crop-br" aria-hidden="true"></span>
-          ${logoWatermark ? `<div class="etq-watermarks" aria-hidden="true">
+          <div class="etq-lateral-yhwh" aria-hidden="true"><span>Y</span><span>H</span><span>W</span><span>H</span></div>
+           ${logoWatermark ? `<div class="etq-watermarks" aria-hidden="true">
             <img class="etq-watermark etq-watermark-a" src="${esc(logoWatermark)}" alt="">
             <img class="etq-watermark etq-watermark-b" src="${esc(logoWatermark)}" alt="">
             <img class="etq-watermark etq-watermark-c" src="${esc(logoWatermark)}" alt="">
@@ -6091,6 +6092,29 @@ function fidColetarCodigosParaEtiquetas(){
         overflow:hidden;
       }
       .etq-vazia{border:${desenharBordas ? '0.25mm dashed #e0e0e0' : 'none'};color:transparent}
+        .etq-lateral-yhwh{
+          position:absolute;
+          left:1.1mm;
+          top:50%;
+          transform:translateY(-50%);
+          z-index:2;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          gap:0.45mm;
+          font-family:"Arial Black","Segoe UI",Arial,sans-serif;
+          font-weight:900;
+          font-size:7.8pt;
+          line-height:1;
+          letter-spacing:0.15pt;
+          color:#b71c1c;
+          text-shadow:0 0 0.2mm rgba(255,140,0,.45);
+          pointer-events:none;
+          user-select:none;
+          opacity:.92;
+        }
+        .etq-lateral-yhwh span{display:block}
     	    .etq-header{
     	      font-family:"Arial Black","Segoe UI",Arial,sans-serif;
     	      font-weight:900;
@@ -6306,6 +6330,18 @@ async function gerarPdfEtiquetasFidelidade(){
         doc.setGState(new doc.GState({ opacity: 1 }));
       }
     }
+
+    // — Lateral vertical "YHWH" —
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.8);
+    doc.setTextColor(183, 28, 28);
+    const yhwhLetters = ['Y', 'H', 'W', 'H'];
+    const yhwhStepMm = 3.6;
+    const yhwhX = innerX + 1.2;
+    const yhwhStartY = y + (ETQ_H / 2) - ((yhwhLetters.length - 1) * yhwhStepMm / 2);
+    yhwhLetters.forEach((letter, idx) => {
+      doc.text(letter, yhwhX, yhwhStartY + (idx * yhwhStepMm), { align: 'left', baseline: 'middle' });
+    });
 
     // — Cabeçalho "CLUBE ITAPOLITANA" —
     const hdrFontPt = 13.0;
