@@ -3640,7 +3640,7 @@ function irPara(seção,btn){
   if(!checkDirty())return; // avisa se há alterações não salvas
   const safeInit=(rotulo,fn)=>{
     try{fn();}
-    catch(e){console.error(`[irPara] Falha ao inicializar ${rotulo}`,e);}
+    catch(e){console.error(`[irPara] Falha ao inicializar ${rotulo}: ${e?.message||e}`,e);}
   };
   // Mapa: aba → lista de seções que compõem cada página do site
   const sectionMap={
@@ -5601,10 +5601,15 @@ const FID_TOTAL_BANCO = 1000000;
 const FID_LOTE_SIZE   = 100;
 const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
 // REGRA DOS CARACTERES PERMITIDOS NOS CUPONS (sem O,I,L,0,1 para evitar confusao visual):
-// Formato fixo do cupom: XXXXXXX#D& (ex.: 7ANXBZQ#6&)
+// Formato fixo do cupom (10 caracteres): XXXXXXX#D& (ex.: 7ANXBZQ#6&)
 // 7 chars base + '#' + 1 dígito + '&'
+// Sem O,I,L,0,1 para evitar confusão visual com caracteres parecidos.
+const FID_CODE_BASE_LENGTH = 7;
 const FID_CHARS_BASE = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const FID_CHARS_DIGITS = '23456789';
+const FID_ETQ_CODE_FONT_PRINT_PT = 31.8;
+const FID_ETQ_CODE_FONT_BASE_PT = 31.5;
+const FID_ETQ_CODE_FONT_MIN_PT = 19.5;
 function fidGerarCodigo(idx){
   const s=FID_SALT;
   let a=idx+1,b=0;
@@ -5618,12 +5623,12 @@ function fidGerarCodigo(idx){
   x=(x*3266489917)>>>0;
   x=(x^(x>>>16))>>>0;
   let parteBase='';
-  for(let i=0;i<7;i++){
+  for(let i=0;i<FID_CODE_BASE_LENGTH;i++){
     x=(x*1664525+1013904223+i*31+a*7)>>>0;
     x=(x^(x>>>15))>>>0;
     parteBase+=FID_CHARS_BASE[x%FID_CHARS_BASE.length];
   }
-  x=(x*1664525+1013904223+7*31+a*7)>>>0;
+  x=(x*1664525+1013904223+FID_CODE_BASE_LENGTH*31+a*7)>>>0;
   x=(x^(x>>>15))>>>0;
   const digito=FID_CHARS_DIGITS[x%FID_CHARS_DIGITS.length];
   return `${parteBase}#${digito}&`;
@@ -5856,7 +5861,7 @@ function fidColetarCodigosParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
- function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, metadados, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
+  function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, metadados, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
    const ETQ_POR_PAGINA = cols * rows;
    const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
    const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
@@ -6008,7 +6013,7 @@ function fidColetarCodigosParaEtiquetas(){
    	    .etq-cod-central{
    	      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
    	      font-weight:900;
-   	      font-size:31.8pt;
+   	      font-size:${FID_ETQ_CODE_FONT_PRINT_PT}pt;
    	      letter-spacing:.25pt;
    	      text-align:center;
    	      width:100%;
@@ -6159,8 +6164,8 @@ async function gerarPdfEtiquetasFidelidade(){
     doc.setFont('courier', 'bold');
     doc.setTextColor(0, 0, 0);
     const maxTextW = innerW - 2;
-    const baseFont = 31.5;
-    const minFont = 19.5;
+    const baseFont = FID_ETQ_CODE_FONT_BASE_PT;
+    const minFont = FID_ETQ_CODE_FONT_MIN_PT;
     const fontSize = fidFitTextSizeMm(doc, codigo, maxTextW, baseFont, minFont);
     doc.setFontSize(fontSize);
     doc.text(codigo, centerX, centerY, { align: 'center', baseline: 'middle' });
