@@ -1,11 +1,13 @@
 # Relatório Operacional — Últimos 5 dias (Admin ↔ Site)
 
-Gerado em: 2026-05-24T07:49:09.469Z
+Gerado em: 2026-05-25T08:57:03.477Z
 
 Status do incidente "Admin não editável / Espelho quebrado": **não resolvido**
 
 ## Commits (últimos 5 dias)
 
+- `1d5149c` | 2026-05-25T04:19:50Z | Manus AI | Fix: Permitir HTML em títulos e campos de texto rico no site-loader
+- `340f028` | 2026-05-24T07:49:09Z | github-actions[bot] | docs: atualizar relatório admin últimos 5 dias [skip ci]
 - `45a1ef9` | 2026-05-23T07:32:07Z | github-actions[bot] | docs: atualizar relatório admin últimos 5 dias [skip ci]
 - `73ba015` | 2026-05-22T08:21:57Z | github-actions[bot] | docs: atualizar relatório admin últimos 5 dias [skip ci]
 - `bdab03b` | 2026-05-22T03:39:58Z | missias123 | Admin: atualizar estoque encomendas
@@ -84,12 +86,40 @@ Status do incidente "Admin não editável / Espelho quebrado": **não resolvido*
 - `2037117` | 2026-05-20T17:29:02Z | anthropic-code-agent[bot] | feat: atualizar regra pontuação 0,5 ponto por R$10 em fidelidade
 - `36597a1` | 2026-05-20T17:14:40Z | missias123 | Merge pull request #153 from missias123/claude/run-lighthouse-audit
 - `e8b7746` | 2026-05-20T17:10:13Z | anthropic-code-agent[bot] | feat: otimizar PDF etiquetas fidelidade 10/A4 com máximo aproveitamento de espaço
-- `e221b13` | 2026-05-20T16:57:19Z | anthropic-code-agent[bot] | docs: adicionar resumo completo da auditoria Lighthouse
-- `160a4f2` | 2026-05-20T16:55:56Z | anthropic-code-agent[bot] | feat: executar auditoria Lighthouse completa e atualizar scores no painel
 
 ## Workflow runs (últimos 5 dias)
 
-- 2026-05-24T07:48:50Z | 📈 Relatório Admin — Últimos 5 dias | `.github/workflows/admin-5dias-report.yml` | in_progress/null | run 26355562592 | https://github.com/missias123/itapolitanacajuru/actions/runs/26355562592
+- 2026-05-25T08:56:46Z | 📈 Relatório Admin — Últimos 5 dias | `.github/workflows/admin-5dias-report.yml` | in_progress/null | run 26392341754 | https://github.com/missias123/itapolitanacajuru/actions/runs/26392341754
+- 2026-05-25T08:13:08Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26390596772 | https://github.com/missias123/itapolitanacajuru/actions/runs/26390596772
+- 2026-05-25T07:18:43Z | Backup Automático dos Dados | `.github/workflows/json-backup.yml` | completed/failure | run 26388536734 | https://github.com/missias123/itapolitanacajuru/actions/runs/26388536734
+- 2026-05-25T07:03:37Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26388003834 | https://github.com/missias123/itapolitanacajuru/actions/runs/26388003834
+- 2026-05-25T06:59:32Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26387854521 | https://github.com/missias123/itapolitanacajuru/actions/runs/26387854521
+- 2026-05-25T06:38:45Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26387117544 | https://github.com/missias123/itapolitanacajuru/actions/runs/26387117544
+- 2026-05-25T06:28:42Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26386777862 | https://github.com/missias123/itapolitanacajuru/actions/runs/26386777862
+- 2026-05-25T05:24:30Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26384795598 | https://github.com/missias123/itapolitanacajuru/actions/runs/26384795598
+- 2026-05-25T04:30:21Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26383271783 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383271783
+- 2026-05-25T04:21:15Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26383021408 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383021408
+- 2026-05-25T04:20:55Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26383012131 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383012131
+- 2026-05-25T04:20:55Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26383012136 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383012136
+- 2026-05-25T04:20:55Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26383012133 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383012133
+- 2026-05-25T04:20:55Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26383012130 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383012130
+- 2026-05-25T04:20:55Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26383012168 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383012168
+- 2026-05-25T04:20:54Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26383011629 | https://github.com/missias123/itapolitanacajuru/actions/runs/26383011629
+- 2026-05-25T02:33:27Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26380190879 | https://github.com/missias123/itapolitanacajuru/actions/runs/26380190879
+- 2026-05-24T23:51:46Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26376253371 | https://github.com/missias123/itapolitanacajuru/actions/runs/26376253371
+- 2026-05-24T22:47:17Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26374907144 | https://github.com/missias123/itapolitanacajuru/actions/runs/26374907144
+- 2026-05-24T21:46:00Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26373612625 | https://github.com/missias123/itapolitanacajuru/actions/runs/26373612625
+- 2026-05-24T20:42:36Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26372255615 | https://github.com/missias123/itapolitanacajuru/actions/runs/26372255615
+- 2026-05-24T19:02:10Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26370049870 | https://github.com/missias123/itapolitanacajuru/actions/runs/26370049870
+- 2026-05-24T17:52:55Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26368523902 | https://github.com/missias123/itapolitanacajuru/actions/runs/26368523902
+- 2026-05-24T16:53:09Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26367174641 | https://github.com/missias123/itapolitanacajuru/actions/runs/26367174641
+- 2026-05-24T15:55:21Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26365867077 | https://github.com/missias123/itapolitanacajuru/actions/runs/26365867077
+- 2026-05-24T14:55:10Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26364502460 | https://github.com/missias123/itapolitanacajuru/actions/runs/26364502460
+- 2026-05-24T13:00:49Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26361959125 | https://github.com/missias123/itapolitanacajuru/actions/runs/26361959125
+- 2026-05-24T11:07:44Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26359567965 | https://github.com/missias123/itapolitanacajuru/actions/runs/26359567965
+- 2026-05-24T09:13:55Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26357279501 | https://github.com/missias123/itapolitanacajuru/actions/runs/26357279501
+- 2026-05-24T07:49:11Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26355568777 | https://github.com/missias123/itapolitanacajuru/actions/runs/26355568777
+- 2026-05-24T07:48:50Z | 📈 Relatório Admin — Últimos 5 dias | `.github/workflows/admin-5dias-report.yml` | completed/success | run 26355562592 | https://github.com/missias123/itapolitanacajuru/actions/runs/26355562592
 - 2026-05-24T06:54:48Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/failure | run 26354506123 | https://github.com/missias123/itapolitanacajuru/actions/runs/26354506123
 - 2026-05-24T06:40:24Z | Backup Automático dos Dados | `.github/workflows/json-backup.yml` | completed/failure | run 26354236331 | https://github.com/missias123/itapolitanacajuru/actions/runs/26354236331
 - 2026-05-24T06:28:40Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26354018043 | https://github.com/missias123/itapolitanacajuru/actions/runs/26354018043
@@ -119,36 +149,6 @@ Status do incidente "Admin não editável / Espelho quebrado": **não resolvido*
 - 2026-05-23T05:49:28Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26325024314 | https://github.com/missias123/itapolitanacajuru/actions/runs/26325024314
 - 2026-05-23T05:40:05Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26324847585 | https://github.com/missias123/itapolitanacajuru/actions/runs/26324847585
 - 2026-05-23T04:45:49Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26323800132 | https://github.com/missias123/itapolitanacajuru/actions/runs/26323800132
-- 2026-05-23T04:33:04Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26323551544 | https://github.com/missias123/itapolitanacajuru/actions/runs/26323551544
-- 2026-05-23T00:07:33Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26317898797 | https://github.com/missias123/itapolitanacajuru/actions/runs/26317898797
-- 2026-05-22T22:58:38Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26315988462 | https://github.com/missias123/itapolitanacajuru/actions/runs/26315988462
-- 2026-05-22T21:58:18Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26313984633 | https://github.com/missias123/itapolitanacajuru/actions/runs/26313984633
-- 2026-05-22T20:27:55Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26310363948 | https://github.com/missias123/itapolitanacajuru/actions/runs/26310363948
-- 2026-05-22T18:28:52Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26305099519 | https://github.com/missias123/itapolitanacajuru/actions/runs/26305099519
-- 2026-05-22T16:15:05Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26298985282 | https://github.com/missias123/itapolitanacajuru/actions/runs/26298985282
-- 2026-05-22T13:23:58Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26290399720 | https://github.com/missias123/itapolitanacajuru/actions/runs/26290399720
-- 2026-05-22T10:16:40Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26282021568 | https://github.com/missias123/itapolitanacajuru/actions/runs/26282021568
-- 2026-05-22T08:21:59Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26276849325 | https://github.com/missias123/itapolitanacajuru/actions/runs/26276849325
-- 2026-05-22T08:21:40Z | 📈 Relatório Admin — Últimos 5 dias | `.github/workflows/admin-5dias-report.yml` | completed/success | run 26276835566 | https://github.com/missias123/itapolitanacajuru/actions/runs/26276835566
-- 2026-05-22T07:37:57Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26274946693 | https://github.com/missias123/itapolitanacajuru/actions/runs/26274946693
-- 2026-05-22T06:52:33Z | Backup Automático dos Dados | `.github/workflows/json-backup.yml` | completed/failure | run 26273096256 | https://github.com/missias123/itapolitanacajuru/actions/runs/26273096256
-- 2026-05-22T06:40:25Z | 🟢 Uptime — Monitoramento de Disponibilidade | `.github/workflows/check-uptime.yml` | completed/success | run 26272642980 | https://github.com/missias123/itapolitanacajuru/actions/runs/26272642980
-- 2026-05-22T06:37:15Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26272527368 | https://github.com/missias123/itapolitanacajuru/actions/runs/26272527368
-- 2026-05-22T06:17:32Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26271817091 | https://github.com/missias123/itapolitanacajuru/actions/runs/26271817091
-- 2026-05-22T06:08:04Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26271504114 | https://github.com/missias123/itapolitanacajuru/actions/runs/26271504114
-- 2026-05-22T05:06:40Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26269544451 | https://github.com/missias123/itapolitanacajuru/actions/runs/26269544451
-- 2026-05-22T03:49:35Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26267354919 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267354919
-- 2026-05-22T03:40:22Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26267088756 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267088756
-- 2026-05-22T03:40:01Z | Validar JSONs de Dados | `.github/workflows/json-validate.yml` | completed/success | run 26267077852 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077852
-- 2026-05-22T03:40:01Z | 🔍 Quality Check — Lint + Auditoria de Código | `.github/workflows/quality-check.yml` | completed/failure | run 26267077832 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077832
-- 2026-05-22T03:40:01Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26267077855 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077855
-- 2026-05-22T03:40:01Z | 🔐 CodeQL Security Scan | `.github/workflows/codeql.yml` | completed/success | run 26267077857 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077857
-- 2026-05-22T03:40:01Z | 🔦 Lighthouse + Axe Auditoria | `.github/workflows/lighthouse-audit.yml` | completed/success | run 26267077856 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077856
-- 2026-05-22T03:40:01Z | 🎭 E2E Tests — Playwright | `.github/workflows/e2e-tests.yml` | completed/failure | run 26267077831 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077831
-- 2026-05-22T03:40:00Z | pages build and deployment | `dynamic/pages/pages-build-deployment` | completed/success | run 26267077415 | https://github.com/missias123/itapolitanacajuru/actions/runs/26267077415
-- 2026-05-22T03:25:43Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/success | run 26266657908 | https://github.com/missias123/itapolitanacajuru/actions/runs/26266657908
-- 2026-05-22T03:16:01Z | 🐛 Criar Issue Automático em Falha | `.github/workflows/create-issue-on-failure.yml` | completed/skipped | run 26266360338 | https://github.com/missias123/itapolitanacajuru/actions/runs/26266360338
-- 2026-05-22T03:15:34Z | 🚀 CI — Validação e Auto-Repair | `.github/workflows/auto-repair.yml` | completed/success | run 26266346910 | https://github.com/missias123/itapolitanacajuru/actions/runs/26266346910
 
 ## Critério de aceite funcional final
 
