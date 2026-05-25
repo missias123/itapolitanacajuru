@@ -158,8 +158,8 @@
           } else {
             el.textContent = valor;
           }
-        } else if (el.hasAttribute('data-config-html') || campo.toLowerCase().includes('texto')) {
-          // Campos de texto rico: permitir HTML seguro (strong, em, br, span)
+        } else if (el.hasAttribute('data-config-html') || campo.toLowerCase().includes('texto') || campo.toLowerCase().includes('titulo') || campo.toLowerCase().includes('título') || el.tagName === 'H2' || el.tagName === 'H1') {
+          // Campos de texto rico, títulos e tags H1/H2: permitir HTML seguro (strong, em, br, span)
           el.innerHTML = sanitizeHTML(valor);
         } else {
           el.textContent = valor;
