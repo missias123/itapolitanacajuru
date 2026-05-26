@@ -399,11 +399,60 @@
     if (secaoCadastro) secaoCadastro.style.display = 'none';
   });
 
+  function atualizarEstadoBotaoCadastro() {
+    if (!btnCadastrar) return;
+    var valido = cadastroNomeValido() && cadastroDataValida() && cadastroCelularValido();
+    btnCadastrar.disabled = !valido;
+  }
+
   if (btnAceitarRegras) btnAceitarRegras.addEventListener('click', function() {
     _cadastroRegrasAceitas = true;
-    if (etapaCadastroForm) etapaCadastroForm.style.display = 'block';
+    if (etapaCadastroForm) {
+      etapaCadastroForm.style.display = 'block';
+      // Habilitar campos
+      [inputCadNome, inputCadNasc, inputCadTel].forEach(function(el) {
+        if (el) {
+          el.disabled = false;
+          el.classList.remove('form-control-disabled');
+        }
+      });
+      atualizarEstadoBotaoCadastro();
+    }
     btnAceitarRegras.textContent = 'Regras aceitas ✓';
+    btnAceitarRegras.classList.add('aceito');
   });
+
+  if (inputCadNome) inputCadNome.addEventListener('input', atualizarEstadoBotaoCadastro);
+  if (inputCadNasc) inputCadNasc.addEventListener('input', atualizarEstadoBotaoCadastro);
+  if (inputCadTel) inputCadTel.addEventListener('input', atualizarEstadoBotaoCadastro);
+
+  // Lógica para revelar campos de login conforme preenchimento
+  if (inputNome) {
+    inputNome.addEventListener('input', function() {
+      var nome = inputNome.value.trim();
+      var wrapData = document.getElementById('login-wrap-data');
+      var wrapCel = document.getElementById('login-wrap-cel');
+      var wrapBtn = document.getElementById('login-wrap-btn');
+
+      if (nome.length >= 3) {
+        if (wrapData) wrapData.style.display = 'block';
+        if (inputNasc) {
+          inputNasc.disabled = false;
+          inputNasc.classList.remove('form-control-disabled');
+        }
+        if (wrapCel) wrapCel.style.display = 'block';
+        if (inputTel) {
+          inputTel.disabled = false;
+          inputTel.classList.remove('form-control-disabled');
+        }
+        if (wrapBtn) wrapBtn.style.display = 'block';
+        if (btnEntrar) {
+          btnEntrar.disabled = false;
+          btnEntrar.classList.remove('form-control-disabled');
+        }
+      }
+    });
+  }
 
   if (btnCadastrar) {
     btnCadastrar.addEventListener('click', function() {
