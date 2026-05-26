@@ -188,21 +188,35 @@
 
     // Atualizar pontos do cliente no sorteioInscritos (fallback de armazenamento)
     if (!fid.sorteioInscritos) fid.sorteioInscritos = [];
-    var inscrito = fid.sorteioInscritos.find(i => i.nome === nome && i.cel.replace(/\D/g,'') === cel.replace(/\D/g,''));
+    
+    // Normalizar busca para evitar duplicados por formatação
+    var celLimpo = cel.replace(/\D/g,'');
+    var inscrito = fid.sorteioInscritos.find(i => {
+      var iCel = (i.cel || '').replace(/\D/g,'');
+      return i.nome === nome || iCel === celLimpo;
+    });
+
+    var ptsGanhos = fid.config && fid.config.pontosPorCodigo ? Number(fid.config.pontosPorCodigo) : 0.5;
+
     if (inscrito) {
-      inscrito.pontos = (inscrito.pontos || 0) + 1;
+      inscrito.pontos = (Number(inscrito.pontos) || 0) + ptsGanhos;
       inscrito.ultimo_ponto = entrada.usado_em;
+      if (!inscrito.cel) inscrito.cel = mascaraTel(cel);
     } else {
-      fid.sorteioInscritos.push({
+      inscrito = {
         nome: nome,
         cel: mascaraTel(cel),
-        pontos: 1,
+        pontos: ptsGanhos,
         ultimo_ponto: entrada.usado_em,
         cadastro: entrada.usado_em
-      });
+      };
+      fid.sorteioInscritos.push(inscrito);
     }
 
-    var novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
+    // Usar TextEncoder para evitar problemas com caracteres especiais no btoa
+    var jsonStr = JSON.stringify(fid, null, 2);
+    var bytes = new TextEncoder().encode(jsonStr);
+    var novoConteudo = btoa(String.fromCharCode.apply(null, bytes));
     var save = await fetch(apiUrl, {
       method: 'PUT',
       headers: { Authorization: 'token ' + tk, 'Content-Type': 'application/json' },
