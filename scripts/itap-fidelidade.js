@@ -147,7 +147,12 @@
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ nome: nome, dataNasc: dataNasc, cel: cel })
-    }).then(function(r) { return r.json(); });
+    }).then(function(r) { 
+      if (r.status === 409) {
+        throw { type: 'DUPLICADO', message: 'Você já possui cadastro no Clube de Fidelidade! Acesse sua conta.' };
+      }
+      return r.json(); 
+    });
   }
 
   function loginClienteWorker(nome, dataNasc, cel) {
@@ -513,10 +518,17 @@
             encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
           }, 1500);
         })
-        .catch(function() {
-          // Se o worker falhar, ainda assim envia o WhatsApp para o admin saber
-          setResultadoCadastro('Cadastro enviado via WhatsApp para validação.', 'ok');
-          encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
+        .catch(function(err) {
+          if (err && err.type === 'DUPLICADO') {
+            setResultadoCadastro(err.message, 'aviso');
+            if (btnMostrarLogin) {
+              setTimeout(function() { btnMostrarLogin.click(); }, 2500);
+            }
+          } else {
+            // Se o worker falhar por rede, ainda assim envia o WhatsApp para o admin saber
+            setResultadoCadastro('Cadastro enviado via WhatsApp para validação.', 'ok');
+            encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
+          }
         })
         .finally(function() {
           btnCadastrar.disabled = false;

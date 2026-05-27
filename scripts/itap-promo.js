@@ -418,6 +418,19 @@
         var cliNascOk = String(cli.dataNasc || '').trim() === dataNascIso;
         if (cliNomeOk && cliNascOk) {
           idUnico = cid;
+          // Verificar se já está nos inscritos do sorteio
+          var jaInscrito = inscritos.some(function(ins) {
+            return ins.id_permanente === idUnico || (normalizarNomePromo(ins.nome) === nomeNorm && parseDataBrPromoToIso(ins.dataNasc || ins.nasc) === dataNascIso);
+          });
+          if (jaInscrito) {
+            mostrarMsgSorteio('✅ Você já está cadastrado e concorrendo a todos os sorteios mensais!', 'ok');
+            if (btnEnviarPromo) {
+              btnEnviarPromo.disabled = false;
+              btnEnviarPromo.textContent = '💬 Enviar Cadastro via WhatsApp';
+            }
+            exibirRegrasRetiradaPromo();
+            return;
+          }
           break;
         }
       }
