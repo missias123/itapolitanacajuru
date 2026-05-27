@@ -432,13 +432,16 @@
     _cadastroRegrasAceitas = true;
     if (etapaCadastroForm) {
       etapaCadastroForm.style.display = 'block';
-      // Habilitar primeiro campo (Nome)
-      if (inputCadNome) {
-        inputCadNome.disabled = false;
-        inputCadNome.classList.remove('form-control-disabled');
-      }
+      // Habilitar TODOS os campos imediatamente para evitar travamentos
+      [inputCadNome, inputCadNasc, inputCadTel].forEach(function(el) {
+        if (el) {
+          el.disabled = false;
+          el.classList.remove('form-control-disabled');
+        }
+      });
       setTimeout(function() {
         etapaCadastroForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (inputCadNome) inputCadNome.focus();
       }, 100);
     }
     btnAceitarRegras.textContent = 'Regras aceitas ✓';
