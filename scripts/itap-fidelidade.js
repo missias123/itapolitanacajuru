@@ -85,6 +85,15 @@
     return 'https://wa.me/' + WPP_NUM + '?text=' + encodeURIComponent(msg);
   }
 
+  function encaminharCadastroFidWhatsApp(nome, dataBr, tel) {
+    var msg = '🍦 *NOVO CADASTRO FIDELIDADE — Itapolitana Cajuru*\n\n' +
+              '*Nome:* ' + nome + '\n' +
+              '*Data Nasc:* ' + dataBr + '\n' +
+              '*WhatsApp:* ' + tel + '\n\n' +
+              'Estou ciente das regras e quero participar do Clube de Fidelidade! 🎉';
+    window.open(wppLink(msg), '_blank');
+  }
+
   function mostrarWppBtn(url, texto) {
     if (!btnWppResgatar) return;
     btnWppResgatar.href = url;
@@ -405,22 +414,53 @@
     btnCadastrar.disabled = !valido;
   }
 
+  var cbAceiteFid = document.getElementById('aceite-fidelidade-inline');
+  if (cbAceiteFid) {
+    cbAceiteFid.addEventListener('change', function() {
+      if (btnAceitarRegras) {
+        btnAceitarRegras.disabled = !cbAceiteFid.checked;
+      }
+    });
+  }
+
   if (btnAceitarRegras) btnAceitarRegras.addEventListener('click', function() {
     _cadastroRegrasAceitas = true;
     if (etapaCadastroForm) {
       etapaCadastroForm.style.display = 'block';
-      // Habilitar campos
-      [inputCadNome, inputCadNasc, inputCadTel].forEach(function(el) {
-        if (el) {
-          el.disabled = false;
-          el.classList.remove('form-control-disabled');
-        }
-      });
-      atualizarEstadoBotaoCadastro();
+      // Habilitar primeiro campo (Nome)
+      if (inputCadNome) {
+        inputCadNome.disabled = false;
+        inputCadNome.classList.remove('form-control-disabled');
+      }
+      setTimeout(function() {
+        etapaCadastroForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
     btnAceitarRegras.textContent = 'Regras aceitas ✓';
     btnAceitarRegras.classList.add('aceito');
   });
+
+  function atualizarFluxoCadastroFid() {
+    var nomeOk = cadastroNomeValido();
+    var dataOk = cadastroDataValida();
+    var celOk = cadastroCelularValido();
+
+    if (inputCadNasc) {
+      inputCadNasc.disabled = !nomeOk;
+      inputCadNasc.classList.toggle('form-control-disabled', !nomeOk);
+    }
+    if (inputCadTel) {
+      inputCadTel.disabled = !dataOk;
+      inputCadTel.classList.toggle('form-control-disabled', !dataOk);
+    }
+    if (btnCadastrar) {
+      btnCadastrar.disabled = !(nomeOk && dataOk && celOk);
+    }
+  }
+
+  if (inputCadNome) inputCadNome.addEventListener('input', atualizarFluxoCadastroFid);
+  if (inputCadNasc) inputCadNasc.addEventListener('input', atualizarFluxoCadastroFid);
+  if (inputCadTel) inputCadTel.addEventListener('input', atualizarFluxoCadastroFid);
 
   if (inputCadNome) inputCadNome.addEventListener('input', atualizarEstadoBotaoCadastro);
   if (inputCadNasc) inputCadNasc.addEventListener('input', atualizarEstadoBotaoCadastro);
@@ -468,14 +508,19 @@
 
       cadastrarClienteWorker(nome, dataIso, telRaw)
         .then(function() {
-          setResultadoCadastro('Cadastro realizado! Agora faça login.', 'ok');
+          setResultadoCadastro('Cadastro realizado com sucesso! Enviando confirmação...', 'ok');
+          setTimeout(function() {
+            encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
+          }, 1500);
         })
         .catch(function() {
-          encaminharCadastroWhatsApp(nome, dataBr, telRaw);
+          // Se o worker falhar, ainda assim envia o WhatsApp para o admin saber
+          setResultadoCadastro('Cadastro enviado via WhatsApp para validação.', 'ok');
+          encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
         })
         .finally(function() {
           btnCadastrar.disabled = false;
-          btnCadastrar.textContent = 'Executar cadastro';
+          btnCadastrar.textContent = '✅ Finalizar Cadastro';
         });
     });
   }

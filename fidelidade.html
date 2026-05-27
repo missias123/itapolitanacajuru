@@ -603,36 +603,66 @@
       </div>
     </section>
 
-    <section class="card" id="secao-cadastro-fid" aria-labelledby="titulo-cadastro-fid" style="display:none;">
-      <h2 id="titulo-cadastro-fid" data-config="fidelidadePagina.regrasTitulo" style="font-size:1.2rem;color:#1b5e20;margin-bottom:8px;">Regras do Clube de Fidelidade</h2>
-      <div id="cadastro-etapa-regras-fid">
-        <ul style="margin:0 0 10px 18px;" data-config-collection="fidelidadeRegrasResumo" data-item-tag="li">
-          <li>Cadastre-se com dados reais e atualizados.</li>
-          <li>Cada cupom representa R$10 gastos e confere 0,5 ponto.</li>
-          <li>Com <span data-pontos-milk>10 pontos</span>: <span data-prêmio-milk>1 milk shake 300ml</span>.</li>
-          <li>Com <span data-pontos-caixa>30 pontos</span>: <span data-prêmio-caixa>1 caixa de sorvete com 7 bolas</span>.</li>
-        </ul>
-        <p style="margin:0 0 12px;"><a href="https://itapolitanacajuru.com.br/fidelidade.html#secao-regras-fid-completas" data-config-href="fidelidadeRegrasUrl" target="_blank" rel="noopener">Ver regras completas</a></p>
-        <button type="button" data-config="fidelidadePagina.btnAceitarRegras" class="btn btn-primary btn-block btn-aceite-pulsante" id="btn-aceitar-regras-fid">Li e aceito as regras do Clube de Fidelidade</button>
+    <section class="card" id="secao-cadastro-fid" aria-labelledby="titulo-cadastro-fid" style="display:none; border-radius:22px; box-shadow:0 6px 30px rgba(0,0,0,.12); overflow:hidden; padding:0;">
+      <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);padding:22px 20px 16px;text-align:center;">
+        <span style="font-size:3rem;display:block;margin-bottom:8px;">🎟️</span>
+        <h2 id="titulo-cadastro-fid" data-config="fidelidadePagina.regrasTitulo" style="font-size:1.05rem;font-weight:900;letter-spacing:.5px;color:#1b5e20;margin-bottom:6px;">CADASTRO FIDELIDADE</h2>
+        <div style="font-size:.82rem;color:#555;line-height:1.55;">Cadastre-se para acumular pontos e ganhar prêmios!</div>
       </div>
 
-      <div class="form-row" id="cadastro-etapa-form-fid" style="display:none;margin-top:12px;">
-        <label for="fid-nome">Nome completo</label>
-        <input id="fid-nome" type="text" maxlength="100" placeholder="Seu nome completo (como no documento)" disabled class="form-control-disabled" aria-describedby="fid-nome-help">
-        <small class="form-text text-muted" id="fid-nome-help">Use o nome completo para vincular corretamente seus pontos.</small>
+      <div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;">
+        <div id="cadastro-etapa-regras-fid" style="border:2px solid #2e7d32;border-radius:14px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);padding:14px 16px;text-align:center;">
+            <h3 style="color:#1b5e20;font-size:1rem;font-weight:900;margin:0 0 4px;">📜 REGULAMENTO FIDELIDADE</h3>
+          </div>
+          <div style="padding:14px 16px;font-size:.85rem;color:#333;line-height:1.6;">
+            <ul style="margin:0 0 10px 18px;" data-config-collection="fidelidadeRegrasResumo" data-item-tag="li">
+              <li>Cadastre-se com dados reais e atualizados.</li>
+              <li>Cada cupom representa R$10 gastos e confere 0,5 ponto.</li>
+              <li>Com <span data-pontos-milk>10 pontos</span>: <span data-prêmio-milk>1 milk shake 300ml</span>.</li>
+              <li>Com <span data-pontos-caixa>30 pontos</span>: <span data-prêmio-caixa>1 caixa de sorvete com 7 bolas</span>.</li>
+            </ul>
+            <p style="margin:0 0 12px; text-align:center;"><a href="#secao-regras-fid-completas" style="color:#c62828; font-weight:800;">Ver regras completas</a></p>
+          </div>
+          
+          <div style="padding:12px 16px;background:#f9f9f9;border-top:1px solid #e0e0e0;">
+            <div class="cad-aceite-row" style="margin:0 0 12px 0;">
+              <p class="cad-aceite-indicador" aria-hidden="true">↓ Leia as regras acima e marque a caixa:</p>
+              <label class="cad-aceite-label" for="aceite-fidelidade-inline">
+                <input type="checkbox" id="aceite-fidelidade-inline">
+                <span class="cad-aceite-visual" aria-hidden="true"></span>
+                <span class="cad-aceite-text">Li e concordo com as <strong>Regras do Clube de Fidelidade</strong> e com a <a href="politica-privacidade.html" target="_blank">Política de Privacidade</a>.</span>
+              </label>
+            </div>
+            <button type="button" id="btn-aceitar-regras-fid" class="btn btn-primary btn-block" disabled style="background:linear-gradient(135deg, #25D366, #128C7E); box-shadow:0 8px 20px rgba(37,211,102,0.3);">📝 Aceitar e Fazer Cadastro</button>
+          </div>
+        </div>
 
-        <label for="fid-data-nasc">Data de nascimento</label>
-        <input id="fid-data-nasc" type="text" maxlength="10" placeholder="Sua data de nascimento (DD/MM/AAAA, como no documento)" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa" disabled class="form-control-disabled" aria-describedby="fid-data-nasc-help">
-        <small class="form-text text-muted" id="fid-data-nasc-help">Usamos para identificar você de forma única no clube.</small>
+        <div id="cadastro-etapa-form-fid" style="display:none;border:2px solid #2e7d32;border-radius:14px;overflow:hidden;margin-top:4px;">
+          <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:14px 16px;text-align:center;">
+            <h3 style="color:#fff;font-size:1rem;font-weight:900;margin:0;">📝 Seus Dados de Cadastro</h3>
+          </div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+            <div class="form-row">
+              <label for="fid-nome">Nome completo</label>
+              <input id="fid-nome" type="text" maxlength="100" placeholder="Seu nome completo (como no documento)">
+              <small class="form-text text-muted">Use o nome completo para vincular seus pontos.</small>
 
-        <label for="fid-celular">Celular (WhatsApp)</label>
-        <input id="fid-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="Seu WhatsApp com DDD (ex: 16 99999-0000)" disabled class="form-control-disabled" aria-describedby="fid-celular-help">
-        <small class="form-text text-muted" id="fid-celular-help">Receba novidades e pontos direto no seu WhatsApp.</small>
+              <label for="fid-data-nasc">Data de nascimento</label>
+              <input id="fid-data-nasc" type="text" maxlength="10" placeholder="DD/MM/AAAA" inputmode="numeric" disabled class="form-control-disabled">
+              <small class="form-text text-muted">Usamos para identificar você de forma única.</small>
 
-        <button type="button" class="btn btn-verde btn-block" id="fid-executar-cadastro" style="margin-top:8px;" disabled>Executar cadastro</button>
+              <label for="fid-celular">Celular (WhatsApp)</label>
+              <input id="fid-celular" type="tel" inputmode="numeric" maxlength="15" placeholder="(XX) XXXXX-XXXX" disabled class="form-control-disabled">
+              <small class="form-text text-muted">Receba novidades e pontos no WhatsApp.</small>
+
+              <button type="button" class="btn btn-success btn-block" id="fid-executar-cadastro" style="margin-top:8px;" disabled>✅ Finalizar Cadastro</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="resultado" id="fid-feedback-message" style="margin-top:12px;display:none;" role="status"></div>
       </div>
-
-      <div class="resultado" id="fid-feedback-message" style="margin-top:12px;display:none;" role="status"></div>
     </section>
 
     <section class="card" id="secao-login-fid" aria-labelledby="titulo-login-fid" style="display:none;">
