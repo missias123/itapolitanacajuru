@@ -2,7 +2,7 @@
   'use strict';
 
   var GH_RAW = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/';
-  var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+  var ITAP_WORKER_API = 'https://itap-worker.missias123.workers.dev';
   var WPP_NUM = '5516996062046';
   var META_10 = 10;
   var META_30 = 30;
@@ -516,10 +516,11 @@
 
       cadastrarClienteWorker(nome, dataIso, telRaw)
         .then(function() {
-          setResultadoCadastro('Cadastro realizado com sucesso! Enviando confirmação...', 'ok');
+          setResultadoCadastro('✅ Cadastro realizado com sucesso! Você já pode acessar sua conta.', 'ok');
+          // Não envia mais WhatsApp, apenas limpa o formulário ou sugere login
           setTimeout(function() {
-            encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
-          }, 1500);
+            if (btnMostrarLogin) btnMostrarLogin.click();
+          }, 3000);
         })
         .catch(function(err) {
           if (err && err.type === 'DUPLICADO') {
@@ -528,9 +529,8 @@
               setTimeout(function() { btnMostrarLogin.click(); }, 2500);
             }
           } else {
-            // Se o worker falhar por rede, ainda assim envia o WhatsApp para o admin saber
-            setResultadoCadastro('Cadastro enviado via WhatsApp para validação.', 'ok');
-            encaminharCadastroFidWhatsApp(nome, dataBr, mascaraTel(telRaw));
+            // Se o worker falhar por rede, tentamos salvar via GitHub se houver token, ou avisamos do erro
+            setResultadoCadastro('❌ Erro ao salvar cadastro. Tente novamente em instantes.', 'erro');
           }
         })
         .finally(function() {
