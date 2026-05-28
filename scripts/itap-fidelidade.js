@@ -448,6 +448,15 @@
     btnAceitarRegras.classList.add('aceito');
   });
 
+  function preencherLoginComDadosCadastro(nome, dataBr, tel) {
+    if (inputNome) inputNome.value = nome;
+    if (inputNasc) inputNasc.value = dataBr;
+    if (inputTel) inputTel.value = tel;
+    
+    // Disparar evento de input para revelar os campos de login
+    if (inputNome) inputNome.dispatchEvent(new Event('input'));
+  }
+
   function atualizarFluxoCadastroFid() {
     var nomeOk = cadastroNomeValido();
     var dataOk = cadastroDataValida();
@@ -516,17 +525,19 @@
 
       cadastrarClienteWorker(nome, dataIso, telRaw)
         .then(function() {
-          setResultadoCadastro('✅ Cadastro realizado com sucesso! Você já pode acessar sua conta.', 'ok');
-          // Não envia mais WhatsApp, apenas limpa o formulário ou sugere login
+          setResultadoCadastro('✅ Cadastro realizado com sucesso! Entrando...', 'ok');
+          preencherLoginComDadosCadastro(nome, dataBr, mascaraTel(telRaw));
           setTimeout(function() {
             if (btnMostrarLogin) btnMostrarLogin.click();
-          }, 3000);
+            if (btnEntrar) btnEntrar.click(); // Tenta logar automaticamente
+          }, 1500);
         })
         .catch(function(err) {
           if (err && err.type === 'DUPLICADO') {
             setResultadoCadastro(err.message, 'aviso');
+            preencherLoginComDadosCadastro(nome, dataBr, mascaraTel(telRaw));
             if (btnMostrarLogin) {
-              setTimeout(function() { btnMostrarLogin.click(); }, 2500);
+              setTimeout(function() { btnMostrarLogin.click(); }, 2000);
             }
           } else {
             // Se o worker falhar por rede, tentamos salvar via GitHub se houver token, ou avisamos do erro
