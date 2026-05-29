@@ -278,7 +278,6 @@
       if (pontosCaixa !== null) window._META_CAIXA = pontosCaixa;
       if (cfg.premioMilkshake || cfg.prêmioMilkshake) window._PREMIO_MILK = cfg.premioMilkshake || cfg.prêmioMilkshake;
       if (cfg.premioCaixa || cfg.prêmioCaixa) window._PREMIO_CAIXA = cfg.premioCaixa || cfg.prêmioCaixa;
-      // Atualizar elementos de fidelidade se existirem
       const pontosMilkTxt = pontosMilk !== null ? `${pontosMilk} pontos` : null;
       const pontosCaixaTxt = pontosCaixa !== null ? `${pontosCaixa} pontos` : null;
       const premioMilkTxt = cfg.premioMilkshake || cfg.prêmioMilkshake || null;
@@ -376,7 +375,6 @@
     const nome = extrairNomePagina(window.location.pathname || '');
     if (!nome || nome === 'index.html') return 'home';
     if (nome === 'encomendas.html') return 'encomendas';
-    if (nome === '') return 'fidelidade';
     if (nome === 'promocao.html') return 'promocao';
     if (nome === 'dicas.html') return 'dicas';
     if (nome === 'sobre.html') return 'sobre';

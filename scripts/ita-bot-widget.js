@@ -19,7 +19,6 @@
   })();
 
   /* ─── Estado da conversa ─── */
-  var _ctx        = null;   // null | 'await_cardapio_cat' | 'await_promo_cat' | 'await_fidelidade_nome' | 'await_fidelidade_data'
   var _ctxData    = {};     // dados acumulados no contexto (ex: nome para login)
   var _prodData   = null;   // cache de dados/produtos.json
   var _promoData  = null;   // cache de dados/promo.json
@@ -281,14 +280,11 @@
   function _itabotClicarChip(txt) {
     var el = document.getElementById('duvidas-resposta');
     if (el) { var cs = el.querySelectorAll('.itabot-chips'); for (var i = 0; i < cs.length; i++) { cs[i].remove(); } }
-    // Chip especial: tentar novamente no fluxo fidelidade
     if (_norm(txt).indexOf('tentar novamente') !== -1) {
-      _ctx = 'await_fidelidade_nome';
       _ctxData = {};
       _itabotMostrarTyping();
       setTimeout(function () {
         _itabotOcultarTyping();
-        _itabotInserirMensagem('bot', { answer: 'Tudo bem! \ud83d\ude0a Qual \u00e9 o seu nome completo cadastrado no programa de fidelidade?' });
       }, 400);
       return;
     }
@@ -478,7 +474,6 @@
     };
   }
 
-  /* ─── Busca assíncrona de pontos no clientes.json ─── */
   function _buscarPontosAsync(nome, dataStr) {
     // Parseia DD/MM/AAAA → AAAA-MM-DD com validação de numerais e faixas
     var dataNorm = null;
@@ -516,7 +511,6 @@
           _itabotOcultarTyping();
           _itabotInserirMensagem('bot', {
             answer: '\u2b50 Encontrei voc\u00ea, ' + primeiro + '!\n\nSaldo atual: ' + pts + ' ponto' + (pts !== 1 ? 's' : '') + '\n' + prox,
-            linkText: '\u2b50 Acessar programa de fidelidade',
             linkHref: ''
           });
           return;
@@ -566,13 +560,10 @@
       if (l.indexOf('sorvete') !== -1 || l.indexOf('preco') !== -1 || l.indexOf('preço') !== -1)           return _respPromoSorvetes();
       return _respPromoAtiva();
     }
-    if (_ctx === 'await_fidelidade_nome') {
-      _ctx = 'await_fidelidade_data';
       _ctxData.nome = msg.trim();
       var prim = msg.trim().split(' ')[0];
       return { answer: '\u00d3timo, ' + prim + '! \ud83d\ude0a\n\nAgora me diga sua data de nascimento no formato DD/MM/AAAA:' };
     }
-    return null; // await_fidelidade_data é tratado de forma async antes de chegar aqui
   }
 
   /* ─── Resposta principal (síncrona) ─── */
@@ -580,16 +571,11 @@
     var l = _norm(msg);
 
     // Contexto ativo
-    if (_ctx !== null && _ctx !== 'await_fidelidade_data') {
       var cr = _handleContexto(msg);
       if (cr) return cr;
     }
 
-    // Consulta de pontos
-    if (l.indexOf('quantos pontos') !== -1 || l.indexOf('meus pontos') !== -1 || l.indexOf('ver pontos') !== -1 || l.indexOf('saldo') !== -1) {
-      _ctx = 'await_fidelidade_nome';
       _ctxData = {};
-      return { answer: 'Para consultar seus pontos, preciso te identificar! \ud83d\ude0a\n\nQual \u00e9 o seu nome completo cadastrado no programa de fidelidade?' };
     }
 
     // Busca direta de sabor ("preço do sorvete de X", "tem sorvete de X", "flocos")
@@ -618,12 +604,8 @@
     }
 
     // Fidelidade
-    if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('clube') !== -1 || l.indexOf('cadastr') !== -1) {
       return {
-        answer: '\u2b50  Itapolitana!\n\nAcumule pontos a cada compra e troque por prêmios:\n\ud83e\udd64 10 pontos = 1 Milk Shake de 300ml\n\ud83c\udf66 30 pontos = 1 caixa de sorvete com 7 bolas\n\nCadastre-se gratuitamente ou fa\u00e7a login para ver seus pontos:',
-        linkText: '\u2b50 Acessar programa de fidelidade',
         linkHref: '',
-        chips: ['\ud83d\udd22 Consultar meus pontos', '\ud83c\udf9f Registrar c\u00f3digo', '\u2b50 Me cadastrar']
       };
     }
 
@@ -672,8 +654,6 @@
     _itabotInserirMensagem('user', msg);
     _itabotMostrarTyping();
 
-    // Caso async: consulta de pontos aguardando data
-    if (_ctx === 'await_fidelidade_data') {
       _ctx = null;
       var nomeGuardado = _ctxData.nome || '';
       _buscarPontosAsync(nomeGuardado, msg);
@@ -747,14 +727,12 @@
     'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o tipo artesanal \u2014 cremosos, em bolas redondas, com 35 sabores incr\u00edveis!',
     'anos':          '\ud83c\udf66 A Sorveteria Itapolitana est\u00e1 em Cajuru desde 2007 \u2014 mais de 19 anos!',
     'historia':      '\ud83c\udf66 Fundada em 2007 em Cajuru/SP, mais de 19 anos de tradi\u00e7\u00e3o!',
-    'default': 'N\u00e3o entendi direitinho \ud83d\ude05 Posso te ajudar com: card\u00e1pio, endere\u00e7o, hor\u00e1rio, promo\u00e7\u00f5es ou fidelidade. Ou chame pelo WhatsApp!'
   };
 
   /* ─── BASE DE CONHECIMENTO DO ITA BOT ─── */
   var itaBotKnowledge = [
     {
       keywords: ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'iniciar', 'inicio', 'início', 'menu', 'opções', 'opcoes', 'começo'],
-      answer: 'Ol\u00e1! \ud83d\udc4b Bem-vindo \u00e0 Sorveteria Itapolitana! Posso te ajudar com card\u00e1pio, encomendas, promo\u00e7\u00f5es, fidelidade, endere\u00e7o e muito mais. O que deseja?',
       chips: ['\ud83c\udf66 Card\u00e1pio', '\ud83d\udce6 Encomendas', '\ud83c\udf89 Promo\u00e7\u00f5es', '\u2b50 Fidelidade', '\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udd59 Hor\u00e1rio']
     },
     {
@@ -779,21 +757,14 @@
       chips: ['\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udcf1 WhatsApp', '\ud83c\udf66 Card\u00e1pio']
     },
     {
-      keywords: ['quero me cadastrar no fidelidade', 'fazer cadastro fidelidade', 'participar do programa', 'entrar no fidelidade'],
-      answer: 'Para se cadastrar no programa de fidelidade Itapolitana:',
       linkText: '\u2b50 Cadastrar no Fidelidade',
       linkHref: ''
     },
     {
-      keywords: ['registrar código', 'código de pontos', 'codigo de pontos', 'inserir código', 'inserir codigo', 'somar pontos'],
-      answer: 'Para registrar seu c\u00f3digo de pontos, acesse o fidelidade, fa\u00e7a login e insira o c\u00f3digo recebido na loja.',
       linkText: '\ud83c\udf9f Registrar c\u00f3digo',
       linkHref: ''
     },
     {
-      keywords: ['como resgatar pontos', 'resgatar prêmio', 'resgatar premio', 'trocar pontos', 'usar pontos'],
-      answer: 'Para resgatar: acesse o fidelidade, fa\u00e7a login. Com 10 pontos = 1 Milk Shake de 300ml \ud83e\udd64 Com 30 pontos = 1 caixa com 7 bolas \ud83c\udf66',
-      linkText: '\ud83c\udf81 Resgatar no fidelidade',
       linkHref: ''
     },
     {
@@ -841,7 +812,6 @@
       _base + 'dados/faq_horarios_localizacao.json',
       _base + 'dados/faq_cardapio.json',
       _base + 'dados/faq_encomendas.json',
-      _base + 'dados/faq_fidelidade.json',
       _base + 'dados/faq_sorteio_promocoes.json'
     ];
     arquivos.forEach(function (url) {
