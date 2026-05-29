@@ -36,7 +36,7 @@ const GH_ADMIN_JSON_PATHS = Object.freeze({
   promocoes:   'dados/promocoes.json',
 });
 const GH_ADMIN_PATH_SET = new Set(Object.values(GH_ADMIN_JSON_PATHS));
-const GH_FIDELIDADE_PATH = GH_ADMIN_JSON_PATHS.fidelidade;
+const GH__PATH = GH_ADMIN_JSON_PATHS.fidelidade;
 
 const RATE_LIMITS = {
   'post-cliente':  { max: 10, windowMs: 3_600_000 },
@@ -238,7 +238,7 @@ async function ghPutJsonFile(path, data, mensagem, token, sha = '') {
 
 // ─── GitHub helper — write fidelidade.json ────────────────────────────────────
 async function ghPutFidelidade(dadosFidelidade, mensagem, token) {
-  await ghPutJsonFile(GH_FIDELIDADE_PATH, dadosFidelidade, mensagem, token);
+  await ghPutJsonFile(GH__PATH, dadosFidelidade, mensagem, token);
   return true;
 }
 
@@ -895,7 +895,7 @@ async function handleBulkPutEncomendas(request, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// HANDLERS — FIDELIDADE
+// HANDLERS — 
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
@@ -935,7 +935,7 @@ async function handleResgatarCodigo(request, env) {
   // 2. Fetch fidelidade.json from GitHub (codes are not PII — public repo)
   let fidelidade;
   try {
-    const r = await fetch(`${GH_RAW}${GH_FIDELIDADE_PATH}?t=${Date.now()}`);
+    const r = await fetch(`${GH_RAW}${GH__PATH}?t=${Date.now()}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     fidelidade = await r.json();
   } catch (e) {

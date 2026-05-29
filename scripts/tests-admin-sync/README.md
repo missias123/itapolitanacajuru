@@ -72,7 +72,7 @@ Para usar como check de auditoria (não bloqueante):
 - Abrir aba **Fidelidade** e validar carga de prêmios, passos, regras, URLs e SEO.
 - Alterar campos e salvar.
 - Reabrir aba e confirmar persistência.
-- Validar no `fidelidade.html` atualização de CTAs (regras/resgate) e SEO.
+- Validar no `` atualização de CTAs (regras/resgate) e SEO.
 
 ### 4) Dicas
 - Abrir aba **Dicas** e validar carga de `depTitulo`, `depSubtitulo`, depoimentos e `dicasItens`.

@@ -25,8 +25,8 @@
       bg: 'background:linear-gradient(135deg,#00C853,#009624);'
     },
     {
-      href: 'fidelidade.html',
-      label: 'FIDELIDADE',
+      href: '',
+      label: '',
       icon: '🎟️',
       bg: 'background:linear-gradient(135deg,#E65100,#FF6D00);'
     },

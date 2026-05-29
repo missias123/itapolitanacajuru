@@ -24,7 +24,7 @@ const MD_MODE   = process.argv.includes('--md');
 const PAGINAS = [
   'index.html',
   'encomendas.html',
-  'fidelidade.html',
+  '',
   'promocao.html',
   'carrossel.html',
   'dicas.html',

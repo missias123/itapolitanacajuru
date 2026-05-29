@@ -30,7 +30,7 @@ Benchmark: iFood, Rappi, McDonald's Brasil — sites de alimentação com excel�
 ### Arquivos críticos que devem sempre existir
 
 ```
-index.html  fidelidade.html  encomendas.html  dicas.html
+index.html    encomendas.html  dicas.html
 promocao.html  carrossel.html  manifest.json  robots.txt
 sitemap.xml  sw.js  dados/config.json  dados/produtos.json
 ```
@@ -124,7 +124,7 @@ Para proteger o branch `main`, configure em:
 ```bash
 # Rodar localmente antes de fazer push:
 npx eslint@8 scripts/*.js
-npx htmlhint@1 index.html fidelidade.html encomendas.html ... --config .htmlhintrc
+npx htmlhint@1 index.html  encomendas.html ... --config .htmlhintrc
 ```
 
 ### 5.3 Falha de sintaxe JS em HTML
@@ -145,7 +145,7 @@ node scripts/auto-repair.js             # aplica a correção
 ## 6. Regras de Ouro (Nunca Violar)
 
 1. **Nunca commitar direto em `main`** — sempre via PR com checks aprovados
-2. **Nunca truncar páginas HTML** — index.html, fidelidade.html, encomendas.html têm conteúdo estrutural crítico
+2. **Nunca truncar páginas HTML** — index.html, , encomendas.html têm conteúdo estrutural crítico
 3. **Nunca remover seções de negócio** — hero, cardápio, promoções, fidelidade, encomendas, rodapé
 4. **Nunca alterar regras de negócio** sem alinhamento: preços, fidelidade, caça à estrela
 5. **Nunca expor tokens/credenciais** no código (usar GitHub Secrets)

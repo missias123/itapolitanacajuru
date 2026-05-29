@@ -39,7 +39,7 @@
 
 ---
 
-### `fidelidade.html` — Clube de Fidelidade
+### `` — 
 **Título:** Programa de Fidelidade – Sorveteria Itapolitana Cajuru
 
 **Seções principais:**
@@ -145,7 +145,7 @@
 
 **Seções principais:**
 - Texto completo da política de privacidade (LGPD)
-- Informações sobre coleta de dados (Clube de Fidelidade, Sorteio)
+- Informações sobre coleta de dados (, Sorteio)
 - Direitos do titular
 - Contato do responsável
 
@@ -188,7 +188,7 @@
 
 ## 2. Scripts JS (`scripts/`)
 
-**Usado em:** `fidelidade.html`
+**Usado em:** ``
 
 ### `products.js`
 **O que faz:** Define o objeto `produtos` como constante JavaScript com todos os dados do cardápio (sorvetes, picolés, açaí, milkshake, taças, sobremesas, caixas, isopores, acréscimos). Serve como fallback/cache local dos dados de `dados/produtos.json`.  
@@ -196,7 +196,7 @@
 
 ### `quality-guard.js`
 **O que faz:** Monitor de qualidade em tempo real. Registra erros de JavaScript, Core Web Vitals (LCP, CLS, FID/INP), erros de Service Worker, recursos 404 e performance de carregamento. Persiste métricas em localStorage (`itap_quality_guard`).  
-**Usado em:** `index.html`, `fidelidade.html`, páginas principais
+**Usado em:** `index.html`, ``, páginas principais
 
 ### `auto-healer.js`
 **O que faz:** Detecta e corrige automaticamente erros de carregamento de recursos bloqueados por CSP ou problemas de rede. Recarrega recursos com fallback alternativo.  
@@ -228,12 +228,12 @@
 | `produtos.json` | Cardápio completo: sabores de sorvete, preços por apresentação, picolés (tipos/preços/sabores), açaí (copos/preços/complementos), milkshake, taças, sobremesas, caixas de viagem, isopores, acréscimos, caixas e tortas de encomenda | `index.html`, `encomendas.html`, `enc-v2.js` | `admin-painel.html` |
 | `promo.json` | Promoção ativa: título, descrição, botão, link, data fim, label FAB, foto, status ativo/inativo | `promocao.html`, `index.html` | `admin-painel.html` |
 | `encomendas.json` | Registro de pedidos de encomenda realizados pelo site: dados do cliente, itens, sabores, valor | `admin-painel.html` | `enc-v2.js` (via GitHub API) |
-| `clientes.json` | Cadastro de clientes do Clube de Fidelidade: nome, telefone, pontos | `fidelidade.html`, `admin-painel.html` | `fidelidade.html` (via GitHub API) |
-| `fidelidade.json` | Estado do programa de fidelidade: ciclo atual, configurações de estrelas, ranking | `fidelidade.html` | `admin-painel.html`, `fidelidade.html` |
-| `fidelidade_indice.json` | Índice rápido de todos os códigos de cupom (hash → mês/ano/status) para validação eficiente | `fidelidade.html` | `admin-painel.html` |
-| `fidelidade_metadata.json` | Metadados do sistema de fidelidade: versão, meses disponíveis, total de códigos/usados | `fidelidade.html` | `admin-painel.html` |
-| `fidelidade_2026_05.json` … `fidelidade_2026_12.json` | Shards mensais do programa de fidelidade (8 arquivos). Cada um contém os dados de pontuação/estrelas do mês correspondente | `fidelidade.html` | `fidelidade.html`, `admin-painel.html` |
-| `vinculos_clientes.json` | Vínculos entre identificadores de clientes (telefone ↔ ID interno) | `fidelidade.html` | `fidelidade.html` |
+| `clientes.json` | Cadastro de clientes do : nome, telefone, pontos | ``, `admin-painel.html` | `` (via GitHub API) |
+| `fidelidade.json` | Estado do programa de fidelidade: ciclo atual, configurações de estrelas, ranking | `` | `admin-painel.html`, `` |
+| `fidelidade_indice.json` | Índice rápido de todos os códigos de cupom (hash → mês/ano/status) para validação eficiente | `` | `admin-painel.html` |
+| `fidelidade_metadata.json` | Metadados do sistema de fidelidade: versão, meses disponíveis, total de códigos/usados | `` | `admin-painel.html` |
+| `fidelidade_2026_05.json` … `fidelidade_2026_12.json` | Shards mensais do programa de fidelidade (8 arquivos). Cada um contém os dados de pontuação/estrelas do mês correspondente | `` | ``, `admin-painel.html` |
+| `vinculos_clientes.json` | Vínculos entre identificadores de clientes (telefone ↔ ID interno) | `` | `` |
 | `faq_horarios_localizacao.json` | FAQs sobre horário, endereço, cidades, contato, delivery, pagamento | `index.html` (via loader ItaBot) | — |
 | `faq_cardapio.json` | FAQs sobre cardápio: sabores, açaí, picolés, milkshake, taças, sobremesas, dietas | `index.html` (via loader ItaBot) | — |
 | `faq_encomendas.json` | FAQs sobre encomendas: prazo, caixas, torta, atacado, carrinho, entrega | `index.html` (via loader ItaBot) | — |
@@ -243,7 +243,7 @@
 
 ## 4. Funcionalidades Principais
 
-### Programa Fidelidade (Clube Itapolitana)
+### Programa Fidelidade ()
 - **Como funciona:** cliente compra acima de R$ 30,00 de segunda a sexta → recebe cupom físico com código único → insere na página de Fidelidade → ganha 1 ponto
 - **Prêmios:** 10 pontos = 1 bola de sorvete (Cascão) · 30 pontos = 1 caixa com 12 picolés de fruta/água
 - **Cupons válidos:** apenas para compras de segunda a sexta-feira (feriados não contam)
@@ -297,8 +297,8 @@
 | Cardápio (preços, sabores, estoque) | `dados/produtos.json` | `index.html`, `encomendas.html` | ✅ Completo |
 | Promoção ativa / Sorteio | `dados/promo.json` | `promocao.html`, `index.html` | ✅ Completo |
 | Encomendas recebidas | `dados/encomendas.json` | `admin-painel.html` | ✅ Completo |
-| Clientes fidelidade | `dados/clientes.json` | `fidelidade.html` | ✅ Completo |
-| Cupons de fidelidade | `dados/fidelidade_indice.json`, `dados/fidelidade_2026_XX.json` | `fidelidade.html` | ✅ Completo |
+| Clientes fidelidade | `dados/clientes.json` | `` | ✅ Completo |
+| Cupons de fidelidade | `dados/fidelidade_indice.json`, `dados/fidelidade_2026_XX.json` | `` | ✅ Completo |
 | Banners / Carrossel | `dados/promo_banner.webp` + config | `carrossel.html`, `index.html` | ⚠️ Parcial |
 | FAQs do Ita Bot | `dados/faq_*.json` | `index.html` (async loader) | ✅ Completo |
 | Dicas e Depoimentos | admin-sync | `dicas.html` | ⚠️ Parcial |

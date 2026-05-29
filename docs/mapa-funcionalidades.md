@@ -30,7 +30,7 @@
 | Logo Itapolitana | `.brand` | `index.html` | Clicar rola para o topo / recarrega página |
 | Botão Cardápio | `.nav-btn` (ícone cardápio) | `index.html` | Scroll/revela a seção do cardápio inline |
 | Botão Promoções | `.nav-btn` | `index.html` | Redireciona para `promocao.html` |
-| Botão Fidelidade | `.nav-btn` | `index.html` | Redireciona para `fidelidade.html` |
+| Botão Fidelidade | `.nav-btn` | `index.html` | Redireciona para `` |
 | Botão Encomendas | `.nav-btn` | `index.html` | Redireciona para `encomendas.html` |
 | Botão WhatsApp | Link `wa.me` | `index.html` | Abre WhatsApp com número configurado |
 
@@ -61,7 +61,7 @@
 - **Validação**: Campos obrigatórios devem exibir mensagem de erro se estiverem vazios
 - **Destino**: Envio via WhatsApp (link `wa.me` com texto montado) ou endpoint de API GitHub
 
-### 3.2 Formulário / Wizard de Fidelidade (`fidelidade.html`)
+### 3.2 Formulário / Wizard de Fidelidade (``)
 - **Etapa 1**: Digitar número de celular → Verificar se cliente existe
 - **Etapa 2**: Se novo, preencher nome → Criar conta
 - **Etapa 3**: Consultar saldo de pontos / histórico
@@ -74,13 +74,13 @@
 
 | Etapa | Descrição | Arquivo |
 |-------|-----------|---------|
-| Acesso | Abrir `fidelidade.html` | `fidelidade.html` |
-| Login | Digitar celular no campo de busca → Verificar cliente em `dados/clientes.json` | `fidelidade.html` |
-| Cadastro | Se cliente novo → Wizard de cadastro (nome + celular) | `fidelidade.html` |
-| Consulta de pontos | Exibir saldo, histórico e nível do cliente | `fidelidade.html` |
-| Resgate de código | Inserir código → Validar em `dados/fidelidade.json` → Creditar pontos | `fidelidade.html` |
-| Regra de pontuação | // TODO: confirmar regra com o proprietário — ex.: R$1 = 1 ponto | `fidelidade.html` |
-| Resgate de prêmio | // TODO: confirmar regra com o proprietário — ex.: 100 pontos = sorvete grátis | `fidelidade.html` |
+| Acesso | Abrir `` | `` |
+| Login | Digitar celular no campo de busca → Verificar cliente em `dados/clientes.json` | `` |
+| Cadastro | Se cliente novo → Wizard de cadastro (nome + celular) | `` |
+| Consulta de pontos | Exibir saldo, histórico e nível do cliente | `` |
+| Resgate de código | Inserir código → Validar em `dados/fidelidade.json` → Creditar pontos | `` |
+| Regra de pontuação | // TODO: confirmar regra com o proprietário — ex.: R$1 = 1 ponto | `` |
+| Resgate de prêmio | // TODO: confirmar regra com o proprietário — ex.: 100 pontos = sorvete grátis | `` |
 
 ---
 

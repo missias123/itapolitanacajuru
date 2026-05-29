@@ -382,14 +382,14 @@ Falhas: 0
 
 ### Páginas Integradas:
 
-#### 1. fidelidade.html (10 campos)
+#### 1.  (10 campos)
 
 **SEO (3 campos):**
 
 ```json
 "seoPaginas": {
   "fidelidade": {
-    "titulo": "Clube de Fidelidade | Sorveteria Itapolitana Cajuru",
+    "titulo": " | Sorveteria Itapolitana Cajuru",
     "descricao": "Acumule pontos por código nos cupons da Itapolitana Cajuru e troque por prêmios",
     "palavrasChave": "clube fidelidade cajuru, programa fidelidade sorveteria"
   }
@@ -401,21 +401,21 @@ Falhas: 0
 ```json
 "fidelidadePagina": {
   "comoFuncionaTitulo": "Como funciona",
-  "acaoTitulo": "Quero participar do Clube de Fidelidade",
-  "btnCadastro": "Quero participar do Clube de Fidelidade",
+  "acaoTitulo": "Quero participar do ",
+  "btnCadastro": "Quero participar do ",
   "btnLogin": "Já sou cadastrado / Digitar código",
-  "regrasTitulo": "Regras do Clube de Fidelidade",
-  "btnAceitarRegras": "Li e aceito as regras do Clube de Fidelidade",
+  "regrasTitulo": "Regras do ",
+  "btnAceitarRegras": "Li e aceito as regras do ",
   "regulamentoTitulo": "Regras completas do programa",
-  "regulamentoSummary": "📜 Ler regulamento completo do Clube de Fidelidade"
+  "regulamentoSummary": "📜 Ler regulamento completo do "
 }
 ```
 
 **Integração HTML:**
 
 ```html
-<!-- fidelidade.html -->
-<title data-config="seoPaginas.fidelidade.titulo">Clube de Fidelidade</title>
+<!--  -->
+<title data-config="seoPaginas.fidelidade.titulo"></title>
 <h2 data-config="fidelidadePagina.comoFuncionaTitulo">Como funciona</h2>
 <h2 data-config="fidelidadePagina.acaoTitulo">Quero participar...</h2>
 <button data-config="fidelidadePagina.btnCadastro">Quero participar...</button>
@@ -426,7 +426,7 @@ Falhas: 0
 <summary data-config="fidelidadePagina.regulamentoSummary">📜 Ler...</summary>
 ```
 
-**Linhas modificadas em fidelidade.html:**
+**Linhas modificadas em :**
 - 29-30: SEO meta tags
 - 584: comoFuncionaTitulo
 - 593: acaoTitulo
@@ -643,7 +643,7 @@ Cobertura: ~88%
 |--------|--------|------------|
 | index.html | 25 | 32.9% |
 | sobre.html | 9 | 11.8% |
-| fidelidade.html | 10 | 13.2% |
+|  | 10 | 13.2% |
 | promocao.html | 6 | 7.9% |
 | galeria.html | 4 | 5.3% |
 | encomendas.html | 4 | 5.3% |

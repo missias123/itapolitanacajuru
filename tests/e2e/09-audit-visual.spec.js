@@ -109,8 +109,8 @@ test.describe('AUDITORIA VISUAL COMPLETA — Admin Painel Itapolitana', () => {
     await expect(page.locator('#sec-produtos')).toHaveClass(/ativo/, { timeout: 10000 });
   });
 
-  // ── ABA FIDELIDADE ────────────────────────────────────────────────
-  test('[FIDELIDADE] aba Fidelidade abre e mostra seção de clientes', async ({ page }) => {
+  // ── ABA  ────────────────────────────────────────────────
+  test('[] aba Fidelidade abre e mostra seção de clientes', async ({ page }) => {
     await fazerLogin(page);
     await page.locator('#admin-app button, #admin-app a').filter({ hasText: 'Fidelidade' }).first().click();
     await expect(page.locator('#sec-fidelidade')).toHaveClass(/ativo/, { timeout: 10000 });

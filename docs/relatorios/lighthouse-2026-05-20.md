@@ -48,7 +48,7 @@ _Gerado automaticamente em 20/05/2026 às 16:55:04_
 
 ---
 
-## 🟢 Fidelidade (fidelidade.html)
+## 🟢 Fidelidade ()
 
 **Score médio:** 95/100
 

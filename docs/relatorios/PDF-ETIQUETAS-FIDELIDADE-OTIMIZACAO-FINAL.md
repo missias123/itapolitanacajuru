@@ -1,4 +1,4 @@
-# 📋 RELATÓRIO TÉCNICO — OTIMIZAÇÃO DEFINITIVA DO PDF DE ETIQUETAS DE FIDELIDADE (10/A4)
+# 📋 RELATÓRIO TÉCNICO — OTIMIZAÇÃO DEFINITIVA DO PDF DE ETIQUETAS DE  (10/A4)
 
 **Data:** 20 de Maio de 2026
 **Versão:** 1.0.0 Final
@@ -502,7 +502,7 @@ O PDF de etiquetas de fidelidade (10/A4 · 92,5×51,4 mm) está agora **100% oti
 ### 3.4. Arquivos do Projeto
 
 - **Código-fonte:** `admin-painel.html` (linhas 5715-5984)
-- **Relatório técnico:** `docs/relatorios/PDF-ETIQUETAS-FIDELIDADE-OTIMIZACAO-FINAL.md`
+- **Relatório técnico:** `docs/relatorios/PDF-ETIQUETAS--OTIMIZACAO-FINAL.md`
 - **Branch:** `claude/otimizar-pdf-etiquetas-fidelidade-10-a4`
 
 ---

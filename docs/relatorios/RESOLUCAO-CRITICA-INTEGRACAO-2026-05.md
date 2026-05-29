@@ -94,7 +94,7 @@ Desenvolvido com <strong>Claude Copilot</strong>
 
 ---
 
-## 📄 PARTE 2: PDF DE ETIQUETAS DE FIDELIDADE (21/A4 → 10/A4)
+## 📄 PARTE 2: PDF DE ETIQUETAS DE  (21/A4 → 10/A4)
 
 ### 🔍 Causa Raiz Identificada
 
@@ -388,7 +388,7 @@ O Google Tag Manager (GTM) com ID `GTM-K7L8M9N` estava ativo em 6 páginas, mas 
 - `index.html`
 - `promocao.html`
 - `dicas.html`
-- `fidelidade.html`
+- ``
 
 (Nota: `encomendas.html` já estava comentado previamente)
 
@@ -428,7 +428,7 @@ O Google Tag Manager (GTM) com ID `GTM-K7L8M9N` estava ativo em 6 páginas, mas 
 1. ✅ `index.html` — Linhas 35-43 (script) + Linha 2097 (noscript)
 2. ✅ `promocao.html` — Linhas 14-21 (script) + Linha 436 (noscript)
 3. ✅ `dicas.html` — Linhas 13-20 (script) + Linha 143 (noscript)
-4. ✅ `fidelidade.html` — Linhas 12-20 (script) + Linha 546 (noscript)
+4. ✅ `` — Linhas 12-20 (script) + Linha 546 (noscript)
 
 #### ✔️ Protocolo de Validação Executado
 
@@ -494,7 +494,7 @@ node scripts/auto-repair.js --check
 ✅ carrossel.html — OK
 ✅ dicas.html — OK
 ✅ encomendas.html — OK
-✅ fidelidade.html — OK
+✅  — OK
 ✅ galeria.html — OK
 ✅ index.html — OK
 ✅ offline.html — OK
@@ -519,7 +519,7 @@ node scripts/auto-repair.js --check
 | `index.html` | 2 blocos | Desabilitar GTM |
 | `promocao.html` | 2 blocos | Desabilitar GTM |
 | `dicas.html` | 2 blocos | Desabilitar GTM |
-| `fidelidade.html` | 2 blocos | Desabilitar GTM |
+| `` | 2 blocos | Desabilitar GTM |
 
 **Total:** 6 arquivos, 15 blocos de código alterados
 

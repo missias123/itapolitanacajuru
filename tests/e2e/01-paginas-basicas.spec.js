@@ -6,7 +6,7 @@ import { test, expect } from '@playwright/test';
 
 const PAGES = [
   { name: 'Home',        path: '/',                selector: '.brand, [data-testid="logo"], h1' },
-  { name: 'Fidelidade',  path: '/fidelidade.html', selector: 'h1, .fid-titulo, #fid-celular' },
+  { name: 'Fidelidade',  path: '/', selector: 'h1, .fid-titulo, #fid-celular' },
   { name: 'Promoções',   path: '/promocao.html',   selector: 'h1, .promo-titulo, main' },
   { name: 'Encomendas',  path: '/encomendas.html', selector: 'h1, form, .enc-form' },
 ];

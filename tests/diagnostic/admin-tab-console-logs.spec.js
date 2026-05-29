@@ -57,7 +57,7 @@ test.describe('Diagnóstico Detalhado - Tab Visibility com Console Logs', () => 
    */
   test('Teste 1: Aba Fidelidade - Captura Console Logs', async ({ page }) => {
     console.log('\n\n========================================');
-    console.log('=== TESTE: FIDELIDADE ===');
+    console.log('=== TESTE:  ===');
     console.log('========================================\n');
 
     const logsBeforeClick = allConsoleLogs.length;
@@ -80,7 +80,7 @@ test.describe('Diagnóstico Detalhado - Tab Visibility com Console Logs', () => 
     const isVisible = await secFidelidade.isVisible();
     const hasActiveClass = await secFidelidade.evaluate(el => el.classList.contains('ativo'));
 
-    console.log('\n=== O QUE VEJO NA TELA (FIDELIDADE) ===');
+    console.log('\n=== O QUE VEJO NA TELA () ===');
     console.log(`Seção #sec-fidelidade visível: ${isVisible}`);
     console.log(`Seção #sec-fidelidade tem classe 'ativo': ${hasActiveClass}`);
 
@@ -92,7 +92,7 @@ test.describe('Diagnóstico Detalhado - Tab Visibility com Console Logs', () => 
     console.log(`Elemento #fid-total visível: ${hasContent}`);
 
     // Imprimir logs capturados DESDE o clique
-    console.log('\n=== LOGS DO CONSOLE (FIDELIDADE) ===');
+    console.log('\n=== LOGS DO CONSOLE () ===');
     const newLogs = allConsoleLogs.slice(logsBeforeClick);
     newLogs.forEach(log => console.log(log));
 

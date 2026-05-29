@@ -75,7 +75,7 @@ Push/PR/Schedule
 | SEO | < 50 → ❌ crítico | Otimização para busca |
 | PWA | < 50 → ⚠️ aviso | Progressive Web App |
 
-**Páginas auditadas:** `index.html`, `fidelidade.html`, `encomendas.html`
+**Páginas auditadas:** `index.html`, ``, `encomendas.html`
 
 **Relatórios gerados:**
 - `docs/relatorios/lighthouse-YYYY-MM-DD.md` — resumo em Markdown

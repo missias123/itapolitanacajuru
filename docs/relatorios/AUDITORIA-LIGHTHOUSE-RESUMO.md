@@ -25,7 +25,7 @@
 - **PWA:** 70/100 🟡
 - **Score Médio:** 95/100
 
-### Fidelidade (fidelidade.html)
+### Fidelidade ()
 - **Performance:** 90/100 🟢
 - **Acessibilidade:** 100/100 🟢
 - **Boas Práticas:** 100/100 🟢

@@ -13,7 +13,7 @@ const ASSETS_CACHE = 'assets-v8';
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
-  '/fidelidade.html',
+  '/',
   '/encomendas.html',
   '/promocao.html',
   '/sobre.html',

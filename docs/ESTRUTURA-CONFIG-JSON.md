@@ -108,7 +108,7 @@ Estrutura aninhada em `seoPaginas`:
 2. carrossel-vitrine.html
 3. galeria.html
 4. encomendas.html
-5. fidelidade.html
+5. 
 6. promocao.html
 7. dicas.html
 
@@ -170,7 +170,7 @@ Estrutura aninhada em `seoPaginas`:
 | `navEncomendas` | string | "ENCOMENDAS" | Link do menu |
 | `navPromocao` | string | "PROMOÇÃO" | Link do menu |
 | `navDicas` | string | "DICAS/DEPOIMENTOS" | Link do menu |
-| `navFidelidade` | string | "FIDELIDADE" | Link do menu |
+| `navFidelidade` | string | "" | Link do menu |
 
 ---
 
@@ -225,13 +225,13 @@ Estrutura aninhada em `seoPaginas`:
 ```json
 "fidelidadePagina": {
   "comoFuncionaTitulo": "Como funciona",
-  "acaoTitulo": "Quero participar do Clube de Fidelidade",
-  "btnCadastro": "Quero participar do Clube de Fidelidade",
+  "acaoTitulo": "Quero participar do ",
+  "btnCadastro": "Quero participar do ",
   "btnLogin": "Já sou cadastrado / Digitar código",
-  "regrasTitulo": "Regras do Clube de Fidelidade",
-  "btnAceitarRegras": "Li e aceito as regras do Clube de Fidelidade",
+  "regrasTitulo": "Regras do ",
+  "btnAceitarRegras": "Li e aceito as regras do ",
   "regulamentoTitulo": "Regras completas do programa",
-  "regulamentoSummary": "📜 Ler regulamento completo do Clube de Fidelidade"
+  "regulamentoSummary": "📜 Ler regulamento completo do "
 }
 ```
 

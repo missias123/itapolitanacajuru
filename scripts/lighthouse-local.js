@@ -20,7 +20,7 @@ const DOCS_DIR = path.join(ROOT, 'docs', 'relatorios');
 const PAGINAS = [
   { nome: 'index.html', titulo: 'Página Inicial', icon: '🏠' },
   { nome: 'encomendas.html', titulo: 'Encomendas', icon: '🛒' },
-  { nome: 'fidelidade.html', titulo: 'Fidelidade', icon: '⭐' },
+  { nome: '', titulo: 'Fidelidade', icon: '⭐' },
   { nome: 'promocao.html', titulo: 'Promoção', icon: '🎁' },
   { nome: 'dicas.html', titulo: 'Dicas', icon: '💡' },
   { nome: 'sobre.html', titulo: 'Sobre', icon: 'ℹ️' },

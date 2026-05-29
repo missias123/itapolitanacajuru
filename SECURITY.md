@@ -10,7 +10,7 @@ Para reportar uma vulnerabilidade de segurança, envie um e-mail diretamente ao 
 
 ### Situação Atual
 
-O arquivo `dados/clientes.json` armazena dados pessoais dos participantes do Clube de Fidelidade:
+O arquivo `dados/clientes.json` armazena dados pessoais dos participantes do :
 
 - Nome completo
 - Data de nascimento

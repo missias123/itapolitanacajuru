@@ -53,7 +53,7 @@
     };
 
     // ── 1.1 Variáveis globais essenciais ──
-    const vars = ['ghClientes','ghFidelidade','clienteAtual','GH_TOKEN','CLIENTES_PATH','FIDELIDADE_PATH'];
+    const vars = ['ghClientes','ghFidelidade','clienteAtual','GH_TOKEN','CLIENTES_PATH','_PATH'];
     vars.forEach(v => {
       if (typeof window[v] === 'undefined') {
         resultado.problemas.push('Variável global ausente: ' + v);

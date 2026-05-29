@@ -37,7 +37,7 @@ O **Admin-Painel** da Sorveteria Itapolitana Cajuru é um sistema completo de ge
 ### Cobertura Atual:
 
 - **76 campos validados** com sincronização perfeita
-- **8 páginas totalmente integradas**: sobre.html, carrossel-vitrine.html, galeria.html, encomendas.html, fidelidade.html, promocao.html, dicas.html, index.html
+- **8 páginas totalmente integradas**: sobre.html, carrossel-vitrine.html, galeria.html, encomendas.html, , promocao.html, dicas.html, index.html
 - **0 falhas** na validação admin-espelho-gate.js
 - **~88% de cobertura** do site
 
@@ -88,7 +88,7 @@ Gerenciamento de produtos e categorias
 ### 4. 💬 CHAT (sec-chat)
 Configuração do chatbot WhatsApp
 
-### 5. 💙 FIDELIDADE (sec-fidelidade)
+### 5. 💙  (sec-fidelidade)
 Programa de pontos e recompensas
 
 ### 6. 🎉 PROMOÇÃO (sec-promoção)
@@ -133,7 +133,7 @@ História da empresa e informações institucionais
 - `navEncomendas`: Texto do link "ENCOMENDAS"
 - `navPromocao`: Texto do link "PROMOÇÃO"
 - `navDicas`: Texto do link "DICAS/DEPOIMENTOS"
-- `navFidelidade`: Texto do link "FIDELIDADE"
+- `navFidelidade`: Texto do link ""
 
 ---
 
@@ -244,7 +244,7 @@ Configure o comportamento do assistente virtual WhatsApp:
 
 **Botão Flutuante**
 - `chatFabTexto`: Texto do botão flutuante (💬 Fale Conosco)
-- `clubeFabTexto`: Texto alternativo (🍦 Clube Itapolitana)
+- `clubeFabTexto`: Texto alternativo (🍦 )
 
 **Cabeçalho do Chat**
 - `chatHdrTitulo`: Título do chat
@@ -264,12 +264,12 @@ Configure o comportamento do assistente virtual WhatsApp:
 
 ---
 
-### 💙 5. PROGRAMA DE FIDELIDADE
+### 💙 5. PROGRAMA DE 
 
 #### Configurações Principais:
 
 **Hero da Página**
-- `fidHeroTitulo`: Título principal (🎟️ Clube de Fidelidade Itapolitana)
+- `fidHeroTitulo`: Título principal (🎟️  Itapolitana)
 - `fidHeroDesc`: Descrição do programa
 
 **Textos da Página** (fidelidadePagina)

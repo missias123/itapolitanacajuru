@@ -117,7 +117,7 @@ Gerado em: 18/05/2026 19:31:00
 URL: https://itapolitanacajuru.com.br/admin-painel.html
 ═══════════════════════════════════════════════════════════════
 
-=== TESTE: FIDELIDADE ===
+=== TESTE:  ===
 Seção sec-clientes: Encontrada=true, Ativa=true, Visível=true
   Conteúdo (primeiros 100 chars): [conteúdo da seção...]
 Seção sec-fidelidade: Encontrada=true, Ativa=true, Visível=true
@@ -128,7 +128,7 @@ Logs do Console (5 mensagens):
   [log] [irPara] IDs das seções a ativar: clientes,fidelidade
   [log] [irPara] ✓ Seção ativada: sec-clientes
   [log] [irPara] ✓ Seção ativada: sec-fidelidade
-  [log] [irPara] Inicializando FIDELIDADE
+  [log] [irPara] Inicializando 
 
 Status Final: SUCESSO
 

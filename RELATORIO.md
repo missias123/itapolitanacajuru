@@ -13,7 +13,7 @@
 ├── encomendas.html          ← Encomendas (tortas, caixas, picolés)
 ├── promocao.html            ← Promoção do mês / sorteio
 ├── dicas.html               ← Dicas e conteúdo
-├── fidelidade.html          ← Programa de fidelidade (wizard 5 passos)
+├──           ← Programa de fidelidade (wizard 5 passos)
 ├── admin-painel.html        ← Painel administrativo (NÃO ALTERAR)
 ├── dados/
 │   ├── config.json          ← Configurações gerais (hero, footer, horário)
@@ -279,11 +279,11 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 
 | Arquivo | Formulário / Área | IDs principais | Tem consentimento? |
 |---|---|---|---|
-| `fidelidade.html` | Bloco Regulamento Fidelidade (inline) | `aceite-fidelidade-inline`, `btn-aceitar-fidelidade-inline` | ✅ Aprimorado nesta PR |
-| `fidelidade.html` | Painel Cadastro Novo (`form-novo`) | `inp-nome`, `inp-data-nasc`, `inp-cel-novo`, `btn-cadastrar` | ✅ Adicionado nesta PR |
-| `fidelidade.html` | Painel Login (`form-login`) | `inp-cel-login`, `inp-login-dia/mes/ano` | — (login, não coleta novos dados) |
-| `fidelidade.html` | Bloco Regras Estrelas (painel cliente) | `chk-aceita-regras-estrelas` | ✅ Aprimorado nesta PR |
-| `fidelidade.html` | Inserir Código (painel cliente) | `input-codigo`, `btn-validar` | — (só valida código) |
+| `` | Bloco Regulamento Fidelidade (inline) | `aceite-fidelidade-inline`, `btn-aceitar-fidelidade-inline` | ✅ Aprimorado nesta PR |
+| `` | Painel Cadastro Novo (`form-novo`) | `inp-nome`, `inp-data-nasc`, `inp-cel-novo`, `btn-cadastrar` | ✅ Adicionado nesta PR |
+| `` | Painel Login (`form-login`) | `inp-cel-login`, `inp-login-dia/mes/ano` | — (login, não coleta novos dados) |
+| `` | Bloco Regras Estrelas (painel cliente) | `chk-aceita-regras-estrelas` | ✅ Aprimorado nesta PR |
+| `` | Inserir Código (painel cliente) | `input-codigo`, `btn-validar` | — (só valida código) |
 | `promocao.html` | Aceite Sorteio (inline, antes do form) | `aceite-sorteio-inline`, `btn-aceitar-sorteio-inline` | ✅ Aprimorado nesta PR |
 | `promocao.html` | Form Sorteio Inline | `sort-nome`, `sort-cel`, `sort-dia/mes/ano`, `btn-enviar-sorteio-promo` | ✅ Nota LGPD adicionada nesta PR |
 
@@ -299,7 +299,7 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 - Botão ativo com `animation: pulsarBtnConsent` — sinaliza claramente a ação disponível
 - `.aceite-area` / `.aceite-area-promo`: fundo colorido + borda que distingue a zona de consentimento do resto do formulário
 
-**Classes CSS adicionadas em `fidelidade.html`:**
+**Classes CSS adicionadas em ``:**
 - `.aceite-area` (laranja/verde) — container visual da zona de consentimento
 - `.aceite-label` — label clicável, hierarquia clara
 - `.aceite-lgpd-link` — link para política de privacidade
@@ -307,7 +307,7 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 - `.aceite-estrelas-label` — variante para o painel do cliente (regras da caçada)
 - `@keyframes pulsarBtnConsent` — animação do botão após liberação
 
-**Funções JS adicionadas em `fidelidade.html`:**
+**Funções JS adicionadas em ``:**
 - `verificarLgpdNovo()` — gata o botão `#btn-cadastrar` do `form-novo` ao checkbox `#chk-lgpd-novo`
 
 **Classes CSS adicionadas em `promocao.html`:**
@@ -348,7 +348,7 @@ A ordenação atual reflete a estrutura dos JSONs em `dados/produtos.json`. Para
 - ❌ NÃO alterar estrutura dos JSON em `dados/`
 - ❌ NÃO remover ou renomear campos dos JSON
 - ❌ NÃO modificar `admin-painel.html`
-- ❌ NÃO mudar as rotas: `index.html`, `encomendas.html`, `promocao.html`, `dicas.html`, `fidelidade.html`
+- ❌ NÃO mudar as rotas: `index.html`, `encomendas.html`, `promocao.html`, `dicas.html`, ``
 - ❌ Qualquer mudança de back-end ou JSON: **somente documentar como sugestão acima**
 
 ---

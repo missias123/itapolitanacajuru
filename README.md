@@ -31,7 +31,7 @@
 | `index.html` | Home + Cardápio Digital inline |
 | `encomendas.html` | Encomendas (tortas, caixas, picolés) |
 | `promocao.html` | Promoção do mês / sorteio |
-| `fidelidade.html` | Clube de fidelidade (wizard 5 passos) |
+| `` | Clube de fidelidade (wizard 5 passos) |
 | `dicas.html` | Dicas e conteúdo editorial |
 | `admin-painel.html` | Painel administrativo (acesso restrito) |
 
@@ -222,7 +222,7 @@ Site disponível em https://itapolitanacajuru.com.br em ~30 segundos
 npx eslint@8 scripts/*.js
 
 # Lint HTML
-npx htmlhint@1 index.html fidelidade.html encomendas.html promocao.html \
+npx htmlhint@1 index.html  encomendas.html promocao.html \
   carrossel.html dicas.html offline.html --config .htmlhintrc
 
 # Segurança: tokens reais expostos no código
@@ -255,7 +255,7 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 ├── index.html               ← Home + Cardápio Digital inline
 ├── encomendas.html          ← Cardápio de encomendas + carrinho WhatsApp
 ├── promocao.html            ← Promoção do mês / sorteio mensal
-├── fidelidade.html          ← Clube de fidelidade (wizard 5 passos)
+├──           ← Clube de fidelidade (wizard 5 passos)
 ├── dicas.html               ← Conteúdo editorial
 ├── admin-painel.html        ← Painel admin (⚠️ NÃO ALTERAR)
 ├── sw.js                    ← Service Worker PWA (⚠️ NÃO ALTERAR)

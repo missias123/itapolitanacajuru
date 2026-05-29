@@ -53,8 +53,8 @@
 
 | # | Elemento | Problema | Status |
 |---|----------|----------|--------|
-| B1 | FIDELIDADE sem classe de cor | Botão FIDELIDADE usava `class="nav-btn"` sem classe de cor, enquanto outros 3 têm `.nav-purple`, `.nav-orange`, `.nav-green` | ✅ **Corrigido** — adicionado `nav-yellow` |
-| B2 | `.nav-label` no FIDELIDADE | Sem `style="color:#fff;"` explícito na `.nav-label`, diferente dos outros 3 | ✅ **Corrigido** — adicionado `style="color:#fff;"` |
+| B1 |  sem classe de cor | Botão  usava `class="nav-btn"` sem classe de cor, enquanto outros 3 têm `.nav-purple`, `.nav-orange`, `.nav-green` | ✅ **Corrigido** — adicionado `nav-yellow` |
+| B2 | `.nav-label` no  | Sem `style="color:#fff;"` explícito na `.nav-label`, diferente dos outros 3 | ✅ **Corrigido** — adicionado `style="color:#fff;"` |
 
 ---
 
@@ -107,5 +107,5 @@ Ao abrir o site nos breakpoints abaixo, observe:
 
 ## 8. Arquivos modificados
 
-- `index.html` — CSS inline: strip sensorial contraste, stats section cor, design system botões, preconnect Google Fonts, noscript fallback; HTML: botão FIDELIDADE (`nav-yellow` class + `nav-label` color)
+- `index.html` — CSS inline: strip sensorial contraste, stats section cor, design system botões, preconnect Google Fonts, noscript fallback; HTML: botão  (`nav-yellow` class + `nav-label` color)
 - `docs/auditoria-visual-home.md` — este arquivo (atualizado com novas correções)

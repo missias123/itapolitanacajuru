@@ -250,7 +250,7 @@
     setTimeout(function () {
       _itabotOcultarTyping();
       _itabotInserirMensagem('bot', {
-        answer: 'Ol\u00e1! \ud83d\udc4b Sou o Ita Bot, assistente da Sorveteria Itapolitana em Cajuru! \ud83c\udf66\n\nPosso te ajudar com:\n\ud83c\udf66 Card\u00e1pio e sabores\n\ud83d\udce6 Encomendas e festas\n\ud83c\udf89 Promo\u00e7\u00f5es e sorteio\n\u2b50 Clube de Fidelidade\n\ud83d\udccd Hor\u00e1rio, localiza\u00e7\u00e3o e contato\n\nDigite sua d\u00favida ou toque em uma op\u00e7\u00e3o:',
+        answer: 'Ol\u00e1! \ud83d\udc4b Sou o Ita Bot, assistente da Sorveteria Itapolitana em Cajuru! \ud83c\udf66\n\nPosso te ajudar com:\n\ud83c\udf66 Card\u00e1pio e sabores\n\ud83d\udce6 Encomendas e festas\n\ud83c\udf89 Promo\u00e7\u00f5es e sorteio\n\u2b50 \n\ud83d\udccd Hor\u00e1rio, localiza\u00e7\u00e3o e contato\n\nDigite sua d\u00favida ou toque em uma op\u00e7\u00e3o:',
         chips: ['\ud83c\udf66 Card\u00e1pio', '\ud83d\udce6 Encomendas', '\ud83c\udf89 Promo\u00e7\u00f5es', '\u2b50 Fidelidade', '\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udd59 Hor\u00e1rio', '\ud83d\udcac Atendente']
       });
     }, 700);
@@ -517,7 +517,7 @@
           _itabotInserirMensagem('bot', {
             answer: '\u2b50 Encontrei voc\u00ea, ' + primeiro + '!\n\nSaldo atual: ' + pts + ' ponto' + (pts !== 1 ? 's' : '') + '\n' + prox,
             linkText: '\u2b50 Acessar programa de fidelidade',
-            linkHref: 'fidelidade.html'
+            linkHref: ''
           });
           return;
         }
@@ -526,7 +526,7 @@
       _itabotInserirMensagem('bot', {
         answer: 'N\u00e3o encontrei cadastro com esse nome e data de nascimento \ud83d\ude14\n\nVerifique os dados ou cadastre-se gratuitamente!',
         linkText: '\u2b50 Cadastrar no Fidelidade',
-        linkHref: 'fidelidade.html',
+        linkHref: '',
         chips: ['\ud83d\udd04 Tentar novamente']
       });
     }
@@ -537,7 +537,7 @@
       .then(function (data) {
         if (!data) {
           _itabotOcultarTyping();
-          _itabotInserirMensagem('bot', { answer: 'N\u00e3o consegui acessar o sistema agora \ud83d\ude14 Tente pela p\u00e1gina de Fidelidade:', linkText: '\u2b50 Ir para Fidelidade', linkHref: 'fidelidade.html' });
+          _itabotInserirMensagem('bot', { answer: 'N\u00e3o consegui acessar o sistema agora \ud83d\ude14 Tente pela p\u00e1gina de Fidelidade:', linkText: '\u2b50 Ir para Fidelidade', linkHref: '' });
           return;
         }
         _cliData = data;
@@ -620,9 +620,9 @@
     // Fidelidade
     if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('clube') !== -1 || l.indexOf('cadastr') !== -1) {
       return {
-        answer: '\u2b50 Clube de Fidelidade Itapolitana!\n\nAcumule pontos a cada compra e troque por prêmios:\n\ud83e\udd64 10 pontos = 1 Milk Shake de 300ml\n\ud83c\udf66 30 pontos = 1 caixa de sorvete com 7 bolas\n\nCadastre-se gratuitamente ou fa\u00e7a login para ver seus pontos:',
+        answer: '\u2b50  Itapolitana!\n\nAcumule pontos a cada compra e troque por prêmios:\n\ud83e\udd64 10 pontos = 1 Milk Shake de 300ml\n\ud83c\udf66 30 pontos = 1 caixa de sorvete com 7 bolas\n\nCadastre-se gratuitamente ou fa\u00e7a login para ver seus pontos:',
         linkText: '\u2b50 Acessar programa de fidelidade',
-        linkHref: 'fidelidade.html',
+        linkHref: '',
         chips: ['\ud83d\udd22 Consultar meus pontos', '\ud83c\udf9f Registrar c\u00f3digo', '\u2b50 Me cadastrar']
       };
     }
@@ -782,19 +782,19 @@
       keywords: ['quero me cadastrar no fidelidade', 'fazer cadastro fidelidade', 'participar do programa', 'entrar no fidelidade'],
       answer: 'Para se cadastrar no programa de fidelidade Itapolitana:',
       linkText: '\u2b50 Cadastrar no Fidelidade',
-      linkHref: 'fidelidade.html'
+      linkHref: ''
     },
     {
       keywords: ['registrar código', 'código de pontos', 'codigo de pontos', 'inserir código', 'inserir codigo', 'somar pontos'],
       answer: 'Para registrar seu c\u00f3digo de pontos, acesse o fidelidade, fa\u00e7a login e insira o c\u00f3digo recebido na loja.',
       linkText: '\ud83c\udf9f Registrar c\u00f3digo',
-      linkHref: 'fidelidade.html'
+      linkHref: ''
     },
     {
       keywords: ['como resgatar pontos', 'resgatar prêmio', 'resgatar premio', 'trocar pontos', 'usar pontos'],
       answer: 'Para resgatar: acesse o fidelidade, fa\u00e7a login. Com 10 pontos = 1 Milk Shake de 300ml \ud83e\udd64 Com 30 pontos = 1 caixa com 7 bolas \ud83c\udf66',
       linkText: '\ud83c\udf81 Resgatar no fidelidade',
-      linkHref: 'fidelidade.html'
+      linkHref: ''
     },
     {
       keywords: ['falar com atendente', 'falar com humano', 'falar com pessoa', 'atendimento humano', 'quero falar com alguem'],

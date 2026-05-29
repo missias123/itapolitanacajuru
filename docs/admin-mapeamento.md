@@ -24,7 +24,7 @@ dados/ JSON files (main branch — público via GitHub Raw CDN)
   ├── dados/clientes.json     ← cadastros de clientes
   ├── dados/encomendas.json   ← pedidos de encomenda
   ↓  GET via GitHub Raw (sem autenticação)
-SITE (index.html, promocao.html, fidelidade.html, encomendas.html, dicas.html)
+SITE (index.html, promocao.html, , encomendas.html, dicas.html)
 ```
 
 **Não há build/deploy intermediário.** As edições no admin são refletidas em tempo real no site (latência do CDN do GitHub Raw, geralmente < 5 min com cache-busting `?t=Date.now()`).
@@ -85,7 +85,7 @@ O admin é organizado em abas/seções. Cada módulo tem campos editáveis e um 
 | Texto "ENCOMENDAS" | `navEncomendas` | `a[href="encomendas.html"] .nav-label` | ✅ Sim | |
 | Texto "PROMOÇÃO" | `navPromocao` | `#nav-promo-btn .nav-label` | ✅ Sim | |
 | Texto "DICAS/DEPOIMENTOS" | `navDicas` | `a[href="dicas.html"] .nav-label` | ✅ Sim | |
-| Texto "FIDELIDADE" | `navFidelidade` | `a[href="fidelidade.html"] .nav-label` | ✅ Sim | |
+| Texto "" | `navFidelidade` | `a[href=""] .nav-label` | ✅ Sim | |
 
 ### 2.3 Módulo: CARRINHO PARA EVENTOS
 
@@ -142,21 +142,21 @@ Esta área tem **duas fontes de dados** (`promo.json` e `config.json`) lidas em 
 
 > ⚠️ **PONTO FRÁGIL:** Dois formulários no admin podem editar os **mesmos campos** da página `promocao.html` via arquivos diferentes (`promo.json` e `config.json`). O segundo a carregar sobrescreve o primeiro. Atualmente `config.json` sempre vence (carrega por último). Se o admin salvar apenas pelo módulo "Promoções" (que grava em `promo.json`) mas `config.json` tiver valores diferentes, o usuário verá o `config.json` no site.
 
-### 2.6 Módulo: FIDELIDADE
+### 2.6 Módulo: 
 
 | Campo no Admin | Chave | Arquivo | Onde aparece no site | Sincronizado? | Observações |
 |----------------|-------|---------|----------------------|---------------|-------------|
-| Nome prêmio Milkshake | `premioMilkshake` | `config.json` + `fidelidade.json.config` | `fidelidade.html` chip | ✅ Sim | Salvo em 2 arquivos |
-| Pontos Milkshake | `pontosMilkshake` | `config.json` + `fidelidade.json.config` | `fidelidade.html` chip | ✅ Sim | |
-| Nome prêmio Caixa | `premioCaixa` | `config.json` + `fidelidade.json.config` | `fidelidade.html` chip | ✅ Sim | |
-| Pontos Caixa | `pontosCaixa` | `config.json` + `fidelidade.json.config` | `fidelidade.html` chip | ✅ Sim | |
-| Título Fidelidade | `fidelidadeTitulo` | `config.json` | `fidelidade.html` | ✅ Sim | |
-| Descrição Fidelidade | `fidelidadeDescricao` | `config.json` | `fidelidade.html` | ✅ Sim | |
+| Nome prêmio Milkshake | `premioMilkshake` | `config.json` + `fidelidade.json.config` | `` chip | ✅ Sim | Salvo em 2 arquivos |
+| Pontos Milkshake | `pontosMilkshake` | `config.json` + `fidelidade.json.config` | `` chip | ✅ Sim | |
+| Nome prêmio Caixa | `premioCaixa` | `config.json` + `fidelidade.json.config` | `` chip | ✅ Sim | |
+| Pontos Caixa | `pontosCaixa` | `config.json` + `fidelidade.json.config` | `` chip | ✅ Sim | |
+| Título Fidelidade | `fidelidadeTitulo` | `config.json` | `` | ✅ Sim | |
+| Descrição Fidelidade | `fidelidadeDescricao` | `config.json` | `` | ✅ Sim | |
 | Hero Título | `fidHeroTitulo` | `config.json` | `#fid-hero-titulo` | ✅ Sim | Prioridade sobre `fidelidade.json` |
 | Hero Descrição | `fidHeroDesc` | `config.json` | `#fid-hero-desc` | ✅ Sim | Prioridade sobre `fidelidade.json` |
-| Códigos de fidelidade | `códigos` (objeto) | `fidelidade.json` | Validação no `fidelidade.html` | ✅ Sim | |
-| Regulamento | Texto hardcoded | `admin-painel.html` | `fidelidade.html` (hardcoded) | ❌ Não | Ver seção 4 |
-| Cadastros clientes | `clientes` | `clientes.json` | `fidelidade.html` | ✅ Sim | |
+| Códigos de fidelidade | `códigos` (objeto) | `fidelidade.json` | Validação no `` | ✅ Sim | |
+| Regulamento | Texto hardcoded | `admin-painel.html` | `` (hardcoded) | ❌ Não | Ver seção 4 |
+| Cadastros clientes | `clientes` | `clientes.json` | `` | ✅ Sim | |
 
 > ⚠️ **PONTO FRÁGIL:** A configuração de prêmios é salva **em dois arquivos** (`config.json` e `fidelidade.json`). Se uma das gravações falhar (race condition ou erro de rede), os dados ficam em estado inconsistente entre os dois arquivos.
 
@@ -314,7 +314,7 @@ Se o proprietário editar apenas um, o outro pode sobrescrever no site.
 | Depoimentos de clientes | `dicas.html` (HTML hardcoded) | Precisam ser atualizados quando chegar novos depoimentos; admin já tem o formulário mas não conecta ao site |
 | Dicas da sorveteria | `dicas.html` (HTML hardcoded) | Conteúdo de marketing editável é importante para promoções sazonais |
 | Imagens do carrossel | `carrossel.html` (12 `<img>` hardcoded) | Admin já tem upload mas não conecta ao HTML do carrossel |
-| Regulamento do Clube de Fidelidade | `fidelidade.html` (hardcoded no JS/HTML) | Regras podem mudar; hoje impossível alterar sem deploy manual |
+| Regulamento do  | `` (hardcoded no JS/HTML) | Regras podem mudar; hoje impossível alterar sem deploy manual |
 | Texto do aviso de encomendas | `encomendas.html` (hardcoded "03 dias úteis") | Prazo pode variar em datas comemorativas/alta demanda |
 | Mínimo de picolés na encomenda | `encomendas.html` / `enc-v2.js` (hardcoded `100`) | Regra de negócio que pode mudar; `config.json` tem o campo mas não é lido |
 | Meta título e descrição SEO | `index.html` `<title>` e `<meta>` (hardcoded) | Campanhas e sazonalidade exigem ajustes de SEO sem deploy |
@@ -401,10 +401,10 @@ Estimativa: **~65% sincronizado**. Os fluxos críticos de negócio (cardápio, p
 
 | Arquivo | Salvo pelo Admin? | Lido pelo Site | Lido onde |
 |---------|-------------------|---------------|-----------|
-| `dados/config.json` | ✅ (vários módulos) | ✅ | `index.html`, `fidelidade.html`, `promocao.html` |
+| `dados/config.json` | ✅ (vários módulos) | ✅ | `index.html`, ``, `promocao.html` |
 | `dados/produtos.json` | ✅ (Preços, Cardápio, Sabores, Estoque) | ✅ | `index.html`, `enc-v2.js` (encomendas) |
 | `dados/promo.json` | ✅ (Promoções, Sorteios) | ✅ | `index.html` (card promo), `promocao.html` |
-| `dados/fidelidade.json` | ✅ (Fidelidade, códigos) | ✅ | `fidelidade.html` |
-| `dados/clientes.json` | ✅ (Clientes) | ✅ | `fidelidade.html` |
+| `dados/fidelidade.json` | ✅ (Fidelidade, códigos) | ✅ | `` |
+| `dados/clientes.json` | ✅ (Clientes) | ✅ | `` |
 | `dados/encomendas.json` | ✅ (Encomendas - status) | Escrito por | `enc-v2.js` (clientes fazem pedidos) |
 | `scripts/products.js` | ❌ (arquivo estático) | Fallback | `encomendas.html` |

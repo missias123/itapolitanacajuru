@@ -50,7 +50,7 @@ _Gerado automaticamente por `scripts/quality-audit.js`_
 | Acessibilidade | Todas as imagens com alt | ✅ | 2 imagem(ns) com alt |
 
 
-## 🟢 fidelidade.html — Score 100/100
+## 🟢  — Score 100/100
 
 | Categoria | Item | Status | Detalhe |
 |-----------|------|--------|---------|

@@ -180,7 +180,7 @@ function verificarConsistenciaFidelidade(config, fidelidade) {
     if (!vf) {
       ok(`"${ck}": fidelidade.json sem valor; config.json = "${vc}" é a fonte ativa`);
     } else if (String(vc) !== String(vf)) {
-      warn(`"${ck}": CONFLITO — config.json = "${vc}" × fidelidade.json.config = "${vf}". config.json prevalece na fidelidade.html.`);
+      warn(`"${ck}": CONFLITO — config.json = "${vc}" × fidelidade.json.config = "${vf}". config.json prevalece na .`);
     } else {
       ok(`"${ck}": config.json e fidelidade.json em sincronia (= ${vc})`);
     }

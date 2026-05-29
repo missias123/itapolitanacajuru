@@ -10,7 +10,7 @@
 O repositório já possui o workflow `lighthouse-audit.yml` que executa auditorias diárias às 04:00 UTC e a cada push na branch `main`, auditando:
 
 - `index.html` (todas as categorias: Performance, Accessibility, Best Practices, SEO, PWA)
-- `fidelidade.html`
+- ``
 - `encomendas.html`
 
 Relatórios são publicados como artefatos em `docs/relatorios/` com retenção de 30 dias.
@@ -79,7 +79,7 @@ index.html:
 + <noscript><link href="https://fonts.googleapis.com/..." rel="stylesheet"/></noscript>
 ~ .strip-sensorial { color: #fff }  (era #F9A825 — contraste insuficiente)
 ~ .stats-section { background: linear-gradient(135deg, #C62828, #E8000D) }  (era pink/laranja)
-~ botão FIDELIDADE: adicionado class="nav-yellow" + style="color:#fff;" no nav-label
+~ botão : adicionado class="nav-yellow" + style="color:#fff;" no nav-label
 ```
 
 ---
@@ -118,7 +118,7 @@ O workflow já está configurado e funcional. Executa:
 - **A cada push** na branch `main`
 - **Manualmente** via `workflow_dispatch`
 
-Páginas auditadas: `index.html`, `fidelidade.html`, `encomendas.html`
+Páginas auditadas: `index.html`, ``, `encomendas.html`
 
 Relatórios disponíveis em: `Actions → Lighthouse Audit → Artifacts → lighthouse-reports-YYYY-MM-DD`
 

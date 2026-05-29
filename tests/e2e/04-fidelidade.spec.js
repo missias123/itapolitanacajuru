@@ -5,18 +5,18 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Programa de Fidelidade', () => {
-  test('página fidelidade.html carrega sem erros de JS', async ({ page }) => {
+  test('página  carrega sem erros de JS', async ({ page }) => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
 
-    await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1500);
 
     expect(jsErrors, `Erros JS: ${jsErrors.join(', ')}`).toHaveLength(0);
   });
 
   test('campo de celular existe e aceita input', async ({ page }) => {
-    await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
     const abrirCadastro = page.locator('#btn-mostrar-cadastro-fid');
@@ -52,7 +52,7 @@ test.describe('Programa de Fidelidade', () => {
   });
 
   test('botão Validar Código existe no DOM (visível após consulta)', async ({ page }) => {
-    await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
     // Botão de validação de código (label conforme memória: '✅ Validar Código')
@@ -70,7 +70,7 @@ test.describe('Programa de Fidelidade', () => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
 
-    await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
     // Tentar clicar no botão de validar sem inserir código
@@ -95,7 +95,7 @@ test.describe('Programa de Fidelidade', () => {
     const jsErrors = [];
     page.on('pageerror', (err) => jsErrors.push(err.message));
 
-    await page.goto('/fidelidade.html', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(800);
 
     const abrirCadastro = page.locator('#btn-mostrar-cadastro-fid');

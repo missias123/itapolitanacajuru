@@ -40,7 +40,7 @@ test.describe('Botões de Navegação — Header', () => {
     }
   });
 
-  test('botão Fidelidade navega para fidelidade.html', async ({ page }) => {
+  test('botão Fidelidade navega para ', async ({ page }) => {
     const btn = page.locator('.nav-btn, .itap-nav-btn').filter({ hasText: /fidelidade/i }).first();
     if (await btn.isVisible()) {
       await Promise.all([

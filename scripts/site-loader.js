@@ -185,7 +185,7 @@
       if (page === 'encomendas.html' && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
       else if (page === 'promocao.html' && cfg.navPromocao) label.textContent = cfg.navPromocao;
       else if (page === 'dicas.html' && cfg.navDicas) label.textContent = cfg.navDicas;
-      else if (page === 'fidelidade.html' && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
+      else if (page === '' && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
     });
 
     // ── WhatsApp: todos os links wa.me ─────────
@@ -376,7 +376,7 @@
     const nome = extrairNomePagina(window.location.pathname || '');
     if (!nome || nome === 'index.html') return 'home';
     if (nome === 'encomendas.html') return 'encomendas';
-    if (nome === 'fidelidade.html') return 'fidelidade';
+    if (nome === '') return 'fidelidade';
     if (nome === 'promocao.html') return 'promocao';
     if (nome === 'dicas.html') return 'dicas';
     if (nome === 'sobre.html') return 'sobre';
