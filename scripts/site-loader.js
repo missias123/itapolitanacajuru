@@ -449,6 +449,26 @@
           el.appendChild(card);
           return;
         }
+        if (layout === 'gallery-item') {
+          if (item && typeof item === 'object') {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = className || 'gallery-item';
+            const imgEl = document.createElement('img');
+            imgEl.src = String(item.url || '');
+            imgEl.alt = String(item.alt || '');
+            imgEl.loading = 'lazy';
+            imgEl.decoding = 'async';
+            const overlayDiv = document.createElement('div');
+            overlayDiv.className = 'gallery-overlay';
+            const overlayP = document.createElement('p');
+            overlayP.textContent = String(item.titulo || '');
+            overlayDiv.appendChild(overlayP);
+            itemDiv.appendChild(imgEl);
+            itemDiv.appendChild(overlayDiv);
+            el.appendChild(itemDiv);
+          }
+          return;
+        }
         const node = document.createElement(tag);
         if (className) node.className = className;
         if (item && typeof item === 'object') {
