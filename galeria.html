@@ -111,6 +111,7 @@
     <div class="itap-header-top">
       <div class="itap-header-duvidas">
         <button type="button" class="ita-bot-duvidas-btn"
+                onclick="abrirItaBot()"
                 aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">💬 DÚVIDAS</button>
       </div>
     </div>
@@ -222,66 +223,5 @@
 <script src="scripts/nav-active.js"></script>
 <script src="scripts/site-loader.js" defer></script>
 <script src="scripts/ita-bot-widget.js" defer></script>
-<script>
-// Carregamento dinâmico de galeria.html via config.json
-(function() {
-  'use strict';
-
-  fetch('/dados/config.json')
-    .then(function(r) { return r.json(); })
-    .then(function(cfg) {
-      // SEO
-      var titleEl = document.querySelector('title[data-config="seoPaginas.galeria.titulo"]');
-      if (titleEl && cfg.seoPaginas && cfg.seoPaginas.galeria && cfg.seoPaginas.galeria.titulo) {
-        titleEl.textContent = cfg.seoPaginas.galeria.titulo;
-      }
-
-      var descEl = document.querySelector('meta[data-config="seoPaginas.galeria.descricao"]');
-      if (descEl && cfg.seoPaginas && cfg.seoPaginas.galeria && cfg.seoPaginas.galeria.descricao) {
-        descEl.setAttribute('content', cfg.seoPaginas.galeria.descricao);
-      }
-
-      // H1 e Descrição
-      var h1El = document.querySelector('[data-config="galeriaPagina.h1"]');
-      if (h1El && cfg.galeriaPagina && cfg.galeriaPagina.h1) {
-        h1El.textContent = cfg.galeriaPagina.h1;
-      }
-
-      var descPagEl = document.querySelector('[data-config="galeriaPagina.descricao"]');
-      if (descPagEl && cfg.galeriaPagina && cfg.galeriaPagina.descricao) {
-        descPagEl.textContent = cfg.galeriaPagina.descricao;
-      }
-
-      // Grid de Imagens
-      var gridEl = document.getElementById('galeria-grid');
-      if (gridEl && cfg.galeriaPagina && cfg.galeriaPagina.imagens && Array.isArray(cfg.galeriaPagina.imagens)) {
-        gridEl.innerHTML = '';
-        cfg.galeriaPagina.imagens.forEach(function(img) {
-          var itemDiv = document.createElement('div');
-          itemDiv.className = 'gallery-item';
-
-          var imgEl = document.createElement('img');
-          imgEl.src = img.url || '';
-          imgEl.alt = img.alt || '';
-          imgEl.loading = 'lazy';
-          imgEl.decoding = 'async';
-
-          var overlayDiv = document.createElement('div');
-          overlayDiv.className = 'gallery-overlay';
-          var overlayP = document.createElement('p');
-          overlayP.textContent = img.titulo || '';
-          overlayDiv.appendChild(overlayP);
-
-          itemDiv.appendChild(imgEl);
-          itemDiv.appendChild(overlayDiv);
-          gridEl.appendChild(itemDiv);
-        });
-      }
-    })
-    .catch(function(err) {
-      console.error('[Galeria] Erro ao carregar config.json:', err);
-    });
-})();
-</script>
 </body>
 </html>
