@@ -1326,7 +1326,15 @@ function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
     if (linkWpp) {
       // Garantir que o número do WhatsApp venha do config se disponível
       const whatsappNum = (window._itap_config && window._itap_config.whatsapp) || '5516996062046';
-      linkWpp.href = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
+      const whatsappUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
+      linkWpp.href = whatsappUrl;
+
+      // Adicionar click handler para garantir que o link funcione
+      linkWpp.onclick = function(e) {
+        e.preventDefault();
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        return false;
+      };
     }
     
     mostrarEtapa('confirmação');
