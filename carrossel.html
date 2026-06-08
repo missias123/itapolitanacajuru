@@ -138,7 +138,9 @@
       var swiper = null;
       var listenersRegistrados = false;
       var ajusteAlturaRegistrado = false;
+      var ultimaConfigAplicada = null;
       function iniciarCarrossel(cfg) {
+        if (cfg && cfg === ultimaConfigAplicada) return;
         var autoplayDelay = 3000;
         var transitionSpeed = 800;
         var titleEl = document.querySelector('title[data-config]');
@@ -218,6 +220,7 @@
           ajusteAlturaRegistrado = true;
         }
         if (swiper) swiper.on('slideChangeTransitionEnd', ajustarAltura);
+        ultimaConfigAplicada = cfg || null;
       }
 
       iniciarCarrossel(window.SITE_CONFIG || null);
