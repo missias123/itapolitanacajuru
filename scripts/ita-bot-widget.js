@@ -7,6 +7,10 @@
 (function () {
   'use strict';
 
+  var _legacyDialog = document.getElementById('chat-dialog');
+  if (_legacyDialog && !_legacyDialog.querySelector('#duvidas-pergunta')) {
+    _legacyDialog.remove();
+  }
   if (document.getElementById('chat-dialog')) return;
 
   /* ─── Detecta raiz do site para construir paths ─── */
@@ -200,7 +204,7 @@
     window.__itabotDuvidasTriggersBound = true;
     document.addEventListener('click', function (event) {
       // Mantém cobertura permanente para botões estáticos dos templates e para botões com data-itabot-open.
-      var trigger = event.target.closest('.ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
+      var trigger = event.target.closest('[data-role="duvidas"], .ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
       event.preventDefault();
       _itabotAbrirItaBot();
@@ -237,11 +241,14 @@
   function _itabotHandleInputFocus() {
     _itabotAtualizarViewport();
     _itabotScrollFim();
+    setTimeout(_itabotAtualizarViewport, 120);
   }
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', _itabotAtualizarViewport);
     window.visualViewport.addEventListener('scroll', _itabotAtualizarViewport);
   }
+  window.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
+  window.addEventListener('orientationchange', _itabotAtualizarViewport, { passive: true });
   window._itabotHandleInputFocus = _itabotHandleInputFocus;
 
   /* ─── Carregamento assíncrono de dados ─── */
