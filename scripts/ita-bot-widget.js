@@ -191,13 +191,14 @@
     document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
   }
   window.abrirItaBot = _itabotAbrirItaBot;
-  window._itabotAbrirItaBot = window.abrirItaBot;
+  window._itabotAbrirItaBot = _itabotAbrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
 
   function _itabotBindDuvidasTriggers() {
     if (window.__itabotDuvidasTriggersBound) return;
     window.__itabotDuvidasTriggersBound = true;
     document.addEventListener('click', function (event) {
+      // `.ita-bot-duvidas-btn` cobre botões estáticos que ainda não receberam `data-itabot-open`.
       var trigger = event.target.closest('.ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
       event.preventDefault();
