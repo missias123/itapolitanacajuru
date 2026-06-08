@@ -97,7 +97,7 @@
   var html = '<div class="itabot-wrap" id="itabot-wrap">' +
   '<span class="itabot-badge" id="itabot-badge" aria-hidden="true" style="display:none"></span>' +
   '<div class="itabot-bubble" id="itabot-bubble" aria-hidden="true" style="display:none"></div>' +
-  '<button type="button" id="ita-bot-trigger" class="duvidas-card" onclick="_itabotAbrirItaBot()"' +
+  '<button type="button" id="ita-bot-trigger" class="duvidas-card" data-itabot-open="true"' +
   ' aria-label="Clique para tirar suas dúvidas sobre sorvetes, açaí e encomendas." aria-haspopup="dialog">' +
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 82" width="80" height="66" aria-hidden="true">' +
   '<rect x="2" y="21" width="5" height="15" rx="2.5" fill="#D0D0E0"/><rect x="51" y="21" width="5" height="15" rx="2.5" fill="#D0D0E0"/>' +
@@ -117,7 +117,7 @@
   '<ellipse cx="76" cy="43" rx="14" ry="11" fill="#F7B73B"/><ellipse cx="75" cy="30" rx="12" ry="10" fill="#EF5350"/>' +
   '<ellipse cx="76" cy="18" rx="9" ry="8" fill="#F9C6D0"/><ellipse cx="73" cy="15" rx="3" ry="2" fill="white" opacity=".5"/>' +
   '</svg></button>' +
-  '<button type="button" class="itabot-duvidas-btn" onclick="_itabotAbrirItaBot()" aria-label="Abrir dúvidas com Ita Bot">DÚVIDAS</button>' +
+  '<button type="button" class="itabot-duvidas-btn" data-itabot-open="true" aria-label="Abrir dúvidas com Ita Bot">DÚVIDAS</button>' +
   '</div>' +
   '<div id="chat-dialog" role="dialog" aria-modal="false" aria-labelledby="chat-hdr-titulo" aria-hidden="true">' +
   '<div class="chat-box">' +
@@ -190,11 +190,13 @@
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
     document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
   }
-  window._itabotAbrirItaBot     = _itabotAbrirItaBot;
   window.abrirItaBot = _itabotAbrirItaBot;
+  window._itabotAbrirItaBot = window.abrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
 
   function _itabotBindDuvidasTriggers() {
+    if (window.__itabotDuvidasTriggersBound) return;
+    window.__itabotDuvidasTriggersBound = true;
     document.addEventListener('click', function (event) {
       var trigger = event.target.closest('.ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
