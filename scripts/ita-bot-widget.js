@@ -190,6 +190,7 @@
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
     document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
   }
+  // API pública canônica + alias legado para compatibilidade com páginas antigas.
   window.abrirItaBot = _itabotAbrirItaBot;
   window._itabotAbrirItaBot = _itabotAbrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
@@ -198,7 +199,7 @@
     if (window.__itabotDuvidasTriggersBound) return;
     window.__itabotDuvidasTriggersBound = true;
     document.addEventListener('click', function (event) {
-      // `.ita-bot-duvidas-btn` cobre botões estáticos que ainda não receberam `data-itabot-open`.
+      // Mantém cobertura permanente para botões estáticos dos templates e para botões com data-itabot-open.
       var trigger = event.target.closest('.ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
       event.preventDefault();
