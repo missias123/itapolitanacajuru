@@ -755,6 +755,7 @@
   // ═══ VERIFICAR ENCERRAMENTO DA LISTA DE INSCRIÇÕES ═══
   // Se hoje >= dataFim ou status === "encerrado", desabilita formulário e botão.
   (function verificarEncerramentoSorteio() {
+    fetch('dados/fidelidade.json?t=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .catch(function() { return null; })
       .then(function(fid) {
