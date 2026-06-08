@@ -25,12 +25,6 @@
       bg: 'background:linear-gradient(135deg,#00C853,#009624);'
     },
     {
-      href: '',
-      label: '',
-      icon: '🎟️',
-      bg: 'background:linear-gradient(135deg,#E65100,#FF6D00);'
-    },
-    {
       href: 'sobre.html',
       label: 'QUEM SOMOS',
       icon: '🏪',

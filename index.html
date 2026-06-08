@@ -2133,7 +2133,6 @@ body.cardapio-aberto { padding-bottom: 80px; }
   <div class="itap-header-duvidas">
     <button type="button" class="ita-bot-duvidas-btn"
             id="ita-bot-duvidas"
-            onclick="abrirItaBot()"
             aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">💬 DÚVIDAS</button>
   </div>
 </div>
@@ -2715,12 +2714,6 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 
     <div style="display:flex;flex-direction:column;gap:10px;">
 
-      <button type="button" class="fale-tema-btn" onclick="mostrarResposta('fidelidade')">
-        <span class="fale-tema-emoji">🎟️</span>
-        <span class="fale-tema-nome"></span>
-        <span class="fale-tema-seta">›</span>
-      </button>
-
       <button type="button" class="fale-tema-btn" onclick="mostrarResposta('promocao')">
         <span class="fale-tema-emoji">🎉</span>
         <span class="fale-tema-nome">Promoções</span>
@@ -2813,19 +2806,6 @@ Desenvolvido por <span id="footer-dev" style="color:#FBD100;font-weight:900;">Sg
 <script>
 // Dados de cada tema
 var faleTemas = {
-  fidelidade: {
-    emoji: '🎟️',
-    titulo: '',
-    palavras: [
-      '✅ A cada compra você acumula pontos automaticamente.',
-      '✅ Os pontos não expiram enquanto você fizer compras mensalmente.',
-      '✅ Troque pontos por sorvetes, picolés e prêmios exclusivos.',
-      '✅ Cadastro gratuito — basta pedir na loja.',
-      '✅ Acompanhe seu saldo pelo site na página Fidelidade.'
-    ],
-    link: '',
-    linkTexto: 'Mais dúvidas sobre Fidelidade? Acesse →'
-  },
   promocao: {
     emoji: '🎉',
     titulo: 'Promoções',
@@ -3827,13 +3807,13 @@ const RESPOSTAS={
   // ── PICOLÉS RECHEADOS ──
   'recheado':    '🍭 Picolés Recheados são nossa especialidade! Para encomenda no atacado (mín. 100 un.), fale pelo WhatsApp: (16) 99606-2046.',
   // ── DEFAULT (FALLBACK PARA WHATSAPP) ──
-  'default':'Não entendi direitinho a sua pergunta 😅<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário<br>• Promoções<br>• Programa de Fidelidade<br>• Falar com atendente<br><br>Tente escrever o assunto (ex.: cardápio, localização, fidelidade) ou clique abaixo:<br><a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+tenho+uma+d%C3%BAvida+sobre+a+Sorveteria+Itapolitana" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar com atendente</a>'
+  'default':'Não entendi direitinho a sua pergunta 😅<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário<br>• Promoções<br>• Falar com atendente<br><br>Tente escrever o assunto (ex.: cardápio, localização, promoções) ou clique abaixo:<br><a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+tenho+uma+d%C3%BAvida+sobre+a+Sorveteria+Itapolitana" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">💬 Falar com atendente</a>'
 };
 window.RESPOSTAS = RESPOSTAS;
 const ITABOT_INTENTS = [
   {
     keywords: ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'iniciar', 'começo', 'inicio', 'início', 'menu', 'opções', 'opcoes'],
-    reply: 'Olá! Eu sou o Ita Bot, assistente virtual da Sorveteria Itapolitana.<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário de funcionamento<br>• Promoções<br>• Programa de Fidelidade<br>• Falar com atendente<br><br>Escreva o assunto ou o número da opção.'
+    reply: 'Olá! Eu sou o Ita Bot, assistente virtual da Sorveteria Itapolitana.<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário de funcionamento<br>• Promoções<br>• Falar com atendente<br><br>Escreva o assunto ou o número da opção.'
   },
   {
     keywords: ['fazer pedido', 'pedido', 'pedir', 'delivery', 'encomenda', 'comprar', 'quero pedir', 'telefone', 'zap', 'whatsapp', 'whats', 'número', 'numero'],
@@ -3892,7 +3872,6 @@ const ITABOT_INTENTS = [
     'dados/faq_horarios_localizacao.json',
     'dados/faq_cardapio.json',
     'dados/faq_encomendas.json',
-    'dados/faq_fidelidade.json',
     'dados/faq_sorteio_promocoes.json'
   ];
 
