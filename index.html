@@ -4334,8 +4334,6 @@ function renderTudo() {
    Aplica em todos os elementos do site ao carregar
    Fallback: localStorage para offline/falha de rede
    ============================================================ */
-const ITAP_CONFIG_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/config.json';
-
 function aplicarConfig(c) {
   if (!c) return;
 
@@ -4612,23 +4610,16 @@ function aplicarTitulosCardapio(cfgTitulos) {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 async function carregarConfig() {
-  try {
-    const resp = await fetch(ITAP_CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!resp.ok) throw new Error('Config indisponível');
-    const cfg = await resp.json();
-    aplicarConfig(cfg);
-    console.log('[Itap] Config sincronizado ✅');
-  } catch(e) {
-    // Fallback: usar cache do localStorage
-    try {
-      const cache = localStorage.getItem('itap_config_cache');
-      if (cache) {
-        aplicarConfig(JSON.parse(cache));
-        console.log('[Itap] Config do cache local ⚡');
-      }
-    } catch(e2) {}
-    console.warn('[Itap] Config offline:', e.message);
+  if (window.SITE_CONFIG) {
+    aplicarConfig(window.SITE_CONFIG);
+    console.log('[Itap] Config sincronizado via site-loader ✅');
+    return;
   }
+  window.addEventListener('siteConfigLoaded', function onConfig(ev) {
+    window.removeEventListener('siteConfigLoaded', onConfig);
+    aplicarConfig(ev && ev.detail);
+    console.log('[Itap] Config sincronizado via evento do site-loader ✅');
+  });
 }
 
 // =====================================================

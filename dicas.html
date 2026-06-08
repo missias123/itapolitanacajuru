@@ -442,7 +442,6 @@
 // AdminSync: depoimentos a partir do admin, com fallback para conteúdo estático
 (function () {
   'use strict';
-  var CONFIG_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/config.json';
 
   function renderEstrelas(n) {
     var s = '';
@@ -468,27 +467,20 @@
     }).join('');
   }
 
-  try {
-    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var tid = ctrl ? setTimeout(function () { ctrl.abort(); }, 4000) : null;
-    fetch(CONFIG_URL, ctrl ? { signal: ctrl.signal } : {})
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .catch(function () { return null; })
-      .then(function (cfg) {
-        if (tid) clearTimeout(tid);
-        if (!cfg) return; // Fallback: mantém conteúdo estático
+  function aplicarConfigDicas(cfg) {
+    if (!cfg) return;
+    if (Array.isArray(cfg.depoimentos)) {
+      var validos = cfg.depoimentos.filter(function (d) { return d && typeof d.texto === 'string' && d.texto.trim(); });
+      if (validos.length > 0) renderDepoimentos(validos);
+    }
+    var mapsBtn = document.querySelector('.btn-google-reviews');
+    if (mapsBtn && cfg.googleMaps) mapsBtn.href = cfg.googleMaps;
+  }
 
-        // AdminSync: renderizar depoimentos do admin se houver dados válidos
-        if (Array.isArray(cfg.depoimentos)) {
-          var validos = cfg.depoimentos.filter(function (d) { return d && typeof d.texto === 'string' && d.texto.trim(); });
-          if (validos.length > 0) renderDepoimentos(validos);
-        }
-
-        // AdminSync: atualizar link do Google Maps se configurado no admin
-        var mapsBtn = document.querySelector('.btn-google-reviews');
-        if (mapsBtn && cfg.googleMaps) mapsBtn.href = cfg.googleMaps;
-      });
-  } catch (e) {} // Fallback: mantém conteúdo estático em caso de erro inesperado
+  if (window.SITE_CONFIG) aplicarConfigDicas(window.SITE_CONFIG);
+  window.addEventListener('siteConfigLoaded', function (ev) {
+    aplicarConfigDicas(ev && ev.detail);
+  });
 }());
 </script>
 </main>
