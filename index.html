@@ -731,11 +731,11 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* chat-box: tela cheia, sem borda de bottom-sheet */
 .chat-box{border-radius:0!important;height:100dvh!important;min-height:0!important;overflow:hidden!important}
 .chat-msgs{padding-bottom:calc(20px + var(--chat-kb-offset, 0px))!important}
-.chat-footer{background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));border-top:3px solid #FBD100;flex-shrink:0}
+.chat-footer{background:linear-gradient(135deg,#0060B0,#0292EC);color:#fff;text-align:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));border-top:3px solid #FBD100;flex-shrink:0}
 .chat-footer-title{font-size:11px;font-weight:900;color:#FBD100;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
 .chat-footer-wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 16px;border-radius:999px;background:rgba(37,211,102,.18);border:1px solid rgba(37,211,102,.78);color:#fff;font-size:12px;font-weight:900;text-decoration:none}
 .chat-footer-copy{font-size:10px;color:rgba(255,255,255,.76);font-weight:700;margin-top:8px;line-height:1.4}
-@media(min-width:769px){#chat-dialog{padding:18px 24px 24px!important;align-items:flex-start!important;justify-content:flex-end!important}.chat-box{max-width:420px!important;height:min(720px,calc(100dvh - 42px))!important;border-radius:28px!important;box-shadow:0 18px 50px rgba(0,0,0,.32)!important}}
+@media(min-width:769px){#chat-dialog{padding:18px 24px 24px!important;align-items:flex-start!important;justify-content:flex-end!important}.chat-box{max-width:460px!important;height:min(780px,calc(100dvh - 32px))!important;border-radius:28px!important;box-shadow:0 18px 50px rgba(0,0,0,.32)!important}}
 /* MOBILE (≤600px) - PADRONIZAÇÃO TOTAL COM PROMOÇÃO/ */
 @media(max-width:600px){
   /* 1. BOTÕES DO TOPO EM 2x2 (FORÇADO) */
@@ -867,18 +867,19 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
 @media(prefers-reduced-motion:reduce){@keyframes duvidaFadeIn{from{opacity:0}to{opacity:1}}}
 
 .chat-box{background:#fff;border-radius:0;width:100%;max-width:100%;height:100dvh;min-height:0;display:flex;flex-direction:column}
-.chat-hdr{background:linear-gradient(135deg,#e8470a,#ff6b35);color:#fff;padding:10px 16px 12px;border-radius:0;display:flex;flex-direction:column;gap:8px}
-.chat-hdr-logo-row{display:flex;align-items:center;justify-content:center;gap:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.22)}
+.chat-hdr{background:linear-gradient(135deg,#e8470a,#ff6b35);color:#fff;padding:8px 12px;border-radius:0;display:flex;flex-direction:column;gap:0}
+.chat-hdr-logo-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.chat-hdr-brand{display:flex;align-items:center;gap:8px;min-width:0}
 .chat-hdr-logo-img{width:46px;height:46px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px #FBD100;flex-shrink:0}
 .chat-hdr-logo-text{font-size:13px;font-weight:900;color:#FBD100;letter-spacing:1.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.4)}
-.chat-hdr-main-row{display:flex;align-items:center;justify-content:space-between}
-.chat-hdr-btns{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.chat-hdr-main-row{display:none}
+.chat-hdr-btns{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .chat-btn-home{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);border-radius:8px;color:#fff;font-size:10px;font-weight:900;padding:4px 8px;cursor:pointer;letter-spacing:.8px;white-space:nowrap;text-transform:uppercase;touch-action:manipulation}
 .chat-btn-home:hover{background:rgba(255,255,255,.32)}
 .chat-hdr h3{font-size:16px;font-weight:800}
 .chat-hdr p{font-size:11px;color:#fff;font-weight:600}
-.chat-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:48px;height:48px;color:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:16px 16px calc(16px + var(--chat-kb-offset));display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.chat-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:44px;height:44px;color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 12px calc(12px + var(--chat-kb-offset));display:flex;flex-direction:column;gap:9px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 /* Fonte maior para melhor legibilidade em mobile */
 .msg{max-width:85%;padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.55;animation:msg-slide .22s ease-out}
 @keyframes msg-slide{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -891,11 +892,11 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
 .chat-typing span:nth-child(2){animation-delay:.18s}
 .chat-typing span:nth-child(3){animation-delay:.36s}
 @keyframes dot-jump{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
-.chat-bottom-stack{display:flex;flex-direction:column;flex-shrink:0;transform:translateY(calc(var(--chat-kb-offset) * -1));transition:transform .22s ease}
-.chat-sugs{padding:8px 16px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid #F3F4F6;scrollbar-width:none;flex-shrink:0}
+.chat-bottom-stack{display:flex;flex-direction:column;flex-shrink:0;transform:translateY(calc(var(--chat-kb-offset) * -1));transition:transform .22s ease;max-height:42dvh}
+.chat-sugs{padding:6px 12px;display:flex;gap:8px;overflow-x:auto;border-top:1px solid #F3F4F6;scrollbar-width:none;flex-shrink:0}
 .chat-sugs::-webkit-scrollbar{display:none}
 .sug{background:#FFF3E0;color:#BF360C;border:2px solid #E64A19;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;flex-shrink:0;min-height:36px}
-.chat-inp-row{padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #F3F4F6;flex-shrink:0;position:relative}.chat-inp { flex: 1; padding: 12px 16px; border: 2px solid #F3F4F6; border-radius: 14px; font-size: 16px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
+.chat-inp-row{padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #F3F4F6;flex-shrink:0;position:relative}.chat-inp { flex: 1; padding: 11px 14px; border: 2px solid #F3F4F6; border-radius: 14px; font-size: 16px; outline: none; transition: border-color 0.2s; box-sizing: border-box; }
 .chat-inp:focus { border-color: #E8000D; }
 .chat-send{background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;box-shadow:0 4px 12px rgba(232,0,13,.25);transition:transform .1s}
 .chat-send:active{transform:scale(.95)}
@@ -2950,50 +2951,18 @@ function voltarTemas() {
 <div class="chat-hdr">
 <!-- Logo row -->
 <div class="chat-hdr-logo-row">
-  <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="chat-hdr-logo-img" loading="lazy" decoding="async">
-  <div>
-    <div class="chat-hdr-logo-text">Itapolitana</div>
-    <div style="font-size:9px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.8px;">Cajuru · SP · Tipo Artesanal</div>
+  <div class="chat-hdr-brand">
+    <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana" class="chat-hdr-logo-img" loading="lazy" decoding="async">
+    <div>
+      <div class="chat-hdr-logo-text" id="chat-hdr-titulo">Itapolitana</div>
+      <div id="chat-hdr-sub" style="font-size:9px;color:rgba(255,255,255,.8);font-weight:700;letter-spacing:.8px;">Cajuru · SP · Tipo Artesanal</div>
+    </div>
+  </div>
+  <div class="chat-hdr-btns">
+    <button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
+    <button class="chat-btn-home" onclick="fecharChatDialog();window.scrollTo({top:0,behavior:'smooth'})" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
   </div>
 </div>
-<!-- Main row: robot + title + buttons -->
-<div class="chat-hdr-main-row">
-<div style="display:flex;align-items:center;gap:11px">
-  <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 27 68 57" width="36" height="36" aria-hidden="true">
-      <rect x="2" y="48" width="6" height="18" rx="3" fill="#D0D0E0"/>
-      <rect x="3" y="52" width="4" height="10" rx="2" fill="#B8B8CC"/>
-      <rect x="58" y="48" width="6" height="18" rx="3" fill="#D0D0E0"/>
-      <rect x="59" y="52" width="4" height="10" rx="2" fill="#B8B8CC"/>
-      <rect x="8" y="40" width="50" height="40" rx="13" fill="#E8E8F8"/>
-      <rect x="8" y="40" width="50" height="16" rx="13" fill="white" opacity=".22"/>
-      <rect x="8" y="53" width="50" height="3" fill="#E8E8F8"/>
-      <rect x="30" y="34" width="7" height="8" rx="2.5" fill="#C8C8D8"/>
-      <circle cx="33" cy="33" r="5.5" fill="#FFD700" stroke="#E8C000" stroke-width=".8"/>
-      <circle cx="31.5" cy="31.5" r="1.8" fill="white" opacity=".55"/>
-      <rect x="15" y="49" width="15" height="12" rx="4" fill="#1A1A2E"/>
-      <rect x="17" y="51" width="11" height="8" rx="3" fill="#FF6B35"/>
-      <circle cx="19" cy="53" r="2" fill="white" opacity=".8"/>
-      <rect x="36" y="49" width="15" height="12" rx="4" fill="#1A1A2E"/>
-      <rect x="38" y="51" width="11" height="8" rx="3" fill="#FF6B35"/>
-      <circle cx="40" cy="53" r="2" fill="white" opacity=".8"/>
-      <circle cx="33" cy="65" r="2.5" fill="#C0C0D0"/>
-      <path d="M19,71 Q33,80 47,71" stroke="#1A1A2E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M23,73 Q33,77 43,73" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <circle cx="12" cy="61" r="5.5" fill="#FFB0C8" opacity=".38"/>
-      <circle cx="54" cy="61" r="5.5" fill="#FFB0C8" opacity=".38"/>
-    </svg>
-  </div>
-  <div>
-    <h3 id="chat-hdr-titulo" style="font-size:15px;font-weight:900;margin:0;color:#fff">🤖 DÚVIDAS — Ita Bot</h3>
-    <p id="chat-hdr-sub" style="font-size:11px;margin:0;color:rgba(255,255,255,.85)">Pergunte sobre sabores, horários, encomendas e muito mais</p>
-  </div>
-</div>
-<div class="chat-hdr-btns">
-  <button class="chat-close" onclick="fecharChatDialog()" type="button" aria-label="Fechar chat">✕</button>
-  <button class="chat-btn-home" onclick="fecharChatDialog();window.scrollTo({top:0,behavior:'smooth'})" type="button" aria-label="Voltar para página inicial">🏠 Início</button>
-</div>
-</div><!-- end .chat-hdr-main-row -->
 </div><!-- end .chat-hdr -->
 <div class="chat-msgs" id="chat-msgs">
 <div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Posso te levar direto para os fluxos principais:<br><br><a class="itabot-link-btn" href="encomendas.html">📦 Quero ver cardápio / encomendar</a><a class="itabot-link-btn" href="promocao.html">🎁 Quero ver promoções</a></div>
@@ -3021,7 +2990,7 @@ function voltarTemas() {
         <button class="duvidas-chip" onclick="inserirKeyword('promoção')" type="button">PROMOÇÕES</button>
       </div>
     </div>
-    <div class="chat-inp-row" id="chat-input-area" style="display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid #eee;align-items:center;">
+    <div class="chat-inp-row" id="chat-input-area" style="display:flex;gap:8px;padding:10px 12px;background:#fff;border-top:1px solid #eee;align-items:center;">
       <input class="chat-inp" id="chat-inp" onfocus="handleChatInputFocus()" onkeydown="if(event.key==='Enter')enviarChat()" placeholder="Digite sua dúvida aqui…" type="text" autocomplete="off" spellcheck="false" aria-label="Digite sua dúvida"/>
       <button class="chat-send" onclick="enviarChat()" type="button" aria-label="Enviar mensagem">➤</button>
     </div>
@@ -4005,6 +3974,12 @@ function atualizarChatViewport() {
 function handleChatInputFocus() {
   atualizarChatViewport();
   scrollChatToBottom();
+  var inputArea = document.getElementById('chat-input-area');
+  if (inputArea && typeof inputArea.scrollIntoView === 'function') {
+    inputArea.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }
+  setTimeout(atualizarChatViewport, 120);
+  setTimeout(scrollChatToBottom, 160);
 }
 
 if (window.visualViewport) {
