@@ -86,7 +86,6 @@
       'use strict';
 
       if (typeof window.Swiper !== 'function') return;
-      var CONFIG_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/config.json';
       var DEFAULT_BANNERS = [
         { src: 'images/carrossel/v3_b1_acai.webp', alt: 'Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru' },
         { src: 'images/carrossel/v3_b2_unicornio.webp', alt: 'Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
@@ -128,48 +127,54 @@
         });
       }
 
-      async function carregarBannersConfig() {
-        try {
-          var r = await fetch(CONFIG_URL, { cache: 'no-cache' });
-          if (!r.ok) throw new Error('config indisponível');
-          var cfg = await r.json();
-          var banners = Array.isArray(cfg && cfg.banners) ? cfg.banners : [];
-          banners = banners
-            .filter(function (b) { return b && typeof b === 'object' && String(b.src || '').trim(); })
-            .slice(0, 20);
-          return banners.length ? banners : DEFAULT_BANNERS;
-        } catch (e) {
-          return DEFAULT_BANNERS;
-        }
+      function extrairBanners(cfg) {
+        var banners = Array.isArray(cfg && cfg.banners) ? cfg.banners : [];
+        banners = banners
+          .filter(function (b) { return b && typeof b === 'object' && String(b.src || '').trim(); })
+          .slice(0, 20);
+        return banners.length ? banners : DEFAULT_BANNERS;
       }
 
-      carregarBannersConfig().then(function (banners) {
-        montarSlides(banners);
-
-        // Carregar configurações dinâmicas
+      var swiper = null;
+      var listenersRegistrados = false;
+      var ajusteAlturaRegistrado = false;
+      var ultimaAssinaturaAplicada = null;
+      function assinaturaCarrossel(cfg) {
+        var cc = cfg && cfg.carrosselConfig ? cfg.carrosselConfig : {};
+        var seo = cfg && cfg.seoPaginas && cfg.seoPaginas.carrossel ? cfg.seoPaginas.carrossel : {};
+        return JSON.stringify({
+          banners: extrairBanners(cfg),
+          titulo: seo.titulo || '',
+          h1: cc.h1 || '',
+          autoplayDelay: typeof cc.autoplayDelay === 'number' ? cc.autoplayDelay : 3000,
+          transitionSpeed: typeof cc.transitionSpeed === 'number' ? cc.transitionSpeed : 800
+        });
+      }
+      function iniciarCarrossel(cfg) {
+        var assinaturaAtual = assinaturaCarrossel(cfg);
+        if (assinaturaAtual === ultimaAssinaturaAplicada) return;
         var autoplayDelay = 3000;
         var transitionSpeed = 800;
-        try {
-          var titleEl = document.querySelector('title[data-config]');
-          var h1El = document.querySelector('h1[data-config]');
-          fetch(CONFIG_URL, { cache: 'no-cache' })
-            .then(function(r) { return r.ok ? r.json() : null; })
-            .then(function(cfg) {
-              if (cfg) {
-                if (cfg.seoPaginas && cfg.seoPaginas.carrossel && cfg.seoPaginas.carrossel.titulo && titleEl) {
-                  titleEl.textContent = cfg.seoPaginas.carrossel.titulo;
-                }
-                if (cfg.carrosselConfig) {
-                  if (cfg.carrosselConfig.h1 && h1El) h1El.textContent = cfg.carrosselConfig.h1;
-                  if (typeof cfg.carrosselConfig.autoplayDelay === 'number') autoplayDelay = cfg.carrosselConfig.autoplayDelay;
-                  if (typeof cfg.carrosselConfig.transitionSpeed === 'number') transitionSpeed = cfg.carrosselConfig.transitionSpeed;
-                }
-              }
-            })
-            .catch(function(){});
-        } catch(e){}
+        var titleEl = document.querySelector('title[data-config]');
+        var h1El = document.querySelector('h1[data-config]');
 
-        var swiper = new Swiper('.itp-slider', {
+        if (cfg) {
+          if (cfg.seoPaginas && cfg.seoPaginas.carrossel && cfg.seoPaginas.carrossel.titulo && titleEl) {
+            titleEl.textContent = cfg.seoPaginas.carrossel.titulo;
+          }
+          if (cfg.carrosselConfig) {
+            if (cfg.carrosselConfig.h1 && h1El) h1El.textContent = cfg.carrosselConfig.h1;
+            if (typeof cfg.carrosselConfig.autoplayDelay === 'number') autoplayDelay = cfg.carrosselConfig.autoplayDelay;
+            if (typeof cfg.carrosselConfig.transitionSpeed === 'number') transitionSpeed = cfg.carrosselConfig.transitionSpeed;
+          }
+        }
+
+        montarSlides(extrairBanners(cfg));
+
+        if (swiper && typeof swiper.destroy === 'function') {
+          swiper.destroy(true, true);
+        }
+        swiper = new Swiper('.itp-slider', {
           loop: true,
           observer: true,
           observeParents: true,
@@ -191,15 +196,19 @@
             nextSlideMessage: 'Próximo banner'
           }
         });
+
         function ensureAutoplay() {
           if (!swiper || !swiper.autoplay) return;
           if (document.hidden) return;
           if (!swiper.autoplay.running) swiper.autoplay.start();
         }
-        document.addEventListener('visibilitychange', ensureAutoplay);
-        window.addEventListener('focus', ensureAutoplay, { passive: true });
-        window.addEventListener('pageshow', ensureAutoplay, { passive: true });
-        window.addEventListener('touchend', () => { setTimeout(ensureAutoplay, 120); }, { passive: true });
+        if (!listenersRegistrados) {
+          document.addEventListener('visibilitychange', ensureAutoplay);
+          window.addEventListener('focus', ensureAutoplay, { passive: true });
+          window.addEventListener('pageshow', ensureAutoplay, { passive: true });
+          window.addEventListener('touchend', function () { setTimeout(ensureAutoplay, 120); }, { passive: true });
+          listenersRegistrados = true;
+        }
 
         /*
          * Ajuste automático da altura do iframe no site pai
@@ -215,11 +224,20 @@
           }
         }
 
-        window.addEventListener('load', function () {
-          setTimeout(ajustarAltura, 200);
-          window.addEventListener('resize', ajustarAltura);
-          swiper.on('slideChangeTransitionEnd', ajustarAltura);
-        });
+        if (!ajusteAlturaRegistrado) {
+          window.addEventListener('load', function () {
+            setTimeout(ajustarAltura, 200);
+            window.addEventListener('resize', ajustarAltura);
+          });
+          ajusteAlturaRegistrado = true;
+        }
+        if (swiper) swiper.on('slideChangeTransitionEnd', ajustarAltura);
+        ultimaAssinaturaAplicada = assinaturaAtual;
+      }
+
+      iniciarCarrossel(window.SITE_CONFIG || null);
+      window.addEventListener('siteConfigLoaded', function (ev) {
+        iniciarCarrossel(ev && ev.detail);
       });
 
     }());

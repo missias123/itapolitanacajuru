@@ -1942,54 +1942,6 @@ document.addEventListener('DOMContentLoaded', function () {
   </ul>
 </nav>
 <script>
-// Carregamento dinâmico de encomendas.html via config.json
-(function() {
-  'use strict';
-
-  fetch('/dados/config.json')
-    .then(function(r) { return r.json(); })
-    .then(function(cfg) {
-      // SEO
-      var titleEl = document.querySelector('title[data-config="seoPaginas.encomendas.titulo"]');
-      if (titleEl && cfg.seoPaginas && cfg.seoPaginas.encomendas && cfg.seoPaginas.encomendas.titulo) {
-        titleEl.textContent = cfg.seoPaginas.encomendas.titulo;
-      }
-
-      var descEl = document.querySelector('meta[data-config="seoPaginas.encomendas.descricao"]');
-      if (descEl && cfg.seoPaginas && cfg.seoPaginas.encomendas && cfg.seoPaginas.encomendas.descricao) {
-        descEl.setAttribute('content', cfg.seoPaginas.encomendas.descricao);
-      }
-
-      // Conteúdo da página encomendas
-      var ep = cfg.encomendasPagina || {};
-
-      var heroTituloEl = document.querySelector('[data-config="encomendasPagina.heroTitulo"]');
-      if (heroTituloEl && ep.heroTitulo) {
-        heroTituloEl.innerHTML = ep.heroTitulo;
-      }
-
-      var heroDescEl = document.querySelector('[data-config="encomendasPagina.heroDescricao"]');
-      if (heroDescEl && ep.heroDescricao) {
-        heroDescEl.textContent = ep.heroDescricao;
-      }
-
-      // Hero Badges
-      var badgesContainer = document.querySelector('[data-config-collection="encomendasPagina.heroBadges"]');
-      if (badgesContainer && ep.heroBadges && Array.isArray(ep.heroBadges)) {
-        badgesContainer.innerHTML = '';
-        ep.heroBadges.forEach(function(badge) {
-          var span = document.createElement('span');
-          span.className = 'hero-badge';
-          span.textContent = badge;
-          badgesContainer.appendChild(span);
-        });
-      }
-    })
-    .catch(function(err) {
-      console.error('[Encomendas] Erro ao carregar config.json:', err);
-    });
-})();
-
 // Função para expandir/colapsar categorias de produtos
 function toggleSecao(id) {
   var conteudo = document.getElementById(id);
