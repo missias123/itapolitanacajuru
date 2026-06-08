@@ -185,7 +185,6 @@
       if (page === 'encomendas.html' && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
       else if (page === 'promocao.html' && cfg.navPromocao) label.textContent = cfg.navPromocao;
       else if (page === 'dicas.html' && cfg.navDicas) label.textContent = cfg.navDicas;
-      else if (page === '' && cfg.navFidelidade) label.textContent = cfg.navFidelidade;
     });
 
     // ── WhatsApp: todos os links wa.me ─────────
@@ -239,13 +238,6 @@
 
     const heroCtaWhats = document.getElementById('hero-cta-whats');
     if (heroCtaWhats && cfg.heroCtaWhats) heroCtaWhats.textContent = cfg.heroCtaWhats;
-
-    // ── Fidelidade Hero ─────────────────────────
-    const fidHeroTitulo = document.getElementById('fid-hero-titulo');
-    if (fidHeroTitulo && cfg.fidHeroTitulo) fidHeroTitulo.textContent = cfg.fidHeroTitulo;
-
-    const fidHeroDesc = document.getElementById('fid-hero-desc');
-    if (fidHeroDesc && cfg.fidHeroDesc) fidHeroDesc.textContent = cfg.fidHeroDesc;
 
     // ── Cardápio ───────────────────────────────
     const cardápioTítulo = document.getElementById('cardápio-título');

@@ -2633,7 +2633,6 @@ body.cardapio-aberto { padding-bottom: 80px; }
     <span class="badge-conf"><span class="badge-icon">🔒</span> Site Seguro</span>
     <span class="badge-conf"><span class="badge-icon">💳</span> Pix Aceito</span>
     <span class="badge-conf"><span class="badge-icon">📱</span> App Disponível</span>
-    <span class="badge-conf badge-dest"><span class="badge-icon">⭐</span> Clube Fidelidade</span>
     <span class="badge-conf"><span class="badge-icon">✅</span> LGPD Conforme</span>
   </div>
   <div style="font-size:clamp(11px,2.5vw,12px);color:rgba(255,255,255,.85);font-weight:700;line-height:1.6;margin-bottom:10px;">
@@ -3017,7 +3016,7 @@ function voltarTemas() {
 </div><!-- end .chat-hdr-main-row -->
 </div><!-- end .chat-hdr -->
 <div class="chat-msgs" id="chat-msgs">
-<div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Posso te levar direto para os fluxos principais:<br><br><a class="itabot-link-btn" href="encomendas.html">📦 Quero ver cardápio / encomendar</a><a class="itabot-link-btn" href="promocao.html">🎁 Quero ver promoções</a><a class="itabot-link-btn" href="">⭐ Quero ver fidelidade</a></div>
+<div class="msg bot" id="chat-msg-inicio">Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana! 🍦<br><br>Posso te levar direto para os fluxos principais:<br><br><a class="itabot-link-btn" href="encomendas.html">📦 Quero ver cardápio / encomendar</a><a class="itabot-link-btn" href="promocao.html">🎁 Quero ver promoções</a></div>
 </div>
 <div class="chat-typing" id="chat-typing"><span></span><span></span><span></span></div>
 <div class="chat-bottom-stack" id="chat-bottom-stack">
@@ -3040,7 +3039,6 @@ function voltarTemas() {
         <button class="duvidas-chip" onclick="inserirKeyword('localização')" type="button">LOCALIZAÇÃO</button>
         <button class="duvidas-chip" onclick="inserirKeyword('whatsapp')" type="button">WHATSAPP</button>
         <button class="duvidas-chip" onclick="inserirKeyword('promoção')" type="button">PROMOÇÕES</button>
-        <button class="duvidas-chip" onclick="inserirKeyword('fidelidade')" type="button"></button>
       </div>
     </div>
     <div class="chat-inp-row" id="chat-input-area" style="display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid #eee;align-items:center;">
@@ -3799,7 +3797,7 @@ const RESPOSTAS={
   'carrinho':'🛒 Sim! Temos Carrinho para Eventos. Consulte disponibilidade e valores pelo WhatsApp: (16) 99606-2046.',
   'aniversário':'🎂 Para aniversários: Torta de Sorvete R$100, Caixas de sorvete, Picolés no atacado e Carrinho para Eventos! Fale conosco: (16) 99606-2046.',
   // ──  E PROMOÇÃO ──
-  'fidelidade':'⭐  Itapolitana! Acumule pontos e ganhe prêmios. Cadastre-se na página de Fidelidade no menu do site!',
+  'fidelidade':'O programa de fidelidade está encerrado. Entre em contato pelo WhatsApp! 💬',
   'pontos':'⭐ Com 10 pontos (milkshakes) você ganha 1 bola de sorvete! Com 30 pontos (caixas) você ganha 1 caixa com 12 picolés! Cadastre-se já!',
   'clube':'⭐ : acumule pontos e ganhe prêmios! Acesse a página de Fidelidade no menu do site.',
   'prêmio':'⭐ Prêmios do Clube: 10 pontos = 1 bola de sorvete · 30 pontos = 1 caixa com 12 picolés de fruta/água. Cadastre-se!',
@@ -3859,19 +3857,19 @@ const ITABOT_INTENTS = [
   },
   {
     keywords: ['quero me cadastrar no fidelidade', 'fazer cadastro fidelidade', 'participar do programa', 'entrar no fidelidade'],
-    reply: 'Para se cadastrar no programa de fidelidade Itapolitana, é só acessar:<br><a class="itabot-link-btn" href="">⭐ Cadastro fidelidade</a><br><br>Na página, clique em “Quero participar do Fidelidade” e preencha seus dados.'
+    reply: 'O programa de fidelidade está encerrado. Fale com a gente pelo WhatsApp para mais informações! 😊'
   },
   {
     keywords: ['registrar código', 'registrar cod', 'código de pontos', 'codigo de pontos', 'código fidelidade', 'codigo fidelidade', 'inserir código', 'inserir codigo', 'somar pontos'],
-    reply: 'Para registrar seu código de pontos:<br><br>• Acesse o programa de fidelidade<br>• Clique em “Já sou cadastrado / Inserir código”<br>• Faça login com seus dados<br>• Digite o código recebido na loja para somar 1 ponto<br><br><a class="itabot-link-btn" href="">🎟️ Registrar código</a>'
+    reply: 'O programa de fidelidade está encerrado. Entre em contato pelo WhatsApp! 💬'
   },
   {
     keywords: ['como resgatar pontos', 'resgatar prêmio', 'resgatar premio', 'resgatar brinde', 'trocar pontos', 'usar pontos'],
-    reply: 'Para resgatar seus pontos do programa de fidelidade:<br><br>• Acesse o fidelidade e faça login<br>• Veja quantos pontos você tem<br>• 10 pontos → 1 Milk Shake de 300 ml<br>• 30 pontos → 1 caixa de sorvete com 7 bolas<br><br>Clique no botão de resgate para falar com a loja no WhatsApp e combinar retirada.<br><a class="itabot-link-btn" href="">🎁 Resgatar no fidelidade</a>'
+    reply: 'O programa de fidelidade está encerrado. Entre em contato pelo WhatsApp! 💬'
   },
   {
     keywords: ['fidelidade', 'programa de fidelidade', 'pontos', 'juntar pontos', 'ganhar pontos', 'cadastro fidelidade', 'cartela', 'código de pontos', 'codigo de pontos', 'milhas', 'clube', 'cartãozinho', 'cartaozinho'],
-    reply: 'Temos um programa de fidelidade: a cada compra, você junta pontos e troca por sorvete.<br><br>Com 10 pontos, você ganha 1 Milk Shake de 300 ml.<br>Com 30 pontos, você ganha 1 caixa de sorvete com 7 bolas.<br><br>Para se cadastrar, ver seus pontos ou registrar um código, acesse:<br><a class="itabot-link-btn" href="">⭐ Abrir fidelidade</a>'
+    reply: 'O programa de fidelidade está encerrado. Entre em contato pelo WhatsApp para mais informações! 💬'
   },
   {
     keywords: ['falar com atendente', 'falar com humano', 'falar com pessoa', 'atendimento', 'suporte', 'quero falar com alguém', 'quero falar com alguem'],
@@ -4424,9 +4422,6 @@ function aplicarConfig(c) {
 
   const navDicas = document.querySelector('a[href="dicas.html"] .itap-nav-label');
   if (navDicas && c.navDicas) navDicas.textContent = c.navDicas;
-
-  const navFidelidade = document.querySelector('a[href=""] .itap-nav-label');
-  if (navFidelidade && c.navFidelidade) navFidelidade.textContent = c.navFidelidade;
 
   // --- BRAND (footer) ---
   const brandName = document.getElementById('brand-name');

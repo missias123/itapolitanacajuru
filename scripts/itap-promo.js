@@ -281,6 +281,8 @@
   // Token lido do localStorage (configurado pelo admin no painel)
   var _GH_TK_P = (function(){return localStorage.getItem('itap_gh_token')||'';})();
   var _GH_CLIENTES = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/clientes.json';
+  // URL do arquivo de fidelidade (inscrições do sorteio + config sorteio)
+  var _GH_FID = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/fidelidade.json';
 
   // ═══ SEGURANÇA: Rate Limiting local (máx. 3 tentativas em 30 min por dispositivo) ═══
   function _promoRateKey() { return 'itap_promo_rate_' + (navigator.language||'') + (screen.width||''); }
@@ -753,6 +755,7 @@
   // ═══ VERIFICAR ENCERRAMENTO DA LISTA DE INSCRIÇÕES ═══
   // Se hoje >= dataFim ou status === "encerrado", desabilita formulário e botão.
   (function verificarEncerramentoSorteio() {
+    fetch('dados/fidelidade.json?t=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .catch(function() { return null; })
       .then(function(fid) {

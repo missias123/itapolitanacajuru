@@ -519,7 +519,7 @@
       _itabotOcultarTyping();
       _itabotInserirMensagem('bot', {
         answer: 'N\u00e3o encontrei cadastro com esse nome e data de nascimento \ud83d\ude14\n\nVerifique os dados ou cadastre-se gratuitamente!',
-        linkText: '\u2b50 Cadastrar no Fidelidade',
+        answer: 'O programa de fidelidade foi encerrado. Fale conosco pelo WhatsApp se tiver dúvidas! 💬',
         linkHref: '',
         chips: ['\ud83d\udd04 Tentar novamente']
       });
@@ -531,7 +531,7 @@
       .then(function (data) {
         if (!data) {
           _itabotOcultarTyping();
-          _itabotInserirMensagem('bot', { answer: 'N\u00e3o consegui acessar o sistema agora \ud83d\ude14 Tente pela p\u00e1gina de Fidelidade:', linkText: '\u2b50 Ir para Fidelidade', linkHref: '' });
+          _itabotInserirMensagem('bot', { answer: 'O programa de fidelidade foi encerrado. Entre em contato pelo WhatsApp para mais informações! 💬' });
           return;
         }
         _cliData = data;
@@ -757,7 +757,7 @@
       chips: ['\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udcf1 WhatsApp', '\ud83c\udf66 Card\u00e1pio']
     },
     {
-      linkText: '\u2b50 Cadastrar no Fidelidade',
+      answer: 'O programa de fidelidade foi encerrado. Fale conosco pelo WhatsApp se tiver dúvidas! 💬',
       linkHref: ''
     },
     {
