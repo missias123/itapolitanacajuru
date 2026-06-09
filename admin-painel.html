@@ -980,8 +980,8 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-açaí-promo-sub" maxlength="100" placeholder="Aproveite agora! 8 combos irresistíveis · 400ml a 700ml"/></div>
 
           <div class="seção-título" style="background:linear-gradient(135deg,#311B92,#512DA8,#7C4DFF);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🫐 Açaí tipo artesanal</div>
-          <div class="campo-edit"><label>Título</label><input type="text" id="acc-açaí-titulo" maxlength="60" placeholder="Açaí tipo artesanal"/></div>
-          <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-açaí-sub" maxlength="100" placeholder="Do jeito que você ama · Monte o seu · 300ml a 600ml"/></div>
+          <div class="campo-edit"><label>Título</label><input type="text" id="acc-açaí-titulo" maxlength="60" placeholder="Açaí Natureon"/></div>
+          <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-açaí-sub" maxlength="100" placeholder="O melhor açaí da região · Cremoso, gelado e com muitos complementos"/></div>
 
           <div class="seção-título" style="background:linear-gradient(135deg,#0277BD,#0288D1,#00ACC1);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🥤 Milkshakes</div>
           <div class="campo-edit"><label>Título</label><input type="text" id="acc-milk-titulo" maxlength="60" placeholder="Milkshakes"/></div>
@@ -4158,8 +4158,10 @@ async function salvarPreços(){
   const _acaiKey=String.fromCharCode(97,99,97,105); // 'acai'
   if(!p[_acaiKey])p[_acaiKey]={copos:{},complementos:{}};
   if(!p[_acaiKey].copos)p[_acaiKey].copos={};
-  if(!p[_acaiKey].complementos)p[_acaiKey].complementos=_acaiCompsExist;
-  for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p.açaí[tam]=parseFloat(el.value)||0;p[_acaiKey].copos[tam]=parseFloat(el.value)||0;}}}
+  if(!p[_acaiKey].complementos)p[_acaiKey].complementos=_açaíCompsExist;
+  for(const tam of Object.keys(ac)){if(typeof ac[tam]==='number'){const id=`preço_açaí_${tam}`.replace(/[\s\W]/g,'_');const el=document.getElementById(id);if(el){p[_acaiKey].copos[tam]=parseFloat(el.value)||0;}}}
+  // Reconstruir açaí (com acento) como estrutura nested para o render do site
+  p.açaí={copos:p[_acaiKey].copos,complementos:p[_acaiKey].complementos};
   const acp=p.açaí_promoção||[];
   if(Array.isArray(acp)){acp.forEach((item,i)=>{const id=`preço_açaíp_${i}`;const el=document.getElementById(id);if(el){const v=parseFloat(el.value)||0;acp[i].preco=v;acp[i].preço=v;}});p.açaí_promoção=acp;p[_acaiKey+'_promocao']=acp;}
   const pic=p.picolés||{};
@@ -8200,8 +8202,8 @@ function carregarTitulosCardapio() {
     ['acc-picoles-sub','Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó'],
     ['acc-açaí-promo-titulo','🔥 Açaí em Promoção'],
     ['acc-açaí-promo-sub','Aproveite agora! 8 combos irresistíveis · 400ml a 700ml'],
-    ['acc-açaí-titulo','Açaí tipo artesanal'],
-    ['acc-açaí-sub','Do jeito que você ama · Monte o seu · 300ml a 600ml'],
+    ['acc-açaí-titulo','Açaí Natureon'],
+    ['acc-açaí-sub','O melhor açaí da região · Cremoso, gelado e com muitos complementos'],
     ['acc-milk-titulo','Milkshakes'],
     ['acc-milk-sub','Cremoso e gelado · Tradicional e Top · 35 sabores'],
     ['acc-tacas-titulo','Taças'],
