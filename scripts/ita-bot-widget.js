@@ -270,7 +270,7 @@
     if (isHome) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      window.location.href = '/';
+      window.location.href = 'index.html';
     }
   }
   window._itabotBtnInicio = _itabotBtnInicio;
