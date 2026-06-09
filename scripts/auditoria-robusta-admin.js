@@ -206,7 +206,7 @@ const paginasEsperadas = [
   { pagina: 'galeria.html', secoes: ['sec-galeria'] },
   { pagina: 'carrossel.html', secoes: ['sec-carrossel-config'] },
   { pagina: 'encomendas.html', secoes: ['sec-encomendas-config'] },
-  { pagina: '', secoes: ['sec-clientes', 'sec-fidelidade'] },
+  { pagina: '', secoes: ['sec-clientes'] },
   { pagina: 'dicas.html', secoes: ['sec-depoimentos'] },
   { pagina: 'promocao.html', secoes: ['sec-promoção'] }
 ];
