@@ -94,13 +94,13 @@
   }
 
   /* ─── CSS ─── */
-  var css = ':root{--itabot-kb-offset:0px}' +
+  var css = ':root{--itabot-kb-offset:0px;--itabot-panel-h:100dvh}' +
  'html.itabot-open,body.itabot-open{position:fixed;width:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}' +
  '#chat-dialog{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);overflow:hidden}' +
  '#chat-dialog.aberto{display:flex;animation:itabot-in .22s ease-out}' +
  '@keyframes itabot-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}' +
  '@media(prefers-reduced-motion:reduce){@keyframes itabot-in{from{opacity:0}to{opacity:1}}}' +
- '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
+ '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:var(--itabot-panel-h);min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
  '@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:460px;height:min(780px,calc(100dvh - 32px));border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
  '.chat-hdr{background:linear-gradient(135deg,#e8470a,#ff6b35);padding:9px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
 '.chat-hdr-logo-img{width:42px;height:42px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(255,255,255,.3);flex-shrink:0}' +
@@ -132,7 +132,7 @@
 '.itabot-chip:active{transform:scale(.95)}' +
 '.itabot-link-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:900;letter-spacing:.3px;margin-top:8px;min-height:46px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;word-break:break-word;box-sizing:border-box}' +
 '.itabot-link-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.itabot-link-btn:active{transform:scale(.97)}' +
- '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;transform:translateY(calc(var(--itabot-kb-offset) * -1));transition:transform .22s ease;max-height:40dvh}' +
+ '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;max-height:40dvh}' +
  '.chat-inp-row{padding:9px 12px;padding-bottom:calc(9px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #E5E7EB;background:#fff;flex-shrink:0;align-items:center;position:relative}' +
 '.chat-inp{flex:1;padding:11px 16px;border:2px solid #E5E7EB;border-radius:24px;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box;background:#F8F9FA;color:#111;-webkit-appearance:none;appearance:none}' +
 '.chat-inp:focus{border-color:#E8000D;box-shadow:0 0 0 3px rgba(232,0,13,.12);background:#fff}' +
@@ -257,6 +257,7 @@
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
     document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
+    document.documentElement.style.setProperty('--itabot-panel-h', '100dvh');
   }
   // API pública canônica + alias legado para compatibilidade com páginas antigas.
   window.abrirItaBot = _itabotAbrirItaBot;
@@ -307,11 +308,10 @@
     var dialog = document.getElementById('chat-dialog');
     if (!dialog || !dialog.classList.contains('aberto')) return;
     var vv = window.visualViewport;
-    var offsetBottom = 0;
-    if (vv) {
-      offsetBottom = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    if (window.innerWidth < 768 && vv) {
+      document.documentElement.style.setProperty('--itabot-panel-h', vv.height + 'px');
+      document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
     }
-    document.documentElement.style.setProperty('--itabot-kb-offset', offsetBottom + 'px');
     _itabotScrollFim();
   }
   function _itabotHandleInputFocus() {
