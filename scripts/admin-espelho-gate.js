@@ -91,7 +91,6 @@ function assertSiteKeysAreInMatrix() {
     'galeria.html',
     'carrossel.html',
     'encomendas.html',
-    'fidelidade.html',
     'dicas.html',
     'promocao.html'
   ];
