@@ -9,7 +9,56 @@
 
   var _legacyDialog = document.getElementById('chat-dialog');
   if (_legacyDialog && !_legacyDialog.querySelector('#duvidas-pergunta')) {
-    _legacyDialog.remove();
+    var _legacyOpen = (typeof window.abrirItaBot === 'function') ? window.abrirItaBot : null;
+    var _legacyClose = (typeof window.fecharChatDialog === 'function') ? window.fecharChatDialog : null;
+
+    function _itabotBindLegacyDuvidasTriggers() {
+      if (window.__itabotDuvidasTriggersBound) return;
+      window.__itabotDuvidasTriggersBound = true;
+      document.addEventListener('click', function (event) {
+        var trigger = event.target.closest('[data-role="duvidas"], .ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
+        if (!trigger) return;
+        event.preventDefault();
+        if (typeof _legacyOpen === 'function') { _legacyOpen(); return; }
+        if (typeof window.abrirChat === 'function') { window.abrirChat(); }
+      });
+    }
+
+    function _itabotLegacyHandleInputFocus() {
+      var vv = window.visualViewport;
+      var offsetBottom = 0;
+      if (vv) {
+        offsetBottom = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      }
+      document.documentElement.style.setProperty('--chat-kb-offset', offsetBottom + 'px');
+      var inputArea = document.getElementById('chat-input-area');
+      if (inputArea && typeof inputArea.scrollIntoView === 'function') {
+        inputArea.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    window._itabotAbrirItaBot = function () {
+      if (typeof _legacyOpen === 'function') { _legacyOpen(); return; }
+      if (typeof window.abrirChat === 'function') { window.abrirChat(); }
+    };
+    window._itabotFecharChatDialog = function () {
+      if (typeof _legacyClose === 'function') { _legacyClose(); return; }
+      var d = document.getElementById('chat-dialog');
+      if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); }
+      document.documentElement.style.setProperty('--chat-kb-offset', '0px');
+    };
+    window._itabotHandleInputFocus = _itabotLegacyHandleInputFocus;
+    if (typeof window.handleChatInputFocus !== 'function') {
+      window.handleChatInputFocus = _itabotLegacyHandleInputFocus;
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', _itabotLegacyHandleInputFocus);
+      window.visualViewport.addEventListener('scroll', _itabotLegacyHandleInputFocus);
+    }
+    window.addEventListener('resize', _itabotLegacyHandleInputFocus, { passive: true });
+    window.addEventListener('orientationchange', _itabotLegacyHandleInputFocus, { passive: true });
+    _itabotBindLegacyDuvidasTriggers();
+    return;
   }
   if (document.getElementById('chat-dialog')) return;
 
