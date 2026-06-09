@@ -67,7 +67,6 @@ self.addEventListener('fetch', (event) => {
 
   // GitHub API, raw e painel admin — Network Only (nunca cachear)
   // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
-  // Para fidelidade offline parcial, o fallback de último saldo é feito via localStorage na própria página.
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
       url.pathname.startsWith('/dados/') ||
