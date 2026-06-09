@@ -112,6 +112,9 @@
 '@media(prefers-reduced-motion:reduce){.chat-hdr-online{animation:none}}' +
 '.chat-close{background:rgba(255,255,255,.18);border:none;border-radius:50%;width:40px;height:40px;min-width:40px;color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .15s}' +
 '.chat-close:hover{background:rgba(255,255,255,.32)}' +
+'.chat-hdr-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}' +
+'.chat-btn-home{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.55);border-radius:8px;color:#fff;font-size:10px;font-weight:900;padding:4px 8px;cursor:pointer;letter-spacing:.8px;white-space:nowrap;text-transform:uppercase;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .15s;flex-shrink:0;line-height:1.2;min-height:32px;display:inline-flex;align-items:center;gap:3px}' +
+'.chat-btn-home:hover{background:rgba(255,255,255,.32)}' +
  '.chat-msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 12px calc(10px + var(--itabot-kb-offset));display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}' +
 '.msg{max-width:84%;padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.6;animation:msg-in .22s ease-out;word-break:break-word}' +
 '@keyframes msg-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}' +
@@ -189,7 +192,10 @@
   '<div class="chat-hdr-title" id="chat-hdr-titulo">🍦 Ita Bot</div>' +
   '<div class="chat-hdr-sub"><span class="chat-hdr-online"></span>Assistente Itapolitana</div>' +
   '</div>' +
+  '<div class="chat-hdr-actions">' +
+  '<button class="chat-btn-home" onclick="_itabotBtnInicio()" type="button" aria-label="Voltar para p\u00e1gina inicial">\uD83C\uDFE0 In\u00edcio</button>' +
   '<button class="chat-close" onclick="_itabotFecharChatDialog()" type="button" aria-label="Fechar chat">\u2715</button>' +
+  '</div>' +
   '</div>' +
   '<div class="chat-msgs" id="duvidas-resposta" aria-live="polite" role="log" aria-relevant="additions text">' +
   '<div class="chat-typing" id="itabot-typing"><span></span><span></span><span></span></div>' +
@@ -256,6 +262,18 @@
   window.abrirItaBot = _itabotAbrirItaBot;
   window._itabotAbrirItaBot = _itabotAbrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
+
+  function _itabotBtnInicio() {
+    _itabotFecharChatDialog();
+    var p = window.location.pathname;
+    var isHome = /^\/(index\.html)?(\?.*)?$/.test(p) || p === '/index.html';
+    if (isHome) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+  window._itabotBtnInicio = _itabotBtnInicio;
 
   function _itabotBindDuvidasTriggers() {
     if (window.__itabotDuvidasTriggersBound) return;
