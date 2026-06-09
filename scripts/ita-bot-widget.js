@@ -9,7 +9,64 @@
 
   var _legacyDialog = document.getElementById('chat-dialog');
   if (_legacyDialog && !_legacyDialog.querySelector('#duvidas-pergunta')) {
-    _legacyDialog.remove();
+    var _legacyOpen = (typeof window.abrirItaBot === 'function') ? window.abrirItaBot : null;
+    var _legacyClose = (typeof window.fecharChatDialog === 'function') ? window.fecharChatDialog : null;
+
+    function _itabotBindLegacyDuvidasTriggers() {
+      if (window.__itabotDuvidasTriggersBound) return;
+      window.__itabotDuvidasTriggersBound = true;
+      document.addEventListener('click', function (event) {
+        var trigger = event.target.closest('[data-role="duvidas"], .ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
+        if (!trigger) return;
+        event.preventDefault();
+        if (typeof _legacyOpen === 'function') { _legacyOpen(); return; }
+        if (typeof window.abrirChat === 'function') { window.abrirChat(); }
+      });
+    }
+
+    var _legacyViewportRaf = 0;
+    function _itabotLegacyHandleInputFocus() {
+      var visualViewport = window.visualViewport;
+      var offsetBottom = 0;
+      if (visualViewport) {
+        offsetBottom = Math.max(0, (window.innerHeight - visualViewport.offsetTop) - visualViewport.height);
+      }
+      document.documentElement.style.setProperty('--chat-kb-offset', offsetBottom + 'px');
+      var inputArea = document.getElementById('chat-input-area');
+      if (inputArea && typeof inputArea.scrollIntoView === 'function') {
+        inputArea.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+    function _itabotLegacyScheduleInputFocus() {
+      if (_legacyViewportRaf) return;
+      _legacyViewportRaf = window.requestAnimationFrame(function () {
+        _legacyViewportRaf = 0;
+        _itabotLegacyHandleInputFocus();
+      });
+    }
+
+    window._itabotAbrirItaBot = function () {
+      if (typeof _legacyOpen === 'function') { _legacyOpen(); return; }
+      if (typeof window.abrirChat === 'function') { window.abrirChat(); }
+    };
+    window._itabotFecharChatDialog = function () {
+      if (typeof _legacyClose === 'function') { _legacyClose(); return; }
+      var d = document.getElementById('chat-dialog');
+      if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); }
+      document.documentElement.style.setProperty('--chat-kb-offset', '0px');
+    };
+    window._itabotHandleInputFocus = _itabotLegacyHandleInputFocus;
+    if (typeof window.handleChatInputFocus !== 'function') {
+      window.handleChatInputFocus = _itabotLegacyHandleInputFocus;
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', _itabotLegacyScheduleInputFocus);
+      window.visualViewport.addEventListener('scroll', _itabotLegacyScheduleInputFocus);
+    }
+    window.addEventListener('resize', _itabotLegacyScheduleInputFocus, { passive: true });
+    window.addEventListener('orientationchange', _itabotLegacyScheduleInputFocus, { passive: true });
+    _itabotBindLegacyDuvidasTriggers();
+    return;
   }
   if (document.getElementById('chat-dialog')) return;
 
@@ -24,6 +81,7 @@
 
   /* ─── Estado da conversa ─── */
   var _ctxData    = {};     // dados acumulados no contexto (ex: nome para login)
+  var _ctx        = null;   // estado de contexto conversacional
   var _prodData   = null;   // cache de dados/produtos.json
   var _promoData  = null;   // cache de dados/promo.json
   var _cliData    = null;   // cache de dados/clientes.json (carregado sob demanda)
@@ -572,73 +630,72 @@
     if (_ctx === 'await_cardapio_cat') {
       _ctx = null;
       if (l.indexOf('sorvete') !== -1 || l.indexOf('massa') !== -1 || l.indexOf('bola') !== -1 || l.indexOf('sabor') !== -1) return _respSorvetes();
-      if (l.indexOf('picol') !== -1)                                                                                           return _respPicoles();
-      if (l.indexOf('acai') !== -1  || l.indexOf('acaí') !== -1)                                                              return _respAcai();
-      if (l.indexOf('taca') !== -1  || l.indexOf('taça') !== -1 || l.indexOf('sobremesa') !== -1 || l.indexOf('brownie') !== -1) return _respTacas();
-      if (l.indexOf('milk') !== -1  || l.indexOf('shake') !== -1)                                                             return _respMilkshake();
+      if (l.indexOf('picol') !== -1) return _respPicoles();
+      if (l.indexOf('acai') !== -1 || l.indexOf('acaí') !== -1) return _respAcai();
+      if (l.indexOf('taca') !== -1 || l.indexOf('taça') !== -1 || l.indexOf('sobremesa') !== -1 || l.indexOf('brownie') !== -1) return _respTacas();
+      if (l.indexOf('milk') !== -1 || l.indexOf('shake') !== -1) return _respMilkshake();
       if (l.indexOf('encomen') !== -1 || l.indexOf('festa') !== -1 || l.indexOf('caixa') !== -1 || l.indexOf('torta') !== -1) return _respEncomendas();
-      // não reconhecido → mantém contexto e pede de novo
       _ctx = 'await_cardapio_cat';
-      return { answer: 'N\u00e3o entendi a categoria \ud83d\ude05 Escolha uma op\u00e7\u00e3o:', chips: ['\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83c\udf60 Picol\u00e9s', '\ud83c\udf68 Ta\u00e7as', '\ud83e\udd64 Milkshakes', '\ud83d\udce6 Encomendas'] };
+      return { answer: 'Não entendi a categoria 😅 Escolha uma opção:', chips: ['🍦 Sorvetes', '🥤 Açaí', '🍰 Picolés', '🍨 Taças', '🥤 Milkshakes', '📦 Encomendas'] };
     }
     if (_ctx === 'await_promo_cat') {
       _ctx = null;
-      if (l.indexOf('acai') !== -1 || l.indexOf('açai') !== -1)                                            return _respPromoAcai();
-      if (l.indexOf('sorvete') !== -1 || l.indexOf('preco') !== -1 || l.indexOf('preço') !== -1)           return _respPromoSorvetes();
+      if (l.indexOf('acai') !== -1 || l.indexOf('açai') !== -1) return _respPromoAcai();
+      if (l.indexOf('sorvete') !== -1 || l.indexOf('preco') !== -1 || l.indexOf('preço') !== -1) return _respPromoSorvetes();
       return _respPromoAtiva();
     }
+    if (_ctx === 'await_fid_nome') {
       _ctxData.nome = msg.trim();
+      _ctx = 'await_fid_nascimento';
       var prim = msg.trim().split(' ')[0];
-      return { answer: '\u00d3timo, ' + prim + '! \ud83d\ude0a\n\nAgora me diga sua data de nascimento no formato DD/MM/AAAA:' };
+      if (!prim) prim = 'cliente';
+      return { answer: 'Ótimo, ' + prim + '! 😊 Agora me diga sua data de nascimento no formato DD/MM/AAAA:' };
     }
+    if (_ctx === 'await_fid_nascimento') {
+      _ctx = null;
+      _buscarPontosAsync((_ctxData.nome || '').trim(), msg);
+      return { __async: true };
+    }
+    return null;
   }
 
-  /* ─── Resposta principal (síncrona) ─── */
+  /* ─── Resposta principal ─── */
   function _itabotGetResp(msg) {
     var l = _norm(msg);
+    var cr = _handleContexto(msg);
+    if (cr) return cr;
 
-    // Contexto ativo
-      var cr = _handleContexto(msg);
-      if (cr) return cr;
-    }
-
-      _ctxData = {};
-    }
-
-    // Busca direta de sabor ("preço do sorvete de X", "tem sorvete de X", "flocos")
     if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
       var sf = _buscarSabor(msg);
       if (sf) return sf;
     }
 
-    // Cardápio → drill-down por categoria
-    if (l === 'cardapio' || l === 'menu' || l.indexOf('cardapio') !== -1 || l.indexOf('card\u00e1pio') !== -1) {
+    if (l === 'cardapio' || l === 'menu' || l.indexOf('cardapio') !== -1 || l.indexOf('cardápio') !== -1) {
       _ctx = 'await_cardapio_cat';
       return {
-        answer: 'Que \u00f3timo! \ud83d\ude0b Qual categoria te interessa?',
-        chips: ['\ud83c\udf66 Sorvetes de massa', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83c\udf60 Picol\u00e9s', '\ud83c\udf68 Ta\u00e7as e Sobremesas', '\ud83e\udd64 Milkshakes', '\ud83d\udce6 Encomendas / Festas']
+        answer: 'Que ótimo! 😋 Qual categoria te interessa?',
+        chips: ['🍦 Sorvetes de massa', '🥤 Açaí', '🍰 Picolés', '🍨 Taças e Sobremesas', '🥛 Milkshakes', '📦 Encomendas / Festas']
       };
     }
 
-    // Promoções → drill-down por tipo
     if (l.indexOf('promo') !== -1 || l.indexOf('oferta') !== -1 || l.indexOf('desconto') !== -1) {
       if (_promoData && _promoData.ativo) return _respPromoAtiva();
       _ctx = 'await_promo_cat';
       return {
-        answer: 'Temos op\u00e7\u00f5es incr\u00edveis! \ud83c\udf89 Sobre qual voc\u00ea quer saber?',
-        chips: ['\ud83e\uded0 Pre\u00e7os do A\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de Sorvete', '\ud83c\udf81 Sorteio mensal', '\ud83c\udf89 Ver tudo']
+        answer: 'Temos opções incríveis! 🎉 Sobre qual você quer saber?',
+        chips: ['🥤 Preços do Açaí', '🍦 Preços de Sorvete', '🎁 Sorteio mensal', '🎉 Ver tudo']
       };
     }
 
-    // Fidelidade
-      return {
-        linkHref: '',
-      };
+    if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('cadastro') !== -1) {
+      _ctxData = {};
+      _ctx = 'await_fid_nome';
+      return { answer: 'Vamos consultar seu cadastro 😊 Qual é seu nome completo?' };
     }
 
-    // 1) itaBotKnowledge
     for (var i = 0; i < itaBotKnowledge.length; i++) {
       var entry = itaBotKnowledge[i];
+      if (!entry || !Array.isArray(entry.keywords)) continue;
       for (var j = 0; j < entry.keywords.length; j++) {
         if (l.indexOf(_norm(entry.keywords[j])) !== -1) {
           return _itabotMontarResposta(entry);
@@ -646,24 +703,21 @@
       }
     }
 
-    // 2) RESPOSTAS fallback
     for (var k in RESPOSTAS) {
-      if (k !== 'default' && l.indexOf(_norm(k)) !== -1) {
+      if (Object.prototype.hasOwnProperty.call(RESPOSTAS, k) && k !== 'default' && l.indexOf(_norm(k)) !== -1) {
         var r = typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
-        return { answer: _norm(r) ? r.replace(/<[^>]*>/g, ' ').trim() : r };
+        return { answer: _norm(r) ? String(r).replace(/<[^>]*>/g, ' ').trim() : r };
       }
     }
 
-    // 3) Tenta buscar sabor sem palavra-chave explícita
     if (_prodData) {
       var sf2 = _buscarSabor(msg);
       if (sf2) return sf2;
     }
 
-    // 4) Default
     return {
-      answer: 'N\u00e3o entendi direitinho \ud83d\ude05 Mas posso te ajudar com:',
-      chips: ['\ud83c\udf66 Card\u00e1pio', '\ud83d\udce6 Encomendas', '\ud83c\udf89 Promo\u00e7\u00f5es', '\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udd59 Hor\u00e1rio', '\ud83d\udcac Atendente']
+      answer: 'Não entendi direitinho 😅 Mas posso te ajudar com:',
+      chips: ['🍦 Cardápio', '📦 Encomendas', '🎉 Promoções', '📍 Localização', '🕙 Horário', '💬 Atendente']
     };
   }
 
@@ -673,7 +727,6 @@
     var msg = (msgForcada !== null && msgForcada !== undefined) ? String(msgForcada) : (inp ? inp.value.trim() : '');
     if (!msg) return;
 
-    // Remove chips existentes
     var el = document.getElementById('duvidas-resposta');
     if (el) { var cs = el.querySelectorAll('.itabot-chips'); for (var i = 0; i < cs.length; i++) { cs[i].remove(); } }
 
@@ -681,16 +734,12 @@
     _itabotInserirMensagem('user', msg);
     _itabotMostrarTyping();
 
-      _ctx = null;
-      var nomeGuardado = _ctxData.nome || '';
-      _buscarPontosAsync(nomeGuardado, msg);
-      return;
-    }
-
     var delay = 450 + Math.floor(Math.random() * 350);
     setTimeout(function () {
       _itabotOcultarTyping();
-      _itabotInserirMensagem('bot', _itabotGetResp(msg));
+      var resposta = _itabotGetResp(msg);
+      if (resposta && resposta.__async) return;
+      _itabotInserirMensagem('bot', resposta);
     }, delay);
   }
   function _itabotEnviarChat() { _itabotEnviarChatComMsg(null); }
