@@ -3314,30 +3314,33 @@ function renderAçaíPromo(){
 function renderAçaí(){
   const b=document.getElementById('açaí-body');b.innerHTML='';
 
-  // Título da seção
-  const tit=document.createElement('div');
-  tit.innerHTML='<div style="font-size:15px;font-weight:900;color:#7B2D8B;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #E9D5FF">🫐 Monte o Seu Açaí — escolha o tamanho</div>';
-  b.appendChild(tit);
+  // Fonte de dados: prioridade açaí.copos → acai.copos → açaí plano (fallback pós-admin-save)
+  const _ac=produtos&&(produtos.açaí||produtos.acai)||{};
+  const copos=_ac.copos||(Object.values(_ac).every(v=>typeof v==='number')?_ac:{});
+  const complementos=_ac.complementos||(produtos&&produtos.acai&&produtos.acai.complementos)||{};
 
-  // Tamanhos com preços
-  if(produtos&&produtos.açaí&&produtos.açaí.copos){
-    Object.entries(produtos.açaí.copos).forEach(([tam,preço])=>{
-      const d=document.createElement('div');d.className='açaí-item';
-      d.innerHTML=`<div class="açaí-row"><span class="açaí-nome">🫐 Monte o Seu ${tam}</span><span class="açaí-preço">R$ ${preço.toFixed(2).replace('.',',')}</span></div><div class="açaí-desc">Personalize com os ingredientes abaixo</div>`;
-      b.appendChild(d);
+  // Grid de tamanhos — mesma lógica prod-card das outras seções
+  if(copos&&Object.keys(copos).length){
+    const grid=document.createElement('div');grid.className='prod-grid';
+    Object.entries(copos).forEach(([tam,preço])=>{
+      const chave='acai_'+tam.replace(/\s/g,'_');
+      const c=document.createElement('div');c.className='prod-card';
+      c.innerHTML=imgCard(chave,'🫐')+`<div class="prod-card-body"><div class="prod-nome">🫐 Açaí ${tam}</div><div class="prod-desc">Monte com os complementos abaixo</div><div class="prod-preço">R$ ${Number(preço).toFixed(2).replace('.',',')}</div></div>`;
+      grid.appendChild(c);
     });
+    b.appendChild(grid);
   }
 
-  // Lista completa de ingredientes — visível diretamente
-  if(produtos&&produtos.açaí&&produtos.açaí.complementos){
+  // Complementos — cartão roxo abaixo do grid
+  if(complementos&&Object.keys(complementos).length){
     const sec=document.createElement('div');
     sec.style='margin-top:16px;padding:14px;background:#F8F0FF;border-radius:14px;border:1.5px solid #CE93D8';
     let html='<div style="font-size:14px;font-weight:900;color:#7B2D8B;margin-bottom:6px;padding-bottom:8px;border-bottom:2px solid #E9D5FF">🍓 Ingredientes Disponíveis</div>';
     html+='<div style="font-size:11px;color:#9333EA;font-weight:700;margin-bottom:12px">Informe os que deseja ao fazer o pedido na loja</div>';
     const getNome=i=>typeof i==='object'&&i!==null?i.nome:i;
     const isEsg=i=>typeof i==='object'&&i!==null&&(i.esgotado||i.estoque<=0);
-    Object.entries(produtos.açaí.complementos).forEach(([k,info])=>{
-      const preçoVal=info.preço!==undefined?info.preço:null;
+    Object.entries(complementos).forEach(([k,info])=>{
+      const preçoVal=info.preço!==undefined?info.preço:(info.preco!==undefined?info.preco:null);
       const preçoStr=preçoVal!==null?`+ R$ ${Number(preçoVal).toFixed(2).replace('.',',')} cada`:'';
       html+=`<div class="comp-group"><div class="comp-group-h">${labelComp[k]||k}<span class="comp-preço" style="font-size:11px;color:#9333EA;font-weight:700">${preçoStr}</span></div><div class="chips">`;
       info.itens.forEach(i=>{
