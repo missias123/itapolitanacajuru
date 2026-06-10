@@ -164,10 +164,7 @@ const produtos = {
 // Chamada por enc-v2.js antes de renderizar os cards de encomenda.
 async function carregarPreçosNuvem() {
   try {
-    const resp = await fetch(
-      'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json?t=' + Date.now(),
-      { cache: 'no-store' }
-    );
+    const resp = await fetch('/dados/produtos.json?t=' + Date.now(), { cache: 'no-store' });
     if (!resp.ok) return;
     const dados = await resp.json();
 

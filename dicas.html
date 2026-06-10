@@ -461,7 +461,7 @@
     if (!grid) return;
     grid.innerHTML = lista.map(function (d) {
       var fotoHtml = d.foto
-        ? '<img src="' + d.foto + '" alt="' + (d.nome || 'Cliente') + '" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #E64A19;">'
+        ? '<img src="' + d.foto + '" alt="' + (d.nome || 'Cliente') + '" loading="lazy" decoding="async" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #E64A19;">'
         : '';
       return '<div class="testimonial-item">'
         + '<div class="stars">' + renderEstrelas(d.estrelas) + '</div>'

@@ -15,15 +15,10 @@
   // ═══════════════════════════════════════════════
   // CONFIGURAÇÃO
   // ═══════════════════════════════════════════════
-  const GH_OWNER  = 'missias123';
-  const GH_REPO   = 'itapolitanacajuru';
-  const GH_BRANCH = 'main';
-  const GH_RAW    = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
   const CONFIG_PATH = 'dados/config.json';
   const CACHE_KEY   = 'itap_site_config';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutos
   const LOCAL_FETCH_TIMEOUT_MS = 5000;
-  const RAW_FETCH_TIMEOUT_MS = 6000;
 
   // ═══════════════════════════════════════════════
   // ESTADO GLOBAL
@@ -101,8 +96,9 @@
     const local = await fetchJsonComTimeout('/' + CONFIG_PATH + '?t=' + stamp, LOCAL_FETCH_TIMEOUT_MS);
     if (local) return local;
 
-    // 2) Fallback para RAW do GitHub (resiliência em ambientes sem arquivo local)
-    return await fetchJsonComTimeout(GH_RAW + CONFIG_PATH + '?t=' + stamp, RAW_FETCH_TIMEOUT_MS);
+    console.warn('[site-loader] Falha ao carregar /' + CONFIG_PATH + ' no domínio atual. Funcionalidades configuráveis podem ficar indisponíveis.');
+    // 2) Sem fallback externo: manter fonte no próprio domínio
+    return null;
   }
 
   // ═══════════════════════════════════════════════
@@ -504,12 +500,83 @@
   };
 
   // ═══════════════════════════════════════════════
+  // COOKIE BANNER LGPD — injeta em todas as páginas
+  // ═══════════════════════════════════════════════
+  function injetarCookieBanner() {
+    if (document.getElementById('cookie-banner')) return; // já existe (index.html)
+    var banner = document.createElement('div');
+    banner.id = 'cookie-banner';
+    banner.setAttribute('role', 'dialog');
+    banner.setAttribute('aria-label', 'Aviso de cookies');
+    banner.setAttribute('aria-live', 'polite');
+    banner.style.cssText = 'display:none;position:fixed;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.92);color:#fff;padding:15px 20px;z-index:9999;text-align:center;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,0.2)';
+    banner.innerHTML = '<div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px;">'
+      + '<p style="margin:0;flex:1;text-align:left;line-height:1.5;">Usamos cookies essenciais para o funcionamento do site e, com seu consentimento, cookies de análise (Google Analytics) para melhorar sua experiência. Você pode aceitar todos ou recusar os não essenciais. <a href="/politica-privacidade.html" aria-label="Saiba mais sobre nossa política de privacidade" style="color:#FBD100;font-weight:700;text-decoration:underline;">Saiba mais →</a></p>'
+      + '<div style="display:flex;gap:10px;flex-shrink:0;">'
+      + '<button id="btn-aceitar-cookies" style="background:#e91e63;color:#fff;border:none;padding:12px 24px;border-radius:20px;cursor:pointer;font-weight:800;font-size:14px;min-height:44px;min-width:100px;"><span aria-hidden="true">✅</span> Aceitar todos</button>'
+      + '<button id="btn-recusar-cookies" style="background:rgba(255,255,255,0.15);color:#fff;border:2px solid #fff;padding:12px 24px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:700;min-height:44px;min-width:100px;"><span aria-hidden="true">❌</span> Recusar não essenciais</button>'
+      + '</div></div>';
+    document.body.appendChild(banner);
+
+    function checkCookiesBanner() {
+      if (localStorage.getItem('cookies_aceitos') === null) banner.style.display = 'block';
+    }
+    function aceitarCookiesBanner() {
+      localStorage.setItem('cookies_aceitos', 'true');
+      banner.style.display = 'none';
+      if (typeof gtag === 'function') {
+        gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' });
+      }
+    }
+    function recusarCookiesBanner() {
+      localStorage.setItem('cookies_aceitos', 'false');
+      banner.style.display = 'none';
+      if (typeof gtag === 'function') {
+        gtag('consent', 'update', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+      }
+    }
+    var btnAceitar = document.getElementById('btn-aceitar-cookies');
+    var btnRecusar = document.getElementById('btn-recusar-cookies');
+    if (btnAceitar) btnAceitar.addEventListener('click', aceitarCookiesBanner);
+    if (btnRecusar) btnRecusar.addEventListener('click', recusarCookiesBanner);
+    checkCookiesBanner();
+  }
+
+  // ═══════════════════════════════════════════════
+  // SKIP LINK — injeta em páginas sem um existente
+  // ═══════════════════════════════════════════════
+  function injetarSkipLink() {
+    if (document.querySelector('.skip-link')) return; // já existe
+    var main = document.querySelector('main') || document.querySelector('[id="conteudo-principal"]');
+    if (!main) return;
+    if (!main.id) main.id = 'conteudo-principal';
+    var link = document.createElement('a');
+    link.href = '#conteudo-principal';
+    link.className = 'skip-link';
+    link.textContent = 'Pular para o conteúdo principal';
+    link.style.cssText = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
+    link.addEventListener('focus', function() {
+      link.style.cssText = 'position:fixed;left:16px;top:0;width:auto;height:auto;overflow:visible;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none;outline:2px solid #fff;outline-offset:2px';
+    });
+    link.addEventListener('blur', function() {
+      link.style.cssText = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
+    });
+    document.body.insertBefore(link, document.body.firstChild);
+  }
+
+  // ═══════════════════════════════════════════════
   // INICIALIZAÇÃO AUTOMÁTICA
   // ═══════════════════════════════════════════════
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', carregarConfig);
-  } else {
+  function inicializar() {
+    injetarCookieBanner();
+    injetarSkipLink();
     carregarConfig();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializar);
+  } else {
+    inicializar();
   }
 
   // Expor função para uso externo

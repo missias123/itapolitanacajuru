@@ -84,7 +84,6 @@
   var _ctx        = null;   // estado de contexto conversacional
   var _prodData   = null;   // cache de dados/produtos.json
   var _promoData  = null;   // cache de dados/promo.json
-  var _cliData    = null;   // cache de dados/clientes.json (carregado sob demanda)
   var _saudacao   = false;  // flag: saudação inicial já mostrada
   var _scrollY    = 0;      // para page-lock
 
@@ -599,47 +598,13 @@
       });
       return;
     }
-    function procurar(data) {
-      var nNorm = _norm(nome);
-      var clientes = (data && data.clientes) ? data.clientes : {};
-      var ids = Object.keys(clientes);
-      for (var i = 0; i < ids.length; i++) {
-        var c = clientes[ids[i]];
-        if (_norm(c.nome) === nNorm && c.dataNasc === dataNorm) {
-          var primeiro = c.nome.split(' ')[0];
-          var pts = c.saldoPontos || 0;
-          var prox = pts < 10
-            ? 'Faltam ' + (10 - pts) + ' ponto(s) para 1 Milk Shake de 300ml! \ud83e\udd64'
-            : (pts >= 30 ? 'Voc\u00ea pode resgatar 1 caixa com 7 bolas! \ud83c\udf66\ud83c\udf89' : 'Faltam ' + (30 - pts) + ' ponto(s) para 1 caixa com 7 bolas!');
-          _itabotOcultarTyping();
-          _itabotInserirMensagem('bot', {
-            answer: '\u2b50 Encontrei voc\u00ea, ' + primeiro + '!\n\nSaldo atual: ' + pts + ' ponto' + (pts !== 1 ? 's' : '') + '\n' + prox,
-            linkHref: ''
-          });
-          return;
-        }
-      }
-      _itabotOcultarTyping();
-      _itabotInserirMensagem('bot', {
-        answer: 'N\u00e3o encontrei cadastro com esse nome e data de nascimento \ud83d\ude14\n\nVerifique os dados ou cadastre-se gratuitamente!',
-        answer: 'O programa de fidelidade foi encerrado. Fale conosco pelo WhatsApp se tiver dúvidas! 💬',
-        linkHref: '',
-        chips: ['\ud83d\udd04 Tentar novamente']
-      });
-    }
-    if (_cliData) { setTimeout(function () { procurar(_cliData); }, 500); return; }
-    fetch(_base + 'dados/clientes.json?v=' + Date.now())
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .catch(function () { return null; })
-      .then(function (data) {
-        if (!data) {
-          _itabotOcultarTyping();
-          _itabotInserirMensagem('bot', { answer: 'O programa de fidelidade foi encerrado. Entre em contato pelo WhatsApp para mais informações! 💬' });
-          return;
-        }
-        _cliData = data;
-        procurar(data);
-      });
+    var primeiro = (nome || '').trim().split(' ')[0] || 'cliente';
+    _itabotOcultarTyping();
+    _itabotInserirMensagem('bot', {
+      answer: 'O programa de fidelidade foi encerrado, ' + primeiro + '. Fale conosco pelo WhatsApp se tiver dúvidas! 💬',
+      linkHref: '',
+      chips: ['💬 Atendimento no WhatsApp']
+    });
   }
 
   /* ─── Handler de contexto ─── */
