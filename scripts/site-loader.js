@@ -15,15 +15,10 @@
   // ═══════════════════════════════════════════════
   // CONFIGURAÇÃO
   // ═══════════════════════════════════════════════
-  const GH_OWNER  = 'missias123';
-  const GH_REPO   = 'itapolitanacajuru';
-  const GH_BRANCH = 'main';
-  const GH_RAW    = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
   const CONFIG_PATH = 'dados/config.json';
   const CACHE_KEY   = 'itap_site_config';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutos
   const LOCAL_FETCH_TIMEOUT_MS = 5000;
-  const RAW_FETCH_TIMEOUT_MS = 6000;
 
   // ═══════════════════════════════════════════════
   // ESTADO GLOBAL
@@ -101,8 +96,9 @@
     const local = await fetchJsonComTimeout('/' + CONFIG_PATH + '?t=' + stamp, LOCAL_FETCH_TIMEOUT_MS);
     if (local) return local;
 
-    // 2) Fallback para RAW do GitHub (resiliência em ambientes sem arquivo local)
-    return await fetchJsonComTimeout(GH_RAW + CONFIG_PATH + '?t=' + stamp, RAW_FETCH_TIMEOUT_MS);
+    console.warn('[site-loader] Falha ao carregar /' + CONFIG_PATH + ' no domínio atual. Funcionalidades configuráveis podem ficar indisponíveis.');
+    // 2) Sem fallback externo: manter fonte no próprio domínio
+    return null;
   }
 
   // ═══════════════════════════════════════════════
