@@ -302,7 +302,7 @@ img{max-width:100%;display:block}
 .hero p{contain: layout;font-size:18px;color:#1A0A00;font-weight:800;max-width:480px;margin:0 auto 22px;line-height:1.6;letter-spacing:.2px;text-shadow:0 1px 3px rgba(255,255,255,0.9);}
 
 /* FRASE SENSORIAL ROTATIVA */
-.frase-sensorial{background:linear-gradient(135deg,#FFF3E0,#FFCCBC);border:2px solid #E64A19;border-radius:50px;padding:8px 20px;display:inline-block;margin-bottom:16px;font-size:13px;font-weight:800;color:#BF360C;letter-spacing:.3px;animation:pulse-frase 3s ease-in-out infinite;min-height:38px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:90vw}
+.frase-sensorial{background:linear-gradient(135deg,#FFF3E0,#FFE8D6);border:2px solid #E64A19;border-radius:50px;padding:8px 20px;display:inline-block;margin-bottom:16px;font-size:13px;font-weight:800;color:#BF360C;letter-spacing:.3px;animation:pulse-frase 3s ease-in-out infinite;min-height:38px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:90vw}
 @keyframes pulse-frase{0%,100%{transform:scale(1);box-shadow:0 2px 8px rgba(255,107,53,.2)}50%{transform:scale(1.03);box-shadow:0 4px 16px rgba(255,107,53,.4)}}
 /* CONTADOR DE SABORES */
 .sabores-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#C62828,#C0001F);color:#fff;border-radius:50px;padding:6px 16px;font-size:12px;font-weight:800;margin-bottom:12px;box-shadow:0 2px 10px rgba(239,1,41,.35)}
@@ -320,7 +320,7 @@ img{max-width:100%;display:block}
 .menu-categorias-cardapio{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.97);border-bottom:2px solid #E8000D;box-shadow:0 2px 12px rgba(0,0,0,.12);padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .menu-categorias-cardapio::-webkit-scrollbar{display:none;}
 .menu-categorias-inner{display:flex;gap:6px;padding:8px 12px;width:max-content;min-width:100%;}
-.cat-pill{display:inline-flex;align-items:center;gap:4px;background:#FFF3E0;color:#E65100;border:1.5px solid #FFCCBC;border-radius:50px;padding:6px 14px;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s,transform .15s;cursor:pointer;}
+.cat-pill{display:inline-flex;align-items:center;gap:4px;background:#FFF3E0;color:#C03400;border:1.5px solid #FFCCBC;border-radius:50px;padding:6px 14px;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s,transform .15s;cursor:pointer;}
 .cat-pill:hover,.cat-pill.ativa{background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;border-color:transparent;transform:scale(1.04);}
 /* DESTAQUE / MAIS PEDIDOS */
 .item-destaque{position:relative;}
@@ -2297,9 +2297,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
     id="itp-crs-iframe"
     src="carrossel.html"
     title="Banners Sorveteria Itapolitana Cajuru"
-    scrolling="no"
     loading="lazy"
-    frameborder="0"
     aria-label="Galeria de produtos Itapolitana"
   ></iframe>
 </div>
@@ -4260,7 +4258,6 @@ async function carregarPreçosNuvemCardápio() {
 
     // Cache local como fallback offline
     try { localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados)); } catch(e) {}
-    console.log('[Itap Cardápio] Produtos sincronizados com dados/produtos.json ✅');
     return true;
 
   } catch(e) {
@@ -4590,13 +4587,11 @@ function aplicarTitulosCardapio(cfgTitulos) {
 async function carregarConfig() {
   if (window.SITE_CONFIG) {
     aplicarConfig(window.SITE_CONFIG);
-    console.log('[Itap] Config sincronizado via site-loader ✅');
     return;
   }
   window.addEventListener('siteConfigLoaded', function onConfig(ev) {
     window.removeEventListener('siteConfigLoaded', onConfig);
     aplicarConfig(ev && ev.detail);
-    console.log('[Itap] Config sincronizado via evento do site-loader ✅');
   });
 }
 
