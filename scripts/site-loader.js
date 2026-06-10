@@ -515,15 +515,15 @@
     banner.setAttribute('aria-live', 'polite');
     banner.style.cssText = 'display:none;position:fixed;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.92);color:#fff;padding:15px 20px;z-index:9999;text-align:center;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,0.2)';
     banner.innerHTML = '<div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px;">'
-      + '<p style="margin:0;flex:1;text-align:left;line-height:1.5;">Usamos cookies essenciais para o funcionamento do site e, com seu consentimento, cookies de análise (Google Analytics) para melhorar sua experiência. Você pode aceitar todos ou recusar os não essenciais. <a href="/politica-privacidade.html" style="color:#FBD100;font-weight:700;text-decoration:underline;">Saiba mais →</a></p>'
+      + '<p style="margin:0;flex:1;text-align:left;line-height:1.5;">Usamos cookies essenciais para o funcionamento do site e, com seu consentimento, cookies de análise (Google Analytics) para melhorar sua experiência. Você pode aceitar todos ou recusar os não essenciais. <a href="/politica-privacidade.html" aria-label="Saiba mais sobre nossa política de privacidade" style="color:#FBD100;font-weight:700;text-decoration:underline;">Saiba mais →</a></p>'
       + '<div style="display:flex;gap:10px;flex-shrink:0;">'
       + '<button id="btn-aceitar-cookies" style="background:#e91e63;color:#fff;border:none;padding:12px 24px;border-radius:20px;cursor:pointer;font-weight:800;font-size:14px;min-height:44px;min-width:100px;"><span aria-hidden="true">✅</span> Aceitar todos</button>'
-      + '<button id="btn-recusar-cookies" style="background:transparent;color:#fff;border:2px solid #fff;padding:12px 24px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:700;min-height:44px;min-width:100px;"><span aria-hidden="true">❌</span> Recusar não essenciais</button>'
+      + '<button id="btn-recusar-cookies" style="background:rgba(255,255,255,0.15);color:#fff;border:2px solid #fff;padding:12px 24px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:700;min-height:44px;min-width:100px;"><span aria-hidden="true">❌</span> Recusar não essenciais</button>'
       + '</div></div>';
     document.body.appendChild(banner);
 
     function checkCookiesBanner() {
-      if (!localStorage.getItem('cookies_aceitos')) banner.style.display = 'block';
+      if (localStorage.getItem('cookies_aceitos') === null) banner.style.display = 'block';
     }
     function aceitarCookiesBanner() {
       localStorage.setItem('cookies_aceitos', 'true');
@@ -539,8 +539,10 @@
         gtag('consent', 'update', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
       }
     }
-    document.getElementById('btn-aceitar-cookies').addEventListener('click', aceitarCookiesBanner);
-    document.getElementById('btn-recusar-cookies').addEventListener('click', recusarCookiesBanner);
+    var btnAceitar = document.getElementById('btn-aceitar-cookies');
+    var btnRecusar = document.getElementById('btn-recusar-cookies');
+    if (btnAceitar) btnAceitar.addEventListener('click', aceitarCookiesBanner);
+    if (btnRecusar) btnRecusar.addEventListener('click', recusarCookiesBanner);
     checkCookiesBanner();
   }
 
