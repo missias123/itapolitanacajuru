@@ -183,16 +183,17 @@
       transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
       line-height: 1.25;
       width: 100%;
+      cursor: pointer;
     }
     .promo-acao-btn:hover {
       transform: translateY(-2px);
       filter: brightness(1.06);
       box-shadow: 0 12px 28px rgba(0,0,0,.22);
     }
-    #btn-quero-participar-sorteio {
+    #btn-ver-regras-sorteio {
       background: linear-gradient(135deg,#E65100,#FF6D00);
     }
-    #btn-ver-cardapio {
+    #btn-quero-participar-principal {
       background: linear-gradient(135deg,#E53935,#B71C1C);
     }
     .promo-acao-btn--principal {
@@ -211,10 +212,10 @@
     }
     @keyframes ctaPulse {
       0%, 100% {
-        box-shadow: 0 14px 34px rgba(183,28,28,.34), 0 0 0 0 rgba(255,109,0,.45);
+        box-shadow: 0 14px 34px rgba(183,28,28,.34), 0 0 0 0 rgba(229,57,53,.35);
       }
       50% {
-        box-shadow: 0 18px 40px rgba(183,28,28,.44), 0 0 0 10px rgba(255,109,0,0);
+        box-shadow: 0 18px 40px rgba(183,28,28,.44), 0 0 0 12px rgba(229,57,53,0);
       }
     }
     #passo-a-passo-promocao {
@@ -563,8 +564,8 @@ body { overflow-x: hidden; }
 </div>
 
 <div id="botoes-acao-promocao" aria-label="Ações principais da página de promoções">
-  <a id="btn-quero-participar-sorteio" data-config="promocaoPagina.btnParticipar" class="promo-acao-btn" href="#" onclick="abrirRegrasSorteioPromo(); return false;">🎁 Quero Participar do Sorteio</a>
-  <a id="btn-ver-cardapio" data-config="promocaoPagina.btnCardapio" class="promo-acao-btn promo-acao-btn--principal" href="#" onclick="abrirRegrasSorteioPromo(); return false;">Quero Participar</a>
+  <button type="button" id="btn-ver-regras-sorteio" data-config="promocaoPagina.btnCardapio" class="promo-acao-btn" onclick="abrirRegrasSorteioPromo()">📜 Ver Regras do Sorteio</button>
+  <button type="button" id="btn-quero-participar-principal" data-config="promocaoPagina.btnParticipar" class="promo-acao-btn promo-acao-btn--principal" onclick="destacarParticipacaoSorteioPromo()">Quero Participar</button>
 </div>
 
 <div id="passo-a-passo-promocao" aria-label="Passo a passo para participar das promoções">
