@@ -95,7 +95,7 @@
       if (bloco && bloco.style.display === 'block') {
         bloco.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      if (aceite && typeof aceite.focus === 'function') {
+      if (aceite) {
         aceite.focus({ preventScroll: true });
       }
     }, 180);
