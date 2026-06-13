@@ -5519,7 +5519,7 @@ function _renderTabelaInscritos(lista) {
     return;
   }
   tbody.innerHTML = lista.map((ins, i) => {
-    const idEsc = (ins.id || '').replace(/'/g, "\\'");
+    const idEsc = String(ins.id || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     return `<tr>
       <td style="font-size:.78rem;color:#555">${ins.id || '—'}</td>
       <td><strong>${ins.nome || '—'}</strong></td>
@@ -5527,11 +5527,18 @@ function _renderTabelaInscritos(lista) {
       <td>${_fmtTel(ins.phone)}</td>
       <td style="font-size:.78rem;color:#777">${_fmtData(ins.created_at)} ${(ins.created_at||'').slice(11,16)}</td>
       <td style="white-space:nowrap">
-        <button onclick="editarInscritoSorteio('${idEsc}')" style="background:#1565c0;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer;margin-right:4px">✏️</button>
-        <button onclick="deletarInscritoSorteio('${idEsc}')" style="background:#c62828;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer">🗑️</button>
+        <button data-sort-edit="${idEsc}" style="background:#1565c0;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer;margin-right:4px">✏️</button>
+        <button data-sort-del="${idEsc}" style="background:#c62828;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer">🗑️</button>
       </td>
     </tr>`;
   }).join('');
+  // Attach event listeners (avoid inline onclick to prevent XSS)
+  tbody.querySelectorAll('[data-sort-edit]').forEach(btn =>
+    btn.addEventListener('click', () => editarInscritoSorteio(btn.getAttribute('data-sort-edit')))
+  );
+  tbody.querySelectorAll('[data-sort-del]').forEach(btn =>
+    btn.addEventListener('click', () => deletarInscritoSorteio(btn.getAttribute('data-sort-del')))
+  );
 }
 
 function filtrarInscritosSorteio() {
@@ -5567,7 +5574,7 @@ async function salvarEdicaoInscritoSorteio() {
   const nasc = document.getElementById('sort-edit-nasc').value.trim();
   const tel  = document.getElementById('sort-edit-tel').value.replace(/\D/g,'');
   if (!nome || nome.length < 3) { toast('Nome precisa ter pelo menos 3 caracteres.', 'erro'); return; }
-  if (!nasc || !/^\d{4}-\d{2}-\d{2}$/.test(nasc)) { toast('Data de nascimento inválida (use AAAA-MM-DD).', 'erro'); return; }
+  if (!nasc || !/^\d{4}-\d{2}-\d{2}$/.test(nasc) || isNaN(new Date(nasc).getTime())) { toast('Data de nascimento inválida (use AAAA-MM-DD).', 'erro'); return; }
   if (!tel || tel.length < 10) { toast('Telefone inválido.', 'erro'); return; }
   const token = getAdminToken();
   if (!token) { toast('Token GitHub necessário.', 'erro'); return; }

@@ -133,7 +133,7 @@ async function isAdmin(request, env) {
   // GitHub PAT flow: admin panel sends Authorization: token <PAT>; accept when it
   // matches the GITHUB_TOKEN secret already stored in the Worker environment.
   const authHeader = request.headers.get('Authorization') || '';
-  const patMatch = authHeader.match(/^(?:token|Bearer)\s+(.+)$/i);
+  const patMatch = authHeader.match(/^(?:token|Bearer)\s+(\S+)$/i);
   if (patMatch && env.GITHUB_TOKEN && patMatch[1].trim() === env.GITHUB_TOKEN) return true;
   return false;
 }
@@ -1242,6 +1242,17 @@ async function handlePatchSorteioInscrito(id, request, env) {
 
   const celNovo  = String(inscricao.phone || '').replace(/\D/g, '');
   const nascKeyNovo = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+
+  // Verificar conflito: novo telefone já pertence a outro inscrito
+  if (celNovo !== celAntigo && celNovo) {
+    const conflito = await env.CLIENTES_KV.get(`sorteio:idx:cel:${celNovo}`);
+    if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Este telefone já pertence a outro inscrito.' }, 409);
+  }
+  // Verificar conflito: novo nome+dataNasc já pertence a outro inscrito
+  if (nascKeyNovo !== nascKeyAntigo) {
+    const conflito = await env.CLIENTES_KV.get(nascKeyNovo);
+    if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Já existe um inscrito com este nome e data de nascimento.' }, 409);
+  }
 
   // Remover índices antigos se mudaram
   if (celNovo !== celAntigo && celAntigo) await env.CLIENTES_KV.delete(`sorteio:idx:cel:${celAntigo}`);
