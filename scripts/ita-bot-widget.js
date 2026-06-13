@@ -60,8 +60,8 @@
       window.handleChatInputFocus = _itabotLegacyHandleInputFocus;
     }
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', _itabotLegacyScheduleInputFocus);
-      window.visualViewport.addEventListener('scroll', _itabotLegacyScheduleInputFocus);
+      window.visualViewport.addEventListener('resize', _itabotLegacyScheduleInputFocus, { passive: true });
+      window.visualViewport.addEventListener('scroll', _itabotLegacyScheduleInputFocus, { passive: true });
     }
     window.addEventListener('resize', _itabotLegacyScheduleInputFocus, { passive: true });
     window.addEventListener('orientationchange', _itabotLegacyScheduleInputFocus, { passive: true });
@@ -324,8 +324,8 @@
     setTimeout(_itabotScrollFim, 160);
   }
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', _itabotAtualizarViewport);
-    window.visualViewport.addEventListener('scroll', _itabotAtualizarViewport);
+    window.visualViewport.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
+    window.visualViewport.addEventListener('scroll', _itabotAtualizarViewport, { passive: true });
   }
   window.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
   window.addEventListener('orientationchange', _itabotAtualizarViewport, { passive: true });
