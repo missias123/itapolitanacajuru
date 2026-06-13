@@ -44,6 +44,7 @@ const RATE_LIMITS = {
   'admin-login':   { max: 10, windowMs: 3_600_000 },
   'post-enc':      { max: 10, windowMs: 3_600_000 },
   'resgatar':      { max: 10, windowMs: 3_600_000 },
+  'post-sorteio':  { max: 3,  windowMs: 1_800_000 }, // 3 tentativas por 30 min (sorteio)
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
@@ -404,6 +405,11 @@ async function router(request, env) {
   // ── Fidelidade ────────────────────────────────────────────────────────────
   if (path === '/api/fidelidade/resgatar' && method === 'POST')
     return handleResgatarCodigo(request, env);
+
+  // ── Promoção / Sorteio Mensal ──────────────────────────────────────────────
+  // Endpoint público — salva inscrição do sorteio no CLIENTES_KV (sem WhatsApp).
+  if (path === '/api/promocao/cadastro' && method === 'POST')
+    return handlePostSorteioCadastro(request, env);
 
   return jsonResp({ ok: false, error: 'Rota não encontrada' }, 404);
 }
@@ -1018,4 +1024,118 @@ async function handleResgatarCodigo(request, env) {
     partialSuccess: !githubOk, // true = points credited but fidelidade.json not updated in GitHub yet
     message:        `Código registrado! Você agora tem ${cliente.saldoPontos} ponto(s).`,
   });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HANDLER — PROMOÇÃO / SORTEIO MENSAL
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * POST /api/promocao/cadastro — inscrição pública no sorteio mensal.
+ *
+ * Payload esperado (JSON):
+ *   { name, birthdate (AAAA-MM-DD), phone (11 dígitos), regulation_accept (true) }
+ *
+ * Resposta em caso de sucesso:
+ *   { success: true, id: "SRT-2026-NNNN" }
+ * Resposta em caso de já inscrito:
+ *   { success: true, id: "SRT-2026-NNNN", alreadyRegistered: true }
+ * Resposta em caso de erro de validação:
+ *   { success: false, error: "mensagem explicando o problema" }
+ * Resposta em caso de erro interno:
+ *   { success: false, error: "erro_interno" }
+ *
+ * Armazenamento (CLIENTES_KV):
+ *   sorteio:inscrito:<id>   — dados da inscrição (JSON)
+ *   sorteio:idx:cel:<phone> — ID da inscrição indexado pelo celular
+ *   meta:sorteio_contador   — contador incremental de inscrições
+ *
+ * NÃO abre WhatsApp. NÃO usa fidelidade.json. Cadastro 100% interno.
+ */
+async function handlePostSorteioCadastro(request, env) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'post-sorteio');
+  if (!rl.allowed) {
+    return jsonResp({ success: false, error: 'Muitas tentativas. Aguarde 30 minutos e tente novamente.' }, 429);
+  }
+
+  let body;
+  try { body = await request.json(); } catch {
+    return jsonResp({ success: false, error: 'Requisição inválida.' }, 400);
+  }
+
+  // Aceitar tanto "name" (front-end novo) quanto "nome" (retrocompatibilidade)
+  const nome        = sanitizeString(body.name || body.nome, 200);
+  const birthdate   = sanitizeString(body.birthdate || body.dataNasc, 20);
+  const phone       = String(body.phone || body.cel || '').replace(/\D/g, '');
+  const regAccept   = !!body.regulation_accept;
+
+  // ── Validações ───────────────────────────────────────────────────────────────
+  if (!regAccept) {
+    return jsonResp({ success: false, error: 'Você precisa aceitar o regulamento para participar.' }, 400);
+  }
+  if (!nome || nome.length < 3) {
+    return jsonResp({ success: false, error: 'Nome inválido. Use seu nome completo (mínimo 3 caracteres).' }, 400);
+  }
+  if (!birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
+    return jsonResp({ success: false, error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.' }, 400);
+  }
+  if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
+    return jsonResp({ success: false, error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).' }, 400);
+  }
+
+  // Idade mínima: 14 anos
+  const [ano, mes, dia] = birthdate.split('-').map(Number);
+  const nasc  = new Date(ano, mes - 1, dia);
+  const hoje  = new Date();
+  let   idade = hoje.getFullYear() - nasc.getFullYear();
+  if (hoje.getMonth() < nasc.getMonth() ||
+      (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) {
+    idade--;
+  }
+  if (idade < 14) {
+    return jsonResp({ success: false, error: 'É necessário ter no mínimo 14 anos para participar.' }, 400);
+  }
+
+  // ── Verificar duplicidade por celular ────────────────────────────────────────
+  const existingId = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
+  if (existingId) {
+    return jsonResp({
+      success:           true,
+      id:                existingId,
+      alreadyRegistered: true,
+      message:           'Você já está cadastrado e concorre a todos os sorteios mensais!',
+    });
+  }
+
+  // ── Gerar novo ID de inscrição ────────────────────────────────────────────────
+  const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
+  let contador = parseInt(contadorStr || '0', 10);
+  contador += 1;
+  const novoId = `SRT-2026-${String(contador).padStart(4, '0')}`;
+  const agora  = new Date().toISOString();
+
+  const inscricao = {
+    id:                novoId,
+    nome,
+    birthdate,
+    phone,
+    regulation_accept: true,
+    created_at:        agora,
+  };
+
+  // ── Persistir no KV ──────────────────────────────────────────────────────────
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${novoId}`, JSON.stringify(inscricao));
+  await env.CLIENTES_KV.put(`sorteio:idx:cel:${phone}`, novoId);
+  await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
+
+  await registrarAudit(env, 'sorteio_cadastro', novoId, {
+    cel: `${phone.slice(0, 4)}*****${phone.slice(-2)}`,
+  });
+
+  return jsonResp({
+    success: true,
+    id:      novoId,
+    message: 'Cadastro realizado com sucesso!',
+  }, 201);
 }
