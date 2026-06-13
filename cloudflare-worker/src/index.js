@@ -129,7 +129,13 @@ async function isAdmin(request, env) {
   }
   // Fallback: direct ADMIN_SECRET (for migration scripts and CLI tools)
   const secret = request.headers.get('X-Itap-Admin-Secret') || '';
-  return Boolean(secret && env.ADMIN_SECRET && secret === env.ADMIN_SECRET);
+  if (secret && env.ADMIN_SECRET && secret === env.ADMIN_SECRET) return true;
+  // GitHub PAT flow: admin panel sends Authorization: token <PAT>; accept when it
+  // matches the GITHUB_TOKEN secret already stored in the Worker environment.
+  const authHeader = request.headers.get('Authorization') || '';
+  const patMatch = authHeader.match(/^(?:token|Bearer)\s+(.+)$/i);
+  if (patMatch && env.GITHUB_TOKEN && patMatch[1].trim() === env.GITHUB_TOKEN) return true;
+  return false;
 }
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────
@@ -410,6 +416,20 @@ async function router(request, env) {
   // Endpoint público — salva inscrição do sorteio no CLIENTES_KV (sem WhatsApp).
   if (path === '/api/promocao/cadastro' && method === 'POST')
     return handlePostSorteioCadastro(request, env);
+
+  // ── Admin — Sorteio Inscritos ──────────────────────────────────────────────
+  if (path === '/api/admin/sorteio/inscritos' && method === 'GET') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handleGetSorteioInscritos(env);
+  }
+
+  const mSorteio = path.match(/^\/api\/admin\/sorteio\/inscritos\/([^/]+)$/);
+  if (mSorteio) {
+    const id = decodeURIComponent(mSorteio[1]);
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (method === 'PATCH') return handlePatchSorteioInscrito(id, request, env);
+    if (method === 'DELETE') return handleDeleteSorteioInscrito(id, env);
+  }
 
   return jsonResp({ ok: false, error: 'Rota não encontrada' }, 404);
 }
@@ -1048,6 +1068,7 @@ async function handleResgatarCodigo(request, env) {
  * Armazenamento (CLIENTES_KV):
  *   sorteio:inscrito:<id>   — dados da inscrição (JSON)
  *   sorteio:idx:cel:<phone> — ID da inscrição indexado pelo celular
+ *   sorteio:idx:nasc:<normNome>__<birthdate> — ID indexado por nome normalizado + data nasc
  *   meta:sorteio_contador   — contador incremental de inscrições
  *
  * NÃO abre WhatsApp. NÃO usa fidelidade.json. Cadastro 100% interno.
@@ -1098,11 +1119,23 @@ async function handlePostSorteioCadastro(request, env) {
   }
 
   // ── Verificar duplicidade por celular ────────────────────────────────────────
-  const existingId = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
-  if (existingId) {
+  const existingIdCel = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
+  if (existingIdCel) {
     return jsonResp({
       success:           true,
-      id:                existingId,
+      id:                existingIdCel,
+      alreadyRegistered: true,
+      message:           'Você já está cadastrado e concorre a todos os sorteios mensais!',
+    });
+  }
+
+  // ── Verificar duplicidade por nome + data de nascimento (Regra 2.4) ──────────
+  const nascKey = sorteioNascKey(nome, birthdate);
+  const existingIdNasc = await env.CLIENTES_KV.get(nascKey);
+  if (existingIdNasc) {
+    return jsonResp({
+      success:           true,
+      id:                existingIdNasc,
       alreadyRegistered: true,
       message:           'Você já está cadastrado e concorre a todos os sorteios mensais!',
     });
@@ -1130,6 +1163,7 @@ async function handlePostSorteioCadastro(request, env) {
   // ── Persistir no KV ──────────────────────────────────────────────────────────
   await env.CLIENTES_KV.put(`sorteio:inscrito:${novoId}`, JSON.stringify(inscricao));
   await env.CLIENTES_KV.put(`sorteio:idx:cel:${phone}`, novoId);
+  await env.CLIENTES_KV.put(nascKey, novoId);
   await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
 
   await registrarAudit(env, 'sorteio_cadastro', novoId, {
@@ -1141,4 +1175,103 @@ async function handlePostSorteioCadastro(request, env) {
     id:      novoId,
     message: 'Cadastro realizado com sucesso!',
   }, 201);
+}
+
+// ─── Sorteio KV key helpers ───────────────────────────────────────────────────
+
+/** Normaliza nome para uso como chave KV (lowercase, sem acentos, sem espaços extras). */
+function normalizarNomeSorteio(nome) {
+  return String(nome)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+}
+
+/** Chave KV para índice nome+dataNasc. */
+function sorteioNascKey(nome, birthdate) {
+  return `sorteio:idx:nasc:${normalizarNomeSorteio(nome)}__${birthdate}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HANDLERS — ADMIN SORTEIO INSCRITOS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/admin/sorteio/inscritos — lista todos os inscritos no sorteio.
+ * Requer autenticação admin.
+ * Resposta: { ok: true, total: N, inscritos: [ { id, nome, birthdate, phone, created_at } ] }
+ */
+async function handleGetSorteioInscritos(env) {
+  const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+  const inscritos = [];
+  const BATCH = 25;
+  const keys = lista.keys.map(k => k.name);
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const lote = keys.slice(i, i + BATCH);
+    await Promise.all(lote.map(async key => {
+      const val = await env.CLIENTES_KV.get(key, 'json');
+      if (val) inscritos.push(val);
+    }));
+  }
+  inscritos.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+  return jsonResp({ ok: true, total: inscritos.length, inscritos });
+}
+
+/**
+ * PATCH /api/admin/sorteio/inscritos/:id — atualiza nome, birthdate ou phone.
+ * Campos aceitos: nome, birthdate, phone.
+ * Mantém índices KV em sincronismo.
+ */
+async function handlePatchSorteioInscrito(id, request, env) {
+  const inscricao = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
+  if (!inscricao) return jsonResp({ ok: false, error: 'Inscrito não encontrado.' }, 404);
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido.' }, 400); }
+
+  // Remove índices antigos antes de atualizar
+  const celAntigo = String(inscricao.phone || '').replace(/\D/g, '');
+  const nascKeyAntigo = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+
+  if (body.nome !== undefined)      inscricao.nome      = sanitizeString(body.nome, 200);
+  if (body.birthdate !== undefined) inscricao.birthdate = sanitizeString(body.birthdate, 20);
+  if (body.phone !== undefined)     inscricao.phone     = String(body.phone).replace(/\D/g, '');
+
+  const celNovo  = String(inscricao.phone || '').replace(/\D/g, '');
+  const nascKeyNovo = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+
+  // Remover índices antigos se mudaram
+  if (celNovo !== celAntigo && celAntigo) await env.CLIENTES_KV.delete(`sorteio:idx:cel:${celAntigo}`);
+  if (nascKeyNovo !== nascKeyAntigo)      await env.CLIENTES_KV.delete(nascKeyAntigo);
+
+  // Gravar índices novos
+  if (celNovo)  await env.CLIENTES_KV.put(`sorteio:idx:cel:${celNovo}`, id);
+  await env.CLIENTES_KV.put(nascKeyNovo, id);
+
+  inscricao.updated_at = new Date().toISOString();
+  await env.CLIENTES_KV.put(`sorteio:inscrito:${id}`, JSON.stringify(inscricao));
+
+  await registrarAudit(env, 'sorteio_inscrito_editado', id, {});
+  return jsonResp({ ok: true, inscrito: inscricao });
+}
+
+/**
+ * DELETE /api/admin/sorteio/inscritos/:id — remove inscrito e seus índices.
+ */
+async function handleDeleteSorteioInscrito(id, env) {
+  const inscricao = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
+  if (!inscricao) return jsonResp({ ok: false, error: 'Inscrito não encontrado.' }, 404);
+
+  const cel = String(inscricao.phone || '').replace(/\D/g, '');
+  const nascKey = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+
+  await env.CLIENTES_KV.delete(`sorteio:inscrito:${id}`);
+  if (cel)     await env.CLIENTES_KV.delete(`sorteio:idx:cel:${cel}`);
+  await env.CLIENTES_KV.delete(nascKey);
+
+  await registrarAudit(env, 'sorteio_inscrito_removido', id, {});
+  return jsonResp({ ok: true });
 }
