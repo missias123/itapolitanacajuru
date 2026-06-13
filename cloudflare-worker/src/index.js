@@ -134,7 +134,7 @@ async function isAdmin(request, env) {
   // matches the GITHUB_TOKEN secret already stored in the Worker environment.
   const authHeader = request.headers.get('Authorization') || '';
   const patMatch = authHeader.match(/^(?:token|Bearer)\s+(\S+)$/i);
-  if (patMatch && env.GITHUB_TOKEN && patMatch[1].trim() === env.GITHUB_TOKEN) return true;
+  if (patMatch && env.GITHUB_TOKEN && patMatch[1] === env.GITHUB_TOKEN) return true;
   return false;
 }
 
