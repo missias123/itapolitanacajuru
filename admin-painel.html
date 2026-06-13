@@ -841,20 +841,62 @@ body { overflow-x: hidden; }
       <div class="card" style="border-left:4px solid #2e7d32">
         <div class="card-header">
           <h2>&#x1F4DD; Inscritos nos Sorteios Mensais</h2>
-          <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">&#x1F4F2; Copiar Lista</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-copiar-sorteio" onclick="copiarInscritosSorteio()">&#x1F4F2; Copiar Lista</button>
+            <button class="btn" style="background:#1565c0;color:#fff" onclick="carregarInscritosSorteio()">&#x1F504; Atualizar</button>
+            <button class="btn" style="background:#6a1b9a;color:#fff" onclick="exportarInscritosCSV()">&#x2B07;&#xFE0F; CSV</button>
+          </div>
         </div>
         <div class="card-body">
           <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.85rem;color:#1b5e20">
             📋 <strong>Lista permanente:</strong> quem se inscrever participa de <em>todos</em> os sorteios mensais até o encerramento (<span id="sort-datafim-exib">02/01/2027</span>). A lista <strong>não é zerada</strong> a cada mês.
           </div>
-          <div class="hint" style="margin-bottom:10px">&#x26A0;&#xFE0F; Estes são os clientes que enviaram solicitação de inscrição pelo WhatsApp. Confirme manualmente na agenda antes do sorteio.</div>
-          <div id="sort-inscritos-lista" style="font-size:.82rem;color:#555;padding:10px;background:#f1f8e9;border-radius:8px;min-height:60px">
-            <em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>
+          <!-- Filtro + busca -->
+          <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <input type="text" id="sort-busca" placeholder="🔍 Buscar por nome, telefone ou ID…" oninput="filtrarInscritosSorteio()" style="flex:1;min-width:180px;padding:8px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.87rem">
+            <span id="sort-contador-badge" style="align-self:center;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:20px;padding:4px 12px;font-size:.8rem;color:#1b5e20;white-space:nowrap">— inscritos</span>
           </div>
-          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-            <input type="text" id="sort-add-nome" placeholder="Nome do inscrito" style="flex:2;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
-            <input type="tel" id="sort-add-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" maxlength="15" style="flex:1.5;padding:9px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.9rem">
-            <button onclick="adicionarInscritoSorteio()" style="padding:9px 16px;background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">&#x2795; Adicionar</button>
+          <div id="sort-inscritos-msg" class="hint" style="display:none;margin-bottom:8px"></div>
+          <!-- Tabela de inscritos -->
+          <div class="tabela-wrap" style="max-height:420px;overflow-y:auto">
+            <table class="tabela" id="tabela-inscritos-sorteio">
+              <thead>
+                <tr>
+                  <th style="min-width:100px">ID</th>
+                  <th style="min-width:160px">Nome</th>
+                  <th style="min-width:100px">Data Nasc.</th>
+                  <th style="min-width:120px">Telefone</th>
+                  <th style="min-width:130px">Cadastrado em</th>
+                  <th style="min-width:100px">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="sort-inscritos-tbody">
+                <tr><td colspan="6" style="text-align:center;color:#888;font-style:italic">Clique em &#x1F504; Atualizar para carregar a lista.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Formulário inline de edição -->
+          <div id="sort-edit-box" style="display:none;margin-top:14px;background:#fff3e0;border:2px solid #fb8c00;border-radius:10px;padding:14px">
+            <div style="font-weight:800;color:#e65100;margin-bottom:10px">✏️ Editar Inscrito — <span id="sort-edit-id-label"></span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <div class="campo-edit">
+                <label for="sort-edit-nome">Nome Completo</label>
+                <input type="text" id="sort-edit-nome" maxlength="200" placeholder="Nome completo">
+              </div>
+              <div class="campo-edit">
+                <label for="sort-edit-nasc">Data de Nascimento</label>
+                <input type="date" id="sort-edit-nasc" placeholder="AAAA-MM-DD">
+              </div>
+              <div class="campo-edit">
+                <label for="sort-edit-tel">Telefone (só dígitos)</label>
+                <input type="tel" id="sort-edit-tel" maxlength="15" placeholder="Ex: 16999990000">
+              </div>
+            </div>
+            <input type="hidden" id="sort-edit-id-hidden">
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn btn-salvar" onclick="salvarEdicaoInscritoSorteio()">💾 Salvar</button>
+              <button class="btn btn-cinza" onclick="fecharEdicaoInscritoSorteio()">✕ Cancelar</button>
+            </div>
           </div>
         </div>
       </div>
@@ -3683,7 +3725,7 @@ function irPara(seção,btn){
   if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');safeInit('SABORES',()=>renderizarSaboresAdmin());}
   if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');safeInit('ESTOQUE',()=>renderizarEstoqueAdmin());}
   if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');safeInit('PRODUTOS',()=>renderProdutosAdmin());}
-  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');safeInit('PROMOÇÃO',()=>{preencherPromoção();preencherSorteio();renderPromocoesTable();});}
+  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');safeInit('PROMOÇÃO',()=>{preencherPromoção();preencherSorteio();renderPromocoesTable();carregarInscritosSorteio();});}
   if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');safeInit('PARTICIPANTES',()=>renderParticipantes());}
   if(ids.includes('clientes')){
     console.log('[irPara] Inicializando CLIENTES');
@@ -5415,57 +5457,197 @@ async function cadastrarClienteManual(){
 }
 
 // ═══════════════════════════════════════════════════════════
-// SORTEIOS MENSAIS — ADMIN
+// SORTEIOS MENSAIS — ADMIN (via Cloudflare Worker KV)
 // ═══════════════════════════════════════════════════════════
-function renderInscritosSorteio() {
-  const inscritos = STATE.fidelidade?.sorteioInscritos || [];
-  const el = document.getElementById('sort-inscritos-lista');
+
+// Cache local dos inscritos carregados da API
+let _sortInscritos = [];
+
+function _sortMsg(txt, tipo) {
+  const el = document.getElementById('sort-inscritos-msg');
   if (!el) return;
-  if (inscritos.length === 0) {
-    el.innerHTML = '<em>Nenhum inscrito registrado. Adicione manualmente abaixo.</em>';
-    return;
-  }
-  el.innerHTML = inscritos.map((c, i) =>
-    `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #c8e6c9">
-      <span><strong>${i+1}.</strong> ${c.nome} — ${c.cel}</span>
-      <button onclick="removerInscritoSorteioComConfirm(${i})" style="background:none;border:none;color:#c62828;font-size:1rem;cursor:pointer" title="Remover">✕</button>
-    </div>`
-  ).join('');
+  if (!txt) { el.style.display = 'none'; el.textContent = ''; return; }
+  el.style.display = 'block';
+  el.style.color = tipo === 'erro' ? '#c62828' : tipo === 'ok' ? '#2e7d32' : '#555';
+  el.textContent = txt;
 }
 
-function adicionarInscritoSorteio() {
-  const nome = (document.getElementById('sort-add-nome').value || '').trim();
-  const cel  = (document.getElementById('sort-add-cel').value || '').trim();
-  if (!nome || cel.length < 14) { toast('Informe nome e celular válido.', 'erro'); return; }
-  if (!STATE.fidelidade) STATE.fidelidade = {};
-  if (!STATE.fidelidade.sorteioInscritos) STATE.fidelidade.sorteioInscritos = [];
-  // Verificar duplicata por celular
-  const celLimpo = cel.replace(/\D/g,'');
-  const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
-  if (jaExiste) {
-    const numExistente = STATE.fidelidade.sorteioInscritos.indexOf(jaExiste) + 1;
-    toast(`❌ ${jaExiste.nome} já está inscrito(a) — Nº ${String(numExistente).padStart(3,'0')}`, 'erro');
+async function carregarInscritosSorteio() {
+  const tbody = document.getElementById('sort-inscritos-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888">⏳ Carregando…</td></tr>';
+  _sortMsg('');
+  const token = getAdminToken();
+  if (!token) {
+    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">⚠️ Token GitHub necessário para carregar inscritos.</td></tr>';
     return;
   }
-  STATE.fidelidade.sorteioInscritos.push({ nome, cel, data: new Date().toLocaleDateString('pt-BR') });
-  document.getElementById('sort-add-nome').value = '';
-  document.getElementById('sort-add-cel').value = '';
-  renderInscritosSorteio();
-  toast(`${nome} adicionado(a) como inscrito Nº ${String(STATE.fidelidade.sorteioInscritos.length).padStart(3,'0')}!`, 'sucesso');
+  try {
+    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos', {
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
+    }, 12000);
+    const dados = await r.json();
+    if (!dados.ok) { _sortMsg('Erro ao carregar: ' + (dados.error || r.status), 'erro'); tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>'; return; }
+    _sortInscritos = dados.inscritos || [];
+    _renderTabelaInscritos(_sortInscritos);
+  } catch (e) {
+    _sortMsg('Erro de rede: ' + e.message, 'erro');
+    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha de conexão com a API.</td></tr>';
+  }
 }
 
-function removerInscritoSorteio(idx) {
-  if (!confirm('Remover este inscrito?')) return;
-  STATE.fidelidade.sorteioInscritos.splice(idx, 1);
-  renderInscritosSorteio();
-  toast('Inscrito removido.', 'ok');
+function _fmtData(iso) {
+  if (!iso) return '—';
+  const d = iso.slice(0, 10).split('-');
+  return d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : iso.slice(0, 10);
+}
+
+function _fmtTel(phone) {
+  const d = String(phone || '').replace(/\D/g, '');
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return phone || '—';
+}
+
+function _renderTabelaInscritos(lista) {
+  const tbody = document.getElementById('sort-inscritos-tbody');
+  const badge = document.getElementById('sort-contador-badge');
+  if (badge) badge.textContent = lista.length + ' inscrito' + (lista.length !== 1 ? 's' : '');
+  if (!tbody) return;
+  if (lista.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;font-style:italic">Nenhum inscrito encontrado.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map((ins, i) => {
+    const idEsc = String(ins.id || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<tr>
+      <td style="font-size:.78rem;color:#555">${ins.id || '—'}</td>
+      <td><strong>${ins.nome || '—'}</strong></td>
+      <td>${_fmtData(ins.birthdate)}</td>
+      <td>${_fmtTel(ins.phone)}</td>
+      <td style="font-size:.78rem;color:#777">${_fmtData(ins.created_at)} ${(ins.created_at||'').slice(11,16)}</td>
+      <td style="white-space:nowrap">
+        <button data-sort-edit="${idEsc}" style="background:#1565c0;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer;margin-right:4px">✏️</button>
+        <button data-sort-del="${idEsc}" style="background:#c62828;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+  // Attach event listeners (avoid inline onclick to prevent XSS)
+  tbody.querySelectorAll('[data-sort-edit]').forEach(btn =>
+    btn.addEventListener('click', () => editarInscritoSorteio(btn.getAttribute('data-sort-edit')))
+  );
+  tbody.querySelectorAll('[data-sort-del]').forEach(btn =>
+    btn.addEventListener('click', () => deletarInscritoSorteio(btn.getAttribute('data-sort-del')))
+  );
+}
+
+function filtrarInscritosSorteio() {
+  const q = (document.getElementById('sort-busca')?.value || '').toLowerCase();
+  if (!q) { _renderTabelaInscritos(_sortInscritos); return; }
+  const filtrado = _sortInscritos.filter(ins =>
+    (ins.nome || '').toLowerCase().includes(q) ||
+    (ins.phone || '').includes(q) ||
+    (ins.id || '').toLowerCase().includes(q)
+  );
+  _renderTabelaInscritos(filtrado);
+}
+
+function editarInscritoSorteio(id) {
+  const ins = _sortInscritos.find(i => i.id === id);
+  if (!ins) return;
+  document.getElementById('sort-edit-id-hidden').value = id;
+  document.getElementById('sort-edit-id-label').textContent = id;
+  document.getElementById('sort-edit-nome').value = ins.nome || '';
+  document.getElementById('sort-edit-nasc').value = ins.birthdate || '';
+  document.getElementById('sort-edit-tel').value = String(ins.phone || '').replace(/\D/g,'');
+  document.getElementById('sort-edit-box').style.display = 'block';
+  document.getElementById('sort-edit-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function fecharEdicaoInscritoSorteio() {
+  document.getElementById('sort-edit-box').style.display = 'none';
+}
+
+async function salvarEdicaoInscritoSorteio() {
+  const id   = document.getElementById('sort-edit-id-hidden').value;
+  const nome = document.getElementById('sort-edit-nome').value.trim();
+  const nasc = document.getElementById('sort-edit-nasc').value.trim();
+  const tel  = document.getElementById('sort-edit-tel').value.replace(/\D/g,'');
+  if (!nome || nome.length < 3) { toast('Nome precisa ter pelo menos 3 caracteres.', 'erro'); return; }
+  if (!nasc || !/^\d{4}-\d{2}-\d{2}$/.test(nasc) || isNaN(new Date(nasc).getTime())) { toast('Data de nascimento inválida (use AAAA-MM-DD).', 'erro'); return; }
+  if (!tel || tel.length < 10) { toast('Telefone inválido.', 'erro'); return; }
+  const token = getAdminToken();
+  if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+  mostrarLoading('Salvando alterações…');
+  try {
+    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token },
+      body: JSON.stringify({ nome, birthdate: nasc, phone: tel })
+    }, 10000);
+    const dados = await r.json();
+    if (dados.ok) {
+      toast('✅ Inscrito atualizado com sucesso!', 'sucesso');
+      fecharEdicaoInscritoSorteio();
+      await carregarInscritosSorteio();
+    } else {
+      toast('❌ ' + (dados.error || 'Erro ao salvar.'), 'erro');
+    }
+  } catch (e) {
+    toast('Erro de rede: ' + e.message, 'erro');
+  } finally {
+    ocultarLoading();
+  }
+}
+
+async function deletarInscritoSorteio(id) {
+  const ins = _sortInscritos.find(i => i.id === id);
+  const nomeExib = ins ? ins.nome : id;
+  if (!confirm(`Remover o inscrito "${nomeExib}" (${id})?\n\nEsta ação não pode ser desfeita.`)) return;
+  const token = getAdminToken();
+  if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+  mostrarLoading('Removendo inscrito…');
+  try {
+    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
+    }, 10000);
+    const dados = await r.json();
+    if (dados.ok) {
+      toast('✅ Inscrito removido.', 'sucesso');
+      await carregarInscritosSorteio();
+    } else {
+      toast('❌ ' + (dados.error || 'Erro ao remover.'), 'erro');
+    }
+  } catch (e) {
+    toast('Erro de rede: ' + e.message, 'erro');
+  } finally {
+    ocultarLoading();
+  }
 }
 
 function copiarInscritosSorteio() {
-  const inscritos = STATE.fidelidade?.sorteioInscritos || [];
-  if (inscritos.length === 0) { toast('Nenhum inscrito para copiar.', 'aviso'); return; }
-  const lista = inscritos.map((c, i) => `${i+1}. ${c.nome} — ${c.cel}`).join('\n');
-  navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${inscritos.length} inscritos copiada!`, 'sucesso'));
+  if (_sortInscritos.length === 0) { toast('Carregue a lista antes de copiar.', 'aviso'); return; }
+  const lista = _sortInscritos.map((ins, i) =>
+    `${i+1}. ${ins.id} — ${ins.nome} — Nasc: ${_fmtData(ins.birthdate)} — Tel: ${_fmtTel(ins.phone)}`
+  ).join('\n');
+  navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${_sortInscritos.length} inscritos copiada!`, 'sucesso'));
+}
+
+function exportarInscritosCSV() {
+  if (_sortInscritos.length === 0) { toast('Carregue a lista antes de exportar.', 'aviso'); return; }
+  const header = 'ID,Nome,Data Nasc.,Telefone,Cadastrado Em';
+  const linhas = _sortInscritos.map(ins =>
+    [ins.id, ins.nome, ins.birthdate, ins.phone, (ins.created_at||'').slice(0,16)].map(v => '"' + String(v||'').replace(/"/g,'""') + '"').join(',')
+  );
+  const csv = [header, ...linhas].join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'inscritos-sorteio-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 async function salvarSorteio() {
@@ -5497,7 +5679,6 @@ function preencherSorteio() {
     const [y, m, d] = s.dataFim.split('-');
     se.textContent = `${d}/${m}/${y}`;
   }
-  renderInscritosSorteio();
 }
 
 function mascaraTelAdmin(el) {
