@@ -161,11 +161,13 @@
     }
     #botoes-acao-promocao {
       display: grid;
-      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: 12px;
       margin-bottom: 16px;
+      align-items: stretch;
     }
     .promo-acao-btn {
-      min-height: 48px;
+      min-height: 52px;
       border-radius: 14px;
       font-size: .94rem;
       font-weight: 900;
@@ -177,11 +179,45 @@
       padding: 12px 14px;
       color: #fff;
       box-shadow: 0 8px 20px rgba(0,0,0,.16);
-      transition: transform .15s ease, filter .15s ease;
+      border: 1px solid rgba(255,255,255,.25);
+      transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+      line-height: 1.25;
+      width: 100%;
+      cursor: pointer;
     }
-    .promo-acao-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
-    #btn-quero-participar-sorteio { background: linear-gradient(135deg,#E65100,#FF6D00); }
-    #btn-ver-cardapio { background: linear-gradient(135deg,#0D47A1,#1565C0); }
+    .promo-acao-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+      box-shadow: 0 12px 28px rgba(0,0,0,.22);
+    }
+    #btn-ver-regras-sorteio {
+      background: linear-gradient(135deg,#E65100,#FF6D00);
+    }
+    #btn-quero-participar-principal {
+      background: linear-gradient(135deg,#E53935,#B71C1C);
+    }
+    .promo-acao-btn--principal {
+      min-height: 62px;
+      border-radius: 18px;
+      font-size: clamp(1rem, 2.3vw, 1.12rem);
+      padding: 16px 22px;
+      letter-spacing: .3px;
+      box-shadow: 0 14px 34px rgba(183,28,28,.34);
+      animation: ctaPulse 2.2s ease-in-out infinite;
+    }
+    .promo-acao-btn--principal:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 18px 36px rgba(183,28,28,.45);
+      filter: brightness(1.08);
+    }
+    @keyframes ctaPulse {
+      0%, 100% {
+        box-shadow: 0 14px 34px rgba(183,28,28,.34), 0 0 0 0 rgba(229,57,53,.35);
+      }
+      50% {
+        box-shadow: 0 18px 40px rgba(183,28,28,.44), 0 0 0 12px rgba(229,57,53,0);
+      }
+    }
     #passo-a-passo-promocao {
       background: #fff;
       border: 1px solid #F5D7BC;
@@ -215,8 +251,34 @@
       box-shadow: 0 4px 12px rgba(232,0,13,.3);
       flex-shrink: 0;
     }
-    @media (min-width: 760px) {
-      #botoes-acao-promocao { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    @media (max-width: 699px) {
+      #botoes-acao-promocao {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 10px;
+      }
+      .promo-acao-btn {
+        min-height: 56px;
+        font-size: .95rem;
+        padding: 12px 10px;
+      }
+      .promo-acao-btn--principal {
+        min-height: 60px;
+        font-size: 1.03rem;
+      }
+    }
+    @media (min-width: 700px) and (max-width: 1023px) {
+      #botoes-acao-promocao {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      #botoes-acao-promocao {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+      }
+      .promo-acao-btn--principal {
+        min-height: 66px;
+        font-size: 1.14rem;
+      }
     }
 
     /* BOTÕES */
@@ -502,8 +564,8 @@ body { overflow-x: hidden; }
 </div>
 
 <div id="botoes-acao-promocao" aria-label="Ações principais da página de promoções">
-  <a id="btn-quero-participar-sorteio" data-config="promocaoPagina.btnParticipar" class="promo-acao-btn" href="#" onclick="abrirRegrasSorteioPromo(); return false;">🎁 Quero Participar do Sorteio</a>
-  <a id="btn-ver-cardapio" data-config="promocaoPagina.btnCardapio" class="promo-acao-btn" href="index.html#cardapio">🍦 Ver Cardápio</a>
+  <button type="button" id="btn-ver-regras-sorteio" data-config="promocaoPagina.btnCardapio" class="promo-acao-btn" onclick="abrirRegrasSorteioPromo()">📜 Ver Regras do Sorteio</button>
+  <button type="button" id="btn-quero-participar-principal" data-config="promocaoPagina.btnParticipar" class="promo-acao-btn promo-acao-btn--principal" onclick="destacarParticipacaoSorteioPromo()">Quero Participar</button>
 </div>
 
 <div id="passo-a-passo-promocao" aria-label="Passo a passo para participar das promoções">

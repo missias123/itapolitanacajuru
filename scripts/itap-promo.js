@@ -73,6 +73,7 @@
         bloco.style.display = 'block';
         setTimeout(function() { bloco.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
       }
+
       return;
     }
     var bloco = document.getElementById('bloco-regras-sorteio-promo');
@@ -83,6 +84,21 @@
     if (bloco.style.display === 'block') {
       setTimeout(function() { bloco.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
     }
+
+  }
+
+  function destacarParticipacaoSorteioPromo() {
+    abrirRegrasSorteioPromo();
+    var bloco = document.getElementById('bloco-regras-sorteio-promo');
+    var aceite = document.getElementById('aceite-sorteio-inline');
+    setTimeout(function() {
+      if (bloco && bloco.style.display === 'block') {
+        bloco.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (aceite) {
+        aceite.focus({ preventScroll: true });
+      }
+    }, 180);
   }
 
   function verificarAceiteSorteioPromo() {
