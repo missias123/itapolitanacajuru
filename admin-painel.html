@@ -5039,8 +5039,21 @@ async function adicionarParticipanteManual() {
     if (!STATE.fidelidade.sorteioInscritos) STATE.fidelidade.sorteioInscritos = [];
     const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
     if (jaExiste) { toast('\u274c ' + jaExiste.nome + ' já está inscrito(a) no sorteio.', 'erro'); return; }
-    STATE.fidelidade.sorteioInscritos.push({ nome, cel, dataNasc: '', data: new Date().toLocaleDateString('pt-BR'), hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) });
+    const cadastroISO = new Date().toISOString();
+    STATE.fidelidade.sorteioInscritos.push({
+      nome, cel: celLimpo, dataNasc: '', cadastro: cadastroISO,
+      data: new Date().toLocaleDateString('pt-BR'),
+      hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})
+    });
     const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
+    if (ok) {
+      document.getElementById('add-part-nome').value = '';
+      document.getElementById('add-part-cel').value = '';
+      toast('\u2705 ' + nome + ' adicionado(a) ao sorteio com sucesso!', 'sucesso');
+      renderParticipantes();
+      await carregarInscritosSorteio();
+      return;
+    }
   } else {
     if (!STATE.clientes) STATE.clientes = { clientes: {}, indice_celular: {} };
     if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
@@ -5479,20 +5492,44 @@ async function carregarInscritosSorteio() {
   _sortMsg('');
   const token = getAdminToken();
   if (!token) {
-    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">⚠️ Token GitHub necessário para carregar inscritos.</td></tr>';
+    // Sem token: mostrar inscritos salvos localmente em fidelidade.json
+    _carregarInscritosLocal();
     return;
   }
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos', {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
     }, 12000);
+    const ct = r.headers.get('content-type') || '';
+    if (!ct.includes('application/json')) throw new Error('Resposta não-JSON (Worker indisponível)');
     const dados = await r.json();
     if (!dados.ok) { _sortMsg('Erro ao carregar: ' + (dados.error || r.status), 'erro'); tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>'; return; }
     _sortInscritos = dados.inscritos || [];
     _renderTabelaInscritos(_sortInscritos);
   } catch (e) {
-    _sortMsg('Erro de rede: ' + e.message, 'erro');
-    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha de conexão com a API.</td></tr>';
+    console.warn('[Admin] Worker API indisponível, usando fallback local:', e.message);
+    _carregarInscritosLocal();
+  }
+}
+
+function _carregarInscritosLocal() {
+  const tbody = document.getElementById('sort-inscritos-tbody');
+  const lista = (STATE.fidelidade?.sorteioInscritos || []).map((ins, i) => {
+    const id = ins.id || ('LOCAL-' + String(i + 1).padStart(4, '0'));
+    return {
+      id,
+      nome: ins.nome || '—',
+      birthdate: ins.dataNasc || '',
+      phone: String(ins.cel || '').replace(/\D/g, ''),
+      created_at: ins.cadastro || ins.data || ''
+    };
+  });
+  _sortInscritos = lista;
+  _renderTabelaInscritos(lista);
+  if (lista.length === 0) {
+    _sortMsg('ℹ️ Worker API offline — nenhum inscrito local encontrado. Adicione inscritos manualmente abaixo.', 'aviso');
+  } else {
+    _sortMsg('⚠️ Worker API offline — exibindo ' + lista.length + ' inscrito(s) adicionados manualmente.', 'aviso');
   }
 }
 
@@ -5578,6 +5615,25 @@ async function salvarEdicaoInscritoSorteio() {
   if (!tel || tel.length < 10) { toast('Telefone inválido.', 'erro'); return; }
   const token = getAdminToken();
   if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+
+  // Modo local (Worker offline): atualiza em STATE.fidelidade.sorteioInscritos
+  if (id.startsWith('LOCAL-')) {
+    const idx = _sortInscritos.findIndex(i => i.id === id);
+    if (idx > -1) {
+      const localIdx = parseInt(id.replace('LOCAL-',''), 10) - 1;
+      const arr = STATE.fidelidade?.sorteioInscritos;
+      if (arr && arr[localIdx]) {
+        arr[localIdx].nome = nome;
+        arr[localIdx].dataNasc = nasc;
+        arr[localIdx].cel = tel;
+      }
+      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: editar inscrito manual ' + nome);
+      if (ok) { toast('✅ Inscrito atualizado!', 'sucesso'); fecharEdicaoInscritoSorteio(); await carregarInscritosSorteio(); }
+      else { toast('❌ Erro ao salvar.', 'erro'); }
+    }
+    return;
+  }
+
   mostrarLoading('Salvando alterações…');
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
@@ -5606,6 +5662,20 @@ async function deletarInscritoSorteio(id) {
   if (!confirm(`Remover o inscrito "${nomeExib}" (${id})?\n\nEsta ação não pode ser desfeita.`)) return;
   const token = getAdminToken();
   if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+
+  // Modo local (Worker offline): remove de STATE.fidelidade.sorteioInscritos
+  if (id.startsWith('LOCAL-')) {
+    const localIdx = parseInt(id.replace('LOCAL-',''), 10) - 1;
+    const arr = STATE.fidelidade?.sorteioInscritos;
+    if (arr && arr[localIdx] !== undefined) {
+      arr.splice(localIdx, 1);
+      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: remover inscrito manual ' + nomeExib);
+      if (ok) { toast('✅ Inscrito removido.', 'sucesso'); await carregarInscritosSorteio(); }
+      else { toast('❌ Erro ao remover.', 'erro'); }
+    }
+    return;
+  }
+
   mostrarLoading('Removendo inscrito…');
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {

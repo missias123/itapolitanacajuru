@@ -65,10 +65,24 @@ self.addEventListener('fetch', (event) => {
 
   if (!url.protocol.startsWith('http')) return;
 
-  // GitHub API, raw e painel admin — Network Only (nunca cachear)
+  // Requisições não-GET (POST, PATCH, DELETE…) nunca devem ser interceptadas pelo SW
+  if (request.method !== 'GET') {
+    event.respondWith(
+      fetch(request).catch(() =>
+        new Response(JSON.stringify({ ok: false, error: 'Offline' }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        })
+      )
+    );
+    return;
+  }
+
+  // GitHub API, raw, API Worker e painel admin — Network Only (nunca cachear)
   // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
+      url.hostname === 'api.itapolitanacajuru.com.br' ||
       url.pathname.startsWith('/dados/') ||
       url.pathname === '/admin-painel.html') {
     event.respondWith(
