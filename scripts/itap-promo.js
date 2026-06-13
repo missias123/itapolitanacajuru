@@ -52,14 +52,16 @@
   // ═══════════════════════════════════════════════════════════
   // SORTEIO MENSAL — FUNÇÕES COMPLETAS
   // ═══════════════════════════════════════════════════════════
-  var WHATS_SORVETERIA = '5516996062046';
+  // Endpoint do Cloudflare Worker — cadastro interno (sem WhatsApp)
+  var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
   var PROMO_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
   var inputPromoData = document.getElementById('promo-data-nasc-cliente');
   var inputPromoCelular = document.getElementById('promo-celular-cliente');
   var inputPromoHp = document.getElementById('promo-honeypot');
-  var btnEnviarPromo = document.getElementById('promo-enviar-whatsapp');
+  // ID atualizado: botão agora envia para o backend (sem WhatsApp)
+  var btnEnviarPromo = document.getElementById('promo-enviar-cadastro');
   var feedbackPromo = document.getElementById('promo-feedback-message');
   var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
   var _promoCadastroLiberado = false;
@@ -211,7 +213,7 @@
     if (!opts.manterRegras && regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
-      btnEnviarPromo.textContent = '💬 Enviar Cadastro via WhatsApp';
+      btnEnviarPromo.textContent = '📝 Enviar Cadastro';
     }
     atualizarFluxoCadastroPromo();
   }
@@ -227,62 +229,8 @@
     return idade;
   }
 
-  function montarMensagemWhatsappPromo(idUnico, numeroInscricao, nome, celFmt, dataNasc) {
-    return [
-      '🍦 *SORTEIO MENSAL — Sorveteria Itapolitana Cajuru*',
-      '',
-      '*ID Permanente:* ' + idUnico,
-      '*Número de Inscrição:* #' + numeroInscricao,
-      '*Nome:* ' + nome,
-      '*Celular:* ' + celFmt,
-      '*Data de nascimento:* ' + dataNasc,
-      '',
-      '⚠️ *ATENÇÃO IMPORTANTE:*',
-      'Os dados informados acima devem ser *idênticos* aos do seu documento oficial com foto (RG ou CNH).',
-      '',
-      '🚫 *O PRÊMIO NÃO SERÁ ENTREGUE* se o nome ou a data de nascimento do documento divergirem do cadastro.',
-      '',
-      'Para retirar o prêmio, apresente *pessoalmente*:',
-      '📄 Documento oficial com foto (RG ou CNH) — original',
-      '📲 Celular cadastrado com WhatsApp ativo',
-      '',
-      'Estou ciente das regras e concordo com o regulamento do sorteio. 🎉'
-    ].join('\n');
-  }
-
-  function montarMensagemWhatsappFallbackPromo(nome, celFmt, dataNasc) {
-    return [
-      'Olá! Quero participar do Sorteio Mensal da Sorveteria Itapolitana Cajuru.',
-      'Nome: ' + nome,
-      'Data de nascimento: ' + dataNasc,
-      'Celular: ' + celFmt,
-      '',
-      'Estou ciente das regras de retirada do prêmio e aguardo a confirmação do meu cadastro.'
-    ].join('\n');
-  }
-
-  function abrirWhatsAppPromo(msg) {
-    try {
-      window.open('https://wa.me/' + WHATS_SORVETERIA + '?text=' + encodeURIComponent(msg), '_blank', 'noopener,noreferrer');
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function finalizarCadastroPromo(msgFeedback, msgWhatsapp) {
-    exibirRegrasRetiradaPromo();
-    var abriuWhats = abrirWhatsAppPromo(msgWhatsapp);
-    mostrarMsgSorteio(abriuWhats ? msgFeedback : msgFeedback + ' Se o WhatsApp não abriu, tente novamente.', 'ok');
-    _promoLimparRate();
-    resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
-  }
-
-  // Token lido do localStorage (configurado pelo admin no painel)
-  var _GH_TK_P = (function(){return localStorage.getItem('itap_gh_token')||'';})();
-  var _GH_CLIENTES = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/clientes.json';
-  // URL do arquivo de fidelidade (inscrições do sorteio + config sorteio)
-  var _GH_FID = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/dados/fidelidade.json';
+  // ─── Novo fluxo: POST /api/promocao/cadastro (sem WhatsApp, sem GitHub token no front-end)
+  // Substitui toda a lógica anterior que usava _GH_TK_P, _GH_FID e _GH_CLIENTES.
 
   // ═══ SEGURANÇA: Rate Limiting local (máx. 3 tentativas em 30 min por dispositivo) ═══
   function _promoRateKey() { return 'itap_promo_rate_' + (navigator.language||'') + (screen.width||''); }
@@ -308,24 +256,9 @@
   }
   function _promoLimparRate() { localStorage.removeItem(_promoRateKey()); }
 
-  function normalizarNomePromo(nome) {
-    return String(nome || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .toLowerCase();
-  }
-
-  function gerarIdHashPromo() {
-    if (window.crypto && window.crypto.getRandomValues) {
-      var arr = new Uint8Array(4);
-      window.crypto.getRandomValues(arr);
-      return Array.from(arr).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('').toUpperCase();
-    }
-    return Math.random().toString(36).slice(2, 10).toUpperCase();
-  }
-
+  // ─── enviarSorteioPromo: envia dados ao backend via POST /api/promocao/cadastro
+  // ANTES: gravava direto no GitHub API + abria WhatsApp.
+  // AGORA: chama o Worker (ITAP_WORKER_API) e exibe o ID retornado na tela (sem WhatsApp).
   async function enviarSorteioPromo() {
     if (!_promoCadastroLiberado) return;
     if (window._sorteioEncerrado) {
@@ -333,7 +266,7 @@
       return;
     }
     if (inputPromoHp && inputPromoHp.value) {
-      mostrarMsgSorteio('Erro de validacao. Tente novamente.', 'aviso');
+      mostrarMsgSorteio('Erro de validação. Tente novamente.', 'aviso');
       return;
     }
 
@@ -343,7 +276,7 @@
       return;
     }
 
-    var nome = (inputPromoNome && inputPromoNome.value ? inputPromoNome.value : '').replace(/[<>&"'/\\]/g, '').trim();
+    var nome = (inputPromoNome && inputPromoNome.value ? inputPromoNome.value : '').replace(/[<>&"'\/]/g, '').trim();
     var dataNasc = inputPromoData ? inputPromoData.value.trim() : '';
     var dataNascIso = parseDataBrPromoToIso(dataNasc);
     var cel = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
@@ -369,223 +302,47 @@
 
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
-      btnEnviarPromo.textContent = '⏳ Verificando...';
+      btnEnviarPromo.textContent = '⏳ Enviando...';
     }
-    mostrarMsgSorteio('⏳ Verificando cadastro, aguarde...', 'info');
-    if (!_GH_TK_P) {
-      finalizarCadastroPromo(
-        '✅ Iniciamos o envio do seu cadastro via WhatsApp.',
-        montarMensagemWhatsappFallbackPromo(nome, formatarCelularPromo(cel), dataNasc)
-      );
-      return;
-    }
+    mostrarMsgSorteio('⏳ Registrando seu cadastro, aguarde...', 'info');
+
     try {
-      var r = await fetch(_GH_FID + '?t=' + Date.now(), {
-        headers: { 'Authorization': 'token ' + _GH_TK_P, 'Accept': 'application/vnd.github.v3+json' }
+      var resposta = await fetch(ITAP_WORKER_API + '/api/promocao/cadastro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: nome,
+          birthdate: dataNascIso,
+          phone: cel,
+          regulation_accept: true
+        })
       });
-      if (!r.ok) throw new Error('Erro ' + r.status);
-      var d = await r.json();
-      var sha = d.sha;
-      var bin = atob(d.content.replace(/\n/g, ''));
-      var bytes = new Uint8Array(bin.length);
-      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      var fid = JSON.parse(new TextDecoder('utf-8').decode(bytes));
-      var inscritos = fid.sorteioInscritos || [];
-      var celLimpo = cel;
-      var nomeNorm = normalizarNomePromo(nome);
-      var celFmt = formatarCelularPromo(cel);
 
-      var cResp = await fetch(_GH_CLIENTES + '?t=' + Date.now(), {
-        headers: { 'Authorization': 'token ' + _GH_TK_P, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (!cResp.ok) throw new Error('Erro ao consultar clientes: ' + cResp.status);
-      var cApi = await cResp.json();
-      var cSha = cApi.sha;
-      var cBin = atob(cApi.content.replace(/\n/g, ''));
-      var cBytes = new Uint8Array(cBin.length);
-      for (var bi = 0; bi < cBin.length; bi++) cBytes[bi] = cBin.charCodeAt(bi);
-      var cData = JSON.parse(new TextDecoder('utf-8').decode(cBytes));
-      var clientesMap = cData.clientes || {};
-      var idxCel = cData.indice_celular || {};
-      var idUnico = null;
-      var clienteNovoCriado = false;
-      var celularClienteAtualizado = false;
+      var dados;
+      try { dados = await resposta.json(); } catch (_) { dados = {}; }
 
-      var idsClientes = Object.keys(clientesMap);
-      for (var ci = 0; ci < idsClientes.length; ci++) {
-        var cid = idsClientes[ci];
-        var cli = clientesMap[cid] || {};
-        var cliNomeOk = normalizarNomePromo(cli.nome || '') === nomeNorm;
-        var cliNascOk = String(cli.dataNasc || '').trim() === dataNascIso;
-        if (cliNomeOk && cliNascOk) {
-          idUnico = cid;
-          // Verificar se já está nos inscritos do sorteio
-          var jaInscrito = inscritos.some(function(ins) {
-            return ins.id_permanente === idUnico || (normalizarNomePromo(ins.nome) === nomeNorm && parseDataBrPromoToIso(ins.dataNasc || ins.nasc) === dataNascIso);
-          });
-          if (jaInscrito) {
-            mostrarMsgSorteio('✅ Você já está cadastrado e concorrendo a todos os sorteios mensais!', 'ok');
-            if (btnEnviarPromo) {
-              btnEnviarPromo.disabled = false;
-              btnEnviarPromo.textContent = '💬 Enviar Cadastro via WhatsApp';
-            }
-            exibirRegrasRetiradaPromo();
-            return;
-          }
-          break;
-        }
-      }
-
-      if (!idUnico) {
-        var maxNum = 0;
-        idsClientes.forEach(function(k) {
-          var match = k.match(/USR-2026-(\d+)/);
-          if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
-        });
-        idUnico = 'USR-2026-' + String(maxNum + 1).padStart(4, '0');
-        var agoraIso = new Date().toISOString();
-        clientesMap[idUnico] = {
-          id_permanente: idUnico,
-          id_hash: gerarIdHashPromo(),
-          nome: nome,
-          dataNasc: dataNascIso,
-          cel: celLimpo,
-          cel_anterior: [],
-          cadastro: agoraIso,
-          saldoPontos: 0,
-          codigosUsados: [],
-          resgates: [],
-          totalPremios: 0,
-          totalCodigos: 0,
-          historico_alteracoes: [{ data: agoraIso, tipo: 'cadastro_promo', descricao: 'Cadastro originado na promoção', por: 'site' }],
-          bloqueado: false,
-          motivo_bloqueio: null,
-          tentativas_fraude: 0,
-          ultimo_acesso: agoraIso
-        };
-        clienteNovoCriado = true;
+      if (dados.success) {
+        exibirRegrasRetiradaPromo();
+        var msgSucesso = dados.alreadyRegistered
+          ? '✅ Você já está cadastrado! Seu ID é: ' + dados.id + '. Você concorre a todos os sorteios mensais!'
+          : '✅ Cadastro feito com sucesso! Seu ID é: ' + dados.id + '.';
+        mostrarMsgSorteio(msgSucesso + ' Guarde esse número para consulta futura.', 'ok');
+        _promoLimparRate();
+        resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
       } else {
-        var cliExist = clientesMap[idUnico] || {};
-        var celAtualCli = String(cliExist.cel || '').replace(/\D/g,'');
-        if (celAtualCli !== celLimpo) {
-          if (!Array.isArray(cliExist.cel_anterior)) cliExist.cel_anterior = [];
-          if (celAtualCli && cliExist.cel_anterior.indexOf(celAtualCli) === -1) cliExist.cel_anterior.push(celAtualCli);
-          cliExist.cel = celLimpo;
-          if (!Array.isArray(cliExist.historico_alteracoes)) cliExist.historico_alteracoes = [];
-          cliExist.historico_alteracoes.push({
-            data: new Date().toISOString(),
-            tipo: 'celular_atualizado_promo',
-            descricao: 'Celular atualizado via cadastro da promoção',
-            por: 'site'
-          });
-          clientesMap[idUnico] = cliExist;
-          celularClienteAtualizado = true;
-        }
+        var erroMsg = (dados && dados.error) ? dados.error : 'Erro desconhecido. Tente novamente.';
+        mostrarMsgSorteio('❌ ' + erroMsg, 'aviso');
       }
-
-      Object.keys(idxCel).forEach(function(celKey) {
-        if (idxCel[celKey] === idUnico && celKey !== celLimpo) delete idxCel[celKey];
-      });
-      idxCel[celLimpo] = idUnico;
-      cData.clientes = clientesMap;
-      cData.indice_celular = idxCel;
-
-      var cNovoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(cData, null, 2))));
-      var cSave = await fetch(_GH_CLIENTES, {
-        method: 'PUT',
-        headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Promo: sync cliente ' + nome, content: cNovoConteudo, sha: cSha })
-      });
-      if (!cSave.ok) throw new Error('Erro ao salvar clientes: ' + cSave.status);
-
-      var jaInscritoNomeData = inscritos.find(function(c) {
-        var nomeCadastrado = normalizarNomePromo(c.nome || '');
-        return nomeCadastrado === nomeNorm && c.dataNasc === dataNasc;
-      });
-      if (jaInscritoNomeData) {
-        var numExistenteNomeData = inscritos.indexOf(jaInscritoNomeData) + 1;
-        var numeroExistente = String(numExistenteNomeData).padStart(3, '0');
-        var celAtualInscricao = (jaInscritoNomeData.cel || '').replace(/\D/g, '');
-        jaInscritoNomeData.id = idUnico;
-        if (celAtualInscricao !== celLimpo) {
-          jaInscritoNomeData.cel = celFmt;
-          jaInscritoNomeData.hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-          fid.sorteioInscritos = inscritos;
-          var conteudoAtualizado = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
-          var updateResp = await fetch(_GH_FID, {
-            method: 'PUT',
-            headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'Atualizar celular sorteio: ' + nome, content: conteudoAtualizado, sha: sha })
-          });
-          if (!updateResp.ok) throw new Error('Erro ao atualizar inscrição existente: ' + updateResp.status);
-          finalizarCadastroPromo(
-            '✅ Cadastro encontrado! Atualizamos seu número de celular e registramos sua participação.',
-            montarMensagemWhatsappPromo(idUnico, numeroExistente, nome, celFmt, dataNasc)
-          );
-        } else {
-          finalizarCadastroPromo(
-            '✅ Sua participação já estava registrada. Reabrimos a confirmação pelo WhatsApp.',
-            montarMensagemWhatsappPromo(idUnico, numeroExistente, nome, celFmt, dataNasc)
-          );
-        }
-        return;
-      }
-
-      var jaInscritoCel = inscritos.find(function(c) {
-        return (c.cel || '').replace(/\D/g,'') === celLimpo;
-      });
-      if (jaInscritoCel) {
-        var numExistente = inscritos.indexOf(jaInscritoCel) + 1;
-        mostrarMsgSorteio('❌ Você já está cadastrado(a) neste sorteio com este celular! Número de inscrição: #' + String(numExistente).padStart(3,'0'), 'aviso');
-        return;
-      }
-
-      inscritos.push({
-        id: idUnico,
-        nome: nome,
-        cel: celFmt,
-        dataNasc: dataNasc,
-        data: new Date().toLocaleDateString('pt-BR'),
-        hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-      });
-      fid.sorteioInscritos = inscritos;
-      var numInscricao = inscritos.length;
-      var novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(fid, null, 2))));
-      var resp = await fetch(_GH_FID, {
-        method: 'PUT',
-        headers: { 'Authorization': 'token ' + _GH_TK_P, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Inscrito no sorteio: ' + nome, content: novoConteudo, sha: sha })
-      });
-      if (!resp.ok) throw new Error('Erro ao salvar: ' + resp.status);
-      var numStr = String(numInscricao).padStart(3, '0');
-      if (clienteNovoCriado) {
-        finalizarCadastroPromo(
-          '✅ Cadastro realizado e participação na promoção registrada com sucesso!',
-          montarMensagemWhatsappPromo(idUnico, numStr, nome, celFmt, dataNasc)
-        );
-      } else if (celularClienteAtualizado) {
-        finalizarCadastroPromo(
-          '✅ Cadastro encontrado! Atualizamos seu número de celular e registramos sua participação.',
-          montarMensagemWhatsappPromo(idUnico, numStr, nome, celFmt, dataNasc)
-        );
-      } else {
-        finalizarCadastroPromo(
-          '✅ Cadastro confirmado! Seu número é #' + numStr + '. Envie a mensagem no WhatsApp para finalizar!',
-          montarMensagemWhatsappPromo(idUnico, numStr, nome, celFmt, dataNasc)
-        );
-      }
-    } catch(e) {
-      console.error('[Itap] Erro no cadastro:', e);
-      finalizarCadastroPromo(
-        '✅ Não foi possível concluir a etapa automática agora, mas iniciamos o envio via WhatsApp.',
-        montarMensagemWhatsappFallbackPromo(nome, formatarCelularPromo(cel), dataNasc)
-      );
+    } catch (e) {
+      console.error('[Itap] Erro no cadastro do sorteio:', e);
+      mostrarMsgSorteio('Não foi possível concluir seu cadastro agora. Tente novamente em alguns minutos.', 'aviso');
     } finally {
-      if (btnEnviarPromo) btnEnviarPromo.textContent = '💬 Enviar Cadastro via WhatsApp';
-      atualizarFluxoCadastroPromo();
+      if (btnEnviarPromo) {
+        btnEnviarPromo.textContent = '📝 Enviar Cadastro';
+        atualizarFluxoCadastroPromo();
+      }
     }
   }
-
   (function inicializarFormularioClientePromo() {
     if (!formCadastroPromo) return;
 
@@ -753,21 +510,20 @@
   })();
 
   // ═══ VERIFICAR ENCERRAMENTO DA LISTA DE INSCRIÇÕES ═══
-  // Se hoje >= dataFim ou status === "encerrado", desabilita formulário e botão.
+  // Fidelidade.json foi removido. O encerramento do sorteio é controlado via
+  // dados/promo.json (campo dataFim). Se dataFim for anterior a hoje,
+  // o contador exibe "SORTEIO EM ANDAMENTO" e o formulário continua habilitado.
+  // Para encerrar manualmente: setar window._sorteioEncerrado = true no painel admin.
   (function verificarEncerramentoSorteio() {
-    fetch('dados/fidelidade.json?t=' + Date.now())
+    // Verificar encerramento via dados/promo.json (dataFim)
+    fetch('dados/promo.json?t=' + Date.now())
       .then(function(r) { return r.ok ? r.json() : null; })
       .catch(function() { return null; })
-      .then(function(fid) {
-        if (!fid) return;
-        var sorteio = fid.sorteio || {};
+      .then(function(pr) {
+        if (!pr || !pr.dataFim) return;
         var hoje = new Date();
-        var encerrado = sorteio.status === 'encerrado';
-        if (!encerrado && sorteio.dataFim) {
-          var fim = new Date(sorteio.dataFim);
-          encerrado = !isNaN(fim.getTime()) && hoje >= fim;
-        }
-        if (!encerrado) return;
+        var fim = new Date(pr.dataFim);
+        if (isNaN(fim.getTime()) || hoje < fim) return;
 
         window._sorteioEncerrado = true;
 
