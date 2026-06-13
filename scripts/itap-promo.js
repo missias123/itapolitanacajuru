@@ -229,11 +229,6 @@
     return idade;
   }
 
-  function montarMensagemWhatsappPromo() { /* removido — cadastro agora é 100% interno via API */ }
-  function montarMensagemWhatsappFallbackPromo() { /* removido — cadastro agora é 100% interno via API */ }
-  function abrirWhatsAppPromo() { /* removido — sorteio não abre WhatsApp */ return false; }
-  function finalizarCadastroPromo() { /* removido — substituído por envio direto à API */ }
-
   // ─── Novo fluxo: POST /api/promocao/cadastro (sem WhatsApp, sem GitHub token no front-end)
   // Substitui toda a lógica anterior que usava _GH_TK_P, _GH_FID e _GH_CLIENTES.
 

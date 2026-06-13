@@ -1109,10 +1109,13 @@ async function handlePostSorteioCadastro(request, env) {
   }
 
   // ── Gerar novo ID de inscrição ────────────────────────────────────────────────
+  // Usa contador sequencial + sufixo aleatório para garantir unicidade mesmo
+  // em requisições simultâneas (Cloudflare KV não oferece incremento atômico).
   const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
   let contador = parseInt(contadorStr || '0', 10);
   contador += 1;
-  const novoId = `SRT-2026-${String(contador).padStart(4, '0')}`;
+  const randomSuffix = generateIdHash().slice(0, 4);
+  const novoId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
   const agora  = new Date().toISOString();
 
   const inscricao = {
