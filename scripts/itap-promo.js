@@ -351,7 +351,13 @@
       }
     } catch (e) {
       console.error('[Itap] Erro no cadastro do sorteio:', e);
-      mostrarMsgSorteio('Não foi possível concluir seu cadastro agora. Tente novamente em alguns minutos.', 'aviso');
+      var ehErroRede = (e instanceof TypeError && /failed to fetch|network/i.test(e.message));
+      mostrarMsgSorteio(
+        ehErroRede
+          ? 'Servidor temporariamente indisponível. Tente novamente em alguns minutos ou entre em contato pelo WhatsApp.'
+          : 'Não foi possível concluir seu cadastro agora. Tente novamente em alguns minutos.',
+        'aviso'
+      );
     } finally {
       if (btnEnviarPromo) {
         btnEnviarPromo.textContent = '📝 Enviar Cadastro';
@@ -550,7 +556,7 @@
         var btnAceitar = document.getElementById('btn-aceitar-sorteio-inline');
         if (btnAceitar) { btnAceitar.disabled = true; btnAceitar.setAttribute('aria-disabled', 'true'); }
 
-        var btnParticip = document.getElementById('btn-quero-participar-sorteio');
+        var btnParticip = document.getElementById('btn-quero-participar-principal');
         if (btnParticip) {
           btnParticip.textContent = '🔒 Inscrições encerradas';
           btnParticip.style.background = '#757575';
