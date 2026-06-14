@@ -361,6 +361,14 @@
         dados = { success: false, error: '_servico_indisponivel' };
       }
 
+      // Resposta HTTP de erro (ex: 503 do SW quando offline) → tratar como indisponível
+      if (!resposta.ok && !(dados && dados.success)) {
+        dados = dados || {};
+        if (!dados.error || dados.error === 'Offline') {
+          dados.error = '_servico_indisponivel';
+        }
+      }
+
       if (dados.success) {
         exibirRegrasRetiradaPromo();
         var msgSucesso = dados.alreadyRegistered
@@ -597,7 +605,7 @@
         var btnAceitar = document.getElementById('btn-aceitar-sorteio-inline');
         if (btnAceitar) { btnAceitar.disabled = true; btnAceitar.setAttribute('aria-disabled', 'true'); }
 
-        var btnParticip = document.getElementById('btn-quero-participar-sorteio');
+        var btnParticip = document.getElementById('btn-quero-participar-principal');
         if (btnParticip) {
           btnParticip.textContent = '🔒 Inscrições encerradas';
           btnParticip.style.background = '#757575';
