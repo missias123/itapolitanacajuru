@@ -203,6 +203,23 @@
     feedbackPromo.className = 'alert ' + (tipo === 'ok' || tipo === 'info' ? 'alert-success' : 'alert-warning');
   }
 
+  function mostrarMsgSorteioComLink(txt, linkUrl, linkTxt) {
+    if (!feedbackPromo) return;
+    feedbackPromo.style.display = 'block';
+    feedbackPromo.className = 'alert alert-warning';
+    var span = document.createElement('span');
+    span.textContent = txt + ' ';
+    var a = document.createElement('a');
+    a.href = linkUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = linkTxt;
+    a.style.cssText = 'color:#fff;font-weight:700;text-decoration:underline;margin-left:4px';
+    feedbackPromo.innerHTML = '';
+    feedbackPromo.appendChild(span);
+    feedbackPromo.appendChild(a);
+  }
+
   function exibirRegrasRetiradaPromo() {
     if (regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'block';
   }
@@ -335,7 +352,14 @@
       });
 
       var dados;
-      try { dados = await resposta.json(); } catch (_) { dados = {}; }
+      var ct = resposta.headers.get('content-type') || '';
+      var respostaEhJson = ct.includes('application/json');
+      if (respostaEhJson) {
+        try { dados = await resposta.json(); } catch (_) { dados = {}; }
+      } else {
+        // Serviço indisponível: retornou HTML (ex: offline.html) em vez de JSON
+        dados = { success: false, error: '_servico_indisponivel' };
+      }
 
       if (dados.success) {
         exibirRegrasRetiradaPromo();
@@ -345,13 +369,36 @@
         mostrarMsgSorteio(msgSucesso + ' Guarde esse número para consulta futura.', 'ok');
         _promoLimparRate();
         resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
+      } else if (dados.error === '_servico_indisponivel') {
+        var waMensagem = encodeURIComponent(
+          'Olá! Gostaria de me inscrever no Sorteio Mensal da Itapolitana Cajuru!\n' +
+          'Nome: ' + nome + '\n' +
+          'Data de nascimento: ' + (inputPromoData ? inputPromoData.value.trim() : dataNascIso) + '\n' +
+          'Celular: ' + (inputPromoCelular ? inputPromoCelular.value.trim() : cel)
+        );
+        var waLink = 'https://wa.me/5516996062046?text=' + waMensagem;
+        mostrarMsgSorteioComLink(
+          '⚠️ Serviço de cadastro temporariamente indisponível.',
+          waLink,
+          '📲 Inscrever-se pelo WhatsApp'
+        );
       } else {
         var erroMsg = (dados && dados.error) ? dados.error : 'Erro desconhecido. Tente novamente.';
         mostrarMsgSorteio('❌ ' + erroMsg, 'aviso');
       }
     } catch (e) {
       console.error('[Itap] Erro no cadastro do sorteio:', e);
-      mostrarMsgSorteio('Não foi possível concluir seu cadastro agora. Tente novamente em alguns minutos.', 'aviso');
+      var waMensagemErr = encodeURIComponent(
+        'Olá! Gostaria de me inscrever no Sorteio Mensal da Itapolitana Cajuru!\n' +
+        'Nome: ' + nome + '\n' +
+        'Data de nascimento: ' + (inputPromoData ? inputPromoData.value.trim() : dataNascIso) + '\n' +
+        'Celular: ' + (inputPromoCelular ? inputPromoCelular.value.trim() : cel)
+      );
+      mostrarMsgSorteioComLink(
+        '⚠️ Não foi possível concluir seu cadastro agora.',
+        'https://wa.me/5516996062046?text=' + waMensagemErr,
+        '📲 Inscrever-se pelo WhatsApp'
+      );
     } finally {
       if (btnEnviarPromo) {
         btnEnviarPromo.textContent = '📝 Enviar Cadastro';
