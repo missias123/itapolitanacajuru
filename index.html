@@ -252,7 +252,7 @@ img{max-width:100%;display:block}
 .promo-top-bar{display:none;background:linear-gradient(135deg,#C62828,#E64A19,#E65100);color:#fff;text-align:center;padding:0;cursor:pointer;text-decoration:none;position:relative;overflow:hidden}
 .promo-top-bar.show{display:block}
 .promo-top-bar-inner{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 40px 11px 16px;position:relative;z-index:1}
-.promo-top-bar-título{font-size:clamp(13px,3.5vw,16px);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
+.promo-top-bar-titulo{font-size:clamp(13px,3.5vw,16px);font-weight:900;letter-spacing:.3px;text-transform:uppercase}
 .promo-top-bar-sub{font-size:clamp(11px,3vw,13px);font-weight:700;opacity:.85}
 .promo-top-bar-cta{background:rgba(0,0,0,.18);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:900;white-space:nowrap;flex-shrink:0}
 /* Ajuste de safe area para evitar sobreposição em mobile – touch target mínimo 44px */
@@ -2124,6 +2124,17 @@ body.cardapio-aberto { padding-bottom: 80px; }
 }
 </script>
 <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
+<div id="promo-top-bar" class="promo-top-bar" role="button" tabindex="0" aria-label="Abrir promoção especial"
+     onclick="abrirPromo()"
+     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirPromo();}">
+  <div class="promo-top-bar-inner">
+    <span class="promo-top-bar-titulo">🎁 <span id="ptb-titulo">Promoção Especial</span></span>
+    <span class="promo-top-bar-sub" id="ptb-sub">Toque para conferir as promoções e sorteios ativos</span>
+    <span class="promo-top-bar-cta">Ver agora</span>
+  </div>
+  <button type="button" class="promo-top-bar-close" aria-label="Fechar aviso de promoção"
+          onclick="event.stopPropagation();fecharBarraPromo();">✕</button>
+</div>
 <main id="conteudo-principal">
 <header class="itap-header">
 <div class="itap-header-inner">
@@ -3609,6 +3620,41 @@ function navProdutoProximo(){
 }
 
 let promoInt=null;
+const DEFAULT_PROMO_URL = 'promocao.html';
+// 22h é o horário padrão de encerramento da loja; usamos como fallback quando só a data é informada.
+const DEFAULT_PROMO_END_TIME = '22:00:00';
+function _valorPromo(dado, chaves) {
+  if (!dado || typeof dado !== 'object' || !Array.isArray(chaves)) return '';
+  for (const c of chaves) {
+    const v = dado[c];
+    if (typeof v === 'string' && v.trim()) return v.trim();
+  }
+  return '';
+}
+function _resolverDataFimPromo(d) {
+  const horaRaw = _valorPromo(d, ['horaFim']);
+  const horaMatch = horaRaw.match(/^(?<hh>[01]\d|2[0-3]):(?<mm>[0-5]\d)(?::(?<ss>[0-5]\d))?$/);
+  const horaValida = horaMatch && horaMatch.groups ? (horaMatch.groups.hh + ':' + horaMatch.groups.mm) : '';
+  const segundos = horaMatch && horaMatch.groups && horaMatch.groups.ss ? horaMatch.groups.ss : '00';
+  const dataRaw = _valorPromo(d, ['dataFim']);
+  if (dataRaw && horaValida) {
+    const dt = new Date(dataRaw + 'T' + horaValida + ':' + segundos);
+    if (!isNaN(dt.getTime())) return dt;
+  }
+  if (dataRaw && !horaValida) {
+    const dt = new Date(dataRaw + 'T' + DEFAULT_PROMO_END_TIME);
+    if (!isNaN(dt.getTime())) return dt;
+  }
+  if (horaValida) {
+    const agora = new Date();
+    const [h, m] = horaValida.split(':').map(Number);
+    const fallback = new Date(agora);
+    fallback.setHours(h, m, 0, 0);
+    if (fallback <= agora) fallback.setDate(fallback.getDate() + 1);
+    return fallback;
+  }
+  return null;
+}
 async function carregarBarraPromo(){
   const d=await _buscarDadosPromo();
   const fechada=sessionStorage.getItem('promo_bar_fechada');
@@ -3616,8 +3662,10 @@ async function carregarBarraPromo(){
   if(fechada){return;} // usuário fechou nesta sessão
   const bar=document.getElementById('promo-top-bar');
   if(!bar)return;
-  if(d.título){document.getElementById('ptb-título').textContent=d.título;}
-  if(d.descrição){document.getElementById('ptb-sub').textContent=d.descrição;}
+  const titulo = _valorPromo(d, ['título', 'titulo', 'headerTitulo']);
+  const descricao = _valorPromo(d, ['descrição', 'descricao', 'bannerFrase']);
+  if(titulo){document.getElementById('ptb-titulo').textContent=titulo;}
+  if(descricao){document.getElementById('ptb-sub').textContent=descricao;}
   bar.classList.add('show');
 }
 function fecharBarraPromo(){
@@ -3651,11 +3699,14 @@ async function _buscarDadosPromo(){
 }
 async function carregarPromo(){
   const d=await _buscarDadosPromo();
-  if(d.título){document.getElementById('promo-title').textContent=d.título;}
-  if(d.descrição){document.getElementById('promo-desc').textContent=d.descrição;}
-  if(d.imagem){
+  const titulo = _valorPromo(d, ['título', 'titulo', 'headerTitulo']);
+  const descricao = _valorPromo(d, ['descrição', 'descricao', 'bannerFrase']);
+  const imagem = _valorPromo(d, ['imagem', 'fotoUrl', 'bannerImg']);
+  if(titulo){document.getElementById('promo-title').textContent=titulo;}
+  if(descricao){document.getElementById('promo-desc').textContent=descricao;}
+  if(imagem){
     const img=document.getElementById('promo-img');
-    img.src=d.imagem;img.style.display='block';
+    img.src=imagem;img.style.display='block';
     document.getElementById('promo-icon').style.display='none';
   }
   if(d.btnTexto){
@@ -3665,38 +3716,57 @@ async function carregarPromo(){
 }
 async function abrirLinkPromo(){
   const d=await _buscarDadosPromo();
-  const url=d.link||'/promocao.html';
-  window.open(url,'_blank');
+  const url=String(d.link||DEFAULT_PROMO_URL).trim();
+  fecharModal('promo-overlay');
+  let externa = false;
+  let destino = null;
+  try {
+    destino = new URL(url, window.location.origin);
+    if (destino.protocol !== 'http:' && destino.protocol !== 'https:') {
+      window.location.href = DEFAULT_PROMO_URL;
+      return;
+    }
+    externa = destino.hostname !== window.location.hostname;
+  } catch(_) {
+    // URL inválida: trata como rota interna e segue fallback de navegação padrão.
+  }
+  if (externa) {
+    window.open(destino.href,'_blank','noopener');
+    return;
+  }
+  if (destino) {
+    window.location.href = destino.pathname + destino.search + destino.hash;
+    return;
+  }
+  window.location.href = url || DEFAULT_PROMO_URL;
 }
 async function abrirPromo(){await carregarPromo();abrirModal('promo-overlay');iniciarTimer();}
 async function iniciarTimer(){
-  let fim;
+  let fim = null;
   try{
     const d=await _buscarDadosPromo();
-    if(d.dataFim&&d.horaFim){
-      fim=new Date(d.dataFim+'T'+d.horaFim+':00');
-    }
+    fim = _resolverDataFimPromo(d);
   }catch(e){}
-  // Sem data configurada: não exibe timer
-  if(!fim||isNaN(fim)){
+  if(promoInt)clearInterval(promoInt);
+  if(!fim||isNaN(fim.getTime())){
     document.getElementById('promo-timer').textContent='--:--:--:--';
     return;
   }
-  // Se já passou, exibe zerado
-  if(fim<=new Date()){
-    document.getElementById('promo-timer').textContent='00:00:00:00';
-    return;
-  }
-  if(promoInt)clearInterval(promoInt);
-  promoInt=setInterval(()=>{
+  const atualizarTimer = () => {
     const diff=fim-new Date();
-    if(diff<=0){clearInterval(promoInt);document.getElementById('promo-timer').textContent='00:00:00:00';return;}
+    if(diff<=0){
+      clearInterval(promoInt);
+      document.getElementById('promo-timer').textContent='00:00:00:00';
+      return;
+    }
     const dias=String(Math.floor(diff/86400000)).padStart(2,'0');
     const h=String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
     const m=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
     const s=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
     document.getElementById('promo-timer').textContent=`${dias}:${h}:${m}:${s}`;
-  },1000);
+  };
+  atualizarTimer();
+  promoInt=setInterval(atualizarTimer,1000);
 }
 const RESPOSTAS={
   // ── HORÁRIO ──
