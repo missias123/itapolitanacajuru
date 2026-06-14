@@ -2973,6 +2973,39 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+async function copiarTextoSeguro(texto){
+  const valor=String(texto==null?'':texto);
+  if(!valor)return false;
+  try{
+    if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+      await navigator.clipboard.writeText(valor);
+      return true;
+    }
+  }catch(err){
+    console.warn('[copiarTextoSeguro] Clipboard API indisponível, tentando fallback.',err);
+  }
+  let area=null;
+  try{
+    area=document.createElement('textarea');
+    area.value=valor;
+    area.setAttribute('readonly','');
+    area.style.position='fixed';
+    area.style.opacity='0';
+    area.style.left='-9999px';
+    area.style.top='0';
+    document.body.appendChild(area);
+    area.focus({preventScroll:true});
+    area.select();
+    area.setSelectionRange(0,area.value.length);
+    const ok=document.execCommand('copy');
+    return Boolean(ok);
+  }catch(err){
+    console.error('[copiarTextoSeguro] Falha no fallback de cópia.',err);
+    return false;
+  }finally{
+    if(area&&area.parentNode)area.parentNode.removeChild(area);
+  }
+}
 function lsGet(k){try{return localStorage.getItem(k)||'';}catch(e){console.warn('[Admin] localStorage indisponível (get)',e);return '';}}
 function lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){console.warn('[Admin] localStorage indisponível (set)',e);return false;}}
 function lsRemove(k){try{localStorage.removeItem(k);return true;}catch(e){console.warn('[Admin] localStorage indisponível (remove)',e);return false;}}
@@ -3983,18 +4016,14 @@ ${githubWritePermitido?'✅ SIM':'❌ NÃO'}
   console.log('%c📊 DADOS ESTRUTURADOS PARA O COPILOTO','background:#3949ab;color:#fff;font-size:14px;font-weight:bold;padding:8px 16px;border-radius:4px');
   console.log(dadosEstruturados);
 
-  // Copiar para área de transferência
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(dadosEstruturados).then(()=>{
+  copiarTextoSeguro(dadosEstruturados).then((ok)=>{
+    if(ok){
       toast('✅ Solicitação enviada ao Copiloto com sucesso! Dados copiados para área de transferência.','sucesso');
       console.log('%c✅ Dados copiados para área de transferência!','background:#00c853;color:#fff;font-size:12px;padding:4px 8px;border-radius:3px');
-    }).catch(err=>{
-      console.error('Erro ao copiar para área de transferência:',err);
-      toast('⚠️ Dados exibidos no console. Cole manualmente no Copiloto.','aviso');
-    });
-  }else{
-    toast('ℹ️ Dados exibidos no console. Copie e cole no Copiloto.','aviso');
-  }
+      return;
+    }
+    toast('⚠️ Dados exibidos no console. Cole manualmente no Copiloto.','aviso');
+  });
 
   // Limpar campo
   el.value='';
@@ -4801,7 +4830,12 @@ async function notificarClienteStatus(){
   if(e.observacaoAdmin)msg+=`\n\n📝 Obs.: ${e.observacaoAdmin}`;
   const tel=(e.telefone||e.tel||'').replace(/\D/g,'');
   if(tel){window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');}
-  else{navigator.clipboard.writeText(msg).then(()=>toast('Mensagem copiada!','sucesso'));}
+  else{
+    copiarTextoSeguro(msg).then((ok)=>{
+      if(ok)toast('Mensagem copiada!','sucesso');
+      else toast('Erro ao copiar mensagem.','erro');
+    });
+  }
 }
 
 function copiarPedidoAdmin(numPedido){
@@ -4821,7 +4855,7 @@ function copiarPedidoAdmin(numPedido){
   }
   if(e.total)txt+=`\n💰 TOTAL: R$ ${parseFloat(e.total).toFixed(2).replace('.',',')}\n`;
   txt+=`\n⏰ Produzido em até 3 dias úteis após confirmação do pagamento.\n💳 Pagamento antecipado obrigatório.`;
-  navigator.clipboard.writeText(txt).then(()=>toast('✅ Pedido copiado!','sucesso')).catch(()=>toast('Erro ao copiar','erro'));
+  copiarTextoSeguro(txt).then((ok)=>toast(ok?'✅ Pedido copiado!':'Erro ao copiar',ok?'sucesso':'erro'));
 }
 async function alterarStatusEncomenda(idx,novoStatus){
   const registros=STATE.encomendas?.registros||[];
@@ -5139,7 +5173,7 @@ function copiarParticipantes() {
   if (!todos.length) { toast('Nenhum participante para copiar.', 'aviso'); return; }
   const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio', ambos: 'Ambos' };
   const lista = todos.map((p, i) => `${i+1}. ${p.nome} — ${p.cel} [${tipoLabel[p.tipo]}]`).join('\n');
-  navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${todos.length} participantes copiada!`, 'sucesso'));
+  copiarTextoSeguro(lista).then((ok)=>toast(ok?`Lista de ${todos.length} participantes copiada!`:'Erro ao copiar lista de participantes.', ok?'sucesso':'erro'));
 }
 
 // ─── COPIAR TODOS OS DADOS (formato completo: nº, nome, WhatsApp, data, tipo, pontos, status) ───
@@ -5167,7 +5201,7 @@ function copiarTodosDados() {
     ...linhas,
     separador
   ].join('\n');
-  navigator.clipboard.writeText(texto).then(() => toast(`Dados completos de ${todos.length} participantes copiados!`, 'sucesso'));
+  copiarTextoSeguro(texto).then((ok)=>toast(ok?`Dados completos de ${todos.length} participantes copiados!`:'Erro ao copiar dados dos participantes.', ok?'sucesso':'erro'));
 }
 
 // ─── COPIAR SÓ SORTEIO (apenas inscritos no sorteio mensal, numerados para sorteio) ───
@@ -5197,7 +5231,7 @@ function copiarApenassorteio() {
     ``,
     `Para sortear: escolha um número entre 001 e ${String(sorteio.length).padStart(3,'0')}`
   ].join('\n');
-  navigator.clipboard.writeText(texto).then(() => toast(`Lista de ${sorteio.length} inscritos no sorteio copiada!`, 'sucesso'));
+  copiarTextoSeguro(texto).then((ok)=>toast(ok?`Lista de ${sorteio.length} inscritos no sorteio copiada!`:'Erro ao copiar lista de sorteio.', ok?'sucesso':'erro'));
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -5701,7 +5735,7 @@ function copiarInscritosSorteio() {
   const lista = _sortInscritos.map((ins, i) =>
     `${i+1}. ${ins.id} — ${ins.nome} — Nasc: ${_fmtData(ins.birthdate)} — Tel: ${_fmtTel(ins.phone)}`
   ).join('\n');
-  navigator.clipboard.writeText(lista).then(() => toast(`Lista de ${_sortInscritos.length} inscritos copiada!`, 'sucesso'));
+  copiarTextoSeguro(lista).then((ok)=>toast(ok?`Lista de ${_sortInscritos.length} inscritos copiada!`:'Erro ao copiar inscritos.', ok?'sucesso':'erro'));
 }
 
 function exportarInscritosCSV() {
@@ -5761,7 +5795,7 @@ function mascaraTelAdmin(el) {
 function copiarSorteio(){
   const clientes=getClientes().filter(c=>!c.bloqueado&&!c.fraude);
   const lista=clientes.map((c,i)=>`${i+1}. ${c.nome||'-'} - ${c.cel||'-'}`).join('\n');
-  navigator.clipboard.writeText(lista).then(()=>toast(`Lista de ${clientes.length} clientes copiada para sorteio!`,'sucesso'));
+  copiarTextoSeguro(lista).then((ok)=>toast(ok?`Lista de ${clientes.length} clientes copiada para sorteio!`:'Erro ao copiar lista para sorteio.',ok?'sucesso':'erro'));
 }
 function preencherFidelidade(){
   const cfg=STATE.config||{};
@@ -6763,7 +6797,7 @@ function copiarCódigosDisponíveis(){
   const códigos=fidGetCodigos();
   const disponíveis=Object.keys(códigos).filter(k=>códigos[k].status==='disponível');
   if(!disponíveis.length){toast('Nenhum código disponível.','');return;}
-  navigator.clipboard.writeText(disponíveis.join('\n')).then(()=>toast(`${disponíveis.length} códigos copiados!`,'sucesso'));
+  copiarTextoSeguro(disponíveis.join('\n')).then((ok)=>toast(ok?`${disponíveis.length} códigos copiados!`:'Erro ao copiar códigos disponíveis.',ok?'sucesso':'erro'));
 }
 function atualizarAtalhosDashboard(cfg){
   const c=cfg||{};
@@ -9363,7 +9397,7 @@ function copiarListaProdutos() {
     const preco = x['preço'] !== undefined ? x['preço'] : (x.preco || 0);
     return `${x.nome};${PROD_CAT_LABELS[x._cat]||x._cat};R$ ${Number(preco).toFixed(2)};${x.estoque??'-'};${x.esgotado?'Inativo':'Ativo'}`;
   });
-  navigator.clipboard.writeText([header,...rows].join('\n')).then(()=>toast(`${lista.length} produtos copiados!`,'sucesso'));
+  copiarTextoSeguro([header,...rows].join('\n')).then((ok)=>toast(ok?`${lista.length} produtos copiados!`:'Erro ao copiar produtos.',ok?'sucesso':'erro'));
 }
 
 function exportarProdutosCSV() {
@@ -9633,7 +9667,7 @@ function copiarListaPromocoes() {
   if (!lista.length) { toast('Nenhuma promoção para copiar.','aviso'); return; }
   const header = 'Nome;Período;Status';
   const rows = lista.map(p => `${p.nome};${p.periodo||'-'};${p.status}`);
-  navigator.clipboard.writeText([header,...rows].join('\n')).then(()=>toast(`${lista.length} promoções copiadas!`,'sucesso'));
+  copiarTextoSeguro([header,...rows].join('\n')).then((ok)=>toast(ok?`${lista.length} promoções copiadas!`:'Erro ao copiar promoções.',ok?'sucesso':'erro'));
 }
 
 function exportarPromocoesCSV() {
@@ -9755,7 +9789,7 @@ function copiarListaClientes() {
     const status = c.bloqueado ? 'Bloqueado' : c.fraude ? 'Fraude' : 'Ativo';
     return `${c.nome};${c.cel};${c.saldoPontos||0};${cad};${status}`;
   });
-  navigator.clipboard.writeText([header,...rows].join('\n')).then(()=>toast(`${clientes.length} clientes copiados!`,'sucesso'));
+  copiarTextoSeguro([header,...rows].join('\n')).then((ok)=>toast(ok?`${clientes.length} clientes copiados!`:'Erro ao copiar clientes.',ok?'sucesso':'erro'));
 }
 
 function exportarClientesCSV() {
