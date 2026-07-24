@@ -87,7 +87,7 @@ const produtos = {
         { nome: "Açaí Promocional 400ml", desc: "Açaí + Morango + Nutella", preço: 18.00 },
         { nome: "Açaí Promocional 400ml", desc: "Açaí + Banana + Confete + Leite Condensado", preço: 17.00 },
         { nome: "Açaí Promocional 500ml", desc: "Açaí + Morango + Granola + Leite Condensado + Leite em Pó", preço: 20.00 },
-        { nome: "Açaí Promocional 500ml", desc: "Açaí + Banana + Creme Leite Ninho + Paçoca", preço: 20.00 },
+        { nome: "Açaí Promocional 500ml", desc: "Açaí + Banana + Creme Ninho + Paçoca", preço: 20.00 },
         { nome: "Açaí Promocional 600ml", desc: "Açaí + Morango + Banana + Leite em Pó + Leite Condensado", preço: 23.00 },
         { nome: "Açaí Promocional 700ml", desc: "Açaí + Morango + Nutella", preço: 28.00 }
     ],
