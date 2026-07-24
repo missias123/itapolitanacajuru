@@ -2390,7 +2390,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="açaí-body" onclick="toggleAcc('acc-açaí')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-açaí');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M17 8C8 10 5.9 4.44 3 2c0 0 0 12 8 13v7h2v-7c7-1 10-8 10-8s-3 3-6 4z"/></svg></span>
-<div><div class="acc-title">🍇 Cardápio Natureon Açaí</div><div class="acc-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais</div></div>
+<div><div class="acc-title">🍇 Cardápio Natureon Açaí</div></div>
 </div>
 <span class="acc-arrow">▼</span>
 </div>
@@ -3338,21 +3338,8 @@ function renderAçaí(){
   // Cabeçalho premium
   const hdr=document.createElement('div');hdr.className='natureon-header';
   hdr.innerHTML=`
-    <div class="natureon-title">🍇 Cardápio Natureon Açaí</div>
-    <p class="natureon-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais.</p>`;
+    <div class="natureon-title">🍇 Cardápio Natureon Açaí</div>`;
   wrap.appendChild(hdr);
-
-  // Aviso de inconsistências (conforme solicitado)
-  const inc=document.createElement('div');inc.className='natureon-inconsistencia';
-  inc.setAttribute('role','note');
-  inc.setAttribute('aria-label','Inconsistências a confirmar antes da publicação final');
-  inc.innerHTML=`<strong>⚠️ Inconsistências a confirmar:</strong><ul style="margin:0;padding-left:18px">
-    <li><b>Item duplicado:</b> "Açaí Natureon + uva + paçoca + Nutella — R$ 18" constava duas vezes no cardápio original (mantido uma vez).</li>
-    <li><b>Preço divergente:</b> "Banana + uva + Nutella + granulado + confete + leite condensado 700 ml — R$ 24" enquanto outros similares são R$ 27.</li>
-    <li><b>Grafia:</b> Confirmar se "chocoboll" é a grafia correta do produto (o site existente usa "Chocoball").</li>
-    <li><b>Ingrediente:</b> Confirmar se "creme Ninho" e "creme de leite Ninho" são o mesmo produto ou produtos distintos.</li>
-  </ul>`;
-  wrap.appendChild(inc);
 
   // Renderizar categorias
   categorias.forEach(cat=>{
@@ -5057,7 +5044,6 @@ function sincronizarCardapioMap() {
     'acc-açaí': {
       bodyId: 'açaí-body',
       titulo: function() { return '🍇 Cardápio Natureon Açaí'; },
-      sub: 'Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais',
       getSabores: function() {
         var cats = produtos && produtos.açaí && produtos.açaí.categorias ? produtos.açaí.categorias : [];
         var items = [];
