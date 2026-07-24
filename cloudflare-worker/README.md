@@ -112,7 +112,7 @@ Execute o script de migração:
 
 ```bash
 cd cloudflare-worker/scripts
-node migrate-data.js \
+node migrate-data.cjs \
   --api https://api.itapolitanacajuru.com.br \
   --secret SEU_ADMIN_SECRET \
   --clientes caminho/para/backup/clientes.json \
