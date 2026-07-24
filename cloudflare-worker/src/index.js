@@ -478,7 +478,9 @@ async function handleAdminSession(request, env) {
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
 
-  const secret = sanitizeString(body.secret || body.password || '', 200);
+  const password = sanitizeString(body.password || '', 200);
+  // Compatibilidade temporária: `secret` é legado e será removido na migração completa.
+  const secret = password || sanitizeString(body.secret || '', 200);
   if (!secret || !env.ADMIN_SECRET || secret !== env.ADMIN_SECRET) {
     await registrarAudit(env, 'admin_login_fail', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
     return jsonResp({ ok: false, error: 'Falha de autenticação' }, 401);

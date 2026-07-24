@@ -7065,7 +7065,7 @@ async function salvarConfig(){
   const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
   const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
   if(novaSenha){
-    toast('⚠️ Alteração de senha via painel foi desativada neste lote. Faça a rotação no segredo ADMIN_SECRET do Worker em ambiente seguro.','aviso');
+    toast('⚠️ Alteração de senha via painel desativada. A senha do administrador agora é gerenciada pelo segredo ADMIN_SECRET do Worker em ambiente seguro.','aviso');
   }
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
