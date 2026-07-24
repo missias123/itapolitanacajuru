@@ -42,6 +42,7 @@ const GH_ADMIN_JSON_PATHS = Object.freeze({
 });
 const GH_ADMIN_PATH_SET = new Set(Object.values(GH_ADMIN_JSON_PATHS));
 const GH__PATH = GH_ADMIN_JSON_PATHS.fidelidade;
+const LEGACY_SECRET_FIELD_DEPRECATION = '2026-12-31';
 
 const RATE_LIMITS = {
   'post-cliente':  { max: 10, windowMs: 3_600_000 },
@@ -101,6 +102,7 @@ function applySecurityHeaders(resp) {
   resp.headers.set('X-Content-Type-Options', 'nosniff');
   resp.headers.set('X-Frame-Options', 'DENY');
   resp.headers.set('Referrer-Policy', 'no-referrer');
+  resp.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none';");
   resp.headers.set('Cache-Control', 'no-store');
   resp.headers.set('Pragma', 'no-cache');
   resp.headers.set('Expires', '0');
@@ -479,7 +481,11 @@ async function handleAdminSession(request, env) {
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
 
   const password = sanitizeString(body.password || '', 200);
-  // Compatibilidade temporária: `secret` é legado e será removido na migração completa.
+  // Compatibilidade temporária: `secret` é legado e será removido até 2026-12-31.
+  // Padrão oficial: enviar apenas `password`.
+  if (!password && body.secret) {
+    await registrarAudit(env, 'admin_login_legacy_field', 'admin', { deprecatesOn: LEGACY_SECRET_FIELD_DEPRECATION });
+  }
   const secret = password || sanitizeString(body.secret || '', 200);
   if (!secret || !env.ADMIN_SECRET || secret !== env.ADMIN_SECRET) {
     await registrarAudit(env, 'admin_login_fail', 'admin', { ip: (ip + '').slice(0, 8) + '…' });

@@ -3232,7 +3232,8 @@ function pathEstaSemSha(path){
   return Boolean(key)&&!STATE[key];
 }
 const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes,PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.carrinhos]);
-const SENSITIVE_PUBLIC_JSON_PATHS=new Set([PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.fidelidade,PATHS.carrinhos,'dados/auth.json']);
+const LEGACY_AUTH_JSON_PATH='dados/auth.json';
+const SENSITIVE_PUBLIC_JSON_PATHS=new Set([PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.fidelidade,PATHS.carrinhos,LEGACY_AUTH_JSON_PATH]);
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
@@ -7065,7 +7066,7 @@ async function salvarConfig(){
   const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
   const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
   if(novaSenha){
-    toast('⚠️ Alteração de senha via painel desativada. A senha do administrador agora é gerenciada pelo segredo ADMIN_SECRET do Worker em ambiente seguro.','aviso');
+    toast('⚠️ Alteração de senha via painel desativada. Solicite ao administrador do sistema a rotação da credencial no backend seguro.','aviso');
   }
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
