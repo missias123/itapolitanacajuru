@@ -238,14 +238,17 @@ window.addEventListener('storage', function(e) {
 function renderizarGridSabores(grid) {
   if (!grid) return;
   grid.innerHTML = SABORES_SORVETE.map(s => {
-    const nome = s.nome;
-    const nomeAttr = nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    const esg  = s.esgotado;
+    const esg = s.esgotado;
+    const nomeEscaped = s.nome.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     if (esg) {
-      return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado — indisponível no momento"><span class="sabor-nome">${nome}</span></button>`;
+      return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado — indisponível no momento" data-nome="${nomeEscaped}"><span class="sabor-nome">${nomeEscaped}</span></button>`;
     }
-    return `<button class="sabor-item" onclick="toggleSabor('${nomeAttr}',this)"><span class="sabor-nome">${nome}</span></button>`;
+    return `<button class="sabor-item" data-nome="${nomeEscaped}"><span class="sabor-nome">${nomeEscaped}</span></button>`;
   }).join('');
+  // Attach click handlers via event delegation (avoids inline onclick com dados dinâmicos)
+  grid.querySelectorAll('.sabor-item:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', function() { toggleSabor(this.dataset.nome, this); });
+  });
 }
 
 // Caixas de encomenda: carregadas do admin (localStorage) ou padrão
