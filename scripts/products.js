@@ -48,7 +48,7 @@ const produtos = {
         leite_ninho: {
             nome: "Picolé Especiais",
             preço_varejo: 4.00,
-            preço_atacado: 4.00,
+            preço_atacado: 3.00,
             estoque: 200,
             sabores: ["Leite Ninho", "Ovomaltine"]
         },
