@@ -651,7 +651,7 @@ img{max-width:100%;display:block}
 .açaí-desc{font-size:12px;color:#6A1B9A;font-weight:700;margin-bottom:8px}
 
 /* ── CARDÁPIO NATUREON — DESIGN PREMIUM ── */
-.natureon-header{text-align:center;padding:20px 16px 16px;background:linear-gradient(135deg,#3E0068,#6A1B9A);border-radius:16px 16px 0 0;margin:-0px}
+.natureon-header{text-align:center;padding:20px 16px 16px;background:linear-gradient(135deg,#3E0068,#6A1B9A);border-radius:16px 16px 0 0;margin:0}
 .natureon-title{font-size:20px;font-weight:900;color:#fff;margin:0 0 6px;line-height:1.2}
 .natureon-sub{font-size:13px;color:#E1BEE7;font-weight:600;margin:0;line-height:1.4}
 .natureon-categoria{margin:0 0 18px}
@@ -3381,8 +3381,8 @@ function renderAçaí(){
     // Grid de produtos
     const grid=document.createElement('div');grid.className='natureon-grid';
 
-    // Extrair tamanho para mensagem WA
-    const tamLabel=cat.titulo.replace('Açaí — ','').replace('Milk-shake de Açaí','Milk-shake').replace('Taças Gourmet — ','Taça Gourmet ').replace('Informações','');
+    // Extrair tamanho para mensagem WA — usa label da categoria
+    const tamLabel=cat.label||cat.titulo;
 
     cat.produtos.forEach(p=>{
       if(p.preco===null||p.preco===undefined){return;}
@@ -3421,7 +3421,7 @@ function renderAçaí(){
   b.appendChild(wrap);
 }
 // Escapa HTML para evitar XSS nos nomes de produtos
-function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 const iconesPicolé={frutas_agua:'',leite_sem_recheio:'',leite_com_recheio:'',leite_ninho:'',esquimós:''};
 function renderPicolés(){
