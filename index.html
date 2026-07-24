@@ -670,9 +670,6 @@ img{max-width:100%;display:block}
 .natureon-info-card{background:linear-gradient(135deg,#F8F0FF,#EDE7F6);border:1.5px solid #CE93D8;border-radius:14px;padding:14px 16px;margin-bottom:4px}
 .natureon-info-item{font-size:13px;font-weight:700;color:#4A148C;padding:4px 0;border-bottom:1px solid #E1BEE7}
 .natureon-info-item:last-child{border-bottom:none}
-.natureon-inconsistencia{background:#FFF8E1;border:1.5px solid #FFB300;border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:12px;color:#7A4F00;font-weight:600}
-.natureon-inconsistencia strong{color:#E65100;display:block;margin-bottom:4px}
-.natureon-inconsistencia li{margin:3px 0}
 .natureon-wrap{padding:16px 4px 4px}
 .natureon-card-size{font-size:10.5px;font-weight:800;color:#9C27B0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
 /* ── CARD DO PICOLÉ — âmbar quente: refrescante, energético ── */
@@ -3342,17 +3339,6 @@ function renderAçaí(){
     <p class="natureon-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais.</p>`;
   wrap.appendChild(hdr);
 
-  // Aviso de inconsistências (conforme solicitado)
-  const inc=document.createElement('div');inc.className='natureon-inconsistencia';
-  inc.setAttribute('role','note');
-  inc.setAttribute('aria-label','Inconsistências a confirmar antes da publicação final');
-  inc.innerHTML=`<strong>⚠️ Inconsistências a confirmar:</strong><ul style="margin:0;padding-left:18px">
-    <li><b>Item duplicado:</b> "Açaí Natureon + uva + paçoca + Nutella — R$ 18" constava duas vezes no cardápio original (mantido uma vez).</li>
-    <li><b>Preço divergente:</b> "Banana + uva + Nutella + granulado + confete + leite condensado 700 ml — R$ 24" enquanto outros similares são R$ 27.</li>
-    <li><b>Grafia:</b> Confirmar se "chocoboll" é a grafia correta do produto (o site existente usa "Chocoball").</li>
-    <li><b>Ingrediente:</b> Confirmar se "creme Ninho" e "creme de leite Ninho" são o mesmo produto ou produtos distintos.</li>
-  </ul>`;
-  wrap.appendChild(inc);
 
   // Renderizar categorias
   categorias.forEach(cat=>{
