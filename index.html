@@ -3439,8 +3439,8 @@ function renderPicolés(){
     },
     leite_ninho:{
       icon:'',
-      titulo:'Picolé Leite Ninho',
-      desc:'O sabor inconfundível do Leite Ninho em forma de picolé. Sucesso garantido!',
+      titulo:'Picolé Especiais',
+      desc:'Dois sabores especiais: Leite Ninho e Ovomaltine.',
       badge:'Especial',
       badgeColor:'#e65100'
     },
@@ -3457,7 +3457,10 @@ function renderPicolés(){
     const grid=document.createElement('div');
     grid.style='display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:14px';
 
-    Object.entries(produtos.picolés).forEach(([key,p])=>{
+    const picolesOrdenados = Object.entries(produtos.picolés)
+      .sort(([a],[b]) => (a === 'leite_ninho' ? -1 : b === 'leite_ninho' ? 1 : 0));
+
+    picolesOrdenados.forEach(([key,p])=>{
       const info=descricoes[key]||{icon:'',titulo:p.nome,desc:'Delicioso picolé tipo artesanal.',badge:'',badgeColor:'#555'};
       const temSabores=p.sabores&&p.sabores.length>0;
       const qtdSabores=temSabores?p.sabores.length:0;
@@ -3470,7 +3473,7 @@ function renderPicolés(){
         ${info.badge?`<span style="background:${info.badgeColor};color:#fff;font-size:10px;font-weight:800;border-radius:20px;padding:2px 10px;margin-bottom:2px">${info.badge}</span>`:''}
         <div style="font-size:11px;color:#555;line-height:1.4;margin-bottom:6px;min-height:32px">${info.desc}</div>
         <div style="font-size:15px;font-weight:900;color:#E91E63;margin-bottom:2px">
-          R$ ${p.preço_varejo.toFixed(2).replace('.',',')} <span style="font-size:10px;font-weight:500;color:#888">/ un.</span>
+          R$ ${p.preço_varejo.toFixed(2).replace('.',',')} <span style="font-size:10px;font-weight:500;color:#888">/ unidade</span>
         </div>
         <button type="button" class="btn-sabores" style="font-size:11px;padding:8px 12px;width:100%;margin-top:4px" onclick="event.stopPropagation();abrirPicoléInline('${key}','${info.titulo}',this)">
           ${temSabores?qtdSabores+' Sabores':'Ver Sabores'}
