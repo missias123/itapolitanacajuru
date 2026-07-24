@@ -12,8 +12,9 @@
  * Variáveis de ambiente obrigatórias (wrangler secret put):
  *   GITHUB_TOKEN   — PAT do GitHub com escopo "repo" (para o admin inteiro)
  *
- * Autenticação administrativa (um dos pares abaixo):
- *   ADMIN_HASH + ADMIN_SALT — hash PBKDF2-SHA-256 da senha (preferido, mais seguro)
+ * Autenticação administrativa (preferência em ordem):
+ *   ADMIN_PASSWORD_RECORD   — formato versionado (pbkdf2-sha256$v=1$iter=...$salt=...$hash=...)
+ *   ADMIN_HASH + ADMIN_SALT — formato legado PBKDF2-SHA-256
  *   ADMIN_SECRET            — senha em texto plano (legado, removido após migração)
  *
  * KV Namespaces:
@@ -21,9 +22,9 @@
  *   ENCOMENDAS_KV  — pedidos de encomenda
  *   RATE_KV        — contadores de rate-limit
  *
- * Para gerar ADMIN_HASH e ADMIN_SALT (staging only):
+ * Para gerar hash/salt/record (staging only):
  *   POST /api/admin/generate-hash  { "setup_key": "<valor de SETUP_KEY>", "password": "..." }
- *   Retorna { ADMIN_HASH, ADMIN_SALT } — copie e configure com: wrangler secret put ADMIN_HASH
+ *   Retorna { ADMIN_PASSWORD_RECORD, ADMIN_HASH, ADMIN_SALT }.
  */
 
 // ─── Origens permitidas para CORS ────────────────────────────────────────────
@@ -58,9 +59,13 @@ const GH__PATH = GH_ADMIN_JSON_PATHS.fidelidade;
 const LEGACY_SECRET_FIELD_DEPRECATION = '2026-12-31';
 
 // PBKDF2 parameters (NIST SP 800-132 recommended minimum for SHA-256)
-const PBKDF2_ITERATIONS = 600_000;
-const PBKDF2_HASH      = 'SHA-256';
-const PBKDF2_KEY_BITS  = 256;
+const PBKDF2_DEFAULT_ITERATIONS = 600_000;
+const PBKDF2_MIN_ITERATIONS     = 100_000;
+const PBKDF2_MAX_ITERATIONS     = 1_500_000;
+const PBKDF2_HASH               = 'SHA-256';
+const PBKDF2_KEY_BITS           = 256;
+const ADMIN_PBKDF2_ALGO         = 'pbkdf2-sha256';
+const ADMIN_PBKDF2_VERSION      = '1';
 
 const RATE_LIMITS = {
   'post-cliente':  { max: 10, windowMs: 3_600_000 },
@@ -174,14 +179,17 @@ async function isAdmin(request, env) {
  * Derives a PBKDF2-SHA-256 hash from a password and salt.
  * Returns base64-encoded 256-bit key.
  */
-async function pbkdf2Derive(password, saltBase64) {
+async function pbkdf2Derive(password, saltBase64, iterations = PBKDF2_DEFAULT_ITERATIONS) {
+  if (!Number.isInteger(iterations) || iterations < PBKDF2_MIN_ITERATIONS || iterations > PBKDF2_MAX_ITERATIONS) {
+    throw new Error(`Iterações PBKDF2 inválidas: ${iterations}`);
+  }
   const enc       = new TextEncoder();
   const saltBytes = base64ToBytes(saltBase64);
   const keyMat    = await crypto.subtle.importKey(
     'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveBits']
   );
   const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', hash: PBKDF2_HASH, salt: saltBytes, iterations: PBKDF2_ITERATIONS },
+    { name: 'PBKDF2', hash: PBKDF2_HASH, salt: saltBytes, iterations },
     keyMat,
     PBKDF2_KEY_BITS
   );
@@ -207,15 +215,62 @@ async function timingSafeEqual(a, b) {
   return diff === 0;
 }
 
+function parseAdminPasswordRecord(recordRaw) {
+  const record = sanitizeString(recordRaw || '', 1024);
+  if (!record) return null;
+  const chunks = record.split('$');
+  if (chunks.length !== 5) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: formato incompleto');
+  }
+  const [algo, vChunk, iterChunk, saltChunk, hashChunk] = chunks;
+  if (algo !== ADMIN_PBKDF2_ALGO) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: algoritmo não suportado');
+  }
+  if (vChunk !== `v=${ADMIN_PBKDF2_VERSION}`) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: versão não suportada');
+  }
+  if (!iterChunk.startsWith('iter=')) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: iter ausente');
+  }
+  if (!saltChunk.startsWith('salt=')) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: salt ausente');
+  }
+  if (!hashChunk.startsWith('hash=')) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: hash ausente');
+  }
+  const iterations = Number(iterChunk.slice(5));
+  if (!Number.isInteger(iterations) || iterations < PBKDF2_MIN_ITERATIONS || iterations > PBKDF2_MAX_ITERATIONS) {
+    throw new Error(`ADMIN_PASSWORD_RECORD inválido: iter fora da faixa (${PBKDF2_MIN_ITERATIONS}-${PBKDF2_MAX_ITERATIONS})`);
+  }
+  const salt = saltChunk.slice(5);
+  const hash = hashChunk.slice(5);
+  if (!salt || !hash) {
+    throw new Error('ADMIN_PASSWORD_RECORD inválido: salt/hash vazios');
+  }
+  // Validação base64 (falha cedo para evitar erros silenciosos durante login).
+  base64ToBytes(salt);
+  base64ToBytes(hash);
+  return { iterations, salt, hash };
+}
+
+function buildAdminPasswordRecord(iterations, saltBase64, hashBase64) {
+  return `${ADMIN_PBKDF2_ALGO}$v=${ADMIN_PBKDF2_VERSION}$iter=${iterations}$salt=${saltBase64}$hash=${hashBase64}`;
+}
+
 /**
  * Verifies the provided password against stored PBKDF2 hash or plain ADMIN_SECRET.
  * Prefers PBKDF2 (ADMIN_HASH + ADMIN_SALT) over plain text (ADMIN_SECRET).
  */
 async function verifyAdminPassword(password, env) {
   if (!password) return false;
+  if (env.ADMIN_PASSWORD_RECORD) {
+    const record = parseAdminPasswordRecord(env.ADMIN_PASSWORD_RECORD);
+    const derived = await pbkdf2Derive(password, record.salt, record.iterations);
+    return timingSafeEqual(derived, record.hash);
+  }
   if (env.ADMIN_HASH && env.ADMIN_SALT) {
     // Secure path: PBKDF2 verification
-    const derived = await pbkdf2Derive(password, env.ADMIN_SALT);
+    const derived = await pbkdf2Derive(password, env.ADMIN_SALT, PBKDF2_DEFAULT_ITERATIONS);
     return timingSafeEqual(derived, env.ADMIN_HASH);
   }
   // Legacy path: plain text comparison (to be removed after migration)
@@ -488,6 +543,10 @@ async function router(request, env) {
   if (path === '/api/admin/generate-hash' && method === 'POST')
     return handleGenerateHash(request, env);
 
+  // ── PBKDF2 runtime self-test (staging/local only) ────────────────────────────
+  if (path === '/api/admin/pbkdf2-selftest' && method === 'POST')
+    return handlePbkdf2Selftest(request, env);
+
   if (path === '/api/admin/github-file' && method === 'GET') {
     if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleAdminGitHubFileGet(url.searchParams.get('path'), env);
@@ -616,7 +675,18 @@ async function handleAdminSession(request, env) {
   }
   const candidate = password || sanitizeString(body.secret || '', 200);
 
-  const ok = await verifyAdminPassword(candidate, env);
+  let ok = false;
+  try {
+    ok = await verifyAdminPassword(candidate, env);
+  } catch (e) {
+    await registrarAudit(env, 'admin_login_crypto_error', 'admin', {
+      message: sanitizeString(e?.message || 'crypto-error', 120),
+    });
+    return jsonResp({
+      ok: false,
+      error: 'Falha criptográfica no ambiente. Verifique ADMIN_PASSWORD_RECORD/iterações e rode /api/admin/pbkdf2-selftest.',
+    }, 500);
+  }
   if (!ok) {
     await registrarAudit(env, 'admin_login_fail', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
     return jsonResp({ ok: false, error: 'Falha de autenticação' }, 401);
@@ -657,7 +727,7 @@ async function handleAdminSessionLogout(request, env) {
  * então configure esses dois valores como secrets e remova SETUP_KEY.
  *
  * Body: { "setup_key": "<valor de SETUP_KEY>", "password": "<nova senha do admin>" }
- * Retorno: { "ADMIN_HASH": "...", "ADMIN_SALT": "..." }
+ * Retorno: { "ADMIN_PASSWORD_RECORD": "...", "ADMIN_HASH": "...", "ADMIN_SALT": "..." }
  */
 async function handleGenerateHash(request, env) {
   const envName = sanitizeString(env?.ENVIRONMENT || '', 32).toLowerCase();
@@ -682,20 +752,107 @@ async function handleGenerateHash(request, env) {
   const saltBytes = new Uint8Array(16);
   crypto.getRandomValues(saltBytes);
   const saltB64 = bytesToBase64(saltBytes);
-  const hashB64 = await pbkdf2Derive(password, saltB64);
+  const hashB64 = await pbkdf2Derive(password, saltB64, PBKDF2_DEFAULT_ITERATIONS);
+  const record  = buildAdminPasswordRecord(PBKDF2_DEFAULT_ITERATIONS, saltB64, hashB64);
 
   return jsonResp({
     ok: true,
     message: 'Configure os secrets abaixo e remova SETUP_KEY após a configuração',
+    ADMIN_PASSWORD_RECORD: record,
+    ADMIN_PASSWORD_RECORD_FORMAT: `${ADMIN_PBKDF2_ALGO}$v=${ADMIN_PBKDF2_VERSION}$iter=<iter>$salt=<base64>$hash=<base64>`,
+    PBKDF2_ITERATIONS: PBKDF2_DEFAULT_ITERATIONS,
     ADMIN_HASH: hashB64,
     ADMIN_SALT: saltB64,
     instructions: [
-      'wrangler secret put ADMIN_HASH  (cole o valor de ADMIN_HASH)',
-      'wrangler secret put ADMIN_SALT  (cole o valor de ADMIN_SALT)',
+      'wrangler secret put ADMIN_PASSWORD_RECORD  (preferido: cole o valor de ADMIN_PASSWORD_RECORD)',
+      'wrangler secret put ADMIN_HASH  (legado: cole o valor de ADMIN_HASH)',
+      'wrangler secret put ADMIN_SALT  (legado: cole o valor de ADMIN_SALT)',
       'wrangler secret delete ADMIN_SECRET  (após confirmar que PBKDF2 funciona)',
       'wrangler secret delete SETUP_KEY',
     ],
   });
+}
+
+/**
+ * POST /api/admin/pbkdf2-selftest — executa benchmark real de PBKDF2 no runtime atual.
+ * Disponível apenas em staging/local/dev e protegido por SETUP_KEY.
+ *
+ * Body:
+ * {
+ *   "setup_key": "<SETUP_KEY>",
+ *   "iterations": 600000, // opcional
+ *   "samples": 3           // opcional (1-5)
+ * }
+ */
+async function handlePbkdf2Selftest(request, env) {
+  const envName = sanitizeString(env?.ENVIRONMENT || '', 32).toLowerCase();
+  const isAllowedEnv = envName === 'staging' || envName === 'local' || envName === 'dev' || envName === 'development';
+  if (!isAllowedEnv) {
+    return jsonResp({ ok: false, error: 'Endpoint disponível apenas em staging/local' }, 403);
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'admin-login');
+  if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas. Aguarde uma hora.' }, 429);
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const setupKey = sanitizeString(body.setup_key || '', 200);
+  if (!setupKey || !env.SETUP_KEY || setupKey !== env.SETUP_KEY) {
+    return jsonResp({ ok: false, error: 'Chave de setup inválida' }, 401);
+  }
+
+  const iterations = Number(body.iterations ?? PBKDF2_DEFAULT_ITERATIONS);
+  const samples = Number(body.samples ?? 3);
+  if (!Number.isInteger(samples) || samples < 1 || samples > 5) {
+    return jsonResp({ ok: false, error: 'samples deve ser inteiro entre 1 e 5' }, 400);
+  }
+
+  try {
+    const ms = [];
+    for (let i = 0; i < samples; i++) {
+      const saltBytes = new Uint8Array(16);
+      crypto.getRandomValues(saltBytes);
+      const salt = bytesToBase64(saltBytes);
+      const start = performance.now();
+      await pbkdf2Derive('pbkdf2-selftest-password', salt, iterations);
+      ms.push(Number((performance.now() - start).toFixed(2)));
+    }
+    const total = ms.reduce((a, b) => a + b, 0);
+    const avgMs = Number((total / ms.length).toFixed(2));
+    const minMs = Math.min(...ms);
+    const maxMs = Math.max(...ms);
+    const highCostWarning = avgMs > 1500
+      ? 'Custo alto detectado: avalie rate limiting reforçado, MFA e proteção adicional.'
+      : '';
+
+    return jsonResp({
+      ok: true,
+      environment: envName,
+      algorithm: 'PBKDF2-HMAC-SHA-256',
+      iterations,
+      samples,
+      timingsMs: ms,
+      minMs,
+      avgMs,
+      maxMs,
+      warning: highCostWarning,
+      note: 'Teste executado no runtime atual do Worker (workerd via Web Crypto).',
+    });
+  } catch (e) {
+    await registrarAudit(env, 'pbkdf2_selftest_fail', 'admin', {
+      iterations,
+      message: sanitizeString(e?.message || 'pbkdf2-fail', 120),
+    });
+    return jsonResp({
+      ok: false,
+      environment: envName,
+      iterations,
+      error: 'PBKDF2 falhou no runtime atual',
+      detail: sanitizeString(e?.message || 'erro-desconhecido', 160),
+    }, 500);
+  }
 }
 
 async function handleAdminGitHubFileGet(pathRaw, env) {

@@ -80,8 +80,9 @@ preview_id = "PLACEHOLDER_RATE_KV_ID"
 
 # ─── Segredos (NÃO colocar valores aqui — use wrangler secret put) ──────────
 # Autenticação administrativa (use PBKDF2 — mais seguro):
-#   wrangler secret put ADMIN_HASH   (hash PBKDF2-SHA-256 em base64 — gerado via /api/admin/generate-hash)
-#   wrangler secret put ADMIN_SALT   (salt aleatório em base64 — gerado junto com ADMIN_HASH)
+#   wrangler secret put ADMIN_PASSWORD_RECORD (preferido: pbkdf2-sha256$v=1$iter=600000$salt=...$hash=...)
+#   wrangler secret put ADMIN_HASH   (legado: hash PBKDF2-SHA-256 em base64)
+#   wrangler secret put ADMIN_SALT   (legado: salt aleatório em base64)
 # Legado (remover após migração PBKDF2):
 #   wrangler secret put ADMIN_SECRET
 # Token GitHub e setup:

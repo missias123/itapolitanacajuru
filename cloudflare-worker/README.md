@@ -47,12 +47,27 @@ Cada comando retornará um `id`. Abra `wrangler.toml` e substitua os `PLACEHOLDE
 **Nunca coloque segredos no `wrangler.toml` nem no código.**
 
 ```bash
-# Segredo admin — use uma senha longa e aleatória (mín. 32 chars)
-npx wrangler secret put ADMIN_SECRET
+# Setup temporário para gerar hash (somente staging/local)
+npx wrangler secret put SETUP_KEY
 
 # Token GitHub com escopo "repo" — para o admin inteiro gravar os JSONs do site
 # Gere em: https://github.com/settings/tokens/new?scopes=repo&description=Itapolitana+Worker
 npx wrangler secret put GITHUB_TOKEN
+```
+
+Depois, gere o hash PBKDF2 no Worker (runtime real) e configure:
+
+```bash
+curl -X POST "$WORKER_URL/api/admin/generate-hash" \
+  -H "content-type: application/json" \
+  -d '{"setup_key":"SEU_SETUP_KEY","password":"SENHA_ADMIN_MUITO_FORTE"}'
+
+# Preferido (formato versionado):
+npx wrangler secret put ADMIN_PASSWORD_RECORD
+
+# Compatibilidade legado:
+npx wrangler secret put ADMIN_HASH
+npx wrangler secret put ADMIN_SALT
 ```
 
 ---
@@ -156,12 +171,12 @@ Nunca enviar hash de senha ao navegador e nunca persistir `ADMIN_SECRET` no stor
 O `ADMIN_SECRET` **nunca deve ser armazenado no browser** — apenas usado na tela de login:
 
 1. O admin insere o `ADMIN_SECRET` no campo "Segredo Worker" do `admin-painel.html`
-2. O frontend chama `POST /api/admin/session` com `{ "secret": "<ADMIN_SECRET>" }`
+2. O frontend chama `POST /api/admin/session` com `{ "password": "<SENHA_ADMIN>" }`
 3. O Worker verifica o segredo e retorna um **token de sessão temporário** (expira em 2h)
 4. O frontend armazena apenas o token de sessão em `sessionStorage`
 5. Todas as rotas admin usam o header `X-Itap-Session-Token: <token>`, inclusive leituras e gravações dos JSONs do site
 
-**Autenticação direta (scripts/CLI):** header `X-Itap-Admin-Secret: <ADMIN_SECRET>` ainda é aceito para uso em scripts de migração e ferramentas CLI.
+**Autenticação direta (scripts/CLI):** header `X-Itap-Admin-Secret: <ADMIN_SECRET>` ainda é aceito apenas para ferramentas técnicas legadas.
 
 ---
 
@@ -192,13 +207,57 @@ Secrets por ambiente:
 
 ```bash
 # STAGING
-npx wrangler secret put ADMIN_SECRET --env staging
+npx wrangler secret put SETUP_KEY --env staging
 npx wrangler secret put GITHUB_TOKEN --env staging
 
 # PRODUÇÃO (somente após aprovação)
-npx wrangler secret put ADMIN_SECRET --env production
+npx wrangler secret put ADMIN_PASSWORD_RECORD --env production
 npx wrangler secret put GITHUB_TOKEN --env production
 ```
+
+## Validação PBKDF2 antes de deploy
+
+Não assuma suporte de iterações sem teste real no runtime alvo.
+
+### 1) Auto-teste no Worker (local/staging)
+
+```bash
+curl -X POST "$WORKER_URL/api/admin/pbkdf2-selftest" \
+  -H "content-type: application/json" \
+  -d '{"setup_key":"SEU_SETUP_KEY","iterations":600000,"samples":3}'
+```
+
+Resposta esperada:
+- `ok: true`
+- `algorithm: "PBKDF2-HMAC-SHA-256"`
+- `iterations: 600000`
+- tempos (`timingsMs`, `avgMs`) aceitáveis para login administrativo
+
+Se falhar (`ok: false` / HTTP 500), o runtime não suportou a configuração informada.
+
+### 2) Paridade entre ambientes
+
+Repita o mesmo teste em **local, staging e produção** antes do deploy final para confirmar:
+- mesmo comportamento de suporte de iterações;
+- mesma faixa de tempo de autenticação;
+- ausência de falha silenciosa.
+
+### 3) Se houver limite (ex.: 100.000 iterações)
+
+Não reduza automaticamente sem análise. Documente a limitação e avalie:
+- Argon2id ou bcrypt em runtime compatível;
+- serviço externo especializado de autenticação;
+- reforço de controles (rate limiting, MFA, Cloudflare Access).
+
+### 4) Formato versionado do hash
+
+Formato canônico:
+
+`pbkdf2-sha256$v=1$iter=<iteracoes>$salt=<base64>$hash=<base64>`
+
+Recomendação:
+- armazenar em `ADMIN_PASSWORD_RECORD` (secret único);
+- manter `ADMIN_HASH` + `ADMIN_SALT` apenas como compatibilidade temporária.
 
 #### Necessidade real de KV
 
