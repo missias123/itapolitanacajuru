@@ -1,12 +1,16 @@
 const { test, expect } = require('@playwright/test');
 
 const ADMIN_URL = 'http://localhost:8080/admin-painel.html';
-const TEST_PASSWORD = '12345678';
+const TEST_PASSWORD = process.env.TEST_PASSWORD;
 
 test.describe('Admin Panel - Comprehensive Diagnostic', () => {
   let diagnosticResults = {};
 
   test('Execute comprehensive diagnostic', async ({ page }) => {
+    if (!TEST_PASSWORD) {
+      throw new Error('TEST_PASSWORD não configurada. Defina a variável de ambiente para executar este diagnóstico.');
+    }
+
     // Enable console logging
     const consoleMessages = [];
     const consoleErrors = [];
