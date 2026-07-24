@@ -1,22 +1,4 @@
 import { defineConfig, devices } from '@playwright/test';
-import { execSync } from 'child_process';
-
-// Detecta executável do Chrome/Chromium disponível no sistema.
-// Permite override via variável de ambiente PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH.
-function detectChrome() {
-  if (process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH) {
-    return process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
-  }
-  for (const bin of ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser']) {
-    try { execSync(`test -x ${bin}`); return bin; } catch { /* continua */ }
-  }
-  return undefined;
-}
-
-const systemChrome = detectChrome();
-const chromeLaunch = systemChrome
-  ? { launchOptions: { executablePath: systemChrome } }
-  : { channel: 'chromium' };
 
 export default defineConfig({
   testDir: './e2e',
@@ -34,14 +16,13 @@ export default defineConfig({
     baseURL: 'http://localhost:8080',
     headless: true,
     screenshot: 'only-on-failure',
-    video: 'off',
-    trace: 'off',
+    video: 'retain-on-failure',
+    trace: 'retain-on-failure',
     // Ignorar erros de HTTPS em ambiente local
     ignoreHTTPSErrors: true,
     // Aceitar cookies por padrão para não bloquear testes
     locale: 'pt-BR',
     timezoneId: 'America/Sao_Paulo',
-    ...chromeLaunch,
   },
   projects: [
     {
@@ -61,4 +42,3 @@ export default defineConfig({
     timeout: 30_000,
   },
 });
-

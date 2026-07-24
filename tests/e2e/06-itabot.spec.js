@@ -156,10 +156,7 @@ test.describe('Ita Bot — Chat', () => {
     const inputMsg = page.locator('#duvidas-pergunta').first();
     await inputMsg.focus();
     await page.evaluate(() => {
-      // Simula teclado virtual: reduz --itabot-panel-h (como visualViewport faz em produção)
-      // e ajusta --itabot-kb-offset para scroll das mensagens.
       document.documentElement.style.setProperty('--itabot-kb-offset', '260px');
-      document.documentElement.style.setProperty('--itabot-panel-h', '584px'); // 844 - 260
     });
     await page.waitForTimeout(350);
 
