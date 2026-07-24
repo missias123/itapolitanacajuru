@@ -78,11 +78,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // GitHub API, raw, Pages Functions (/api/) e painel admin — Network Only (nunca cachear)
+  // GitHub API, raw, API Worker e painel admin — Network Only (nunca cachear)
   // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
-      url.pathname.startsWith('/api/') ||
+      url.hostname === 'api.itapolitanacajuru.com.br' ||
       url.pathname.startsWith('/dados/') ||
       url.pathname === '/admin-painel.html') {
     event.respondWith(
