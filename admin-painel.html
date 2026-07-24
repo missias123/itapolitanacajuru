@@ -3210,8 +3210,8 @@ const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
-	const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json',auth:'dados/auth.json'};
-	const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,auth:null,authSha:null,pagClientes:0,senhaAdmin:null};
+	const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',pedidos:'dados/pedidos.json',submissoes:'dados/submissoes_encomendas.json',carrinhos:'dados/carrinhos_abandonados.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
+	const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0};
 	window.STATE=STATE;
 	let GH_WRITE_ALLOWED=false;
 let GH_TOKEN_CAN_WRITE=null;
@@ -3223,8 +3223,7 @@ const PATH_SHA_KEYS={
   [PATHS.fidelidade]:'fidelidadeSha',
   [PATHS.encomendas]:'encomendasSha',
   [PATHS.config]:'configSha',
-  [PATHS.promocoes]:'promocoesSha',
-  [PATHS.auth]:'authSha'
+  [PATHS.promocoes]:'promocoesSha'
 };
 function pathShaKey(path){return PATH_SHA_KEYS[path]||null;}
 function pathPrecisaSha(path){return Boolean(pathShaKey(path));}
@@ -3232,14 +3231,42 @@ function pathEstaSemSha(path){
   const key=pathShaKey(path);
   return Boolean(key)&&!STATE[key];
 }
-const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
+const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes,PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.carrinhos]);
+const SENSITIVE_PUBLIC_JSON_PATHS=new Set([PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.fidelidade,PATHS.carrinhos,'dados/auth.json']);
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
 function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
-function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','Authorization':`token ${getAdminToken()}`,...extra};}
-function workerRepoPathAllowed(path){return true;} // Todos os arquivos agora podem ser salvos via GitHub API
+function getWorkerSessionToken(){return ssGet('itap_worker_session_token')||'';}
+function getWorkerSessionExpiry(){return parseInt(ssGet('itap_worker_session_exp')||'0',10)||0;}
+function hasWorkerSession(){
+  const token=getWorkerSessionToken();
+  const exp=getWorkerSessionExpiry();
+  if(!token||!exp||Date.now()>=exp){
+    ssRemove('itap_worker_session_token');
+    ssRemove('itap_worker_session_exp');
+    return false;
+  }
+  return true;
+}
+function setWorkerSession(token,expiresIn){
+  if(!token||!expiresIn)return;
+  ssSet('itap_worker_session_token',token);
+  ssSet('itap_worker_session_exp',String(Date.now()+Math.max(60,Number(expiresIn)||0)*1000));
+}
+function clearWorkerSession(){
+  ssRemove('itap_worker_session_token');
+  ssRemove('itap_worker_session_exp');
+}
+function workerAdminHeaders(extra={}){
+  const headers={'Content-Type':'application/json',...extra};
+  if(hasWorkerSession())headers['X-Itap-Session-Token']=getWorkerSessionToken();
+  const adminToken=getAdminToken();
+  if(adminToken)headers['Authorization']=`token ${adminToken}`;
+  return headers;
+}
+function workerRepoPathAllowed(path){return WORKER_GH_PATHS.has(path);}
 function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo token para continuar editando.'){
   ssRemove('itap_github_token');
   GITHUB_PAT='';
@@ -3255,12 +3282,23 @@ function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo
   });
 }
 // Mantém compatibilidade com código legado
-function invalidarSessaoWorker(msg){invalidarTokenGitHub(msg);}
+function invalidarSessaoWorker(msg){
+  clearWorkerSession();
+  invalidarTokenGitHub(msg);
+}
 async function iniciarSessaoWorker(secret){
-  // Função legada mantida apenas para compatibilidade
-  // Agora redireciona para validação de token GitHub
-  console.warn('[Admin] iniciarSessaoWorker é legado. Use token GitHub diretamente.');
-  return{ok:false,error:'Função descontinuada. Use token GitHub.'};
+  const r=await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/auth`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({password:secret})
+  },9000);
+  const data=await r.json().catch(()=>({ok:false,error:'Resposta inválida do servidor'}));
+  if(!r.ok||!data?.ok||!data?.token){
+    clearWorkerSession();
+    return{ok:false,error:data?.error||'Falha de autenticação'};
+  }
+  setWorkerSession(data.token,data.expiresIn||7200);
+  return{ok:true};
 }
 async function fetchWithTimeout(url,options={},timeoutMs=10000){
   if(options&&options.signal&&options.signal.aborted)throw new Error('Abortado antes do fetch');
@@ -3364,6 +3402,20 @@ function fidRequireWrite(){
   return false;
 }
 async function ghGetRepo(path){
+  if(workerRepoPathAllowed(path)&&hasWorkerSession()){
+    try{
+      const url=`${ITAP_WORKER_API}/api/admin/github-file?path=${encodeURIComponent(path)}`;
+      const rWorker=await fetchWithTimeout(url,{headers:workerAdminHeaders({'Accept':'application/json'})},9000);
+      if(rWorker.ok){
+        const d=await rWorker.json();
+        if(d?.ok&&d.content)return{content:d.content,sha:d.sha||null};
+      }else if(rWorker.status===401){
+        clearWorkerSession();
+      }
+    }catch(eWorker){
+      console.warn('[admin] worker github-file falhou para',path,eWorker);
+    }
+  }
   try{
     const r=await fetchWithTimeout(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})},9000);
     if(r.status===404)return{content:null,sha:null};
@@ -3376,8 +3428,9 @@ async function ghGetRepo(path){
     return{content:JSON.parse(content),sha:d.sha};
   }catch(e){
     // Fallback 1: tentar ler do próprio site (mesma origem) quando existir /dados/*.json
+    // NUNCA usar fallback público para arquivos sensíveis.
     try{
-      if(typeof path==='string'&&(path.startsWith('dados/')||path.startsWith('/dados/'))){
+      if(!SENSITIVE_PUBLIC_JSON_PATHS.has(path)&&typeof path==='string'&&(path.startsWith('dados/')||path.startsWith('/dados/'))){
         const localPath=path.startsWith('/')?path:('/'+path);
         const rLocal=await fetchWithTimeout(localPath+'?t='+Date.now(),{cache:'no-store'},7000);
         if(rLocal.ok){const c=await rLocal.json();return{content:c,sha:null,readonly:true};}
@@ -3386,9 +3439,12 @@ async function ghGetRepo(path){
       console.warn('[admin] ghGet local fallback falhou para',path,eLocal);
     }
     // Fallback 2: repo público — lê via URL raw (sem autenticação, sem SHA para salvar)
+    // NUNCA usar fallback público para arquivos sensíveis.
     try{
-      const r2=await fetchWithTimeout(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'},7000);
-      if(r2.ok){const c=await r2.json();return{content:c,sha:null,readonly:true};}
+      if(!SENSITIVE_PUBLIC_JSON_PATHS.has(path)){
+        const r2=await fetchWithTimeout(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'},7000);
+        if(r2.ok){const c=await r2.json();return{content:c,sha:null,readonly:true};}
+      }
     }catch(e2){
       console.warn('[admin] ghGet fallback falhou para',path,e2);
     }
@@ -3403,29 +3459,8 @@ function aplicarConfigAdmin(cfg){
   if(cfg&&cfg.content){
     STATE.config=cfg.content;
     STATE.configSha=cfg.sha;
-    if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;
   }
   return cfg;
-}
-let _authLoadPromise=null;
-function aplicarAuth(result){
-  if(result&&result.content){
-    STATE.auth=result.content;
-    STATE.authSha=result.sha;
-    if(result.content.senhaAdmin)STATE.senhaAdmin=result.content.senhaAdmin;
-  }
-  return result;
-}
-async function carregarAuth(forceRefresh=false){
-  if(forceRefresh||!_authLoadPromise){
-    _authLoadPromise=ghGet(PATHS.auth)
-      .then(aplicarAuth)
-      .catch(e=>{
-        console.warn('[Admin] carregarAuth falhou',e);
-        return{content:null,sha:null};
-      });
-  }
-  return _authLoadPromise;
 }
 async function carregarConfigAdmin(forceRefresh=false){
   const deveAtualizarConfig=Boolean(getAdminToken()&&STATE.config&&STATE.configSha===null);
@@ -3502,10 +3537,6 @@ async function salvarArquivo(path,data,shaKey,msg){
 function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
 function toggleGitHubToken(){const i=document.getElementById('inp-github-token');if(i)i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
   const githubToken=(document.getElementById('inp-github-token')?.value||'').trim();
@@ -3516,17 +3547,17 @@ async function entrar(){
     return;
   }
   mostrarLoading('Verificando...');
-  const[cfg,_,senhaHash]=await Promise.all([carregarConfigAdmin(),carregarAuth(),sha256(senha)]);
-  if(!cfg.content){
+  const sessao=await iniciarSessaoWorker(senha);
+  if(!sessao.ok){
     ocultarLoading();
-    loginErro.innerHTML='⚠️ Não foi possível carregar a configuração do admin. Verifique a conexão e tente novamente.';
+    loginErro.innerHTML='&#x274C; Credenciais inválidas ou serviço indisponível.';
     loginErro.style.display='block';
     return;
   }
-  const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
-  if(!senhaOk){
+  const cfg=await carregarConfigAdmin(true);
+  if(!cfg.content){
     ocultarLoading();
-    loginErro.innerHTML='&#x274C; Senha incorreta.';
+    loginErro.innerHTML='⚠️ Login validado, mas não foi possível carregar config do admin.';
     loginErro.style.display='block';
     return;
   }
@@ -3610,8 +3641,25 @@ async function reativarTokenGitHub(){
   await carregarTudo();
 }
 // Mantém compatibilidade com código legado
-async function reativarSessaoWorker(){await reativarTokenGitHub();}
-function sair(){
+async function reativarSessaoWorker(){
+  const senhaPrompt=prompt('Informe novamente a senha do admin para reativar a sessão:');
+  if(!senhaPrompt)return;
+  const r=await iniciarSessaoWorker(senhaPrompt);
+  if(r.ok)toast('✅ Sessão do admin reativada.','sucesso');
+  else toast('❌ Não foi possível reativar a sessão.','erro');
+}
+async function sair(){
+  if(hasWorkerSession()){
+    try{
+      await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/session`,{
+        method:'DELETE',
+        headers:workerAdminHeaders()
+      },6000);
+    }catch(e){
+      console.warn('[Admin] Falha ao encerrar sessão remota',e);
+    }
+  }
+  clearWorkerSession();
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('admin-app').style.display='none';
   document.getElementById('inp-senha').value='';
@@ -3637,7 +3685,7 @@ async function carregarTudo(){
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}else{console.error('[BOOT] Falha ao carregar config');}
+    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;}else{console.error('[BOOT] Falha ao carregar config');}
     const falhasCarregamento=[
       [PATHS.promo,pr],
       [PATHS.clientes,cl],
@@ -7016,12 +7064,8 @@ async function salvarConfig(){
   const seoCarTitEl=document.getElementById('cfg-seo-carrossel-titulo'); if(seoCarTitEl) cfg.seoPaginas.carrossel.titulo=seoCarTitEl.value.trim();
   const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
   const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
-  delete cfg.senhaAdmin;
   if(novaSenha){
-    const novaHash=await sha256(novaSenha);
-    const authData={...(STATE.auth||{}),senhaAdmin:novaHash};
-    const okAuth=await salvarArquivo(PATHS.auth,authData,'authSha','Admin: atualizar senha');
-    if(okAuth)STATE.senhaAdmin=novaHash;
+    toast('⚠️ Alteração de senha via painel foi desativada neste lote. Faça a rotação no segredo ADMIN_SECRET do Worker em ambiente seguro.','aviso');
   }
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');

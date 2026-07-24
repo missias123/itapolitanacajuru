@@ -31,6 +31,51 @@ preview_id = "PLACEHOLDER_RATE_KV_ID"       # ← substitua pelo ID real
 [vars]
 ENVIRONMENT = "production"
 
+[env.local.vars]
+ENVIRONMENT = "local"
+[[env.local.kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+[[env.local.kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+[[env.local.kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+[[env.staging.kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+[[env.staging.kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+[[env.staging.kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+[[env.production.kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+[[env.production.kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+[[env.production.kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
 # ─── Segredos (NÃO colocar valores aqui — use wrangler secret put) ──────────
 # wrangler secret put ADMIN_SECRET
 # wrangler secret put GITHUB_TOKEN

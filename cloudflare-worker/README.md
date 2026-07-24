@@ -111,11 +111,13 @@ node migrate-data.js \
 
 ## 8. Atualizar o painel admin
 
-No **Painel Administrativo**, faça login usando apenas:
-- **Senha do administrador**
-- **Segredo Worker**
+No **Painel Administrativo**, o login deve usar o endpoint:
 
-O campo **"Segredo Worker"** usa exatamente o valor definido em `ADMIN_SECRET` (passo 4) e libera a escrita do admin inteiro nesta aba.
+- `POST /api/admin/auth` com `{ "password": "<ADMIN_SECRET>" }`
+- retorno: token de sessão temporário (`expiresIn`)
+- uso subsequente: header `X-Itap-Session-Token`
+
+Nunca enviar hash de senha ao navegador e nunca persistir `ADMIN_SECRET` no storage.
 
 ---
 
@@ -130,7 +132,9 @@ O campo **"Segredo Worker"** usa exatamente o valor definido em `ADMIN_SECRET` (
 | GET    | `/api/clientes/:id`           | Admin   | Buscar cliente por ID               |
 | PATCH  | `/api/clientes/:id`           | Admin   | Atualizar dados do cliente          |
 | DELETE | `/api/clientes/:id`           | Admin   | Remover cliente                     |
-| POST   | `/api/admin/session`          | -       | Trocar ADMIN_SECRET por token de sessão |
+| POST   | `/api/admin/auth`             | -       | Trocar senha admin por token de sessão (staging/local) |
+| POST   | `/api/admin/session`          | -       | Alias de sessão (compatibilidade) |
+| DELETE | `/api/admin/session`          | Admin   | Encerrar sessão atual |
 | GET    | `/api/clientes`               | Admin   | Listar todos os clientes            |
 | POST   | `/api/clientes`               | Público | Cadastrar novo cliente              |
 | POST   | `/api/clientes/login`         | Público | Login do cliente (retorna dados)    |
@@ -167,6 +171,42 @@ O `ADMIN_SECRET` **nunca deve ser armazenado no browser** — apenas usado na te
 npx wrangler dev
 # Worker disponível em http://localhost:8787
 ```
+
+### Configuração por ambiente (local / staging / produção)
+
+Não use IDs fictícios no repositório. Crie os namespaces em cada ambiente e aplique os IDs reais apenas no ambiente correspondente.
+
+```bash
+# STAGING
+npx wrangler kv namespace create CLIENTES_KV --env staging
+npx wrangler kv namespace create ENCOMENDAS_KV --env staging
+npx wrangler kv namespace create RATE_KV --env staging
+
+# PRODUÇÃO
+npx wrangler kv namespace create CLIENTES_KV --env production
+npx wrangler kv namespace create ENCOMENDAS_KV --env production
+npx wrangler kv namespace create RATE_KV --env production
+```
+
+Secrets por ambiente:
+
+```bash
+# STAGING
+npx wrangler secret put ADMIN_SECRET --env staging
+npx wrangler secret put GITHUB_TOKEN --env staging
+
+# PRODUÇÃO (somente após aprovação)
+npx wrangler secret put ADMIN_SECRET --env production
+npx wrangler secret put GITHUB_TOKEN --env production
+```
+
+#### Necessidade real de KV
+
+- `RATE_KV`: obrigatório para rate limit e sessão admin com expiração.
+- `CLIENTES_KV`: obrigatório para dados de clientes (PII) fora do frontend público.
+- `ENCOMENDAS_KV`: obrigatório para pedidos/encomendas fora do frontend público.
+
+Se autenticação for usada isoladamente em ambiente técnico, `RATE_KV` é o mínimo necessário.
 
 ---
 

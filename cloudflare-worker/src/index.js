@@ -34,6 +34,11 @@ const GH_ADMIN_JSON_PATHS = Object.freeze({
   promo:       'dados/promo.json',
   fidelidade:  'dados/fidelidade.json',
   promocoes:   'dados/promocoes.json',
+  clientes:    'dados/clientes.json',
+  pedidos:     'dados/pedidos.json',
+  encomendas:  'dados/encomendas.json',
+  submissoes:  'dados/submissoes_encomendas.json',
+  carrinhos:   'dados/carrinhos_abandonados.json',
 });
 const GH_ADMIN_PATH_SET = new Set(Object.values(GH_ADMIN_JSON_PATHS));
 const GH__PATH = GH_ADMIN_JSON_PATHS.fidelidade;
@@ -86,16 +91,26 @@ function buildCorsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin':  allowed,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-Itap-Admin-Secret, X-Itap-Session-Token',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Itap-Admin-Secret, X-Itap-Session-Token',
     'Access-Control-Max-Age':       '86400',
     'Vary':                         'Origin',
   };
+}
+
+function applySecurityHeaders(resp) {
+  resp.headers.set('X-Content-Type-Options', 'nosniff');
+  resp.headers.set('X-Frame-Options', 'DENY');
+  resp.headers.set('Referrer-Policy', 'no-referrer');
+  resp.headers.set('Cache-Control', 'no-store');
+  resp.headers.set('Pragma', 'no-cache');
+  resp.headers.set('Expires', '0');
 }
 
 function withCors(response, origin) {
   const r = new Response(response.body, response);
   const headers = buildCorsHeaders(origin);
   Object.entries(headers).forEach(([k, v]) => r.headers.set(k, v));
+  applySecurityHeaders(r);
   return r;
 }
 
@@ -334,8 +349,14 @@ async function router(request, env) {
   }
 
   // ── Admin session exchange ─────────────────────────────────────────────────
+  if (path === '/api/admin/auth' && method === 'POST')
+    return handleAdminAuth(request, env);
+
   if (path === '/api/admin/session' && method === 'POST')
     return handleAdminSession(request, env);
+
+  if (path === '/api/admin/session' && method === 'DELETE')
+    return handleAdminSessionLogout(request, env);
 
   if (path === '/api/admin/github-file' && method === 'GET') {
     if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
@@ -445,6 +466,11 @@ async function router(request, env) {
  * O frontend armazena APENAS o token de sessão (nunca o ADMIN_SECRET em si).
  */
 async function handleAdminSession(request, env) {
+  const envName = sanitizeString(env?.ENVIRONMENT || '', 32).toLowerCase();
+  const allowInsecure = envName === 'local' || envName === 'dev' || envName === 'development';
+  if (!allowInsecure && !request.url.startsWith('https://')) {
+    return jsonResp({ ok: false, error: 'HTTPS obrigatório' }, 400);
+  }
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rl = await checkRateLimit(env, ip, 'admin-login');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login. Aguarde uma hora.' }, 429);
@@ -452,21 +478,37 @@ async function handleAdminSession(request, env) {
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
 
-  const secret = sanitizeString(body.secret || '', 200);
+  const secret = sanitizeString(body.secret || body.password || '', 200);
   if (!secret || !env.ADMIN_SECRET || secret !== env.ADMIN_SECRET) {
     await registrarAudit(env, 'admin_login_fail', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
-    return jsonResp({ ok: false, error: 'Credenciais inválidas' }, 401);
+    return jsonResp({ ok: false, error: 'Falha de autenticação' }, 401);
   }
 
-  // Generate a cryptographically random 256-bit session token
+  const token = await issueAdminSessionToken(env);
+  await registrarAudit(env, 'admin_login_ok', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
+  return jsonResp({ ok: true, token, expiresIn: SESSION_TTL });
+}
+
+async function issueAdminSessionToken(env) {
   const tokenBytes = new Uint8Array(32);
   crypto.getRandomValues(tokenBytes);
   const token = Array.from(tokenBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-
   await env.RATE_KV.put(`session:${token}`, '1', { expirationTtl: SESSION_TTL });
-  await registrarAudit(env, 'admin_login_ok', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
+  return token;
+}
 
-  return jsonResp({ ok: true, token, expiresIn: SESSION_TTL });
+async function handleAdminAuth(request, env) {
+  return handleAdminSession(request, env);
+}
+
+async function handleAdminSessionLogout(request, env) {
+  const token = sanitizeString(request.headers.get('X-Itap-Session-Token') || '', 128);
+  if (!token) {
+    return jsonResp({ ok: true });
+  }
+  await env.RATE_KV.delete(`session:${token}`);
+  await registrarAudit(env, 'admin_logout', 'admin', { status: 'ok' });
+  return jsonResp({ ok: true });
 }
 
 async function handleAdminGitHubFileGet(pathRaw, env) {
