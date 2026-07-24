@@ -6,20 +6,16 @@
 
 const { test, expect } = require('@playwright/test');
 
-async function obterSenhaAdmin(request) {
-  const [cfgResp, authResp] = await Promise.all([
-    request.get('/dados/config.json'),
-    request.get('/dados/auth.json')
-  ]);
-  expect(cfgResp.ok()).toBeTruthy();
-  expect(authResp.ok()).toBeTruthy();
-  const cfg = await cfgResp.json();
-  const auth = await authResp.json();
-  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+function obterSenhaAdminTeste() {
+  const senha = String(process.env.TEST_PASSWORD || '').trim();
+  if (!senha) {
+    throw new Error('TEST_PASSWORD não configurada. Defina uma credencial de staging segura para executar o teste do admin.');
+  }
+  return senha;
 }
 
-async function fazerLogin(page, request) {
-  const senhaAdmin = await obterSenhaAdmin(request);
+async function fazerLogin(page) {
+  const senhaAdmin = obterSenhaAdminTeste();
   await page.fill('#inp-senha', senhaAdmin);
   await page.click('button:has-text("Entrar no Admin")');
   await expect(page.locator('#admin-app')).toBeVisible({ timeout: 15000 });
@@ -34,9 +30,9 @@ test.describe('Admin - Carregamento de Seções', () => {
     await page.waitForSelector('#inp-senha', { timeout: 10000 });
   });
 
-  test('deve carregar config.json ao fazer login', async ({ page, request }) => {
+  test('deve carregar config.json ao fazer login', async ({ page }) => {
     // Fazer login (deve carregar a configuração como parte do bootstrap do admin)
-    await fazerLogin(page, request);
+    await fazerLogin(page);
 
     // Verificar se STATE.config foi preenchido
     await expect
@@ -44,8 +40,8 @@ test.describe('Admin - Carregamento de Seções', () => {
       .toBe(true);
   });
 
-  test('deve preencher STATE.config após carregarTudo()', async ({ page, request }) => {
-    await fazerLogin(page, request);
+  test('deve preencher STATE.config após carregarTudo()', async ({ page }) => {
+    await fazerLogin(page);
     await expect
       .poll(() => page.evaluate(() => !!window.STATE?.config), { timeout: 15000 })
       .toBe(true);
