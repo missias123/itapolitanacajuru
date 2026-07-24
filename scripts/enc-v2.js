@@ -483,7 +483,6 @@ function renderizarPicolés() {
       <div class="prod-body">
         <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
         <div class="prod-preços-picolé">
-          <span class="preco-varejo-ref">De R$\u00a0${p.preçoVarejo.toFixed(2).replace('.',',')} varejo</span>
           <span class="preco-atacado-main">R$\u00a0${p.preçoAtacado.toFixed(2).replace('.',',')} <small>atacado</small></span>
           <span class="badge-min-picole">Mín. ${MIN_PICOLES} un.</span>
         </div>
@@ -666,7 +665,6 @@ function abrirModalPicolé(id, originEl) {
   const elPreços = document.getElementById('picolé-preços');
   if (elPreços) {
     elPreços.innerHTML =
-      `<span style="font-size:11px;color:#888;text-decoration:line-through">Varejo R$\u00a0${p.preçoVarejo.toFixed(2).replace('.',',')}</span>&nbsp;&nbsp;` +
       `<strong style="color:#1B5E20;font-size:15px">R$\u00a0${p.preçoAtacado.toFixed(2).replace('.',',')} <small style="font-size:11px;font-weight:400">/un. atacado</small></strong>`;
   }
   const lista = document.getElementById('lista-sabores-picolé');
