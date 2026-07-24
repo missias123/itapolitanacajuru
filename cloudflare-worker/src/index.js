@@ -10,13 +10,20 @@
  * como segredo no Cloudflare.
  *
  * Variáveis de ambiente obrigatórias (wrangler secret put):
- *   ADMIN_SECRET   — segredo compartilhado para rotas protegidas do admin
  *   GITHUB_TOKEN   — PAT do GitHub com escopo "repo" (para o admin inteiro)
+ *
+ * Autenticação administrativa (um dos pares abaixo):
+ *   ADMIN_HASH + ADMIN_SALT — hash PBKDF2-SHA-256 da senha (preferido, mais seguro)
+ *   ADMIN_SECRET            — senha em texto plano (legado, removido após migração)
  *
  * KV Namespaces:
  *   CLIENTES_KV    — dados de clientes
  *   ENCOMENDAS_KV  — pedidos de encomenda
  *   RATE_KV        — contadores de rate-limit
+ *
+ * Para gerar ADMIN_HASH e ADMIN_SALT (staging only):
+ *   POST /api/admin/generate-hash  { "setup_key": "<valor de SETUP_KEY>", "password": "..." }
+ *   Retorna { ADMIN_HASH, ADMIN_SALT } — copie e configure com: wrangler secret put ADMIN_HASH
  */
 
 // ─── Origens permitidas para CORS ────────────────────────────────────────────
@@ -24,6 +31,9 @@ const ALLOWED_ORIGINS = [
   'https://itapolitanacajuru.com.br',
   'https://www.itapolitanacajuru.com.br',
   'https://missias123.github.io',
+  // staging: adicione a URL do Pages preview e do subdomínio de staging
+  // 'https://staging.itapolitanacajuru.com.br',
+  // 'https://missias123-itapolitanacajuru-staging.pages.dev',
 ];
 
 const GH_RAW  = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/';
@@ -41,8 +51,16 @@ const GH_ADMIN_JSON_PATHS = Object.freeze({
   carrinhos:   'dados/carrinhos_abandonados.json',
 });
 const GH_ADMIN_PATH_SET = new Set(Object.values(GH_ADMIN_JSON_PATHS));
+
+// Allowed binary/image paths for admin upload (prefix match against allowed dirs)
+const GH_ADMIN_IMAGE_PREFIXES = ['images/carrossel/', 'images/depoimentos/', 'dados/promo_banner'];
 const GH__PATH = GH_ADMIN_JSON_PATHS.fidelidade;
 const LEGACY_SECRET_FIELD_DEPRECATION = '2026-12-31';
+
+// PBKDF2 parameters (NIST SP 800-132 recommended minimum for SHA-256)
+const PBKDF2_ITERATIONS = 600_000;
+const PBKDF2_HASH      = 'SHA-256';
+const PBKDF2_KEY_BITS  = 256;
 
 const RATE_LIMITS = {
   'post-cliente':  { max: 10, windowMs: 3_600_000 },
@@ -129,10 +147,11 @@ function jsonResp(data, status = 200) {
  * isAdmin — checks for a valid admin session token (preferred) or direct secret (fallback).
  *
  * Session flow (recommended):
- *   1. Client calls POST /api/admin/session with the raw ADMIN_SECRET
- *   2. Worker verifies the secret and returns a short-lived random session token
- *   3. Client stores the session token and uses X-Itap-Session-Token on all requests
- *   4. Session token is stored in RATE_KV with SESSION_TTL expiry
+ *   1. Client calls POST /api/admin/session with the raw password
+ *   2. Worker verifies the password (PBKDF2 when ADMIN_HASH+ADMIN_SALT are set, otherwise ADMIN_SECRET)
+ *   3. Worker returns a short-lived random session token
+ *   4. Client stores the session token and uses X-Itap-Session-Token on all requests
+ *   5. Session token is stored in RATE_KV with SESSION_TTL expiry
  *
  * Direct secret (fallback — for non-browser callers such as migration scripts):
  *   X-Itap-Admin-Secret: <raw ADMIN_SECRET>
@@ -144,15 +163,79 @@ async function isAdmin(request, env) {
     const valid = await env.RATE_KV.get(`session:${sessionToken}`);
     if (valid === '1') return true;
   }
-  // Fallback: direct ADMIN_SECRET (for migration scripts and CLI tools)
+  // Fallback: direct ADMIN_SECRET (for migration scripts and CLI tools only)
   const secret = request.headers.get('X-Itap-Admin-Secret') || '';
   if (secret && env.ADMIN_SECRET && secret === env.ADMIN_SECRET) return true;
-  // GitHub PAT flow: admin panel sends Authorization: token <PAT>; accept when it
-  // matches the GITHUB_TOKEN secret already stored in the Worker environment.
-  const authHeader = request.headers.get('Authorization') || '';
-  const patMatch = authHeader.match(/^(?:token|Bearer)\s+(\S+)$/i);
-  if (patMatch && env.GITHUB_TOKEN && patMatch[1] === env.GITHUB_TOKEN) return true;
   return false;
+}
+
+// ─── PBKDF2 password hashing (Web Crypto API — available in all Workers) ─────
+/**
+ * Derives a PBKDF2-SHA-256 hash from a password and salt.
+ * Returns base64-encoded 256-bit key.
+ */
+async function pbkdf2Derive(password, saltBase64) {
+  const enc       = new TextEncoder();
+  const saltBytes = base64ToBytes(saltBase64);
+  const keyMat    = await crypto.subtle.importKey(
+    'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveBits']
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: PBKDF2_HASH, salt: saltBytes, iterations: PBKDF2_ITERATIONS },
+    keyMat,
+    PBKDF2_KEY_BITS
+  );
+  return bytesToBase64(new Uint8Array(bits));
+}
+
+/**
+ * Timing-safe comparison of two strings using HMAC-SHA-256.
+ * This prevents timing attacks by comparing HMAC signatures, not raw strings.
+ */
+async function timingSafeEqual(a, b) {
+  const enc  = new TextEncoder();
+  const key  = await crypto.subtle.generateKey({ name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const [sa, sb] = await Promise.all([
+    crypto.subtle.sign('HMAC', key, enc.encode(a)),
+    crypto.subtle.sign('HMAC', key, enc.encode(b)),
+  ]);
+  const ba = new Uint8Array(sa);
+  const bb = new Uint8Array(sb);
+  if (ba.length !== bb.length) return false;
+  let diff = 0;
+  for (let i = 0; i < ba.length; i++) diff |= ba[i] ^ bb[i];
+  return diff === 0;
+}
+
+/**
+ * Verifies the provided password against stored PBKDF2 hash or plain ADMIN_SECRET.
+ * Prefers PBKDF2 (ADMIN_HASH + ADMIN_SALT) over plain text (ADMIN_SECRET).
+ */
+async function verifyAdminPassword(password, env) {
+  if (!password) return false;
+  if (env.ADMIN_HASH && env.ADMIN_SALT) {
+    // Secure path: PBKDF2 verification
+    const derived = await pbkdf2Derive(password, env.ADMIN_SALT);
+    return timingSafeEqual(derived, env.ADMIN_HASH);
+  }
+  // Legacy path: plain text comparison (to be removed after migration)
+  if (env.ADMIN_SECRET) {
+    return timingSafeEqual(password, env.ADMIN_SECRET);
+  }
+  return false;
+}
+
+function base64ToBytes(b64) {
+  const bin   = atob(String(b64 || '').replace(/\s/g, ''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+function bytesToBase64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
 }
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────
@@ -214,6 +297,14 @@ function isAllowedAdminRepoPath(path) {
   return GH_ADMIN_PATH_SET.has(path);
 }
 
+function isAllowedAdminImagePath(path) {
+  return GH_ADMIN_IMAGE_PREFIXES.some(prefix => path.startsWith(prefix));
+}
+
+function isAllowedAdminFilePath(path) {
+  return isAllowedAdminRepoPath(path) || isAllowedAdminImagePath(path);
+}
+
 async function ghGetJsonFile(path, token) {
   const r = await fetch(GH_API + path, {
     headers: {
@@ -258,6 +349,39 @@ async function ghPutJsonFile(path, data, mensagem, token, sha = '') {
   }
   const resp = await r.json().catch(() => ({}));
   return { ok: true, sha: resp?.content?.sha || body.sha || '' };
+}
+
+/**
+ * ghPutRawFile — uploads a binary file (already base64-encoded) to GitHub.
+ * Used for image uploads where the browser sends pre-encoded content.
+ */
+async function ghPutRawFile(path, base64Content, mensagem, token, sha = '') {
+  const cleanContent = String(base64Content || '').replace(/\s/g, '');
+  const body = {
+    message: sanitizeString(mensagem || `Admin: atualizar ${path}`, 180),
+    content: cleanContent,
+  };
+  if (sha) {
+    body.sha = sha;
+  } else {
+    try {
+      const r = await fetch(GH_API + path, {
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' },
+      });
+      if (r.ok) { const meta = await r.json(); if (meta.sha) body.sha = meta.sha; }
+    } catch { /* file may not exist yet */ }
+  }
+  const r = await fetch(GH_API + path, {
+    method: 'PUT',
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    throw new Error(e.message || `PUT ${path}: HTTP ${r.status}`);
+  }
+  const resp = await r.json().catch(() => ({}));
+  return { ok: true, sha: resp?.content?.sha || body.sha || '', url: resp?.content?.download_url || '' };
 }
 
 // ─── GitHub helper — write fidelidade.json ────────────────────────────────────
@@ -359,6 +483,10 @@ async function router(request, env) {
 
   if (path === '/api/admin/session' && method === 'DELETE')
     return handleAdminSessionLogout(request, env);
+
+  // ── Admin hash generation (staging only — generates PBKDF2 hash for setup) ──
+  if (path === '/api/admin/generate-hash' && method === 'POST')
+    return handleGenerateHash(request, env);
 
   if (path === '/api/admin/github-file' && method === 'GET') {
     if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
@@ -465,7 +593,7 @@ async function router(request, env) {
  * POST /api/admin/session — troca o ADMIN_SECRET por um token de sessão temporário.
  *
  * O token de sessão é um valor aleatório armazenado no RATE_KV com TTL de SESSION_TTL segundos.
- * O frontend armazena APENAS o token de sessão (nunca o ADMIN_SECRET em si).
+ * O frontend armazena APENAS o token de sessão (nunca a senha em si).
  */
 async function handleAdminSession(request, env) {
   const envName = sanitizeString(env?.ENVIRONMENT || '', 32).toLowerCase();
@@ -486,8 +614,10 @@ async function handleAdminSession(request, env) {
   if (!password && body.secret) {
     await registrarAudit(env, 'admin_login_legacy_field', 'admin', { deprecatesOn: LEGACY_SECRET_FIELD_DEPRECATION });
   }
-  const secret = password || sanitizeString(body.secret || '', 200);
-  if (!secret || !env.ADMIN_SECRET || secret !== env.ADMIN_SECRET) {
+  const candidate = password || sanitizeString(body.secret || '', 200);
+
+  const ok = await verifyAdminPassword(candidate, env);
+  if (!ok) {
     await registrarAudit(env, 'admin_login_fail', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
     return jsonResp({ ok: false, error: 'Falha de autenticação' }, 401);
   }
@@ -519,6 +649,55 @@ async function handleAdminSessionLogout(request, env) {
   return jsonResp({ ok: true });
 }
 
+/**
+ * POST /api/admin/generate-hash — gera PBKDF2-SHA-256 hash + salt para configuração segura.
+ *
+ * Disponível apenas em ambientes staging/local. Protegido por SETUP_KEY (Cloudflare Secret).
+ * Uso: configure SETUP_KEY como secret, chame este endpoint uma vez para obter ADMIN_HASH e ADMIN_SALT,
+ * então configure esses dois valores como secrets e remova SETUP_KEY.
+ *
+ * Body: { "setup_key": "<valor de SETUP_KEY>", "password": "<nova senha do admin>" }
+ * Retorno: { "ADMIN_HASH": "...", "ADMIN_SALT": "..." }
+ */
+async function handleGenerateHash(request, env) {
+  const envName = sanitizeString(env?.ENVIRONMENT || '', 32).toLowerCase();
+  const isAllowedEnv = envName === 'staging' || envName === 'local' || envName === 'dev';
+  if (!isAllowedEnv) {
+    return jsonResp({ ok: false, error: 'Endpoint disponível apenas em staging/local' }, 403);
+  }
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const setupKey = sanitizeString(body.setup_key || '', 200);
+  if (!setupKey || !env.SETUP_KEY || setupKey !== env.SETUP_KEY) {
+    return jsonResp({ ok: false, error: 'Chave de setup inválida' }, 401);
+  }
+
+  const password = sanitizeString(body.password || '', 200);
+  if (!password || password.length < 16) {
+    return jsonResp({ ok: false, error: 'Senha deve ter ao menos 16 caracteres' }, 400);
+  }
+
+  const saltBytes = new Uint8Array(16);
+  crypto.getRandomValues(saltBytes);
+  const saltB64 = bytesToBase64(saltBytes);
+  const hashB64 = await pbkdf2Derive(password, saltB64);
+
+  return jsonResp({
+    ok: true,
+    message: 'Configure os secrets abaixo e remova SETUP_KEY após a configuração',
+    ADMIN_HASH: hashB64,
+    ADMIN_SALT: saltB64,
+    instructions: [
+      'wrangler secret put ADMIN_HASH  (cole o valor de ADMIN_HASH)',
+      'wrangler secret put ADMIN_SALT  (cole o valor de ADMIN_SALT)',
+      'wrangler secret delete ADMIN_SECRET  (após confirmar que PBKDF2 funciona)',
+      'wrangler secret delete SETUP_KEY',
+    ],
+  });
+}
+
 async function handleAdminGitHubFileGet(pathRaw, env) {
   const path = sanitizeString(pathRaw || '', 120).replace(/^\/+/, '');
   if (!isAllowedAdminRepoPath(path)) {
@@ -536,18 +715,33 @@ async function handleAdminGitHubFilePut(request, env) {
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
 
   const path = sanitizeString(body.path || '', 120).replace(/^\/+/, '');
-  if (!isAllowedAdminRepoPath(path)) {
+  if (!isAllowedAdminFilePath(path)) {
     return jsonResp({ ok: false, error: 'Arquivo não permitido' }, 400);
-  }
-  if (!Object.prototype.hasOwnProperty.call(body, 'data')) {
-    return jsonResp({ ok: false, error: 'Campo data é obrigatório' }, 400);
   }
   if (!env.GITHUB_TOKEN) {
     return jsonResp({ ok: false, error: 'GITHUB_TOKEN não configurado no Worker' }, 500);
   }
 
-  const sha = sanitizeString(body.sha || '', 120);
+  const sha     = sanitizeString(body.sha || '', 120);
   const message = sanitizeString(body.message || `Admin: atualizar ${path}`, 180);
+
+  // Binary file upload: browser sends pre-encoded base64 content
+  if (typeof body.content_base64 === 'string') {
+    if (!isAllowedAdminImagePath(path) && !isAllowedAdminRepoPath(path)) {
+      return jsonResp({ ok: false, error: 'Arquivo não permitido para upload binário' }, 400);
+    }
+    const saved = await ghPutRawFile(path, body.content_base64, message, env.GITHUB_TOKEN, sha);
+    await registrarAudit(env, 'admin_repo_put_binary', path, { via: 'worker' });
+    return jsonResp({ ok: true, path, sha: saved.sha, url: saved.url || '' });
+  }
+
+  // JSON file update
+  if (!Object.prototype.hasOwnProperty.call(body, 'data')) {
+    return jsonResp({ ok: false, error: 'Campo data ou content_base64 é obrigatório' }, 400);
+  }
+  if (!isAllowedAdminRepoPath(path)) {
+    return jsonResp({ ok: false, error: 'Arquivo não permitido para escrita JSON' }, 400);
+  }
   const saved = await ghPutJsonFile(path, body.data, message, env.GITHUB_TOKEN, sha);
   await registrarAudit(env, 'admin_repo_put', path, { via: 'worker' });
   return jsonResp({ ok: true, path, sha: saved.sha });

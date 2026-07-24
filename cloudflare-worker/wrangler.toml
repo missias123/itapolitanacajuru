@@ -79,8 +79,14 @@ id         = "PLACEHOLDER_RATE_KV_ID"
 preview_id = "PLACEHOLDER_RATE_KV_ID"
 
 # ─── Segredos (NÃO colocar valores aqui — use wrangler secret put) ──────────
-# wrangler secret put ADMIN_SECRET
-# wrangler secret put GITHUB_TOKEN
+# Autenticação administrativa (use PBKDF2 — mais seguro):
+#   wrangler secret put ADMIN_HASH   (hash PBKDF2-SHA-256 em base64 — gerado via /api/admin/generate-hash)
+#   wrangler secret put ADMIN_SALT   (salt aleatório em base64 — gerado junto com ADMIN_HASH)
+# Legado (remover após migração PBKDF2):
+#   wrangler secret put ADMIN_SECRET
+# Token GitHub e setup:
+#   wrangler secret put GITHUB_TOKEN
+#   wrangler secret put SETUP_KEY    (usado uma vez para gerar ADMIN_HASH/ADMIN_SALT — remover depois)
 
 # ─── Rota personalizada ───────────────────────────────────────────────────────
 # Após configurar o domínio no Cloudflare, defina a rota:
