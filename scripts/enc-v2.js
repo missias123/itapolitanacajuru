@@ -239,11 +239,12 @@ function renderizarGridSabores(grid) {
   if (!grid) return;
   grid.innerHTML = SABORES_SORVETE.map(s => {
     const nome = s.nome;
+    const nomeAttr = nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     const esg  = s.esgotado;
     if (esg) {
       return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado — indisponível no momento"><span class="sabor-nome">${nome}</span></button>`;
     }
-    return `<button class="sabor-item" onclick="toggleSabor('${nome}',this)"><span class="sabor-nome">${nome}</span></button>`;
+    return `<button class="sabor-item" onclick="toggleSabor('${nomeAttr}',this)"><span class="sabor-nome">${nome}</span></button>`;
   }).join('');
 }
 
