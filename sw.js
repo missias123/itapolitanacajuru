@@ -69,7 +69,7 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') {
     event.respondWith(
       fetch(request).catch(() =>
-        new Response(JSON.stringify({ ok: false, error: 'Offline' }), {
+        new Response(JSON.stringify({ success: false, error: '_offline' }), {
           status: 503,
           headers: { 'Content-Type': 'application/json' }
         })
