@@ -1,11 +1,17 @@
 import { test, expect } from '@playwright/test';
 
-const API_URL = 'https://api.itapolitanacajuru.com.br/api/promocao/cadastro';
+const API_URL = '**/api/promocao/cadastro';
 
 async function abrirFormularioPromo(page) {
   await page.goto('/promocao.html', { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    window.ITAP_WORKER_API = window.location.origin;
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister())).catch(() => {});
+    }
+  });
   await page.locator('#btn-quero-participar-principal').click();
-  await page.locator('#aceite-sorteio-inline').check();
+  await page.locator('label[for="aceite-sorteio-inline"]').click();
   await page.locator('#btn-aceitar-sorteio-inline').click();
   await expect(page.locator('#form-promocao-cliente')).toBeVisible();
 }

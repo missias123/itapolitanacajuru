@@ -504,7 +504,7 @@
         var erro = (dados && dados.error) ? String(dados.error) : '';
         var code = (dados && dados.code) ? String(dados.code) : '';
         if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || /ja|já.*cadastr/i.test(erro)) {
-          mostrarMsgSorteio('Este WhatsApp já está cadastrado nesta promoção.', 'aviso');
+          mostrarMsgSorteio('Este WhatsApp já possui um cadastro nesta promoção.', 'aviso');
           _promoClearOperation();
         } else if (resposta.status === 400) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
