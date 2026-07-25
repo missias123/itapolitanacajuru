@@ -3087,6 +3087,8 @@ function atualizarEstadoHeaderAcc(acc, isOpen) {
 }
 
 function inicializarAcessibilidadeAcc() {
+  if (window.__itapAccA11yInitDone) return;
+  window.__itapAccA11yInitDone = true;
   var headers = document.querySelectorAll('.acc > .acc-header');
   headers.forEach(function(header) {
     var acc = header.closest('.acc');

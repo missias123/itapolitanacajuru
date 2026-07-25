@@ -66,6 +66,7 @@
   var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
   var _promoCadastroLiberado = false;
   var _promoSubmitting = false;
+  // Timeout de 12s: evita bloqueio indefinido quando há falha de rede/API.
   var _promoTimeoutMs = 12000;
 
   function trackPromoEvent(nomeEvento, params) {
