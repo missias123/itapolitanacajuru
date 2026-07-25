@@ -65,6 +65,16 @@
   var feedbackPromo = document.getElementById('promo-feedback-message');
   var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
   var _promoCadastroLiberado = false;
+  var _promoSubmitting = false;
+  // Timeout de 12s: evita bloqueio indefinido quando há falha de rede/API.
+  var _promoTimeoutMs = 12000;
+
+  function trackPromoEvent(nomeEvento, params) {
+    if (typeof gtag !== 'function') return;
+    try {
+      gtag('event', nomeEvento, params || {});
+    } catch (_) {}
+  }
 
   function abrirRegrasSorteioPromo() {
     if (window._sorteioEncerrado) {
@@ -200,14 +210,66 @@
       feedbackPromo.setAttribute('aria-live', 'polite');
       return;
     }
-    var ehErro = tipo !== 'ok' && tipo !== 'info';
     feedbackPromo.style.display = 'block';
     feedbackPromo.textContent = txt;
-    feedbackPromo.className = 'alert ' + (ehErro ? 'alert-warning' : 'alert-success');
-    // role="alert" para erros (leitura imediata por screen readers), "status" para sucesso/info
-    feedbackPromo.setAttribute('role', ehErro ? 'alert' : 'status');
-    feedbackPromo.setAttribute('aria-live', ehErro ? 'assertive' : 'polite');
-    feedbackPromo.setAttribute('aria-atomic', 'true');
+    var isInfo = tipo === 'ok' || tipo === 'info';
+    feedbackPromo.className = 'alert ' + (isInfo ? 'alert-success' : 'alert-warning');
+    feedbackPromo.setAttribute('role', isInfo ? 'status' : 'alert');
+    feedbackPromo.setAttribute('aria-live', isInfo ? 'polite' : 'assertive');
+  }
+
+  function mostrarMsgSorteioComLink(txt, linkUrl, linkTxt) {
+    if (!feedbackPromo) return;
+    feedbackPromo.style.display = 'block';
+    feedbackPromo.className = 'alert alert-warning';
+    feedbackPromo.setAttribute('role', 'alert');
+    feedbackPromo.setAttribute('aria-live', 'assertive');
+    var span = document.createElement('span');
+    span.textContent = txt + ' ';
+    var a = document.createElement('a');
+    a.href = linkUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = linkTxt;
+    a.style.cssText = 'color:#fff;font-weight:700;text-decoration:underline;margin-left:4px';
+    feedbackPromo.innerHTML = '';
+    feedbackPromo.appendChild(span);
+    feedbackPromo.appendChild(a);
+  }
+
+  function mostrarMsgSorteioComAcao(txt, tipo, acaoTxt, onClick) {
+    if (!feedbackPromo) return;
+    mostrarMsgSorteio('', '');
+    feedbackPromo.style.display = 'block';
+    feedbackPromo.className = 'alert ' + (tipo === 'ok' || tipo === 'info' ? 'alert-success' : 'alert-warning');
+    feedbackPromo.setAttribute('role', tipo === 'ok' || tipo === 'info' ? 'status' : 'alert');
+    feedbackPromo.setAttribute('aria-live', tipo === 'ok' || tipo === 'info' ? 'polite' : 'assertive');
+
+    var span = document.createElement('span');
+    span.textContent = txt + ' ';
+    feedbackPromo.appendChild(span);
+    if (!acaoTxt || typeof onClick !== 'function') return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = acaoTxt;
+    btn.style.cssText = 'margin-left:8px;background:#fff;color:#1b5e20;border:1px solid rgba(0,0,0,.18);border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer';
+    btn.addEventListener('click', onClick);
+    feedbackPromo.appendChild(btn);
+  }
+
+  function marcarCampoInvalido(campo, invalido) {
+    if (!campo) return;
+    if (invalido) {
+      campo.setAttribute('aria-invalid', 'true');
+    } else {
+      campo.removeAttribute('aria-invalid');
+    }
+  }
+
+  function limparValidacaoPromo() {
+    marcarCampoInvalido(inputPromoNome, false);
+    marcarCampoInvalido(inputPromoData, false);
+    marcarCampoInvalido(inputPromoCelular, false);
   }
 
   function exibirRegrasRetiradaPromo() {
@@ -236,8 +298,10 @@
     if (!opts.manterRegras && regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
-      btnEnviarPromo.textContent = '📝 Enviar Cadastro';
+      btnEnviarPromo.textContent = 'Enviar meu cadastro';
     }
+    _promoSubmitting = false;
+    limparValidacaoPromo();
     atualizarFluxoCadastroPromo();
   }
 
@@ -283,7 +347,7 @@
   // ANTES: gravava direto no GitHub API + abria WhatsApp.
   // AGORA: chama o Worker (ITAP_WORKER_API) e exibe o ID retornado na tela (sem WhatsApp).
   async function enviarSorteioPromo() {
-    if (!_promoCadastroLiberado) return;
+    if (!_promoCadastroLiberado || _promoSubmitting) return;
     if (window._sorteioEncerrado) {
       mostrarMsgSorteio('⛔ As inscrições para o sorteio foram encerradas em 02/01/2027. Obrigado pela participação!', 'aviso');
       return;
@@ -303,69 +367,59 @@
     var dataNasc = inputPromoData ? inputPromoData.value.trim() : '';
     var dataNascIso = parseDataBrPromoToIso(dataNasc);
     var cel = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
-
-    // Limpar aria-invalid anteriores
-    [inputPromoNome, inputPromoData, inputPromoCelular].forEach(function(el) {
-      if (el) el.removeAttribute('aria-invalid');
-    });
+    limparValidacaoPromo();
 
     if (nome.length < 3) {
-      mostrarMsgSorteio('Digite seu nome completo para participar do sorteio.', 'aviso');
-      if (inputPromoNome) { inputPromoNome.setAttribute('aria-invalid', 'true'); inputPromoNome.focus(); }
+      marcarCampoInvalido(inputPromoNome, true);
+      mostrarMsgSorteio('Informe seu nome completo com pelo menos 3 caracteres.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'name' });
       return;
     }
     if (!dataNascIso) {
-      mostrarMsgSorteio('Digite uma data de nascimento válida no formato DD/MM/AAAA.', 'aviso');
-      if (inputPromoData) { inputPromoData.setAttribute('aria-invalid', 'true'); inputPromoData.focus(); }
+      marcarCampoInvalido(inputPromoData, true);
+      mostrarMsgSorteio('Informe uma data de nascimento válida no formato dd/mm/aaaa.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'birthdate' });
       return;
     }
     if (!PROMO_MOBILE_REGEX.test(cel)) {
-      mostrarMsgSorteio('Digite um número de WhatsApp válido com DDD.', 'aviso');
-      if (inputPromoCelular) { inputPromoCelular.setAttribute('aria-invalid', 'true'); inputPromoCelular.focus(); }
+      marcarCampoInvalido(inputPromoCelular, true);
+      mostrarMsgSorteio('Informe um celular válido com DDD e 11 dígitos numéricos.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'phone' });
       return;
     }
     if (obterIdadePromo(dataNascIso) < 14) {
+      marcarCampoInvalido(inputPromoData, true);
       mostrarMsgSorteio('É necessário ter no mínimo 14 anos para participar do sorteio.', 'aviso');
-      if (inputPromoData) { inputPromoData.setAttribute('aria-invalid', 'true'); inputPromoData.focus(); }
-      return;
-    }
-
-    // Verificar conectividade antes do fetch
-    if (!navigator.onLine) {
-      mostrarMsgSorteio('Você está sem internet. Verifique sua conexão e tente novamente.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'birthdate_min_age' });
       return;
     }
 
     _promoRegistrarTentativa();
+    _promoSubmitting = true;
 
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
+      btnEnviarPromo.textContent = 'Enviando cadastro…';
       btnEnviarPromo.setAttribute('aria-busy', 'true');
-      btnEnviarPromo.textContent = '⏳ Enviando cadastro…';
     }
-    mostrarMsgSorteio('⏳ Registrando seu cadastro, aguarde...', 'info');
+    mostrarMsgSorteio('Carregando opções… registrando seu cadastro, aguarde.', 'info');
+    trackPromoEvent('promotion_form_submit', {});
 
-    // Timeout de 15 segundos via AbortController
-    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timeoutId = controller
-      ? setTimeout(function() { controller.abort(); }, 15000)
-      : null;
-
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() { controller.abort(); }, _promoTimeoutMs);
     try {
-      var fetchOpts = {
+      var resposta = await fetch(ITAP_WORKER_API + '/api/promocao/cadastro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           name: nome,
           birthdate: dataNascIso,
           phone: cel,
           regulation_accept: true
         })
-      };
-      if (controller) fetchOpts.signal = controller.signal;
-
-      var resposta = await fetch(ITAP_WORKER_API + '/api/promocao/cadastro', fetchOpts);
-      if (timeoutId) clearTimeout(timeoutId);
+      });
+      clearTimeout(timeoutId);
 
       var dados;
       var ct = resposta.headers.get('content-type') || '';
@@ -373,62 +427,64 @@
       if (respostaEhJson) {
         try { dados = await resposta.json(); } catch (_) { dados = {}; }
       } else {
-        // Serviço retornou HTML (ex: offline.html) em vez de JSON
+        // Serviço indisponível: retornou HTML (ex: offline.html) em vez de JSON
         dados = { success: false, error: '_servico_indisponivel' };
-      }
-
-      // Resposta de offline do Service Worker (sw.js intercept)
-      if (dados.error === '_offline') {
-        mostrarMsgSorteio(
-          'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
-          'aviso'
-        );
-        return;
       }
 
       if (dados.success) {
         exibirRegrasRetiradaPromo();
         var msgSucesso = dados.alreadyRegistered
-          ? '✅ Você já está cadastrado! Protocolo: ' + dados.id + '. Você concorre a todos os sorteios mensais até 02/01/2027!'
-          : '✅ Cadastro realizado com sucesso! Protocolo: ' + dados.id + '. Você já está participando de todos os sorteios mensais!';
-        mostrarMsgSorteio(msgSucesso + ' Guarde este protocolo para consulta futura.', 'ok');
+          ? 'Este WhatsApp já está cadastrado nesta promoção.'
+          : 'Cadastro realizado com sucesso! Você já está participando do sorteio.';
+        mostrarMsgSorteio(msgSucesso + (dados.id ? ' ID: ' + dados.id + '.' : ''), 'ok');
+        trackPromoEvent('promotion_form_success', { already_registered: !!dados.alreadyRegistered });
         _promoLimparRate();
         resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
-      } else if (resposta.status === 429) {
-        mostrarMsgSorteio('Muitas tentativas. Aguarde 30 minutos e tente novamente.', 'aviso');
-      } else if (dados.error === '_servico_indisponivel' || resposta.status >= 500) {
-        mostrarMsgSorteio('O cadastro está temporariamente indisponível. Tente novamente em alguns minutos.', 'aviso');
+      } else if (dados.error === '_servico_indisponivel') {
+        mostrarMsgSorteioComAcao(
+          'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+          'aviso',
+          'Tentar novamente',
+          function() { enviarSorteioPromo(); }
+        );
+        trackPromoEvent('promotion_network_error', { reason: 'service_unavailable' });
       } else {
-        // Erro de validação do servidor (400) ou outro — usar mensagem do servidor
-        var erroMsg = (dados && (dados.message || dados.error))
-          ? String(dados.message || dados.error)
-          : 'Confira os campos e tente novamente.';
-        mostrarMsgSorteio('⚠️ ' + erroMsg, 'aviso');
+        var erro = (dados && dados.error) ? String(dados.error) : '';
+        if (resposta.status === 409 || /ja|já.*cadastr/i.test(erro)) {
+          mostrarMsgSorteio('Este WhatsApp já está cadastrado nesta promoção.', 'aviso');
+        } else if (resposta.status >= 400 && resposta.status < 500) {
+          mostrarMsgSorteio('Confira os campos destacados e corrija as informações.', 'aviso');
+          if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
+          if (/data|nasc/i.test(erro)) marcarCampoInvalido(inputPromoData, true);
+          if (/celular|telefone|ddd|phone/i.test(erro)) marcarCampoInvalido(inputPromoCelular, true);
+          trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
+        } else {
+          mostrarMsgSorteioComAcao(
+            'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+            'aviso',
+            'Tentar novamente',
+            function() { enviarSorteioPromo(); }
+          );
+          trackPromoEvent('promotion_network_error', { reason: erro || 'unknown_error' });
+        }
       }
     } catch (e) {
-      if (timeoutId) clearTimeout(timeoutId);
-      if (e && e.name === 'AbortError') {
-        mostrarMsgSorteio(
-          'A conexão demorou mais que o esperado. Verifique sua internet e tente novamente.',
-          'aviso'
-        );
-      } else if (!navigator.onLine) {
-        mostrarMsgSorteio(
-          'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
-          'aviso'
-        );
-      } else {
-        mostrarMsgSorteio(
-          'O cadastro está temporariamente indisponível. Tente novamente em alguns minutos.',
-          'aviso'
-        );
-      }
+      clearTimeout(timeoutId);
+      console.error('[Itap] Erro no cadastro do sorteio:', e);
+      mostrarMsgSorteioComAcao(
+        'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+        'aviso',
+        'Tentar novamente',
+        function() { enviarSorteioPromo(); }
+      );
+      trackPromoEvent('promotion_network_error', { reason: e && e.name === 'AbortError' ? 'timeout' : 'exception' });
     } finally {
       if (btnEnviarPromo) {
-        btnEnviarPromo.removeAttribute('aria-busy');
         btnEnviarPromo.textContent = 'Enviar meu cadastro';
+        btnEnviarPromo.removeAttribute('aria-busy');
         atualizarFluxoCadastroPromo();
       }
+      _promoSubmitting = false;
     }
   }
   (function inicializarFormularioClientePromo() {
@@ -438,17 +494,11 @@
       evento.preventDefault();
       enviarSorteioPromo();
     });
+    trackPromoEvent('promotion_form_start', {});
 
     if (inputPromoNome) {
-      var promoFormStarted = false;
       ['input', 'change'].forEach(function(evt) {
-        inputPromoNome.addEventListener(evt, function() {
-          if (!promoFormStarted) {
-            promoFormStarted = true;
-            registrarEvento('promotion_form_start', { form: 'sorteio' });
-          }
-          atualizarFluxoCadastroPromo();
-        });
+        inputPromoNome.addEventListener(evt, atualizarFluxoCadastroPromo);
       });
     }
 
@@ -470,7 +520,6 @@
       });
     }
 
-    if (btnEnviarPromo) btnEnviarPromo.addEventListener('click', enviarSorteioPromo);
     if (regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
     mostrarMsgSorteio('', '');
     atualizarFluxoCadastroPromo();

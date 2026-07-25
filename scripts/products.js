@@ -45,13 +45,6 @@ const produtos = {
         }
     },
     picolés: {
-        leite_ninho: {
-            nome: "Picolé Especiais",
-            preço_varejo: 4.00,
-            preço_atacado: 3.00,
-            estoque: 200,
-            sabores: ["Leite Ninho", "Ovomaltine"]
-        },
         frutas_agua: {
             nome: "Picolé de Fruta/Água",
             preço_varejo: 2.50,
@@ -72,6 +65,20 @@ const produtos = {
             preço_atacado: 2.00,
             estoque: 200,
             sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"]
+        },
+        leite_ninho: {
+            nome: "Picolé Leite Ninho",
+            preço_varejo: 4.00,
+            preço_atacado: 3.00,
+            estoque: 200,
+            sabores: ["Leite Ninho"]
+        },
+        ovomaltine: {
+            nome: "Picolé de Ovomaltine",
+            preço_varejo: 4.00,
+            preço_atacado: 3.00,
+            estoque: 200,
+            sabores: ["Ovomaltine"]
         },
         esquimós: {
             nome: "Picolé Esquimó",
