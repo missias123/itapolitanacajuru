@@ -66,6 +66,7 @@
   var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
   var _promoCadastroLiberado = false;
   var _promoSubmitting = false;
+  var _promoPendingOperation = null;
   // Timeout de 20s: evita bloqueio indefinido quando há falha de rede/API.
   // Aumentado de 12s para 20s para tolerar conexões 3G/4G lentas.
   var _promoTimeoutMs = 20000;
@@ -344,6 +345,46 @@
   }
   function _promoLimparRate() { localStorage.removeItem(_promoRateKey()); }
 
+  function _promoNovoIdempotencyKey() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return 'promo-' + window.crypto.randomUUID();
+      }
+      if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+        var bytes = new Uint8Array(16);
+        window.crypto.getRandomValues(bytes);
+        var hex = Array.from(bytes).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+        return 'promo-' + hex;
+      }
+    } catch (_) {}
+    return 'promo-' + Date.now() + '-fallback';
+  }
+
+  function _promoBuildPayloadHash(payload) {
+    return JSON.stringify([
+      String(payload.name || ''),
+      String(payload.birthdate || ''),
+      String(payload.phone || ''),
+      payload.regulation_accept ? 1 : 0
+    ]);
+  }
+
+  function _promoGetOperation(payload) {
+    var payloadHash = _promoBuildPayloadHash(payload);
+    if (_promoPendingOperation && _promoPendingOperation.payloadHash === payloadHash) {
+      return _promoPendingOperation;
+    }
+    _promoPendingOperation = {
+      key: _promoNovoIdempotencyKey(),
+      payloadHash: payloadHash
+    };
+    return _promoPendingOperation;
+  }
+
+  function _promoClearOperation() {
+    _promoPendingOperation = null;
+  }
+
   // ─── enviarSorteioPromo: envia dados ao backend via POST /api/promocao/cadastro
   // ANTES: gravava direto no GitHub API + abria WhatsApp.
   // AGORA: chama o Worker (ITAP_WORKER_API) e exibe o ID retornado na tela (sem WhatsApp).
@@ -407,17 +448,22 @@
 
     var controller = new AbortController();
     var timeoutId = setTimeout(function() { controller.abort(); }, _promoTimeoutMs);
+    var payload = {
+      name: nome,
+      birthdate: dataNascIso,
+      phone: cel,
+      regulation_accept: true
+    };
+    var operacao = _promoGetOperation(payload);
     try {
       var resposta = await fetch(ITAP_WORKER_API + '/api/promocao/cadastro', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': operacao.key
+        },
         signal: controller.signal,
-        body: JSON.stringify({
-          name: nome,
-          birthdate: dataNascIso,
-          phone: cel,
-          regulation_accept: true
-        })
+        body: JSON.stringify(Object.assign({}, payload, { idempotencyKey: operacao.key }))
       });
       clearTimeout(timeoutId);
       // Conta a tentativa apenas quando o servidor respondeu (evita bloquear
@@ -433,15 +479,15 @@
         // Serviço indisponível: retornou HTML (ex: offline.html) em vez de JSON
         dados = { success: false, error: '_servico_indisponivel' };
       }
+      var requestIdTxt = dados && dados.requestId ? ' Protocolo: ' + String(dados.requestId).replace(/[^\w\-:.]/g, '').slice(0, 80) + '.' : '';
 
-      if (dados.success) {
+      if (resposta.status >= 200 && resposta.status < 300 && dados.success === true) {
         exibirRegrasRetiradaPromo();
-        var msgSucesso = dados.alreadyRegistered
-          ? 'Este WhatsApp já está cadastrado nesta promoção.'
-          : 'Cadastro realizado com sucesso! Você já está participando do sorteio.';
-        mostrarMsgSorteio(msgSucesso + (dados.id ? ' ID: ' + dados.id + '.' : ''), 'ok');
-        trackPromoEvent('promotion_form_success', { already_registered: !!dados.alreadyRegistered });
+        var registrationIdTxt = dados.registrationId ? ' Código: ' + String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) + '.' : '';
+        mostrarMsgSorteio('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt, 'ok');
+        trackPromoEvent('promotion_form_success', { code: dados.code || 'PROMO_REGISTRATION_CREATED' });
         _promoLimparRate();
+        _promoClearOperation();
         resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
       } else if (dados.error === '_offline') {
         mostrarMsgSorteioComAcao(
@@ -453,25 +499,40 @@
         trackPromoEvent('promotion_network_error', { reason: 'offline' });
       } else if (dados.error === '_servico_indisponivel') {
         mostrarMsgSorteioComAcao(
-          'O serviço está temporariamente indisponível. Tente novamente em instantes.',
+          'O servidor respondeu de forma inesperada. Tente novamente em instantes.',
           'aviso',
           'Tentar novamente',
           function() { enviarSorteioPromo(); }
         );
-        trackPromoEvent('promotion_network_error', { reason: 'service_unavailable' });
+        trackPromoEvent('promotion_network_error', { reason: 'unexpected_content_type' });
       } else {
         var erro = (dados && dados.error) ? String(dados.error) : '';
-        if (resposta.status === 409 || /ja|já.*cadastr/i.test(erro)) {
-          mostrarMsgSorteio('Este WhatsApp já está cadastrado nesta promoção.', 'aviso');
-        } else if (resposta.status >= 400 && resposta.status < 500) {
-          mostrarMsgSorteio('Confira os campos destacados e corrija as informações.', 'aviso');
+        var code = (dados && dados.code) ? String(dados.code) : '';
+        if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || /ja|já.*cadastr/i.test(erro)) {
+          mostrarMsgSorteio('Este WhatsApp já possui um cadastro nesta promoção.', 'aviso');
+          _promoClearOperation();
+        } else if (resposta.status === 400) {
+          mostrarMsgSorteio('Confira os dados informados.', 'aviso');
           if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
           if (/data|nasc/i.test(erro)) marcarCampoInvalido(inputPromoData, true);
           if (/celular|telefone|ddd|phone/i.test(erro)) marcarCampoInvalido(inputPromoCelular, true);
           trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
+        } else if (resposta.status === 429) {
+          mostrarMsgSorteio('Você tentou muitas vezes. Aguarde alguns instantes e tente novamente.', 'aviso');
+        } else if (resposta.status === 500 || resposta.status === 502 || resposta.status === 503) {
+          mostrarMsgSorteioComAcao(
+            'O cadastro não foi concluído. Tente novamente mais tarde.',
+            'aviso',
+            'Tentar novamente',
+            function() { enviarSorteioPromo(); }
+          );
+        } else if (resposta.status >= 400 && resposta.status < 500) {
+          mostrarMsgSorteio('Confira os dados informados.', 'aviso');
+        } else if (respostaEhJson && Object.keys(dados || {}).length === 0) {
+          mostrarMsgSorteio('O servidor respondeu de forma inesperada. Tente novamente em instantes.', 'aviso');
         } else {
           mostrarMsgSorteioComAcao(
-            'O cadastro não pôde ser concluído (erro interno). Tente novamente mais tarde.',
+            'O cadastro não foi concluído. Tente novamente mais tarde.' + requestIdTxt,
             'aviso',
             'Tentar novamente',
             function() { enviarSorteioPromo(); }
@@ -484,7 +545,7 @@
       var isTimeout = e && e.name === 'AbortError';
       if (isTimeout) {
         mostrarMsgSorteioComAcao(
-          'O cadastro demorou muito para responder. Verifique sua conexão e tente novamente.',
+          'O servidor demorou para responder. Aguarde alguns instantes e tente novamente.',
           'aviso',
           'Tentar novamente',
           function() { enviarSorteioPromo(); }
