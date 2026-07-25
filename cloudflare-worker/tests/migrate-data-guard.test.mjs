@@ -472,7 +472,10 @@ describe('Logs seguros', () => {
       '--environment=staging', '--dry-run', '--secret', FAKE_SECRET,
       '--api', prodUrl,
     ]);
-    // Deve mascarar a URL
+    // Deve mascarar a URL. Esta verificação usa includes() intencionalmente para
+    // confirmar que a string literal da URL não aparece em nenhum ponto do output
+    // de texto (teste de mascaramento, não validação de URL).
+    // lgtm[js/incomplete-url-substring-sanitization]
     assert.ok(!output(r).includes(prodUrl), 'URL de produção não deve aparecer por extenso');
   });
 

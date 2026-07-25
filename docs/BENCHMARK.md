@@ -1,10 +1,26 @@
-# Benchmark de 100 Sites Relevantes de Alimentação e Sobremesas
+# Benchmark de Até 1.000 Sites Relevantes de Alimentação e Sobremesas
 
-> **Denominação correta:** Este documento apresenta um benchmark de 100 sites relevantes de alimentação e sobremesas, selecionados por sua relevância nos segmentos de sorveterias, açaíterias, restaurantes, redes de alimentação, delivery, cardápios digitais, encomendas para festas e empresas alimentícias locais/regionais. **Não constitui ranking dos "100 maiores" por ausência de fonte objetiva de ranking.**
+> **Denominação correta:** "Benchmark de até 1.000 sites relevantes de alimentação e sobremesas". Esta denominação é usada porque não existe fonte objetiva e verificável que determine quais são os "1.000 maiores" do segmento no Brasil. A seleção é feita por relevância observada nos segmentos de sorveterias, açaíterias, restaurantes, redes de alimentação, delivery, cardápios digitais, encomendas para festas e empresas alimentícias locais/regionais.
 >
 > **Objetivo:** Gerar recomendações para a Sorveteria Itapolitana Cajuru. Não foram copiados código, textos, imagens, marcas, layouts, avaliações, promoções ou identidade visual.
 >
-> Data de análise: 2026-07-25 | Analista: Copilot (auditoria somente leitura) | Branch: copilot/valores-estao-erraods
+> **Metodologia em ondas:** A análise é feita em ondas iterativas. A Onda 1 (este documento) analisa 100 sites com pontuação completa nos 25 critérios. Ondas subsequentes acrescentam mais sites até o limite de 1.000.
+>
+> Data de análise — Onda 1: 2026-07-25 | Analista: Copilot (auditoria somente leitura) | Branch: copilot/valores-estao-erraods
+
+---
+
+## ESTRUTURA DO BENCHMARK
+
+| Onda | Sites | Status | Foco |
+|---|---|---|---|
+| Onda 1 | 1–100 | ✅ Completa (neste documento) | Análise detalhada com 25 critérios |
+| Onda 2 | 101–300 | 🔲 Planejada | Sorveterias e açaíterias do interior SP/MG |
+| Onda 3 | 301–500 | 🔲 Planejada | Delivery e cardápios digitais regionais |
+| Onda 4 | 501–700 | 🔲 Planejada | Restaurantes com encomendas e festas |
+| Onda 5 | 701–1000 | 🔲 Planejada | Sites locais e micro-negócios de alimentação |
+
+**Total planejado:** até 1.000 sites. Cada onda requer aprovação antes da execução.
 
 ---
 
@@ -304,11 +320,20 @@
 
 ---
 
-## CONCLUSÃO DO BENCHMARK
+## CONCLUSÃO DO BENCHMARK — ONDA 1 (100 sites)
 
-A Sorveteria Itapolitana obteve **88 pontos de 125 possíveis (70%)**, acima da média geral do benchmark (67 pontos / 54%). Os pontos fortes são: clareza da proposta, cardápio bem organizado, integração WhatsApp, segurança HTTPS e SEO local. Os principais gaps são: bot sem distinção de contexto para Ovomaltine, horário estático e ausência de busca.
+A Sorveteria Itapolitana obteve **88 pontos de 125 possíveis (70%)**, acima da média geral do benchmark da Onda 1 (67 pontos / 54%). Os pontos fortes são: clareza da proposta, cardápio bem organizado, integração WhatsApp, segurança HTTPS e SEO local. Os principais gaps são: bot sem distinção de contexto para Ovomaltine, horário estático e ausência de busca.
 
 O Lote A endereça os problemas de maior impacto identificados no benchmark, sem alterar dados comerciais.
+
+### Próximos passos do benchmark
+
+- **Onda 2 (sites 101–300):** Ampliar para sorveterias e açaíterias do interior de SP e MG, incluindo cidades próximas a Cajuru (Ribeirão Preto, Jaboticabal, São Simão, Batatais, Altinópolis). Foco em: experiência mobile, integração WhatsApp e fluxo de encomendas.
+- **Onda 3 (sites 301–500):** Delivery e cardápios digitais regionais (iFood, Rappi, páginas próprias com delivery próprio).
+- **Onda 4 (sites 501–700):** Restaurantes com fluxo de encomendas para festas e eventos.
+- **Onda 5 (sites 701–1000):** Micro-negócios e sites locais de alimentação — perfis mais próximos do porte da Itapolitana.
+
+Cada onda será executada mediante aprovação e entregue como atualização deste documento.
 
 ---
 
