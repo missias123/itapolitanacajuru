@@ -60,7 +60,8 @@
       --radius: 14px;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; background: var(--cinza-claro); color: #212121; font-size: 18px; -webkit-text-size-adjust: 100%; }
+    body { font-family: 'Nunito', 'Segoe UI', Arial, sans-serif; background: var(--cinza-claro); color: #212121; font-size: 18px; -webkit-text-size-adjust: 100%; }
+    h1, h2, h3, .category-cta, button { font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; }
 
     /* HEADER */
     .header {
@@ -1329,6 +1330,8 @@ html { scroll-behavior: smooth; }
 <meta content="Encomende tortas, caixas de sorvete e picolés para festas. Retirada na loja em Cajuru/SP." name="twitter:description"/>
 <meta content="https://itapolitanacajuru.com.br/images/logo.webp" name="twitter:image"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/></noscript>
 <style>
 .security-seals-title { font-size:12px;color:rgba(255,255,255,.7);text-align:center;margin-bottom:12px;font-weight:600; }
 .security-seals-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 700px; margin: 0 auto; padding: 0 12px; }
@@ -1626,6 +1629,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="category-cta-row">
   <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20picol%C3%A9s%20no%20atacado%20para%20um%20evento." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','wholesale_cta_click',{page:'encomendas',category:'picoles',cta_type:'consultar_atacado',position:'after_grid'});}">Consultar atacado</a>
   <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20or%C3%A7amento%20para%20picol%C3%A9s%20em%20evento." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','event_quote_cta_click',{page:'encomendas',category:'picoles',cta_type:'solicitar_orcamento',position:'after_grid'});}">Solicitar orçamento</a>
+  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Quero%20planejar%20meu%20evento%20com%20carrinho%20de%20picol%C3%A9s." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'picoles',cta_type:'planejar_evento',position:'after_grid'});}">Planejar meu evento</a>
 </div>
 </div>
 </div>
@@ -1646,6 +1650,31 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="category-cta-row">
   <button type="button" class="category-cta category-cta--primary category-cta--attention" onclick="handleMontarPedidoCta();">Montar meu pedido</button>
   <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20os%20acr%C3%A9scimos%20dispon%C3%ADveis%20para%20meu%20pedido." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'acrescimos',cta_type:'ver_opcoes',position:'after_grid'});}">Ver opções</a>
+</div>
+</div>
+</div>
+<div class="categoria cat-revenda" id="revenda">
+<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-revenda" onclick="toggleSecao('conteudo-revenda')">
+<div class="categoria-header-left">
+<span class="categoria-emoji">🏪</span>
+<div class="categoria-info">
+<h3>Revenda</h3>
+<p>Preços e condições especiais para comércio local e eventos</p>
+<div class="frase-cat">🏪 Quer revender produtos Itapolitana? Consulte atacado e disponibilidade.</div>
+</div>
+</div>
+<span class="toggle-icon">▼</span>
+</button>
+<div class="categoria-conteudo" id="conteudo-revenda">
+<div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
+  <div style="background:#FAFAFA;border:1.5px solid #E0E0E0;border-radius:12px;padding:12px;">
+    <div style="font-size:0.92rem;font-weight:800;color:#1A0A00;margin-bottom:4px;">Atacado para revenda</div>
+    <div style="font-size:0.82rem;color:#5C2D6B;font-weight:700;">Ideal para mercados, lanchonetes e pontos de venda em Cajuru e região.</div>
+  </div>
+</div>
+<div class="category-cta-row">
+  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Quero%20revender%20produtos%20Itapolitana.%20Pode%20me%20passar%20as%20condi%C3%A7%C3%B5es%20de%20atacado%3F" target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'revenda',cta_type:'quero_revender',position:'after_grid'});}">Quero revender</a>
+  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20disponibilidade%20para%20revenda." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'revenda',cta_type:'consultar_disponibilidade',position:'after_grid'});}">Consultar disponibilidade</a>
 </div>
 </div>
 </div>
