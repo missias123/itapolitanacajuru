@@ -93,14 +93,16 @@
   }
 
   /* ─── CSS ─── */
-  var css = ':root{--itabot-kb-offset:0px;--itabot-panel-h:100dvh}' +
+  var css = ':root{--itabot-kb-offset:0px;--itabot-panel-h:100dvh;--ita-visual-height:100dvh;--ita-visual-top:0px}' +
  'html.itabot-open,body.itabot-open{position:fixed;width:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}' +
  '#chat-dialog{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);overflow:hidden}' +
  '#chat-dialog.aberto{display:flex;animation:itabot-in .22s ease-out}' +
  '@keyframes itabot-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}' +
  '@media(prefers-reduced-motion:reduce){@keyframes itabot-in{from{opacity:0}to{opacity:1}}}' +
- '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:var(--itabot-panel-h);min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
- '@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:460px;height:min(780px,calc(100dvh - 32px));border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
+ /* Mobile: usa --ita-visual-height (atualizado via JS com visualViewport.height) e
+    margin-top (compensa visualViewport.offsetTop no iOS sem page-lock) */
+ '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:var(--ita-visual-height,100dvh);margin-top:var(--ita-visual-top,0px);min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
+ '@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:460px;height:min(780px,calc(100dvh - 32px));margin-top:0;border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
  '.chat-hdr{background:linear-gradient(135deg,#e8470a,#ff6b35);padding:9px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
 '.chat-hdr-logo-img{width:42px;height:42px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(255,255,255,.3);flex-shrink:0}' +
 '.chat-hdr-info{flex:1;min-width:0}' +
@@ -131,7 +133,7 @@
 '.itabot-chip:active{transform:scale(.95)}' +
 '.itabot-link-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:900;letter-spacing:.3px;margin-top:8px;min-height:46px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;word-break:break-word;box-sizing:border-box}' +
 '.itabot-link-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.itabot-link-btn:active{transform:scale(.97)}' +
- '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;max-height:40dvh}' +
+ '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;min-height:0}' +
  '.chat-inp-row{padding:9px 12px;padding-bottom:calc(9px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #E5E7EB;background:#fff;flex-shrink:0;align-items:center;position:relative}' +
 '.chat-inp{flex:1;padding:11px 16px;border:2px solid #E5E7EB;border-radius:24px;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box;background:#F8F9FA;color:#111;-webkit-appearance:none;appearance:none}' +
 '.chat-inp:focus{border-color:#E8000D;box-shadow:0 0 0 3px rgba(232,0,13,.12);background:#fff}' +
@@ -256,11 +258,13 @@
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
     document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
-    document.documentElement.style.setProperty('--itabot-panel-h', '100dvh');
+    document.documentElement.style.setProperty('--itabot-panel-h',   '100dvh');
+    document.documentElement.style.setProperty('--ita-visual-height','100dvh');
+    document.documentElement.style.setProperty('--ita-visual-top',   '0px');
   }
   // API pública canônica + alias legado para compatibilidade com páginas antigas.
-  window.abrirItaBot = _itabotAbrirItaBot;
-  window._itabotAbrirItaBot = _itabotAbrirItaBot;
+  window.abrirItaBot             = _itabotAbrirItaBot;
+  window._itabotAbrirItaBot      = _itabotAbrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
 
   function _itabotBtnInicio() {
@@ -279,7 +283,6 @@
     if (window.__itabotDuvidasTriggersBound) return;
     window.__itabotDuvidasTriggersBound = true;
     document.addEventListener('click', function (event) {
-      // Mantém cobertura permanente para botões estáticos dos templates e para botões com data-itabot-open.
       var trigger = event.target.closest('[data-role="duvidas"], .ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
       event.preventDefault();
@@ -303,32 +306,66 @@
       if (el) { el.scrollTop = el.scrollHeight; }
     }, 300);
   }
+
+  /* ─── Viewport dinâmico — mantém o composer acima do teclado ─── *
+   *
+   * Causa raiz no iOS/Android:
+   *   • visualViewport.resize dispara NO FIM da animação do teclado (~300 ms),
+   *     deixando o input coberto durante a abertura.
+   *   • scrollIntoView no body travado (position:fixed) causa saltos.
+   *   • vv.offsetTop > 0 no iOS sem page-lock: o viewport visual desceu,
+   *     então o .chat-box precisa de margin-top para realinhar.
+   *
+   * Solução:
+   *   • CSS usa --ita-visual-height (height do .chat-box) e
+   *     --ita-visual-top (margin-top para compensar offsetTop).
+   *   • JS atualiza as variáveis via RAF para não causar loop de layout.
+   *   • _itabotHandleInputFocus agenda múltiplas verificações
+   *     durante toda a animação do teclado (~350 ms).
+   */
+  var _itabotViewportRaf = 0;
+
   function _itabotAtualizarViewport() {
     var dialog = document.getElementById('chat-dialog');
     if (!dialog || !dialog.classList.contains('aberto')) return;
     var vv = window.visualViewport;
-    if (window.innerWidth < 768 && vv) {
-      document.documentElement.style.setProperty('--itabot-panel-h', vv.height + 'px');
+    if (window.innerWidth < 768) {
+      var h   = vv ? vv.height              : window.innerHeight;
+      var top = vv ? Math.max(0, vv.offsetTop) : 0;
+      document.documentElement.style.setProperty('--ita-visual-height', h   + 'px');
+      document.documentElement.style.setProperty('--ita-visual-top',    top + 'px');
+      document.documentElement.style.setProperty('--itabot-panel-h',    h   + 'px');
       document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
     }
     _itabotScrollFim();
   }
+
+  /* RAF-throttled: evita múltiplos reflows por evento de resize. */
+  function _itabotScheduleViewport() {
+    if (_itabotViewportRaf) return;
+    _itabotViewportRaf = window.requestAnimationFrame(function () {
+      _itabotViewportRaf = 0;
+      _itabotAtualizarViewport();
+    });
+  }
+
   function _itabotHandleInputFocus() {
     _itabotAtualizarViewport();
     _itabotScrollFim();
-    var inputArea = document.getElementById('itabot-input-area');
-    if (inputArea && typeof inputArea.scrollIntoView === 'function') {
-      inputArea.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-    }
-    setTimeout(_itabotAtualizarViewport, 120);
-    setTimeout(_itabotScrollFim, 160);
+    /* Agendar verificações em múltiplos pontos durante a animação do teclado.
+       iOS dispara visualViewport.resize apenas no fim (~300 ms), então
+       verificamos em 80 ms, 200 ms e 380 ms para cobrir toda a animação. */
+    setTimeout(_itabotAtualizarViewport,  80);
+    setTimeout(_itabotAtualizarViewport, 200);
+    setTimeout(_itabotAtualizarViewport, 380);
+    setTimeout(_itabotScrollFim,         420);
   }
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
-    window.visualViewport.addEventListener('scroll', _itabotAtualizarViewport, { passive: true });
+    window.visualViewport.addEventListener('resize', _itabotScheduleViewport, { passive: true });
+    window.visualViewport.addEventListener('scroll', _itabotScheduleViewport, { passive: true });
   }
-  window.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
-  window.addEventListener('orientationchange', _itabotAtualizarViewport, { passive: true });
+  window.addEventListener('resize',            _itabotScheduleViewport, { passive: true });
+  window.addEventListener('orientationchange', _itabotScheduleViewport, { passive: true });
   window._itabotHandleInputFocus = _itabotHandleInputFocus;
 
   /* ─── Carregamento assíncrono de dados ─── */
