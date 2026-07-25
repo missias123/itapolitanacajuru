@@ -1,14 +1,14 @@
 /**
  * SW.JS — Sorveteria Itapolitana Cajuru
- * Versão: 7.0 (itapolitana-v7) — PWA Versão 2
+ * Versão: 9.0 (itapolitana-v9) — PWA Versão 2
  * Estratégia: Cache First (assets), Network First (HTML/API)
  *
  * Para atualizar o cache no futuro, incremente CACHE_NAME e ASSETS_CACHE
- * (ex.: itapolitana-v8 / assets-v8). O evento 'activate' apaga versões antigas.
+ * (ex.: itapolitana-v10 / assets-v10). O evento 'activate' apaga versões antigas.
  */
 
-const CACHE_NAME   = 'itapolitana-v8';
-const ASSETS_CACHE = 'assets-v8';
+const CACHE_NAME   = 'itapolitana-v9';
+const ASSETS_CACHE = 'assets-v9';
 
 const CRITICAL_ASSETS = [
   '/',
@@ -69,7 +69,7 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') {
     event.respondWith(
       fetch(request).catch(() =>
-        new Response(JSON.stringify({ ok: false, error: 'Offline' }), {
+        new Response(JSON.stringify({ success: false, error: '_offline' }), {
           status: 503,
           headers: { 'Content-Type': 'application/json' }
         })
