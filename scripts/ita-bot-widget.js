@@ -497,15 +497,22 @@
     };
   }
   function _respPicoles() {
-    var p = _prodData && _prodData.picoles;
-    var fruta = (p && p.frutas_agua) ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',') : '2,50';
-    var leite = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
-    var ninho = (p && p.leite_ninho) ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',') : '4,00';
+    var p      = _prodData && _prodData.picoles;
+    var fruta  = (p && p.frutas_agua)                                                   ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',')       : '2,50';
+    var leite  = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
+    var ninho  = (p && p.leite_ninho  && p.leite_ninho.preco_varejo  != null)           ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',')       : '4,00';
+    var eskimo = (p && p.esquim\u00f3s && p.esquim\u00f3s.preco_varejo != null)          ? p.esquim\u00f3s.preco_varejo.toFixed(2).replace('.', ',')       : '8,00';
     return {
-      answer: '\ud83c\udf60 Picol\u00e9s tipo artesanal!\n\n\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Gro\u00e9selha, Lim\u00e3o, Melancia, Uva...)\n\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n\ud83c\udf3c Leite Ninho \u2014 R$ ' + ninho + '\n\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
+      answer: '\ud83c\udf60 Picol\u00e9s tipo artesanal!\n\n' +
+              '\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Groselha, Lim\u00e3o, Melancia, Uva...)\n' +
+              '\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n' +
+              '\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n' +
+              '\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ ' + ninho + ' (Leite Ninho e Ovomaltine)\n' +
+              '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ ' + eskimo + ' (inc. Ovomaltine)\n' +
+              '\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
       linkText: '\ud83d\udce6 Ver encomendas',
       linkHref: 'encomendas.html',
-      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed']
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3', '\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed']
     };
   }
   function _respTacas() {
@@ -537,6 +544,78 @@
       linkText: '\ud83d\udce6 Fazer encomenda online',
       linkHref: 'encomendas.html',
       chips: ['\ud83d\udcac Falar no WhatsApp', '\ud83c\udf66 Ver card\u00e1pio']
+    };
+  }
+
+  /* ─── Lote A: Ovomaltine — Picolé Especiais ─── */
+  function _respPicoleEspecialOvomaltine(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.leite_ninho;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 4;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 3;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Especiais de Ovomaltine no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Especiais+de+Ovomaltine+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine']
+      };
+    }
+    return {
+      answer: '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine \u2014 nosso carro-chefe!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un.)\n\n\u2728 Tamb\u00e9m temos Picol\u00e9 Esquim\u00f3 de Ovomaltine (coberto com chocolate) \u2014 R$ 8,00.',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udce6 Atacado de picol\u00e9s']
+    };
+  }
+
+  /* ─── Lote A: Ovomaltine — Picolé Esquimó ─── */
+  function _respEskimoOvomaltine(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.esquim\u00f3s;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 8;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 6;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Esquim\u00f3 de Ovomaltine no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Esquim%C3%B3+de+Ovomaltine+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine']
+      };
+    }
+    return {
+      answer: '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine \u2014 coberto com chocolate!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un.)\n\n\u2728 Outros sabores do Esquim\u00f3: Bombom, Nutella, Leite Ninho, Nata, Morango, Brigadeiro, Prest\u00edgio.',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udce6 Atacado de picol\u00e9s']
+    };
+  }
+
+  /* ─── Lote A: Picolé Esquimó genérico ─── */
+  function _respEskimo(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.esquim\u00f3s;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 8;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 6;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Esquim\u00f3 no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Esquim%C3%B3+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf60 Picol\u00e9s']
+      };
+    }
+    return {
+      answer: '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 \u2014 coberto com chocolate!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un.)\n\nSabores: Bombom, Nutella, Ovomaltine, Leite Ninho, Nata, Morango, Brigadeiro, Prest\u00edgio.',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf60 Picol\u00e9s', '\ud83d\udcac Falar no WhatsApp']
     };
   }
 
@@ -684,6 +763,35 @@
     var l = _norm(msg);
     var cr = _handleContexto(msg);
     if (cr) return cr;
+
+    /* ── Lote A: Ovomaltine — três produtos distintos ── */
+    var temOvo    = l.indexOf('ovomalt') !== -1;
+    var temEskimo = l.indexOf('eskimo') !== -1 || l.indexOf('esquimo') !== -1 || l.indexOf('coberto') !== -1;
+    var temPicol  = l.indexOf('picole') !== -1 || l.indexOf('picolé') !== -1;
+    var temSorv   = l.indexOf('sorvete') !== -1;
+    var temAtac   = l.indexOf('atacado') !== -1 || l.indexOf('encomend') !== -1 || l.indexOf('atacad') !== -1;
+    if (temOvo) {
+      /* "picolé Esquimó de Ovomaltine" ou "Esquimó Ovomaltine" */
+      if (temEskimo) return _respEskimoOvomaltine(temAtac);
+      /* "picolé de Ovomaltine" — sem menção a Esquimó */
+      if (temPicol && !temSorv) return _respPicoleEspecialOvomaltine(temAtac);
+      /* "sorvete de Ovomaltine" — busca na lista de sorvetes */
+      if (temSorv && !temPicol) { var sf0 = _buscarSabor('sorvete de ovomaltine'); if (sf0) return sf0; }
+      /* pergunta ambígua ("Quanto custa o Ovomaltine?", "atacado de Ovomaltine") */
+      if (temAtac) {
+        return {
+          answer: '\ud83e\udd14 Qual produto de Ovomaltine no atacado?\n\n\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ 3,00/un (m\u00edn. 100)\n\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ 6,00/un (m\u00edn. 100)',
+          chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine atacado', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine atacado', '\ud83d\udcac Falar no WhatsApp']
+        };
+      }
+      return {
+        answer: '\ud83e\udd14 Temos Ovomaltine em tr\u00eas produtos!\n\n\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine \u2014 R$ 4,00 varejo\n\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine (coberto) \u2014 R$ 8,00 varejo\n\ud83c\udf66 Sorvete de Ovomaltine \u2014 vendido por bola\n\nQual voc\u00ea quer saber?',
+        chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine']
+      };
+    }
+
+    /* ── Lote A: Picolé Esquimó sem Ovomaltine ── */
+    if (temEskimo && !temOvo) return _respEskimo(temAtac);
 
     if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
       var sf = _buscarSabor(msg);

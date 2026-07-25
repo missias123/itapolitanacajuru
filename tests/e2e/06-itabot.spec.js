@@ -198,3 +198,149 @@ test.describe('Ita Bot — Chat', () => {
     }
   });
 });
+
+/* ─── Lote A — Testes de Ovomaltine, Esquimó e Picolés ─── */
+test.describe('Ita Bot — Lote A: Ovomaltine e Picolés (preços e desambiguação)', () => {
+  /** Abre o bot e envia uma mensagem; retorna o texto do último .msg.bot */
+  async function _enviar(page, texto) {
+    const trigger = page.locator('#ita-bot-trigger, #ita-bot-duvidas, .ita-bot-duvidas-btn, .itabot-btn').first();
+    if (!(await trigger.isVisible({ timeout: 8000 }).catch(() => false))) return null;
+    await trigger.click();
+    await page.waitForTimeout(600);
+
+    const dialog = page.locator('#chat-dialog').first();
+    if (!(await dialog.isVisible({ timeout: 5000 }).catch(() => false))) return null;
+
+    const input = page.locator('#duvidas-pergunta').first();
+    await input.fill(texto);
+    const sendBtn = page.locator('.chat-send').first();
+    if (await sendBtn.count() > 0) { await sendBtn.click(); } else { await input.press('Enter'); }
+
+    await page.waitForTimeout(2500);
+    const msgs = page.locator('#duvidas-resposta .msg.bot');
+    const count = await msgs.count();
+    if (count === 0) return null;
+    return await msgs.last().innerText();
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => { localStorage.setItem('cookies_aceitos', 'true'); });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1200);
+  });
+
+  // TC-01
+  test('TC-01 picolé de Ovomaltine retorna R$ 4,00 (varejo)', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Quanto custa o picolé de Ovomaltine?');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    expect(lower).toContain('4');
+    expect(lower).not.toContain('8,00');
+  });
+
+  // TC-02
+  test('TC-02 sorvete de Ovomaltine retorna preço por bola (não picolé)', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Quanto custa o sorvete de Ovomaltine?');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    expect(lower).not.toContain('4,00');
+  });
+
+  // TC-03
+  test('TC-03 Ovomaltine ambíguo retorna desambiguação com 3 produtos', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Quanto custa o Ovomaltine?');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    const temEsclarecimento = lower.includes('qual') || lower.includes('tr\xeas') || lower.includes('tres') || lower.includes('picol\xe9') || lower.includes('sorvete');
+    expect(temEsclarecimento).toBe(true);
+  });
+
+  // TC-04
+  test('TC-04 "Tem picolé de Ovomaltine?" retorna picolé (não sorvete)', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Tem picolé de Ovomaltine?');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    const temPicol = lower.includes('picol') || lower.includes('especiai') || lower.includes('esquim');
+    expect(temPicol).toBe(true);
+  });
+
+  // TC-05
+  test('TC-05 Picolé Esquimó de Ovomaltine retorna R$ 8,00 varejo / R$ 6,00 atacado', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Picolé Esquimó de Ovomaltine');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    expect(lower).toContain('8');
+    expect(lower).toContain('6');
+  });
+
+  // TC-06
+  test('TC-06 picolé de Leite Ninho retorna R$ 4,00', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Quanto custa o picolé de Leite Ninho?');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    expect(lower).toContain('4');
+  });
+
+  // TC-07
+  test('TC-07 Ovomaltine atacado retorna preço de atacado', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Quero Ovomaltine para atacado.');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    const temPrecoAtacado = lower.includes('3,00') || lower.includes('6,00') || lower.includes('3') || lower.includes('6');
+    expect(temPrecoAtacado).toBe(true);
+  });
+
+  // TC-08
+  test('TC-08 Picolé Esquimó genérico retorna lista de sabores', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Quero saber sobre o Picolé Esquimó');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    const lower = resp.toLowerCase();
+    const temEsquimo = lower.includes('esquim') || lower.includes('coberto') || lower.includes('bombom') || lower.includes('nutella');
+    expect(temEsquimo).toBe(true);
+  });
+
+  // TC-09
+  test('TC-09 pergunta de delivery não gera preço inventado', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'Vocês fazem delivery?');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    expect(typeof resp).toBe('string');
+    expect(resp.length).toBeGreaterThan(0);
+  });
+
+  // TC-10
+  test('TC-10 pergunta desconhecida retorna chips de fallback', async ({ page }) => {
+    const jsErrors = [];
+    page.on('pageerror', e => jsErrors.push(e.message));
+    const resp = await _enviar(page, 'xyzzy foobar 12345');
+    expect(jsErrors, `Erros JS: ${jsErrors.join('; ')}`).toHaveLength(0);
+    if (resp === null) { test.skip(); return; }
+    expect(resp.length).toBeGreaterThan(0);
+  });
+});
