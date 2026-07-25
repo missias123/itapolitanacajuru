@@ -3249,10 +3249,36 @@ const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fid
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
+const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
 function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
 function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','Authorization':`token ${getAdminToken()}`,...extra};}
 function workerRepoPathAllowed(path){return true;} // Todos os arquivos agora podem ser salvos via GitHub API
+function getWorkerSessionToken(){return ssGet(WORKER_SESSION_TOKEN_KEY)||'';}
+function setWorkerSessionToken(token){if(token)ssSet(WORKER_SESSION_TOKEN_KEY,token);}
+function clearWorkerSessionToken(){ssRemove(WORKER_SESSION_TOKEN_KEY);}
+function getWorkerAuthHeaders(extra={}){
+  const sessionToken=getWorkerSessionToken();
+  return {'Content-Type':'application/json',...(sessionToken?{'X-Itap-Session-Token':sessionToken}:{}),...extra};
+}
+async function iniciarSessaoWorkerComSenha(senha){
+  if(!senha)return{ok:false,error:'Senha ausente'};
+  try{
+    const r=await fetchWithTimeout(ITAP_WORKER_API+'/api/admin/session',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:senha})
+    },12000);
+    const ct=r.headers.get('content-type')||'';
+    if(!ct.includes('application/json'))return{ok:false,error:'Resposta inesperada de autenticação do Worker.'};
+    const dados=await r.json();
+    if(!r.ok||!dados.ok||!dados.token)return{ok:false,error:dados.error||'Falha na autenticação do Worker.'};
+    setWorkerSessionToken(dados.token);
+    return{ok:true};
+  }catch(e){
+    return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.'};
+  }
+}
 function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo token para continuar editando.'){
   ssRemove('itap_github_token');
   GITHUB_PAT='';
@@ -3575,6 +3601,11 @@ async function entrar(){
       atualizarStatusGitHubToken('ℹ️ Token GitHub não informado. Admin em modo somente leitura.','info');
     }
   }
+  const workerAuth=await iniciarSessaoWorkerComSenha(senha);
+  if(!workerAuth.ok){
+    console.warn('[Admin] Sessão do Worker indisponível:',workerAuth.error);
+    clearWorkerSessionToken();
+  }
   ocultarLoading();
   loginErro.style.display='none';
   document.getElementById('login-screen').style.display='none';
@@ -3633,6 +3664,7 @@ function sair(){
   document.getElementById('login-erro').style.display='none';
   // Limpar token GitHub ao sair
   ssRemove('itap_github_token');
+  clearWorkerSessionToken();
   GITHUB_PAT='';
   GH_WRITE_ALLOWED=false;
 }
@@ -5545,15 +5577,15 @@ async function carregarInscritosSorteio() {
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888">⏳ Carregando…</td></tr>';
   _sortMsg('');
-  const token = getAdminToken();
-  if (!token) {
-    // Sem token: mostrar inscritos salvos localmente em fidelidade.json
-    _carregarInscritosLocal();
+  const sessionToken = getWorkerSessionToken();
+  if (!sessionToken) {
+    _sortMsg('Sessão administrativa expirada. Faça login novamente para carregar inscritos da fonte oficial.', 'erro');
+    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Sessão expirada.</td></tr>';
     return;
   }
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos', {
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
+      headers: getWorkerAuthHeaders()
     }, 12000);
     const ct = r.headers.get('content-type') || '';
     if (!ct.includes('application/json')) throw new Error('Resposta não-JSON (Worker indisponível)');
@@ -5562,8 +5594,8 @@ async function carregarInscritosSorteio() {
     _sortInscritos = dados.inscritos || [];
     _renderTabelaInscritos(_sortInscritos);
   } catch (e) {
-    console.warn('[Admin] Worker API indisponível, usando fallback local:', e.message);
-    _carregarInscritosLocal();
+    _sortMsg('Erro ao carregar inscritos da fonte oficial: ' + (e && e.message ? e.message : 'falha de rede'), 'erro');
+    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>';
   }
 }
 
@@ -5594,10 +5626,16 @@ function _fmtData(iso) {
   return d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : iso.slice(0, 10);
 }
 
+function _fmtDataResumida(iso) {
+  if (!iso) return '—';
+  const d = iso.slice(0, 10).split('-');
+  return d.length === 3 ? `${d[1]}/${d[0]}` : iso.slice(0, 7);
+}
+
 function _fmtTel(phone) {
   const d = String(phone || '').replace(/\D/g, '');
-  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
-  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,3)}****-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,3)}***-${d.slice(6)}`;
   return phone || '—';
 }
 
@@ -5615,7 +5653,7 @@ function _renderTabelaInscritos(lista) {
     return `<tr>
       <td style="font-size:.78rem;color:#555">${ins.id || '—'}</td>
       <td><strong>${ins.nome || '—'}</strong></td>
-      <td>${_fmtData(ins.birthdate)}</td>
+      <td>${_fmtDataResumida(ins.birthdate)}</td>
       <td>${_fmtTel(ins.phone)}</td>
       <td style="font-size:.78rem;color:#777">${_fmtData(ins.created_at)} ${(ins.created_at||'').slice(11,16)}</td>
       <td style="white-space:nowrap">
@@ -5668,8 +5706,8 @@ async function salvarEdicaoInscritoSorteio() {
   if (!nome || nome.length < 3) { toast('Nome precisa ter pelo menos 3 caracteres.', 'erro'); return; }
   if (!nasc || !/^\d{4}-\d{2}-\d{2}$/.test(nasc) || isNaN(new Date(nasc).getTime())) { toast('Data de nascimento inválida (use AAAA-MM-DD).', 'erro'); return; }
   if (!tel || tel.length < 10) { toast('Telefone inválido.', 'erro'); return; }
-  const token = getAdminToken();
-  if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+  const sessionToken = getWorkerSessionToken();
+  if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
 
   // Modo local (Worker offline): atualiza em STATE.fidelidade.sorteioInscritos
   if (id.startsWith('LOCAL-')) {
@@ -5693,7 +5731,7 @@ async function salvarEdicaoInscritoSorteio() {
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token },
+      headers: getWorkerAuthHeaders(),
       body: JSON.stringify({ nome, birthdate: nasc, phone: tel })
     }, 10000);
     const dados = await r.json();
@@ -5715,8 +5753,8 @@ async function deletarInscritoSorteio(id) {
   const ins = _sortInscritos.find(i => i.id === id);
   const nomeExib = ins ? ins.nome : id;
   if (!confirm(`Remover o inscrito "${nomeExib}" (${id})?\n\nEsta ação não pode ser desfeita.`)) return;
-  const token = getAdminToken();
-  if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+  const sessionToken = getWorkerSessionToken();
+  if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
 
   // Modo local (Worker offline): remove de STATE.fidelidade.sorteioInscritos
   if (id.startsWith('LOCAL-')) {
@@ -5735,7 +5773,7 @@ async function deletarInscritoSorteio(id) {
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
+      headers: getWorkerAuthHeaders()
     }, 10000);
     const dados = await r.json();
     if (dados.ok) {

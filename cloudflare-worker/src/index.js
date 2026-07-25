@@ -115,7 +115,7 @@ function buildCorsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin':  allowed,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Itap-Admin-Secret, X-Itap-Session-Token',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Itap-Admin-Secret, X-Itap-Session-Token, X-Idempotency-Key',
     'Access-Control-Max-Age':       '86400',
     'Vary':                         'Origin',
   };
@@ -1474,16 +1474,55 @@ async function handleResgatarCodigo(request, env) {
  *
  * NÃO abre WhatsApp. NÃO usa fidelidade.json. Cadastro 100% interno.
  */
+const SORTEIO_IDEMPOTENCY_TTL = 86400 * 30;
+
+function buildPromoRequestId() {
+  const rand = generateIdHash();
+  return `req-${Date.now()}-${rand}`;
+}
+
+function getPromoIdempotencyKey(request, body) {
+  const headerKey = sanitizeString(request.headers.get('X-Idempotency-Key') || '', 160);
+  const bodyKey = sanitizeString(body?.idempotencyKey || '', 160);
+  const raw = headerKey || bodyKey;
+  if (!raw) return '';
+  return /^[A-Za-z0-9._:-]{8,160}$/.test(raw) ? raw : '';
+}
+
+function promoPayloadHash(payload) {
+  return [
+    sanitizeString(payload.name || '', 200).toLowerCase(),
+    sanitizeString(payload.birthdate || '', 20),
+    String(payload.phone || '').replace(/\D/g, ''),
+    payload.regulation_accept ? '1' : '0',
+  ].join('|');
+}
+
+function promoResponse(data, status) {
+  return { data, status };
+}
+
 async function handlePostSorteioCadastro(request, env) {
+  const requestId = buildPromoRequestId();
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rl = await checkRateLimit(env, ip, 'post-sorteio');
   if (!rl.allowed) {
-    return jsonResp({ success: false, error: 'Muitas tentativas. Aguarde 30 minutos e tente novamente.' }, 429);
+    return jsonResp({
+      success: false,
+      code: 'PROMO_RATE_LIMIT',
+      requestId,
+      error: 'Muitas tentativas. Aguarde alguns instantes e tente novamente.',
+    }, 429);
   }
 
   let body;
   try { body = await request.json(); } catch {
-    return jsonResp({ success: false, error: 'Requisição inválida.' }, 400);
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_JSON',
+      requestId,
+      error: 'Requisição inválida.',
+    }, 400);
   }
 
   // Aceitar tanto "name" (front-end novo) quanto "nome" (retrocompatibilidade)
@@ -1491,19 +1530,60 @@ async function handlePostSorteioCadastro(request, env) {
   const birthdate   = sanitizeString(body.birthdate || body.dataNasc, 20);
   const phone       = String(body.phone || body.cel || '').replace(/\D/g, '');
   const regAccept   = !!body.regulation_accept;
+  const normalizedPayload = { name: nome, birthdate, phone, regulation_accept: regAccept };
+  const idempotencyKey = getPromoIdempotencyKey(request, body);
+  const payloadHash = promoPayloadHash(normalizedPayload);
+  const idempotencyKvKey = idempotencyKey ? `sorteio:idempotency:${idempotencyKey}` : '';
+
+  if (idempotencyKvKey) {
+    const existingOperation = await env.CLIENTES_KV.get(idempotencyKvKey, 'json');
+    if (existingOperation) {
+      if (existingOperation.payloadHash && existingOperation.payloadHash !== payloadHash) {
+        return jsonResp({
+          success: false,
+          code: 'PROMO_IDEMPOTENCY_CONFLICT',
+          requestId,
+          error: 'A mesma chave de idempotência foi reutilizada com dados diferentes.',
+        }, 409);
+      }
+      if (existingOperation.response && existingOperation.statusCode) {
+        return jsonResp(existingOperation.response, existingOperation.statusCode);
+      }
+    }
+  }
 
   // ── Validações ───────────────────────────────────────────────────────────────
   if (!regAccept) {
-    return jsonResp({ success: false, error: 'Você precisa aceitar o regulamento para participar.' }, 400);
+    return jsonResp({
+      success: false,
+      code: 'PROMO_REGULATION_REQUIRED',
+      requestId,
+      error: 'Você precisa aceitar o regulamento para participar.',
+    }, 400);
   }
   if (!nome || nome.length < 3) {
-    return jsonResp({ success: false, error: 'Nome inválido. Use seu nome completo (mínimo 3 caracteres).' }, 400);
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_NAME',
+      requestId,
+      error: 'Nome inválido. Use seu nome completo (mínimo 3 caracteres).',
+    }, 400);
   }
   if (!birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
-    return jsonResp({ success: false, error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.' }, 400);
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_BIRTHDATE',
+      requestId,
+      error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.',
+    }, 400);
   }
   if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
-    return jsonResp({ success: false, error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).' }, 400);
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_PHONE',
+      requestId,
+      error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).',
+    }, 400);
   }
 
   // Idade mínima: 14 anos
@@ -1516,66 +1596,106 @@ async function handlePostSorteioCadastro(request, env) {
     idade--;
   }
   if (idade < 14) {
-    return jsonResp({ success: false, error: 'É necessário ter no mínimo 14 anos para participar.' }, 400);
+   return jsonResp({
+     success: false,
+     code: 'PROMO_UNDERAGE',
+     requestId,
+     error: 'É necessário ter no mínimo 14 anos para participar.',
+   }, 400);
   }
+
+  if (idempotencyKvKey) {
+   await env.CLIENTES_KV.put(idempotencyKvKey, JSON.stringify({
+     payloadHash,
+     status: 'processing',
+     requestId,
+     createdAt: new Date().toISOString(),
+   }), { expirationTtl: SORTEIO_IDEMPOTENCY_TTL });
+  }
+
+  let finalResult = null;
 
   // ── Verificar duplicidade por celular ────────────────────────────────────────
   const existingIdCel = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
   if (existingIdCel) {
-    return jsonResp({
-      success:           true,
-      id:                existingIdCel,
-      alreadyRegistered: true,
-      message:           'Você já está cadastrado e concorre a todos os sorteios mensais!',
-    });
+   finalResult = promoResponse({
+     success: false,
+     code: 'PROMO_REGISTRATION_EXISTS',
+     requestId,
+     registrationId: existingIdCel,
+     error: 'Este WhatsApp já possui um cadastro nesta promoção.',
+   }, 409);
   }
 
   // ── Verificar duplicidade por nome + data de nascimento (Regra 2.4) ──────────
   const nascKey = sorteioNascKey(nome, birthdate);
-  const existingIdNasc = await env.CLIENTES_KV.get(nascKey);
-  if (existingIdNasc) {
-    return jsonResp({
-      success:           true,
-      id:                existingIdNasc,
-      alreadyRegistered: true,
-      message:           'Você já está cadastrado e concorre a todos os sorteios mensais!',
-    });
+  if (!finalResult) {
+   const existingIdNasc = await env.CLIENTES_KV.get(nascKey);
+   if (existingIdNasc) {
+     finalResult = promoResponse({
+       success: false,
+       code: 'PROMO_REGISTRATION_EXISTS',
+       requestId,
+       registrationId: existingIdNasc,
+       error: 'Este WhatsApp já possui um cadastro nesta promoção.',
+     }, 409);
+   }
   }
 
   // ── Gerar novo ID de inscrição ────────────────────────────────────────────────
   // Usa contador sequencial + sufixo aleatório para garantir unicidade mesmo
   // em requisições simultâneas (Cloudflare KV não oferece incremento atômico).
-  const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
-  let contador = parseInt(contadorStr || '0', 10);
-  contador += 1;
-  const randomSuffix = generateIdHash().slice(0, 4);
-  const novoId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
-  const agora  = new Date().toISOString();
+  if (!finalResult) {
+   const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
+   let contador = parseInt(contadorStr || '0', 10);
+   contador += 1;
+   const randomSuffix = generateIdHash().slice(0, 4);
+   const novoId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
+   const agora  = new Date().toISOString();
 
-  const inscricao = {
-    id:                novoId,
-    nome,
-    birthdate,
-    phone,
-    regulation_accept: true,
-    created_at:        agora,
-  };
+   const inscricao = {
+     id:                novoId,
+     nome,
+     birthdate,
+     phone,
+     regulation_accept: true,
+     created_at:        agora,
+     requestId,
+     idempotencyKey: idempotencyKey || null,
+   };
 
-  // ── Persistir no KV ──────────────────────────────────────────────────────────
-  await env.CLIENTES_KV.put(`sorteio:inscrito:${novoId}`, JSON.stringify(inscricao));
-  await env.CLIENTES_KV.put(`sorteio:idx:cel:${phone}`, novoId);
-  await env.CLIENTES_KV.put(nascKey, novoId);
-  await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
+   // ── Persistir no KV ──────────────────────────────────────────────────────────
+   await env.CLIENTES_KV.put(`sorteio:inscrito:${novoId}`, JSON.stringify(inscricao));
+   await env.CLIENTES_KV.put(`sorteio:idx:cel:${phone}`, novoId);
+   await env.CLIENTES_KV.put(nascKey, novoId);
+   await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
 
-  await registrarAudit(env, 'sorteio_cadastro', novoId, {
-    cel: `${phone.slice(0, 4)}*****${phone.slice(-2)}`,
-  });
+   await registrarAudit(env, 'sorteio_cadastro', novoId, {
+     cel: `${phone.slice(0, 4)}*****${phone.slice(-2)}`,
+     requestId,
+     idempotencyKey: idempotencyKey || null,
+   });
 
-  return jsonResp({
-    success: true,
-    id:      novoId,
-    message: 'Cadastro realizado com sucesso!',
-  }, 201);
+   finalResult = promoResponse({
+     success: true,
+     code: 'PROMO_REGISTRATION_CREATED',
+     requestId,
+     registrationId: novoId,
+   }, 201);
+  }
+
+  if (idempotencyKvKey) {
+   await env.CLIENTES_KV.put(idempotencyKvKey, JSON.stringify({
+     payloadHash,
+     status: 'completed',
+     requestId,
+     response: finalResult.data,
+     statusCode: finalResult.status,
+     completedAt: new Date().toISOString(),
+   }), { expirationTtl: SORTEIO_IDEMPOTENCY_TTL });
+  }
+
+  return jsonResp(finalResult.data, finalResult.status);
 }
 
 // ─── Sorteio KV key helpers ───────────────────────────────────────────────────
