@@ -1,20 +1,16 @@
 import { test, expect } from '@playwright/test';
 
-async function obterSenhaAdmin(request) {
-  const [cfgResp, authResp] = await Promise.all([
-    request.get('/dados/config.json'),
-    request.get('/dados/auth.json')
-  ]);
-  expect(cfgResp.ok()).toBeTruthy();
-  expect(authResp.ok()).toBeTruthy();
-  const cfg = await cfgResp.json();
-  const auth = await authResp.json();
-  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+function obterSenhaAdminTeste() {
+  const senha = String(process.env.TEST_PASSWORD || '').trim();
+  if (!senha) {
+    throw new Error('TEST_PASSWORD não configurada. Defina uma credencial de staging segura para executar o teste do admin.');
+  }
+  return senha;
 }
 
 test.describe('Admin Painel — Login e Editabilidade', () => {
-  test('login humano abre seção editável com dados carregados', async ({ page, request }) => {
-    const senhaAdmin = await obterSenhaAdmin(request);
+  test('login humano abre seção editável com dados carregados', async ({ page }) => {
+    const senhaAdmin = obterSenhaAdminTeste();
 
     await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
     await page.fill('#inp-senha', senhaAdmin);
@@ -26,8 +22,8 @@ test.describe('Admin Painel — Login e Editabilidade', () => {
     await expect(page.locator('#home-titulo')).not.toHaveValue('');
   });
 
-  test('salvar sem PAT mostra feedback visual de modo somente leitura', async ({ page, request }) => {
-    const senhaAdmin = await obterSenhaAdmin(request);
+  test('salvar sem PAT mostra feedback visual de modo somente leitura', async ({ page }) => {
+    const senhaAdmin = obterSenhaAdminTeste();
 
     await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
     await page.fill('#inp-senha', senhaAdmin);

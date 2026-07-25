@@ -86,6 +86,12 @@
   var _promoData  = null;   // cache de dados/promo.json
   var _saudacao   = false;  // flag: saudação inicial já mostrada
   var _scrollY    = 0;      // para page-lock
+  var _engine     = null;   // instância do motor compartilhado (ItaBotEngine)
+
+  /* ─── Instanciar motor compartilhado (se disponível) ─── */
+  if (window.ItaBotEngine) {
+    _engine = window.ItaBotEngine.createEngine();
+  }
 
   /* ─── Normaliza string ─── */
   function _norm(s) {
@@ -93,14 +99,16 @@
   }
 
   /* ─── CSS ─── */
-  var css = ':root{--itabot-kb-offset:0px;--itabot-panel-h:100dvh}' +
+  var css = ':root{--itabot-kb-offset:0px;--itabot-panel-h:100dvh;--ita-visual-height:100dvh;--ita-visual-top:0px}' +
  'html.itabot-open,body.itabot-open{position:fixed;width:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}' +
  '#chat-dialog{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);overflow:hidden}' +
  '#chat-dialog.aberto{display:flex;animation:itabot-in .22s ease-out}' +
  '@keyframes itabot-in{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}' +
  '@media(prefers-reduced-motion:reduce){@keyframes itabot-in{from{opacity:0}to{opacity:1}}}' +
- '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:var(--itabot-panel-h);min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
- '@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:460px;height:min(780px,calc(100dvh - 32px));border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
+ /* Mobile: usa --ita-visual-height (atualizado via JS com visualViewport.height) e
+    margin-top (compensa visualViewport.offsetTop no iOS sem page-lock) */
+ '.chat-box{background:#F0F2F5;width:100%;max-width:100%;height:var(--ita-visual-height,100dvh);margin-top:var(--ita-visual-top,0px);min-height:0;display:flex;flex-direction:column;overflow:hidden}' +
+ '@media(min-width:768px){#chat-dialog{padding:18px 24px 24px;align-items:flex-start;justify-content:flex-end}.chat-box{max-width:460px;height:min(780px,calc(100dvh - 32px));margin-top:0;border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.32)}}' +
  '.chat-hdr{background:linear-gradient(135deg,#e8470a,#ff6b35);padding:9px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.18)}' +
 '.chat-hdr-logo-img{width:42px;height:42px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(255,255,255,.3);flex-shrink:0}' +
 '.chat-hdr-info{flex:1;min-width:0}' +
@@ -131,7 +139,7 @@
 '.itabot-chip:active{transform:scale(.95)}' +
 '.itabot-link-btn{display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#FF6B35,#E8000D);color:#fff!important;text-decoration:none!important;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:900;letter-spacing:.3px;margin-top:8px;min-height:46px;box-shadow:0 3px 10px rgba(232,0,13,.25);transition:filter .15s,transform .1s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;word-break:break-word;box-sizing:border-box}' +
 '.itabot-link-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}.itabot-link-btn:active{transform:scale(.97)}' +
- '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;max-height:40dvh}' +
+ '.chat-controls{display:flex;flex-direction:column;flex-shrink:0;min-height:0}' +
  '.chat-inp-row{padding:9px 12px;padding-bottom:calc(9px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;border-top:1px solid #E5E7EB;background:#fff;flex-shrink:0;align-items:center;position:relative}' +
 '.chat-inp{flex:1;padding:11px 16px;border:2px solid #E5E7EB;border-radius:24px;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s;box-sizing:border-box;background:#F8F9FA;color:#111;-webkit-appearance:none;appearance:none}' +
 '.chat-inp:focus{border-color:#E8000D;box-shadow:0 0 0 3px rgba(232,0,13,.12);background:#fff}' +
@@ -256,11 +264,13 @@
     var d = document.getElementById('chat-dialog');
     if (d) { d.classList.remove('aberto'); d.setAttribute('aria-hidden', 'true'); d.setAttribute('aria-modal', 'false'); _itabotLiberarPagina(); }
     document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
-    document.documentElement.style.setProperty('--itabot-panel-h', '100dvh');
+    document.documentElement.style.setProperty('--itabot-panel-h',   '100dvh');
+    document.documentElement.style.setProperty('--ita-visual-height','100dvh');
+    document.documentElement.style.setProperty('--ita-visual-top',   '0px');
   }
   // API pública canônica + alias legado para compatibilidade com páginas antigas.
-  window.abrirItaBot = _itabotAbrirItaBot;
-  window._itabotAbrirItaBot = _itabotAbrirItaBot;
+  window.abrirItaBot             = _itabotAbrirItaBot;
+  window._itabotAbrirItaBot      = _itabotAbrirItaBot;
   window._itabotFecharChatDialog = _itabotFecharChatDialog;
 
   function _itabotBtnInicio() {
@@ -279,7 +289,6 @@
     if (window.__itabotDuvidasTriggersBound) return;
     window.__itabotDuvidasTriggersBound = true;
     document.addEventListener('click', function (event) {
-      // Mantém cobertura permanente para botões estáticos dos templates e para botões com data-itabot-open.
       var trigger = event.target.closest('[data-role="duvidas"], .ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
       event.preventDefault();
@@ -303,32 +312,66 @@
       if (el) { el.scrollTop = el.scrollHeight; }
     }, 300);
   }
+
+  /* ─── Viewport dinâmico — mantém o composer acima do teclado ─── *
+   *
+   * Causa raiz no iOS/Android:
+   *   • visualViewport.resize dispara NO FIM da animação do teclado (~300 ms),
+   *     deixando o input coberto durante a abertura.
+   *   • scrollIntoView no body travado (position:fixed) causa saltos.
+   *   • vv.offsetTop > 0 no iOS sem page-lock: o viewport visual desceu,
+   *     então o .chat-box precisa de margin-top para realinhar.
+   *
+   * Solução:
+   *   • CSS usa --ita-visual-height (height do .chat-box) e
+   *     --ita-visual-top (margin-top para compensar offsetTop).
+   *   • JS atualiza as variáveis via RAF para não causar loop de layout.
+   *   • _itabotHandleInputFocus agenda múltiplas verificações
+   *     durante toda a animação do teclado (~350 ms).
+   */
+  var _itabotViewportRaf = 0;
+
   function _itabotAtualizarViewport() {
     var dialog = document.getElementById('chat-dialog');
     if (!dialog || !dialog.classList.contains('aberto')) return;
     var vv = window.visualViewport;
-    if (window.innerWidth < 768 && vv) {
-      document.documentElement.style.setProperty('--itabot-panel-h', vv.height + 'px');
+    if (window.innerWidth < 768) {
+      var h   = vv ? vv.height              : window.innerHeight;
+      var top = vv ? Math.max(0, vv.offsetTop) : 0;
+      document.documentElement.style.setProperty('--ita-visual-height', h   + 'px');
+      document.documentElement.style.setProperty('--ita-visual-top',    top + 'px');
+      document.documentElement.style.setProperty('--itabot-panel-h',    h   + 'px');
       document.documentElement.style.setProperty('--itabot-kb-offset', '0px');
     }
     _itabotScrollFim();
   }
+
+  /* RAF-throttled: evita múltiplos reflows por evento de resize. */
+  function _itabotScheduleViewport() {
+    if (_itabotViewportRaf) return;
+    _itabotViewportRaf = window.requestAnimationFrame(function () {
+      _itabotViewportRaf = 0;
+      _itabotAtualizarViewport();
+    });
+  }
+
   function _itabotHandleInputFocus() {
     _itabotAtualizarViewport();
     _itabotScrollFim();
-    var inputArea = document.getElementById('itabot-input-area');
-    if (inputArea && typeof inputArea.scrollIntoView === 'function') {
-      inputArea.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-    }
-    setTimeout(_itabotAtualizarViewport, 120);
-    setTimeout(_itabotScrollFim, 160);
+    /* Agendar verificações em múltiplos pontos durante a animação do teclado.
+       iOS dispara visualViewport.resize apenas no fim (~300 ms), então
+       verificamos em 80 ms, 200 ms e 380 ms para cobrir toda a animação. */
+    setTimeout(_itabotAtualizarViewport,  80);
+    setTimeout(_itabotAtualizarViewport, 200);
+    setTimeout(_itabotAtualizarViewport, 380);
+    setTimeout(_itabotScrollFim,         420);
   }
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
-    window.visualViewport.addEventListener('scroll', _itabotAtualizarViewport, { passive: true });
+    window.visualViewport.addEventListener('resize', _itabotScheduleViewport, { passive: true });
+    window.visualViewport.addEventListener('scroll', _itabotScheduleViewport, { passive: true });
   }
-  window.addEventListener('resize', _itabotAtualizarViewport, { passive: true });
-  window.addEventListener('orientationchange', _itabotAtualizarViewport, { passive: true });
+  window.addEventListener('resize',            _itabotScheduleViewport, { passive: true });
+  window.addEventListener('orientationchange', _itabotScheduleViewport, { passive: true });
   window._itabotHandleInputFocus = _itabotHandleInputFocus;
 
   /* ─── Carregamento assíncrono de dados ─── */
@@ -336,11 +379,17 @@
     fetch(_base + 'dados/produtos.json?v=' + Date.now())
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
-      .then(function (d) { _prodData = d; });
+      .then(function (d) {
+        _prodData = d;
+        if (_engine) _engine.loadData(_prodData, _promoData);
+      });
     fetch(_base + 'dados/promo.json?v=' + Date.now())
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
-      .then(function (d) { _promoData = d; });
+      .then(function (d) {
+        _promoData = d;
+        if (_engine) _engine.loadData(_prodData, _promoData);
+      });
   }
   _itabotCarregarDados();
 
@@ -460,15 +509,22 @@
     };
   }
   function _respPicoles() {
-    var p = _prodData && _prodData.picoles;
-    var fruta = (p && p.frutas_agua) ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',') : '2,50';
-    var leite = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
-    var ninho = (p && p.leite_ninho) ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',') : '4,00';
+    var p      = _prodData && _prodData.picoles;
+    var fruta  = (p && p.frutas_agua)                                                   ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',')       : '2,50';
+    var leite  = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
+    var ninho  = (p && p.leite_ninho  && p.leite_ninho.preco_varejo  != null)           ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',')       : '4,00';
+    var eskimo = (p && p.esquim\u00f3s && p.esquim\u00f3s.preco_varejo != null)          ? p.esquim\u00f3s.preco_varejo.toFixed(2).replace('.', ',')       : '8,00';
     return {
-      answer: '\ud83c\udf60 Picol\u00e9s tipo artesanal!\n\n\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Gro\u00e9selha, Lim\u00e3o, Melancia, Uva...)\n\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n\ud83c\udf3c Leite Ninho \u2014 R$ ' + ninho + '\n\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
+      answer: '\ud83c\udf60 Picol\u00e9s tipo artesanal!\n\n' +
+              '\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Groselha, Lim\u00e3o, Melancia, Uva...)\n' +
+              '\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n' +
+              '\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n' +
+              '\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ ' + ninho + ' (Leite Ninho e Ovomaltine)\n' +
+              '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ ' + eskimo + ' (inc. Ovomaltine)\n' +
+              '\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
       linkText: '\ud83d\udce6 Ver encomendas',
       linkHref: 'encomendas.html',
-      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed']
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3', '\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed']
     };
   }
   function _respTacas() {
@@ -500,6 +556,102 @@
       linkText: '\ud83d\udce6 Fazer encomenda online',
       linkHref: 'encomendas.html',
       chips: ['\ud83d\udcac Falar no WhatsApp', '\ud83c\udf66 Ver card\u00e1pio']
+    };
+  }
+
+  /* ─── Lote A: Ovomaltine — Picolé Especiais ─── */
+  function _respPicoleEspecialOvomaltine(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.leite_ninho;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 4;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 3;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Especiais de Ovomaltine no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Especiais+de+Ovomaltine+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine']
+      };
+    }
+    return {
+      answer: '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un., prazo 3 dias \u00fateis).',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udcac Falar no WhatsApp']
+    };
+  }
+
+  /* ─── Lote A: Ovomaltine — Picolé Esquimó ─── */
+  function _respEskimoOvomaltine(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.esquim\u00f3s;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 8;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 6;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Esquim\u00f3 de Ovomaltine no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Esquim%C3%B3+de+Ovomaltine+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine']
+      };
+    }
+    return {
+      answer: '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine \u2014 coberto com chocolate!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un.)\n\n\u2728 Outros sabores do Esquim\u00f3: Bombom, Nutella, Leite Ninho, Nata, Morango, Brigadeiro, Prest\u00edgio.',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udce6 Atacado de picol\u00e9s']
+    };
+  }
+
+  /* ─── Lote A: Picolé Especiais de Leite Ninho ─── */
+  function _respPicoleLeiteNinho(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.leite_ninho;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 4;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 3;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Especial de Leite Ninho no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Especiais+de+Leite+Ninho+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine']
+      };
+    }
+    return {
+      answer: '\ud83c\udf3c Picol\u00e9 Especial de Leite Ninho!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un., prazo 3 dias \u00fateis).',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83d\udcac Falar no WhatsApp']
+    };
+  }
+
+  /* ─── Lote A: Picolé Esquimó genérico ─── */
+  function _respEskimo(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.esquim\u00f3s;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 8;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 6;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Esquim\u00f3 no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Esquim%C3%B3+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf60 Picol\u00e9s']
+      };
+    }
+    return {
+      answer: '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 \u2014 coberto com chocolate!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un.)\n\nSabores: Bombom, Nutella, Ovomaltine, Leite Ninho, Nata, Morango, Brigadeiro, Prest\u00edgio.',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf60 Picol\u00e9s', '\ud83d\udcac Falar no WhatsApp']
     };
   }
 
@@ -643,65 +795,72 @@
   }
 
   /* ─── Resposta principal ─── */
+  /* Delega ao motor compartilhado (ItaBotEngine) quando disponível.
+     Mantém a lógica interna como fallback caso o motor não esteja carregado. */
   function _itabotGetResp(msg) {
+    if (_engine) {
+      return _engine.getResponse(msg);
+    }
+    /* ── Fallback: lógica interna (legado, sem motor compartilhado) ── */
     var l = _norm(msg);
     var cr = _handleContexto(msg);
     if (cr) return cr;
 
+    var temOvo    = l.indexOf('ovomalt') !== -1;
+    var temEskimo = l.indexOf('eskimo') !== -1 || l.indexOf('esquimo') !== -1 || l.indexOf('coberto') !== -1;
+    var temPicol  = l.indexOf('picole') !== -1 || l.indexOf('picolé') !== -1;
+    var temSorv   = l.indexOf('sorvete') !== -1;
+    var temAtac   = l.indexOf('atacado') !== -1 || l.indexOf('encomend') !== -1 || l.indexOf('atacad') !== -1;
+    if (temOvo) {
+      if (temEskimo) return _respEskimoOvomaltine(temAtac);
+      if (temPicol && !temSorv) return _respPicoleEspecialOvomaltine(temAtac);
+      if (temSorv && !temPicol) { var sf0 = _buscarSabor('sorvete de ovomaltine'); if (sf0) return sf0; }
+      if (temAtac) {
+        return {
+          answer: '\ud83e\udd14 Qual produto de Ovomaltine no atacado?\n\n\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ 3,00/un (m\u00edn. 100)\n\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ 6,00/un (m\u00edn. 100)',
+          chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine atacado', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine atacado', '\ud83d\udcac Falar no WhatsApp']
+        };
+      }
+      return {
+        answer: '\ud83e\udd14 Temos Ovomaltine em tr\u00eas produtos!\n\n\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine \u2014 R$ 4,00 varejo\n\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine (coberto) \u2014 R$ 8,00 varejo\n\ud83c\udf66 Sorvete de Ovomaltine \u2014 vendido por bola\n\nQual voc\u00ea quer saber?',
+        chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine']
+      };
+    }
+    if (temEskimo && !temOvo) return _respEskimo(temAtac);
+    var temNinho = l.indexOf('ninho') !== -1;
+    if (temNinho && !temOvo && !temEskimo && (temPicol || temAtac)) return _respPicoleLeiteNinho(temAtac);
     if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
       var sf = _buscarSabor(msg);
       if (sf) return sf;
     }
-
     if (l === 'cardapio' || l === 'menu' || l.indexOf('cardapio') !== -1 || l.indexOf('cardápio') !== -1) {
       _ctx = 'await_cardapio_cat';
-      return {
-        answer: 'Que ótimo! 😋 Qual categoria te interessa?',
-        chips: ['🍦 Sorvetes de massa', '🥤 Açaí', '🍰 Picolés', '🍨 Taças e Sobremesas', '🥛 Milkshakes', '📦 Encomendas / Festas']
-      };
+      return { answer: 'Que \u00f3timo! \ud83d\ude0b Qual categoria te interessa?', chips: ['\ud83c\udf66 Sorvetes de massa', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83c\udf60 Picol\u00e9s', '\ud83c\udf68 Ta\u00e7as e Sobremesas', '\ud83e\udd64 Milkshakes', '\ud83d\udce6 Encomendas / Festas'] };
     }
-
     if (l.indexOf('promo') !== -1 || l.indexOf('oferta') !== -1 || l.indexOf('desconto') !== -1) {
       if (_promoData && _promoData.ativo) return _respPromoAtiva();
       _ctx = 'await_promo_cat';
-      return {
-        answer: 'Temos opções incríveis! 🎉 Sobre qual você quer saber?',
-        chips: ['🥤 Preços do Açaí', '🍦 Preços de Sorvete', '🎁 Sorteio mensal', '🎉 Ver tudo']
-      };
+      return { answer: 'Temos op\u00e7\u00f5es incr\u00edveis! \ud83c\udf89 Sobre qual voc\u00ea quer saber?', chips: ['\ud83e\uded0 Pre\u00e7os do A\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de Sorvete', '\ud83c\udf81 Sorteio mensal', '\ud83c\udf89 Ver tudo'] };
     }
-
     if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('cadastro') !== -1) {
-      _ctxData = {};
-      _ctx = 'await_fid_nome';
-      return { answer: 'Vamos consultar seu cadastro 😊 Qual é seu nome completo?' };
+      _ctxData = {}; _ctx = 'await_fid_nome';
+      return { answer: 'Vamos consultar seu cadastro \ud83d\ude0a Qual \u00e9 seu nome completo?' };
     }
-
     for (var i = 0; i < itaBotKnowledge.length; i++) {
       var entry = itaBotKnowledge[i];
       if (!entry || !Array.isArray(entry.keywords)) continue;
       for (var j = 0; j < entry.keywords.length; j++) {
-        if (l.indexOf(_norm(entry.keywords[j])) !== -1) {
-          return _itabotMontarResposta(entry);
-        }
+        if (l.indexOf(_norm(entry.keywords[j])) !== -1) { return _itabotMontarResposta(entry); }
       }
     }
-
     for (var k in RESPOSTAS) {
       if (Object.prototype.hasOwnProperty.call(RESPOSTAS, k) && k !== 'default' && l.indexOf(_norm(k)) !== -1) {
         var r = typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
         return { answer: _norm(r) ? String(r).replace(/<[^>]*>/g, ' ').trim() : r };
       }
     }
-
-    if (_prodData) {
-      var sf2 = _buscarSabor(msg);
-      if (sf2) return sf2;
-    }
-
-    return {
-      answer: 'Não entendi direitinho 😅 Mas posso te ajudar com:',
-      chips: ['🍦 Cardápio', '📦 Encomendas', '🎉 Promoções', '📍 Localização', '🕙 Horário', '💬 Atendente']
-    };
+    if (_prodData) { var sf2 = _buscarSabor(msg); if (sf2) return sf2; }
+    return { answer: 'N\u00e3o entendi direitinho \ud83d\ude05 Mas posso te ajudar com:', chips: ['\ud83c\udf66 Card\u00e1pio', '\ud83d\udce6 Encomendas', '\ud83c\udf89 Promo\u00e7\u00f5es', '\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udd59 Hor\u00e1rio', '\ud83d\udcac Atendente'] };
   }
 
   /* ─── Enviar mensagem ─── */
@@ -721,7 +880,16 @@
     setTimeout(function () {
       _itabotOcultarTyping();
       var resposta = _itabotGetResp(msg);
-      if (resposta && resposta.__async) return;
+      if (resposta && resposta.__async) {
+        /* Motor compartilhado: resposta assíncrona via callback */
+        if (typeof resposta.__asyncFn === 'function') {
+          resposta.__asyncFn(function (r) {
+            _itabotOcultarTyping();
+            _itabotInserirMensagem('bot', r);
+          });
+        }
+        return;
+      }
       _itabotInserirMensagem('bot', resposta);
     }, delay);
   }
@@ -865,7 +1033,7 @@
     };
   }
 
-  /* ─── Carrega FAQs dos JSON e mescla em RESPOSTAS ─── */
+  /* ─── Carrega FAQs dos JSON e mescla em RESPOSTAS e no motor compartilhado ─── */
   (function () {
     var arquivos = [
       _base + 'dados/faq_horarios_localizacao.json',
@@ -884,6 +1052,7 @@
             p.tags.forEach(function (tag) {
               var chave = _norm(tag);
               if (typeof RESPOSTAS[chave] !== 'function') RESPOSTAS[chave] = p.resposta;
+              if (_engine) _engine.mergeRespostas(tag, p.resposta);
             });
           });
         });

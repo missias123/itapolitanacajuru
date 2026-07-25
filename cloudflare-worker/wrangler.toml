@@ -10,6 +10,8 @@ compatibility_flags = ["nodejs_compat"]
 #        npx wrangler kv namespace create ENCOMENDAS_KV
 #        npx wrangler kv namespace create RATE_KV
 #   2. Substitua CADA "PLACEHOLDER_*" pelo ID retornado pelo Wrangler.
+#      Nunca use IDs inventados/fictícios no versionamento.
+#      Os IDs reais devem ser aplicados apenas no ambiente correspondente (local/staging/produção).
 #   3. O Worker valida os IDs no startup e falha com erro claro caso ainda
 #      existam valores de placeholder (evita deploy silencioso com config errada).
 [[kv_namespaces]]
@@ -31,9 +33,61 @@ preview_id = "PLACEHOLDER_RATE_KV_ID"       # ← substitua pelo ID real
 [vars]
 ENVIRONMENT = "production"
 
+[env.local.vars]
+ENVIRONMENT = "local"
+[[env.local.kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+[[env.local.kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+[[env.local.kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+[[env.staging.kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+[[env.staging.kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+[[env.staging.kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+[[env.production.kv_namespaces]]
+binding    = "CLIENTES_KV"
+id         = "PLACEHOLDER_CLIENTES_KV_ID"
+preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+[[env.production.kv_namespaces]]
+binding    = "ENCOMENDAS_KV"
+id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+[[env.production.kv_namespaces]]
+binding    = "RATE_KV"
+id         = "PLACEHOLDER_RATE_KV_ID"
+preview_id = "PLACEHOLDER_RATE_KV_ID"
+
 # ─── Segredos (NÃO colocar valores aqui — use wrangler secret put) ──────────
-# wrangler secret put ADMIN_SECRET
-# wrangler secret put GITHUB_TOKEN
+# Autenticação administrativa (use PBKDF2 — mais seguro):
+#   wrangler secret put ADMIN_PASSWORD_RECORD (preferido: pbkdf2-sha256$v=1$iter=600000$salt=...$hash=...)
+#   wrangler secret put ADMIN_HASH   (legado: hash PBKDF2-SHA-256 em base64)
+#   wrangler secret put ADMIN_SALT   (legado: salt aleatório em base64)
+# Legado (remover após migração PBKDF2):
+#   wrangler secret put ADMIN_SECRET
+# Token GitHub e setup:
+#   wrangler secret put GITHUB_TOKEN
+#   wrangler secret put SETUP_KEY    (usado uma vez para gerar ADMIN_HASH/ADMIN_SALT — remover depois)
 
 # ─── Rota personalizada ───────────────────────────────────────────────────────
 # Após configurar o domínio no Cloudflare, defina a rota:
