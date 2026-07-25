@@ -5626,7 +5626,7 @@ function _fmtData(iso) {
   return d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : iso.slice(0, 10);
 }
 
-function _fmtDataResumida(iso) {
+function _fmtDataMesAno(iso) {
   if (!iso) return '—';
   const d = iso.slice(0, 10).split('-');
   return d.length === 3 ? `${d[1]}/${d[0]}` : iso.slice(0, 7);
@@ -5653,7 +5653,7 @@ function _renderTabelaInscritos(lista) {
     return `<tr>
       <td style="font-size:.78rem;color:#555">${ins.id || '—'}</td>
       <td><strong>${ins.nome || '—'}</strong></td>
-      <td>${_fmtDataResumida(ins.birthdate)}</td>
+      <td>${_fmtDataMesAno(ins.birthdate)}</td>
       <td>${_fmtTel(ins.phone)}</td>
       <td style="font-size:.78rem;color:#777">${_fmtData(ins.created_at)} ${(ins.created_at||'').slice(11,16)}</td>
       <td style="white-space:nowrap">

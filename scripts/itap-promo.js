@@ -350,8 +350,14 @@
       if (window.crypto && typeof window.crypto.randomUUID === 'function') {
         return 'promo-' + window.crypto.randomUUID();
       }
+      if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+        var bytes = new Uint8Array(16);
+        window.crypto.getRandomValues(bytes);
+        var hex = Array.from(bytes).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+        return 'promo-' + hex;
+      }
     } catch (_) {}
-    return 'promo-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+    return 'promo-' + Date.now() + '-fallback';
   }
 
   function _promoBuildPayloadHash(payload) {

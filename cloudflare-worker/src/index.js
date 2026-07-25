@@ -1475,11 +1475,14 @@ async function handleResgatarCodigo(request, env) {
  * NÃO abre WhatsApp. NÃO usa fidelidade.json. Cadastro 100% interno.
  */
 const SORTEIO_IDEMPOTENCY_TTL = 86400 * 30;
-const SORTEIO_IDEMPOTENCY_PROCESSING_TTL = 120;
+const SORTEIO_IDEMPOTENCY_PROCESSING_TTL_SECONDS = 120;
 
 function buildPromoRequestId() {
-  const rand = generateIdHash();
-  return `req-${Date.now()}-${rand}`;
+  if (typeof crypto.randomUUID === 'function') {
+    return `req-${crypto.randomUUID()}`;
+  }
+  const rand = generateIdHash() + generateIdHash();
+  return `req-${rand}`;
 }
 
 function getPromoIdempotencyKey(request, body) {
@@ -1583,7 +1586,7 @@ async function handlePostSorteioCadastro(request, env) {
       }
       if (existingOperation.status === 'processing') {
         const startedAt = Date.parse(existingOperation.createdAt || '');
-        const stale = !Number.isFinite(startedAt) || (Date.now() - startedAt > (SORTEIO_IDEMPOTENCY_PROCESSING_TTL * 1000));
+        const stale = !Number.isFinite(startedAt) || (Date.now() - startedAt > (SORTEIO_IDEMPOTENCY_PROCESSING_TTL_SECONDS * 1000));
         if (!stale) {
           return jsonResp({
             success: false,
@@ -1654,7 +1657,7 @@ async function handlePostSorteioCadastro(request, env) {
      status: 'processing',
      requestId,
      createdAt: new Date().toISOString(),
-   }), { expirationTtl: SORTEIO_IDEMPOTENCY_PROCESSING_TTL });
+   }), { expirationTtl: SORTEIO_IDEMPOTENCY_PROCESSING_TTL_SECONDS });
   }
 
   let finalResult = null;
