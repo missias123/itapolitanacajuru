@@ -388,29 +388,49 @@ img{max-width:100%;display:block}
 .cardápio-h{contain: layout;font-size:22px;font-weight:900;text-align:center;margin-bottom:20px;letter-spacing:-.5px;color:#1A0A00;font-family:"Poppins",sans-serif;padding:0 16px}
 /* ACCORDION */
 .acc{border-radius:22px;margin-bottom:18px;box-shadow:0 8px 25px rgba(0,0,0,0.15);isolation:isolate;transition:transform .2s,box-shadow .2s;scroll-margin-top:120px;border:2px solid #FFE0B2;}.acc:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s,background-color .2s;scroll-margin-top:80px;width:100%;border:none;background:transparent;text-align:left}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;cursor:pointer;user-select:none;min-height:118px;transition:filter .2s,transform .2s,background-color .2s;scroll-margin-top:80px;width:100%;border:none;background:transparent;text-align:left;gap:14px;touch-action:manipulation}
 @media (hover:hover) and (pointer:fine){.acc-header:hover{filter:brightness(.95)}}
 .acc-header:active{transform:scale(.99)}
 .acc-header:focus{outline:3px solid rgba(255,255,255,.85);outline-offset:3px;}
 .acc-header:focus:not(:focus-visible){outline:none;}
 .acc-header:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:3px;}
-.acc-left{display:flex;align-items:center;gap:12px}
+.acc-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
 .acc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 .acc-title{font-size:18px;font-weight:900;color:#fff;letter-spacing:.5px;text-shadow:0 2px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);text-transform:uppercase;}
 .acc-sub{font-size:13px;color:#fff;font-weight:800;margin-top:3px;letter-spacing:.3px;font-family:"Nunito",sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.5)}
-.acc-right{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:150px}
-.acc-cta-txt{font-size:13px;font-weight:900;color:#fff;line-height:1.2;text-align:right;max-width:160px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
-.acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
-.acc-header:hover .acc-arrow{transform:translateX(4px)}
+/* Indicador neon circular */
+.acc-indicator{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;pointer-events:none}
+.acc-circle{width:70px;height:70px;display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.95);border-radius:50%;background:rgba(255,255,255,.12);box-shadow:0 0 12px rgba(255,255,255,.7),0 0 24px rgba(255,255,255,.3);animation:accCirclePulse 2s ease-in-out infinite;transition:box-shadow .3s ease,background .3s ease;flex-shrink:0}
+.acc.open .acc-circle{animation:none;background:rgba(255,255,255,.22);box-shadow:0 0 8px rgba(255,255,255,.4)}
+.acc-arrow{font-size:26px;color:#fff;font-weight:900;line-height:1;transition:transform .3s ease;display:block;pointer-events:none}
 .acc.open .acc-arrow{transform:rotate(180deg)}
-.acc.open .acc-header .acc-cta-txt{opacity:.95}
+.acc-label{font-size:10px;font-weight:900;color:#FFD600;text-align:center;letter-spacing:.3px;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1.3;pointer-events:none}
+@keyframes accCirclePulse{0%,100%{box-shadow:0 0 10px rgba(255,255,255,.6),0 0 20px rgba(255,255,255,.25)}50%{box-shadow:0 0 20px rgba(255,255,255,.98),0 0 38px rgba(255,255,255,.55)}}
+@media(prefers-reduced-motion:reduce){.acc-circle{animation:none}.acc-arrow{transition:none}}
+/* legado — mantém sem quebrar se ainda injetado pelo JS */
+.acc-right{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.acc-cta-txt{display:none}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .35s ease,padding .35s ease;opacity:0;padding:0 16px;background:#FFFDF9;border:2px solid transparent;border-top:none;}
 .acc.open .acc-body{max-height:9999px;opacity:1;padding:20px 16px;}
 .acc-header[aria-disabled="true"]{opacity:.65;cursor:not-allowed}
 @media (max-width:768px){
-  .acc-header{min-height:56px;padding:16px}
-  .acc-right{min-width:132px}
-  .acc-cta-txt{font-size:16px;max-width:132px}
+  .acc-header{min-height:100px;padding:12px 18px;gap:12px}
+  .acc-circle{width:58px;height:58px}
+  .acc-arrow{font-size:20px}
+  .acc-label{font-size:9px}
+}
+@media (max-width:480px){
+  .acc-header{min-height:88px;padding:10px 14px;gap:10px}
+  .acc-icon{width:38px;height:38px;font-size:22px}
+  .acc-title{font-size:15px}
+  .acc-sub{font-size:11px}
+  .acc-circle{width:52px;height:52px}
+  .acc-arrow{font-size:18px}
+  .acc-label{font-size:8px;letter-spacing:0}
+}
+@media (max-width:360px){
+  .acc-label{display:none}
+  .acc-circle{width:48px;height:48px}
 }
 .home-enc-separator{
   margin:20px 0 14px;
@@ -2380,7 +2400,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M12 2C9.24 2 7 4.24 7 7c0 2.09 1.24 3.89 3.03 4.73l-1.55 8.27h7.04l-1.55-8.27C15.76 10.89 17 9.09 17 7c0-2.76-2.24-5-5-5zm0 7c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg></span>
 <div><div class="acc-title">Sorvetes de massa tipo artesanais</div><div class="acc-sub">Feitos com carinho em Cajuru · 35 sabores para o dia a dia e para festas</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="sorvetes-body">
 <div class="prod-grid" id="sorvetes-grid"></div>
@@ -2395,7 +2415,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M22 11h-4.17l2.24-2.24-1.41-1.41L15 11h-2V9l3.66-3.66-1.41-1.41L13 6.17V2h-2v4.17l-2.24-2.24-1.41 1.41L11 9v2H9L5.34 7.34 3.93 8.75 6.17 11H2v2h4.17l-2.24 2.24 1.41 1.41L9 13h2v2l-3.66 3.66 1.41 1.41L11 17.83V22h2v-4.17l2.24 2.24 1.41-1.41L13 15v-2h2l3.66 3.66 1.41-1.41L17.83 13H22z"/></svg></span>
 <div><div class="acc-title">Picolés diferenciados</div><div class="acc-sub">Sabores clássicos e especiais para refrescar o dia em Cajuru</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="picolés-body"></div>
 </div>
@@ -2405,7 +2425,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M17 8C8 10 5.9 4.44 3 2c0 0 0 12 8 13v7h2v-7c7-1 10-8 10-8s-3 3-6 4z"/></svg></span>
 <div><div class="acc-title">🍇 Cardápio Natureon Açaí</div><div class="acc-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="açaí-body"></div>
 </div>
@@ -2415,7 +2435,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M18.5 3H6c-1.1 0-2 .9-2 2v5.71c0 3.83 2.95 7.18 6.78 7.29 3.96.12 7.22-3.06 7.22-7V5c0-.55-.45-1-1-1h-1V3zM16 5v3H8V5h8zM7 18h14v2H5v-6l2 .38V18z"/></svg></span>
 <div><div class="acc-title">Milkshakes</div><div class="acc-sub">Cremoso e gelado · Tradicional e Top · 35 sabores</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="milk-body">
 <div class="prod-grid" id="milk-grid"></div>
@@ -2430,7 +2450,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M20 3H4l4 9.5V19H6v2h12v-2h-2v-6.5L20 3zm-5.41 9H9.41L7.08 7h9.84l-2.33 5z"/></svg></span>
 <div><div class="acc-title">Taças</div><div class="acc-sub">Uma experiência única · Colegial, Sundae, Banana Split e mais</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="tacas-body">
 <div class="prod-grid" id="tacas-grid"></div>
@@ -2445,7 +2465,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M5 16L3 5l5.5 5L12 2l3.5 8L21 5l-2 11H5zm14 3c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1v-1h14v1z"/></svg></span>
 <div><div class="acc-title">Taças Premium (Taças Sujas)</div><div class="acc-sub">O melhor da sorveteria · Prestígio, Kit Kat, Unicórnio e mais</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="tacas-p-body">
 <div class="prod-grid" id="tacas-p-grid"></div>
@@ -2460,7 +2480,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.33C18 2.54 15.96.5 13.5.5c-1.37 0-2.6.65-3.4 1.67L9 3.4 7.9 2.17C7.1 1.15 5.87.5 4.5.5 2.04.5 0 2.54 0 4.67c0 .46.11.9.18 1.33H0v2h20V6zm-4 4H4v12h16V10h-4zm2 10H6V12h12v8z"/></svg></span>
 <div><div class="acc-title">Isopores de Viagem</div><div class="acc-sub">Leve o prazer para casa · 4 tamanhos disponíveis</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="iso-body"></div>
 </div>
@@ -2470,7 +2490,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M12 6c1.11 0 2-.89 2-2 0-.36-.1-.69-.26-1 .26-.24.26-.52.26-.8C14 1.34 13.1.44 12 .44s-2 .9-2 1.76c0 .28 0 .56.26.8C10.1 3.31 10 3.64 10 4c0 1.11.89 2 2 2zm2.5 14H20v-2H4v2h5.5v-2h5v2zM20 8H4v1.71c0 3.83 2.95 7.18 6.78 7.29 4.2.12 7.22-3.01 7.22-7V8z"/></svg></span>
 <div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="sobremesas-body"></div>
 </div>
@@ -2496,7 +2516,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></span>
 <div><div class="acc-title">Sorvete em Caixa</div><div class="acc-sub">Veja tamanhos e escolha seu favorito</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="acc-enc-caixas-body"><div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">Para encomendar, acesse a página de Encomendas no menu acima</div><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px"><a href="encomendas.html#caixas" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">Consultar caixas</a><a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20sorvete%20em%20caixa%20para%20festa." target="_blank" rel="noopener" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">Falar no WhatsApp</a></div></div>
 <button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-caixas')">← Voltar ao Início do Cardápio</button>
@@ -2508,7 +2528,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M12 6c1.11 0 2-.89 2-2 0-.36-.1-.69-.26-1 .26-.24.26-.52.26-.8C14 1.34 13.1.44 12 .44s-2 .9-2 1.76c0 .28 0 .56.26.8C10.1 3.31 10 3.64 10 4c0 1.11.89 2 2 2zm2.5 10H20v-4H4v4h5.5v2h5v-2zM4 7h16v2H4z"/></svg></span>
 <div><div class="acc-title">Torta de Sorvete</div><div class="acc-sub">Escolha a torta para o seu momento especial</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="acc-enc-tortas-body">
 <a class="enc-link-btn product-cta--attention" href="encomendas.html#tortas">Encomendar torta</a><a class="enc-link-btn" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20encomendar%20uma%20torta%20de%20sorvete." target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)">Falar no WhatsApp</a><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-tortas')">← Voltar ao Início do Cardápio</button>
@@ -2520,7 +2540,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M22 11h-4.17l2.24-2.24-1.41-1.41L15 11h-2V9l3.66-3.66-1.41-1.41L13 6.17V2h-2v4.17l-2.24-2.24-1.41 1.41L11 9v2H9L5.34 7.34 3.93 8.75 6.17 11H2v2h4.17l-2.24 2.24 1.41 1.41L9 13h2v2l-3.66 3.66 1.41 1.41L11 17.83V22h2v-4.17l2.24 2.24 1.41-1.41L13 15v-2h2l3.66 3.66 1.41-1.41L17.83 13H22z"/></svg></span>
 <div><div class="acc-title">Picolés</div><div class="acc-sub">Opções para festas, eventos e atacado</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="picolés-enc-body">
 <a class="enc-link-btn" href="encomendas.html#picolés">Ver picolés</a>
@@ -2534,7 +2554,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg></span>
 <div><div class="acc-title">Acréscimos</div><div class="acc-sub">Monte sua combinação com coberturas e complementos</div></div>
 </div>
-<span class="acc-arrow">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
 <div class="acc-body" id="acc-body-complementos"><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-complementos')">← Voltar ao Início do Cardápio</button></div>
 </div>
@@ -3108,6 +3128,10 @@ function atualizarEstadoHeaderAcc(acc, isOpen) {
   if (!acc) return;
   var h = acc.querySelector('.acc-header');
   if (h) h.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  // Atualiza label do indicador neon
+  var label = acc.querySelector('.acc-label');
+  if (label) label.textContent = isOpen ? 'Fechar opções' : 'Clique para abrir';
+  // legado acc-cta-txt
   var cta = acc.querySelector('.acc-cta-txt');
   var labelCfg = ACC_CTA_LABELS[acc.id];
   if (cta && labelCfg) cta.textContent = isOpen ? labelCfg.close : labelCfg.open;
@@ -3152,26 +3176,30 @@ function inicializarAcessibilidadeAcc() {
     var arrow = header.querySelector('.acc-arrow');
     if (arrow) arrow.setAttribute('aria-hidden', 'true');
 
-    var labelCfg = ACC_CTA_LABELS[acc.id];
-    if (labelCfg) {
-      var right = header.querySelector('.acc-right');
-      if (!right) {
-        right = document.createElement('span');
-        right.className = 'acc-right';
-        if (arrow) {
-          arrow.parentNode.insertBefore(right, arrow);
-          right.appendChild(arrow);
-        } else {
-          header.appendChild(right);
+    // Não injeta acc-cta-txt quando o indicador neon já está presente no HTML
+    var hasIndicator = !!header.querySelector('.acc-indicator');
+    if (!hasIndicator) {
+      var labelCfg = ACC_CTA_LABELS[acc.id];
+      if (labelCfg) {
+        var right = header.querySelector('.acc-right');
+        if (!right) {
+          right = document.createElement('span');
+          right.className = 'acc-right';
+          if (arrow) {
+            arrow.parentNode.insertBefore(right, arrow);
+            right.appendChild(arrow);
+          } else {
+            header.appendChild(right);
+          }
         }
+        var cta = right.querySelector('.acc-cta-txt');
+        if (!cta) {
+          cta = document.createElement('span');
+          cta.className = 'acc-cta-txt';
+          right.insertBefore(cta, right.firstChild);
+        }
+        cta.textContent = labelCfg.open;
       }
-      var cta = right.querySelector('.acc-cta-txt');
-      if (!cta) {
-        cta = document.createElement('span');
-        cta.className = 'acc-cta-txt';
-        right.insertBefore(cta, right.firstChild);
-      }
-      cta.textContent = labelCfg.open;
     }
   });
 }

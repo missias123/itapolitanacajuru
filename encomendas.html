@@ -280,7 +280,7 @@
       overflow: hidden;
     }
     .categoria-header {
-      padding: 18px 20px;
+      padding: 14px 20px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -290,14 +290,44 @@
       width: 100%;
       border: none;
       text-align: left;
+      min-height: 118px;
+      gap: 14px;
+      touch-action: manipulation;
+      box-sizing: border-box;
     }
     .categoria-header:hover { opacity: 0.9; }
     .categoria-header:focus-visible { outline: 3px solid rgba(255,255,255,.95); outline-offset: -3px; }
-    .categoria-header-left { display:flex; align-items:center; gap:14px; }
-    .categoria-emoji { font-size: 1.8rem; }
+    .categoria-header-left { display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
+    .categoria-emoji { font-size: 1.8rem; flex-shrink:0; }
     .categoria-info h3 { font-size: clamp(1.2rem, 5vw, 1.5rem); color: white; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,.7); letter-spacing: .5px; }
     .categoria-info p { font-size: clamp(0.9rem, 3.5vw, 1.1rem); color: #fff; margin-top:4px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,.6); }
-    .toggle-icon { font-size: 1.2rem; color: white; transition: transform 0.3s; }
+    .frase-cat { font-size: clamp(0.78rem, 2.8vw, 0.9rem); color: rgba(255,255,255,.9); font-style: italic; margin-top: 5px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+    /* Indicador neon circular */
+    .acc-indicator { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; pointer-events:none; }
+    .acc-circle { width:70px; height:70px; display:flex; align-items:center; justify-content:center; border:3px solid rgba(255,255,255,.95); border-radius:50%; background:rgba(255,255,255,.12); box-shadow:0 0 12px rgba(255,255,255,.7),0 0 24px rgba(255,255,255,.3); animation:accCirclePulse 2s ease-in-out infinite; transition:box-shadow .3s ease,background .3s ease; flex-shrink:0; }
+    .categoria-header.aberta .acc-circle { animation:none; background:rgba(255,255,255,.22); box-shadow:0 0 8px rgba(255,255,255,.4); }
+    .acc-arrow { font-size:26px; color:#fff; font-weight:900; line-height:1; transition:transform .3s ease; display:block; pointer-events:none; }
+    .categoria-header.aberta .acc-arrow { transform:rotate(180deg); }
+    .acc-label { font-size:10px; font-weight:900; color:#FFD600; text-align:center; letter-spacing:.3px; white-space:nowrap; text-shadow:0 1px 3px rgba(0,0,0,.6); line-height:1.3; pointer-events:none; }
+    @keyframes accCirclePulse { 0%,100%{box-shadow:0 0 10px rgba(255,255,255,.6),0 0 20px rgba(255,255,255,.25)} 50%{box-shadow:0 0 20px rgba(255,255,255,.98),0 0 38px rgba(255,255,255,.55)} }
+    @media(prefers-reduced-motion:reduce){ .acc-circle{animation:none} .acc-arrow{transition:none} }
+    @media(max-width:768px){
+      .categoria-header { min-height:100px; padding:12px 16px; gap:12px; }
+      .acc-circle { width:58px; height:58px; }
+      .acc-arrow { font-size:20px; }
+      .acc-label { font-size:9px; }
+    }
+    @media(max-width:480px){
+      .categoria-header { min-height:88px; padding:10px 12px; gap:10px; }
+      .categoria-emoji { font-size:1.4rem; }
+      .acc-circle { width:52px; height:52px; }
+      .acc-arrow { font-size:17px; }
+      .acc-label { font-size:8px; letter-spacing:0; }
+    }
+    @media(max-width:360px){
+      .acc-label { display:none; }
+      .acc-circle { width:48px; height:48px; }
+    }
     .categoria-conteudo { display: none; padding: 16px; border-top: 1px solid #eee; }
     .categoria-conteudo.aberto { display: block; }
     .category-cta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
@@ -1574,7 +1604,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="frase-cat">✨ Sorvete tipo artesanal em caixas de 5L e 10L — ideal para festas e eventos</div>
 </div>
 </div>
-<span class="toggle-icon">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </button>
 <div class="categoria-conteudo" id="conteudo-caixas">
 <div class="prod-grid" id="lista-caixas"></div>
@@ -1594,7 +1624,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="frase-cat">🎂 3 sabores à escolha — encomende com 3 dias de antecedência</div>
 </div>
 </div>
-<span class="toggle-icon">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </button>
 <div class="categoria-conteudo" id="conteudo-tortas">
 <div class="prod-grid" id="lista-tortas"></div>
@@ -1614,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="frase-cat">🍭 Mínimo 100 unidades — perfeito para festas infantis, buffets e eventos</div>
 </div>
 </div>
-<span class="toggle-icon">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </button>
 <div class="categoria-conteudo" id="conteudo-picolés">
 <div class="prod-grid" id="lista-picolés">
@@ -1643,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="frase-cat">🍪 Casquinha, cascão, coberturas e mais — personalize seu pedido</div>
 </div>
 </div>
-<span class="toggle-icon">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </button>
 <div class="categoria-conteudo" id="conteudo-acréscimos">
 <div id="lista-acréscimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
@@ -1663,7 +1693,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="frase-cat">🏪 Quer revender produtos Itapolitana? Consulte atacado e disponibilidade.</div>
 </div>
 </div>
-<span class="toggle-icon">▼</span>
+<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
 </button>
 <div class="categoria-conteudo" id="conteudo-revenda">
 <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
@@ -2039,12 +2069,17 @@ function toggleSecao(id) {
   if (!conteudo) return;
   var header = conteudo.previousElementSibling;
   if (!header) return;
-  var icon = header.querySelector('.toggle-icon');
   var aberto = conteudo.classList.contains('aberto');
   var novoEstado = !aberto;
   conteudo.classList.toggle('aberto', novoEstado);
   conteudo.hidden = !novoEstado;
   header.setAttribute('aria-expanded', novoEstado ? 'true' : 'false');
+  // Indicador neon
+  header.classList.toggle('aberta', novoEstado);
+  var lbl = header.querySelector('.acc-label');
+  if (lbl) lbl.textContent = novoEstado ? 'Fechar opções' : 'Clique para abrir';
+  // Legado: toggle-icon (fallback se ainda existir)
+  var icon = header.querySelector('.toggle-icon');
   if (icon) icon.textContent = novoEstado ? '▼' : '▶';
 }
 function handleMontarPedidoCta() {
@@ -2068,6 +2103,9 @@ document.querySelectorAll('.categoria-conteudo').forEach(function(sec){
 });
 document.querySelectorAll('.categoria-header[aria-controls]').forEach(function(btn){
   btn.setAttribute('aria-expanded', 'false');
+  btn.classList.remove('aberta');
+  var lbl = btn.querySelector('.acc-label');
+  if (lbl) lbl.textContent = 'Clique para abrir';
   var ic = btn.querySelector('.toggle-icon');
   if (ic) ic.textContent = '▶';
 });
