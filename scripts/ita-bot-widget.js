@@ -564,10 +564,10 @@
       };
     }
     return {
-      answer: '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine \u2014 nosso carro-chefe!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un.)\n\n\u2728 Tamb\u00e9m temos Picol\u00e9 Esquim\u00f3 de Ovomaltine (coberto com chocolate) \u2014 R$ 8,00.',
+      answer: '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un., prazo 3 dias \u00fateis).',
       linkText: '\ud83d\udce6 Fazer encomenda',
       linkHref: 'encomendas.html',
-      chips: ['\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udce6 Atacado de picol\u00e9s']
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udcac Falar no WhatsApp']
     };
   }
 
@@ -592,6 +592,30 @@
       linkText: '\ud83d\udce6 Fazer encomenda',
       linkHref: 'encomendas.html',
       chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine', '\ud83d\udce6 Atacado de picol\u00e9s']
+    };
+  }
+
+  /* ─── Lote A: Picolé Especiais de Leite Ninho ─── */
+  function _respPicoleLeiteNinho(atacado) {
+    var p      = _prodData && _prodData.picoles && _prodData.picoles.leite_ninho;
+    var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 4;
+    var atac   = (p && p.preco_atacado != null) ? p.preco_atacado : 3;
+    var vStr   = 'R$ ' + varejo.toFixed(2).replace('.', ',');
+    var aStr   = 'R$ ' + atac.toFixed(2).replace('.', ',');
+    if (atacado) {
+      return {
+        answer: '\ud83d\udce6 Picol\u00e9 Especial de Leite Ninho no atacado:\n\n' + aStr + '/unidade (m\u00ednimo 100 un.)\n\u23f1 Prazo: 3 dias \u00fateis \u00b7 Pagamento antecipado.',
+        linkText: '\ud83d\udcac Pedir pelo WhatsApp',
+        linkHref: 'https://wa.me/5516996062046?text=Ol%C3%A1%2C+quero+encomendar+picol%C3%A9+Especiais+de+Leite+Ninho+no+atacado',
+        external: true,
+        chips: ['\ud83d\udce6 Fazer encomenda', '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine']
+      };
+    }
+    return {
+      answer: '\ud83c\udf3c Picol\u00e9 Especial de Leite Ninho!\n\n\ud83d\udcb0 ' + vStr + ' no varejo\n\ud83d\udce6 ' + aStr + '/un no atacado (m\u00edn. 100 un., prazo 3 dias \u00fateis).',
+      linkText: '\ud83d\udce6 Fazer encomenda',
+      linkHref: 'encomendas.html',
+      chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83d\udcac Falar no WhatsApp']
     };
   }
 
@@ -792,6 +816,10 @@
 
     /* ── Lote A: Picolé Esquimó sem Ovomaltine ── */
     if (temEskimo && !temOvo) return _respEskimo(temAtac);
+
+    /* ── Lote A: Picolé Especiais de Leite Ninho ── */
+    var temNinho = l.indexOf('ninho') !== -1;
+    if (temNinho && !temOvo && !temEskimo && (temPicol || temAtac)) return _respPicoleLeiteNinho(temAtac);
 
     if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
       var sf = _buscarSabor(msg);
