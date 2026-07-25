@@ -86,6 +86,12 @@
   var _promoData  = null;   // cache de dados/promo.json
   var _saudacao   = false;  // flag: saudação inicial já mostrada
   var _scrollY    = 0;      // para page-lock
+  var _engine     = null;   // instância do motor compartilhado (ItaBotEngine)
+
+  /* ─── Instanciar motor compartilhado (se disponível) ─── */
+  if (window.ItaBotEngine) {
+    _engine = window.ItaBotEngine.createEngine();
+  }
 
   /* ─── Normaliza string ─── */
   function _norm(s) {
@@ -373,11 +379,17 @@
     fetch(_base + 'dados/produtos.json?v=' + Date.now())
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
-      .then(function (d) { _prodData = d; });
+      .then(function (d) {
+        _prodData = d;
+        if (_engine) _engine.loadData(_prodData, _promoData);
+      });
     fetch(_base + 'dados/promo.json?v=' + Date.now())
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
-      .then(function (d) { _promoData = d; });
+      .then(function (d) {
+        _promoData = d;
+        if (_engine) _engine.loadData(_prodData, _promoData);
+      });
   }
   _itabotCarregarDados();
 
@@ -783,25 +795,26 @@
   }
 
   /* ─── Resposta principal ─── */
+  /* Delega ao motor compartilhado (ItaBotEngine) quando disponível.
+     Mantém a lógica interna como fallback caso o motor não esteja carregado. */
   function _itabotGetResp(msg) {
+    if (_engine) {
+      return _engine.getResponse(msg);
+    }
+    /* ── Fallback: lógica interna (legado, sem motor compartilhado) ── */
     var l = _norm(msg);
     var cr = _handleContexto(msg);
     if (cr) return cr;
 
-    /* ── Lote A: Ovomaltine — três produtos distintos ── */
     var temOvo    = l.indexOf('ovomalt') !== -1;
     var temEskimo = l.indexOf('eskimo') !== -1 || l.indexOf('esquimo') !== -1 || l.indexOf('coberto') !== -1;
     var temPicol  = l.indexOf('picole') !== -1 || l.indexOf('picolé') !== -1;
     var temSorv   = l.indexOf('sorvete') !== -1;
     var temAtac   = l.indexOf('atacado') !== -1 || l.indexOf('encomend') !== -1 || l.indexOf('atacad') !== -1;
     if (temOvo) {
-      /* "picolé Esquimó de Ovomaltine" ou "Esquimó Ovomaltine" */
       if (temEskimo) return _respEskimoOvomaltine(temAtac);
-      /* "picolé de Ovomaltine" — sem menção a Esquimó */
       if (temPicol && !temSorv) return _respPicoleEspecialOvomaltine(temAtac);
-      /* "sorvete de Ovomaltine" — busca na lista de sorvetes */
       if (temSorv && !temPicol) { var sf0 = _buscarSabor('sorvete de ovomaltine'); if (sf0) return sf0; }
-      /* pergunta ambígua ("Quanto custa o Ovomaltine?", "atacado de Ovomaltine") */
       if (temAtac) {
         return {
           answer: '\ud83e\udd14 Qual produto de Ovomaltine no atacado?\n\n\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ 3,00/un (m\u00edn. 100)\n\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ 6,00/un (m\u00edn. 100)',
@@ -813,68 +826,41 @@
         chips: ['\ud83c\udf3c Picol\u00e9 Especiais de Ovomaltine', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 de Ovomaltine', '\ud83c\udf66 Sorvete de Ovomaltine']
       };
     }
-
-    /* ── Lote A: Picolé Esquimó sem Ovomaltine ── */
     if (temEskimo && !temOvo) return _respEskimo(temAtac);
-
-    /* ── Lote A: Picolé Especiais de Leite Ninho ── */
     var temNinho = l.indexOf('ninho') !== -1;
     if (temNinho && !temOvo && !temEskimo && (temPicol || temAtac)) return _respPicoleLeiteNinho(temAtac);
-
     if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
       var sf = _buscarSabor(msg);
       if (sf) return sf;
     }
-
     if (l === 'cardapio' || l === 'menu' || l.indexOf('cardapio') !== -1 || l.indexOf('cardápio') !== -1) {
       _ctx = 'await_cardapio_cat';
-      return {
-        answer: 'Que ótimo! 😋 Qual categoria te interessa?',
-        chips: ['🍦 Sorvetes de massa', '🥤 Açaí', '🍰 Picolés', '🍨 Taças e Sobremesas', '🥛 Milkshakes', '📦 Encomendas / Festas']
-      };
+      return { answer: 'Que \u00f3timo! \ud83d\ude0b Qual categoria te interessa?', chips: ['\ud83c\udf66 Sorvetes de massa', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83c\udf60 Picol\u00e9s', '\ud83c\udf68 Ta\u00e7as e Sobremesas', '\ud83e\udd64 Milkshakes', '\ud83d\udce6 Encomendas / Festas'] };
     }
-
     if (l.indexOf('promo') !== -1 || l.indexOf('oferta') !== -1 || l.indexOf('desconto') !== -1) {
       if (_promoData && _promoData.ativo) return _respPromoAtiva();
       _ctx = 'await_promo_cat';
-      return {
-        answer: 'Temos opções incríveis! 🎉 Sobre qual você quer saber?',
-        chips: ['🥤 Preços do Açaí', '🍦 Preços de Sorvete', '🎁 Sorteio mensal', '🎉 Ver tudo']
-      };
+      return { answer: 'Temos op\u00e7\u00f5es incr\u00edveis! \ud83c\udf89 Sobre qual voc\u00ea quer saber?', chips: ['\ud83e\uded0 Pre\u00e7os do A\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de Sorvete', '\ud83c\udf81 Sorteio mensal', '\ud83c\udf89 Ver tudo'] };
     }
-
     if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('cadastro') !== -1) {
-      _ctxData = {};
-      _ctx = 'await_fid_nome';
-      return { answer: 'Vamos consultar seu cadastro 😊 Qual é seu nome completo?' };
+      _ctxData = {}; _ctx = 'await_fid_nome';
+      return { answer: 'Vamos consultar seu cadastro \ud83d\ude0a Qual \u00e9 seu nome completo?' };
     }
-
     for (var i = 0; i < itaBotKnowledge.length; i++) {
       var entry = itaBotKnowledge[i];
       if (!entry || !Array.isArray(entry.keywords)) continue;
       for (var j = 0; j < entry.keywords.length; j++) {
-        if (l.indexOf(_norm(entry.keywords[j])) !== -1) {
-          return _itabotMontarResposta(entry);
-        }
+        if (l.indexOf(_norm(entry.keywords[j])) !== -1) { return _itabotMontarResposta(entry); }
       }
     }
-
     for (var k in RESPOSTAS) {
       if (Object.prototype.hasOwnProperty.call(RESPOSTAS, k) && k !== 'default' && l.indexOf(_norm(k)) !== -1) {
         var r = typeof RESPOSTAS[k] === 'function' ? RESPOSTAS[k]() : RESPOSTAS[k];
         return { answer: _norm(r) ? String(r).replace(/<[^>]*>/g, ' ').trim() : r };
       }
     }
-
-    if (_prodData) {
-      var sf2 = _buscarSabor(msg);
-      if (sf2) return sf2;
-    }
-
-    return {
-      answer: 'Não entendi direitinho 😅 Mas posso te ajudar com:',
-      chips: ['🍦 Cardápio', '📦 Encomendas', '🎉 Promoções', '📍 Localização', '🕙 Horário', '💬 Atendente']
-    };
+    if (_prodData) { var sf2 = _buscarSabor(msg); if (sf2) return sf2; }
+    return { answer: 'N\u00e3o entendi direitinho \ud83d\ude05 Mas posso te ajudar com:', chips: ['\ud83c\udf66 Card\u00e1pio', '\ud83d\udce6 Encomendas', '\ud83c\udf89 Promo\u00e7\u00f5es', '\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udd59 Hor\u00e1rio', '\ud83d\udcac Atendente'] };
   }
 
   /* ─── Enviar mensagem ─── */
@@ -894,7 +880,16 @@
     setTimeout(function () {
       _itabotOcultarTyping();
       var resposta = _itabotGetResp(msg);
-      if (resposta && resposta.__async) return;
+      if (resposta && resposta.__async) {
+        /* Motor compartilhado: resposta assíncrona via callback */
+        if (typeof resposta.__asyncFn === 'function') {
+          resposta.__asyncFn(function (r) {
+            _itabotOcultarTyping();
+            _itabotInserirMensagem('bot', r);
+          });
+        }
+        return;
+      }
       _itabotInserirMensagem('bot', resposta);
     }, delay);
   }
@@ -1038,7 +1033,7 @@
     };
   }
 
-  /* ─── Carrega FAQs dos JSON e mescla em RESPOSTAS ─── */
+  /* ─── Carrega FAQs dos JSON e mescla em RESPOSTAS e no motor compartilhado ─── */
   (function () {
     var arquivos = [
       _base + 'dados/faq_horarios_localizacao.json',
@@ -1057,6 +1052,7 @@
             p.tags.forEach(function (tag) {
               var chave = _norm(tag);
               if (typeof RESPOSTAS[chave] !== 'function') RESPOSTAS[chave] = p.resposta;
+              if (_engine) _engine.mergeRespostas(tag, p.resposta);
             });
           });
         });

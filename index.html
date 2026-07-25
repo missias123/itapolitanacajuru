@@ -3707,6 +3707,8 @@ function _resolverDataFimPromo(d) {
 }
 async function carregarBarraPromo(){
   const d=await _buscarDadosPromo();
+  // Alimentar motor compartilhado com dados de promoção
+  if (_homeEngine) _homeEngine.loadData(null, d);
   const fechada=sessionStorage.getItem('promo_bar_fechada');
   if(d.ativo===false){return;} // promoção desativada pelo admin
   if(fechada){return;} // usuário fechou nesta sessão
@@ -3922,6 +3924,13 @@ const RESPOSTAS={
   'default':'Não entendi direitinho a sua pergunta<br><br>Posso te ajudar com:<br>• Cardápio e pedidos<br>• Endereço e horário<br>• Promoções<br>• Falar com atendente<br><br>Tente escrever o assunto (ex.: cardápio, localização, promoções) ou clique abaixo:<br><a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+tenho+uma+d%C3%BAvida+sobre+a+Sorveteria+Itapolitana" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;margin-top:8px">Falar com atendente</a>'
 };
 window.RESPOSTAS = RESPOSTAS;
+/* Motor compartilhado: inicializado após o DOM (defer) via DOMContentLoaded */
+var _homeEngine = null;
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.ItaBotEngine) {
+    _homeEngine = window.ItaBotEngine.createEngine();
+  }
+});
 const ITABOT_INTENTS = [
   {
     keywords: ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'iniciar', 'começo', 'inicio', 'início', 'menu', 'opções', 'opcoes'],
@@ -3985,6 +3994,7 @@ const ITABOT_INTENTS = [
         if (typeof window.RESPOSTAS[chave] !== 'function') {
           window.RESPOSTAS[chave] = p.resposta;
         }
+        if (_homeEngine) _homeEngine.mergeRespostas(tag, p.resposta);
       });
     });
   }
@@ -4118,7 +4128,25 @@ function enviarChat() {
   scrollChatToBottom();
   const t=document.getElementById('chat-typing');t.classList.add('show');
   scrollChatToBottom();
-  setTimeout(()=>{t.classList.remove('show');addMsg('bot',getResp(msg));scrollChatToBottom();},700+Math.random()*500);
+  setTimeout(function() {
+    t.classList.remove('show');
+    var resposta = getResp(msg);
+    /* Motor compartilhado: resposta assíncrona (ex: consulta de pontos) */
+    if (resposta && typeof resposta === 'object' && resposta.__async) {
+      if (typeof resposta.__asyncFn === 'function') {
+        resposta.__asyncFn(function(r) {
+          t.classList.remove('show');
+          var html = _homeEngineRespToHtml(r);
+          _homeEngineRenderChips(r && r.chips);
+          addMsg('bot', html);
+          scrollChatToBottom();
+        });
+      }
+      return;
+    }
+    addMsg('bot', typeof resposta === 'string' ? resposta : _homeEngineRespToHtml(resposta));
+    scrollChatToBottom();
+  }, 700 + Math.random() * 500);
 }
 function addMsg(tipo, txt) {
   const m = document.getElementById('chat-msgs');
@@ -4205,12 +4233,39 @@ function renderChatSugestoes(sugestoes) {
   });
 }
 
+/* Converte resposta estruturada do motor compartilhado para HTML string.
+   Renderiza chips no container de sugestões do chat Home. */
+function _homeEngineRespToHtml(resp) {
+  if (!resp || typeof resp === 'string') return resp || '';
+  var txt = String(resp.answer || '').replace(/\n/g, '<br>');
+  if (resp.linkHref && resp.linkText) {
+    txt += '<br><a class="itabot-link-btn" href="' + resp.linkHref + '" target="_blank" rel="noopener">' +
+           resp.linkText + '</a>';
+  }
+  return sanitizarHtmlRicoChat(txt);
+}
+function _homeEngineRenderChips(chips) {
+  if (!Array.isArray(chips) || !chips.length) return;
+  renderChatSugestoes(chips);
+}
+
 function getResp(msg) {
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const l = norm(msg);
+  // Política de horário: mantida na interface, não no motor
   if (!chatLojaAbertaAgora() && /(pedido|pedir|encomenda|atendente|whats|whatsapp|comprar|falar)/i.test(l)) {
     return window.ITAP_CHAT_FORA_HORARIO || 'Estamos fechados agora. Retornaremos em breve!';
   }
+  // Motor compartilhado: delega quando disponível
+  if (_homeEngine) {
+    var resp = _homeEngine.getResponse(msg);
+    if (resp && resp.__async) return resp; // tratado em enviarChat
+    if (resp) {
+      _homeEngineRenderChips(resp.chips);
+      return _homeEngineRespToHtml(resp);
+    }
+  }
+  // Fallback legado
   for (const intent of ITABOT_INTENTS) {
     if (intent.keywords.some(k => l.includes(norm(k)))) return intent.reply;
   }
@@ -4378,6 +4433,9 @@ async function carregarPreçosNuvemCardápio() {
 
     // Cache local como fallback offline
     try { localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados)); } catch(e) {}
+
+    // Alimentar motor compartilhado com dados atualizados
+    if (_homeEngine) _homeEngine.loadData(dados, null);
     return true;
 
   } catch(e) {
@@ -5372,6 +5430,7 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 </nav>
 
 <script src="scripts/nav-active.js" defer></script>
+<script src="scripts/ita-bot-engine.js" defer></script>
 <script src="scripts/ita-bot-widget.js" defer></script>
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div>
 </body>
