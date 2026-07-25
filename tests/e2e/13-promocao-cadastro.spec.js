@@ -46,6 +46,7 @@ test.describe('Promoção — cadastro', () => {
     await preencherDados(page);
 
     await page.locator('#promo-enviar-cadastro').dblclick();
+    await expect(page.locator('#promo-enviar-cadastro')).toBeDisabled();
     await expect(page.locator('#promo-feedback-message')).toContainText('Cadastro realizado com sucesso', { timeout: 5000 });
 
     expect(requests).toBe(1);

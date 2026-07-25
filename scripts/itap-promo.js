@@ -355,7 +355,12 @@
   }
 
   function _promoBuildPayloadHash(payload) {
-    return [payload.name, payload.birthdate, payload.phone, payload.regulation_accept ? '1' : '0'].join('|');
+    return JSON.stringify([
+      String(payload.name || ''),
+      String(payload.birthdate || ''),
+      String(payload.phone || ''),
+      payload.regulation_accept ? 1 : 0
+    ]);
   }
 
   function _promoGetOperation(payload) {
@@ -452,13 +457,7 @@
           'X-Idempotency-Key': operacao.key
         },
         signal: controller.signal,
-        body: JSON.stringify({
-          name: nome,
-          birthdate: dataNascIso,
-          phone: cel,
-          regulation_accept: true,
-          idempotencyKey: operacao.key
-        })
+        body: JSON.stringify(Object.assign({}, payload, { idempotencyKey: operacao.key }))
       });
       clearTimeout(timeoutId);
       // Conta a tentativa apenas quando o servidor respondeu (evita bloquear

@@ -1485,9 +1485,15 @@ function buildPromoRequestId() {
 function getPromoIdempotencyKey(request, body) {
   const headerKey = sanitizeString(request.headers.get('X-Idempotency-Key') || '', 160);
   const bodyKey = sanitizeString(body?.idempotencyKey || '', 160);
+  if (headerKey && bodyKey && headerKey !== bodyKey) {
+    return { key: '', error: 'mismatch' };
+  }
   const raw = headerKey || bodyKey;
-  if (!raw) return '';
-  return /^[A-Za-z0-9._:-]{8,160}$/.test(raw) ? raw : '';
+  if (!raw) return { key: '', error: '' };
+  if (!/^[A-Za-z0-9._:-]{8,160}$/.test(raw)) {
+    return { key: '', error: 'invalid' };
+  }
+  return { key: raw, error: '' };
 }
 
 function promoPayloadHash(payload) {
@@ -1532,13 +1538,38 @@ async function handlePostSorteioCadastro(request, env) {
   const phone       = String(body.phone || body.cel || '').replace(/\D/g, '');
   const regAccept   = !!body.regulation_accept;
   const normalizedPayload = { name: nome, birthdate, phone, regulation_accept: regAccept };
-  const idempotencyKey = getPromoIdempotencyKey(request, body);
+  const idempotency = getPromoIdempotencyKey(request, body);
+  if (idempotency.error === 'mismatch') {
+    return jsonResp({
+      success: false,
+      code: 'PROMO_IDEMPOTENCY_MISMATCH',
+      requestId,
+      error: 'Chave de idempotência inconsistente entre header e payload.',
+    }, 400);
+  }
+  if (idempotency.error === 'invalid') {
+    return jsonResp({
+      success: false,
+      code: 'PROMO_IDEMPOTENCY_INVALID',
+      requestId,
+      error: 'Chave de idempotência inválida.',
+    }, 400);
+  }
+  const idempotencyKey = idempotency.key;
   const payloadHash = promoPayloadHash(normalizedPayload);
   const idempotencyKvKey = idempotencyKey ? `sorteio:idempotency:${idempotencyKey}` : '';
 
   if (idempotencyKvKey) {
     const existingOperation = await env.CLIENTES_KV.get(idempotencyKvKey, 'json');
     if (existingOperation) {
+      if (!existingOperation.payloadHash) {
+        return jsonResp({
+          success: false,
+          code: 'PROMO_IDEMPOTENCY_CONFLICT',
+          requestId,
+          error: 'Chave de idempotência já utilizada em uma operação inválida.',
+        }, 409);
+      }
       if (existingOperation.payloadHash && existingOperation.payloadHash !== payloadHash) {
         return jsonResp({
           success: false,
