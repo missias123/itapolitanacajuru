@@ -399,6 +399,15 @@ img{max-width:100%;display:block}
 .acc-sub{font-size:13px;color:#fff;font-weight:800;margin-top:3px;letter-spacing:.3px;font-family:"Inter",sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.5)}
 .acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
 .acc.open .acc-arrow{transform:rotate(180deg)}
+/* ── CTA textual de categoria: bloco direito (texto + seta) ── */
+.acc-cta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.acc-cta-txt{font-size:11px;font-weight:800;color:rgba(255,255,255,.92);letter-spacing:.5px;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.5);transition:opacity .2s;display:block;text-align:right}
+.acc.open .acc-cta-txt{opacity:.7}
+/* Hover: seta desliza (somente dispositivos com ponteiro) */
+@media(hover:hover){
+  .acc-header:hover .acc-arrow{transform:translateY(4px)}
+  .acc.open .acc-header:hover .acc-arrow{transform:rotate(180deg) translateY(-4px)}
+}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .35s ease,padding .35s ease;opacity:0;padding:0 16px;background:#FFFDF9;border:2px solid transparent;border-top:none;}
 .acc.open .acc-body{max-height:9999px;opacity:1;padding:20px 16px;}
 .home-enc-separator{
@@ -731,7 +740,9 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 @keyframes duvidas-shine{0%{left:-70%}60%,100%{left:130%}}
 @media(prefers-reduced-motion:reduce){
   .duvidas-btn,.duvidas-btn::after{animation:none}
-  .duvidas-btn{box-shadow:0 4px 14px rgba(232,0,13,.55)}}
+  .duvidas-btn{box-shadow:0 4px 14px rgba(232,0,13,.55)}
+  .acc-cta-txt,.acc-arrow,.acc-body{transition:none!important}
+}
 /* badge e bubble mantidos para compatibilidade JS */
 .itabot-badge{display:none}
 .itabot-bubble{display:none}
@@ -3056,6 +3067,30 @@ function imgCard(chave,emoji){
 // Clica → abre suavemente | Clica de novo → fecha
 // Dedo/mouse fica no mesmo lugar — tela não se move
 // ────────────────────────────────────────────────────────────────
+// ═══ CTA labels por categoria (conceito "Abre a Vontade") ══════
+var ACC_CTA_LABELS = {
+  'acc-sorvetes':     { open: 'Descobrir sabores',   close: 'Fechar opções' },
+  'acc-picolés':      { open: 'Escolher picolés',    close: 'Fechar opções' },
+  'acc-açaí':         { open: 'Ver opções',           close: 'Fechar opções' },
+  'acc-milk':         { open: 'Descobrir sabores',    close: 'Fechar opções' },
+  'acc-tacas':        { open: 'Ver opções',           close: 'Fechar opções' },
+  'acc-tacas-p':      { open: 'Ver taças premium',    close: 'Fechar opções' },
+  'acc-iso':          { open: 'Ver tamanhos',          close: 'Fechar opções' },
+  'acc-sobremesas':   { open: 'Descobrir opções',     close: 'Fechar opções' },
+  'acc-enc-caixas':   { open: 'Descobrir sabores',    close: 'Fechar opções' },
+  'acc-enc-tortas':   { open: 'Ver opções',           close: 'Fechar opções' },
+  'acc-enc-picolés':  { open: 'Escolher picolés',     close: 'Fechar opções' },
+  'acc-complementos': { open: 'Personalizar pedido',  close: 'Fechar opções' },
+};
+
+// Analytics helper sem dados pessoais
+function _itapEvt(nome, params) {
+  try {
+    if (typeof gtag === 'function') gtag('event', nome, params || {});
+    if (typeof dataLayer !== 'undefined') dataLayer.push(Object.assign({ event: nome }, params || {}));
+  } catch(_) {}
+}
+
 function toggleAcc(id) {
   var el = document.getElementById(id);
   if (!el) return;
@@ -3071,6 +3106,8 @@ function toggleAcc(id) {
       acc.classList.remove('open');
       var h = acc.querySelector('.acc-header');
       if (h) h.setAttribute('aria-expanded', 'false');
+      var t = acc.querySelector('.acc-cta-txt');
+      if (t && ACC_CTA_LABELS[acc.id]) t.textContent = ACC_CTA_LABELS[acc.id].open;
     }
   });
   // Abre ou fecha o clicado
@@ -3084,10 +3121,15 @@ function toggleAcc(id) {
     el.classList.remove('open');
     var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'false');
+    var t = el.querySelector('.acc-cta-txt');
+    if (t && ACC_CTA_LABELS[id]) t.textContent = ACC_CTA_LABELS[id].open;
+    _itapEvt('category_close', { category_id: id });
   } else {
     el.classList.add('open');
     var h = el.querySelector('.acc-header');
     if (h) h.setAttribute('aria-expanded', 'true');
+    var t = el.querySelector('.acc-cta-txt');
+    if (t && ACC_CTA_LABELS[id]) t.textContent = ACC_CTA_LABELS[id].close;
     // Re-renderiza ao abrir para garantir dados carregados
     if (id === 'acc-iso') renderIso();
     if (id === 'acc-sobremesas') renderSobremesas();
@@ -3100,7 +3142,48 @@ function toggleAcc(id) {
         if (el.classList.contains('open')) body.style.maxHeight = '';
       }, 500);
     }
+    _itapEvt('category_open', { category_id: id });
   }
+}
+
+// Fecha accordion aberto ao pressionar Escape (foco dentro do accordion)
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  var openAcc = document.querySelector('.acc.open');
+  if (!openAcc || !openAcc.contains(document.activeElement)) return;
+  toggleAcc(openAcc.id);
+  var h = openAcc.querySelector('.acc-header');
+  if (h) h.focus();
+});
+
+// Injeta .acc-cta-txt em cada cabeçalho de accordion com CTA label
+function initAccCTA() {
+  Object.keys(ACC_CTA_LABELS).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var header = el.querySelector('.acc-header');
+    if (!header) return;
+    var arrow = header.querySelector('.acc-arrow');
+    if (!arrow) return;
+    // Cria wrapper .acc-cta com texto + seta
+    var cta = document.createElement('div');
+    cta.className = 'acc-cta';
+    var ctaTxt = document.createElement('span');
+    ctaTxt.className = 'acc-cta-txt';
+    ctaTxt.setAttribute('aria-hidden', 'true');
+    ctaTxt.textContent = ACC_CTA_LABELS[id].open;
+    // Move a seta para dentro do .acc-cta
+    arrow.parentNode.removeChild(arrow);
+    cta.appendChild(ctaTxt);
+    cta.appendChild(arrow);
+    header.appendChild(cta);
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAccCTA);
+} else {
+  initAccCTA();
 }
 
 // Volta ao topo do cardápio E fecha o accordion atual

@@ -426,7 +426,7 @@
     } finally {
       if (btnEnviarPromo) {
         btnEnviarPromo.removeAttribute('aria-busy');
-        btnEnviarPromo.textContent = '📝 Enviar Cadastro';
+        btnEnviarPromo.textContent = 'Enviar meu cadastro';
         atualizarFluxoCadastroPromo();
       }
     }
@@ -440,8 +440,15 @@
     });
 
     if (inputPromoNome) {
+      var _promoFormStarted = false;
       ['input', 'change'].forEach(function(evt) {
-        inputPromoNome.addEventListener(evt, atualizarFluxoCadastroPromo);
+        inputPromoNome.addEventListener(evt, function() {
+          if (!_promoFormStarted) {
+            _promoFormStarted = true;
+            registrarEvento('promotion_form_start', { form: 'sorteio' });
+          }
+          atualizarFluxoCadastroPromo();
+        });
       });
     }
 
