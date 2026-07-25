@@ -440,11 +440,11 @@
     });
 
     if (inputPromoNome) {
-      var _promoFormStarted = false;
+      var promoFormStarted = false;
       ['input', 'change'].forEach(function(evt) {
         inputPromoNome.addEventListener(evt, function() {
-          if (!_promoFormStarted) {
-            _promoFormStarted = true;
+          if (!promoFormStarted) {
+            promoFormStarted = true;
             registrarEvento('promotion_form_start', { form: 'sorteio' });
           }
           atualizarFluxoCadastroPromo();
