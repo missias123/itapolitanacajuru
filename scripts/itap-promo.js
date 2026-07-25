@@ -298,7 +298,7 @@
     if (!opts.manterRegras && regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
-      btnEnviarPromo.textContent = 'Enviar meu cadastro';
+      btnEnviarPromo.textContent = 'Fazer cadastro';
     }
     _promoSubmitting = false;
     limparValidacaoPromo();
@@ -497,7 +497,7 @@
       trackPromoEvent('promotion_network_error', { reason: isTimeout ? 'timeout' : 'exception' });
     } finally {
       if (btnEnviarPromo) {
-        btnEnviarPromo.textContent = 'Enviar meu cadastro';
+        btnEnviarPromo.textContent = 'Fazer cadastro';
         btnEnviarPromo.removeAttribute('aria-busy');
         atualizarFluxoCadastroPromo();
       }
