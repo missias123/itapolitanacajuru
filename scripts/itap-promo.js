@@ -440,9 +440,17 @@
         trackPromoEvent('promotion_form_success', { already_registered: !!dados.alreadyRegistered });
         _promoLimparRate();
         resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
+      } else if (dados.error === '_offline') {
+        mostrarMsgSorteioComAcao(
+          'Você está sem conexão. Verifique sua internet e tente novamente.',
+          'aviso',
+          'Tentar novamente',
+          function() { enviarSorteioPromo(); }
+        );
+        trackPromoEvent('promotion_network_error', { reason: 'offline' });
       } else if (dados.error === '_servico_indisponivel') {
         mostrarMsgSorteioComAcao(
-          'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+          'O serviço está temporariamente indisponível. Nenhum cadastro foi realizado. Tente novamente em instantes.',
           'aviso',
           'Tentar novamente',
           function() { enviarSorteioPromo(); }
@@ -460,7 +468,7 @@
           trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
         } else {
           mostrarMsgSorteioComAcao(
-            'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+            'O cadastro não pôde ser concluído (erro interno). Nenhuma alteração foi realizada. Tente novamente mais tarde.',
             'aviso',
             'Tentar novamente',
             function() { enviarSorteioPromo(); }
@@ -470,14 +478,23 @@
       }
     } catch (e) {
       clearTimeout(timeoutId);
-      console.error('[Itap] Erro no cadastro do sorteio:', e);
-      mostrarMsgSorteioComAcao(
-        'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
-        'aviso',
-        'Tentar novamente',
-        function() { enviarSorteioPromo(); }
-      );
-      trackPromoEvent('promotion_network_error', { reason: e && e.name === 'AbortError' ? 'timeout' : 'exception' });
+      var ehTimeout = e && e.name === 'AbortError';
+      if (ehTimeout) {
+        mostrarMsgSorteioComAcao(
+          'O cadastro demorou muito para responder. Verifique sua conexão e tente novamente.',
+          'aviso',
+          'Tentar novamente',
+          function() { enviarSorteioPromo(); }
+        );
+      } else {
+        mostrarMsgSorteioComAcao(
+          'Não foi possível alcançar o servidor. Verifique sua conexão e tente novamente.',
+          'aviso',
+          'Tentar novamente',
+          function() { enviarSorteioPromo(); }
+        );
+      }
+      trackPromoEvent('promotion_network_error', { reason: ehTimeout ? 'timeout' : 'exception' });
     } finally {
       if (btnEnviarPromo) {
         btnEnviarPromo.textContent = 'Enviar meu cadastro';
