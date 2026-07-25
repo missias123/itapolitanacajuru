@@ -66,8 +66,9 @@
   var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
   var _promoCadastroLiberado = false;
   var _promoSubmitting = false;
-  // Timeout de 12s: evita bloqueio indefinido quando há falha de rede/API.
-  var _promoTimeoutMs = 12000;
+  // Timeout de 20s: evita bloqueio indefinido quando há falha de rede/API.
+  // Aumentado de 12s para 20s para tolerar conexões 3G/4G lentas.
+  var _promoTimeoutMs = 20000;
 
   function trackPromoEvent(nomeEvento, params) {
     if (typeof gtag !== 'function') return;
@@ -394,7 +395,6 @@
       return;
     }
 
-    _promoRegistrarTentativa();
     _promoSubmitting = true;
 
     if (btnEnviarPromo) {
@@ -420,6 +420,9 @@
         })
       });
       clearTimeout(timeoutId);
+      // Conta a tentativa apenas quando o servidor respondeu (evita bloquear
+      // o usuário por falhas de rede ou timeout fora do controle dele).
+      _promoRegistrarTentativa();
 
       var dados;
       var ct = resposta.headers.get('content-type') || '';
