@@ -2113,6 +2113,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 }
 .vc-hint strong{color:#FFD43B;font-size:1.15em;display:block;}
 .vc-hint-hand{font-size:1.5em;display:block;margin-bottom:1px;}
+.vc-hint-svg{display:block;width:1.8em;height:1.8em;fill:currentColor;margin-bottom:3px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));}
 /* Acordeão */
 .vc-container{max-height:0;overflow:hidden;transition:max-height .55s ease,opacity .4s ease;opacity:0;}
 .vc-container.aberto{max-height:9999px;opacity:1;}
@@ -2135,7 +2136,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
   .vc-btn{width:100%;min-width:0;font-size:1.05rem;border-radius:14px;}
   .vc-row{gap:8px;}
   .vc-hint{width:74px;height:74px;font-size:.58rem;}
-  .vc-arrow-hint{font-size:1.2rem;}
+  .vc-arrow-hint{display:none;}
 }
 
 </style>
@@ -2459,10 +2460,19 @@ body.cardapio-aberto { padding-bottom: 80px; }
     <div class="vc-row">
       <button class="vc-btn" id="vc-btn" type="button"
         onclick="toggleCardápio()"
-        aria-label="Ver nosso Cardápio"
-        aria-expanded="false">
-        Ver cardápio completo <i class="vc-seta" aria-hidden="true">▼</i>
+        aria-label="Abrir o cardápio da Sorveteria Itapolitana"
+        aria-expanded="false"
+        aria-controls="vc-container">
+        <span class="vc-btn-icon" aria-hidden="true">🍦</span>
+        <span>VER CARDÁPIO</span>
+        <span class="vc-btn-circle" aria-hidden="true"><i class="vc-seta">▼</i></span>
       </button>
+      <span class="vc-arrow-hint" aria-hidden="true">←</span>
+      <span class="vc-hint" aria-hidden="true">
+        <svg class="vc-hint-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" focusable="false"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg>
+        VEJA
+        <strong>AGORA!</strong>
+      </span>
     </div>
   </div>
   <div class="vc-container" id="vc-container">
@@ -5117,12 +5127,12 @@ function toggleCardápio() {
     c.classList.remove('aberto');
     btn.classList.remove('aberto');
     btn.setAttribute('aria-expanded', 'false');
-    btn.innerHTML = '🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
+    btn.setAttribute('aria-label', 'Abrir o card\u00e1pio da Sorveteria Itapolitana');
   } else {
     c.classList.add('aberto');
     btn.classList.add('aberto');
     btn.setAttribute('aria-expanded', 'true');
-    btn.innerHTML = '🍦 Esconder Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
+    btn.setAttribute('aria-label', 'Fechar o card\u00e1pio da Sorveteria Itapolitana');
     // Altura exata para animação suave de abertura
     c.style.maxHeight = c.scrollHeight + 'px';
     c.style.opacity   = '1';
@@ -5147,7 +5157,7 @@ function fecharCardápio() {
     c.classList.remove('aberto');
     btn.classList.remove('aberto');
     btn.setAttribute('aria-expanded', 'false');
-    btn.innerHTML = '🍦 Ver nosso Cardápio <i class="vc-seta" aria-hidden="true">▼</i>';
+    btn.setAttribute('aria-label', 'Abrir o card\u00e1pio da Sorveteria Itapolitana');
     // oculta barra de categorias ao fechar
     var catNav = document.getElementById('menu-categorias-cardapio');
     if (catNav) catNav.style.display = 'none';
