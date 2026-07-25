@@ -65,6 +65,15 @@
   var feedbackPromo = document.getElementById('promo-feedback-message');
   var regrasRetiradaPromo = document.getElementById('promo-regras-retirada-premio');
   var _promoCadastroLiberado = false;
+  var _promoSubmitting = false;
+  var _promoTimeoutMs = 12000;
+
+  function trackPromoEvent(nomeEvento, params) {
+    if (typeof gtag !== 'function') return;
+    try {
+      gtag('event', nomeEvento, params || {});
+    } catch (_) {}
+  }
 
   function abrirRegrasSorteioPromo() {
     if (window._sorteioEncerrado) {
@@ -196,17 +205,24 @@
       feedbackPromo.style.display = 'none';
       feedbackPromo.textContent = '';
       feedbackPromo.className = 'alert';
+      feedbackPromo.setAttribute('role', 'status');
+      feedbackPromo.setAttribute('aria-live', 'polite');
       return;
     }
     feedbackPromo.style.display = 'block';
     feedbackPromo.textContent = txt;
-    feedbackPromo.className = 'alert ' + (tipo === 'ok' || tipo === 'info' ? 'alert-success' : 'alert-warning');
+    var isInfo = tipo === 'ok' || tipo === 'info';
+    feedbackPromo.className = 'alert ' + (isInfo ? 'alert-success' : 'alert-warning');
+    feedbackPromo.setAttribute('role', isInfo ? 'status' : 'alert');
+    feedbackPromo.setAttribute('aria-live', isInfo ? 'polite' : 'assertive');
   }
 
   function mostrarMsgSorteioComLink(txt, linkUrl, linkTxt) {
     if (!feedbackPromo) return;
     feedbackPromo.style.display = 'block';
     feedbackPromo.className = 'alert alert-warning';
+    feedbackPromo.setAttribute('role', 'alert');
+    feedbackPromo.setAttribute('aria-live', 'assertive');
     var span = document.createElement('span');
     span.textContent = txt + ' ';
     var a = document.createElement('a');
@@ -218,6 +234,41 @@
     feedbackPromo.innerHTML = '';
     feedbackPromo.appendChild(span);
     feedbackPromo.appendChild(a);
+  }
+
+  function mostrarMsgSorteioComAcao(txt, tipo, acaoTxt, onClick) {
+    if (!feedbackPromo) return;
+    mostrarMsgSorteio('', '');
+    feedbackPromo.style.display = 'block';
+    feedbackPromo.className = 'alert ' + (tipo === 'ok' || tipo === 'info' ? 'alert-success' : 'alert-warning');
+    feedbackPromo.setAttribute('role', tipo === 'ok' || tipo === 'info' ? 'status' : 'alert');
+    feedbackPromo.setAttribute('aria-live', tipo === 'ok' || tipo === 'info' ? 'polite' : 'assertive');
+
+    var span = document.createElement('span');
+    span.textContent = txt + ' ';
+    feedbackPromo.appendChild(span);
+    if (!acaoTxt || typeof onClick !== 'function') return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = acaoTxt;
+    btn.style.cssText = 'margin-left:8px;background:#fff;color:#1b5e20;border:1px solid rgba(0,0,0,.18);border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer';
+    btn.addEventListener('click', onClick);
+    feedbackPromo.appendChild(btn);
+  }
+
+  function marcarCampoInvalido(campo, invalido) {
+    if (!campo) return;
+    if (invalido) {
+      campo.setAttribute('aria-invalid', 'true');
+    } else {
+      campo.removeAttribute('aria-invalid');
+    }
+  }
+
+  function limparValidacaoPromo() {
+    marcarCampoInvalido(inputPromoNome, false);
+    marcarCampoInvalido(inputPromoData, false);
+    marcarCampoInvalido(inputPromoCelular, false);
   }
 
   function exibirRegrasRetiradaPromo() {
@@ -246,8 +297,10 @@
     if (!opts.manterRegras && regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
-      btnEnviarPromo.textContent = '📝 Enviar Cadastro';
+      btnEnviarPromo.textContent = 'Enviar meu cadastro';
     }
+    _promoSubmitting = false;
+    limparValidacaoPromo();
     atualizarFluxoCadastroPromo();
   }
 
@@ -293,7 +346,7 @@
   // ANTES: gravava direto no GitHub API + abria WhatsApp.
   // AGORA: chama o Worker (ITAP_WORKER_API) e exibe o ID retornado na tela (sem WhatsApp).
   async function enviarSorteioPromo() {
-    if (!_promoCadastroLiberado) return;
+    if (!_promoCadastroLiberado || _promoSubmitting) return;
     if (window._sorteioEncerrado) {
       mostrarMsgSorteio('⛔ As inscrições para o sorteio foram encerradas em 02/01/2027. Obrigado pela participação!', 'aviso');
       return;
@@ -313,36 +366,51 @@
     var dataNasc = inputPromoData ? inputPromoData.value.trim() : '';
     var dataNascIso = parseDataBrPromoToIso(dataNasc);
     var cel = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
+    limparValidacaoPromo();
 
     if (nome.length < 3) {
+      marcarCampoInvalido(inputPromoNome, true);
       mostrarMsgSorteio('Informe seu nome completo com pelo menos 3 caracteres.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'name' });
       return;
     }
     if (!dataNascIso) {
+      marcarCampoInvalido(inputPromoData, true);
       mostrarMsgSorteio('Informe uma data de nascimento válida no formato dd/mm/aaaa.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'birthdate' });
       return;
     }
     if (!PROMO_MOBILE_REGEX.test(cel)) {
+      marcarCampoInvalido(inputPromoCelular, true);
       mostrarMsgSorteio('Informe um celular válido com DDD e 11 dígitos numéricos.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'phone' });
       return;
     }
     if (obterIdadePromo(dataNascIso) < 14) {
+      marcarCampoInvalido(inputPromoData, true);
       mostrarMsgSorteio('É necessário ter no mínimo 14 anos para participar do sorteio.', 'aviso');
+      trackPromoEvent('promotion_validation_error', { field: 'birthdate_min_age' });
       return;
     }
 
     _promoRegistrarTentativa();
+    _promoSubmitting = true;
 
     if (btnEnviarPromo) {
       btnEnviarPromo.disabled = true;
-      btnEnviarPromo.textContent = '⏳ Enviando...';
+      btnEnviarPromo.textContent = 'Enviando cadastro…';
+      btnEnviarPromo.setAttribute('aria-busy', 'true');
     }
-    mostrarMsgSorteio('⏳ Registrando seu cadastro, aguarde...', 'info');
+    mostrarMsgSorteio('Carregando opções… registrando seu cadastro, aguarde.', 'info');
+    trackPromoEvent('promotion_form_submit', {});
 
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() { controller.abort(); }, _promoTimeoutMs);
     try {
       var resposta = await fetch(ITAP_WORKER_API + '/api/promocao/cadastro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           name: nome,
           birthdate: dataNascIso,
@@ -350,6 +418,7 @@
           regulation_accept: true
         })
       });
+      clearTimeout(timeoutId);
 
       var dados;
       var ct = resposta.headers.get('content-type') || '';
@@ -364,46 +433,57 @@
       if (dados.success) {
         exibirRegrasRetiradaPromo();
         var msgSucesso = dados.alreadyRegistered
-          ? '✅ Você já está cadastrado! Seu ID é: ' + dados.id + '. Você concorre a todos os sorteios mensais!'
-          : '✅ Cadastro feito com sucesso! Seu ID é: ' + dados.id + '.';
-        mostrarMsgSorteio(msgSucesso + ' Guarde esse número para consulta futura.', 'ok');
+          ? 'Este WhatsApp já está cadastrado nesta promoção.'
+          : 'Cadastro realizado com sucesso! Você já está participando do sorteio.';
+        mostrarMsgSorteio(msgSucesso + (dados.id ? ' ID: ' + dados.id + '.' : ''), 'ok');
+        trackPromoEvent('promotion_form_success', { already_registered: !!dados.alreadyRegistered });
         _promoLimparRate();
         resetarFormularioPromo({ manterFeedback: true, manterRegras: true });
       } else if (dados.error === '_servico_indisponivel') {
-        var waMensagem = encodeURIComponent(
-          'Olá! Gostaria de me inscrever no Sorteio Mensal da Itapolitana Cajuru!\n' +
-          'Nome: ' + nome + '\n' +
-          'Data de nascimento: ' + (inputPromoData ? inputPromoData.value.trim() : dataNascIso) + '\n' +
-          'Celular: ' + (inputPromoCelular ? inputPromoCelular.value.trim() : cel)
+        mostrarMsgSorteioComAcao(
+          'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+          'aviso',
+          'Tentar novamente',
+          function() { enviarSorteioPromo(); }
         );
-        var waLink = 'https://wa.me/5516996062046?text=' + waMensagem;
-        mostrarMsgSorteioComLink(
-          '⚠️ Serviço de cadastro temporariamente indisponível.',
-          waLink,
-          '📲 Inscrever-se pelo WhatsApp'
-        );
+        trackPromoEvent('promotion_network_error', { reason: 'service_unavailable' });
       } else {
-        var erroMsg = (dados && dados.error) ? dados.error : 'Erro desconhecido. Tente novamente.';
-        mostrarMsgSorteio('❌ ' + erroMsg, 'aviso');
+        var erro = (dados && dados.error) ? String(dados.error) : '';
+        if (resposta.status === 409 || /ja|já.*cadastr/i.test(erro)) {
+          mostrarMsgSorteio('Este WhatsApp já está cadastrado nesta promoção.', 'aviso');
+        } else if (resposta.status >= 400 && resposta.status < 500) {
+          mostrarMsgSorteio('Confira os campos destacados e corrija as informações.', 'aviso');
+          if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
+          if (/data|nasc/i.test(erro)) marcarCampoInvalido(inputPromoData, true);
+          if (/celular|telefone|ddd|phone/i.test(erro)) marcarCampoInvalido(inputPromoCelular, true);
+          trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
+        } else {
+          mostrarMsgSorteioComAcao(
+            'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+            'aviso',
+            'Tentar novamente',
+            function() { enviarSorteioPromo(); }
+          );
+          trackPromoEvent('promotion_network_error', { reason: erro || 'unknown_error' });
+        }
       }
     } catch (e) {
+      clearTimeout(timeoutId);
       console.error('[Itap] Erro no cadastro do sorteio:', e);
-      var waMensagemErr = encodeURIComponent(
-        'Olá! Gostaria de me inscrever no Sorteio Mensal da Itapolitana Cajuru!\n' +
-        'Nome: ' + nome + '\n' +
-        'Data de nascimento: ' + (inputPromoData ? inputPromoData.value.trim() : dataNascIso) + '\n' +
-        'Celular: ' + (inputPromoCelular ? inputPromoCelular.value.trim() : cel)
+      mostrarMsgSorteioComAcao(
+        'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.',
+        'aviso',
+        'Tentar novamente',
+        function() { enviarSorteioPromo(); }
       );
-      mostrarMsgSorteioComLink(
-        '⚠️ Não foi possível concluir seu cadastro agora.',
-        'https://wa.me/5516996062046?text=' + waMensagemErr,
-        '📲 Inscrever-se pelo WhatsApp'
-      );
+      trackPromoEvent('promotion_network_error', { reason: e && e.name === 'AbortError' ? 'timeout' : 'exception' });
     } finally {
       if (btnEnviarPromo) {
-        btnEnviarPromo.textContent = '📝 Enviar Cadastro';
+        btnEnviarPromo.textContent = 'Enviar meu cadastro';
+        btnEnviarPromo.removeAttribute('aria-busy');
         atualizarFluxoCadastroPromo();
       }
+      _promoSubmitting = false;
     }
   }
   (function inicializarFormularioClientePromo() {
@@ -413,6 +493,7 @@
       evento.preventDefault();
       enviarSorteioPromo();
     });
+    trackPromoEvent('promotion_form_start', {});
 
     if (inputPromoNome) {
       ['input', 'change'].forEach(function(evt) {
@@ -438,7 +519,6 @@
       });
     }
 
-    if (btnEnviarPromo) btnEnviarPromo.addEventListener('click', enviarSorteioPromo);
     if (regrasRetiradaPromo) regrasRetiradaPromo.style.display = 'none';
     mostrarMsgSorteio('', '');
     atualizarFluxoCadastroPromo();

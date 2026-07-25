@@ -388,19 +388,30 @@ img{max-width:100%;display:block}
 .cardápio-h{contain: layout;font-size:22px;font-weight:900;text-align:center;margin-bottom:20px;letter-spacing:-.5px;color:#1A0A00;font-family:"Poppins",sans-serif;padding:0 16px}
 /* ACCORDION */
 .acc{border-radius:22px;margin-bottom:18px;box-shadow:0 8px 25px rgba(0,0,0,0.15);isolation:isolate;transition:transform .2s,box-shadow .2s;scroll-margin-top:120px;border:2px solid #FFE0B2;}.acc:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s;scroll-margin-top:80px}
-.acc-header:hover{filter:brightness(1.08)}
-.acc-header:focus{outline:3px solid rgba(255,255,255,.7);outline-offset:2px;}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;cursor:pointer;user-select:none;min-height:70px;transition:filter .2s,transform .2s,background-color .2s;scroll-margin-top:80px;width:100%;border:none;background:transparent;text-align:left}
+@media (hover:hover) and (pointer:fine){.acc-header:hover{filter:brightness(.95)}}
+.acc-header:active{transform:scale(.99)}
+.acc-header:focus{outline:3px solid rgba(255,255,255,.85);outline-offset:3px;}
 .acc-header:focus:not(:focus-visible){outline:none;}
-.acc-header:focus-visible{outline:3px solid rgba(255,255,255,.8);outline-offset:2px;}
+.acc-header:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:3px;}
 .acc-left{display:flex;align-items:center;gap:12px}
 .acc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 .acc-title{font-size:18px;font-weight:900;color:#fff;letter-spacing:.5px;text-shadow:0 2px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);text-transform:uppercase;}
 .acc-sub{font-size:13px;color:#fff;font-weight:800;margin-top:3px;letter-spacing:.3px;font-family:"Inter",sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.5)}
+.acc-right{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:150px}
+.acc-cta-txt{font-size:13px;font-weight:900;color:#fff;line-height:1.2;text-align:right;max-width:160px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 .acc-arrow{font-size:14px;color:#fff;font-weight:900;transition:transform .3s;flex-shrink:0}
+.acc-header:hover .acc-arrow{transform:translateX(4px)}
 .acc.open .acc-arrow{transform:rotate(180deg)}
+.acc.open .acc-header .acc-cta-txt{opacity:.95}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1),opacity .35s ease,padding .35s ease;opacity:0;padding:0 16px;background:#FFFDF9;border:2px solid transparent;border-top:none;}
 .acc.open .acc-body{max-height:9999px;opacity:1;padding:20px 16px;}
+.acc-header[aria-disabled="true"]{opacity:.65;cursor:not-allowed}
+@media (max-width:768px){
+  .acc-header{min-height:56px;padding:16px}
+  .acc-right{min-width:132px}
+  .acc-cta-txt{font-size:16px;max-width:132px}
+}
 .home-enc-separator{
   margin:20px 0 14px;
   text-align:center;
@@ -2478,7 +2489,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-caixas-body" onclick="toggleAcc('acc-enc-caixas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-caixas');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></span>
-<div><div class="acc-title">Sorvetes em Caixa 5 e 10 Litros</div><div class="acc-sub">Ideal para festas e eventos · 2 ou 3 sabores à escolha</div></div>
+<div><div class="acc-title">Sorvete em Caixa</div><div class="acc-sub">Veja tamanhos e escolha seu favorito</div></div>
 </div>
 <span class="acc-arrow">▼</span>
 </div>
@@ -2490,7 +2501,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-tortas-body" onclick="toggleAcc('acc-enc-tortas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-tortas');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M12 6c1.11 0 2-.89 2-2 0-.36-.1-.69-.26-1 .26-.24.26-.52.26-.8C14 1.34 13.1.44 12 .44s-2 .9-2 1.76c0 .28 0 .56.26.8C10.1 3.31 10 3.64 10 4c0 1.11.89 2 2 2zm2.5 10H20v-4H4v4h5.5v2h5v-2zM4 7h16v2H4z"/></svg></span>
-<div><div class="acc-title">Tortas de Sorvete</div><div class="acc-sub">Faça a festa! 3 sabores · Encomende com 3 dias de antecedência</div></div>
+<div><div class="acc-title">Torta de Sorvete</div><div class="acc-sub">Escolha a torta para o seu momento especial</div></div>
 </div>
 <span class="acc-arrow">▼</span>
 </div>
@@ -2502,7 +2513,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="picolés-enc-body" onclick="toggleAcc('acc-enc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-picolés');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M22 11h-4.17l2.24-2.24-1.41-1.41L15 11h-2V9l3.66-3.66-1.41-1.41L13 6.17V2h-2v4.17l-2.24-2.24-1.41 1.41L11 9v2H9L5.34 7.34 3.93 8.75 6.17 11H2v2h4.17l-2.24 2.24 1.41 1.41L9 13h2v2l-3.66 3.66 1.41 1.41L11 17.83V22h2v-4.17l2.24 2.24 1.41-1.41L13 15v-2h2l3.66 3.66 1.41-1.41L17.83 13H22z"/></svg></span>
-<div><div class="acc-title">Picolés para Encomenda</div><div class="acc-sub">Preço especial de atacado · 5 tipos · Mín. 100 unidades</div></div>
+<div><div class="acc-title">Picolés</div><div class="acc-sub">Opções para festas, eventos e atacado</div></div>
 </div>
 <span class="acc-arrow">▼</span>
 </div>
@@ -2516,7 +2527,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-body-complementos" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg></span>
-<div><div class="acc-title">Complementos para Sorvetes</div><div class="acc-sub">Canudinho, Casquinha, Cascão, Cestinha, Cobertura</div></div>
+<div><div class="acc-title">Acréscimos</div><div class="acc-sub">Monte sua combinação com coberturas e complementos</div></div>
 </div>
 <span class="acc-arrow">▼</span>
 </div>
@@ -3054,9 +3065,92 @@ function imgCard(chave,emoji){
 // Clica → abre suavemente | Clica de novo → fecha
 // Dedo/mouse fica no mesmo lugar — tela não se move
 // ────────────────────────────────────────────────────────────────
+const ACC_CTA_LABELS = {
+  'acc-enc-caixas': { open: 'Descobrir sabores', close: 'Fechar opções' },
+  'acc-enc-tortas': { open: 'Ver opções', close: 'Fechar opções' },
+  'acc-enc-picolés': { open: 'Escolher picolés', close: 'Fechar opções' },
+  'acc-complementos': { open: 'Personalizar pedido', close: 'Fechar opções' }
+};
+
+function _trackUiEvent(eventName, params) {
+  if (typeof gtag !== 'function') return;
+  try { gtag('event', eventName, params || {}); } catch (_) {}
+}
+
+function atualizarEstadoHeaderAcc(acc, isOpen) {
+  if (!acc) return;
+  var h = acc.querySelector('.acc-header');
+  if (h) h.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  var cta = acc.querySelector('.acc-cta-txt');
+  var labelCfg = ACC_CTA_LABELS[acc.id];
+  if (cta && labelCfg) cta.textContent = isOpen ? labelCfg.close : labelCfg.open;
+}
+
+function inicializarAcessibilidadeAcc() {
+  var headers = document.querySelectorAll('.acc > .acc-header');
+  headers.forEach(function(header) {
+    var acc = header.closest('.acc');
+    if (!acc) return;
+    var body = acc.querySelector('.acc-body');
+    if (!body) return;
+
+    if (!body.id) body.id = acc.id + '-body';
+
+    if (header.tagName !== 'BUTTON') {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = header.className;
+      btn.innerHTML = header.innerHTML;
+      btn.setAttribute('aria-expanded', header.getAttribute('aria-expanded') || 'false');
+      btn.setAttribute('aria-controls', body.id);
+      header.parentNode.replaceChild(btn, header);
+      header = btn;
+    } else if (!header.getAttribute('type')) {
+      header.setAttribute('type', 'button');
+    }
+
+    header.setAttribute('aria-controls', body.id);
+    header.removeAttribute('role');
+    header.removeAttribute('tabindex');
+    header.removeAttribute('onclick');
+    header.removeAttribute('onkeydown');
+
+    if (!header.dataset.accBound) {
+      header.dataset.accBound = '1';
+      header.addEventListener('click', function() { toggleAcc(acc.id); });
+    }
+
+    var arrow = header.querySelector('.acc-arrow');
+    if (arrow) arrow.setAttribute('aria-hidden', 'true');
+
+    var labelCfg = ACC_CTA_LABELS[acc.id];
+    if (labelCfg) {
+      var right = header.querySelector('.acc-right');
+      if (!right) {
+        right = document.createElement('span');
+        right.className = 'acc-right';
+        if (arrow) {
+          arrow.parentNode.insertBefore(right, arrow);
+          right.appendChild(arrow);
+        } else {
+          header.appendChild(right);
+        }
+      }
+      var cta = right.querySelector('.acc-cta-txt');
+      if (!cta) {
+        cta = document.createElement('span');
+        cta.className = 'acc-cta-txt';
+        right.insertBefore(cta, right.firstChild);
+      }
+      cta.textContent = labelCfg.open;
+    }
+  });
+}
+
 function toggleAcc(id) {
   var el = document.getElementById(id);
   if (!el) return;
+  inicializarAcessibilidadeAcc();
   var isOpen = el.classList.contains('open');
   // Fecha todos os outros accordions abertos — padrão iFood: trava altura atual → anima até 0
   document.querySelectorAll('.acc.open').forEach(function(acc) {
@@ -3067,8 +3161,8 @@ function toggleAcc(id) {
         requestAnimationFrame(function() { b.style.maxHeight = '0'; });
       }
       acc.classList.remove('open');
-      var h = acc.querySelector('.acc-header');
-      if (h) h.setAttribute('aria-expanded', 'false');
+      atualizarEstadoHeaderAcc(acc, false);
+      _trackUiEvent('category_close', { category_id: acc.id });
     }
   });
   // Abre ou fecha o clicado
@@ -3080,12 +3174,12 @@ function toggleAcc(id) {
       requestAnimationFrame(function() { body.style.maxHeight = '0'; });
     }
     el.classList.remove('open');
-    var h = el.querySelector('.acc-header');
-    if (h) h.setAttribute('aria-expanded', 'false');
+    atualizarEstadoHeaderAcc(el, false);
+    _trackUiEvent('category_close', { category_id: el.id });
   } else {
     el.classList.add('open');
-    var h = el.querySelector('.acc-header');
-    if (h) h.setAttribute('aria-expanded', 'true');
+    atualizarEstadoHeaderAcc(el, true);
+    _trackUiEvent('category_open', { category_id: el.id });
     // Re-renderiza ao abrir para garantir dados carregados
     if (id === 'acc-iso') renderIso();
     if (id === 'acc-sobremesas') renderSobremesas();
@@ -3100,6 +3194,20 @@ function toggleAcc(id) {
     }
   }
 }
+
+document.addEventListener('keydown', function(event) {
+  if (event.key !== 'Escape') return;
+  var active = document.activeElement;
+  if (!active || !active.classList || !active.classList.contains('acc-header')) return;
+  var acc = active.closest('.acc');
+  if (!acc || !acc.classList.contains('open')) return;
+  event.preventDefault();
+  toggleAcc(acc.id);
+  active.focus({ preventScroll: true });
+});
+
+document.addEventListener('DOMContentLoaded', inicializarAcessibilidadeAcc);
+inicializarAcessibilidadeAcc();
 
 // Volta ao topo do cardápio E fecha o accordion atual
 function voltarCardapio(accId) {
