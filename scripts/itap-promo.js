@@ -450,7 +450,7 @@
         trackPromoEvent('promotion_network_error', { reason: 'offline' });
       } else if (dados.error === '_servico_indisponivel') {
         mostrarMsgSorteioComAcao(
-          'O serviço está temporariamente indisponível. Nenhum cadastro foi realizado. Tente novamente em instantes.',
+          'O serviço está temporariamente indisponível. Tente novamente em instantes.',
           'aviso',
           'Tentar novamente',
           function() { enviarSorteioPromo(); }
@@ -468,7 +468,7 @@
           trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
         } else {
           mostrarMsgSorteioComAcao(
-            'O cadastro não pôde ser concluído (erro interno). Nenhuma alteração foi realizada. Tente novamente mais tarde.',
+            'O cadastro não pôde ser concluído (erro interno). Tente novamente mais tarde.',
             'aviso',
             'Tentar novamente',
             function() { enviarSorteioPromo(); }
@@ -478,8 +478,8 @@
       }
     } catch (e) {
       clearTimeout(timeoutId);
-      var ehTimeout = e && e.name === 'AbortError';
-      if (ehTimeout) {
+      var isTimeout = e && e.name === 'AbortError';
+      if (isTimeout) {
         mostrarMsgSorteioComAcao(
           'O cadastro demorou muito para responder. Verifique sua conexão e tente novamente.',
           'aviso',
@@ -494,7 +494,7 @@
           function() { enviarSorteioPromo(); }
         );
       }
-      trackPromoEvent('promotion_network_error', { reason: ehTimeout ? 'timeout' : 'exception' });
+      trackPromoEvent('promotion_network_error', { reason: isTimeout ? 'timeout' : 'exception' });
     } finally {
       if (btnEnviarPromo) {
         btnEnviarPromo.textContent = 'Enviar meu cadastro';
