@@ -73,6 +73,13 @@ const produtos = {
             estoque: 200,
             sabores: ["Leite Ninho"]
         },
+        ovomaltine: {
+            nome: "Picolé de Ovomaltine",
+            preço_varejo: 4.00,
+            preço_atacado: 3.00,
+            estoque: 200,
+            sabores: ["Ovomaltine"]
+        },
         esquimós: {
             nome: "Picolé Esquimó",
             preço_varejo: 8.00,

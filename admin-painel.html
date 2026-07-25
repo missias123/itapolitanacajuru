@@ -1807,6 +1807,26 @@ body { overflow-x: hidden; }
             </div>
             <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
           </div>
+          <div class="seção-título">🍭 Picolé de Ovomaltine</div>
+          <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
+          <div class="sabores-grid">
+              <div class="sabor-item">
+                <span class="sabor-nome">Ovomaltine</span>
+                <label class="toggle">
+                  <input type="checkbox" id="pic_ovomaltine_Ovomaltine" checked onchange="toggleSaborPicolé('ovomaltine','Ovomaltine',this.checked)"/>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="sabor-status" id="status_pic_ovomaltine_Ovomaltine">Disponível</span>
+              </div>
+          </div>
+          <div class="campo-edit" style="margin-top:10px">
+            <label>Adicionar novo sabor a esta categoria</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="novo_sab_ovomaltine" placeholder="Nome do novo sabor..." style="flex:1"/>
+              <button class="btn btn-verde" onclick="adicionarSaborPicolé('ovomaltine')">+ Adicionar</button>
+            </div>
+            <div class="hint">Máx. 30 caracteres. Apenas letras, espaços e acentos.</div>
+          </div>
           <div class="seção-título">🍭 Picolé Esquimó</div>
           <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
           <div class="sabores-grid">
@@ -2603,6 +2623,7 @@ Talento</textarea>
           <div class="campo-edit"><label>Picolés de Leite (um por linha)</label><textarea id="card-picoles-leite" rows="4" placeholder="Leite&#10;Coco&#10;Amendoim"></textarea></div>
           <div class="campo-edit"><label>Picolés Recheados (um por linha)</label><textarea id="card-picoles-recheado" rows="4" placeholder="Morango com Chocolate&#10;Napolitano Recheado"></textarea></div>
           <div class="campo-edit"><label>Picolés Ninho (um por linha)</label><textarea id="card-picoles-ninho" rows="3" placeholder="Ninho&#10;Ninho com Morango"></textarea></div>
+          <div class="campo-edit"><label>Picolés Ovomaltine (um por linha)</label><textarea id="card-picoles-ovomaltine" rows="3" placeholder="Ovomaltine"></textarea></div>
           <div class="campo-edit"><label>Picolés Esquimó (um por linha)</label><textarea id="card-picoles-esquimo" rows="3" placeholder="Esquimó Chocolate&#10;Esquimó Branco"></textarea></div>
           <div class="campo-edit"><label>Texto do botão "Ver Picolés"</label><input type="text" id="card-picoles-btn" maxlength="30" placeholder="🧊 Ver Sabores de Picolés"/></div>
 
@@ -7518,7 +7539,7 @@ function ocultarLoading(){document.getElementById('loading-overlay').style.displ
 // =====================================================================
 // SABORES — gestão de sabores de sorvete e picolés
 // =====================================================================
-const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Leite Ninho", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolé Esquimó", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
+const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Leite Ninho", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}]}, "ovomaltine": {"id": "pic_ovomaltine", "nome": "Picolé de Ovomaltine", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Ovomaltine", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolé Esquimó", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
 
 // =====================================================================
 // SABORES — renderização dinâmica a partir do produtos.json (Single Source of Truth)
@@ -8636,6 +8657,7 @@ function preencherCardapio() {
     if (p.picoles.leite_sem_recheio) document.getElementById('card-picoles-leite').value = (p.picoles.leite_sem_recheio.sabores || []).join('\n');
     if (p.picoles.leite_com_recheio) document.getElementById('card-picoles-recheado').value = (p.picoles.leite_com_recheio.sabores || []).join('\n');
     if (p.picoles.leite_ninho) document.getElementById('card-picoles-ninho').value = (p.picoles.leite_ninho.sabores || []).join('\n');
+    if (p.picoles.ovomaltine) document.getElementById('card-picoles-ovomaltine').value = (p.picoles.ovomaltine.sabores || []).join('\n');
     if (p.picoles.esquimós) document.getElementById('card-picoles-esquimo').value = (p.picoles.esquimós.sabores || []).join('\n');
   }
 
@@ -8704,6 +8726,7 @@ async function salvarCardápio() {
     if (p.picoles.leite_sem_recheio) p.picoles.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s => s.trim()).filter(s => s);
     if (p.picoles.leite_com_recheio) p.picoles.leite_com_recheio.sabores = document.getElementById('card-picoles-recheado').value.split('\n').map(s => s.trim()).filter(s => s);
     if (p.picoles.leite_ninho) p.picoles.leite_ninho.sabores = document.getElementById('card-picoles-ninho').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (p.picoles.ovomaltine) p.picoles.ovomaltine.sabores = document.getElementById('card-picoles-ovomaltine').value.split('\n').map(s => s.trim()).filter(s => s);
     if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s => s.trim()).filter(s => s);
   }
 
