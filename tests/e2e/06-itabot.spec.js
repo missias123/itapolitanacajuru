@@ -200,18 +200,29 @@ test.describe('Ita Bot — Chat', () => {
 });
 
 /* ─── Lote A — Testes de Ovomaltine, Esquimó e Picolés ─── */
+/* Nota: estes testes usam dicas.html onde o widget (ita-bot-widget.js) é o bot ativo.
+ * O index.html tem implementação inline separada (#chat-inp / getResp).
+ * O widget injeta #duvidas-pergunta e #duvidas-resposta apenas quando #chat-dialog ainda não existe. */
 test.describe('Ita Bot — Lote A: Ovomaltine e Picolés (preços e desambiguação)', () => {
   /** Abre o bot e envia uma mensagem; retorna o texto do último .msg.bot */
   async function _enviar(page, texto) {
-    const trigger = page.locator('#ita-bot-trigger, #ita-bot-duvidas, .ita-bot-duvidas-btn, .itabot-btn').first();
-    if (!(await trigger.isVisible({ timeout: 8000 }).catch(() => false))) return null;
+    // Tenta abrir o widget: trigger injetado pelo widget no dicas.html
+    const trigger = page.locator('#ita-bot-trigger, .itabot-duvidas-btn, .ita-bot-duvidas-btn').first();
+    const triggerVisible = await trigger.isVisible().catch(() => false);
+    if (!triggerVisible) return null;
     await trigger.click();
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(800);
 
+    // Verifica se o dialog abrimos
     const dialog = page.locator('#chat-dialog').first();
-    if (!(await dialog.isVisible({ timeout: 5000 }).catch(() => false))) return null;
+    const dialogVisible = await dialog.isVisible().catch(() => false);
+    if (!dialogVisible) return null;
 
+    // Guarda de visibilidade antes de fill — evita timeout
     const input = page.locator('#duvidas-pergunta').first();
+    const inputVisible = await input.isVisible().catch(() => false);
+    if (!inputVisible) return null;
+
     await input.fill(texto);
     const sendBtn = page.locator('.chat-send').first();
     if (await sendBtn.count() > 0) { await sendBtn.click(); } else { await input.press('Enter'); }
@@ -225,8 +236,9 @@ test.describe('Ita Bot — Lote A: Ovomaltine e Picolés (preços e desambiguaç
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => { localStorage.setItem('cookies_aceitos', 'true'); });
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1200);
+    // Usa dicas.html: o widget injeta #duvidas-pergunta e _itabotGetResp é o bot ativo
+    await page.goto('/dicas.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1500);
   });
 
   // TC-01
