@@ -494,7 +494,7 @@
         trackPromoEvent('promotion_network_error', { reason: 'offline' });
       } else if (dados.error === '_servico_indisponivel') {
         mostrarMsgSorteioComAcao(
-          'O servidor respondeu de forma inesperada. Nossa equipe foi informada.',
+          'O servidor respondeu de forma inesperada. Tente novamente em instantes.',
           'aviso',
           'Tentar novamente',
           function() { enviarSorteioPromo(); }
@@ -524,7 +524,7 @@
         } else if (resposta.status >= 400 && resposta.status < 500) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
         } else if (respostaEhJson && Object.keys(dados || {}).length === 0) {
-          mostrarMsgSorteio('O servidor respondeu de forma inesperada. Nossa equipe foi informada.', 'aviso');
+          mostrarMsgSorteio('O servidor respondeu de forma inesperada. Tente novamente em instantes.', 'aviso');
         } else {
           mostrarMsgSorteioComAcao(
             'O cadastro não foi concluído. Tente novamente mais tarde.' + requestIdTxt,

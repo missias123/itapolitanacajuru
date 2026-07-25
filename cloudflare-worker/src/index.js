@@ -1475,6 +1475,7 @@ async function handleResgatarCodigo(request, env) {
  * NÃO abre WhatsApp. NÃO usa fidelidade.json. Cadastro 100% interno.
  */
 const SORTEIO_IDEMPOTENCY_TTL = 86400 * 30;
+const SORTEIO_IDEMPOTENCY_PROCESSING_TTL = 120;
 
 function buildPromoRequestId() {
   const rand = generateIdHash();
@@ -1549,6 +1550,18 @@ async function handlePostSorteioCadastro(request, env) {
       if (existingOperation.response && existingOperation.statusCode) {
         return jsonResp(existingOperation.response, existingOperation.statusCode);
       }
+      if (existingOperation.status === 'processing') {
+        const startedAt = Date.parse(existingOperation.createdAt || '');
+        const stale = !Number.isFinite(startedAt) || (Date.now() - startedAt > (SORTEIO_IDEMPOTENCY_PROCESSING_TTL * 1000));
+        if (!stale) {
+          return jsonResp({
+            success: false,
+            code: 'PROMO_REQUEST_IN_PROGRESS',
+            requestId,
+            error: 'Sua solicitação ainda está sendo processada. Tente novamente em instantes.',
+          }, 409);
+        }
+      }
     }
   }
 
@@ -1610,7 +1623,7 @@ async function handlePostSorteioCadastro(request, env) {
      status: 'processing',
      requestId,
      createdAt: new Date().toISOString(),
-   }), { expirationTtl: SORTEIO_IDEMPOTENCY_TTL });
+   }), { expirationTtl: SORTEIO_IDEMPOTENCY_PROCESSING_TTL });
   }
 
   let finalResult = null;
