@@ -7,26 +7,22 @@ const { test, expect } = require('@playwright/test');
  * Segue exatamente os passos de validação manual solicitados.
  */
 
-async function obterSenhaAdmin(request) {
-  const [cfgResp, authResp] = await Promise.all([
-    request.get('/dados/config.json'),
-    request.get('/dados/auth.json')
-  ]);
-  expect(cfgResp.ok()).toBeTruthy();
-  expect(authResp.ok()).toBeTruthy();
-  const cfg = await cfgResp.json();
-  const auth = await authResp.json();
-  return String(auth.senhaAdmin || cfg.senhaAdmin || '');
+function obterSenhaAdminTeste() {
+  const senha = String(process.env.TEST_PASSWORD || '').trim();
+  if (!senha) {
+    throw new Error('TEST_PASSWORD não configurada. Defina uma credencial de staging segura para executar o teste do admin.');
+  }
+  return senha;
 }
 
 test.describe('🔍 AUDITORIA VISUAL - Sobre, Galeria, Pág. Encomendas', () => {
 
-  test.beforeEach(async ({ page, request }) => {
+  test.beforeEach(async ({ page }) => {
     console.log('📍 Passo 1: Abrir admin no navegador');
     await page.goto('/admin-painel.html', { waitUntil: 'domcontentloaded' });
 
     console.log('📍 Passo 2: Fazer login com senha');
-    const senhaAdmin = await obterSenhaAdmin(request);
+    const senhaAdmin = obterSenhaAdminTeste();
     await page.fill('#inp-senha', senhaAdmin);
     await page.click('button:has-text("Entrar no Admin")');
 

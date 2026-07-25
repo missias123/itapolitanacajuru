@@ -543,28 +543,15 @@ body { overflow-x: hidden; }
       <input type="password" id="inp-senha" placeholder="Senha do administrador" onkeydown="if(event.key==='Enter')entrar()"/>
       <button class="eye" onclick="toggleSenhaAdmin()" id="eye-btn">&#x1F441;&#xFE0F;</button>
     </div>
-    <div class="inp-wrap" style="margin-top:8px">
-      <input type="password" id="inp-github-token" aria-label="Token GitHub" placeholder="Token GitHub (PAT - para habilitar escrita)" autocomplete="off" onkeydown="if(event.key==='Enter')entrar()"/>
-      <button class="eye" onclick="toggleGitHubToken()" id="eye-btn-token" aria-label="Mostrar/ocultar token">&#x1F441;&#xFE0F;</button>
-    </div>
-    <div id="github-token-status" style="font-size:0.72rem;color:#9ccc65;margin:2px 0 6px;min-height:1.1em">ℹ️ Sem token GitHub, o admin entra em modo somente leitura.</div>
-    <div style="font-size:0.74rem;color:#666;margin-bottom:12px;line-height:1.45">
-      Entre com sua senha e seu token GitHub (PAT) para acessar o painel com permissão de escrita.
-    </div>
     <button class="btn-login" onclick="entrar()">&#x1F510; Entrar no Admin</button>
     <div class="login-erro" id="login-erro">&#x274C; Informe a senha do administrador.</div>
   </div>
 </div>
 <div id="admin-app">
-  <div id="aviso-token-expirado" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
+  <div id="aviso-sessao-expirada" style="display:none;background:#fff3e0;border-bottom:3px solid #e65100;padding:10px 16px;align-items:center;gap:10px;font-size:.85rem;color:#bf360c;flex-wrap:wrap">
     <span style="font-size:1.1rem">⚠️</span>
-    <span id="aviso-token-expirado-msg"><strong>Admin em modo somente leitura.</strong> Token GitHub inativo ou expirado.</span>
-    <button onclick="abrirModalGitHubToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Adicionar Token</button>
-  </div>
-  <div id="aviso-github-token" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
-    <span style="font-size:1rem">ℹ️</span>
-    <span><strong>Token GitHub não ativo</strong> — o admin permanece em <strong>modo somente leitura</strong> até que um token GitHub válido seja informado.</span>
-    <button onclick="abrirModalGitHubToken()" aria-label="Adicionar token GitHub" style="margin-left:auto;background:#1565c0;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700">🔑 Adicionar Token</button>
+    <span id="aviso-sessao-expirada-msg"><strong>Sessão expirada.</strong> Faça login novamente para continuar.</span>
+    <button onclick="location.reload()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Fazer Login</button>
   </div>
   <div class="admin-header">
     <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
@@ -3038,151 +3025,32 @@ function setFieldValue(id, value, ctx=''){
     return false;
   }
 }
-// sessionStorage — usado para dados de sessão sensíveis (ex.: GitHub token) que não devem persistir
+// sessionStorage — usado para dados de sessão (token de sessão do Worker)
 function ssGet(k){try{return sessionStorage.getItem(k)||'';}catch(e){return '';}}
 function ssSet(k,v){try{sessionStorage.setItem(k,v);return true;}catch(e){return false;}}
 function ssRemove(k){try{sessionStorage.removeItem(k);return true;}catch(e){return false;}}
-function getToken(){return GITHUB_PAT||ssGet('itap_github_token')||'';}
-function getAuthHeaders(extraHeaders={}, tokenOverride=''){
-  const tok=(tokenOverride||getToken()).trim();
-  const headers={...extraHeaders};
-  if(tok)headers['Authorization']=`token ${tok}`;
-  return headers;
-}
-// GitHub classic PAT tokens are usually 40 chars (ghp_/gho_/ghu_/ghs_ + payload).
-const MIN_CLASSIC_TOKEN_LENGTH=40;
-// Fine-grained PATs (github_pat_) are significantly longer; keep a safe minimum.
-const MIN_FINE_GRAINED_TOKEN_LENGTH=80;
-// Accepts common GitHub token formats (classic/fine-grained PAT and app/oauth tokens).
-function tokenFormatoValido(tok){
-  const t=(tok||'').trim();
-  const regras=[
-    {prefix:'github_pat_',minLen:MIN_FINE_GRAINED_TOKEN_LENGTH},
-    {prefix:'ghp_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
-    {prefix:'gho_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
-    {prefix:'ghu_',minLen:MIN_CLASSIC_TOKEN_LENGTH},
-    {prefix:'ghs_',minLen:MIN_CLASSIC_TOKEN_LENGTH}
-  ];
-  if(regras.some(r=>t.startsWith(r.prefix)&&t.length>=r.minLen))return true;
-  // Legacy fallback: older classic token shapes can appear as 40-char alphanumeric strings.
-  return new RegExp(`^[a-zA-Z0-9]{${MIN_CLASSIC_TOKEN_LENGTH}}$`).test(t);
-}
 
-// ── Validação proativa do token GitHub ────────────────────────────────────────
-// Feedback inline no campo de token da tela de login
-function validarCampoToken(input){
-  const v = input.value.trim();
-  const ok = !v || tokenFormatoValido(v);
-  const hint = document.getElementById('token-hint');
-  const statusEl = document.getElementById('token-status');
-  if (hint) hint.style.display = v && !ok ? 'block' : 'none';
-  if(statusEl){
-    if(!v) statusEl.textContent='ℹ️ Nenhum token salvo neste navegador.';
-    else if(!ok) statusEl.textContent='⚠️ Token com formato inválido (não será salvo).';
-    else statusEl.textContent='✅ Token com formato válido.';
-  }
+function mostrarBannerSessaoExpirada(msg){
+  const banner=document.getElementById('aviso-sessao-expirada');
+  const msgEl=document.getElementById('aviso-sessao-expirada-msg');
+  if(banner)banner.style.display='flex';
+  if(msgEl&&msg)msgEl.innerHTML=msg;
 }
-
-function preencherTokenSalvoNoLogin(){
-  // Verificar se há token GitHub ativo no sessionStorage
-  const token=ssGet('itap_github_token');
-  if(token){
-    GITHUB_PAT=token;
-    GH_WRITE_ALLOWED=true;
-    atualizarStatusGitHubToken('✅ Token GitHub recuperado nesta aba.','success');
-  }else{
-    GH_WRITE_ALLOWED=false;
-    GITHUB_PAT='';
-    atualizarStatusGitHubToken('ℹ️ Sem token GitHub ativo. Admin em modo somente leitura.','info');
-  }
-  atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
+function ocultarBannerSessaoExpirada(){
+  const banner=document.getElementById('aviso-sessao-expirada');
+  if(banner)banner.style.display='none';
 }
-
-function limparTokenSalvo(){
-  ssRemove('itap_github_token');
-  GITHUB_PAT='';
-  GH_WRITE_ALLOWED=false;
-  GH_TOKEN_CAN_WRITE=null;
-  atualizarStatusGitHubToken('ℹ️ Token GitHub removido. Informe um novo token para habilitar escrita.','info');
-  atualizarBannerGitHubToken(false);
-  toast('Token GitHub removido com sucesso.','sucesso');
+// Mantém compatibilidade com referências legadas ao banner anterior
+function atualizarStatusGitHubToken(msg,tipo){
+  if(tipo==='warning'||tipo==='error')mostrarBannerSessaoExpirada(msg);
 }
-
-function atualizarStatusGitHubToken(msg,tipo='info'){
-  const ghStatus=document.getElementById('github-token-status');
-  if(!ghStatus)return;
-  const cores={info:'#90caf9',success:'#9ccc65',warning:'#ffd54f',error:'#ef9a9a'};
-  ghStatus.style.color=cores[tipo]||cores.info;
-  ghStatus.textContent=msg||'';
-}
-function atualizarBannerGitHubToken(ativo=GH_WRITE_ALLOWED){
-  const bannerGitHub=document.getElementById('aviso-github-token');
-  if(bannerGitHub)bannerGitHub.style.display=ativo?'none':'flex';
-  const bannerExpired=document.getElementById('aviso-token-expirado');
-  if(bannerExpired)bannerExpired.style.display=ativo?'none':'flex';
-}
-// Mantém compatibilidade com código legado
+function atualizarBannerGitHubToken(ativo){if(!ativo)mostrarBannerSessaoExpirada();}
 function atualizarStatusSessaoWorker(msg,tipo){atualizarStatusGitHubToken(msg,tipo);}
 function atualizarBannerSessaoWorker(ativo){atualizarBannerGitHubToken(ativo);}
-const GITHUB_TOKEN_MODAL_FOCUS_DELAY_MILLIS=30;
-function abrirModalGitHubToken(){
-  const modal=document.getElementById('github-token-modal');
-  const input=document.getElementById('github-token-modal-input');
-  if(!modal||!input)return;
-  modal.style.display='flex';
-  input.value='';
-  setTimeout(()=>input.focus(),GITHUB_TOKEN_MODAL_FOCUS_DELAY_MILLIS);
-}
-function fecharModalGitHubToken(){
-  const modal=document.getElementById('github-token-modal');
-  const input=document.getElementById('github-token-modal-input');
-  if(input)input.value='';
-  if(modal)modal.style.display='none';
-}
-// Mantém compatibilidade com código legado
-const WORKER_MODAL_FOCUS_DELAY_MILLIS=30;
+function abrirModalGitHubToken(){location.reload();}
+function fecharModalGitHubToken(){}
 function abrirModalSessaoWorker(){abrirModalGitHubToken();}
-function fecharModalSessaoWorker(){fecharModalGitHubToken();}
-
-async function validarToken(tok){
-  const token=(tok||'').trim();
-  if(!token) return {ok:false,canWrite:false,reason:'ausente'};
-  if(!GH_OWNER||!GH_REPO){
-    console.warn('[Admin] validarToken: GH_OWNER/GH_REPO not configured');
-    return {ok:false,canWrite:false,reason:'repo_not_configured'};
-  }
-  try{
-    // Using /repos/{owner}/{repo} validates auth and confirms this token can access
-    // the exact repository used by the admin (avoids false positives from /user-only checks).
-    const r=await fetchWithTimeout(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}`,{
-      headers:getAuthHeaders({'X-GitHub-Api-Version':GH_API_VERSION,'Accept':GH_API_ACCEPT},token),
-      cache:'no-store'
-    },8000);
-    if(!r.ok){
-      console.warn('[Admin] validarToken: status',r.status);
-      return {ok:false,canWrite:false,reason:'invalid_or_expired',status:r.status};
-    }
-    let canWrite=false;
-    let permissaoConfirmada=false;
-    try{
-      const repoInfo=await r.json();
-      const perms=repoInfo&&repoInfo.permissions?repoInfo.permissions:{};
-      permissaoConfirmada=Object.keys(perms).length>0;
-      canWrite=Boolean(perms.push||perms.admin||perms.maintain);
-    }catch(e){
-      console.warn('[Admin] validarToken: não foi possível ler permissões',e?.message||e);
-    }
-    return{
-      ok:true,
-      canWrite:permissaoConfirmada?canWrite:null,
-      reason:canWrite?'ok':(permissaoConfirmada?'missing_write_permission':'permissions_unknown')
-    };
-  }catch(e){
-    console.warn('[Admin] validarToken: erro de rede',e.message);
-    // Evita falso bloqueio em instabilidade de rede; o salvamento confirma no retorno da API.
-    return {ok:true,canWrite:null,reason:'network_error_unverified'};
-  }
-}
+function fecharModalSessaoWorker(){}
 
 // ── Helper: exibe erro visível numa seção quando dados não carregaram ──────────
 function adminMostrarErroCarregamento(containerId, nomeArquivo){
@@ -3201,8 +3069,8 @@ async function recarregarTodosDados(){
 }
 
 function atualizarToken(){
-  // Legado: redireciona para o modal de token GitHub
-  abrirModalGitHubToken();
+  // Sessão expirada — recarregar página para novo login
+  location.reload();
 }const GH_OWNER='missias123';
 const GH_REPO='itapolitanacajuru';
 const GH_BRANCH='main';
@@ -3210,12 +3078,11 @@ const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
-	const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json',auth:'dados/auth.json'};
-	const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,auth:null,authSha:null,pagClientes:0,senhaAdmin:null};
+	const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',pedidos:'dados/pedidos.json',submissoes:'dados/submissoes_encomendas.json',carrinhos:'dados/carrinhos_abandonados.json',config:'dados/config.json',promocoes:'dados/promocoes.json'};
+	const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,pagClientes:0};
 	window.STATE=STATE;
+	// GH_WRITE_ALLOWED: true quando há sessão ativa com o Worker (escrita via GITHUB_TOKEN do Worker)
 	let GH_WRITE_ALLOWED=false;
-let GH_TOKEN_CAN_WRITE=null;
-let GITHUB_PAT=ssGet('itap_github_token')||'';
 const PATH_SHA_KEYS={
   [PATHS.produtos]:'produtosSha',
   [PATHS.promo]:'promoSha',
@@ -3223,8 +3090,7 @@ const PATH_SHA_KEYS={
   [PATHS.fidelidade]:'fidelidadeSha',
   [PATHS.encomendas]:'encomendasSha',
   [PATHS.config]:'configSha',
-  [PATHS.promocoes]:'promocoesSha',
-  [PATHS.auth]:'authSha'
+  [PATHS.promocoes]:'promocoesSha'
 };
 function pathShaKey(path){return PATH_SHA_KEYS[path]||null;}
 function pathPrecisaSha(path){return Boolean(pathShaKey(path));}
@@ -3232,21 +3098,45 @@ function pathEstaSemSha(path){
   const key=pathShaKey(path);
   return Boolean(key)&&!STATE[key];
 }
-const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
+const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes,PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.carrinhos]);
+const LEGACY_AUTH_JSON_PATH='dados/auth.json';
+const SENSITIVE_PUBLIC_JSON_PATHS=new Set([PATHS.clientes,PATHS.encomendas,PATHS.pedidos,PATHS.submissoes,PATHS.fidelidade,PATHS.carrinhos,LEGACY_AUTH_JSON_PATH]);
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
 const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
-// Mantém o nome legado para evitar refatoração ampla no arquivo.
-function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
-function workerAdminHeaders(extra={}){return{'Content-Type':'application/json','Authorization':`token ${getAdminToken()}`,...extra};}
-function workerRepoPathAllowed(path){return true;} // Todos os arquivos agora podem ser salvos via GitHub API
-function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo token para continuar editando.'){
-  ssRemove('itap_github_token');
-  GITHUB_PAT='';
+// Sem PAT no navegador: autenticação é feita exclusivamente pelo token de sessão do Worker.
+function getAdminToken(){return '';}
+function getWorkerSessionToken(){return ssGet('itap_worker_session_token')||'';}
+function getWorkerSessionExpiry(){return parseInt(ssGet('itap_worker_session_exp')||'0',10)||0;}
+function hasWorkerSession(){
+  const token=getWorkerSessionToken();
+  const exp=getWorkerSessionExpiry();
+  if(!token||!exp||Date.now()>=exp){
+    ssRemove('itap_worker_session_token');
+    ssRemove('itap_worker_session_exp');
+    return false;
+  }
+  return true;
+}
+function setWorkerSession(token,expiresIn){
+  if(!token||!expiresIn)return;
+  ssSet('itap_worker_session_token',token);
+  ssSet('itap_worker_session_exp',String(Date.now()+Math.max(60,Number(expiresIn)||0)*1000));
+}
+function clearWorkerSession(){
+  ssRemove('itap_worker_session_token');
+  ssRemove('itap_worker_session_exp');
   GH_WRITE_ALLOWED=false;
-  GH_TOKEN_CAN_WRITE=null;
-  atualizarStatusGitHubToken(msg,'warning');
-  atualizarBannerGitHubToken(false);
+}
+function workerAdminHeaders(extra={}){
+  const headers={'Content-Type':'application/json',...extra};
+  if(hasWorkerSession())headers['X-Itap-Session-Token']=getWorkerSessionToken();
+  return headers;
+}
+function workerRepoPathAllowed(path){return WORKER_GH_PATHS.has(path);}
+function invalidarTokenGitHub(msg='⚠️ Sessão expirada. Faça login novamente.'){
+  clearWorkerSession();
+  mostrarBannerSessaoExpirada(`<strong>Sessão expirada.</strong> Faça login novamente para continuar.`);
   // Desabilitar botões de escrita imediatamente
   document.querySelectorAll('[data-fid-write]').forEach(el=>{
     const tag=(el.tagName||'').toUpperCase();
@@ -3255,12 +3145,23 @@ function invalidarTokenGitHub(msg='⚠️ Token GitHub expirado. Informe um novo
   });
 }
 // Mantém compatibilidade com código legado
-function invalidarSessaoWorker(msg){invalidarTokenGitHub(msg);}
+function invalidarSessaoWorker(msg){
+  clearWorkerSession();
+  invalidarTokenGitHub(msg);
+}
 async function iniciarSessaoWorker(secret){
-  // Função legada mantida apenas para compatibilidade
-  // Agora redireciona para validação de token GitHub
-  console.warn('[Admin] iniciarSessaoWorker é legado. Use token GitHub diretamente.');
-  return{ok:false,error:'Função descontinuada. Use token GitHub.'};
+  const r=await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/auth`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({password:secret})
+  },9000);
+  const data=await r.json().catch(()=>({ok:false,error:'Resposta inválida do servidor'}));
+  if(!r.ok||!data?.ok||!data?.token){
+    clearWorkerSession();
+    return{ok:false,error:data?.error||'Falha de autenticação'};
+  }
+  setWorkerSession(data.token,data.expiresIn||7200);
+  return{ok:true};
 }
 async function fetchWithTimeout(url,options={},timeoutMs=10000){
   if(options&&options.signal&&options.signal.aborted)throw new Error('Abortado antes do fetch');
@@ -3284,9 +3185,9 @@ async function workerGet(endpoint){
   return{content:null,sha:null};
 }
 async function workerSalvar(endpoint,data,method='PUT'){
-  // Função legada - não mais utilizada, salvamos direto via GitHub API
-  console.warn('[Admin] workerSalvar é legado. Use salvarArquivo() que usa GitHub API.');
-  toast('⚠️ Função descontinuada. Os dados são salvos diretamente via GitHub API.','aviso');
+  // Função legada - salvamento agora usa ghPut() via Worker
+  console.warn('[Admin] workerSalvar é legado. Use salvarArquivo() que usa Worker via ghPut.');
+  toast('⚠️ Função descontinuada. Use salvarArquivo().','aviso');
   return false;
 }
 async function workerGetRepo(path){
@@ -3295,10 +3196,8 @@ async function workerGetRepo(path){
   return{content:null,sha:null};
 }
 async function workerSalvarRepo(path,data,sha,msg){
-  // Função legada - não mais utilizada, redirecionada para ghPut
-  console.warn('[Admin] workerSalvarRepo é legado. Usando GitHub API diretamente via ghPut.');
-  const token=getAdminToken();
-  if(!token)return{ok:false,erro:'Token GitHub inativo ou expirado.'};
+  // Função legada - redirecionada para ghPut (via Worker)
+  console.warn('[Admin] workerSalvarRepo é legado. Usando Worker via ghPut.');
   return await ghPut(path,data,sha,msg);
 }
 // Dirty-check: rastreia se há alterações não salvas na aba atual
@@ -3338,7 +3237,7 @@ function ensureSafeState(){
   else if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
 }
 function fidIsReadOnly(){
-  // Fidelidade (fidelidade.json) requer token GitHub ativo + SHA.
+  // Fidelidade (fidelidade.json) requer sessão ativa com o Worker + SHA.
   return !GH_WRITE_ALLOWED||!STATE.fidelidadeSha;
 }
 function fidPathReadOnly(path){
@@ -3358,42 +3257,46 @@ function fidRequireWrite(){
   if(!fidIsReadOnly())return true;
   fidApplyReadOnlyGuard();
   const msg=!STATE.fidelidadeSha
-    ? '⚠️ Modo leitura ativo. Adicione um token GitHub para editar esta área do admin.'
-    : '⚠️ Token GitHub inativo. Adicione um novo token para editar esta área do admin.';
+    ? '⚠️ Modo leitura ativo. Dados de fidelidade ainda não carregados.'
+    : '⚠️ Sessão expirada. Faça login novamente para editar.';
   toast(msg,'aviso');
   return false;
 }
 async function ghGetRepo(path){
-  try{
-    const r=await fetchWithTimeout(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})},9000);
-    if(r.status===404)return{content:null,sha:null};
-    if(!r.ok)throw new Error(r.status);
-    const d=await r.json();
-    const bin=atob(d.content.replace(/\n/g,''));
-    const bytes=new Uint8Array(bin.length);
-    for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-    const content=new TextDecoder('utf-8').decode(bytes);
-    return{content:JSON.parse(content),sha:d.sha};
-  }catch(e){
-    // Fallback 1: tentar ler do próprio site (mesma origem) quando existir /dados/*.json
+  if(workerRepoPathAllowed(path)&&hasWorkerSession()){
     try{
-      if(typeof path==='string'&&(path.startsWith('dados/')||path.startsWith('/dados/'))){
-        const localPath=path.startsWith('/')?path:('/'+path);
-        const rLocal=await fetchWithTimeout(localPath+'?t='+Date.now(),{cache:'no-store'},7000);
-        if(rLocal.ok){const c=await rLocal.json();return{content:c,sha:null,readonly:true};}
+      const url=`${ITAP_WORKER_API}/api/admin/github-file?path=${encodeURIComponent(path)}`;
+      const rWorker=await fetchWithTimeout(url,{headers:workerAdminHeaders({'Accept':'application/json'})},9000);
+      if(rWorker.ok){
+        const d=await rWorker.json();
+        if(d?.ok&&d.content)return{content:d.content,sha:d.sha||null};
+      }else if(rWorker.status===401){
+        clearWorkerSession();
       }
-    }catch(eLocal){
-      console.warn('[admin] ghGet local fallback falhou para',path,eLocal);
+    }catch(eWorker){
+      console.warn('[admin] worker github-file falhou para',path,eWorker);
     }
-    // Fallback 2: repo público — lê via URL raw (sem autenticação, sem SHA para salvar)
-    try{
+  }
+  // Fallback: repo público via URL raw — apenas para arquivos não sensíveis, sem SHA para salvar
+  // NUNCA usar fallback público para arquivos sensíveis.
+  try{
+    if(!SENSITIVE_PUBLIC_JSON_PATHS.has(path)&&typeof path==='string'&&(path.startsWith('dados/')||path.startsWith('/dados/'))){
+      const localPath=path.startsWith('/')?path:('/'+path);
+      const rLocal=await fetchWithTimeout(localPath+'?t='+Date.now(),{cache:'no-store'},7000);
+      if(rLocal.ok){const c=await rLocal.json();return{content:c,sha:null,readonly:true};}
+    }
+  }catch(eLocal){
+    console.warn('[admin] ghGet local fallback falhou para',path,eLocal);
+  }
+  try{
+    if(!SENSITIVE_PUBLIC_JSON_PATHS.has(path)){
       const r2=await fetchWithTimeout(GH_RAW+path+'?t='+Date.now(),{cache:'no-store'},7000);
       if(r2.ok){const c=await r2.json();return{content:c,sha:null,readonly:true};}
-    }catch(e2){
-      console.warn('[admin] ghGet fallback falhou para',path,e2);
     }
-    return{content:null,sha:null};
+  }catch(e2){
+    console.warn('[admin] ghGet fallback falhou para',path,e2);
   }
+  return{content:null,sha:null};
 }
 async function ghGet(path){
   return ghGetRepo(path);
@@ -3403,33 +3306,11 @@ function aplicarConfigAdmin(cfg){
   if(cfg&&cfg.content){
     STATE.config=cfg.content;
     STATE.configSha=cfg.sha;
-    if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;
   }
   return cfg;
 }
-let _authLoadPromise=null;
-function aplicarAuth(result){
-  if(result&&result.content){
-    STATE.auth=result.content;
-    STATE.authSha=result.sha;
-    if(result.content.senhaAdmin)STATE.senhaAdmin=result.content.senhaAdmin;
-  }
-  return result;
-}
-async function carregarAuth(forceRefresh=false){
-  if(forceRefresh||!_authLoadPromise){
-    _authLoadPromise=ghGet(PATHS.auth)
-      .then(aplicarAuth)
-      .catch(e=>{
-        console.warn('[Admin] carregarAuth falhou',e);
-        return{content:null,sha:null};
-      });
-  }
-  return _authLoadPromise;
-}
 async function carregarConfigAdmin(forceRefresh=false){
-  const deveAtualizarConfig=Boolean(getAdminToken()&&STATE.config&&STATE.configSha===null);
-  if(forceRefresh||!_configLoadPromise||deveAtualizarConfig){
+  if(forceRefresh||!_configLoadPromise){
     _configLoadPromise=ghGet(PATHS.config)
       .then(aplicarConfigAdmin)
       .catch(e=>{
@@ -3441,24 +3322,31 @@ async function carregarConfigAdmin(forceRefresh=false){
   if(!cfg?.content)_configLoadPromise=null;
   return cfg;
 }
+// ghPut — grava arquivo JSON via Worker (GITHUB_TOKEN armazenado como Cloudflare Secret)
 async function ghPut(path,data,sha,msg){
-  const MAX_TENTATIVAS = 3;
-  for(let tentativa = 1; tentativa <= MAX_TENTATIVAS; tentativa++){
+  if(!hasWorkerSession()){
+    invalidarTokenGitHub();
+    return{ok:false,erro:'Sessão expirada. Faça login novamente.'};
+  }
+  const MAX_TENTATIVAS=3;
+  for(let tentativa=1;tentativa<=MAX_TENTATIVAS;tentativa++){
     try{
-      const content=btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
-      const body={message:msg,content};
-      if(sha)body.sha=sha;
-      const r=await fetch(GH_API+path,{method:'PUT',headers:getAuthHeaders({'Content-Type':'application/json'}),body:JSON.stringify(body)});
-      // Rate limit (429) ou servidor temporariamente indisponível (503) → aguardar e tentar novamente
+      const body={path,data,sha:sha||null,message:msg||`Admin: atualizar ${path}`};
+      const r=await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/github-file`,{
+        method:'PUT',
+        headers:workerAdminHeaders(),
+        body:JSON.stringify(body)
+      },15000);
       if((r.status===429||r.status===503)&&tentativa<MAX_TENTATIVAS){
-        const espera=tentativa*2000; // tentativa 1→2s, tentativa 2→4s
-        console.warn(`[Admin] API retornou ${r.status}. Tentativa ${tentativa}/${MAX_TENTATIVAS}. Aguardando ${espera/1000}s...`);
+        const espera=tentativa*2000;
+        console.warn(`[Admin] Worker retornou ${r.status}. Tentativa ${tentativa}/${MAX_TENTATIVAS}. Aguardando ${espera/1000}s...`);
         await new Promise(res=>setTimeout(res,espera));
         continue;
       }
-      if(!r.ok){const e=await r.json();throw new Error(e.message);}
-      const d=await r.json();
-      return{ok:true,sha:d.content.sha};
+      if(r.status===401){invalidarTokenGitHub();return{ok:false,erro:'Sessão expirada'};}
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||`HTTP ${r.status}`);}
+      const d=await r.json().catch(()=>({}));
+      return{ok:true,sha:d.sha||''};
     }catch(e){
       if(tentativa<MAX_TENTATIVAS&&(e.message==='Failed to fetch'||e.message==='NetworkError')){
         const espera=tentativa*1500;
@@ -3472,14 +3360,12 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
-  if(!GH_WRITE_ALLOWED||!getToken()){
-    const banner=document.getElementById('aviso-token-expirado');
-    if(banner)banner.style.display='flex';
-    toast('⚠️ Modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
+  if(!GH_WRITE_ALLOWED||!hasWorkerSession()){
+    mostrarBannerSessaoExpirada('<strong>Sessão expirada.</strong> Faça login novamente para salvar alterações.');
+    toast('⚠️ Sessão expirada. Faça login novamente para salvar alterações.','aviso');
     return false;
   }
-  // Salvar diretamente via GitHub API
-  console.log('[Admin] Salvando via GitHub API:', path, 'SHA:', STATE[shaKey]);
+  console.log('[Admin] Salvando via Worker:', path, 'SHA:', STATE[shaKey]);
   const r=await ghPut(path,data,STATE[shaKey],msg);
   if(r.ok){
     STATE[shaKey]=r.sha;
@@ -3489,9 +3375,9 @@ async function salvarArquivo(path,data,shaKey,msg){
     return true;
   }
   console.error('[Admin] Erro ao salvar:', r.erro);
-  if(r.erro&&(r.erro.includes('401')||r.erro.toLowerCase().includes('unauthorized'))){
+  if(r.erro&&(r.erro.includes('401')||r.erro.toLowerCase().includes('expirada')||r.erro.toLowerCase().includes('sessão'))){
     invalidarTokenGitHub();
-    toast('⚠️ Token GitHub expirado ou inválido. Informe um novo token.','erro');
+    toast('⚠️ Sessão expirada. Faça login novamente.','erro');
   }else if(r.erro&&(r.erro.includes('409')||r.erro.toLowerCase().includes('conflict'))){
     toast('⚠️ Conflito de versão! Outra pessoa alterou os dados. Recarregue a página (F5).','erro');
   }else{
@@ -3500,15 +3386,9 @@ async function salvarArquivo(path,data,shaKey,msg){
   return false;
 }
 function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
-function toggleGitHubToken(){const i=document.getElementById('inp-github-token');if(i)i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
 async function entrar(){
   const senha=document.getElementById('inp-senha').value;
-  const githubToken=(document.getElementById('inp-github-token')?.value||'').trim();
   const loginErro=document.getElementById('login-erro');
   if(!senha){
     loginErro.innerHTML='&#x274C; Informe a senha do administrador.';
@@ -3516,111 +3396,58 @@ async function entrar(){
     return;
   }
   mostrarLoading('Verificando...');
-  const[cfg,_,senhaHash]=await Promise.all([carregarConfigAdmin(),carregarAuth(),sha256(senha)]);
+  const sessao=await iniciarSessaoWorker(senha);
+  if(!sessao.ok){
+    ocultarLoading();
+    loginErro.innerHTML='&#x274C; Credenciais inválidas ou serviço indisponível.';
+    loginErro.style.display='block';
+    return;
+  }
+  const cfg=await carregarConfigAdmin(true);
   if(!cfg.content){
     ocultarLoading();
-    loginErro.innerHTML='⚠️ Não foi possível carregar a configuração do admin. Verifique a conexão e tente novamente.';
+    loginErro.innerHTML='⚠️ Login validado, mas não foi possível carregar config do admin.';
     loginErro.style.display='block';
     return;
   }
-  const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
-  if(!senhaOk){
-    ocultarLoading();
-    loginErro.innerHTML='&#x274C; Senha incorreta.';
-    loginErro.style.display='block';
-    return;
-  }
-  // --- GitHub Token: validar token e habilitar escrita ---
-  let tokenOk=false;
-  if(githubToken){
-    if(!tokenFormatoValido(githubToken)){
-      atualizarStatusGitHubToken('⚠️ Token GitHub com formato inválido. Admin em modo somente leitura.','warning');
-    }else{
-      const validacao=await validarToken(githubToken);
-      if(validacao.ok){
-        ssSet('itap_github_token',githubToken);
-        GITHUB_PAT=githubToken;
-        GH_WRITE_ALLOWED=validacao.canWrite!==false;
-        GH_TOKEN_CAN_WRITE=validacao.canWrite;
-        tokenOk=true;
-        if(GH_WRITE_ALLOWED){
-          atualizarStatusGitHubToken('✅ Token GitHub válido. Edição e salvamento liberados.','success');
-        }else if(validacao.canWrite===false){
-          atualizarStatusGitHubToken('⚠️ Token válido, mas sem permissão de escrita no repositório. Admin em modo somente leitura.','warning');
-        }else{
-          atualizarStatusGitHubToken('⚠️ Token válido, mas permissões não confirmadas. Admin em modo somente leitura.','warning');
-        }
-      }else{
-        atualizarStatusGitHubToken('⚠️ Token GitHub inválido ou expirado. Admin em modo somente leitura.','warning');
-      }
-    }
-  }
-  if(!tokenOk){
-    GH_WRITE_ALLOWED=false;
-    GITHUB_PAT='';
-    if(!githubToken){
-      atualizarStatusGitHubToken('ℹ️ Token GitHub não informado. Admin em modo somente leitura.','info');
-    }
-  }
+  GH_WRITE_ALLOWED=true;
   ocultarLoading();
   loginErro.style.display='none';
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
-  atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
-  if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
+  ocultarBannerSessaoExpirada();
   await carregarTudo();
   const btnPaginaInicial=document.getElementById('nav-btn-pagina-inicial');
   irPara('pagina-inicial',btnPaginaInicial);
 }
 async function reativarTokenGitHub(){
-  const input=document.getElementById('github-token-modal-input');
-  const token=(input?.value||'').trim();
-  if(!token){
-    toast('Informe o token GitHub para continuar.','aviso');
-    if(input)input.focus();
-    return;
-  }
-  if(!tokenFormatoValido(token)){
-    toast('⚠️ Token GitHub com formato inválido.','aviso');
-    if(input)input.focus();
-    return;
-  }
-  mostrarLoading('Validando token GitHub...');
-  try{
-    const validacao=await validarToken(token);
-    if(!validacao.ok){
-      toast('⚠️ Não foi possível validar o token GitHub. Confira o token e tente novamente.','aviso');
-      if(input)input.focus();
-      return;
-    }
-    if(validacao.canWrite===false){
-      toast('⚠️ Token válido, mas sem permissão de escrita no repositório.','aviso');
-    }
-    ssSet('itap_github_token',token);
-    GITHUB_PAT=token;
-    GH_WRITE_ALLOWED=validacao.canWrite!==false;
-    GH_TOKEN_CAN_WRITE=validacao.canWrite;
-    atualizarStatusGitHubToken('✅ Token GitHub validado. Edição e salvamento liberados.','success');
-    atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
-    fecharModalGitHubToken();
-    toast('✅ Token GitHub ativado com sucesso!','sucesso');
-  }finally{
-    ocultarLoading();
-  }
-  await carregarTudo();
+  // Sessão expirada — recarregar página para novo login
+  location.reload();
 }
 // Mantém compatibilidade com código legado
-async function reativarSessaoWorker(){await reativarTokenGitHub();}
-function sair(){
+async function reativarSessaoWorker(){
+  const senhaPrompt=prompt('Informe novamente a senha do admin para reativar a sessão:');
+  if(!senhaPrompt)return;
+  const r=await iniciarSessaoWorker(senhaPrompt);
+  if(r.ok){GH_WRITE_ALLOWED=true;toast('✅ Sessão do admin reativada.','sucesso');}
+  else toast('❌ Não foi possível reativar a sessão.','erro');
+}
+async function sair(){
+  if(hasWorkerSession()){
+    try{
+      await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/session`,{
+        method:'DELETE',
+        headers:workerAdminHeaders()
+      },6000);
+    }catch(e){
+      console.warn('[Admin] Falha ao encerrar sessão remota',e);
+    }
+  }
+  clearWorkerSession();
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('admin-app').style.display='none';
   document.getElementById('inp-senha').value='';
-  const tokenInput=document.getElementById('inp-github-token');
-  if(tokenInput)tokenInput.value='';
   document.getElementById('login-erro').style.display='none';
-  // Limpar token GitHub ao sair
-  ssRemove('itap_github_token');
-  GITHUB_PAT='';
   GH_WRITE_ALLOWED=false;
 }
 async function carregarTudo(){
@@ -3637,7 +3464,7 @@ async function carregarTudo(){
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
-    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}else{console.error('[BOOT] Falha ao carregar config');}
+    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;}else{console.error('[BOOT] Falha ao carregar config');}
     const falhasCarregamento=[
       [PATHS.promo,pr],
       [PATHS.clientes,cl],
@@ -3661,7 +3488,7 @@ async function carregarTudo(){
     ].filter(([_,resp])=>Boolean(resp?.content)&&!resp?.sha).map(([path])=>path);
     if(arquivosSemSha.length){
       console.warn('[ADMIN][SHA] Arquivos carregados sem SHA:',arquivosSemSha);
-      toast(`⚠️ Arquivos sem SHA (somente leitura parcial): ${arquivosSemSha.join(', ')}.`,'aviso');
+      toast(`⚠️ Arquivos sem SHA (modo leitura parcial): ${arquivosSemSha.join(', ')}.`,'aviso');
     }
     console.table([
       {arquivo:PATHS.promo,sha:Boolean(STATE.promoSha),readonly:Boolean(pr?.readonly),carregado:Boolean(pr?.content)},
@@ -3672,24 +3499,13 @@ async function carregarTudo(){
       {arquivo:PATHS.promocoes,sha:Boolean(STATE.promocoesSha),readonly:Boolean(promos?.readonly),carregado:Boolean(promos?.content)},
       {arquivo:PATHS.config,sha:Boolean(STATE.configSha),readonly:Boolean(cfg?.readonly),carregado:Boolean(cfg?.content)}
     ]);
-    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
-    const semToken=[pr,cl,fi,en,prod,promos,cfg].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
-    const avisoComFalhas=Boolean(falhasCarregamento.length||arquivosSemSha.length);
-    const banner=document.getElementById('aviso-token-expirado');
-    const bannerMsg=document.getElementById('aviso-token-expirado-msg');
-    if(banner){
-      banner.style.display=(semToken||avisoComFalhas)?'flex':'none';
+    // Mostrar banner de sessão expirada apenas se houver problemas de autenticação
+    if(arquivosSemSha.length&&SENSITIVE_PUBLIC_JSON_PATHS.has(arquivosSemSha[0])){
+      mostrarBannerSessaoExpirada('<strong>Falha ao carregar dados sensíveis.</strong> Verifique a sessão e recarregue.');
     }
-    if(bannerMsg){
-      bannerMsg.innerHTML=avisoComFalhas
-        ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. ${falhasCarregamento.length?`Falha ao carregar: ${falhasCarregamento.map(esc).join(', ')}. `:''}${arquivosSemSha.length?`Sem SHA: ${arquivosSemSha.map(esc).join(', ')}.`:''}`
-        :'<strong>Admin em modo somente leitura.</strong> Adicione um token GitHub para liberar edição e salvamento.';
-    }
-    // Banner: mostrar quando token de escrita não está válido
-    atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
   }catch(e){
     console.error('[BOOT] carregarTudo falhou',e);
-    toast('⚠️ Falha ao carregar parte dos dados. Verifique a conexão/token e tente Recarregar.','aviso');
+    toast('⚠️ Falha ao carregar parte dos dados. Verifique a conexão e tente Recarregar.','aviso');
   }finally{
     ocultarLoading();
   }
@@ -4301,33 +4117,37 @@ function preencherPromoção(){
   const promoSeoDesc=document.getElementById('cfg-seo-promocao-descricao');
   if(promoSeoDesc) promoSeoDesc.value=seoPg.promocao?.descricao||'';
 }
-// Upload de imagem binária para o GitHub (converte Blob para base64)
-async function ghPutImagem(path, blob, msg) {
+// Upload de imagem binária via Worker (Worker usa GITHUB_TOKEN internamente)
+async function ghPutImagem(path, blobOrBase64, msg) {
+  if(!hasWorkerSession()){
+    invalidarTokenGitHub();
+    return{ok:false,erro:'Sessão expirada. Faça login novamente.'};
+  }
   try {
-    // Converter Blob para base64
-    const arrayBuf = await blob.arrayBuffer();
-    const bytes = new Uint8Array(arrayBuf);
-    let bin = '';
-    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-    const base64 = btoa(bin);
-    // Buscar SHA atual do arquivo (se já existir)
-    let sha = null;
-    try {
-      const r = await fetch(GH_API + path, { headers: getAuthHeaders() });
-      if (r.ok) { const d = await r.json(); sha = d.sha; }
-    } catch(e) {}
-    const body = { message: msg, content: base64 };
-    if (sha) body.sha = sha;
-    const r = await fetch(GH_API + path, {
-      method: 'PUT',
-      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify(body)
-    });
-    if (!r.ok) { const e = await r.json(); throw new Error(e.message); }
-    const d = await r.json();
-    return { ok: true, url: d.content.download_url };
-  } catch(e) {
-    return { ok: false, erro: e.message };
+    let base64;
+    if(typeof blobOrBase64==='string'){
+      // Já é base64 (pode ser data URL ou base64 puro)
+      base64=blobOrBase64.includes(',')&&blobOrBase64.startsWith('data:')?blobOrBase64.split(',')[1]:blobOrBase64;
+    }else{
+      // Converter Blob para base64
+      const arrayBuf=await blobOrBase64.arrayBuffer();
+      const bytes=new Uint8Array(arrayBuf);
+      let bin='';
+      for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+      base64=btoa(bin);
+    }
+    const body={path,content_base64:base64,message:msg||`Admin: atualizar ${path}`};
+    const r=await fetchWithTimeout(`${ITAP_WORKER_API}/api/admin/github-file`,{
+      method:'PUT',
+      headers:workerAdminHeaders(),
+      body:JSON.stringify(body)
+    },30000);
+    if(r.status===401){invalidarTokenGitHub();return{ok:false,erro:'Sessão expirada'};}
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||`HTTP ${r.status}`);}
+    const d=await r.json().catch(()=>({}));
+    return{ok:true,url:d.url||'',sha:d.sha||''};
+  }catch(e){
+    return{ok:false,erro:e.message};
   }
 }
 
@@ -4680,7 +4500,7 @@ function _gerarNumEncomenda(){
   return base+'-'+String(seq).padStart(3,'0');
 }
 function abrirFormNovaEncomenda(){
-  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Adicione um token GitHub para adicionar encomendas.','aviso');return;}
+  if(!GH_WRITE_ALLOWED){toast('Sessão expirada. Faça login novamente para adicionar encomendas.','aviso');return;}
   const tit=document.getElementById('enc-form-titulo');
   if(tit)tit.textContent='➕ Nova Encomenda';
   document.getElementById('enc-f-nome').value='';
@@ -4697,7 +4517,7 @@ function abrirFormNovaEncomenda(){
   if(panel){panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'start'});}
 }
 function abrirFormEditarEncomenda(num){
-  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Adicione um token GitHub para editar encomendas.','aviso');return;}
+  if(!GH_WRITE_ALLOWED){toast('Sessão expirada. Faça login novamente para editar encomendas.','aviso');return;}
   const registros=STATE.encomendas?.registros||[];
   const e=registros.find(r=>r.num===num);
   if(!e){toast('Pedido não encontrado.','erro');return;}
@@ -4721,7 +4541,7 @@ function fecharFormEncomenda(){
   if(panel)panel.style.display='none';
 }
 async function salvarFormEncomenda(){
-  if(!GH_WRITE_ALLOWED){toast('Modo somente leitura. Adicione um token GitHub para salvar.','aviso');return;}
+  if(!GH_WRITE_ALLOWED){toast('Sessão expirada. Faça login novamente para salvar.','aviso');return;}
   const nome=(document.getElementById('enc-f-nome').value||'').trim();
   if(!nome){toast('Informe o nome do cliente.','erro');document.getElementById('enc-f-nome').focus();return;}
   const tel=(document.getElementById('enc-f-tel').value||'').trim();
@@ -5532,15 +5352,14 @@ async function carregarInscritosSorteio() {
   if (!tbody) return;
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888">⏳ Carregando…</td></tr>';
   _sortMsg('');
-  const token = getAdminToken();
-  if (!token) {
-    // Sem token: mostrar inscritos salvos localmente em fidelidade.json
+  if (!hasWorkerSession()) {
+    // Sem sessão: mostrar inscritos salvos localmente em fidelidade.json
     _carregarInscritosLocal();
     return;
   }
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos', {
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
+      headers: workerAdminHeaders({'Accept':'application/json'})
     }, 12000);
     const ct = r.headers.get('content-type') || '';
     if (!ct.includes('application/json')) throw new Error('Resposta não-JSON (Worker indisponível)');
@@ -5655,8 +5474,7 @@ async function salvarEdicaoInscritoSorteio() {
   if (!nome || nome.length < 3) { toast('Nome precisa ter pelo menos 3 caracteres.', 'erro'); return; }
   if (!nasc || !/^\d{4}-\d{2}-\d{2}$/.test(nasc) || isNaN(new Date(nasc).getTime())) { toast('Data de nascimento inválida (use AAAA-MM-DD).', 'erro'); return; }
   if (!tel || tel.length < 10) { toast('Telefone inválido.', 'erro'); return; }
-  const token = getAdminToken();
-  if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+  if (!hasWorkerSession()) { toast('Sessão expirada. Faça login novamente.', 'erro'); return; }
 
   // Modo local (Worker offline): atualiza em STATE.fidelidade.sorteioInscritos
   if (id.startsWith('LOCAL-')) {
@@ -5680,7 +5498,7 @@ async function salvarEdicaoInscritoSorteio() {
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token },
+      headers: workerAdminHeaders(),
       body: JSON.stringify({ nome, birthdate: nasc, phone: tel })
     }, 10000);
     const dados = await r.json();
@@ -5702,8 +5520,7 @@ async function deletarInscritoSorteio(id) {
   const ins = _sortInscritos.find(i => i.id === id);
   const nomeExib = ins ? ins.nome : id;
   if (!confirm(`Remover o inscrito "${nomeExib}" (${id})?\n\nEsta ação não pode ser desfeita.`)) return;
-  const token = getAdminToken();
-  if (!token) { toast('Token GitHub necessário.', 'erro'); return; }
+  if (!hasWorkerSession()) { toast('Sessão expirada. Faça login novamente.', 'erro'); return; }
 
   // Modo local (Worker offline): remove de STATE.fidelidade.sorteioInscritos
   if (id.startsWith('LOCAL-')) {
@@ -5722,7 +5539,7 @@ async function deletarInscritoSorteio(id) {
   try {
     const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/' + encodeURIComponent(id), {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'token ' + token }
+      headers: workerAdminHeaders()
     }, 10000);
     const dados = await r.json();
     if (dados.ok) {
@@ -7016,12 +6833,8 @@ async function salvarConfig(){
   const seoCarTitEl=document.getElementById('cfg-seo-carrossel-titulo'); if(seoCarTitEl) cfg.seoPaginas.carrossel.titulo=seoCarTitEl.value.trim();
   const seoCarDesEl=document.getElementById('cfg-seo-carrossel-descricao'); if(seoCarDesEl) cfg.seoPaginas.carrossel.descricao=seoCarDesEl.value.trim();
   const seoCarPalEl=document.getElementById('cfg-seo-carrossel-palavras'); if(seoCarPalEl) cfg.seoPaginas.carrossel.palavrasChave=seoCarPalEl.value.trim();
-  delete cfg.senhaAdmin;
   if(novaSenha){
-    const novaHash=await sha256(novaSenha);
-    const authData={...(STATE.auth||{}),senhaAdmin:novaHash};
-    const okAuth=await salvarArquivo(PATHS.auth,authData,'authSha','Admin: atualizar senha');
-    if(okAuth)STATE.senhaAdmin=novaHash;
+    toast('⚠️ Alteração de senha via painel desativada. Solicite ao administrador do sistema a rotação da credencial no backend seguro.','aviso');
   }
   STATE.config=cfg;
   const ok=await salvarArquivo(PATHS.config,cfg,'configSha','Admin: atualizar configurações gerais');
@@ -7526,7 +7339,7 @@ function ocultarLoading(){document.getElementById('loading-overlay').style.displ
 // =====================================================================
 // SABORES — gestão de sabores de sorvete e picolés
 // =====================================================================
-const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Especiais", "preço_varejo": 4.0, "preço_atacado": 4.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolé Esquimó", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
+const PICOLES_PADRAO = {"frutas_agua": {"id": "pic_frutas_agua", "nome": "Picolé de Fruta/Água", "preço_varejo": 2.5, "preço_atacado": 1.8, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Abacaxi", "esgotado": false}, {"nome": "Caju", "esgotado": false}, {"nome": "Goiaba", "esgotado": false}, {"nome": "Groselha", "esgotado": false}, {"nome": "Limão", "esgotado": false}, {"nome": "Melância", "esgotado": false}, {"nome": "Uva", "esgotado": false}, {"nome": "Tamarindo", "esgotado": false}]}, "leite_sem_recheio": {"id": "pic_leite_sem_recheio", "nome": "Picolé de Leite sem Recheio", "preço_varejo": 2.5, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Coco Queimado", "esgotado": false}, {"nome": "Milho Verde", "esgotado": false}, {"nome": "Amendoim", "esgotado": false}, {"nome": "Pistache", "esgotado": false}]}, "leite_com_recheio": {"id": "pic_leite_com_recheio", "nome": "Picolé de Leite com Recheio", "preço_varejo": 3.0, "preço_atacado": 2.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Açaí", "esgotado": false}, {"nome": "Blue Ice", "esgotado": false}, {"nome": "Caraxi", "esgotado": false}, {"nome": "Coco Branco", "esgotado": false}, {"nome": "Chocolate", "esgotado": false}, {"nome": "Amarena", "esgotado": false}, {"nome": "Leite Condensado", "esgotado": false}, {"nome": "Mamão Papaia", "esgotado": false}, {"nome": "Maracujá", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Menta com Chocolate", "esgotado": false}, {"nome": "Nata com Goiaba", "esgotado": false}]}, "leite_ninho": {"id": "pic_leite_ninho", "nome": "Picolé Especiais", "preço_varejo": 4.0, "preço_atacado": 3.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Leite Ninho", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}]}, "esquimós": {"id": "pic_esquimós", "nome": "Picolé Esquimó", "preço_varejo": 8.0, "preço_atacado": 6.0, "estoque": 200, "esgotado": false, "sabores": [{"nome": "Bombom", "esgotado": false}, {"nome": "Nutella", "esgotado": false}, {"nome": "Ovomaltine", "esgotado": false}, {"nome": "Leite Ninho", "esgotado": false}, {"nome": "Nata", "esgotado": false}, {"nome": "Morango", "esgotado": false}, {"nome": "Brigadeiro", "esgotado": false}, {"nome": "Prestígio", "esgotado": false}]}};
 
 // =====================================================================
 // SABORES — renderização dinâmica a partir do produtos.json (Single Source of Truth)
@@ -10203,32 +10016,6 @@ async function zerarPontosNegativos(clienteId){
   </div>
 </div>
 
-<!-- ═══════════════ MODAL TOKEN GITHUB ═══════════════════ -->
-<div id="github-token-modal" class="modal-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)fecharModalGitHubToken()">
-  <div class="modal-box" style="max-width:500px;background:#fff;border-radius:12px;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
-    <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <h3 style="margin:0;font-size:1.3rem;color:#1565c0">🔑 Adicionar Token GitHub</h3>
-      <button class="modal-close" onclick="fecharModalGitHubToken()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:0.9rem;color:#666;margin-bottom:16px">
-        Informe seu Personal Access Token (PAT) do GitHub para habilitar a edição e salvamento de dados no painel administrativo.
-      </p>
-      <div class="campo-edit" style="margin-bottom:16px">
-        <label style="display:block;margin-bottom:6px;font-weight:600;color:#333">Token GitHub (PAT)</label>
-        <input type="password" id="github-token-modal-input" placeholder="ghp_..." autocomplete="off" onkeydown="if(event.key==='Enter')reativarTokenGitHub()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:0.95rem"/>
-      </div>
-      <div style="font-size:0.8rem;color:#888;margin-bottom:16px">
-        <strong>Como obter:</strong> GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic)<br>
-        <strong>Permissões necessárias:</strong> repo (acesso total ao repositório)
-      </div>
-    </div>
-    <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn btn-salvar" onclick="reativarTokenGitHub()" style="background:#1565c0;color:#fff;border:none;border-radius:6px;padding:10px 20px;cursor:pointer;font-weight:600">✅ Validar e Ativar</button>
-      <button class="btn btn-cinza" onclick="fecharModalGitHubToken()" style="background:#999;color:#fff;border:none;border-radius:6px;padding:10px 20px;cursor:pointer">✕ Cancelar</button>
-    </div>
-  </div>
-</div>
 
 <!-- ═══════════════ MODAL PONTOS CLIENTE ═══════════════════ -->
 <div id="modal-pontos" class="modal-overlay" onclick="if(event.target===this)fecharModalPontos()">
