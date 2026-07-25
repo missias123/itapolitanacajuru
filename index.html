@@ -3086,7 +3086,17 @@ const ACC_CTA_LABELS = {
 };
 const ITAP_WHATSAPP = '5516996062046';
 function buildWhatsAppHref(message) {
-  return `https://wa.me/${ITAP_WHATSAPP}?text=${encodeURIComponent(message || 'Olá!')}`;
+  var defaultWhatsApp = '5516996062046';
+  var number = /^\d{12,15}$/.test(ITAP_WHATSAPP) ? ITAP_WHATSAPP : defaultWhatsApp;
+  return `https://wa.me/${number}?text=${encodeURIComponent(message || 'Olá!')}`;
+}
+function createCtaStack(parent, ctaIdentifier) {
+  var old = (parent && ctaIdentifier) ? parent.getElementsByClassName(ctaIdentifier)[0] : null;
+  if (old) old.remove();
+  var node = document.createElement('div');
+  node.className = 'product-cta-stack ' + ctaIdentifier;
+  if (parent) parent.appendChild(node);
+  return node;
 }
 
 function _trackUiEvent(eventName, params) {
@@ -3386,12 +3396,10 @@ function renderSorvetes(){
       g.appendChild(c);
     });
   }
-  const ctasOld=g.parentElement.querySelector('.home-cta-sorvetes');if(ctasOld)ctasOld.remove();
-  const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-sorvetes';
+  const ctas=createCtaStack(g.parentElement,'home-cta-sorvetes');
   ctas.innerHTML=`
     <a class="enc-link-btn product-cta--attention" href="#acc-sorvetes" onclick="_trackUiEvent('category_cta_click',{page:'home',category:'sorvetes',cta_type:'ver_sabores'})">Ver sabores</a>
     <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de saber mais sobre sorvetes tipo artesanais.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('whatsapp_cta_click',{page:'home',category:'sorvetes',cta_type:'consultar_whatsapp'})">Falar no WhatsApp</a>`;
-  g.parentElement.appendChild(ctas);
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
   _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-sorvetes\')">← Voltar ao Início do Cardápio</button>';
@@ -3410,12 +3418,10 @@ function renderMilk(){
       g.appendChild(c);
     });
   }
-  const ctasOld=g.parentElement.querySelector('.home-cta-milk');if(ctasOld)ctasOld.remove();
-  const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-milk';
+  const ctas=createCtaStack(g.parentElement,'home-cta-milk');
   ctas.innerHTML=`
     <a class="enc-link-btn product-cta--attention" href="#acc-milk" onclick="_trackUiEvent('category_cta_click',{page:'home',category:'milkshakes',cta_type:'ver_milkshakes'})">Ver milk-shakes</a>
     <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de consultar as opções de milk-shake.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('whatsapp_cta_click',{page:'home',category:'milkshakes',cta_type:'consultar_opcoes'})">Consultar opções no WhatsApp</a>`;
-  g.parentElement.appendChild(ctas);
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
   _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-milk\')">← Voltar ao Início do Cardápio</button>';
@@ -3431,12 +3437,10 @@ function renderTacas(){
       g.appendChild(c);
     });
   }
-  const ctasOld=g.parentElement.querySelector('.home-cta-tacas');if(ctasOld)ctasOld.remove();
-  const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-tacas';
+  const ctas=createCtaStack(g.parentElement,'home-cta-tacas');
   ctas.innerHTML=`
     <a class="enc-link-btn product-cta--attention" href="#acc-tacas" onclick="_trackUiEvent('category_cta_click',{page:'home',category:'tacas',cta_type:'ver_sobremesas'})">Ver sobremesas</a>
     <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de consultar opções de taças e sobremesas.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('whatsapp_cta_click',{page:'home',category:'tacas',cta_type:'consultar_opcoes'})">Consultar opções</a>`;
-  g.parentElement.appendChild(ctas);
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
   _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-tacas\')">← Voltar ao Início do Cardápio</button>';
@@ -3452,12 +3456,10 @@ function renderTacasP(){
       g.appendChild(c);
     });
   }
-  const ctasOld=g.parentElement.querySelector('.home-cta-tacas-p');if(ctasOld)ctasOld.remove();
-  const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-tacas-p';
+  const ctas=createCtaStack(g.parentElement,'home-cta-tacas-p');
   ctas.innerHTML=`
     <a class="enc-link-btn product-cta--attention" href="#acc-tacas-p" onclick="_trackUiEvent('category_cta_click',{page:'home',category:'tacas_premium',cta_type:'ver_sobremesas'})">Ver sobremesas</a>
     <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de consultar as taças premium disponíveis.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('whatsapp_cta_click',{page:'home',category:'tacas_premium',cta_type:'consultar_opcoes'})">Consultar opções</a>`;
-  g.parentElement.appendChild(ctas);
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
   _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-tacas-p\')">← Voltar ao Início do Cardápio</button>';
@@ -3550,12 +3552,10 @@ function renderAçaí(){
   });
 
   // Botão voltar
-  const ctasOld=wrap.querySelector('.home-cta-acai');if(ctasOld)ctasOld.remove();
-  const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-acai';
+  const ctas=createCtaStack(wrap,'home-cta-acai');
   ctas.innerHTML=`
     <a class="enc-link-btn product-cta--attention" href="#acc-açaí" onclick="_trackUiEvent('category_cta_click',{page:'home',category:'acai',cta_type:'montar_acai'})">Montar meu açaí</a>
     <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de montar meu açaí com as opções disponíveis.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('whatsapp_cta_click',{page:'home',category:'acai',cta_type:'ver_opcoes'})">Ver opções no WhatsApp</a>`;
-  wrap.appendChild(ctas);
 
   const _vb=document.createElement('div');_vb.style='padding:10px 0 4px';
   _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-açaí\')">← Voltar ao Início do Cardápio</button>';
@@ -3648,12 +3648,10 @@ function renderPicolés(){
     nota.style='background:linear-gradient(135deg,#1A237E,#283593);color:#fff;border-radius:12px;padding:12px 16px;text-align:center;margin-bottom:10px;font-size:12px';
     nota.innerHTML='<strong>Atacado e Eventos:</strong> Consulte condições e orçamento no WhatsApp.';
     b.appendChild(nota);
-    const ctasOld=b.querySelector('.home-cta-picoles');if(ctasOld)ctasOld.remove();
-    const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-picoles';
+    const ctas=createCtaStack(b,'home-cta-picoles');
     ctas.innerHTML=`
       <a class="enc-link-btn product-cta--attention" href="${buildWhatsAppHref('Olá! Gostaria de consultar picolés no atacado para um evento.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('wholesale_cta_click',{page:'home',category:'picoles',cta_type:'consultar_atacado'})">Consultar atacado</a>
       <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de solicitar orçamento para picolés em evento.')}" target="_blank" rel="noopener" onclick="_trackUiEvent('event_quote_cta_click',{page:'home',category:'picoles',cta_type:'solicitar_orcamento'})">Solicitar orçamento</a>`;
-    b.appendChild(ctas);
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
@@ -3675,12 +3673,10 @@ function renderIso(){
     const btn=document.createElement('div');btn.style='margin-top:12px';
     btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Sabores para Isopore',this)">Ver os 35 Sabores</button></div>`;
     b.appendChild(btn);
-    const ctasOld=b.querySelector('.home-cta-iso');if(ctasOld)ctasOld.remove();
-    const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-iso';
+    const ctas=createCtaStack(b,'home-cta-iso');
     ctas.innerHTML=`
       <a class="enc-link-btn product-cta--attention" href="${buildWhatsAppHref('Olá! Gostaria de consultar as opções de sorvete em caixa para minha festa.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('order_cta_click',{page:'home',category:'isopores',cta_type:'consultar_caixas'})">Consultar caixas</a>
       <a class="enc-link-btn" href="encomendas.html" onclick="_trackUiEvent('order_cta_click',{page:'home',category:'isopores',cta_type:'encomendar_festa'})">Encomendar para festa</a>`;
-    b.appendChild(ctas);
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
@@ -3704,12 +3700,10 @@ function renderSobremesas(){
     const btn=document.createElement('div');btn.style='margin-top:12px';
     btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Sabores para Sobremesas',this)">Ver os 35 Sabores</button></div>`;
     b.appendChild(btn);
-    const ctasOld=b.querySelector('.home-cta-sobremesas');if(ctasOld)ctasOld.remove();
-    const ctas=document.createElement('div');ctas.className='product-cta-stack home-cta-sobremesas';
+    const ctas=createCtaStack(b,'home-cta-sobremesas');
     ctas.innerHTML=`
       <a class="enc-link-btn product-cta--attention" href="encomendas.html#tortas" onclick="_trackUiEvent('order_cta_click',{page:'home',category:'sobremesas',cta_type:'encomendar_torta'})">Encomendar torta</a>
       <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de consultar uma torta de sorvete para minha festa.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('whatsapp_cta_click',{page:'home',category:'sobremesas',cta_type:'consultar_disponibilidade'})">Consultar disponibilidade</a>`;
-    b.appendChild(ctas);
   }
 
   const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';

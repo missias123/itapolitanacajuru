@@ -1644,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="categoria-conteudo" id="conteudo-acréscimos">
 <div id="lista-acréscimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
 <div class="category-cta-row">
-  <button type="button" class="category-cta category-cta--primary category-cta--attention" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'acrescimos',cta_type:'montar_pedido',position:'after_grid'});} abrirCarrinho();">Montar meu pedido</button>
+  <button type="button" class="category-cta category-cta--primary category-cta--attention" onclick="handleMontarPedidoCta();">Montar meu pedido</button>
   <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20os%20acr%C3%A9scimos%20dispon%C3%ADveis%20para%20meu%20pedido." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'acrescimos',cta_type:'ver_opcoes',position:'after_grid'});}">Ver opções</a>
 </div>
 </div>
@@ -2008,19 +2008,32 @@ document.addEventListener('DOMContentLoaded', function () {
 function toggleSecao(id) {
   var conteudo = document.getElementById(id);
   if (!conteudo) return;
-  var header = document.querySelector('.categoria-header[aria-controls="' + id + '"]') || conteudo.previousElementSibling;
+  var header = conteudo.previousElementSibling;
   if (!header) return;
   var icon = header.querySelector('.toggle-icon');
-  var aberto = conteudo.classList.contains('aberto') || window.getComputedStyle(conteudo).display !== 'none';
-  var proximoAberto = !aberto;
-  conteudo.classList.toggle('aberto', proximoAberto);
-  conteudo.style.display = proximoAberto ? 'block' : 'none';
-  conteudo.hidden = !proximoAberto;
-  header.setAttribute('aria-expanded', proximoAberto ? 'true' : 'false');
-  if (icon) icon.textContent = proximoAberto ? '▼' : '▶';
+  var aberto = conteudo.classList.contains('aberto');
+  var novoEstado = !aberto;
+  conteudo.classList.toggle('aberto', novoEstado);
+  conteudo.hidden = !novoEstado;
+  header.setAttribute('aria-expanded', novoEstado ? 'true' : 'false');
+  if (icon) icon.textContent = novoEstado ? '▼' : '▶';
+}
+function handleMontarPedidoCta() {
+  if (typeof gtag === 'function') {
+    gtag('event', 'order_cta_click', {
+      page: 'encomendas',
+      category: 'acrescimos',
+      cta_type: 'montar_pedido',
+      position: 'after_grid'
+    });
+  }
+  if (typeof abrirCarrinho === 'function') {
+    abrirCarrinho();
+    return;
+  }
+  window.open('https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20montar%20meu%20pedido%20com%20acr%C3%A9scimos.', '_blank', 'noopener');
 }
 document.querySelectorAll('.categoria-conteudo').forEach(function(sec){
-  sec.style.display = 'none';
   sec.hidden = true;
   sec.classList.remove('aberto');
 });
@@ -2029,6 +2042,14 @@ document.querySelectorAll('.categoria-header[aria-controls]').forEach(function(b
   var ic = btn.querySelector('.toggle-icon');
   if (ic) ic.textContent = '▶';
 });
+var hash = (window.location.hash || '').replace('#', '');
+if (hash) {
+  var alvo = document.getElementById(hash);
+  if (alvo && alvo.classList.contains('categoria')) {
+    var body = alvo.querySelector('.categoria-conteudo');
+    if (body && body.id) toggleSecao(body.id);
+  }
+}
 window.toggleSecao = toggleSecao;
 </script>
 </body>
