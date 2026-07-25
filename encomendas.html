@@ -286,8 +286,12 @@
       justify-content: space-between;
       user-select: none;
       transition: opacity 0.2s;
+      width: 100%;
+      border: none;
+      text-align: left;
     }
     .categoria-header:hover { opacity: 0.9; }
+    .categoria-header:focus-visible { outline: 3px solid rgba(255,255,255,.95); outline-offset: -3px; }
     .categoria-header-left { display:flex; align-items:center; gap:14px; }
     .categoria-emoji { font-size: 1.8rem; }
     .categoria-info h3 { font-size: clamp(1.2rem, 5vw, 1.5rem); color: white; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,.7); letter-spacing: .5px; }
@@ -295,6 +299,44 @@
     .toggle-icon { font-size: 1.2rem; color: white; transition: transform 0.3s; }
     .categoria-conteudo { display: none; padding: 16px; border-top: 1px solid #eee; }
     .categoria-conteudo.aberto { display: block; }
+    .category-cta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .category-cta {
+      flex:1 1 220px;
+      min-height:44px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      border-radius:50px;
+      padding:12px 18px;
+      font-size:0.95rem;
+      font-weight:900;
+      letter-spacing:.2px;
+      border:2px solid transparent;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .category-cta:hover { transform: translateY(-1px); }
+    .category-cta--primary { background:linear-gradient(135deg,#25D366,#128C7E); color:#fff; box-shadow:0 4px 14px rgba(18,140,126,.35); }
+    .category-cta--secondary { background:#fff; color:#0D47A1; border-color:#0D47A1; }
+    .category-cta--attention { position:relative; isolation:isolate; }
+    .category-cta--attention::after {
+      content:"";
+      position:absolute;
+      inset:-4px;
+      border:2px solid currentColor;
+      border-radius:inherit;
+      opacity:0;
+      z-index:-1;
+      animation:ctaPulseSoft 2.4s ease-out infinite;
+    }
+    @keyframes ctaPulseSoft {
+      0% { opacity:.48; transform:scale(.97); }
+      70% { opacity:0; transform:scale(1.06); }
+      100% { opacity:0; transform:scale(1.06); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .category-cta--attention::after { animation:none; opacity:0; }
+    }
 
     /* CORES DAS CATEGORIAS */
     .cat-caixas .categoria-header { background: linear-gradient(135deg, #4A148C, #7B1FA2, #9C27B0); }
@@ -1520,7 +1562,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <div class="container">
 <div class="categoria cat-caixas" id="caixas">
-<div class="categoria-header" onclick="toggleSecao('conteudo-caixas')">
+<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-caixas" onclick="toggleSecao('conteudo-caixas')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🍦</span>
 <div class="categoria-info">
@@ -1530,13 +1572,17 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <span class="toggle-icon">▼</span>
-</div>
+</button>
 <div class="categoria-conteudo" id="conteudo-caixas">
 <div class="prod-grid" id="lista-caixas"></div>
+<div class="category-cta-row">
+  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20as%20op%C3%A7%C3%B5es%20de%20sorvete%20em%20caixa%20para%20minha%20festa." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'caixas',cta_type:'consultar_caixas',position:'after_grid'});}">Consultar caixas</a>
+  <a class="category-cta category-cta--secondary" href="#como-encomendar" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'caixas',cta_type:'encomendar_festa',position:'after_grid'});}">Encomendar para festa</a>
+</div>
 </div>
 </div>
 <div class="categoria cat-tortas" id="tortas">
-<div class="categoria-header" onclick="toggleSecao('conteudo-tortas')">
+<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-tortas" onclick="toggleSecao('conteudo-tortas')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🎂</span>
 <div class="categoria-info">
@@ -1546,13 +1592,17 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <span class="toggle-icon">▼</span>
-</div>
+</button>
 <div class="categoria-conteudo" id="conteudo-tortas">
 <div class="prod-grid" id="lista-tortas"></div>
+<div class="category-cta-row">
+  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20uma%20torta%20de%20sorvete%20para%20minha%20festa." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'tortas',cta_type:'encomendar_torta',position:'after_grid'});}">Encomendar torta</a>
+  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20disponibilidade%20de%20torta%20de%20sorvete." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'tortas',cta_type:'consultar_disponibilidade',position:'after_grid'});}">Consultar disponibilidade</a>
+</div>
 </div>
 </div>
 <div class="categoria cat-picolés" id="picolés">
-<div class="categoria-header" onclick="toggleSecao('conteudo-picolés')">
+<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-picolés" onclick="toggleSecao('conteudo-picolés')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🍭</span>
 <div class="categoria-info">
@@ -1562,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <span class="toggle-icon">▼</span>
-</div>
+</button>
 <div class="categoria-conteudo" id="conteudo-picolés">
 <div class="prod-grid" id="lista-picolés">
 <div class="prod-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 14px;gap:8px;">
@@ -1573,10 +1623,14 @@ document.addEventListener('DOMContentLoaded', function () {
 </a>
 </div>
 </div>
+<div class="category-cta-row">
+  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20picol%C3%A9s%20no%20atacado%20para%20um%20evento." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','wholesale_cta_click',{page:'encomendas',category:'picoles',cta_type:'consultar_atacado',position:'after_grid'});}">Consultar atacado</a>
+  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20or%C3%A7amento%20para%20picol%C3%A9s%20em%20evento." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','event_quote_cta_click',{page:'encomendas',category:'picoles',cta_type:'solicitar_orcamento',position:'after_grid'});}">Solicitar orçamento</a>
+</div>
 </div>
 </div>
 <div class="categoria cat-acréscimos" id="acréscimos">
-<div class="categoria-header" onclick="toggleSecao('conteudo-acréscimos')">
+<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-acréscimos" onclick="toggleSecao('conteudo-acréscimos')">
 <div class="categoria-header-left">
 <span class="categoria-emoji">🍪</span>
 <div class="categoria-info">
@@ -1586,9 +1640,13 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 </div>
 <span class="toggle-icon">▼</span>
-</div>
+</button>
 <div class="categoria-conteudo" id="conteudo-acréscimos">
 <div id="lista-acréscimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
+<div class="category-cta-row">
+  <button type="button" class="category-cta category-cta--primary category-cta--attention" onclick="handleMontarPedidoCta();">Montar meu pedido</button>
+  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20os%20acr%C3%A9scimos%20dispon%C3%ADveis%20para%20meu%20pedido." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'acrescimos',cta_type:'ver_opcoes',position:'after_grid'});}">Ver opções</a>
+</div>
 </div>
 </div>
 
@@ -1953,13 +2011,43 @@ function toggleSecao(id) {
   var header = conteudo.previousElementSibling;
   if (!header) return;
   var icon = header.querySelector('.toggle-icon');
-
-  if (conteudo.style.display === 'none') {
-    conteudo.style.display = 'block';
-    if (icon) icon.textContent = '▼';
-  } else {
-    conteudo.style.display = 'none';
-    if (icon) icon.textContent = '▶';
+  var aberto = conteudo.classList.contains('aberto');
+  var novoEstado = !aberto;
+  conteudo.classList.toggle('aberto', novoEstado);
+  conteudo.hidden = !novoEstado;
+  header.setAttribute('aria-expanded', novoEstado ? 'true' : 'false');
+  if (icon) icon.textContent = novoEstado ? '▼' : '▶';
+}
+function handleMontarPedidoCta() {
+  if (typeof gtag === 'function') {
+    gtag('event', 'order_cta_click', {
+      page: 'encomendas',
+      category: 'acrescimos',
+      cta_type: 'montar_pedido',
+      position: 'after_grid'
+    });
+  }
+  if (typeof abrirCarrinho === 'function') {
+    abrirCarrinho();
+    return;
+  }
+  window.open('https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20montar%20meu%20pedido%20com%20acr%C3%A9scimos.', '_blank', 'noopener');
+}
+document.querySelectorAll('.categoria-conteudo').forEach(function(sec){
+  sec.hidden = true;
+  sec.classList.remove('aberto');
+});
+document.querySelectorAll('.categoria-header[aria-controls]').forEach(function(btn){
+  btn.setAttribute('aria-expanded', 'false');
+  var ic = btn.querySelector('.toggle-icon');
+  if (ic) ic.textContent = '▶';
+});
+var hash = (window.location.hash || '').replace('#', '');
+if (hash) {
+  var alvo = document.getElementById(hash);
+  if (alvo && alvo.classList.contains('categoria')) {
+    var body = alvo.querySelector('.categoria-conteudo');
+    if (body && body.id) toggleSecao(body.id);
   }
 }
 window.toggleSecao = toggleSecao;
