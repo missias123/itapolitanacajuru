@@ -8653,7 +8653,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof origIrPara === 'function') {
     window.irPara = function(...args) {
       const r = origIrPara.apply(this, args);
-      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); }, 300);
+      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); if (window.itapValidacao) window.itapValidacao.init(); }, 300);
       return r;
     };
   }
@@ -8674,7 +8674,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof _origSalvarArquivo === 'function') {
     window.salvarArquivo = async function(...args) {
       const resultado = await _origSalvarArquivo.apply(this, args);
-      if (resultado) marcarSalvo();
+      if (resultado) { marcarSalvo(); if (window.itapValidacao) window.itapValidacao.limparAlterados(); }
       return resultado;
     };
   }
@@ -10490,6 +10490,8 @@ async function zerarPontosNegativos(clienteId){
   </div>
 </div>
 
+
+<script src="scripts/itap-admin-validacao.js" defer></script>
 
 </body>
 </html>
