@@ -583,6 +583,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
+    <button class="nav-btn" id="nav-btn-carrossel" onclick="irPara('carrossel-admin',this)">🎠 Carrossel</button>
     <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🧩 Site Encomendas</button>
     <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
     <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
@@ -608,6 +609,7 @@ body { overflow-x: hidden; }
           <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
           <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
           <button onclick="irPara('fidelidade-admin',document.getElementById('nav-btn-fidelidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
+          <button onclick="irPara('carrossel-admin',document.getElementById('nav-btn-carrossel'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00838f,#00acc1)">🎠<span>Carrossel</span></button>
           <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
           <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
           <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.getElementById('nav-btn-rastreio'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
@@ -2857,6 +2859,64 @@ Talento</textarea>
     </div>
 
     <!-- ═══════════════ SEÇÃO GALERIA (Página galeria.html) ═══════ -->
+    <!-- CARROSSEL -->
+    <div class="seção" id="sec-carrossel-admin">
+      <div class="card">
+        <div class="card-header">
+          <h2>🎠 Carrossel de Banners</h2>
+          <a href="carrossel.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">&#x1F441;&#xFE0F; Ver Carrossel</a>
+        </div>
+        <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+          📌 <strong>Como usar:</strong> Selecione uma foto (JPG, PNG ou WebP) → ela é convertida para WebP automaticamente → clique em <strong>Adicionar ao Carrossel</strong> → clique em <strong>Salvar Lista</strong>. Pronto! O carrossel se atualiza sozinho.
+        </div>
+        <div class="card-body">
+          <!-- UPLOAD NOVO BANNER -->
+          <div class="campo-edit">
+            <label>📷 Nova Imagem para o Carrossel</label>
+            <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
+              📐 <strong>Dimensões ideais:</strong> 1536 × 1024 px (proporção 3:2) — redimensionado automaticamente se maior<br>
+              💾 <strong>Tamanho máximo:</strong> 250 KB após conversão<br>
+              🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
+              ⚡ <strong>Conversão automática:</strong> toda imagem é convertida para WebP antes de salvar
+            </div>
+            <div class="upload-area" id="crs-banner-area" onclick="document.getElementById('crs-banner-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');processarUploadCarrosselDedicado(event.dataTransfer.files[0])">
+              <input type="file" accept="image/*" id="crs-banner-input" style="display:none" onchange="processarUploadCarrosselDedicado(this.files[0])"/>
+              <div class="upload-icon">📷</div>
+              <div class="upload-texto">Clique ou arraste a imagem aqui</div>
+              <div class="upload-regras">
+                <span>📐 1536×1024px</span>
+                <span>💾 Máx. 250KB</span>
+                <span>🖼️ JPG · PNG · WebP</span>
+                <span>⚡ → WebP automático</span>
+              </div>
+            </div>
+            <div class="img-preview-wrap" id="crs-banner-preview-wrap">
+              <img class="img-preview" id="crs-banner-preview" src="" alt="Preview banner"/>
+              <div class="img-preview-info" id="crs-banner-info"></div>
+            </div>
+            <div class="erro-inline" id="crs-banner-erro"></div>
+            <div class="campo-edit" style="margin-top:10px">
+              <label>Texto alternativo (alt) do banner</label>
+              <input type="text" id="crs-banner-alt" maxlength="120" placeholder="Ex: Taças Gourmet Açaí Natureon — Sorveteria Itapolitana Cajuru"/>
+              <div class="hint">Descreva o que aparece na foto. Importante para SEO e acessibilidade. Max. 120 caracteres.</div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-salvar" onclick="adicionarBannerCarrosselDedicado()">➕ Adicionar ao Carrossel</button>
+            </div>
+          </div>
+
+          <!-- LISTA DE BANNERS -->
+          <div class="seção-título" style="margin-top:16px">📚 Banners Existentes — Ordem, Alt e Exclusão</div>
+          <div class="hint" style="margin-bottom:10px">Use ↑/↓ para reordenar, edite o ALT e clique em Salvar Lista.</div>
+          <div id="crs-banners-lista" style="display:grid;gap:10px">
+            <div style="padding:12px;border:1px dashed #cfd8dc;border-radius:10px;background:#fafafa;color:#546e7a;font-size:.82rem">Carregando lista de banners...</div>
+          </div>
+          <div class="btn-row" style="margin-top:12px">
+            <button class="btn btn-salvar" onclick="salvarBannersCarrosselDedicado()">💾 Salvar Lista de Banners</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="seção" id="sec-galeria">
       <div class="card">
         <div class="card-header"><h2>📸 Galeria — Configurações</h2><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar</button></div>
@@ -3780,6 +3840,7 @@ function irPara(seção,btn){
     'dicas-admin':    ['depoimentos'],
     'sobre-admin':    ['sobre','carrossel-config'],
     'galeria-admin':  ['galeria'],
+    'carrossel-admin': ['carrossel-admin'],
     'encomendas-config-admin': ['encomendas-config'],
     'qualidade':      ['qualidade'],
     'rastreio-admin': ['rastreio'],
@@ -3841,6 +3902,7 @@ function irPara(seção,btn){
   if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');safeInit('SOBRE',()=>carregarSobre());}
   if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');safeInit('CARROSSEL',()=>carregarCarrosselConfig());}
   if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');safeInit('GALERIA',()=>carregarGaleria());}
+  if(ids.includes('carrossel-admin')){console.log('[irPara] Inicializando CARROSSEL-ADMIN');safeInit('CARROSSEL-ADMIN',()=>renderListaBannersCarrosselDedicado());}
   if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');safeInit('ENCOMENDAS CONFIG',()=>carregarEncomendas());}
   if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');safeInit('QUALIDADE',()=>{atualizarScoresQualidade();preencherNotasOperacionais();});}
   if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');safeInit('RASTREIO',()=>renderRastreioRecentes());}
@@ -4544,6 +4606,105 @@ async function salvarBannersCarrossel(){
     toast('✅ Lista de banners salva com sucesso!', 'ok');
   }
 }
+
+// ─── CARROSSEL DEDICADO — funções para a aba exclusiva ────────────────────────
+var _crsBannerBlob = null;
+
+function processarUploadCarrosselDedicado(file) {
+  const erroEl = document.getElementById('crs-banner-erro');
+  const previewWrap = document.getElementById('crs-banner-preview-wrap');
+  const previewImg = document.getElementById('crs-banner-preview');
+  const infoEl = document.getElementById('crs-banner-info');
+  if (erroEl) erroEl.textContent = '';
+  if (!file) return;
+  processarImagem(file, 1536, 1024, 0.82, (info, erro) => {
+    if (erro) {
+      if (erroEl) { erroEl.textContent = '❌ ' + erro; erroEl.classList.add('ativo'); }
+      return;
+    }
+    _crsBannerBlob = info.blob;
+    if (previewImg) previewImg.src = URL.createObjectURL(info.blob);
+    if (previewWrap) previewWrap.classList.add('ativo');
+    if (infoEl) infoEl.innerHTML = `<span style="color:#2e7d32">✅ WebP convertido</span> <span>${info.width}×${info.height}px</span> <span>${info.tamanhoKB}KB</span>`;
+    if (erroEl) erroEl.classList.remove('ativo');
+    toast('Imagem processada! Clique em Adicionar ao Carrossel.', 'info');
+  });
+}
+
+async function adicionarBannerCarrosselDedicado() {
+  if (!_crsBannerBlob) { toast('Selecione uma imagem primeiro.', 'erro'); return; }
+  const altText = (document.getElementById('crs-banner-alt')?.value.trim()) || 'Banner Sorveteria Itapolitana Cajuru';
+  const nomeArq = `images/carrossel/banner-${Date.now()}.webp`;
+  mostrarLoading('Enviando banner para o carrossel...');
+  try {
+    const result = await ghPutImagem(nomeArq, _crsBannerBlob, 'Admin: adicionar banner ao carrossel');
+    ocultarLoading();
+    if (result && result.ok) {
+      if (!STATE.config) STATE.config = {};
+      if (!Array.isArray(STATE.config.banners)) STATE.config.banners = [];
+      STATE.config.banners.push({ src: nomeArq, alt: altText, ts: Date.now() });
+      const ok = await salvarArquivo(PATHS.config, STATE.config, 'configSha', 'Admin: adicionar banner ao carrossel');
+      if (ok) {
+        renderListaBannersCarrosselDedicado();
+        renderListaBannersCarrossel(); // sincroniza lista na aba pagina-inicial
+        toast('✅ Banner adicionado ao carrossel!', 'ok');
+        _crsBannerBlob = null;
+        const pw = document.getElementById('crs-banner-preview-wrap');
+        if (pw) pw.classList.remove('ativo');
+        const ai = document.getElementById('crs-banner-alt');
+        if (ai) ai.value = '';
+        const fi = document.getElementById('crs-banner-input');
+        if (fi) fi.value = '';
+      }
+    } else {
+      toast('❌ Erro ao enviar banner: ' + ((result && result.erro) || 'falha'), 'erro');
+    }
+  } catch(e) {
+    ocultarLoading();
+    toast('❌ Erro ao enviar: ' + e.message, 'erro');
+  }
+}
+
+function renderListaBannersCarrosselDedicado() {
+  const wrap = document.getElementById('crs-banners-lista');
+  if (!wrap) return;
+  const banners = obterBannersCarrossel();
+  if (!banners.length) {
+    wrap.innerHTML = '<div style="padding:12px;border:1px dashed #cfd8dc;border-radius:10px;background:#fafafa;color:#546e7a;font-size:.82rem">Nenhum banner em config.banners[] ainda. Adicione a primeira imagem acima!</div>';
+    return;
+  }
+  wrap.innerHTML = banners.map((b, i) => {
+    const srcEsc = esc(b.src);
+    const altEsc = esc(b.alt || '');
+    const srcPreview = srcEsc.startsWith('http') ? srcEsc : ('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/' + srcEsc);
+    return `<div style="display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid #eceff1;border-radius:10px;background:#fff">
+      <img src="${srcPreview}" alt="${altEsc}" style="width:86px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #e0e0e0" loading="lazy" decoding="async" onerror="this.style.opacity=.35"/>
+      <div>
+        <div style="font-size:.75rem;color:#546e7a;margin-bottom:4px">#${i + 1} · <code>${srcEsc}</code></div>
+        <input type="text" value="${altEsc}" maxlength="120" onchange="atualizarAltBannerCarrossel(${i}, this.value)" style="width:100%;padding:8px 10px;border:1px solid #cfd8dc;border-radius:8px" placeholder="Texto alternativo (alt)"/>
+      </div>
+      <div style="display:grid;gap:6px">
+        <button class="btn btn-cinza" style="padding:6px 10px" onclick="moverBannerCarrossel(${i},-1);renderListaBannersCarrosselDedicado()" ${i===0?'disabled':''}>↑</button>
+        <button class="btn btn-cinza" style="padding:6px 10px" onclick="moverBannerCarrossel(${i},1);renderListaBannersCarrosselDedicado()" ${i===banners.length-1?'disabled':''}>↓</button>
+        <button class="btn btn-excluir" style="padding:6px 10px" onclick="removerBannerCarrossel(${i});renderListaBannersCarrosselDedicado()">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function salvarBannersCarrosselDedicado() {
+  const c = STATE.config || {};
+  c.banners = obterBannersCarrossel();
+  STATE.config = c;
+  const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar lista de banners do carrossel');
+  if (ok) {
+    renderListaBannersCarrosselDedicado();
+    renderListaBannersCarrossel(); // sincroniza lista na aba pagina-inicial
+    toast('✅ Lista de banners salva!', 'ok');
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 
 async function salvarPromoção(){
   // Validação: título obrigatório quando promoção ativa
