@@ -426,7 +426,8 @@
     if (/\.{4,}/.test(val)) problemas.push('evite reticências longas (....) no texto do site');
 
     // Links malformados em campos de texto livre
-    if (campo.tagName === 'TEXTAREA' && /http[^ ]+/i.test(val) && !/^https?:\/\//i.test(val.match(/http[^ ]+/i)[0])) {
+    var urlMatch = campo.tagName === 'TEXTAREA' && val.match(/\bhttps?:\/\/[^\s]+/gi);
+    if (urlMatch && urlMatch.some(function(u){ return /^http:/i.test(u); })) {
       problemas.push('verifique se os links no texto começam com https://');
     }
 
@@ -478,7 +479,7 @@
    * 9. AVISO AO SAIR SEM SALVAR
    * ══════════════════════════════════════════════════════════════════════════ */
 
-  var _campos_alterados = new Set ? new Set() : {};
+  var _campos_alterados = typeof Set === 'function' ? new Set() : {};
   var _usaSet = typeof Set === 'function';
 
   function marcarAlterado(campo) {

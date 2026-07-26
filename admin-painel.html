@@ -4557,7 +4557,8 @@ function renderListaBannersCarrossel(){
   wrap.innerHTML = banners.map((b, i) => {
     const srcEsc = esc(b.src);
     const altEsc = esc(b.alt || '');
-    const srcPreview = srcEsc.startsWith('http') ? srcEsc : ('https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/' + srcEsc);
+    const safeSrc = /^[a-zA-Z0-9_\-./]+$/.test(b.src) && !b.src.includes('..') ? b.src : '';
+    const srcPreview = srcEsc.startsWith('https://') ? srcEsc : (safeSrc ? 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/' + safeSrc : '');
     return `<div style="display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid #eceff1;border-radius:10px;background:#fff">
       <img src="${srcPreview}" alt="${altEsc}" style="width:86px;height:58px;object-fit:cover;border-radius:8px;border:1px solid #e0e0e0" loading="lazy" decoding="async" onerror="this.style.opacity=.35"/>
       <div>
@@ -4576,7 +4577,7 @@ function renderListaBannersCarrossel(){
 function atualizarAltBannerCarrossel(idx, valor){
   const banners = obterBannersCarrossel();
   if (!banners[idx]) return;
-  banners[idx].alt = String(valor || '').trim();
+  banners[idx].alt = String(valor || '').trim().replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function moverBannerCarrossel(idx, dir){
