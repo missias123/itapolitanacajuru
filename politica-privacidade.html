@@ -11,12 +11,23 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('consent', 'default', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'wait_for_update': 500
+    });
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF"></script>
   <script>
     gtag('js', new Date());
-    gtag('config', 'G-S6TCMLQLQF');
+    gtag('config', 'G-S6TCMLQLQF', {'send_page_view': false});
+    (function(){
+      var c = localStorage.getItem('cookies_aceitos');
+      if(c === 'aceitos') {
+        gtag('consent', 'update', {'analytics_storage': 'granted'});
+        gtag('event', 'page_view');
+      }
+    })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -157,8 +168,10 @@
       <li>Acessar, corrigir ou atualizar seus dados cadastrados.</li>
       <li>Revogar o consentimento para recebimento de promoções.</li>
       <li>Opor-se ao tratamento realizado com base em legítimo interesse.</li>
+      <li>Solicitar a exclusão dos seus dados pessoais.</li>
+      <li>Obter informações sobre o compartilhamento dos seus dados.</li>
     </ul>
-    <div class="pp-destaque">📲 Para exercer qualquer direito, entre em contato: <a class="pp-contato-link" href="https://wa.me/5516996062046" target="_blank" rel="noopener">(16) 99606-2046</a> — respondemos em até 15 dias úteis.</div>
+    <div class="pp-destaque">📲 Canal LGPD — Para exercer qualquer direito, envie sua solicitação escrita pelo WhatsApp: <a class="pp-contato-link" href="https://wa.me/5516996062046" target="_blank" rel="noopener">(16) 99606-2046</a>. Informe nome completo, tipo de solicitação e dados para retorno. Respondemos em até <strong>15 dias úteis</strong>.</div>
   </div>
 
   <div class="pp-section">
@@ -217,6 +230,8 @@
       <a href="politica-privacidade.html" class="itap-footer-pill">🔒 Política de Privacidade (LGPD)</a>
       <span style="color:rgba(255,255,255,.3);font-weight:700;font-size:16px;">·</span>
       <a href="sobre.html" class="itap-footer-pill">ℹ️ Sobre a Itapolitana</a>
+      <span style="color:rgba(255,255,255,.3);font-weight:700;font-size:16px;">·</span>
+      <button onclick="reabrirCookieBanner()" class="itap-footer-pill" style="background:none;border:none;cursor:pointer;font:inherit;" aria-label="Preferências de cookies">🍪 Preferências de cookies</button>
     </div>
   </div>
   <!-- Copyright -->
@@ -226,8 +241,7 @@
   </div>
   <!-- Admin link discreto -->
   <div style="padding:4px 0 16px;">
-    <a href="admin-painel.html" style="color:rgba(255,255,255,.15);font-size:1.1rem;text-decoration:none;padding:8px;" title="Admin">⚙️</a>
-  </div>
+</div>
 </footer>
 <!-- ═══ FIM RODAPÉ PADRÃO ═══════════════════════════════════════════════════ -->
 <!-- Barra mobile fixa global (sem Ita Bot) -->
@@ -269,5 +283,12 @@
 <script src="scripts/site-loader.js" defer></script>
 <script src="scripts/ita-bot-engine.js" defer></script>
 <script src="scripts/ita-bot-widget.js" defer></script>
+<script>
+function reabrirCookieBanner() {
+  localStorage.removeItem('cookies_aceitos');
+  var banner = document.getElementById('cookie-banner');
+  if (banner) banner.style.display = 'block';
+}
+</script>
 </body>
 </html>
