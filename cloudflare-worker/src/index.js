@@ -1541,11 +1541,63 @@ async function handlePostSorteioCadastro(request, env) {
   }
 
   // Aceitar tanto "name" (front-end novo) quanto "nome" (retrocompatibilidade)
-  const nome        = sanitizeString(body.name || body.nome, 200);
+    const nome        = sanitizeString(body.name || body.nome, 200);
   const birthdate   = sanitizeString(body.birthdate || body.dataNasc, 20);
   const phone       = String(body.phone || body.cel || '').replace(/\D/g, '');
   const regAccept   = !!body.regulation_accept;
   const normalizedPayload = { name: nome, birthdate, phone, regulation_accept: regAccept };
+
+  // Validação de campos obrigatórios e formato
+  if (!regAccept) {
+    return jsonResp({
+      success: false,
+      code: 'PROMO_REGULATION_REQUIRED',
+      requestId,
+      error: 'Você precisa aceitar o regulamento para participar.',
+    }, 400);
+  }
+  if (!nome || nome.length < 3) {
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_NAME',
+      requestId,
+      error: 'Nome inválido. Use seu nome completo (mínimo 3 caracteres).',
+    }, 400);
+  }
+  if (!birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_BIRTHDATE',
+      requestId,
+      error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.',
+    }, 400);
+  }
+  if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
+    return jsonResp({
+      success: false,
+      code: 'PROMO_INVALID_PHONE',
+      requestId,
+      error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).',
+    }, 400);
+  }
+
+  // Idade mínima: 14 anos
+  const [ano, mes, dia] = birthdate.split('-').map(Number);
+  const nasc  = new Date(ano, mes - 1, dia);
+  const hoje  = new Date();
+  let   idade = hoje.getFullYear() - nasc.getFullYear();
+  if (hoje.getMonth() < nasc.getMonth() ||
+      (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) {
+    idade--;
+  }
+  if (idade < 14) {
+   return jsonResp({
+     success: false,
+     code: 'PROMO_UNDERAGE',
+     requestId,
+     error: 'É necessário ter no mínimo 14 anos para participar.',
+   }, 400);
+   }
   const idempotency = getPromoIdempotencyKey(request, body);
   if (idempotency.error === 'mismatch') {
     return jsonResp({
@@ -1667,73 +1719,79 @@ async function handlePostSorteioCadastro(request, env) {
 
   let finalResult = null;
 
-  // ── Verificar duplicidade por celular ────────────────────────────────────────
-  const existingIdCel = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
-  if (existingIdCel) {
-   finalResult = promoResponse({
-     success: false,
-     code: 'PROMO_REGISTRATION_EXISTS',
-     requestId,
-     registrationId: existingIdCel,
-     error: 'Este WhatsApp já possui um cadastro nesta promoção.',
-   }, 409);
-  }
-
   // ── Verificar duplicidade por nome + data de nascimento (Regra 2.4) ──────────
   const nascKey = sorteioNascKey(nome, birthdate);
-  if (!finalResult) {
-   const existingIdNasc = await env.CLIENTES_KV.get(nascKey);
-   if (existingIdNasc) {
-     finalResult = promoResponse({
-       success: false,
-       code: 'PROMO_REGISTRATION_EXISTS',
-       requestId,
-       registrationId: existingIdNasc,
-       error: 'Este WhatsApp já possui um cadastro nesta promoção.',
-     }, 409);
-   }
+  let existingParticipantId = await env.CLIENTES_KV.get(nascKey);
+
+  if (existingParticipantId) {
+    // Se já existe um cadastro com o mesmo nome e data de nascimento
+    // Retorna o ID existente e informa que já está cadastrado
+    finalResult = promoResponse({
+      success: false,
+      code: 'PROMO_REGISTRATION_EXISTS',
+      requestId,
+      registrationId: existingParticipantId,
+      error: 'Você já está cadastrado nesta promoção. Se precisar alterar seu celular ou atualizar alguma informação permitida, utilize a opção \'Já sou cadastrado\'.',
+    }, 409);
+  } else {
+    // Se não encontrou por nome+dataNasc, verifica por celular (para casos de atualização)
+    const existingIdCel = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
+    if (existingIdCel) {
+      // Se encontrou por celular, mas não por nome+dataNasc, é um caso de celular atualizado
+      // Não cria novo cadastro, apenas retorna o ID existente
+      existingParticipantId = existingIdCel;
+      finalResult = promoResponse({
+        success: false,
+        code: 'PROMO_REGISTRATION_EXISTS_BY_PHONE',
+        requestId,
+        registrationId: existingParticipantId,
+        error: 'Este celular já está associado a um cadastro existente. Utilize a opção \'Já sou cadastrado\' para atualizar seus dados.',
+      }, 409);
+    }
   }
 
-  // ── Gerar novo ID de inscrição ────────────────────────────────────────────────
-  // Usa contador sequencial + sufixo aleatório para garantir unicidade mesmo
-  // em requisições simultâneas (Cloudflare KV não oferece incremento atômico).
+  // ── Gerar novo ID de inscrição ou usar existente ────────────────────────────────
+  let registrationId = existingParticipantId;
   if (!finalResult) {
-   const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
-   let contador = parseInt(contadorStr || '0', 10);
-   contador += 1;
-   const randomSuffix = generateIdHash().slice(0, 4);
-   const novoId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
-   const agora  = new Date().toISOString();
+    // Usa contador sequencial + sufixo aleatório para garantir unicidade mesmo
+    // em requisições simultâneas (Cloudflare KV não oferece incremento atômico).
+    const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
+    let contador = parseInt(contadorStr || '0', 10);
+    contador += 1;
+    const randomSuffix = generateIdHash().slice(0, 4);
+    registrationId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
+    const agora  = new Date().toISOString();
 
-   const inscricao = {
-     id:                novoId,
-     nome,
-     birthdate,
-     phone,
-     regulation_accept: true,
-     created_at:        agora,
-     requestId,
-     idempotencyKey: idempotencyKey || null,
-   };
+    const inscricao = {
+      id:                registrationId,
+      nome,
+      birthdate,
+      phone,
+      regulation_accept: true,
+      created_at:        agora,
+      requestId,
+      idempotencyKey: idempotencyKey || null,
+      historico_alteracoes: [], // Novo campo para histórico
+    };
 
-   // ── Persistir no KV ──────────────────────────────────────────────────────────
-   await env.CLIENTES_KV.put(`sorteio:inscrito:${novoId}`, JSON.stringify(inscricao));
-   await env.CLIENTES_KV.put(`sorteio:idx:cel:${phone}`, novoId);
-   await env.CLIENTES_KV.put(nascKey, novoId);
-   await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
+    // ── Persistir no KV ──────────────────────────────────────────────────────────
+    await env.CLIENTES_KV.put(`sorteio:inscrito:${registrationId}`, JSON.stringify(inscricao));
+    await env.CLIENTES_KV.put(`sorteio:idx:cel:${phone}`, registrationId);
+    await env.CLIENTES_KV.put(nascKey, registrationId);
+    await env.CLIENTES_KV.put('meta:sorteio_contador', String(contador));
 
-   await registrarAudit(env, 'sorteio_cadastro', novoId, {
-     cel: `${phone.slice(0, 4)}*****${phone.slice(-2)}`,
-     requestId,
-     idempotencyKey: idempotencyKey || null,
-   });
+    await registrarAudit(env, 'sorteio_cadastro', registrationId, {
+      cel: `${phone.slice(0, 4)}*****${phone.slice(-2)}`,
+      requestId,
+      idempotencyKey: idempotencyKey || null,
+    });
 
-   finalResult = promoResponse({
-     success: true,
-     code: 'PROMO_REGISTRATION_CREATED',
-     requestId,
-     registrationId: novoId,
-   }, 201);
+    finalResult = promoResponse({
+      success: true,
+      code: 'PROMO_REGISTRATION_CREATED',
+      requestId,
+      registrationId: registrationId,
+    }, 201);
   }
 
   if (idempotencyKvKey) {
@@ -1753,6 +1811,20 @@ async function handlePostSorteioCadastro(request, env) {
 // ─── Sorteio KV key helpers ───────────────────────────────────────────────────
 
 /** Normaliza nome para uso como chave KV (lowercase, sem acentos, sem espaços extras). */
+function normalizarNomeCompleto(nome) {
+  return String(nome)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+}
+
+/** Chave KV para índice nome+dataNasc. */
+function sorteioNascKey(nome, birthdate) {
+  return `sorteio:idx:nasc:${normalizarNomeCompleto(nome)}__${birthdate}`;
+}
 function normalizarNomeSorteio(nome) {
   return String(nome)
     .toLowerCase()
@@ -1806,12 +1878,37 @@ async function handlePatchSorteioInscrito(id, request, env) {
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido.' }, 400); }
 
   // Remove índices antigos antes de atualizar
-  const celAntigo = String(inscricao.phone || '').replace(/\D/g, '');
+    const celAntigo = String(inscricao.phone || '').replace(/\D/g, '');
   const nascKeyAntigo = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+
+  // Captura os valores antigos para o histórico
+  const oldNome = inscricao.nome;
+  const oldBirthdate = inscricao.birthdate;
+  const oldPhone = inscricao.phone;
 
   if (body.nome !== undefined)      inscricao.nome      = sanitizeString(body.nome, 200);
   if (body.birthdate !== undefined) inscricao.birthdate = sanitizeString(body.birthdate, 20);
   if (body.phone !== undefined)     inscricao.phone     = String(body.phone).replace(/\D/g, '');
+
+  // Adiciona ao histórico de alterações
+  if (!inscricao.historico_alteracoes) inscricao.historico_alteracoes = [];
+  const agora = new Date().toISOString();
+
+  if (oldNome !== inscricao.nome) {
+    inscricao.historico_alteracoes.push({
+      data: agora, campo: 'nome', valor_antigo: oldNome, valor_novo: inscricao.nome
+    });
+  }
+  if (oldBirthdate !== inscricao.birthdate) {
+    inscricao.historico_alteracoes.push({
+      data: agora, campo: 'birthdate', valor_antigo: oldBirthdate, valor_novo: inscricao.birthdate
+    });
+  }
+  if (oldPhone !== inscricao.phone) {
+    inscricao.historico_alteracoes.push({
+      data: agora, campo: 'phone', valor_antigo: oldPhone, valor_novo: inscricao.phone
+    });
+  }
 
   const celNovo  = String(inscricao.phone || '').replace(/\D/g, '');
   const nascKeyNovo = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
@@ -1827,9 +1924,25 @@ async function handlePatchSorteioInscrito(id, request, env) {
     if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Já existe um inscrito com este nome e data de nascimento.' }, 409);
   }
 
+  // Verificar conflito: novo telefone já pertence a outro inscrito
+  if (celNovo !== celAntigo && celNovo) {
+    const conflito = await env.CLIENTES_KV.get(`sorteio:idx:cel:${celNovo}`);
+    if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Este telefone já pertence a outro inscrito.' }, 409);
+  }
+  // Verificar conflito: novo nome+dataNasc já pertence a outro inscrito
+  if (nascKeyNovo !== nascKeyAntigo) {
+    const conflito = await env.CLIENTES_KV.get(nascKeyNovo);
+    if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Já existe um inscrito com este nome e data de nascimento.' }, 409);
+  }
+
+  // Remover índices antigos se mudaram
   // Remover índices antigos se mudaram
   if (celNovo !== celAntigo && celAntigo) await env.CLIENTES_KV.delete(`sorteio:idx:cel:${celAntigo}`);
   if (nascKeyNovo !== nascKeyAntigo)      await env.CLIENTES_KV.delete(nascKeyAntigo);
+
+  // Gravar índices novos
+  if (celNovo)  await env.CLIENTES_KV.put(`sorteio:idx:cel:${celNovo}`, id);
+  await env.CLIENTES_KV.put(nascKeyNovo, id);
 
   // Gravar índices novos
   if (celNovo)  await env.CLIENTES_KV.put(`sorteio:idx:cel:${celNovo}`, id);
