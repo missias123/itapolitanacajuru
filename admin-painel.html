@@ -3334,7 +3334,7 @@ async function iniciarSessaoWorkerComSenha(senha){
     const dados=await r.json();
     if(!r.ok||!dados.ok||!dados.token)return{ok:false,error:dados.error||'Falha na autenticação do Worker.'};
     setWorkerSessionToken(dados.token);
-    return{ok:true};
+    return{ok:true, hasGithubToken: !!dados.hasGithubToken};
   }catch(e){
     return{ok:false,error:e&&e.message?e.message:'Falha de rede no Worker.'};
   }
@@ -3541,6 +3541,24 @@ async function carregarConfigAdmin(forceRefresh=false){
   return cfg;
 }
 async function ghPut(path,data,sha,msg){
+  // Se não temos PAT mas temos sessão Worker, tentamos via Worker Proxy
+  if(!GITHUB_PAT && getWorkerSessionToken()) {
+    try {
+      const rWorker = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/github-file', {
+        method: 'PUT',
+        headers: getWorkerAuthHeaders(),
+        body: JSON.stringify({ path, data, sha, message: msg })
+      }, 15000);
+      const d = await rWorker.json();
+      if(rWorker.ok && d.ok) return { ok: true, sha: d.sha };
+      throw new Error(d.error || 'Erro no Worker Proxy');
+    } catch (e) {
+      console.error('[Admin] Falha no salvamento via Worker Proxy:', e);
+      toast('❌ Erro ao salvar via Worker: ' + (e.message || e), 'erro');
+      return { ok: false, erro: e.message };
+    }
+  }
+
   const MAX_TENTATIVAS = 3;
   for(let tentativa = 1; tentativa <= MAX_TENTATIVAS; tentativa++){
     try{
@@ -3571,7 +3589,7 @@ async function ghPut(path,data,sha,msg){
   return{ok:false,erro:'Falha após '+MAX_TENTATIVAS+' tentativas. Verifique sua conexão.'};
 }
 async function salvarArquivo(path,data,shaKey,msg){
-  if(!GH_WRITE_ALLOWED||!getToken()){
+  if(!GH_WRITE_ALLOWED || (!getToken() && !getWorkerSessionToken())){
     const banner=document.getElementById('aviso-token-expirado');
     if(banner)banner.style.display='flex';
     toast('⚠️ Modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
@@ -3665,13 +3683,26 @@ async function entrar(){
   if(!workerAuth.ok){
     console.warn('[Admin] Sessão do Worker indisponível:',workerAuth.error);
     clearWorkerSessionToken();
+  } else if (workerAuth.hasGithubToken && !GITHUB_PAT) {
+    // Se o Worker tem token e o usuário não informou um, usamos o Worker
+    GH_WRITE_ALLOWED = true;
+    GH_TOKEN_CAN_WRITE = true;
+    console.log('[Admin] Usando GITHUB_TOKEN via Worker Proxy.');
+    atualizarStatusGitHubToken('✅ Conectado via Worker Proxy. Edição liberada.','success');
   }
+
   ocultarLoading();
   loginErro.style.display='none';
   document.getElementById('login-screen').style.display='none';
   document.getElementById('admin-app').style.display='block';
   atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
-  if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
+  
+  if(!GH_WRITE_ALLOWED) {
+    toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
+  } else {
+    toast('✅ Bem-vindo! Acesso administrativo liberado.','sucesso');
+  }
+  
   await carregarTudo();
   const btnPaginaInicial=document.getElementById('nav-btn-pagina-inicial');
   irPara('pagina-inicial',btnPaginaInicial);

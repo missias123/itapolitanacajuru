@@ -4,93 +4,41 @@ compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ─── KV Namespaces ─────────────────────────────────────────────────────────────
-# ⚠️  AÇÃO OBRIGATÓRIA ANTES DO DEPLOY:
-#   1. Execute os comandos abaixo para criar os namespaces:
-#        npx wrangler kv namespace create CLIENTES_KV
-#        npx wrangler kv namespace create ENCOMENDAS_KV
-#        npx wrangler kv namespace create RATE_KV
-#   2. Substitua CADA "PLACEHOLDER_*" pelo ID retornado pelo Wrangler.
-#      Nunca use IDs inventados/fictícios no versionamento.
-#      Os IDs reais devem ser aplicados apenas no ambiente correspondente (local/staging/produção).
-#   3. O Worker valida os IDs no startup e falha com erro claro caso ainda
-#      existam valores de placeholder (evita deploy silencioso com config errada).
 [[kv_namespaces]]
 binding    = "CLIENTES_KV"
-id         = "PLACEHOLDER_CLIENTES_KV_ID"   # ← substitua pelo ID real
-preview_id = "PLACEHOLDER_CLIENTES_KV_ID"   # ← substitua pelo ID real
+id         = "9a3e5d5c8fc94c8a8b2d27e0fcc783f9"
+preview_id = "9a3e5d5c8fc94c8a8b2d27e0fcc783f9"
 
 [[kv_namespaces]]
 binding    = "ENCOMENDAS_KV"
-id         = "PLACEHOLDER_ENCOMENDAS_KV_ID" # ← substitua pelo ID real
-preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID" # ← substitua pelo ID real
+id         = "6b5f3c8a655842b5a42dfca0bdeafa90"
+preview_id = "6b5f3c8a655842b5a42dfca0bdeafa90"
 
 [[kv_namespaces]]
 binding    = "RATE_KV"
-id         = "PLACEHOLDER_RATE_KV_ID"       # ← substitua pelo ID real
-preview_id = "PLACEHOLDER_RATE_KV_ID"       # ← substitua pelo ID real
+id         = "48321bd8c21f42e98488ff8f28d6da89"
+preview_id = "48321bd8c21f42e98488ff8f28d6da89"
 
 # ─── Variáveis de ambiente públicas ───────────────────────────────────────────
 [vars]
 ENVIRONMENT = "production"
 
-[env.local.vars]
-ENVIRONMENT = "local"
-[[env.local.kv_namespaces]]
-binding    = "CLIENTES_KV"
-id         = "PLACEHOLDER_CLIENTES_KV_ID"
-preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
-[[env.local.kv_namespaces]]
-binding    = "ENCOMENDAS_KV"
-id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
-preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
-[[env.local.kv_namespaces]]
-binding    = "RATE_KV"
-id         = "PLACEHOLDER_RATE_KV_ID"
-preview_id = "PLACEHOLDER_RATE_KV_ID"
-
-[env.staging.vars]
-ENVIRONMENT = "staging"
-[[env.staging.kv_namespaces]]
-binding    = "CLIENTES_KV"
-id         = "PLACEHOLDER_CLIENTES_KV_ID"
-preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
-[[env.staging.kv_namespaces]]
-binding    = "ENCOMENDAS_KV"
-id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
-preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
-[[env.staging.kv_namespaces]]
-binding    = "RATE_KV"
-id         = "PLACEHOLDER_RATE_KV_ID"
-preview_id = "PLACEHOLDER_RATE_KV_ID"
-
 [env.production.vars]
 ENVIRONMENT = "production"
 [[env.production.kv_namespaces]]
 binding    = "CLIENTES_KV"
-id         = "PLACEHOLDER_CLIENTES_KV_ID"
-preview_id = "PLACEHOLDER_CLIENTES_KV_ID"
+id         = "9a3e5d5c8fc94c8a8b2d27e0fcc783f9"
+preview_id = "9a3e5d5c8fc94c8a8b2d27e0fcc783f9"
 [[env.production.kv_namespaces]]
 binding    = "ENCOMENDAS_KV"
-id         = "PLACEHOLDER_ENCOMENDAS_KV_ID"
-preview_id = "PLACEHOLDER_ENCOMENDAS_KV_ID"
+id         = "6b5f3c8a655842b5a42dfca0bdeafa90"
+preview_id = "6b5f3c8a655842b5a42dfca0bdeafa90"
 [[env.production.kv_namespaces]]
 binding    = "RATE_KV"
-id         = "PLACEHOLDER_RATE_KV_ID"
-preview_id = "PLACEHOLDER_RATE_KV_ID"
-
-# ─── Segredos (NÃO colocar valores aqui — use wrangler secret put) ──────────
-# Autenticação administrativa (use PBKDF2 — mais seguro):
-#   wrangler secret put ADMIN_PASSWORD_RECORD (preferido: pbkdf2-sha256$v=1$iter=600000$salt=...$hash=...)
-#   wrangler secret put ADMIN_HASH   (legado: hash PBKDF2-SHA-256 em base64)
-#   wrangler secret put ADMIN_SALT   (legado: salt aleatório em base64)
-# Legado (remover após migração PBKDF2):
-#   wrangler secret put ADMIN_SECRET
-# Token GitHub e setup:
-#   wrangler secret put GITHUB_TOKEN
-#   wrangler secret put SETUP_KEY    (usado uma vez para gerar ADMIN_HASH/ADMIN_SALT — remover depois)
+id         = "48321bd8c21f42e98488ff8f28d6da89"
+preview_id = "48321bd8c21f42e98488ff8f28d6da89"
 
 # ─── Rota personalizada ───────────────────────────────────────────────────────
-# Após configurar o domínio no Cloudflare, defina a rota:
-# [[routes]]
-# pattern  = "api.itapolitanacajuru.com.br/*"
-# zone_name = "itapolitanacajuru.com.br"
+[[routes]]
+pattern  = "api.itapolitanacajuru.com.br/*"
+zone_name = "itapolitanacajuru.com.br"

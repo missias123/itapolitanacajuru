@@ -694,7 +694,12 @@ async function handleAdminSession(request, env) {
 
   const token = await issueAdminSessionToken(env);
   await registrarAudit(env, 'admin_login_ok', 'admin', { ip: (ip + '').slice(0, 8) + '…' });
-  return jsonResp({ ok: true, token, expiresIn: SESSION_TTL });
+  return jsonResp({
+    ok: true,
+    token,
+    expiresIn: SESSION_TTL,
+    hasGithubToken: !!env.GITHUB_TOKEN
+  });
 }
 
 async function issueAdminSessionToken(env) {
