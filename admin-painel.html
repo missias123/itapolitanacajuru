@@ -3640,11 +3640,18 @@ async function entrar(){
     loginErro.style.display='block';
     return;
   }
-  const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
-  if(!senhaOk){
+  // Tenta autenticação local se o hash estiver disponível
+  let senhaOk = false;
+  if (STATE.senhaAdmin) {
+    senhaOk = (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
+  }
+
+  // Se a senha local falhar e não houver Worker configurado, barramos aqui.
+  // Caso contrário, deixamos o Worker tentar validar a senha.
+  if (STATE.senhaAdmin && !senhaOk) {
     ocultarLoading();
-    loginErro.innerHTML='&#x274C; Senha incorreta.';
-    loginErro.style.display='block';
+    loginErro.innerHTML = '&#x274C; Senha incorreta.';
+    loginErro.style.display = 'block';
     return;
   }
   // --- GitHub Token: validar token e habilitar escrita ---
