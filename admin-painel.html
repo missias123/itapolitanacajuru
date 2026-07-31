@@ -579,7 +579,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
     <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
     <button class="nav-btn" id="nav-btn-promocao" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
-    <button class="nav-btn" id="nav-btn-fidelidade" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
+    <button class="nav-btn" id="nav-btn-participantes" onclick="irPara('participantes',this)">👥 Participantes</button>
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
@@ -608,7 +608,7 @@ body { overflow-x: hidden; }
           <button onclick="irPara('encomendas-admin',document.getElementById('nav-btn-encomendas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
           <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
           <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
-          <button onclick="irPara('fidelidade-admin',document.getElementById('nav-btn-fidelidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
+          <button onclick="irPara('participantes',document.getElementById('nav-btn-participantes'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">👥<span>Participantes</span></button>
           <button onclick="irPara('carrossel-admin',document.getElementById('nav-btn-carrossel'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00838f,#00acc1)">🎠<span>Carrossel</span></button>
           <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
           <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
@@ -770,7 +770,7 @@ body { overflow-x: hidden; }
           <div class="seção-título" style="margin-top:20px">⚡ Botões de Ação da Página</div>
           <div class="campo-edit"><label>Texto botão "Participar"</label><input type="text" id="promocao-btn-participar" maxlength="50" placeholder="🎁 Quero Participar do Sorteio"/><div class="hint">Botão principal para participar do sorteio.</div></div>
           <div class="campo-edit"><label>Texto botão "Cardápio"</label><input type="text" id="promocao-btn-cardapio" maxlength="50" placeholder="🍦 Ver Cardápio"/><div class="hint">Botão para visualizar o cardápio completo.</div></div>
-          <div class="campo-edit"><label>Texto botão "Fidelidade"</label><input type="text" id="promocao-btn-fidelidade" maxlength="50" placeholder="⭐ Fidelidade"/><div class="hint">Botão para acessar o programa de fidelidade.</div></div>
+          <div class="campo-edit"><label>Texto botão "Sorteios"</label><input type="text" id="promocao-btn-fidelidade" maxlength="50" placeholder="🎁 Sorteios Mensais"/><div class="hint">Botão para acessar a área de sorteios mensais.</div></div>
 
           <!-- NOVOS CAMPOS FASE 3.2 - Banner e SEO -->
           <div class="seção-título" style="margin-top:20px">📣 Banner Superior</div>
@@ -851,7 +851,16 @@ body { overflow-x: hidden; }
         </div>
         <div class="card-body">
           <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.85rem;color:#1b5e20">
-            📋 <strong>Lista permanente:</strong> quem se inscrever participa de <em>todos</em> os sorteios mensais até o encerramento (<span id="sort-datafim-exib">02/01/2027</span>). A lista <strong>não é zerada</strong> a cada mês.
+            📋 <strong>Lista permanente:</strong> quem se inscrever permanece no admin até exclusão manual. Cadastros são organizados por <strong>lote mensal numerado</strong>.
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">
+            <div style="min-width:180px;flex:1">
+              <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Lote mensal (AAAA-MM)</label>
+              <select id="sort-lote-mes-select" style="width:100%;padding:8px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.87rem">
+                <option value="">Selecione um lote mensal…</option>
+              </select>
+            </div>
+            <button class="btn btn-vermelho" style="white-space:nowrap" onclick="deletarLoteMensalSorteio()">🗑️ Excluir lote do mês</button>
           </div>
           <!-- Filtro + busca -->
           <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
@@ -868,12 +877,13 @@ body { overflow-x: hidden; }
                   <th style="min-width:160px">Nome</th>
                   <th style="min-width:100px">Data Nasc.</th>
                   <th style="min-width:120px">Telefone</th>
+                  <th style="min-width:140px">Lote mensal</th>
                   <th style="min-width:130px">Cadastrado em</th>
                   <th style="min-width:100px">Ações</th>
                 </tr>
               </thead>
               <tbody id="sort-inscritos-tbody">
-                <tr><td colspan="6" style="text-align:center;color:#888;font-style:italic">Clique em &#x1F504; Atualizar para carregar a lista.</td></tr>
+                <tr><td colspan="7" style="text-align:center;color:#888;font-style:italic">Clique em &#x1F504; Atualizar para carregar a lista.</td></tr>
               </tbody>
             </table>
           </div>
@@ -2065,9 +2075,7 @@ Talento</textarea>
     <div class="seção" id="sec-participantes">
       <div class="stats-row">
         <div class="stat-card"><div class="num" id="part-total">-</div><div class="txt">Total Geral</div></div>
-        <div class="stat-card"><div class="num" id="part-fidelidade" style="color:#e8650a">-</div><div class="txt">Clube Fidelidade</div></div>
         <div class="stat-card"><div class="num" id="part-sorteio" style="color:#2e7d32">-</div><div class="txt">Sorteios Mensais</div></div>
-        <div class="stat-card"><div class="num" id="part-ambos" style="color:#7b1fa2">-</div><div class="txt">Ambos</div></div>
       </div>
       <div class="card" style="border-top:4px solid #2e7d32;margin-bottom:12px">
         <div class="card-body" style="padding:14px 20px">
@@ -2079,7 +2087,7 @@ Talento</textarea>
             <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV (Excel)</button>
           </div>
           <div style="font-size:.75rem;color:#888;margin-top:8px">
-            • <strong>Copiar Todos os Dados</strong>: formato completo com nº, nome, WhatsApp, data, tipo, pontos e status<br>
+            • <strong>Copiar Todos os Dados</strong>: formato completo com nº, nome, WhatsApp e data de cadastro<br>
             • <strong>Copiar Só Sorteio</strong>: apenas inscritos no sorteio mensal, numerados sequencialmente para sortear<br>
             • <strong>Exportar CSV</strong>: planilha para Excel/Google Sheets com todos os campos
           </div>
@@ -2109,23 +2117,19 @@ Talento</textarea>
                 <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Celular (WhatsApp)</label>
                 <input type="tel" id="add-part-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
               </div>
-              <div style="flex:1;min-width:140px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Tipo de cadastro</label>
-                <select id="add-part-tipo" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box">
-                  <option value="sorteio">🎁 Sorteio Mensal</option>
-                  <option value="fidelidade">🎟️ Clube Fidelidade</option>
-                </select>
+              <div style="flex:1;min-width:160px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Data de nascimento</label>
+                <input type="date" id="add-part-nasc" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
               </div>
+              <input type="hidden" id="add-part-tipo" value="sorteio"/>
               <button class="btn btn-verde" onclick="adicionarParticipanteManual()" style="padding:10px 18px;white-space:nowrap">➕ Adicionar</button>
             </div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
             <input type="search" id="busca-participante" placeholder="🔍 Buscar por nome ou celular..." oninput="renderParticipantes()" style="flex:2;min-width:180px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
             <select id="filtro-tipo-part" onchange="renderParticipantes()" style="flex:1;min-width:140px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem">
-              <option value="">Todos os tipos</option>
-              <option value="fidelidade">🎟️ </option>
+              <option value="">Todos os cadastros</option>
               <option value="sorteio">🎁 Sorteios Mensais</option>
-              <option value="ambos">⭐ Ambos</option>
             </select>
           </div>
           <div class="tabela-wrap">
@@ -2198,7 +2202,7 @@ Talento</textarea>
     </div>
 
     <!--  -->
-    <div class="seção" id="sec-fidelidade">
+    <div class="seção" id="sec-fidelidade" style="display:none">
       <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
         ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
       </div>
@@ -3841,7 +3845,6 @@ async function carregarTudo(){
   try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}
   try{preencherPromoção();}catch(e){console.error('[Admin] preencherPromoção',e);}
   try{preencherConfig();}catch(e){console.error('[Admin] preencherConfig',e);}
-  try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
   try{preencherSorteio();}catch(e){console.error('[Admin] preencherSorteio',e);}
   try{renderPreços();}catch(e){console.error('[Admin] renderPreços',e);}
   try{renderizarEstoqueAdmin();}catch(e){console.error('[Admin] renderizarEstoqueAdmin',e);}
@@ -3855,7 +3858,6 @@ async function carregarTudo(){
   try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}
   try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}
   try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}
-  try{carregarFidelidadePagina();}catch(e){console.error('[Admin] carregarFidelidadePagina',e);}
   fidApplyReadOnlyGuard();
 }
 function irPara(seção,btn){
@@ -3874,7 +3876,6 @@ function irPara(seção,btn){
     'encomendas-admin':['encomendas','sabores','estoque'],
     'produtos-admin': ['produtos'],
     'promocao-admin': ['promoção','participantes'],
-    'fidelidade-admin':['clientes','fidelidade'],
     'dicas-admin':    ['depoimentos'],
     'sobre-admin':    ['sobre','carrossel-config'],
     'galeria-admin':  ['galeria'],
@@ -3919,20 +3920,7 @@ function irPara(seção,btn){
       if(typeof renderDuplicidades==='function')renderDuplicidades();
     });
   }
-  if(ids.includes('fidelidade')){
-    console.log('[irPara] Inicializando ');
-    try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
-    try{if(typeof renderCódigos==='function')renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
-    try{if(typeof fidRenderProgresso==='function')fidRenderProgresso();if(typeof fidRenderLoteAtual==='function')fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
-    try{if(typeof carregarConfigSorteio==='function')carregarConfigSorteio();}catch(e){console.error('[Admin] carregarConfigSorteio',e);}
-    try{if(typeof carregarRegrasPontuacao==='function')carregarRegrasPontuacao();}catch(e){console.error('[Admin] carregarRegrasPontuacao',e);}
-    try{if(typeof carregarFidelidadePagina==='function')carregarFidelidadePagina();}catch(e){console.error('[Admin] carregarFidelidadePagina',e);}
-    const secFidelidade=document.getElementById('sec-fidelidade');
-    if(seção==='fidelidade-admin'&&secFidelidade){
-      secFidelidade.scrollIntoView({behavior:'smooth',block:'start'});
-    }
-  }
-  if(ids.includes('clientes')||ids.includes('fidelidade')) { if(typeof fidApplyReadOnlyGuard==='function') fidApplyReadOnlyGuard(); }
+  if(ids.includes('clientes')) { if(typeof fidApplyReadOnlyGuard==='function') fidApplyReadOnlyGuard(); }
   if(ids.includes('depoimentos')){
     console.log('[irPara] Inicializando DEPOIMENTOS');
     try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
@@ -5139,48 +5127,15 @@ const POR_PAG_PART = 50;
 if (!STATE.pagPart) STATE.pagPart = 0;
 
 function getParticipantesUnificados() {
-  // Clientes do 
-  const cliFid = Object.values(STATE.clientes?.clientes || STATE.fidelidade?.clientes || {});
-  // Inscritos nos Sorteios Mensais
-  const insSorteio = STATE.fidelidade?.sorteioInscritos || [];
-
-  // Mapa por celular para unificar
-  const mapa = {};
-
-  cliFid.forEach(c => {
-    const cel = c.cel || '';
-    if (!cel) return;
-    mapa[cel] = {
-      id: c.id || '-',
-      nome: c.nome || '-',
-      cel: cel,
-      tipo: 'fidelidade',
-      pontos: c.saldoPontos || 0,
-      cadastro: c.cadastro || '',
-      status: c.bloqueado ? 'Bloqueado' : c.fraude ? 'Fraude' : 'Ativo'
-    };
-  });
-
-  insSorteio.forEach(c => {
-    const cel = c.cel || '';
-    if (!cel) return;
-    if (mapa[cel]) {
-      mapa[cel].tipo = 'ambos'; // já está nos dois
-      if (c.id && mapa[cel].id === '-') mapa[cel].id = c.id;
-    } else {
-      mapa[cel] = {
-        id: c.id || '-',
-        nome: c.nome || '-',
-        cel: cel,
-        tipo: 'sorteio',
-        pontos: 0,
-        cadastro: c.data || '',
-        status: 'Ativo'
-      };
-    }
-  });
-
-  return Object.values(mapa);
+  return (_sortInscritos || []).map((ins) => ({
+    id: ins.id || '-',
+    nome: ins.nome || '-',
+    cel: String(ins.phone || '').replace(/\D/g,''),
+    tipo: 'sorteio',
+    pontos: 0,
+    cadastro: ins.created_at || '',
+    status: 'Ativo'
+  }));
 }
 
 function renderParticipantes() {
@@ -5196,13 +5151,9 @@ function renderParticipantes() {
 
   // Contadores
   const elTotal = document.getElementById('part-total');
-  const elFid   = document.getElementById('part-fidelidade');
   const elSort  = document.getElementById('part-sorteio');
-  const elAmbos = document.getElementById('part-ambos');
   if (elTotal) elTotal.textContent = todos.length;
-  if (elFid)   elFid.textContent   = todos.filter(p => p.tipo === 'fidelidade').length;
-  if (elSort)  elSort.textContent  = todos.filter(p => p.tipo === 'sorteio').length;
-  if (elAmbos) elAmbos.textContent = todos.filter(p => p.tipo === 'ambos').length;
+  if (elSort)  elSort.textContent  = todos.length;
 
   const total   = filtrados.length;
   const paginas = Math.ceil(total / POR_PAG_PART) || 1;
@@ -5212,8 +5163,8 @@ function renderParticipantes() {
   const tbody = document.getElementById('tabela-participantes');
   if (!tbody) return;
 
-  const tipoLabel = { fidelidade: '🎟️ Fidelidade', sorteio: '🎁 Sorteio', ambos: '⭐ Ambos' };
-  const tipoCor   = { fidelidade: '#e8650a', sorteio: '#2e7d32', ambos: '#7b1fa2' };
+  const tipoLabel = { sorteio: '🎁 Sorteio' };
+  const tipoCor   = { sorteio: '#2e7d32' };
 
   if (!slice.length) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:20px">Nenhum participante encontrado.</td></tr>';
@@ -5252,63 +5203,9 @@ function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
 // ═══════════════════════════════════════════════════════════
 function excluirParticipante(cel, tipo) {
   const celLimpo = cel.replace(/\D/g,'');
-  let nome = cel;
-  
-  // Tentar encontrar o nome em qualquer lugar
-  const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
-  const cli = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
-  if (ins) nome = ins.nome;
-  else if (cli) nome = cli.nome;
-
-  confirmarAcao(
-    'Excluir Participante',
-    `Tem certeza que deseja excluir <strong>${nome}</strong> de TODOS os sistemas (Fidelidade e Sorteio)?<br><br><span style="color:#c62828;font-weight:700">Esta ação não pode ser desfeita.</span>`,
-    'Sim, excluir de tudo',
-    async () => {
-      try {
-        let salvouAlgo = false;
-        mostrarLoading('Excluindo de todos os sistemas...');
-        
-        // 1. Remover do Sorteio (fidelidade.json)
-        if (STATE.fidelidade?.sorteioInscritos) {
-          const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
-          if (idx > -1) {
-            STATE.fidelidade.sorteioInscritos.splice(idx, 1);
-            const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' do sorteio');
-            if (ok) salvouAlgo = true;
-          }
-        }
-        
-        // 2. Remover do  (clientes.json ou fidelidade.json)
-        // Busca por valor do campo cel (chaves são USR-XXXX, não o número do celular)
-        const entradaCliente = Object.entries(STATE.clientes?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
-        const entradaFid = !entradaCliente && Object.entries(STATE.fidelidade?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
-        if (entradaCliente) {
-          const [chaveCliente, cliObj] = entradaCliente;
-          delete STATE.clientes.clientes[chaveCliente];
-          if (STATE.clientes.indice_celular) delete STATE.clientes.indice_celular[celLimpo];
-          const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
-          if (ok) salvouAlgo = true;
-        } else if (entradaFid) {
-          const [chaveFid] = entradaFid;
-          delete STATE.fidelidade.clientes[chaveFid];
-          const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
-          if (ok) salvouAlgo = true;
-        }
-        
-        ocultarLoading();
-        if (salvouAlgo) {
-          toast('🗑️ ' + nome + ' removido(a) com sucesso!', 'ok');
-          renderParticipantes();
-        } else {
-          toast('⚠️ Registro não encontrado ou já excluído.', 'aviso');
-        }
-      } catch (erro) {
-        ocultarLoading();
-        toast('❌ Erro ao excluir: ' + erro.message, 'erro');
-      }
-    }
-  );
+  const ins = (_sortInscritos || []).find(c => String(c.phone || '').replace(/\D/g,'') === celLimpo);
+  if (!ins || !ins.id) { toast('Registro não encontrado.', 'aviso'); return; }
+  deletarInscritoSorteio(ins.id);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -5317,80 +5214,85 @@ function excluirParticipante(cel, tipo) {
 async function adicionarParticipanteManual() {
   const nome = (document.getElementById('add-part-nome')?.value || '').trim();
   const cel  = (document.getElementById('add-part-cel')?.value || '').trim();
-  const tipo = document.getElementById('add-part-tipo')?.value || 'sorteio';
+  const nasc = (document.getElementById('add-part-nasc')?.value || '').trim();
   if (!nome) { toast('Informe o nome do participante.', 'erro'); return; }
   if (cel.replace(/\D/g,'').length < 10) { toast('Informe um celular válido.', 'erro'); return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(nasc)) { toast('Informe a data de nascimento.', 'erro'); return; }
   const celLimpo = cel.replace(/\D/g,'');
-  if (tipo === 'sorteio') {
-    if (!STATE.fidelidade) STATE.fidelidade = {};
-    if (!STATE.fidelidade.sorteioInscritos) STATE.fidelidade.sorteioInscritos = [];
-    const jaExiste = STATE.fidelidade.sorteioInscritos.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
-    if (jaExiste) { toast('\u274c ' + jaExiste.nome + ' já está inscrito(a) no sorteio.', 'erro'); return; }
-    const cadastroISO = new Date().toISOString();
-    STATE.fidelidade.sorteioInscritos.push({
-      nome, cel: celLimpo, dataNasc: '', cadastro: cadastroISO,
-      data: new Date().toLocaleDateString('pt-BR'),
-      hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})
-    });
-    const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: adicionar participante manual ' + nome);
-    if (ok) {
-      document.getElementById('add-part-nome').value = '';
-      document.getElementById('add-part-cel').value = '';
-      toast('\u2705 ' + nome + ' adicionado(a) ao sorteio com sucesso!', 'sucesso');
-      renderParticipantes();
-      await carregarInscritosSorteio();
+  const jaExiste = (_sortInscritos || []).find(c => String(c.phone || '').replace(/\D/g,'') === celLimpo);
+  if (jaExiste) { toast('\u274c ' + jaExiste.nome + ' já está inscrito(a) no sorteio.', 'erro'); return; }
+
+  const sessionToken = getWorkerSessionToken();
+  if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
+
+  mostrarLoading('Adicionando participante no sorteio…');
+  try {
+    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/promocao/cadastro', {
+      method: 'POST',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, getWorkerAuthHeaders()),
+      body: JSON.stringify({
+        nome,
+        phone: celLimpo,
+        birthdate: nasc,
+        regulation_accept: true
+      })
+    }, 12000);
+    const dados = await r.json();
+    if (!dados.success) {
+      toast('❌ ' + (dados.error || 'Erro ao adicionar participante.'), 'erro');
       return;
     }
-  } else {
-    if (!STATE.clientes) STATE.clientes = { clientes: {}, indice_celular: {} };
-    if (!STATE.clientes.clientes) STATE.clientes.clientes = {};
-    if (!STATE.clientes.indice_celular) STATE.clientes.indice_celular = {};
-    // Verificar duplicata por valor do campo cel (chaves são USR-XXXX, não cel)
-    const jaFid = Object.values(STATE.clientes.clientes).find(v => String(v.cel||'').replace(/\D/g,'') === celLimpo);
-    if (jaFid) { toast('❌ ' + jaFid.nome + ' já está cadastrado(a) na fidelidade.', 'erro'); return; }
-    // Gerar ID USR-XXXX para o novo participante
-    let maxNum = 0;
-    Object.values(STATE.clientes.clientes).forEach(v => { const m = (v.id_permanente||'').match(/USR-2026-(\d+)/); if(m) maxNum = Math.max(maxNum, parseInt(m[1],10)); });
-    const novoId = 'USR-2026-' + String(maxNum+1).padStart(4,'0');
-    STATE.clientes.clientes[novoId] = { id_permanente: novoId, nome, cel: celLimpo, dataNasc: '', cadastro: new Date().toISOString(), saldoPontos: 0, codigosUsados: [], resgates: [], totalPremios: 0, totalCodigos: 0, bloqueado: false, tentativas_fraude: 0 };
-    STATE.clientes.indice_celular[celLimpo] = novoId;
-    const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: adicionar participante manual ' + nome);
+    document.getElementById('add-part-nome').value = '';
+    document.getElementById('add-part-cel').value = '';
+    document.getElementById('add-part-nasc').value = '';
+    toast('\u2705 ' + nome + ' adicionado(a) ao sorteio com sucesso!', 'sucesso');
+    await carregarInscritosSorteio();
+    renderParticipantes();
+  } catch (erro) {
+    toast('❌ Erro ao adicionar: ' + erro.message, 'erro');
+  } finally {
+    ocultarLoading();
   }
-  document.getElementById('add-part-nome').value = '';
-  document.getElementById('add-part-cel').value = '';
-  toast('\u2705 ' + nome + ' adicionado(a) com sucesso!', 'sucesso');
-  renderParticipantes();
 }
 
 // ═══════════════════════════════════════════════════════════
 // LIMPAR LISTA DE PARTICIPANTES
 // ═══════════════════════════════════════════════════════════
 function limparListaParticipantes() {
-  const filtroTipo = document.getElementById('filtro-tipo-part')?.value || '';
   const total = getParticipantesUnificados().length;
   if (total === 0) { toast('A lista já está vazia.', 'aviso'); return; }
-  let descricao = 'todos os participantes';
-  if (filtroTipo === 'sorteio') descricao = 'todos os inscritos no Sorteio';
-  else if (filtroTipo === 'fidelidade') descricao = 'todos os clientes do Clube Fidelidade';
   confirmarAcao(
     '🧹 Limpar Lista de Participantes',
-    `Tem certeza que deseja apagar <strong>${descricao}</strong>?<br><br>⚠️ Isso vai remover <strong>todos os cadastros</strong> da lista selecionada.<br><br><span style="color:#c62828;font-weight:700">Esta ação NÃO pode ser desfeita!</span>`,
+    `Tem certeza que deseja apagar <strong>todos os inscritos no sorteio mensal</strong>?<br><br>⚠️ Isso vai remover <strong>todos os cadastros</strong> de todos os lotes mensais.<br><br><span style="color:#c62828;font-weight:700">Esta ação NÃO pode ser desfeita!</span>`,
     '🧹 Sim, limpar tudo',
     async () => {
+      const sessionToken = getWorkerSessionToken();
+      if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
+      const lotes = Array.from(new Set((_sortInscritos || []).map(_sortLoteMes).filter(Boolean)));
+      let removidos = 0;
       let ok = true;
-      if (!filtroTipo || filtroTipo === 'sorteio' || filtroTipo === 'ambos') {
-        if (STATE.fidelidade?.sorteioInscritos) {
-          STATE.fidelidade.sorteioInscritos = [];
-          ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: limpar lista sorteio') && ok;
+      for (const loteMes of lotes) {
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/lote/' + encodeURIComponent(loteMes), {
+            method: 'DELETE',
+            headers: getWorkerAuthHeaders()
+          }, 15000);
+          // eslint-disable-next-line no-await-in-loop
+          const dados = await r.json();
+          if (!dados.ok) ok = false;
+          removidos += Number(dados.removidos || 0);
+        } catch (_) {
+          ok = false;
         }
       }
-      if (!filtroTipo || filtroTipo === 'fidelidade' || filtroTipo === 'ambos') {
-        if (STATE.clientes?.clientes) {
-          STATE.clientes.clientes = {};
-          ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: limpar lista fidelidade') && ok;
-        }
+      if (ok) {
+        toast(`🧹 Lista limpa com sucesso! (${removidos} removidos)`, 'ok');
+      } else {
+        toast('⚠️ Parte dos lotes não pôde ser removida.', 'aviso');
       }
-      if (ok) { toast('🧹 Lista limpa com sucesso!', 'ok'); renderParticipantes(); }
+      await carregarInscritosSorteio();
+      renderParticipantes();
     },
     'perigo'
   );
@@ -5399,7 +5301,7 @@ function limparListaParticipantes() {
 function exportarParticipantesCSV() {
   const todos = getParticipantesUnificados();
   if (!todos.length) { toast('Nenhum participante para exportar.', 'aviso'); return; }
-  const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio Mensal', ambos: 'Fidelidade + Sorteio' };
+  const tipoLabel = { sorteio: 'Sorteio Mensal' };
   const formatarData = (d) => {
     if (!d) return '-';
     if (d.includes('T')) return new Date(d).toLocaleDateString('pt-BR');
@@ -5407,9 +5309,9 @@ function exportarParticipantesCSV() {
   };
   // BOM para Excel reconhecer UTF-8
   const BOM = '\uFEFF';
-  const header = 'N\u00ba,Nome,WhatsApp,Tipo,Pontos,Data de Cadastro,Status';
+  const header = 'N\u00ba,Nome,WhatsApp,Tipo,Data de Cadastro,Status';
   const rows = todos.map((p, i) =>
-    `${i+1},"${(p.nome||'-').replace(/"/g,'""')}","${p.cel||'-'}","${tipoLabel[p.tipo]||p.tipo}",${p.pontos||0},"${formatarData(p.cadastro)}","${p.status||'Ativo'}"`
+    `${i+1},"${(p.nome||'-').replace(/"/g,'""')}","${p.cel||'-'}","${tipoLabel[p.tipo]||p.tipo}","${formatarData(p.cadastro)}","${p.status||'Ativo'}"`
   );
   const csv = BOM + [header, ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -5424,7 +5326,7 @@ function exportarParticipantesCSV() {
 function copiarParticipantes() {
   const todos = getParticipantesUnificados();
   if (!todos.length) { toast('Nenhum participante para copiar.', 'aviso'); return; }
-  const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio', ambos: 'Ambos' };
+  const tipoLabel = { sorteio: 'Sorteio' };
   const lista = todos.map((p, i) => `${i+1}. ${p.nome} — ${p.cel} [${tipoLabel[p.tipo]}]`).join('\n');
   copiarTextoSeguro(lista).then((ok)=>toast(ok?`Lista de ${todos.length} participantes copiada!`:'Erro ao copiar lista de participantes.', ok?'sucesso':'erro'));
 }
@@ -5433,7 +5335,7 @@ function copiarParticipantes() {
 function copiarTodosDados() {
   const todos = getParticipantesUnificados();
   if (!todos.length) { toast('Nenhum participante para copiar.', 'aviso'); return; }
-  const tipoLabel = { fidelidade: 'Fidelidade', sorteio: 'Sorteio', ambos: 'Ambos' };
+  const tipoLabel = { sorteio: 'Sorteio' };
   const formatarData = (d) => {
     if (!d) return '-';
     if (d.includes('T')) return new Date(d).toLocaleDateString('pt-BR');
@@ -5460,7 +5362,7 @@ function copiarTodosDados() {
 // ─── COPIAR SÓ SORTEIO (apenas inscritos no sorteio mensal, numerados para sorteio) ───
 function copiarApenassorteio() {
   const todos = getParticipantesUnificados();
-  const sorteio = todos.filter(p => p.tipo === 'sorteio' || p.tipo === 'ambos');
+  const sorteio = todos.filter(p => p.tipo === 'sorteio');
   if (!sorteio.length) { toast('Nenhum inscrito no sorteio para copiar.', 'aviso'); return; }
   const formatarData = (d) => {
     if (!d) return '-';
@@ -5775,12 +5677,12 @@ function _sortMsg(txt, tipo) {
 async function carregarInscritosSorteio() {
   const tbody = document.getElementById('sort-inscritos-tbody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888">⏳ Carregando…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888">⏳ Carregando…</td></tr>';
   _sortMsg('');
   const sessionToken = getWorkerSessionToken();
   if (!sessionToken) {
     _sortMsg('Sessão administrativa expirada. Faça login novamente para carregar inscritos da fonte oficial.', 'erro');
-    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Sessão expirada.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="color:#c62828;text-align:center">Sessão expirada.</td></tr>';
     return;
   }
   try {
@@ -5790,12 +5692,13 @@ async function carregarInscritosSorteio() {
     const ct = r.headers.get('content-type') || '';
     if (!ct.includes('application/json')) throw new Error('Resposta não-JSON (Worker indisponível)');
     const dados = await r.json();
-    if (!dados.ok) { _sortMsg('Erro ao carregar: ' + (dados.error || r.status), 'erro'); tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>'; return; }
+    if (!dados.ok) { _sortMsg('Erro ao carregar: ' + (dados.error || r.status), 'erro'); tbody.innerHTML = '<tr><td colspan="7" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>'; return; }
     _sortInscritos = dados.inscritos || [];
     _renderTabelaInscritos(_sortInscritos);
+    try { renderParticipantes(); } catch (_) {}
   } catch (e) {
     _sortMsg('Erro ao carregar inscritos da fonte oficial: ' + (e && e.message ? e.message : 'falha de rede'), 'erro');
-    tbody.innerHTML = '<tr><td colspan="6" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="color:#c62828;text-align:center">Falha ao carregar inscritos.</td></tr>';
   }
 }
 
@@ -5813,6 +5716,7 @@ function _carregarInscritosLocal() {
   });
   _sortInscritos = lista;
   _renderTabelaInscritos(lista);
+  try { renderParticipantes(); } catch (_) {}
   if (lista.length === 0) {
     _sortMsg('ℹ️ Worker API offline — nenhum inscrito local encontrado. Adicione inscritos manualmente abaixo.', 'aviso');
   } else {
@@ -5834,18 +5738,45 @@ function _fmtDataMesAno(iso) {
 
 function _fmtTel(phone) {
   const d = String(phone || '').replace(/\D/g, '');
-  if (d.length === 11) return `(${d.slice(0,2)}) *****-**${d.slice(9)}`;
-  if (d.length === 10) return `(${d.slice(0,2)}) ****-**${d.slice(8)}`;
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
   return phone || '—';
+}
+
+function _sortLoteMes(ins) {
+  const mes = String(ins?.lote_mes || (ins?.created_at || '').slice(0, 7) || '');
+  return /^\d{4}-\d{2}$/.test(mes) ? mes : '';
+}
+
+function _sortLoteLabel(ins) {
+  const mes = _sortLoteMes(ins);
+  if (!mes) return '—';
+  const [ano, m] = mes.split('-');
+  const num = Number(ins?.lote_numero || 0);
+  const numTxt = Number.isFinite(num) && num > 0 ? ` #${String(num).padStart(4, '0')}` : '';
+  return `LOTE ${m}/${ano}${numTxt}`;
+}
+
+function _atualizarSelectLotesMensais(lista) {
+  const sel = document.getElementById('sort-lote-mes-select');
+  if (!sel) return;
+  const atual = sel.value || '';
+  const meses = Array.from(new Set((lista || []).map(_sortLoteMes).filter(Boolean))).sort().reverse();
+  sel.innerHTML = '<option value="">Selecione um lote mensal…</option>' + meses.map(m => {
+    const [ano, mm] = m.split('-');
+    return `<option value="${m}">${mm}/${ano}</option>`;
+  }).join('');
+  if (atual && meses.includes(atual)) sel.value = atual;
 }
 
 function _renderTabelaInscritos(lista) {
   const tbody = document.getElementById('sort-inscritos-tbody');
   const badge = document.getElementById('sort-contador-badge');
   if (badge) badge.textContent = lista.length + ' inscrito' + (lista.length !== 1 ? 's' : '');
+  _atualizarSelectLotesMensais(lista);
   if (!tbody) return;
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;font-style:italic">Nenhum inscrito encontrado.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;font-style:italic">Nenhum inscrito encontrado.</td></tr>';
     return;
   }
   tbody.innerHTML = lista.map((ins, i) => {
@@ -5853,8 +5784,9 @@ function _renderTabelaInscritos(lista) {
     return `<tr>
       <td style="font-size:.78rem;color:#555">${ins.id || '—'}</td>
       <td><strong>${ins.nome || '—'}</strong></td>
-      <td>${_fmtDataMesAno(ins.birthdate)}</td>
+      <td>${_fmtData(ins.birthdate)}</td>
       <td>${_fmtTel(ins.phone)}</td>
+      <td style="font-size:.74rem;color:#0d47a1;font-weight:700">${_sortLoteLabel(ins)}</td>
       <td style="font-size:.78rem;color:#777">${_fmtData(ins.created_at)} ${(ins.created_at||'').slice(11,16)}</td>
       <td style="white-space:nowrap">
         <button data-sort-edit="${idEsc}" style="background:#1565c0;color:#fff;border:none;border-radius:6px;padding:4px 9px;font-size:.75rem;cursor:pointer;margin-right:4px">✏️</button>
@@ -5880,6 +5812,36 @@ function filtrarInscritosSorteio() {
     (ins.id || '').toLowerCase().includes(q)
   );
   _renderTabelaInscritos(filtrado);
+}
+
+async function deletarLoteMensalSorteio() {
+  const loteMes = (document.getElementById('sort-lote-mes-select')?.value || '').trim();
+  if (!/^\d{4}-\d{2}$/.test(loteMes)) { toast('Selecione um lote mensal válido (AAAA-MM).', 'aviso'); return; }
+  const [ano, mes] = loteMes.split('-');
+  if (!confirm(`Excluir todos os cadastros do lote ${mes}/${ano}?\n\nEsta ação não pode ser desfeita.`)) return;
+
+  const sessionToken = getWorkerSessionToken();
+  if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
+
+  mostrarLoading('Excluindo lote mensal…');
+  try {
+    const r = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sorteio/inscritos/lote/' + encodeURIComponent(loteMes), {
+      method: 'DELETE',
+      headers: getWorkerAuthHeaders()
+    }, 15000);
+    const dados = await r.json();
+    if (!dados.ok) {
+      toast('❌ ' + (dados.error || 'Erro ao excluir lote.'), 'erro');
+      return;
+    }
+    const removidos = Number(dados.removidos || 0);
+    toast(`✅ Lote ${mes}/${ano} excluído (${removidos} cadastro(s)).`, 'sucesso');
+    await carregarInscritosSorteio();
+  } catch (e) {
+    toast('Erro de rede: ' + e.message, 'erro');
+  } finally {
+    ocultarLoading();
+  }
 }
 
 function editarInscritoSorteio(id) {

@@ -74,6 +74,7 @@ const RATE_LIMITS = {
   'post-enc':      { max: 10, windowMs: 3_600_000 },
   'resgatar':      { max: 10, windowMs: 3_600_000 },
   'post-sorteio':  { max: 3,  windowMs: 1_800_000 }, // 3 tentativas por 30 min (sorteio)
+  'buscar-sorteio': { max: 5, windowMs: 3_600_000 }, // 5 buscas por hora
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
@@ -618,19 +619,33 @@ async function router(request, env) {
     }
   }
 
-  // ── Fidelidade ────────────────────────────────────────────────────────────
-  if (path === '/api/fidelidade/resgatar' && method === 'POST')
-    return handleResgatarCodigo(request, env);
+  // ── Fidelidade (descontinuado) ────────────────────────────────────────────
+  if (path === '/api/fidelidade/resgatar' && method === 'POST') {
+    return jsonResp({
+      ok: false,
+      error: 'Programa de fidelidade descontinuado. Use apenas os sorteios mensais.'
+    }, 410);
+  }
 
   // ── Promoção / Sorteio Mensal ──────────────────────────────────────────────
   // Endpoint público — salva inscrição do sorteio no CLIENTES_KV (sem WhatsApp).
   if (path === '/api/promocao/cadastro' && method === 'POST')
     return handlePostSorteioCadastro(request, env);
 
+  if (path === '/api/sorteio/buscar' && method === 'GET')
+    return handleGetSorteioBuscar(request, env, url);
+
   // ── Admin — Sorteio Inscritos ──────────────────────────────────────────────
   if (path === '/api/admin/sorteio/inscritos' && method === 'GET') {
     if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleGetSorteioInscritos(env);
+  }
+
+  const mSorteioLoteMes = path.match(/^\/api\/admin\/sorteio\/inscritos\/lote\/(\d{4}-\d{2})$/);
+  if (mSorteioLoteMes) {
+    const loteMes = mSorteioLoteMes[1];
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (method === 'DELETE') return handleDeleteSorteioInscritosLoteMes(loteMes, env);
   }
 
   const mSorteio = path.match(/^\/api\/admin\/sorteio\/inscritos\/([^/]+)$/);
@@ -1517,6 +1532,18 @@ function promoResponse(data, status) {
   return { data, status };
 }
 
+async function obterLoteMensalSorteio(isoDatePrefix, env) {
+  const loteMes = String(isoDatePrefix || '').slice(0, 7);
+  if (!/^\d{4}-\d{2}$/.test(loteMes)) {
+    return { loteMes: '', loteNumero: 0 };
+  }
+  const contadorKey = `meta:sorteio_lote_mes_contador:${loteMes}`;
+  const atual = parseInt(await env.CLIENTES_KV.get(contadorKey) || '0', 10) || 0;
+  const proximo = atual + 1;
+  await env.CLIENTES_KV.put(contadorKey, String(proximo));
+  return { loteMes, loteNumero: proximo };
+}
+
 async function handlePostSorteioCadastro(request, env) {
   const requestId = buildPromoRequestId();
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
@@ -1656,58 +1683,6 @@ async function handlePostSorteioCadastro(request, env) {
     }
   }
 
-  // ── Validações ───────────────────────────────────────────────────────────────
-  if (!regAccept) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_REGULATION_REQUIRED',
-      requestId,
-      error: 'Você precisa aceitar o regulamento para participar.',
-    }, 400);
-  }
-  if (!nome || nome.length < 3) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_INVALID_NAME',
-      requestId,
-      error: 'Nome inválido. Use seu nome completo (mínimo 3 caracteres).',
-    }, 400);
-  }
-  if (!birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_INVALID_BIRTHDATE',
-      requestId,
-      error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.',
-    }, 400);
-  }
-  if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_INVALID_PHONE',
-      requestId,
-      error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).',
-    }, 400);
-  }
-
-  // Idade mínima: 14 anos
-  const [ano, mes, dia] = birthdate.split('-').map(Number);
-  const nasc  = new Date(ano, mes - 1, dia);
-  const hoje  = new Date();
-  let   idade = hoje.getFullYear() - nasc.getFullYear();
-  if (hoje.getMonth() < nasc.getMonth() ||
-      (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) {
-    idade--;
-  }
-  if (idade < 14) {
-   return jsonResp({
-     success: false,
-     code: 'PROMO_UNDERAGE',
-     requestId,
-     error: 'É necessário ter no mínimo 14 anos para participar.',
-   }, 400);
-  }
-
   if (idempotencyKvKey) {
    await env.CLIENTES_KV.put(idempotencyKvKey, JSON.stringify({
      payloadHash,
@@ -1762,11 +1737,14 @@ async function handlePostSorteioCadastro(request, env) {
     registrationId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
     const agora  = new Date().toISOString();
 
+    const lote = await obterLoteMensalSorteio(agora, env);
     const inscricao = {
       id:                registrationId,
       nome,
       birthdate,
       phone,
+      lote_mes:          lote.loteMes,
+      lote_numero:       lote.loteNumero,
       regulation_accept: true,
       created_at:        agora,
       requestId,
@@ -1808,23 +1786,53 @@ async function handlePostSorteioCadastro(request, env) {
   return jsonResp(finalResult.data, finalResult.status);
 }
 
+/**
+ * GET /api/sorteio/buscar — localiza inscrição pública por nome + data de nascimento.
+ *
+ * Query params:
+ *   nome     — nome completo do participante
+ *   dataNasc — data de nascimento no formato AAAA-MM-DD
+ *
+ * Resposta em caso de encontrado:
+ *   { found: true, registration: { id, phone, created_at } }
+ * Resposta em caso de não encontrado:
+ *   { found: false }
+ */
+async function handleGetSorteioBuscar(request, env, url) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'buscar-sorteio');
+  if (!rl.allowed) {
+    return jsonResp({ found: false, error: 'Muitas tentativas. Aguarde uma hora.' }, 429);
+  }
+
+  const nome     = sanitizeString(url.searchParams.get('nome') || '', 200);
+  const dataNasc = sanitizeString(url.searchParams.get('dataNasc') || '', 20);
+
+  if (!nome || nome.length < 3) {
+    return jsonResp({ found: false, error: 'Nome inválido.' }, 400);
+  }
+  if (!dataNasc || !/^\d{4}-\d{2}-\d{2}$/.test(dataNasc)) {
+    return jsonResp({ found: false, error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.' }, 400);
+  }
+
+  const nascKey = sorteioNascKey(nome, dataNasc);
+  const id = await env.CLIENTES_KV.get(nascKey);
+  if (!id) return jsonResp({ found: false }, 200);
+
+  const inscricao = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
+  if (!inscricao) return jsonResp({ found: false }, 200);
+
+  return jsonResp({
+    found: true,
+    registration: {
+      id:         inscricao.id,
+      phone:      inscricao.phone,
+      created_at: inscricao.created_at,
+    },
+  }, 200);
+}
+
 // ─── Sorteio KV key helpers ───────────────────────────────────────────────────
-
-/** Normaliza nome para uso como chave KV (lowercase, sem acentos, sem espaços extras). */
-function normalizarNomeCompleto(nome) {
-  return String(nome)
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
-}
-
-/** Chave KV para índice nome+dataNasc. */
-function sorteioNascKey(nome, birthdate) {
-  return `sorteio:idx:nasc:${normalizarNomeCompleto(nome)}__${birthdate}`;
-}
 function normalizarNomeSorteio(nome) {
   return String(nome)
     .toLowerCase()
@@ -1971,4 +1979,45 @@ async function handleDeleteSorteioInscrito(id, env) {
 
   await registrarAudit(env, 'sorteio_inscrito_removido', id, {});
   return jsonResp({ ok: true });
+}
+
+/**
+ * DELETE /api/admin/sorteio/inscritos/lote/:mes (AAAA-MM)
+ * Remove todos os cadastros do mês informado.
+ */
+async function handleDeleteSorteioInscritosLoteMes(loteMes, env) {
+  if (!/^\d{4}-\d{2}$/.test(loteMes)) {
+    return jsonResp({ ok: false, error: 'Lote mensal inválido. Use AAAA-MM.' }, 400);
+  }
+
+  const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+  const keys = lista.keys.map(k => k.name);
+  if (!keys.length) {
+    return jsonResp({ ok: true, loteMes, removidos: 0 });
+  }
+
+  let removidos = 0;
+  const BATCH = 25;
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const lote = keys.slice(i, i + BATCH);
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(lote.map(async key => {
+      const inscricao = await env.CLIENTES_KV.get(key, 'json');
+      if (!inscricao) return;
+      const mesInscricao = String(inscricao.lote_mes || (inscricao.created_at || '').slice(0, 7));
+      if (mesInscricao !== loteMes) return;
+
+      const id = String(inscricao.id || '').trim();
+      if (!id) return;
+      const cel = String(inscricao.phone || '').replace(/\D/g, '');
+      const nascKey = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+      await env.CLIENTES_KV.delete(`sorteio:inscrito:${id}`);
+      if (cel) await env.CLIENTES_KV.delete(`sorteio:idx:cel:${cel}`);
+      await env.CLIENTES_KV.delete(nascKey);
+      removidos += 1;
+      await registrarAudit(env, 'sorteio_lote_mensal_removido', id, { loteMes });
+    }));
+  }
+
+  return jsonResp({ ok: true, loteMes, removidos });
 }
