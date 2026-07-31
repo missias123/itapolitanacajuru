@@ -1683,58 +1683,6 @@ async function handlePostSorteioCadastro(request, env) {
     }
   }
 
-  // ── Validações ───────────────────────────────────────────────────────────────
-  if (!regAccept) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_REGULATION_REQUIRED',
-      requestId,
-      error: 'Você precisa aceitar o regulamento para participar.',
-    }, 400);
-  }
-  if (!nome || nome.length < 3) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_INVALID_NAME',
-      requestId,
-      error: 'Nome inválido. Use seu nome completo (mínimo 3 caracteres).',
-    }, 400);
-  }
-  if (!birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_INVALID_BIRTHDATE',
-      requestId,
-      error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.',
-    }, 400);
-  }
-  if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
-    return jsonResp({
-      success: false,
-      code: 'PROMO_INVALID_PHONE',
-      requestId,
-      error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).',
-    }, 400);
-  }
-
-  // Idade mínima: 14 anos
-  const [ano, mes, dia] = birthdate.split('-').map(Number);
-  const nasc  = new Date(ano, mes - 1, dia);
-  const hoje  = new Date();
-  let   idade = hoje.getFullYear() - nasc.getFullYear();
-  if (hoje.getMonth() < nasc.getMonth() ||
-      (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) {
-    idade--;
-  }
-  if (idade < 14) {
-   return jsonResp({
-     success: false,
-     code: 'PROMO_UNDERAGE',
-     requestId,
-     error: 'É necessário ter no mínimo 14 anos para participar.',
-   }, 400);
-  }
-
   if (idempotencyKvKey) {
    await env.CLIENTES_KV.put(idempotencyKvKey, JSON.stringify({
      payloadHash,
@@ -1884,7 +1832,8 @@ async function handleGetSorteioBuscar(request, env, url) {
   }, 200);
 }
 
-// ─── Sorteio KV key helpers ───────────────────────────────────────────────────(nome) {
+// ─── Sorteio KV key helpers ───────────────────────────────────────────────────
+function normalizarNomeSorteio(nome) {
   return String(nome)
     .toLowerCase()
     .normalize('NFD')
