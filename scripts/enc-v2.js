@@ -7,7 +7,7 @@
 // =====================================================
 const ITAP_PRODUTOS_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json';
 // Backend seguro — pedidos PII enviados ao Worker, não gravados direto no GitHub
-const ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
+const ITAP_WORKER_API = 'https://itapolitana-api.wmc760.workers.dev';
 // Token GitHub mantido apenas para atualização de estoque (produtos.json — sem PII)
 const _GH_TK  = (function(){return localStorage.getItem('itap_gh_token')||'';})();
 const _GH_API = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';

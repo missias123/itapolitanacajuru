@@ -7,8 +7,8 @@
  * (ex.: itapolitana-v10 / assets-v10). O evento 'activate' apaga versões antigas.
  */
 
-const CACHE_NAME   = 'itapolitana-v9';
-const ASSETS_CACHE = 'assets-v9';
+const CACHE_NAME   = 'itapolitana-v10';
+const ASSETS_CACHE = 'assets-v10';
 
 const CRITICAL_ASSETS = [
   '/',
@@ -83,7 +83,7 @@ self.addEventListener('fetch', (event) => {
   // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
-      url.hostname === 'api.itapolitanacajuru.com.br' ||
+      url.hostname === 'api.itapolitanacajuru.com.br' || url.hostname === 'itapolitana-api.wmc760.workers.dev' ||
       url.pathname.startsWith('/dados/') ||
       url.pathname === '/admin-painel.html') {
     event.respondWith(
