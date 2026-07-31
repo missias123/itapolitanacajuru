@@ -619,9 +619,13 @@ async function router(request, env) {
     }
   }
 
-  // ── Fidelidade ────────────────────────────────────────────────────────────
-  if (path === '/api/fidelidade/resgatar' && method === 'POST')
-    return handleResgatarCodigo(request, env);
+  // ── Fidelidade (descontinuado) ────────────────────────────────────────────
+  if (path === '/api/fidelidade/resgatar' && method === 'POST') {
+    return jsonResp({
+      ok: false,
+      error: 'Programa de fidelidade descontinuado. Use apenas os sorteios mensais.'
+    }, 410);
+  }
 
   // ── Promoção / Sorteio Mensal ──────────────────────────────────────────────
   // Endpoint público — salva inscrição do sorteio no CLIENTES_KV (sem WhatsApp).
@@ -635,6 +639,13 @@ async function router(request, env) {
   if (path === '/api/admin/sorteio/inscritos' && method === 'GET') {
     if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
     return handleGetSorteioInscritos(env);
+  }
+
+  const mSorteioLoteMes = path.match(/^\/api\/admin\/sorteio\/inscritos\/lote\/(\d{4}-\d{2})$/);
+  if (mSorteioLoteMes) {
+    const loteMes = mSorteioLoteMes[1];
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (method === 'DELETE') return handleDeleteSorteioInscritosLoteMes(loteMes, env);
   }
 
   const mSorteio = path.match(/^\/api\/admin\/sorteio\/inscritos\/([^/]+)$/);
@@ -1521,6 +1532,18 @@ function promoResponse(data, status) {
   return { data, status };
 }
 
+async function obterLoteMensalSorteio(isoDatePrefix, env) {
+  const loteMes = String(isoDatePrefix || '').slice(0, 7);
+  if (!/^\d{4}-\d{2}$/.test(loteMes)) {
+    return { loteMes: '', loteNumero: 0 };
+  }
+  const contadorKey = `meta:sorteio_lote_mes_contador:${loteMes}`;
+  const atual = parseInt(await env.CLIENTES_KV.get(contadorKey) || '0', 10) || 0;
+  const proximo = atual + 1;
+  await env.CLIENTES_KV.put(contadorKey, String(proximo));
+  return { loteMes, loteNumero: proximo };
+}
+
 async function handlePostSorteioCadastro(request, env) {
   const requestId = buildPromoRequestId();
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
@@ -1766,11 +1789,14 @@ async function handlePostSorteioCadastro(request, env) {
     registrationId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
     const agora  = new Date().toISOString();
 
+    const lote = await obterLoteMensalSorteio(agora, env);
     const inscricao = {
       id:                registrationId,
       nome,
       birthdate,
       phone,
+      lote_mes:          lote.loteMes,
+      lote_numero:       lote.loteNumero,
       regulation_accept: true,
       created_at:        agora,
       requestId,
@@ -2004,4 +2030,45 @@ async function handleDeleteSorteioInscrito(id, env) {
 
   await registrarAudit(env, 'sorteio_inscrito_removido', id, {});
   return jsonResp({ ok: true });
+}
+
+/**
+ * DELETE /api/admin/sorteio/inscritos/lote/:mes (AAAA-MM)
+ * Remove todos os cadastros do mês informado.
+ */
+async function handleDeleteSorteioInscritosLoteMes(loteMes, env) {
+  if (!/^\d{4}-\d{2}$/.test(loteMes)) {
+    return jsonResp({ ok: false, error: 'Lote mensal inválido. Use AAAA-MM.' }, 400);
+  }
+
+  const lista = await env.CLIENTES_KV.list({ prefix: 'sorteio:inscrito:' });
+  const keys = lista.keys.map(k => k.name);
+  if (!keys.length) {
+    return jsonResp({ ok: true, loteMes, removidos: 0 });
+  }
+
+  let removidos = 0;
+  const BATCH = 25;
+  for (let i = 0; i < keys.length; i += BATCH) {
+    const lote = keys.slice(i, i + BATCH);
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(lote.map(async key => {
+      const inscricao = await env.CLIENTES_KV.get(key, 'json');
+      if (!inscricao) return;
+      const mesInscricao = String(inscricao.lote_mes || (inscricao.created_at || '').slice(0, 7));
+      if (mesInscricao !== loteMes) return;
+
+      const id = String(inscricao.id || '').trim();
+      if (!id) return;
+      const cel = String(inscricao.phone || '').replace(/\D/g, '');
+      const nascKey = sorteioNascKey(inscricao.nome || '', inscricao.birthdate || '');
+      await env.CLIENTES_KV.delete(`sorteio:inscrito:${id}`);
+      if (cel) await env.CLIENTES_KV.delete(`sorteio:idx:cel:${cel}`);
+      await env.CLIENTES_KV.delete(nascKey);
+      removidos += 1;
+      await registrarAudit(env, 'sorteio_lote_mensal_removido', id, { loteMes });
+    }));
+  }
+
+  return jsonResp({ ok: true, loteMes, removidos });
 }
