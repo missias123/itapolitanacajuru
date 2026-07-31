@@ -1,0 +1,63 @@
+name: 🔦 Lighthouse Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lighthouse:
+    name: Lighthouse — Performance, SEO, Acessibilidade
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar serve
+        run: npm install -g serve
+
+      - name: Iniciar servidor local
+        run: serve -s . -l 8080 &
+        env:
+          CI: true
+
+      - name: Aguardar servidor
+        run: npx --yes wait-on http://localhost:8080 --timeout 30000
+
+      - name: Auditar index.html
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://localhost:8080/index.html
+            http://localhost:8080/encomendas.html
+            http://localhost:8080/dicas.html
+          configPath: '.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: false
+        continue-on-error: true
+
+      - name: Verificar scores mínimos (≥ 50)
+        run: |
+          node -e "
+            const fs = require('fs');
+            const files = fs.readdirSync('.lighthouseci').filter(f => f.endsWith('.json'));
+            let fail = false;
+            for (const f of files) {
+              const r = JSON.parse(fs.readFileSync('.lighthouseci/' + f, 'utf8'));
+              const cats = r.categories || {};
+              for (const [k, v] of Object.entries(cats)) {
+                const score = Math.round((v.score || 0) * 100);
+                const status = score >= 50 ? '✅' : '❌';
+                console.log(status + ' ' + k + ': ' + score);
+                if (score < 50) fail = true;
+              }
+            }
+            if (fail) process.exit(1);
+          " || true

@@ -1,0 +1,39 @@
+name: 🚀 Auto-Repair
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  repair:
+    name: Detectar e corrigir erros automaticamente
+    runs-on: ubuntu-latest
+    # Apenas roda se o commit não foi feito pelo próprio bot
+    if: github.actor != 'github-actions[bot]'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rodar auto-repair
+        id: repair
+        run: |
+          node scripts/auto-repair.js 2>&1 | tee /tmp/repair-output.txt
+          echo "changed=$(git diff --name-only | wc -l | tr -d ' ')" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Commit correções automáticas
+        if: steps.repair.outputs.changed != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(auto-repair): correções automáticas de JS [skip ci]"
+          git push
