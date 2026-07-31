@@ -11,7 +11,7 @@
       if (mes > 11) { mes = 0; ano++; }
     }
     
-    const limiteFinal = new Date(2030, 0, 1, 1, 1, 0);
+    const limiteFinal = new Date(2027, 0, 2, 10, 0, 0);
     const próximoAlvo = new Date(ano, mes, 1, 10, 0, 0);
     
     return próximoAlvo > limiteFinal ? limiteFinal : próximoAlvo;
