@@ -74,6 +74,7 @@ const RATE_LIMITS = {
   'post-enc':      { max: 10, windowMs: 3_600_000 },
   'resgatar':      { max: 10, windowMs: 3_600_000 },
   'post-sorteio':  { max: 3,  windowMs: 1_800_000 }, // 3 tentativas por 30 min (sorteio)
+  'buscar-sorteio': { max: 5, windowMs: 3_600_000 }, // 5 buscas por hora
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
@@ -626,6 +627,9 @@ async function router(request, env) {
   // Endpoint público — salva inscrição do sorteio no CLIENTES_KV (sem WhatsApp).
   if (path === '/api/promocao/cadastro' && method === 'POST')
     return handlePostSorteioCadastro(request, env);
+
+  if (path === '/api/sorteio/buscar' && method === 'GET')
+    return handleGetSorteioBuscar(request, env, url);
 
   // ── Admin — Sorteio Inscritos ──────────────────────────────────────────────
   if (path === '/api/admin/sorteio/inscritos' && method === 'GET') {
@@ -1808,24 +1812,53 @@ async function handlePostSorteioCadastro(request, env) {
   return jsonResp(finalResult.data, finalResult.status);
 }
 
-// ─── Sorteio KV key helpers ───────────────────────────────────────────────────
+/**
+ * GET /api/sorteio/buscar — localiza inscrição pública por nome + data de nascimento.
+ *
+ * Query params:
+ *   nome     — nome completo do participante
+ *   dataNasc — data de nascimento no formato AAAA-MM-DD
+ *
+ * Resposta em caso de encontrado:
+ *   { found: true, registration: { id, phone, created_at } }
+ * Resposta em caso de não encontrado:
+ *   { found: false }
+ */
+async function handleGetSorteioBuscar(request, env, url) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'buscar-sorteio');
+  if (!rl.allowed) {
+    return jsonResp({ found: false, error: 'Muitas tentativas. Aguarde uma hora.' }, 429);
+  }
 
-/** Normaliza nome para uso como chave KV (lowercase, sem acentos, sem espaços extras). */
-function normalizarNomeCompleto(nome) {
-  return String(nome)
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
+  const nome     = sanitizeString(url.searchParams.get('nome') || '', 200);
+  const dataNasc = sanitizeString(url.searchParams.get('dataNasc') || '', 20);
+
+  if (!nome || nome.length < 3) {
+    return jsonResp({ found: false, error: 'Nome inválido.' }, 400);
+  }
+  if (!dataNasc || !/^\d{4}-\d{2}-\d{2}$/.test(dataNasc)) {
+    return jsonResp({ found: false, error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.' }, 400);
+  }
+
+  const nascKey = sorteioNascKey(nome, dataNasc);
+  const id = await env.CLIENTES_KV.get(nascKey);
+  if (!id) return jsonResp({ found: false }, 200);
+
+  const inscricao = await env.CLIENTES_KV.get(`sorteio:inscrito:${id}`, 'json');
+  if (!inscricao) return jsonResp({ found: false }, 200);
+
+  return jsonResp({
+    found: true,
+    registration: {
+      id:         inscricao.id,
+      phone:      inscricao.phone,
+      created_at: inscricao.created_at,
+    },
+  }, 200);
 }
 
-/** Chave KV para índice nome+dataNasc. */
-function sorteioNascKey(nome, birthdate) {
-  return `sorteio:idx:nasc:${normalizarNomeCompleto(nome)}__${birthdate}`;
-}
-function normalizarNomeSorteio(nome) {
+// ─── Sorteio KV key helpers ───────────────────────────────────────────────────(nome) {
   return String(nome)
     .toLowerCase()
     .normalize('NFD')
