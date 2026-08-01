@@ -134,6 +134,13 @@
           img.alt = String(b.alt || 'Banner Sorveteria Itapolitana Cajuru');
           img.setAttribute('loading', i === 0 ? 'eager' : 'lazy');
           img.setAttribute('decoding', 'async');
+          img.onerror = function () {
+            var s = this.parentNode;
+            if (s && s.parentNode) {
+              s.parentNode.removeChild(s);
+              if (swiper && typeof swiper.update === 'function') swiper.update();
+            }
+          };
           slide.appendChild(img);
           wrap.appendChild(slide);
         });
