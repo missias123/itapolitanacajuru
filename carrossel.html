@@ -109,8 +109,20 @@
         { src: 'images/carrossel/v3_b10_petit_gateau.webp', alt: 'Petit Gateau com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
         { src: 'images/carrossel/v3_b11_cascao_3bolas.webp', alt: 'Cascão com 3 Bolas de Sorvete — Sorveteria Itapolitana Cajuru' },
         { src: 'images/carrossel/v3_b12_vitrine_produtos.webp', alt: 'Sorvete, Milkshake, Picolé e Taça — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b13_acai_tacas_gourmet.webp', alt: 'Açaí Taças Gourmet Natureon — 4 Sabores Especiais — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b14_picole_cajuru.webp', alt: 'Picolé Ovomaltine Summer Blast — Feito em Cajuru SP — Sorveteria Itapolitana Cajuru' }
+        {
+          srcSet: [
+            'images/carrossel/v3_b13_acai_tacas_gourmet.webp',
+            'images/carrossel/WhatsApp Image 2026-08-01 at 11.43.05 (2).jpeg'
+          ],
+          alt: 'Açaí Taças Gourmet Natureon — 4 Sabores Especiais — Sorveteria Itapolitana Cajuru'
+        },
+        {
+          srcSet: [
+            'images/carrossel/v3_b14_picole_cajuru.webp',
+            'images/carrossel/WhatsApp Image 2026-08-01 at 11.43.05 (3).jpeg'
+          ],
+          alt: 'Picolé Ovomaltine Summer Blast — Feito em Cajuru SP — Sorveteria Itapolitana Cajuru'
+        }
       ];
 
       function bannerSrcSeguro(src) {
@@ -119,21 +131,51 @@
         if (/^https?:\/\//i.test(s)) return s;
         return s.replace(/^\/+/, '');
       }
+      function bannerSourcesSeguro(banner) {
+        var fontes = Array.isArray(banner && banner.srcSet) ? banner.srcSet : [banner && banner.src];
+        var limpas = [];
+        fontes.forEach(function (src) {
+          var seguro = bannerSrcSeguro(src);
+          if (seguro && limpas.indexOf(seguro) === -1) limpas.push(seguro);
+        });
+        return limpas;
+      }
 
       function montarSlides(banners) {
         var wrap = document.getElementById('itp-carrossel-wrapper');
         if (!wrap) return;
         wrap.innerHTML = '';
         banners.forEach(function (b, i) {
-          var src = bannerSrcSeguro(b.src);
-          if (!src) return;
+          var fontes = bannerSourcesSeguro(b);
+          if (!fontes.length) return;
           var slide = document.createElement('div');
           slide.className = 'swiper-slide';
           var img = document.createElement('img');
-          img.src = src;
+          var idxFonte = 0;
+          function aplicarFonte() {
+            img.src = fontes[idxFonte];
+          }
+          img.onerror = function () {
+            idxFonte += 1;
+            if (idxFonte < fontes.length) {
+              aplicarFonte();
+              return;
+            }
+            if (slide.parentNode) {
+              slide.parentNode.removeChild(slide);
+              if (swiper && typeof swiper.update === 'function') {
+                if (swiper.params && swiper.params.loop && swiper.slides && swiper.slides.length <= 2 && typeof swiper.loopDestroy === 'function') {
+                  swiper.loopDestroy();
+                  swiper.params.loop = false;
+                }
+                swiper.update();
+              }
+            }
+          };
           img.alt = String(b.alt || 'Banner Sorveteria Itapolitana Cajuru');
           img.setAttribute('loading', i === 0 ? 'eager' : 'lazy');
           img.setAttribute('decoding', 'async');
+          aplicarFonte();
           slide.appendChild(img);
           wrap.appendChild(slide);
         });
