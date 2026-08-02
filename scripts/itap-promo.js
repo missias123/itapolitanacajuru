@@ -293,7 +293,7 @@
 
   function atualizarFluxoCadastroPromo() {
     var podeEditarNome = _promoCadastroLiberado;
-    var podeEditarData = podeEditarNome && promoNomeValido();
+    var podeEditarData = _promoCadastroLiberado;
     var podeEditarCelular = podeEditarData && promoDataValida();
 
     setCampoPromoHabilitado(inputPromoNome, podeEditarNome);
