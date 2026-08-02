@@ -5,10 +5,8 @@
     const agora = new Date();
     const ano = agora.getFullYear();
     const mes = agora.getMonth();
-    // Último dia do mês corrente às 23:59:59
-    const fimMesAtual = new Date(ano, mes + 1, 0, 23, 59, 59);
-    const limiteFinal = new Date(2027, 0, 2, 10, 0, 0);
-    return fimMesAtual > limiteFinal ? limiteFinal : fimMesAtual;
+    // Dia 01 do mês seguinte às 10:00 — sorteio mensal sem data de término
+    return new Date(ano, mes + 1, 1, 10, 0, 0);
   }
 
   let dataAlvo = calcularPróximoFim();
@@ -52,7 +50,9 @@
   var PROMO_MOBILE_REGEX = /^169\d{8}$/;
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
-  var inputPromoData = document.getElementById('promo-data-nasc-cliente');
+  var inputPromoDia = document.getElementById('promo-dia-nasc');
+  var inputPromoMes = document.getElementById('promo-mes-nasc');
+  var inputPromoAno = document.getElementById('promo-ano-nasc');
   var inputPromoCelular = document.getElementById('promo-celular-cliente');
   var inputPromoHp = document.getElementById('promo-honeypot');
   // ID atualizado: botão agora envia para o backend (sem WhatsApp)
@@ -65,6 +65,18 @@
   // Timeout de 20s: evita bloqueio indefinido quando há falha de rede/API.
   // Aumentado de 12s para 20s para tolerar conexões 3G/4G lentas.
   var _promoTimeoutMs = 20000;
+
+  // Popula o select de ano com intervalo válido (18 a 100 anos atrás)
+  (function popularAnosNasc() {
+    if (!inputPromoAno) return;
+    var anoAtual = new Date().getFullYear();
+    for (var a = anoAtual - 18; a >= anoAtual - 100; a--) {
+      var opt = document.createElement('option');
+      opt.value = String(a);
+      opt.textContent = String(a);
+      inputPromoAno.appendChild(opt);
+    }
+  })();
 
   function trackPromoEvent(nomeEvento, params) {
     if (typeof gtag !== 'function') return;
@@ -137,8 +149,13 @@
 
   function setCampoPromoHabilitado(campo, habilitado) {
     if (!campo) return;
+    var eraDesabilitado = campo.disabled;
     campo.disabled = !habilitado;
     campo.classList.toggle('form-control-disabled', !habilitado);
+    // Pré-preenche DDD 16 ao habilitar o campo de celular pela primeira vez
+    if (habilitado && eraDesabilitado && campo.id === 'promo-celular-cliente' && !campo.value.trim()) {
+      campo.value = '(16) ';
+    }
   }
 
   function formatarCelularPromo(valor) {
@@ -154,16 +171,13 @@
     el.value = formatarCelularPromo(el.value);
   }
 
-  function mascaraDataPromo(el) {
-    if (!el) return;
-    var digitos = String(el.value || '').replace(/\D/g, '').slice(0, 8);
-    if (digitos.length > 4) {
-      el.value = digitos.slice(0, 2) + '/' + digitos.slice(2, 4) + '/' + digitos.slice(4);
-    } else if (digitos.length > 2) {
-      el.value = digitos.slice(0, 2) + '/' + digitos.slice(2);
-    } else {
-      el.value = digitos;
-    }
+  // Retorna a data dos 3 selects no formato DD/MM/AAAA, ou '' se incompleto
+  function obterDataPromoStr() {
+    var dia = inputPromoDia ? inputPromoDia.value : '';
+    var mes = inputPromoMes ? inputPromoMes.value : '';
+    var ano = inputPromoAno ? inputPromoAno.value : '';
+    if (!dia || !mes || !ano) return '';
+    return dia + '/' + mes + '/' + ano;
   }
 
   function parseDataBrPromoToIso(dataBr) {
@@ -185,7 +199,9 @@
   }
 
   function promoDataValida() {
-    return !!(inputPromoData && parseDataBrPromoToIso(inputPromoData.value));
+    var iso = parseDataBrPromoToIso(obterDataPromoStr());
+    if (!iso) return false;
+    return obterIdadePromo(iso) >= 18;
   }
 
   function promoCelularValido() {
@@ -265,7 +281,9 @@
 
   function limparValidacaoPromo() {
     marcarCampoInvalido(inputPromoNome, false);
-    marcarCampoInvalido(inputPromoData, false);
+    marcarCampoInvalido(inputPromoDia, false);
+    marcarCampoInvalido(inputPromoMes, false);
+    marcarCampoInvalido(inputPromoAno, false);
     marcarCampoInvalido(inputPromoCelular, false);
   }
 
@@ -279,7 +297,9 @@
     var podeEditarCelular = podeEditarData && promoDataValida();
 
     setCampoPromoHabilitado(inputPromoNome, podeEditarNome);
-    setCampoPromoHabilitado(inputPromoData, podeEditarData);
+    setCampoPromoHabilitado(inputPromoDia, podeEditarData);
+    setCampoPromoHabilitado(inputPromoMes, podeEditarData);
+    setCampoPromoHabilitado(inputPromoAno, podeEditarData);
     setCampoPromoHabilitado(inputPromoCelular, podeEditarCelular);
 
     if (btnEnviarPromo) btnEnviarPromo.disabled = !(_promoCadastroLiberado && promoCamposValidos());
@@ -288,7 +308,9 @@
   function resetarFormularioPromo(opcoes) {
     var opts = opcoes || {};
     if (inputPromoNome) inputPromoNome.value = '';
-    if (inputPromoData) inputPromoData.value = '';
+    if (inputPromoDia) inputPromoDia.value = '';
+    if (inputPromoMes) inputPromoMes.value = '';
+    if (inputPromoAno) inputPromoAno.value = '';
     if (inputPromoCelular) inputPromoCelular.value = '';
     if (inputPromoHp) inputPromoHp.value = '';
     if (!opts.manterFeedback) mostrarMsgSorteio('', '');
@@ -386,7 +408,7 @@
   async function enviarSorteioPromo() {
     if (!_promoCadastroLiberado || _promoSubmitting) return;
     if (window._sorteioEncerrado) {
-      mostrarMsgSorteio('⛔ As inscrições para o sorteio foram encerradas em 02/01/2027. Obrigado pela participação!', 'aviso');
+      mostrarMsgSorteio('⛔ As inscrições para este sorteio foram encerradas. Obrigado pela participação!', 'aviso');
       return;
     }
     if (inputPromoHp && inputPromoHp.value) {
@@ -401,7 +423,7 @@
     }
 
     var nome = (inputPromoNome && inputPromoNome.value ? inputPromoNome.value : '').replace(/[<>&"'\/]/g, '').trim();
-    var dataNasc = inputPromoData ? inputPromoData.value.trim() : '';
+    var dataNasc = obterDataPromoStr();
     var dataNascIso = parseDataBrPromoToIso(dataNasc);
     var cel = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
     limparValidacaoPromo();
@@ -413,8 +435,10 @@
       return;
     }
     if (!dataNascIso) {
-      marcarCampoInvalido(inputPromoData, true);
-      mostrarMsgSorteio('Informe uma data de nascimento válida no formato dd/mm/aaaa.', 'aviso');
+      marcarCampoInvalido(inputPromoDia, true);
+      marcarCampoInvalido(inputPromoMes, true);
+      marcarCampoInvalido(inputPromoAno, true);
+      mostrarMsgSorteio('Selecione dia, mês e ano de nascimento.', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'birthdate' });
       return;
     }
@@ -424,9 +448,11 @@
       trackPromoEvent('promotion_validation_error', { field: 'phone' });
       return;
     }
-    if (obterIdadePromo(dataNascIso) < 14) {
-      marcarCampoInvalido(inputPromoData, true);
-      mostrarMsgSorteio('É necessário ter no mínimo 14 anos para participar do sorteio.', 'aviso');
+    if (obterIdadePromo(dataNascIso) < 18) {
+      marcarCampoInvalido(inputPromoDia, true);
+      marcarCampoInvalido(inputPromoMes, true);
+      marcarCampoInvalido(inputPromoAno, true);
+      mostrarMsgSorteio('⛔ É necessário ter 18 anos ou mais para participar do sorteio.', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'birthdate_min_age' });
       return;
     }
@@ -523,7 +549,7 @@
         } else if (resposta.status === 400) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
           if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
-          if (/data|nasc/i.test(erro)) marcarCampoInvalido(inputPromoData, true);
+          if (/data|nasc/i.test(erro)) { marcarCampoInvalido(inputPromoDia, true); marcarCampoInvalido(inputPromoMes, true); marcarCampoInvalido(inputPromoAno, true); }
           if (/celular|telefone|ddd|phone/i.test(erro)) marcarCampoInvalido(inputPromoCelular, true);
           trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
         } else if (resposta.status === 429) {
@@ -592,14 +618,26 @@
       });
     }
 
-    if (inputPromoData) {
-      ['input', 'change'].forEach(function(evt) {
-        inputPromoData.addEventListener(evt, function() {
-          mascaraDataPromo(inputPromoData);
+    [inputPromoDia, inputPromoMes, inputPromoAno].forEach(function(el) {
+      if (!el) return;
+      ['change'].forEach(function(evt) {
+        el.addEventListener(evt, function() {
+          var iso = parseDataBrPromoToIso(obterDataPromoStr());
+          if (iso && obterIdadePromo(iso) < 18) {
+            mostrarMsgSorteio('⛔ É necessário ter 18 anos ou mais para participar.', 'aviso');
+            marcarCampoInvalido(inputPromoDia, true);
+            marcarCampoInvalido(inputPromoMes, true);
+            marcarCampoInvalido(inputPromoAno, true);
+          } else {
+            mostrarMsgSorteio('', '');
+            marcarCampoInvalido(inputPromoDia, false);
+            marcarCampoInvalido(inputPromoMes, false);
+            marcarCampoInvalido(inputPromoAno, false);
+          }
           atualizarFluxoCadastroPromo();
         });
       });
-    }
+    });
 
     if (inputPromoCelular) {
       ['input', 'change'].forEach(function(evt) {
@@ -683,14 +721,6 @@
         var desc = document.getElementById('promo-desc-el');
         if (desc && (pr.descrição || pr.descricao)) desc.textContent = pr.descrição || pr.descricao;
 
-        // Data de encerramento para o contador
-        if (pr.dataFim) {
-          try {
-            var novaData = new Date(pr.dataFim);
-            if (!isNaN(novaData.getTime())) dataAlvo = novaData;
-          } catch(e) {}
-        }
-
         // Imagem do banner (se o admin fez upload)
         var imgBanner = document.getElementById('promo-img-banner');
         if (imgBanner && pr.fotoUrl) {
@@ -743,52 +773,6 @@
       .catch(function() { container.style.display = 'none'; });
   })();
 
-  // ═══ VERIFICAR ENCERRAMENTO DA LISTA DE INSCRIÇÕES ═══
-  // Fidelidade.json foi removido. O encerramento do sorteio é controlado via
-  // dados/promo.json (campo dataFim). Se dataFim for anterior a hoje,
-  // o contador exibe "SORTEIO EM ANDAMENTO" e o formulário continua habilitado.
-  // Para encerrar manualmente: setar window._sorteioEncerrado = true no painel admin.
-  (function verificarEncerramentoSorteio() {
-    // Verificar encerramento via dados/promo.json (dataFim)
-    fetch('dados/promo.json?t=' + Date.now())
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .catch(function() { return null; })
-      .then(function(pr) {
-        if (!pr || !pr.dataFim) return;
-        var hoje = new Date();
-        var fim = new Date(pr.dataFim);
-        if (isNaN(fim.getTime()) || hoje < fim) return;
-
-        window._sorteioEncerrado = true;
-
-        // Oculta formulário e botões de inscrição
-        var formInline = document.getElementById('form-sorteio-inline');
-        if (formInline) formInline.style.display = 'none';
-
-        var btnAceitar = document.getElementById('btn-aceitar-sorteio-inline');
-        if (btnAceitar) { btnAceitar.disabled = true; btnAceitar.setAttribute('aria-disabled', 'true'); }
-
-        var btnParticip = document.getElementById('btn-quero-participar-sorteio');
-        if (btnParticip) {
-          btnParticip.textContent = '🔒 Inscrições encerradas';
-          btnParticip.style.background = '#757575';
-          btnParticip.style.cursor = 'default';
-          btnParticip.onclick = null;
-        }
-
-        // Exibe aviso de encerramento dentro do bloco de regras
-        var blocoRegras = document.getElementById('bloco-regras-sorteio-promo');
-        if (blocoRegras) {
-          var aviso = document.createElement('div');
-          aviso.style.cssText = 'background:#fff3e0;border:2px solid #e65100;border-radius:10px;padding:12px 16px;margin:10px 0;font-weight:700;color:#bf360c;text-align:center';
-          aviso.textContent = '🔒 As inscrições foram encerradas em 02/01/2027. Os participantes cadastrados continuam concorrendo até o último sorteio.';
-          blocoRegras.insertBefore(aviso, blocoRegras.firstChild);
-        }
-
-        // Atualiza o contador para não mostrar próximo sorteio
-        var cdRow = document.getElementById('cd-row');
-        var cdEncerrado = document.getElementById('cd-encerrado');
-        if (cdRow) cdRow.style.display = 'none';
-        if (cdEncerrado) { cdEncerrado.style.display = 'block'; cdEncerrado.textContent = '🔒 INSCRIÇÕES ENCERRADAS'; }
-      });
-  })();
+  // ═══ ENCERRAMENTO DO SORTEIO ═══
+  // O sorteio é mensal e não tem data de término.
+  // Para encerrar: setar window._sorteioEncerrado = true no painel admin.

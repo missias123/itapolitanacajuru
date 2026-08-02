@@ -21,19 +21,24 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #000;
+      background: #111;
     }
 
-    /*
-     * TÉCNICA PROFISSIONAL — aspect-ratio nativo (CSS moderno)
-     * Suportado por 97% dos navegadores (Chrome 88+, Safari 15+, Firefox 89+)
-     * O carrossel se ajusta AUTOMATICAMENTE à proporção 3:2 das fotos
-     * Sem corte, sem barra preta, perfeito em qualquer tela
-     */
     .itp-slider {
       width: 100%;
       height: 100%;
       position: relative;
+    }
+
+    /* Gradiente sutil na base — profundidade visual premium */
+    .itp-slider::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 30%;
+      background: linear-gradient(to top, rgba(0,0,0,0.28), transparent);
+      pointer-events: none;
+      z-index: 2;
     }
 
     .itp-slider .swiper-slide {
@@ -41,41 +46,51 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #000;
+      background: #111;
     }
 
+    /* Fotos preenchem 100 % do frame — sem barras pretas, sem corte */
     .itp-slider .swiper-slide img {
       width: 100%;
-      height: auto;          /* altura automática — mantém proporção original */
+      height: 100%;
       display: block;
-      object-fit: contain;   /* foto inteira, sem corte */
+      object-fit: cover;
+      object-position: center center;
+      /* Ken Burns: zoom suave enquanto o slide está ativo */
+      transform-origin: center center;
+      will-change: transform;
     }
 
-    /* Dots */
-    .itp-slider .swiper-pagination { bottom: 12px; }
+    /* Ken Burns aplicado apenas no slide ativo */
+    @keyframes itpKenBurns {
+      0%   { transform: scale(1.00); }
+      100% { transform: scale(1.07); }
+    }
+    .itp-slider .swiper-slide-active img {
+      animation: itpKenBurns 8s ease-out forwards;
+    }
+
+    /* Transição suave ao trocar slide */
+    .itp-slider .swiper-slide img {
+      transition: opacity 0.4s ease;
+    }
+
+    /* Dots premium */
+    .itp-slider .swiper-pagination {
+      bottom: 16px;
+      z-index: 3;
+    }
     .itp-slider .swiper-pagination-bullet {
-      width: 8px; height: 8px;
-      background: rgba(255,255,255,0.55);
+      width: 9px; height: 9px;
+      background: rgba(255,255,255,0.5);
       opacity: 1;
-      transition: transform 0.25s, background 0.25s;
+      border-radius: 50%;
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
     }
     .itp-slider .swiper-pagination-bullet-active {
       background: #fff;
-      transform: scale(1.6);
-    }
-
-    @media (max-width: 768px) {
-      .itp-slider .swiper-slide {
-        min-height: auto;
-        aspect-ratio: auto;
-      }
-
-      .itp-slider .swiper-slide img {
-        width: 100%;
-        height: auto;
-        max-height: none;
-        object-fit: contain;
-      }
+      transform: scale(1.55);
+      box-shadow: 0 0 8px rgba(255,255,255,0.65);
     }
 
   </style>
@@ -97,18 +112,13 @@
 
       if (typeof window.Swiper !== 'function') return;
       var DEFAULT_BANNERS = [
-        { src: 'images/carrossel/v3_b1_acai.webp', alt: 'Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b2_unicornio.webp', alt: 'Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b3_nutella.webp', alt: 'Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b4_ovomaltine.webp', alt: 'Picolé Ovomaltine Novo — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b5_eventos.webp', alt: 'Picolés para Eventos — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b6_maracuja_diet.webp', alt: 'Maracujá Diet + Leite Ninho — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b7_escolha_favorito.webp', alt: 'Escolha o Seu Favorito — Taça Suja, Milkshake, Açaí e Sorvete — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b8_sorvetes_montanha.webp', alt: 'Sorvetes tipo artesanal em sabores variados — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b9_brownie_sorvete.webp', alt: 'Brownie com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b10_petit_gateau.webp', alt: 'Petit Gateau com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b11_cascao_3bolas.webp', alt: 'Cascão com 3 Bolas de Sorvete — Sorveteria Itapolitana Cajuru' },
-        { src: 'images/carrossel/v3_b12_vitrine_produtos.webp', alt: 'Sorvete, Milkshake, Picolé e Taça — Sorveteria Itapolitana Cajuru' },
+        {
+          srcSet: [
+            'images/carrossel/v3_b14_picole_cajuru.webp',
+            'images/carrossel/WhatsApp Image 2026-08-01 at 11.43.05 (3).jpeg'
+          ],
+          alt: 'Picolé Ovomaltine Summer Blast — Feito em Cajuru SP — Sorveteria Itapolitana Cajuru'
+        },
         {
           srcSet: [
             'images/carrossel/v3_b13_acai_tacas_gourmet.webp',
@@ -116,13 +126,18 @@
           ],
           alt: 'Açaí Taças Gourmet Natureon — 4 Sabores Especiais — Sorveteria Itapolitana Cajuru'
         },
-        {
-          srcSet: [
-            'images/carrossel/v3_b14_picole_cajuru.webp',
-            'images/carrossel/WhatsApp Image 2026-08-01 at 11.43.05 (3).jpeg'
-          ],
-          alt: 'Picolé Ovomaltine Summer Blast — Feito em Cajuru SP — Sorveteria Itapolitana Cajuru'
-        }
+        { src: 'images/carrossel/v3_b12_vitrine_produtos.webp', alt: 'Sorvete, Milkshake, Picolé e Taça — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b11_cascao_3bolas.webp', alt: 'Cascão com 3 Bolas de Sorvete — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b10_petit_gateau.webp', alt: 'Petit Gateau com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b9_brownie_sorvete.webp', alt: 'Brownie com Sorvete — Combinação Irresistível — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b8_sorvetes_montanha.webp', alt: 'Sorvetes tipo artesanal em sabores variados — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b7_escolha_favorito.webp', alt: 'Escolha o Seu Favorito — Taça Suja, Milkshake, Açaí e Sorvete — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b6_maracuja_diet.webp', alt: 'Maracujá Diet + Leite Ninho — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b5_eventos.webp', alt: 'Picolés para Eventos — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b4_ovomaltine.webp', alt: 'Picolé Ovomaltine Novo — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b3_nutella.webp', alt: 'Sobremesa dos Sonhos com Nutella — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b2_unicornio.webp', alt: 'Taça Unicórnio — Venha Experimentar — Sorveteria Itapolitana Cajuru' },
+        { src: 'images/carrossel/v3_b1_acai.webp', alt: 'Açaí do Seu Jeito — O Mais Pedido — Sorveteria Itapolitana Cajuru' }
       ];
 
       function bannerSrcSeguro(src) {
