@@ -183,7 +183,9 @@
   }
 
   function promoDataValida() {
-    return !!(inputPromoData && parseDataBrPromoToIso(inputPromoData.value));
+    var iso = inputPromoData && parseDataBrPromoToIso(inputPromoData.value);
+    if (!iso) return false;
+    return obterIdadePromo(iso) >= 18;
   }
 
   function promoCelularValido() {
@@ -422,9 +424,9 @@
       trackPromoEvent('promotion_validation_error', { field: 'phone' });
       return;
     }
-    if (obterIdadePromo(dataNascIso) < 14) {
+    if (obterIdadePromo(dataNascIso) < 18) {
       marcarCampoInvalido(inputPromoData, true);
-      mostrarMsgSorteio('É necessário ter no mínimo 14 anos para participar do sorteio.', 'aviso');
+      mostrarMsgSorteio('⛔ É necessário ter 18 anos ou mais para participar do sorteio.', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'birthdate_min_age' });
       return;
     }
@@ -594,6 +596,14 @@
       ['input', 'change'].forEach(function(evt) {
         inputPromoData.addEventListener(evt, function() {
           mascaraDataPromo(inputPromoData);
+          var iso = parseDataBrPromoToIso(inputPromoData.value);
+          if (iso && obterIdadePromo(iso) < 18) {
+            mostrarMsgSorteio('⛔ É necessário ter 18 anos ou mais para participar.', 'aviso');
+            marcarCampoInvalido(inputPromoData, true);
+          } else {
+            mostrarMsgSorteio('', '');
+            marcarCampoInvalido(inputPromoData, false);
+          }
           atualizarFluxoCadastroPromo();
         });
       });
