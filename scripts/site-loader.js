@@ -258,15 +258,6 @@
       footerHorário.textContent = cfg.footerHorario;
     }
 
-    // ── Fidelidade: pontos e prêmios ───────────
-    if (cfg.pontosMilkshake !== undefined || cfg.pontosCaixa !== undefined || cfg.premioMilkshake || cfg.prêmioMilkshake || cfg.premioCaixa || cfg.prêmioCaixa) {
-      const pontosMilk = parseNumero(cfg.pontosMilkshake);
-      const pontosCaixa = parseNumero(cfg.pontosCaixa);
-      if (pontosMilk !== null) window._META_MILK = pontosMilk;
-      if (pontosCaixa !== null) window._META_CAIXA = pontosCaixa;
-      if (cfg.premioMilkshake || cfg.prêmioMilkshake) window._PREMIO_MILK = cfg.premioMilkshake || cfg.prêmioMilkshake;
-      if (cfg.premioCaixa || cfg.prêmioCaixa) window._PREMIO_CAIXA = cfg.premioCaixa || cfg.prêmioCaixa;
-      const pontosMilkTxt = pontosMilk !== null ? `${pontosMilk} pontos` : null;
       const pontosCaixaTxt = pontosCaixa !== null ? `${pontosCaixa} pontos` : null;
       const premioMilkTxt = cfg.premioMilkshake || cfg.prêmioMilkshake || null;
       const premioCaixaTxt = cfg.premioCaixa || cfg.prêmioCaixa || null;

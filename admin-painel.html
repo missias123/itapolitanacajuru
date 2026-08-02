@@ -622,7 +622,6 @@ body { overflow-x: hidden; }
         <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
           <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
           <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
-          <a href="" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
           <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
           <a id="dash-link-sobre" href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
@@ -1181,19 +1180,9 @@ body { overflow-x: hidden; }
             <label>Badges do Hero (um por linha)</label>
             <textarea id="enc-hero-badges" rows="5" placeholder="✨ tipo artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
           </div>
-          <div class="seção-título">🔗 CTAs da Fidelidade</div>
-          <div class="campo-edit">
-            <label>URL "Ver regras completas" (Fidelidade)</label>
-            <input type="url" id="cfg-fid-regras-url" placeholder="https://itapolitanacajuru.com.br/#secao-regras-fid-completas"/>
-          </div>
-          <div class="campo-edit">
-            <label>URL "Resgatar prêmio via WhatsApp" (Fidelidade)</label>
-            <input type="url" id="cfg-fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/>
-          </div>
+          
           <div class="seção-título">🔎 SEO por Página</div>
-          <div class="campo-edit"><label>Fidelidade · Title</label><input type="text" id="cfg-seo-fid-titulo" maxlength="80" placeholder=" | Sorveteria Itapolitana Cajuru"/></div>
-          <div class="campo-edit"><label>Fidelidade · Meta Description</label><textarea id="cfg-seo-fid-descricao" rows="2" maxlength="180" placeholder="Acumule pontos..."></textarea></div>
-          <div class="campo-edit"><label>Fidelidade · Keywords</label><input type="text" id="cfg-seo-fid-palavras" maxlength="220" placeholder="fidelidade cajuru, clube de pontos"/></div>
+          
           <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
           <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
@@ -2201,194 +2190,6 @@ Talento</textarea>
       </div>
     </div>
 
-    <!--  -->
-    <div class="seção" id="sec-fidelidade" style="display:none">
-      <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
-        ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
-      </div>
-      <div class="btn-row" style="margin-bottom:10px">
-        <button class="btn btn-cinza" id="btn-refresh-fidelidade" onclick="atualizarListaFidelidade()">🔄 Atualizar Lista</button>
-      </div>
-      <div class="códigos-stats">
-        <div class="cod-stat"><div class="cn" id="fid-total">-</div><div class="ct">Total Códigos</div></div>
-        <div class="cod-stat"><div class="cn" id="fid-disponíveis" style="color:#2e7d32">-</div><div class="ct">Disponíveis</div></div>
-        <div class="cod-stat"><div class="cn" id="fid-usados" style="color:#c62828">-</div><div class="ct">Usados</div></div>
-        <div class="cod-stat"><div class="cn" id="fid-liberados" style="color:#1565c0">-</div><div class="ct">Liberados</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h2>&#x1F3C6; Configuração dos Prêmios</h2></div>
-        <div class="card-body">
-          <div class="seção-título">&#x1F964; Prêmio 1 - Milkshake</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit"><label>Nome do Prêmio</label><input type="text" id="fid-prêmio-milk-nome" placeholder="Milkshake 300ml"/></div>
-            <div class="campo-edit"><label>Pontos necessários</label><input type="number" id="fid-pts-milk" min="1" max="100" placeholder="10"/></div>
-          </div>
-          <div class="seção-título">&#x1F366; Prêmio 2 - Caixa de Sorvete</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit"><label>Nome do Prêmio</label><input type="text" id="fid-prêmio-caixa-nome" placeholder="Caixa 7 Bolas"/></div>
-            <div class="campo-edit"><label>Pontos necessários</label><input type="number" id="fid-pts-caixa" min="1" max="100" placeholder="30"/></div>
-          </div>
-          <div class="campo-edit"><label>Título da página Fidelidade</label><input type="text" id="fid-título" placeholder="Programa de Fidelidade"/></div>
-          <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
-          <div class="campo-edit"><label>Passos "Como funciona" (um por linha)</label><textarea id="fid-como-funciona-lista" rows="4" placeholder="Faça seu cadastro...&#10;A cada compra...&#10;Junte pontos..."></textarea></div>
-          <div class="campo-edit"><label>Regras resumidas (uma por linha)</label><textarea id="fid-regras-resumo-lista" rows="5" placeholder="Cadastre-se com dados reais...&#10;Cada código válido soma 1 ponto..."></textarea></div>
-
-          <div class="seção-título">📝 Textos da Página Fidelidade</div>
-          <div class="campo-edit"><label>Título "Como funciona"</label><input type="text" id="fidelidade-como-funciona-titulo" maxlength="100" placeholder="Como funciona"/><div class="hint">H2 da seção Como Funciona.</div></div>
-          <div class="campo-edit"><label>Título seção "Quero participar"</label><input type="text" id="fidelidade-acao-titulo" maxlength="120" placeholder="Quero participar do "/><div class="hint">H2 da seção de ações principais.</div></div>
-          <div class="campo-edit"><label>Botão "Quero participar"</label><input type="text" id="fidelidade-btn-cadastro" maxlength="120" placeholder="Quero participar do "/><div class="hint">Texto do botão de cadastro.</div></div>
-          <div class="campo-edit"><label>Botão "Já sou cadastrado"</label><input type="text" id="fidelidade-btn-login" maxlength="120" placeholder="Já sou cadastrado / Digitar código"/><div class="hint">Texto do botão de login.</div></div>
-          <div class="campo-edit"><label>Título "Regras do Clube"</label><input type="text" id="fidelidade-regras-titulo" maxlength="100" placeholder="Regras do "/><div class="hint">H2 da seção de cadastro/regras.</div></div>
-          <div class="campo-edit"><label>Botão "Li e aceito"</label><input type="text" id="fidelidade-btn-aceitar-regras" maxlength="120" placeholder="Li e aceito as regras do "/><div class="hint">Texto do botão de aceitação de regras.</div></div>
-          <div class="campo-edit"><label>Título "Regras completas"</label><input type="text" id="fidelidade-regulamento-titulo" maxlength="100" placeholder="Regras completas do programa"/><div class="hint">H2 da seção de regras completas.</div></div>
-          <div class="campo-edit"><label>Summary "Ler regulamento"</label><input type="text" id="fidelidade-regulamento-summary" maxlength="120" placeholder="📜 Ler regulamento completo do "/><div class="hint">Texto do summary do details de regulamento.</div></div>
-
-          <div class="seção-título">🔎 SEO da Página Fidelidade</div>
-          <div class="campo-edit"><label>Título SEO (&lt;title&gt;)</label><input type="text" id="cfg-seo-fidelidade-titulo" maxlength="80" placeholder=" | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador.</div></div>
-          <div class="campo-edit"><label>Meta Description</label><textarea id="cfg-seo-fidelidade-descricao" rows="2" maxlength="160" placeholder="Acumule pontos por código nos cupons da Itapolitana Cajuru e troque por prêmios. Cadastre-se no ."></textarea><div class="hint">Descrição SEO (máx. 160 caracteres).</div></div>
-
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidelidadePagina()">💾 Salvar Textos da Página Fidelidade</button></div>
-
-          <div class="seção-título">🔗 CTAs da Fidelidade</div>
-          <div class="campo-edit"><label>URL "Ver regras completas"</label><input type="url" id="fid-regras-url" placeholder="https://itapolitanacajuru.com.br/#secao-regras-fid-completas"/></div>
-          <div class="campo-edit"><label>URL "Resgatar prêmio via WhatsApp"</label><input type="url" id="fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/></div>
-          <div class="seção-título">🔎 SEO por Página</div>
-          <div class="campo-edit"><label>Fidelidade · Title</label><input type="text" id="fid-seo-titulo" maxlength="80" placeholder=" | Sorveteria Itapolitana Cajuru"/></div>
-          <div class="campo-edit"><label>Fidelidade · Meta Description</label><textarea id="fid-seo-descricao" rows="2" maxlength="180" placeholder="Acumule pontos e resgate prêmios no  da Itapolitana em Cajuru."></textarea></div>
-          <div class="campo-edit"><label>Fidelidade · Keywords</label><input type="text" id="fid-seo-palavras" maxlength="220" placeholder="fidelidade cajuru, clube de pontos, sorveteria itapolitana"/></div>
-          <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h2>&#x1F3AB; Gerador de Lotes de Códigos</h2></div>
-        <div class="card-body">
-          <div class="fid-info-box">
-            Banco total: <strong>1.000.000 códigos únicos e indecifráveis</strong>.<br>
-            Cada clique em <strong>“Liberar 100 Códigos”</strong> gera o próximo lote e salva automaticamente no GitHub.<br>
-            O contador avança: <strong>100/1.000.000 → 200/1.000.000 → 300/1.000.000...</strong><br>
-            Apenas códigos liberados são aceitos pelos clientes — sem impressão = sem validade.
-          </div>
-          <div class="fid-progresso-wrap">
-            <div class="fid-progresso-titulo">Progresso do Banco de Códigos</div>
-            <div class="fid-progresso-barra-bg"><div class="fid-progresso-barra" id="fid-prog-barra" style="width:0%"></div></div>
-            <div class="fid-progresso-texto" id="fid-prog-texto">0 / 1.000.000 códigos liberados</div>
-          </div>
-          <div class="btn-row" style="margin-top:14px">
-            <button class="btn btn-laranja" data-fid-write onclick="liberarLoteFidelidade()" id="btn-liberar-lote">&#x1F3B2; Liberar 100 Códigos</button>
-            <button class="btn btn-vermelho" data-fid-write onclick="apagarTodosCodigos()">&#x1F5D1;&#xFE0F; Apagar Todos</button>
-          </div>
-          <div class="fid-alerta" id="fid-alerta-lote"></div>
-          <div class="btn-row" style="margin-top:16px">
-            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (10/A4 · 92,5&times;51,4 mm)</button>
-          </div>
-          <div id="fid-lote-wrap" style="display:none;margin-top:16px">
-            <div class="fid-lote-info" id="fid-lote-info"></div>
-            <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <h2>&#x1F3AB; Todos os Códigos</h2>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <select id="fid-filtro-status" onchange="renderCódigos()">
-              <option value="">Todos</option>
-              <option value="disponível">Disponíveis</option>
-              <option value="usado">Usados</option>
-            </select>
-            <button class="btn btn-cinza" onclick="copiarCódigosDisponíveis()">&#x1F4CB; Copiar Disponíveis</button>
-          </div>
-        </div>
-        <div class="card-body" style="padding:0">
-          <div class="códigos-lista" id="códigos-lista"><p style="color:#999;text-align:center;padding:20px">Carregando códigos...</p></div>
-          <div style="padding:12px 16px;font-size:.78rem;color:#888" id="fid-pag-info"></div>
-        </div>
-      </div>
-
-      <!-- REGULAMENTO DO CLUBE DE  -->
-      <div class="card" style="border-left:4px solid #e65100">
-        <div class="card-header"><h2>&#x1F4DC; Regulamento — </h2></div>
-        <div class="card-body">
-          <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de cadastro do . O cliente precisa aceitar para prosseguir.</div>
-          <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
-            <strong>Versão atual ativa no site:</strong><br>
-            1. Do Programa — Cada cupom vale R$10 em compras e confere 0,5 ponto<br>
-            2. Da Participação — Cadastro obrigatório com dados verdadeiros<br>
-            3. Dos Cupons — Cada código válido = +0,5 ponto<br>
-            4. Dos Prêmios — 10pts Milkshake / 30pts Caixa 7 Bolas<br>
-            5. Das Proibições — Fraude = cancelamento permanente<br>
-            6. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
-            7. Do Foro — Comarca de Cajuru — SP
-          </div>
-        </div>
-      </div>
-
-      <!-- GERENCIAMENTO DE SORTEIOS -->
-      <div class="card" style="border-left:4px solid #9c27b0">
-        <div class="card-header"><h2>🎁 Gerenciamento de Sorteios</h2></div>
-        <div class="card-body">
-          <div class="hint" style="margin-bottom:12px">Configure sorteios mensais para engajar clientes cadastrados no programa de fidelidade.</div>
-
-          <div class="seção-título">🎯 Sorteio Atual</div>
-          <div class="campo-edit"><label>Status do Sorteio</label>
-            <select id="sorteio-status">
-              <option value="ativo">🟢 Ativo</option>
-              <option value="pausado">🟡 Pausado</option>
-              <option value="encerrado">🔴 Encerrado</option>
-            </select>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit"><label>Data Próximo Sorteio</label><input type="date" id="sorteio-data-prox"/></div>
-            <div class="campo-edit"><label>Data Fim Inscrições</label><input type="date" id="sorteio-data-fim"/></div>
-          </div>
-          <div class="campo-edit"><label>Prêmio do Sorteio</label><input type="text" id="sorteio-premio" placeholder="Ex: 1 caixa de 5 litros de sorvete tipo artesanal" maxlength="200"/></div>
-          <div class="campo-edit"><label>Vencedor (deixe vazio se ainda não foi sorteado)</label><input type="text" id="sorteio-vencedor" placeholder="Nome do vencedor"/></div>
-          <div class="campo-edit"><label>Observações</label><textarea id="sorteio-obs" rows="3" placeholder="Observações sobre o sorteio atual"></textarea></div>
-
-          <div class="seção-título">📊 Estatísticas do Sorteio</div>
-          <div class="stats-row">
-            <div class="stat-card"><div class="num" id="sorteio-inscritos">-</div><div class="txt">Inscritos</div></div>
-            <div class="stat-card"><div class="num" id="sorteio-dias-restantes">-</div><div class="txt">Dias Restantes</div></div>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn btn-salvar" data-fid-write onclick="salvarConfigSorteio()">💾 Salvar Configuração do Sorteio</button>
-            <button class="btn btn-cinza" onclick="copiarSorteio()">🎲 Copiar Lista de Inscritos para Sorteio</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- REGRAS DE PONTUAÇÃO -->
-      <div class="card" style="border-left:4px solid #1976d2">
-        <div class="card-header"><h2>⚙️ Regras de Pontuação</h2></div>
-        <div class="card-body">
-          <div class="hint" style="margin-bottom:12px">Configure o valor de cada cupom e quantos pontos ele confere ao cliente.</div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo-edit">
-              <label>Pontos por Cupom/Código</label>
-              <input type="number" id="pontos-por-codigo" step="0.1" min="0.1" max="10" placeholder="0.5"/>
-              <div class="hint">Quantos pontos cada código/cupom vale (ex: 0.5)</div>
-            </div>
-            <div class="campo-edit">
-              <label>Valor Monetário por Cupom (R$)</label>
-              <input type="number" id="valor-por-codigo" step="1" min="1" max="100" placeholder="10"/>
-              <div class="hint">Quanto cada cupom representa em compras (ex: R$ 10,00)</div>
-            </div>
-          </div>
-
-          <div class="campo-edit">
-            <label>Descrição da Regra (exibida para o cliente)</label>
-            <input type="text" id="descricao-regra-pontos" maxlength="200" placeholder="Cada cupom representa R$10 em compras e confere 0,5 ponto ao cadastrar"/>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn btn-salvar" data-fid-write onclick="salvarRegrasPontuacao()">💾 Salvar Regras de Pontuação</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
     <!-- CONFIG -->
 
     <!-- QUALIDADE -->
@@ -2505,7 +2306,6 @@ Talento</textarea>
             <a href="https://itapolitanacajuru.com.br/" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
               <div style="font-size:24px">⭐</div>
               <div>
-                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Fidelidade</div>
                 <div style="font-size:11px;color:#5c6bc0">/</div>
                 <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
                   <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 91</span>
@@ -2598,13 +2398,6 @@ Talento</textarea>
           <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
           <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
           <div class="seção-título">🎟️ Página de Fidelidade — Hero Banner</div>
-          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-            📌 <strong>IDs no site:</strong> <code>fid-hero-titulo</code> e <code>fid-hero-desc</code> (). Alterar aqui muda o banner da página de fidelidade imediatamente ao salvar.
-          </div>
-          <div class="campo-edit"><label>Título do Hero Fidelidade (ID: fid-hero-titulo)</label><input type="text" id="cfg-fid-hero-titulo" maxlength="80" placeholder="🎟️  Itapolitana"/><div class="hint">Título principal do banner da página de fidelidade. Max. 80 caracteres.</div></div>
-          <div class="campo-edit"><label>Descrição do Hero Fidelidade (ID: fid-hero-desc)</label><textarea id="cfg-fid-hero-desc" rows="2" maxlength="160" placeholder="Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru."></textarea><div class="hint">Descrição abaixo do título no banner de fidelidade. Max. 160 caracteres.</div></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidHero()">&#x1F4BE; Salvar Hero Fidelidade</button></div>
-
           <div class="seção-título">&#x1F512; Segurança</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
@@ -2770,13 +2563,6 @@ Talento</textarea>
           <div class="campo-edit"><label>Sugestões rápidas — 6 botões (IDs: chat-sug-1 a chat-sug-6, um por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário&#10;Como encomendar&#10;Sabores&#10;Preços&#10;Localização&#10;Picolés"></textarea><div class="hint">Exatamente 6 linhas. Cada linha = 1 botão de sugestão no chat.</div></div>
           <div class="campo-edit"><label>Mensagem fora do horário do Chat (config.chatForaHorario)</label><input type="text" id="fc-chat-fora" maxlength="220" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar sobre atendimento/pedido fora do horário de funcionamento.</div></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarChat()">&#x1F4BE; Salvar Chat</button></div>
-
-          <div class="seção-título" style="margin-top:20px">🍦 Botão  (FAB)</div>
-          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-            📌 <strong>ID no site:</strong> <code>clube-fab-texto</code>. Botão fixo no canto inferior direito que leva à página de fidelidade.
-          </div>
-          <div class="campo-edit"><label>Texto do botão Clube (ID: clube-fab-texto)</label><input type="text" id="fc-clube-fab" maxlength="30" placeholder="🍦 "/><div class="hint">Texto do botão laranja fixo no canto inferior direito.</div></div>
-          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarClubeFab()">&#x1F4BE; Salvar Botão Clube</button></div>
 
           <div class="seção-título" style="margin-top:20px">📢 Botão Promoção (FAB)</div>
           <div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
@@ -3940,26 +3726,6 @@ function irPara(seção,btn){
   if(content)content.scrollTop=0;
 }
 
-async function atualizarListaFidelidade(){
-  const btn=document.getElementById('btn-refresh-fidelidade');
-  if(btn){btn.disabled=true;btn.textContent='Atualizando...';}
-  try{
-    const[cl,fi]=await Promise.all([ghGet(PATHS.clientes),ghGet(PATHS.fidelidade)]);
-    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
-    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
-    try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] atualizarListaFidelidade renderClientes',e);}
-    try{preencherFidelidade();}catch(e){console.error('[Admin] atualizarListaFidelidade preencherFidelidade',e);}
-    try{renderCódigos();}catch(e){console.error('[Admin] atualizarListaFidelidade renderCódigos',e);}
-    try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] atualizarListaFidelidade fidRender',e);}
-    fidApplyReadOnlyGuard();
-    toast('✅ Lista de Fidelidade atualizada com sucesso!','sucesso');
-  }catch(e){
-    console.error('[Admin] atualizarListaFidelidade',e);
-    toast('❌ Erro ao atualizar lista de Fidelidade.','erro');
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar Lista';}
-  }
-}
 function atualizarScoresQualidade(){
   carregarMetricasQualidade();
 }
@@ -9263,8 +9029,6 @@ function preencherFaleConosco() {
   document.getElementById('fc-modal-sorvetes-sub').value = c.modalSaboresSub || 'Informe o sabor desejado ao fazer seu pedido na loja';
   document.getElementById('fc-modal-picole-titulo').value = c.modalPicoleTitulo || 'Sabores do Picolé';
   document.getElementById('fc-modal-açaí-titulo').value = c.modalAçaíTitulo || '🫐 Complementos do Açaí';
-  document.getElementById('fc-modal-açaí-sub').value = c.modalAçaíSub || 'Disponíveis para o Açaí Personalizado';
-}
 
 async function salvarFaleConosco() {
   const c = STATE.config;
@@ -9318,12 +9082,6 @@ async function salvarClubeFab() {
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
 }
 
-// Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
-async function salvarModaisCardapio() {
-  const c = STATE.config;
-  c.modalSaboresTitulo = document.getElementById('fc-modal-sorvetes-titulo').value.trim();
-  c.modalSaboresSub = document.getElementById('fc-modal-sorvetes-sub').value.trim();
-  c.modalPicoleTitulo = document.getElementById('fc-modal-picole-titulo').value.trim();
   c.modalAçaíTitulo = document.getElementById('fc-modal-açaí-titulo').value.trim();
   c.modalAçaíSub = document.getElementById('fc-modal-açaí-sub').value.trim();
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');

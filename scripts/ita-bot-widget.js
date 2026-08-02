@@ -753,10 +753,6 @@
     var primeiro = (nome || '').trim().split(' ')[0] || 'cliente';
     _itabotOcultarTyping();
     _itabotInserirMensagem('bot', {
-      answer: 'O programa de fidelidade foi encerrado, ' + primeiro + '. Fale conosco pelo WhatsApp se tiver dúvidas! 💬',
-      linkHref: '',
-      chips: ['💬 Atendimento no WhatsApp']
-    });
   }
 
   /* ─── Handler de contexto ─── */
@@ -842,7 +838,6 @@
       _ctx = 'await_promo_cat';
       return { answer: 'Temos op\u00e7\u00f5es incr\u00edveis! \ud83c\udf89 Sobre qual voc\u00ea quer saber?', chips: ['\ud83e\uded0 Pre\u00e7os do A\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de Sorvete', '\ud83c\udf81 Sorteio mensal', '\ud83c\udf89 Ver tudo'] };
     }
-    if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('cadastro') !== -1) {
       _ctxData = {}; _ctx = 'await_fid_nome';
       return { answer: 'Vamos consultar seu cadastro \ud83d\ude0a Qual \u00e9 seu nome completo?' };
     }
@@ -984,9 +979,6 @@
       chips: ['\ud83d\udccd Localiza\u00e7\u00e3o', '\ud83d\udcf1 WhatsApp', '\ud83c\udf66 Card\u00e1pio']
     },
     {
-      answer: 'O programa de fidelidade foi encerrado. Fale conosco pelo WhatsApp se tiver dúvidas! 💬',
-      linkHref: ''
-    },
     {
       linkText: '\ud83c\udf9f Registrar c\u00f3digo',
       linkHref: ''
