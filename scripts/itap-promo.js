@@ -62,9 +62,8 @@
   var _promoCadastroLiberado = false;
   var _promoSubmitting = false;
   var _promoPendingOperation = null;
-  // Timeout de 20s: evita bloqueio indefinido quando há falha de rede/API.
-  // Aumentado de 12s para 20s para tolerar conexões 3G/4G lentas.
-  var _promoTimeoutMs = 20000;
+  // Timeout de 15s: evita bloqueio indefinido quando há falha de rede/API.
+  var _promoTimeoutMs = 15000;
 
   // Popula o select de ano com intervalo válido (18 a 100 anos atrás)
   (function popularAnosNasc() {
@@ -503,7 +502,7 @@
       }
       var requestIdTxt = dados && dados.requestId ? ' Protocolo: ' + String(dados.requestId).replace(/[^\w\-:.]/g, '').slice(0, 80) + '.' : '';
 
-      if (resposta.status >= 200 && resposta.status < 300 && dados.success === true) {
+      if (resposta.status === 201 && dados.success === true) {
         exibirRegrasRetiradaPromo();
         var registrationId = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
         var registrationIdTxt = registrationId ? ' Código: ' + registrationId + '.' : '';
@@ -547,6 +546,9 @@
         if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || /ja|já.*cadastr/i.test(erro)) {
           mostrarMsgSorteio('Você já está inscrito para a promoção deste mês.', 'aviso');
           _promoClearOperation();
+        } else if (resposta.status === 422 || code === 'VALIDATION_ERROR') {
+          mostrarMsgSorteio('Verifique os dados informados.', 'aviso');
+          trackPromoEvent('promotion_validation_error', { reason: 'server_validation_422' });
         } else if (resposta.status === 400) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
           if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
