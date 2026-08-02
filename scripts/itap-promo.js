@@ -45,8 +45,8 @@
   // ═══════════════════════════════════════════════════════════
   // SORTEIO MENSAL — FUNÇÕES COMPLETAS
   // ═══════════════════════════════════════════════════════════
-  // Endpoint do Cloudflare Worker — cadastro interno (sem WhatsApp)
-  var ITAP_WORKER_API = 'https://itapolitana-api.wmc760.workers.dev';
+  // Endpoint da API de produção — cadastro interno (sem WhatsApp)
+  var ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
   var PROMO_MOBILE_REGEX = /^169\d{8}$/;
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
