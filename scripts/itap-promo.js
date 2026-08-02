@@ -50,7 +50,9 @@
   var PROMO_MOBILE_REGEX = /^169\d{8}$/;
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
-  var inputPromoData = document.getElementById('promo-data-nasc-cliente');
+  var inputPromoDia = document.getElementById('promo-dia-nasc');
+  var inputPromoMes = document.getElementById('promo-mes-nasc');
+  var inputPromoAno = document.getElementById('promo-ano-nasc');
   var inputPromoCelular = document.getElementById('promo-celular-cliente');
   var inputPromoHp = document.getElementById('promo-honeypot');
   // ID atualizado: botão agora envia para o backend (sem WhatsApp)
@@ -63,6 +65,18 @@
   // Timeout de 20s: evita bloqueio indefinido quando há falha de rede/API.
   // Aumentado de 12s para 20s para tolerar conexões 3G/4G lentas.
   var _promoTimeoutMs = 20000;
+
+  // Popula o select de ano com intervalo válido (18 a 100 anos atrás)
+  (function popularAnosNasc() {
+    if (!inputPromoAno) return;
+    var anoAtual = new Date().getFullYear();
+    for (var a = anoAtual - 18; a >= anoAtual - 100; a--) {
+      var opt = document.createElement('option');
+      opt.value = String(a);
+      opt.textContent = String(a);
+      inputPromoAno.appendChild(opt);
+    }
+  })();
 
   function trackPromoEvent(nomeEvento, params) {
     if (typeof gtag !== 'function') return;
@@ -135,8 +149,13 @@
 
   function setCampoPromoHabilitado(campo, habilitado) {
     if (!campo) return;
+    var eraDesabilitado = campo.disabled;
     campo.disabled = !habilitado;
     campo.classList.toggle('form-control-disabled', !habilitado);
+    // Pré-preenche DDD 16 ao habilitar o campo de celular pela primeira vez
+    if (habilitado && eraDesabilitado && campo.id === 'promo-celular-cliente' && !campo.value.trim()) {
+      campo.value = '(16) ';
+    }
   }
 
   function formatarCelularPromo(valor) {
@@ -152,16 +171,13 @@
     el.value = formatarCelularPromo(el.value);
   }
 
-  function mascaraDataPromo(el) {
-    if (!el) return;
-    var digitos = String(el.value || '').replace(/\D/g, '').slice(0, 8);
-    if (digitos.length > 4) {
-      el.value = digitos.slice(0, 2) + '/' + digitos.slice(2, 4) + '/' + digitos.slice(4);
-    } else if (digitos.length > 2) {
-      el.value = digitos.slice(0, 2) + '/' + digitos.slice(2);
-    } else {
-      el.value = digitos;
-    }
+  // Retorna a data dos 3 selects no formato DD/MM/AAAA, ou '' se incompleto
+  function obterDataPromoStr() {
+    var dia = inputPromoDia ? inputPromoDia.value : '';
+    var mes = inputPromoMes ? inputPromoMes.value : '';
+    var ano = inputPromoAno ? inputPromoAno.value : '';
+    if (!dia || !mes || !ano) return '';
+    return dia + '/' + mes + '/' + ano;
   }
 
   function parseDataBrPromoToIso(dataBr) {
@@ -183,7 +199,7 @@
   }
 
   function promoDataValida() {
-    var iso = inputPromoData && parseDataBrPromoToIso(inputPromoData.value);
+    var iso = parseDataBrPromoToIso(obterDataPromoStr());
     if (!iso) return false;
     return obterIdadePromo(iso) >= 18;
   }
@@ -265,7 +281,9 @@
 
   function limparValidacaoPromo() {
     marcarCampoInvalido(inputPromoNome, false);
-    marcarCampoInvalido(inputPromoData, false);
+    marcarCampoInvalido(inputPromoDia, false);
+    marcarCampoInvalido(inputPromoMes, false);
+    marcarCampoInvalido(inputPromoAno, false);
     marcarCampoInvalido(inputPromoCelular, false);
   }
 
@@ -279,7 +297,9 @@
     var podeEditarCelular = podeEditarData && promoDataValida();
 
     setCampoPromoHabilitado(inputPromoNome, podeEditarNome);
-    setCampoPromoHabilitado(inputPromoData, podeEditarData);
+    setCampoPromoHabilitado(inputPromoDia, podeEditarData);
+    setCampoPromoHabilitado(inputPromoMes, podeEditarData);
+    setCampoPromoHabilitado(inputPromoAno, podeEditarData);
     setCampoPromoHabilitado(inputPromoCelular, podeEditarCelular);
 
     if (btnEnviarPromo) btnEnviarPromo.disabled = !(_promoCadastroLiberado && promoCamposValidos());
@@ -288,7 +308,9 @@
   function resetarFormularioPromo(opcoes) {
     var opts = opcoes || {};
     if (inputPromoNome) inputPromoNome.value = '';
-    if (inputPromoData) inputPromoData.value = '';
+    if (inputPromoDia) inputPromoDia.value = '';
+    if (inputPromoMes) inputPromoMes.value = '';
+    if (inputPromoAno) inputPromoAno.value = '';
     if (inputPromoCelular) inputPromoCelular.value = '';
     if (inputPromoHp) inputPromoHp.value = '';
     if (!opts.manterFeedback) mostrarMsgSorteio('', '');
@@ -401,7 +423,7 @@
     }
 
     var nome = (inputPromoNome && inputPromoNome.value ? inputPromoNome.value : '').replace(/[<>&"'\/]/g, '').trim();
-    var dataNasc = inputPromoData ? inputPromoData.value.trim() : '';
+    var dataNasc = obterDataPromoStr();
     var dataNascIso = parseDataBrPromoToIso(dataNasc);
     var cel = inputPromoCelular ? inputPromoCelular.value.replace(/\D/g, '') : '';
     limparValidacaoPromo();
@@ -413,8 +435,10 @@
       return;
     }
     if (!dataNascIso) {
-      marcarCampoInvalido(inputPromoData, true);
-      mostrarMsgSorteio('Informe uma data de nascimento válida no formato dd/mm/aaaa.', 'aviso');
+      marcarCampoInvalido(inputPromoDia, true);
+      marcarCampoInvalido(inputPromoMes, true);
+      marcarCampoInvalido(inputPromoAno, true);
+      mostrarMsgSorteio('Selecione dia, mês e ano de nascimento.', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'birthdate' });
       return;
     }
@@ -425,7 +449,9 @@
       return;
     }
     if (obterIdadePromo(dataNascIso) < 18) {
-      marcarCampoInvalido(inputPromoData, true);
+      marcarCampoInvalido(inputPromoDia, true);
+      marcarCampoInvalido(inputPromoMes, true);
+      marcarCampoInvalido(inputPromoAno, true);
       mostrarMsgSorteio('⛔ É necessário ter 18 anos ou mais para participar do sorteio.', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'birthdate_min_age' });
       return;
@@ -523,7 +549,7 @@
         } else if (resposta.status === 400) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
           if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
-          if (/data|nasc/i.test(erro)) marcarCampoInvalido(inputPromoData, true);
+          if (/data|nasc/i.test(erro)) { marcarCampoInvalido(inputPromoDia, true); marcarCampoInvalido(inputPromoMes, true); marcarCampoInvalido(inputPromoAno, true); }
           if (/celular|telefone|ddd|phone/i.test(erro)) marcarCampoInvalido(inputPromoCelular, true);
           trackPromoEvent('promotion_validation_error', { reason: 'server_validation' });
         } else if (resposta.status === 429) {
@@ -592,22 +618,26 @@
       });
     }
 
-    if (inputPromoData) {
-      ['input', 'change'].forEach(function(evt) {
-        inputPromoData.addEventListener(evt, function() {
-          mascaraDataPromo(inputPromoData);
-          var iso = parseDataBrPromoToIso(inputPromoData.value);
+    [inputPromoDia, inputPromoMes, inputPromoAno].forEach(function(el) {
+      if (!el) return;
+      ['change'].forEach(function(evt) {
+        el.addEventListener(evt, function() {
+          var iso = parseDataBrPromoToIso(obterDataPromoStr());
           if (iso && obterIdadePromo(iso) < 18) {
             mostrarMsgSorteio('⛔ É necessário ter 18 anos ou mais para participar.', 'aviso');
-            marcarCampoInvalido(inputPromoData, true);
+            marcarCampoInvalido(inputPromoDia, true);
+            marcarCampoInvalido(inputPromoMes, true);
+            marcarCampoInvalido(inputPromoAno, true);
           } else {
             mostrarMsgSorteio('', '');
-            marcarCampoInvalido(inputPromoData, false);
+            marcarCampoInvalido(inputPromoDia, false);
+            marcarCampoInvalido(inputPromoMes, false);
+            marcarCampoInvalido(inputPromoAno, false);
           }
           atualizarFluxoCadastroPromo();
         });
       });
-    }
+    });
 
     if (inputPromoCelular) {
       ['input', 'change'].forEach(function(evt) {

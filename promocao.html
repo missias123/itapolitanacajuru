@@ -341,6 +341,36 @@
        opacity: 1;
        box-shadow: none;
      }
+     .form-row select {
+       width: 100%;
+       border: 2px solid #E0E0E0;
+       border-radius: 10px;
+       padding: 12px 10px;
+       font-size: 1rem;
+       font-family: inherit;
+       background: #fff;
+       appearance: auto;
+     }
+     .form-row select:focus {
+       outline: none;
+       border-color: #2e7d32;
+       box-shadow: 0 0 0 3px rgba(46,125,50,.12);
+     }
+     .form-row select.form-control-disabled,
+     .form-row select:disabled {
+       background: #F5F5F5;
+       color: #78909C;
+       border-color: #CFD8DC;
+       cursor: not-allowed;
+       opacity: 1;
+       box-shadow: none;
+     }
+     .hint-vermelho { display:block; color:#C62828; font-weight:800; font-size:.8rem; margin-top:3px; line-height:1.4; }
+     .regras-premio-visivel { background:linear-gradient(135deg,#FFEBEE,#FFCDD2); border:2.5px solid #C62828; border-radius:14px; padding:14px 16px; margin-bottom:4px; }
+     .regras-premio-visivel strong { display:block; color:#B71C1C; font-size:.92rem; font-weight:900; margin-bottom:8px; letter-spacing:.2px; }
+     .regras-premio-visivel ul { margin:0 0 0 18px; padding:0; }
+     .regras-premio-visivel li { font-size:.82rem; color:#4E342E; font-weight:700; margin-bottom:5px; line-height:1.5; }
+     .data-nasc-grid { display:grid; grid-template-columns:1fr 1.6fr 1.5fr; gap:8px; }
      .form-text {
        display: block;
        margin-top: -2px;
@@ -633,7 +663,8 @@ body { overflow-x: hidden; }
         &nbsp;&nbsp;&nbsp;&bull; O <strong>nome completo</strong> no documento deve ser <strong>idêntico</strong> ao informado no cadastro;<br>
         &nbsp;&nbsp;&nbsp;&bull; A <strong>data de nascimento</strong> no documento deve ser <strong>idêntica</strong> à informada no cadastro;<br>
         &nbsp;&nbsp;&nbsp;&bull; O <strong>celular cadastrado</strong> com WhatsApp ativo e acessível no momento da retirada.<br>
-        3.5. <span style="color:#c62828;font-weight:700">O prêmio NÃO SERÁ ENTREGUE em caso de divergência entre o documento e os dados do cadastro. Não será permitida a retirada por terceiros. Sem exceções e sem direito a recurso.</span><br><br>
+        3.5. O ganhador deve <strong>seguir a Sorveteria Itapolitana no Instagram @itapolitanacajuru</strong> para receber o prêmio. O perfil deve estar seguindo a conta no momento da retirada.<br>
+        3.6. <span style="color:#c62828;font-weight:700">O prêmio NÃO SERÁ ENTREGUE em caso de divergência entre o documento e os dados do cadastro, ou se o ganhador não estiver seguindo o Instagram da sorveteria. Não será permitida a retirada por terceiros. Sem exceções e sem direito a recurso.</span><br><br>
         <strong>4. DAS PROIBIÇÕES E FRAUDES</strong><br>
         4.1. É expressamente proibido o uso de dados falsos, incompletos, cadastros em nome de terceiros ou qualquer tentativa de burlar o sistema.<br>
         4.2. Tentativas de fraude implicarão no <strong>cancelamento imediato e permanente</strong> do cadastro, sem direito a recurso.<br>
@@ -661,18 +692,48 @@ body { overflow-x: hidden; }
         <h3 style="color:#fff;font-size:1rem;font-weight:900;margin:0;">📝 Cadastro para o Sorteio</h3>
       </div>
       <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <!-- REGRAS VISÍVEIS PARA RECEBER A CAIXA DE 5 LITROS -->
+        <div class="regras-premio-visivel" role="note" aria-label="Regras para receber o prêmio">
+          <strong>🏆 REGRAS PARA RECEBER A CAIXA DE 5 LITROS DE SORVETE</strong>
+          <ul>
+            <li>👤 <strong>Nome e Data de Nascimento IGUAIS</strong> ao cadastro e ao seu documento (RG ou CNH)</li>
+            <li>📲 <strong>Número de celular</strong> cadastrado com WhatsApp ativo na hora da retirada</li>
+            <li>📸 <strong>Seguir a Sorveteria no Instagram</strong> <a href="https://www.instagram.com/itapolitanacajuru/" target="_blank" rel="noopener" style="color:#C62828;font-weight:900;">@itapolitanacajuru</a></li>
+          </ul>
+        </div>
         <form id="form-promocao-cliente" class="form-row" novalidate>
-          <label for="promo-nome-cliente">Nome Completo</label>
-          <input id="promo-nome-cliente" type="text" maxlength="100" placeholder="Seu nome completo (como no documento)" autocomplete="name" aria-describedby="promo-nome-help">
-          <small class="form-text text-muted" id="promo-nome-help">Use o nome completo para validar sua participação.</small>
+          <label for="promo-nome-cliente">👤 Nome Completo</label>
+          <input id="promo-nome-cliente" type="text" maxlength="100" placeholder="Seu nome completo" autocomplete="name" aria-describedby="promo-nome-help">
+          <small class="hint-vermelho" id="promo-nome-help">⚠️ NOME IGUAL AO DOCUMENTO (RG ou CNH)</small>
 
-          <label for="promo-data-nasc-cliente">Data de Nascimento</label>
-          <input id="promo-data-nasc-cliente" type="text" maxlength="10" placeholder="Sua data de nascimento (DD/MM/AAAA, como no documento)" inputmode="numeric" pattern="\d{2}/\d{2}/\d{4}" title="Informe no formato dd/mm/aaaa" autocomplete="bday" disabled class="form-control-disabled" aria-describedby="promo-data-nasc-help">
-          <small class="form-text text-muted" id="promo-data-nasc-help">Usamos para identificar você e validar sua idade (mínimo 18 anos).</small>
+          <label>🎂 Data de Nascimento</label>
+          <div class="data-nasc-grid" id="promo-data-nasc-grupo" aria-describedby="promo-data-nasc-help">
+            <select id="promo-dia-nasc" disabled class="form-control-disabled" aria-label="Dia de nascimento">
+              <option value="">Dia</option>
+              <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option>
+              <option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option>
+              <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
+              <option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+              <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option>
+              <option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
+              <option value="31">31</option>
+            </select>
+            <select id="promo-mes-nasc" disabled class="form-control-disabled" aria-label="Mês de nascimento">
+              <option value="">Mês</option>
+              <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+              <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+              <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+              <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+            <select id="promo-ano-nasc" disabled class="form-control-disabled" aria-label="Ano de nascimento">
+              <option value="">Ano</option>
+            </select>
+          </div>
+          <small class="hint-vermelho" id="promo-data-nasc-help">⚠️ DATA IGUAL AO DOCUMENTO — mínimo 18 anos</small>
 
-          <label for="promo-celular-cliente">Celular (WhatsApp)</label>
-          <input id="promo-celular-cliente" type="tel" inputmode="numeric" maxlength="15" placeholder="Seu WhatsApp com DDD (ex: 16 99999-0000)" autocomplete="tel" disabled class="form-control-disabled" aria-describedby="promo-celular-help">
-          <small class="form-text text-muted" id="promo-celular-help">Receba o resultado da promoção e informações importantes.</small>
+          <label for="promo-celular-cliente">📱 Celular (WhatsApp)</label>
+          <input id="promo-celular-cliente" type="tel" inputmode="numeric" maxlength="15" placeholder="99999-0000" autocomplete="tel" disabled class="form-control-disabled" aria-describedby="promo-celular-help">
+          <small class="hint-vermelho" id="promo-celular-help">⚠️ SOMENTE DDD 16 — ex: (16) 99999-0000</small>
 
           <input type="text" id="promo-honeypot" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true">
 
@@ -685,8 +746,9 @@ body { overflow-x: hidden; }
             <ul>
               <li>📄 Documento oficial com foto (RG ou CNH) — original, nao sera aceita copia</li>
               <li>👤 O nome completo no documento deve ser IDENTICO ao informado no cadastro</li>
-              <li>🎉 A data de nascimento no documento deve ser IDENTICA a informada no cadastro</li>
+              <li>🎂 A data de nascimento no documento deve ser IDENTICA a informada no cadastro</li>
               <li>📲 O celular cadastrado com WhatsApp ativo e acessivel no momento da retirada</li>
+              <li>📸 Seguir a Sorveteria Itapolitana no Instagram <strong>@itapolitanacajuru</strong></li>
             </ul>
             <p>🚫 O PREMIO NAO SERA ENTREGUE em caso de divergencia entre o documento e os dados do cadastro.</p>
             <p>Nao sera permitida retirada por terceiros. Sem excecoes e sem direito a recurso.</p>
