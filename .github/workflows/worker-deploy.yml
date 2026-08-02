@@ -63,3 +63,25 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloudflare-worker
           command: deploy --env production
+
+      - name: Verificar health check da API após deploy
+        run: |
+          echo "Aguardando propagação do deploy (15s)..."
+          sleep 15
+          HTTP_STATUS=$(curl -s -o /tmp/health_response.json -w "%{http_code}" \
+            -H "Accept: application/json" \
+            "https://api.itapolitanacajuru.com.br/api/health" || echo "000")
+          echo "HTTP Status: $HTTP_STATUS"
+          cat /tmp/health_response.json || true
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo ""
+            echo "FALHA: A API não respondeu com HTTP 200 após o deploy."
+            echo "Status recebido: $HTTP_STATUS"
+            echo ""
+            echo "Verifique:"
+            echo "  1. Se o registro DNS api.itapolitanacajuru.com.br está configurado no Cloudflare (tipo AAAA 100::, proxied)."
+            echo "  2. Se a rota api.itapolitanacajuru.com.br/* está ativa no dashboard Workers & Pages."
+            echo "  3. Se os KV namespaces CLIENTES_KV, ENCOMENDAS_KV e RATE_KV existem com os IDs corretos."
+            exit 1
+          fi
+          echo "API respondeu com HTTP 200. Deploy verificado com sucesso."
