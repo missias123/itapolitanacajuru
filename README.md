@@ -1,7 +1,7 @@
 # 🍦 Sorveteria Itapolitana Cajuru — Site PWA
 
 > Site oficial da Sorveteria Itapolitana em Cajuru/SP.  
-> PWA (Progressive Web App) com cardápio digital, encomendas via WhatsApp, promoções mensais e painel administrativo.
+> PWA (Progressive Web App) com cardápio digital, encomendas via WhatsApp, clube de fidelidade e painel administrativo.
 
 🌐 **URL de produção:** [https://itapolitanacajuru.com.br](https://itapolitanacajuru.com.br)  
 📦 **Hospedagem:** GitHub Pages (branch `main`, domínio customizado via CNAME)
@@ -30,7 +30,8 @@
 |--------|-----------|
 | `index.html` | Home + Cardápio Digital inline |
 | `encomendas.html` | Encomendas (tortas, caixas, picolés) |
-| `promocao.html` | Promoção do mês / sorteio mensal |
+| `promocao.html` | Promoção do mês / sorteio |
+| `` | Clube de fidelidade (wizard 5 passos) |
 | `dicas.html` | Dicas e conteúdo editorial |
 | `admin-painel.html` | Painel administrativo (acesso restrito) |
 
@@ -254,6 +255,7 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 ├── index.html               ← Home + Cardápio Digital inline
 ├── encomendas.html          ← Cardápio de encomendas + carrinho WhatsApp
 ├── promocao.html            ← Promoção do mês / sorteio mensal
+├──           ← Clube de fidelidade (wizard 5 passos)
 ├── dicas.html               ← Conteúdo editorial
 ├── admin-painel.html        ← Painel admin (⚠️ NÃO ALTERAR)
 ├── sw.js                    ← Service Worker PWA (⚠️ NÃO ALTERAR)
@@ -263,6 +265,7 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 │   └── ...
 ├── scripts/
 │   ├── ita-bot-widget.js    ← Ita Bot (chatbot de dúvidas)
+│   ├── itap-fidelidade.js   ← Lógica do clube de fidelidade
 │   ├── itap-promo.js        ← Lógica do sorteio/promoção
 │   ├── products.js          ← Aux. de produtos (defer)
 │   ├── enc-v2.js            ← Fluxo de encomendas (defer)
@@ -272,6 +275,7 @@ node -e "JSON.parse(require('fs').readFileSync('dados/produtos.json','utf8')); c
 │   ├── produtos.json        ← Preços e sabores
 │   ├── promo.json           ← Promoção ativa
 │   ├── clientes.json        ← Cadastro de clientes
+│   ├── fidelidade.json      ← Dados do programa de fidelidade
 │   └── encomendas.json      ← Pedidos de encomenda
 ├── .github/workflows/       ← CI/CD (5 workflows)
 └── RELATORIO.md             ← Documentação técnica detalhada
@@ -302,7 +306,7 @@ Não depende de conta Cloudflare para uso normal.
 
 | Modo | Condição | O que está disponível |
 |------|----------|-----------------------|
-| **Leitura** | Senha correta + sem token ou token inválido | Consulta de dados, visualização de clientes/promoções |
+| **Leitura** | Senha correta + sem token ou token inválido | Consulta de dados, visualização de clientes/fidelidade/promoções |
 | **Escrita** | Senha correta + token GitHub válido | Todas as operações (editar, salvar, publicar) |
 
 ### Como criar / renovar o token GitHub (PAT)
