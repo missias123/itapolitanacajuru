@@ -62,9 +62,8 @@
   var _promoCadastroLiberado = false;
   var _promoSubmitting = false;
   var _promoPendingOperation = null;
-  // Timeout de 20s: evita bloqueio indefinido quando há falha de rede/API.
-  // Aumentado de 12s para 20s para tolerar conexões 3G/4G lentas.
-  var _promoTimeoutMs = 20000;
+  // Timeout de 15s: evita bloqueio indefinido quando há falha de rede/API.
+  var _promoTimeoutMs = 15000;
 
   // Popula o select de ano com intervalo válido (18 a 100 anos atrás)
   (function popularAnosNasc() {
@@ -503,14 +502,14 @@
       }
       var requestIdTxt = dados && dados.requestId ? ' Protocolo: ' + String(dados.requestId).replace(/[^\w\-:.]/g, '').slice(0, 80) + '.' : '';
 
-      if (resposta.status >= 200 && resposta.status < 300 && dados.success === true) {
+      if (resposta.status === 201 && dados.success === true) {
         exibirRegrasRetiradaPromo();
         var registrationId = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
         var registrationIdTxt = registrationId ? ' Código: ' + registrationId + '.' : '';
         var wppTxt = '';
         if (registrationId) {
           var wppMsg = encodeURIComponent('Olá! Meu código de inscrição na promoção Itapolitana Cajuru é: ' + registrationId);
-          wppTxt = ' <a href="https://wa.me/5516996062046?text=' + wppMsg + '" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:700;text-decoration:underline;margin-left:4px">📲 Enviar para WhatsApp</a>';
+          wppTxt = ' <a href="https://wa.me/5516996062046?text=' + wppMsg + '" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;padding:10px 18px;background:#c62828;color:#fff;border:2px solid #c62828;border-radius:8px;font-weight:900;font-size:1rem;text-decoration:none;text-align:center;">📲 Clique para enviar pelo WhatsApp</a>';
         }
         if (!feedbackPromo) {
           mostrarMsgSorteio('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt, 'ok');
@@ -544,9 +543,22 @@
       } else {
         var erro = (dados && dados.error) ? String(dados.error) : '';
         var code = (dados && dados.code) ? String(dados.code) : '';
-        if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || /ja|já.*cadastr/i.test(erro)) {
-          mostrarMsgSorteio('Você já está inscrito para a promoção deste mês.', 'aviso');
+        if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || code === 'PROMO_REGISTRATION_EXISTS_BY_PHONE' || /ja|já.*cadastr/i.test(erro)) {
+          var regIdExist = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
+          var msgJaCadastrado = '✅ Você já está inscrito no sorteio! Seu código: <strong>' + (regIdExist || 'cadastro confirmado') + '</strong>. Aguarde o sorteio no dia 01 do mês. 🍦';
+          if (!feedbackPromo) {
+            mostrarMsgSorteio(msgJaCadastrado, 'ok');
+          } else {
+            feedbackPromo.style.display = 'block';
+            feedbackPromo.className = 'alert alert-success';
+            feedbackPromo.setAttribute('role', 'status');
+            feedbackPromo.setAttribute('aria-live', 'polite');
+            feedbackPromo.innerHTML = msgJaCadastrado;
+          }
           _promoClearOperation();
+        } else if (resposta.status === 422 || code === 'VALIDATION_ERROR') {
+          mostrarMsgSorteio('Verifique os dados informados.', 'aviso');
+          trackPromoEvent('promotion_validation_error', { reason: 'server_validation_422' });
         } else if (resposta.status === 400) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
           if (/nome/i.test(erro)) marcarCampoInvalido(inputPromoNome, true);
