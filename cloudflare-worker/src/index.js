@@ -1599,12 +1599,12 @@ async function handlePostSorteioCadastro(request, env) {
       error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.',
     }, 400);
   }
-  if (!phone || !/^169\d{8}$/.test(phone)) {
+  if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
     return jsonResp({
       success: false,
       code: 'PROMO_INVALID_PHONE',
       requestId,
-      error: 'Celular inválido. Apenas celulares com DDD 16 (Cajuru/SP) podem participar.',
+      error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).',
     }, 400);
   }
 
