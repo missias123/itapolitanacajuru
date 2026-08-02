@@ -1599,12 +1599,12 @@ async function handlePostSorteioCadastro(request, env) {
       error: 'Data de nascimento inválida. Use o formato AAAA-MM-DD.',
     }, 400);
   }
-  if (!phone || !/^(1[1-9]|[2-9]\d)9\d{8}$/.test(phone)) {
+  if (!phone || !/^169\d{8}$/.test(phone)) {
     return jsonResp({
       success: false,
       code: 'PROMO_INVALID_PHONE',
       requestId,
-      error: 'Celular inválido. Informe DDD + 9 dígitos (11 números no total).',
+      error: 'Celular inválido. Apenas DDD 16 é permitido (formato 169XXXXXXXX).',
     }, 400);
   }
 
@@ -1697,47 +1697,65 @@ async function handlePostSorteioCadastro(request, env) {
   // ── Verificar duplicidade por nome + data de nascimento (Regra 2.4) ──────────
   const nascKey = sorteioNascKey(nome, birthdate);
   let existingParticipantId = await env.CLIENTES_KV.get(nascKey);
+  const mesAtual = new Date().toISOString().slice(0, 7); // AAAA-MM
 
   if (existingParticipantId) {
-    // Se já existe um cadastro com o mesmo nome e data de nascimento
-    // Retorna o ID existente e informa que já está cadastrado
-    finalResult = promoResponse({
-      success: false,
-      code: 'PROMO_REGISTRATION_EXISTS',
-      requestId,
-      registrationId: existingParticipantId,
-      error: 'Você já está cadastrado nesta promoção. Se precisar alterar seu celular ou atualizar alguma informação permitida, utilize a opção \'Já sou cadastrado\'.',
-    }, 409);
-  } else {
-    // Se não encontrou por nome+dataNasc, verifica por celular (para casos de atualização)
-    const existingIdCel = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
-    if (existingIdCel) {
-      // Se encontrou por celular, mas não por nome+dataNasc, é um caso de celular atualizado
-      // Não cria novo cadastro, apenas retorna o ID existente
-      existingParticipantId = existingIdCel;
+    // Verifica se o cadastro existente é do mês corrente
+    const existingInscricao = await env.CLIENTES_KV.get(`sorteio:inscrito:${existingParticipantId}`, 'json');
+    const mesExistente = existingInscricao
+      ? String(existingInscricao.lote_mes || (existingInscricao.created_at || '').slice(0, 7))
+      : '';
+    if (mesExistente === mesAtual) {
+      // Inscrição do mesmo mês — bloquear duplicidade
       finalResult = promoResponse({
         success: false,
-        code: 'PROMO_REGISTRATION_EXISTS_BY_PHONE',
+        code: 'PROMO_REGISTRATION_EXISTS',
         requestId,
         registrationId: existingParticipantId,
-        error: 'Este celular já está associado a um cadastro existente. Utilize a opção \'Já sou cadastrado\' para atualizar seus dados.',
+        error: 'Você já está inscrito para a promoção deste mês.',
       }, 409);
+    }
+    // Se é de mês diferente, continua para criar nova inscrição (sobrescreve o índice)
+    if (finalResult) existingParticipantId = existingParticipantId; // já bloqueado
+    else existingParticipantId = null; // permite nova inscrição
+  }
+
+  if (!finalResult) {
+    // Se não encontrou por nome+dataNasc, verifica por celular
+    const existingIdCel = await env.CLIENTES_KV.get(`sorteio:idx:cel:${phone}`);
+    if (existingIdCel) {
+      const existingInscricaoCel = await env.CLIENTES_KV.get(`sorteio:inscrito:${existingIdCel}`, 'json');
+      const mesExistenteCel = existingInscricaoCel
+        ? String(existingInscricaoCel.lote_mes || (existingInscricaoCel.created_at || '').slice(0, 7))
+        : '';
+      if (mesExistenteCel === mesAtual) {
+        existingParticipantId = existingIdCel;
+        finalResult = promoResponse({
+          success: false,
+          code: 'PROMO_REGISTRATION_EXISTS_BY_PHONE',
+          requestId,
+          registrationId: existingParticipantId,
+          error: 'Este celular já está inscrito na promoção deste mês.',
+        }, 409);
+      }
+      // Se é de mês diferente, permite nova inscrição
     }
   }
 
   // ── Gerar novo ID de inscrição ou usar existente ────────────────────────────────
   let registrationId = existingParticipantId;
   if (!finalResult) {
-    // Usa contador sequencial + sufixo aleatório para garantir unicidade mesmo
-    // em requisições simultâneas (Cloudflare KV não oferece incremento atômico).
+    // Usa contador sequencial para garantir unicidade.
+    // Formato do ID: ITAP-AAAA-MM-XXXX
     const contadorStr = await env.CLIENTES_KV.get('meta:sorteio_contador');
     let contador = parseInt(contadorStr || '0', 10);
     contador += 1;
-    const randomSuffix = generateIdHash().slice(0, 4);
-    registrationId = `SRT-2026-${String(contador).padStart(4, '0')}-${randomSuffix}`;
-    const agora  = new Date().toISOString();
+    const agoraIso  = new Date().toISOString();
+    const anoAtual  = agoraIso.slice(0, 4);
+    const mesNum    = agoraIso.slice(5, 7);
+    registrationId = `ITAP-${anoAtual}-${mesNum}-${String(contador).padStart(4, '0')}`;
 
-    const lote = await obterLoteMensalSorteio(agora, env);
+    const lote = await obterLoteMensalSorteio(agoraIso, env);
     const inscricao = {
       id:                registrationId,
       nome,
@@ -1746,10 +1764,10 @@ async function handlePostSorteioCadastro(request, env) {
       lote_mes:          lote.loteMes,
       lote_numero:       lote.loteNumero,
       regulation_accept: true,
-      created_at:        agora,
+      created_at:        agoraIso,
       requestId,
       idempotencyKey: idempotencyKey || null,
-      historico_alteracoes: [], // Novo campo para histórico
+      historico_alteracoes: [],
     };
 
     // ── Persistir no KV ──────────────────────────────────────────────────────────
@@ -1932,25 +1950,9 @@ async function handlePatchSorteioInscrito(id, request, env) {
     if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Já existe um inscrito com este nome e data de nascimento.' }, 409);
   }
 
-  // Verificar conflito: novo telefone já pertence a outro inscrito
-  if (celNovo !== celAntigo && celNovo) {
-    const conflito = await env.CLIENTES_KV.get(`sorteio:idx:cel:${celNovo}`);
-    if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Este telefone já pertence a outro inscrito.' }, 409);
-  }
-  // Verificar conflito: novo nome+dataNasc já pertence a outro inscrito
-  if (nascKeyNovo !== nascKeyAntigo) {
-    const conflito = await env.CLIENTES_KV.get(nascKeyNovo);
-    if (conflito && conflito !== id) return jsonResp({ ok: false, error: 'Já existe um inscrito com este nome e data de nascimento.' }, 409);
-  }
-
-  // Remover índices antigos se mudaram
   // Remover índices antigos se mudaram
   if (celNovo !== celAntigo && celAntigo) await env.CLIENTES_KV.delete(`sorteio:idx:cel:${celAntigo}`);
   if (nascKeyNovo !== nascKeyAntigo)      await env.CLIENTES_KV.delete(nascKeyAntigo);
-
-  // Gravar índices novos
-  if (celNovo)  await env.CLIENTES_KV.put(`sorteio:idx:cel:${celNovo}`, id);
-  await env.CLIENTES_KV.put(nascKeyNovo, id);
 
   // Gravar índices novos
   if (celNovo)  await env.CLIENTES_KV.put(`sorteio:idx:cel:${celNovo}`, id);

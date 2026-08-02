@@ -3,18 +3,12 @@
  */
   function calcularPróximoFim() {
     const agora = new Date();
-    let ano = agora.getFullYear();
-    let mes = agora.getMonth();
-    
-    if (agora.getDate() > 1 || (agora.getDate() === 1 && agora.getHours() >= 10)) {
-      mes++;
-      if (mes > 11) { mes = 0; ano++; }
-    }
-    
+    const ano = agora.getFullYear();
+    const mes = agora.getMonth();
+    // Último dia do mês corrente às 23:59:59
+    const fimMesAtual = new Date(ano, mes + 1, 0, 23, 59, 59);
     const limiteFinal = new Date(2027, 0, 2, 10, 0, 0);
-    const próximoAlvo = new Date(ano, mes, 1, 10, 0, 0);
-    
-    return próximoAlvo > limiteFinal ? limiteFinal : próximoAlvo;
+    return fimMesAtual > limiteFinal ? limiteFinal : fimMesAtual;
   }
 
   let dataAlvo = calcularPróximoFim();
@@ -26,9 +20,10 @@
     if (diff <= 0) {
       document.getElementById('cd-row').style.display = 'none';
       document.getElementById('cd-encerrado').style.display = 'block';
-      
-      if (agora.getMinutes() >= 1 || agora.getHours() > 10 || agora.getDate() > 1) {
-        dataAlvo = calcularPróximoFim();
+      // Ao iniciar novo mês, recalcular e reiniciar o cronômetro automaticamente
+      const novaData = calcularPróximoFim();
+      if (novaData > agora) {
+        dataAlvo = novaData;
         document.getElementById('cd-row').style.display = 'flex';
         document.getElementById('cd-encerrado').style.display = 'none';
       }
@@ -54,7 +49,7 @@
   // ═══════════════════════════════════════════════════════════
   // Endpoint do Cloudflare Worker — cadastro interno (sem WhatsApp)
   var ITAP_WORKER_API = 'https://itapolitana-api.wmc760.workers.dev';
-  var PROMO_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
+  var PROMO_MOBILE_REGEX = /^169\d{8}$/;
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
   var inputPromoData = document.getElementById('promo-data-nasc-cliente');
@@ -425,7 +420,7 @@
     }
     if (!PROMO_MOBILE_REGEX.test(cel)) {
       marcarCampoInvalido(inputPromoCelular, true);
-      mostrarMsgSorteio('Informe um celular válido com DDD e 11 dígitos numéricos.', 'aviso');
+      mostrarMsgSorteio('Celular inválido. Apenas DDD 16 é permitido (formato 169XXXXXXXX).', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'phone' });
       return;
     }
@@ -483,8 +478,22 @@
 
       if (resposta.status >= 200 && resposta.status < 300 && dados.success === true) {
         exibirRegrasRetiradaPromo();
-        var registrationIdTxt = dados.registrationId ? ' Código: ' + String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) + '.' : '';
-        mostrarMsgSorteio('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt, 'ok');
+        var registrationId = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
+        var registrationIdTxt = registrationId ? ' Código: ' + registrationId + '.' : '';
+        var wppTxt = '';
+        if (registrationId) {
+          var wppMsg = encodeURIComponent('Olá! Meu código de inscrição na promoção Itapolitana Cajuru é: ' + registrationId);
+          wppTxt = ' <a href="https://wa.me/5516996062046?text=' + wppMsg + '" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:700;text-decoration:underline;margin-left:4px">📲 Enviar para WhatsApp</a>';
+        }
+        if (!feedbackPromo) {
+          mostrarMsgSorteio('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt, 'ok');
+        } else {
+          feedbackPromo.style.display = 'block';
+          feedbackPromo.className = 'alert alert-success';
+          feedbackPromo.setAttribute('role', 'status');
+          feedbackPromo.setAttribute('aria-live', 'polite');
+          feedbackPromo.innerHTML = 'Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt + wppTxt;
+        }
         trackPromoEvent('promotion_form_success', { code: dados.code || 'PROMO_REGISTRATION_CREATED' });
         _promoLimparRate();
         _promoClearOperation();
@@ -509,7 +518,7 @@
         var erro = (dados && dados.error) ? String(dados.error) : '';
         var code = (dados && dados.code) ? String(dados.code) : '';
         if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || /ja|já.*cadastr/i.test(erro)) {
-          mostrarMsgSorteio('Este WhatsApp já possui um cadastro nesta promoção.', 'aviso');
+          mostrarMsgSorteio('Você já está inscrito para a promoção deste mês.', 'aviso');
           _promoClearOperation();
         } else if (resposta.status === 400) {
           mostrarMsgSorteio('Confira os dados informados.', 'aviso');
