@@ -18,7 +18,9 @@ async function abrirFormularioPromo(page) {
 
 async function preencherDados(page) {
   await page.locator('#promo-nome-cliente').fill('USUARIO TESTE PROMOCAO');
-  await page.locator('#promo-data-nasc-cliente').fill('01/01/1990');
+  await page.locator('#promo-dia-nasc').selectOption('01');
+  await page.locator('#promo-mes-nasc').selectOption('01');
+  await page.locator('#promo-ano-nasc').selectOption('1990');
   await page.locator('#promo-celular-cliente').fill('(16) 90000-0000');
 }
 
@@ -112,6 +114,6 @@ test.describe('Promoção — cadastro', () => {
     await preencherDados(page);
     await page.locator('#promo-enviar-cadastro').click();
 
-    await expect(page.locator('#promo-feedback-message')).toContainText('já possui um cadastro', { timeout: 5000 });
+    await expect(page.locator('#promo-feedback-message')).toContainText('já está inscrito', { timeout: 5000 });
   });
 });
