@@ -23,8 +23,12 @@ preview_id = "7b024fbb09224336b65bfc5aa0080a56"
 [vars]
 ENVIRONMENT = "production"
 
+[env.production]
+workers_dev = true
+
 [env.production.vars]
 ENVIRONMENT = "production"
+
 [[env.production.kv_namespaces]]
 binding    = "CLIENTES_KV"
 id         = "b75fa5373ee0486ca8642bdedcd69a15"
@@ -38,7 +42,14 @@ binding    = "RATE_KV"
 id         = "7b024fbb09224336b65bfc5aa0080a56"
 preview_id = "7b024fbb09224336b65bfc5aa0080a56"
 
-# ─── Rota personalizada ───────────────────────────────────────────────────────
+# ─── Rota personalizada — domínio de produção ─────────────────────────────────
+# NOTA: Requer que a zona itapolitanacajuru.com.br esteja gerenciada pelo Cloudflare
+# e que exista um registro DNS para api.itapolitanacajuru.com.br (ex: A 192.0.2.1, proxied).
+[[env.production.routes]]
+pattern   = "api.itapolitanacajuru.com.br/*"
+zone_name = "itapolitanacajuru.com.br"
+
+# ─── Rota do ambiente padrão (compatibilidade) ────────────────────────────────
 [[routes]]
 pattern  = "api.itapolitanacajuru.com.br/*"
 zone_name = "itapolitanacajuru.com.br"

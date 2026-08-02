@@ -527,7 +527,7 @@ async function router(request, env) {
 
   // Health check
   if (path === '/api/health' && method === 'GET') {
-    return jsonResp({ ok: true, ts: Date.now(), version: '1.0.0' });
+    return jsonResp({ ok: true, success: true, service: 'promocao-cadastro', status: 'online', ts: Date.now() });
   }
 
   // ── Admin session exchange ─────────────────────────────────────────────────

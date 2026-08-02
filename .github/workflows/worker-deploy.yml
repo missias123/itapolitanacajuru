@@ -16,6 +16,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verificar segredos obrigatórios
+        run: |
+          MISSING=""
+          if [ -z "$CF_TOKEN" ]; then
+            MISSING="$MISSING\n  • CLOUDFLARE_API_TOKEN — token da API do Cloudflare (permissao Workers:Edit)"
+          fi
+          if [ -z "$CF_ACCOUNT" ]; then
+            MISSING="$MISSING\n  • CLOUDFLARE_ACCOUNT_ID — ID da conta Cloudflare (dashboard.cloudflare.com)"
+          fi
+          if [ -n "$MISSING" ]; then
+            echo "Segredos obrigatórios nao configurados no repositório GitHub:"
+            printf "$MISSING\n"
+            echo ""
+            echo "Como configurar:"
+            echo "  1. Acesse github.com/missias123/itapolitanacajuru/settings/secrets/actions"
+            echo "  2. Clique em 'New repository secret'"
+            echo "  3. Adicione CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID"
+            exit 1
+          fi
+          echo "Segredos necessários encontrados."
+        env:
+          CF_TOKEN:   ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
