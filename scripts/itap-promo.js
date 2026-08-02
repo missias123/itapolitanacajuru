@@ -5,10 +5,8 @@
     const agora = new Date();
     const ano = agora.getFullYear();
     const mes = agora.getMonth();
-    // Último dia do mês corrente às 23:59:59
-    const fimMesAtual = new Date(ano, mes + 1, 0, 23, 59, 59);
-    const limiteFinal = new Date(2027, 0, 2, 10, 0, 0);
-    return fimMesAtual > limiteFinal ? limiteFinal : fimMesAtual;
+    // Dia 01 do mês seguinte às 10:00 — sorteio mensal sem data de término
+    return new Date(ano, mes + 1, 1, 10, 0, 0);
   }
 
   let dataAlvo = calcularPróximoFim();
@@ -386,7 +384,7 @@
   async function enviarSorteioPromo() {
     if (!_promoCadastroLiberado || _promoSubmitting) return;
     if (window._sorteioEncerrado) {
-      mostrarMsgSorteio('⛔ As inscrições para o sorteio foram encerradas em 02/01/2027. Obrigado pela participação!', 'aviso');
+      mostrarMsgSorteio('⛔ As inscrições para este sorteio foram encerradas. Obrigado pela participação!', 'aviso');
       return;
     }
     if (inputPromoHp && inputPromoHp.value) {
@@ -683,14 +681,6 @@
         var desc = document.getElementById('promo-desc-el');
         if (desc && (pr.descrição || pr.descricao)) desc.textContent = pr.descrição || pr.descricao;
 
-        // Data de encerramento para o contador
-        if (pr.dataFim) {
-          try {
-            var novaData = new Date(pr.dataFim);
-            if (!isNaN(novaData.getTime())) dataAlvo = novaData;
-          } catch(e) {}
-        }
-
         // Imagem do banner (se o admin fez upload)
         var imgBanner = document.getElementById('promo-img-banner');
         if (imgBanner && pr.fotoUrl) {
@@ -743,52 +733,6 @@
       .catch(function() { container.style.display = 'none'; });
   })();
 
-  // ═══ VERIFICAR ENCERRAMENTO DA LISTA DE INSCRIÇÕES ═══
-  // Fidelidade.json foi removido. O encerramento do sorteio é controlado via
-  // dados/promo.json (campo dataFim). Se dataFim for anterior a hoje,
-  // o contador exibe "SORTEIO EM ANDAMENTO" e o formulário continua habilitado.
-  // Para encerrar manualmente: setar window._sorteioEncerrado = true no painel admin.
-  (function verificarEncerramentoSorteio() {
-    // Verificar encerramento via dados/promo.json (dataFim)
-    fetch('dados/promo.json?t=' + Date.now())
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .catch(function() { return null; })
-      .then(function(pr) {
-        if (!pr || !pr.dataFim) return;
-        var hoje = new Date();
-        var fim = new Date(pr.dataFim);
-        if (isNaN(fim.getTime()) || hoje < fim) return;
-
-        window._sorteioEncerrado = true;
-
-        // Oculta formulário e botões de inscrição
-        var formInline = document.getElementById('form-sorteio-inline');
-        if (formInline) formInline.style.display = 'none';
-
-        var btnAceitar = document.getElementById('btn-aceitar-sorteio-inline');
-        if (btnAceitar) { btnAceitar.disabled = true; btnAceitar.setAttribute('aria-disabled', 'true'); }
-
-        var btnParticip = document.getElementById('btn-quero-participar-sorteio');
-        if (btnParticip) {
-          btnParticip.textContent = '🔒 Inscrições encerradas';
-          btnParticip.style.background = '#757575';
-          btnParticip.style.cursor = 'default';
-          btnParticip.onclick = null;
-        }
-
-        // Exibe aviso de encerramento dentro do bloco de regras
-        var blocoRegras = document.getElementById('bloco-regras-sorteio-promo');
-        if (blocoRegras) {
-          var aviso = document.createElement('div');
-          aviso.style.cssText = 'background:#fff3e0;border:2px solid #e65100;border-radius:10px;padding:12px 16px;margin:10px 0;font-weight:700;color:#bf360c;text-align:center';
-          aviso.textContent = '🔒 As inscrições foram encerradas em 02/01/2027. Os participantes cadastrados continuam concorrendo até o último sorteio.';
-          blocoRegras.insertBefore(aviso, blocoRegras.firstChild);
-        }
-
-        // Atualiza o contador para não mostrar próximo sorteio
-        var cdRow = document.getElementById('cd-row');
-        var cdEncerrado = document.getElementById('cd-encerrado');
-        if (cdRow) cdRow.style.display = 'none';
-        if (cdEncerrado) { cdEncerrado.style.display = 'block'; cdEncerrado.textContent = '🔒 INSCRIÇÕES ENCERRADAS'; }
-      });
-  })();
+  // ═══ ENCERRAMENTO DO SORTEIO ═══
+  // O sorteio é mensal e não tem data de término.
+  // Para encerrar: setar window._sorteioEncerrado = true no painel admin.
