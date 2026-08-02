@@ -481,6 +481,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'X-Idempotency-Key': operacao.key
         },
         signal: controller.signal,
