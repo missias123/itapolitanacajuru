@@ -1,38 +1,33 @@
 /* Promoções — lógica do sorteio e contador
  * Extraído de promocao.html na Fase 3 da refatoração arquitetural.
  */
-  function calcularPróximoFim() {
+  // Calcula 23:59:59 do último dia do mês atual e reinicia automaticamente
+  // no mês seguinte. Ao atingir zero (virada de mês), recalcula para o novo mês.
+  function calcularFimDoMesAtual() {
     const agora = new Date();
-    let ano = agora.getFullYear();
-    let mes = agora.getMonth();
-    
-    if (agora.getDate() > 1 || (agora.getDate() === 1 && agora.getHours() >= 10)) {
-      mes++;
-      if (mes > 11) { mes = 0; ano++; }
-    }
-    
-    const limiteFinal = new Date(2027, 0, 2, 10, 0, 0);
-    const próximoAlvo = new Date(ano, mes, 1, 10, 0, 0);
-    
-    return próximoAlvo > limiteFinal ? limiteFinal : próximoAlvo;
+    // new Date(ano, mes+1, 0) = último dia do mês atual (dia 0 do próximo = último do atual)
+    const fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0, 23, 59, 59);
+    const limiteFinal = new Date(2027, 0, 31, 23, 59, 59);
+    return fimMes > limiteFinal ? limiteFinal : fimMes;
   }
 
-  let dataAlvo = calcularPróximoFim();
+  let dataAlvo = calcularFimDoMesAtual();
 
   function tick() {
     const agora = new Date();
-    const diff = dataAlvo - agora;
+    let diff = dataAlvo - agora;
 
     if (diff <= 0) {
-      document.getElementById('cd-row').style.display = 'none';
-      document.getElementById('cd-encerrado').style.display = 'block';
-      
-      if (agora.getMinutes() >= 1 || agora.getHours() > 10 || agora.getDate() > 1) {
-        dataAlvo = calcularPróximoFim();
-        document.getElementById('cd-row').style.display = 'flex';
-        document.getElementById('cd-encerrado').style.display = 'none';
+      // Virada de mês: recalcula alvo para o novo mês
+      dataAlvo = calcularFimDoMesAtual();
+      diff = dataAlvo - agora;
+      if (diff <= 0) {
+        document.getElementById('cd-row').style.display = 'none';
+        document.getElementById('cd-encerrado').style.display = 'block';
+        return;
       }
-      return;
+      document.getElementById('cd-row').style.display = 'flex';
+      document.getElementById('cd-encerrado').style.display = 'none';
     }
 
     const d = Math.floor(diff / 86400000);
@@ -54,7 +49,7 @@
   // ═══════════════════════════════════════════════════════════
   // Endpoint do Cloudflare Worker — cadastro interno (sem WhatsApp)
   var ITAP_WORKER_API = 'https://itapolitana-api.wmc760.workers.dev';
-  var PROMO_MOBILE_REGEX = /^(1[1-9]|[2-9]\d)9\d{8}$/;
+  var PROMO_MOBILE_REGEX = /^169\d{8}$/; // apenas DDD 16 (Cajuru/SP)
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
   var inputPromoData = document.getElementById('promo-data-nasc-cliente');
@@ -425,7 +420,7 @@
     }
     if (!PROMO_MOBILE_REGEX.test(cel)) {
       marcarCampoInvalido(inputPromoCelular, true);
-      mostrarMsgSorteio('Informe um celular válido com DDD e 11 dígitos numéricos.', 'aviso');
+      mostrarMsgSorteio('Informe um celular com DDD 16 (Cajuru/SP). Ex: (16) 9xxxx-xxxx.', 'aviso');
       trackPromoEvent('promotion_validation_error', { field: 'phone' });
       return;
     }
@@ -483,8 +478,30 @@
 
       if (resposta.status >= 200 && resposta.status < 300 && dados.success === true) {
         exibirRegrasRetiradaPromo();
-        var registrationIdTxt = dados.registrationId ? ' Código: ' + String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) + '.' : '';
-        mostrarMsgSorteio('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt, 'ok');
+        var idRegistro = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
+        var msgSucesso = 'Cadastro realizado com sucesso! Você já está participando do sorteio.';
+        if (idRegistro) msgSucesso += ' Seu ID: ' + idRegistro + '.';
+        if (idRegistro && feedbackPromo) {
+          feedbackPromo.style.display = 'block';
+          feedbackPromo.className = 'alert alert-success';
+          feedbackPromo.setAttribute('role', 'status');
+          feedbackPromo.setAttribute('aria-live', 'polite');
+          feedbackPromo.innerHTML = '';
+          var pMsg = document.createElement('p');
+          pMsg.style.marginBottom = '10px';
+          pMsg.textContent = msgSucesso;
+          feedbackPromo.appendChild(pMsg);
+          var waMensagem = encodeURIComponent('Olá! Meu ID de inscrição na promoção da Sorveteria Itapolitana é: ' + idRegistro + '. Confirmo minha participação! 🍦');
+          var waBtn = document.createElement('a');
+          waBtn.href = 'https://wa.me/5516996062046?text=' + waMensagem;
+          waBtn.target = '_blank';
+          waBtn.rel = 'noopener noreferrer';
+          waBtn.textContent = '📲 Confirmar no WhatsApp (16) 99606-2046';
+          waBtn.style.cssText = 'display:inline-block;background:#25d366;color:#fff;padding:8px 16px;border-radius:8px;font-weight:700;text-decoration:none;font-size:.9rem';
+          feedbackPromo.appendChild(waBtn);
+        } else {
+          mostrarMsgSorteio(msgSucesso, 'ok');
+        }
         trackPromoEvent('promotion_form_success', { code: dados.code || 'PROMO_REGISTRATION_CREATED' });
         _promoLimparRate();
         _promoClearOperation();
