@@ -543,8 +543,18 @@
       } else {
         var erro = (dados && dados.error) ? String(dados.error) : '';
         var code = (dados && dados.code) ? String(dados.code) : '';
-        if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || /ja|já.*cadastr/i.test(erro)) {
-          mostrarMsgSorteio('Você já está inscrito para a promoção deste mês.', 'aviso');
+        if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || code === 'PROMO_REGISTRATION_EXISTS_BY_PHONE' || /ja|já.*cadastr/i.test(erro)) {
+          var regIdExist = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
+          var msgJaCadastrado = '✅ Você já está inscrito no sorteio! Seu código: <strong>' + (regIdExist || 'cadastro confirmado') + '</strong>. Aguarde o sorteio no dia 01 do mês. 🍦';
+          if (!feedbackPromo) {
+            mostrarMsgSorteio(msgJaCadastrado, 'ok');
+          } else {
+            feedbackPromo.style.display = 'block';
+            feedbackPromo.className = 'alert alert-success';
+            feedbackPromo.setAttribute('role', 'status');
+            feedbackPromo.setAttribute('aria-live', 'polite');
+            feedbackPromo.innerHTML = msgJaCadastrado;
+          }
           _promoClearOperation();
         } else if (resposta.status === 422 || code === 'VALIDATION_ERROR') {
           mostrarMsgSorteio('Verifique os dados informados.', 'aviso');

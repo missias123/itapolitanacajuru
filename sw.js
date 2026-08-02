@@ -7,8 +7,8 @@
  * (ex.: itapolitana-v10 / assets-v10). O evento 'activate' apaga versões antigas.
  */
 
-const CACHE_NAME   = 'itapolitana-v10';
-const ASSETS_CACHE = 'assets-v10';
+const CACHE_NAME   = 'itapolitana-v11';
+const ASSETS_CACHE = 'assets-v11';
 
 const CRITICAL_ASSETS = [
   '/',
@@ -65,17 +65,9 @@ self.addEventListener('fetch', (event) => {
 
   if (!url.protocol.startsWith('http')) return;
 
-  // Requisições não-GET (POST, PATCH, DELETE…) nunca devem ser interceptadas pelo SW
+  // Requisições não-GET (POST, PATCH, DELETE…) não são interceptadas pelo SW
+  // Deixa o browser ir direto à rede para que a resposta real do servidor chegue à página
   if (request.method !== 'GET') {
-    event.respondWith(
-      fetch(request).catch(() =>
-        // Convenção de erro offline alinhada ao frontend/worker: { success:false, error:'_offline' }
-        new Response(JSON.stringify({ success: false, error: '_offline' }), {
-          status: 503,
-          headers: { 'Content-Type': 'application/json' }
-        })
-      )
-    );
     return;
   }
 
