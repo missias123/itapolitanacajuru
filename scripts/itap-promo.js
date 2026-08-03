@@ -546,6 +546,10 @@
         if (resposta.status === 409 || code === 'PROMO_REGISTRATION_EXISTS' || code === 'PROMO_REGISTRATION_EXISTS_BY_PHONE' || /ja|já.*cadastr/i.test(erro)) {
           var regIdExist = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
           var msgJaCadastrado = '✅ Você já está inscrito no sorteio! Seu código: <strong>' + (regIdExist || 'cadastro confirmado') + '</strong>. Aguarde o sorteio no dia 01 do mês. 🍦';
+          if (regIdExist) {
+            var wppMsgExist = encodeURIComponent('Olá! Meu código de inscrição na promoção Itapolitana Cajuru é: ' + regIdExist);
+            msgJaCadastrado += ' <a href="https://wa.me/5516996062046?text=' + wppMsgExist + '" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;padding:10px 18px;background:#c62828;color:#fff;border:2px solid #c62828;border-radius:8px;font-weight:900;font-size:1rem;text-decoration:none;text-align:center;">📲 Enviar cadastro pelo WhatsApp</a>';
+          }
           if (!feedbackPromo) {
             mostrarMsgSorteio(msgJaCadastrado, 'ok');
           } else {
