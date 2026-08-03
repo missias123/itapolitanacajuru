@@ -506,11 +506,6 @@
         exibirRegrasRetiradaPromo();
         var registrationId = dados.registrationId ? String(dados.registrationId).replace(/[^\w\-:.]/g, '').slice(0, 80) : '';
         var registrationIdTxt = registrationId ? ' Código: ' + registrationId + '.' : '';
-        var wppTxt = '';
-        if (registrationId) {
-          var wppMsg = encodeURIComponent('Olá! Meu código de inscrição na promoção Itapolitana Cajuru é: ' + registrationId);
-          wppTxt = ' <a href="https://wa.me/5516996062046?text=' + wppMsg + '" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;padding:10px 18px;background:#c62828;color:#fff;border:2px solid #c62828;border-radius:8px;font-weight:900;font-size:1rem;text-decoration:none;text-align:center;">📲 Clique para enviar pelo WhatsApp</a>';
-        }
         if (!feedbackPromo) {
           mostrarMsgSorteio('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt, 'ok');
         } else {
@@ -518,7 +513,7 @@
           feedbackPromo.className = 'alert alert-success';
           feedbackPromo.setAttribute('role', 'status');
           feedbackPromo.setAttribute('aria-live', 'polite');
-          feedbackPromo.innerHTML = 'Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt + wppTxt;
+          feedbackPromo.innerHTML = 'Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt + requestIdTxt;
         }
         trackPromoEvent('promotion_form_success', { code: dados.code || 'PROMO_REGISTRATION_CREATED' });
         _promoLimparRate();
