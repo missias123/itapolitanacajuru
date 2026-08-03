@@ -264,7 +264,7 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.textContent = acaoTxt;
-    btn.style.cssText = 'margin-left:8px;background:#fff;color:#1b5e20;border:1px solid rgba(0,0,0,.18);border-radius:8px;padding:6px 10px;font-weight:700;cursor:pointer';
+    btn.style.cssText = 'display:block;margin:8px 0 0;width:100%;background:#fff;color:#1b5e20;border:1px solid rgba(0,0,0,.18);border-radius:8px;padding:8px 10px;font-weight:700;cursor:pointer;text-align:center';
     btn.addEventListener('click', onClick);
     feedbackPromo.appendChild(btn);
   }
