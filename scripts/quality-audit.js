@@ -51,7 +51,8 @@ function extrairTags(html, re) {
   const resultados = [];
   let m;
   const r = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
-  while ((m = r.exec(html)) !== null) resultados.push(m);
+  let count = 0;
+  while ((m = r.exec(html)) !== null && count++ < 1000) resultados.push(m);
   return resultados;
 }
 
@@ -288,7 +289,8 @@ const REGRAS = [
     categoria: 'Segurança',
     critico: true,
     verificar(html) {
-      const ok = !/ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]+|ghs_[A-Za-z0-9]+/.test(html);
+      const GITHUB_TOKEN_RE = /ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]+|ghs_[A-Za-z0-9]+/;
+      const ok = !GITHUB_TOKEN_RE.test(html);
       return { ok, msg: ok ? 'Nenhum token exposto' : '⚠️  Token GitHub encontrado no código — REMOVER IMEDIATAMENTE' };
     },
   },

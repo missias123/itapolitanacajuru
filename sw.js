@@ -75,7 +75,7 @@ self.addEventListener('fetch', (event) => {
   // Observação: consultas em raw.githubusercontent.com não ficam disponíveis offline no SW.
   if (url.hostname === 'raw.githubusercontent.com' ||
       url.hostname === 'api.github.com' ||
-      url.hostname === 'api.itapolitanacajuru.com.br' || url.hostname === 'itapolitana-api.wmc760.workers.dev' ||
+      url.hostname === 'api.itapolitanacajuru.com.br' ||
       url.pathname.startsWith('/dados/') ||
       url.pathname === '/admin-painel.html') {
     event.respondWith(
@@ -135,6 +135,8 @@ self.addEventListener('fetch', (event) => {
 
 // ── MESSAGE — forçar atualização ────────────────────────────
 self.addEventListener('message', (event) => {
+  // Restringe mensagens apenas da mesma origem (itapolitanacajuru.com.br)
+  if (event.origin !== self.location.origin) return;
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }

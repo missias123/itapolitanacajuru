@@ -20,7 +20,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import fs, { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import os from 'node:os';
@@ -73,8 +73,7 @@ function assertNoForbiddenContent(result, label = '') {
 
 // ─── Arquivos de dados sintéticos ─────────────────────────────────────────────
 
-const TMP_DIR = join(os.tmpdir(), `migrate-guard-test-${Date.now()}`);
-mkdirSync(TMP_DIR, { recursive: true });
+const TMP_DIR = fs.mkdtempSync(join(os.tmpdir(), 'migrate-guard-test-'));
 
 const VALID_CLIENTES_PATH = join(TMP_DIR, 'clientes-sinteticos.json');
 const INVALID_CLIENTES_PATH = join(TMP_DIR, 'clientes-invalidos.json');

@@ -30,7 +30,8 @@
 
   /** Escapa HTML para exibição segura em prévia */
   function escHtml(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var AMP_RE = /&/g, LT_RE = /</g, GT_RE = />/g, QUOT_RE = /"/g;
+    return String(s || '').replace(AMP_RE,'&amp;').replace(LT_RE,'&lt;').replace(GT_RE,'&gt;').replace(QUOT_RE,'&quot;');
   }
 
   /** Retorna elemento por id (null-safe) */
@@ -295,7 +296,8 @@
       mostrarErroCampo(campo, '⚠️ O número deve ter entre 10 e 13 dígitos (incluindo DDD e código do país se necessário). Exemplo: 5516996062046');
       return;
     }
-    if (!/^[0-9]+$/.test(val)) {
+    var NUMEROS_RE = /^[0-9]+$/;
+    if (!NUMEROS_RE.test(val)) {
       mostrarErroCampo(campo, '⚠️ Use apenas números. Não inclua espaços, traços ou parênteses no número armazenado.');
       return;
     }
@@ -306,7 +308,9 @@
   function validarInstagram(campo) {
     var val = campo.value.trim();
     if (!val) return;
-    if (!/^@/.test(val) && !/instagram\.com/.test(val)) {
+    var INSTA_PREFIX_RE = /^@/;
+    var INSTA_URL_RE = /^https?:\/\/(www\.)?instagram\.com\//;
+    if (!INSTA_PREFIX_RE.test(val) && !INSTA_URL_RE.test(val)) {
       mostrarErroCampo(campo, '⚠️ Informe o @usuário do Instagram (ex: @sorveteriaitapolitanacajuru) ou o link completo.');
       return;
     }
@@ -411,7 +415,8 @@
     var problemas = [];
 
     // Espaços duplos
-    if (/  /.test(val)) problemas.push('espaços duplicados encontrados');
+    var DOUBLE_SPACE_RE = /  /;
+    if (DOUBLE_SPACE_RE.test(val)) problemas.push('espaços duplicados encontrados');
 
     // CAPS LOCK excessivo (mais de 50% maiúsculas em texto com mais de 10 chars)
     if (val.length > 10) {
@@ -423,7 +428,8 @@
     }
 
     // Reticências com mais de 3 pontos
-    if (/\.{4,}/.test(val)) problemas.push('evite reticências longas (....) no texto do site');
+    var LONG_ELLIPSIS_RE = /\.{4,}/;
+    if (LONG_ELLIPSIS_RE.test(val)) problemas.push('evite reticências longas (....) no texto do site');
 
     // Links malformados em campos de texto livre
     var urlMatch = campo.tagName === 'TEXTAREA' && val.match(/\bhttps?:\/\/[^\s]+/gi);

@@ -425,7 +425,6 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
   width: 0%;
 }
 
-/* Gerador de lotes de códigos de fidelidade */
 .fid-progresso-wrap{background:#FFF3E0;border:2px solid #FFD0A0;border-radius:14px;padding:16px;margin:12px 0;text-align:center}
 .fid-progresso-titulo{font-size:14px;font-weight:900;color:#E65100;margin-bottom:8px}
 .fid-progresso-barra-bg{background:#FFE0B2;border-radius:20px;height:14px;overflow:hidden;margin-bottom:8px}
@@ -769,7 +768,6 @@ body { overflow-x: hidden; }
           <div class="seção-título" style="margin-top:20px">⚡ Botões de Ação da Página</div>
           <div class="campo-edit"><label>Texto botão "Participar"</label><input type="text" id="promocao-btn-participar" maxlength="50" placeholder="🎁 Quero Participar do Sorteio"/><div class="hint">Botão principal para participar do sorteio.</div></div>
           <div class="campo-edit"><label>Texto botão "Cardápio"</label><input type="text" id="promocao-btn-cardapio" maxlength="50" placeholder="🍦 Ver Cardápio"/><div class="hint">Botão para visualizar o cardápio completo.</div></div>
-          <div class="campo-edit"><label>Texto botão "Sorteios"</label><input type="text" id="promocao-btn-fidelidade" maxlength="50" placeholder="🎁 Sorteios Mensais"/><div class="hint">Botão para acessar a área de sorteios mensais.</div></div>
 
           <!-- NOVOS CAMPOS FASE 3.2 - Banner e SEO -->
           <div class="seção-título" style="margin-top:20px">📣 Banner Superior</div>
@@ -2397,7 +2395,6 @@ Talento</textarea>
           <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — URL</label><input type="text" id="cfg-dash-galeria-url" maxlength="120" placeholder="galeria.html"/></div>
           <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
           <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
-          <div class="seção-título">🎟️ Página de Fidelidade — Hero Banner</div>
           <div class="seção-título">&#x1F512; Segurança</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
@@ -2559,7 +2556,6 @@ Talento</textarea>
           <div class="campo-edit"><label>Texto do botão flutuante Chat (ID: chat-fab-texto)</label><input type="text" id="fc-chat-fab" maxlength="30" placeholder="💬 Fale Conosco"/><div class="hint">Texto do botão verde fixo no canto inferior esquerdo.</div></div>
           <div class="campo-edit"><label>Título do Chat (ID: chat-hdr-titulo)</label><input type="text" id="fc-chat-hdr-titulo" maxlength="40" placeholder="💬 Fale Conosco"/><div class="hint">Título exibido no cabeçalho do chat.</div></div>
           <div class="campo-edit"><label>Subtexto do Chat (ID: chat-hdr-sub)</label><input type="text" id="fc-chat-hdr-sub" maxlength="60" placeholder="Assistente Itapolitana · Responde na hora"/><div class="hint">Linha de apoio no cabeçalho do chat.</div></div>
-          <div class="campo-edit"><label>Mensagem inicial do assistente (ID: chat-msg-inicio) — textarea estruturado</label><textarea id="fc-chat-inicio" rows="6" maxlength="1200" placeholder="Olá! 👋 Sou o Ita Bot, assistente da Sorveteria Itapolitana!&#10;&#10;Posso te ajudar com cardápio, promoções e fidelidade."></textarea><div class="hint">Aceita texto com quebras de linha e marcação rica segura (&lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, &lt;a href&gt;).</div></div>
           <div class="campo-edit"><label>Sugestões rápidas — 6 botões (IDs: chat-sug-1 a chat-sug-6, um por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário&#10;Como encomendar&#10;Sabores&#10;Preços&#10;Localização&#10;Picolés"></textarea><div class="hint">Exatamente 6 linhas. Cada linha = 1 botão de sugestão no chat.</div></div>
           <div class="campo-edit"><label>Mensagem fora do horário do Chat (config.chatForaHorario)</label><input type="text" id="fc-chat-fora" maxlength="220" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar sobre atendimento/pedido fora do horário de funcionamento.</div></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarChat()">&#x1F4BE; Salvar Chat</button></div>
@@ -2800,7 +2796,6 @@ Talento</textarea>
         <option value="">Todos módulos</option>
         <option value="clientes">Clientes</option>
         <option value="encomendas">Encomendas</option>
-        <option value="fidelidade">Fidelidade</option>
       </select>
       <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
         <option value="">Todas severidades</option>
@@ -3073,8 +3068,8 @@ const GH_API=`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
 const GH_RAW=`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`;
 const GH_API_ACCEPT='application/vnd.github+json';
 const GH_API_VERSION='2022-11-28';
-	const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',fidelidade:'dados/fidelidade.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json',auth:'dados/auth.json'};
-	const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,fidelidade:null,fidelidadeSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,auth:null,authSha:null,pagClientes:0,senhaAdmin:null};
+	const PATHS={produtos:'dados/produtos.json',promo:'dados/promo.json',clientes:'dados/clientes.json',encomendas:'dados/encomendas.json',config:'dados/config.json',promocoes:'dados/promocoes.json',auth:'dados/auth.json'};
+	const STATE={produtos:null,produtosSha:null,promo:null,promoSha:null,clientes:null,clientesSha:null,encomendas:null,encomendasSha:null,config:null,configSha:null,promocoes:null,promocoesSha:null,auth:null,authSha:null,pagClientes:0,senhaAdmin:null};
 	window.STATE=STATE;
 	let GH_WRITE_ALLOWED=false;
 let GH_TOKEN_CAN_WRITE=null;
@@ -3083,7 +3078,7 @@ const PATH_SHA_KEYS={
   [PATHS.produtos]:'produtosSha',
   [PATHS.promo]:'promoSha',
   [PATHS.clientes]:'clientesSha',
-  [PATHS.fidelidade]:'fidelidadeSha',
+  
   [PATHS.encomendas]:'encomendasSha',
   [PATHS.config]:'configSha',
   [PATHS.promocoes]:'promocoesSha',
@@ -3095,10 +3090,10 @@ function pathEstaSemSha(path){
   const key=pathShaKey(path);
   return Boolean(key)&&!STATE[key];
 }
-const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.fidelidade,PATHS.promocoes]);
+const WORKER_GH_PATHS=new Set([PATHS.config,PATHS.produtos,PATHS.promo,PATHS.promocoes]);
 
 // ── Compatibilidade legada (funções antigas de sessão) ─────────────────────────
-const ITAP_WORKER_API='https://itapolitana-api.wmc760.workers.dev';
+const ITAP_WORKER_API='https://api.itapolitanacajuru.com.br';
 const WORKER_SESSION_TOKEN_KEY='itap_worker_session_token';
 // Mantém o nome legado para evitar refatoração ampla no arquivo.
 function getAdminToken(){return GH_WRITE_ALLOWED?getToken():'';}
@@ -3199,59 +3194,17 @@ function checkDirty(){
   return confirm('⚠️ Há alterações não salvas nesta aba. Se sair agora elas serão perdidas.\n\nContinuar mesmo assim?');
 }
 const POR_PAGINA=50;
-function fidCodigosKey(){
-  if(!STATE.fidelidade)return'códigos';
-  if(STATE.fidelidade['códigos'])return'códigos';
-  if(STATE.fidelidade.codigos)return'codigos';
-  return'códigos';
-}
-function fidGetCodigos(){
-  if(!STATE.fidelidade)return{};
-  const key=fidCodigosKey();
-  const codigos=STATE.fidelidade[key];
-  return codigos&&typeof codigos==='object'?codigos:{};
-}
-function fidEnsureCodigos(){
-  if(!STATE.fidelidade)STATE.fidelidade={};
-  const key=fidCodigosKey();
-  if(!STATE.fidelidade[key]||typeof STATE.fidelidade[key]!=='object')STATE.fidelidade[key]={};
-  return{key,codigos:STATE.fidelidade[key]};
-}
+
 function ensureSafeState(){
   if(!STATE.clientes||typeof STATE.clientes!=='object')STATE.clientes={clientes:{},indice_celular:{}};
   else if(!STATE.clientes.clientes||typeof STATE.clientes.clientes!=='object')STATE.clientes.clientes={};
   if(!STATE.encomendas||typeof STATE.encomendas!=='object')STATE.encomendas={registros:[]};
   else if(!Array.isArray(STATE.encomendas.registros))STATE.encomendas.registros=[];
-  if(!STATE.fidelidade||typeof STATE.fidelidade!=='object')STATE.fidelidade={};
+
   if(!STATE.promocoes||typeof STATE.promocoes!=='object')STATE.promocoes={promocoes:[]};
   else if(!Array.isArray(STATE.promocoes.promocoes))STATE.promocoes.promocoes=[];
 }
-function fidIsReadOnly(){
-  // Fidelidade (fidelidade.json) requer token GitHub ativo + SHA.
-  return !GH_WRITE_ALLOWED||!STATE.fidelidadeSha;
-}
-function fidPathReadOnly(path){
-  return (path===PATHS.fidelidade&&!STATE.fidelidadeSha)||(path===PATHS.clientes&&!GH_WRITE_ALLOWED);
-}
-const FID_DISABLEABLE_TAGS=['BUTTON','INPUT','SELECT','TEXTAREA','OPTION','OPTGROUP','FIELDSET'];
-function fidApplyReadOnlyGuard(){
-  const isReadOnly=fidIsReadOnly();
-  document.querySelectorAll('.fid-readonly-aviso').forEach(el=>{el.style.display=isReadOnly?'block':'none';});
-  document.querySelectorAll('[data-fid-write]').forEach(el=>{
-    const tag=(el.tagName||'').toUpperCase();
-    if(FID_DISABLEABLE_TAGS.includes(tag))el.disabled=isReadOnly;
-    el.classList.toggle('is-disabled',isReadOnly);
-  });
-}
-function fidRequireWrite(){
-  if(!fidIsReadOnly())return true;
-  fidApplyReadOnlyGuard();
-  const msg=!STATE.fidelidadeSha
-    ? '⚠️ Modo leitura ativo. Adicione um token GitHub para editar esta área do admin.'
-    : '⚠️ Token GitHub inativo. Adicione um novo token para editar esta área do admin.';
-  toast(msg,'aviso');
-  return false;
-}
+
 async function ghGetRepo(path){
   try{
     const r=await fetchWithTimeout(GH_API+path+'?t='+Date.now(),{headers:getAuthHeaders({'Accept':GH_API_ACCEPT,'X-GitHub-Api-Version':GH_API_VERSION})},9000);
@@ -3558,15 +3511,15 @@ function sair(){
 }
 async function carregarTudo(){
   mostrarLoading('Carregando dados...');
-  let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null},cfg={content:null,sha:null};
+  let pr={content:null,sha:null},cl={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null},cfg={content:null,sha:null};
   try{
-    const fontes=['promo','clientes','fidelidade','encomendas','produtos','promocoes','config'];
-    const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes),ghGet(PATHS.config)]);
+    const fontes=['promo','clientes','encomendas','produtos','promocoes','config'];
+    const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes),ghGet(PATHS.config)]);
     resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',fontes[idx],'falhou:',r.reason);});
-    [pr,cl,fi,en,prod,promos,cfg]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
+    [pr,cl,en,prod,promos,cfg]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
     if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
     if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes');}
-    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
+
     if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
     if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
     if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
@@ -3574,7 +3527,7 @@ async function carregarTudo(){
     const falhasCarregamento=[
       [PATHS.promo,pr],
       [PATHS.clientes,cl],
-      [PATHS.fidelidade,fi],
+
       [PATHS.encomendas,en],
       [PATHS.produtos,prod],
       [PATHS.promocoes,promos],
@@ -3586,7 +3539,7 @@ async function carregarTudo(){
     const arquivosSemSha=[
       [PATHS.promo,pr],
       [PATHS.clientes,cl],
-      [PATHS.fidelidade,fi],
+
       [PATHS.encomendas,en],
       [PATHS.produtos,prod],
       [PATHS.promocoes,promos],
@@ -3599,14 +3552,14 @@ async function carregarTudo(){
     console.table([
       {arquivo:PATHS.promo,sha:Boolean(STATE.promoSha),readonly:Boolean(pr?.readonly),carregado:Boolean(pr?.content)},
       {arquivo:PATHS.clientes,sha:Boolean(STATE.clientesSha),readonly:Boolean(cl?.readonly),carregado:Boolean(cl?.content)},
-      {arquivo:PATHS.fidelidade,sha:Boolean(STATE.fidelidadeSha),readonly:Boolean(fi?.readonly),carregado:Boolean(fi?.content)},
+
       {arquivo:PATHS.encomendas,sha:Boolean(STATE.encomendasSha),readonly:Boolean(en?.readonly),carregado:Boolean(en?.content)},
       {arquivo:PATHS.produtos,sha:Boolean(STATE.produtosSha),readonly:Boolean(prod?.readonly),carregado:Boolean(prod?.content)},
       {arquivo:PATHS.promocoes,sha:Boolean(STATE.promocoesSha),readonly:Boolean(promos?.readonly),carregado:Boolean(promos?.content)},
       {arquivo:PATHS.config,sha:Boolean(STATE.configSha),readonly:Boolean(cfg?.readonly),carregado:Boolean(cfg?.content)}
     ]);
     // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
-    const semToken=[pr,cl,fi,en,prod,promos,cfg].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    const semToken=[pr,cl,en,prod,promos,cfg].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
     const avisoComFalhas=Boolean(falhasCarregamento.length||arquivosSemSha.length);
     const banner=document.getElementById('aviso-token-expirado');
     const bannerMsg=document.getElementById('aviso-token-expirado-msg');
@@ -3968,7 +3921,6 @@ function preencherHome(){
   document.getElementById('home-nav-encomendas').value=cfg.navEncomendas||'ENCOMENDAS';
   document.getElementById('home-nav-promocao').value=cfg.navPromocao||'PROMOÇÃO';
   document.getElementById('home-nav-dicas').value=cfg.navDicas||'DICAS/DEPOIMENTOS';
-  document.getElementById('home-nav-fidelidade').value=cfg.navFidelidade||'';
   // Campos Críticos da Página Inicial (Fase Final)
   const idxPag=cfg.indexPagina||{};
   document.getElementById('index-hero-h1-principal').value=idxPag.heroH1Principal||'';
@@ -4004,7 +3956,6 @@ async function salvarHome(){
   cfg.navEncomendas=document.getElementById('home-nav-encomendas').value.trim()||'ENCOMENDAS';
   cfg.navPromocao=document.getElementById('home-nav-promocao').value.trim()||'PROMOÇÃO';
   cfg.navDicas=document.getElementById('home-nav-dicas').value.trim()||'DICAS/DEPOIMENTOS';
-  cfg.navFidelidade=document.getElementById('home-nav-fidelidade').value.trim()||'';
   // Campos Críticos da Página Inicial (Fase Final)
   if(!cfg.indexPagina)cfg.indexPagina={};
   cfg.indexPagina.heroH1Principal=document.getElementById('index-hero-h1-principal').value.trim();
@@ -4188,8 +4139,6 @@ function preencherPromoção(){
   if(promoBtnPart) promoBtnPart.value=pp.btnParticipar||'🎁 Quero Participar do Sorteio';
   const promoBtnCard=document.getElementById('promocao-btn-cardapio');
   if(promoBtnCard) promoBtnCard.value=pp.btnCardapio||'🍦 Ver Cardápio';
-  const promoBtnFid=document.getElementById('promocao-btn-fidelidade');
-  if(promoBtnFid) promoBtnFid.value=pp.btnFidelidade||'⭐ Fidelidade';
   const promoBanner=document.getElementById('promocao-banner-texto');
   if(promoBanner) promoBanner.value=pp.bannerTexto||'🎉 Sorteios Mensais todo dia 01 🎉';
 
@@ -4555,8 +4504,6 @@ async function salvarPromoção(){
   if (promoBtnPart) cfg.promocaoPagina.btnParticipar = promoBtnPart.value.trim();
   const promoBtnCard = document.getElementById('promocao-btn-cardapio');
   if (promoBtnCard) cfg.promocaoPagina.btnCardapio = promoBtnCard.value.trim();
-  const promoBtnFid = document.getElementById('promocao-btn-fidelidade');
-  if (promoBtnFid) cfg.promocaoPagina.btnFidelidade = promoBtnFid.value.trim();
   const promoBanner = document.getElementById('promocao-banner-texto');
   if (promoBanner) cfg.promocaoPagina.bannerTexto = promoBanner.value.trim();
 
@@ -4882,7 +4829,6 @@ async function alterarStatusEncomenda(idx,novoStatus){
 function getClientes(){if(!STATE.clientes?.clientes){console.warn('[] STATE.clientes não carregado');return[];}return Object.values(STATE.clientes.clientes);}
 /* Retorna a chave (USR-XXXX ou cel legado) de um objeto cliente no STATE */
 function obterChaveCliente(c){
-  const mapa=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const entrada=Object.entries(mapa).find(([,v])=>v===c);
   return entrada?entrada[0]:(c.id_permanente||c.id||c.cel||'');
 }
@@ -5230,7 +5176,6 @@ function irPagClientes(p){STATE.pagClientes=p;renderClientes();}
 // PAINEL DE POTENCIAL DUPLICIDADE
 // ═══════════════════════════════════════════════════════════
 function renderDuplicidades() {
-  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const comDup = Object.values(clientes).filter(c => c.potencialDuplicidade && c.potencialDuplicidade.length > 0);
   const card = document.getElementById('card-duplicidades');
   const badge = document.getElementById('badge-duplicidades');
@@ -5267,7 +5212,6 @@ function renderDuplicidades() {
 
 async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
   if(!fidRequireWrite())return;
-  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const c = clientes[celOriginal];
   if (!c || !c.potencialDuplicidade) return;
   if (acao === 'atualizar' && celNovo) {
@@ -5288,28 +5232,23 @@ async function resolverDuplicidade(celOriginal, idxTentativa, acao, celNovo) {
     STATE.clientes.clientes = clientes;
     const ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: resolver duplicidade ' + celOriginal);
   } else {
-    STATE.fidelidade.clientes = clientes;
-    const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: resolver duplicidade ' + celOriginal);
   }
   renderClientes();
   renderDuplicidades();
 }
 async function toggleBloqueio(clienteId,bloquear){
   if(!fidRequireWrite())return;
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   if(!clientes[clienteId])return;
   const c=clientes[clienteId];
   if(bloquear){
     // Exigir confirmação antes de bloquear
     confirmarAcao(
       'Bloquear Cliente',
-      `Tem certeza que deseja <strong>bloquear</strong> o cadastro de <strong>${c.nome||clienteId}</strong>?<br><small style="color:#888">Celular: ${c.cel||'-'}</small><br><br><span style="color:#c62828;font-weight:700">O cliente não conseguirá mais acessar o clube de fidelidade até ser desbloqueado.</span>`,
       'Sim, bloquear',
       async ()=>{
         clientes[clienteId].bloqueado=true;
         let ok=false;
         if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: bloquear ${c.nome||clienteId}`);}
-        else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: bloquear ${c.nome||clienteId}`);}
         if(ok)renderClientes();
       }
     );
@@ -5323,13 +5262,11 @@ async function toggleBloqueio(clienteId,bloquear){
     clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'desbloqueio',descricao:'Conta desbloqueada e tentativas zeradas pelo admin',por:'admin'});
     let ok=false;
     if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: desbloquear ${c.nome||clienteId}`);}
-    else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: desbloquear ${c.nome||clienteId}`);}
     if(ok){toast('✅ Conta desbloqueada e tentativas zeradas. Mudança salva no GitHub.','sucesso');renderClientes();}
   }
 }
 // ═══════════════════════════════════════════════════════════
 // FUNÇÕES DE GESTÃO MANUAL DO CLUBE DE 
-// Todas as ações salvam no GitHub (dados/clientes.json / dados/fidelidade.json)
 // para atualização imediata no site — sem cache de CDN.
 // ═══════════════════════════════════════════════════════════
 
@@ -5337,7 +5274,6 @@ async function toggleBloqueio(clienteId,bloquear){
    Admin usa quando o cliente trouxe cupom físico ou houve erro no fluxo. */
 async function adicionarPontoManual(clienteId){
   if(!fidRequireWrite())return;
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c)return;
   const qtdStr=prompt(`➕ Adicionar pontos para ${c.nome}\nWhatsApp: ${c.cel||'-'}\nPontos atuais: ${c.saldoPontos||0}\n\nQuantidade a adicionar:`);
@@ -5351,7 +5287,6 @@ async function adicionarPontoManual(clienteId){
   clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'ponto_manual',descricao:motivo,por:'admin',pontos:n});
   let ok=false;
   if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: +${n}pt para ${c.nome}`);}
-  else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: +${n}pt para ${c.nome}`);}
   if(ok){toast(`✅ +${n} ponto(s) para ${c.nome}. Novo saldo: ${clientes[clienteId].saldoPontos}. Salvo no GitHub.`,'sucesso');renderClientes();}
 }
 
@@ -5359,7 +5294,6 @@ async function adicionarPontoManual(clienteId){
    Usar quando o cliente erroneamente foi bloqueado ou após confirmação pessoal. */
 async function zerarTentativas(clienteId){
   if(!fidRequireWrite())return;
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c)return;
   const agora=new Date().toISOString();
@@ -5370,23 +5304,18 @@ async function zerarTentativas(clienteId){
   clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'reset_tentativas',descricao:'Tentativas zeradas e conta desbloqueada pelo admin',por:'admin'});
   let ok=false;
   if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;ok=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: zerar tentativas ${c.nome||clienteId}`);}
-  else{STATE.fidelidade.clientes=clientes;ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: zerar tentativas ${c.nome||clienteId}`);}
   if(ok){toast('✅ Tentativas zeradas e conta desbloqueada. Salvo no GitHub.','sucesso');renderClientes();}
 }
 
 /* Validar código manualmente pelo admin.
-   Marca o código como usado em fidelidade.json E adiciona 1 ponto ao cliente em clientes.json.
    Ambas as mudanças são persistidas no GitHub para atualização imediata no site. */
 async function adminValidarCodigo(clienteId){
   if(!fidRequireWrite())return;
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c)return;
   const codigo=(prompt(`✅ Validar código para ${c.nome}\nWhatsApp: ${c.cel||'-'}\nPontos atuais: ${c.saldoPontos||0}\n\nDigite o código do cupom:`)||'').trim().toUpperCase();
   if(!codigo)return;
-  const codigos=STATE.fidelidade?.['códigos']||STATE.fidelidade?.codigos||{};
   const entrada=codigos[codigo];
-  if(!entrada){toast(`Código "${codigo}" não encontrado em fidelidade.json.`,'erro');return;}
   if(entrada.status!=='disponível'&&entrada.status!=='disponivel'){toast(`Código "${codigo}" já foi utilizado (status: ${entrada.status}).`,'erro');return;}
   const usados=c.codigosUsados||[];
   if(usados.indexOf(codigo)!==-1){toast(`${c.nome} já usou este código anteriormente.`,'erro');return;}
@@ -5400,16 +5329,11 @@ async function adminValidarCodigo(clienteId){
   if(!clientes[clienteId].historico_alteracoes)clientes[clienteId].historico_alteracoes=[];
   clientes[clienteId].historico_alteracoes.push({data:agora,tipo:'codigo_validado_admin',descricao:`Código ${codigo} validado manualmente pelo admin`,por:'admin',pontos:1});
 
-  /* atualizar status do código em fidelidade.json */
-  const chave=STATE.fidelidade?.['códigos']?'códigos':'codigos';
-  STATE.fidelidade[chave][codigo]=Object.assign({},entrada,{status:'usado',usadoPor:c.cel||clienteId,usadoEm:agora});
 
   /* salvar clientes.json */
   let okC=false;
   if(STATE.clientes?.clientes){STATE.clientes.clientes=clientes;okC=await salvarArquivo(PATHS.clientes,STATE.clientes,'clientesSha',`Admin: código ${codigo} → ${c.nome}`);}
 
-  /* salvar fidelidade.json */
-  const okF=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Admin: código ${codigo} usado por ${c.nome}`);
 
   if(okC||okF){
     toast(`✅ Código ${codigo} validado! ${c.nome} agora tem ${clientes[clienteId].saldoPontos} ponto(s). Salvo no GitHub.`,'sucesso');
@@ -5470,7 +5394,6 @@ async function carregarInscritosSorteio() {
 
 function _carregarInscritosLocal() {
   const tbody = document.getElementById('sort-inscritos-tbody');
-  const lista = (STATE.fidelidade?.sorteioInscritos || []).map((ins, i) => {
     const id = ins.id || ('LOCAL-' + String(i + 1).padStart(4, '0'));
     return {
       id,
@@ -5637,18 +5560,15 @@ async function salvarEdicaoInscritoSorteio() {
   const sessionToken = getWorkerSessionToken();
   if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
 
-  // Modo local (Worker offline): atualiza em STATE.fidelidade.sorteioInscritos
   if (id.startsWith('LOCAL-')) {
     const idx = _sortInscritos.findIndex(i => i.id === id);
     if (idx > -1) {
       const localIdx = parseInt(id.replace('LOCAL-',''), 10) - 1;
-      const arr = STATE.fidelidade?.sorteioInscritos;
       if (arr && arr[localIdx]) {
         arr[localIdx].nome = nome;
         arr[localIdx].dataNasc = nasc;
         arr[localIdx].cel = tel;
       }
-      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: editar inscrito manual ' + nome);
       if (ok) { toast('✅ Inscrito atualizado!', 'sucesso'); fecharEdicaoInscritoSorteio(); await carregarInscritosSorteio(); }
       else { toast('❌ Erro ao salvar.', 'erro'); }
     }
@@ -5684,13 +5604,10 @@ async function deletarInscritoSorteio(id) {
   const sessionToken = getWorkerSessionToken();
   if (!sessionToken) { toast('Sessão administrativa expirada. Faça login novamente.', 'erro'); return; }
 
-  // Modo local (Worker offline): remove de STATE.fidelidade.sorteioInscritos
   if (id.startsWith('LOCAL-')) {
     const localIdx = parseInt(id.replace('LOCAL-',''), 10) - 1;
-    const arr = STATE.fidelidade?.sorteioInscritos;
     if (arr && arr[localIdx] !== undefined) {
       arr.splice(localIdx, 1);
-      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: remover inscrito manual ' + nomeExib);
       if (ok) { toast('✅ Inscrito removido.', 'sucesso'); await carregarInscritosSorteio(); }
       else { toast('❌ Erro ao remover.', 'erro'); }
     }
@@ -5748,9 +5665,6 @@ async function salvarSorteio() {
   const venc    = document.getElementById('sort-vencedor').value.trim();
   const obs     = document.getElementById('sort-obs').value.trim();
   const dataFim = document.getElementById('sort-datafim').value;
-  if (!STATE.fidelidade) STATE.fidelidade = {};
-  STATE.fidelidade.sorteio = { dataProx: data, dataFim, premio, status, vencedor: venc, obs, atualizado: new Date().toISOString() };
-  const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: atualizar configuração do sorteio mensal');
   if (ok) {
     const msg = document.getElementById('sort-msg');
     if (msg) { msg.textContent = '✅ Sorteio salvo!'; msg.style.color = '#2e7d32'; setTimeout(() => msg.textContent = '', 3000); }
@@ -5758,7 +5672,6 @@ async function salvarSorteio() {
 }
 
 function preencherSorteio() {
-  const s = STATE.fidelidade?.sorteio || {};
   const dp = document.getElementById('sort-data-prox'); if (dp) dp.value = s.dataProx || '';
   const sp = document.getElementById('sort-premio');    if (sp) sp.value = s.premio || '1 caixa de 5 litros de sorvete tipo artesanal';
   const ss = document.getElementById('sort-status');    if (ss) ss.value = s.status || 'ativo';
@@ -5784,54 +5697,31 @@ function copiarSorteio(){
   const lista=clientes.map((c,i)=>`${i+1}. ${c.nome||'-'} - ${c.cel||'-'}`).join('\n');
   copiarTextoSeguro(lista).then((ok)=>toast(ok?`Lista de ${clientes.length} clientes copiada para sorteio!`:'Erro ao copiar lista para sorteio.',ok?'sucesso':'erro'));
 }
-function preencherFidelidade(){
   const cfg=STATE.config||{};
   document.getElementById('fid-prêmio-milk-nome').value=cfg.premioMilkshake||'Milkshake 300ml';
   document.getElementById('fid-pts-milk').value=cfg.pontosMilkshake||10;
   document.getElementById('fid-prêmio-caixa-nome').value=cfg.premioCaixa||'Caixa 7 Bolas';
   document.getElementById('fid-pts-caixa').value=cfg.pontosCaixa||30;
-  document.getElementById('fid-título').value=cfg.fidelidadeTitulo||'Programa de Fidelidade';
-  document.getElementById('fid-descrição').value=cfg.fidelidadeDescricao||'Acumule pontos e ganhe prêmios incriveis!';
   const fidComo=document.getElementById('fid-como-funciona-lista');
-  if(fidComo) fidComo.value=Array.isArray(cfg.fidelidadeComoFunciona)?cfg.fidelidadeComoFunciona.join('\n'):'';
   const fidRegrasResumo=document.getElementById('fid-regras-resumo-lista');
-  if(fidRegrasResumo) fidRegrasResumo.value=Array.isArray(cfg.fidelidadeRegrasResumo)?cfg.fidelidadeRegrasResumo.join('\n'):'';
   const fidRegrasUrl=document.getElementById('fid-regras-url');
-  if(fidRegrasUrl) fidRegrasUrl.value=cfg.fidelidadeRegrasUrl||'';
   const fidResgateUrl=document.getElementById('fid-resgate-url');
-  if(fidResgateUrl) fidResgateUrl.value=cfg.fidelidadeResgateWhatsappUrl||'';
 
   // Novos campos Fase 3.2
-  const fp=cfg.fidelidadePagina||{};
-  const fidComoTit=document.getElementById('fidelidade-como-funciona-titulo');
   if(fidComoTit) fidComoTit.value=fp.comoFuncionaTitulo||'Como funciona';
-  const fidAcaoTit=document.getElementById('fidelidade-acao-titulo');
   if(fidAcaoTit) fidAcaoTit.value=fp.acaoTitulo||'Quero participar do ';
-  const fidBtnCad=document.getElementById('fidelidade-btn-cadastro');
   if(fidBtnCad) fidBtnCad.value=fp.btnCadastro||'Quero participar do ';
-  const fidBtnLog=document.getElementById('fidelidade-btn-login');
   if(fidBtnLog) fidBtnLog.value=fp.btnLogin||'Já sou cadastrado / Digitar código';
-  const fidRegraTit=document.getElementById('fidelidade-regras-titulo');
   if(fidRegraTit) fidRegraTit.value=fp.regrasTitulo||'Regras do ';
-  const fidBtnAceite=document.getElementById('fidelidade-btn-aceitar-regras');
   if(fidBtnAceite) fidBtnAceite.value=fp.btnAceitarRegras||'Li e aceito as regras do ';
-  const fidRegTit=document.getElementById('fidelidade-regulamento-titulo');
   if(fidRegTit) fidRegTit.value=fp.regulamentoTitulo||'Regras completas do programa';
-  const fidRegSum=document.getElementById('fidelidade-regulamento-summary');
   if(fidRegSum) fidRegSum.value=fp.regulamentoSummary||'📜 Ler regulamento completo do ';
 
   const seoPg=cfg.seoPaginas||{};
-  const fidSeoTit=document.getElementById('cfg-seo-fidelidade-titulo');
-  if(fidSeoTit) fidSeoTit.value=seoPg.fidelidade?.titulo||'';
-  const fidSeoDesc=document.getElementById('cfg-seo-fidelidade-descricao');
-  if(fidSeoDesc) fidSeoDesc.value=seoPg.fidelidade?.descricao||'';
 
   const fidSeoTitOld=document.getElementById('fid-seo-titulo');
-  if(fidSeoTitOld) fidSeoTitOld.value=seoPg.fidelidade?.titulo||'';
   const fidSeoDescOld=document.getElementById('fid-seo-descricao');
-  if(fidSeoDescOld) fidSeoDescOld.value=seoPg.fidelidade?.descricao||'';
   const fidSeoPal=document.getElementById('fid-seo-palavras');
-  if(fidSeoPal) fidSeoPal.value=seoPg.fidelidade?.palavrasChave||'';
   atualizarStatsCódigos();
 
   // Carregar configurações de sorteios e pontuação
@@ -5845,7 +5735,6 @@ function atualizarStatsCódigos(){
   const total=Object.keys(códigos).length;
   const disponíveis=Object.values(códigos).filter(c=>c.status==='disponível').length;
   const usados=Object.values(códigos).filter(c=>c.status==='usado').length;
-  const liberados=STATE.fidelidade?.liberados||0;
   document.getElementById('fid-total').textContent=total;
   document.getElementById('fid-disponíveis').textContent=disponíveis;
   document.getElementById('fid-usados').textContent=usados;
@@ -5867,9 +5756,7 @@ function renderCódigos(){
   fidApplyReadOnlyGuard();
 }
 // =====================================================
-// GERADOR DE LOTES DETERMINÍSTICO (mesmo algoritmo do fidelidade-admin.html)
 // =====================================================
-// Capacidade histórica restaurada do banco de fidelidade: 1.000.000 códigos.
 const FID_TOTAL_BANCO = 1000000;
 const FID_LOTE_SIZE   = 100;
 const FID_SALT        = 'ITAP0L1T4N4#S3CR3T@2024!';
@@ -5934,7 +5821,6 @@ function fidMostrarAlerta(msg,tipo){
   if(tipo==='ok')setTimeout(()=>{el.className='fid-alerta';},5000);
 }
 function fidRenderProgresso(){
-  const n=STATE.fidelidade?.liberados||0;
   const pct=(n/FID_TOTAL_BANCO*100).toFixed(3);
   const barra=document.getElementById('fid-prog-barra');
   const texto=document.getElementById('fid-prog-texto');
@@ -5959,14 +5845,9 @@ function fidRenderLoteAtual(){
   const codigos=fidGetCodigos();
   if(grid)grid.innerHTML=lote.codigos.map(c=>{const usado=codigos[c]&&codigos[c].status==='usado';return`<div class="fid-codigo-chip${usado?' usado':''}">${c}</div>`;}).join('');
 }
-async function liberarLoteFidelidade(){
   if(!fidRequireWrite())return;
-  // Se STATE.fidelidade não carregou, evitar gerar lote sem a versão atual do arquivo
-  if(!STATE.fidelidade){
-    fidMostrarAlerta('⚠️ Dados de fidelidade não carregados. Verifique o token GitHub e recarregue o painel antes de liberar um novo lote.','erro');
     return;
   }
-  const atual=STATE.fidelidade.liberados||0;
   if(atual>=FID_TOTAL_BANCO){fidMostrarAlerta('⚠️ Todos os 1.000.000 códigos já foram liberados!','erro');return;}
   const btn=document.getElementById('btn-liberar-lote');
   if(btn){btn.disabled=true;btn.innerHTML='<span class="fid-spinner"></span> Gerando e salvando...';
@@ -5978,10 +5859,7 @@ async function liberarLoteFidelidade(){
   for(let i=inicio;i<fim;i++)novos.push(fidGerarCodigo(i));
   const fidData=fidEnsureCodigos();
   novos.forEach((c,i)=>{fidData.codigos[c]={status:'disponível',idx:inicio+i,lote:loteNum};});
-  STATE.fidelidade.liberados=fim;
-  STATE.fidelidade.última_atualização=new Date().toISOString();
   localStorage.setItem('fid_lote_admin',JSON.stringify({inicio:inicio+1,fim,codigos:novos,loteNum}));
-  const ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha',`Fidelidade: Lote ${loteNum} liberado — ${fim.toLocaleString('pt-BR')}/${FID_TOTAL_BANCO.toLocaleString('pt-BR')} códigos`);
   if(btn)btn.disabled=false;
   fidRenderProgresso();
   fidRenderLoteAtual();
@@ -5997,15 +5875,11 @@ function apagarTodosCodigos(){
     'Tem certeza que deseja apagar <strong>TODOS</strong> os códigos liberados?<br><br><span style="color:#c62828;font-weight:700">Esta ação é irreversível!</span>',
     'Sim, apagar todos',
     async () => {
-      if(!STATE.fidelidade)STATE.fidelidade={liberados:0,códigos:{},clientes:{},fraudes:{}};
       const fidData=fidEnsureCodigos();
-      STATE.fidelidade[fidData.key]={};
-      STATE.fidelidade.liberados=0;
-      STATE.fidelidade.última_atualização=new Date().toISOString();
+dData.key]={};
       localStorage.removeItem('fid_lote_admin');
       const wrap=document.getElementById('fid-lote-wrap');
       if(wrap)wrap.style.display='none';
-      const ok=await salvarArquivo(PATHS.fidelidade,STATE.fidelidade,'fidelidadeSha','Fidelidade: todos os códigos apagados pelo admin');
       fidRenderProgresso();
       atualizarStatsCódigos();
       renderCódigos();
@@ -6060,7 +5934,6 @@ function fidColetarCodigosParaEtiquetas(){
   if(lote && Array.isArray(lote.codigos) && lote.codigos.length){
     return { codigos: lote.codigos.slice(), origem: 'lote', lote };
   }
-  const codigosConfig = STATE.config?.fidelidade?.codigos;
   if(Array.isArray(codigosConfig) && codigosConfig.length){
     return { codigos: codigosConfig.slice(), origem: 'config', lote: null };
   }
@@ -6077,7 +5950,6 @@ function fidColetarCodigosParaEtiquetas(){
 }
  /**
   * Monta metadados laterais (lote e número sequencial) para cada etiqueta.
-  * Prioriza dados persistidos em fidelidade.códigos (lote/idx) e usa fallback do lote atual quando disponível.
   * @param {string[]} codigos Lista de códigos na ordem de impressão.
   * @param {{loteNum?: number, inicio?: number}|null} lote Dados do último lote liberado (quando houver).
   * @returns {{loteTexto:string, sequenciaTexto:string}[]} Metadados alinhados por índice da lista de códigos.
@@ -6180,13 +6052,11 @@ function fidColetarCodigosParaEtiquetas(){
    const marginY = (A4_H - totalH) / 2;
    return { A4_W, A4_H, totalW, totalH, marginX, marginY };
  }
-   async function gerarPdfEtiquetasFidelidadeViaPrint({ codigos, origem, lote, etqW, etqH, cols, rows, gapCol, gapRow, desenharBordas }){
     const ETQ_POR_PAGINA = cols * rows;
     const totalSlots = Math.max(ETQ_POR_PAGINA, Math.ceil(codigos.length / ETQ_POR_PAGINA) * ETQ_POR_PAGINA);
     const lista = Array.from({ length: totalSlots }, (_, i) => (codigos[i] == null ? '' : String(codigos[i]).trim()));
     const hoje = new Date().toISOString().slice(0, 10);
     const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-    const titulo = `Etiquetas Fidelidade (${etqW}×${etqH})${loteTag} — ${origem} — ${hoje}`;
     const logoWatermark = await fidGetLogoMarcaDaguaDataUrl();
 
     const layout = fidCalcularLayoutEtiquetasA4({ etqW, etqH, cols, rows, gapCol, gapRow });
@@ -6506,16 +6376,13 @@ function fidColetarCodigosParaEtiquetas(){
    win.document.close();
    try{ win.focus(); }catch(e){}
  }
-async function gerarPdfEtiquetasFidelidade(){
   let jsPDF;
   try{
     jsPDF = await fidEnsureJsPDF();
   }catch(err){
-    console.error('[Fidelidade] Erro ao carregar jsPDF:', err);
     toast('Falha ao carregar jsPDF. Abrindo versão de impressão (Salvar como PDF).','aviso');
 	    try{
 	      const payload = fidColetarCodigosParaEtiquetas();
-	      await gerarPdfEtiquetasFidelidadeViaPrint({
 	        ...payload,
 	        etqW: 92.5,
 	        etqH: 51.4,
@@ -6526,7 +6393,6 @@ async function gerarPdfEtiquetasFidelidade(){
 	        desenharBordas: true
 	      });
 	    }catch(e){
-	      console.error('[Fidelidade] Falha ao abrir versão de impressão:', e);
 	    }
     return;
   }
@@ -6692,11 +6558,9 @@ async function gerarPdfEtiquetasFidelidade(){
 
   const hoje = new Date().toISOString().slice(0, 10);
   const loteTag = lote?.loteNum ? `-lote-${lote.loteNum}` : '';
-  const filename = `etiquetas-fidelidade-92_5x51_4${loteTag}-${origem}-${hoje}.pdf`;
   doc.save(filename);
   toast('PDF de etiquetas (10/A4 · 92,5×51,4 mm) gerado com sucesso.','ok');
 }
-async function salvarConfigFidelidade() {
   if(!fidRequireWrite())return;
   if (!STATE.config) STATE.config = {};
   const c = STATE.config;
@@ -6712,72 +6576,29 @@ async function salvarConfigFidelidade() {
   c.pontosCaixa = Number.isFinite(ptsCaixaInput) && ptsCaixaInput > 0
     ? ptsCaixaInput
     : (Number.isFinite(Number(c.pontosCaixa)) ? Number(c.pontosCaixa) : 30);
-  c.fidelidadeTitulo = document.getElementById('fid-título').value.trim();
-  c.fidelidadeDescricao = document.getElementById('fid-descrição').value.trim();
-  c.fidelidadeComoFunciona = lerLinhasTextarea('fid-como-funciona-lista');
-  c.fidelidadeRegrasResumo = lerLinhasTextarea('fid-regras-resumo-lista');
-  const fidRegrasUrlSafe = cmsLerUrlCampo('fid-regras-url', 'URL de regras da Fidelidade', {allowRelative:true});
   if (fidRegrasUrlSafe===null) return;
   const fidResgateUrlSafe = cmsLerUrlCampo('fid-resgate-url', 'URL de resgate via WhatsApp', {allowRelative:false});
   if (fidResgateUrlSafe===null) return;
-  c.fidelidadeRegrasUrl = fidRegrasUrlSafe || '';
-  c.fidelidadeResgateWhatsappUrl = fidResgateUrlSafe || '';
 
   // Novos campos Fase 3.2
-  c.fidelidadePagina = c.fidelidadePagina || {};
-  const fidComoTit=document.getElementById('fidelidade-como-funciona-titulo');
-  if(fidComoTit) c.fidelidadePagina.comoFuncionaTitulo = fidComoTit.value.trim();
-  const fidAcaoTit=document.getElementById('fidelidade-acao-titulo');
-  if(fidAcaoTit) c.fidelidadePagina.acaoTitulo = fidAcaoTit.value.trim();
-  const fidBtnCad=document.getElementById('fidelidade-btn-cadastro');
-  if(fidBtnCad) c.fidelidadePagina.btnCadastro = fidBtnCad.value.trim();
-  const fidBtnLog=document.getElementById('fidelidade-btn-login');
-  if(fidBtnLog) c.fidelidadePagina.btnLogin = fidBtnLog.value.trim();
-  const fidRegraTit=document.getElementById('fidelidade-regras-titulo');
-  if(fidRegraTit) c.fidelidadePagina.regrasTitulo = fidRegraTit.value.trim();
-  const fidBtnAceite=document.getElementById('fidelidade-btn-aceitar-regras');
-  if(fidBtnAceite) c.fidelidadePagina.btnAceitarRegras = fidBtnAceite.value.trim();
-  const fidRegTit=document.getElementById('fidelidade-regulamento-titulo');
-  if(fidRegTit) c.fidelidadePagina.regulamentoTitulo = fidRegTit.value.trim();
-  const fidRegSum=document.getElementById('fidelidade-regulamento-summary');
-  if(fidRegSum) c.fidelidadePagina.regulamentoSummary = fidRegSum.value.trim();
 
   c.seoPaginas = c.seoPaginas || {};
-  c.seoPaginas.fidelidade = c.seoPaginas.fidelidade || {};
-  const fidSeoTit = document.getElementById('cfg-seo-fidelidade-titulo');
-  if (fidSeoTit) c.seoPaginas.fidelidade.titulo = fidSeoTit.value.trim();
-  const fidSeoDesc = document.getElementById('cfg-seo-fidelidade-descricao');
-  if (fidSeoDesc) c.seoPaginas.fidelidade.descricao = fidSeoDesc.value.trim();
 
   const fidSeoTitOld = document.getElementById('fid-seo-titulo');
-  if (fidSeoTitOld) c.seoPaginas.fidelidade.titulo = fidSeoTitOld.value.trim();
   const fidSeoDescOld = document.getElementById('fid-seo-descricao');
-  if (fidSeoDescOld) c.seoPaginas.fidelidade.descricao = fidSeoDescOld.value.trim();
   const fidSeoPal = document.getElementById('fid-seo-palavras');
-  if (fidSeoPal) c.seoPaginas.fidelidade.palavrasChave = fidSeoPal.value.trim();
 
   mostrarLoading('Salvando...');
 
-  // Sincronizar com o STATE.fidelidade se necessário (para o site ler de um lugar só)
   let ok1 = true;
-  if (STATE.fidelidade) {
-    if (!STATE.fidelidade.config) STATE.fidelidade.config = {};
-    STATE.fidelidade.config.premioMilkshake = c.premioMilkshake;
-    STATE.fidelidade.config.pontosMilkshake = c.pontosMilkshake;
-    STATE.fidelidade.config.premioCaixa = c.premioCaixa;
-    STATE.fidelidade.config.pontosCaixa = c.pontosCaixa;
-    STATE.fidelidade.config.titulo = c.fidelidadeTitulo;
-    STATE.fidelidade.config.descricao = c.fidelidadeDescricao;
-
-    ok1 = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: sincronizar textos da fidelidade');
-  }
+  
   
   // Salvar no config.json (fonte principal do admin)
-  const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar configuração de prêmios e textos da fidelidade');
+  const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar configuração de prêmios');
   
   ocultarLoading();
   if (ok1 && ok2) {
-    toast('Configurações de fidelidade salvas e sincronizadas!', 'sucesso');
+    toast('Configurações salvas e sincronizadas!', 'sucesso');
   }
 }
 function copiarCódigosDisponíveis(){
@@ -6882,18 +6703,13 @@ function preencherConfig(){
   const dCt=document.getElementById('cfg-dash-carrossel-texto'); if(dCt) dCt.value=cfg.adminDashLinkCarrosselTexto||'🎠 Carrossel';
   const dCu=document.getElementById('cfg-dash-carrossel-url'); if(dCu) dCu.value=cfg.adminDashLinkCarrosselUrl||'carrossel.html';
   atualizarAtalhosDashboard(cfg);
-  // Fidelidade Hero (IDs: fid-hero-titulo, fid-hero-desc)
+
   const fidHT=document.getElementById('cfg-fid-hero-titulo'); if(fidHT) fidHT.value=cfg.fidHeroTitulo||'🎟️  Itapolitana';
   const fidHD=document.getElementById('cfg-fid-hero-desc'); if(fidHD) fidHD.value=cfg.fidHeroDesc||'Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru.';
   const encHeroTit=document.getElementById('enc-hero-titulo'); if(encHeroTit) encHeroTit.value=cfg.encomendasHeroTitulo||'';
   const encHeroDesc=document.getElementById('enc-hero-desc'); if(encHeroDesc) encHeroDesc.value=cfg.encomendasHeroDescricao||'';
   const encHeroBadges=document.getElementById('enc-hero-badges'); if(encHeroBadges) encHeroBadges.value=Array.isArray(cfg.encomendasHeroBadges)?cfg.encomendasHeroBadges.join('\n'):'';
-  const fidRegrasUrl=document.getElementById('cfg-fid-regras-url'); if(fidRegrasUrl) fidRegrasUrl.value=cfg.fidelidadeRegrasUrl||'';
-  const fidResgateUrl=document.getElementById('cfg-fid-resgate-url'); if(fidResgateUrl) fidResgateUrl.value=cfg.fidelidadeResgateWhatsappUrl||'';
   const seoPg=cfg.seoPaginas||{};
-  const seoFidTit=document.getElementById('cfg-seo-fid-titulo'); if(seoFidTit) seoFidTit.value=seoPg.fidelidade?.titulo||'';
-  const seoFidDes=document.getElementById('cfg-seo-fid-descricao'); if(seoFidDes) seoFidDes.value=seoPg.fidelidade?.descricao||'';
-  const seoFidPal=document.getElementById('cfg-seo-fid-palavras'); if(seoFidPal) seoFidPal.value=seoPg.fidelidade?.palavrasChave||'';
   const seoEncTit=document.getElementById('cfg-seo-enc-titulo'); if(seoEncTit) seoEncTit.value=seoPg.encomendas?.titulo||'';
   const seoEncDes=document.getElementById('cfg-seo-enc-descricao'); if(seoEncDes) seoEncDes.value=seoPg.encomendas?.descricao||'';
   const seoEncPal=document.getElementById('cfg-seo-enc-palavras'); if(seoEncPal) seoEncPal.value=seoPg.encomendas?.palavrasChave||'';
@@ -6924,7 +6740,6 @@ async function salvarConfig(){
   if(instagramSafe===null)return;
   const mapsSafe=cmsLerUrlCampo('cfg-maps','Link Google Maps',{allowRelative:false});
   if(mapsSafe===null)return;
-  const fidRegrasUrlSafe=cmsLerUrlCampo('cfg-fid-regras-url','URL de regras da Fidelidade',{allowRelative:true});
   if(fidRegrasUrlSafe===null)return;
   const fidResgateUrlSafe=cmsLerUrlCampo('cfg-fid-resgate-url','URL de resgate via WhatsApp',{allowRelative:false});
   if(fidResgateUrlSafe===null)return;
@@ -6968,18 +6783,12 @@ async function salvarConfig(){
   const encHeroTitEl=document.getElementById('enc-hero-titulo'); if(encHeroTitEl) cfg.encomendasHeroTitulo=encHeroTitEl.value.trim();
   const encHeroDescEl=document.getElementById('enc-hero-desc'); if(encHeroDescEl) cfg.encomendasHeroDescricao=encHeroDescEl.value.trim();
   cfg.encomendasHeroBadges=lerLinhasTextarea('enc-hero-badges');
-  cfg.fidelidadeRegrasUrl=fidRegrasUrlSafe||'';
-  cfg.fidelidadeResgateWhatsappUrl=fidResgateUrlSafe||'';
   cfg.seoPaginas=cfg.seoPaginas||{};
-  cfg.seoPaginas.fidelidade=cfg.seoPaginas.fidelidade||{};
   cfg.seoPaginas.encomendas=cfg.seoPaginas.encomendas||{};
   cfg.seoPaginas.promocao=cfg.seoPaginas.promocao||{};
   cfg.seoPaginas.sobre=cfg.seoPaginas.sobre||{};
   cfg.seoPaginas.galeria=cfg.seoPaginas.galeria||{};
   cfg.seoPaginas.carrossel=cfg.seoPaginas.carrossel||{};
-  const seoFidTitEl=document.getElementById('cfg-seo-fid-titulo'); if(seoFidTitEl) cfg.seoPaginas.fidelidade.titulo=seoFidTitEl.value.trim();
-  const seoFidDesEl=document.getElementById('cfg-seo-fid-descricao'); if(seoFidDesEl) cfg.seoPaginas.fidelidade.descricao=seoFidDesEl.value.trim();
-  const seoFidPalEl=document.getElementById('cfg-seo-fid-palavras'); if(seoFidPalEl) cfg.seoPaginas.fidelidade.palavrasChave=seoFidPalEl.value.trim();
   const seoEncTitEl=document.getElementById('cfg-seo-enc-titulo'); if(seoEncTitEl) cfg.seoPaginas.encomendas.titulo=seoEncTitEl.value.trim();
   const seoEncDesEl=document.getElementById('cfg-seo-enc-descricao'); if(seoEncDesEl) cfg.seoPaginas.encomendas.descricao=seoEncDesEl.value.trim();
   const seoEncPalEl=document.getElementById('cfg-seo-enc-palavras'); if(seoEncPalEl) cfg.seoPaginas.encomendas.palavrasChave=seoEncPalEl.value.trim();
@@ -7011,7 +6820,6 @@ async function salvarFidHero() {
   cfg.fidHeroTitulo = document.getElementById('cfg-fid-hero-titulo').value.trim();
   cfg.fidHeroDesc = document.getElementById('cfg-fid-hero-desc').value.trim();
   STATE.config = cfg;
-  const ok = await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar hero fidelidade');
 }
 
 // =====================================================================
@@ -7292,91 +7100,35 @@ async function salvarEncomendas() {
 // =====================================================================
 //  PÁGINA — Carregar e salvar textos de 
 // =====================================================================
-function carregarFidelidadePagina() {
-  const cfg = STATE.config || {};
-  const seo = (cfg.seoPaginas && cfg.seoPaginas.fidelidade) || {};
-  const fp = cfg.fidelidadePagina || {};
 
-  const tituloEl = document.getElementById('cfg-seo-fidelidade-titulo');
+  const cfg = STATE.config || {};
+
   if (tituloEl) tituloEl.value = seo.titulo || ' | Sorveteria Itapolitana Cajuru';
 
-  const descEl = document.getElementById('cfg-seo-fidelidade-descricao');
   if (descEl) descEl.value = seo.descricao || 'Acumule pontos por código nos cupons da Itapolitana Cajuru e troque por prêmios. Cadastre-se no .';
 
-  const comoFuncTitEl = document.getElementById('fidelidade-como-funciona-titulo');
   if (comoFuncTitEl) comoFuncTitEl.value = fp.comoFuncionaTitulo || 'Como funciona';
 
-  const acaoTitEl = document.getElementById('fidelidade-acao-titulo');
   if (acaoTitEl) acaoTitEl.value = fp.acaoTitulo || 'Quero participar do ';
 
-  const btnCadEl = document.getElementById('fidelidade-btn-cadastro');
   if (btnCadEl) btnCadEl.value = fp.btnCadastro || 'Quero participar do ';
 
-  const btnLogEl = document.getElementById('fidelidade-btn-login');
   if (btnLogEl) btnLogEl.value = fp.btnLogin || 'Já sou cadastrado / Digitar código';
 
-  const regrasTitEl = document.getElementById('fidelidade-regras-titulo');
   if (regrasTitEl) regrasTitEl.value = fp.regrasTitulo || 'Regras do ';
 
-  const btnAceitEl = document.getElementById('fidelidade-btn-aceitar-regras');
   if (btnAceitEl) btnAceitEl.value = fp.btnAceitarRegras || 'Li e aceito as regras do ';
 
-  const regTitEl = document.getElementById('fidelidade-regulamento-titulo');
   if (regTitEl) regTitEl.value = fp.regulamentoTitulo || 'Regras completas do programa';
 
-  const regSumEl = document.getElementById('fidelidade-regulamento-summary');
   if (regSumEl) regSumEl.value = fp.regulamentoSummary || '📜 Ler regulamento completo do ';
 }
 
-async function salvarFidelidadePagina() {
-  const cfg = STATE.config || {};
-
-  // Garantir que seoPaginas.fidelidade existe
-  if (!cfg.seoPaginas) cfg.seoPaginas = {};
-  if (!cfg.seoPaginas.fidelidade) cfg.seoPaginas.fidelidade = {};
-
-  const tituloEl = document.getElementById('cfg-seo-fidelidade-titulo');
-  if (tituloEl) cfg.seoPaginas.fidelidade.titulo = tituloEl.value.trim();
-
-  const descEl = document.getElementById('cfg-seo-fidelidade-descricao');
-  if (descEl) cfg.seoPaginas.fidelidade.descricao = descEl.value.trim();
-
-  // Garantir que fidelidadePagina existe
-  if (!cfg.fidelidadePagina) cfg.fidelidadePagina = {};
-
-  const comoFuncTitEl = document.getElementById('fidelidade-como-funciona-titulo');
-  if (comoFuncTitEl) cfg.fidelidadePagina.comoFuncionaTitulo = comoFuncTitEl.value.trim();
-
-  const acaoTitEl = document.getElementById('fidelidade-acao-titulo');
-  if (acaoTitEl) cfg.fidelidadePagina.acaoTitulo = acaoTitEl.value.trim();
-
-  const btnCadEl = document.getElementById('fidelidade-btn-cadastro');
-  if (btnCadEl) cfg.fidelidadePagina.btnCadastro = btnCadEl.value.trim();
-
-  const btnLogEl = document.getElementById('fidelidade-btn-login');
-  if (btnLogEl) cfg.fidelidadePagina.btnLogin = btnLogEl.value.trim();
-
-  const regrasTitEl = document.getElementById('fidelidade-regras-titulo');
-  if (regrasTitEl) cfg.fidelidadePagina.regrasTitulo = regrasTitEl.value.trim();
-
-  const btnAceitEl = document.getElementById('fidelidade-btn-aceitar-regras');
-  if (btnAceitEl) cfg.fidelidadePagina.btnAceitarRegras = btnAceitEl.value.trim();
-
-  const regTitEl = document.getElementById('fidelidade-regulamento-titulo');
-  if (regTitEl) cfg.fidelidadePagina.regulamentoTitulo = regTitEl.value.trim();
-
-  const regSumEl = document.getElementById('fidelidade-regulamento-summary');
-  if (regSumEl) cfg.fidelidadePagina.regulamentoSummary = regSumEl.value.trim();
-
-  STATE.config = cfg;
-  await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: atualizar fidelidade página');
-}
 
 // =====================================================================
 // SORTEIOS — Carregar e salvar configuração de sorteios
 // =====================================================================
 function carregarConfigSorteio() {
-  const fid = STATE.fidelidade || {};
   const sorteio = fid.sorteio || {};
 
   const statusEl = document.getElementById('sorteio-status');
@@ -7417,7 +7169,6 @@ function carregarConfigSorteio() {
 async function salvarConfigSorteio() {
   if (!fidRequireWrite()) return;
 
-  const fid = STATE.fidelidade || {};
   if (!fid.sorteio) fid.sorteio = {};
 
   const statusEl = document.getElementById('sorteio-status');
@@ -7440,8 +7191,7 @@ async function salvarConfigSorteio() {
 
   fid.sorteio.atualizado = new Date().toISOString();
 
-  STATE.fidelidade = fid;
-  await salvarArquivo(PATHS.fidelidade, fid, 'fidelidadeSha', 'Admin: atualizar sorteio');
+
   toast('Configuração do sorteio salva com sucesso!', 'ok');
   carregarConfigSorteio();
 }
@@ -7450,7 +7200,6 @@ async function salvarConfigSorteio() {
 // REGRAS DE PONTUAÇÃO — Carregar e salvar
 // =====================================================================
 function carregarRegrasPontuacao() {
-  const fid = STATE.fidelidade || {};
   const config = fid.config || {};
 
   const ptsEl = document.getElementById('pontos-por-codigo');
@@ -7466,7 +7215,6 @@ function carregarRegrasPontuacao() {
 async function salvarRegrasPontuacao() {
   if (!fidRequireWrite()) return;
 
-  const fid = STATE.fidelidade || {};
   if (!fid.config) fid.config = {};
 
   const ptsEl = document.getElementById('pontos-por-codigo');
@@ -7484,15 +7232,14 @@ async function salvarRegrasPontuacao() {
   const descEl = document.getElementById('descricao-regra-pontos');
   if (descEl) fid.config.descricaoRegra = descEl.value.trim();
 
-  STATE.fidelidade = fid;
-  await salvarArquivo(PATHS.fidelidade, fid, 'fidelidadeSha', 'Admin: atualizar regras de pontuação');
+
   toast('Regras de pontuação salvas com sucesso!', 'ok');
   carregarRegrasPontuacao();
 
   // Também atualizar no config.json para sincronização com o site
   const cfg = STATE.config || {};
-  cfg.fidelidadePontosPorCodigo = fid.config.pontosPorCodigo;
-  cfg.fidelidadeValorPorCodigo = fid.config.valorMonetarioPorCodigo;
+  
+  
   STATE.config = cfg;
   await salvarArquivo(PATHS.config, cfg, 'configSha', 'Admin: sincronizar regras de pontuação');
 }
@@ -8289,7 +8036,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'configuracao': 'configuração', 'Configuracao': 'Configuração',
     'configuracoes': 'configurações', 'Configuracoes': 'Configurações',
     'encomenda': 'encomenda', // correto
-    'fidelidade': 'fidelidade', // correto
     'sorvete': 'sorvete', // correto
     'açaí': 'açaí', 'Açaí': 'Açaí',
     'picole': 'picolé', 'Picole': 'Picolé',
@@ -8382,7 +8128,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Interceptar funções de salvar para validar português
   const fnsSalvar = ['salvarHome', 'salvarPreços', 'salvarPromoção', 'salvarConfig',
-                     'salvarConfigFidelidade', 'salvarSabores', 'salvarEstoque'];
 
   fnsSalvar.forEach(nome => {
     const original = window[nome];
@@ -9148,7 +8893,6 @@ function excluirEncomenda(numPedido) {
 // ═══════════════════════════════════════════════════════════
 function excluirCliente(clienteId) {
   if(!fidRequireWrite())return;
-  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const c = clientes[clienteId];
   if (!c) return;
   confirmarAcao(
@@ -9163,8 +8907,6 @@ function excluirCliente(clienteId) {
         if (STATE.clientes.indice_celular && c.cel) delete STATE.clientes.indice_celular[c.cel];
         ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       } else {
-        delete STATE.fidelidade.clientes[clienteId];
-        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       }
       if (ok) { toast('Cliente ' + (c.nome || clienteId) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
     }
@@ -9174,14 +8916,12 @@ function excluirCliente(clienteId) {
 // Substituir confirm() nativo por confirmarAcao() em todas as exclusoes existentes
 // Inscrito do sorteio
 function removerInscritoSorteioComConfirm(idx) {
-  const ins = STATE.fidelidade?.sorteioInscritos?.[idx];
   if (!ins) return;
   confirmarAcao(
     'Remover Inscrito',
     `Remover <strong>${ins.nome || 'inscrito'}</strong> do sorteio?`,
     'Sim, remover',
     () => {
-      STATE.fidelidade.sorteioInscritos.splice(idx, 1);
       salvarSorteio();
     },
     'aviso'
@@ -9808,8 +9548,6 @@ function excluirCodigo(cod) {
     async () => {
       const fidData=fidEnsureCodigos();
       delete fidData.codigos[cod];
-      STATE.fidelidade.liberados = Object.keys(fidData.codigos).length;
-      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir código ' + cod);
       if (ok) { toast('Código excluído.','ok'); renderCódigos(); atualizarStatsCódigos(); fidRenderProgresso(); }
     }
   );
@@ -9817,11 +9555,9 @@ function excluirCodigo(cod) {
 
 
 // ═══════════════════════════════════════════════════════════
-// MODAL AJUSTE DE PONTOS (Fidelidade – cliente)
 // ═══════════════════════════════════════════════════════════
 let _pontosClienteId = null;
 function abrirModalPontos(clienteId){
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c){toast('Cliente não encontrado','erro');return;}
   _pontosClienteId=clienteId;
@@ -9848,7 +9584,6 @@ function abrirModalPontos(clienteId){
 function fecharModalPontos(){document.getElementById('modal-pontos').classList.remove('show');_pontosClienteId=null;}
 function previewNovoPontos(){
   const qtd=parseInt(document.getElementById('mp-qtd').value)||0;
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[_pontosClienteId];
   const saldo=c?c.saldoPontos||0:0;
   const novo=Math.max(0,saldo+qtd);
@@ -9861,7 +9596,6 @@ async function salvarModalPontos(){
   if(qtd===0){toast('Informe uma quantidade diferente de 0.','aviso');return;}
   const tipo=document.getElementById('mp-tipo').value;
   const motivo=document.getElementById('mp-motivo').value.trim()||'Ajuste manual pelo admin';
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[_pontosClienteId];
   if(!c){toast('Cliente não encontrado','erro');return;}
   const saldoAnterior=c.saldoPontos||0;
@@ -9961,7 +9695,6 @@ function executarAuditoria(){
   const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
   const clientesCarregados=Boolean(STATE.clientes?.clientes&&typeof STATE.clientes.clientes==='object');
   const clientes=clientesCarregados?STATE.clientes.clientes:{};
-  const fidelidade=STATE.fidelidade||{};
   const encomendas=STATE.encomendas?.registros||[];
   // ── 1. Clientes com pontos negativos (não deveria ser possível)
   if(!filtroMod||filtroMod==='clientes'){
@@ -10003,15 +9736,11 @@ function executarAuditoria(){
       }
     });
   }
-  // ── 6. Fidelidade — códigos usados em clientes inexistentes
-  if((!filtroMod||filtroMod==='fidelidade')&&clientesCarregados){
-    const codigos=fidelidade.códigos||fidelidade.codigos||{};
     Object.entries(codigos).forEach(([cod,v])=>{
       if(v.status==='usado'&&v.usadoPor){
         const cel=(v.usadoPor||'').replace(/\D/g,'');
         const achouCliente=Object.values(clientes).some(c=>(c.cel||'').replace(/\D/g,'')===cel);
         if(!achouCliente&&cel){
-          _auditoriaResultados.push({modulo:'fidelidade',severidade:'media',tipo:'codigo_sem_cliente',titulo:`Código usado por cliente inexistente`,descricao:`Código ${cod} foi usado por ${v.usadoPor} mas esse telefone não existe nos clientes cadastrados.`,admin:v.usadoPor,site:'não cadastrado',id:cod});
         }
       }
     });

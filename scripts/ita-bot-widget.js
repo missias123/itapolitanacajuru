@@ -95,7 +95,8 @@
 
   /* ─── Normaliza string ─── */
   function _norm(s) {
-    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    var ACCENT_RE = /[\u0300-\u036f]/g;
+    return String(s || '').toLowerCase().normalize('NFD').replace(ACCENT_RE, '').trim();
   }
 
   /* ─── CSS ─── */
@@ -276,7 +277,8 @@
   function _itabotBtnInicio() {
     _itabotFecharChatDialog();
     var p = window.location.pathname;
-    var isHome = /^\/(index\.html)?(\?.*)?$/.test(p) || p === '/index.html';
+    var HOME_RE = /^\/(index\.html)?(\?.*)?$/;
+    var isHome = HOME_RE.test(p) || p === '/index.html';
     if (isHome) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {

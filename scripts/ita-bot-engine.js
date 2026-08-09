@@ -30,7 +30,8 @@
 
   /* ─── Normalização de texto ─── */
   function _norm(s) {
-    return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    var ACCENT_RE = /[\u0300-\u036f]/g;
+    return String(s || '').toLowerCase().normalize('NFD').replace(ACCENT_RE, '').trim();
   }
 
   /* ─── Factory: cria uma instância do motor ─── */
@@ -493,10 +494,10 @@
       return {
         answer:    entry.answer    || '',
         linkText:  entry.linkText  || '',
-        linkHref:  entry.linkHref  || '',
+        linkHref:  (entry.linkHref && entry.linkHref.indexOf('javascript:') === -1) ? entry.linkHref : '',
         external:  !!entry.external,
         linkText2: entry.linkText2 || '',
-        linkHref2: entry.linkHref2 || '',
+        linkHref2: (entry.linkHref2 && entry.linkHref2.indexOf('javascript:') === -1) ? entry.linkHref2 : '',
         external2: !!entry.external2,
         chips:     entry.chips     || []
       };
@@ -553,7 +554,8 @@
       if (temNinho && !temOvo && !temEskimo && (temPicol || temAtac)) return _respPicoleLeiteNinho(temAtac);
 
       /* ── Busca por sabor de sorvete específico ── */
-      if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || /\btem\b/.test(l)) {
+      var SORVETE_DE_RE = /\btem\b/;
+      if (l.indexOf('sorvete de') !== -1 || l.indexOf('preco do') !== -1 || l.indexOf('preço do') !== -1 || SORVETE_DE_RE.test(l)) {
         var sf = _buscarSabor(msg);
         if (sf) return sf;
       }

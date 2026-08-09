@@ -216,7 +216,7 @@
       bannerPwa.innerHTML = '<div class="itap-pwa-msg"></div><div class="itap-pwa-acoes"></div>';
       const msg = bannerPwa.querySelector('.itap-pwa-msg');
       const acoes = bannerPwa.querySelector('.itap-pwa-acoes');
-      msg.textContent = opts.msg;
+      if (msg) msg.textContent = opts.msg;
 
       const btnPrincipal = document.createElement('button');
       btnPrincipal.className = 'itap-pwa-btn primary';
@@ -346,7 +346,7 @@
         const recurso = {
           tipo: '404',
           tag: tag,
-          url: src.replace(window.location.origin, ''),
+          url: src.replace(window.location.origin, '').slice(0, 500),
           ts: new Date().toISOString()
         };
         recursos_404.push(recurso);

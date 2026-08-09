@@ -45,7 +45,7 @@ console.log(`  ℹ️  1.2 Recursos CSS: ${cssRefs.length}, JS: ${jsRefs.length}
 
 // 1.3 Verificar lógica de autenticação
 const hasPasswordValidation = adminHtml.includes('senhaAdmin') && adminHtml.includes('SHA-256');
-const hasPATValidation = adminHtml.includes('api.github.com') || adminHtml.includes('GITHUB_PAT');
+const hasPATValidation = adminHtml.includes('api.github.com/') || adminHtml.includes('GITHUB_PAT');
 const hasWorkerSecret = adminHtml.includes('Worker Secret') || adminHtml.includes('ADMIN_SECRET');
 
 if (!hasPasswordValidation) {
@@ -285,8 +285,9 @@ if (fs.existsSync(reportPath)) {
 
 if (shouldWrite) {
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  const tempPath = reportPath + '.tmp.' + Math.random().toString(36).substring(2);
   fs.writeFileSync(
-    reportPath,
+    tempPath,
     JSON.stringify(
       {
         timestamp: new Date().toISOString(),
@@ -298,6 +299,7 @@ if (shouldWrite) {
       2
     )
   );
+  fs.renameSync(tempPath, reportPath);
   console.log(`\n✅ Relatório atualizado em: docs/relatorios/auditoria-robusta-admin.json`);
 } else {
   console.log(`\nℹ️  Relatório inalterado: docs/relatorios/auditoria-robusta-admin.json`);

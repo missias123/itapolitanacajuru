@@ -408,9 +408,43 @@
        margin: 8px 0 0 18px;
        padding: 0;
      }
-     .mt-3 { margin-top: 12px; }
-     
-     .modal-overlay {
+    .mt-3 { margin-top: 12px; }
+
+    /* REGRAS E PASSOS */
+    .regras-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .regras-header h2 {
+      font-size: clamp(1.5rem, 6vw, 2.2rem);
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-weight: 900;
+    }
+    .regras-header p {
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      color: var(--text);
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+    .passo-item-promocao {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.06);
+      border: 1px solid #eee;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .passo-item-promocao:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.1);
+    }
+    .passo-item-promocao .passo-numero {
+      background: linear-gradient(135deg, var(--primary), #C62828);
+      box-shadow: 0 4px 12px rgba(232,0,13,.3);
+    }
+
+    .modal-overlay {
        position: fixed;
        top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.7);
@@ -598,20 +632,28 @@ body { overflow-x: hidden; }
 </div>
 </div>
 
-<div id="texto-promocoes-sorteios" aria-labelledby="promocao-hero-titulo">
+<section id="regras-promocao" class="container">
+      <div class="regras-header">
+        <h2>Como Participar da Promoção</h2>
+        <p>Siga os passos abaixo para garantir sua participação e concorrer a prêmios incríveis!</p>
+      </div>
+      <div id="texto-promocoes-sorteios" aria-labelledby="promocao-hero-titulo">
   <h1 id="promocao-hero-titulo" data-config="promo.headerTitulo">Promoções e Sorteios</h1>
   <p>Acompanhe as promoções ativas da Itapolitana, veja o sorteio do mês e participe do cadastro em poucos passos. Tudo organizado para você navegar rápido entre promoções e cardápio.</p>
 </div>
+    </section>
 
 <div id="botoes-acao-promocao" aria-label="Ações principais da página de promoções">
   <button type="button" id="btn-ver-regras-sorteio" data-config="promocaoPagina.btnCardapio" class="promo-acao-btn" onclick="abrirRegrasSorteioPromo()">📜 Ver Regras do Sorteio</button>
   <button type="button" id="btn-quero-participar-principal" data-config="promocaoPagina.btnParticipar" class="promo-acao-btn promo-acao-btn--principal" onclick="destacarParticipacaoSorteioPromo()">Quero Participar</button>
 </div>
 
-<div id="passo-a-passo-promocao" aria-label="Passo a passo para participar das promoções">
+<section id="passos-participacao" class="container">
+      <div id="passo-a-passo-promocao" aria-label="Passo a passo para participar das promoções">
   <div class="passo-item-promocao"><span class="passo-numero">1</span><p>Cadastre-se no formulário abaixo para participar do sorteio mensal.</p></div>
   <div class="passo-item-promocao"><span class="passo-numero">2</span><p>Concorra aos prêmios mensais e acompanhe as novas promoções.</p></div>
 </div>
+    </section>
 <!-- Promoções adicionais: renderizadas dinamicamente de dados/promocoes.json -->
 <div id="promos-adicionais-lista" style="margin-top:20px"></div>
 <!-- CARD SORTEIO MENSAL - FORMULARIO COMPLETO -->
