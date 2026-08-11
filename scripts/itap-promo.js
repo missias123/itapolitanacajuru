@@ -204,6 +204,14 @@
     }
   };
 
+  window.destacarEExibirRegrasPromo = function() {
+    var el = document.getElementById('bloco-regras-sorteio-promo');
+    if (el) {
+      el.style.display = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   window.destacarParticipacaoSorteioPromo = function() {
     var el = document.getElementById('card-sorteio');
     if (el) {
