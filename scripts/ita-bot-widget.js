@@ -6,8 +6,7 @@
 (function () {
   'use strict';
 
-  // Se já existir um diálogo de chat, não faz nada para evitar duplicação
-  if (document.getElementById('chat-dialog')) return;
+  console.log('ItaBot Widget: Inicializando...');
 
   /* ─── Detecta raiz do site para construir paths ─── */
   var _base = (function () {
@@ -79,7 +78,10 @@
 
   /* ─── Injeção de HTML ─── */
   function _itabotInjetarHtml() {
-    if (document.getElementById('chat-dialog')) return;
+    if (document.getElementById('chat-dialog')) {
+      console.log('ItaBot: Chat dialog já existe no DOM.');
+      return;
+    }
     var div = document.createElement('div');
     div.id = 'chat-dialog';
     div.setAttribute('role', 'dialog');
