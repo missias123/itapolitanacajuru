@@ -38,10 +38,10 @@
     const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-    const elD = document.getElementById('days');
-    const elH = document.getElementById('hours');
-    const elM = document.getElementById('minutes');
-    const elS = document.getElementById('seconds');
+    const elD = document.getElementById('cd-d');
+    const elH = document.getElementById('cd-h');
+    const elM = document.getElementById('cd-m');
+    const elS = document.getElementById('cd-s');
 
     if (elD) elD.innerText = d.toString().padStart(2, '0');
     if (elH) elH.innerText = h.toString().padStart(2, '0');
@@ -140,8 +140,9 @@
       if (resposta.status === 201 && dados.success) {
         exibirRegrasRetiradaPromo();
         var registrationIdTxt = dados.registrationId ? ' Código: ' + dados.registrationId + '.' : '';
-        var whatsappLink = 'https://api.whatsapp.com/send?phone=5516996062046&text=Ol%C3%A1%20' + encodeURIComponent(nome) + '%2C%20sua%20inscri%C3%A7%C3%A3o%20para%20o%20sorteio%20mensal%20foi%20confirmada%21%20Seu%20ID%20de%20inscri%C3%A7%C3%A3o%20%C3%A9%20' + dados.registrationId + '.%20Boa%20sorte%21';
-        mostrarMsgSorteioComAcao('Cadastro realizado com sucesso! Você já está participando do sorteio.' + registrationIdTxt, 'ok', null, null, whatsappLink);
+        var msgZap = 'Olá ' + nome + ', minha inscrição para o sorteio MENSAL da Itapolitana foi confirmada! Meu ID é ' + dados.registrationId + '. Sei que devo me cadastrar todo mês para continuar concorrendo. Boa sorte para mim!';
+        var whatsappLink = 'https://api.whatsapp.com/send?phone=5516996062046&text=' + encodeURIComponent(msgZap);
+        mostrarMsgSorteioComAcao('Cadastro realizado com sucesso! Você está participando do sorteio deste mês. Lembre-se: a inscrição é MENSAL, cadastre-se novamente no próximo mês!' + registrationIdTxt, 'ok', null, null, whatsappLink);
         formCadastroPromo.reset();
       } else {
         mostrarMsgSorteio(dados.error || 'Erro ao realizar cadastro.', 'erro');
@@ -172,4 +173,59 @@
       enviarSorteioPromo(nome, data, cel);
     };
   }
+
+  // Expor funções globais para o HTML
+  window.abrirRegrasSorteioPromo = function() {
+    var el = document.getElementById('bloco-regras-sorteio-promo');
+    if (el) {
+      el.style.display = 'block';
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  window.destacarParticipacaoSorteioPromo = function() {
+    var el = document.getElementById('card-sorteio');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.style.boxShadow = '0 0 0 4px #2e7d32';
+      setTimeout(function() { el.style.boxShadow = ''; }, 2000);
+    }
+  };
+
+  window.verificarAceiteSorteioPromo = function() {
+    var chk = document.getElementById('aceite-sorteio-inline');
+    var btn = document.getElementById('btn-aceitar-sorteio-inline');
+    var hint = document.getElementById('hint-aceite-sorteio');
+    if (chk && btn) {
+      btn.disabled = !chk.checked;
+      btn.classList.toggle('ativo-verde', chk.checked);
+      if (hint) hint.style.display = chk.checked ? 'none' : 'block';
+    }
+  };
+
+  window.abrirFormSorteioPromo = function() {
+    var form = document.getElementById('form-sorteio-inline');
+    var chk = document.getElementById('aceite-sorteio-inline');
+    if (form && chk && chk.checked) {
+      form.style.display = 'block';
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Habilitar campos do formulário
+      var campos = form.querySelectorAll('input, select, button');
+      campos.forEach(function(c) { 
+        c.disabled = false; 
+        c.classList.remove('form-control-disabled');
+      });
+      // Preencher anos
+      var anoSel = document.getElementById('promo-ano-nasc');
+      if (anoSel && anoSel.options.length <= 1) {
+        var anoAtual = new Date().getFullYear();
+        for (var i = anoAtual - 18; i >= anoAtual - 100; i--) {
+          var opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = i;
+          anoSel.appendChild(opt);
+        }
+      }
+    }
+  };
 })();

@@ -257,7 +257,7 @@ img{max-width:100%;display:block}
 @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
 .promo-top-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2.5s infinite}
 /* HEADER */
-.header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,0.25);isolation:isolate;width:100%;box-sizing:border-box;border-top:none;}
+.header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.25);isolation:isolate;width:100%;box-sizing:border-box;border-top:none;}
 .header-inner{contain: layout;max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px 12px 16px}
 .brand{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;padding:0;flex-shrink:0}
 .brand-icon{width:90px;min-width:90px;flex-shrink:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:0 0 4px 0}.brand-icon img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18)}
@@ -2304,17 +2304,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 }
 </script>
 <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
-<div id="promo-top-bar" class="promo-top-bar" role="button" tabindex="0" aria-label="Abrir promoção especial"
-     onclick="abrirPromo()"
-     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirPromo();}">
-  <div class="promo-top-bar-inner">
-    <span class="promo-top-bar-titulo">🎁 <span id="ptb-titulo">Promoção Especial</span></span>
-    <span class="promo-top-bar-sub" id="ptb-sub">Toque para conferir as promoções e sorteios ativos</span>
-    <span class="promo-top-bar-cta">Ver agora</span>
-  </div>
-  <button type="button" class="promo-top-bar-close" aria-label="Fechar aviso de promoção"
-          onclick="event.stopPropagation();fecharBarraPromo();">✕</button>
-</div>
+<!-- Barra de promoção removida a pedido do usuário -->
 <main id="conteudo-principal">
 <header class="itap-header">
 <div class="itap-header-inner">
@@ -4043,17 +4033,8 @@ function _resolverDataFimPromo(d) {
   return null;
 }
 async function carregarBarraPromo(){
-  const d=await _buscarDadosPromo();
-  const fechada=sessionStorage.getItem('promo_bar_fechada');
-  if(d.ativo===false){return;} // promoção desativada pelo admin
-  if(fechada){return;} // usuário fechou nesta sessão
-  const bar=document.getElementById('promo-top-bar');
-  if(!bar)return;
-  const titulo = _valorPromo(d, ['título', 'titulo', 'headerTitulo']);
-  const descricao = _valorPromo(d, ['descrição', 'descricao', 'bannerFrase']);
-  if(titulo){document.getElementById('ptb-titulo').textContent=titulo;}
-  if(descricao){document.getElementById('ptb-sub').textContent=descricao;}
-  bar.classList.add('show');
+  // Exibição da barra de promoção desabilitada para evitar sobreposição no topo.
+  return;
 }
 function fecharBarraPromo(){
   sessionStorage.setItem('promo_bar_fechada','1');
