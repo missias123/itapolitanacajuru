@@ -27,8 +27,13 @@
   var _engine     = null;   // instância do motor compartilhado (ItaBotEngine)
 
   /* ─── Instanciar motor compartilhado (se disponível) ─── */
-  if (window.ItaBotEngine) {
-    _engine = window.ItaBotEngine.createEngine();
+  function _getEngine() {
+    if (_engine) return _engine;
+    if (window.ItaBotEngine) {
+      _engine = window.ItaBotEngine.createEngine();
+      return _engine;
+    }
+    return null;
   }
 
   /* ─── Normaliza string ─── */
@@ -43,9 +48,9 @@
     var style = document.createElement('style');
     style.id = 'itabot-css';
     style.textContent = [
-      '#chat-dialog { display:none; position:fixed; inset:0; width:100%; height:100dvh; z-index:100000; background:rgba(0,0,0,0.55); overflow:hidden; align-items:center; justify-content:center; }',
-      '#chat-dialog.aberto { display:flex; }',
-      '.chat-box { width:95%; max-width:460px; height:90dvh; background:#fff; border-radius:28px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,0.32); position:relative; }',
+      '#chat-dialog { display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:100000; background:rgba(0,0,0,0.55); overflow:hidden; align-items:center; justify-content:center; }',
+      '#chat-dialog.aberto { display:flex !important; }',
+      '.chat-box { width:95%; max-width:460px; height:90%; max-height: 800px; background:#fff; border-radius:28px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,0.32); position:relative; }',
       '.chat-hdr { background:linear-gradient(135deg,#E8000D,#C62828); color:#fff; padding:16px 20px; flex-shrink:0; }',
       '.chat-hdr-logo-row { display:flex; align-items:center; justify-content:space-between; }',
       '.chat-hdr-brand { display:flex; align-items:center; gap:12px; }',
@@ -236,8 +241,9 @@
   }
 
   function _itabotGetResp(texto) {
-    if (_engine) {
-      var r = _engine.getResponse(texto);
+    var eng = _getEngine();
+    if (eng) {
+      var r = eng.getResponse(texto);
       // Garantir formato de objeto
       if (typeof r === 'string') return { answer: r };
       return r;

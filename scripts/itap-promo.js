@@ -60,7 +60,9 @@
   var PROMO_MOBILE_REGEX = /^169\d{8}$/;
   var formCadastroPromo = document.getElementById('form-promocao-cliente');
   var inputPromoNome = document.getElementById('promo-nome-cliente');
-  var inputPromoData = document.getElementById('promo-data-nasc-cliente');
+  var inputPromoDia = document.getElementById('promo-dia-nasc');
+  var inputPromoMes = document.getElementById('promo-mes-nasc');
+  var inputPromoAno = document.getElementById('promo-ano-nasc');
   var inputPromoCelular = document.getElementById('promo-celular-cliente');
   var inputPromoHp = document.getElementById('promo-honeypot');
   var btnEnviarPromo = document.getElementById('promo-enviar-cadastro');
@@ -158,19 +160,38 @@
     }
   }
 
+  // Máscara de celular (16) 99999-9999
+  if (inputPromoCelular) {
+    inputPromoCelular.oninput = function(e) {
+      var x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+      e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    };
+  }
+
   if (formCadastroPromo) {
     formCadastroPromo.onsubmit = function(e) {
       e.preventDefault();
       var nome = inputPromoNome.value.trim();
-      var data = inputPromoData.value;
+      var dia = inputPromoDia ? inputPromoDia.value : '';
+      var mes = inputPromoMes ? inputPromoMes.value : '';
+      var ano = inputPromoAno ? inputPromoAno.value : '';
       var cel = inputPromoCelular.value.replace(/\D/g, '');
       
+      if (!nome) {
+        mostrarMsgSorteio('Por favor, informe seu nome completo.', 'erro');
+        return;
+      }
+      if (!dia || !mes || !ano) {
+        mostrarMsgSorteio('Por favor, informe sua data de nascimento completa.', 'erro');
+        return;
+      }
       if (!PROMO_MOBILE_REGEX.test(cel)) {
-        mostrarMsgSorteio('Por favor, informe um celular válido com DDD 16.', 'erro');
+        mostrarMsgSorteio('Por favor, informe um celular válido com DDD 16. Ex: (16) 99999-9999', 'erro');
         return;
       }
       
-      enviarSorteioPromo(nome, data, cel);
+      var dataNasc = ano + '-' + mes + '-' + dia;
+      enviarSorteioPromo(nome, dataNasc, cel);
     };
   }
 
