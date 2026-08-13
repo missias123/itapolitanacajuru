@@ -2343,21 +2343,47 @@ body.cardapio-aberto { padding-bottom: 80px; }
      Sem JS, sem conflito com o site
      ======================================== -->
 <style id="itp-crs-style">
-  /* Carrossel Itapolitana — isolado, sem conflito com o site */
+  /* Carrossel Itapolitana — Enquadramento Premium Responsivo */
   #itp-crs-wrap {
     width: 100%;
-    margin: 0 0 32px 0;
+    max-width: 960px;
+    margin: 0 auto 24px auto;
     padding: 0;
     line-height: 0;
     overflow: hidden;
     background: #111;
     display: block;
-    /* Reservar espaço fixo para evitar CLS */
     aspect-ratio: 3 / 2;
     max-height: 800px;
     contain: layout;
+    /* Enquadramento visual */
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.05);
   }
-  /* Altura reservada — sem transition para evitar CLS */
+  
+  /* Ajustes de responsividade para manter o enquadramento em todas as telas */
+  @media (min-width: 1200px) {
+    #itp-crs-wrap { max-width: 1100px; }
+  }
+  
+  @media (max-width: 1024px) {
+    #itp-crs-wrap { 
+      max-width: calc(100% - 32px); 
+      margin-bottom: 20px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    #itp-crs-wrap { 
+      max-width: 100%; 
+      border-radius: 0; 
+      margin-bottom: 16px;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
   #itp-crs-iframe {
     width: 100%;
     height: 100%;
@@ -2365,9 +2391,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
     max-height: 800px;
     border: none;
     display: block;
-    /* SEM transition: evita layout shift */
   }
-
 </style>
 <div id="itp-crs-wrap">
   <iframe
