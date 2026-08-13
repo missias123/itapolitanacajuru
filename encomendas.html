@@ -8,34 +8,36 @@
   <link rel="stylesheet" href="css/itap-refinements.css">
   <style>
     :root {
-      --azul: #1565C0;
-      --azul-escuro: #0D47A1;
-      --vermelho: #D32F2F;
-      --verde: #2E7D32;
-      --amarelo: #F9A825;
-      --cinza: #9E9E9E;
+      --primary: #EA1D2C; /* Vermelho iFood - Alta Conversão */
+      --secondary: #3E3E3E;
+      --success: #2E7D32;
+      --bg-light: #F7F7F7;
+      --white: #FFFFFF;
+      --text-main: #3E3E3E;
+      --text-muted: #717171;
     }
-    body { font-family: 'Nunito', sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
-    .header { background: var(--azul-escuro); color: white; padding: 6px 0; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .container { max-width: 800px; margin: 0 auto; padding: 10px; padding-bottom: 100px; }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg-light); color: var(--text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    .header { background: var(--white); color: var(--primary); padding: 12px 0; text-align: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #E8E8E8; }
+    .container { max-width: 800px; margin: 0 auto; padding: 16px; padding-bottom: 120px; }
     
-    /* Accordion Style */
-    .categoria { background: white; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+    /* Accordion Style - Padrão App Premium */
+    .categoria { background: var(--white); border-radius: 8px; margin-bottom: 12px; border: 1px solid #E8E8E8; overflow: hidden; }
     .categoria-header { 
-        padding: 20px; background: var(--azul); color: white; cursor: pointer; 
+        padding: 16px 20px; background: var(--white); color: var(--text-main); cursor: pointer; 
         display: flex; justify-content: space-between; align-items: center;
-        border: none; width: 100%; text-align: left;
+        border: none; width: 100%; text-align: left; transition: background 0.2s;
     }
+    .categoria-header:active { background: #F2F2F2; }
     .categoria-conteudo { display: none; padding: 20px; border-top: 1px solid #eee; }
     
     /* Product Cards */
     .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-    .prod-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; text-align: center; background: #fff; }
-    .prod-nome { font-weight: 800; margin-bottom: 10px; }
-    .prod-preco { color: var(--azul); font-weight: 700; margin-bottom: 15px; }
+    .prod-card { border: 1px solid #F2F2F2; border-radius: 8px; padding: 16px; text-align: center; background: var(--white); transition: transform 0.2s; }
+    .prod-nome { font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 8px; }
+    .prod-preco { color: var(--success); font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; }
     .btn-sabores { 
-        background: var(--azul); color: white; border: none; padding: 10px 15px; 
-        border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%;
+        background: var(--primary); color: var(--white); border: none; padding: 12px; 
+        border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%; font-size: 0.9rem;
     }
 
     /* Modais */
@@ -57,9 +59,10 @@
     
     /* Carrinho */
     .btn-carrinho-fixo {
-        position: fixed; bottom: 20px; right: 20px; background: #FF6D00; color: white;
-        padding: 15px 25px; border-radius: 50px; font-weight: 800; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        display: none; align-items: center; gap: 10px; z-index: 1500; border: none; cursor: pointer;
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
+        background: var(--primary); color: var(--white);
+        padding: 16px; border-radius: 4px; font-weight: 700; box-shadow: 0 8px 24px rgba(234, 29, 44, 0.25);
+        display: none; justify-content: space-between; align-items: center; z-index: 1500; border: none; cursor: pointer;
     }
     
     .lock-scroll { overflow: hidden !important; }
