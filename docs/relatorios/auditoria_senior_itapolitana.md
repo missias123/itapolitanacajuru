@@ -8,7 +8,7 @@
 
 ## 1. Visão Geral e Diagnóstico Inicial
 
-A **Sorveteria Itapolitana** é uma marca tradicional em Cajuru/SP, reconhecida pela excelência em sorvetes artesanais, picolés, açaí Natureon, milkshakes e encomendas para festas. O objetivo desta auditoria, fundamentada em padrões de excelência de mercado, UX mobile-first e neuromarketing ético, é elevar a experiência digital do cliente a um patamar de conversão impecável (100/100).
+A **Sorveteria Itapolitana** é uma marca tradicional em Cajuru/SP, reconhecida pela excelência em sorvetes do tipo artesanal, picolés, açaí Natureon, milkshakes e encomendas para festas. O objetivo desta auditoria, fundamentada em padrões de excelência de mercado, UX mobile-first e neuromarketing ético, é elevar a experiência digital do cliente a um patamar de conversão impecável (100/100).
 
 ### Principais Pontos de Otimização Identificados
 1. **Redundância de Informações**: A aba de promoções apresentava textos repetitivos sobre o sorteio mensal no passo a passo e no regulamento, gerando fadiga cognitiva.

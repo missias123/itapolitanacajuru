@@ -462,7 +462,7 @@ Avaliados por observação direta em cada site:
 - Shopee — modelo de negócio totalmente diferente
 - McDonald's — escala não aplicável
 
-**Ondas 2–5:** Planejadas. Incluirão sorveterias artesanais regionais, negócios do interior de SP/MG e micro-negócios mobile-first.
+**Ondas 2–5:** Planejadas. Incluirão sorveterias do tipo artesanal regionais, negócios do interior de SP/MG e micro-negócios mobile-first.
 
 ---
 
