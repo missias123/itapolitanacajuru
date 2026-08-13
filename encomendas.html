@@ -43,7 +43,21 @@
 <link href="/apple-touch-icon.png" rel="apple-touch-icon"/>
 <link rel="preload" as="image" href="images/carrinho-picole.webp" type="image/webp" fetchpriority="high"/>
 <title data-config="seoPaginas.encomendas.titulo">Encomendas | Sorveteria Itapolitana Cajuru</title>
-    <script src="scripts/enc-v3.js?v=3.2_ELITE"></script>
+    <!-- AUTOMAÇÃO INSTANT DEPLOY & REDUNDÂNCIA EM VIGOR -->
+    <script>
+      (function() {
+        // 1. CACHE BUSTING DINÂMICO (Obriga o navegador a baixar a versão nova sempre)
+        var script = document.createElement('script');
+        script.src = 'scripts/enc-v3.js?v=' + Date.now();
+        document.head.appendChild(script);
+
+        // 2. REDUNDÂNCIA EM MEMÓRIA (Caso o script externo demore, o botão já sabe o que fazer)
+        window.abrirSaboresSorvete = window.abrirSaboresSorvete || function() {
+           console.warn('⚠️ Aguardando carregamento do sistema de encomendas...');
+           alert('O sistema está carregando os sabores. Por favor, aguarde 2 segundos e tente novamente.');
+        };
+      })();
+    </script>
 
     <style>
       body { position: relative; }
