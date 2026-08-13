@@ -407,3 +407,20 @@ function showToast(msg, tipo) {
 
 // Iniciar quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', inicializarEncomendas);
+
+// =====================================================
+// EXPOSIÇÃO GLOBAL DE FUNÇÕES (Gênio UX / Anti-Regression)
+// =====================================================
+window.abrirSaboresSorvete = abrirSaboresSorvete;
+window.renderizarGridSabores = renderizarGridSabores;
+window.toggleSabor = toggleSabor;
+window.atualizarBtnConfirmar = atualizarBtnConfirmar;
+window.confirmarSabores = confirmarSabores;
+window.abrirModalPicole = abrirModalPicole;
+window.atualizarQtdPicole = atualizarQtdPicole;
+window.confirmarPicole = confirmarPicole;
+window.abrirModal = abrirModal;
+window.fecharModal = fecharModal;
+window.showToast = showToast;
+window.addCarrinho = addCarrinho;
+window.atualizarBotãoCarrinho = atualizarBotãoCarrinho;
