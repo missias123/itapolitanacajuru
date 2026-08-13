@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Responsividade harness</title>
+<style>html,body{margin:0;padding:0}#site{width:100%;height:7000px;border:0}</style>
+<iframe id="site" src="/index.html?preview=carousel-order-v1"></iframe>
+<pre id="result">WAITING</pre>
+<script>
+(function () {
+  var out = document.getElementById('result');
+  var frame = document.getElementById('site');
+  var errors = [];
+  window.addEventListener('error', function (e) { errors.push(String(e.message || e.error || 'window error')); });
+  function measure() {
+    try {
+      var doc = frame.contentDocument;
+      var win = frame.contentWindow;
+      if (!doc || !doc.body) throw new Error('iframe ainda não carregou');
+      win.addEventListener('error', function (e) { errors.push(String(e.message || e.error || 'iframe error')); });
+      var header = doc.querySelector('.itap-header');
+      var carousel = doc.querySelector('#itp-crs-wrap');
+      var strip = doc.querySelector('#strip-sensorial');
+      var iframe = doc.querySelector('#itp-crs-iframe');
+      var hr = header && header.getBoundingClientRect();
+      var cr = carousel && carousel.getBoundingClientRect();
+      var sr = strip && strip.getBoundingClientRect();
+      var result = {
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+        headerBottom: hr && hr.bottom,
+        carouselTop: cr && cr.top,
+        carouselBottom: cr && cr.bottom,
+        stripTop: sr && sr.top,
+        carouselHeight: cr && cr.height,
+        scrollWidth: doc.documentElement.scrollWidth,
+        clientWidth: doc.documentElement.clientWidth,
+        navLinks: doc.querySelectorAll('.itap-header-nav .itap-nav-btn').length,
+        hasDuvidas: !!doc.querySelector('.ita-bot-duvidas-btn'),
+        hasCarousel: !!carousel,
+        iframeSrc: iframe && iframe.getAttribute('src'),
+        errors: errors,
+      };
+      result.ok = result.carouselTop === result.headerBottom && result.carouselTop < result.stripTop && result.scrollWidth <= result.clientWidth && result.navLinks === 5 && result.hasDuvidas && result.iframeSrc === 'carrossel.html' && result.errors.length === 0;
+      out.textContent = JSON.stringify(result);
+    } catch (e) {
+      out.textContent = JSON.stringify({ ok:false, error:String(e), errors:errors });
+    }
+  }
+  frame.addEventListener('load', function () { setTimeout(measure, 2500); });
+  setTimeout(measure, 6000);
+}());
+</script>
