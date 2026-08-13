@@ -156,9 +156,10 @@
     <h2 id="modal-titulo-sabores">Escolha os Sabores</h2>
     <p id="modal-subtitulo-sabores"></p>
     <div id="grid-sabores" class="sabor-grid"></div>
+    <p id="status-sabores" class="selection-status" role="status" aria-live="polite">Selecione os sabores solicitados para liberar a confirmação.</p>
     <div class="modal-actions">
       <button onclick="window.fecharModal('modal-sabores')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
-      <button id="btn-confirmar-sabores" class="confirm-action" onclick="window.confirmarSabores()" aria-hidden="true" tabindex="-1" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
+      <button id="btn-confirmar-sabores" class="confirm-action" onclick="window.confirmarSabores()" aria-hidden="true" tabindex="-1" style="flex: 2; padding: 15px; border-radius: 15px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar Pedido</button>
     </div>
   </div>
 </div>
@@ -172,9 +173,10 @@
     <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; text-align: center;">
       <strong>Total de Picolés: <span id="total-picoles">0</span> / 100</strong>
     </div>
+    <p id="status-picoles" class="selection-status" role="status" aria-live="polite">Adicione picolés para liberar a confirmação.</p>
     <div class="modal-actions">
       <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
-      <button id="btn-confirmar-picoles" class="confirm-action" onclick="window.confirmarPickle()" disabled aria-hidden="true" tabindex="-1" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
+      <button id="btn-confirmar-picoles" class="confirm-action" onclick="window.confirmarPickle()" disabled aria-hidden="true" tabindex="-1" style="flex: 2; padding: 15px; border-radius: 15px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar Pedido</button>
     </div>
   </div>
 </div>
@@ -288,11 +290,24 @@
 
     function atualizarAcaoSabores() {
         var btn = document.getElementById('btn-confirmar-sabores');
-        var completo = !!produtoAtual && saboresSelecionados.length === produtoAtual.max;
+        var status = document.getElementById('status-sabores');
+        var atual = saboresSelecionados.length;
+        var max = produtoAtual ? produtoAtual.max : 0;
+        var completo = !!produtoAtual && atual === max;
+        
         btn.disabled = !completo;
         btn.classList.toggle('is-ready', completo);
         btn.setAttribute('aria-hidden', String(!completo));
         btn.tabIndex = completo ? 0 : -1;
+
+        if (completo) {
+            status.textContent = "Pronto para Confirmar Pedido!";
+            status.classList.add('ready');
+        } else {
+            var falta = max - atual;
+            status.textContent = "Selecione mais " + falta + (falta === 1 ? " sabor" : " sabores") + " para liberar.";
+            status.classList.remove('ready');
+        }
     }
 
     window.confirmarSabores = function() {
@@ -343,15 +358,26 @@
 
     function atualizarAcaoPicoles() {
         var btn = document.getElementById('btn-confirmar-picoles');
+        var status = document.getElementById('status-picoles');
         var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
         var limitesValidos = Object.values(picolesSelecionados).every(function(qtd) {
             return qtd >= 0 && qtd <= MAX_PICOLES_POR_SABOR;
         });
         var completo = total >= MIN_PICOLES_ATACADO && limitesValidos;
+        
         btn.disabled = !completo;
         btn.classList.toggle('is-ready', completo);
         btn.setAttribute('aria-hidden', String(!completo));
         btn.tabIndex = completo ? 0 : -1;
+
+        if (completo) {
+            status.textContent = "Lote mínimo atingido! Pronto para Confirmar Pedido.";
+            status.classList.add('ready');
+        } else {
+            var falta = MIN_PICOLES_ATACADO - total;
+            status.textContent = "Adicione mais " + falta + " picolés para o lote de atacado.";
+            status.classList.remove('ready');
+        }
     }
 
     window.confirmarPickle = function() {

@@ -98,10 +98,28 @@ body.fueap-encomendas .modal-actions > button:last-child {
   flex: 2 1 0;
 }
 body.fueap-encomendas .modal-actions > .confirm-action {
-  display: none !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  background: #9aa0a6 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  transition: background-color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
 body.fueap-encomendas .modal-actions > .confirm-action.is-ready {
-  display: inline-block !important;
+  display: inline-flex !important;
+  background: #079b2f !important;
+  color: #ffffff !important;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(7, 155, 47, .24);
+}
+body.fueap-encomendas .modal-actions > .confirm-action.is-ready:hover,
+body.fueap-encomendas .modal-actions > .confirm-action.is-ready:focus-visible {
+  background: #057d26 !important;
+  transform: translateY(-1px);
 }
 
 body.fueap-encomendas .sabor-grid {
@@ -193,3 +211,21 @@ body.fueap-encomendas .btn-carrinho-fixo {
 .fueap-surface-marker { display: none !important; }
 
 /* Fim da camada FUEAP. */
+
+/* Instruções de fluxo em tempo real e status acessíveis */
+body.fueap-encomendas .selection-status {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #f1f3f4;
+  border-left: 4px solid var(--azul, #1565c0);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #333333;
+  text-align: center;
+}
+body.fueap-encomendas .selection-status.ready {
+  background: #e6f4ea;
+  border-left-color: #079b2f;
+  color: #0d652d;
+}
