@@ -425,6 +425,7 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
   width: 0%;
 }
 
+/* Gerador de lotes de códigos de fidelidade */
 .fid-progresso-wrap{background:#FFF3E0;border:2px solid #FFD0A0;border-radius:14px;padding:16px;margin:12px 0;text-align:center}
 .fid-progresso-titulo{font-size:14px;font-weight:900;color:#E65100;margin-bottom:8px}
 .fid-progresso-barra-bg{background:#FFE0B2;border-radius:20px;height:14px;overflow:hidden;margin-bottom:8px}
@@ -527,9 +528,8 @@ body { overflow-x: hidden; }
 .hist-tipo.manual{background:#f3e5f5;color:#6a1b9a}
 </style>
 <!-- cache-bust:20260419_000000 -->
-  <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
-<bodyclass="fueap-surface fueap-admin-painel">
+<body>
 <div class="loading-overlay" id="loading-overlay" style="display:none">
   <div class="loading-box"><div class="spin2"></div><p id="loading-txt">Salvando...</p></div>
 </div>
@@ -579,11 +579,10 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
     <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
     <button class="nav-btn" id="nav-btn-promocao" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
-    <button class="nav-btn" id="nav-btn-participantes" onclick="irPara('participantes',this)">👥 Participantes</button>
+    <button class="nav-btn" id="nav-btn-fidelidade" onclick="irPara('fidelidade-admin',this)">🎟️ Fidelidade</button>
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
-    <button class="nav-btn" id="nav-btn-carrossel" onclick="irPara('carrossel-admin',this)">🎠 Carrossel</button>
     <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🧩 Site Encomendas</button>
     <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
     <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
@@ -608,8 +607,7 @@ body { overflow-x: hidden; }
           <button onclick="irPara('encomendas-admin',document.getElementById('nav-btn-encomendas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
           <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
           <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
-          <button onclick="irPara('participantes',document.getElementById('nav-btn-participantes'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">👥<span>Participantes</span></button>
-          <button onclick="irPara('carrossel-admin',document.getElementById('nav-btn-carrossel'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00838f,#00acc1)">🎠<span>Carrossel</span></button>
+          <button onclick="irPara('fidelidade-admin',document.getElementById('nav-btn-fidelidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">🎟️<span>Fidelidade</span></button>
           <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
           <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
           <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.getElementById('nav-btn-rastreio'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
@@ -622,6 +620,7 @@ body { overflow-x: hidden; }
         <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
           <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
           <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
+          <a href="" target="_blank" class="link-site">&#x1F381; Fidelidade</a>
           <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
           <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
           <a id="dash-link-sobre" href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
@@ -640,13 +639,13 @@ body { overflow-x: hidden; }
         </div>
         <div class="card-body">
           <div class="seção-título">&#x1F3AF; Hero - Topo da Página</div>
-          <div class="campo-edit"><label>Badge do Hero (linha pequena acima do título)</label><input type="text" id="home-badge" maxlength="60" placeholder="35 sabores Tipo Artesanal"/><div class="hint">Max. 60 caracteres. Aparece em destaque acima do título principal.</div></div>
+          <div class="campo-edit"><label>Badge do Hero (linha pequena acima do título)</label><input type="text" id="home-badge" maxlength="60" placeholder="35 sabores tipo artesanal"/><div class="hint">Max. 60 caracteres. Aparece em destaque acima do título principal.</div></div>
           <div class="campo-edit"><label>Título principal (H1)</label><input type="text" id="home-titulo" maxlength="80" placeholder="O Sorvete que Cajuru Ama de Verdade"/><div class="hint">Max. 80 caracteres. É o título H1 da página — impacta SEO. Use palavras-chave.</div></div>
-          <div class="campo-edit"><label>Descrição do Hero</label><textarea id="home-descricao" rows="3" maxlength="200" placeholder="Cremosidade real, sabores que encantam..."></textarea><div class="hint">Max. 200 caracteres. Texto de apoio abaixo do título. Descreva o diferencial da sorveteria. Ex: Sorvete Tipo Artesanal, feito com leite fresco e ingredientes selecionados.</div></div>
+          <div class="campo-edit"><label>Descrição do Hero</label><textarea id="home-descricao" rows="3" maxlength="200" placeholder="Cremosidade real, sabores que encantam..."></textarea><div class="hint">Max. 200 caracteres. Texto de apoio abaixo do título. Descreva o diferencial da sorveteria. Ex: Sorvete tipo artesanal, feito com leite fresco e ingredientes selecionados.</div></div>
           <div class="campo-edit"><label>Botão principal - Ver Cardápio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardápio Completo"/><div class="hint">Max. 40 caracteres. Texto do botão verde que rola até o cardápio.</div></div>
           <div class="campo-edit"><label>Botão WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botão laranja do WhatsApp.</div></div>
           <div class="campo-edit"><label>Subtítulo do Hero</label>
-            <input type="text" id="home-subtitulo" maxlength="100" placeholder="35 sabores Tipo Artesanal — feitos com ingredientes selecionados"/>
+            <input type="text" id="home-subtitulo" maxlength="100" placeholder="35 sabores tipo artesanal — feitos com ingredientes selecionados"/>
             <div class="hint">Max. 100 caracteres. Linha de apoio abaixo do título principal.</div></div>
           <div class="campo-edit"><label>Frases rotativas do carrossel (uma por linha)</label><textarea id="home-frases" rows="10" placeholder="O sorvete mais cremoso de Cajuru, desde 2007!"></textarea><div class="hint">Cada linha é uma frase que aparece no carrossel de texto do hero</div></div>
 
@@ -709,10 +708,10 @@ body { overflow-x: hidden; }
 
           <!-- CAMPOS FASE FINAL - Campos Críticos da Página Inicial -->
           <div class="seção-título" style="margin-top:24px">⭐ Campos Críticos da Página Inicial</div>
-          <div class="campo-edit"><label>Hero H1 Principal</label><input type="text" id="index-hero-h1-principal" maxlength="120" placeholder="Sorvetes Tipo artesanais em Cajuru, picolés diferenciados e Açaí Natureon"/><div class="hint">Título H1 principal do hero. Max. 120 caracteres. Pode conter HTML (ex: &lt;span&gt;). Este é o título principal da página inicial e impacta fortemente no SEO.</div></div>
-          <div class="campo-edit"><label>Hero Descrição Principal</label><textarea id="index-hero-descricao-principal" rows="3" maxlength="250" placeholder="Do nosso balcão aqui em Cajuru para a sua casa: sorvete Tipo Artesanal, picolés diferenciados e o melhor açaí da região, com pedido rápido pelo WhatsApp."></textarea><div class="hint">Descrição principal do hero. Max. 250 caracteres. Aparece logo abaixo do H1 principal.</div></div>
-          <div class="campo-edit"><label>Strip Sensorial Texto</label><input type="text" id="index-strip-sensorial-texto" maxlength="150" placeholder="🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · Tipo Artesanal · 🍦"/><div class="hint">Texto da faixa animada horizontal (strip sensorial). Max. 150 caracteres. Use · para separar palavras.</div></div>
-          <div class="campo-edit"><label>Cardápio H2 Título</label><input type="text" id="index-cardapio-h2-titulo" maxlength="120" placeholder="🍦 Cardápio Itapolitana: sorvetes Tipo artesanais, picolés diferenciados e Açaí Natureon em Cajuru"/><div class="hint">Título H2 da seção do cardápio. Max. 120 caracteres. Importante para SEO e estrutura da página.</div></div>
+          <div class="campo-edit"><label>Hero H1 Principal</label><input type="text" id="index-hero-h1-principal" maxlength="120" placeholder="Sorvetes tipo artesanais em Cajuru, picolés diferenciados e Açaí Natureon"/><div class="hint">Título H1 principal do hero. Max. 120 caracteres. Pode conter HTML (ex: &lt;span&gt;). Este é o título principal da página inicial e impacta fortemente no SEO.</div></div>
+          <div class="campo-edit"><label>Hero Descrição Principal</label><textarea id="index-hero-descricao-principal" rows="3" maxlength="250" placeholder="Do nosso balcão aqui em Cajuru para a sua casa: sorvete tipo artesanal, picolés diferenciados e o melhor açaí da região, com pedido rápido pelo WhatsApp."></textarea><div class="hint">Descrição principal do hero. Max. 250 caracteres. Aparece logo abaixo do H1 principal.</div></div>
+          <div class="campo-edit"><label>Strip Sensorial Texto</label><input type="text" id="index-strip-sensorial-texto" maxlength="150" placeholder="🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · tipo artesanal · 🍦"/><div class="hint">Texto da faixa animada horizontal (strip sensorial). Max. 150 caracteres. Use · para separar palavras.</div></div>
+          <div class="campo-edit"><label>Cardápio H2 Título</label><input type="text" id="index-cardapio-h2-titulo" maxlength="120" placeholder="🍦 Cardápio Itapolitana: sorvetes tipo artesanais, picolés diferenciados e Açaí Natureon em Cajuru"/><div class="hint">Título H2 da seção do cardápio. Max. 120 caracteres. Importante para SEO e estrutura da página.</div></div>
           <div class="campo-edit"><label>Hero Badge Açaí</label><input type="text" id="index-hero-badge-acai" maxlength="80" placeholder="🍇 O melhor açaí de Cajuru — Natureon!"/><div class="hint">Badge do açaí Natureon no hero. Max. 80 caracteres. Destaca o diferencial do açaí na seção hero.</div></div>
           <div class="campo-edit"><label>Horário Status Texto</label><input type="text" id="index-horario-status-texto" maxlength="60" placeholder="Aberto agora · Fecha às 22h"/><div class="hint">Texto do status de horário exibido na página. Max. 60 caracteres. Ex: "Aberto agora · Fecha às 22h" ou "Fechado · Abre às 10h".</div></div>
           <div class="campo-edit"><label>Quem Somos Título</label><input type="text" id="index-quem-somos-titulo" maxlength="40" placeholder="Quem somos"/><div class="hint">Título da seção "Quem Somos" na página inicial. Max. 40 caracteres.</div></div>
@@ -769,6 +768,7 @@ body { overflow-x: hidden; }
           <div class="seção-título" style="margin-top:20px">⚡ Botões de Ação da Página</div>
           <div class="campo-edit"><label>Texto botão "Participar"</label><input type="text" id="promocao-btn-participar" maxlength="50" placeholder="🎁 Quero Participar do Sorteio"/><div class="hint">Botão principal para participar do sorteio.</div></div>
           <div class="campo-edit"><label>Texto botão "Cardápio"</label><input type="text" id="promocao-btn-cardapio" maxlength="50" placeholder="🍦 Ver Cardápio"/><div class="hint">Botão para visualizar o cardápio completo.</div></div>
+          <div class="campo-edit"><label>Texto botão "Fidelidade"</label><input type="text" id="promocao-btn-fidelidade" maxlength="50" placeholder="⭐ Fidelidade"/><div class="hint">Botão para acessar o programa de fidelidade.</div></div>
 
           <!-- NOVOS CAMPOS FASE 3.2 - Banner e SEO -->
           <div class="seção-título" style="margin-top:20px">📣 Banner Superior</div>
@@ -819,7 +819,7 @@ body { overflow-x: hidden; }
           <div class="seção-título">&#x1F4CD; Configuração do Sorteio</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="campo-edit"><label>Data do próximo sorteio</label><input type="date" id="sort-data-prox"/><div class="hint">Data em que ocorrerá o próximo sorteio. Aparece no site para os participantes.</div></div>
-            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" maxlength="100" placeholder="1 caixa de 5 litros de sorvete Tipo Artesanal"/><div class="hint">Max. 100 caracteres. Descreva o prêmio claramente. Ex: 1 caixa de 5 litros de sorvete.</div></div>
+            <div class="campo-edit"><label>Prêmio do sorteio</label><input type="text" id="sort-premio" maxlength="100" placeholder="1 caixa de 5 litros de sorvete tipo artesanal"/><div class="hint">Max. 100 caracteres. Descreva o prêmio claramente. Ex: 1 caixa de 5 litros de sorvete.</div></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="campo-edit"><label>Status do sorteio</label>
@@ -849,16 +849,7 @@ body { overflow-x: hidden; }
         </div>
         <div class="card-body">
           <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.85rem;color:#1b5e20">
-            📋 <strong>Lista permanente:</strong> quem se inscrever permanece no admin até exclusão manual. Cadastros são organizados por <strong>lote mensal numerado</strong>.
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">
-            <div style="min-width:180px;flex:1">
-              <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Lote mensal (AAAA-MM)</label>
-              <select id="sort-lote-mes-select" style="width:100%;padding:8px 12px;border:2px solid #a5d6a7;border-radius:8px;font-size:.87rem">
-                <option value="">Selecione um lote mensal…</option>
-              </select>
-            </div>
-            <button class="btn btn-vermelho" style="white-space:nowrap" onclick="deletarLoteMensalSorteio()">🗑️ Excluir lote do mês</button>
+            📋 <strong>Lista permanente:</strong> quem se inscrever participa de <em>todos</em> os sorteios mensais até o encerramento (<span id="sort-datafim-exib">02/01/2027</span>). A lista <strong>não é zerada</strong> a cada mês.
           </div>
           <!-- Filtro + busca -->
           <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
@@ -875,13 +866,12 @@ body { overflow-x: hidden; }
                   <th style="min-width:160px">Nome</th>
                   <th style="min-width:100px">Data Nasc.</th>
                   <th style="min-width:120px">Telefone</th>
-                  <th style="min-width:140px">Lote mensal</th>
                   <th style="min-width:130px">Cadastrado em</th>
                   <th style="min-width:100px">Ações</th>
                 </tr>
               </thead>
               <tbody id="sort-inscritos-tbody">
-                <tr><td colspan="7" style="text-align:center;color:#888;font-style:italic">Clique em &#x1F504; Atualizar para carregar a lista.</td></tr>
+                <tr><td colspan="6" style="text-align:center;color:#888;font-style:italic">Clique em &#x1F504; Atualizar para carregar a lista.</td></tr>
               </tbody>
             </table>
           </div>
@@ -1031,7 +1021,7 @@ body { overflow-x: hidden; }
           <div class="campo-edit"><label>Título</label><input type="text" id="acc-açaí-promo-titulo" maxlength="60" placeholder="🔥 Açaí em Promoção"/></div>
           <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-açaí-promo-sub" maxlength="100" placeholder="Aproveite agora! 8 combos irresistíveis · 400ml a 700ml"/></div>
 
-          <div class="seção-título" style="background:linear-gradient(135deg,#311B92,#512DA8,#7C4DFF);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🫐 Açaí Tipo Artesanal</div>
+          <div class="seção-título" style="background:linear-gradient(135deg,#311B92,#512DA8,#7C4DFF);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🫐 Açaí tipo artesanal</div>
           <div class="campo-edit"><label>Título</label><input type="text" id="acc-açaí-titulo" maxlength="60" placeholder="Açaí Natureon"/></div>
           <div class="campo-edit"><label>Subtítulo</label><input type="text" id="acc-açaí-sub" maxlength="100" placeholder="O melhor açaí da região · Cremoso, gelado e com muitos complementos"/></div>
 
@@ -1121,7 +1111,7 @@ body { overflow-x: hidden; }
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()">➕ Nova Encomenda</button><button class="btn btn-azul" onclick="sincronizarEncomendasNuvem()" id="btn-sync-encomendas">☁️ Sincronizar Nuvem</button><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div></div>
+        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()">➕ Nova Encomenda</button><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div></div>
         <div class="card-body">
           <div class="busca-wrap" style="margin-bottom:10px"><input type="search" id="busca-encomenda" placeholder="Buscar por nº pedido, nome ou telefone..." oninput="renderEncomendas()"/></div>
           <div class="filtros">
@@ -1173,15 +1163,25 @@ body { overflow-x: hidden; }
           </div>
           <div class="campo-edit">
             <label>Descrição do Hero</label>
-            <textarea id="enc-hero-desc" rows="3" maxlength="240" placeholder="Sorvete Tipo Artesanal em caixa, tortas geladas..."></textarea>
+            <textarea id="enc-hero-desc" rows="3" maxlength="240" placeholder="Sorvete tipo artesanal em caixa, tortas geladas..."></textarea>
           </div>
           <div class="campo-edit">
             <label>Badges do Hero (um por linha)</label>
-            <textarea id="enc-hero-badges" rows="5" placeholder="✨ Tipo Artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
+            <textarea id="enc-hero-badges" rows="5" placeholder="✨ tipo artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
           </div>
-          
+          <div class="seção-título">🔗 CTAs da Fidelidade</div>
+          <div class="campo-edit">
+            <label>URL "Ver regras completas" (Fidelidade)</label>
+            <input type="url" id="cfg-fid-regras-url" placeholder="https://itapolitanacajuru.com.br/#secao-regras-fid-completas"/>
+          </div>
+          <div class="campo-edit">
+            <label>URL "Resgatar prêmio via WhatsApp" (Fidelidade)</label>
+            <input type="url" id="cfg-fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/>
+          </div>
           <div class="seção-título">🔎 SEO por Página</div>
-          
+          <div class="campo-edit"><label>Fidelidade · Title</label><input type="text" id="cfg-seo-fid-titulo" maxlength="80" placeholder=" | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Fidelidade · Meta Description</label><textarea id="cfg-seo-fid-descricao" rows="2" maxlength="180" placeholder="Acumule pontos..."></textarea></div>
+          <div class="campo-edit"><label>Fidelidade · Keywords</label><input type="text" id="cfg-seo-fid-palavras" maxlength="220" placeholder="fidelidade cajuru, clube de pontos"/></div>
           <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
           <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
@@ -2063,7 +2063,9 @@ Talento</textarea>
     <div class="seção" id="sec-participantes">
       <div class="stats-row">
         <div class="stat-card"><div class="num" id="part-total">-</div><div class="txt">Total Geral</div></div>
+        <div class="stat-card"><div class="num" id="part-fidelidade" style="color:#e8650a">-</div><div class="txt">Clube Fidelidade</div></div>
         <div class="stat-card"><div class="num" id="part-sorteio" style="color:#2e7d32">-</div><div class="txt">Sorteios Mensais</div></div>
+        <div class="stat-card"><div class="num" id="part-ambos" style="color:#7b1fa2">-</div><div class="txt">Ambos</div></div>
       </div>
       <div class="card" style="border-top:4px solid #2e7d32;margin-bottom:12px">
         <div class="card-body" style="padding:14px 20px">
@@ -2075,7 +2077,7 @@ Talento</textarea>
             <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV (Excel)</button>
           </div>
           <div style="font-size:.75rem;color:#888;margin-top:8px">
-            • <strong>Copiar Todos os Dados</strong>: formato completo com nº, nome, WhatsApp e data de cadastro<br>
+            • <strong>Copiar Todos os Dados</strong>: formato completo com nº, nome, WhatsApp, data, tipo, pontos e status<br>
             • <strong>Copiar Só Sorteio</strong>: apenas inscritos no sorteio mensal, numerados sequencialmente para sortear<br>
             • <strong>Exportar CSV</strong>: planilha para Excel/Google Sheets com todos os campos
           </div>
@@ -2105,19 +2107,23 @@ Talento</textarea>
                 <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Celular (WhatsApp)</label>
                 <input type="tel" id="add-part-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
               </div>
-              <div style="flex:1;min-width:160px">
-                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Data de nascimento</label>
-                <input type="date" id="add-part-nasc" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
+              <div style="flex:1;min-width:140px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Tipo de cadastro</label>
+                <select id="add-part-tipo" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box">
+                  <option value="sorteio">🎁 Sorteio Mensal</option>
+                  <option value="fidelidade">🎟️ Clube Fidelidade</option>
+                </select>
               </div>
-              <input type="hidden" id="add-part-tipo" value="sorteio"/>
               <button class="btn btn-verde" onclick="adicionarParticipanteManual()" style="padding:10px 18px;white-space:nowrap">➕ Adicionar</button>
             </div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
             <input type="search" id="busca-participante" placeholder="🔍 Buscar por nome ou celular..." oninput="renderParticipantes()" style="flex:2;min-width:180px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
             <select id="filtro-tipo-part" onchange="renderParticipantes()" style="flex:1;min-width:140px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem">
-              <option value="">Todos os cadastros</option>
+              <option value="">Todos os tipos</option>
+              <option value="fidelidade">🎟️ </option>
               <option value="sorteio">🎁 Sorteios Mensais</option>
+              <option value="ambos">⭐ Ambos</option>
             </select>
           </div>
           <div class="tabela-wrap">
@@ -2189,6 +2195,194 @@ Talento</textarea>
       </div>
     </div>
 
+    <!--  -->
+    <div class="seção" id="sec-fidelidade">
+      <div id="fid-readonly-aviso" class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
+        ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
+      </div>
+      <div class="btn-row" style="margin-bottom:10px">
+        <button class="btn btn-cinza" id="btn-refresh-fidelidade" onclick="atualizarListaFidelidade()">🔄 Atualizar Lista</button>
+      </div>
+      <div class="códigos-stats">
+        <div class="cod-stat"><div class="cn" id="fid-total">-</div><div class="ct">Total Códigos</div></div>
+        <div class="cod-stat"><div class="cn" id="fid-disponíveis" style="color:#2e7d32">-</div><div class="ct">Disponíveis</div></div>
+        <div class="cod-stat"><div class="cn" id="fid-usados" style="color:#c62828">-</div><div class="ct">Usados</div></div>
+        <div class="cod-stat"><div class="cn" id="fid-liberados" style="color:#1565c0">-</div><div class="ct">Liberados</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>&#x1F3C6; Configuração dos Prêmios</h2></div>
+        <div class="card-body">
+          <div class="seção-título">&#x1F964; Prêmio 1 - Milkshake</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Nome do Prêmio</label><input type="text" id="fid-prêmio-milk-nome" placeholder="Milkshake 300ml"/></div>
+            <div class="campo-edit"><label>Pontos necessários</label><input type="number" id="fid-pts-milk" min="1" max="100" placeholder="10"/></div>
+          </div>
+          <div class="seção-título">&#x1F366; Prêmio 2 - Caixa de Sorvete</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Nome do Prêmio</label><input type="text" id="fid-prêmio-caixa-nome" placeholder="Caixa 7 Bolas"/></div>
+            <div class="campo-edit"><label>Pontos necessários</label><input type="number" id="fid-pts-caixa" min="1" max="100" placeholder="30"/></div>
+          </div>
+          <div class="campo-edit"><label>Título da página Fidelidade</label><input type="text" id="fid-título" placeholder="Programa de Fidelidade"/></div>
+          <div class="campo-edit"><label>Descrição da página Fidelidade</label><input type="text" id="fid-descrição" placeholder="Acumule pontos e ganhe prêmios incríveis!"/></div>
+          <div class="campo-edit"><label>Passos "Como funciona" (um por linha)</label><textarea id="fid-como-funciona-lista" rows="4" placeholder="Faça seu cadastro...&#10;A cada compra...&#10;Junte pontos..."></textarea></div>
+          <div class="campo-edit"><label>Regras resumidas (uma por linha)</label><textarea id="fid-regras-resumo-lista" rows="5" placeholder="Cadastre-se com dados reais...&#10;Cada código válido soma 1 ponto..."></textarea></div>
+
+          <div class="seção-título">📝 Textos da Página Fidelidade</div>
+          <div class="campo-edit"><label>Título "Como funciona"</label><input type="text" id="fidelidade-como-funciona-titulo" maxlength="100" placeholder="Como funciona"/><div class="hint">H2 da seção Como Funciona.</div></div>
+          <div class="campo-edit"><label>Título seção "Quero participar"</label><input type="text" id="fidelidade-acao-titulo" maxlength="120" placeholder="Quero participar do "/><div class="hint">H2 da seção de ações principais.</div></div>
+          <div class="campo-edit"><label>Botão "Quero participar"</label><input type="text" id="fidelidade-btn-cadastro" maxlength="120" placeholder="Quero participar do "/><div class="hint">Texto do botão de cadastro.</div></div>
+          <div class="campo-edit"><label>Botão "Já sou cadastrado"</label><input type="text" id="fidelidade-btn-login" maxlength="120" placeholder="Já sou cadastrado / Digitar código"/><div class="hint">Texto do botão de login.</div></div>
+          <div class="campo-edit"><label>Título "Regras do Clube"</label><input type="text" id="fidelidade-regras-titulo" maxlength="100" placeholder="Regras do "/><div class="hint">H2 da seção de cadastro/regras.</div></div>
+          <div class="campo-edit"><label>Botão "Li e aceito"</label><input type="text" id="fidelidade-btn-aceitar-regras" maxlength="120" placeholder="Li e aceito as regras do "/><div class="hint">Texto do botão de aceitação de regras.</div></div>
+          <div class="campo-edit"><label>Título "Regras completas"</label><input type="text" id="fidelidade-regulamento-titulo" maxlength="100" placeholder="Regras completas do programa"/><div class="hint">H2 da seção de regras completas.</div></div>
+          <div class="campo-edit"><label>Summary "Ler regulamento"</label><input type="text" id="fidelidade-regulamento-summary" maxlength="120" placeholder="📜 Ler regulamento completo do "/><div class="hint">Texto do summary do details de regulamento.</div></div>
+
+          <div class="seção-título">🔎 SEO da Página Fidelidade</div>
+          <div class="campo-edit"><label>Título SEO (&lt;title&gt;)</label><input type="text" id="cfg-seo-fidelidade-titulo" maxlength="80" placeholder=" | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador.</div></div>
+          <div class="campo-edit"><label>Meta Description</label><textarea id="cfg-seo-fidelidade-descricao" rows="2" maxlength="160" placeholder="Acumule pontos por código nos cupons da Itapolitana Cajuru e troque por prêmios. Cadastre-se no ."></textarea><div class="hint">Descrição SEO (máx. 160 caracteres).</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidelidadePagina()">💾 Salvar Textos da Página Fidelidade</button></div>
+
+          <div class="seção-título">🔗 CTAs da Fidelidade</div>
+          <div class="campo-edit"><label>URL "Ver regras completas"</label><input type="url" id="fid-regras-url" placeholder="https://itapolitanacajuru.com.br/#secao-regras-fid-completas"/></div>
+          <div class="campo-edit"><label>URL "Resgatar prêmio via WhatsApp"</label><input type="url" id="fid-resgate-url" placeholder="https://wa.me/5516996062046?text=Quero%20resgatar%20meu%20pr%C3%AAmio"/></div>
+          <div class="seção-título">🔎 SEO por Página</div>
+          <div class="campo-edit"><label>Fidelidade · Title</label><input type="text" id="fid-seo-titulo" maxlength="80" placeholder=" | Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Fidelidade · Meta Description</label><textarea id="fid-seo-descricao" rows="2" maxlength="180" placeholder="Acumule pontos e resgate prêmios no  da Itapolitana em Cajuru."></textarea></div>
+          <div class="campo-edit"><label>Fidelidade · Keywords</label><input type="text" id="fid-seo-palavras" maxlength="220" placeholder="fidelidade cajuru, clube de pontos, sorveteria itapolitana"/></div>
+          <div class="btn-row"><button class="btn btn-salvar" data-fid-write onclick="salvarConfigFidelidade()">&#x1F4BE; Salvar Configuração dos Prêmios</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>&#x1F3AB; Gerador de Lotes de Códigos</h2></div>
+        <div class="card-body">
+          <div class="fid-info-box">
+            Banco total: <strong>1.000.000 códigos únicos e indecifráveis</strong>.<br>
+            Cada clique em <strong>“Liberar 100 Códigos”</strong> gera o próximo lote e salva automaticamente no GitHub.<br>
+            O contador avança: <strong>100/1.000.000 → 200/1.000.000 → 300/1.000.000...</strong><br>
+            Apenas códigos liberados são aceitos pelos clientes — sem impressão = sem validade.
+          </div>
+          <div class="fid-progresso-wrap">
+            <div class="fid-progresso-titulo">Progresso do Banco de Códigos</div>
+            <div class="fid-progresso-barra-bg"><div class="fid-progresso-barra" id="fid-prog-barra" style="width:0%"></div></div>
+            <div class="fid-progresso-texto" id="fid-prog-texto">0 / 1.000.000 códigos liberados</div>
+          </div>
+          <div class="btn-row" style="margin-top:14px">
+            <button class="btn btn-laranja" data-fid-write onclick="liberarLoteFidelidade()" id="btn-liberar-lote">&#x1F3B2; Liberar 100 Códigos</button>
+            <button class="btn btn-vermelho" data-fid-write onclick="apagarTodosCodigos()">&#x1F5D1;&#xFE0F; Apagar Todos</button>
+          </div>
+          <div class="fid-alerta" id="fid-alerta-lote"></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn btn-laranja" onclick="gerarPdfEtiquetasFidelidade()">&#x1F4C4; Gerar PDF de Etiquetas (10/A4 · 92,5&times;51,4 mm)</button>
+          </div>
+          <div id="fid-lote-wrap" style="display:none;margin-top:16px">
+            <div class="fid-lote-info" id="fid-lote-info"></div>
+            <div class="fid-codigos-grid" id="fid-codigos-grid"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>&#x1F3AB; Todos os Códigos</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="fid-filtro-status" onchange="renderCódigos()">
+              <option value="">Todos</option>
+              <option value="disponível">Disponíveis</option>
+              <option value="usado">Usados</option>
+            </select>
+            <button class="btn btn-cinza" onclick="copiarCódigosDisponíveis()">&#x1F4CB; Copiar Disponíveis</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="códigos-lista" id="códigos-lista"><p style="color:#999;text-align:center;padding:20px">Carregando códigos...</p></div>
+          <div style="padding:12px 16px;font-size:.78rem;color:#888" id="fid-pag-info"></div>
+        </div>
+      </div>
+
+      <!-- REGULAMENTO DO CLUBE DE  -->
+      <div class="card" style="border-left:4px solid #e65100">
+        <div class="card-header"><h2>&#x1F4DC; Regulamento — </h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:8px">Este texto é exibido no site antes do formulário de cadastro do . O cliente precisa aceitar para prosseguir.</div>
+          <div style="background:#fff8f0;border:1.5px solid #ffcc80;border-radius:8px;padding:12px;font-size:.78rem;color:#333;line-height:1.7;max-height:200px;overflow-y:auto">
+            <strong>Versão atual ativa no site:</strong><br>
+            1. Do Programa — Cada cupom vale R$10 em compras e confere 0,5 ponto<br>
+            2. Da Participação — Cadastro obrigatório com dados verdadeiros<br>
+            3. Dos Cupons — Cada código válido = +0,5 ponto<br>
+            4. Dos Prêmios — 10pts Milkshake / 30pts Caixa 7 Bolas<br>
+            5. Das Proibições — Fraude = cancelamento permanente<br>
+            6. Das Alterações — Sorveteria pode alterar a qualquer momento<br>
+            7. Do Foro — Comarca de Cajuru — SP
+          </div>
+        </div>
+      </div>
+
+      <!-- GERENCIAMENTO DE SORTEIOS -->
+      <div class="card" style="border-left:4px solid #9c27b0">
+        <div class="card-header"><h2>🎁 Gerenciamento de Sorteios</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:12px">Configure sorteios mensais para engajar clientes cadastrados no programa de fidelidade.</div>
+
+          <div class="seção-título">🎯 Sorteio Atual</div>
+          <div class="campo-edit"><label>Status do Sorteio</label>
+            <select id="sorteio-status">
+              <option value="ativo">🟢 Ativo</option>
+              <option value="pausado">🟡 Pausado</option>
+              <option value="encerrado">🔴 Encerrado</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Data Próximo Sorteio</label><input type="date" id="sorteio-data-prox"/></div>
+            <div class="campo-edit"><label>Data Fim Inscrições</label><input type="date" id="sorteio-data-fim"/></div>
+          </div>
+          <div class="campo-edit"><label>Prêmio do Sorteio</label><input type="text" id="sorteio-premio" placeholder="Ex: 1 caixa de 5 litros de sorvete tipo artesanal" maxlength="200"/></div>
+          <div class="campo-edit"><label>Vencedor (deixe vazio se ainda não foi sorteado)</label><input type="text" id="sorteio-vencedor" placeholder="Nome do vencedor"/></div>
+          <div class="campo-edit"><label>Observações</label><textarea id="sorteio-obs" rows="3" placeholder="Observações sobre o sorteio atual"></textarea></div>
+
+          <div class="seção-título">📊 Estatísticas do Sorteio</div>
+          <div class="stats-row">
+            <div class="stat-card"><div class="num" id="sorteio-inscritos">-</div><div class="txt">Inscritos</div></div>
+            <div class="stat-card"><div class="num" id="sorteio-dias-restantes">-</div><div class="txt">Dias Restantes</div></div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" data-fid-write onclick="salvarConfigSorteio()">💾 Salvar Configuração do Sorteio</button>
+            <button class="btn btn-cinza" onclick="copiarSorteio()">🎲 Copiar Lista de Inscritos para Sorteio</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGRAS DE PONTUAÇÃO -->
+      <div class="card" style="border-left:4px solid #1976d2">
+        <div class="card-header"><h2>⚙️ Regras de Pontuação</h2></div>
+        <div class="card-body">
+          <div class="hint" style="margin-bottom:12px">Configure o valor de cada cupom e quantos pontos ele confere ao cliente.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit">
+              <label>Pontos por Cupom/Código</label>
+              <input type="number" id="pontos-por-codigo" step="0.1" min="0.1" max="10" placeholder="0.5"/>
+              <div class="hint">Quantos pontos cada código/cupom vale (ex: 0.5)</div>
+            </div>
+            <div class="campo-edit">
+              <label>Valor Monetário por Cupom (R$)</label>
+              <input type="number" id="valor-por-codigo" step="1" min="1" max="100" placeholder="10"/>
+              <div class="hint">Quanto cada cupom representa em compras (ex: R$ 10,00)</div>
+            </div>
+          </div>
+
+          <div class="campo-edit">
+            <label>Descrição da Regra (exibida para o cliente)</label>
+            <input type="text" id="descricao-regra-pontos" maxlength="200" placeholder="Cada cupom representa R$10 em compras e confere 0,5 ponto ao cadastrar"/>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-salvar" data-fid-write onclick="salvarRegrasPontuacao()">💾 Salvar Regras de Pontuação</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
     <!-- CONFIG -->
 
     <!-- QUALIDADE -->
@@ -2305,6 +2499,7 @@ Talento</textarea>
             <a href="https://itapolitanacajuru.com.br/" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
               <div style="font-size:24px">⭐</div>
               <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Fidelidade</div>
                 <div style="font-size:11px;color:#5c6bc0">/</div>
                 <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
                   <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 91</span>
@@ -2385,8 +2580,8 @@ Talento</textarea>
             &#x1F4CC; <strong>O que é SEO?</strong> São os textos que aparecem no Google quando alguém pesquisa sua sorveteria. Preencher corretamente aumenta as visitas ao site.
           </div>
           <div class="campo-edit"><label class="label-obrigatório">Título da página (aparece na aba do navegador e no Google)</label><input type="text" id="cfg-seo-titulo" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés"/><div class="hint">&#x26A0;&#xFE0F; Máximo 60 caracteres. Inclua o nome da cidade. Exemplo: <em>Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés</em></div></div>
-          <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete Tipo Artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
-          <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete Tipo Artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
+          <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete tipo artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
+          <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete tipo artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
           <div class="seção-título">🧭 Dashboard do Admin — Atalhos Editáveis</div>
           <div class="campo-edit"><label>Botão rápido 🔍 Rastreio — texto</label><input type="text" id="cfg-dash-rastreio-texto" maxlength="30" placeholder="Rastreio"/></div>
           <div class="campo-edit"><label>Botão rápido 🔎 Auditoria — texto</label><input type="text" id="cfg-dash-auditoria-texto" maxlength="30" placeholder="Auditoria"/></div>
@@ -2396,6 +2591,14 @@ Talento</textarea>
           <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — URL</label><input type="text" id="cfg-dash-galeria-url" maxlength="120" placeholder="galeria.html"/></div>
           <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
           <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
+          <div class="seção-título">🎟️ Página de Fidelidade — Hero Banner</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>fid-hero-titulo</code> e <code>fid-hero-desc</code> (). Alterar aqui muda o banner da página de fidelidade imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Título do Hero Fidelidade (ID: fid-hero-titulo)</label><input type="text" id="cfg-fid-hero-titulo" maxlength="80" placeholder="🎟️  Itapolitana"/><div class="hint">Título principal do banner da página de fidelidade. Max. 80 caracteres.</div></div>
+          <div class="campo-edit"><label>Descrição do Hero Fidelidade (ID: fid-hero-desc)</label><textarea id="cfg-fid-hero-desc" rows="2" maxlength="160" placeholder="Acumule pontos a cada compra e ganhe prêmios exclusivos na Sorveteria Itapolitana de Cajuru."></textarea><div class="hint">Descrição abaixo do título no banner de fidelidade. Max. 160 caracteres.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarFidHero()">&#x1F4BE; Salvar Hero Fidelidade</button></div>
+
           <div class="seção-título">&#x1F512; Segurança</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
@@ -2411,17 +2614,17 @@ Talento</textarea>
 
           <div class="seção-título">🍨 Sorvetes de Massa</div>
           <div class="hint" style="margin-bottom:12px">Cada linha = 1 sabor. Separe com Enter. Ordem de exibição = ordem das linhas.</div>
-          <div class="campo-edit"><label>Lista de sabores (um por linha)</label><textarea id="card-sorvetes-sabores" rows="12" placeholder="Chocolate&#10;Leite Ninho&#10;Morango Trufado&#10;Ferrero Rocher&#10;Pistache&#10;Kinder Ovo"></textarea></div>
+          <div class="campo-edit"><label>Lista de sabores (um por linha)</label><textarea id="card-sorvetes-sabores" rows="12" placeholder="Chocolate&#10;Morango&#10;Baunilha&#10;Creme&#10;Flocos&#10;Napolitano"></textarea></div>
           <div class="campo-edit"><label>Texto do botão "Ver Sabores"</label><input type="text" id="card-sorvetes-btn" maxlength="30" placeholder="🍦 Ver 35 Sabores"/></div>
           <div class="campo-edit"><label>Descrição curta da categoria</label><input type="text" id="card-sorvetes-desc" maxlength="80" placeholder="Cremoso, gelado, irresistível · 35 sabores pra você escolher"/></div>
 
           <div class="seção-título" style="margin-top:20px">🧊 Picolés</div>
-          <div class="campo-edit"><label>Picolés de Fruta/Água (um por linha)</label><textarea id="card-picoles-fruta" rows="6" placeholder="Abacaxi&#10;Caju&#10;Goiaba&#10;Groselha&#10;Limão&#10;Melância&#10;Uva&#10;Tamarindo"></textarea></div>
-          <div class="campo-edit"><label>Picolés de Leite (um por linha)</label><textarea id="card-picoles-leite" rows="4" placeholder="Coco Queimado&#10;Milho Verde&#10;Amendoim&#10;Pistache"></textarea></div>
-          <div class="campo-edit"><label>Picolés Recheados (um por linha)</label><textarea id="card-picoles-recheado" rows="4" placeholder="Açaí&#10;Blue Ice&#10;Caraxi&#10;Chocolate&#10;Amarena&#10;Leite Condensado"></textarea></div>
-          <div class="campo-edit"><label>Picolés Ninho (um por linha)</label><textarea id="card-picoles-ninho" rows="3" placeholder="Leite Ninho"></textarea></div>
+          <div class="campo-edit"><label>Picolés de Fruta/Água (um por linha)</label><textarea id="card-picoles-fruta" rows="6" placeholder="Limão&#10;Morango&#10;Maracujá&#10;Abacaxi&#10;Uva"></textarea></div>
+          <div class="campo-edit"><label>Picolés de Leite (um por linha)</label><textarea id="card-picoles-leite" rows="4" placeholder="Leite&#10;Coco&#10;Amendoim"></textarea></div>
+          <div class="campo-edit"><label>Picolés Recheados (um por linha)</label><textarea id="card-picoles-recheado" rows="4" placeholder="Morango com Chocolate&#10;Napolitano Recheado"></textarea></div>
+          <div class="campo-edit"><label>Picolés Ninho (um por linha)</label><textarea id="card-picoles-ninho" rows="3" placeholder="Ninho&#10;Ninho com Morango"></textarea></div>
           <div class="campo-edit"><label>Picolés Ovomaltine (um por linha)</label><textarea id="card-picoles-ovomaltine" rows="3" placeholder="Ovomaltine"></textarea></div>
-          <div class="campo-edit"><label>Picolés Esquimó (um por linha)</label><textarea id="card-picoles-esquimo" rows="3" placeholder="Bombom&#10;Nutella&#10;Ovomaltine&#10;Leite Ninho&#10;Nata&#10;Morango&#10;Brigadeiro&#10;Prestígio"></textarea></div>
+          <div class="campo-edit"><label>Picolés Esquimó (um por linha)</label><textarea id="card-picoles-esquimo" rows="3" placeholder="Esquimó Chocolate&#10;Esquimó Branco"></textarea></div>
           <div class="campo-edit"><label>Texto do botão "Ver Picolés"</label><input type="text" id="card-picoles-btn" maxlength="30" placeholder="🧊 Ver Sabores de Picolés"/></div>
 
           <div class="seção-título" style="margin-top:20px">🫐 Açaí em Promoção</div>
@@ -2557,9 +2760,17 @@ Talento</textarea>
           <div class="campo-edit"><label>Texto do botão flutuante Chat (ID: chat-fab-texto)</label><input type="text" id="fc-chat-fab" maxlength="30" placeholder="💬 Fale Conosco"/><div class="hint">Texto do botão verde fixo no canto inferior esquerdo.</div></div>
           <div class="campo-edit"><label>Título do Chat (ID: chat-hdr-titulo)</label><input type="text" id="fc-chat-hdr-titulo" maxlength="40" placeholder="💬 Fale Conosco"/><div class="hint">Título exibido no cabeçalho do chat.</div></div>
           <div class="campo-edit"><label>Subtexto do Chat (ID: chat-hdr-sub)</label><input type="text" id="fc-chat-hdr-sub" maxlength="60" placeholder="Assistente Itapolitana · Responde na hora"/><div class="hint">Linha de apoio no cabeçalho do chat.</div></div>
+          <div class="campo-edit"><label>Mensagem inicial do assistente (ID: chat-msg-inicio) — textarea estruturado</label><textarea id="fc-chat-inicio" rows="6" maxlength="1200" placeholder="Olá! 👋 Sou o Ita Bot, assistente da Sorveteria Itapolitana!&#10;&#10;Posso te ajudar com cardápio, promoções e fidelidade."></textarea><div class="hint">Aceita texto com quebras de linha e marcação rica segura (&lt;strong&gt;, &lt;em&gt;, &lt;br&gt;, &lt;a href&gt;).</div></div>
           <div class="campo-edit"><label>Sugestões rápidas — 6 botões (IDs: chat-sug-1 a chat-sug-6, um por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário&#10;Como encomendar&#10;Sabores&#10;Preços&#10;Localização&#10;Picolés"></textarea><div class="hint">Exatamente 6 linhas. Cada linha = 1 botão de sugestão no chat.</div></div>
           <div class="campo-edit"><label>Mensagem fora do horário do Chat (config.chatForaHorario)</label><input type="text" id="fc-chat-fora" maxlength="220" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar sobre atendimento/pedido fora do horário de funcionamento.</div></div>
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarChat()">&#x1F4BE; Salvar Chat</button></div>
+
+          <div class="seção-título" style="margin-top:20px">🍦 Botão  (FAB)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>ID no site:</strong> <code>clube-fab-texto</code>. Botão fixo no canto inferior direito que leva à página de fidelidade.
+          </div>
+          <div class="campo-edit"><label>Texto do botão Clube (ID: clube-fab-texto)</label><input type="text" id="fc-clube-fab" maxlength="30" placeholder="🍦 "/><div class="hint">Texto do botão laranja fixo no canto inferior direito.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarClubeFab()">&#x1F4BE; Salvar Botão Clube</button></div>
 
           <div class="seção-título" style="margin-top:20px">📢 Botão Promoção (FAB)</div>
           <div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
@@ -2601,7 +2812,7 @@ Talento</textarea>
 
           <div class="seção-título" style="margin-top:20px">📊 Estatísticas (Cards)</div>
           <div class="campo-edit"><label>Anos de Tradição</label><input type="text" id="sobre-stat-anos-trad" maxlength="10" placeholder="19+"/><div class="hint">Número exibido no card de anos de tradição.</div></div>
-          <div class="campo-edit"><label>Sabores Tipo Artesanais</label><input type="text" id="sobre-stat-sabores" maxlength="10" placeholder="35+"/><div class="hint">Número de sabores Tipo artesanais.</div></div>
+          <div class="campo-edit"><label>Sabores Tipo Artesanais</label><input type="text" id="sobre-stat-sabores" maxlength="10" placeholder="35+"/><div class="hint">Número de sabores tipo artesanais.</div></div>
           <div class="campo-edit"><label>Nota no Google</label><input type="text" id="sobre-stat-nota-google" maxlength="10" placeholder="4,8"/><div class="hint">Avaliação média no Google.</div></div>
           <div class="campo-edit"><label>Feito com Amor</label><input type="text" id="sobre-stat-amor" maxlength="10" placeholder="100%"/><div class="hint">Percentual de amor no produto.</div></div>
 
@@ -2646,64 +2857,6 @@ Talento</textarea>
     </div>
 
     <!-- ═══════════════ SEÇÃO GALERIA (Página galeria.html) ═══════ -->
-    <!-- CARROSSEL -->
-    <div class="seção" id="sec-carrossel-admin">
-      <div class="card">
-        <div class="card-header">
-          <h2>🎠 Carrossel de Banners</h2>
-          <a href="carrossel.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">&#x1F441;&#xFE0F; Ver Carrossel</a>
-        </div>
-        <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
-          📌 <strong>Como usar:</strong> Selecione uma foto (JPG, PNG ou WebP) → ela é convertida para WebP automaticamente → clique em <strong>Adicionar ao Carrossel</strong> → clique em <strong>Salvar Lista</strong>. Pronto! O carrossel se atualiza sozinho.
-        </div>
-        <div class="card-body">
-          <!-- UPLOAD NOVO BANNER -->
-          <div class="campo-edit">
-            <label>📷 Nova Imagem para o Carrossel</label>
-            <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
-              📐 <strong>Dimensões ideais:</strong> 1536 × 1024 px (proporção 3:2) — redimensionado automaticamente se maior<br>
-              💾 <strong>Tamanho máximo:</strong> 250 KB após conversão<br>
-              🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
-              ⚡ <strong>Conversão automática:</strong> toda imagem é convertida para WebP antes de salvar
-            </div>
-            <div class="upload-area" id="crs-banner-area" onclick="document.getElementById('crs-banner-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');processarUploadCarrosselDedicado(event.dataTransfer.files[0])">
-              <input type="file" accept="image/*" id="crs-banner-input" style="display:none" onchange="processarUploadCarrosselDedicado(this.files[0])"/>
-              <div class="upload-icon">📷</div>
-              <div class="upload-texto">Clique ou arraste a imagem aqui</div>
-              <div class="upload-regras">
-                <span>📐 1536×1024px</span>
-                <span>💾 Máx. 250KB</span>
-                <span>🖼️ JPG · PNG · WebP</span>
-                <span>⚡ → WebP automático</span>
-              </div>
-            </div>
-            <div class="img-preview-wrap" id="crs-banner-preview-wrap">
-              <img class="img-preview" id="crs-banner-preview" src="" alt="Preview banner"/>
-              <div class="img-preview-info" id="crs-banner-info"></div>
-            </div>
-            <div class="erro-inline" id="crs-banner-erro"></div>
-            <div class="campo-edit" style="margin-top:10px">
-              <label>Texto alternativo (alt) do banner</label>
-              <input type="text" id="crs-banner-alt" maxlength="120" placeholder="Ex: Taças Gourmet Açaí Natureon — Sorveteria Itapolitana Cajuru"/>
-              <div class="hint">Descreva o que aparece na foto. Importante para SEO e acessibilidade. Max. 120 caracteres.</div>
-            </div>
-            <div class="btn-row">
-              <button class="btn btn-salvar" onclick="adicionarBannerCarrosselDedicado()">➕ Adicionar ao Carrossel</button>
-            </div>
-          </div>
-
-          <!-- LISTA DE BANNERS -->
-          <div class="seção-título" style="margin-top:16px">📚 Banners Existentes — Ordem, Alt e Exclusão</div>
-          <div class="hint" style="margin-bottom:10px">Use ↑/↓ para reordenar, edite o ALT e clique em Salvar Lista.</div>
-          <div id="crs-banners-lista" style="display:grid;gap:10px">
-            <div style="padding:12px;border:1px dashed #cfd8dc;border-radius:10px;background:#fafafa;color:#546e7a;font-size:.82rem">Carregando lista de banners...</div>
-          </div>
-          <div class="btn-row" style="margin-top:12px">
-            <button class="btn btn-salvar" onclick="salvarBannersCarrosselDedicado()">💾 Salvar Lista de Banners</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="seção" id="sec-galeria">
       <div class="card">
         <div class="card-header"><h2>📸 Galeria — Configurações</h2><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar</button></div>
@@ -2719,7 +2872,7 @@ Talento</textarea>
 
 	          <div class="seção-título" style="margin-top:20px">📄 Conteúdo da Página</div>
 	          <div class="campo-edit"><label>H1 da Galeria</label><input type="text" id="galeria-h1" maxlength="120" placeholder="📸 Galeria – Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal exibido na página da galeria.</div></div>
-	          <div class="campo-edit"><label>Descrição</label><textarea id="galeria-descricao" rows="2" maxlength="200" placeholder="Sorvete Tipo Artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP."></textarea><div class="hint">Texto descritivo exibido abaixo do título da galeria.</div></div>
+	          <div class="campo-edit"><label>Descrição</label><textarea id="galeria-descricao" rows="2" maxlength="200" placeholder="Sorvete tipo artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP."></textarea><div class="hint">Texto descritivo exibido abaixo do título da galeria.</div></div>
 
 	          <div class="seção-título" style="margin-top:20px">🖼️ Imagens da Galeria</div>
 	          <div class="hint" style="margin-bottom:10px">Cada item = 1 imagem na grade. Preencha URL (relativa do repo ou https://), texto alternativo (alt) e um título curto.</div>
@@ -2746,8 +2899,8 @@ Talento</textarea>
 
           <div class="seção-título" style="margin-top:20px">🎯 Hero Banner</div>
           <div class="campo-edit"><label>Título Hero (permite HTML)</label><input type="text" id="encomendas-hero-titulo" maxlength="150" placeholder="🛒 Cardápio e Encomendas <span class=&quot;destaque&quot;>Itapolitana Cajuru</span>"/><div class="hint">Título principal do hero. Pode conter HTML para estilização (ex: &lt;span class="destaque"&gt;).</div></div>
-          <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Sorvete Tipo Artesanal em caixa, tortas geladas, picolés em atacado e acréscimos..."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
-          <div class="campo-edit"><label>Badges do Hero (um por linha)</label><textarea id="encomendas-hero-badges" rows="5" maxlength="300" placeholder="✨ Tipo Artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea><div class="hint">Badges exibidos abaixo do hero (uma linha = um badge).</div></div>
+          <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos..."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
+          <div class="campo-edit"><label>Badges do Hero (um por linha)</label><textarea id="encomendas-hero-badges" rows="5" maxlength="300" placeholder="✨ tipo artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea><div class="hint">Badges exibidos abaixo do hero (uma linha = um badge).</div></div>
 
           <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar Encomendas</button></div>
         </div>
@@ -2797,6 +2950,7 @@ Talento</textarea>
         <option value="">Todos módulos</option>
         <option value="clientes">Clientes</option>
         <option value="encomendas">Encomendas</option>
+        <option value="fidelidade">Fidelidade</option>
       </select>
       <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
         <option value="">Todas severidades</option>
@@ -8207,6 +8361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'configuracao': 'configuração', 'Configuracao': 'Configuração',
     'configuracoes': 'configurações', 'Configuracoes': 'Configurações',
     'encomenda': 'encomenda', // correto
+    'fidelidade': 'fidelidade', // correto
     'sorvete': 'sorvete', // correto
     'açaí': 'açaí', 'Açaí': 'Açaí',
     'picole': 'picolé', 'Picole': 'Picolé',
@@ -8299,6 +8454,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Interceptar funções de salvar para validar português
   const fnsSalvar = ['salvarHome', 'salvarPreços', 'salvarPromoção', 'salvarConfig',
+                     'salvarConfigFidelidade', 'salvarSabores', 'salvarEstoque'];
 
   fnsSalvar.forEach(nome => {
     const original = window[nome];
@@ -8336,7 +8492,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof origIrPara === 'function') {
     window.irPara = function(...args) {
       const r = origIrPara.apply(this, args);
-      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); if (window.itapValidacao) window.itapValidacao.init(); }, 300);
+      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); }, 300);
       return r;
     };
   }
@@ -8357,7 +8513,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof _origSalvarArquivo === 'function') {
     window.salvarArquivo = async function(...args) {
       const resultado = await _origSalvarArquivo.apply(this, args);
-      if (resultado) { marcarSalvo(); if (window.itapValidacao) window.itapValidacao.limparAlterados(); }
+      if (resultado) marcarSalvo();
       return resultado;
     };
   }
@@ -8945,6 +9101,8 @@ function preencherFaleConosco() {
   document.getElementById('fc-modal-sorvetes-sub').value = c.modalSaboresSub || 'Informe o sabor desejado ao fazer seu pedido na loja';
   document.getElementById('fc-modal-picole-titulo').value = c.modalPicoleTitulo || 'Sabores do Picolé';
   document.getElementById('fc-modal-açaí-titulo').value = c.modalAçaíTitulo || '🫐 Complementos do Açaí';
+  document.getElementById('fc-modal-açaí-sub').value = c.modalAçaíSub || 'Disponíveis para o Açaí Personalizado';
+}
 
 async function salvarFaleConosco() {
   const c = STATE.config;
@@ -8998,6 +9156,12 @@ async function salvarClubeFab() {
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
 }
 
+// Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
+async function salvarModaisCardapio() {
+  const c = STATE.config;
+  c.modalSaboresTitulo = document.getElementById('fc-modal-sorvetes-titulo').value.trim();
+  c.modalSaboresSub = document.getElementById('fc-modal-sorvetes-sub').value.trim();
+  c.modalPicoleTitulo = document.getElementById('fc-modal-picole-titulo').value.trim();
   c.modalAçaíTitulo = document.getElementById('fc-modal-açaí-titulo').value.trim();
   c.modalAçaíSub = document.getElementById('fc-modal-açaí-sub').value.trim();
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
@@ -9064,6 +9228,7 @@ function excluirEncomenda(numPedido) {
 // ═══════════════════════════════════════════════════════════
 function excluirCliente(clienteId) {
   if(!fidRequireWrite())return;
+  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const c = clientes[clienteId];
   if (!c) return;
   confirmarAcao(
@@ -9078,6 +9243,8 @@ function excluirCliente(clienteId) {
         if (STATE.clientes.indice_celular && c.cel) delete STATE.clientes.indice_celular[c.cel];
         ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       } else {
+        delete STATE.fidelidade.clientes[clienteId];
+        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       }
       if (ok) { toast('Cliente ' + (c.nome || clienteId) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
     }
@@ -9087,12 +9254,14 @@ function excluirCliente(clienteId) {
 // Substituir confirm() nativo por confirmarAcao() em todas as exclusoes existentes
 // Inscrito do sorteio
 function removerInscritoSorteioComConfirm(idx) {
+  const ins = STATE.fidelidade?.sorteioInscritos?.[idx];
   if (!ins) return;
   confirmarAcao(
     'Remover Inscrito',
     `Remover <strong>${ins.nome || 'inscrito'}</strong> do sorteio?`,
     'Sim, remover',
     () => {
+      STATE.fidelidade.sorteioInscritos.splice(idx, 1);
       salvarSorteio();
     },
     'aviso'
@@ -9719,6 +9888,8 @@ function excluirCodigo(cod) {
     async () => {
       const fidData=fidEnsureCodigos();
       delete fidData.codigos[cod];
+      STATE.fidelidade.liberados = Object.keys(fidData.codigos).length;
+      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir código ' + cod);
       if (ok) { toast('Código excluído.','ok'); renderCódigos(); atualizarStatsCódigos(); fidRenderProgresso(); }
     }
   );
@@ -9726,9 +9897,11 @@ function excluirCodigo(cod) {
 
 
 // ═══════════════════════════════════════════════════════════
+// MODAL AJUSTE DE PONTOS (Fidelidade – cliente)
 // ═══════════════════════════════════════════════════════════
 let _pontosClienteId = null;
 function abrirModalPontos(clienteId){
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c){toast('Cliente não encontrado','erro');return;}
   _pontosClienteId=clienteId;
@@ -9755,6 +9928,7 @@ function abrirModalPontos(clienteId){
 function fecharModalPontos(){document.getElementById('modal-pontos').classList.remove('show');_pontosClienteId=null;}
 function previewNovoPontos(){
   const qtd=parseInt(document.getElementById('mp-qtd').value)||0;
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[_pontosClienteId];
   const saldo=c?c.saldoPontos||0:0;
   const novo=Math.max(0,saldo+qtd);
@@ -9767,6 +9941,7 @@ async function salvarModalPontos(){
   if(qtd===0){toast('Informe uma quantidade diferente de 0.','aviso');return;}
   const tipo=document.getElementById('mp-tipo').value;
   const motivo=document.getElementById('mp-motivo').value.trim()||'Ajuste manual pelo admin';
+  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[_pontosClienteId];
   if(!c){toast('Cliente não encontrado','erro');return;}
   const saldoAnterior=c.saldoPontos||0;
@@ -9866,6 +10041,7 @@ function executarAuditoria(){
   const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
   const clientesCarregados=Boolean(STATE.clientes?.clientes&&typeof STATE.clientes.clientes==='object');
   const clientes=clientesCarregados?STATE.clientes.clientes:{};
+  const fidelidade=STATE.fidelidade||{};
   const encomendas=STATE.encomendas?.registros||[];
   // ── 1. Clientes com pontos negativos (não deveria ser possível)
   if(!filtroMod||filtroMod==='clientes'){
@@ -9907,11 +10083,15 @@ function executarAuditoria(){
       }
     });
   }
+  // ── 6. Fidelidade — códigos usados em clientes inexistentes
+  if((!filtroMod||filtroMod==='fidelidade')&&clientesCarregados){
+    const codigos=fidelidade.códigos||fidelidade.codigos||{};
     Object.entries(codigos).forEach(([cod,v])=>{
       if(v.status==='usado'&&v.usadoPor){
         const cel=(v.usadoPor||'').replace(/\D/g,'');
         const achouCliente=Object.values(clientes).some(c=>(c.cel||'').replace(/\D/g,'')===cel);
         if(!achouCliente&&cel){
+          _auditoriaResultados.push({modulo:'fidelidade',severidade:'media',tipo:'codigo_sem_cliente',titulo:`Código usado por cliente inexistente`,descricao:`Código ${cod} foi usado por ${v.usadoPor} mas esse telefone não existe nos clientes cadastrados.`,admin:v.usadoPor,site:'não cadastrado',id:cod});
         }
       }
     });
@@ -10149,8 +10329,6 @@ async function zerarPontosNegativos(clienteId){
   </div>
 </div>
 
-
-<script src="scripts/itap-admin-validacao.js" defer></script>
 
 </body>
 </html>
