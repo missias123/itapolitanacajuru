@@ -99,12 +99,22 @@
   </style>
   <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
-<bodyclass="fueap-surface fueap-encomendas">
+<body class="fueap-surface fueap-encomendas">
 
 <header class="header">
   <h2 style="margin:0; font-size:1rem; letter-spacing: 0.5px;">Itapolitana Cajuru - Encomendas</h2>
 </header>
 
+<div style="background: linear-gradient(135deg, #EA1D2C 0%, #b5121d 100%); color: white; padding: 12px 16px; text-align: center; font-weight: 800; font-size: 0.95rem; border-radius: 8px; margin: 12px auto; max-width: 800px; box-shadow: 0 4px 15px rgba(234, 29, 44, 0.3); animation: fueapPulse 2s infinite ease-in-out;">
+  🚨 ATENÇÃO: ENCOMENDAS EXIGEM PRAZO MÍNIMO DE 5 DIAS ÚTEIS DE ANTECEDÊNCIA APÓS CONFIRMAÇÃO NO WHATSAPP E PAGAMENTO!
+</div>
+<style>
+@keyframes fueapPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.01); opacity: 0.92; }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
 <div class="container">
   <!-- Categoria Caixas -->
   <div class="categoria">
@@ -148,7 +158,7 @@
     <div id="grid-sabores" class="sabor-grid"></div>
     <div class="modal-actions">
       <button onclick="window.fecharModal('modal-sabores')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
-      <button id="btn-confirmar-sabores" onclick="window.confirmarSabores()" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
+      <button id="btn-confirmar-sabores" class="confirm-action" onclick="window.confirmarSabores()" aria-hidden="true" tabindex="-1" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
     </div>
   </div>
 </div>
@@ -164,7 +174,7 @@
     </div>
     <div class="modal-actions">
       <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
-      <button id="btn-confirmar-picoles" onclick="window.confirmarPickle()" disabled style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
+      <button id="btn-confirmar-picoles" class="confirm-action" onclick="window.confirmarPickle()" disabled aria-hidden="true" tabindex="-1" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
     </div>
   </div>
 </div>
@@ -228,6 +238,8 @@
     var produtoAtual = null;
     var saboresSelecionados = [];
     var picolesSelecionados = {};
+    var MAX_PICOLES_POR_SABOR = 25;
+    var MIN_PICOLES_ATACADO = 100;
 
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);
@@ -253,7 +265,7 @@
         var grid = document.getElementById('grid-sabores');
         grid.innerHTML = SABORES_SORVETE.map(s => `<div class="sabor-item" onclick="window.toggleSabor('${s}', this)">${s}</div>`).join('');
         grid.classList.remove('limite-atingido');
-        document.getElementById('btn-confirmar-sabores').disabled = true;
+        atualizarAcaoSabores();
         window.abrirModal('modal-sabores');
     };
 
@@ -271,10 +283,20 @@
         var grid = document.getElementById('grid-sabores');
         if (saboresSelecionados.length >= produtoAtual.max) grid.classList.add('limite-atingido');
         else grid.classList.remove('limite-atingido');
-        document.getElementById('btn-confirmar-sabores').disabled = (saboresSelecionados.length !== produtoAtual.max);
+        atualizarAcaoSabores();
     };
 
+    function atualizarAcaoSabores() {
+        var btn = document.getElementById('btn-confirmar-sabores');
+        var completo = !!produtoAtual && saboresSelecionados.length === produtoAtual.max;
+        btn.disabled = !completo;
+        btn.classList.toggle('is-ready', completo);
+        btn.setAttribute('aria-hidden', String(!completo));
+        btn.tabIndex = completo ? 0 : -1;
+    }
+
     window.confirmarSabores = function() {
+        if (!produtoAtual || saboresSelecionados.length !== produtoAtual.max) return;
         carrinho.push({
             nome: produtoAtual.nome,
             preco: produtoAtual.preco,
@@ -303,24 +325,41 @@
             });
         });
         document.getElementById('lista-sabores-picole').innerHTML = html;
+        atualizarAcaoPicoles();
         window.abrirModal('modal-picoles');
     };
 
     window.addPicole = function(sabor, qtd) {
         var atual = picolesSelecionados[sabor] || 0;
-        var novo = Math.max(0, atual + qtd);
+        var novo = Math.min(MAX_PICOLES_POR_SABOR, Math.max(0, atual + qtd));
         picolesSelecionados[sabor] = novo;
         var el = document.getElementById('q-' + sabor);
         if (el) el.textContent = novo;
 
         var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
         document.getElementById('total-picoles').textContent = total;
-        document.getElementById('btn-confirmar-picoles').disabled = (total < 100);
+        atualizarAcaoPicoles();
     };
+
+    function atualizarAcaoPicoles() {
+        var btn = document.getElementById('btn-confirmar-picoles');
+        var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
+        var limitesValidos = Object.values(picolesSelecionados).every(function(qtd) {
+            return qtd >= 0 && qtd <= MAX_PICOLES_POR_SABOR;
+        });
+        var completo = total >= MIN_PICOLES_ATACADO && limitesValidos;
+        btn.disabled = !completo;
+        btn.classList.toggle('is-ready', completo);
+        btn.setAttribute('aria-hidden', String(!completo));
+        btn.tabIndex = completo ? 0 : -1;
+    }
 
     window.confirmarPickle = function() {
         var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
-        if (total < 100) return;
+        var limitesValidos = Object.values(picolesSelecionados).every(function(qtd) {
+            return qtd >= 0 && qtd <= MAX_PICOLES_POR_SABOR;
+        });
+        if (total < MIN_PICOLES_ATACADO || !limitesValidos) return;
         var detalhes = Object.entries(picolesSelecionados).filter(e => e[1] > 0).map(e => e[1] + 'x ' + e[0]).join(', ');
         
         // Média de preço ponderada ou cálculo simplificado por categoria
@@ -376,7 +415,18 @@
     }
 
     window.finalizarPedido = function() {
-        var texto = "Olá! Gostaria de fazer uma encomenda:\n\n" + 
+        var hoje = new Date();
+        var minData = new Date();
+        var diasUteisAdicionados = 0;
+        while (diasUteisAdicionados < 5) {
+            minData.setDate(minData.getDate() + 1);
+            var diaSemana = minData.getDay();
+            if (diaSemana !== 0 && diaSemana !== 6) {
+                diasUteisAdicionados++;
+            }
+        }
+        var dataFormatada = minData.toLocaleDateString('pt-BR');
+        var texto = "Olá! Gostaria de fazer uma encomenda (Prazo mínimo de 5 dias úteis - Entrega a partir de " + dataFormatada + "):\n\n" + 
             carrinho.map(i => "▪ " + i.nome + "\n  Sabores: " + i.detalhes + "\n  Preço: R$ " + i.preco.toFixed(2)).join('\n\n') + 
             "\n\n*Total do Pedido: R$ " + carrinho.reduce((a, b) => a + b.preco, 0).toFixed(2) + "*";
         window.open("https://wa.me/5516996062046?text=" + encodeURIComponent(texto));
