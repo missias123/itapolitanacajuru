@@ -198,11 +198,11 @@
     }
 
     function _respPicoles() {
-      var p      = _prodData && _prodData.picoles;
+      var p = (_prodData && (_prodData.picolés || _prodData.picoles)) ? (_prodData.picolés || _prodData.picoles) : null;
       var fruta  = (p && p.frutas_agua)                                                   ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',')       : '2,50';
       var leite  = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
       var ninho  = (p && p.leite_ninho  && p.leite_ninho.preco_varejo  != null)           ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',')       : '4,00';
-      var eskimo = (p && p.esqu\u00edm\u00f3s && p.esqu\u00edm\u00f3s.preco_varejo != null) ? p.esqu\u00edm\u00f3s.preco_varejo.toFixed(2).replace('.', ',') : '8,00';
+      var eskimo = (p && (p.esquímós || p.esquimos) && (p.esquímós || p.esquimos).preco_varejo != null) ? (p.esquímós || p.esquimos).preco_varejo.toFixed(2).replace('.', ',') : '8,00';
       return {
         answer: '\ud83c\udf60 Picol\u00e9s tipo artesanal!\n\n' +
                 '\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Groselha, Lim\u00e3o, Melancia, Uva...)\n' +
