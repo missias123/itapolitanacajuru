@@ -4548,8 +4548,13 @@ async function sincronizarEncomendasNuvem() {
   
   try {
     console.log('[Sync] Buscando encomendas na nuvem (Worker)...');
-    const resp = await fetch(ITAP_WORKER_API + '/api/encomendas');
-    if (!resp.ok) throw new Error('Falha ao buscar dados na nuvem: ' + resp.status);
+    const resp = await fetch(ITAP_WORKER_API + '/api/encomendas', {
+      headers: getWorkerAuthHeaders()
+    });
+    if (!resp.ok) {
+      if (resp.status === 401) throw new Error('Sessão expirada ou não autorizado. Tente fazer login novamente.');
+      throw new Error('Falha ao buscar dados na nuvem: ' + resp.status);
+    }
     
     const data = await resp.json();
     if (!data.ok || !data.encomendas) throw new Error('Dados da nuvem inválidos');
