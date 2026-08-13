@@ -3300,6 +3300,15 @@ function toggleAcc(id) {
         if (el.classList.contains('open')) body.style.maxHeight = '';
       }, 500);
     }
+    // UX Gênio: Estabilidade Total - Se estiver abrindo, garante que o header está visível
+    // mas evita o "pulo" automático do navegador se o header já estiver na tela.
+    var header = el.querySelector('.acc-header');
+    if (header) {
+      var rect = header.getBoundingClientRect();
+      if (rect.top < 0 || rect.bottom > window.innerHeight) {
+        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
   }
 }
 
