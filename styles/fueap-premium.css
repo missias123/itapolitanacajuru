@@ -1,0 +1,163 @@
+/*
+ * FUEAP — Fórmula Única de Enquadramento, Alinhamento e Preservação
+ * Camada visual בלבד: não contém JavaScript e não redefine IDs ou eventos.
+ * Aplicada somente em páginas que recebem a classe fueap-surface.
+ */
+
+body.fueap-surface,
+body.fueap-surface * ,
+body.fueap-surface *::before,
+body.fueap-surface *::after {
+  box-sizing: border-box;
+}
+
+body.fueap-surface {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.fueap-surface :where(img, video, canvas, svg) {
+  max-width: 100%;
+}
+
+body.fueap-surface :where(button, input, select, textarea) {
+  font: inherit;
+  max-width: 100%;
+}
+
+body.fueap-surface :where(button, a, input, select, textarea) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Padrão exclusivo para a página de encomendas. */
+body.fueap-encomendas {
+  --fueap-gutter: clamp(12px, 3.5vw, 24px);
+  --fueap-radius: clamp(10px, 2vw, 16px);
+  --verde: var(--success, #008912);
+  --azul: #1565c0;
+}
+
+body.fueap-encomendas .container {
+  width: min(100%, 800px);
+  margin-inline: auto;
+  padding-inline: var(--fueap-gutter);
+}
+
+body.fueap-encomendas .prod-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  align-items: stretch;
+}
+
+body.fueap-encomendas .prod-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.fueap-encomendas .modal {
+  padding: max(0px, env(safe-area-inset-top)) 0 max(0px, env(safe-area-inset-bottom));
+}
+
+body.fueap-encomendas .modal-content {
+  width: min(100%, 600px);
+  max-width: 600px;
+  max-height: min(90dvh, 760px);
+  min-width: 0;
+  padding: clamp(16px, 4vw, 25px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+body.fueap-encomendas .sabor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(8px, 2.5vw, 12px);
+  align-items: stretch;
+}
+
+body.fueap-encomendas .sabor-item {
+  min-width: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  line-height: 1.2;
+}
+
+body.fueap-encomendas :where(.sabor-item, .btn-sabores, .categoria-header, .btn-carrinho-fixo) {
+  touch-action: manipulation;
+}
+
+body.fueap-encomendas .btn-carrinho-fixo {
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  width: auto;
+  max-width: 400px;
+  margin-inline: auto;
+  transform: none;
+  bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 480px) {
+  body.fueap-encomendas .sabor-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 760px) {
+  body.fueap-encomendas .modal {
+    align-items: center;
+    padding: 20px;
+  }
+
+  body.fueap-encomendas .modal-content {
+    border-radius: var(--fueap-radius);
+  }
+}
+
+@media (max-width: 359px) {
+  body.fueap-encomendas .sabor-item {
+    padding-inline: 6px;
+    font-size: clamp(.72rem, 3.5vw, .85rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.fueap-surface *,
+  body.fueap-surface *::before,
+  body.fueap-surface *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@supports not (height: 1dvh) {
+  body.fueap-encomendas .modal-content {
+    max-height: 90vh;
+  }
+}
+
+@supports not (aspect-ratio: 1 / 1) {
+  body.fueap-encomendas .sabor-item {
+    min-height: 112px;
+  }
+}
+
+@media (forced-colors: active) {
+  body.fueap-surface :where(button, a, input, select, textarea) {
+    forced-color-adjust: auto;
+  }
+}
+
+/* Não usar seletores globais para cores, z-index ou display de botões.
+ * A lógica de abertura/fechamento permanece exclusivamente no JavaScript existente. */
+.fueap-surface-marker { display: none !important; }
+
+/* Fim da camada FUEAP. */
