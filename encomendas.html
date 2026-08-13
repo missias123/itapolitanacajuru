@@ -327,13 +327,14 @@
         Object.entries(PICOLES_CATALOGO).forEach(([categoria, sabores]) => {
             html += `<h3 style="margin-top:15px; color:var(--azul); font-size:1rem; border-bottom:1px solid #ddd; padding-bottom:5px;">${categoria}</h3>`;
             sabores.forEach(s => {
+                var idSabor = categoria.split(' ')[0] + '-' + s; // ID único por categoria
                 html += `
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0;">
                         <span>${s}</span>
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <button onclick="window.addPicole('${s}', -1)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold;">-</button>
-                            <span id="q-${s}" style="min-width:25px; text-align:center; font-weight:bold;">0</span>
-                            <button onclick="window.addPicole('${s}', 1)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold;">+</button>
+                            <button onclick="window.addPicole('${idSabor}', -1)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold;">-</button>
+                            <span id="q-${idSabor}" style="min-width:25px; text-align:center; font-weight:bold;">0</span>
+                            <button onclick="window.addPicole('${idSabor}', 1)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold;">+</button>
                         </div>
                     </div>
                 `;
@@ -344,11 +345,11 @@
         window.abrirModal('modal-picoles');
     };
 
-    window.addPicole = function(sabor, qtd) {
-        var atual = picolesSelecionados[sabor] || 0;
+    window.addPicole = function(idSabor, qtd) {
+        var atual = picolesSelecionados[idSabor] || 0;
         var novo = Math.min(MAX_PICOLES_POR_SABOR, Math.max(0, atual + qtd));
-        picolesSelecionados[sabor] = novo;
-        var el = document.getElementById('q-' + sabor);
+        picolesSelecionados[idSabor] = novo;
+        var el = document.getElementById('q-' + idSabor);
         if (el) el.textContent = novo;
 
         var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
@@ -381,18 +382,29 @@
     }
 
     window.confirmarPickle = function() {
-        var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
-        var limitesValidos = Object.values(picolesSelecionados).every(function(qtd) {
-            return qtd >= 0 && qtd <= MAX_PICOLES_POR_SABOR;
-        });
-        if (total < MIN_PICOLES_ATACADO || !limitesValidos) return;
-        var detalhes = Object.entries(picolesSelecionados).filter(e => e[1] > 0).map(e => e[1] + 'x ' + e[0]).join(', ');
+        var total = 0;
+        var precoTotal = 0;
+        var detalhesArray = [];
         
-        // Média de preço ponderada ou cálculo simplificado por categoria
+        Object.entries(PICOLES_CATALOGO).forEach(([cat, sabores]) => {
+            var precoUn = parseFloat(cat.match(/R\$ ([\d,]+)/)[1].replace(',', '.'));
+            sabores.forEach(s => {
+                var idSabor = cat.split(' ')[0] + '-' + s;
+                var qtd = picolesSelecionados[idSabor] || 0;
+                if (qtd > 0) {
+                    total += qtd;
+                    precoTotal += (qtd * precoUn);
+                    detalhesArray.push(qtd + 'x ' + s);
+                }
+            });
+        });
+
+        if (total < MIN_PICOLES_ATACADO) return;
+        
         carrinho.push({
             nome: "Lote de Picolés (" + total + " un)",
-            preco: total * 2.00, // Preço base médio atacado
-            detalhes: detalhes
+            preco: precoTotal,
+            detalhes: detalhesArray.join(', ')
         });
         window.fecharModal('modal-picoles');
         atualizarCarrinho();
