@@ -712,6 +712,16 @@ img{max-width:100%;display:block}
 .picolé-preço{font-size:16px;font-weight:900;color:#E8000D}
 /* TRAVA GLOBAL DA PÁGINA — PADRÃO GRANDES APPS */
 body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!important;touch-action:none}
+/* MODO FOCO DO CARDÁPIO — somente index.html; não afeta encomendas/promoção */
+html.menu-foco-aberto,body.menu-foco-aberto{position:fixed!important;inset:0;width:100%;height:100dvh;overflow:hidden!important;overscroll-behavior:none}
+body.menu-foco-aberto{top:calc(var(--menu-foco-scroll-top, 0px) * -1)}
+.acc.menu-foco-ativo{position:fixed!important;inset:0;z-index:600;margin:0!important;border-radius:0!important;max-height:100dvh;height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;background:#FFFDF9;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
+.acc.menu-foco-ativo .acc-header{position:sticky;top:0;z-index:3;min-height:92px;box-shadow:0 3px 14px rgba(0,0,0,.18)}
+.acc.menu-foco-ativo .acc-body{max-height:none!important;overflow:visible!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.menu-foco-back{position:sticky;top:92px;z-index:2;display:flex!important;width:100%;align-items:center;justify-content:center;min-height:48px;margin:0 0 14px;padding:12px 16px;border:0;border-radius:14px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font:800 14px/1.2 inherit;cursor:pointer;box-shadow:0 5px 16px rgba(232,0,13,.25);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.menu-foco-back:active{transform:scale(.98)}
+@media(min-width:700px){.acc.menu-foco-ativo{inset:20px;max-height:calc(100dvh - 40px);height:auto;border-radius:22px!important;box-shadow:0 12px 46px rgba(0,0,0,.3)}.acc.menu-foco-ativo .acc-header{border-radius:22px 22px 0 0}}
+@media(prefers-reduced-motion:reduce){.menu-foco-back{transition:none}.acc.menu-foco-ativo{scroll-behavior:auto}}
 /* MODAL CENTRALIZADO — PADRÃO GRANDES APPS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 .modal-overlay.show{display:flex;animation:fadeInOverlay .18s ease}
@@ -3330,15 +3340,8 @@ function toggleAcc(id) {
         if (el.classList.contains('open')) body.style.maxHeight = '';
       }, 500);
     }
-    // UX Gênio: Estabilidade Total - Se estiver abrindo, garante que o header está visível
-    // mas evita o "pulo" automático do navegador se o header já estiver na tela.
-    var header = el.querySelector('.acc-header');
-    if (header) {
-      var rect = header.getBoundingClientRect();
-      if (rect.top < 0 || rect.bottom > window.innerHeight) {
-        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
+    // Estabilidade: não mover a página ao abrir uma categoria.
+    // O usuário controla a navegação; somente os botões de Voltar alteram o nível.
   }
 }
 
@@ -4383,6 +4386,18 @@ setInterval(() => {
 // ─────────────────────────────────────────────────────────────────────────
 const ITAP_PRODUTOS_URL = '/dados/produtos.json';
 
+// Compatibilidade do cardápio: o dataset oficial é carregado por scripts/products.js
+// como window.PRODUTOS_DATA. O alias dinâmico evita ReferenceError em botões
+// acionados após o carregamento, sem modificar o dataset ou as outras páginas.
+if (!Object.getOwnPropertyDescriptor(window, 'produtos')) {
+  Object.defineProperty(window, 'produtos', {
+    configurable: true,
+    enumerable: false,
+    get: function() { return window.PRODUTOS_DATA || {}; },
+    set: function(value) { window.PRODUTOS_DATA = value; }
+  });
+}
+
 async function carregarPreçosNuvemCardápio() {
   try {
     const resp = await fetch(ITAP_PRODUTOS_URL + '?t=' + Date.now(), { cache: 'no-store' });
@@ -4929,8 +4944,6 @@ function fecharCardápio() {
 
 // ── Barra sticky de categorias: mostra/oculta com o cardápio ──
 (function() {
-  var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  function getScrollBehavior() { return motionQuery.matches ? 'auto' : 'smooth'; }
   document.addEventListener('click', function(e) {
     var pill = e.target.closest('.cat-pill');
     if (!pill) return;
@@ -4945,10 +4958,10 @@ function fecharCardápio() {
     if (target.querySelector('.acc-header[aria-expanded="false"]')) {
       if (typeof toggleAcc === 'function') toggleAcc(accId);
     }
-    // Scroll suave até o accordion
-    setTimeout(function() {
-      target.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
-    }, 50);
+    // Sem scrollIntoView: abrir a categoria não pode deslocar a tela.
+    // O foco permanece no ponto em que o usuário clicou.
+    var header = target.querySelector('.acc-header');
+    if (header && typeof header.focus === 'function') header.focus({ preventScroll: true });
   });
 })();
 
@@ -5029,6 +5042,72 @@ function atualizarStatusLoja() {
 // ── NAVEGAÇÃO INLINE EM 3 NÍVEIS ─────────────────────────────────────────────
 // Guarda o HTML original do acc-body para restaurar ao clicar Voltar
 var _nivelAnterior = {};
+var _menuFocoId = null;
+var _menuFocoScrollY = 0;
+
+/* Modo Foco: isola o conteúdo aberto no cardápio da página inicial.
+   Escopo deliberadamente limitado ao index.html; não compartilha estado com
+   encomendas, promoção ou qualquer outra página. */
+function _menuFocoAtivar(acc) {
+  if (!acc || !acc.id) return;
+  if (_menuFocoId === acc.id) return;
+  if (_menuFocoId) _menuFocoDesativar(false);
+  _menuFocoScrollY = window.scrollY || window.pageYOffset || 0;
+  document.documentElement.style.setProperty('--menu-foco-scroll-top', _menuFocoScrollY + 'px');
+  document.documentElement.classList.add('menu-foco-aberto');
+  document.body.classList.add('menu-foco-aberto');
+  acc.classList.add('menu-foco-ativo');
+  _menuFocoId = acc.id;
+
+  var back = acc.querySelector(':scope > .menu-foco-back');
+  if (!back) {
+    back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'menu-foco-back';
+    back.setAttribute('aria-label', 'Voltar ao cardápio');
+    back.textContent = '← Voltar ao cardápio';
+    back.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      _menuFocoVoltar(acc);
+    });
+    var header = acc.querySelector(':scope > .acc-header');
+    if (header && header.nextSibling) acc.insertBefore(back, header.nextSibling);
+    else acc.appendChild(back);
+  }
+}
+
+function _menuFocoDesativar(restaurarPosicao) {
+  if (!_menuFocoId) return;
+  var acc = document.getElementById(_menuFocoId);
+  var y = _menuFocoScrollY;
+  if (acc) {
+    acc.classList.remove('menu-foco-ativo');
+    var back = acc.querySelector(':scope > .menu-foco-back');
+    if (back) back.remove();
+  }
+  document.documentElement.classList.remove('menu-foco-aberto');
+  document.body.classList.remove('menu-foco-aberto');
+  document.documentElement.style.removeProperty('--menu-foco-scroll-top');
+  _menuFocoId = null;
+  if (restaurarPosicao) {
+    requestAnimationFrame(function() { window.scrollTo({ top: y, left: 0, behavior: 'auto' }); });
+  }
+}
+
+function _menuFocoVoltar(acc) {
+  if (!acc) return;
+  var id = acc.id;
+  var body = acc.querySelector('.acc-body');
+  var y = _menuFocoScrollY;
+  _menuFocoDesativar(false);
+  if (body && _nivelAnterior[id]) {
+    body.innerHTML = _nivelAnterior[id];
+    delete _nivelAnterior[id];
+  }
+  requestAnimationFrame(function() { window.scrollTo({ top: y, left: 0, behavior: 'auto' }); });
+}
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // _semPulo() — TÉCNICA PADRÃO DOS GRANDES SITES (iFood, Rappi, WhatsApp Web)
@@ -5168,6 +5247,8 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
   if (!accBodyEl) return;
   var accId = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc').id : accBodyEl.id;
   if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
+  var acc = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc') : null;
+  if (acc) _menuFocoAtivar(acc);
 
   var chipsHtml = chips.map(function(s) {
     return '<span class="chip-inline">' + s + '</span>';
@@ -5198,10 +5279,14 @@ function voltarNivel(btn) {
   var acc = accBody.closest ? accBody.closest('.acc') : null;
   var accId = acc ? acc.id : accBody.id;
   if (accId && _nivelAnterior[accId]) {
+    var focoAtivo = _menuFocoId === accId;
+    var focoY = _menuFocoScrollY;
+    if (focoAtivo) _menuFocoDesativar(false);
     _semPulo(function() {
       accBody.innerHTML = _nivelAnterior[accId];
       delete _nivelAnterior[accId];
     });
+    if (focoAtivo) requestAnimationFrame(function() { window.scrollTo({ top: focoY, left: 0, behavior: 'auto' }); });
   }
 }
 
@@ -5265,6 +5350,7 @@ function abrirComplementosInline(el) {
   var acc = accBody.closest ? accBody.closest('.acc') : null;
   var accId = acc ? acc.id : accBody.id;
   if (accId) _nivelAnterior[accId] = accBody.innerHTML;
+  if (acc) _menuFocoAtivar(acc);
 
   var labelComp = {frutas:'🍓 Frutas', cremes:'🍯 Cremes', guloseimas:'🍬 Guloseimas', chocolates:'🍫 Chocolates'};
   var html = '<div class="sabores-inline">';
@@ -5302,6 +5388,7 @@ function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chip
   var acc = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc') : null;
   var accId = acc ? acc.id : accBodyEl.id;
   if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
+  if (acc) _menuFocoAtivar(acc);
 
   var chips1Html = chips1.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
   var chips2Html = chips2.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
