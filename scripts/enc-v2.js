@@ -195,8 +195,10 @@
         
         carrinho.push({
             id: 'massa_' + Date.now(),
+            prodId: produtoAtual.id,
             nome: produtoAtual.nome,
             preço: produtoAtual.preço,
+            max: produtoAtual.max,
             sabores: saboresSelecionados.slice(),
             tipo: 'massa'
         });
@@ -274,8 +276,10 @@
 
         carrinho.push({
             id: 'picole_' + Date.now(),
+            prodId: produtoAtual.id,
             nome: produtoAtual.nome,
-            preço: produtoAtual.preço * total,
+            preço: (produtoAtual.preço * total),
+            unitario: produtoAtual.preço,
             detalhes: detalhes.join(', '),
             tipo: 'picole'
         });
@@ -311,20 +315,62 @@
         var totalEl = document.getElementById('total-carrinho');
         
         if (carrinho.length === 0) {
-            lista.innerHTML = '<p style="text-align:center;padding:20px;color:#888;">Carrinho vazio</p>';
+            lista.innerHTML = '<p style="text-align:center;padding:20px;color:#888;font-weight:700;">🛒 Seu carrinho está vazio</p>';
             totalEl.textContent = 'R$ 0,00';
         } else {
             lista.innerHTML = carrinho.map(function(item, idx) {
                 var desc = item.tipo === 'massa' ? item.sabores.join(', ') : item.detalhes;
-                return '<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;">' +
-                    '<div><b>' + item.nome + '</b><br><small>' + desc + '</small></div>' +
-                    '<div style="text-align:right"><b>R$ ' + item.preço.toFixed(2).replace('.',',') + '</b><br>' +
-                    '<button onclick="window.removerItem(' + idx + ')" style="color:red;border:none;background:none;font-size:11px;">Remover</button></div>' +
+                var acaoMais = '';
+                if (item.tipo === 'massa') {
+                    acaoMais = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirSaboresSorvete(\'' + item.prodId + '\', ' + item.preço + ', ' + item.max + ', \'' + item.nome + '\')" style="color:var(--verde);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">+ Adicionar Outro</button>';
+                } else {
+                    acaoMais = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirModalPicole(\'' + item.prodId + '\')" style="color:var(--verde);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">+ Adicionar Outro</button>';
+                }
+                
+                return '<div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid #eee;align-items:center;">' +
+                    '<div style="flex:1;">' +
+                        '<div style="font-weight:800;font-size:0.95rem;color:#333;">' + item.nome + '</div>' +
+                        '<div style="font-size:0.8rem;color:#666;line-height:1.2;">' + desc + '</div>' +
+                    '</div>' +
+                    '<div style="text-align:right;min-width:100px;">' +
+                        '<div style="font-weight:900;color:var(--azul-escuro);margin-bottom:4px;">R$ ' + item.preço.toFixed(2).replace('.',',') + '</div>' +
+                        '<div style="display:flex;justify-content:flex-end;gap:5px;">' +
+                            acaoMais +
+                            '<button onclick="window.removerItem(' + idx + ')" style="color:var(--vermelho);border:none;background:none;font-size:11px;font-weight:700;">Remover</button>' +
+                        '</div>' +
+                    '</div>' +
                 '</div>';
             }).join('');
             var total = carrinho.reduce(function(s, i) { return s + i.preço; }, 0);
             totalEl.textContent = 'R$ ' + total.toFixed(2).replace('.',',');
         }
+        
+        // Adicionar botões de ação no rodapé do carrinho
+        var footer = document.querySelector('#modal-carrinho .modal-footer');
+        if (footer) {
+            // Limpar botões antigos para evitar duplicidade
+            var botoesAntigos = footer.querySelectorAll('.btn-carrinho-extra');
+            botoesAntigos.forEach(function(b) { b.remove(); });
+            
+            if (carrinho.length > 0) {
+                // Botão Continuar Comprando
+                var btnCont = document.createElement('button');
+                btnCont.className = 'btn-carrinho-extra';
+                btnCont.textContent = '← Adicionar mais produtos';
+                btnCont.style.cssText = 'background:#e3f2fd; color:#1565c0; border:none; padding:12px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:10px; width:100%; font-size:0.9rem;';
+                btnCont.onclick = function() { window.fecharModal('modal-carrinho'); };
+                footer.insertBefore(btnCont, footer.firstChild);
+
+                // Botão Limpar Pedido
+                var btnLimpar = document.createElement('button');
+                btnLimpar.className = 'btn-carrinho-extra';
+                btnLimpar.textContent = '🗑️ Excluir todo o pedido';
+                btnLimpar.style.cssText = 'background:none; color:#d32f2f; border:1px solid #d32f2f; padding:8px; border-radius:8px; font-weight:700; cursor:pointer; margin-top:15px; width:100%; font-size:0.8rem; opacity:0.8;';
+                btnLimpar.onclick = window.limparCarrinho;
+                footer.appendChild(btnLimpar);
+            }
+        }
+        
         abrirModal('modal-carrinho');
     }
 
@@ -333,6 +379,16 @@
         abrirCarrinho();
         atualizarBotaoCarrinho();
         localStorage.setItem('itap_carrinho', JSON.stringify(carrinho));
+    }
+    
+    function limparCarrinho() {
+        if (confirm("Deseja realmente excluir todo o seu pedido e recomeçar?")) {
+            carrinho = [];
+            localStorage.removeItem('itap_carrinho');
+            fecharModal('modal-carrinho');
+            atualizarBotaoCarrinho();
+            mostrarToast("Pedido excluído com sucesso!");
+        }
     }
 
     function finalizarPedido() {
@@ -366,6 +422,7 @@
     window.fecharModal = fecharModal;
     window.abrirCarrinho = abrirCarrinho;
     window.removerItem = removerItem;
+    window.limparCarrinho = limparCarrinho;
     window.finalizarPedido = finalizarPedido;
     window.toggleSecao = function(id) {
         var c = document.getElementById(id);
