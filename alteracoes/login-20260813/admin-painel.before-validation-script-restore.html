@@ -8207,7 +8207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'configuracao': 'configuração', 'Configuracao': 'Configuração',
     'configuracoes': 'configurações', 'Configuracoes': 'Configurações',
     'encomenda': 'encomenda', // correto
-    'fidelidade': 'fidelidade', // correto
     'sorvete': 'sorvete', // correto
     'açaí': 'açaí', 'Açaí': 'Açaí',
     'picole': 'picolé', 'Picole': 'Picolé',
@@ -8338,7 +8337,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof origIrPara === 'function') {
     window.irPara = function(...args) {
       const r = origIrPara.apply(this, args);
-      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); }, 300);
+      setTimeout(() => { aplicarSpellcheck(); aplicarAutocorrecao(); if (window.itapValidacao) window.itapValidacao.init(); }, 300);
       return r;
     };
   }
@@ -8359,7 +8358,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof _origSalvarArquivo === 'function') {
     window.salvarArquivo = async function(...args) {
       const resultado = await _origSalvarArquivo.apply(this, args);
-      if (resultado) marcarSalvo();
+      if (resultado) { marcarSalvo(); if (window.itapValidacao) window.itapValidacao.limparAlterados(); }
       return resultado;
     };
   }
@@ -8443,7 +8442,7 @@ async function salvarTitulosCardapio() {
 // ── CARDÁPIO COMPLETO ──────────────────────────────────────────────────────
 // ── CARDÁPIO — TABELAS DE PREÇO (padrão iFood/Baskin-Robbins) ────────────────
 function _precoRowHTML(nome, preco, placeholder) {
-  const n = String(nome||'').replace(/"/g,'&quot;');
+  const n = String(nome||'').replace(/"/g,'\x26quot;');
   const p = Number(preco||0).toFixed(2);
   return `<div class="preco-row" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
     <input type="text" class="preco-nome" value="${n}" placeholder="${placeholder||'Nome do item'}" style="flex:2;padding:8px 10px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:.9rem;background:#fafafa"/>
@@ -8483,8 +8482,8 @@ function readCardapioPrecoTabela(containerId) {
 }
 // Açaí Promo — 3 colunas: Tamanho/Nome | Descrição | Preço
 function _promoComboRowHTML(nome, desc, preco) {
-  const n = String(nome||'').replace(/"/g,'&quot;');
-  const d = String(desc||'').replace(/"/g,'&quot;');
+  const n = String(nome||'').replace(/"/g,'\x26quot;');
+  const d = String(desc||'').replace(/"/g,'\x26quot;');
   const p = Number(preco||0).toFixed(2);
   return `<div class="promo-combo-row" style="display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
     <input type="text" class="combo-nome" value="${n}" placeholder="Ex: 400ml" style="flex:1;min-width:80px;padding:7px 9px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:.88rem;background:#fafafa"/>
@@ -8947,8 +8946,6 @@ function preencherFaleConosco() {
   document.getElementById('fc-modal-sorvetes-sub').value = c.modalSaboresSub || 'Informe o sabor desejado ao fazer seu pedido na loja';
   document.getElementById('fc-modal-picole-titulo').value = c.modalPicoleTitulo || 'Sabores do Picolé';
   document.getElementById('fc-modal-açaí-titulo').value = c.modalAçaíTitulo || '🫐 Complementos do Açaí';
-  document.getElementById('fc-modal-açaí-sub').value = c.modalAçaíSub || 'Disponíveis para o Açaí Personalizado';
-}
 
 async function salvarFaleConosco() {
   const c = STATE.config;
@@ -9002,12 +8999,6 @@ async function salvarClubeFab() {
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar clube fab');
 }
 
-// Salvar Modais do Cardápio (IDs: ms-título, ms-sub, mp-título, modal-comp-titulo, modal-comp-sub)
-async function salvarModaisCardapio() {
-  const c = STATE.config;
-  c.modalSaboresTitulo = document.getElementById('fc-modal-sorvetes-titulo').value.trim();
-  c.modalSaboresSub = document.getElementById('fc-modal-sorvetes-sub').value.trim();
-  c.modalPicoleTitulo = document.getElementById('fc-modal-picole-titulo').value.trim();
   c.modalAçaíTitulo = document.getElementById('fc-modal-açaí-titulo').value.trim();
   c.modalAçaíSub = document.getElementById('fc-modal-açaí-sub').value.trim();
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar modais cardapio');
@@ -9074,7 +9065,6 @@ function excluirEncomenda(numPedido) {
 // ═══════════════════════════════════════════════════════════
 function excluirCliente(clienteId) {
   if(!fidRequireWrite())return;
-  const clientes = STATE.clientes?.clientes || STATE.fidelidade?.clientes || {};
   const c = clientes[clienteId];
   if (!c) return;
   confirmarAcao(
@@ -9089,8 +9079,6 @@ function excluirCliente(clienteId) {
         if (STATE.clientes.indice_celular && c.cel) delete STATE.clientes.indice_celular[c.cel];
         ok = await salvarArquivo(PATHS.clientes, STATE.clientes, 'clientesSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       } else {
-        delete STATE.fidelidade.clientes[clienteId];
-        ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir cliente ' + (c.nome||clienteId));
       }
       if (ok) { toast('Cliente ' + (c.nome || clienteId) + ' excluído.', 'ok'); renderClientes(); renderDuplicidades(); }
     }
@@ -9100,14 +9088,12 @@ function excluirCliente(clienteId) {
 // Substituir confirm() nativo por confirmarAcao() em todas as exclusoes existentes
 // Inscrito do sorteio
 function removerInscritoSorteioComConfirm(idx) {
-  const ins = STATE.fidelidade?.sorteioInscritos?.[idx];
   if (!ins) return;
   confirmarAcao(
     'Remover Inscrito',
     `Remover <strong>${ins.nome || 'inscrito'}</strong> do sorteio?`,
     'Sim, remover',
     () => {
-      STATE.fidelidade.sorteioInscritos.splice(idx, 1);
       salvarSorteio();
     },
     'aviso'
@@ -9734,8 +9720,6 @@ function excluirCodigo(cod) {
     async () => {
       const fidData=fidEnsureCodigos();
       delete fidData.codigos[cod];
-      STATE.fidelidade.liberados = Object.keys(fidData.codigos).length;
-      const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir código ' + cod);
       if (ok) { toast('Código excluído.','ok'); renderCódigos(); atualizarStatsCódigos(); fidRenderProgresso(); }
     }
   );
@@ -9743,11 +9727,9 @@ function excluirCodigo(cod) {
 
 
 // ═══════════════════════════════════════════════════════════
-// MODAL AJUSTE DE PONTOS (Fidelidade – cliente)
 // ═══════════════════════════════════════════════════════════
 let _pontosClienteId = null;
 function abrirModalPontos(clienteId){
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[clienteId];
   if(!c){toast('Cliente não encontrado','erro');return;}
   _pontosClienteId=clienteId;
@@ -9774,7 +9756,6 @@ function abrirModalPontos(clienteId){
 function fecharModalPontos(){document.getElementById('modal-pontos').classList.remove('show');_pontosClienteId=null;}
 function previewNovoPontos(){
   const qtd=parseInt(document.getElementById('mp-qtd').value)||0;
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[_pontosClienteId];
   const saldo=c?c.saldoPontos||0:0;
   const novo=Math.max(0,saldo+qtd);
@@ -9787,7 +9768,6 @@ async function salvarModalPontos(){
   if(qtd===0){toast('Informe uma quantidade diferente de 0.','aviso');return;}
   const tipo=document.getElementById('mp-tipo').value;
   const motivo=document.getElementById('mp-motivo').value.trim()||'Ajuste manual pelo admin';
-  const clientes=STATE.clientes?.clientes||STATE.fidelidade?.clientes||{};
   const c=clientes[_pontosClienteId];
   if(!c){toast('Cliente não encontrado','erro');return;}
   const saldoAnterior=c.saldoPontos||0;
@@ -9887,7 +9867,6 @@ function executarAuditoria(){
   const filtroMod=document.getElementById('audit-filtro-mod')?.value||'';
   const clientesCarregados=Boolean(STATE.clientes?.clientes&&typeof STATE.clientes.clientes==='object');
   const clientes=clientesCarregados?STATE.clientes.clientes:{};
-  const fidelidade=STATE.fidelidade||{};
   const encomendas=STATE.encomendas?.registros||[];
   // ── 1. Clientes com pontos negativos (não deveria ser possível)
   if(!filtroMod||filtroMod==='clientes'){
@@ -9929,15 +9908,11 @@ function executarAuditoria(){
       }
     });
   }
-  // ── 6. Fidelidade — códigos usados em clientes inexistentes
-  if((!filtroMod||filtroMod==='fidelidade')&&clientesCarregados){
-    const codigos=fidelidade.códigos||fidelidade.codigos||{};
     Object.entries(codigos).forEach(([cod,v])=>{
       if(v.status==='usado'&&v.usadoPor){
         const cel=(v.usadoPor||'').replace(/\D/g,'');
         const achouCliente=Object.values(clientes).some(c=>(c.cel||'').replace(/\D/g,'')===cel);
         if(!achouCliente&&cel){
-          _auditoriaResultados.push({modulo:'fidelidade',severidade:'media',tipo:'codigo_sem_cliente',titulo:`Código usado por cliente inexistente`,descricao:`Código ${cod} foi usado por ${v.usadoPor} mas esse telefone não existe nos clientes cadastrados.`,admin:v.usadoPor,site:'não cadastrado',id:cod});
         }
       }
     });
