@@ -1,2147 +1,347 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-S6TCMLQLQF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-S6TCMLQLQF');
-</script>
-<!-- Google Tag Manager -->
-<!-- GTM temporariamente desabilitado - requer configuração válida
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K7L8M9N');</script>
--->
-<!-- End Google Tag Manager -->
-<meta charset="utf-8"/>
-  <link rel="dns-prefetch" href="https://wa.me"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<meta name="theme-color" content="#EF0129"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="description" content="Faça sua encomenda de sorvetes tipo artesanais, tortas geladas e açaí na Itapolitana Cajuru. Retire na loja. Cardápio completo online." data-config="seoPaginas.encomendas.descricao"/>
-<meta content="encomenda sorvete Cajuru, torta de sorvete Cajuru, caixa de sorvete Cajuru, picolé atacado Cajuru, festa sorvete Cajuru, Itapolitana encomendas, sorvete para eventos Cajuru" name="keywords"/>
-<meta content="index, follow" name="robots"/>
-<link href="https://itapolitanacajuru.com.br/encomendas.html" rel="canonical"/>
-<meta content="website" property="og:type"/>
-<meta content="https://itapolitanacajuru.com.br/encomendas.html" property="og:url"/>
-<meta content="Encomendas de Sorvete Tipo Artesanal para Festas e Eventos | Sorveteria Itapolitana Cajuru" property="og:title"/>
-<meta content="Encomende tortas de sorvete, caixas de sorvete, picolés e acréscimos para festas e eventos em Cajuru/SP. Faça seu pedido via WhatsApp na Sorveteria Itapolitana!" property="og:description"/>
-<meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
-<meta content="1200" property="og:image:width"/>
-<meta content="630" property="og:image:height"/>
-<meta content="Sorveteria Itapolitana Cajuru" property="og:site_name"/>
-<meta content="pt_BR" property="og:locale"/>
-<link href="manifest.json" rel="manifest"/>
-<link href="/apple-touch-icon.png" rel="apple-touch-icon"/>
-<link rel="preload" as="image" href="images/carrinho-picole.webp" type="image/webp" fetchpriority="high"/>
-<title data-config="seoPaginas.encomendas.titulo">Encomendas | Sorveteria Itapolitana Cajuru</title>
-
-
-    <style>
-      body { position: relative; }
-      #grid-sabores.limite-atingido .sabor-item:not(.sel) {
-          opacity: 0.5;
-          filter: grayscale(1);
-          cursor: not-allowed;
-          pointer-events: none;
-      }
-      .sabor-item.sel {
-          background: #4CAF50 !important;
-          color: white !important;
-          border-color: #2E7D32 !important;
-          transform: scale(1.05);
-          box-shadow: 0 4px 12px rgba(76,175,80,0.3);
-      }
-
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Encomendas | Sorveteria Itapolitana Cajuru</title>
+  <link rel="stylesheet" href="css/itap-shared.css">
+  <link rel="stylesheet" href="css/itap-refinements.css">
+  <style>
     :root {
       --azul: #1565C0;
       --azul-escuro: #0D47A1;
       --vermelho: #D32F2F;
-      --amarelo: #F9A825;
-      --branco: #FFFFFF;
-      --cinza-claro: #F5F5F5;
-      --cinza: #9E9E9E;
       --verde: #2E7D32;
-      --sombra: 0 2px 12px rgba(0,0,0,0.12);
-      --radius: 14px;
+      --amarelo: #F9A825;
+      --cinza: #9E9E9E;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Nunito', 'Segoe UI', Arial, sans-serif; background: var(--cinza-claro); color: #212121; font-size: 18px; -webkit-text-size-adjust: 100%; }
-    h1, h2, h3, .category-cta, button { font-family: 'Poppins', 'Segoe UI', Arial, sans-serif; }
+    body { font-family: 'Nunito', sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+    .header { background: var(--azul-escuro); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+    
+    /* Accordion Style */
+    .categoria { background: white; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }
+    .categoria-header { 
+        padding: 20px; background: var(--azul); color: white; cursor: pointer; 
+        display: flex; justify-content: space-between; align-items: center;
+        border: none; width: 100%; text-align: left;
+    }
+    .categoria-conteudo { display: none; padding: 20px; border-top: 1px solid #eee; }
+    
+    /* Product Cards */
+    .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+    .prod-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; text-align: center; background: #fff; }
+    .prod-nome { font-weight: 800; margin-bottom: 10px; }
+    .prod-preco { color: var(--azul); font-weight: 700; margin-bottom: 15px; }
+    .btn-sabores { 
+        background: var(--azul); color: white; border: none; padding: 10px 15px; 
+        border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%;
+    }
 
-    /* HEADER */
-    .header {
-      background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
-      color: white;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    /* Modais */
+    .modal { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.7); display: none; align-items: flex-end; justify-content: center; z-index: 2000; 
     }
-    .header-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-    .header-logo img{width:54px;height:54px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 14px rgba(0,0,0,.25);}
-    .header-logo-texto h1 { font-size:1rem; color:#E8000D; line-height:1.2; font-weight:900; }
-    .header-logo-texto p { font-size:0.7rem; color:#fff; font-weight: 600; }
-    .header-acoes { display:flex; gap:10px; align-items:center; }
-    .btn-voltar {
-      background: linear-gradient(135deg, #F9A825, #FFD600);
-      color: #1A0A00;
-      border: 2px solid #1A0A00;
-      box-shadow: 0 0 0 2px #FFD600, 0 2px 8px rgba(249,168,37,.5);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 800;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+    .modal-content { 
+        background: white; width: 100%; max-width: 600px; max-height: 90vh; 
+        border-radius: 20px 20px 0 0; padding: 25px; overflow-y: auto; 
     }
-    .btn-voltar:hover { background: linear-gradient(135deg, #FFD600, #F9A825); transform: translateY(-1px); }
-
-    /* BOTÃO CARRINHO FIXO — design iFood/Rappi style */
+    .sabor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+    .sabor-item { 
+        padding: 12px; border: 2px solid #eee; border-radius: 10px; cursor: pointer; 
+        text-align: center; font-weight: 600; background: #fff;
+    }
+    .sabor-item.sel { background: var(--verde); color: white; border-color: var(--verde); }
+    .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+    
+    /* Carrinho */
     .btn-carrinho-fixo {
-      position: fixed;
-      bottom: calc(32px + env(safe-area-inset-bottom, 0px));
-      right: 16px;
-      left: auto;
-      transform: none;
-      background: linear-gradient(135deg, #E65100 0%, #FF6D00 100%);
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 16px 32px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 6px 24px rgba(230,81,0,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      z-index: 9997;
-      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-      min-width: 220px;
-      max-width: 90vw;
-      white-space: nowrap;
-      /* Evita menu de contexto e seleção de texto no celular */
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-    }
-    @keyframes popIn {
-      from { opacity:0; transform:scale(0.7) translateY(20px); }
-      to   { opacity:1; transform:scale(1) translateY(0); }
-    }
-    @keyframes carrinho-pulse {
-      0%, 100% { box-shadow: 0 6px 24px rgba(230,81,0,0.45); }
-      50%       { box-shadow: 0 8px 36px rgba(255,109,0,0.75), 0 0 0 8px rgba(255,109,0,0.12); }
-    }
-    @keyframes carrinho-pulse-mobile {
-      0%, 100% { box-shadow: 0 -4px 20px rgba(230,81,0,0.35); }
-      50%       { box-shadow: 0 -6px 30px rgba(255,109,0,0.65); }
-    }
-    .btn-carrinho-fixo.ativo {
-      animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards,
-                 carrinho-pulse 2s ease-in-out 0.35s infinite;
-    }
-    .btn-carrinho-fixo:not(:disabled):hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(230,81,0,0.6); }
-    .btn-carrinho-fixo .badge {
-      background: #fff;
-      color: #E65100;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    .btn-carrinho-fixo__label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 900;
-      font-size: 1rem;
-      min-width: 0;
-      color: #fff;
-    }
-    .btn-carrinho-fixo__meta {
-      display: inline-flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px;
-      min-width: 0;
-      font-size: 0.95rem;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-    .btn-carrinho-fixo__total {
-      color: #fff;
-      font-weight: 900;
-    }
-    .btn-carrinho-fixo__arrow {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: rgba(255,255,255,0.85);
-      margin-left: 2px;
-    }
-    @media (max-width: 640px) {
-      .btn-carrinho-fixo {
-        /* FAB flutuante — canto inferior direito, sem barra full-width */
-        right: 14px;
-        left: auto;
-        width: auto;
-        max-width: calc(100vw - 28px);
-        min-width: 0;
-        border-radius: 50px;
-        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-        padding: 13px 18px;
-        justify-content: center;
-        gap: 8px;
-        box-shadow: 0 6px 24px rgba(230,81,0,0.5);
-      }
-      .btn-carrinho-fixo__label {
-        font-size: 0.88rem;
-      }
-      .btn-carrinho-fixo__meta {
-        font-size: 0.88rem;
-      }
-      .btn-carrinho-fixo__arrow {
-        display: none;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .btn-carrinho-fixo.ativo { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) forwards; }
-    }
-
-    /* BANNER INFO */
-    .banner-info {
-      background: linear-gradient(90deg, #C62828, #0D47A1);
-      color: #fff;
-      text-align: center;
-      padding: 12px 16px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-
-    /* HERO */
-    .hero {
-      background: linear-gradient(160deg, #0D47A1 0%, #1565C0 40%, #1976D2 70%, #0D47A1 100%);
-      background-size: 200% 200%;
-      animation: hero-gradiente 6s ease infinite;
-      color: white;
-      padding: 28px 20px 32px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    @keyframes hero-gradiente {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero h2 { font-size: clamp(1.8rem, 7vw, 2.5rem); margin-bottom: 12px; font-weight: 900; text-shadow: 0 3px 12px rgba(0,0,0,.4); }
-    .hero h2 .destaque { color: var(--amarelo); text-shadow: 0 0 15px rgba(249,168,37,0.4); }
-    .hero p { font-size: clamp(1rem, 4vw, 1.2rem); color: #fff; line-height: 1.6; max-width: 550px; margin: 0 auto 16px; font-weight: 700; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-    .hero-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .hero-badge {
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.35);
-      color: white;
-      border-radius: 50px;
-      padding: 5px 14px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: .3px;
-    }
-
-    /* CONTAINER PRINCIPAL */
-    .container { max-width: 800px; margin: 0 auto; padding: 20px 16px 100px; }
-
-    /* SEÇÃO CATEGORIA */
-    .categoria {
-      background: white;
-      border-radius: var(--radius);
-      margin-bottom: 16px;
-      box-shadow: var(--sombra);
-      overflow: hidden;
-    }
-    .categoria-header {
-      padding: 14px 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      user-select: none;
-      transition: opacity 0.2s;
-      width: 100%;
-      border: none;
-      text-align: left;
-      min-height: 118px;
-      gap: 14px;
-      touch-action: manipulation;
-      box-sizing: border-box;
-    }
-    .categoria-header:hover { opacity: 0.9; }
-    .categoria-header:focus-visible { outline: 3px solid rgba(255,255,255,.95); outline-offset: -3px; }
-    .categoria-header-left { display:flex; align-items:center; gap:14px; flex:1; min-width:0; }
-    .categoria-emoji { font-size: 1.8rem; flex-shrink:0; }
-    .categoria-info h3 { font-size: clamp(1.2rem, 5vw, 1.5rem); color: white; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,.7); letter-spacing: .5px; }
-    .categoria-info p { font-size: clamp(0.9rem, 3.5vw, 1.1rem); color: #fff; margin-top:4px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,.6); }
-    .frase-cat { font-size: clamp(0.78rem, 2.8vw, 0.9rem); color: rgba(255,255,255,.9); font-style: italic; margin-top: 5px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
-    /* Indicador neon circular */
-    .acc-indicator { display:flex; flex-direction:column; align-items:center; gap:5px; flex-shrink:0; pointer-events:none; }
-    .acc-circle { width:70px; height:70px; display:flex; align-items:center; justify-content:center; border:3px solid rgba(255,255,255,.95); border-radius:50%; background:rgba(255,255,255,.12); box-shadow:0 0 12px rgba(255,255,255,.7),0 0 24px rgba(255,255,255,.3); animation:accCirclePulse 2s ease-in-out infinite; transition:box-shadow .3s ease,background .3s ease; flex-shrink:0; }
-    .categoria-header.aberta .acc-circle { animation:none; background:rgba(255,255,255,.22); box-shadow:0 0 8px rgba(255,255,255,.4); }
-    .acc-arrow { font-size:26px; color:#fff; font-weight:900; line-height:1; transition:transform .3s ease; display:block; pointer-events:none; }
-    .categoria-header.aberta .acc-arrow { transform:rotate(180deg); }
-    .acc-label { font-size:12px; font-weight:900; color:#FFD600; text-align:center; letter-spacing:.3px; white-space:nowrap; text-shadow:0 1px 3px rgba(0,0,0,.6); line-height:1.3; pointer-events:none; }
-    @keyframes accCirclePulse { 0%,100%{box-shadow:0 0 10px rgba(255,255,255,.6),0 0 20px rgba(255,255,255,.25)} 50%{box-shadow:0 0 20px rgba(255,255,255,.98),0 0 38px rgba(255,255,255,.55)} }
-    @media(prefers-reduced-motion:reduce){ .acc-circle{animation:none} .acc-arrow{transition:none} }
-    @media(max-width:768px){
-      .categoria-header { min-height:100px; padding:12px 16px; gap:12px; }
-      .acc-circle { width:58px; height:58px; }
-      .acc-arrow { font-size:20px; }
-      .acc-label { font-size:11px; }
-    }
-    @media(max-width:480px){
-      .categoria-header { min-height:88px; padding:10px 12px; gap:10px; }
-      .categoria-emoji { font-size:1.4rem; }
-      .acc-circle { width:52px; height:52px; }
-      .acc-arrow { font-size:17px; }
-      .acc-label { font-size:11px; letter-spacing:0; }
-    }
-    @media(max-width:360px){
-      .acc-label { display:none; }
-      .acc-circle { width:48px; height:48px; }
-    }
-    .categoria-conteudo { display: none; padding: 16px; border-top: 1px solid #eee; }
-    .categoria-conteudo.aberto { display: block; }
-    .category-cta-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
-    .category-cta {
-      flex:1 1 220px;
-      min-height:44px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      text-decoration:none;
-      border-radius:50px;
-      padding:12px 18px;
-      font-size:0.95rem;
-      font-weight:900;
-      letter-spacing:.2px;
-      border:2px solid transparent;
-      transition:transform .2s ease, box-shadow .2s ease;
-    }
-    .category-cta:hover { transform: translateY(-1px); }
-    .category-cta--primary { background:linear-gradient(135deg,#25D366,#128C7E); color:#fff; box-shadow:0 4px 14px rgba(18,140,126,.35); }
-    .category-cta--secondary { background:#fff; color:#0D47A1; border-color:#0D47A1; }
-    .category-cta--attention { position:relative; isolation:isolate; }
-    .category-cta--attention::after {
-      content:"";
-      position:absolute;
-      inset:-4px;
-      border:2px solid currentColor;
-      border-radius:inherit;
-      opacity:0;
-      z-index:-1;
-      animation:ctaPulseSoft 2.4s ease-out infinite;
-    }
-    @keyframes ctaPulseSoft {
-      0% { opacity:.48; transform:scale(.97); }
-      70% { opacity:0; transform:scale(1.06); }
-      100% { opacity:0; transform:scale(1.06); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .category-cta--attention::after { animation:none; opacity:0; }
-    }
-
-    /* CORES DAS CATEGORIAS */
-    .cat-caixas .categoria-header { background: linear-gradient(135deg, #4A148C, #7B1FA2, #9C27B0); }
-    .cat-tortas .categoria-header { background: linear-gradient(135deg, #B71C1C, var(--vermelho), #E91E63); }
-    .cat-picolés .categoria-header { background: linear-gradient(135deg, #BF360C, #E65100, #FF9800); }
-    .cat-acréscimos .categoria-header { background: linear-gradient(135deg, #1B5E20, #2E7D32, #43A047); }
-    /* Sombra colorida por categoria */
-    .cat-caixas { box-shadow: 0 4px 20px rgba(123,31,162,.2); }
-    .cat-tortas { box-shadow: 0 4px 20px rgba(211,47,47,.2); }
-    .cat-picolés { box-shadow: 0 4px 20px rgba(230,81,0,.2); }
-    .cat-acréscimos { box-shadow: 0 4px 20px rgba(27,94,32,.2); }
-    /* Texto sensorial abaixo do título */
-    .categoria-info .frase-cat { font-size: 0.72rem; color: #fff; margin-top: 3px; font-style: italic; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
-
-    /* CARDS DE PRODUTO */
-    .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-    .prod-card {
-      border: 2px solid #eee;
-      border-radius: 14px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      background: white;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-    }
-    .prod-card:hover:not(.esgotado) { transform: translateY(-4px); }
-    .prod-card-img { width: 100%; height: 130px; object-fit: cover; display: block; }
-    .prod-card-sem-foto { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; background: linear-gradient(135deg, #E3F2FD, #F3E5F5); }
-    .prod-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-    .prod-card:hover { border-color: var(--azul); box-shadow: 0 4px 16px rgba(21,101,192,0.15); }
-    .prod-card.esgotado { opacity: 0.6; pointer-events: none; }
-    .prod-nome { font-size: 1rem; font-weight: 800; color: #1A0A00; }
-    .prod-preço { font-size: 1.25rem; font-weight: 900; color: #0D47A1; }
-    .prod-preços-picolé { display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem; }
-    .prod-preços-picolé .preco-varejo-ref { font-size: 11px; color: #999; text-decoration: line-through; }
-    .prod-preços-picolé .preco-atacado-main { font-size: 18px; font-weight: 900; color: var(--verde); line-height: 1.2; }
-    .prod-preços-picolé .preco-atacado-main small { font-size: 11px; font-weight: 500; color: #555; }
-    .prod-preços-picolé .badge-min-picole { display: inline-block; background: var(--verde); color: #fff; font-size: 10px; font-weight: 800; border-radius: 20px; padding: 2px 9px; width: fit-content; }
-    .prod-estoque { font-size: 0.78rem; color: #5D4037; font-weight: 600; }
-    .tag-esgotado {
-      background: var(--vermelho);
-      color: white;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .btn-sabores {
-      background: var(--azul);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 0.9rem;
-      font-weight: 900;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.2s, transform 0.1s;
-      text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4);
-      letter-spacing: .3px;
-    }
-    .btn-sabores:hover:not(:disabled) { background: var(--azul-escuro); transform: translateY(-1px); }
-    .btn-sabores:disabled { background: var(--cinza); cursor: not-allowed; }
-    /* Evita menu de contexto no celular em todos os botões */
-    button, .btn-sabores, .btn-carrinho-fixo, .btn-confirmar, .btn-qty, .btn-add-picóles, .btn-continuar-picóles, .btn-tipo-picóle, .btn-fechar-modal, .btn-voltar {
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-    }
-    .btn-picolé { background: #E65100; }
-    .btn-picolé:hover:not(:disabled) { background: #BF360C; }
-
-    /* MODAL BASE */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 9998; /* acima do nav (8900) e btn-carrinho (9997) */
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .modal-overlay.ativo { opacity: 1; pointer-events: all; }
-    .modal-box {
-      background: white;
-      border-radius: 20px 20px 0 0;
-      width: 100%;
-      max-width: 600px;
-      max-height: 92vh;
-      overflow-y: auto;
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
-      position: relative;
-      z-index: 1001;
-      pointer-events: all !important;
-    }
-    .modal-overlay.ativo .modal-box { transform: translateY(0); }
-    .modal-header {
-      background: linear-gradient(135deg, var(--azul-escuro), var(--azul));
-      color: white;
-      padding: 20px;
-      border-radius: 20px 20px 0 0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .modal-header-top { display:flex; justify-content:space-between; align-items:center; }
-    .modal-título { font-size: 1.1rem; font-weight: 700; }
-    .modal-subtítulo { font-size: 0.85rem; color: #fff; font-weight: 600; margin-top: 4px; }
-    .btn-fechar-modal {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .btn-fechar-modal:hover { background: rgba(255,255,255,0.35); }
-    .modal-body { padding: 20px; }
-
-    /* GRID SABORES */
-    .grid-sabores {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    /* ===== RISCO VERMELHO — PRODUTOS ESGOTADOS ===== */
-    /* Sabor esgotado no modal (sorvete, picolé) */
-    .sabor-item.sabor-esgotado {
-      border: 2px solid #ffcdd2 !important;
-      background: #fff8f8 !important;
-      color: #b71c1c !important;
-      cursor: not-allowed !important;
-      pointer-events: none !important;
-      position: relative;
-      opacity: 0.85;
-    }
-    .sabor-item.sabor-esgotado .sabor-nome {
-      text-decoration: line-through;
-      text-decoration-color: #e53935;
-      text-decoration-thickness: 2px;
-    }
-    /* Risco vermelho diagonal sobre o texto do sabor */
-    .sabor-item.sabor-esgotado::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 8%;
-      width: 84%;
-      height: 2.5px;
-      background: #e53935;
-      transform: translateY(-50%);
-      border-radius: 2px;
-      pointer-events: none;
-    }
-    /* Card de produto esgotado (caixas, tortas, picolés) */
-    .prod-card.esgotado {
-      opacity: 0.80;
-      position: relative;
-    }
-    .prod-card.esgotado .prod-nome {
-      text-decoration: line-through;
-      text-decoration-color: #e53935;
-      text-decoration-thickness: 2.5px;
-      color: #b71c1c;
-    }
-    .prod-card.esgotado .btn-sabores {
-      cursor: not-allowed !important;
-      pointer-events: none !important;
-      background: #e0e0e0 !important;
-      color: #9e9e9e !important;
-      border: 2px solid #bdbdbd !important;
-    }
-    /* Linha vermelha sobre o nome do produto esgotado */
-    .prod-nome-wrap {
-      position: relative;
-      display: inline-block;
-    }
-    .prod-card.esgotado .prod-nome-wrap::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2.5px;
-      background: #e53935;
-      transform: translateY(-50%);
-      border-radius: 2px;
-    }
-    /* Acréscimo esgotado */
-    .acr-card.esgotado .acr-nome {
-      text-decoration: line-through;
-      text-decoration-color: #e53935;
-      text-decoration-thickness: 2px;
-      color: #b71c1c;
-    }
-    /* Animação de liberação quando produto volta ao estoque */
-    @keyframes liberado {
-      0%   { box-shadow: 0 0 0 0 rgba(46,125,50,0.5); }
-      70%  { box-shadow: 0 0 0 12px rgba(46,125,50,0); }
-      100% { box-shadow: 0 0 0 0 rgba(46,125,50,0); }
-    }
-    .produto-liberado {
-      animation: liberado 0.6s ease-out;
-    }
-
-    .sabor-item {
-      border: 2px solid #E0E0E0;
-      background: white;
-      border-radius: 10px;
-      padding: 10px 8px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s;
-      font-weight: 500;
-    }
-    .sabor-item:hover { border-color: var(--azul); color: var(--azul); }
-    .sabor-item.sel {
-      background: var(--azul);
-      border-color: var(--azul);
-      color: white;
-      font-weight: 700;
-    }
-    .btn-confirmar {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 900;
-      cursor: pointer;
-      background: #E0E0E0;
-      color: #4A148C;
-      transition: all 0.2s;
-      letter-spacing: .3px;
-    }
-    .btn-confirmar.pronto { background: var(--verde); color: #fff; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4); }
-    .btn-confirmar:disabled { cursor: not-allowed; }
-
-    /* COMPLEMENTOS SORVETE */
-    .comp-sorvete-título {
-      font-size: 1.05rem; font-weight: 900; color: #fff;
-      margin: 14px 0 12px; padding: 14px 18px;
-      background: linear-gradient(135deg,#B71C1C,#E53935,#FF5252);
-      border-radius: 14px;
-      text-align: center;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      box-shadow: 0 4px 16px rgba(183,28,28,0.35);
-      border: 2px solid rgba(255,255,255,0.25);
-      cursor: default;
-      display: block;
-      width: 100%;
-      text-shadow: 0 1px 4px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.3), 0 0 1px rgba(0,0,0,.5);
-    }
-    .comp-sorvete-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px; background: #FAFAFA;
-      border: 1px solid #E8E8E8; border-radius: 10px; margin-bottom: 8px;
-      transition: border-color 0.15s;
-    }
-    .comp-sorvete-item.esgotado { opacity: 0.5; pointer-events: none; }
-    .comp-sorvete-item.ativo { border-color: #6A0DAD; background: #F3E5F5; }
-    .comp-sorvete-info { flex: 1; }
-    .comp-sorvete-nome { font-size: 0.9rem; font-weight: 700; color: #1A0A00; display: block; }
-    .comp-sorvete-preço { font-size: 0.82rem; color: #4A148C; font-weight: 700; }
-    .comp-sorvete-tag-esgotado { font-size: 0.72rem; background: #EF5350; color: white; border-radius: 4px; padding: 2px 6px; font-weight: 700; margin-left: 6px; }
-    .comp-sorvete-ctrl { display: flex; align-items: center; gap: 8px; }
-    .comp-btn {
-      width: 32px; height: 32px; border: none; border-radius: 8px;
-      font-size: 1.1rem; font-weight: 800; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-    }
-    .comp-btn-menos { background: #EF5350; color: white; }
-    .comp-btn-menos:hover { background: #C62828; }
-    .comp-btn-mais { background: #43A047; color: white; }
-    .comp-btn-mais:hover { background: #1B5E20; }
-    .comp-qtd { font-size: 1rem; font-weight: 800; min-width: 24px; text-align: center; color: #1A0A00; }
-
-    /* MODAL PICOLÉ */
-    .picolé-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid #F5F5F5;
-    }
-    .picolé-sabor-nome { font-size: 0.9rem; font-weight: 500; flex: 1; }
-    .qty-ctrl { display:flex; align-items:center; gap:10px; }
-    .btn-qty {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid var(--azul);
-      background: white;
-      color: var(--azul);
-      font-size: 1.2rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-    .btn-qty:hover { background: var(--azul); color: white; }
-    .qty-val { font-size: 1rem; font-weight: 700; min-width: 28px; text-align: center; }
-    .picolé-total-bar {
-      background: #F5F5F5;
-      border: 1px solid #E0E0E0;
-      border-radius: 10px;
-      padding: 16px;
-      margin: 16px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .aviso-mínimo {
-      background: #FFF3E0;
-      border: 2px solid #E65100;
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 0.85rem;
-      color: #BF360C;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: none;
-    }
-    .btn-add-picolés {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: #E65100;
-      color: white;
-      font-size: 1rem;
-      font-weight: 900;
-      cursor: pointer;
-      transition: background 0.2s;
-      text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4);
-      letter-spacing: .3px;
-    }
-     .btn-add-picolés:disabled { background: var(--cinza); cursor: not-allowed; }
-    .btn-add-picolés:not(:disabled):hover { background: #BF360C; }
-    .btn-continuar-picolés {
-      width: 100%;
-      padding: 18px 16px;
-      border: 3px solid #E65100;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-      color: #BF360C;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 14px;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      letter-spacing: 0.3px;
-      box-shadow: 0 3px 10px rgba(230,81,0,0.2);
-      min-height: 56px;
-    }
-    .btn-continuar-picolés:hover { background: linear-gradient(135deg, #FFE0B2, #FFCC80); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(230,81,0,0.3); }
-    .btn-continuar-picolés:active { transform: translateY(0); }
-    /* TIPOS DE PICOLÉ */
-    .btn-tipo-picolé {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #E65100;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #FFF8E1, #FFF3E0);
-      color: #BF360C;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(230,81,0,0.15);
-    }
-    .btn-tipo-picolé:hover { background: linear-gradient(135deg, #FFE0B2, #FFCC80); transform: translateY(-1px); }
-    .btn-tipo-picolé.esgotado { opacity: 0.4; cursor: not-allowed; }
-    .btn-tipo-nome { flex: 1; text-align: left; }
-    .btn-tipo-qtd { background: #E65100; color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.85rem; }
-    .btn-tipo-preço { font-size: 0.8rem; color: #795548; }
-    /* BARRA DE PROGRESSO PICOLÉS */
-    .picolé-progress-bar {
-      background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-      border-top: 1px solid #FFCC80;
-      padding: 8px 16px 10px;
-    }
-    .picolé-progress-info {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-      color: #BF360C;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-    .picolé-progress-info strong {
-      font-size: 1.1rem;
-      color: #E65100;
-    }
-    .picolé-progress-status {
-      margin-left: auto;
-      font-weight: 700;
-      font-size: 0.8rem;
-      padding: 2px 8px;
-      border-radius: 20px;
-      background: #FFCCBC;
-      color: #BF360C;
-    }
-    .picolé-progress-status.ok {
-      background: #C8E6C9;
-      color: #2E7D32;
-    }
-    .picolé-progress-track {
-      height: 8px;
-      background: #FFCCBC;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .picolé-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #FF7043, #E65100);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-    }
-    .picolé-progress-fill.ok {
-      background: linear-gradient(90deg, #66BB6A, #2E7D32);
-    }
-    /* MODAL CARRINHO */
-    .steps-bar {
-      display: flex;
-      align-items: center;
-      padding: 16px 20px;
-      background: #F5F5F5;
-      gap: 8px;
-    }
-    .step {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: var(--cinza);
-      flex: 1;
-    }
-    .step-num {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #E0E0E0;
-      color: #6A0DAD; font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.8rem;
-      flex-shrink: 0;
-    }
-    .step.ativo .step-num { background: var(--azul); color: white; }
-    .step.completo .step-num { background: var(--verde); color: white; }
-    .step.ativo .step-label { color: var(--azul); font-weight: 600; }
-    .step-sep { color: #E0E0E0; font-size: 1.2rem; }
-    .etapa { display: none; padding: 20px; }
-    .etapa.ativa { display: block; }
-
-    /* CART ITEMS */
-    .cart-item {
-      display: flex;
-      gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid #F0F0F0;
-      align-items: flex-start;
-    }
-    .cart-item-info { flex: 1; }
-    .cart-item-nome { font-weight: 700; font-size: 0.95rem; }
-    .cart-item-sabores { font-size: 0.78rem; color: var(--cinza); margin: 4px 0; line-height: 1.5; }
-    .cart-item-preço-unit { font-size: 0.8rem; color: var(--azul); }
-    .cart-item-ctrl { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
-    .cart-item-sub { font-weight: 700; font-size: 0.95rem; color: var(--azul); }
-    .btn-remover { background:none; border:none; cursor:pointer; font-size:1.1rem; padding:4px; }
-    .total-bar {
-      background: linear-gradient(135deg, var(--azul), var(--azul-escuro));
-      color: white;
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 16px 0;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-    .aviso-min-carrinho {
-      background: #FFF3E0;
-      border: 1px solid #FFB300;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.82rem;
-      color: #E65100;
-      margin-bottom: 12px;
-      display: none;
-    }
-    .btn-próxima-etapa {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: var(--azul);
-      color: white;
-      font-size: 1rem;
-      font-weight: 900;
-      cursor: pointer;
-      transition: background 0.2s;
-      text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4);
-      letter-spacing: .3px;
-    }
-    .btn-próxima-etapa:disabled { background: var(--cinza); cursor: not-allowed; }
-    .btn-próxima-etapa:not(:disabled):hover { background: var(--azul-escuro); }
-    /* Barra de ação sticky no rodapéé do modal */
-    .modal-action-bar {
-      position: sticky;
-      bottom: 0;
-      background: white;
-      padding: 14px 20px 20px;
-      border-top: 1px solid #F0F0F0;
-      z-index: 50;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
-    }
-    .modal-action-bar.hidden { display: none; }
-
-    /* RESUMO PEDIDO */
-    .resumo-título { font-size: 1rem; font-weight: 700; margin-bottom: 14px; color: var(--azul); }
-    .resumo-item {
-      border: 1px solid #E0E0E0;
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-    .resumo-item-topção { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
-    .qty-ctrl-mini { display:flex; align-items:center; gap:8px; }
-    .btn-qty-mini {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      border: 1.5px solid var(--azul);
-      background: white;
-      color: var(--azul);
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-qty-mini:hover { background: var(--azul); color: white; }
-    .resumo-sabor { font-size: 0.8rem; color: #6A0DAD; font-weight: 700; margin: 2px 0; }
-    .resumo-sub { font-weight: 700; color: var(--azul); font-size: 0.9rem; margin-top: 8px; text-align: right; }
-    .resumo-total-final {
-      background: var(--azul);
-      color: white;
-      border-radius: 10px;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.05rem;
-      margin: 14px 0;
-    }
-    .aviso-prazo {
-      background: #E3F2FD;
-      border: 1px solid var(--azul);
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 0.85rem;
-      color: var(--azul-escuro);
-      margin: 14px 0;
-    }
-
-    /* FORMULÁRIO DADOS */
-    .form-grupo { margin-bottom: 16px; }
-    .form-grupo label { display:block; font-weight:600; font-size:0.88rem; margin-bottom:6px; color:#424242; }
-    .form-grupo input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #E0E0E0;
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: border-color 0.2s;
-      outline: none;
-    }
-    .form-grupo input:focus { border-color: var(--azul); }
-    .botãoes-etapa-dados {
-      background: white;
-      padding: 20px 0 8px;
-      border-top: 1px solid #E0E0E0;
-      margin-top: 12px;
-    }
-    .btn-finalizar {
-      flex: 1;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: var(--verde);
-      color: white;
-      font-size: 1rem;
-      font-weight: 900;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 0;
-      text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4);
-      letter-spacing: .3px;
-    }
-    .btn-finalizar:hover { background: #1B5E20; }
-    .btn-enviar-rápido {
-      width: 48px;
-      height: 48px;
-      min-width: 48px;
-      border-radius: 50%;
-      background: #D32F2F;
-      border: none;
-      color: white;
-      font-size: 1.3rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(211,47,47,0.4);
-      transition: background 0.2s;
-      flex-shrink: 0;
-    }
-    .btn-enviar-rápido:hover { background: #B71C1C; }
-    .btn-voltar-etapa {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid var(--azul);
-      border-radius: 12px;
-      background: white;
-      color: var(--azul);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .btn-continuar-comprando {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #D32F2F, #F44336);
-      color: white;
-      font-size: 0.95rem;
-      font-weight: 900;
-      cursor: pointer;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px rgba(211,47,47,0.35);
-      transition: background 0.2s, transform 0.15s;
-      text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4);
-      letter-spacing: .3px;
-    }
-    .btn-continuar-comprando:hover { background: linear-gradient(135deg,#B71C1C,#D32F2F); transform: translateY(-1px); }
-
-    /* CONFIRMAÇÃO */
-    .confirmação-box { text-align: center; padding: 20px 0; }
-    .confirmação-icon { font-size: 4rem; margin-bottom: 16px; }
-    .confirmação-título { font-size: 1.4rem; font-weight: 800; color: var(--verde); margin-bottom: 8px; }
-    .confirmação-num { font-size: 0.9rem; color: var(--cinza); margin-bottom: 20px; }
-    .btn-whatsapp-final {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: #25D366;
-      color: white;
-      font-size: 1rem;
-      font-weight: 900;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      text-shadow: 0 1px 3px rgba(0,0,0,.55), 0 0 1px rgba(0,0,0,.4);
-      letter-spacing: .3px;
-    }
-    .btn-whatsapp-final:hover { background: #128C7E; }
-    .btn-novo-pedido {
-      width: 100%;
-      padding: 14px;
-      border: 2px solid var(--azul);
-      border-radius: 12px;
-      background: white;
-      color: var(--azul);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-    .btn-voltar-cardápio {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: var(--cinza-claro);
-      color: #424242;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #212121;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s;
-      white-space: nowrap;
-      max-width: 90vw;
-      text-align: center;
-    }
-    .toast.ativo { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.sucesso { background: var(--verde); }
-    .toast.alerta { background: var(--vermelho); }
-
-    /* RESPONSIVO */
-    @media (max-width: 480px) {
-      .prod-grid { grid-template-columns: 1fr; }
-      .grid-sabores { grid-template-columns: repeat(3, 1fr); }
-      .header-logo-texto h1 { font-size: 0.85rem; }
-
-      /* BOTÕES MOBILE - enquadramento perfeito */
-      .btn-sabores {
-        padding: 14px 10px;
-        font-size: 0.85rem;
-        border-radius: 10px;
-        min-height: 48px;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .btn-próxima-etapa {
-        padding: 18px 16px;
-        font-size: 1rem;
-        border-radius: 14px;
-        min-height: 56px;
-        width: 100%;
-        box-sizing: border-box;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-        margin-top: 12px;
-      }
-      .btn-finalizar {
-        padding: 18px 16px;
-        font-size: 1rem;
-        border-radius: 14px;
-        min-height: 56px;
-        width: 100%;
-        box-sizing: border-box;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .btn-continuar-comprando {
-        padding: 16px;
-        font-size: 0.9rem;
-        border-radius: 14px;
-        min-height: 52px;
-        width: 100%;
-        box-sizing: border-box;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .btn-voltar-etapa {
-        padding: 14px;
-        font-size: 0.88rem;
-        border-radius: 12px;
-        min-height: 48px;
-        width: 100%;
-        box-sizing: border-box;
-        touch-action: manipulation;
-      }
-      .modal-box {
-        max-height: 88vh;
-        border-radius: 16px 16px 0 0;
-      }
-      .etapa { padding: 16px 14px; }
-      .lista-carrinho-item {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .form-grupo input {
-        font-size: 16px; /* evita zoom automático no iOS */
-        padding: 14px 12px;
-      }
-      .prod-card { padding: 14px 12px; }
-      .prod-nome { font-size: 0.92rem; }
-      .prod-preço { font-size: 1rem; }
-      .total-bar {
-        font-size: 1rem;
-        padding: 14px 16px;
-      }
-    }
-
-    /* TOUCH - todos os botões interativos */
-
-    /* Garantir que filhos dos botãoes não bloqueiem cliques */
-    .btn-finalizar *, .btn-whatsapp-final *, .btn-voltar-etapa *,
-    .btn-ir-dados *, .btn-próxima-etapa *, .btn-novo-pedido *,
-    .btn-voltar-cardápio * {
-      pointer-events: none;
-    }
-    button, .btn-sabores, .btn-próxima-etapa, .btn-finalizar,
-    .btn-continuar-comprando, .btn-voltar-etapa, .categoria-header {
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    /* ===== BARRAS DE AÇÃO ===== */
-    .barra-acao {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-radius: 14px;
-      padding: 10px 16px;
-      margin: 8px 0;
-      min-height: 52px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      position: relative;
-      z-index: 1;
-    }
-    .barra-texto {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: white;
-      flex: 1;
-      text-align: center;
-      pointer-events: none;
-    }
-    /* Cores das barras */
-    .barra-verde  { background: linear-gradient(135deg, #1B5E20, #2E7D32, #43A047); }
-    .barra-azul   { background: linear-gradient(135deg, #0D47A1, #1565C0, #1976D2); }
-    .barra-wpp    { background: linear-gradient(135deg, #075E54, #128C7E, #25D366); }
-    .barra-cinza-claro { background: #F0F0F0; }
-    .barra-cinza-claro .barra-texto { color: #333; }
-
-    /* ===== BOTÕES REDONDOS ===== */
-    .btn-acao-redondo {
-      width: 44px;
-      height: 44px;
-      min-width: 44px;
-      border-radius: 50%;
-      border: none;
-      font-size: 1.1rem;
-      font-weight: 900;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-      transition: transform 0.15s, box-shadow 0.15s;
-      flex-shrink: 0;
-      z-index: 2;
-      position: relative;
-      pointer-events: all !important;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      text-decoration: none;
-      color: white;
-    }
-    .btn-acao-redondo:hover  { transform: scale(1.1); box-shadow: 0 5px 16px rgba(0,0,0,0.35); }
-    .btn-acao-redondo:active { transform: scale(0.95); }
-
-    /* Cores dos botões redondos */
-    .btn-vermelho    { background: linear-gradient(135deg, #B71C1C, #D32F2F); color: white; }
-    .btn-azul        { background: linear-gradient(135deg, #0D47A1, #1565C0); color: white; }
-    .btn-wpp         { background: linear-gradient(135deg, #075E54, #25D366); color: white; }
-    .btn-cinza       { background: linear-gradient(135deg, #616161, #9E9E9E); color: white; }
-    .btn-cinza-claro { background: white; color: #333; border: 2px solid #ccc; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-
-    /* Garantir cliques nos botões redondos */
-    .btn-acao-redondo * { pointer-events: none; }
-    /* BOTÃO VOLTAR PADRÃO - Amarelo vibrante, seta ← */
-    .btn-voltar-padrao {
-      background: linear-gradient(135deg, #F9A825, #FFD600) !important;
-      color: #1A0A00 !important;
-      border: 3px solid #1A0A00 !important;
-      box-shadow: 0 0 0 2px #FFD600, 0 4px 14px rgba(249,168,37,.5) !important;
-    }
-    /* Quando em barra cinza claro (fundo claro), borda amarela escura */
-    .barra-cinza-claro .btn-voltar-padrao {
-      border: 3px solid #E65100 !important;
-      box-shadow: 0 0 0 2px #FFD600, 0 4px 14px rgba(249,168,37,.6) !important;
-    }
-    /* Quando em barra azul (fundo azul escuro), borda branca bem visivel */
-    .barra-azul .btn-voltar-padrao {
-      border: 3px solid #fff !important;
-      box-shadow: 0 0 0 2px #1565C0, 0 4px 14px rgba(249,168,37,.7) !important;
-    }
-
-/* =====================================================
-   ENCOMENDAS — RESPONSIVIDADE 3 APARELHOS
-   ===================================================== */
-@media (max-width: 480px) {
-  .enc-header { padding: 10px 12px !important; }
-  .enc-nav-tabs { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-  .enc-tab { font-size: 0.8rem !important; padding: 8px 12px !important; }
-  .prod-card { padding: 14px 12px !important; }
-  .prod-nome { font-size: 1rem !important; }
-  .prod-preço { font-size: 1.1rem !important; }
-  .sabor-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
-  .sabor-item { font-size: 0.82rem !important; padding: 8px 6px !important; }
-  .carrinho-fab { bottom: 16px !important; right: 16px !important; }
-  .modal-sabores { padding: 16px 12px !important; }
-  .form-pedido input, .form-pedido textarea { font-size: 16px !important; }
-  .btn-finalizar { font-size: 1rem !important; padding: 14px !important; }
-}
-
-@media (min-width: 481px) and (max-width: 1024px) {
-  .sabor-grid { grid-template-columns: repeat(3, 1fr) !important; }
-  .prod-grid { grid-template-columns: repeat(2, 1fr) !important; }
-  .enc-tab { font-size: 0.88rem; padding: 9px 14px; }
-}
-
-@media (min-width: 1025px) {
-  .sabor-grid { grid-template-columns: repeat(5, 1fr) !important; }
-  .prod-grid { grid-template-columns: repeat(3, 1fr) !important; }
-  .enc-container { max-width: 960px; margin: 0 auto; }
-}
-
-html { scroll-behavior: smooth; }
-::selection { background: #e85d04; color: #fff; }
-
-</style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": ["FoodService", "IceCreamShop"],
-  "name": "Encomendas – Sorveteria Itapolitana Cajuru",
-  "description": "Encomende tortas de sorvete, caixas 5L e 10L, picolés no atacado e acréscimos. Retirada na loja em Cajuru/SP. Sorvete artesanal para festas, aniversários e eventos.",
-  "url": "https://itapolitanacajuru.com.br/encomendas.html",
-  "telephone": "+55-16-99606-2046",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "R. Cel. Manoel Caetano, 311",
-    "addressLocality": "Cajuru",
-    "addressRegion": "SP",
-    "postalCode": "14240-000",
-    "addressCountry": "BR"
-  },
-  "servesCuisine": ["Sorvete", "Açaí", "Torta Gelada", "Picolé", "Sobremesa", "Sorvete para Festas"],
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "bestRating": "5",
-    "worstRating": "1",
-    "reviewCount": "180"
-  },
-  "potentialAction": {
-    "@type": "OrderAction",
-    "target": "https://wa.me/5516996062046"
-  },
-  "sameAs": [
-    "https://www.instagram.com/itapolitanacajuru/",
-    "https://www.facebook.com/itapolitanacajuru/"
-  ]
-}
-</script>
-<meta content="#EF0129" name="theme-color"/>
-<meta content="summary_large_image" name="twitter:card"/>
-<meta content="Encomendas – Sorveteria Itapolitana Cajuru" name="twitter:title"/>
-<meta content="Encomende tortas, caixas de sorvete e picolés para festas. Retirada na loja em Cajuru/SP." name="twitter:description"/>
-<meta content="https://itapolitanacajuru.com.br/images/logo.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-<noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/></noscript>
-<style>
-.security-seals-title { font-size:12px;color:rgba(255,255,255,.7);text-align:center;margin-bottom:12px;font-weight:600; }
-.security-seals-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 700px; margin: 0 auto; padding: 0 12px; }
-.security-seal-item { flex: 1 1 auto; min-width: 100px; max-width: 110px; text-decoration: none; cursor: pointer; }
-.security-seal-content { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; background: rgba(255,255,255,.05); transition: all 0.3s; }
-.security-seal-content:hover { background: rgba(255,255,255,.15); }
-.security-seal-icon { font-size: 32px; line-height: 1; }
-.security-seal-text { font-size: 9px; color: #FBD100; font-weight: 700; text-align: center; line-height: 1.2; }
-</style>
-<!-- cache-bust:20260408_111640 -->
-  <link rel="stylesheet" href="css/itap-shared.css">
-  <link rel="stylesheet" href="css/itap-refinements.css">
+        position: fixed; bottom: 20px; right: 20px; background: #FF6D00; color: white;
+        padding: 15px 25px; border-radius: 50px; font-weight: 800; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        display: none; align-items: center; gap: 10px; z-index: 1500; border: none; cursor: pointer;
+    }
+    
+    /* Estabilidade */
+    .lock-scroll { overflow: hidden !important; }
+  </style>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<!-- GTM temporariamente desabilitado - requer configuração válida
-<noscript><iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-K7L8M9N" style="display:none;visibility:hidden" width="0"></iframe></noscript>
--->
-<!-- End Google Tag Manager (noscript) -->
 
-<!-- ═══ CABEÇALHO PADRÃO ITAPOLITANA ════════════════════════════════════ -->
-<header class="itap-header">
-  <div class="itap-header-inner">
-    <!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô.
-         Sem position:absolute/fixed; sobreposição impossível via flex + gap + margin. -->
-    <div class="itap-header-top">
-      <div class="itap-header-duvidas">
-        <button type="button" class="ita-bot-duvidas-btn" data-role="duvidas"
-                id="ita-bot-duvidas" onclick="if(window.abrirItaBot)window.abrirItaBot();else console.error('ItaBot não carregado');"
-                aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">💬 DÚVIDAS</button>
-      </div>
-    </div>
-    <nav class="itap-header-nav" aria-label="Menu principal">
-      <a class="itap-nav-btn" href="index.html" style="background:linear-gradient(135deg,#FF6D00,#E65100);">
-        <span class="itap-nav-icon">🏠</span><span class="itap-nav-label">TELA INICIAL</span>
-      </a>
-      <a class="itap-nav-btn" href="encomendas.html" aria-current="page" style="background:linear-gradient(135deg,#0D47A1,#00288F);">
-        <span class="itap-nav-icon">🛒</span><span class="itap-nav-label">ENCOMENDAS</span>
-      </a>
-      <a class="itap-nav-btn" href="promocao.html" style="background:linear-gradient(135deg,#E8000D,#C62828);">
-        <span class="itap-nav-icon">🎉</span><span class="itap-nav-label">PROMOÇÃO</span>
-      </a>
-      <a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);">
-        <span class="itap-nav-icon">⭐</span><span class="itap-nav-label">DICAS/DEPOIMENTOS</span>
-      </a>
-      <a class="itap-nav-btn" href="sobre.html" style="background:linear-gradient(135deg,#4A148C,#6A1B9A);">
-        <span class="itap-nav-icon">🏪</span><span class="itap-nav-label">QUEM SOMOS</span>
-      </a>
-    </nav>
-  </div>
+<header class="header">
+  <h1>Itapolitana Cajuru - Encomendas (v5.0)</h1>
 </header>
-<!-- ═══ FIM CABEÇALHO PADRÃO ═══════════════════════════════════════════════ -->
-<main id="conteudo-principal">
-<div class="banner-info">
-  📍 Cajuru · Cássia dos Coqueiros · Santa Cruz da Esperança  ·  🏪 Retirada na loja  ·  ✨ Sorvete tipo artesanal desde 2007
-</div>
-<div class="hero">
-<h1 id="enc-hero-titulo" data-config="encomendasPagina.heroTitulo">🛒 Cardápio e Encomendas <span class="destaque">Itapolitana Cajuru</span></h1>
-<p id="enc-hero-desc" data-config="encomendasPagina.heroDescricao">Sorvete tipo artesanal em caixa, tortas geladas, picolés em atacado e acréscimos. (v2.8) Feito com carinho desde 2007, entregue com qualidade. Pedido fácil pelo WhatsApp!</p>
-<div class="hero-badges" data-config-collection="encomendasPagina.heroBadges" data-item-tag="span" data-item-class="hero-badge">
-<span class="hero-badge">✨ tipo artesanal</span>
-<span class="hero-badge">🍦 35 Sabores</span>
-<span class="hero-badge">🎂 Tortas Especiais</span>
-<span class="hero-badge">📦 Caixas 5L e 10L</span>
-<span class="hero-badge">🍭 Picolés Atacado</span>
-</div>
-<!-- Badge: sem delivery — Item 1 -->
-<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.45);border-radius:50px;padding:7px 18px;margin-top:14px;font-size:0.82rem;font-weight:800;color:#fff;letter-spacing:.2px;" role="note" aria-label="Informação sobre delivery">🚫 Não fazemos delivery &nbsp;·&nbsp; Encomende e retire na loja</div>
-</div>
-<!-- UX FINAL (inspiração iFood/Rappi): trilha curta de fluxo logo no topo para reduzir dúvidas -->
-<section style="max-width:860px;margin:14px auto 0;padding:0 16px 8px;">
-  <div style="background:#FFFFFF;border:1.5px solid #BBDEFB;border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px rgba(13,71,161,.08);font-size:.86rem;color:#0D47A1;font-weight:800;text-align:center;">
-    Como funciona: <strong>1. Escolha os produtos</strong> · <strong>2. Clique em “Fazer pedido”</strong> · <strong>3. Finalize no WhatsApp</strong>
-  </div>
-</section>
-<section class="itap-page-shell" aria-labelledby="atalhos-encomendas-titulo">
-  <!-- Alteração para alinhar o fluxo de encomendas da Itapolitana com práticas de UX/performance usadas em grandes apps de alimentos. -->
-  <div class="itap-surface-card">
-    <div class="itap-surface-card__body">
-      <div class="itap-surface-card__eyebrow">Categorias visíveis</div>
-      <h2 class="itap-surface-card__title" id="atalhos-encomendas-titulo">Escolha a categoria e encontre seu produto em poucos toques.</h2>
-      <p class="itap-surface-card__text">O cardápio de encomendas destaca, no topo, as categorias mais usadas para você chegar mais rápido ao produto certo.</p>
-      <div class="itap-anchor-strip itap-anchor-strip--categorias" style="margin-top:14px;">
-        <a class="is-dest" href="#caixas">🍦 Caixas</a>
-        <a href="#tortas">🎂 Tortas</a>
-        <a href="#picolés">🍭 Picolés</a>
-        <a href="#acréscimos">🍪 Acréscimos</a>
-        <button type="button" class="itap-install-btn js-pwa-install is-hidden" hidden disabled aria-hidden="true">📲 Instalar app Itapolitana</button>
-      </div>
-      <div class="itap-inline-note" style="margin-top:14px;">No celular, o carrinho fica sempre visível no rodapé para você finalizar o pedido pelo WhatsApp com rapidez.</div>
-    </div>
-  </div>
-</section>
-<style>
-@media (max-width: 768px) {
-  .itap-anchor-strip--categorias {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    padding-bottom: 6px;
-  }
-  .itap-anchor-strip--categorias a {
-    flex: 0 0 auto;
-    min-height: 46px;
-    padding: 11px 16px;
-    scroll-snap-align: start;
-    white-space: nowrap;
-  }
-}
-.como-encomendar-wrapper { max-width: 800px; margin: 0 auto; }
-#btn-como-fazer-encomenda {
-  width: 100%;
-  border: none;
-  border-radius: 14px;
-  padding: 14px 16px;
-  background: linear-gradient(135deg,#0D47A1,#1565C0);
-  color: #fff;
-  font-size: clamp(.95rem,2.8vw,1.08rem);
-  font-weight: 900;
-  letter-spacing: .3px;
-  box-shadow: 0 4px 16px rgba(13,71,161,.32);
-  cursor: pointer;
-}
-#btn-como-fazer-encomenda:hover { filter: brightness(1.06); }
-#conteudo-como-fazer-encomenda[hidden] { display: none !important; }
-#conteudo-como-fazer-encomenda { margin-top: 14px; }
-</style>
-
-<!-- ═══════════════════════════════════════════════════
-     SEÇÃO: COMO FAZER SUA ENCOMENDA — Item 3
-     ═══════════════════════════════════════════════════ -->
-<section id="como-encomendar" style="background:#F3F8FF;padding:22px 16px 26px;border-bottom:3px solid #BBDEFB;">
-<div class="como-encomendar-wrapper">
-  <button id="btn-como-fazer-encomenda" type="button" aria-expanded="false" aria-controls="conteudo-como-fazer-encomenda">
-    📦 Como Fazer Sua Encomenda
-  </button>
-
-  <div id="conteudo-como-fazer-encomenda" hidden>
-    <p style="text-align:center;font-size:0.92rem;color:#37474F;font-weight:600;margin:16px 0 20px;">
-      A Itapolitana <strong>não faz delivery</strong>. Trabalhamos com encomendas para <strong>retirar na loja</strong> — ideal para consumo em casa, festas, aniversários e eventos em Cajuru e região.
-    </p>
-
-    <!-- Trilha 1 -->
-    <div style="background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 2px 12px rgba(13,71,161,.10);margin-bottom:14px;border-left:5px solid #1565C0;">
-      <h3 style="font-size:1.05rem;font-weight:900;color:#1565C0;margin-bottom:10px;">🛒 Quero encomendar para hoje ou próximos dias</h3>
-      <ol style="padding-left:18px;font-size:0.9rem;color:#37474F;line-height:1.9;font-weight:600;margin:0 0 14px 0;">
-        <li>Veja o cardápio e escolha os sabores e produtos desejados.</li>
-        <li>Clique em "Encomendar pelo WhatsApp" abaixo e envie a mensagem pronta.</li>
-        <li>Nossa equipe confirma disponibilidade e combina o horário de retirada.</li>
-        <li>Retire na loja: <strong>Rua Cel. Manoel Caetano, 311 – Centro, Cajuru/SP</strong>.</li>
-      </ol>
-      <a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+fazer+uma+encomenda+de+sorvete+para+retirar+na+loja.+Pode+me+ajudar%3F"
-         target="_blank" rel="noopener noreferrer"
-         style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border-radius:50px;padding:13px 24px;font-size:0.95rem;font-weight:900;text-decoration:none;box-shadow:0 3px 12px rgba(37,211,102,.4);text-shadow:0 1px 3px rgba(0,0,0,.4);"
-         aria-label="Encomendar sorvete para retirar na loja pelo WhatsApp">
-        📲 Encomendar para Retirar na Loja
-      </a>
-    </div>
-
-    <!-- Trilha 2 -->
-    <div style="background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 2px 12px rgba(13,71,161,.10);margin-bottom:14px;border-left:5px solid #C62828;">
-      <h3 style="font-size:1.05rem;font-weight:900;color:#C62828;margin-bottom:6px;">🎉 Quero encomendar para festa ou evento</h3>
-      <p style="font-size:0.85rem;color:#5D4037;font-weight:700;margin-bottom:10px;">⏱️ Prazo mínimo: <strong>3 dias úteis</strong>. Consulte disponibilidade antes de confirmar a data.</p>
-      <ul style="list-style:none;padding:0;margin:0 0 14px 0;font-size:0.9rem;color:#37474F;line-height:1.9;font-weight:600;">
-        <li>🍨 <strong>Sorvete em Caixa</strong> — caixas de 5L e 10L, vários sabores à escolha</li>
-        <li>🎂 <strong>Tortas de Sorvete</strong> — personalizadas para aniversários e confraternizações</li>
-        <li>🍭 <strong>Picolés em Atacado</strong> — mínimo 100 unidades, sabores variados</li>
-        <li>🛒 <strong>Carrinho de Sorvete para Eventos</strong> — reserve com antecedência</li>
-        <li>🧁 <strong>Combos Especiais</strong> — sorvete + acréscimos (calda, granola, frutas)</li>
-      </ul>
-      <a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+fazer+uma+encomenda+para+festa%2Faniversário.+Quais+são+as+opções+e+prazos%3F"
-         target="_blank" rel="noopener noreferrer"
-         style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#E65100,#E53935);color:#fff;border-radius:50px;padding:13px 24px;font-size:0.95rem;font-weight:900;text-decoration:none;box-shadow:0 3px 12px rgba(230,81,0,.40);text-shadow:0 1px 3px rgba(0,0,0,.4);"
-         aria-label="Encomendar sorvete para festa ou evento pelo WhatsApp">
-        🎉 Encomendar para Festa pelo WhatsApp
-      </a>
-    </div>
-
-    <!-- Mensagens modelo -->
-    <div style="background:#fff;border-radius:16px;padding:20px 18px;box-shadow:0 2px 12px rgba(13,71,161,.10);border-left:5px solid #00897B;">
-      <h3 style="font-size:1.05rem;font-weight:900;color:#00695C;margin-bottom:12px;">💬 Mensagens Prontas para o WhatsApp</h3>
-      <p style="font-size:0.82rem;color:#546E7A;margin-bottom:12px;font-weight:600;">Clique na mensagem que melhor se encaixa na sua situação:</p>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+fazer+uma+encomenda+de+sorvetes+para+retirar+na+loja.+Pode+me+ajudar%3F"
-           target="_blank" rel="noopener noreferrer"
-           style="background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:12px;padding:12px 16px;font-size:0.88rem;color:#1B5E20;font-weight:700;text-decoration:none;display:block;">
-          📩 "Olá, quero fazer uma encomenda de sorvetes para retirar na loja."
-        </a>
-        <a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+fazer+uma+encomenda+para+festa%2Faniversário.+Pode+me+informar+as+opções%3F"
-           target="_blank" rel="noopener noreferrer"
-           style="background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:12px;padding:12px 16px;font-size:0.88rem;color:#1B5E20;font-weight:700;text-decoration:none;display:block;">
-          📩 "Olá, quero fazer uma encomenda para festa/aniversário. Pode me informar as opções?"
-        </a>
-        <a href="https://wa.me/5516996062046?text=Ol%C3%A1%2C+Itapolitana!+Quero+saber+quais+opções+vocês+têm+para+encomenda+hoje."
-           target="_blank" rel="noopener noreferrer"
-           style="background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:12px;padding:12px 16px;font-size:0.88rem;color:#1B5E20;font-weight:700;text-decoration:none;display:block;">
-          📩 "Olá, quero saber quais opções vocês têm para encomenda hoje."
-        </a>
-      </div>
-      <p style="font-size:0.78rem;color:#78909C;margin-top:12px;font-weight:600;text-align:center;">🔒 Sua mensagem é enviada pelo seu próprio WhatsApp. Não armazenamos dados pessoais neste site.</p>
-    </div>
-  </div>
-</div>
-</section>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  var btn = document.getElementById('btn-como-fazer-encomenda');
-  var conteudo = document.getElementById('conteudo-como-fazer-encomenda');
-  if (!btn || !conteudo || btn.dataset.toggleBound === '1') return;
-
-  btn.dataset.toggleBound = '1';
-  var textoPadrao = '📦 Como Fazer Sua Encomenda';
-  var textoAberto = '📦 Ocultar Instruções';
-
-  btn.addEventListener('click', function () {
-    var aberto = !conteudo.hasAttribute('hidden');
-    if (aberto) {
-      conteudo.setAttribute('hidden', '');
-      btn.textContent = textoPadrao;
-      btn.setAttribute('aria-expanded', 'false');
-      return;
-    }
-
-    conteudo.removeAttribute('hidden');
-    btn.textContent = textoAberto;
-    btn.setAttribute('aria-expanded', 'true');
-  });
-});
-</script>
 
 <div class="container">
-<div class="categoria cat-caixas" id="caixas">
-<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-caixas" onclick="toggleSecao('conteudo-caixas')">
-<div class="categoria-header-left">
-<span class="categoria-emoji">🍦</span>
-<div class="categoria-info">
-<h3>Sorvete em Caixa</h3>
-<p>4 opções disponíveis</p>
-<div class="frase-cat">✨ Sorvete tipo artesanal em caixas de 5L e 10L — ideal para festas e eventos</div>
-</div>
-</div>
-<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
-</button>
-<div class="categoria-conteudo" id="conteudo-caixas">
-<div class="prod-grid" id="lista-caixas"></div>
-<div class="category-cta-row">
-  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20as%20op%C3%A7%C3%B5es%20de%20sorvete%20em%20caixa%20para%20minha%20festa." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'caixas',cta_type:'consultar_caixas',position:'after_grid'});}">Consultar caixas</a>
-  <a class="category-cta category-cta--secondary" href="#como-encomendar" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'caixas',cta_type:'encomendar_festa',position:'after_grid'});}">Encomendar para festa</a>
-</div>
-</div>
-</div>
-<div class="categoria cat-tortas" id="tortas">
-<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-tortas" onclick="toggleSecao('conteudo-tortas')">
-<div class="categoria-header-left">
-<span class="categoria-emoji">🎂</span>
-<div class="categoria-info">
-<h3>Torta de Sorvete</h3>
-<p>Perfeita para festas</p>
-<div class="frase-cat">🎂 3 sabores à escolha — encomende com 3 dias de antecedência</div>
-</div>
-</div>
-<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
-</button>
-<div class="categoria-conteudo" id="conteudo-tortas">
-<div class="prod-grid" id="lista-tortas"></div>
-<div class="category-cta-row">
-  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20uma%20torta%20de%20sorvete%20para%20minha%20festa." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'tortas',cta_type:'encomendar_torta',position:'after_grid'});}">Encomendar torta</a>
-  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20disponibilidade%20de%20torta%20de%20sorvete." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'tortas',cta_type:'consultar_disponibilidade',position:'after_grid'});}">Consultar disponibilidade</a>
-</div>
-</div>
-</div>
-<div class="categoria cat-picolés" id="picolés">
-<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-picolés" onclick="toggleSecao('conteudo-picolés')">
-<div class="categoria-header-left">
-<span class="categoria-emoji">🍭</span>
-<div class="categoria-info">
-<h3>Picolés (Atacado)</h3>
-<p>Mínimo 100 unidades</p>
-<div class="frase-cat">🍭 Mínimo 100 unidades — perfeito para festas infantis, buffets e eventos</div>
-</div>
-</div>
-<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
-</button>
-<div class="categoria-conteudo" id="conteudo-picolés">
-<div class="prod-grid" id="lista-picolés">
-<div class="prod-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px 14px;gap:8px;">
-<a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20a%20disponibilidade%20do%20carrinho%20de%20picolé%C3%A9%20para%20evento." rel="noopener" style="text-decoration:none;display:inline-block;" target="_blank">
-<img alt="Carrinho de Picolé para Eventos" decoding="async" loading="lazy" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.06)'" src="images/carrinho-picole.webp" style="width:150px;height:auto;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.18));transition:transform 0.2s;"/>
-<div style="font-size:0.72rem;font-weight:800;color:#E65100;margin-top:6px;letter-spacing:.3px;">🛒 Carrinho para Eventos</div>
-<div style="font-size:0.68rem;color:#5C2D6B;font-weight:700;">Toque para consultar</div>
-</a>
-</div>
-</div>
-<div class="category-cta-row">
-  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20picol%C3%A9s%20no%20atacado%20para%20um%20evento." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','wholesale_cta_click',{page:'encomendas',category:'picoles',cta_type:'consultar_atacado',position:'after_grid'});}">Consultar atacado</a>
-  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20or%C3%A7amento%20para%20picol%C3%A9s%20em%20evento." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','event_quote_cta_click',{page:'encomendas',category:'picoles',cta_type:'solicitar_orcamento',position:'after_grid'});}">Solicitar orçamento</a>
-  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Quero%20planejar%20meu%20evento%20com%20carrinho%20de%20picol%C3%A9s." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'picoles',cta_type:'planejar_evento',position:'after_grid'});}">Planejar meu evento</a>
-</div>
-</div>
-</div>
-<div class="categoria cat-acréscimos" id="acréscimos">
-<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-acréscimos" onclick="toggleSecao('conteudo-acréscimos')">
-<div class="categoria-header-left">
-<span class="categoria-emoji">🍪</span>
-<div class="categoria-info">
-<h3>Acréscimos</h3>
-<p>Canudinho, casquinha, cobertura e mais</p>
-<div class="frase-cat">🍪 Casquinha, cascão, coberturas e mais — personalize seu pedido</div>
-</div>
-</div>
-<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
-</button>
-<div class="categoria-conteudo" id="conteudo-acréscimos">
-<div id="lista-acréscimos" style="display:flex;flex-direction:column;gap:10px;padding:4px 0"></div>
-<div class="category-cta-row">
-  <button type="button" class="category-cta category-cta--primary category-cta--attention" onclick="handleMontarPedidoCta();">Montar meu pedido</button>
-  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20os%20acr%C3%A9scimos%20dispon%C3%ADveis%20para%20meu%20pedido." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'acrescimos',cta_type:'ver_opcoes',position:'after_grid'});}">Ver opções</a>
-</div>
-</div>
-</div>
-<div class="categoria cat-revenda" id="revenda">
-<button type="button" class="categoria-header" aria-expanded="false" aria-controls="conteudo-revenda" onclick="toggleSecao('conteudo-revenda')">
-<div class="categoria-header-left">
-<span class="categoria-emoji">🏪</span>
-<div class="categoria-info">
-<h3>Revenda</h3>
-<p>Preços e condições especiais para comércio local e eventos</p>
-<div class="frase-cat">🏪 Quer revender produtos Itapolitana? Consulte atacado e disponibilidade.</div>
-</div>
-</div>
-<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow">▼</span></span><span class="acc-label">Clique para abrir</span></span>
-</button>
-<div class="categoria-conteudo" id="conteudo-revenda">
-<div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
-  <div style="background:#FAFAFA;border:1.5px solid #E0E0E0;border-radius:12px;padding:12px;">
-    <div style="font-size:0.92rem;font-weight:800;color:#1A0A00;margin-bottom:4px;">Atacado para revenda</div>
-    <div style="font-size:0.82rem;color:#5C2D6B;font-weight:700;">Ideal para mercados, lanchonetes e pontos de venda em Cajuru e região.</div>
-  </div>
-</div>
-<div class="category-cta-row">
-  <a class="category-cta category-cta--primary category-cta--attention" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Quero%20revender%20produtos%20Itapolitana.%20Pode%20me%20passar%20as%20condi%C3%A7%C3%B5es%20de%20atacado%3F" target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','order_cta_click',{page:'encomendas',category:'revenda',cta_type:'quero_revender',position:'after_grid'});}">Quero revender</a>
-  <a class="category-cta category-cta--secondary" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20disponibilidade%20para%20revenda." target="_blank" rel="noopener" onclick="if(typeof gtag==='function'){gtag('event','whatsapp_cta_click',{page:'encomendas',category:'revenda',cta_type:'consultar_disponibilidade',position:'after_grid'});}">Consultar disponibilidade</a>
-</div>
-</div>
-</div>
-
-<!-- BOTÃO DEPOIMENTOS ABAIXO DE ACRÉSCIMOS -->
-<div style="text-align: center; padding: 20px; background: #fff; border-radius: 20px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-  <a class="nav-btn nav-green" href="dicas.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 15px 30px; border-radius: 50px; font-size: clamp(0.85rem,2.5vw,1.1rem); font-weight: 800; text-decoration: none; background: linear-gradient(135deg,#00C853,#009624); color: #fff; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 14px rgba(0,200,83,.4); transition: transform 0.2s; white-space: nowrap;">
-    ⭐ DICAS/DEPOIMENTOS
-  </a>
-  <p style="font-size: 0.85rem; color: #666; margin-top: 10px; font-weight: 600;">Veja o que nossos clientes dizem sobre nós!</p>
-</div>
-
-<button aria-label="Abrir carrinho" class="btn-carrinho-fixo" id="btn-carrinho" onclick="window.abrirCarrinho()" type="button">
-  <span class="btn-carrinho-fixo__label">🛒 Carrinho</span>
-  <span class="btn-carrinho-fixo__meta"><span class="badge" id="carrinho-badge">0</span><span class="btn-carrinho-fixo__total" id="carrinho-total">R$ 0,00</span><span class="btn-carrinho-fixo__arrow" aria-hidden="true">›</span></span>
-</button>
-
-<div class="modal-overlay" id="modal-sabores" onclick="if(event.target===this)fecharModal('modal-sabores')">
-<div class="modal-box">
-<div class="modal-header">
-<div class="modal-header-top">
-<div>
-<div class="modal-título">Escolher Sabores</div>
-<div class="modal-subtítulo" id="modal-subtítulo-sabores"></div>
-</div>
-<button class="btn-fechar-modal" onclick="fecharModal('modal-sabores')" type="button" aria-label="Fechar">✕</button>
-</div>
-</div>
-<div style="padding:16px 20px 0;overflow-y:auto;max-height:35vh">
-<div class="grid-sabores" id="grid-sabores"></div>
-</div>
-<div style="padding:12px 20px 20px">
-<div class="barra-acao barra-azul">
-<span class="barra-texto" id="txt-confirmar-sabores">Confirmar Seleção (0/0)</span>
-<button class="btn-acao-redondo btn-vermelho" disabled="" id="btn-confirmar-sabores" onclick="window.confirmarSabores()" title="Confirmar Sabores" type="button">✓</button>
-</div>
-</div>
-</div>
-</div>
-<div class="modal-overlay" id="modal-picolé" onclick="if(event.target===this)fecharModal('modal-picolé')">
-<div class="modal-box">
-<div class="modal-header">
-<div class="modal-header-top">
-<div>
-<div class="modal-título" id="picolé-título"></div>
-<div class="modal-subtítulo" id="picolé-preços"></div>
-</div>
-<button class="btn-fechar-modal" onclick="fecharModal('modal-picolé')" type="button" aria-label="Fechar">✕</button>
-</div>
-<div class="picolé-progress-bar">
-<div class="picolé-progress-info">
-<span>🧳 Total selecionado:</span>
-<strong id="picolé-progress-num">0</strong>
-<span>/ 250 picolés</span>
-<span class="picolé-progress-status" id="picolé-progress-status">🔒 Faltam 100</span>
-</div>
-<div class="picolé-progress-track">
-<div class="picolé-progress-fill" id="picolé-progress-fill" style="width:0%"></div>
-</div>
-</div>
-</div>
-<div id="picolé-tela-tipos" style="display:none;padding:16px 20px 20px">
-<p style="text-align:center;font-weight:700;color:#E65100;margin-bottom:12px">🍭 Escolha o tipo de picolé:</p>
-<div id="picolé-lista-tipos"></div>
-<div class="picolé-total-bar" style="margin-top:12px">
-<span>🧳 Total acumulado:</span>
-<strong><span id="total-picolés-tipos">0</span> / 250 picolés</strong>
-</div>
-<button class="btn-add-picolés" disabled="" id="btn-add-picolés-tipos" onclick="window.confirmarPickle()" style="margin-top:10px" type="button">
-        🍭 Selecione ao menos 100 picolés para liberar
-      </button>
-</div>
-<div class="modal-body" id="picolé-tela-sabores">
-<div id="lista-sabores-picolé"></div>
-<div class="picolé-total-bar">
-<span>🧳 Total geral (todos os tipos):</span>
-<strong><span id="total-picolés">0</span> / 250 picolés</strong>
-</div>
-<div class="aviso-mínimo" id="aviso-mínimo-picolé"></div>
-<button class="btn-add-picolés" disabled="" id="btn-add-picolés" onclick="window.confirmarPickle()" type="button">
-        🍭 Selecione ao menos 100 picolés no total
-      </button>
-<button class="btn-continuar-picolés" id="btn-continuar-picolés" onclick="voltarPicolé()" type="button">
-        ← Voltar aos Tipos de Picolé
-      </button>
-</div>
-</div>
-</div>
-<div class="modal-overlay" id="modal-carrinho">
-<div class="modal-box">
-<div class="modal-header">
-<div class="modal-header-top">
-<div class="modal-título">🛒 Meu Pedido</div>
-<button class="btn-fechar-modal" onclick="window.fecharModal('modal-carrinho')" type="button" aria-label="Fechar">✕</button>
-</div>
-</div>
-<div class="steps-bar">
-<div class="step" id="step-revisao">
-<div class="step-num">1</div>
-<span class="step-label">Revisão</span>
-</div>
-<span class="step-sep">›</span>
-<div class="step" id="step-dados">
-<div class="step-num">2</div>
-<span class="step-label">Seus Dados</span>
-</div>
-<span class="step-sep">›</span>
-<div class="step" id="step-confirmação">
-<div class="step-num">3</div>
-<span class="step-label">Confirmação</span>
-</div>
-</div>
-<div class="etapa" id="etapa-revisao">
-<div id="lista-carrinho"></div>
-<div class="total-bar">
-<span>Total</span>
-<span id="total-carrinho">R$ 0,00</span>
-</div>
-<div class="aviso-min-carrinho" id="aviso-min-carrinho"></div>
-<div style="padding:16px 0 24px;display:flex;flex-direction:column;gap:10px;">
-<div class="barra-acao barra-verde">
-<span style="width:44px;"></span>
-<span class="barra-texto">✅ Preencher Dados e Confirmar</span>
-<button class="btn-acao-redondo btn-vermelho" id="btn-ir-dados" title="Preencher Dados e Confirmar" type="button">▶</button>
-</div>
-<div class="barra-acao barra-cinza-claro">
-<button class="btn-acao-redondo btn-voltar-padrao" id="btn-continuar-comprando" title="Continuar Comprando" aria-label="Continuar Comprando" type="button">←</button>
-<span class="barra-texto" style="color:#333">← Continuar Adicionando Produtos</span>
-<span style="width:44px;"></span>
-</div>
-</div>
-</div>
-<div class="etapa" id="etapa-dados">
-<div id="resumo-pedido"></div>
-<div style="background:linear-gradient(135deg,#E65100,#FF6D00);color:white;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;">
-<div style="font-size:1rem;font-weight:900;margin-bottom:6px;">⏰ IMPORTANTE — PRAZO DE PRODUÇÃO</div>
-<div data-encomenda-aviso>Sua encomenda será <strong>produzida em até 3 dias úteis</strong> após a <strong>confirmação do pagamento</strong> via WhatsApp.</div>
-<div style="margin-top:6px;font-size:0.8rem;opacity:0.9;">📲 Após enviar o pedido, aguarde o contato da sorveteria para confirmar e realizar o pagamento antecipado.</div>
-</div>
-<!-- Honeypot anti-bot: visualmente oculto, leitores de tela ignoram, bots preenchem -->
-<div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-  <label for="enc-website">Website</label>
-  <input type="text" id="enc-website" name="website" tabindex="-1" autocomplete="off"/>
-</div>
-<div class="form-grupo">
-<label for="cliente-nome">👤 Seu Nome Completo *</label>
-<input autocomplete="name" id="cliente-nome" maxlength="80" oninput="_nomeCliente=this.value; verificarFormulario()" placeholder="Ex: João da Silva" type="text"/>
-</div>
-<div class="form-grupo">
-<label for="cliente-tel">📱 Seu WhatsApp *</label>
-<input autocomplete="tel" id="cliente-tel" inputmode="tel" maxlength="15" oninput="var v=this.value.replace(/\D/g,''); if(v.length<=11) this.value=v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3').replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3'); _telCliente=this.value; verificarFormulario()" placeholder="Ex: (16) 99999-9999" type="text"/>
-</div>
-<div class="form-grupo">
-<label for="cliente-endereço">📍 Endereço para Entrega *</label>
-<input autocomplete="street-address" id="cliente-endereço" maxlength="150" oninput="_endereçoCliente=this.value; verificarFormulario()" placeholder="Ex: Rua das Flores, 123 – Bairro – Cajuru/SP" type="text"/>
-</div>
-<div class="botãoes-etapa-dados">
-<div class="barra-acao barra-verde" id="barra-btn-finalizar">
-<span style="width:44px;"></span>
-<span class="barra-texto" id="texto-btn-finalizar">📲 Finalizar no WhatsApp</span>
-<button class="btn-acao-redondo btn-vermelho" disabled="" id="btn-finalizar" onclick="window.finalizarPedido()" title="Gerar Pedido" type="button">✓</button>
-</div>
-<div id="campos-obrigatórios-hint" style="font-size:0.78rem;color:#E65100;text-align:center;padding:2px 0 6px;font-weight:600;">⚠️ Preencha nome, WhatsApp e endereço para continuar</div>
-<div class="barra-acao barra-azul">
-<button class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-etapa" title="Revisar Carrinho" aria-label="Revisar Carrinho" type="button">←</button>
-<span class="barra-texto">🛒 Revisar Carrinho</span>
-<span style="width:44px;"></span>
-</div>
-<div class="barra-acao barra-cinza-claro">
-<button class="btn-acao-redondo btn-voltar-padrao" id="btn-sair-formulario" title="Cancelar" aria-label="Cancelar" type="button">←</button>
-<span class="barra-texto" style="color:#555">← Cancelar e Voltar às Encomendas</span>
-<span style="width:44px;"></span>
-</div>
-</div>
-</div>
-<div class="etapa" id="etapa-confirmação">
-<div class="confirmação-box">
-<div class="confirmação-icon">🎉</div>
-<div class="confirmação-título">Pedido Confirmado!</div>
-<div class="confirmação-num">Nº do Pedido: <strong id="num-pedido"></strong></div>
-<div id="data-pedido" style="font-size:0.82rem;color:#555;margin-top:4px;"></div>
-<p style="font-size:1.05rem;color:#DC2626;font-weight:900;margin:18px auto 22px;text-align:center;line-height:1.6;padding:14px 18px;background:#FEF2F2;border:2.5px solid #DC2626;border-radius:12px;max-width:480px;">
-          📢 Clique abaixo para enviar seu pedido via WhatsApp.<br/>Nossa equipe entrará em contato para confirmar o pagamento.
-        </p>
-<a href="javascript:void(0)" id="link-whatsapp-final" rel="noopener" style="text-decoration:none;display:block;margin-bottom:10px;" target="_blank">
-<div class="barra-acao barra-wpp" style="cursor:pointer;">
-<span style="font-size:1.4rem;">📲</span>
-<span class="barra-texto" style="font-size:1rem;font-weight:900;letter-spacing:0.5px;">ENVIAR PEDIDO VIA WhatsApp</span>
-<span class="btn-acao-redondo btn-wpp" id="btn-whatsapp-final" style="font-size:1.3rem;">▶</span>
-</div>
-</a>
-<div class="barra-acao barra-azul" onclick="novoPedido()" style="cursor:pointer;">
-<span style="font-size:1.2rem;">🛒</span>
-<span class="barra-texto">Fazer Novo Pedido</span>
-<button class="btn-acao-redondo btn-azul" style="background:linear-gradient(135deg,#0D47A1,#1565C0);font-size:1.3rem;" title="Novo Pedido" type="button">+</button>
-</div>
-<div class="barra-acao barra-cinza-claro" style="margin-top:6px;">
-<button class="btn-acao-redondo btn-voltar-padrao" id="btn-voltar-cardápio" title="Voltar" aria-label="Voltar às Encomendas" type="button">←</button>
-<span class="barra-texto" style="color:#666;font-size:0.85rem;">← Voltar às Encomendas sem Enviar</span>
-<span style="width:44px;"></span>
-</div>
-<div style="margin-top:28px;padding:16px 20px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;border-left:4px solid #1565C0;text-align:center;">
-<div style="font-size:1.4rem;margin-bottom:6px;">2️⃣</div>
-<p style="font-size:0.92rem;color:#1A237E;font-weight:700;font-style:italic;line-height:1.6;margin:0;">“Não deixe para amanhã: viva hoje como se fosse o último dia da sua vida.”</p>
-<div style="font-size:0.75rem;color:#5C6BC0;margin-top:6px;font-weight:600;">— Itapolitana Cajuru</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="toast" id="toast"></div>
-<!-- CERTIFICAÇÕES E SEGURANÇA -->
-<div style="background:linear-gradient(135deg,#0D47A1,#1565C0);padding:24px 16px;margin-top:32px;text-align:center;">
-<div class="security-seals-title">Certificações e Segurança</div>
-<div class="security-seals-container">
-<a class="security-seal-item" href="https://www.ssllabs.com/ssltest/analyze.html?d=itapolitanacajuru.com.br" rel="noopener noreferrer" target="_blank" title="Verificar Certificado SSL">
-<div class="security-seal-content">
-<div class="security-seal-icon">🔒</div>
-<div class="security-seal-text">HTTPS<br/>Seguro</div>
-</div>
-</a>
-<a class="security-seal-item" href="https://www.ssllabs.com/ssltest/analyze.html?d=itapolitanacajuru.com.br" rel="noopener noreferrer" target="_blank" title="Certificado SSL Ativo">
-<div class="security-seal-content">
-<div class="security-seal-icon">✅</div>
-<div class="security-seal-text">SSL<br/>Certificado</div>
-</div>
-</a>
-<div class="security-seal-item" title="Seus dados estão protegidos com criptografia">
-<div class="security-seal-content">
-<div class="security-seal-icon">🛡️</div>
-<div class="security-seal-text">Dados<br/>Protegidos</div>
-</div>
-</div>
-<div class="security-seal-item" title="Site otimizado para dispositivos móveis">
-<div class="security-seal-content">
-<div class="security-seal-icon">📱</div>
-<div class="security-seal-text">Mobile<br/>Friendly</div>
-</div>
-</div>
-<div class="security-seal-item" title="Performance otimizada para carregamento rápido">
-<div class="security-seal-content">
-<div class="security-seal-icon">⚡</div>
-<div class="security-seal-text">Performance<br/>Otimizada</div>
-</div>
-</div>
-<div class="security-seal-item" title="Otimizado para mecanismos de busca">
-<div class="security-seal-content">
-<div class="security-seal-icon">🌐</div>
-<div class="security-seal-text">SEO<br/>Otimizado</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- FIM CERTIFICAÇÕES E SEGURANÇA -->
-<script src="scripts/products.js?v=20260225" defer></script>
-
-
-
-
-<!-- Botão Admin discreto -->
-<div style="text-align:center;padding:8px 0 4px;">
-</div>
-</div><!-- /container -->
-</main>
-
-<!-- ═══ RODAPÉ PADRÃO ITAPOLITANA ═══════════════════════════════════════ -->
-<footer style="background:linear-gradient(160deg,#0060B0 0%,#0292EC 40%,#00AAFF 70%,#0292EC 100%);color:#fff;text-align:center;border-top:4px solid #FBD100;box-shadow:0 -4px 24px rgba(2,146,236,.4);width:100%;box-sizing:border-box;">
-  <!-- Logo + nome -->
-  <div style="padding:26px 20px 18px;">
-    <img src="images/logo.webp" alt="Logo Sorveteria Itapolitana Cajuru" loading="lazy" decoding="async" width="96" height="96"
-         style="width:96px;height:96px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #fff,0 0 0 6px #FBD100,0 0 0 10px #C62828,0 4px 20px rgba(0,0,0,.55);display:block;margin:0 auto;">
-    <div style="margin-top:10px;font-size:16px;color:#FBD100;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px rgba(0,0,0,.7);">ITAPOLITANA</div>
-    <div style="font-size:11px;color:rgba(255,255,255,.9);font-weight:700;letter-spacing:1px;margin-top:2px;">Cajuru · SP · Sorvete tipo artesanal desde 2007</div>
-  </div>
-  <!-- Links rápidos -->
-  <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 16px 20px;">
-    <a href="index.html" class="itap-footer-nav">🍦 Cardápio</a>
-    <a href="https://wa.me/5516996062046" target="_blank" rel="noopener" class="itap-footer-nav" style="border-color:rgba(37,211,102,.7);background:rgba(37,211,102,.2);">💬 WhatsApp</a>
-    <a href="encomendas.html" class="itap-footer-nav">📦 Encomendas</a>
-  </div>
-  <!-- Selos de confiança – estilo grandes apps (iFood, Rappi, McDonald's BR) – contornos visíveis -->
-  <div class="badges-confianca">
-    <span class="badge-conf badge-dest"><span class="badge-icon">🏅</span> Desde 2007</span>
-    <span class="badge-conf"><span class="badge-icon">🔒</span> Site Seguro</span>
-    <span class="badge-conf"><span class="badge-icon">💳</span> Pix Aceito</span>
-    <span class="badge-conf"><span class="badge-icon">📱</span> Instale no Celular</span>
-    <span class="badge-conf"><span class="badge-icon">✅</span> LGPD Conforme</span>
-  </div>
-  <!-- Faixa LGPD -->
-  <div style="margin:0 16px 18px;padding:13px 16px;background:rgba(0,0,0,.3);border-radius:14px;border:1px solid rgba(251,209,0,.3);">
-    <div style="font-size:11px;color:rgba(255,255,255,.88);font-weight:700;line-height:1.65;margin-bottom:10px;">🔒 Seus dados estão seguros. Usamos apenas cookies essenciais e de análise. Nenhum dado de pagamento é armazenado pelo site.</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
-      <a href="politica-privacidade.html" class="itap-footer-pill">🔒 Política de Privacidade (LGPD)</a>
-      <span style="color:rgba(255,255,255,.3);font-weight:700;font-size:16px;">·</span>
-      <a href="sobre.html" class="itap-footer-pill">ℹ️ Sobre a Itapolitana</a>
+  <!-- Categoria Caixas -->
+  <div class="categoria">
+    <button class="categoria-header" onclick="window.toggleSecao('sec-caixas')">
+      <div><strong>🍦 Sorvete em Caixa</strong><br><small>5L e 10L - Ideal para festas</small></div>
+      <span>▼</span>
+    </button>
+    <div id="sec-caixas" class="categoria-conteudo">
+      <div id="lista-caixas" class="prod-grid"></div>
     </div>
   </div>
-  <!-- Copyright -->
-  <div style="padding:12px 16px 6px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;color:rgba(255,255,255,.75);font-weight:600;line-height:1.8;">
-    © 2007–2026 Sorveteria Itapolitana · Cajuru/SP · Todos os direitos reservados<br>
-    Desenvolvido por <span style="color:#FBD100;font-weight:900;">MissiaScaçarato</span>
+
+  <!-- Categoria Tortas -->
+  <div class="categoria">
+    <button class="categoria-header" onclick="window.toggleSecao('sec-tortas')">
+      <div><strong>🎂 Tortas Geladas</strong><br><small>Especiais e decoradas</small></div>
+      <span>▼</span>
+    </button>
+    <div id="sec-tortas" class="categoria-conteudo">
+      <div id="lista-tortas" class="prod-grid"></div>
+    </div>
   </div>
-  <!-- Admin link discreto -->
-  <div style="padding:4px 0 16px;">
+
+  <!-- Categoria Picolés -->
+  <div class="categoria">
+    <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')">
+      <div><strong>🍭 Picolés (Atacado)</strong><br><small>Mínimo 100 unidades</small></div>
+      <span>▼</span>
+    </button>
+    <div id="sec-picoles" class="categoria-conteudo">
+      <div id="lista-picoles" class="prod-grid"></div>
+    </div>
+  </div>
 </div>
-</footer>
-<!-- ═══ FIM RODAPÉ PADRÃO ═══════════════════════════════════════════════════ -->
 
+<!-- Modal de Sabores -->
+<div id="modal-sabores" class="modal">
+  <div class="modal-content">
+    <h2 id="modal-titulo-sabores">Escolha os Sabores</h2>
+    <p id="modal-subtitulo-sabores"></p>
+    <div id="grid-sabores" class="sabor-grid"></div>
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <button onclick="window.fecharModal('modal-sabores')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">Voltar</button>
+      <button id="btn-confirmar-sabores" onclick="window.confirmarSabores()" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
+    </div>
+  </div>
+</div>
 
+<!-- Modal de Picolés -->
+<div id="modal-picoles" class="modal">
+  <div class="modal-content">
+    <h2>Picolés no Atacado</h2>
+    <p>Mínimo de 100 unidades. Selecione por sabor:</p>
+    <div id="lista-sabores-picole" style="max-height: 400px; overflow-y: auto;"></div>
+    <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; text-align: center;">
+      <strong>Total: <span id="total-picoles">0</span> / 100</strong>
+    </div>
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">Voltar</button>
+      <button id="btn-confirmar-picoles" onclick="window.confirmarPickle()" disabled style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
+    </div>
+  </div>
+</div>
 
+<!-- Modal de Carrinho -->
+<div id="modal-carrinho" class="modal">
+  <div class="modal-content">
+    <h2>Seu Pedido</h2>
+    <div id="lista-carrinho" style="margin-top: 15px;"></div>
+    <div style="margin-top: 20px; padding: 15px; background: var(--azul); color: white; border-radius: 10px; display: flex; justify-content: space-between;">
+      <strong>Total:</strong>
+      <strong id="total-carrinho">R$ 0,00</strong>
+    </div>
+    <div style="margin-top: 20px; display: grid; gap: 10px;">
+      <button onclick="window.fecharModal('modal-carrinho')" style="padding: 15px; border-radius: 10px; border: 1px solid #ccc;">Adicionar mais produtos</button>
+      <button onclick="window.limparCarrinho()" style="padding: 10px; border: none; color: red; background: none;">🗑️ Excluir todo o pedido</button>
+      <button onclick="window.finalizarPedido()" style="padding: 18px; border-radius: 12px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.1rem;">Finalizar no WhatsApp</button>
+    </div>
+  </div>
+</div>
 
-<script src="scripts/itap-promo.js?v=20260813_v1" defer></script>
+<!-- Botão Flutuante Carrinho -->
+<button id="btn-carrinho-fixo" class="btn-carrinho-fixo" onclick="window.abrirCarrinho()">
+  🛒 <span id="carrinho-qtd">0</span> itens - <span id="carrinho-total">R$ 0,00</span>
+</button>
 
-<script src="scripts/quality-guard.js" defer></script>
-<script src="scripts/auto-healer.js" defer></script>
-<script src="scripts/nav-active.js" defer></script>
-<script src="scripts/ita-bot-engine.js" defer></script>
-<script src="scripts/ita-bot-widget.js" defer></script>
-
-<!-- Barra mobile fixa global -->
-<nav id="itap-mobile-nav" aria-label="Navegação rápida">
-  <ul class="itap-mobile-nav__list">
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="index.html">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">🏠</span>
-        <span class="itap-mobile-nav__label">Início</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="index.html#cardapio">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">🍦</span>
-        <span class="itap-mobile-nav__label">Cardápio</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item">
-      <a class="itap-mobile-nav__link" href="promocao.html">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">🎁</span>
-        <span class="itap-mobile-nav__label">Promoções</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item itap-mobile-nav__item--active">
-      <a class="itap-mobile-nav__link itap-mobile-nav__link--active" href="encomendas.html" aria-current="page">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">📦</span>
-        <span class="itap-mobile-nav__label">Encomendas</span>
-      </a>
-    </li>
-    <li class="itap-mobile-nav__item itap-mobile-nav__item--cta">
-      <a class="itap-mobile-nav__link" href="https://wa.me/5516996062046" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
-        <span class="itap-mobile-nav__icon" aria-hidden="true">💬</span>
-        <span class="itap-mobile-nav__label">Contato</span>
-      </a>
-    </li>
-  </ul>
-</nav>
 <script>
-// Função para expandir/colapsar categorias de produtos
-function toggleSecao(id) {
-  var conteudo = document.getElementById(id);
-  if (!conteudo) return;
-  var header = conteudo.previousElementSibling;
-  if (!header) return;
-  var aberto = conteudo.classList.contains('aberto');
-  var novoEstado = !aberto;
-  conteudo.classList.toggle('aberto', novoEstado);
-  conteudo.hidden = !novoEstado;
-  header.setAttribute('aria-expanded', novoEstado ? 'true' : 'false');
-  // Indicador neon
-  header.classList.toggle('aberta', novoEstado);
-  var lbl = header.querySelector('.acc-label');
-  if (lbl) lbl.textContent = novoEstado ? 'Fechar opções' : 'Clique para abrir';
-  // Legado: toggle-icon (fallback se ainda existir)
-  var icon = header.querySelector('.toggle-icon');
-  if (icon) icon.textContent = novoEstado ? '▼' : '▶';
-}
-function handleMontarPedidoCta() {
-  if (typeof gtag === 'function') {
-    gtag('event', 'order_cta_click', {
-      page: 'encomendas',
-      category: 'acrescimos',
-      cta_type: 'montar_pedido',
-      position: 'after_grid'
-    });
-  }
-  if (typeof abrirCarrinho === 'function') {
-    abrirCarrinho();
-    return;
-  }
-  window.open('https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20montar%20meu%20pedido%20com%20acr%C3%A9scimos.', '_blank', 'noopener');
-}
-document.querySelectorAll('.categoria-conteudo').forEach(function(sec){
-  sec.hidden = true;
-  sec.classList.remove('aberto');
-});
-document.querySelectorAll('.categoria-header[aria-controls]').forEach(function(btn){
-  btn.setAttribute('aria-expanded', 'false');
-  btn.classList.remove('aberta');
-  var lbl = btn.querySelector('.acc-label');
-  if (lbl) lbl.textContent = 'Clique para abrir';
-  var ic = btn.querySelector('.toggle-icon');
-  if (ic) ic.textContent = '▶';
-});
-var hash = (window.location.hash || '').replace('#', '');
-if (hash) {
-  var alvo = document.getElementById(hash);
-  if (alvo && alvo.classList.contains('categoria')) {
-    var body = alvo.querySelector('.categoria-conteudo');
-    if (body && body.id) toggleSecao(body.id);
-  }
-}
-window.toggleSecao = toggleSecao;
+(function(window, document) {
+    'use strict';
+    
+    var SABORES = ["Abacaxi ao Vinho", "Amarena", "Chocolate", "Ferrero Rocher", "Leite Ninho", "Morango Trufado", "Nutella", "Pistache", "Sensação", "Torta de Chocolate"];
+    var PRODUTOS = [
+        { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preco: 100, max: 2, cat: 'caixas' },
+        { id: "cx5l_3s", nome: "Caixa 5 Litros - 3 Sabores", preco: 115, max: 3, cat: 'caixas' },
+        { id: "cx10l_2s", nome: "Caixa 10 Litros - 2 Sabores", preco: 150, max: 2, cat: 'caixas' },
+        { id: "cx10l_3s", nome: "Caixa 10 Litros - 3 Sabores", preco: 165, max: 3, cat: 'caixas' }
+    ];
+
+    var carrinho = [];
+    var produtoAtual = null;
+    var saboresSelecionados = [];
+    var picolesSelecionados = {};
+
+    window.toggleSecao = function(id) {
+        var el = document.getElementById(id);
+        var isOpen = el.style.display === 'block';
+        document.querySelectorAll('.categoria-conteudo').forEach(c => c.style.display = 'none');
+        el.style.display = isOpen ? 'none' : 'block';
+    };
+
+    window.abrirModal = function(id) {
+        document.getElementById(id).style.display = 'flex';
+        document.body.classList.add('lock-scroll');
+    };
+
+    window.fecharModal = function(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.classList.remove('lock-scroll');
+    };
+
+    window.abrirSaboresSorvete = function(id, preco, max, nome) {
+        produtoAtual = { id: id, preco: preco, max: max, nome: nome };
+        saboresSelecionados = [];
+        document.getElementById('modal-subtitulo-sabores').textContent = "Escolha " + max + " sabores";
+        var grid = document.getElementById('grid-sabores');
+        grid.innerHTML = SABORES.map(s => `<div class="sabor-item" onclick="window.toggleSabor('${s}', this)">${s}</div>`).join('');
+        grid.classList.remove('limite-atingido');
+        document.getElementById('btn-confirmar-sabores').disabled = true;
+        window.abrirModal('modal-sabores');
+    };
+
+    window.toggleSabor = function(sabor, el) {
+        var idx = saboresSelecionados.indexOf(sabor);
+        if (idx > -1) {
+            saboresSelecionados.splice(idx, 1);
+            el.classList.remove('sel');
+        } else {
+            if (saboresSelecionados.length < produtoAtual.max) {
+                saboresSelecionados.push(sabor);
+                el.classList.add('sel');
+            }
+        }
+        var grid = document.getElementById('grid-sabores');
+        if (saboresSelecionados.length >= produtoAtual.max) grid.classList.add('limite-atingido');
+        else grid.classList.remove('limite-atingido');
+        document.getElementById('btn-confirmar-sabores').disabled = (saboresSelecionados.length !== produtoAtual.max);
+    };
+
+    window.confirmarSabores = function() {
+        carrinho.push({
+            nome: produtoAtual.nome,
+            preco: produtoAtual.preco,
+            detalhes: saboresSelecionados.join(', ')
+        });
+        window.fecharModal('modal-sabores');
+        atualizarCarrinho();
+    };
+
+    window.abrirModalPicole = function() {
+        picolesSelecionados = {};
+        var lista = document.getElementById('lista-sabores-picole');
+        lista.innerHTML = SABORES.map(s => `
+            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
+                <span>${s}</span>
+                <div>
+                    <button onclick="window.addPicole('${s}', -10)">-</button>
+                    <span id="q-${s}" style="margin:0 10px;">0</span>
+                    <button onclick="window.addPicole('${s}', 10)">+</button>
+                </div>
+            </div>
+        `).join('');
+        window.abrirModal('modal-picoles');
+    };
+
+    window.addPicole = function(sabor, qtd) {
+        var atual = picolesSelecionados[sabor] || 0;
+        picolesSelecionados[sabor] = Math.max(0, atual + qtd);
+        document.getElementById('q-' + sabor).textContent = picolesSelecionados[sabor];
+        var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
+        document.getElementById('total-picoles').textContent = total;
+        document.getElementById('btn-confirmar-picoles').disabled = (total < 100);
+    };
+
+    window.confirmarPickle = function() {
+        var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
+        var detalhes = Object.entries(picolesSelecionados).filter(e => e[1] > 0).map(e => e[1] + 'x ' + e[0]).join(', ');
+        carrinho.push({
+            nome: "Lote de Picolés (" + total + " un)",
+            preco: total * 1.50,
+            detalhes: detalhes
+        });
+        window.fecharModal('modal-picoles');
+        atualizarCarrinho();
+    };
+
+    window.abrirCarrinho = function() {
+        var lista = document.getElementById('lista-carrinho');
+        var total = 0;
+        lista.innerHTML = carrinho.map((item, i) => {
+            total += item.preco;
+            return `
+                <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                    <div><strong>${item.nome}</strong><br><small>${item.detalhes}</small></div>
+                    <div>R$ ${item.preco.toFixed(2)} <button onclick="window.removerItem(${i})">🗑️</button></div>
+                </div>
+            `;
+        }).join('');
+        document.getElementById('total-carrinho').textContent = "R$ " + total.toFixed(2);
+        window.abrirModal('modal-carrinho');
+    };
+
+    window.removerItem = function(i) {
+        carrinho.splice(i, 1);
+        window.abrirCarrinho();
+        atualizarCarrinho();
+    };
+
+    window.limparCarrinho = function() {
+        if (confirm("Limpar pedido?")) {
+            carrinho = [];
+            atualizarCarrinho();
+            window.fecharModal('modal-carrinho');
+        }
+    };
+
+    function atualizarCarrinho() {
+        var total = carrinho.reduce((a, b) => a + b.preco, 0);
+        var btn = document.getElementById('btn-carrinho-fixo');
+        if (carrinho.length > 0) {
+            btn.style.display = 'flex';
+            document.getElementById('carrinho-qtd').textContent = carrinho.length;
+            document.getElementById('carrinho-total').textContent = "R$ " + total.toFixed(2);
+        } else {
+            btn.style.display = 'none';
+        }
+    }
+
+    window.finalizarPedido = function() {
+        var texto = "Olá! Gostaria de fazer uma encomenda:\n\n" + 
+            carrinho.map(i => "* " + i.nome + " (" + i.detalhes + ") - R$ " + i.preco.toFixed(2)).join('\n') + 
+            "\n\n*Total: R$ " + carrinho.reduce((a, b) => a + b.preco, 0).toFixed(2) + "*";
+        window.open("https://wa.me/5516996062046?text=" + encodeURIComponent(texto));
+    };
+
+    // Render Inicial
+    document.getElementById('lista-caixas').innerHTML = PRODUTOS.map(p => `
+        <div class="prod-card">
+            <div class="prod-nome">${p.nome}</div>
+            <div class="prod-preco">R$ ${p.preco.toFixed(2)}</div>
+            <button class="btn-sabores" onclick="window.abrirSaboresSorvete('${p.id}', ${p.preco}, ${p.max}, '${p.nome}')">Escolher Sabores</button>
+        </div>
+    `).join('');
+    
+    document.getElementById('lista-tortas').innerHTML = `
+        <div class="prod-card">
+            <div class="prod-nome">Torta Especial</div>
+            <div class="prod-preco">R$ 100,00</div>
+            <button class="btn-sabores" onclick="window.abrirSaboresSorvete('torta', 100, 3, 'Torta Especial')">Escolher Sabores</button>
+        </div>
+    `;
+
+    document.getElementById('lista-picoles').innerHTML = `
+        <div class="prod-card">
+            <div class="prod-nome">Lote Picolés</div>
+            <div class="prod-preco">R$ 1,50 / un</div>
+            <button class="btn-sabores" onclick="window.abrirModalPicole()">Escolher Sabores</button>
+        </div>
+    `;
+
+})(window, document);
 </script>
-<script src="scripts/enc-v4.js?v=4.0_FINAL"></script>
 </body>
 </html>
