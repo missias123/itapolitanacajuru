@@ -1,0 +1,19 @@
+AUDITORIA DE PROMOÇÃO - ITAPOLITANA CAJURU
+
+1. Melhores Práticas de UX (Pesquisa Externa):
+- Landing pages de sorteios devem ter: Título claro do prêmio, imagem do prêmio, formulário curto, link para regras oficiais e prazo (countdown).
+- Uso de "Progressive Disclosure" para regras longas evita sobrecarga cognitiva.
+- Feedback visual imediato (badges, popovers) ao realizar ações.
+- Validação de DDD e formato de telefone é padrão para evitar dados inválidos.
+
+2. Estado Atual do Site (Análise Técnica):
+- Backend (Worker): Já possui validação de DDD 16, unicidade mensal por CPF/Telefone e suporte a múltiplos lotes mensais.
+- Conflito de Configuração: O site carrega promo.json e depois config.json, o que causa sobrescrita de campos e confusão no admin.
+- Página promocao.html: Possui redundância de informações e o regulamento ocupa muito espaço visual.
+- Sorteio 2027: O usuário deseja um novo banner e regra de 1 torta por mês para todo o ano de 2027.
+
+3. Plano de Ação:
+- Criar banner 2027 para Torta de Sorvete Mensal.
+- Refatorar promocao.html para usar abas ou colapsáveis nas regras.
+- Unificar fontes de dados ou limpar redundâncias.
+- Implementar "Ticket da Sorte" visual após cadastro.

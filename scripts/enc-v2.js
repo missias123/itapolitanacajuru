@@ -9,6 +9,7 @@
     // --- ESTADO ---
     var carrinho = [];
     var produtoAtual = null;
+    var editandoIndex = -1; // -1 = novo item, >=0 = editando item existente
     var saboresSelecionados = [];
     var picolesSelecionados = {}; // { sabor: quantidade }
     var MIN_PICOLES = 100;
@@ -132,9 +133,17 @@
     }
 
     // --- FLUXO SABORES (MASSA) ---
-    function abrirSaboresSorvete(id, preço, max, nome) {
+    function abrirSaboresSorvete(id, preço, max, nome, indexParaEditar) {
+        editandoIndex = (typeof indexParaEditar !== 'undefined') ? indexParaEditar : -1;
         produtoAtual = { id: id, preço: preço, max: max, nome: nome };
         saboresSelecionados = [];
+        
+        if (editandoIndex !== -1) {
+            saboresSelecionados = carrinho[editandoIndex].sabores.slice();
+            document.getElementById('btn-confirmar-sabores').textContent = "Salvar Alterações";
+        } else {
+            document.getElementById('btn-confirmar-sabores').textContent = "✓ Confirmar Seleção";
+        }
         
         document.getElementById('modal-subtítulo-sabores').textContent = "Escolha " + max + " sabores para " + nome;
         
@@ -143,7 +152,8 @@
             window.PRODUTOS_DATA.sorvetes.sabores : SABORES_OFICIAIS;
 
         grid.innerHTML = sabores.map(function(s) {
-            return '<button class="sabor-item" onclick="window.toggleSabor(\'' + s + '\', this)">' + s + '</button>';
+            var sel = saboresSelecionados.indexOf(s) !== -1 ? ' sel' : '';
+            return '<button class="sabor-item' + sel + '" onclick="window.toggleSabor(\'' + s + '\', this)">' + s + '</button>';
         }).join('');
 
         atualizarStatusSabores();
@@ -193,36 +203,55 @@
     function confirmarSabores() {
         if (saboresSelecionados.length !== produtoAtual.max) return;
         
-        carrinho.push({
-            id: 'massa_' + Date.now(),
+        var item = {
+            id: editandoIndex !== -1 ? carrinho[editandoIndex].id : ('massa_' + Date.now()),
             prodId: produtoAtual.id,
             nome: produtoAtual.nome,
             preço: produtoAtual.preço,
             max: produtoAtual.max,
             sabores: saboresSelecionados.slice(),
             tipo: 'massa'
-        });
+        };
+
+        if (editandoIndex !== -1) {
+            carrinho[editandoIndex] = item;
+            mostrarToast("Alterações salvas!");
+        } else {
+            carrinho.push(item);
+            mostrarToast("Adicionado ao carrinho!");
+        }
         
         fecharModal('modal-sabores');
-        finalizarAcaoCarrinho();
+        atualizarBotaoCarrinho();
+        localStorage.setItem('itap_carrinho', JSON.stringify(carrinho));
     }
 
     // --- FLUXO PICOLÉS ---
-    function abrirModalPicole(key) {
+    function abrirModalPicole(key, indexParaEditar) {
+        editandoIndex = (typeof indexParaEditar !== 'undefined') ? indexParaEditar : -1;
         var p = window.PRODUTOS_DATA.picolés[key];
         produtoAtual = { id: key, nome: p.nome, preço: p.preço_atacado };
         picolesSelecionados = {};
         
+        if (editandoIndex !== -1) {
+            // Reconstruir picolesSelecionados a partir da string detalhes
+            // Formato: "50x Chocolate, 50x Morango"
+            var detalhes = carrinho[editandoIndex].detalhes_raw || {};
+            picolesSelecionados = Object.assign({}, detalhes);
+            document.getElementById('btn-add-picolés').textContent = "Salvar Alterações";
+        }
+
         document.getElementById('picolé-título').textContent = p.nome;
         document.getElementById('picolé-preços').textContent = "Mínimo 100 unidades (Atacado)";
         
         var container = document.getElementById('lista-sabores-picolé');
         container.innerHTML = p.sabores.map(function(s) {
+            var qtd = picolesSelecionados[s] || 0;
             return '<div class="sabor-picole-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;">' +
                 '<span style="font-weight:700;">' + s + '</span>' +
                 '<div style="display:flex;align-items:center;gap:12px;">' +
                     '<button onclick="window.altQtdPicole(\'' + s + '\', -1)" style="width:30px;height:30px;border-radius:50%;border:1px solid #ccc;">-</button>' +
-                    '<span id="qtd-' + s.replace(/\s/g, '_') + '" style="font-weight:900;min-width:20px;text-align:center;">0</span>' +
+                    '<span id="qtd-' + s.replace(/\s/g, '_') + '" style="font-weight:900;min-width:20px;text-align:center;">' + qtd + '</span>' +
                     '<button onclick="window.altQtdPicole(\'' + s + '\', 1)" style="width:30px;height:30px;border-radius:50%;border:1px solid #ccc;">+</button>' +
                 '</div>' +
             '</div>';
@@ -268,24 +297,39 @@
     function confirmarPickle() {
         var total = 0;
         var detalhes = [];
+        var detalhesRaw = {};
         Object.entries(picolesSelecionados).forEach(function(e) {
-            if (e[1] > 0) { total += e[1]; detalhes.push(e[1] + "x " + e[0]); }
+            if (e[1] > 0) { 
+                total += e[1]; 
+                detalhes.push(e[1] + "x " + e[0]); 
+                detalhesRaw[e[0]] = e[1];
+            }
         });
 
         if (total < MIN_PICOLES) return;
 
-        carrinho.push({
-            id: 'picole_' + Date.now(),
+        var item = {
+            id: editandoIndex !== -1 ? carrinho[editandoIndex].id : ('picole_' + Date.now()),
             prodId: produtoAtual.id,
             nome: produtoAtual.nome,
             preço: (produtoAtual.preço * total),
             unitario: produtoAtual.preço,
             detalhes: detalhes.join(', '),
+            detalhes_raw: detalhesRaw,
             tipo: 'picole'
-        });
+        };
+
+        if (editandoIndex !== -1) {
+            carrinho[editandoIndex] = item;
+            mostrarToast("Alterações salvas!");
+        } else {
+            carrinho.push(item);
+            mostrarToast("Adicionado ao carrinho!");
+        }
 
         fecharModal('modal-picolé');
-        finalizarAcaoCarrinho();
+        atualizarBotaoCarrinho();
+        localStorage.setItem('itap_carrinho', JSON.stringify(carrinho));
     }
 
     // --- CARRINHO ---
@@ -321,10 +365,13 @@
             lista.innerHTML = carrinho.map(function(item, idx) {
                 var desc = item.tipo === 'massa' ? item.sabores.join(', ') : item.detalhes;
                 var acaoMais = '';
+                var acaoEditar = '';
                 if (item.tipo === 'massa') {
-                    acaoMais = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirSaboresSorvete(\'' + item.prodId + '\', ' + item.preço + ', ' + item.max + ', \'' + item.nome + '\')" style="color:var(--verde);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">+ Adicionar Outro</button>';
+                    acaoMais = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirSaboresSorvete(\'' + item.prodId + '\', ' + item.preço + ', ' + item.max + ', \'' + item.nome + '\')" style="color:var(--verde);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">+ Outro</button>';
+                    acaoEditar = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirSaboresSorvete(\'' + item.prodId + '\', ' + item.preço + ', ' + item.max + ', \'' + item.nome + '\', ' + idx + ')" style="color:var(--azul);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">✏️ Editar</button>';
                 } else {
-                    acaoMais = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirModalPicole(\'' + item.prodId + '\')" style="color:var(--verde);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">+ Adicionar Outro</button>';
+                    acaoMais = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirModalPicole(\'' + item.prodId + '\')" style="color:var(--verde);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">+ Outro</button>';
+                    acaoEditar = '<button onclick="window.fecharModal(\'modal-carrinho\'); window.abrirModalPicole(\'' + item.prodId + '\', ' + idx + ')" style="color:var(--azul);border:none;background:none;font-size:11px;margin-right:10px;font-weight:700;">✏️ Editar</button>';
                 }
                 
                 return '<div style="display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid #eee;align-items:center;">' +
@@ -335,8 +382,9 @@
                     '<div style="text-align:right;min-width:100px;">' +
                         '<div style="font-weight:900;color:var(--azul-escuro);margin-bottom:4px;">R$ ' + item.preço.toFixed(2).replace('.',',') + '</div>' +
                         '<div style="display:flex;justify-content:flex-end;gap:5px;">' +
+                            acaoEditar +
                             acaoMais +
-                            '<button onclick="window.removerItem(' + idx + ')" style="color:var(--vermelho);border:none;background:none;font-size:11px;font-weight:700;">Remover</button>' +
+                            '<button onclick="window.removerItem(' + idx + ')" style="color:var(--vermelho);border:none;background:none;font-size:11px;font-weight:700;">Excluir</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>';
@@ -358,7 +406,11 @@
                 btnCont.className = 'btn-carrinho-extra';
                 btnCont.textContent = '← Adicionar mais produtos';
                 btnCont.style.cssText = 'background:#e3f2fd; color:#1565c0; border:none; padding:12px; border-radius:8px; font-weight:800; cursor:pointer; margin-bottom:10px; width:100%; font-size:0.9rem;';
-                btnCont.onclick = function() { window.fecharModal('modal-carrinho'); };
+                btnCont.onclick = function() { 
+                    window.fecharModal('modal-carrinho');
+                    var target = document.querySelector('.container-categorias') || document.querySelector('.container');
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                };
                 footer.insertBefore(btnCont, footer.firstChild);
 
                 // Botão Limpar Pedido
