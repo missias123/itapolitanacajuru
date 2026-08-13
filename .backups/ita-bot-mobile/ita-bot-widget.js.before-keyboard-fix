@@ -140,52 +140,38 @@
       if (e.target === div) _itabotFecharItaBot();
     };
 
-    /* ─── Lógica Ultra-Robusta para Teclado Mobile (Padrão Elite) ─── */
+    /* ─── Lógica robusta para VisualViewport (Teclado Virtual Mobile) ─── */
     if (window.visualViewport) {
       var viewport = window.visualViewport;
       var chatDialog = div;
-      var chatBox = div.querySelector('.chat-box');
       var inputEl = document.getElementById('itabot-input');
 
       function updateChatViewport() {
-        // No mobile, o visualViewport.height diminui quando o teclado sobe
-        var vh = viewport.height;
-        var offset = viewport.offsetTop;
-        
-        // Ajusta a altura e posição da caixa de chat para caber exatamente no espaço visível
-        if (window.innerWidth <= 600) {
-          chatBox.style.height = vh + 'px';
-          chatBox.style.top = offset + 'px';
-          chatBox.style.bottom = 'auto';
-          
-          // Se o teclado estiver aberto (altura visível menor que a da janela)
-          if (vh < window.innerHeight * 0.85) {
-            chatDialog.classList.add('keyboard-open');
-            // Garante que a última mensagem ou o input esteja visível
-            setTimeout(function() {
-              var msgs = document.getElementById('itabot-msgs');
-              if (msgs) msgs.scrollTop = msgs.scrollHeight;
-              if (document.activeElement === inputEl) {
-                inputEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-              }
-            }, 100);
-          } else {
-            chatDialog.classList.remove('keyboard-open');
-            chatBox.style.top = '0'; // Volta ao topo normal
-          }
+        var keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+        document.documentElement.style.setProperty('--keyboard-height', keyboardHeight + 'px');
+
+        if (keyboardHeight > 80) {
+          chatDialog.classList.add('keyboard-open');
+          requestAnimationFrame(function () {
+            if (inputEl && document.activeElement === inputEl) {
+              inputEl.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+            }
+          });
+        } else {
+          chatDialog.classList.remove('keyboard-open');
         }
       }
 
       viewport.addEventListener('resize', updateChatViewport);
       viewport.addEventListener('scroll', updateChatViewport);
-      
+      window.addEventListener('resize', updateChatViewport);
+
       if (inputEl) {
-        inputEl.addEventListener('focus', function() {
-          // Pequeno delay para o teclado subir totalmente no iOS/Android
-          setTimeout(updateChatViewport, 300);
-        });
-        inputEl.addEventListener('blur', function() {
-          setTimeout(updateChatViewport, 100);
+        inputEl.addEventListener('focus', function () {
+          setTimeout(updateChatViewport, 250);
+          setTimeout(function () {
+            inputEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          }, 350);
         });
       }
     }
