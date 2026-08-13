@@ -1,5 +1,5 @@
 /**
- * ITAPOLITANA CAJURU - Lógica de Encomendas v2.1 (UX Genius Edition)
+ * ITAPOLITANA CAJURU - Lógica de Encomendas v2.2 (UX Genius Edition)
  * Compatível com ganchos HTML de encomendas.html
  */
 
@@ -10,9 +10,8 @@
     let carrinho = [];
     let produtoAtual = null;
     let saboresSelecionados = [];
-    let picolésSelecionados = {}; // { sabor: quantidade }
     
-    // Dados Locais (Fallback se products.js falhar)
+    // Dados Locais (Fallback)
     const DADOS_LOCAL = {
         caixas: [
             { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preço: 100, maxSabores: 2 },
@@ -29,24 +28,34 @@
     // --- INICIALIZAÇÃO ---
     function init() {
         console.log("📦 Encomendas: Inicializando...");
+        
+        // Renderizar imediatamente com locais
         renderizarCaixas();
         renderizarTortas();
         atualizarBotãoCarrinho();
         
-        // Listener para dados carregados do products.js (se disponível)
-        document.addEventListener('produtosNuvemCarregados', function() {
-            console.log("📦 Encomendas: Dados da nuvem recebidos.");
+        // Listener para dados da nuvem
+        window.addEventListener('produtosNuvemCarregados', function() {
+            console.log("📦 Encomendas: Dados da nuvem recebidos, re-renderizando...");
             renderizarCaixas();
             renderizarTortas();
         });
+
+        // Caso já tenham sido carregados antes do script
+        if (window._itap_caixas || window._itap_tortas) {
+            renderizarCaixas();
+            renderizarTortas();
+        }
     }
 
     // --- RENDERIZAÇÃO ---
     function renderizarCaixas() {
         const container = document.getElementById('lista-caixas');
         if (!container) return;
-        const caixas = (window._itap_caixas && window._itap_caixas.length) ? window._itap_caixas : DADOS_LOCAL.caixas;
         
+        const caixas = (window._itap_caixas && window._itap_caixas.length > 0) ? window._itap_caixas : DADOS_LOCAL.caixas;
+        console.log("📦 Renderizando Caixas:", caixas.length);
+
         container.innerHTML = caixas.map(p => `
             <div class="prod-card">
                 <div class="prod-nome">${p.nome}</div>
@@ -59,7 +68,9 @@
     function renderizarTortas() {
         const container = document.getElementById('lista-tortas');
         if (!container) return;
-        const tortas = (window._itap_tortas && window._itap_tortas.length) ? window._itap_tortas : DADOS_LOCAL.tortas;
+        
+        const tortas = (window._itap_tortas && window._itap_tortas.length > 0) ? window._itap_tortas : DADOS_LOCAL.tortas;
+        console.log("📦 Renderizando Tortas:", tortas.length);
 
         container.innerHTML = tortas.map(p => `
             <div class="prod-card">
@@ -83,8 +94,13 @@
 
         if (!isAberto) {
             conteudo.classList.add('aberto');
-            conteudo.parentElement.querySelector('.categoria-header').classList.add('aberta');
+            const header = conteudo.parentElement.querySelector('.categoria-header');
+            if (header) header.classList.add('aberta');
             conteudo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Forçar renderização se estiver vazio (segurança extra)
+            if (id === 'conteudo-caixas' && !document.getElementById('lista-caixas').innerHTML) renderizarCaixas();
+            if (id === 'conteudo-tortas' && !document.getElementById('lista-tortas').innerHTML) renderizarTortas();
         }
     }
 
@@ -104,11 +120,14 @@
     // --- FLUXO SABORES ---
     function abrirSaboresSorvete(id, tipo) {
         const lista = tipo === 'caixas' ? 
-            ((window._itap_caixas || DADOS_LOCAL.caixas)) : 
-            ((window._itap_tortas || DADOS_LOCAL.tortas));
+            (window._itap_caixas || DADOS_LOCAL.caixas) : 
+            (window._itap_tortas || DADOS_LOCAL.tortas);
             
         produtoAtual = lista.find(p => p.id === id);
-        if (!produtoAtual) return;
+        if (!produtoAtual) {
+            console.error("Produto não encontrado:", id);
+            return;
+        }
 
         saboresSelecionados = [];
         
@@ -250,7 +269,7 @@
         setTimeout(() => t.classList.remove('ativo'), 3000);
     }
 
-    // --- EXPOSIÇÃO GLOBAL (Obrigatório para onclick do HTML) ---
+    // --- EXPOSIÇÃO GLOBAL ---
     window.toggleSecao = toggleSecao;
     window.abrirSaboresSorvete = abrirSaboresSorvete;
     window.toggleSabor = toggleSabor;
@@ -260,7 +279,7 @@
     window.removerItem = removerItem;
     window.fecharCarrinho = () => fecharModal('modal-carrinho');
 
-    // Inicializar quando o DOM estiver pronto
+    // Inicializar
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
