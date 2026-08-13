@@ -1,4 +1,3 @@
-
 // ENCOMENDAS.JS - Sorveteria Itapolitana Cajuru
 // Lógica completa do fluxo de encomendas
 // =====================================================
@@ -6,526 +5,213 @@
 // Admin salva → produtos.json → site lê (padrão profissional)
 // =====================================================
 const ITAP_PRODUTOS_URL = 'https://raw.githubusercontent.com/missias123/itapolitanacajuru/main/dados/produtos.json';
-// Backend seguro — pedidos PII enviados ao Worker, não gravados direto no GitHub
 const ITAP_WORKER_API = 'https://api.itapolitanacajuru.com.br';
-// Token GitHub mantido apenas para atualização de estoque (produtos.json — sem PII)
 const _GH_TK  = (function(){return localStorage.getItem('itap_gh_token')||'';})();
 const _GH_API = 'https://api.github.com/repos/missias123/itapolitanacajuru/contents/';
 
-// Envia o pedido ao Worker (backend seguro — sem gravação direta no GitHub)
-async function enviarPedidoWorker(pedido) {
-  try {
-    const resp = await fetch(ITAP_WORKER_API + '/api/encomendas', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(pedido),
-    });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error('Worker retornou ' + resp.status + ': ' + (err.error || ''));
-    }
-    console.log('[Itap] Pedido registrado no Worker ✅', pedido.num);
-    return true;
-  } catch(e) {
-    console.warn('[Itap] Erro ao enviar pedido ao Worker:', e.message);
-    return false;
-  }
-}
+// Estado Global da Página de Encomendas
+let carrinho = [];
+let produtoAtual = null;
+let picoléAtual = null;
+let saboresSelecionados = [];
+let selecoesPickle = {}; // { "Sabor": qtd }
+let selecoesPickleGlobal = {}; // { "tipoId::Sabor": qtd }
 
-// Atualiza o estoque de caixas, tortas e picolés em dados/produtos.json no GitHub após um pedido
-async function atualizarEstoqueGitHub(caixasAtualizadas, tortasAtualizadas, picolesQtdPorCat) {
-  try {
-    const r = await fetch(_GH_API + 'dados/produtos.json?t=' + Date.now(), {
-      headers: { 'Authorization': 'token ' + _GH_TK, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (!r.ok) throw new Error('Leitura falhou: ' + r.status);
-    const d = await r.json();
-    const sha = d.sha;
-    const bin = atob(d.content.replace(/\n/g, ''));
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    const prodAtual = JSON.parse(new TextDecoder('utf-8').decode(bytes));
-    // Aplicar baixa de estoque nas caixas
-    if (prodAtual.caixas_enc && caixasAtualizadas.length > 0) {
-      caixasAtualizadas.forEach(cx => {
-        const idx = prodAtual.caixas_enc.findIndex(c => c.id === cx.id);
-        if (idx !== -1) {
-          prodAtual.caixas_enc[idx].estoque = cx.estoque;
-          prodAtual.caixas_enc[idx].esgotado = cx.estoque <= 0;
-        }
-      });
-    }
-    // Aplicar baixa de estoque nas tortas
-    if (prodAtual.tortas_enc && tortasAtualizadas.length > 0) {
-      tortasAtualizadas.forEach(tr => {
-        const idx = prodAtual.tortas_enc.findIndex(t => t.id === tr.id);
-        if (idx !== -1) {
-          prodAtual.tortas_enc[idx].estoque = tr.estoque;
-          prodAtual.tortas_enc[idx].esgotado = tr.estoque <= 0;
-        }
-      });
-    }
-    // Aplicar baixa de estoque nos picolés por categoria (chave picoles sem acento no JSON)
-    if (picolesQtdPorCat && Object.keys(picolesQtdPorCat).length > 0) {
-      const srcPic = prodAtual.picoles || prodAtual.picolés || {};
-      Object.entries(picolesQtdPorCat).forEach(([cat, qtd]) => {
-        if (srcPic[cat]) {
-          srcPic[cat].estoque = Math.max(0, (srcPic[cat].estoque || 0) - qtd);
-          srcPic[cat].esgotado = srcPic[cat].estoque === 0;
-        }
-      });
-      if (prodAtual.picoles) prodAtual.picoles = srcPic;
-      else if (prodAtual.picolés) prodAtual.picolés = srcPic;
-    }
-    const novoConteudo = btoa(unescape(encodeURIComponent(JSON.stringify(prodAtual, null, 2))));
-    const resp = await fetch(_GH_API + 'dados/produtos.json', {
-      method: 'PUT',
-      headers: { 'Authorization': 'token ' + _GH_TK, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Baixa de estoque automática', content: novoConteudo, sha })
-    });
-    if (!resp.ok) throw new Error('Gravação falhou: ' + resp.status);
-    console.log('[Itap] Estoque atualizado no GitHub ✅');
-    return true;
-  } catch(e) {
-    console.warn('[Itap] Erro ao atualizar estoque no GitHub:', e.message);
-    return false;
-  }
-}
-
-async function carregarPreçosNuvem() {
-  // Normaliza chaves do JSON — aceita com e sem acento (picoles/picolés, preco/preço)
-  function normalizarPicolés(obj) {
-    if (!obj) return null;
-    const result = {};
-    Object.entries(obj).forEach(([key, p]) => {
-      result[key] = {
-        nome: p.nome,
-        preço_varejo:  p.preço_varejo  || p.preco_varejo  || 0,
-        preço_atacado: p.preço_atacado || p.preco_atacado || 0,
-        estoque: p.estoque !== undefined ? p.estoque : 200,
-        sabores: p.sabores || []
-      };
-    });
-    return result;
-  }
-  try {
-    const resp = await fetch(ITAP_PRODUTOS_URL + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!resp.ok) throw new Error('produtos.json indisponível');
-    const dados = await resp.json();
-    // Aceita tanto 'picolés' (com acento) quanto 'picoles' (sem acento)
-    const fontePicolés = dados.picolés || dados.picoles || null;
-    const picolésNorm = normalizarPicolés(fontePicolés);
-    if (picolésNorm) {
-      Object.entries(picolésNorm).forEach(([key, p]) => {
-        if (produtos.picolés[key]) {
-          produtos.picolés[key].preço_varejo  = p.preço_varejo;
-          produtos.picolés[key].preço_atacado = p.preço_atacado;
-          if (p.estoque !== undefined) produtos.picolés[key].estoque = p.estoque;
-        }
-      });
-    }
-    // Aceita tanto 'açaí' quanto 'acai' e 'acai_promocao'
-    if (dados.sorvetes_preços || dados.sorvetes) {
-      const src = dados.sorvetes_preços || (dados.sorvetes && dados.sorvetes.preços) || null;
-      if (src) produtos.sorvetes.preços = src;
-    }
-    if (dados.milkshake) produtos.milkshake = dados.milkshake;
-    if (dados.tacas) produtos.tacas = dados.tacas;
-    if (dados.açaí || dados.acai) produtos.açaí = dados.açaí || dados.acai;
-    if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
-    if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
-    if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
-    localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados));
-    // Armazenar no STATE global para uso imediato
-    if (dados.caixas_enc) window._itap_caixas = dados.caixas_enc;
-    if (dados.tortas_enc) window._itap_tortas = dados.tortas_enc;
-    if (dados.acréscimos || dados.acrescimos) window._itap_acréscimos = dados.acréscimos || dados.acrescimos;
-    console.log('[Itap] Preços carregados da nuvem ✅', { picolés: !!picolésNorm, caixas: !!dados.caixas_enc });
-    return true;
-  } catch(e) {
-    console.warn('[Itap] Falha ao carregar nuvem, usando cache:', e.message);
-    const cache = localStorage.getItem('itap_produtos_nuvem');
-    if (cache) {
-      try {
-        const dados = JSON.parse(cache);
-        const fontePicolés = dados.picolés || dados.picoles || null;
-        const picolésNorm = normalizarPicolés(fontePicolés);
-        if (picolésNorm) {
-          Object.entries(picolésNorm).forEach(([key, p]) => {
-            if (produtos.picolés[key]) {
-              produtos.picolés[key].preço_varejo  = p.preço_varejo;
-              produtos.picolés[key].preço_atacado = p.preço_atacado;
-            }
-          });
-        }
-      } catch(e2) {}
-    }
-    return false;
-  }
-}
-
-// Variáveis globais
-var carrinho = [];
-var produtoAtual = null;
-var saboresSelecionados = [];
-var selecoesPickle = {};        // seleções do modal atual (por sabor)
-var selecoesPickleGlobal = {};  // acumulado de TODOS os tipos (chave: tipo_id::sabor)
-var _nomeCliente = '';
-var _telCliente = '';
-var _endereçoCliente = '';
-
-// Valida número de telefone brasileiro: aceita apenas DDD (11–99) + 8 ou 9 dígitos
-function _telValido(tel) {
-  var digits = (tel || '').replace(/\D/g, '');
-  return /^(?:[1-9]{2})(?:9\d{8}|\d{8})$/.test(digits);
-}
-
-// ---- PILHA DE NAVEGAÇÃO DO MODAL DE PICOLÉS ----
-// Garante que cada tela empilha a anterior e o botão Voltar sempre vai para a tela imediatamente anterior
-var _picoléNavStack = []; // ex: ['tipos', 'sabores']
-var picoléAtual = null;   // produto de picolé selecionado no modal
-
-// Lista padrão de sabores
-const SABORES_PADRAO = [
-  "Abacaxi ao Vinho","Abacaxi Suíço","Algodão Doce (Blue Ice)","Amarena","Ameixa",
-  "Banana com Nutella","Bis e Trufa","Cereja Trufada","Chocolate","Chocolate com Café",
-  "Coco Queimado","Creme Paris","Croquer","Doce de Leite","Ferrero Rocher",
-  "Flocos","Kinder Ovo","Leite Condensado","Leite Ninho",
-  "Leite Ninho Folheado","Leite Ninho com Oreo","Limão",
-  "Limão Suíço","Menta com Chocolate","Milho Verde","Morango Trufado",
-  "Mousse de Maracujá","Mousse de Uva","Nozes","Nutella","Ovomaltine",
-  "Pistache","Prestígio","Sensação","Torta de Chocolate"
-];
-// Retorna TODOS os sabores como objetos {nome, esgotado}
-function getTodosSabores() {
-  try {
-    const salvo = localStorage.getItem('itap_sabores');
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      if (Array.isArray(dados) && dados.length > 0) return dados;
-    }
-  } catch(e) {}
-  return SABORES_PADRAO.map(n => ({ nome: n, esgotado: false }));
-}
-// Compatibilidade — retorna só nomes ativos
-function getSaboresAtivos() {
-  return getTodosSabores().filter(s => !s.esgotado).map(s => s.nome);
-}
-// Variável global atualizada dinamicamente
-var SABORES_SORVETE = getTodosSabores();
-// Escutar mudanças do Admin via localStorage
-window.addEventListener('storage', function(e) {
-  if (e.key === 'itap_sabores') {
-    SABORES_SORVETE = getTodosSabores();
-    // Re-renderizar modal se estiver aberto
-    const grid = document.getElementById('grid-sabores');
-    if (grid && grid.children.length > 0) {
-      renderizarGridSabores(grid);
-    }
-  }
-  if (e.key === 'itap_caixas_enc' || e.key === 'itap_tortas_enc') {
-    renderizarCaixas();
-    renderizarTortas();
-  }
-  if (e.key === 'itap_acréscimos') {
-    renderizarAcréscimos();
-  }
-  if (e.key === 'itap_picolés_admin') {
-    renderizarPicolés();
-  }
-});
-// Renderizar grid de sabores com risco vermelho nos esgotados
-function renderizarGridSabores(grid) {
-  if (!grid) return;
-  grid.innerHTML = SABORES_SORVETE.map(s => {
-    const esg = s.esgotado;
-    const nomeEscaped = s.nome.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    if (esg) {
-      return `<button class="sabor-item sabor-esgotado" disabled title="Esgotado — indisponível no momento" data-nome="${nomeEscaped}"><span class="sabor-nome">${nomeEscaped}</span></button>`;
-    }
-    return `<button class="sabor-item" data-nome="${nomeEscaped}"><span class="sabor-nome">${nomeEscaped}</span></button>`;
-  }).join('');
-  // Attach click handlers via event delegation (avoids inline onclick com dados dinâmicos)
-  grid.querySelectorAll('.sabor-item:not([disabled])').forEach(btn => {
-    btn.addEventListener('click', function() { toggleSabor(this.dataset.nome, this); });
-  });
-}
-
-// Caixas de encomenda: carregadas do admin (localStorage) ou padrão
-function normalizarCaixa(c, padrao) {
-  // Aceita tanto 'preço' (com acento) quanto 'preco' (sem acento) do JSON
-  return {
-    ...padrao,
-    ...c,
-    preço: c.preço || c.preco || padrao.preço,
-    maxSabores: padrao ? padrao.maxSabores : (c.maxSabores || 2)
-  };
-}
-function getCaixasEncomenda() {
-  const PADRAO = [
-    { id:"cx5l_2s",  nome:"Caixa 5 Litros – 2 Sabores",  preço:100.00, maxSabores:2, estoque:20, esgotado:false },
-    { id:"cx5l_3s",  nome:"Caixa 5 Litros – 3 Sabores",  preço:115.00, maxSabores:3, estoque:20, esgotado:false },
-    { id:"cx10l_2s", nome:"Caixa 10 Litros – 2 Sabores", preço:150.00, maxSabores:2, estoque:15, esgotado:false },
-    { id:"cx10l_3s", nome:"Caixa 10 Litros – 3 Sabores", preço:165.00, maxSabores:3, estoque:15, esgotado:false }
-  ];
-  // Priorizar dados da nuvem carregados no window._itap_caixas
-  if (window._itap_caixas && window._itap_caixas.length > 0) {
-    return window._itap_caixas.map((c, i) => normalizarCaixa(c, PADRAO[i] || PADRAO[0]));
-  }
-  return PADRAO;
-}
-function getTortasEncomenda() {
-  const PADRAO = [
-    { id:"torta1", nome:"Torta de Sorvete", preço:100.00, maxSabores:3, estoque:10, esgotado:false }
-  ];
-  if (window._itap_tortas && window._itap_tortas.length > 0) {
-    return window._itap_tortas.map((t, i) => normalizarCaixa(t, PADRAO[i] || PADRAO[0]));
-  }
-  return PADRAO;
-}
-
+// Objeto de Dados Centralizado
 const PRODUTOS = {
-  caixas: getCaixasEncomenda(),
-  tortas: getTortasEncomenda(),
-  // Picolés carregados do products.js (fonte única)
-  picolés: Object.entries(produtos.picolés).map(([key, p]) => ({
-    id: 'pic_'+key,
+  caixas: [],
+  tortas: [],
+  picolés: [],
+  acréscimos: []
+};
+
+// ---- HELPERS DE DADOS ----
+function getCaixasEncomenda() {
+  return window._itap_caixas || [
+    { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preço: 100, maxSabores: 2, estoque: 20, esgotado: false },
+    { id: "cx5l_3s", nome: "Caixa 5 Litros - 3 Sabores", preço: 115, maxSabores: 3, estoque: 20, esgotado: false },
+    { id: "cx10l_2s", nome: "Caixa 10 Litros - 2 Sabores", preço: 150, maxSabores: 2, estoque: 15, esgotado: false },
+    { id: "cx10l_3s", nome: "Caixa 10 Litros - 3 Sabores", preço: 165, maxSabores: 3, estoque: 15, esgotado: false }
+  ];
+}
+
+function getTortasEncomenda() {
+  return window._itap_tortas || [
+    { id: "torta1", nome: "Torta de Sorvete", preço: 100, maxSabores: 3, estoque: 10, esgotado: false }
+  ];
+}
+
+function getAcréscimosEncomenda() {
+  return window._itap_acréscimos || [];
+}
+
+function getPicolésAtacado() {
+  if (!window.PRODUTOS_DATA || !window.PRODUTOS_DATA.picolés) return [];
+  return Object.entries(window.PRODUTOS_DATA.picolés).map(([id, p]) => ({
+    id,
     nome: p.nome,
     preçoVarejo: p.preço_varejo,
     preçoAtacado: p.preço_atacado,
     estoque: p.estoque,
-    sabores: p.sabores
-  }))
-};
+    sabores: p.sabores,
+    esgotado: p.estoque <= 0
+  }));
+}
 
+// ---- INICIALIZAÇÃO ----
+function inicializarEncomendas() {
+  console.log('[Itap] Inicializando Encomendas...');
+  
+  // 1. Carregar dados iniciais (locais ou globais)
+  PRODUTOS.caixas = getCaixasEncomenda();
+  PRODUTOS.tortas = getTortasEncomenda();
+  PRODUTOS.picolés = getPicolésAtacado();
+  PRODUTOS.acréscimos = getAcréscimosEncomenda();
 
-// ---- INIT ----
-document.addEventListener('DOMContentLoaded', () => {
-  // Modal carrinho: listeners diretos nos botões (sem conflito de dupla chamada)
-  const modalCarrinho = document.getElementById('modal-carrinho');
-  if (modalCarrinho) {
-    // Fechar ao clicar no overlay (fora do modal-box)
-    modalCarrinho.addEventListener('click', function(e) {
-      if (e.target === modalCarrinho) fecharCarrinho();
-    });
-  }
-  // Botão ir para dados (etapa 1 → 2)
-  const btnIrDados = document.getElementById('btn-ir-dados');
-  if (btnIrDados) {
-    btnIrDados.addEventListener('click', function(e) {
-      e.stopPropagation();
-      irParaDados();
-    });
-  }
-  // Botão Confirmar e Enviar Pedido (etapa 2 → 3)
-  const btnFinalizar = document.getElementById('btn-finalizar');
-  if (btnFinalizar) {
-    btnFinalizar.addEventListener('click', function(e) {
-      e.stopPropagation();
-      finalizarPedido();
-    });
-  }
-  // Botão Voltar ao Carrinho
-  const btnVoltarEtapa = document.getElementById('btn-voltar-etapa');
-  if (btnVoltarEtapa) {
-    btnVoltarEtapa.addEventListener('click', function(e) {
-      e.stopPropagation();
-      mostrarEtapa('revisao');
-    });
-  }
-  // Botão Continuar Comprando (etapa 1)
-  const btnContinuar = document.getElementById('btn-continuar-comprando');
-  if (btnContinuar) {
-    btnContinuar.addEventListener('click', function(e) {
-      e.stopPropagation();
-      fecharCarrinho();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-  // Botão Revisar Carrinho (etapa 2 → 1) - alias do voltar-etapa
-  const btnVoltarEtapa2 = document.getElementById('btn-voltar-etapa2');
-  if (btnVoltarEtapa2) {
-    btnVoltarEtapa2.addEventListener('click', function(e) {
-      e.stopPropagation();
-      mostrarEtapa('revisao');
-    });
-  }
-  // Botão Desistir e Voltar às Encomendas (etapa 3)
-  const btnVoltarCardápio = document.getElementById('btn-voltar-cardápio');
-  if (btnVoltarCardápio) {
-    btnVoltarCardápio.addEventListener('click', function(e) {
-      e.stopPropagation();
-      fecharCarrinho();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-  // Botão Voltar às Encomendas (etapa 2) — fecha o modal, mantém o carrinho
-  const btnSairFormulario = document.getElementById('btn-sair-formulario');
-  if (btnSairFormulario) {
-    btnSairFormulario.addEventListener('click', function(e) {
-      e.stopPropagation();
-      fecharCarrinho();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // Carregar preços da nuvem e re-renderizar
-  try {
-    carregarPreçosNuvem().then(() => {
-      // Re-inicializar PRODUTOS com preços atualizados
-      PRODUTOS.caixas = getCaixasEncomenda();
-      PRODUTOS.tortas = getTortasEncomenda();
-      PRODUTOS.picolés = Object.entries(produtos.picolés).map(([key, p]) => ({
-        id: 'pic_'+key,
-        nome: p.nome,
-        preçoVarejo: p.preço_varejo,
-        preçoAtacado: p.preço_atacado,
-        estoque: p.estoque,
-        sabores: p.sabores
-      }));
-      renderizarTudo();
-      atualizarBotãoCarrinho();
-    }).catch(() => { /* falha silenciosa — dados locais já foram renderizados */ });
-  } catch(e) {
-    console.warn('[Itap] carregarPreçosNuvem indisponível:', e.message);
-  }
+  // 2. Renderizar interface inicial
   renderizarTudo();
-  atualizarBotãoCarrinho();
-  // Abrir seção via hash (ex: encomendas.html#caixas)
-  const hash = window.location.hash.replace('#','');
-  const mapa = {caixas:'conteudo-caixas', tortas:'conteudo-tortas', picolés:'conteudo-picolés'};
-  if(hash && mapa[hash]){
-    const el = document.getElementById(mapa[hash]);
-    if(el){ el.classList.add('aberto'); }
-    setTimeout(()=>{
-      const sec = document.getElementById(hash);
-      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 200);
-  }
-  // Abrir caixas se vier de complementos
-  if(hash === 'complementos'){
-    const el = document.getElementById('conteudo-caixas');
-    if(el){ el.classList.add('aberto'); }
-    setTimeout(()=>{
-      const sec = document.getElementById('caixas');
-      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 200);
-  }
-  // Abrir acréscimos via hash
-  if(hash === 'acréscimos'){
-    const el = document.getElementById('conteudo-acréscimos');
-    if(el){ el.classList.add('aberto'); }
-    setTimeout(()=>{
-      const sec = document.getElementById('acréscimos');
-      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 200);
-  }
-  // Re-renderizar acréscimos ao abrir a seção
-  const headerAcr = document.querySelector('#acréscimos .categoria-header');
-  if(headerAcr){
-    headerAcr.addEventListener('click', function(){
-      setTimeout(renderizarAcréscimos, 50);
-    });
-  }
-});
+
+  // 3. Escutar atualização da nuvem (via products.js)
+  document.addEventListener('produtosNuvemCarregados', () => {
+    console.log('[Itap] Sincronizando dados da nuvem nas encomendas...');
+    PRODUTOS.caixas = getCaixasEncomenda();
+    PRODUTOS.tortas = getTortasEncomenda();
+    PRODUTOS.picolés = getPicolésAtacado();
+    PRODUTOS.acréscimos = getAcréscimosEncomenda();
+    renderizarTudo();
+  });
+}
 
 function renderizarTudo() {
   renderizarCaixas();
   renderizarTortas();
   renderizarPicolés();
   renderizarAcréscimos();
+  atualizarBotãoCarrinho();
 }
 
-// ---- RENDERIZAR CAIXAS ----
+// ---- RENDERIZADORES ----
+
 function renderizarCaixas() {
-  const c = document.getElementById('lista-caixas');
-  if (!c) return;
-  c.innerHTML = PRODUTOS.caixas.map(p => {
+  const container = document.getElementById('lista-caixas');
+  if (!container) return;
+  
+  if (PRODUTOS.caixas.length === 0) {
+    container.innerHTML = '<p class="aviso-vazio">Carregando opções de caixas...</p>';
+    return;
+  }
+
+  container.innerHTML = PRODUTOS.caixas.map(p => {
     const esgotado = p.esgotado || p.estoque <= 0;
     return `
-    <div class="prod-card ${esgotado?'esgotado':''}">
-      <div class="prod-body">
-        <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
-        <div class="prod-preço">R$ ${p.preço.toFixed(2).replace('.',',')}</div>
-        <div class="prod-estoque">${esgotado?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
-      </div>
-      <button class="btn-sabores" onclick="${esgotado?'':"abrirSaboresSorvete('"+p.id+"','caixas',this)"}" ${esgotado?'disabled style="cursor:not-allowed"':''}>
-        🍦 ${esgotado?'Esgotado':'Escolher '+p.maxSabores+' Sabores'}
-      </button>
-    </div>`;
-  }).join('');
-}
-
-// ---- RENDERIZAR TORTAS ----
-function renderizarTortas() {
-  const c = document.getElementById('lista-tortas');
-  if (!c) return;
-  c.innerHTML = PRODUTOS.tortas.map(p => {
-    const esg = p.esgotado || p.estoque <= 0;
-    return `
-    <div class="prod-card ${esg?'esgotado':''}">
-      <div class="prod-body">
-        <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
-        <div class="prod-preço">R$ ${p.preço.toFixed(2).replace('.',',')}</div>
-        <div class="prod-estoque">${esg?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
-      </div>
-      <button class="btn-sabores" onclick="${esg?'':"abrirSaboresSorvete('"+p.id+"','tortas',this)"}" ${esg?'disabled style="cursor:not-allowed"':''}>
-        🎂 ${esg?'Esgotado':'Escolher '+p.maxSabores+' Sabores'}
-      </button>
-    </div>`;
-  }).join('');
-}
-
-// ---- RENDERIZAR PICOLÉS ----
-function renderizarPicolés() {
-  const c = document.getElementById('lista-picolés');
-  if (!c) return;
-  c.innerHTML = PRODUTOS.picolés.map(p => {
-    const esg = p.esgotado || p.estoque <= 0;
-    return `
-    <div class="prod-card picolé ${esg?'esgotado':''}">
-      <div class="prod-body">
-        <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
-        <div class="prod-preços-picolé">
-          <span class="preco-varejo-ref">De R$\u00a0${p.preçoVarejo.toFixed(2).replace('.',',')} varejo</span>
-          <span class="preco-atacado-main">R$\u00a0${p.preçoAtacado.toFixed(2).replace('.',',')} <small>atacado</small></span>
-          <span class="badge-min-picole">Mín. ${MIN_PICOLES} un.</span>
+      <div class="prod-card ${esgotado ? 'esgotado' : ''}">
+        <div class="prod-body">
+          <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
+          <div class="prod-preço">R$ ${p.preço.toFixed(2).replace('.', ',')}</div>
+          <div class="prod-estoque">${esgotado ? '<span class="tag-esgotado">ESGOTADO</span>' : `Estoque: ${p.estoque} un.`}</div>
         </div>
-        <div class="prod-estoque">${esg?'<span class="tag-esgotado">ESGOTADO</span>':`Estoque: ${p.estoque} un.`}</div>
-      </div>
-      <button class="btn-sabores btn-picolé" onclick="${esg?'':"abrirModalPicolé('"+p.id+"',this)"}" ${esg?'disabled style="cursor:not-allowed"':''}>
-        🍭 ${esg?'Esgotado':'Ver Sabores'}
-      </button>
-    </div>`;
+        <button class="btn-sabores" onclick="${esgotado ? '' : "abrirSaboresSorvete('" + p.id + "','caixas')"}" ${esgotado ? 'disabled' : ''}>
+          🍦 ${esgotado ? 'Esgotado' : 'Escolher ' + p.maxSabores + ' Sabores'}
+        </button>
+      </div>`;
   }).join('');
 }
 
-// ---- MODAL SABORES SORVETE ----
-function abrirSaboresSorvete(id, cat, originEl) {
-  const lista = PRODUTOS[cat];
-  const p = lista.find(x => x.id === id);
-  if (!p) return;
-  produtoAtual = {...p, categoria: cat};
+function renderizarTortas() {
+  const container = document.getElementById('lista-tortas');
+  if (!container) return;
+
+  if (PRODUTOS.tortas.length === 0) {
+    container.innerHTML = '<p class="aviso-vazio">Carregando opções de tortas...</p>';
+    return;
+  }
+
+  container.innerHTML = PRODUTOS.tortas.map(p => {
+    const esgotado = p.esgotado || p.estoque <= 0;
+    return `
+      <div class="prod-card ${esgotado ? 'esgotado' : ''}">
+        <div class="prod-body">
+          <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
+          <div class="prod-preço">R$ ${p.preço.toFixed(2).replace('.', ',')}</div>
+          <div class="prod-estoque">${esgotado ? '<span class="tag-esgotado">ESGOTADO</span>' : `Estoque: ${p.estoque} un.`}</div>
+        </div>
+        <button class="btn-sabores" onclick="${esgotado ? '' : "abrirSaboresSorvete('" + p.id + "','tortas')"}" ${esgotado ? 'disabled' : ''}>
+          🎂 ${esgotado ? 'Esgotado' : 'Escolher ' + p.maxSabores + ' Sabores'}
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function renderizarPicolés() {
+  const container = document.getElementById('lista-picolés');
+  if (!container) return;
+
+  if (PRODUTOS.picolés.length === 0) {
+    container.innerHTML = '<p class="aviso-vazio">Carregando picolés...</p>';
+    return;
+  }
+
+  container.innerHTML = PRODUTOS.picolés.map(p => {
+    const esgotado = p.esgotado || p.estoque <= 0;
+    return `
+      <div class="prod-card ${esgotado ? 'esgotado' : ''}">
+        <div class="prod-body">
+          <div class="prod-nome-wrap"><div class="prod-nome">${p.nome}</div></div>
+          <div class="prod-preço">R$ ${p.preçoAtacado.toFixed(2).replace('.', ',')} <small>(atacado)</small></div>
+          <div class="prod-estoque">${esgotado ? '<span class="tag-esgotado">ESGOTADO</span>' : `Estoque: ${p.estoque} un.`}</div>
+        </div>
+        <button class="btn-sabores" onclick="${esgotado ? '' : "abrirPicolésSincronizado('" + p.id + "')"}" ${esgotado ? 'disabled' : ''}>
+          🍭 ${esgotado ? 'Esgotado' : 'Escolher Sabores'}
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function renderizarAcréscimos() {
+  const container = document.getElementById('lista-acréscimos');
+  if (!container) return;
+  // Implementação futura ou simplificada
+}
+
+// ---- MODAL DE SABORES (SORVETE/TORTA) ----
+function abrirSaboresSorvete(id, tipo) {
+  const lista = tipo === 'caixas' ? PRODUTOS.caixas : PRODUTOS.tortas;
+  produtoAtual = lista.find(p => p.id === id);
+  if (!produtoAtual) return;
+
   saboresSelecionados = [];
-
   const modal = document.getElementById('modal-sabores');
-  document.getElementById('modal-subtítulo-sabores').textContent = `Selecione exatamente ${p.maxSabores} sabores`;
+  const titulo = document.getElementById('titulo-modal-sabores');
+  if (titulo) titulo.textContent = produtoAtual.nome;
 
-  const grid = document.getElementById('grid-sabores');
-  renderizarGridSabores(grid);
-
+  renderizarGridSabores();
   atualizarBtnConfirmar();
-  abrirModal('modal-sabores', originEl);
+  abrirModal('modal-sabores');
+}
+
+function renderizarGridSabores() {
+  const grid = document.getElementById('grid-sabores');
+  if (!grid) return;
+
+  // Busca sabores globais do motor ou de uma lista padrão
+  const sabores = window.SABORES_SORVETE || [
+    "Abacaxi", "Abacaxi c/ Vinho", "Açaí", "Amendoim", "Banana", "Baunilha", "Beijinho", "Blue Ice", "Brigadeiro", "Café", "Cajá", "Cereja", "Chiclete", "Chocolate", "Chocolate Branco", "Coco", "Coco Queimado", "Creme", "Doce de Leite", "Flocos", "Goiaba", "Iogurte c/ Amora", "Leite Condensado", "Limão", "Maçã Verde", "Manga", "Maracujá", "Melancia", "Milho Verde", "Morango", "Mousse de Maracujá", "Nata c/ Morango", "Ninho c/ Nutella", "Passas ao Rum", "Pavê", "Pêssego", "Pistache", "Queijo c/ Goiabada", "Sensação", "Tapioca", "Uva"
+  ];
+
+  grid.innerHTML = sabores.map(s => {
+    const sel = saboresSelecionados.includes(s);
+    return `<button class="sabor-item ${sel ? 'sel' : ''}" onclick="toggleSabor('${s}', this)">${s}</button>`;
+  }).join('');
 }
 
 function toggleSabor(sabor, btn) {
   const idx = saboresSelecionados.indexOf(sabor);
-  if (idx > -1) {
+  if (idx !== -1) {
     saboresSelecionados.splice(idx, 1);
     btn.classList.remove('sel');
   } else {
     if (saboresSelecionados.length >= produtoAtual.maxSabores) {
-      showToast('⚠️ Limite de sabores atingido!', 'alerta');
+      showToast(`⚠️ Máximo de ${produtoAtual.maxSabores} sabores atingido!`, 'alerta');
       return;
     }
     saboresSelecionados.push(sabor);
@@ -536,998 +222,188 @@ function toggleSabor(sabor, btn) {
 
 function atualizarBtnConfirmar() {
   const btn = document.getElementById('btn-confirmar-sabores');
+  if (!btn) return;
   const max = produtoAtual ? produtoAtual.maxSabores : 0;
   const atual = saboresSelecionados.length;
-  const faltam = max - atual;
-  // Texto dinâmico indicando quantos sabores faltam
-  let txtBotão;
-  if (atual === 0) {
-    txtBotão = `🔒 Selecione ${max} sabores para continuar`;
-  } else if (faltam > 0) {
-    txtBotão = `🔒 Falta${faltam > 1 ? 'm' : ''} ${faltam} sabor${faltam > 1 ? 'es' : ''}`;
+  
+  if (atual === max) {
+    btn.disabled = false;
+    btn.textContent = `✅ Confirmar (${atual}/${max})`;
+    btn.classList.add('pronto');
   } else {
-    txtBotão = `✅ Confirmar Seleção (${atual}/${max})`;
+    btn.disabled = true;
+    btn.textContent = `🔒 Escolha ${max} sabores (${atual}/${max})`;
+    btn.classList.remove('pronto');
   }
-  btn.title = txtBotão;
-  const txtEl = document.getElementById('txt-confirmar-sabores');
-  if (txtEl) txtEl.textContent = txtBotão;
-  // Botão só libera quando tiver exatamente o número de sabores necessário
-  btn.disabled = atual !== max;
-  btn.className = 'btn-confirmar' + (atual === max ? ' pronto' : ' bloqueado');
 }
 
 function confirmarSabores() {
   if (!produtoAtual || saboresSelecionados.length !== produtoAtual.maxSabores) return;
+  
   addCarrinho({
-    id: produtoAtual.id,
+    id: produtoAtual.id + '_' + Date.now(), // ID único para o carrinho
+    baseId: produtoAtual.id,
     nome: produtoAtual.nome,
     preço: produtoAtual.preço,
     sabores: [...saboresSelecionados],
     quantidade: 1,
     tipo: 'sorvete'
   });
+
   fecharModal('modal-sabores');
-  showToast(`✅ ${produtoAtual.nome} adicionado ao carrinho!`, 'sucesso');
+  showToast(`✅ ${produtoAtual.nome} adicionado!`, 'sucesso');
 }
 
-// ---- MODAL PICOLÉS ----
-function mostrarTelasTiposPicolé() {
-  // Mostra a tela de seleção de tipos dentro do modal
-  const telaTipos = document.getElementById('picolé-tela-tipos');
-  const telaSabores = document.getElementById('picolé-tela-sabores');
-  if (telaTipos) telaTipos.style.display = 'block';
-  if (telaSabores) telaSabores.style.display = 'none';
-  // Atualizar título
-  const título = document.getElementById('picolé-título');
-  if (título) título.textContent = 'Picolés — Escolha o Tipo';
-  const preços = document.getElementById('picolé-preços');
-  if (preços) preços.textContent = 'Toque em um tipo para ver os sabores';
-  // Renderizar botões dos tipos
-  const lista = document.getElementById('picolé-lista-tipos');
-  if (lista) {
-    lista.innerHTML = PRODUTOS.picolés.map(p => {
-      const totalTipo = Object.entries(selecoesPickleGlobal)
-        .filter(([k]) => k.startsWith(p.id + '::'))
-        .reduce((a,[,v]) => a + v, 0);
-      const esgotado = p.estoque === 0;
-      return `
-        <button class="btn-tipo-picolé ${esgotado ? 'esgotado' : ''}" onclick="abrirTipoPicolé('${p.id}')" ${esgotado ? 'disabled' : ''}>
-          <span class="btn-tipo-nome">${p.nome}</span>
-          ${totalTipo > 0 ? `<span class="btn-tipo-qtd">${totalTipo} un.</span>` : ''}
-          <span class="btn-tipo-preço">Atacado: R$ ${p.preçoAtacado.toFixed(2).replace('.',',')}</span>
-        </button>`;
-    }).join('');
-  }
-  // Atualizar total na tela de tipos
-  const elTipos = document.getElementById('total-picolés-tipos');
-  if (elTipos) elTipos.textContent = totalPickleGlobal();
-  // Atualizar botão na tela de tipos
-  const btnTipos = document.getElementById('btn-add-picolés-tipos');
-  const totalGlobal = totalPickleGlobal();
-  if (btnTipos) {
-    if (totalGlobal === 0) { btnTipos.disabled = true; btnTipos.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`; }
-    else if (totalGlobal < MIN_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`; }
-    else if (totalGlobal > MAX_PICOLES) { btnTipos.disabled = true; btnTipos.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`; }
-    else { btnTipos.disabled = false; btnTipos.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`; }
-  }
-}
+// ---- PICOLÉS (Sincronizado com produtos.json) ----
+function abrirPicolésSincronizado(id) {
+  picoléAtual = PRODUTOS.picolés.find(p => p.id === id);
+  if (!picoléAtual) return;
 
-function abrirTipoPicolé(id) {
-  // Empilha a tela de sabores sobre a tela de tipos
-  _picoléNavStack.push('sabores');
-  const telaTipos = document.getElementById('picolé-tela-tipos');
-  const telaSabores = document.getElementById('picolé-tela-sabores');
-  if (telaTipos) telaTipos.style.display = 'none';
-  if (telaSabores) telaSabores.style.display = 'block';
-  abrirModalPicolé(id);
-}
-
-// Voltar para a tela anterior na pilha de navegação do modal de picolés
-function voltarPicolé() {
-  // Remove a tela atual da pilha
-  if (_picoléNavStack.length > 1) _picoléNavStack.pop();
-  const telaAnterior = _picoléNavStack[_picoléNavStack.length - 1];
-  if (telaAnterior === 'tipos') {
-    mostrarTelasTiposPicolé();
-  } else {
-    // Fallback: fechar o modal
-    fecharModal('modal-picolé');
-  }
-}
-
-// Função para abrir o modal de picolés já sincronizado com o carrinho
-function abrirPicolésSincronizado() {
-  // Reconstruir selecoesPickleGlobal a partir do carrinho atual
-  // Chave no carrinho já é tipoId::sabor — usar diretamente
-  selecoesPickleGlobal = {};
-  carrinho.forEach(item => {
-    if (item.tipo === 'picolé') {
-      // item.id já está no formato 'pic_tipo::sabor'
-      selecoesPickleGlobal[item.id] = item.quantidade;
-    }
-  });
-  
-  // Resetar pilha de navegação e ir para tela de tipos
-  _picoléNavStack = ['tipos'];
-  mostrarTelasTiposPicolé();
-  abrirModal('modal-picolé');
-}
-
-function abrirModalPicolé(id, originEl) {
-  const p = PRODUTOS.picolés.find(x => x.id === id);
-  if (!p) return;
-  picoléAtual = p;
-  // Restaurar seleções já feitas para este tipo a partir do global
-  // Chave global: 'pic_tipo::sabor' — extrair sabor corretamente
   selecoesPickle = {};
+  // Recuperar o que já está no global para este tipo
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
-    if (chave.startsWith(p.id + '::')) {
-      const sabor = chave.slice(p.id.length + 2);
+    if (chave.startsWith(id + '::')) {
+      const sabor = chave.split('::')[1];
       selecoesPickle[sabor] = qtd;
     }
   });
-  document.getElementById('picolé-título').textContent = p.nome;
-  const elPreços = document.getElementById('picolé-preços');
-  if (elPreços) {
-    elPreços.innerHTML =
-      `<span style="font-size:11px;color:#888;text-decoration:line-through">Varejo R$\u00a0${p.preçoVarejo.toFixed(2).replace('.',',')}</span>&nbsp;&nbsp;` +
-      `<strong style="color:#1B5E20;font-size:15px">R$\u00a0${p.preçoAtacado.toFixed(2).replace('.',',')} <small style="font-size:11px;font-weight:400">/un. atacado</small></strong>`;
-  }
-  const lista = document.getElementById('lista-sabores-picolé');
-  lista.innerHTML = p.sabores.map(s => {
-    const qtdAtual = selecoesPickle[s] || 0;
-    return `
-    <div class="picolé-row">
-      <span class="picolé-sabor-nome">${s}</span>
-      <div class="qty-ctrl">
-        <button class="btn-qty" onclick="qtdPickle('${s}',-1)">−</button>
-        <span class="qty-val" id="pqty-${s.replace(/\s+/g,'_')}">${qtdAtual}</span>
-        <button class="btn-qty" onclick="qtdPickle('${s}',1)">+</button>
-      </div>
-    </div>`;
-  }).join('');
 
+  const titulo = document.getElementById('titulo-modal-picolé');
+  if (titulo) titulo.textContent = picoléAtual.nome;
+
+  renderizarGridPicolés();
   atualizarTotalPickle();
-  const _mPic = document.getElementById('modal-picolé');
-  if (!_mPic || !_mPic.classList.contains('ativo')) {
-    abrirModal('modal-picolé', originEl);
-  }
+  abrirModal('modal-picolé');
 }
 
-function qtdPickle(sabor, delta) {
-  if (!selecoesPickle[sabor]) selecoesPickle[sabor] = 0;
-  const nova = selecoesPickle[sabor] + delta;
-  if (nova < 0) return;
+function renderizarGridPicolés() {
+  const grid = document.getElementById('grid-picolés');
+  if (!grid) return;
 
-  // TRAVA 1: Limite de 25 unidades por sabor
+  const sabores = picoléAtual.sabores || [];
+  grid.innerHTML = sabores.map(s => {
+    const qtd = selecoesPickle[s] || 0;
+    return `
+      <div class="pickle-item">
+        <div class="pickle-info">
+          <div class="pickle-nome">${s}</div>
+        </div>
+        <div class="pickle-ctrl">
+          <button class="btn-p-qty" onclick="alterarQtdPicolé('${s}', -1)">−</button>
+          <span class="p-qty-val" id="pqty-${s.replace(/\s+/g, '_')}">${qtd}</span>
+          <button class="btn-p-qty" onclick="alterarQtdPicolé('${s}', 1)">+</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function alterarQtdPicolé(sabor, delta) {
+  const atual = selecoesPickle[sabor] || 0;
+  const nova = Math.max(0, atual + delta);
+  
   if (delta > 0 && nova > 25) {
-    showToast(`⚠️ Limite excedido de sabores!`, 'alerta');
-    // Forçar o valor a 25 caso algo tenha passado
-    selecoesPickle[sabor] = 25;
-    const elFix = document.getElementById(`pqty-${sabor.replace(/\s+/g,'_')}`);
-    if (elFix) elFix.textContent = 25;
-    atualizarTotalPickle();
+    showToast('⚠️ Máximo 25 por sabor no atacado.', 'alerta');
     return;
   }
 
-  // TRAVA 2: Verificar limite global de 250
-  const totalGlobal = totalPickleGlobal();
-  const diff = nova - (selecoesPickle[sabor] || 0);
-  if (totalGlobal + diff > MAX_PICOLES) {
-    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalGlobal}.`, 'alerta');
+  const totalGlobal = Object.values(selecoesPickleGlobal).reduce((a, b) => a + b, 0);
+  if (delta > 0 && totalGlobal + 1 > 250) {
+    showToast('⚠️ Máximo 250 picolés no total.', 'alerta');
     return;
   }
 
   selecoesPickle[sabor] = nova;
-  // Atualizar o global
   const chave = picoléAtual.id + '::' + sabor;
-  if (nova === 0) { delete selecoesPickleGlobal[chave]; }
-  else { selecoesPickleGlobal[chave] = nova; }
-  const el = document.getElementById(`pqty-${sabor.replace(/\s+/g,'_')}`);
+  if (nova === 0) delete selecoesPickleGlobal[chave];
+  else selecoesPickleGlobal[chave] = nova;
+
+  const el = document.getElementById(`pqty-${sabor.replace(/\s+/g, '_')}`);
   if (el) el.textContent = nova;
   atualizarTotalPickle();
 }
-function totalPickleGlobal() {
-  return Object.values(selecoesPickleGlobal).reduce((a,b)=>a+b,0);
-}
-
-const MIN_PICOLES = 100;
-const MAX_PICOLES = 250;
 
 function atualizarTotalPickle() {
-  // Usa o total GLOBAL (todos os tipos acumulados)
-  const totalGlobal = totalPickleGlobal();
-  const el = document.getElementById('total-picolés');
-  if (el) el.textContent = totalGlobal;
+  const total = Object.values(selecoesPickleGlobal).reduce((a, b) => a + b, 0);
+  const elTotal = document.getElementById('total-picolés');
+  if (elTotal) elTotal.textContent = total;
+
   const btn = document.getElementById('btn-add-picolés');
-  const aviso = document.getElementById('aviso-mínimo-picolé');
-  // Regra: bloqueado 0-99, liberado 100-250, bloqueado 251+
   if (btn) {
-    if (totalGlobal === 0) {
+    if (total < 100) {
       btn.disabled = true;
-      btn.textContent = `🍭 Selecione ao menos ${MIN_PICOLES} picolés para liberar`;
-    } else if (totalGlobal < MIN_PICOLES) {
-      btn.disabled = true;
-      btn.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal} picolés (total: ${totalGlobal})`;
-    } else if (totalGlobal > MAX_PICOLES) {
-      btn.disabled = true;
-      btn.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés atingido`;
+      btn.textContent = `🔒 Mínimo 100 picolés (${total}/100)`;
     } else {
       btn.disabled = false;
-      btn.textContent = `✅ Adicionar ${totalGlobal} picolé(s) ao carrinho`;
-    }
-  }
-  if (aviso) {
-    if (totalGlobal > 0 && totalGlobal < MIN_PICOLES) {
-      aviso.style.display = 'block';
-      aviso.textContent = `🧳 Total acumulado: ${totalGlobal} picolés. Faltam ${MIN_PICOLES - totalGlobal} para liberar o carrinho.`;
-    } else if (totalGlobal > MAX_PICOLES) {
-      aviso.style.display = 'block';
-      aviso.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés. Reduza ${totalGlobal - MAX_PICOLES} unidades.`;
-    } else {
-      aviso.style.display = 'none';
-    }
-  }
-  // Atualizar barra de progresso fixa no header
-  const progressNum = document.getElementById('picolé-progress-num');
-  const progressStatus = document.getElementById('picolé-progress-status');
-  const progressFill = document.getElementById('picolé-progress-fill');
-  if (progressNum) progressNum.textContent = totalGlobal;
-  if (progressFill) {
-    const pct = Math.min((totalGlobal / MAX_PICOLES) * 100, 100);
-    progressFill.style.width = pct + '%';
-    if (totalGlobal >= MIN_PICOLES && totalGlobal <= MAX_PICOLES) {
-      progressFill.classList.add('ok');
-    } else {
-      progressFill.classList.remove('ok');
-    }
-  }
-  if (progressStatus) {
-    if (totalGlobal === 0) {
-      progressStatus.textContent = `🔒 Faltam ${MIN_PICOLES}`;
-      progressStatus.classList.remove('ok');
-    } else if (totalGlobal < MIN_PICOLES) {
-      progressStatus.textContent = `🔒 Faltam ${MIN_PICOLES - totalGlobal}`;
-      progressStatus.classList.remove('ok');
-    } else if (totalGlobal > MAX_PICOLES) {
-      progressStatus.textContent = `⚠️ Máx. atingido`;
-      progressStatus.classList.remove('ok');
-    } else {
-      progressStatus.textContent = `✅ Pronto!`;
-      progressStatus.classList.add('ok');
+      btn.textContent = `✅ Confirmar ${total} picolés`;
     }
   }
 }
 
 function confirmarPickle() {
-  const totalGlobal = totalPickleGlobal();
-  if (totalGlobal < MIN_PICOLES) { 
-    showToast(`⚠️ Mínimo ${MIN_PICOLES} picolés no total. Você tem ${totalGlobal}. Continue escolhendo outros sabores!`, 'alerta'); 
-    return; 
-  }
-  if (totalGlobal > MAX_PICOLES) { 
-    showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total.`, 'alerta'); 
-    return; 
-  }
+  const total = Object.values(selecoesPickleGlobal).reduce((a, b) => a + b, 0);
+  if (total < 100) return;
 
-  // 1. Remover picolés antigos do carrinho para evitar duplicatas e garantir sincronia total
+  // Limpar picolés antigos do carrinho e adicionar novos
   carrinho = carrinho.filter(c => c.tipo !== 'picolé');
-
-  // 2. Adicionar as novas seleções (Sincronização Inteligente)
+  
   Object.entries(selecoesPickleGlobal).forEach(([chave, qtd]) => {
-    if (qtd <= 0) return;
-    const [tipoId, ...saborParts] = chave.split('::');
-    const sabor = saborParts.join('::');
+    const [tipoId, sabor] = chave.split('::');
     const p = PRODUTOS.picolés.find(x => x.id === tipoId);
     if (!p) return;
-    
-    const itemId = tipoId + '::' + sabor;
+
     carrinho.push({
-      id: itemId,
-      nome: sabor,
-      nomeTipo: p.nome,
+      id: chave,
+      nome: `${p.nome} - ${sabor}`,
       preço: p.preçoAtacado,
-      sabores: [],
       quantidade: qtd,
-      tipo: 'picolé'
+      tipo: 'picolé',
+      sabores: []
     });
   });
 
   fecharModal('modal-picolé');
   atualizarBotãoCarrinho();
-  showToast(`✅ ${totalGlobal} picolés sincronizados no carrinho!`, 'sucesso');
+  showToast('✅ Picolés adicionados ao carrinho!', 'sucesso');
 }
 
-// ---- CARRINHO ----
+// ---- CARRINHO E FINALIZAÇÃO ----
 function addCarrinho(item) {
-  if (item.tipo === 'sorvete') {
-    const ex = carrinho.find(c => c.id===item.id && JSON.stringify(c.sabores)===JSON.stringify(item.sabores));
-    if (ex) { ex.quantidade++; }
-    else carrinho.push(item);
-  } else {
-    carrinho.push(item);
-  }
+  carrinho.push(item);
   atualizarBotãoCarrinho();
 }
 
 function atualizarBotãoCarrinho() {
-  const total = carrinho.reduce((a,b)=>a+b.quantidade,0);
-  const totalValor = carrinho.reduce((a,b)=>a + (b.preço * b.quantidade), 0);
+  const total = carrinho.reduce((a, b) => a + b.quantidade, 0);
+  const totalValor = carrinho.reduce((a, b) => a + (b.preço * b.quantidade), 0);
+  
   const badge = document.getElementById('carrinho-badge');
-  const btn = document.getElementById('btn-carrinho');
   const totalEl = document.getElementById('carrinho-total');
-  const labelEl = btn ? btn.querySelector('.btn-carrinho-fixo__label') : null;
+  
   if (badge) badge.textContent = total;
-  if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.',',')}`;
-  if (labelEl) {
-    labelEl.textContent = total > 0
-      ? `🛒 ${total === 1 ? '1 item' : total + ' itens'}`
-      : '🛒 Carrinho';
-  }
-  if (btn) {
-    btn.disabled = false;
-    btn.classList.toggle('ativo', total > 0);
-    const itensTxt = total === 1 ? '1 item' : `${total} itens`;
-    const totalTxt = totalEl ? totalEl.textContent : `R$ ${totalValor.toFixed(2).replace('.',',')}`;
-    btn.setAttribute('aria-label', `Abrir carrinho, ${itensTxt}, total ${totalTxt}`);
-  }
-}
-
-function abrirCarrinho() {
-  if (carrinho.length === 0) { showToast('Carrinho vazio! Adicione produtos.','alerta'); return; }
+  if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.', ',')}`;
   
-  // Sincronizar selecoesPickleGlobal com o carrinho SEM ZERAR o que já existe
-  // Apenas atualiza/adiciona — não remove seleções pendentes do modal de picolés
-  carrinho.forEach(item => {
-    if (item.tipo === 'picolé') {
-      selecoesPickleGlobal[item.id] = item.quantidade;
-    }
-  });
-  // Remover do global itens de picolé que foram removidos do carrinho
-  Object.keys(selecoesPickleGlobal).forEach(chave => {
-    const noCarrinho = carrinho.find(c => c.tipo === 'picolé' && c.id === chave);
-    if (!noCarrinho) delete selecoesPickleGlobal[chave];
-  });
-
-  renderCarrinho();
-  mostrarEtapa('revisao');
-  abrirModal('modal-carrinho');
+  const btn = document.getElementById('btn-carrinho');
+  if (btn) btn.classList.toggle('ativo', total > 0);
 }
 
-function fecharCarrinho() { fecharModal('modal-carrinho'); }
-
-function renderCarrinho() {
-  const lista = document.getElementById('lista-carrinho');
-  const totalEl = document.getElementById('total-carrinho');
-  if (!lista) return;
-  let total = 0;
-  lista.innerHTML = carrinho.map((item,i) => {
-    const sub = item.preço * item.quantidade;
-    total += sub;
-    if (item.tipo === 'picolé') {
-      // Picolé: tipo no topção (pequeno/cinza), sabor em destaque + contador embaixo
-      return `
-      <div class="cart-item" style="flex-direction:column;align-items:stretch;padding:10px 14px;">
-        <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.nomeTipo || ''}</div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <div style="flex:1;min-width:0">
-            <div class="cart-item-nome" style="margin:0;font-size:15px;font-weight:800">${item.nome}</div>
-            <div class="cart-item-preço-unit" style="margin:0">R$ ${item.preço.toFixed(2).replace('.',',')} / un.</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-            <div class="qty-ctrl">
-              <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
-              <span class="qty-val">${item.quantidade}</span>
-              <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
-            </div>
-            <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
-          </div>
-        </div>
-        <div style="text-align:right;font-weight:700;color:#1565C0;font-size:13px;margin-top:4px">R$ ${sub.toFixed(2).replace('.',',')}</div>
-      </div>`;
-    }
-    // Caixa / Torta: tipo no topção, sabores abaixo
-    const saboresHtml = item.sabores && item.sabores.length > 0
-      ? item.sabores.map(s => `<div style="font-size:12px;color:#6B7280;margin-top:2px">• ${s}</div>`).join('') : '';
-    return `
-    <div class="cart-item" style="flex-direction:column;align-items:stretch;padding:10px 14px;">
-      <div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${item.tipo === 'sorvete' ? 'Sorvete' : item.tipo || ''}</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <div style="flex:1;min-width:0">
-          <div class="cart-item-nome" style="margin:0;font-size:15px;font-weight:800">${item.nome}</div>
-          ${saboresHtml}
-          <div class="cart-item-preço-unit" style="margin-top:3px">R$ ${item.preço.toFixed(2).replace('.',',')} / un.</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-          <div class="qty-ctrl">
-            <button class="btn-qty" onclick="qtdCarrinho(${i},-1)">−</button>
-            <span class="qty-val">${item.quantidade}</span>
-            <button class="btn-qty" onclick="qtdCarrinho(${i},1)">+</button>
-          </div>
-          <div class="cart-item-sub" style="font-size:12px;font-weight:700;color:#1565C0">R$ ${sub.toFixed(2).replace('.',',')}</div>
-          <button class="btn-remover" onclick="removerItem(${i})" title="Remover">🗑️</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2).replace('.',',')}`;
-  const totalPic = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicolé = carrinho.some(i=>i.tipo==='picolé');
-  const aviso = document.getElementById('aviso-min-carrinho');
-  const btnNext = document.getElementById('btn-ir-dados');
-  if (temPicolé && totalPic < 100) {
-    // Bloquear botão Prosseguir
-    if (aviso) {
-      aviso.style.display = 'block';
-      aviso.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center';
-      aviso.innerHTML = `
-        <div style="margin-bottom:8px">🔒 Mínimo 100 picolés para atacado. Você tem ${totalPic}. Faltam ${100 - totalPic}.</div>
-        <button onclick="fecharCarrinho(); setTimeout(abrirPicolésSincronizado, 200);" style="background:#DC2626;color:#fff;border:none;padding:8px 15px;border-radius:8px;font-weight:900;cursor:pointer;font-size:12px;box-shadow:0 2px 8px rgba(220,38,38,0.3)">➕ Adicionar mais sabores</button>
-      `;
-    }
-    if (btnNext) {
-      btnNext.disabled = true;
-      btnNext.style.opacity = '0.4';
-      btnNext.title = `Mínimo 100 picolés. Você tem ${totalPic}.`;
-    }
-  } else {
-    if (aviso) aviso.style.display = 'none';
-    if (btnNext) {
-      btnNext.disabled = false;
-      btnNext.style.opacity = '1';
-      btnNext.title = '';
-    }
-  }
-}
-
-function qtdCarrinho(i, delta) {
-  if (!carrinho[i]) return;
-  const item = carrinho[i];
-  const nova = item.quantidade + delta;
-  // Remover se chegar a zero
-  if (nova <= 0) { removerItem(i); return; }
-  if (item.tipo === 'picolé') {
-    // TRAVA 1: máximo 25 unidades por sabor/item
-    if (delta > 0 && nova > 25) {
-      showToast(`⚠️ Máximo 25 unidades por sabor. Adicione outro sabor.`, 'alerta');
-      return;
-    }
-    // TRAVA 2: máximo 250 picolés no total do carrinho
-    const totalPicAtualSemEste = carrinho.filter((c,idx)=>c.tipo==='picolé'&&idx!==i).reduce((a,b)=>a+b.quantidade,0);
-    if (delta > 0 && totalPicAtualSemEste + nova > MAX_PICOLES) {
-      showToast(`⚠️ Máximo ${MAX_PICOLES} picolés no total. Você já tem ${totalPicAtualSemEste + item.quantidade}.`, 'alerta');
-      return;
-    }
-  }
-  // Aplicar a alteração
-  item.quantidade = nova;
-  const totalPicAtual = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicolé = carrinho.some(c=>c.tipo==='picolé');
-  // TRAVA 3: se picolés caírem abaixo de 100, bloquear avanço e voltar para revisão
-  if (temPicolé && totalPicAtual < MIN_PICOLES) {
-    renderCarrinho();
-    atualizarBotãoCarrinho();
-    // Forçar volta para etapa de revisão se estiver na etapa de dados
-    const etapaDados = document.getElementById('etapa-dados');
-    if (etapaDados && etapaDados.classList.contains('ativa')) {
-      mostrarEtapa('revisao');
-      showToast(`🔒 Voltou para revisão: mínimo ${MIN_PICOLES} picolés. Faltam ${MIN_PICOLES - totalPicAtual}.`, 'alerta');
-    }
-    return;
-  }
-  renderCarrinho();
-  atualizarBotãoCarrinho();
-}
-
-function removerItem(i) {
-  const itemRemovido = carrinho[i];
-  carrinho.splice(i,1);
-  if (carrinho.length === 0) { fecharCarrinho(); atualizarBotãoCarrinho(); return; }
-  // Após remover, verificar se picolés ficaram abaixo do mínimo
-  if (itemRemovido && itemRemovido.tipo === 'picolé') {
-    const totalPicRestante = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
-    const temPicolé = carrinho.some(c=>c.tipo==='picolé');
-    if (temPicolé && totalPicRestante < MIN_PICOLES) {
-      renderCarrinho();
-      atualizarBotãoCarrinho();
-      const etapaDados = document.getElementById('etapa-dados');
-      if (etapaDados && etapaDados.classList.contains('ativa')) {
-        mostrarEtapa('revisao');
-        showToast(`🔒 Mínimo ${MIN_PICOLES} picolés. Você tem ${totalPicRestante}. Faltam ${MIN_PICOLES - totalPicRestante}.`, 'alerta');
-      }
-      return;
-    }
-  }
-  renderCarrinho();
-  atualizarBotãoCarrinho();
-}
-
-// ---- ETAPAS CHECKOUT ----
-function mostrarEtapa(etapa) {
-  document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
-  const el = document.getElementById(`etapa-${etapa}`);
-  if (el) el.classList.add('ativa');
-  // Steps
-  const steps = ['revisao','dados','confirmação'];
-  const idx = steps.indexOf(etapa);
-  steps.forEach((s,i) => {
-    const st = document.getElementById(`step-${s}`);
-    if (!st) return;
-    st.classList.remove('ativo','completo');
-    if (i < idx) st.classList.add('completo');
-    else if (i === idx) st.classList.add('ativo');
-  });
-  // Scroll para o topção do modal
-  setTimeout(() => {
-    const modalBox = document.querySelector('#modal-carrinho .modal-box');
-    if (modalBox) modalBox.scrollTop = 0;
-  }, 50);
-}
-
-function irParaDados() {
-  if (carrinho.length === 0) { showToast('Carrinho vazio!','alerta'); return; }
-  const totalPicolés = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicolé = carrinho.some(i=>i.tipo==='picolé');
-  if (temPicolé && totalPicolés < 100) {
-    showToast(`🔒 Mínimo 100 picolés para atacado. Você tem ${totalPicolés}. Faltam ${100-totalPicolés}.`, 'alerta');
-    return;
-  }
-  renderResumoPedido();
-  const etapaDados = document.getElementById('etapa-dados');
-  if (!etapaDados) { showToast('Erro ao carregar formulário. Recarregue a página.','alerta'); return; }
-  mostrarEtapa('dados');
-  setTimeout(() => {
-    const modalBox = document.querySelector('#modal-carrinho .modal-box');
-    if (modalBox) modalBox.scrollTop = 0;
-  }, 100);
-}
-
-function renderResumoPedido() {
-  const el = document.getElementById('resumo-pedido');
-  if (!el) return;
-  let total = 0;
-  el.innerHTML = `
-    <h3 class="resumo-título">📋 Revisão do Pedido</h3>
-    ${carrinho.map((item,i) => {
-      const sub = item.preço * item.quantidade;
-      total += sub;
-      // Tipo no topção para todos os produtos
-      const tipoLabel = item.tipo === 'picolé' ? (item.nomeTipo || 'Picolé') : item.tipo === 'sorvete' ? 'Sorvete' : item.tipo === 'acréscimo' ? 'Acréscimo' : (item.tipo || '');
-      const tipoTopçãoHtml = tipoLabel ? `<div style="font-size:10px;color:#9CA3AF;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">${tipoLabel}</div>` : '';
-      return `
-      <div class="resumo-item">
-        ${tipoTopçãoHtml}
-        <div class="resumo-item-topção">
-          <strong>${item.nome}</strong>
-          <div class="qty-ctrl-mini">
-            <button class="btn-qty-mini" onclick="qtdCarrinho(${i},-1);renderResumoPedido()">−</button>
-            <span>${item.quantidade}</span>
-            <button class="btn-qty-mini" onclick="qtdCarrinho(${i},1);renderResumoPedido()">+</button>
-          </div>
-        </div>
-        ${item.sabores && item.sabores.length > 0 ? item.sabores.map(s=>`<div class="resumo-sabor">• ${s}</div>`).join('') : ''}
-        <div class="resumo-sub">R$ ${sub.toFixed(2).replace('.',',')}</div>
-      </div>`;
-    }).join('')}
-    <div class="resumo-total-final">
-      <span>Total do Pedido</span>
-      <strong>R$ ${total.toFixed(2).replace('.',',')}</strong>
-    </div>
-    <div class="aviso-prazo">
-      ⏰ <strong>Prazo:</strong> Entrega em até <strong>3 dias úteis</strong> após confirmação do pagamento.
-    </div>`;
-  // Verificar regras de picolés após renderizar
-  const totalPicResumo = carrinho.filter(c=>c.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
-  const temPicoléResumo = carrinho.some(c=>c.tipo==='picolé');
-  const btnIrDadosResumo = document.getElementById('btn-ir-dados');
-  const avisoResumo = document.getElementById('aviso-min-carrinho');
-  if (temPicoléResumo) {
-    if (totalPicResumo < MIN_PICOLES) {
-      if (btnIrDadosResumo) { btnIrDadosResumo.disabled = true; btnIrDadosResumo.style.opacity = '0.4'; }
-      if (avisoResumo) { avisoResumo.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center'; avisoResumo.textContent = `🔒 Mínimo ${MIN_PICOLES} picolés. Você tem ${totalPicResumo}. Faltam ${MIN_PICOLES - totalPicResumo}.`; }
-    } else if (totalPicResumo > MAX_PICOLES) {
-      if (btnIrDadosResumo) { btnIrDadosResumo.disabled = true; btnIrDadosResumo.style.opacity = '0.4'; }
-      if (avisoResumo) { avisoResumo.style.cssText = 'display:block;background:#FEF2F2;border:2px solid #EF4444;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:13px;font-weight:700;color:#DC2626;text-align:center'; avisoResumo.textContent = `⚠️ Máximo ${MAX_PICOLES} picolés. Reduza ${totalPicResumo - MAX_PICOLES} unidades.`; }
-    } else {
-      if (btnIrDadosResumo) { btnIrDadosResumo.disabled = false; btnIrDadosResumo.style.opacity = '1'; }
-      if (avisoResumo) avisoResumo.style.display = 'none';
-    }
-  }
-}
-
-function verificarFormulario() {
-  const nome = (document.getElementById('cliente-nome')?.value || '').trim();
-  const tel  = (document.getElementById('cliente-tel')?.value  || '').trim();
-  const end  = (document.getElementById('cliente-endereço')?.value || '').trim();
-  const btn  = document.getElementById('btn-finalizar');
-  const hint = document.getElementById('campos-obrigatórios-hint');
-  const barra = document.getElementById('barra-btn-finalizar');
-  const texto = document.getElementById('texto-btn-finalizar');
-  if (!btn) return;
-  const liberado = nome.length >= 3 && _telValido(tel) && end.length >= 5;
-  btn.disabled = !liberado;
-  btn.style.opacity = liberado ? '1' : '0.4';
-  // Feedback visual corporativo
-  if (liberado) {
-    if (hint) hint.style.display = 'none';
-    if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
-    if (texto) texto.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
-    btn.title = 'Clique para gerar seu pedido';
-  } else {
-    if (hint) hint.style.display = 'block';
-    if (barra) barra.style.background = 'linear-gradient(135deg, #424242, #616161)';
-    if (texto) texto.textContent = '🔒 Preencha os campos abaixo';
-    btn.title = 'Preencha todos os campos para continuar';
-  }
-}
-
-function finalizarPedido() {
-  // Honeypot anti-bot: campo oculto preenchido indica automação — bloquear silenciosamente
-  if ((document.getElementById('enc-website')?.value || '') !== '') return;
-  // CHECKOUT CORPORATIVO — Padrão de produção
-  // Válidação robusta + loading staté + fallback garantido
-  const _totalPicFinal = carrinho.filter(i=>i.tipo==='picolé').reduce((a,b)=>a+b.quantidade,0);
-  const _temPicoléFinal = carrinho.some(i=>i.tipo==='picolé');
-  if (_temPicoléFinal && _totalPicFinal < 100) {
-    showToast(`🔒 Pedido bloqueado: mínimo 100 picolés. Você tem ${_totalPicFinal}.`, 'alerta');
-    mostrarEtapa('revisao');
-    return;
-  }
-  const nomeEl = document.getElementById('cliente-nome');
-  const telEl  = document.getElementById('cliente-tel');
-  const endEl  = document.getElementById('cliente-endereço');
-  const nome = ((nomeEl ? nomeEl.value : '') || _nomeCliente || '').trim();
-  const tel  = ((telEl  ? telEl.value  : '') || _telCliente  || '').trim();
-  const end  = ((endEl  ? endEl.value  : '') || _endereçoCliente || '').trim();
-  // Válidação de campos
-  if (!nome || nome.length < 3) { showToast('⚠️ Preencha seu nome completo (mínimo 3 caracteres).', 'alerta'); return; }
-  if (!tel  || !_telValido(tel)) { showToast('⚠️ Preencha seu WhatsApp com DDD válido (ex: 16 99999-9999).', 'alerta'); return; }
-  if (!end  || end.length  < 5) { showToast('⚠️ Preencha o endereço de entrega.', 'alerta'); return; }
-  if (carrinho.length === 0)    { showToast('⚠️ Carrinho vazio! Adicione produtos.', 'alerta'); return; }
-  // Válidação de prazo mínimo (72 horas = 3 dias úteis)
-  const agoraVálidacao = new Date();
-  const prazMínimo = new Date(agoraVálidacao.getTime() + 72 * 60 * 60 * 1000);
-  const prazMínimoFormatado = prazMínimo.toLocaleDateString('pt-BR');
-  showToast(`⏰ Encomenda será produzida a partir de ${prazMínimoFormatado}`, 'info');
-  // === LOADING STATE: bloquear duplo clique e mostrar progresso ===
-  const btnFin = document.getElementById('btn-finalizar');
-  const textoBtn = document.getElementById('texto-btn-finalizar');
-  const barra = document.getElementById('barra-btn-finalizar');
-  if (btnFin) { btnFin.disabled = true; btnFin.textContent = '⏳'; }
-  if (textoBtn) textoBtn.textContent = '⏳ Gerando número do pedido...';
-  if (barra) barra.style.background = 'linear-gradient(135deg, #E65100, #FF6D00)';
-  // Data/hora atual
-  const agora = new Date();
-  const dd   = String(agora.getDate()).padStart(2, '0');
-  const mm   = String(agora.getMonth() + 1).padStart(2, '0');
-  const aaaa = agora.getFullYear();
-  const hh   = String(agora.getHours()).padStart(2, '0');
-  const min  = String(agora.getMinutes()).padStart(2, '0');
-  const dataFormatada = `${dd}/${mm}/${aaaa} ${hh}:${min}`;
-  // Função de reset do botão em caso de erro
-  function _resetBtnFinalizar() {
-    if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
-    if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
-    if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
-  }
-  // SISTEMA DE NUMERAÇÃO DE PEDIDOS
-  // Formato: ITA-140526-K7XQ (data compacta + sufixo aleatório 4 chars)
-  // Único por definição — sem dependência de localStorage compartilhado entre dispositivos
-  var _rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-  let numPedido = `ITA-${dd}${mm}${String(aaaa).slice(2)}-${_rand}`;
-  
-  // EXECUTAR CONCLUSÃO COM PROTEÇÃO GLOBAL
-  try {
-    _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtnFinalizar);
-  } catch(err) {
-    console.error('[ITAP] Erro crítico na conclusão:', err);
-    _resetBtnFinalizar();
-    showToast('⚠️ Erro ao processar pedido. Tente novamente.', 'alerta');
-  }
-}
-function _concluirPedido(nome, tel, end, numPedido, dataFormatada, _resetBtn) {
-  try {
-    let total = 0;
-    let msg = `🍦 *PEDIDO - Sorveteria Itapolitana Cajuru*\n\n`;
-    msg += `🔢 *Pedido Nº:* ${numPedido}\n📅 *Data:* ${dataFormatada}\n\n`;
-    msg += `👤 *Cliente:* ${nome}\n📱 *WhatsApp:* ${tel}\n📍 *Endereço:* ${end}\n\n`;
-    msg += `📦 *ITENS:*\n`;
-    
-    carrinho.forEach(item => {
-      const sub = item.preço * item.quantidade;
-      total += sub;
-      if (item.tipo === 'picolé' && item.nomeTipo) {
-        msg += `\n▶ *${item.nomeTipo} — ${item.nome}* (${item.quantidade} un.)\n`;
-      } else if (item.tipo === 'sorvete') {
-        msg += `\n▶ *Sorvete — ${item.nome}* (${item.quantidade} un.)\n`;
-        if (item.sabores && item.sabores.length > 0) {
-          item.sabores.forEach(s => msg += `   • ${s}\n`);
-        }
-      } else if (item.tipo === 'acréscimo') {
-        msg += `\n▶ *Acréscimo — ${item.nome}* (${item.quantidade} un.)\n`;
-      } else {
-        msg += `\n▶ *${item.nome}* (${item.quantidade} un.)\n`;
-        if (item.sabores && item.sabores.length > 0) {
-          item.sabores.forEach(s => msg += `   • ${s}\n`);
-        }
-      }
-      msg += `   Subtotal: R$ ${sub.toFixed(2).replace('.',',')}\n`;
-    });
-    
-    msg += `\n💰 *TOTAL: R$ ${total.toFixed(2).replace('.',',')}*\n`;
-    msg += `\n⛰️ *PRAZO:* Produzido em até 3 dias úteis após confirmação do pagamento.\n`;
-    msg += `📍 *Retirada na loja:* R. Cel. Manoel Caetano, 311 – Cajuru/SP\n`;
-    msg += `💳 *Pagamento antecipado* obrigatório para confirmar a produção.\n\n`;
-    msg += `🔗 Acesse: https://itapolitanacajuru.com.br/encomendas.html`;    
-    // Montar objeto do pedido
-    const pedidoObj = {
-      num: numPedido,
-      data: new Date().toISOString(),
-      dataFormatada: dataFormatada,
-      nome: nome,
-      telefone: tel,
-      endereço: end,
-      itens: carrinho.map(i => ({ nome: i.nome, nomeTipo: i.nomeTipo || '', qtd: i.quantidade, sabores: i.sabores || [], preço: i.preço, tipo: i.tipo || 'sorvete' })),
-      total: total,
-      status: 'novo',
-      tipo: (() => {
-        const temPicolé = carrinho.some(i => i.tipo === 'picolé');
-        const temTorta  = carrinho.some(i => i.tipo === 'sorvete' && i.nome.toLowerCase().includes('torta'));
-        const temCaixa  = carrinho.some(i => i.tipo === 'sorvete' && !i.nome.toLowerCase().includes('torta'));
-        const tipos = [temPicolé && 'picolés', temTorta && 'torta', temCaixa && 'caixa'].filter(Boolean);
-        return tipos.length > 1 ? 'misto' : (tipos[0] || 'caixa');
-      })()
-    };
-    // Salvar pedido no localStorage com proteção extra
-    try {
-      const pedidos = JSON.parse(localStorage.getItem('itap_pedidos') || '[]');
-      pedidos.unshift(pedidoObj);
-      if (pedidos.length > 50) pedidos.length = 50;
-      localStorage.setItem('itap_pedidos', JSON.stringify(pedidos));
-    } catch(e) { console.warn('[ITAP] Erro ao salvar histórico local:', e); }
-    // Registrar pedido no backend seguro (Worker)
-    enviarPedidoWorker(pedidoObj).then(ok => {
-      if (ok) console.log('[Itap] Pedido registrado no admin ✅');
-      else console.warn('[Itap] Pedido não chegou ao admin — disponível apenas no localStorage');
-    });
-
-    const numEl = document.getElementById('num-pedido');
-    if (numEl) numEl.textContent = numPedido;
-    const dataEl = document.getElementById('data-pedido');
-    if (dataEl) dataEl.textContent = `📅 Data: ${dataFormatada}`;
-
-    // BAIXA DE ESTOQUE COM PROTEÇÃO
-    try {
-      const caixas = getCaixasEncomenda();
-      const tortas = getTortasEncomenda();
-      // Agregar picolés por categoria para baixa de estoque no GitHub
-      // item.id = 'pic_frutas_agua::Limão' → categoria = 'frutas_agua'
-      const picolesQtdPorCat = {};
-      carrinho.forEach(item => {
-        const cx = caixas.find(c => c.id === item.id);
-        if (cx && cx.estoque > 0) { cx.estoque = Math.max(0, cx.estoque - item.quantidade); }
-        const tr = tortas.find(t => t.id === item.id);
-        if (tr && tr.estoque > 0) { tr.estoque = Math.max(0, tr.estoque - item.quantidade); }
-        if (item.tipo === 'picolé') {
-          const cat = item.id.split('::')[0].replace('pic_', '');
-          picolesQtdPorCat[cat] = (picolesQtdPorCat[cat] || 0) + item.quantidade;
-        }
-      });
-      localStorage.setItem('itap_caixas_enc', JSON.stringify(caixas));
-      localStorage.setItem('itap_tortas_enc', JSON.stringify(tortas));
-      // Persistir baixa de estoque (caixas + tortas + picolés) no GitHub — assíncrono, não bloqueia UI
-      atualizarEstoqueGitHub(caixas, tortas, picolesQtdPorCat).catch(() => {});
-    } catch(e) { console.warn('[ITAP] Erro ao atualizar estoque:', e); }
-
-    // Esvaziar carrinho e resetar botões
-    carrinho.length = 0;
-    atualizarBotãoCarrinho();
-    
-    // Reset visual do botão de finalizar (Garantia de reset)
-    if (typeof _resetBtn === 'function') _resetBtn();
-
-    const linkWpp = document.getElementById('link-whatsapp-final');
-    if (linkWpp) {
-      // Garantir que o número do WhatsApp venha do config se disponível
-      const whatsappNum = (window._itap_config && window._itap_config.whatsapp) || '5516996062046';
-      const whatsappUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
-      linkWpp.href = whatsappUrl;
-
-      // Adicionar click handler para garantir que o link funcione
-      linkWpp.onclick = function(e) {
-        e.preventDefault();
-        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-        return false;
-      };
-    }
-    
-    mostrarEtapa('confirmação');
-  } catch(e) {
-    console.error('[ITAP] Erro crítico na conclusão:', e);
-    if (typeof _resetBtn === 'function') _resetBtn();
-    showToast('⚠️ Erro ao finalizar pedido. Tente novamente.', 'alerta');
-  }
-}
-
-function novoPedido() {
-  carrinho = [];
-  fecharCarrinho();
-  atualizarBotãoCarrinho();
-  
-  // RESET TÉCNICO DO BOTÃO DE FINALIZAR (Correção para múltiplos pedidos)
-  const btnFin = document.getElementById('btn-finalizar');
-  const textoBtn = document.getElementById('texto-btn-finalizar');
-  const barra = document.getElementById('barra-btn-finalizar');
-  if (btnFin) { btnFin.disabled = false; btnFin.textContent = '✓'; btnFin.style.opacity = '1'; }
-  if (textoBtn) textoBtn.textContent = '📲 Gerar Pedido e Enviar via WhatsApp';
-  if (barra) barra.style.background = 'linear-gradient(135deg, #1B5E20, #2E7D32, #43A047)';
-  
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  showToast('✅ Novo pedido iniciado! Carrinho limpo.','sucesso');
-}
-
-// ---- UTILS ----
-let _encScrollY = 0;
-let _encOriginEl = null;
-function abrirModal(id, originEl) {
+// Funções de Modal (Garantir que existam)
+function abrirModal(id) {
   const m = document.getElementById(id);
-  if (m) {
-    _encScrollY = window.scrollY;
-    _encOriginEl = originEl || null;
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = '-' + _encScrollY + 'px';
-    document.body.style.width = '100%';
-    m.classList.add('ativo');
-  }
+  if (m) m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
+
 function fecharModal(id) {
   const m = document.getElementById(id);
-  if (m) { m.classList.remove('ativo'); }
-  const algumAberto = document.querySelectorAll('.modal-overlay.ativo').length > 0;
-  if (!algumAberto) {
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.documentElement.style.overflow = '';
-    window.scrollTo({ top: _encScrollY, behavior: 'instant' });
-    if (_encOriginEl) {
-      setTimeout(() => { _encOriginEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
-    }
-  }
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
 }
-function showToast(msg, tipo='sucesso') {
-  const t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.className = `toast ativo ${tipo}`;
-  setTimeout(()=>t.classList.remove('ativo'), 3200);
-}
-function toggleSecao(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const jaAberto = el.classList.contains('aberto');
 
-  // Fechar TODAS as seções abertas (accordion exclusivo)
-  const todasSeções = ['conteudo-caixas', 'conteudo-tortas', 'conteudo-picolés', 'conteudo-acréscimos'];
-  todasSeções.forEach(secId => {
-    const secEl = document.getElementById(secId);
-    if (secEl && secEl.classList.contains('aberto')) {
-      secEl.classList.remove('aberto');
-      const icon = secEl.previousElementSibling?.querySelector('.toggle-icon');
-      if (icon) icon.textContent = '▼';
-    }
-  });
+function showToast(msg, tipo) {
+  console.log(`[Toast] ${tipo}: ${msg}`);
+  // Implementação simples ou integração com o site-loader
+  alert(msg); 
+}
 
-  // Se não estava aberto, abrir agora
-  if (!jaAberto) {
-    el.classList.add('aberto');
-    const icon = el.previousElementSibling?.querySelector('.toggle-icon');
-    if (icon) icon.textContent = '▲';
-    // Re-renderizar ao abrir
-    if (id === 'conteudo-acréscimos') {
-      setTimeout(renderizarAcréscimos, 10);
-    }
-    if (id === 'conteudo-picolés') {
-      setTimeout(renderizarPicolés, 10);
-    }
-    if (id === 'conteudo-caixas') {
-      setTimeout(renderizarCaixas, 10);
-    }
-    if (id === 'conteudo-tortas') {
-      setTimeout(renderizarTortas, 10);
-    }
-    // Scroll suave até a seção
-    setTimeout(() => {
-      const pai = el.closest('.categoria');
-      if (pai) pai.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  }
-}
-window.toggleSecao = toggleSecao;
-
-
-// ---- ACRÉSCIMOS (sincronizado com admin - itap_acréscimos) ----
-function getAcréscimosEnc() {
-  const PADRAO = [
-    { id:'acr_canudinho', nome:'Canudinho Wafer', preço:0.25,  estoque:100, esgotado:false },
-    { id:'acr_casquinha', nome:'Casquinhas',      preço:0.25,  estoque:100, esgotado:false },
-    { id:'acr_cascão',    nome:'Cascão',          preço:1.00,  estoque:100, esgotado:false },
-    { id:'acr_cestinha',  nome:'Cestinha Recheada',        preço:1.00,  estoque:100, esgotado:false },
-    { id:'acr_cobertura', nome:'Cobertura 1.3L',  preço:40.00, estoque:100, esgotado:false }
-  ];
-  // 1. Priorizar dados da nuvem carregados em window._itap_acréscimos
-  if (window._itap_acréscimos && window._itap_acréscimos.length > 0) {
-    const ativos = window._itap_acréscimos.filter(c => c.nome && c.nome.trim() !== '');
-    if (ativos.length > 0) return ativos;
-  }
-  // 2. Fallback: localStorage
-  try {
-    const salvo = localStorage.getItem('itap_acréscimos');
-    if (salvo) {
-      const todos = JSON.parse(salvo);
-      // Filtrar apenas slots com nome preenchido (ativos)
-      const ativos = todos.filter(c => c.nome && c.nome.trim() !== '');
-      return ativos.length > 0 ? ativos : PADRAO;
-    }
-  } catch(e) {}
-  return PADRAO;
-}
-function renderizarAcréscimos() {
-  const lista_el = document.getElementById('lista-acréscimos');
-  if (!lista_el) return;
-  const lista = getAcréscimosEnc();
-  lista_el.innerHTML = lista.map(c => {
-    const esgotado = c.esgotado || c.estoque <= 0;
-    const item = carrinho.find(x => x.id === c.id);
-    const qtd = item ? item.quantidade : 0;
-    if (esgotado) {
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff8f8;border-radius:12px;border:2px solid #FECACA;margin-bottom:8px;opacity:0.82;cursor:not-allowed">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:24px">🍪</span>
-          <div>
-            <div style="font-weight:700;font-size:14px;color:#b71c1c;position:relative;display:inline-block">
-              ${c.nome}
-              <span style="position:absolute;top:50%;left:0;width:100%;height:2px;background:#e53935;transform:translateY(-50%);border-radius:2px;display:block"></span>
-            </div>
-            <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preço.toFixed(2).replace('.',',')} / un.</div>
-          </div>
-        </div>
-        <span style="background:#fee2e2;color:#dc2626;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700">ESGOTADO</span>
-      </div>`;
-    }
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#fff;border-radius:12px;border:2px solid #e5e7eb;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:24px">🍪</span>
-        <div>
-          <div style="font-weight:700;font-size:14px;color:#1a1a1a">${c.nome}</div>
-          <div style="font-size:12px;color:#e53935;font-weight:600">R$ ${c.preço.toFixed(2).replace('.',',')} / un.</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button onclick="alterarAcréscimo('${c.id}',-1)" style="width:36px;height:36px;border-radius:50%;border:2px solid #1B5E20;background:#fff;color:#1B5E20;font-size:22px;font-weight:700;cursor:pointer;line-height:1">−</button>
-        <span id="acr-qtd-${c.id}" style="font-size:16px;font-weight:700;min-width:22px;text-align:center">${qtd}</span>
-        <button onclick="alterarAcréscimo('${c.id}',1)" style="width:36px;height:36px;border-radius:50%;border:none;background:#1B5E20;color:#fff;font-size:22px;font-weight:700;cursor:pointer;line-height:1">+</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function alterarAcréscimo(id, delta) {
-  const lista = getAcréscimosEnc();
-  const comp = lista.find(c => c.id === id);
-  if (!comp) return;
-  const idx = carrinho.findIndex(x => x.id === id);
-  if (idx > -1) {
-    carrinho[idx].quantidade += delta;
-    if (carrinho[idx].quantidade <= 0) carrinho.splice(idx, 1);
-  } else if (delta > 0) {
-    carrinho.push({ id: comp.id, nome: comp.nome, preço: comp.preço, quantidade: 1, sabores: [], tipo: 'acréscimo' });
-  }
-  const qtdEl = document.getElementById('acr-qtd-' + id);
-  if (qtdEl) {
-    const item = carrinho.find(x => x.id === id);
-    qtdEl.textContent = item ? item.quantidade : 0;
-  }
-  atualizarBotãoCarrinho();
-}
+// Iniciar quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', inicializarEncomendas);

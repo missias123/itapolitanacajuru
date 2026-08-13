@@ -1120,7 +1120,7 @@ body { overflow-x: hidden; }
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()">➕ Nova Encomenda</button><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div></div>
+        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()">➕ Nova Encomenda</button><button class="btn btn-azul" onclick="sincronizarEncomendasNuvem()" id="btn-sync-encomendas">☁️ Sincronizar Nuvem</button><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div></div>
         <div class="card-body">
           <div class="busca-wrap" style="margin-bottom:10px"><input type="search" id="busca-encomenda" placeholder="Buscar por nº pedido, nome ou telefone..." oninput="renderEncomendas()"/></div>
           <div class="filtros">
@@ -4539,6 +4539,53 @@ const ENC_STATUS_BORDA={
 const TIMELINE_PASSOS=['novo','confirmado','em_preparo','pronto','enviado','entregue'];
 const TIMELINE_LABELS=['Novo','Confirmado','Em preparo','Pronto','Enviado','Entregue'];
 const TIMELINE_ICONES=['🔴','✅','🍦','📦','🚚','🎉'];
+
+async function sincronizarEncomendasNuvem() {
+  const btn = document.getElementById('btn-sync-encomendas');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Sincronizando...';
+  
+  try {
+    console.log('[Sync] Buscando encomendas na nuvem (Worker)...');
+    const resp = await fetch(ITAP_WORKER_API + '/api/encomendas');
+    if (!resp.ok) throw new Error('Falha ao buscar dados na nuvem: ' + resp.status);
+    
+    const data = await resp.json();
+    if (!data.ok || !data.encomendas) throw new Error('Dados da nuvem inválidos');
+    
+    console.log(`[Sync] ${data.encomendas.length} encomendas encontradas na nuvem.`);
+    
+    // Garantir que STATE.encomendas existe
+    if (!STATE.encomendas) STATE.encomendas = { registros: [] };
+    if (!STATE.encomendas.registros) STATE.encomendas.registros = [];
+    
+    let novosCount = 0;
+    data.encomendas.forEach(encNuvem => {
+      // Verifica se já existe pelo número do pedido (num)
+      const existe = STATE.encomendas.registros.find(e => e.num === encNuvem.num);
+      if (!existe) {
+        STATE.encomendas.registros.push(encNuvem);
+        novosCount++;
+      }
+    });
+    
+    if (novosCount > 0) {
+      toast(`✅ ${novosCount} novas encomendas importadas da nuvem!`, 'sucesso');
+      // Salva no GitHub para persistir o sincronismo
+      await salvarArquivo(PATHS.encomendas, STATE.encomendas, 'encomendasSha', `Admin: sincronizar ${novosCount} encomendas da nuvem`);
+      renderEncomendas();
+    } else {
+      toast('ℹ️ Nenhuma encomenda nova na nuvem.', 'info');
+    }
+  } catch (e) {
+    console.error('[Sync] Erro:', e.message);
+    toast('❌ Erro ao sincronizar: ' + e.message, 'erro');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
 
 function renderEncomendas(){
   console.log('[renderEncomendas] Iniciando...');
