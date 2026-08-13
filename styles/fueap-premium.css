@@ -72,6 +72,32 @@ body.fueap-encomendas .modal-content {
   overscroll-behavior: contain;
 }
 
+/* Rodapé de ação sempre acessível, mesmo com 35 sabores ou listas extensas. */
+body.fueap-encomendas .modal-actions {
+  position: sticky;
+  bottom: calc(-1 * clamp(16px, 4vw, 25px));
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-inline: calc(-1 * clamp(16px, 4vw, 25px));
+  padding: 12px clamp(16px, 4vw, 25px) max(12px, env(safe-area-inset-bottom));
+  background: color-mix(in srgb, #ffffff 96%, transparent);
+  border-top: 1px solid rgba(26, 26, 26, .10);
+  box-shadow: 0 -8px 20px rgba(0, 0, 0, .06);
+  backdrop-filter: blur(8px);
+}
+
+body.fueap-encomendas .modal-actions > button {
+  min-height: 48px;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+body.fueap-encomendas .modal-actions > button:last-child {
+  flex: 2 1 0;
+}
+
 body.fueap-encomendas .sabor-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(8px, 2.5vw, 12px);

@@ -146,8 +146,8 @@
     <h2 id="modal-titulo-sabores">Escolha os Sabores</h2>
     <p id="modal-subtitulo-sabores"></p>
     <div id="grid-sabores" class="sabor-grid"></div>
-    <div style="margin-top: 20px; display: flex; gap: 10px;">
-      <button onclick="window.fecharModal('modal-sabores')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">Voltar</button>
+    <div class="modal-actions">
+      <button onclick="window.fecharModal('modal-sabores')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
       <button id="btn-confirmar-sabores" onclick="window.confirmarSabores()" style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
     </div>
   </div>
@@ -162,8 +162,8 @@
     <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; text-align: center;">
       <strong>Total de Picolés: <span id="total-picoles">0</span> / 100</strong>
     </div>
-    <div style="margin-top: 20px; display: flex; gap: 10px;">
-      <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">Voltar</button>
+    <div class="modal-actions">
+      <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
       <button id="btn-confirmar-picoles" onclick="window.confirmarPickle()" disabled style="flex: 2; padding: 15px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 800;">Confirmar</button>
     </div>
   </div>
@@ -178,10 +178,12 @@
       <strong>Total:</strong>
       <strong id="total-carrinho">R$ 0,00</strong>
     </div>
-    <div style="margin-top: 20px; display: grid; gap: 10px;">
-      <button onclick="window.fecharModal('modal-carrinho')" style="padding: 15px; border-radius: 10px; border: 1px solid #ccc;">Adicionar mais produtos</button>
-      <button onclick="window.limparCarrinho()" style="padding: 10px; border: none; color: red; background: none;">🗑️ Excluir todo o pedido</button>
-      <button onclick="window.finalizarPedido()" style="padding: 18px; border-radius: 12px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.1rem;">Finalizar no WhatsApp</button>
+    <div class="modal-actions" style="flex-direction: column; gap: 8px;">
+      <div style="display: flex; gap: 8px; width: 100%;">
+        <button onclick="window.fecharModal('modal-carrinho')" style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Continuar Comprando</button>
+        <button onclick="window.limparCarrinho()" style="padding: 14px 16px; border-radius: 10px; border: 1px solid #ffcccc; background:#fff0f0; color: #d32f2f; font-weight:700;">Excluir Tudo</button>
+      </div>
+      <button onclick="window.finalizarPedido()" style="width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.05rem;">Finalizar Pedido no WhatsApp</button>
     </div>
   </div>
 </div>
