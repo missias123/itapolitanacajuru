@@ -3360,7 +3360,17 @@ async function salvarArquivo(path,data,shaKey,msg){
   }
   return false;
 }
-function toggleSenhaAdmin(){const i=document.getElementById('inp-senha');i.type=i.type==='password'?'text':'password';}
+function toggleSenhaAdmin(){
+  const i = document.getElementById('inp-senha');
+  const b = document.getElementById('eye-btn');
+  if(i.type === 'password') {
+    i.type = 'text';
+    b.innerHTML = '&#x1F441;'; // Olho aberto
+  } else {
+    i.type = 'password';
+    b.innerHTML = '&#x1F441;&#xFE0F;'; // Olho com variante (padrão)
+  }
+}
 function toggleGitHubToken(){const i=document.getElementById('inp-github-token');if(i)i.type=i.type==='password'?'text':'password';}
 function toggleSenhaCfg(){const i=document.getElementById('cfg-nova-senha');i.type=i.type==='password'?'text':'password';}
 async function sha256(str) {
