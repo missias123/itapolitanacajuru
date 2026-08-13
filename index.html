@@ -2452,6 +2452,31 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <h2 class="cardápio-h" data-config="indexPagina.cardapioH2Titulo" aria-label="Escolha seu próximo sabor no cardápio Itapolitana">Escolha seu próximo sabor</h2>
 <div style="font-size:13px;color:#7B2D8B;font-weight:600;margin-top:4px;">Confira as opções da Itapolitana e encontre a melhor escolha para seu momento.</div>
 </div>
+
+<!-- postMessage de altura desativado: aspect-ratio 3/2 reserva o espaço sem CLS -->
+<!-- VER NOSSO CARDÁPIO - BANNER DIVISOR PROFISSIONAL -->
+<div class="vc-wrap" id="vc-wrap">
+  <div class="vc-banner">
+    <div class="vc-banner-titulo">Nosso Cardápio Completo</div>
+    <div class="vc-banner-sub">35 sabores · Sorvetes · Picolés · Açaí · Milkshakes · Taças · Sobremesas</div>
+    <div class="vc-row">
+      <button class="vc-btn" id="vc-btn" type="button"
+        onclick="toggleCardápio()"
+        aria-label="Abrir o cardápio da Sorveteria Itapolitana"
+        aria-expanded="false"
+        aria-controls="vc-container">
+        <span class="vc-btn-icon" aria-hidden="true">🍦</span>
+        <span>VER CARDÁPIO</span>
+        <span class="vc-btn-circle" aria-hidden="true"><i class="vc-seta">▼</i></span>
+      </button>
+      <span class="vc-arrow-hint" aria-hidden="true">←</span>
+      <span class="vc-hint" aria-hidden="true">
+        <svg class="vc-hint-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" focusable="false"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg>
+        VEJA
+        <strong>AGORA!</strong>
+      </span>
+    </div>
+  </div>
 <!-- ========================================
      CARROSSEL ITAPOLITANA
      Arquivo isolado: carrossel.html
@@ -2494,30 +2519,6 @@ body.cardapio-aberto { padding-bottom: 80px; }
   ></iframe>
 </div>
 <!-- FIM CARROSSEL ITAPOLITANA -->
-<!-- postMessage de altura desativado: aspect-ratio 3/2 reserva o espaço sem CLS -->
-<!-- VER NOSSO CARDÁPIO - BANNER DIVISOR PROFISSIONAL -->
-<div class="vc-wrap" id="vc-wrap">
-  <div class="vc-banner">
-    <div class="vc-banner-titulo">Nosso Cardápio Completo</div>
-    <div class="vc-banner-sub">35 sabores · Sorvetes · Picolés · Açaí · Milkshakes · Taças · Sobremesas</div>
-    <div class="vc-row">
-      <button class="vc-btn" id="vc-btn" type="button"
-        onclick="toggleCardápio()"
-        aria-label="Abrir o cardápio da Sorveteria Itapolitana"
-        aria-expanded="false"
-        aria-controls="vc-container">
-        <span class="vc-btn-icon" aria-hidden="true">🍦</span>
-        <span>VER CARDÁPIO</span>
-        <span class="vc-btn-circle" aria-hidden="true"><i class="vc-seta">▼</i></span>
-      </button>
-      <span class="vc-arrow-hint" aria-hidden="true">←</span>
-      <span class="vc-hint" aria-hidden="true">
-        <svg class="vc-hint-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" focusable="false"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg>
-        VEJA
-        <strong>AGORA!</strong>
-      </span>
-    </div>
-  </div>
   <div class="vc-container" id="vc-container">
 <nav class="menu-categorias-cardapio" id="menu-categorias-cardapio" aria-label="Categorias do cardápio" style="display:none">
   <div class="menu-categorias-inner">
@@ -3325,6 +3326,10 @@ function toggleAcc(id) {
     atualizarEstadoHeaderAcc(el, false);
     _trackUiEvent('category_close', { category_id: el.id });
   } else {
+    _cardapioScrollAnterior[id] = {
+      left: window.scrollX || window.pageXOffset || 0,
+      top: window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+    };
     el.classList.add('open');
     atualizarEstadoHeaderAcc(el, true);
     _trackUiEvent('category_open', { category_id: el.id });
@@ -3361,7 +3366,11 @@ inicializarAcessibilidadeAcc();
 
 // Volta ao topo do cardápio E fecha o accordion atual
 function voltarCardapio(accId) {
-  // 1. Fecha o accordion clicado
+  var posicaoAnterior = _cardapioScrollAnterior[accId] || {
+    left: window.scrollX || window.pageXOffset || 0,
+    top: window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+  };
+  // 1. Fecha o accordion clicado sem deslocar a página
   if (accId) {
     var el = document.getElementById(accId);
     if (el) {
@@ -3384,8 +3393,9 @@ function voltarCardapio(accId) {
     vcBtn.classList.add('aberto');
     vcBtn.setAttribute('aria-expanded', 'true');
   }
-  // 3. SEM scroll — tela fica parada, dedo/mouse no mesmo lugar
-  // (mesma regra dos botões de sabores inline)
+  // 3. Libera o accordion e volta à posição exata de onde ele foi aberto.
+  if (accId) delete _cardapioScrollAnterior[accId];
+  _restaurarPosicaoCardapio(posicaoAnterior.left, posicaoAnterior.top);
 }
 /* =====================================================
    SISTEMA UNIFICADO DE MODAL — PADRÃO PROFISSIONAL
@@ -5041,8 +5051,31 @@ function atualizarStatusLoja() {
 // ── NAVEGAÇÃO INLINE EM 3 NÍVEIS ─────────────────────────────────────────────
 // Guarda o HTML original do acc-body para restaurar ao clicar Voltar
 var _nivelAnterior = {};
+var _cardapioScrollAnterior = {};
 var _menuFocoId = null;
+var _menuFocoScrollX = 0;
 var _menuFocoScrollY = 0;
+
+// Restaura a posição original depois de liberar o Modo Foco.
+// A aplicação em múltiplos frames evita que o reflow do accordion provoque salto.
+function _restaurarPosicaoCardapio(x, y) {
+  var left = Number.isFinite(Number(x)) ? Number(x) : 0;
+  var top = Number.isFinite(Number(y)) ? Number(y) : 0;
+  var aplicar = function() {
+    window.scrollTo({ left: left, top: top, behavior: 'auto' });
+    document.documentElement.scrollTop = top;
+    if (document.body) document.body.scrollTop = top;
+  };
+  aplicar();
+  requestAnimationFrame(function() {
+    aplicar();
+    requestAnimationFrame(function() {
+      aplicar();
+      setTimeout(aplicar, 40);
+      setTimeout(aplicar, 120);
+    });
+  });
+}
 
 /* Modo Foco: isola o conteúdo aberto no cardápio da página inicial.
    Escopo deliberadamente limitado ao index.html; não compartilha estado com
@@ -5051,7 +5084,9 @@ function _menuFocoAtivar(acc) {
   if (!acc || !acc.id) return;
   if (_menuFocoId === acc.id) return;
   if (_menuFocoId) _menuFocoDesativar(false);
-  _menuFocoScrollY = window.scrollY || window.pageYOffset || 0;
+  _menuFocoScrollX = window.scrollX || window.pageXOffset || 0;
+  _menuFocoScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+  document.documentElement.style.setProperty('--menu-foco-scroll-left', _menuFocoScrollX + 'px');
   document.documentElement.style.setProperty('--menu-foco-scroll-top', _menuFocoScrollY + 'px');
   document.documentElement.classList.add('menu-foco-aberto');
   document.body.classList.add('menu-foco-aberto');
@@ -5079,6 +5114,7 @@ function _menuFocoAtivar(acc) {
 function _menuFocoDesativar(restaurarPosicao) {
   if (!_menuFocoId) return;
   var acc = document.getElementById(_menuFocoId);
+  var x = _menuFocoScrollX;
   var y = _menuFocoScrollY;
   if (acc) {
     acc.classList.remove('menu-foco-ativo');
@@ -5087,24 +5123,27 @@ function _menuFocoDesativar(restaurarPosicao) {
   }
   document.documentElement.classList.remove('menu-foco-aberto');
   document.body.classList.remove('menu-foco-aberto');
+  document.documentElement.style.removeProperty('--menu-foco-scroll-left');
   document.documentElement.style.removeProperty('--menu-foco-scroll-top');
   _menuFocoId = null;
-  if (restaurarPosicao) {
-    requestAnimationFrame(function() { window.scrollTo({ top: y, left: 0, behavior: 'auto' }); });
-  }
+  if (restaurarPosicao) _restaurarPosicaoCardapio(x, y);
 }
 
 function _menuFocoVoltar(acc) {
   if (!acc) return;
   var id = acc.id;
   var body = acc.querySelector('.acc-body');
+  var x = _menuFocoScrollX;
   var y = _menuFocoScrollY;
-  _menuFocoDesativar(false);
+
+  // Restaura o nível anterior enquanto o painel ainda está fixo.
+  // Assim o reflow não desloca a página antes da liberação do foco.
   if (body && _nivelAnterior[id]) {
     body.innerHTML = _nivelAnterior[id];
     delete _nivelAnterior[id];
   }
-  requestAnimationFrame(function() { window.scrollTo({ top: y, left: 0, behavior: 'auto' }); });
+  _menuFocoDesativar(false);
+  _restaurarPosicaoCardapio(x, y);
 }
 
 
@@ -5279,13 +5318,19 @@ function voltarNivel(btn) {
   var accId = acc ? acc.id : accBody.id;
   if (accId && _nivelAnterior[accId]) {
     var focoAtivo = _menuFocoId === accId;
+    var focoX = _menuFocoScrollX;
     var focoY = _menuFocoScrollY;
-    if (focoAtivo) _menuFocoDesativar(false);
-    _semPulo(function() {
+    var restaurarNivel = function() {
       accBody.innerHTML = _nivelAnterior[accId];
       delete _nivelAnterior[accId];
-    });
-    if (focoAtivo) requestAnimationFrame(function() { window.scrollTo({ top: focoY, left: 0, behavior: 'auto' }); });
+    };
+    if (focoAtivo) {
+      restaurarNivel();
+      _menuFocoDesativar(false);
+      _restaurarPosicaoCardapio(focoX, focoY);
+    } else {
+      _semPulo(restaurarNivel);
+    }
   }
 }
 
