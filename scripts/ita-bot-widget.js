@@ -148,30 +148,40 @@
       var inputEl = document.getElementById('itabot-input');
 
       function updateChatViewport() {
-        // No mobile, o visualViewport.height diminui quando o teclado sobe
         var vh = viewport.height;
         var offset = viewport.offsetTop;
         
-        // Ajusta a altura e posição da caixa de chat para caber exatamente no espaço visível
         if (window.innerWidth <= 600) {
           chatBox.style.height = vh + 'px';
           chatBox.style.top = offset + 'px';
           chatBox.style.bottom = 'auto';
           
-          // Se o teclado estiver aberto (altura visível menor que a da janela)
-          if (vh < window.innerHeight * 0.85) {
+          var inpRow = document.querySelector('.chat-inp-row');
+          var chatMsgs = document.getElementById('itabot-msgs');
+          var chatBoxInner = document.querySelector('.chat-box');
+          var chatHdr = document.querySelector('.chat-hdr');
+
+          if (vh < window.innerHeight * 0.82) {
             chatDialog.classList.add('keyboard-open');
-            // Garante que a última mensagem ou o input esteja visível
+            // Mover input row para o topo (abaixo do cabeçalho) no celular quando o teclado sobe
+            if (inpRow && chatHdr && chatBoxInner && inpRow.parentElement !== chatHdr.parentElement) {
+              chatHdr.insertAdjacentElement('afterend', inpRow);
+              inpRow.style.borderTop = 'none';
+              inpRow.style.borderBottom = '1px solid #eee';
+              inpRow.style.background = '#fff';
+            }
             setTimeout(function() {
-              var msgs = document.getElementById('itabot-msgs');
-              if (msgs) msgs.scrollTop = msgs.scrollHeight;
-              if (document.activeElement === inputEl) {
-                inputEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-              }
+              if (chatMsgs) chatMsgs.scrollTop = chatMsgs.scrollHeight;
             }, 100);
           } else {
             chatDialog.classList.remove('keyboard-open');
-            chatBox.style.top = '0'; // Volta ao topo normal
+            // Restaurar input row para o rodapé
+            if (inpRow && chatBoxInner && inpRow.parentElement !== chatBoxInner) {
+              chatBoxInner.appendChild(inpRow);
+              inpRow.style.borderTop = '1px solid #eee';
+              inpRow.style.borderBottom = 'none';
+            }
+            chatBox.style.top = '0';
           }
         }
       }
