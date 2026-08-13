@@ -44,8 +44,21 @@
 <link rel="preload" as="image" href="images/carrinho-picole.webp" type="image/webp" fetchpriority="high"/>
 <title data-config="seoPaginas.encomendas.titulo">Encomendas | Sorveteria Itapolitana Cajuru</title>
 
-<style>
-    body { position: relative; }
+    <style>
+      body { position: relative; }
+      #grid-sabores.limite-atingido .sabor-item:not(.sel) {
+          opacity: 0.5;
+          filter: grayscale(1);
+          cursor: not-allowed;
+          pointer-events: none;
+      }
+      .sabor-item.sel {
+          background: #4CAF50 !important;
+          color: white !important;
+          border-color: #2E7D32 !important;
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+      }
 
     :root {
       --azul: #1565C0;

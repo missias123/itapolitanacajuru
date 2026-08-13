@@ -86,6 +86,7 @@
             '<div class="prod-card-body">' +
                 '<div class="prod-nome">Torta de Sorvete (Especial)</div>' +
                 '<div class="prod-preço">R$ 100,00</div>' +
+                '<div style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">Escolha exatamente 3 sabores</div>' +
                 '<button class="btn-sabores" onclick="window.abrirSaboresSorvete(\'torta\', 100, 3, \'Torta de Sorvete\')">Escolher Sabores</button>' +
             '</div>' +
         '</div>';
@@ -155,11 +156,10 @@
             saboresSelecionados.splice(idx, 1);
             btn.classList.remove('sel');
         } else {
+            // Trava de limite: Não permite selecionar mais que o máximo
             if (saboresSelecionados.length >= produtoAtual.max) {
-                var removido = saboresSelecionados.shift();
-                document.querySelectorAll('.sabor-item').forEach(function(b) {
-                    if (b.textContent === removido) b.classList.remove('sel');
-                });
+                mostrarToast("Limite de " + produtoAtual.max + " sabores atingido!");
+                return;
             }
             saboresSelecionados.push(sabor);
             btn.classList.add('sel');
@@ -170,13 +170,24 @@
     function atualizarStatusSabores() {
         var txt = document.getElementById('txt-confirmar-sabores');
         var btn = document.getElementById('btn-confirmar-sabores');
+        var grid = document.getElementById('grid-sabores');
         if (!txt || !btn) return;
         
         var qtd = saboresSelecionados.length;
-        txt.textContent = "Selecionado: " + qtd + " / " + produtoAtual.max;
+        var max = produtoAtual.max;
+        txt.textContent = "Selecionado: " + qtd + " / " + max;
         
-        btn.disabled = (qtd !== produtoAtual.max);
-        btn.parentElement.className = (qtd === produtoAtual.max) ? 'barra-acao barra-verde' : 'barra-acao barra-azul';
+        // Desabilita visualmente outros sabores se o limite foi atingido
+        if (grid) {
+            if (qtd >= max) {
+                grid.classList.add('limite-atingido');
+            } else {
+                grid.classList.remove('limite-atingido');
+            }
+        }
+        
+        btn.disabled = (qtd !== max);
+        btn.parentElement.className = (qtd === max) ? 'barra-acao barra-verde' : 'barra-acao barra-azul';
     }
 
     function confirmarSabores() {
