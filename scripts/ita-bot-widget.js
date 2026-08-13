@@ -50,7 +50,18 @@
     style.textContent = [
       '#chat-dialog { display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:100000; background:rgba(0,0,0,0.55); overflow:hidden; align-items:center; justify-content:center; }',
       '#chat-dialog.aberto { display:flex !important; }',
-      '.chat-box { width:95%; max-width:460px; height:90%; max-height: 800px; background:#fff; border-radius:28px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,0.32); position:relative; }',
+      '.chat-box { width:100%; max-width:460px; height:100%; max-height: 100dvh; background:#fff; border-radius:28px 28px 0 0; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,0.32); position:absolute; bottom:0; left:0; right:0; margin:0 auto; padding-bottom:env(safe-area-inset-bottom,0px); }',
+      '@media (min-width: 601px) {',
+      '  #chat-dialog { align-items:center; justify-content:center; }',
+      '  .chat-box { width:95%; height:90%; max-height:800px; border-radius:28px; position:relative; bottom:auto; left:auto; right:auto; margin:auto; padding-bottom:0; }',
+      '}',
+      '#chat-dialog.keyboard-open .chat-box {',
+      '  height: calc(100dvh - var(--keyboard-height, 0px)) !important;',
+      '  max-height: calc(100dvh - var(--keyboard-height, 0px)) !important;',
+      '}',
+      '.chat-msgs { flex:1 1 auto; min-height:0; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; background:#f9f9f9; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }',
+      '.chat-inp-row { flex:0 0 auto; position:relative; padding:12px; background:#fff; border-top:1px solid #eee; display:flex; gap:8px; align-items:center; padding-bottom:max(12px, env(safe-area-inset-bottom, 0px)); }',
+      '.chat-inp { flex:1; border:1px solid #ddd; border-radius:24px; padding:10px 16px; font-size:16px !important; outline:none; }',
       '.chat-hdr { background:linear-gradient(135deg,#E8000D,#C62828); color:#fff; padding:16px 20px; flex-shrink:0; }',
       '.chat-hdr-logo-row { display:flex; align-items:center; justify-content:space-between; }',
       '.chat-hdr-brand { display:flex; align-items:center; gap:12px; }',
@@ -124,6 +135,42 @@
     div.onclick = function (e) {
       if (e.target === div) _itabotFecharItaBot();
     };
+
+    /* ─── Lógica robusta para VisualViewport (Teclado Virtual Mobile) ─── */
+    if (window.visualViewport) {
+      var viewport = window.visualViewport;
+      var chatDialog = div;
+      var inputEl = document.getElementById('itabot-input');
+
+      function updateChatViewport() {
+        var keyboardHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+        document.documentElement.style.setProperty('--keyboard-height', keyboardHeight + 'px');
+
+        if (keyboardHeight > 80) {
+          chatDialog.classList.add('keyboard-open');
+          requestAnimationFrame(function () {
+            if (inputEl && document.activeElement === inputEl) {
+              inputEl.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+            }
+          });
+        } else {
+          chatDialog.classList.remove('keyboard-open');
+        }
+      }
+
+      viewport.addEventListener('resize', updateChatViewport);
+      viewport.addEventListener('scroll', updateChatViewport);
+      window.addEventListener('resize', updateChatViewport);
+
+      if (inputEl) {
+        inputEl.addEventListener('focus', function () {
+          setTimeout(updateChatViewport, 250);
+          setTimeout(function () {
+            inputEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          }, 350);
+        });
+      }
+    }
   }
 
   /* ─── Lógica de abertura/fechamento ─── */
