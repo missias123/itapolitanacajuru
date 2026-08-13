@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
@@ -21,7 +20,6 @@
     .header { background: var(--white); color: var(--primary); padding: 14px 0; text-align: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #EEEEEE; }
     .container { max-width: 800px; margin: 0 auto; padding: 12px; padding-bottom: 140px; }
     
-    /* Accordion Style - Padrão App Premium */
     .categoria { background: var(--white); border-radius: 8px; margin-bottom: 12px; border: 1px solid #E8E8E8; overflow: hidden; }
     .categoria-header { 
         padding: 16px 20px; background: var(--white); color: var(--text-main); cursor: pointer; 
@@ -31,7 +29,6 @@
     .categoria-header:active { background: #F2F2F2; }
     .categoria-conteudo { display: none; padding: 20px; border-top: 1px solid #eee; }
     
-    /* Product Cards */
     .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
     .prod-card { border: 1px solid #F2F2F2; border-radius: 8px; padding: 16px; text-align: center; background: var(--white); transition: transform 0.2s; }
     .prod-nome { font-weight: 700; font-size: 1.05rem; color: var(--text-main); margin-bottom: 6px; }
@@ -43,7 +40,6 @@
     }
     .btn-sabores:active { opacity: 0.85; }
 
-    /* Modais */
     .modal { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
         background: rgba(0,0,0,0.7); display: none; align-items: flex-end; justify-content: center; z-index: 2000; 
@@ -87,7 +83,6 @@
     }
     .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
     
-    /* Carrinho */
     .btn-carrinho-fixo {
         position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
         background: var(--primary); color: var(--white);
@@ -141,7 +136,7 @@
   <!-- Categoria Picolés -->
   <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')">
-      <div><strong>🍭 Picolés (Atacado)</strong><br><small>Mínimo 100 unidades - Sabores Especializados</small></div>
+      <div><strong>🍭 Picolés (Atacado)</strong><br><small>Mínimo 100 unidades - Separados por Tipo</small></div>
       <span>▼</span>
     </button>
     <div id="sec-picoles" class="categoria-conteudo">
@@ -164,12 +159,12 @@
   </div>
 </div>
 
-<!-- Modal de Picolés -->
+<!-- Modal de Picolés (Separado por Tipos) -->
 <div id="modal-picoles" class="modal">
   <div class="modal-content">
-    <h2>Picolés no Atacado (Catálogo Especializado)</h2>
-    <p>Mínimo de 100 unidades no total. Selecione por categoria e sabor:</p>
-    <div id="lista-sabores-picole" style="max-height: 400px; overflow-y: auto;"></div>
+    <h2>Picolés no Atacado (Separados por Tipo)</h2>
+    <p>Mínimo de 100 unidades no total. Ajuste a quantidade por sabor em cada categoria:</p>
+    <div id="lista-sabores-picole" style="max-height: 400px; overflow-y: auto; padding-right: 5px;"></div>
     <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 10px; text-align: center;">
       <strong>Total de Picolés: <span id="total-picoles">0</span> / 100</strong>
     </div>
@@ -209,7 +204,6 @@
 (function(window, document) {
     'use strict';
     
-    // Os 35 Sabores oficiais de Sorvete Tipo Artesanal (para Caixas e Tortas)
     var SABORES_SORVETE = [
         "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa",
         "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
@@ -220,13 +214,12 @@
         "Prestígio", "Sensação", "Torta de Chocolate"
     ];
 
-    // Catálogo especializado de Picolés por Categoria
+    // Catálogo especializado de Picolés dividido em 4 tipos claros com seus respectivos preços
     var PICOLES_CATALOGO = {
-        "Frutas / Água (R$ 1,80)": ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"],
-        "Leite sem Recheio (R$ 2,00)": ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"],
-        "Leite com Recheio (R$ 2,00)": ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"],
-        "Leite Ninho / Ovomaltine (R$ 3,00)": ["Leite Ninho", "Ovomaltine"],
-        "Esquímós Especiais (R$ 6,00)": ["Bombom", "Nutella", "Ovomaltine", "Nata", "Morango", "Brigadeiro", "Prestígio"]
+        "Base Água / Frutas (R$ 1,80)": { preco: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melancia", "Uva", "Tamarindo"] },
+        "Recheados (R$ 2,00)": { preco: 2.00, sabores: ["Açaí", "Blue Ice", "Caraxi", "Coco Branco", "Chocolate", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba", "Coco Queimado", "Milho Verde", "Amendoim", "Pistache", "Leite Ninho", "Ovomaltine"] },
+        "Esquimós (R$ 6,00)": { preco: 6.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Nata", "Morango", "Brigadeiro", "Prestígio"] },
+        "Especiais (R$ 6,00)": { preco: 6.00, sabores: ["Trufado Especial", "Romeu e Julieta", "Sensação Trufada", "Maracujá Trufado"] }
     };
 
     var PRODUTOS = [
@@ -321,24 +314,27 @@
         atualizarCarrinho();
     };
 
+    // Modal de Picolés por Tipo com controles +/- individuais
     window.abrirModalPicole = function() {
         picolesSelecionados = {};
         var html = '';
-        Object.entries(PICOLES_CATALOGO).forEach(([categoria, sabores]) => {
-            html += `<h3 style="margin-top:15px; color:var(--azul); font-size:1rem; border-bottom:1px solid #ddd; padding-bottom:5px;">${categoria}</h3>`;
-            sabores.forEach(s => {
-                var idSabor = categoria.split(' ')[0] + '-' + s; // ID único por categoria
+        Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo]) => {
+            html += `<div style="margin-bottom:20px;">
+                <h3 style="color:var(--azul); font-size:1.05rem; border-bottom:2px solid var(--azul); padding-bottom:6px; margin-bottom:12px;">${tipo}</h3>`;
+            grupo.sabores.forEach(s => {
+                var idSabor = tipo.split(' ')[0] + '-' + s;
                 html += `
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0f0f0;">
-                        <span>${s}</span>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <button onclick="window.addPicole('${idSabor}', -1)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold;">-</button>
-                            <span id="q-${idSabor}" style="min-width:25px; text-align:center; font-weight:bold;">0</span>
-                            <button onclick="window.addPicole('${idSabor}', 1)" style="width:30px; height:30px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold;">+</button>
+                        <span style="font-weight:600; font-size:0.95rem;">${s}</span>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <button onclick="window.addPicole('${idSabor}', -1)" style="width:34px; height:34px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold; font-size:1.1rem; cursor:pointer;">-</button>
+                            <span id="q-${idSabor}" style="min-width:30px; text-align:center; font-weight:800; font-size:1.05rem;">0</span>
+                            <button onclick="window.addPicole('${idSabor}', 1)" style="width:34px; height:34px; border-radius:50%; border:1px solid #ccc; background:#fff; font-weight:bold; font-size:1.1rem; cursor:pointer;">+</button>
                         </div>
                     </div>
                 `;
             });
+            html += `</div>`;
         });
         document.getElementById('lista-sabores-picole').innerHTML = html;
         atualizarAcaoPicoles();
@@ -376,36 +372,43 @@
             status.classList.add('ready');
         } else {
             var falta = MIN_PICOLES_ATACADO - total;
-            status.textContent = "Adicione mais " + falta + " picolés para o lote de atacado.";
+            status.textContent = "Adicione mais " + falta + " picolés para o lote de atacado (Máx 25 por sabor).";
             status.classList.remove('ready');
         }
     }
 
     window.confirmarPickle = function() {
         var total = 0;
-        var precoTotal = 0;
-        var detalhesArray = [];
         
-        Object.entries(PICOLES_CATALOGO).forEach(([cat, sabores]) => {
-            var precoUn = parseFloat(cat.match(/R\$ ([\d,]+)/)[1].replace(',', '.'));
-            sabores.forEach(s => {
-                var idSabor = cat.split(' ')[0] + '-' + s;
+        // Agrupar picolés confirmados por tipo para exibição clara e exclusão individual no carrinho
+        Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo]) => {
+            var subtotalQtd = 0;
+            var subtotalPreco = 0;
+            var itensTipo = [];
+
+            grupo.sabores.forEach(s => {
+                var idSabor = tipo.split(' ')[0] + '-' + s;
                 var qtd = picolesSelecionados[idSabor] || 0;
                 if (qtd > 0) {
-                    total += qtd;
-                    precoTotal += (qtd * precoUn);
-                    detalhesArray.push(qtd + 'x ' + s);
+                    subtotalQtd += qtd;
+                    subtotalPreco += (qtd * grupo.preco);
+                    itensTipo.push(qtd + 'x ' + s);
                 }
             });
+
+            if (subtotalQtd > 0) {
+                carrinho.push({
+                    nome: "Picolés: " + tipo,
+                    preco: subtotalPreco,
+                    detalhes: itensTipo.join(', '),
+                    tipoPicole: tipo
+                });
+                total += subtotalQtd;
+            }
         });
 
         if (total < MIN_PICOLES_ATACADO) return;
         
-        carrinho.push({
-            nome: "Lote de Picolés (" + total + " un)",
-            preco: precoTotal,
-            detalhes: detalhesArray.join(', ')
-        });
         window.fecharModal('modal-picoles');
         atualizarCarrinho();
     };
@@ -416,9 +419,12 @@
         lista.innerHTML = carrinho.map((item, i) => {
             total += item.preco;
             return `
-                <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-                    <div><strong>${item.nome}</strong><br><small style="color:#666;">${item.detalhes}</small></div>
-                    <div style="text-align:right;">R$ ${item.preco.toFixed(2)} <button onclick="window.removerItem(${i})" style="border:none; background:none; cursor:pointer; color:red; margin-left:10px;">🗑️</button></div>
+                <div style="padding:12px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+                    <div><strong>${item.nome}</strong><br><small style="color:#666; line-height:1.4; display:block; margin-top:3px;">${item.detalhes}</small></div>
+                    <div style="text-align:right; white-space:nowrap; margin-left:12px;">
+                        <span style="font-weight:700; color:var(--success);">R$ ${item.preco.toFixed(2)}</span>
+                        <button onclick="window.removerItem(${i})" style="border:none; background:#ffeeee; color:#d32f2f; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:700; margin-left:8px;" title="Excluir item">Excluir</button>
+                    </div>
                 </div>
             `;
         }).join('');
@@ -465,7 +471,7 @@
         }
         var dataFormatada = minData.toLocaleDateString('pt-BR');
         var texto = "Olá! Gostaria de fazer uma encomenda (Prazo mínimo de 5 dias úteis - Entrega a partir de " + dataFormatada + "):\n\n" + 
-            carrinho.map(i => "▪ " + i.nome + "\n  Sabores: " + i.detalhes + "\n  Preço: R$ " + i.preco.toFixed(2)).join('\n\n') + 
+            carrinho.map(i => "▪ " + i.nome + "\n  Itens: " + i.detalhes + "\n  Subtotal: R$ " + i.preco.toFixed(2)).join('\n\n') + 
             "\n\n*Total do Pedido: R$ " + carrinho.reduce((a, b) => a + b.preco, 0).toFixed(2) + "*";
         window.open("https://wa.me/5516996062046?text=" + encodeURIComponent(texto));
     };
@@ -491,41 +497,11 @@
         <div class="prod-card">
             <div class="prod-nome">Lote Picolés (Atacado)</div>
             <div class="prod-preco">A partir de R$ 1,80 / un</div>
-            <button class="btn-sabores" onclick="window.abrirModalPicole()">Escolher Sabores</button>
+            <button class="btn-sabores" onclick="window.abrirModalPicole()">Escolher Sabores por Tipo</button>
         </div>
     `;
 
 })(window, document);
 </script>
-
-  <!-- Admin link discreto -->
-  <div style="padding:10px 0 20px; text-align:center;">
-    <style>
-      .admin-gear-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        background: rgba(255,255,255,0.08);
-        color: rgba(255,255,255,0.4);
-        border-radius: 50%;
-        text-decoration: none;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(255,255,255,0.1);
-      }
-      .admin-gear-btn:hover {
-        background: rgba(251,209,0,0.15);
-        color: #FBD100;
-        transform: rotate(90deg);
-        border-color: rgba(251,209,0,0.5);
-        box-shadow: 0 0 15px rgba(251,209,0,0.2);
-      }
-      .admin-gear-btn span { font-size: 22px; line-height: 1; }
-    </style>
-    <a href="admin-painel.html" class="admin-gear-btn" title="Painel Administrativo" aria-label="Acessar Painel Administrativo">
-      <span>⚙️</span>
-    </a>
-  </div>
 </body>
 </html>
