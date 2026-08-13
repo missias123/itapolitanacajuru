@@ -117,9 +117,9 @@
         var regId = dados.registrationId || 'SRT-2027-' + Math.floor(1000 + Math.random() * 9000);
         var msgSucesso = `
           <div style="font-size: 1.1rem; margin-bottom: 8px;">🎉 <strong>Inscrição Confirmada com Sucesso!</strong> 🎉</div>
-          <div style="font-size: 0.9rem; margin-bottom: 12px; color: #333;">Você está concorrendo à Torta de Sorvete deste mês.</div>
+          <div style="font-size: 0.9rem; margin-bottom: 12px; color: #333;">Você está concorrendo à Caixa de 5L (2026) e à Torta de Sorvete (2027)!</div>
           <div class="ticket-sorte">
-            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Seu Ticket da Sorte 2027</div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Seu Ticket da Sorte Itapolitana</div>
             <div class="ticket-codigo">${regId}</div>
             <div style="font-size: 0.75rem; opacity: 0.8;">Guarde este código para a retirada do prêmio!</div>
           </div>
