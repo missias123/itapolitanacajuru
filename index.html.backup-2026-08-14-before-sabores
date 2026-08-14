@@ -715,8 +715,7 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
 /* MODO FOCO DO CARDÁPIO — somente index.html; não afeta encomendas/promoção */
 html.menu-foco-aberto,body.menu-foco-aberto{position:fixed!important;inset:0;width:100%;height:100dvh;overflow:hidden!important;overscroll-behavior:none}
 body.menu-foco-aberto{top:calc(var(--menu-foco-scroll-top, 0px) * -1)}
-.acc.menu-foco-ativo{position:fixed!important;inset:0;z-index:99999!important;margin:0!important;border-radius:0!important;max-height:100dvh;height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;background:#FFFDF9!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
-.reveal:has(.menu-foco-ativo), .reveal.foco-pai{transform:none!important;transition:none!important;z-index:99998!important;opacity:1!important}
+.acc.menu-foco-ativo{position:fixed!important;inset:0;z-index:600;margin:0!important;border-radius:0!important;max-height:100dvh;height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;background:#FFFDF9;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box}
 .acc.menu-foco-ativo .acc-header{position:sticky;top:0;z-index:3;min-height:92px;box-shadow:0 3px 14px rgba(0,0,0,.18)}
 .acc.menu-foco-ativo .acc-body{max-height:none!important;overflow:visible!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .menu-foco-back{position:sticky;top:92px;z-index:2;display:flex!important;width:100%;align-items:center;justify-content:center;min-height:48px;margin:0 0 14px;padding:12px 16px;border:0;border-radius:14px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font:800 14px/1.2 inherit;cursor:pointer;box-shadow:0 5px 16px rgba(232,0,13,.25);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -3985,10 +3984,9 @@ function renderSobremesas(){
   b.appendChild(_vb);
 }
 
-const SABORES_35_OFICIAL = ["Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa", "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo", "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache", "Prestígio", "Sensação", "Torta de Chocolate"];
-
-function getSaboresDisponíveis() {
-  return (typeof SABORES_35_OFICIAL !== "undefined" && SABORES_35_OFICIAL.length > 0) ? SABORES_35_OFICIAL : [
+const SABORES_35_OFICIAL = ['Abacaxi ao Vinho', 'Abacaxi Suíço', 'Algodão Doce (Blue Ice)', 'Amarena', 'Ameixa', 'Banana com Nutella', 'Bis e Trufa', 'Cereja Trufada', 'Chocolate', 'Chocolate com Café', 'Coco Queimado', 'Creme Paris', 'Croquer', 'Doce de Leite', 'Ferrero Rocher', 'Flocos', 'Kinder Ovo', 'Leite Condensado', 'Leite Ninho', 'Leite Ninho Folheado', 'Leite Ninho com Oreo', 'Limão', 'Limão Suíço', 'Menta com Chocolate', 'Milho Verde', 'Morango Trufado', 'Mousse de Maracujá', 'Mousse de Uva', 'Nozes', 'Nutella', 'Ovomaltine', 'Pistache', 'Prestígio', 'Sensação', 'Torta de Chocolate'];
+function getSaboresDisponíveis(){
+  return typeof SABORES_35_OFICIAL !== 'undefined' ? SABORES_35_OFICIAL : [
     "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa",
     "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
     "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
@@ -3997,6 +3995,9 @@ function getSaboresDisponíveis() {
     "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
     "Prestígio", "Sensação", "Torta de Chocolate"
   ];
+}
+  }catch(e){}
+  return produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
 }
 function abrirSabores(tipo,título,el){
   // Convertido para inline — sem modal, sem scroll
@@ -5242,8 +5243,6 @@ function _menuFocoAtivar(acc) {
   document.documentElement.classList.add('menu-foco-aberto');
   document.body.classList.add('menu-foco-aberto');
   acc.classList.add('menu-foco-ativo');
-  var pai = acc.closest('.reveal');
-  if(pai) pai.classList.add('foco-pai');
   _menuFocoId = acc.id;
 
   var back = acc.querySelector(':scope > .menu-foco-back');
@@ -5271,8 +5270,6 @@ function _menuFocoDesativar(restaurarPosicao) {
   var y = _menuFocoScrollY;
   if (acc) {
     acc.classList.remove('menu-foco-ativo');
-    var pai = acc.closest('.reveal');
-    if(pai) pai.classList.remove('foco-pai');
     var back = acc.querySelector(':scope > .menu-foco-back');
     if (back) back.remove();
   }
@@ -5443,9 +5440,9 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
   var acc = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc') : null;
   if (acc) _menuFocoAtivar(acc);
 
-  var chipsHtml = (chips && chips.length > 0) ? chips.map(function(s) {
+  var chipsHtml = chips.map(function(s) {
     return '<span class="chip-inline">' + s + '</span>';
-  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
+  }).join('');
 
   _semPulo(function() {
     accBodyEl.innerHTML =
@@ -5538,7 +5535,7 @@ function abrirPicoléInline(key, nome, el) {
   var accBody = _getAccBody(el, 'picolés-body');
   if (!accBody) return;
   var sabs = produtos && produtos.picolés && produtos.picolés[key] && produtos.picolés[key].sabores ? produtos.picolés[key].sabores : [];
-  var chips = sabs;
+  var chips = sabs.length > 0 ? sabs : getSaboresDisponíveis();
   mostrarSaboresInline(accBody, '🍭 Sabores – ' + nome, 'Sabores disponíveis para este tipo de picolé', chips);
 }
 

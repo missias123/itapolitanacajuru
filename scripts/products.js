@@ -41,7 +41,7 @@ window.PRODUTOS_DATA = {
         ovomaltine: {
             nome: "Picolé de Ovomaltine", preço_varejo: 4, preço_atacado: 3, sabores: ["Ovomaltine"]
         },
-        esquímós: {
+        esquimos: {
             nome: "Picolé Esquimó", preço_varejo: 8, preço_atacado: 6,
             sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"]
         }
