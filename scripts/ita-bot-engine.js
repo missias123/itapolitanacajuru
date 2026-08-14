@@ -31,24 +31,7 @@
   /* ─── Normalização de texto ─── */
   function _norm(s) {
     var ACCENT_RE = /[\u0300-\u036f]/g;
-    return String(s || '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(ACCENT_RE, '')
-      .replace(/[^a-z0-9]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  function _money(value) {
-    return (typeof value === 'number' && isFinite(value))
-      ? 'R$ ' + value.toFixed(2).replace('.', ',')
-      : '';
-  }
-
-  function _picoleGroups(prodData) {
-    var p = prodData && (prodData.picolés || prodData.picoles);
-    return p && typeof p === 'object' ? p : {};
+    return String(s || '').toLowerCase().normalize('NFD').replace(ACCENT_RE, '').trim();
   }
 
   /* ─── Factory: cria uma instância do motor ─── */
@@ -96,8 +79,6 @@
       'pix':           '\ud83d\udcb3 Sim! Aceitamos Pix. Para encomendas, pagamento via Pix antecipado.',
       'cartão':        '\ud83d\udcb3 Sim! Aceitamos cart\u00e3o de d\u00e9bito e cr\u00e9dito. Tamb\u00e9m Pix e dinheiro.',
       'complemento':   '\ud83e\uded0 Complementos do a\u00e7a\u00ed: Frutas (R$ 2), Cremes Nutella/Ninho (R$ 3), Guloseimas (R$ 2), Chocolates Kit Kat/Oreo (R$ 4).',
-      'picole':        '🍦 Temos picolés Base Água (R$ 2,50), Recheados (R$ 3,00), Esquimós (R$ 8,00) e Especiais (R$ 4,00). No atacado (min. 100 un), preços a partir de R$ 1,80!',
-      'picoles':       '🍦 Temos picolés Base Água (R$ 2,50), Recheados (R$ 3,00), Esquimós (R$ 8,00) e Especiais (R$ 4,00). No atacado (min. 100 un), preços a partir de R$ 1,80!',
       'atacado':       '\ud83d\udce6 Picol\u00e9s no atacado: m\u00ednimo 100 un., prazo de 3 dias \u00fateis, pagamento antecipado. (16) 99606-2046.',
       'prazo':         '\ud83d\udce6 O prazo m\u00ednimo para encomendas \u00e9 de 3 dias \u00fateis ap\u00f3s confirma\u00e7\u00e3o e pagamento.',
       'torta':         '\ud83c\udf82 Torta de Sorvete R$ 100 com at\u00e9 3 sabores. Encomende com 3 dias de anteced\u00eancia!',
@@ -217,60 +198,23 @@
     }
 
     function _respPicoles() {
-      var groups = _picoleGroups(_prodData);
-      var order = ['frutas_agua', 'leite_sem_recheio', 'leite_com_recheio', 'leite_ninho', 'ovomaltine', 'esquimós', 'esquimos'];
-      var seen = {};
-      var sections = [];
-      order.forEach(function (key) {
-        if (seen[key]) return;
-        var group = groups[key];
-        if (!group) return;
-        seen[key] = true;
-        var name = group.nome || key;
-        var retail = _money(group.preço_varejo != null ? group.preço_varejo : group.preco_varejo);
-        var wholesale = _money(group.preço_atacado != null ? group.preço_atacado : group.preco_atacado);
-        var flavors = Array.isArray(group.sabores) ? group.sabores.join(', ') : '';
-        var prices = retail ? retail + ' varejo' : '';
-        if (wholesale) prices += (prices ? ' · ' : '') + wholesale + ' atacado';
-        sections.push('• ' + name + (prices ? ' — ' + prices : '') + (flavors ? '\n  Sabores: ' + flavors : ''));
-      });
-      if (!sections.length) {
-        sections.push('Consulte os sabores e preços oficiais na página de encomendas.');
-      }
+      var p = (_prodData && (_prodData.picolés || _prodData.picoles)) ? (_prodData.picolés || _prodData.picoles) : null;
+      var fruta  = (p && p.frutas_agua)                                                   ? p.frutas_agua.preco_varejo.toFixed(2).replace('.', ',')       : '2,50';
+      var leite  = (p && p.leite_com_recheio && p.leite_com_recheio.preco_varejo != null) ? p.leite_com_recheio.preco_varejo.toFixed(2).replace('.', ',') : '3,00';
+      var ninho  = (p && p.leite_ninho  && p.leite_ninho.preco_varejo  != null)           ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',')       : '4,00';
+      var eskimo = (p && (p.esquímós || p.esquimos) && (p.esquímós || p.esquimos).preco_varejo != null) ? (p.esquímós || p.esquimos).preco_varejo.toFixed(2).replace('.', ',') : '8,00';
       return {
-        answer: '🍧 Picolés Tipo Artesanal!\n\n' + sections.join('\n\n') +
-                '\n\n📦 Atacado: lote mínimo de 100 unidades e máximo de 25 unidades por sabor.\n⏱️ Encomendas: antecedência mínima de 5 dias úteis.',
-        linkText: '📦 Ver encomendas',
+        answer: '\ud83c\udf60 Picol\u00e9s Tipo Artesanal!\n\n' +
+                '\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Groselha, Lim\u00e3o, Melancia, Uva...)\n' +
+                '\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n' +
+                '\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n' +
+                '\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ ' + ninho + ' (Leite Ninho e Ovomaltine)\n' +
+                '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ ' + eskimo + ' (inc. Ovomaltine)\n' +
+                '\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
+        linkText: '\ud83d\udce6 Ver encomendas',
         linkHref: 'encomendas.html',
-        chips: ['📦 Atacado de picolés', '🍦 Picolé Esquimó', '🍨 Sorvetes', '💬 Falar com atendente']
+        chips: ['\ud83d\udce6 Atacado de picol\u00e9s', '\ud83c\udf6b Picol\u00e9 Esquim\u00f3', '\ud83c\udf66 Sorvetes', '\ud83e\uded0 A\u00e7a\u00ed']
       };
-    }
-
-    function _buscarPicole(msg) {
-      var groups = _picoleGroups(_prodData);
-      var l = _norm(msg);
-      var keys = Object.keys(groups);
-      for (var i = 0; i < keys.length; i++) {
-        var group = groups[keys[i]];
-        if (!group || !Array.isArray(group.sabores)) continue;
-        for (var j = 0; j < group.sabores.length; j++) {
-          var flavor = group.sabores[j];
-          var flavorNorm = _norm(flavor);
-          if (flavorNorm && l.indexOf(flavorNorm) !== -1) {
-            var retail = group.preço_varejo != null ? group.preço_varejo : group.preco_varejo;
-            var wholesale = group.preço_atacado != null ? group.preço_atacado : group.preco_atacado;
-            var priceLine = _money(retail) + ' no varejo';
-            if (_money(wholesale)) priceLine += ' · ' + _money(wholesale) + ' no atacado';
-            return {
-              answer: '🍧 Temos o picolé de ' + flavor + '!\n\nCategoria: ' + (group.nome || keys[i]) + '\n💰 ' + priceLine + '\n📦 No atacado: mínimo de 100 unidades e máximo de 25 deste sabor.\n⏱️ Encomendas com 5 dias úteis de antecedência.',
-              linkText: '📦 Escolher este sabor',
-              linkHref: 'encomendas.html',
-              chips: ['🍧 Ver todos os picolés', '📦 Fazer encomenda', '💬 Falar com atendente']
-            };
-          }
-        }
-      }
-      return null;
     }
 
     function _respTacas() {
@@ -608,20 +552,6 @@
 
       /* ── Picolé de Leite Ninho ── */
       if (temNinho && !temOvo && !temEskimo && (temPicol || temAtac)) return _respPicoleLeiteNinho(temAtac);
-
-      /* ── Busca por sabor de picolé e categoria ── */
-      if (temPicol) {
-        var pf = _buscarPicole(msg);
-        if (pf) return pf;
-        return _respPicoles();
-      }
-
-      /* ── Categorias do catálogo ── */
-      if (l.indexOf('milkshake') !== -1 || l.indexOf('milk shake') !== -1) return _respMilkshake();
-      if (l.indexOf('acai') !== -1) return _respAcai();
-      if (l.indexOf('taca') !== -1 || l.indexOf('sobremesa') !== -1 || l.indexOf('brownie') !== -1 || l.indexOf('fondue') !== -1) return _respTacas();
-      if (l.indexOf('encomenda') !== -1 || l.indexOf('caixa') !== -1 || l.indexOf('torta') !== -1 || l.indexOf('festa') !== -1) return _respEncomendas();
-      if (l === 'sorvete' || l.indexOf('sorvetes') !== -1 || l.indexOf('sabores') !== -1) return _respSorvetes();
 
       /* ── Busca por sabor de sorvete específico ── */
       var SORVETE_DE_RE = /\btem\b/;

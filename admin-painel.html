@@ -234,6 +234,7 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
   .estoque-campos { grid-template-columns: repeat(3, 1fr); }
 }
 
+
 /* =====================================================
    VALIDAÇÃO PROFISSIONAL — PADRÃO GRANDES SITES
    ===================================================== */
@@ -528,7 +529,7 @@ body { overflow-x: hidden; }
 <!-- cache-bust:20260419_000000 -->
   <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
-<body class="fueap-surface fueap-admin-painel">
+<bodyclass="fueap-surface fueap-admin-painel">
 <div class="loading-overlay" id="loading-overlay" style="display:none">
   <div class="loading-box"><div class="spin2"></div><p id="loading-txt">Salvando...</p></div>
 </div>
@@ -1005,7 +1006,7 @@ body { overflow-x: hidden; }
 
 	    </div>
 	    </div>
-
+	
 	    <!-- CARDÁPIO TÍTULOS -->
 	    <div class="seção" id="sec-cardapio-titulos">
       <div class="card">
@@ -1178,9 +1179,9 @@ body { overflow-x: hidden; }
             <label>Badges do Hero (um por linha)</label>
             <textarea id="enc-hero-badges" rows="5" placeholder="✨ Tipo Artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
           </div>
-
+          
           <div class="seção-título">🔎 SEO por Página</div>
-
+          
           <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
           <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
@@ -1557,7 +1558,7 @@ body { overflow-x: hidden; }
             </div>
             <div class="hint">📝 Máx. 40 caracteres — apenas letras, espaços e acentos. Ex: <strong>Morango Trufado</strong>, <strong>Doce de Leite</strong>. Aparece automaticamente nas opções de caixas e tortas no site. Não use números ou símbolos especiais.</div>
           </div>
-
+          
           <div class="seção-título">🍭 Picolé de Fruta/Água</div>
           <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
           <div class="sabores-grid">
@@ -1904,7 +1905,7 @@ body { overflow-x: hidden; }
           </div>
           <div class="seção-título" style="margin-top:20px">🍨 Complementos do Açaí</div>
           <div class="hint" style="margin-bottom:8px">Edite os itens de cada categoria de complemento. Salvar atualiza o site imediatamente.</div>
-
+          
           <div class="seção-título">🍨 Complemento: Frutas (R$ 2,0)</div>
           <div class="campo-edit">
             <label>Itens de Frutas (um por linha)</label>
@@ -4898,7 +4899,7 @@ function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
 function excluirParticipante(cel, tipo) {
   const celLimpo = cel.replace(/\D/g,'');
   let nome = cel;
-
+  
   // Tentar encontrar o nome em qualquer lugar
   const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
   const cli = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
@@ -4913,7 +4914,7 @@ function excluirParticipante(cel, tipo) {
       try {
         let salvouAlgo = false;
         mostrarLoading('Excluindo de todos os sistemas...');
-
+        
         // 1. Remover do Sorteio (fidelidade.json)
         if (STATE.fidelidade?.sorteioInscritos) {
           const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
@@ -4923,7 +4924,7 @@ function excluirParticipante(cel, tipo) {
             if (ok) salvouAlgo = true;
           }
         }
-
+        
         // 2. Remover do  (clientes.json ou fidelidade.json)
         // Busca por valor do campo cel (chaves são USR-XXXX, não o número do celular)
         const entradaCliente = Object.entries(STATE.clientes?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
@@ -4940,7 +4941,7 @@ function excluirParticipante(cel, tipo) {
           const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
           if (ok) salvouAlgo = true;
         }
-
+        
         ocultarLoading();
         if (salvouAlgo) {
           toast('🗑️ ' + nome + ' removido(a) com sucesso!', 'ok');
@@ -5755,6 +5756,7 @@ function preencherFidelidade(){
   try { carregarConfigSorteio(); } catch(e) { console.error('[Admin] Erro ao carregar sorteio', e); }
   try { carregarRegrasPontuacao(); } catch(e) { console.error('[Admin] Erro ao carregar regras pontuação', e); }
 }
+
 
 function atualizarStatsCódigos(){
   const códigos=fidGetCodigos();
@@ -6687,10 +6689,10 @@ async function salvarConfigFidelidade() {
 
     ok1 = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: sincronizar textos da fidelidade');
   }
-
+  
   // Salvar no config.json (fonte principal do admin)
   const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar configuração de prêmios e textos da fidelidade');
-
+  
   ocultarLoading();
   if (ok1 && ok2) {
     toast('Configurações de fidelidade salvas e sincronizadas!', 'sucesso');
@@ -7849,14 +7851,14 @@ function initContadores() {
   document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(el => {
     const max = parseInt(el.getAttribute('maxlength'));
     if (!max) return;
-
+    
     // Criar contador
     const counter = document.createElement('span');
     counter.className = 'char-counter';
     counter.textContent = `0/${max}`;
     el.parentElement.style.position = 'relative';
     el.parentElement.appendChild(counter);
-
+    
     // Atualizar contador ao digitar
     el.addEventListener('input', () => {
       const len = el.value.length;
@@ -7874,7 +7876,7 @@ function initContadores() {
         else el.classList.remove('campo-ok');
       }
     });
-
+    
     // Inicializar com valor atual
     if (el.value.length > 0) {
       el.dispatchEvent(new Event('input'));
@@ -7886,13 +7888,13 @@ function initContadores() {
 function initVálidacaoWhatsApp() {
   const el = document.getElementById('cfg-whatsapp');
   if (!el) return;
-
+  
   el.addEventListener('input', () => {
     const val = el.value.replace(/\D/g, '');
     el.value = val; // Remover não-números automaticamente
-
+    
     const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
-
+    
     if (val.length > 0 && (val.length < 12 || val.length > 13)) {
       el.classList.add('campo-erro');
       el.classList.remove('campo-ok');
@@ -7912,7 +7914,7 @@ function initVálidacaoPreços() {
     el.addEventListener('input', () => {
       const val = parseFloat(el.value);
       const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
-
+      
       if (isNaN(val) || val < 0) {
         el.classList.add('campo-erro');
         erroEl.textContent = '⚠️ Preço deve ser um número positivo (ex: 15.00)';
@@ -7944,13 +7946,13 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
     callback(null, 'Arquivo não é uma imagem válida');
     return;
   }
-
+  
   // Verificar tamanho máximo (5MB antes de processar)
   if (file.size > 5 * 1024 * 1024) {
     callback(null, 'Imagem muito grande (máx. 5MB). Escolha uma imagem menor.');
     return;
   }
-
+  
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
@@ -7958,7 +7960,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
       // Calcular dimensões mantendo proporção
       let w = img.width;
       let h = img.height;
-
+      
       if (w > maxWidth) {
         h = Math.round(h * maxWidth / w);
         w = maxWidth;
@@ -7967,21 +7969,21 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
         w = Math.round(w * maxHeight / h);
         h = maxHeight;
       }
-
+      
       // Desenhar no canvas
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
-
+      
       // Exportar como WebP
       canvas.toBlob((blob) => {
         if (!blob) {
           callback(null, 'Erro ao processar imagem');
           return;
         }
-
+        
         const tamanhoKB = Math.round(blob.size / 1024);
         // Converter blob para dataUrl para uso em preview e upload base64
         const reader2 = new FileReader();
@@ -8010,7 +8012,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
 function criarUploadImagem(containerId, opções) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
+  
   const {
     label = 'Imagem',
     maxWidth = 1200,
@@ -8021,7 +8023,7 @@ function criarUploadImagem(containerId, opções) {
     obrigatório = false,
     onProcessada = null
   } = opções;
-
+  
   container.innerHTML = `
     <div class="campo-edit">
       <label class="${obrigatório ? 'label-obrigatório' : ''}">${label}</label>
@@ -8052,7 +8054,7 @@ function criarUploadImagem(containerId, opções) {
       ${hint ? `<div class="hint">${hint}</div>` : ''}
     </div>
   `;
-
+  
   const input = document.getElementById(`${containerId}-input`);
   const previewWrap = document.getElementById(`${containerId}-preview-wrap`);
   const previewImg = document.getElementById(`${containerId}-preview`);
@@ -8060,7 +8062,7 @@ function criarUploadImagem(containerId, opções) {
   const erroEl = document.getElementById(`${containerId}-erro`);
   const progBar = document.getElementById(`${containerId}-prog`);
   const area = document.getElementById(`${containerId}-area`);
-
+  
   // Drag & Drop
   area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('drag-over'); });
   area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
@@ -8070,36 +8072,36 @@ function criarUploadImagem(containerId, opções) {
     const file = e.dataTransfer.files[0];
     if (file) processarUpload(file);
   });
-
+  
   input.addEventListener('change', () => {
     if (input.files[0]) processarUpload(input.files[0]);
   });
-
+  
   function processarUpload(file) {
     erroEl.classList.remove('ativo');
     progBar.parentElement.style.display = 'block';
     progBar.style.width = '30%';
-
+    
     processarImagem(file, maxWidth, maxHeight, qualidade, (info, erro) => {
       progBar.style.width = '100%';
-
+      
       setTimeout(() => {
         progBar.parentElement.style.display = 'none';
         progBar.style.width = '0%';
       }, 500);
-
+      
       if (erro) {
         erroEl.textContent = '❌ ' + erro;
         erroEl.classList.add('ativo');
         previewWrap.classList.remove('ativo');
         return;
       }
-
+      
       // Mostrar preview
       const url = URL.createObjectURL(info.blob);
       previewImg.src = url;
       previewWrap.classList.add('ativo');
-
+      
       // Mostrar informações
       const statusKB = info.tamanhoKB <= maxKB ? 'info-ok' : 'info-aviso';
       infoEl.innerHTML = `
@@ -8107,12 +8109,12 @@ function criarUploadImagem(containerId, opções) {
         <span>${info.width}×${info.height}px</span>
         <span class="${statusKB}">${info.tamanhoKB}KB ${info.reducao > 0 ? `(${info.reducao}% menor)` : ''}</span>
       `;
-
+      
       if (info.tamanhoKB > maxKB) {
         erroEl.textContent = `⚠️ Imagem ainda grande (${info.tamanhoKB}KB). Recomendado: máx. ${maxKB}KB. Tente uma imagem menor.`;
         erroEl.classList.add('ativo');
       }
-
+      
       // Callback com o blob processado
       if (onProcessada) onProcessada(info.blob, info);
     });
@@ -8883,7 +8885,7 @@ async function salvarDepoimentos() {
   if (seoDicasDesc) c.seoPaginas.dicas.descricao = seoDicasDesc.value.trim();
   const seoDicasPal = document.getElementById('cfg-seo-dicas-palavras');
   if (seoDicasPal) c.seoPaginas.dicas.palavrasChave = seoDicasPal.value.trim();
-
+  
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
 }
 
@@ -9019,6 +9021,7 @@ async function salvarCarrinhoEvento() {
   c.carrinhoWhatsMsg = document.getElementById('home-carrinho-whats').value.trim();
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar carrinho para eventos');
 }
+
 
 // ═══════════════════════════════════════════════════════════
 // MODAL DE CONFIRMACAO CENTRALIZADO
@@ -9738,6 +9741,7 @@ function excluirCodigo(cod) {
   );
 }
 
+
 // ═══════════════════════════════════════════════════════════
 // MODAL AJUSTE DE PONTOS (Fidelidade – cliente)
 // ═══════════════════════════════════════════════════════════
@@ -10170,6 +10174,7 @@ async function zerarPontosNegativos(clienteId){
     </div>
   </div>
 </div>
+
 
 <script src="scripts/itap-admin-validacao.js" defer></script>
 
