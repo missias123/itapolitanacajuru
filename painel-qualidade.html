@@ -126,7 +126,7 @@
 </style>
   <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
-<bodyclass="fueap-surface fueap-painel-qualidade">
+<body class="fueap-surface fueap-painel-qualidade">
 
 <div class="header">
   <div class="header-logo">🍦</div>
@@ -370,15 +370,14 @@ function limparErrosAntigos(dados) {
   return dados;
 }
 
-
   function carregarDados() {
   let dados = lerMemoria();
   dados = limparErrosAntigos(dados);
-  
+
   // Atualizar timestamp
   const ts = dados.ultima_atualizacao ? new Date(dados.ultima_atualizacao).toLocaleString('pt-BR') : 'Aguardando primeira visita ao site';
   document.getElementById('ultima-leitura').textContent = 'Última leitura do Quality Guard: ' + ts;
-  
+
   // Badge status
   const badge = document.getElementById('badge-status');
   const erros = (dados.erros_js || []).length + (dados.recursos_404 || []).length;

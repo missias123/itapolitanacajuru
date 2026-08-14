@@ -61,7 +61,7 @@
       '}',
       '.chat-msgs { flex:1 1 auto; min-height:0; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; background:#f9f9f9; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }',
       '.chat-inp-row { flex:0 0 auto; position:relative; padding:12px; background:#fff; border-top:1px solid #eee; display:flex; gap:8px; align-items:center; padding-bottom:max(12px, env(safe-area-inset-bottom, 0px)); }',
-      '.chat-inp { flex:1; border:1px solid #ddd; border-radius:24px; padding:10px 16px; font-size:16px !important; outline:none; }',
+      '.chat-inp { flex:1; border:2px solid #eee; border-radius:12px; padding:14px 16px; font-size:16px !important; outline:none; transition: all 0.2s; background:#fcfcfc; }',
       '.chat-hdr { background:linear-gradient(135deg,#E8000D,#C62828); color:#fff; padding:16px 20px; flex-shrink:0; }',
       '.chat-hdr-logo-row { display:flex; align-items:center; justify-content:space-between; }',
       '.chat-hdr-brand { display:flex; align-items:center; gap:12px; }',
@@ -80,7 +80,7 @@
       '@keyframes typing { 0%,80%,100% { transform:scale(0.6); opacity:0.4; } 40% { transform:scale(1); opacity:1; } }',
       '.chat-inp-row { padding:12px; background:#fff; border-top:1px solid #eee; display:flex; gap:8px; align-items:center; }',
       '.chat-inp { flex:1; border:1px solid #ddd; border-radius:24px; padding:10px 16px; font-size:14px; outline:none; }',
-      '.chat-inp:focus { border-color:#E8000D; }',
+      '.chat-inp:focus { border-color:#E8000D; background:#fff; box-shadow:0 0 0 4px rgba(232,0,13,0.1); }',
       '.chat-send { background:#E8000D; color:#fff; border:none; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform 0.2s; }',
       '.chat-send:active { transform:scale(0.9); }',
       '.chat-chips { display:flex; gap:8px; padding:0 20px 12px; overflow-x:auto; scrollbar-width:none; }',
@@ -303,7 +303,7 @@
       _itabotOcultarTyping();
       _itabotInserirMensagem('bot', {
         answer: 'Olá! 👋 Sou o <strong>Ita Bot</strong>, assistente da Sorveteria Itapolitana!<br><br>Como posso te ajudar hoje?',
-        chips: ['🍦 Cardápio', '📦 Encomendas', '🎁 Promoções', '📍 Localização']
+        chips: ['🍦 Cardápio', '📦 Encomendas', '🎁 Promoções', '📍 Localização', '❓ Perguntas Frequentes']
       });
     }, 800);
   }
@@ -355,7 +355,7 @@
     }
     return { 
       answer: 'Não entendi muito bem, mas você pode falar com um atendente no WhatsApp ou escolher uma opção abaixo:', 
-      chips: ['🍦 Cardápio', '📍 Localização', '💬 WhatsApp'] 
+      chips: ['❓ Perguntas Frequentes', '🍦 Cardápio', '📍 Localização', '💬 WhatsApp'] 
     };
   }
 
