@@ -1684,13 +1684,35 @@ body.cardapio-aberto { padding-bottom: 80px; }
 .sabor-tag {
   background: #FFF3E0;
   border: 1.5px solid #FF6B35;
-  border-radius: 50px;
-  padding: 6px 14px;
-  font-size: clamp(11px, 3vw, 13px);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #BF360C;
-  white-space: nowrap;
-  cursor: default;
+  text-align: center;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.sabores-inline-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 4px;
+}
+@media (min-width: 481px) {
+  .sabores-inline-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+  }
+}
+@media (min-width: 769px) {
+  .sabores-inline-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
 }
 
 /* Grid de produtos — responsivo */

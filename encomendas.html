@@ -76,29 +76,32 @@
     }
     .sabor-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-top: 20px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 14px;
     }
-    @media (min-width: 480px) {
-        .sabor-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 481px) {
+        .sabor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    }
+    @media (min-width: 769px) {
+        .sabor-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     }
     .sabor-item {
-        aspect-ratio: 1 / 1;
+        min-height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 10px;
+        padding: 8px 10px;
         border: 1.5px solid #E8E8E8;
-        border-radius: 12px;
+        border-radius: 8px;
         cursor: pointer;
         text-align: center;
         font-weight: 700;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         background: var(--white);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        line-height: 1.2;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        line-height: 1.15;
     }
     .sabor-item:active { transform: scale(0.95); }
     .sabor-item.sel {
@@ -162,6 +165,8 @@
     @media (max-width: 380px) { .picole-linha { grid-template-columns:minmax(0,1fr); gap:8px; } .picole-linha__controle { justify-content:flex-end; } }
     @media (max-width: 480px) {
       .modal-content { padding:18px 14px calc(18px + env(safe-area-inset-bottom)); max-height:94vh; }
+      .sabor-grid { gap: 7px; }
+      .sabor-item { min-height: 48px; padding: 7px 5px; font-size: 0.74rem; border-radius: 7px; }
       .modal-actions { position:sticky; bottom:calc(-18px - env(safe-area-inset-bottom)); background:#fff; padding:12px 0 calc(10px + env(safe-area-inset-bottom)); z-index:2; }
     }
 
