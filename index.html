@@ -5534,5 +5534,135 @@ document.addEventListener('DOMContentLoaded', function() {
   if (typeof renderTudo === 'function') renderTudo();
 });
 </script>
+
+<script>
+// DADOS OFICIAIS DE SABORES DE PICOLÉ (SEPARADOS POR CATEGORIA)
+const PICSOFICIAL = {
+  frutas_agua: {
+    titulo: 'Picolé Base Água / Frutas',
+    preco: 'R$ 1,80 / un',
+    sabores: ['Abacaxi', 'Caju', 'Goiaba', 'Groselha', 'Limão', 'Melancia', 'Uva', 'Tamarindo']
+  },
+  recheados: {
+    titulo: 'Picolé Recheado',
+    preco: 'R$ 2,00 / un',
+    sabores: ['Açaí', 'Blue Ice', 'Caraxi', 'Coco Branco', 'Chocolate', 'Amarena', 'Leite Condensado', 'Mamão Papaia', 'Maracujá', 'Morango', 'Menta com Chocolate', 'Nata com Goiaba', 'Coco Queimado', 'Milho Verde', 'Amendoim', 'Pistache']
+  },
+  esquimós: {
+    titulo: 'Picolé Esquimó',
+    preco: 'R$ 6,00 / un',
+    sabores: ['Bombom', 'Nutella', 'Ovomaltine', 'Leite Ninho', 'Nata', 'Morango', 'Brigadeiro', 'Prestígio']
+  },
+  especiais: {
+    titulo: 'Picolé Especial',
+    preco: 'R$ 3,00 / un',
+    sabores: ['Leite Ninho', 'Ovomaltine', 'Trufado Especial', 'Romeu e Julieta', 'Sensação Trufada', 'Maracujá Trufado']
+  }
+};
+
+const SABORESSORVETE35 = [
+  "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa",
+  "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
+  "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
+  "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
+  "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
+  "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
+  "Prestígio", "Sensação", "Torta de Chocolate"
+];
+
+function _semPulo(fn) {
+  const y = window.pageYOffset || document.documentElement.scrollTop;
+  fn();
+  window.scrollTo({ top: y, behavior: 'instant' });
+}
+
+function abrirSaboresInline(tipo, titulo, el) {
+  const bodyId = tipo === 'sorvetes' ? 'sorvetes-body' : tipo + '-body';
+  const bodyEl = document.getElementById(bodyId);
+  if (!bodyEl) return;
+
+  const isAberto = bodyEl.getAttribute('data-aberto') === 'true';
+  
+  // Se já está aberto, fecha (toggle)
+  if (isAberto) {
+    _semPulo(() => {
+      bodyEl.setAttribute('data-aberto', 'false');
+      if (el) {
+        el.setAttribute('aria-expanded', 'false');
+        el.textContent = 'Ver 35 Sabores';
+      }
+      // Restaurar conteúdo original
+      renderTudo();
+    });
+    return;
+  }
+
+  _semPulo(() => {
+    bodyEl.setAttribute('data-aberto', 'true');
+    if (el) {
+      el.setAttribute('aria-expanded', 'true');
+      el.textContent = 'Fechar opções';
+    }
+
+    const chipsHtml = SABORESSORVETE35.map(s => `<div class="itap-sabor-chip">${s}</div>`).join('');
+    
+    bodyEl.innerHTML = `
+      <div class="sabores-inline animate-fade-in" style="padding:15px;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-top:10px;">
+        <div class="sabores-inline-titulo" style="font-size:18px;font-weight:800;color:#2C1810;margin-bottom:4px;">${titulo}</div>
+        <div class="sabores-inline-sub" style="font-size:13px;color:#666;margin-bottom:12px;">Selecione seus sabores favoritos (35 opções Tipo Artesanal)</div>
+        <div class="itap-chips-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:15px;">
+          ${chipsHtml}
+        </div>
+        <button type="button" class="btn-voltar-nivel" onclick="abrirSaboresInline('${tipo}', '${titulo}', document.querySelector('button[onclick*=\'abrirSaboresInline\']'))" style="background:#EF0129;color:#fff;border:none;padding:10px 20px;border-radius:25px;font-weight:700;cursor:pointer;width:100%;">Fechar opções</button>
+      </div>
+    `;
+  });
+}
+
+function abrirPicoléInline(key, titulo, el) {
+  const bodyEl = document.getElementById('picolés-body');
+  if (!bodyEl) return;
+
+  const info = PICSOFICIAL[key];
+  if (!info) return;
+
+  const isAberto = bodyEl.getAttribute('data-subaberto') === key;
+  if (isAberto) {
+    _semPulo(() => {
+      bodyEl.setAttribute('data-subaberto', '');
+      renderPicolés();
+    });
+    return;
+  }
+
+  _semPulo(() => {
+    bodyEl.setAttribute('data-subaberto', key);
+    const chipsHtml = info.sabores.map(s => `<div class="itap-sabor-chip" style="background:#f8f9fa;border:1px solid #e0e0e0;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:#333;">${s}</div>`).join('');
+
+    // Mantém a estrutura de picolés e injeta os sabores específicos abaixo
+    renderPicolés();
+    setTimeout(() => {
+      const targetCard = document.getElementById('picole-card-' + key);
+      if (targetCard) {
+        let subDiv = targetCard.querySelector('.picolé-sub-sabores');
+        if (!subDiv) {
+          subDiv = document.createElement('div');
+          subDiv.className = 'picolé-sub-sabores';
+          subDiv.style.cssText = 'margin-top:12px;padding-top:12px;border-top:1px dashed #ddd;animation:fadeIn 0.25s ease;';
+          targetCard.appendChild(subDiv);
+        }
+        subDiv.innerHTML = `
+          <div style="font-weight:800;font-size:14px;color:#C62828;margin-bottom:8px;">Sabores de ${info.titulo} (${info.preco}):</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;">
+            ${chipsHtml}
+          </div>
+          <button type="button" onclick="abrirPicoléInline('${key}','${titulo}',this)" style="margin-top:10px;background:#333;color:#fff;border:none;padding:6px 14px;border-radius:15px;font-size:12px;font-weight:700;cursor:pointer;">Fechar sabores</button>
+        `;
+      }
+    }, 50);
+  });
+}
+</script>
+
 </body>
 </html>
