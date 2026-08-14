@@ -58,6 +58,10 @@
     .btn-sabores:active { opacity: 0.85; }
     /* Cores distintas por categoria: não confundir seleção com o carrinho. */
     .btn-sabores--caixas { background: linear-gradient(135deg, #0D47A1, #1565C0); }
+    .btn-sabores--caixa-azul { background: linear-gradient(135deg, #0D47A1, #1565C0); }
+    .btn-sabores--caixa-verde { background: linear-gradient(135deg, #008C45, #00B85A); }
+    .btn-sabores--caixa-amarela { background: linear-gradient(135deg, #FFD600, #F9A825); color: #1A1A1A; }
+    .btn-sabores--caixa-roxa { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
     .btn-sabores--tortas { background: linear-gradient(135deg, #008C45, #00B85A); }
     .btn-sabores--picoles { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
     .btn-sabores:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -466,6 +470,12 @@
 
         caixasEl.innerHTML = PRODUTOS.map(function (p) {
             var indisponivel = Boolean(p.esgotado || Number(p.estoque || 0) <= 0);
+            var classeBotaoCaixa = {
+                cx5l_2s: 'btn-sabores--caixa-azul',
+                cx5l_3s: 'btn-sabores--caixa-verde',
+                cx10l_2s: 'btn-sabores--caixa-amarela',
+                cx10l_3s: 'btn-sabores--caixa-roxa'
+            }[p.id] || 'btn-sabores--caixa-azul';
             var status = indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)';
             var nome = escaparHtml(p.nome);
             return `<div class="prod-card ${indisponivel ? 'is-esgotado' : ''}">
@@ -473,7 +483,7 @@
                 <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">${p.max} Sabores Tipo Artesanal</div>
                 <div class="prod-card__estoque ${indisponivel ? 'is-esgotado' : ''}">${status}</div>
                 <div class="prod-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>
-                <button class="btn-sabores btn-sabores--caixas" ${indisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('${p.id}', ${Number(p.preco)}, ${Number(p.max)}, '${String(p.nome).replace(/'/g, "\\'")}')">${indisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
+                <button class="btn-sabores ${classeBotaoCaixa}" ${indisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('${p.id}', ${Number(p.preco)}, ${Number(p.max)}, '${String(p.nome).replace(/'/g, "\\'")}')">${indisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
             </div>`;
         }).join('');
 
