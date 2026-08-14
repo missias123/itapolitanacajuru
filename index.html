@@ -1537,8 +1537,31 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
 .sabores-inline-titulo{font-size:16px;font-weight:900;color:#7B2D8B;margin-bottom:6px;padding-bottom:6px;border-bottom:2px solid #F3E8FF}
 .sabores-inline-sub{font-size:12px;color:#9333EA;margin-bottom:12px;font-weight:600}
 .chips-inline{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.chip-inline{background:#FFF0F9;border:1.5px solid #F9A8D4;border-radius:50px;padding:6px 14px;font-size:13px;font-weight:700;color:#BE185D;cursor:default;transition:background .15s}
-.chip-inline:hover{background:#FCE7F3}
+
+.chip-inline {
+  background: #FFFFFF;
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  cursor: default;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  text-align: center;
+}
+.chip-inline:hover {
+  border-color: #EA1D2C;
+  color: #EA1D2C;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
 .btn-voltar-nivel{display:inline-flex;align-items:center;gap:6px;margin:8px 0 4px;padding:10px 20px;min-height:44px;background:linear-gradient(135deg,#7B2D8B,#9333EA);color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(123,45,139,.3);transition:all .2s}
 .btn-voltar-nivel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(123,45,139,.4)}
 
@@ -1931,6 +1954,19 @@ body.cardapio-aberto { padding-bottom: 80px; }
     scroll-behavior: auto !important;
   }
 }
+
+.chips-inline {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px 0;
+}
+@media (min-width: 768px) {
+  .chips-inline { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .chips-inline { grid-template-columns: repeat(4, 1fr); }
+}
 </style>
 <script type="application/ld+json">
 {
@@ -2311,6 +2347,65 @@ body.cardapio-aberto { padding-bottom: 80px; }
     <link rel="stylesheet" href="css/itap-refinements.css">
 
       <link rel="stylesheet" href="styles/fueap-premium.css">
+
+<style>
+/* Padrão Global de Botões de Sabores - Estilo Bento Card Intermediário */
+.itap-flavors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+.itap-flavor-chip {
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.itap-flavor-chip:hover {
+  background: #fff0f0;
+  border-color: #d32f2f;
+  color: #d32f2f;
+}
+.itap-flavor-chip.selected {
+  background: #d32f2f;
+  color: #fff;
+  border-color: #b71c1c;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(211, 47, 47, 0.3);
+}
+.itap-back-btn {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.2s;
+}
+.itap-back-btn:hover {
+  background: #333;
+}
+</style>
+
 </head>
 <body class="fueap-surface fueap-index">
 <noscript>
@@ -3888,12 +3983,18 @@ function renderSobremesas(){
   _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-sobremesas\')">← Voltar ao Início do Cardápio</button>';
   b.appendChild(_vb);
 }
+
+const SABORES_35_OFICIAL = ['Abacaxi ao Vinho', 'Abacaxi Suíço', 'Algodão Doce (Blue Ice)', 'Amarena', 'Ameixa', 'Banana com Nutella', 'Bis e Trufa', 'Cereja Trufada', 'Chocolate', 'Chocolate com Café', 'Coco Queimado', 'Creme Paris', 'Croquer', 'Doce de Leite', 'Ferrero Rocher', 'Flocos', 'Kinder Ovo', 'Leite Condensado', 'Leite Ninho', 'Leite Ninho Folheado', 'Leite Ninho com Oreo', 'Limão', 'Limão Suíço', 'Menta com Chocolate', 'Milho Verde', 'Morango Trufado', 'Mousse de Maracujá', 'Mousse de Uva', 'Nozes', 'Nutella', 'Ovomaltine', 'Pistache', 'Prestígio', 'Sensação', 'Torta de Chocolate'];
 function getSaboresDisponíveis(){
-  try{
-    const salvo=localStorage.getItem('itap_sabores');
-    if(salvo){const lista=JSON.parse(salvo);return lista.filter(s=>!s.esgotado).map(s=>s.nome);}
-  }catch(e){}
-  return produtos&&produtos.sorvetes&&produtos.sorvetes.sabores?produtos.sorvetes.sabores:[];
+  return typeof SABORES_35_OFICIAL !== 'undefined' ? SABORES_35_OFICIAL : [
+    "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa",
+    "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
+    "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
+    "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
+    "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
+    "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
+    "Prestígio", "Sensação", "Torta de Chocolate"
+  ];
 }
 function abrirSabores(tipo,título,el){
   // Convertido para inline — sem modal, sem scroll
