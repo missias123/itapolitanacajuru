@@ -42,6 +42,11 @@
         transition: opacity 0.2s;
     }
     .btn-sabores:active { opacity: 0.85; }
+    /* Cores distintas por categoria: não confundir seleção com o carrinho. */
+    .btn-sabores--caixas { background: linear-gradient(135deg, #0D47A1, #1565C0); }
+    .btn-sabores--tortas { background: linear-gradient(135deg, #008C45, #00B85A); }
+    .btn-sabores--picoles { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
+    .btn-sabores:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -88,8 +93,8 @@
 
     .btn-carrinho-fixo {
         position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
-        background: var(--primary); color: var(--white);
-        padding: 16px; border-radius: 4px; font-weight: 700; box-shadow: 0 8px 24px rgba(234, 29, 44, 0.25);
+        background: linear-gradient(135deg, #E8000D, #C62828); color: var(--white);
+        padding: 16px; border-radius: 4px; font-weight: 700; box-shadow: 0 8px 24px rgba(232, 0, 13, 0.35);
         display: none; justify-content: space-between; align-items: center; z-index: 1500; border: none; cursor: pointer;
     }
 
@@ -439,7 +444,7 @@
                 <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">${p.max} Sabores Tipo Artesanal</div>
                 <div class="prod-card__estoque ${indisponivel ? 'is-esgotado' : ''}">${status}</div>
                 <div class="prod-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>
-                <button class="btn-sabores" ${indisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('${p.id}', ${Number(p.preco)}, ${Number(p.max)}, '${String(p.nome).replace(/'/g, "\\'")}')">${indisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
+                <button class="btn-sabores btn-sabores--caixas" ${indisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('${p.id}', ${Number(p.preco)}, ${Number(p.max)}, '${String(p.nome).replace(/'/g, "\\'")}')">${indisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
             </div>`;
         }).join('');
 
@@ -449,7 +454,7 @@
             <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">Até ${Number(TORTA_ESTOQUE.max)} Sabores Tipo Artesanal</div>
             <div class="prod-card__estoque ${tortaIndisponivel ? 'is-esgotado' : ''}">${tortaIndisponivel ? 'Esgotado' : 'Disponível: ' + Number(TORTA_ESTOQUE.estoque) + ' unidade(s)'}</div>
             <div class="prod-preco">R$ ${Number(TORTA_ESTOQUE.preco).toFixed(2).replace('.',',')}</div>
-            <button class="btn-sabores" ${tortaIndisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('torta', ${Number(TORTA_ESTOQUE.preco)}, ${Number(TORTA_ESTOQUE.max)}, 'Torta de Sorvete')">${tortaIndisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
+            <button class="btn-sabores btn-sabores--tortas" ${tortaIndisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('torta', ${Number(TORTA_ESTOQUE.preco)}, ${Number(TORTA_ESTOQUE.max)}, 'Torta de Sorvete')">${tortaIndisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
         </div>`;
 
         picolesEl.innerHTML = `<div class="prod-card">
@@ -457,7 +462,7 @@
             <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">Tipo acima; preço, quantidade e subtotal por sabor; mínimo 100 unidades</div>
             <div class="prod-card__estoque">Estoque consultado no catálogo oficial</div>
             <div class="prod-preco">A partir de R$ 1,80 / unidade</div>
-            <button class="btn-sabores" onclick="window.abrirModalPicole()">Montar lote</button>
+            <button class="btn-sabores btn-sabores--picoles" onclick="window.abrirModalPicole()">Montar lote</button>
         </div>`;
     }
 
