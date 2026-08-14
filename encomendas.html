@@ -53,14 +53,57 @@
     .header { background: var(--white); color: var(--primary); padding: 14px 0; text-align: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #EEEEEE; }
     .container { max-width: 800px; margin: 0 auto; padding: 12px; padding-bottom: 140px; }
 
-    .categoria { background: var(--white); border-radius: 8px; margin-bottom: 12px; border: 1px solid #E8E8E8; overflow: hidden; }
-    .categoria-header {
-        padding: 16px 20px; background: var(--white); color: var(--text-main); cursor: pointer;
-        display: flex; justify-content: space-between; align-items: center;
-        border: none; width: 100%; text-align: left; transition: background 0.2s;
+    .categoria { 
+        background: var(--white); 
+        border-radius: 18px; 
+        margin-bottom: 18px; 
+        border: 1px solid #E8E8E8; 
+        overflow: hidden; 
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .categoria-header:active { background: #F2F2F2; }
-    .categoria-conteudo { display: none; padding: 20px; border-top: 1px solid #eee; }
+    .categoria:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .categoria-header {
+        padding: 22px 24px; 
+        background: var(--white); 
+        color: var(--text-main); 
+        cursor: pointer;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        border: none; 
+        width: 100%; 
+        text-align: left; 
+        transition: all 0.2s;
+    }
+    .categoria-header strong {
+        display: block;
+        font-size: clamp(1.25rem, 4.5vw, 1.6rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        margin-bottom: 4px;
+        color: #1A1A1A;
+    }
+    .categoria-header small {
+        display: block;
+        font-size: clamp(0.95rem, 3.8vw, 1.1rem);
+        font-weight: 600;
+        color: #666;
+        line-height: 1.3;
+    }
+    .categoria-header .arrow-icon {
+        font-size: 1.5rem;
+        color: var(--primary);
+        transition: transform 0.3s;
+    }
+    .categoria.open .categoria-header .arrow-icon {
+        transform: rotate(180deg);
+    }
+    .categoria-header:active { background: #F9F9F9; }
+    .categoria-conteudo { display: none; padding: 24px; border-top: 1px solid #F2F2F2; background: #FAFAFA; }
 
     .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
     .prod-card { border: 1px solid #F2F2F2; border-radius: 8px; padding: 16px; text-align: center; background: var(--white); transition: transform 0.2s; }
@@ -233,8 +276,8 @@
   <!-- Categoria Caixas -->
   <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-caixas')">
-      <div><strong>🍦 Sorvete em Caixa</strong><br><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
-      <span>▼</span>
+      <div><strong>🍦 Sorvete em Caixa</strong><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
+      <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-caixas" class="categoria-conteudo">
       <div id="lista-caixas" class="prod-grid"></div>
@@ -244,8 +287,8 @@
   <!-- Categoria Tortas -->
   <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-tortas')">
-      <div><strong>🎂 Tortas Geladas</strong><br><small>Até 3 Sabores Tipo Artesanal</small></div>
-      <span>▼</span>
+      <div><strong>🎂 Tortas Geladas</strong><small>Até 3 Sabores Tipo Artesanal</small></div>
+      <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-tortas" class="categoria-conteudo">
       <div id="lista-tortas" class="prod-grid"></div>
@@ -255,8 +298,8 @@
   <!-- Categoria Picolés -->
   <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')">
-      <div><strong>🍭 Picolés (Atacado)</strong><br><small>Tipo acima · preço e subtotal por sabor · mínimo 100 unidades</small></div>
-      <span>▼</span>
+      <div><strong>🍭 Picolés (Atacado)</strong><small>Tipo acima · preço e subtotal por sabor · mínimo 100 unidades</small></div>
+      <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-picoles" class="categoria-conteudo">
       <div id="lista-picoles" class="prod-grid"></div>
@@ -456,14 +499,21 @@
     var MIN_PICOLES_ATACADO = 100;
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);
+        var catPai = el.closest('.categoria');
         var isOpen = el.style.display === 'block';
+        
         document.querySelectorAll('.categoria-conteudo').forEach(c => c.style.display = 'none');
-        document.querySelectorAll('.categoria').forEach(cat => cat.style.display = 'block');
+        document.querySelectorAll('.categoria').forEach(cat => {
+            cat.style.display = 'block';
+            cat.classList.remove('open');
+        });
         
         if (isOpen) {
             el.style.display = 'none';
+            if (catPai) catPai.classList.remove('open');
         } else {
             el.style.display = 'block';
+            if (catPai) catPai.classList.add('open');
             // Isola as outras categorias para dar o efeito de foco (padrão grandes sites)
             document.querySelectorAll('.categoria').forEach(cat => {
                 if (!cat.contains(el)) cat.style.display = 'none';
@@ -472,8 +522,9 @@
             var conteudoEl = el;
             if (!conteudoEl.querySelector('.btn-voltar-encomenda')) {
                 var btnVoltar = document.createElement('div');
-                btnVoltar.style = 'margin-bottom: 16px;';
-                btnVoltar.innerHTML = '<button type="button" class="btn-voltar-nivel" onclick="window.fecharSecaoEncomenda(\'' + id + '\')" style="width:100%; padding:12px; border-radius:12px; border:none; background:linear-gradient(135deg,#EA1D2C,#B3001B); color:#fff; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(232,0,13,0.25);">← Voltar às Opções de Encomenda</button>';
+                btnVoltar.className = 'btn-voltar-encomenda';
+                btnVoltar.style = 'margin-bottom: 20px;';
+                btnVoltar.innerHTML = '<button type="button" class="btn-voltar-nivel" onclick="window.fecharSecaoEncomenda(\'' + id + '\')" style="width:100%; padding:18px; border-radius:14px; border:none; background:linear-gradient(135deg,#EA1D2C,#B3001B); color:#fff; font-weight:900; font-size:1.1rem; cursor:pointer; box-shadow:0 6px 18px rgba(232,0,13,0.3);">← Voltar às Opções de Encomenda</button>';
                 conteudoEl.insertBefore(btnVoltar, conteudoEl.firstChild);
             }
         }
@@ -481,7 +532,9 @@
 
     window.fecharSecaoEncomenda = function(id) {
         var el = document.getElementById(id);
+        var catPai = el ? el.closest('.categoria') : null;
         if (el) el.style.display = 'none';
+        if (catPai) catPai.classList.remove('open');
         document.querySelectorAll('.categoria').forEach(cat => cat.style.display = 'block');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
