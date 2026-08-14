@@ -129,11 +129,16 @@
 
     .modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.7); display: none; align-items: flex-end; justify-content: center; z-index: 2000;
+        background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000;
+        backdrop-filter: blur(4px);
     }
     .modal-content {
-        background: white; width: 100%; max-width: 600px; max-height: 90vh;
-        border-radius: 20px 20px 0 0; padding: 25px; overflow-y: auto;
+        background: white; width: 100%; max-width: 680px; height: 100%; max-height: 100vh;
+        border-radius: 0; padding: 20px; overflow-y: auto; display: flex; flex-direction: column;
+    }
+    @media (min-width: 641px) {
+        .modal { align-items: center; }
+        .modal-content { height: 90vh; border-radius: 20px; max-height: 850px; padding: 30px; }
     }
     .sabor-grid {
         display: grid;
@@ -339,28 +344,39 @@
   </div>
 </div>
 
-<!-- Modal de Carrinho -->
+<!-- Modal de Carrinho (Padrão iFood / Tela Cheia) -->
 <div id="modal-carrinho" class="modal">
   <div class="modal-content">
-    <h2>Seu Pedido</h2>
-    <div id="lista-carrinho" style="margin-top: 15px;"></div>
-    <div style="margin-top: 20px; padding: 15px; background: var(--azul); color: white; border-radius: 10px; display: flex; justify-content: space-between;">
-      <strong>Total:</strong>
-      <strong id="total-carrinho">R$ 0,00</strong>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F2F2F2; padding-bottom: 15px; margin-bottom: 15px;">
+      <h2 style="margin: 0; font-size: 1.5rem; font-weight: 900; color: #1A1A1A;">🛒 Revisão do Pedido</h2>
+      <button onclick="window.fecharModal('modal-carrinho')" style="background: #F2F2F2; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
     </div>
-    <div class="modal-actions" style="flex-direction: column; gap: 8px;">
-      <div style="display: flex; gap: 8px; width: 100%;">
-        <button onclick="window.fecharModal('modal-carrinho')" style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">+ Produtos</button>
-        <button onclick="window.limparCarrinho()" style="padding: 14px 16px; border-radius: 10px; border: 1px solid #ffcccc; background:#fff0f0; color: #d32f2f; font-weight:700;">Limpar</button>
+    
+    <div style="flex: 1; overflow-y: auto; padding-right: 4px;">
+      <div id="lista-carrinho" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      
+      <div style="margin-top: 20px; padding: 18px; background: #1A1A1A; color: white; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 1.1rem; font-weight: 700;">Total do Pedido:</span>
+        <span id="total-carrinho" style="font-size: 1.4rem; font-weight: 900; color: #00E676;">R$ 0,00</span>
       </div>
-      <div id="status-carrinho" class="cart-status" role="status" aria-live="polite" style="display:none;"></div>
-      <div id="dados-cliente-pedido" style="display:none; margin-top:14px; padding:14px; border:1px solid #eee; border-radius:12px;">
-        <strong style="display:block; margin-bottom:10px;">Dados do Cliente</strong>
-        <input id="pedido-nome" type="text" style="width:100%; padding:11px; border:1px solid #ccc; border-radius:8px; margin-bottom:8px;" placeholder="Seu Nome" />
-        <input id="pedido-endereco" type="text" style="width:100%; padding:11px; border:1px solid #ccc; border-radius:8px; margin-bottom:8px;" placeholder="Endereço Completo" />
-        <input id="pedido-whatsapp" type="tel" style="width:100%; padding:11px; border:1px solid #ccc; border-radius:8px;" placeholder="WhatsApp (16) 99999-9999" />
+
+      <div id="status-carrinho" class="cart-status" role="status" aria-live="polite" style="display:none; margin-top: 15px; padding: 12px; border-radius: 10px; font-weight: 700; text-align: center;"></div>
+
+      <div id="dados-cliente-pedido" style="display:none; margin-top: 20px; padding: 20px; background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 16px;">
+        <strong style="display:block; margin-bottom: 12px; font-size: 1.1rem; color: #1A1A1A;">📍 Endereço e Contato (Apenas DDD 16)</strong>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px; line-height: 1.4;">⚠️ Prazo mínimo de 3 dias úteis após confirmação via WhatsApp e pagamento antecipado.</p>
+        <input id="pedido-nome" type="text" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:10px; margin-bottom:10px; font-size: 1rem;" placeholder="Seu Nome Completo" />
+        <input id="pedido-endereco" type="text" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:10px; margin-bottom:10px; font-size: 1rem;" placeholder="Endereço de Entrega Completo" />
+        <input id="pedido-whatsapp" type="tel" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="WhatsApp (DDD 16 Obrigatório)" />
       </div>
-      <button id="btn-finalizar-pedido" onclick="window.finalizarPedido()" style="width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.05rem;">Finalizar no WhatsApp</button>
+    </div>
+
+    <div style="border-top: 2px solid #F2F2F2; padding-top: 15px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: flex; gap: 10px; width: 100%;">
+        <button onclick="window.fecharModal('modal-carrinho')" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #CCC; background:#FFF; font-weight:800; cursor: pointer;">+ Adicionar Mais Produtos</button>
+        <button onclick="window.limparCarrinho()" style="padding: 14px 20px; border-radius: 12px; border: 1px solid #FFCCCC; background:#FFF0F0; color: #D32F2F; font-weight:800; cursor: pointer;">Limpar Tudo</button>
+      </div>
+      <button id="btn-finalizar-pedido" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(0,230,118,0.35);">Finalizar Pedido no WhatsApp ➔</button>
     </div>
   </div>
 </div>
@@ -799,32 +815,32 @@
         atualizarCarrinhoFixo();
     };
 
-    window.abrirCarrinho = function() {
-        var lista = document.getElementById('lista-carrinho');
-        var total = 0;
-        
-        if (carrinho.length === 0) {
-            lista.innerHTML = '<p style="text-align:center; color:#666;">Carrinho vazio.</p>';
-        } else {
-            lista.innerHTML = carrinho.map((item, i) => {
-                total += item.preco;
-                var desc = item.isPicole ? `${item.quantidade} un · R$ ${item.precoUnit.toFixed(2)}/un` : item.sabores.join(', ');
-                return `
-                    <div style="padding:10px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div style="flex:1;">
-                            <div style="font-size:0.7rem; font-weight:800; color:var(--primary); text-transform:uppercase;">${item.tipo}</div>
-                            <div style="font-weight:800;">${item.nome}</div>
-                            <div style="font-size:0.8rem; color:#666;">${desc}</div>
-                            <div style="margin-top:5px; display:flex; gap:10px;">
-                                <button onclick="window.editarItem(${i})" style="border:none; background:#EEF4FF; color:var(--azul); font-weight:800; font-size:0.75rem; padding:4px 8px; border-radius:5px;">Editar</button>
-                                <button onclick="window.removerItem(${i})" style="border:none; background:#FFF0F0; color:#B42318; font-weight:800; font-size:0.75rem; padding:4px 8px; border-radius:5px;">Excluir</button>
-                            </div>
-                        </div>
-                        <div style="font-weight:800; color:var(--success);">R$ ${item.preco.toFixed(2).replace('.',',')}</div>
-                    </div>
-                `;
-            }).join('');
-        }
+	    window.abrirCarrinho = function() {
+	        var lista = document.getElementById('lista-carrinho');
+	        var total = 0;
+	        
+	        if (carrinho.length === 0) {
+	            lista.innerHTML = '<div style="text-align:center; padding: 40px 20px; color:#666;"><div style="font-size: 3rem; margin-bottom: 10px;">🛒</div><strong style="font-size: 1.2rem;">Seu carrinho está vazio</strong><p style="font-size: 0.9rem; margin-top: 5px;">Adicione caixas de sorvete, tortas ou picolés para encomendar.</p></div>';
+	        } else {
+	            lista.innerHTML = carrinho.map((item, i) => {
+	                total += item.preco;
+	                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : 'Sabores: ' + item.sabores.join(', ');
+	                return `
+	                    <div style="padding: 16px; background: #FFF; border: 1px solid #E8E8E8; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+	                        <div style="flex: 1; padding-right: 15px;">
+	                            <div style="font-size: 0.75rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.tipo}</div>
+	                            <div style="font-weight: 900; font-size: 1.1rem; color: #1A1A1A;">${item.nome}</div>
+	                            <div style="font-size: 0.85rem; color: #666; margin-top: 4px; line-height: 1.3;">${desc}</div>
+	                            <div style="margin-top: 10px; display: flex; gap: 8px;">
+	                                <button onclick="window.editarItem(${i})" style="border: none; background: #EEF4FF; color: #1565C0; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">✏️ Editar</button>
+	                                <button onclick="window.removerItem(${i})" style="border: none; background: #FFF0F0; color: #D32F2F; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">🗑️ Excluir</button>
+	                            </div>
+	                        </div>
+	                        <div style="font-weight: 900; font-size: 1.2rem; color: var(--success); text-align: right;">R$ ${item.preco.toFixed(2).replace('.',',')}</div>
+	                    </div>
+	                `;
+	            }).join('');
+	        }
         
         document.getElementById('total-carrinho').textContent = "R$ " + total.toFixed(2).replace('.',',');
         
@@ -903,16 +919,27 @@
         }
     }
 
-    window.finalizarPedido = function() {
-        var nome = document.getElementById('pedido-nome').value.trim();
-        var end = document.getElementById('pedido-endereco').value.trim();
-        var zap = document.getElementById('pedido-whatsapp').value.trim();
-        var tel = zap.replace(/\D/g, '');
-        
-        if (nome.length < 3 || end.length < 5 || !/^16\d{8,9}$/.test(tel)) {
-            alert("Preencha Nome, Endereço e WhatsApp (DDD 16) corretamente.");
-            return;
-        }
+	    window.finalizarPedido = function() {
+	        var nome = document.getElementById('pedido-nome').value.trim();
+	        var end = document.getElementById('pedido-endereco').value.trim();
+	        var zap = document.getElementById('pedido-whatsapp').value.trim();
+	        var tel = zap.replace(/\D/g, '');
+	        
+	        if (nome.length < 3) {
+	            alert("Por favor, preencha seu Nome Completo.");
+	            document.getElementById('pedido-nome').focus();
+	            return;
+	        }
+	        if (end.length < 5) {
+	            alert("Por favor, preencha o Endereço de Entrega Completo.");
+	            document.getElementById('pedido-endereco').focus();
+	            return;
+	        }
+	        if (!/^16\d{8,9}$/.test(tel)) {
+	            alert("Atenção: Apenas telefones com o DDD 16 são aceitos para encomendas nesta região.");
+	            document.getElementById('pedido-whatsapp').focus();
+	            return;
+	        }
         
         var texto = `Olá! Gostaria de fazer uma encomenda.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
