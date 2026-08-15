@@ -727,11 +727,15 @@ body.menu-foco-aberto {
  * Assim a posição de rolagem original continua intacta e o acordeão
  * aparece mesmo quando o usuário abriu o cardápio no meio da página.
  */
+body.menu-foco-aberto .acc:not(.menu-foco-ativo) {
+  display: none !important;
+}
 .acc.menu-foco-ativo {
   position: fixed !important;
   inset: 0 !important;
   z-index: 99999 !important;
   width: 100% !important;
+  height: 100dvh !important;
   min-height: 100dvh !important;
   max-height: 100dvh !important;
   margin: 0 !important;
@@ -741,10 +745,12 @@ body.menu-foco-aberto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   background: #FFFDF9 !important;
-  padding-bottom: 80px !important;
+  padding: 0 0 100px 0 !important;
   box-sizing: border-box;
   transform: none !important;
   transition: none !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 .acc.menu-foco-ativo .acc-body {
   max-height: none !important;
