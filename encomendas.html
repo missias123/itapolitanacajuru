@@ -313,11 +313,12 @@
     .picole-linha:last-child { border-bottom:0; }
     .picole-linha__sabor { font-weight:800; line-height:1.2; font-size:.92rem; }
     .picole-linha__preco { margin-top:1px; color:var(--text-muted); font-size:.72rem; }
-    .picole-precos { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:6px; }
+    .picole-precos { display:flex; flex-direction:column; align-items:flex-start; gap:5px; margin-top:6px; }
     .picole-preco { display:inline-flex; align-items:center; min-height:24px; padding:4px 7px; border-radius:7px; font-size:clamp(.68rem, 2.8vw, .76rem); line-height:1.1; white-space:nowrap; }
     .picole-preco--varejo { color:#596273; background:#F3F4F6; border:1px solid #E5E7EB; font-weight:700; }
     .picole-preco--atacado { color:#065F46; background:#DCFCE7; border:1px solid #34D399; font-weight:900; box-shadow:0 0 0 2px rgba(52,211,153,.16); }
     .picole-preco--atacado::before { content:'★'; margin-right:4px; color:#047857; font-size:.7rem; }
+    .picole-preco--aplicado { outline:2px solid rgba(15,118,110,.32); outline-offset:1px; }
     .picole-linha__subtotal { margin-top:6px; color:var(--success); font-size:.74rem; font-weight:800; }
     .picole-linha__controle { display:flex; align-items:center; gap:5px; }
     .picole-linha__controle button { width:30px; height:30px; border:1px solid #D5D5D5; border-radius:50%; background:#fff; color:var(--text-main); font-size:1.05rem; font-weight:900; line-height:1; cursor:pointer; }
@@ -1081,8 +1082,9 @@
                         <div style="flex: 1; padding-right: 10px;">
                             <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
                             ${tipo.indexOf('Base Leite') !== -1 ? seloLeitePasteurizadoHtml() : ''}
-                            <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
-                                <span class="picole-preco ${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'picole-preco--atacado' : 'picole-preco--varejo'}" data-picole-price-key="${escaparHtml(key)}">${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'Atacado' : 'Varejo'}: R$ ${precoAtualDoGrupo(grupo, totalPicolesSelecionados).toFixed(2).replace('.',',')} / un.</span>
+                            <div class="picole-precos" aria-label="Preços fixos por unidade">
+                                <span class="picole-preco picole-preco--atacado ${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'picole-preco--aplicado' : ''}" data-picole-price-key="${escaparHtml(key)}" data-picole-price-kind="atacado">Atacado: R$ ${precoAtacadoDoGrupo(grupo).toFixed(2).replace('.',',')} / un.</span>
+                                <span class="picole-preco picole-preco--varejo ${totalPicolesSelecionados < MIN_PICOLES_ATACADO ? 'picole-preco--aplicado' : ''}" data-picole-price-key="${escaparHtml(key)}" data-picole-price-kind="varejo">Varejo: R$ ${precoVarejoDoGrupo(grupo).toFixed(2).replace('.',',')} / un.</span>
                             </div>
                             ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : ''}
                             <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
@@ -1137,7 +1139,6 @@
             return soma + (Number(entry[1]) * precoAtualDoGrupo(grupo, total));
         }, 0);
         var valorFormatado = valorTotal.toFixed(2).replace('.', ',');
-        var modalidadePreco = pronto ? 'Atacado' : 'Varejo';
         var btn = document.getElementById('btn-confirmar-picoles');
         var status = document.getElementById('status-picoles');
         var totalEl = document.getElementById('total-picoles');
@@ -1150,13 +1151,11 @@
             var quantidade = Number(picolesSelecionados[chave] || 0);
             if (!grupo) return;
             var precoAplicado = precoAtualDoGrupo(grupo, total);
-            var etiqueta = linha.querySelector('[data-picole-price-key]');
+            var etiquetaAtacado = linha.querySelector('[data-picole-price-kind="atacado"]');
+            var etiquetaVarejo = linha.querySelector('[data-picole-price-kind="varejo"]');
             var subtotal = linha.querySelector('[id^="sub-"]');
-            if (etiqueta) {
-                etiqueta.textContent = modalidadePreco + ': R$ ' + precoAplicado.toFixed(2).replace('.', ',') + ' / un.';
-                etiqueta.classList.toggle('picole-preco--atacado', pronto);
-                etiqueta.classList.toggle('picole-preco--varejo', !pronto);
-            }
+            if (etiquetaAtacado) etiquetaAtacado.classList.toggle('picole-preco--aplicado', pronto);
+            if (etiquetaVarejo) etiquetaVarejo.classList.toggle('picole-preco--aplicado', !pronto);
             if (subtotal) subtotal.textContent = 'Subtotal: R$ ' + (quantidade * precoAplicado).toFixed(2).replace('.', ',');
         });
 
