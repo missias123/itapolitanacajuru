@@ -359,39 +359,73 @@
   </div>
 </div>
 
-<!-- Modal de Carrinho (Padrão iFood / Tela Cheia) -->
+<!-- Modal de Carrinho (Fluxo de 3 Etapas iFood) -->
 <div id="modal-carrinho" class="modal">
   <div class="modal-content">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F2F2F2; padding-bottom: 15px; margin-bottom: 15px;">
-      <h2 style="margin: 0; font-size: 1.5rem; font-weight: 900; color: #1A1A1A;">🛒 Revisão do Pedido</h2>
+      <h2 id="titulo-etapa-carrinho" style="margin: 0; font-size: 1.4rem; font-weight: 900; color: #1A1A1A;">🛒 Etapa 1: Revisão do Carrinho</h2>
       <button onclick="window.fecharModal('modal-carrinho')" style="background: #F2F2F2; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
     </div>
     
     <div style="flex: 1; overflow-y: auto; padding-right: 4px;">
-      <div id="lista-carrinho" style="display: flex; flex-direction: column; gap: 12px;"></div>
-      
-      <div style="margin-top: 20px; padding: 18px; background: #1A1A1A; color: white; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 1.1rem; font-weight: 700;">Total do Pedido:</span>
-        <span id="total-carrinho" style="font-size: 1.4rem; font-weight: 900; color: #00E676;">R$ 0,00</span>
+      <!-- ETAPA 1: LISTA DE ITENS -->
+      <div id="etapa-revisao">
+        <div id="lista-carrinho" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        
+        <div style="margin-top: 20px; padding: 18px; background: #1A1A1A; color: white; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 1.1rem; font-weight: 700;">Total do Pedido:</span>
+          <span id="total-carrinho" style="font-size: 1.4rem; font-weight: 900; color: #00E676;">R$ 0,00</span>
+        </div>
+
+        <div id="status-carrinho" class="cart-status" role="status" aria-live="polite" style="display:none; margin-top: 15px; padding: 12px; border-radius: 10px; font-weight: 700; text-align: center;"></div>
       </div>
 
-      <div id="status-carrinho" class="cart-status" role="status" aria-live="polite" style="display:none; margin-top: 15px; padding: 12px; border-radius: 10px; font-weight: 700; text-align: center;"></div>
+      <!-- ETAPA 2: FORMULÁRIO SEQUENCIAL DE DADOS -->
+      <div id="etapa-formulario" style="display: none;">
+        <div style="padding: 16px; background: #FFF9C4; border: 1px solid #FFEE58; border-radius: 12px; margin-bottom: 16px;">
+          <p style="font-size: 0.85rem; color: #5D4037; margin: 0; line-height: 1.4;">
+            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias úteis</strong> para encomendas pelo site. Logo entraremos em contato para confirmar o pedido e combinar o pagamento.
+          </p>
+        </div>
 
-      <div id="dados-cliente-pedido" style="display:none; margin-top: 20px; padding: 20px; background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 16px;">
-        <strong style="display:block; margin-bottom: 12px; font-size: 1.1rem; color: #1A1A1A;">📍 Endereço e Contato (Apenas DDD 16)</strong>
-        <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px; line-height: 1.4;">⚠️ Prazo mínimo de 3 dias úteis após confirmação via WhatsApp e pagamento antecipado.</p>
-        <input id="pedido-nome" type="text" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:10px; margin-bottom:10px; font-size: 1rem;" placeholder="Seu Nome Completo" />
-        <input id="pedido-endereco" type="text" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:10px; margin-bottom:10px; font-size: 1rem;" placeholder="Endereço de Entrega Completo" />
-        <input id="pedido-whatsapp" type="tel" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="WhatsApp (DDD 16 Obrigatório)" />
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div>
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">1. Seu Nome Completo *</label>
+            <input id="pedido-nome" type="text" oninput="window.validarNome()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Digite seu nome completo" />
+          </div>
+
+          <div id="bloco-endereco" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">2. Endereço de Entrega Completo *</label>
+            <input id="pedido-endereco" type="text" oninput="window.validarEndereco()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Rua, Número, Bairro, Cidade" disabled />
+          </div>
+
+          <div id="bloco-whatsapp" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">3. WhatsApp de Contato (Apenas DDD 16) *</label>
+            <input id="pedido-whatsapp" type="tel" oninput="window.validarWhatsapp()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="(16) 99999-9999" disabled />
+            <small style="color: #666; display: block; margin-top: 4px;">Exigido DDD 16 para validação na região.</small>
+          </div>
+        </div>
       </div>
     </div>
 
+    <!-- BOTÕES DE RODAPÉ DINÂMICOS POR ETAPA -->
     <div style="border-top: 2px solid #F2F2F2; padding-top: 15px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-      <div style="display: flex; gap: 10px; width: 100%;">
-        <button onclick="window.fecharModal('modal-carrinho')" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #CCC; background:#FFF; font-weight:800; cursor: pointer;">+ Adicionar Mais Produtos</button>
-        <button onclick="window.limparCarrinho()" style="padding: 14px 20px; border-radius: 12px; border: 1px solid #FFCCCC; background:#FFF0F0; color: #D32F2F; font-weight:800; cursor: pointer;">Limpar Tudo</button>
+      <!-- BOTÕES ETAPA 1 -->
+      <div id="botoes-etapa-1" style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <button onclick="window.fecharModal('modal-carrinho')" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #CCC; background:#FFF; font-weight:800; cursor: pointer;">← Voltar ao Cardápio</button>
+          <button onclick="window.limparCarrinho()" style="padding: 14px 20px; border-radius: 12px; border: 1px solid #FFCCCC; background:#FFF0F0; color: #D32F2F; font-weight:800; cursor: pointer;">Limpar</button>
+        </div>
+        <button id="btn-prosseguir" onclick="window.irParaFormulario()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(0,230,118,0.35);">Prosseguir para Identificação ➔</button>
       </div>
-      <button id="btn-finalizar-pedido" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: var(--verde); color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(0,230,118,0.35);">Finalizar Pedido no WhatsApp ➔</button>
+
+      <!-- BOTÕES ETAPA 2 -->
+      <div id="botoes-etapa-2" style="display: none; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 10px; width: 100%;">
+          <button onclick="window.voltarParaRevisao()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #CCC; background:#FFF; font-weight:800; cursor: pointer;">← Voltar ao Carrinho</button>
+        </div>
+        <button id="btn-finalizar-pedido" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: #25D366; color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(37,211,102,0.35); opacity: 0.5; pointer-events: none;">Enviar Pedido via WhatsApp ➔</button>
+      </div>
     </div>
   </div>
 </div>
@@ -831,32 +865,37 @@
         atualizarCarrinhoFixo();
     };
 
-	    window.abrirCarrinho = function() {
-	        var lista = document.getElementById('lista-carrinho');
-	        var total = 0;
-	        
-	        if (carrinho.length === 0) {
-	            lista.innerHTML = '<div style="text-align:center; padding: 40px 20px; color:#666;"><div style="font-size: 3rem; margin-bottom: 10px;">🛒</div><strong style="font-size: 1.2rem;">Seu carrinho está vazio</strong><p style="font-size: 0.9rem; margin-top: 5px;">Adicione caixas de sorvete, tortas ou picolés para encomendar.</p></div>';
-	        } else {
-	            lista.innerHTML = carrinho.map((item, i) => {
-	                total += item.preco;
-	                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : 'Sabores: ' + item.sabores.join(', ');
-	                return `
-	                    <div style="padding: 16px; background: #FFF; border: 1px solid #E8E8E8; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-	                        <div style="flex: 1; padding-right: 15px;">
-	                            <div style="font-size: 0.75rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.tipo}</div>
-	                            <div style="font-weight: 900; font-size: 1.1rem; color: #1A1A1A;">${item.nome}</div>
-	                            <div style="font-size: 0.85rem; color: #666; margin-top: 4px; line-height: 1.3;">${desc}</div>
-	                            <div style="margin-top: 10px; display: flex; gap: 8px;">
-	                                <button onclick="window.editarItem(${i})" style="border: none; background: #EEF4FF; color: #1565C0; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">✏️ Editar</button>
-	                                <button onclick="window.removerItem(${i})" style="border: none; background: #FFF0F0; color: #D32F2F; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">🗑️ Excluir</button>
-	                            </div>
-	                        </div>
-	                        <div style="font-weight: 900; font-size: 1.2rem; color: var(--success); text-align: right;">R$ ${item.preco.toFixed(2).replace('.',',')}</div>
-	                    </div>
-	                `;
-	            }).join('');
-	        }
+    window.abrirCarrinho = function() {
+        // Sempre abre na Etapa 1 (Revisão)
+        window.voltarParaRevisao();
+        
+        var lista = document.getElementById('lista-carrinho');
+        var total = 0;
+        
+        if (carrinho.length === 0) {
+            lista.innerHTML = '<div style="text-align:center; padding: 40px 20px; color:#666;"><div style="font-size: 3rem; margin-bottom: 10px;">🛒</div><strong style="font-size: 1.2rem;">Seu carrinho está vazio</strong><p style="font-size: 0.9rem; margin-top: 5px;">Adicione caixas de sorvete, tortas ou picolés para encomendar.</p></div>';
+            document.getElementById('btn-prosseguir').style.display = 'none';
+        } else {
+            document.getElementById('btn-prosseguir').style.display = 'block';
+            lista.innerHTML = carrinho.map((item, i) => {
+                total += item.preco;
+                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : 'Sabores: ' + item.sabores.join(', ');
+                return `
+                    <div style="padding: 16px; background: #FFF; border: 1px solid #E8E8E8; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="flex: 1; padding-right: 15px;">
+                            <div style="font-size: 0.75rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.tipo}</div>
+                            <div style="font-weight: 900; font-size: 1.1rem; color: #1A1A1A;">${item.nome}</div>
+                            <div style="font-size: 0.85rem; color: #666; margin-top: 4px; line-height: 1.3;">${desc}</div>
+                            <div style="margin-top: 10px; display: flex; gap: 8px;">
+                                <button onclick="window.editarItem(${i})" style="border: none; background: #EEF4FF; color: #1565C0; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">✏️ Editar</button>
+                                <button onclick="window.removerItem(${i})" style="border: none; background: #FFF0F0; color: #D32F2F; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">🗑️ Excluir</button>
+                            </div>
+                        </div>
+                        <div style="font-weight: 900; font-size: 1.2rem; color: var(--success); text-align: right;">R$ ${item.preco.toFixed(2).replace('.',',')}</div>
+                    </div>
+                `;
+            }).join('');
+        }
         
         document.getElementById('total-carrinho').textContent = "R$ " + total.toFixed(2).replace('.',',');
         
@@ -865,31 +904,107 @@
         var picoleOk = !temPicole || totalPicoles >= MIN_PICOLES_ATACADO;
         
         var status = document.getElementById('status-carrinho');
-        var dados = document.getElementById('dados-cliente-pedido');
-        var btn = document.getElementById('btn-finalizar-pedido');
+        var btnProsseguir = document.getElementById('btn-prosseguir');
         
         if (carrinho.length > 0 && picoleOk) {
-            status.style.display = 'block';
-            status.textContent = "Tudo certo! Preencha seus dados para finalizar.";
-            status.className = "cart-status ready";
-            dados.style.display = 'block';
-            btn.disabled = false;
-            btn.style.opacity = '1';
+            status.style.display = 'none';
+            btnProsseguir.disabled = false;
+            btnProsseguir.style.opacity = '1';
         } else if (temPicole && !picoleOk) {
             status.style.display = 'block';
             status.textContent = "O lote de picolés precisa de 100 unidades. Faltam " + (MIN_PICOLES_ATACADO - totalPicoles) + ".";
             status.className = "cart-status";
-            dados.style.display = 'none';
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
+            btnProsseguir.disabled = true;
+            btnProsseguir.style.opacity = '0.5';
         } else {
             status.style.display = 'none';
-            dados.style.display = 'none';
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
+            btnProsseguir.disabled = true;
+            btnProsseguir.style.opacity = '0.5';
         }
         
         window.abrirModal('modal-carrinho');
+    };
+
+    // FUNÇÕES DO FLUXO DE 3 ETAPAS
+    window.irParaFormulario = function() {
+        document.getElementById('titulo-etapa-carrinho').textContent = "🛒 Etapa 2: Identificação do Cliente";
+        document.getElementById('etapa-revisao').style.display = 'none';
+        document.getElementById('etapa-formulario').style.display = 'block';
+        document.getElementById('botoes-etapa-1').style.display = 'none';
+        document.getElementById('botoes-etapa-2').style.display = 'flex';
+        
+        // Reset form state
+        document.getElementById('pedido-nome').value = '';
+        document.getElementById('pedido-endereco').value = '';
+        document.getElementById('pedido-whatsapp').value = '';
+        document.getElementById('bloco-endereco').style.opacity = '0.4';
+        document.getElementById('bloco-endereco').style.pointerEvents = 'none';
+        document.getElementById('pedido-endereco').disabled = true;
+        document.getElementById('bloco-whatsapp').style.opacity = '0.4';
+        document.getElementById('bloco-whatsapp').style.pointerEvents = 'none';
+        document.getElementById('pedido-whatsapp').disabled = true;
+        
+        var btnFin = document.getElementById('btn-finalizar-pedido');
+        btnFin.style.opacity = '0.5';
+        btnFin.style.pointerEvents = 'none';
+    };
+
+    window.voltarParaRevisao = function() {
+        document.getElementById('titulo-etapa-carrinho').textContent = "🛒 Etapa 1: Revisão do Carrinho";
+        document.getElementById('etapa-revisao').style.display = 'block';
+        document.getElementById('etapa-formulario').style.display = 'none';
+        document.getElementById('botoes-etapa-1').style.display = 'flex';
+        document.getElementById('botoes-etapa-2').style.display = 'none';
+    };
+
+    window.validarNome = function() {
+        var nome = document.getElementById('pedido-nome').value.trim();
+        var blocoEnd = document.getElementById('bloco-endereco');
+        var inputEnd = document.getElementById('pedido-endereco');
+        
+        if (nome.length >= 3) {
+            blocoEnd.style.opacity = '1';
+            blocoEnd.style.pointerEvents = 'auto';
+            inputEnd.disabled = false;
+        } else {
+            blocoEnd.style.opacity = '0.4';
+            blocoEnd.style.pointerEvents = 'none';
+            inputEnd.disabled = true;
+            inputEnd.value = '';
+            window.validarEndereco();
+        }
+    };
+
+    window.validarEndereco = function() {
+        var end = document.getElementById('pedido-endereco').value.trim();
+        var blocoWp = document.getElementById('bloco-whatsapp');
+        var inputWp = document.getElementById('pedido-whatsapp');
+        
+        if (end.length >= 5) {
+            blocoWp.style.opacity = '1';
+            blocoWp.style.pointerEvents = 'auto';
+            inputWp.disabled = false;
+        } else {
+            blocoWp.style.opacity = '0.4';
+            blocoWp.style.pointerEvents = 'none';
+            inputWp.disabled = true;
+            inputWp.value = '';
+            window.validarWhatsapp();
+        }
+    };
+
+    window.validarWhatsapp = function() {
+        var zap = document.getElementById('pedido-whatsapp').value.trim();
+        var tel = zap.replace(/\D/g, '');
+        var btnFin = document.getElementById('btn-finalizar-pedido');
+        
+        if (/^16\d{8,9}$/.test(tel)) {
+            btnFin.style.opacity = '1';
+            btnFin.style.pointerEvents = 'auto';
+        } else {
+            btnFin.style.opacity = '0.5';
+            btnFin.style.pointerEvents = 'none';
+        }
     };
 
     window.editarItem = function(i) {
