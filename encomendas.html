@@ -335,23 +335,35 @@
   </div>
 </div>
 
-<!-- Modal de Picolés -->
-<div id="modal-picoles" class="modal">
-  <div class="modal-content">
-    <h2>Picolés no Atacado</h2>
-    <p>Escolha a quantidade por sabor. Mínimo <strong>100 unidades</strong> total, máx 25 por sabor.</p>
-    <div class="fluxo-progresso" aria-live="polite">
-      <div class="fluxo-progresso__linha"><span id="total-picoles">0 unidades</span><span>Meta: 100 unidades</span></div>
-      <div class="fluxo-progresso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progresso-picoles" class="fluxo-progresso__valor"></div></div>
+    <!-- Modal de Picolés -->
+    <div id="modal-picoles" class="modal">
+      <div class="modal-content" style="max-width: 650px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F2F2F2; padding-bottom: 12px; margin-bottom: 12px;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.3rem; font-weight: 900; color: var(--primary);">🍭 Picolés no Atacado</h2>
+            <p style="margin: 3px 0 0; font-size: 0.8rem; color: #666;">Mínimo <strong>100 unidades</strong> total · Máx 25 por sabor</p>
+          </div>
+          <button onclick="window.fecharModal('modal-picoles')" style="background: #F2F2F2; border: none; width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+        </div>
+
+        <div class="fluxo-progresso" aria-live="polite" style="margin-bottom: 12px;">
+          <div class="fluxo-progresso__linha"><span id="total-picoles" style="font-weight: 800; color: var(--primary);">0 unidades</span><span style="font-weight: 700; color: #555;">Meta: 100 unidades</span></div>
+          <div class="fluxo-progresso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="height: 10px; border-radius: 6px; background: #eee; overflow:hidden;"><div id="progresso-picoles" class="fluxo-progresso__valor" style="height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease;"></div></div>
+        </div>
+
+        <!-- Abas Rápidas (Sticky Tabs) estilo iFood -->
+        <div id="picoles-abas-container" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid #eee; scrollbar-width: none;"></div>
+
+        <div id="lista-sabores-picole" style="max-height: 42vh; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 12px;"></div>
+
+        <div id="status-picoles" class="selection-status" role="status" aria-live="polite" style="margin-top: 10px; padding: 10px; border-radius: 8px; font-weight: 700; text-align: center; font-size: 0.85rem;">Adicione picolés para liberar a confirmação.</div>
+        
+        <div class="modal-actions" style="margin-top: 12px; display: flex; gap: 10px;">
+          <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #ccc; background:#fff; font-weight:800; cursor:pointer;">Voltar</button>
+          <button id="btn-confirmar-picoles" class="confirm-action" onclick="window.confirmarPicole()" disabled style="flex: 2; padding: 14px; border-radius: 12px; border: none; background: var(--verde); color: white; font-weight: 900; cursor: pointer; opacity: 0.5;">Confirmar Lote</button>
+        </div>
+      </div>
     </div>
-    <div id="lista-sabores-picole" style="max-height: 400px; overflow-y: auto; padding-right: 5px;"></div>
-    <p id="status-picoles" class="selection-status" role="status" aria-live="polite">Adicione picolés para liberar a confirmação.</p>
-    <div class="modal-actions">
-      <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; padding: 15px; border-radius: 10px; border: 1px solid #ccc; background:#fff; font-weight:700;">Voltar</button>
-      <button id="btn-confirmar-picoles" class="confirm-action" onclick="window.confirmarPicole()" disabled>Confirmar Lote</button>
-    </div>
-  </div>
-</div>
 
 <!-- Modal de Carrinho (Fluxo de 3 Etapas iFood) -->
 <div id="modal-carrinho" class="modal">
@@ -755,41 +767,71 @@
         atualizarCarrinhoFixo();
     };
 
+    window.filtrarSecaoPicole = function(tipoId) {
+        document.querySelectorAll('.picole-grupo-sec').forEach(el => {
+            el.style.display = (tipoId === 'todos' || el.dataset.tipoId === tipoId) ? 'block' : 'none';
+        });
+        document.querySelectorAll('.picole-aba-btn').forEach(btn => {
+            if (btn.dataset.tipoId === tipoId) {
+                btn.style.background = 'var(--primary)';
+                btn.style.color = '#fff';
+                btn.style.borderColor = 'var(--primary)';
+            } else {
+                btn.style.background = '#f7f7f7';
+                btn.style.color = '#333';
+                btn.style.borderColor = '#ddd';
+            }
+        });
+    };
+
     window.abrirModalPicole = function() {
         if (!ESTOQUE_CARREGADO) {
             alert('Aguarde: consultando o estoque oficial.');
             return;
         }
+        var abasHtml = '<button type="button" class="picole-aba-btn" data-tipo-id="todos" onclick="window.filtrarSecaoPicole(\'todos\')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid var(--primary); background: var(--primary); color: #fff; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto;">Todos</button>';
         var html = '';
-        Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo]) => {
+        
+        Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
             var icon = tipo.includes('Água') ? '💧' : tipo.includes('Recheado') ? '🍫' : tipo.includes('Esquimó') ? '🍦' : '⭐';
-            html += `<section class="picole-grupo" aria-labelledby="titulo-${tipo}">
-                <h3 id="titulo-${tipo}" class="picole-grupo__titulo">${icon} ${tipo}</h3>`;
+            var tipoCurto = tipo.split('(')[0].trim();
+            var tipoId = 'grupo-picole-' + index;
+            
+            abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto;">${icon} ${tipoCurto}</button>`;
+            
+            html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
+                <div style="font-size: 1.05rem; font-weight: 900; color: var(--primary); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #FFF0F0; display: flex; align-items: center; gap: 6px;">
+                    <span>${icon}</span> <span>${tipo}</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">`;
+            
             grupo.sabores.forEach(s => {
                 var key = tipo + "|" + s;
                 var qtd = picolesSelecionados[key] || 0;
                 var info = infoEstoquePicole(tipo, s);
                 var indisponivel = Boolean(info.esgotado || Number(info.estoque || 0) <= 0);
                 var subtotal = qtd * grupo.preco;
-                var estoqueLabel = indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : '<div class="picole-linha__estoque">Estoque da categoria: ' + Number(info.estoque) + ' · máximo por sabor: 25</div>';
+                var hasSelected = qtd > 0;
+                
                 html += `
-                    <div class="picole-linha ${indisponivel ? 'is-esgotado' : ''}" data-picole-key="${key}">
-                        <div>
-                            <div class="picole-linha__sabor">${escaparHtml(s)}</div>
-                            <div class="picole-linha__preco">R$ ${grupo.preco.toFixed(2).replace('.',',')} / unidade</div>
-                            ${estoqueLabel}
-                            <div id="sub-${key}" class="picole-linha__subtotal">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: ${hasSelected ? '#F0FDF4' : '#FAFAFA'}; border: 1.5px solid ${hasSelected ? '#86EFAC' : '#E5E7EB'}; border-radius: 12px; transition: all 0.2s;" data-picole-key="${key}" class="${indisponivel ? 'is-esgotado' : ''}">
+                        <div style="flex: 1; padding-right: 10px;">
+                            <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 1px;">R$ ${grupo.preco.toFixed(2).replace('.',',')} un. ${indisponivel ? '· <span style="color:#B42318; font-weight:800;">Esgotado</span>' : ''}</div>
+                            <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
                         </div>
-                        <div class="picole-linha__controle" aria-label="Quantidade de ${escaparHtml(s)}">
-                            <button type="button" aria-label="Remover uma unidade de ${escaparHtml(s)}" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''}>−</button>
-                            <span id="q-${key}" class="picole-linha__qtd">${qtd}</span>
-                            <button type="button" aria-label="Adicionar uma unidade de ${escaparHtml(s)}" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''}>+</button>
+                        <div style="display: flex; align-items: center; gap: 8px;" aria-label="Quantidade de ${escaparHtml(s)}">
+                            <button type="button" aria-label="Remover" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''} style="width: 34px; height: 34px; border: 1px solid #D5D5D5; border-radius: 50%; background: #fff; color: #333; font-size: 1.1rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
+                            <span id="q-${key}" style="min-width: 26px; text-align: center; font-weight: 900; font-size: 1rem; color: ${hasSelected ? 'var(--success)' : '#333'};">${qtd}</span>
+                            <button type="button" aria-label="Adicionar" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''} style="width: 34px; height: 34px; border: 1px solid var(--primary); border-radius: 50%; background: var(--primary); color: #fff; font-size: 1.1rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
                         </div>
                     </div>
                 `;
             });
-            html += `</section>`;
+            html += `</div></div>`;
         });
+        
+        document.getElementById('picoles-abas-container').innerHTML = abasHtml;
         document.getElementById('lista-sabores-picole').innerHTML = html;
         atualizarAcaoPicoles();
         window.abrirModal('modal-picoles');
