@@ -727,7 +727,8 @@ body.menu-foco-aberto {
  * Assim a posição de rolagem original continua intacta e o acordeão
  * aparece mesmo quando o usuário abriu o cardápio no meio da página.
  */
-/* Oculta absolutamente tudo exceto o acordeão em foco */
+/* BLOQUEIO ABSOLUTO: Oculta absolutamente tudo exceto o acordeão em foco */
+body.menu-foco-aberto > *:not(script):not(style):not(link):not(.vc-container):not(.home-enc-comp-grid),
 body.menu-foco-aberto .itap-header,
 body.menu-foco-aberto .hero,
 body.menu-foco-aberto .home-enc-separator,
@@ -736,10 +737,13 @@ body.menu-foco-aberto .footer,
 body.menu-foco-aberto .whatsapp-fixo,
 body.menu-foco-aberto .cookie-banner,
 body.menu-foco-aberto .ita-bot-widget,
-body.menu-foco-aberto .acc:not(.menu-foco-ativo) {
-  display: none !important;
-}
-body.menu-foco-aberto #ita-bot-duvidas {
+body.menu-foco-aberto #ita-bot-duvidas,
+body.menu-foco-aberto .acc:not(.menu-foco-ativo),
+body.menu-foco-aberto section:not(.vc-container):not(.home-enc-comp-grid),
+body.menu-foco-aberto #acai-natureon,
+body.menu-foco-aberto #eventos-atacado,
+body.menu-foco-aberto #quem-somos,
+body.menu-foco-aberto #depoimentos {
   display: none !important;
 }
 /* Garante que o container pai não limite o tamanho do foco */
