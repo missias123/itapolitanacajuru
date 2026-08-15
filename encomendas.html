@@ -396,6 +396,30 @@
     .picole-grupo-sec__label {
       min-width: 0;
       overflow-wrap: anywhere;
+      color: #1F2937;
+    }
+    .picole-grupo-sec__atacado {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 1 auto;
+      max-width: 100%;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #FFD100;
+      color: #111827;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: clamp(.68rem, 2.8vw, .78rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: .01em;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      box-shadow: 0 1px 0 rgba(0,0,0,.12);
+    }
+    @media (max-width: 520px) {
+      .picole-grupo-sec__titulo { align-items: flex-start; flex-wrap: wrap; }
+      .picole-grupo-sec__label { flex: 1 1 150px; }
+      .picole-grupo-sec__atacado { flex: 0 1 auto; margin-left: 36px; }
     }
   </style>
   <link rel="stylesheet" href="css/itap-shared.css?v=20260815-icons-approved-2">
@@ -1070,14 +1094,15 @@
         Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
             var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
             var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange small') : '';
-            var tipoCurto = tipo.split('(')[0].trim();
+            var tipoCurto = tipo.replace(/\s+—\s+Atacado R\$ [0-9]+,[0-9]{2} acima de 100 un\.$/, '').trim();
+            var precoAtacadoTitulo = precoAtacadoDoGrupo(grupo).toFixed(2).replace('.', ',');
             var tipoId = 'grupo-picole-' + index;
             
             
             var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
                 <div class="picole-grupo-sec__titulo">
-                    <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${tipoCurto}</span>
+                    <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${escaparHtml(tipoCurto)}</span><span class="picole-grupo-sec__atacado">Atacado R$ ${precoAtacadoTitulo} acima de 100 un.</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">`;
             
