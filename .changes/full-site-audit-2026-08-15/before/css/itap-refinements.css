@@ -1,0 +1,282 @@
+/*
+ * ITAP REFINEMENTS CSS — Sorveteria Itapolitana Cajuru
+ * Melhorias finas de UX/UI (v1.1) sem quebrar nenhum fluxo existente.
+ * Foco: tipografia, microinterações em cards e barra mobile de navegação.
+ *
+ * COMO REMOVER/AJUSTAR:
+ *   Basta remover a tag <link rel="stylesheet" href="css/itap-refinements.css">
+ *   das páginas ou comentar a seção correspondente abaixo.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. TIPOGRAFIA — corpo de texto com Nunito para máxima legibilidade
+   Poppins (700–900) continua para títulos, CTAs e nav.
+   Nunito (400, 600) entra para parágrafos, descrições e textos longos.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Aplica Nunito ao corpo de texto sem sobrescrever headings/botões */
+body p,
+body li,
+body td,
+body th,
+body label,
+body figcaption,
+.item-desc,
+.quem-somos p,
+.depoimento-texto,
+.itap-food-hero__description,
+.itap-surface-card__text,
+.itap-inline-note,
+.itap-flow-step p,
+.cookie-text,
+.footer p,
+.footer li {
+  font-family: 'Nunito', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(15px, 3.8vw, 17px);
+  line-height: 1.7;
+}
+
+/* Títulos permanecem em Poppins — apenas ajuste sutil de tamanho em mobile */
+h1, h2, h3, h4 {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Melhora contraste em textos sobre fundos claros (Quem Somos, Depoimentos) */
+.quem-somos p,
+.depoimento-texto {
+  color: #3E2723;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. MICROINTERAÇÕES — hover e focus em cards e botões
+   Transições leves (0.15s ease-out) sem impactar performance.
+   O aumento de escala é contido (max translateY -3px) para não
+   criar deslocamento de layout em listas densas de itens.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Cards genéricos — hover elevado suave */
+.card,
+.info-card,
+.quem-card,
+.depoimento-card,
+.feat-card,
+.promo-card,
+.feat-item,
+.item-card,
+.açaí-card,
+.acai-card,
+.evento-card,
+.revenda-card {
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.card:hover,
+.info-card:hover,
+.quem-card:hover,
+.depoimento-card:hover,
+.feat-card:hover,
+.promo-card:hover,
+.feat-item:hover,
+.item-card:hover,
+.açaí-card:hover,
+.acai-card:hover,
+.evento-card:hover,
+.revenda-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(26, 10, 0, 0.13);
+}
+
+/* Surface cards do design-system */
+.itap-surface-card {
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.itap-surface-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(26, 10, 0, 0.11);
+}
+
+/* Buttons: leveza extra no focus-visible para acessibilidade teclado */
+.btn:focus-visible,
+.itap-nav-btn:focus-visible,
+.hero-cta-primary:focus-visible,
+.hero-cta-secondary:focus-visible {
+  outline: 3px solid #FFD600;
+  outline-offset: 3px;
+}
+
+/* Chips e anchor strip: hover de cor */
+.itap-chip:hover,
+.itap-anchor-strip a:hover {
+  background: #FFE8D2;
+  color: #E65100;
+  border-color: #E65100;
+  transition: background 0.15s ease-out, color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+/* Imagens de card: zoom suave sem corte */
+.item-card img,
+.açaí-card img,
+.acai-card img,
+.promo-card img,
+.evento-card img {
+  transition: transform 0.25s ease-out;
+  overflow: hidden;
+}
+.item-card:hover img,
+.açaí-card:hover img,
+.acai-card:hover img,
+.promo-card:hover img,
+.evento-card:hover img {
+  transform: scale(1.04);
+}
+
+/* Respeita preferência do usuário por menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .info-card,
+  .quem-card,
+  .depoimento-card,
+  .feat-card,
+  .promo-card,
+  .feat-item,
+  .item-card,
+  .açaí-card,
+  .acai-card,
+  .evento-card,
+  .revenda-card,
+  .itap-surface-card,
+  .item-card img,
+  .açaí-card img,
+  .acai-card img,
+  .promo-card img,
+  .evento-card img {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. BARRA DE NAVEGAÇÃO MOBILE FIXA
+   Aparece SOMENTE em telas ≤ 767px.
+   Usa apenas HTML/CSS — sem JS.
+   Para remover: apague o bloco abaixo e o HTML #itap-mobile-nav no index.html.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Reserva espaço no fundo da página para a nav não cobrir conteúdo */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* A barra em si */
+#itap-mobile-nav {
+  display: none; /* Oculta em desktop — sobrescrito abaixo para mobile */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 8900; /* Abaixo do Ita Bot (9996) e do header (9000) */
+  background: linear-gradient(180deg, #1A0A00 0%, #12060A 100%);
+  border-top: 2px solid #FFD600;
+  height: calc(68px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 767px) {
+  #itap-mobile-nav {
+    display: flex;
+  }
+}
+
+.itap-mobile-nav__list {
+  display: flex;
+  width: 100%;
+  height: 68px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: stretch;
+}
+
+.itap-mobile-nav__item {
+  flex: 1;
+  display: flex;
+}
+
+.itap-mobile-nav__link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.12s ease-out, background 0.12s ease-out;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px; /* Touch target mínimo */
+  width: 100%;
+}
+
+.itap-mobile-nav__link:hover,
+.itap-mobile-nav__link:focus-visible {
+  color: #FFD600;
+  background: rgba(255, 214, 0, 0.08);
+  outline: none;
+}
+
+.itap-mobile-nav__link:active {
+  background: rgba(255, 214, 0, 0.16);
+  color: #FFD600;
+}
+
+.itap-mobile-nav__icon {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.itap-mobile-nav__label {
+  font-size: 9.5px;
+  line-height: 1.1;
+  display: block;
+}
+
+/* Item de destaque (WhatsApp / Dúvidas) */
+.itap-mobile-nav__item--cta .itap-mobile-nav__link {
+  color: #FFD600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. CONSISTÊNCIA DE CTAs — notas sobre a paleta de botões
+   (sem alterar as classes existentes; apenas reforço do sistema)
+
+   CTA PRIMÁRIO  → .btn.btn-primary  (laranja #E65100→#FF6D00)
+     Uso: "Ver Cardápio", "Ver Sabores", "Ver Promoção"
+   CTA WHATSAPP  → .btn.btn-wpp      (verde WhatsApp #25D366)
+     Uso: "Falar no WhatsApp", "Encomendar via WhatsApp"
+   CTA SECUNDÁRIO → .btn.btn-blue    (azul royal #0D47A1)
+     Uso: ações de navegação, "Ver Mais Detalhes"
+   CTA GHOST     → .btn.btn-ghost    (transparente, borda laranja)
+     Uso: ações opcionais, menos prioritárias
+
+   O sistema já existe em itap-shared.css; estes comentários servem
+   como documentação de uso para manutenção futura.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Utilitário de acessibilidade — esconde visualmente mas mantém para leitores de tela */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

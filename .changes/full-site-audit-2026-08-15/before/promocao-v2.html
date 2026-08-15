@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promoção Sorveteria Itapolitana</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .progress-bar::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+
+    .progress-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #999;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .progress-step.active .progress-circle {
+      background: #667eea;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .progress-step.completed .progress-circle {
+      background: #4caf50;
+      color: white;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      color: #999;
+      text-align: center;
+    }
+
+    .progress-step.active .progress-label {
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="date"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="date"]:focus,
+    input[type="tel"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .error {
+      border-color: #f44336 !important;
+    }
+
+    .error-message {
+      color: #f44336;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .checkbox-group {
+      margin-bottom: 20px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      margin-right: 12px;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
+
+    .checkbox-label {
+      flex: 1;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .review-item {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .review-label {
+      font-weight: 500;
+      color: #333;
+      font-size: 13px;
+    }
+
+    .review-value {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      font-size: 12px;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #5568d3;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .initial-choice {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .choice-btn {
+      padding: 20px;
+      border: 2px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .choice-btn:hover {
+      border-color: #667eea;
+      background: #f5f7ff;
+    }
+
+    .success-message {
+      background: #e8f5e9;
+      border: 1px solid #4caf50;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-title {
+      color: #2e7d32;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .success-details {
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .copy-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .copy-btn:hover {
+      background: #5568d3;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      .progress-label {
+        font-size: 10px;
+      }
+
+      .progress-circle {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+      }
+
+      button {
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .review-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .edit-btn {
+        margin-top: 10px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="styles/fueap-premium.css">
+</head>
+<bodyclass="fueap-surface fueap-promocao-v2">
+  <div class="container">
+    <div class="header">
+      <div class="logo">🍦 Sorveteria Itapolitana</div>
+      <div class="subtitle">Cadastro para Promoção</div>
+    </div>
+
+    <!-- Escolha Inicial -->
+    <div id="initialChoice" class="form-section active">
+      <div class="initial-choice">
+        <button class="choice-btn" onclick="startNewRegistration()">
+          ✏️ AINDA NÃO SOU CADASTRADO
+        </button>
+        <button class="choice-btn" onclick="startExistingRegistration()">
+          🔍 JÁ SOU CADASTRADO
+        </button>
+      </div>
+    </div>
+
+    <!-- Novo Cadastro -->
+    <div id="newRegistrationForm" class="form-section">
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-step active" id="step1">
+          <div class="progress-circle">1</div>
+          <div class="progress-label">Dados Pessoais</div>
+        </div>
+        <div class="progress-step" id="step2">
+          <div class="progress-circle">2</div>
+          <div class="progress-label">Contato</div>
+        </div>
+        <div class="progress-step" id="step3">
+          <div class="progress-circle">3</div>
+          <div class="progress-label">Consentimentos</div>
+        </div>
+        <div class="progress-step" id="step4">
+          <div class="progress-circle">4</div>
+          <div class="progress-label">Conferência</div>
+        </div>
+      </div>
+
+      <!-- Etapa 1: Dados Pessoais -->
+      <div id="stage1" class="form-section active">
+        <h3 style="margin-bottom: 20px; color: #333;">Etapa 1 de 4 — Dados Pessoais</h3>
+        <form id="stage1Form">
+          <div class="form-group">
+            <label for="fullName">Nome Completo *</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Ex: João Silva Santos" required>
+            <div class="error-message"></div>
+          </div>
+          <div class="form-group">
+            <label for="birthDate">Data de Nascimento *</label>
+            <input type="date" id="birthDate" name="birthDate" required>
+            <div class="error-message"></div>
+          </div>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="goBackToChoice()">← Voltar</button>
+            <button type="button" class="btn-primary" onclick="validateStage1()">Próximo →</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Etapa 2: Contato -->
+      <div id="stage2" class="form-section">
+        <h3 style="margin-bottom: 20px; color: #333;">Etapa 2 de 4 — Contato</h3>
+        <form id="stage2Form">
+          <div class="form-group">
+            <label for="phone">Celular/WhatsApp *</label>
+            <input type="tel" id="phone" name="phone" placeholder="(16) 99999-9999" required>
+            <div class="error-message"></div>
+          </div>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="goToStage(1)">← Voltar</button>
+            <button type="button" class="btn-primary" onclick="validateStage2()">Próximo →</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Etapa 3: Consentimentos -->
+      <div id="stage3" class="form-section">
+        <h3 style="margin-bottom: 20px; color: #333;">Etapa 3 de 4 — Consentimentos</h3>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="consent1" name="consent1">
+            <label for="consent1" class="checkbox-label">Li e concordo com o regulamento da promoção.</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="consent2" name="consent2">
+            <label for="consent2" class="checkbox-label">Confirmo que os dados informados são verdadeiros.</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="consent3" name="consent3">
+            <label for="consent3" class="checkbox-label">Concordo com o uso dos meus dados para participação e contato sobre esta promoção, conforme a Política de Privacidade.</label>
+          </div>
+        </div>
+        <div class="button-group">
+          <button type="button" class="btn-secondary" onclick="goToStage(2)">← Voltar</button>
+          <button type="button" class="btn-primary" onclick="validateStage3()">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- Etapa 4: Conferência -->
+      <div id="stage4" class="form-section">
+        <h3 style="margin-bottom: 20px; color: #333;">Etapa 4 de 4 — Conferência</h3>
+        <div id="reviewData"></div>
+        <div class="button-group">
+          <button type="button" class="btn-secondary" onclick="goToStage(3)">← Voltar</button>
+          <button type="button" class="btn-primary" id="confirmBtn" onclick="submitRegistration()">Confirmar Cadastro</button>
+        </div>
+      </div>
+
+      <!-- Sucesso -->
+      <div id="successStage" class="form-section">
+        <div class="success-message show">
+          <div class="success-title">✓ Cadastro realizado com sucesso!</div>
+          <div class="success-details" id="successDetails"></div>
+          <button class="copy-btn" onclick="copyRegistrationNumber()">📋 Copiar Número do Cadastro</button>
+        </div>
+        <div class="button-group">
+          <button type="button" class="btn-primary" onclick="goBackToChoice()">← Fazer Novo Cadastro</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cadastro Existente (Já sou cadastrado) -->
+    <div id="existingRegistrationForm" class="form-section">
+      <h3 style="margin-bottom: 20px; color: #333;">Localizar Seu Cadastro</h3>
+      <form id="existingForm">
+        <div class="form-group">
+          <label for="existingFullName">Nome Completo *</label>
+          <input type="text" id="existingFullName" name="existingFullName" placeholder="Ex: João Silva Santos" required>
+          <div class="error-message"></div>
+        </div>
+        <div class="form-group">
+          <label for="existingBirthDate">Data de Nascimento *</label>
+          <input type="date" id="existingBirthDate" name="existingBirthDate" required>
+          <div class="error-message"></div>
+        </div>
+        <div class="button-group">
+          <button type="button" class="btn-secondary" onclick="goBackToChoice()">← Voltar</button>
+          <button type="button" class="btn-primary" onclick="searchExistingRegistration()">Localizar Cadastro</button>
+        </div>
+      </form>
+      <div id="existingRegistrationResult"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <p style="margin-top: 15px; color: #666;">Processando...</p>
+    </div>
+  </div>
+
+  <script>
+    let currentStage = 1;
+    let registrationMode = 'new'; // 'new' ou 'existing'
+    let formData = {
+      fullName: '',
+      birthDate: '',
+      phone: '',
+      consent1: false,
+      consent2: false,
+      consent3: false
+    };
+    let lastRegistrationNumber = '';
+
+    function startNewRegistration() {
+      registrationMode = 'new';
+      showSection('newRegistrationForm');
+      goToStage(1);
+    }
+
+    function startExistingRegistration() {
+      registrationMode = 'existing';
+      showSection('existingRegistrationForm');
+    }
+
+    function goBackToChoice() {
+      registrationMode = null;
+      currentStage = 1;
+      formData = {
+        fullName: '',
+        birthDate: '',
+        phone: '',
+        consent1: false,
+        consent2: false,
+        consent3: false
+      };
+      showSection('initialChoice');
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.form-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    function goToStage(stage) {
+      currentStage = stage;
+      document.querySelectorAll('#newRegistrationForm > .form-section').forEach(s => {
+        s.classList.remove('active');
+      });
+      document.getElementById('stage' + stage).classList.add('active');
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      for (let i = 1; i <= 4; i++) {
+        const step = document.getElementById('step' + i);
+        step.classList.remove('active', 'completed');
+        if (i < currentStage) {
+          step.classList.add('completed');
+        } else if (i === currentStage) {
+          step.classList.add('active');
+        }
+      }
+    }
+
+    function validateStage1() {
+      const fullName = document.getElementById('fullName').value.trim();
+      const birthDate = document.getElementById('birthDate').value;
+      let isValid = true;
+
+      // Validar nome
+      if (fullName.length < 3) {
+        showError('fullName', 'Nome deve ter no mínimo 3 caracteres.');
+        isValid = false;
+      } else if (/\d/.test(fullName)) {
+        showError('fullName', 'Nome não pode conter números.');
+        isValid = false;
+      } else {
+        clearError('fullName');
+      }
+
+      // Validar data
+      if (!birthDate) {
+        showError('birthDate', 'Data de nascimento é obrigatória.');
+        isValid = false;
+      } else {
+        const date = new Date(birthDate);
+        const today = new Date();
+        if (date > today) {
+          showError('birthDate', 'Data de nascimento não pode ser no futuro.');
+          isValid = false;
+        } else {
+          let age = today.getFullYear() - date.getFullYear();
+          if (today.getMonth() < date.getMonth() || (today.getMonth() === date.getMonth() && today.getDate() < date.getDate())) {
+            age--;
+          }
+          if (age < 14) {
+            showError('birthDate', 'É necessário ter no mínimo 14 anos para participar.');
+            isValid = false;
+          } else {
+            clearError('birthDate');
+          }
+        }
+      }
+
+      if (isValid) {
+        formData.fullName = fullName;
+        formData.birthDate = birthDate;
+        goToStage(2);
+      }
+    }
+
+    function validateStage2() {
+      const phone = document.getElementById('phone').value.replace(/\D/g, '');
+      let isValid = true;
+
+      if (!phone || !/^169\d{8}$/.test(phone)) {
+        showError('phone', 'Celular inválido. Apenas números com DDD 16 são aceitos.');
+        isValid = false;
+      } else {
+        clearError('phone');
+      }
+
+      if (isValid) {
+        formData.phone = phone;
+        goToStage(3);
+      }
+    }
+
+    function validateStage3() {
+      const consent1 = document.getElementById('consent1').checked;
+      const consent2 = document.getElementById('consent2').checked;
+      const consent3 = document.getElementById('consent3').checked;
+
+      if (!consent1 || !consent2 || !consent3) {
+        alert('Você deve aceitar todos os consentimentos para continuar.');
+        return;
+      }
+
+      formData.consent1 = consent1;
+      formData.consent2 = consent2;
+      formData.consent3 = consent3;
+      showReview();
+      goToStage(4);
+    }
+
+    function showReview() {
+      const reviewData = document.getElementById('reviewData');
+      const maskPhone = formData.phone.slice(0, 2) + ' ' + formData.phone.slice(2, 7) + '-' + formData.phone.slice(-4);
+      const birthDateFormatted = new Date(formData.birthDate).toLocaleDateString('pt-BR');
+
+      reviewData.innerHTML = `
+        <div class="review-item">
+          <div>
+            <div class="review-label">Nome Completo</div>
+            <div class="review-value">${formData.fullName}</div>
+          </div>
+          <button class="edit-btn" onclick="goToStage(1)">Editar</button>
+        </div>
+        <div class="review-item">
+          <div>
+            <div class="review-label">Data de Nascimento</div>
+            <div class="review-value">${birthDateFormatted}</div>
+          </div>
+          <button class="edit-btn" onclick="goToStage(1)">Editar</button>
+        </div>
+        <div class="review-item">
+          <div>
+            <div class="review-label">Celular/WhatsApp</div>
+            <div class="review-value">${maskPhone}</div>
+          </div>
+          <button class="edit-btn" onclick="goToStage(2)">Editar</button>
+        </div>
+      `;
+    }
+
+    function showError(fieldId, message) {
+      const field = document.getElementById(fieldId);
+      const errorMsg = field.parentElement.querySelector('.error-message');
+      field.classList.add('error');
+      errorMsg.textContent = message;
+      errorMsg.classList.add('show');
+    }
+
+    function clearError(fieldId) {
+      const field = document.getElementById(fieldId);
+      const errorMsg = field.parentElement.querySelector('.error-message');
+      field.classList.remove('error');
+      errorMsg.classList.remove('show');
+    }
+
+    async function submitRegistration() {
+      document.getElementById('confirmBtn').disabled = true;
+      showLoading(true);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch('https://api.itapolitanacajuru.com.br/api/promocao/cadastro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: formData.fullName,
+            birthdate: formData.birthDate,
+            phone: formData.phone,
+            regulation_accept: formData.consent1
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const result = await response.json();
+
+        if (result.success) {
+          lastRegistrationNumber = result.registrationId;
+          const registrationDate = new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          document.getElementById('successDetails').innerHTML = `
+            <strong>Número do cadastro:</strong> ${result.registrationId}<br>
+            <strong>Data do cadastro:</strong> ${registrationDate}<br><br>
+            Guarde essas informações para consultar seu cadastro posteriormente.
+          `;
+          document.querySelectorAll('#newRegistrationForm > .form-section').forEach(s => {
+            s.classList.remove('active');
+          });
+          document.getElementById('successStage').classList.add('active');
+        } else {
+          alert('Erro: ' + result.error);
+        }
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          alert('O servidor demorou para responder. Aguarde alguns instantes e tente novamente.');
+        } else {
+          alert('Erro ao enviar cadastro: ' + error.message);
+        }
+      } finally {
+        showLoading(false);
+        document.getElementById('confirmBtn').disabled = false;
+      }
+    }
+
+    async function searchExistingRegistration() {
+      const fullName = document.getElementById('existingFullName').value.trim();
+      const birthDate = document.getElementById('existingBirthDate').value;
+
+      if (!fullName || !birthDate) {
+        alert('Preencha todos os campos para localizar seu cadastro.');
+        return;
+      }
+
+      showLoading(true);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch(`https://api.itapolitanacajuru.com.br/api/sorteio/buscar?nome=${encodeURIComponent(fullName)}&dataNasc=${birthDate}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        const result = await response.json();
+
+        if (result.found) {
+          showExistingRegistrationOptions(result.registration);
+        } else {
+          alert('Cadastro não encontrado. Verifique os dados informados.');
+        }
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          alert('O servidor demorou para responder. Aguarde alguns instantes e tente novamente.');
+        } else {
+          alert('Erro ao buscar cadastro: ' + error.message);
+        }
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function showExistingRegistrationOptions(registration) {
+      const resultDiv = document.getElementById('existingRegistrationResult');
+      const maskPhone = registration.phone.slice(0, 2) + ' *****-' + registration.phone.slice(-4);
+      const registrationDate = new Date(registration.created_at).toLocaleDateString('pt-BR');
+
+      resultDiv.innerHTML = `
+        <div class="success-message show" style="background: #e3f2fd; border-color: #2196f3; margin-top: 20px;">
+          <div class="success-title" style="color: #1976d2;">✓ Cadastro Localizado!</div>
+          <div class="success-details">
+            <strong>Número do cadastro:</strong> ${registration.id}<br>
+            <strong>Data do cadastro:</strong> ${registrationDate}<br>
+            <strong>Celular cadastrado:</strong> ${maskPhone}<br><br>
+            <button class="copy-btn" onclick="updatePhoneNumber('${registration.id}')">Atualizar Celular</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function updatePhoneNumber(registrationId) {
+      const newPhone = prompt('Informe seu novo celular (com DDD 16):');
+      if (newPhone) {
+        const cleanPhone = newPhone.replace(/\D/g, '');
+        if (!/^169\d{8}$/.test(cleanPhone)) {
+          alert('Celular inválido. Apenas números com DDD 16 são aceitos.');
+          return;
+        }
+        // Aqui você faria a chamada para atualizar o celular na API
+        alert('Celular atualizado com sucesso! Seu número de cadastro permanece: ' + registrationId);
+      }
+    }
+
+    function copyRegistrationNumber() {
+      navigator.clipboard.writeText(lastRegistrationNumber);
+      alert('Número do cadastro copiado!');
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

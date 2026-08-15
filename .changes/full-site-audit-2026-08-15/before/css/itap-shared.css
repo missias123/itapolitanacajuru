@@ -1,0 +1,853 @@
+/*
+ * ITAP SHARED CSS — Sorveteria Itapolitana Cajuru
+ * Estilos compartilhados entre todas as páginas principais.
+ * Inclui: header padrão (.itap-header)
+ * Gerado na Fase 2 da refatoração arquitetural.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   CABEÇALHO PADRÃO ITAPOLITANA
+   Usado em: encomendas, promocao, offline
+   (index.html usa .header — será migrado em refatoração futura)
+═══════════════════════════════════════════════════════════════════ */
+.itap-header {
+  background: linear-gradient(135deg, #E8000D, #C62828);
+  border-bottom: 4px solid #FFD600;
+  padding: 0 12px;
+  position: relative;
+  top: auto;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+  width: 100%;
+  box-sizing: border-box;
+}
+.itap-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 8px 10px;
+}
+.itap-brand-icon {
+  width: 90px;
+  min-width: 90px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 0 2px 0;
+}
+.itap-brand-icon img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 0 0 3px #C62828, 0 0 0 6px #F9A825, 0 0 0 9px #0D47A1, 0 4px 18px rgba(0, 0, 0, .18);
+}
+.itap-header-nav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.itap-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 6px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 900;
+  min-height: 60px;
+  text-align: center;
+  border: 2px solid rgba(255, 255, 255, .35);
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+  line-height: 1.1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+  text-decoration: none;
+  transition: transform .15s, filter .15s;
+  color: #fff;
+}
+.itap-nav-btn:active  { transform: scale(.95); }
+.itap-nav-btn:hover   { transform: translateY(-2px); filter: brightness(1.15); }
+.itap-nav-icon  { font-size: 1.5em; line-height: 1; display: block; margin-bottom: 1px; }
+.itap-nav-label {
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 900;
+  line-height: 1.1;
+  display: block;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, .8);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: #fff;
+}
+@media (max-width: 480px) {
+  .itap-brand-icon img { width: 76px; height: 76px; }
+  .itap-nav-btn  { min-height: 52px; padding: 7px 4px; }
+  .itap-nav-label { font-size: 11px; }
+}
+@media (min-width: 601px) {
+  .itap-header-nav { grid-template-columns: repeat(4, 1fr); }
+  .itap-nav-btn    { min-height: 70px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LINHA SUPERIOR DO CABEÇALHO — CTA ÚNICO: DÚVIDAS
+   Header limpo: só o botão pulsante de Dúvidas como CTA principal.
+   Sem logo e sem robô no topo — foco total na conversão.
+═══════════════════════════════════════════════════════════════════ */
+.itap-header-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1px 0;
+  width: 100%;
+  box-sizing: border-box;
+    /* FIX: Z-index alto para garantir que o botão fique sempre clicável em qualquer tela */
+    position: relative;
+    z-index: 999999;
+    pointer-events: auto;
+  }
+  
+  .itap-header-duvidas {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 999999;
+    pointer-events: auto;
+  }
+
+/* Botão DÚVIDAS — CTA principal do topo, pulsante, bem legível */
+.ita-bot-duvidas-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 8px 22px !important;
+  min-height: 44px !important;
+  background: linear-gradient(135deg, #1565C0, #0D47A1) !important;
+  color: #fff !important;
+  border: 2px solid rgba(255, 255, 255, .85) !important;
+  border-radius: 999px !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: .8px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  animation: itabot-btn-pulse 1.8s ease-in-out infinite !important;
+  /* FIX: Garantir que sempre receba eventos de clique */
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 9999999 !important;
+}
+.ita-bot-duvidas-btn:hover { filter: brightness(1.12); transform: scale(1.04); }
+.ita-bot-duvidas-btn:focus-visible { outline: 3px solid #FFD600; outline-offset: 2px; }
+
+@keyframes itabot-btn-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,.9), 0 4px 12px rgba(0,60,180,.35); }
+  50%       { box-shadow: 0 0 0 2px rgba(255,255,255,1), 0 0 18px rgba(0,80,220,.65), 0 0 32px rgba(0,80,220,.3); }
+}
+
+@media (max-width: 360px) { .ita-bot-duvidas-btn { padding: 9px 22px; font-size: 13px; } }
+@media (prefers-reduced-motion: reduce) {
+  .ita-bot-duvidas-btn { animation: none; box-shadow: 0 4px 12px rgba(0,60,180,.35); }
+  .itap-footer-pill { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SISTEMA DE BOTÕES ITAPOLITANA — base + variantes
+   Usado em todas as páginas. Herança: .btn + variante de cor/tipo.
+   Versão responsiva: mobile-first, min-height 44px (touch target).
+═══════════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 20px;
+  min-height: 44px;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: .92rem;
+  font-weight: 900;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .15s, transform .12s, filter .15s;
+  white-space: normal;
+  word-break: break-word;
+  letter-spacing: .3px;
+}
+.btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: scale(.96); filter: none; }
+.btn:disabled, .btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn:focus-visible { outline: 3px solid #FFD600; outline-offset: 2px; }
+
+/* Variantes de cor */
+.btn-primary   { background: linear-gradient(135deg, #E65100, #FF6D00); color: #fff; box-shadow: 0 4px 14px rgba(232,81,0,.3); }
+.btn-danger    { background: linear-gradient(135deg, #FF2020, #C62828); color: #fff; box-shadow: 0 4px 14px rgba(232,0,13,.3); }
+.btn-blue      { background: linear-gradient(135deg, #1565C0, #0D47A1); color: #fff; box-shadow: 0 4px 14px rgba(13,71,161,.3); }
+.btn-green     { background: linear-gradient(135deg, #2e7d32, #43a047); color: #fff; box-shadow: 0 4px 14px rgba(46,125,50,.25); }
+.btn-wpp       { background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; box-shadow: 0 4px 14px rgba(37,211,102,.25); }
+.btn-secondary { background: #fff; color: #1A0A00; border: 1.5px solid rgba(0,0,0,.12); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.btn-ghost     { background: transparent; color: #E65100; border: 1.5px solid currentColor; }
+
+/* Layout helpers */
+.btn-block { width: 100%; }
+/* Alias compatível com  (laranja quente) */
+.btn-sec   { background: linear-gradient(135deg, #E65100, #FF8F00); color: #fff; box-shadow: 0 4px 14px rgba(230,81,0,.25); }
+
+/* Responsividade */
+@media (max-width: 360px) { .btn { padding: 10px 14px; font-size: .85rem; min-height: 44px; } }
+@media (min-width: 768px) { .btn { padding: 12px 24px; font-size: .95rem; } }
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTER — PILLS LGPD e BADGES DE CONFIANÇA
+   Compartilhados entre encomendas, promocao (e outros rodapés)
+═══════════════════════════════════════════════════════════════════ */
+.itap-footer-pill {
+  color: #FBD100;
+  font-weight: 900;
+  font-size: .82rem;
+  text-decoration: none;
+  background: rgba(251, 209, 0, .12);
+  border: 1.5px solid rgba(251, 209, 0, .6);
+  border-radius: 50px;
+  padding: 7px 15px;
+  display: inline-block;
+  animation: itap-footer-pulse 2.2s ease-in-out infinite;
+  white-space: nowrap;
+}
+.itap-footer-pill:hover { background: rgba(251, 209, 0, .25); text-decoration: underline; }
+@keyframes itap-footer-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 209, 0, .65);  border-color: rgba(251, 209, 0, .65); }
+  50%       { box-shadow: 0 0 0 8px rgba(251, 209, 0, 0);  border-color: #FBD100; }
+}
+.itap-footer-nav {
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 30px;
+  padding: 7px 14px;
+  display: inline-block;
+  border: 1.5px solid rgba(255, 255, 255, .35);
+  background: rgba(255, 255, 255, .12);
+}
+.itap-footer-nav:hover { background: rgba(255, 255, 255, .25); }
+@media (max-width: 600px) { footer { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important; } }
+
+/* Selos de confiança — estilo grandes apps (iFood, Rappi) */
+.badge-conf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, .13);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, .55);
+  border-radius: 30px;
+  padding: 7px 14px;
+  font-size: .8rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .12);
+  transition: background .2s, transform .15s;
+}
+.badge-conf:hover { background: rgba(255, 255, 255, .22); transform: translateY(-1px); }
+.badge-conf.badge-dest {
+  border-color: rgba(251, 209, 0, .8);
+  background: rgba(251, 209, 0, .14);
+  color: #FBD100;
+  box-shadow: 0 2px 10px rgba(251, 209, 0, .22), inset 0 1px 0 rgba(251, 209, 0, .1);
+}
+.badge-conf.badge-dest:hover { background: rgba(251, 209, 0, .24); }
+.badge-conf .badge-icon { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
+.badges-confianca { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 16px 0 20px; }
+@media (max-width: 480px) { .badge-conf { font-size: .73rem; padding: 6px 11px; } }
+
+/* ═══════════════════════════════════════════════════════════════════
+   UX / PERFORMANCE — padrões inspirados em grandes apps de alimentos
+   Reutilizado nas páginas principais para reforçar clareza de fluxo,
+   hierarquia visual mobile e CTA de instalação do PWA.
+═══════════════════════════════════════════════════════════════════ */
+.itap-page-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.itap-food-hero {
+  background:
+    radial-gradient(circle at top right, rgba(255, 214, 0, .24), transparent 30%),
+    linear-gradient(135deg, #FFF7EE 0%, #FFFFFF 46%, #FFF1E3 100%);
+  border: 1px solid #F5D7BC;
+  border-radius: 28px;
+  box-shadow: 0 16px 36px rgba(26, 10, 0, .09);
+  overflow: hidden;
+}
+
+.itap-food-hero__inner {
+  display: grid;
+  gap: 18px;
+  padding: 22px 18px;
+}
+
+.itap-food-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #FFE8D2;
+  color: #C62828;
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.itap-food-hero__title {
+  font-size: clamp(1.8rem, 6.8vw, 3rem);
+  line-height: 1.08;
+  color: #1A0A00;
+  margin: 0;
+}
+
+.itap-food-hero__title strong {
+  color: #E65100;
+}
+
+.itap-food-hero__description {
+  font-size: clamp(.98rem, 3.6vw, 1.12rem);
+  line-height: 1.65;
+  color: #5D4037;
+  margin: 0;
+  max-width: 56ch;
+}
+
+.itap-food-hero__actions {
+  display: grid;
+  gap: 10px;
+}
+
+.itap-food-hero__action,
+.itap-install-btn {
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 18px;
+  border: none;
+  padding: 12px 18px;
+  font-size: .96rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, .12);
+  transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.itap-food-hero__action:hover,
+.itap-install-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.itap-food-hero__action--primary {
+  background: linear-gradient(135deg, #E65100, #FF6D00);
+  color: #fff;
+}
+
+.itap-food-hero__action--secondary {
+  background: linear-gradient(135deg, #0D47A1, #1565C0);
+  color: #fff;
+}
+
+.itap-food-hero__action--ghost {
+  background: #fff;
+  color: #1A0A00;
+  border: 2px solid #D4B896;
+  box-shadow: 0 8px 18px rgba(26, 10, 0, .10);
+}
+
+.itap-install-btn {
+  background: linear-gradient(135deg, #EF0129, #C62828);
+  color: #fff;
+}
+
+.itap-install-btn.is-hidden,
+.js-pwa-install[hidden] {
+  display: none !important;
+}
+
+.itap-food-hero__meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.itap-food-hero__meta-card {
+  min-height: 86px;
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid #F6D9BF;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.itap-food-hero__meta-label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 900;
+  color: #E65100;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+  margin-bottom: 6px;
+}
+
+.itap-food-hero__meta-card p {
+  margin: 0;
+  color: #5D4037;
+  font-size: .88rem;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.itap-section-stack {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.itap-surface-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.itap-surface-card {
+  background: #fff;
+  border: 1px solid #F0D7C0;
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(26, 10, 0, .06);
+  overflow: hidden;
+}
+
+.itap-surface-card__body {
+  padding: 16px;
+}
+
+.itap-surface-card__eyebrow {
+  font-size: .74rem;
+  font-weight: 900;
+  color: #C62828;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.itap-surface-card__title {
+  font-size: 1.03rem;
+  font-weight: 900;
+  color: #1A0A00;
+  margin: 0 0 6px;
+}
+
+.itap-surface-card__text {
+  font-size: .86rem;
+  line-height: 1.55;
+  color: #6D4C41;
+  margin: 0;
+}
+
+.itap-surface-card__media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #F7F7F7;
+}
+
+.itap-chip-row,
+.itap-anchor-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.itap-chip,
+.itap-anchor-strip a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid #F1D2B8;
+  background: #fff;
+  color: #5D4037;
+  font-size: .8rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(26, 10, 0, .06);
+}
+
+.itap-anchor-strip {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.itap-anchor-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.itap-anchor-strip a.is-dest {
+  background: linear-gradient(135deg, #E65100, #FF6D00);
+  color: #fff;
+  border-color: transparent;
+}
+
+.itap-inline-note {
+  background: #FFF4E5;
+  border: 1px solid #FFD2A6;
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: #8D4E00;
+  font-size: .84rem;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.itap-flow-list {
+  display: grid;
+  gap: 10px;
+}
+
+.itap-flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid #F0D8C4;
+}
+
+.itap-flow-step__num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #EF0129;
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.itap-flow-step p {
+  margin: 0;
+  color: #5D4037;
+  font-size: .86rem;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+@media (min-width: 700px) {
+  .itap-page-shell {
+    padding: 22px 20px;
+  }
+
+  .itap-food-hero__inner {
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr);
+    align-items: center;
+    padding: 28px;
+  }
+
+  .itap-food-hero__actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .itap-surface-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ICONOGRAFIA BENTO UI — PADRÃO PREMIUM 2026
+   Containers de ícones com profundidade, cores estimulantes e
+   micro-interações para uma experiência World Class.
+   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   ICONOGRAFIA BENTO UI — PADRÃO PREMIUM 2026
+   ═══════════════════════════════════════════════════════════════════ */
+.bento-icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(255,255,255,0.5);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.bento-icon-container svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+}
+
+/* Variantes de Cores Estimulantes */
+.bento-icon-container.red    { background: linear-gradient(135deg, #FFEBEE, #FFCDD2); color: #EA1D2C; box-shadow: 0 4px 12px rgba(234, 29, 44, 0.15); }
+.bento-icon-container.orange { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: #EA580C; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15); }
+.bento-icon-container.purple { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); color: #9333EA; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.15); }
+.bento-icon-container.blue   { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); color: #0D47A1; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.15); }
+.bento-icon-container.brown  { background: linear-gradient(135deg, #EFEBE9, #D7CCC8); color: #4E342E; box-shadow: 0 4px 12px rgba(78, 52, 46, 0.15); }
+.bento-icon-container.white  { background: rgba(255,255,255,0.2); color: #fff; box-shadow: none; border: 1px solid rgba(255,255,255,0.4); }
+.bento-icon-container.small { width: 32px; height: 32px; border-radius: 8px; margin-right: 0; }
+.bento-icon-container.small svg { width: 18px; height: 18px; stroke-width: 2; }
+
+.itap-chevron {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.acc.active .itap-chevron {
+  transform: rotate(180deg);
+}
+
+/* Micro-animação ao interagir */
+.acc-header:hover .bento-icon-container,
+.itap-nav-btn:hover .bento-icon-container,
+.demo-item:hover .bento-icon-container {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+@media (max-width: 480px) {
+  .bento-icon-container {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    margin-right: 8px;
+  }
+  .bento-icon-container svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   ICONOGRAFIA APROVADA — CLEAN, BRASILEIRA E RESPONSIVA
+   Os ícones mantêm o porte visual anterior, mas com traço mais leve,
+   cores pastel e contraste suficiente para leitura em qualquer tela.
+═══════════════════════════════════════════════════════════════════ */
+.bento-icon-container {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  border: 1px solid rgba(100, 60, 40, .08);
+  box-shadow: 0 5px 16px rgba(60, 30, 15, .055);
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.bento-icon-container svg {
+  display: block;
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.bento-icon-container.red    { background: #fff0ed; color: #c62828; box-shadow: 0 5px 16px rgba(198, 40, 40, .10); }
+.bento-icon-container.orange { background: #fff7e6; color: #b45309; box-shadow: 0 5px 16px rgba(180, 83, 9, .10); }
+.bento-icon-container.purple { background: #f4eaff; color: #6b2d86; box-shadow: 0 5px 16px rgba(107, 45, 134, .10); }
+.bento-icon-container.blue   { background: #eaf5ff; color: #1d5d8f; box-shadow: 0 5px 16px rgba(29, 93, 143, .10); }
+.bento-icon-container.brown  { background: #f7eee8; color: #7c4b2e; box-shadow: 0 5px 16px rgba(124, 75, 46, .10); }
+.bento-icon-container.white  { background: rgba(255, 255, 255, .18); color: #fff; border-color: rgba(255,255,255,.4); box-shadow: none; }
+.bento-icon-container.small { width: 32px; height: 32px; border-radius: 10px; }
+.bento-icon-container.small svg { width: 18px; height: 18px; stroke-width: 1.8; }
+.itap-nav-icon .bento-icon-container { width: 36px; height: 36px; border-radius: 11px; }
+.itap-nav-icon .bento-icon-container svg { width: 22px; height: 22px; }
+@media (max-width: 480px) {
+  .bento-icon-container { width: 38px; height: 38px; border-radius: 11px; }
+  .bento-icon-container svg { width: 22px; height: 22px; }
+  .itap-nav-icon .bento-icon-container { width: 34px; height: 34px; border-radius: 10px; }
+  .itap-nav-icon .bento-icon-container svg { width: 20px; height: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bento-icon-container { transition: none; }
+}
+
+/* Selo de origem para produtos cuja receita é base leite. A faixa ocupa sua própria linha para nunca cobrir nome, preço ou CTA. */
+.selo-leite-pasteurizado {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  max-width: 100%;
+  margin: 0;
+  padding: 4px 9px;
+  border: 1px solid rgba(13, 71, 161, .22);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #eef6ff, #ffffff);
+  color: #0d47a1;
+  font-size: .68rem;
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: .01em;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 2px 8px rgba(13, 71, 161, .10);
+  animation: selo-leite-pulse 2.8s ease-in-out infinite;
+}
+.selo-leite-pasteurizado::before {
+  content: '✓';
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1565c0;
+  color: #fff;
+  font-size: .62rem;
+  line-height: 1;
+}
+@keyframes selo-leite-pulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(13, 71, 161, .10); transform: scale(1); filter: brightness(1); }
+  50% { box-shadow: 0 4px 20px rgba(21, 101, 192, .45); transform: scale(1.03); filter: brightness(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .selo-leite-pasteurizado { animation: none; }
+}
+@media (max-width: 420px) {
+  .selo-leite-pasteurizado {
+    max-width: 100%;
+    padding: 4px 7px;
+    font-size: .62rem;
+  }
+  .selo-leite-pasteurizado::before {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   ENQUADRAMENTO PREMIUM — camada segura sobre a estrutura existente
+   Objetivo: uma área útil previsível, sem overflow horizontal, com
+   ícones isolados de pseudo-elementos ou fundos legados.
+═══════════════════════════════════════════════════════════════════ */
+:root {
+  --itap-frame-max: 1120px;
+  --itap-frame-gutter: clamp(12px, 3vw, 28px);
+  --itap-frame-radius: 20px;
+  --itap-frame-shadow: 0 12px 32px rgba(25, 20, 18, .08);
+}
+
+html { overflow-x: hidden; }
+body { overflow-x: hidden; }
+
+/* Cada SVG deve ocupar somente sua caixa Bento; nenhuma camada antiga fica
+   autorizada a desenhar por trás do símbolo atual. */
+.bento-icon-container,
+.itap-nav-icon,
+.categoria-header__icon,
+.picole-grupo-sec__icon {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  min-width: 0;
+}
+.bento-icon-container::before,
+.bento-icon-container::after,
+.itap-nav-icon::before,
+.itap-nav-icon::after,
+.categoria-header__icon::before,
+.categoria-header__icon::after,
+.picole-grupo-sec__icon::before,
+.picole-grupo-sec__icon::after {
+  content: none !important;
+  display: none !important;
+}
+.bento-icon-container svg {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+/* O wrapper do ícone nunca invade o texto vizinho. */
+.itap-nav-icon,
+.categoria-header__icon,
+.picole-grupo-sec__icon {
+  flex: 0 0 auto;
+}
+.itap-nav-label,
+.categoria-header__copy,
+.picole-grupo-sec__label,
+.prod-nome,
+.prod-card,
+.selo-leite-pasteurizado {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .itap-header {
+    padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right));
+  }
+  .itap-header-inner {
+    width: min(100%, var(--itap-frame-max));
+    padding-inline: 4px;
+  }
+  .itap-nav-btn { min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itap-nav-btn,
+  .bento-icon-container,
+  .itap-footer-pill { transition: none !important; animation: none !important; }
+}
