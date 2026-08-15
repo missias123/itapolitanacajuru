@@ -2472,15 +2472,16 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </style>
 
 <style>
-.enc-preview-list{display:grid;gap:8px;margin:2px 0 4px}
-.enc-preview-item{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:10px 12px;background:#fff;border:1px solid rgba(31,45,61,.12);border-radius:12px;box-shadow:0 2px 8px rgba(31,45,61,.05);font-size:.86rem;line-height:1.25;color:#263238}
-.enc-preview-item span{min-width:0;font-weight:750}
-.enc-preview-item strong{flex:0 0 auto;color:#B71C1C;font-size:.9rem;white-space:nowrap}
-.enc-preview-item.is-esgotado{opacity:.62}
-.enc-preview-item.is-esgotado strong{color:#777}
-.home-enc-comp-card .btn-row-grid{display:grid;grid-template-columns:1fr}
-.home-enc-comp-card .enc-link-btn{display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;border-radius:12px;text-decoration:none;font-weight:900}
-@media (min-width:700px){.enc-preview-list{grid-template-columns:repeat(2,minmax(0,1fr))}.home-enc-comp-card .enc-preview-list{grid-template-columns:1fr}}
+.enc-preview-list{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:10px;margin:8px 0 16px}
+.enc-preview-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 10px;background:#fff;border:2px solid #F2F2F2;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.2s}
+.enc-preview-item:hover{transform:translateY(-2px)}
+.enc-preview-item span{font-weight:800;font-size:0.95rem;color:#333;margin-bottom:6px;line-height:1.2}
+.enc-preview-item strong{color:#008C45;font-size:1.1rem;font-weight:900}
+.enc-preview-item.is-esgotado{opacity:0.6;filter:grayscale(1)}
+.enc-preview-item.is-esgotado strong{color:#999}
+.home-enc-comp-card .btn-row-grid{margin-top:12px}
+.home-enc-comp-card .enc-link-btn{display:flex;align-items:center;justify-content:center;padding:16px;border-radius:14px;text-decoration:none;font-weight:900;font-size:1.1rem;box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+@media (max-width:480px){.enc-preview-list{grid-template-columns:repeat(2, 1fr)}}
 </style>
 </head>
 <body class="fueap-surface fueap-index">
@@ -3528,6 +3529,10 @@ function toggleAcc(id) {
     _trackUiEvent('category_open', { category_id: el.id });
     if (id === 'acc-iso') renderIso();
     if (id === 'acc-sobremesas') renderSobremesas();
+    if (id === 'acc-enc-caixas') renderEncomendasPreviews();
+    if (id === 'acc-enc-tortas') renderEncomendasPreviews();
+    if (id === 'acc-enc-picolés') renderEncomendasPreviews();
+    if (id === 'acc-complementos') renderEncomendasPreviews();
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -4704,21 +4709,36 @@ function renderPreviewEncomenda(id, itens, precoGetter) {
   el.innerHTML = `<div class="enc-preview-list" role="list">${itens.map(item => {
     const nome = item.nome || item.titulo || item.label || '';
     const preco = precoGetter(item);
-    return `<div class="enc-preview-item" role="listitem"><span>${escHTML(nome)}</span><strong>${formatarPrecoEncomenda(preco)}</strong></div>`;
+    const esgotado = item.estoque !== undefined && Number(item.estoque) <= 0;
+    return `<div class="enc-preview-item ${esgotado ? 'is-esgotado' : ''}" role="listitem">
+      <span>${escHTML(nome)}</span>
+      <strong>${esgotado ? 'Esgotado' : formatarPrecoEncomenda(preco)}</strong>
+    </div>`;
   }).join('')}</div>`;
 }
 function renderEncomendasPreviews() {
   const caixas = Array.isArray(produtos && produtos.caixas_enc) && produtos.caixas_enc.length
     ? produtos.caixas_enc
     : Object.entries((produtos && produtos.caixas_viagem) || {}).map(([nome, preco]) => ({ nome, preço: preco }));
+  
   const tortas = Array.isArray(produtos && produtos.tortas_enc) && produtos.tortas_enc.length
     ? produtos.tortas_enc
-    : [{ nome: 'Torta de Sorvete', preço: produtos && produtos.sobremesas ? produtos.sobremesas['Torta de Sorvete'] : 100 }];
-  const picoles = Object.entries((produtos && (produtos.picolés || produtos.picoles)) || {}).map(([id, item]) => ({ id, nome: item.nome, preço: item.preço_atacado ?? item.preco_atacado ?? item.preço_varejo ?? item.preco_varejo }));
+    : [{ nome: 'Torta de Sorvete', preço: (produtos && produtos.sobremesas) ? produtos.sobremesas['Torta de Sorvete'] : 100 }];
+
+  // Para picolés, mostramos as categorias e o preço de atacado
+  const picolesData = (produtos && (produtos.picolés || produtos.picoles)) || {};
+  const picoles = Object.entries(picolesData).map(([id, item]) => ({ 
+    nome: item.nome || id, 
+    preço: item.preço_atacado ?? item.preco_atacado ?? item.preço_varejo ?? item.preco_varejo,
+    estoque: item.estoque
+  }));
+
+  const acrescimos = Array.isArray(produtos && produtos.acrescimos) ? produtos.acrescimos : [];
+
   renderPreviewEncomenda('enc-preview-caixas', caixas, item => item.preço ?? item.preco);
   renderPreviewEncomenda('enc-preview-tortas', tortas, item => item.preço ?? item.preco);
   renderPreviewEncomenda('enc-preview-picoles', picoles, item => item.preço ?? item.preco);
-  renderComplementosCardápio();
+  renderPreviewEncomenda('enc-preview-acrescimos', acrescimos, item => item.preço ?? item.preco);
 }
 function renderTudo() {
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAçaí();renderPicolés();renderIso();renderSobremesas();
