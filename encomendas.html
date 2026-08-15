@@ -106,7 +106,11 @@
     .categoria-conteudo { display: none; padding: 24px; border-top: 1px solid #F2F2F2; background: #FAFAFA; }
 
     .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-    .prod-card { border: 1px solid #F2F2F2; border-radius: 8px; padding: 16px; text-align: center; background: var(--white); transition: transform 0.2s; }
+    .prod-card { border: 2px solid #F2F2F2; border-radius: 16px; padding: 20px; text-align: center; background: var(--white); transition: all 0.2s; }
+    .prod-card--azul { border-color: #1565C0; box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1); }
+    .prod-card--verde { border-color: #008C45; box-shadow: 0 4px 12px rgba(0, 140, 69, 0.1); }
+    .prod-card--amarela { border-color: #FFD600; box-shadow: 0 4px 12px rgba(255, 214, 0, 0.1); }
+    .prod-card--roxa { border-color: #6A1B9A; box-shadow: 0 4px 12px rgba(106, 27, 154, 0.1); }
     .prod-nome { font-weight: 800; font-size: 1.18rem; color: var(--text-main); margin-bottom: 8px; letter-spacing: -0.01em; }
     .prod-preco { color: var(--success); font-weight: 800; font-size: 1.28rem; margin-bottom: 20px; }
     .btn-sabores {
@@ -599,33 +603,34 @@
 
         caixasEl.innerHTML = PRODUTOS.map(function (p) {
             var indisponivel = Boolean(p.esgotado || Number(p.estoque || 0) <= 0);
-            var classeBotaoCaixa = {
-                cx5l_2s: 'btn-sabores--caixa-azul',
-                cx5l_3s: 'btn-sabores--caixa-verde',
-                cx10l_2s: 'btn-sabores--caixa-amarela',
-                cx10l_3s: 'btn-sabores--caixa-roxa'
-            }[p.id] || 'btn-sabores--caixa-azul';
+            var cores = {
+                cx5l_2s: { btn: 'btn-sabores--caixa-azul', card: 'prod-card--azul' },
+                cx5l_3s: { btn: 'btn-sabores--caixa-verde', card: 'prod-card--verde' },
+                cx10l_2s: { btn: 'btn-sabores--caixa-amarela', card: 'prod-card--amarela' },
+                cx10l_3s: { btn: 'btn-sabores--caixa-roxa', card: 'prod-card--roxa' }
+            }[p.id] || { btn: 'btn-sabores--caixa-azul', card: 'prod-card--azul' };
+            
             var status = indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)';
             var nome = escaparHtml(p.nome);
-            return `<div class="prod-card ${indisponivel ? 'is-esgotado' : ''}">
+            return `<div class="prod-card ${cores.card} ${indisponivel ? 'is-esgotado' : ''}">
                 <div class="prod-nome">${nome}</div>
-                <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">${p.max} Sabores Tipo Artesanal</div>
-                <div class="prod-card__estoque ${indisponivel ? 'is-esgotado' : ''}">${status}</div>
-                <div class="prod-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</div>
-                <button class="btn-sabores ${classeBotaoCaixa}" ${indisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('${p.id}', ${Number(p.preco)}, ${Number(p.max)}, '${String(p.nome).replace(/'/g, "\\'")}')">${indisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
+                <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">${p.max} Sabores Tipo Artesanal</div>
+                <div class="prod-card__estoque">${status}</div>
+                <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
+                <button class="btn-sabores ${cores.btn}" onclick="window.abrirSaboresSorvete('${p.id}', ${p.preco}, ${p.max}, '${nome}')" ${indisponivel ? 'disabled' : ''}>Escolher sabores</button>
             </div>`;
         }).join('');
 
         var tortaIndisponivel = Boolean(TORTA_ESTOQUE.esgotado || Number(TORTA_ESTOQUE.estoque || 0) <= 0);
-        tortasEl.innerHTML = `<div class="prod-card ${tortaIndisponivel ? 'is-esgotado' : ''}">
+        tortasEl.innerHTML = `<div class="prod-card prod-card--verde ${tortaIndisponivel ? 'is-esgotado' : ''}">
             <div class="prod-nome">Torta de Sorvete</div>
-            <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">Até ${Number(TORTA_ESTOQUE.max)} Sabores Tipo Artesanal</div>
-            <div class="prod-card__estoque ${tortaIndisponivel ? 'is-esgotado' : ''}">${tortaIndisponivel ? 'Esgotado' : 'Disponível: ' + Number(TORTA_ESTOQUE.estoque) + ' unidade(s)'}</div>
-            <div class="prod-preco">R$ ${Number(TORTA_ESTOQUE.preco).toFixed(2).replace('.',',')}</div>
-            <button class="btn-sabores btn-sabores--tortas" ${tortaIndisponivel ? 'disabled aria-disabled="true"' : ''} onclick="window.abrirSaboresSorvete('torta', ${Number(TORTA_ESTOQUE.preco)}, ${Number(TORTA_ESTOQUE.max)}, 'Torta de Sorvete')">${tortaIndisponivel ? 'Indisponível' : 'Escolher sabores'}</button>
+            <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">Até 3 Sabores Tipo Artesanal</div>
+            <div class="prod-card__estoque">${statusEstoqueProduto(TORTA_ESTOQUE)}</div>
+            <div class="prod-preco">R$ ${TORTA_ESTOQUE.preco.toFixed(2).replace('.',',')}</div>
+            <button class="btn-sabores btn-sabores--tortas" onclick="window.abrirSaboresSorvete('torta', ${TORTA_ESTOQUE.preco}, ${TORTA_ESTOQUE.max}, 'Torta de Sorvete')" ${tortaIndisponivel ? 'disabled' : ''}>Escolher sabores</button>
         </div>`;
 
-        picolesEl.innerHTML = `<div class="prod-card">
+        picolesEl.innerHTML = `<div class="prod-card prod-card--roxa">
             <div class="prod-nome">Lote de Picolés Atacado</div>
             <div style="font-size:0.8rem; color:#666; margin-bottom:10px;">Tipo acima; preço, quantidade e subtotal por sabor; mínimo 100 unidades</div>
             <div class="prod-card__estoque">Estoque consultado no catálogo oficial</div>
