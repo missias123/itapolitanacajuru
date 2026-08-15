@@ -199,16 +199,26 @@
     .btn-sabores--picoles { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
     .btn-sabores:disabled { opacity: 0.55; cursor: not-allowed; }
 
+    /* Camada única de tela inteira: a etapa ativa cobre tudo que ficou atrás. */
     .modal {
         position: fixed; inset: 0; width: 100%; height: 100%;
         padding: env(safe-area-inset-top, 0px) max(0px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(0px, env(safe-area-inset-left, 0px));
-        background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000;
-        overscroll-behavior: contain; backdrop-filter: blur(4px);
+        background: #08080A; display: none; align-items: center; justify-content: center;
+        z-index: 2147483000; isolation: isolate; contain: paint; pointer-events: auto;
+        overscroll-behavior: contain; backdrop-filter: blur(6px);
+        animation: folhaEntrada .22s cubic-bezier(.22,.8,.24,1) both;
     }
     .modal-content {
-        background: white; width: min(100%, 760px); max-width: 760px; height: min(100%, 900px); max-height: min(94dvh, 900px);
+        position: relative; z-index: 1; background: white; width: min(100%, 760px); max-width: 760px; height: min(100%, 900px); max-height: min(94dvh, 900px);
         min-height: 0; border-radius: 0; padding: clamp(16px, 3vw, 30px); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column;
+        box-shadow: 0 18px 60px rgba(0,0,0,.45);
     }
+    @keyframes folhaEntrada { from { opacity: 0; transform: translateX(5%); } to { opacity: 1; transform: translateX(0); } }
+    body.lock-scroll > header,
+    body.lock-scroll > nav,
+    body.lock-scroll .btn-carrinho-fixo,
+    body.lock-scroll .header,
+    body.lock-scroll [data-fixed-ui] { visibility: hidden !important; pointer-events: none !important; }
     @media (min-width: 641px) {
         .modal { align-items: center; }
         .modal-content { height: 90vh; border-radius: 20px; max-height: 850px; padding: 30px; }
@@ -355,14 +365,6 @@
       50% { transform: scale(1.01); opacity: 0.92; }
       100% { transform: scale(1); opacity: 1; }
     }
-    .picole-aba-btn .bento-icon-container {
-      width: 24px;
-      height: 24px;
-      flex: 0 0 24px;
-      margin-right: 0;
-      border-radius: 8px;
-    }
-    .picole-aba-btn .bento-icon-container svg { width: 16px; height: 16px; }
     .picole-grupo-sec__titulo {
       display: flex;
       align-items: center;
@@ -495,9 +497,6 @@
           <div class="fluxo-progresso__linha" style="font-size: .88rem; margin-bottom: 4px;"><span id="total-picoles" style="font-weight: 900; color: var(--primary);">0 unidades</span><span style="font-weight: 700; color: #444;">Meta: 100</span></div>
           <div class="fluxo-progresso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="height: 10px; border-radius: 6px; background: #eee; overflow:hidden;"><div id="progresso-picoles" class="fluxo-progresso__valor" style="height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease;"></div></div>
         </div>
-
-        <!-- Abas Rápidas (Sticky Tabs) estilo iFood -->
-        <div id="picoles-abas-container" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #eee; scrollbar-width: none; flex-shrink: 0;"></div>
 
         <!-- Lista Flexível: ocupa exatamente todo o espaço restante do modal, sem desperdício e com rolagem perfeita -->
         <div id="lista-sabores-picole" style="flex: 1; overflow-y: auto; padding: 0 4px 4px 0; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;"></div>
@@ -798,7 +797,17 @@
     };
 
     window.abrirModal = function(id) {
-        document.getElementById(id).style.display = 'flex';
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        // Fecha e retira imediatamente qualquer etapa anterior para não empilhar telas.
+        document.querySelectorAll('.modal').forEach(function (outra) {
+            if (outra !== modal) {
+                outra.style.display = 'none';
+                outra.setAttribute('aria-hidden', 'true');
+            }
+        });
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('lock-scroll');
     };
 
@@ -949,8 +958,14 @@
     }
 
     window.fecharModal = function(id) {
-        document.getElementById(id).style.display = 'none';
-        document.body.classList.remove('lock-scroll');
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        var existeAberta = Array.from(document.querySelectorAll('.modal')).some(function (item) {
+            return window.getComputedStyle(item).display !== 'none';
+        });
+        if (!existeAberta) document.body.classList.remove('lock-scroll');
     };
 
     window.abrirSaboresSorvete = function(id, preco, max, nome, editIndex) {
@@ -1050,7 +1065,6 @@
             alert('Aguarde: consultando o estoque oficial.');
             return;
         }
-        var abasHtml = '<button type="button" class="picole-aba-btn" data-tipo-id="todos" onclick="window.filtrarSecaoPicole(\'todos\')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid var(--primary); background: var(--primary); color: #fff; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto;">Todos</button>';
         var html = '';
         
         Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
@@ -1059,7 +1073,6 @@
             var tipoCurto = tipo.split('(')[0].trim();
             var tipoId = 'grupo-picole-' + index;
             
-            abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">${icon}<span>${tipoCurto}</span></button>`;
             
             var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
@@ -1098,7 +1111,6 @@
             html += `</div></div>`;
         });
         
-        document.getElementById('picoles-abas-container').innerHTML = abasHtml;
         document.getElementById('lista-sabores-picole').innerHTML = html;
         atualizarAcaoPicoles();
         window.abrirModal('modal-picoles');

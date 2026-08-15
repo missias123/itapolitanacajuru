@@ -48,7 +48,7 @@
     var style = document.createElement('style');
     style.id = 'itabot-css';
     style.textContent = [
-      '#chat-dialog { display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:100000; background:rgba(0,0,0,0.55); overflow:hidden; align-items:center; justify-content:center; }',
+      '#chat-dialog { display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:2147483000 !important; background:#08080A !important; isolation:isolate; contain:paint; overflow:hidden; align-items:center; justify-content:center; }',
       '#chat-dialog.aberto { display:flex !important; }',
       '.chat-box { width:100%; max-width:460px; height:100%; max-height: 100dvh; background:#fff; border-radius:28px 28px 0 0; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,0.32); position:absolute; bottom:0; left:0; right:0; margin:0 auto; padding-bottom:env(safe-area-inset-bottom,0px); }',
       '@media (min-width: 601px) {',
@@ -210,6 +210,9 @@
       d = document.getElementById('chat-dialog');
     }
     d.classList.add('aberto');
+    // O Ita Bot é uma tela inteira: fecha visualmente todo o conteúdo anterior.
+    document.documentElement.classList.add('chat-open');
+    document.body.classList.add('chat-open','modal-aberto');
     _scrollY = window.scrollY;
     document.body.style.position = 'fixed';
     document.body.style.top = '-' + _scrollY + 'px';
@@ -229,6 +232,8 @@
   function _itabotFecharItaBot() {
     var d = document.getElementById('chat-dialog');
     if (d) d.classList.remove('aberto');
+    document.documentElement.classList.remove('chat-open');
+    document.body.classList.remove('chat-open','modal-aberto');
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.width = '';
