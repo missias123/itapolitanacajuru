@@ -403,6 +403,13 @@
             <input id="pedido-whatsapp" type="tel" oninput="window.validarWhatsapp()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="(16) 99999-9999" disabled />
             <small style="color: #666; display: block; margin-top: 4px;">Exigido DDD 16 para validação na região.</small>
           </div>
+
+          <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
+            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
+              <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
+              <span>Estou ciente do prazo de 5 dias úteis e pagamento antecipado para o pedido ser feito.</span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
@@ -937,12 +944,16 @@
         document.getElementById('pedido-nome').value = '';
         document.getElementById('pedido-endereco').value = '';
         document.getElementById('pedido-whatsapp').value = '';
+        document.getElementById('pedido-ciencia').checked = false;
         document.getElementById('bloco-endereco').style.opacity = '0.4';
         document.getElementById('bloco-endereco').style.pointerEvents = 'none';
         document.getElementById('pedido-endereco').disabled = true;
         document.getElementById('bloco-whatsapp').style.opacity = '0.4';
         document.getElementById('bloco-whatsapp').style.pointerEvents = 'none';
         document.getElementById('pedido-whatsapp').disabled = true;
+        document.getElementById('bloco-ciencia').style.opacity = '0.4';
+        document.getElementById('bloco-ciencia').style.pointerEvents = 'none';
+        document.getElementById('pedido-ciencia').disabled = true;
         
         var btnFin = document.getElementById('btn-finalizar-pedido');
         btnFin.style.opacity = '0.5';
@@ -996,12 +1007,29 @@
     window.validarWhatsapp = function() {
         var zap = document.getElementById('pedido-whatsapp').value.trim();
         var tel = zap.replace(/\D/g, '');
+        var ciencia = document.getElementById('pedido-ciencia').checked;
         var btnFin = document.getElementById('btn-finalizar-pedido');
         
+        var blocoCiencia = document.getElementById('bloco-ciencia');
+        var inputCiencia = document.getElementById('pedido-ciencia');
+        
         if (/^16\d{8,9}$/.test(tel)) {
-            btnFin.style.opacity = '1';
-            btnFin.style.pointerEvents = 'auto';
+            blocoCiencia.style.opacity = '1';
+            blocoCiencia.style.pointerEvents = 'auto';
+            inputCiencia.disabled = false;
+            
+            if (ciencia) {
+                btnFin.style.opacity = '1';
+                btnFin.style.pointerEvents = 'auto';
+            } else {
+                btnFin.style.opacity = '0.5';
+                btnFin.style.pointerEvents = 'none';
+            }
         } else {
+            blocoCiencia.style.opacity = '0.4';
+            blocoCiencia.style.pointerEvents = 'none';
+            inputCiencia.disabled = true;
+            inputCiencia.checked = false;
             btnFin.style.opacity = '0.5';
             btnFin.style.pointerEvents = 'none';
         }
@@ -1077,7 +1105,8 @@
                 var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
                 return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${item.preco.toFixed(2).replace('.',',')}`;
             }).join('\n\n') +
-            `\n\nTotal do Pedido: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
+            `\n\nTotal do Pedido: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}` +
+            `\n\n✅ Estou ciente do prazo de 5 dias úteis e pagamento antecipado para o pedido ser feito.`;
             
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
