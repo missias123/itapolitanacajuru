@@ -117,6 +117,26 @@
     return a;
   }
 
+  function montarCabecalhos() {
+    document.querySelectorAll('[data-itap-header-slot]').forEach(function (slot) {
+      if (slot.dataset.itapHeaderMounted === 'true') return;
+      var header = document.createElement('header');
+      header.className = 'itap-header';
+      header.setAttribute('data-itap-header', '');
+      header.innerHTML =
+        '<div class="itap-header-inner">' +
+          '<div class="itap-header-top"><div class="itap-header-duvidas">' +
+            '<button type="button" class="ita-bot-duvidas-btn" data-role="duvidas" id="ita-bot-duvidas" ' +
+              'onclick="if(window.abrirItaBot){window.abrirItaBot();}else{window.location.href=\'index.html#conteudo-principal\';}" ' +
+              'aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">DÚVIDAS</button>' +
+          '</div></div>' +
+          '<nav class="itap-header-nav" aria-label="Menu principal"></nav>' +
+        '</div>';
+      slot.replaceChildren(header);
+      slot.dataset.itapHeaderMounted = 'true';
+    });
+  }
+
   function montarMenuCompleto(nav) {
     var paginaAtual = descobrirPaginaAtual();
     nav.classList.add('itap-header-nav--full');
@@ -138,6 +158,7 @@
   }
 
   function run() {
+    montarCabecalhos();
     var navs = document.querySelectorAll('.itap-header-nav');
     if (!navs.length) return;
     injectCSS();

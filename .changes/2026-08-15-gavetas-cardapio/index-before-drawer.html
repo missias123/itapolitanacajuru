@@ -714,48 +714,109 @@ img{max-width:100%;display:block}
 /* TRAVA GLOBAL DA PÁGINA — PADRÃO GRANDES APPS */
 body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!important;touch-action:none}
 
-/* GAVETAS INTERNAS DO ARMÁRIO — uma gaveta aberta por vez.
-   A categoria continua no fluxo normal, mas o foco é exclusivo: durante a
-   abertura, o usuário vê somente a gaveta ativa, sem seções externas, rodapé
-   ou outros botões atravessando o conteúdo. */
-#menu-foco-portal{display:none!important;}
-html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100%;touch-action:pan-y;-webkit-overflow-scrolling:touch;scroll-behavior:auto!important;}
-#vc-container{position:relative;isolation:isolate;}
-#vc-container .acc{position:relative;overflow:clip;}
-#vc-container .acc.menu-foco-ativo{margin-bottom:18px;transform:none!important;box-shadow:0 12px 32px rgba(0,0,0,.18);overflow:visible;}
-#vc-container .acc.menu-foco-ativo .acc-body{position:relative;z-index:1;overflow:visible;touch-action:pan-y;overscroll-behavior-y:auto;}
-#vc-container .acc.menu-foco-ativo.menu-foco-scroll-livre .acc-body{max-height:none!important;overflow:visible!important;}
-#vc-container .acc.menu-foco-ativo .acc-header{position:relative;z-index:2;}
-#vc-container .acc-body{overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
-#vc-container .acc-body > .sabores-inline,
-#vc-container .acc-body > .prod-grid,
-#vc-container .acc-body > .btn-row-grid{position:relative;z-index:1;}
-.menu-foco-back{display:none!important;}
-
-/* Foco exclusivo da gaveta: o armário permanece no lugar, mas nenhum
-   elemento externo ou irmão pode vazar durante a leitura do conteúdo. */
-body.menu-foco-aberto #conteudo-principal > header,
-body.menu-foco-aberto #conteudo-principal > #itp-crs-style,
-body.menu-foco-aberto #conteudo-principal > #itp-crs-wrap,
-body.menu-foco-aberto #conteudo-principal > #strip-sensorial,
-body.menu-foco-aberto #conteudo-principal > .hero,
-body.menu-foco-aberto #conteudo-principal > #acai-natureon,
-body.menu-foco-aberto #conteudo-principal > #linha-festas,
-body.menu-foco-aberto #conteudo-principal > #quem-somos-itapolitana,
-body.menu-foco-aberto #conteudo-principal > #avaliacoes,
-body.menu-foco-aberto #conteudo-principal > footer,
-body.menu-foco-aberto > #cookie-banner,
-body.menu-foco-aberto > #itap-mobile-nav,
-body.menu-foco-aberto > .itap-pwa-banner,
-body.menu-foco-aberto > .skip-link{display:none!important;}
-body.menu-foco-aberto #cardapio > *:not(#vc-wrap),
-body.menu-foco-aberto #vc-wrap > .vc-banner,
-body.menu-foco-aberto #vc-container > .menu-categorias-cardapio,
-body.menu-foco-aberto #vc-container > .acc:not(.menu-foco-ativo){display:none!important;}
-body.menu-foco-aberto #vc-wrap,
-body.menu-foco-aberto #vc-container{max-height:none!important;min-height:0!important;opacity:1!important;overflow:visible!important;}
-body.menu-foco-aberto #vc-container > .acc.menu-foco-ativo{display:block!important;visibility:visible!important;pointer-events:auto!important;}
-@media(prefers-reduced-motion:reduce){#vc-container .acc-body{transition:none!important}.acc-header,.acc-arrow,.acc-circle{transition:none!important}}
+/* MODO FOCO DO CARDÁPIO — portal exclusivo, sem vazamento de irmãos.
+   O acordeão ativo é movido temporariamente para uma camada filha direta do
+   body. Assim header, rodapé, Açaí Natureon e qualquer seção posterior ficam
+   fora da árvore visual do foco, sem depender de uma lista frágil de seletores. */
+html.menu-foco-aberto,
+body.menu-foco-aberto { overflow:hidden!important; }
+body.menu-foco-aberto { width:100%!important; }
+body.menu-foco-aberto > *:not(#menu-foco-portal):not(script):not(style):not(link) {
+  visibility:hidden!important;
+  pointer-events:none!important;
+  user-select:none!important;
+}
+#menu-foco-portal {
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  width:100%;
+  height:100dvh;
+  overflow:hidden;
+  background:#FFFDF9;
+  isolation:isolate;
+  box-sizing:border-box;
+  animation:itapFocoPortalIn .22s cubic-bezier(.23,1,.32,1) both;
+}
+#menu-foco-portal.is-exiting {
+  animation:itapFocoPortalOut .2s cubic-bezier(.23,1,.32,1) both;
+}
+@keyframes itapFocoPortalIn {
+  from{opacity:0;transform:translate3d(0,12px,0);filter:blur(2px)}
+  to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+@keyframes itapFocoPortalOut {
+  from{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+  to{opacity:0;transform:translate3d(0,8px,0);filter:blur(2px)}
+}
+.acc.menu-foco-ativo {
+  position:relative!important;
+  inset:auto!important;
+  z-index:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:100%!important;
+  max-height:none!important;
+  margin:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  background:#FFFDF9!important;
+  padding:0!important;
+  box-sizing:border-box;
+  display:flex!important;
+  flex-direction:column!important;
+  animation:none!important;
+}
+#menu-foco-portal .acc.menu-foco-ativo .acc-header {
+  flex:0 0 auto;
+  position:relative!important;
+  top:auto;
+  z-index:3;
+  min-height:72px;
+  box-shadow:0 3px 14px rgba(0,0,0,.12);
+}
+#menu-foco-portal .acc.menu-foco-ativo .acc-body {
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+}
+.menu-foco-back {
+  position:relative;
+  flex:0 0 auto;
+  z-index:10;
+  display:flex!important;
+  width:100%;
+  align-items:center;
+  justify-content:center;
+  min-height:60px;
+  margin:0;
+  padding:12px 16px;
+  border:0;
+  border-radius:0;
+  background:linear-gradient(135deg,#E8000D,#FF6B35);
+  color:#fff;
+  font:900 16px/1.2 inherit;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  transition:filter .16s ease,transform .16s ease;
+}
+.menu-foco-back:hover{filter:brightness(1.06)}
+.menu-foco-back:active{transform:scale(.98)}
+@media(min-width:700px){
+  #menu-foco-portal{padding:16px;}
+  #menu-foco-portal .acc.menu-foco-ativo{border-radius:22px!important;box-shadow:0 12px 46px rgba(0,0,0,.2)}
+  #menu-foco-portal .acc.menu-foco-ativo .acc-header{border-radius:22px 22px 0 0}
+}
+@media(prefers-reduced-motion:reduce){#menu-foco-portal{animation:none!important}.menu-foco-back{transition:none}}
 
 /* MODAL CENTRALIZADO — PADRÃO GRANDES APPS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
@@ -1783,39 +1844,9 @@ body.cardapio-aberto { padding-bottom: 80px; }
 
 @media (max-width: 480px) {
   .prod-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 8px 0;
-  }
-  .prod-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    min-height: 100px;
-    padding: 8px;
-  }
-  .prod-card-img,
-  .prod-card-sem-foto {
-    width: 90px !important;
-    height: 90px !important;
-    flex: 0 0 90px;
-    border-radius: 8px;
-    margin: 0 12px 0 0;
-  }
-  .prod-card-body {
-    min-width: 0;
-    padding: 0;
-    flex: 1 1 auto;
-    text-align: left;
-  }
-  .prod-nome { font-size: 15px; line-height: 1.25; margin-bottom: 2px; }
-  .prod-desc { font-size: 12px; line-height: 1.35; margin-bottom: 6px; }
-  .prod-preço {
-    font-size: 16px;
-    border-top: 0;
-    padding-top: 0;
-    margin-top: 4px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px 4px;
   }
   .btn-voltar-inicio {
     width: calc(100% - 16px);
@@ -2499,7 +2530,26 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
 <!-- Barra de promoção removida a pedido do usuário -->
 <main id="conteudo-principal">
-<div class="itap-header-slot" data-itap-header-slot aria-label="Cabeçalho Itapolitana"></div>
+<header class="itap-header">
+<div class="itap-header-inner">
+<!-- Linha superior: 3 colunas — distância segura entre logo, botão Dúvidas e robô.
+     Mudança: substituiu .header/.brand por .itap-header/.itap-header-top para garantir
+     que o botão Dúvidas nunca sobreponha a logomarca em nenhuma resolução. -->
+<div class="itap-header-top">
+  <div class="itap-header-duvidas">
+    <button type="button" class="ita-bot-duvidas-btn" data-role="duvidas"
+            id="ita-bot-duvidas" onclick="if(window.abrirItaBot)window.abrirItaBot();else console.error('ItaBot não carregado');"
+            aria-label="Dúvidas — Ita Bot" aria-haspopup="dialog">DÚVIDAS</button>
+  </div>
+</div>
+<nav class="itap-header-nav" aria-label="Menu principal">
+<a class="itap-nav-btn" href="index.html" aria-current="page" style="background:linear-gradient(135deg,#FF6D00,#E65100);color:#fff;"><span class="itap-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span><span class="itap-nav-label" style="color:#fff;">INÍCIO</span></a>
+<a class="itap-nav-btn" href="encomendas.html" style="background:linear-gradient(135deg,#0D47A1,#00288F);color:#fff;"><span class="itap-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/></svg></span><span class="itap-nav-label" style="color:#fff;">ENCOMENDAS</span></a>
+<a class="itap-nav-btn" href="promocao.html" id="nav-promo-btn" style="background:linear-gradient(135deg,#E8000D,#C62828);color:#fff;"><span class="itap-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg></span><span class="itap-nav-label" style="color:#fff;">PROMOÇÃO</span></a>
+<a class="itap-nav-btn" href="dicas.html" style="background:linear-gradient(135deg,#00C853,#009624);color:#fff;"><span class="itap-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></span><span class="itap-nav-label" style="color:#fff;">DICAS/DEPOIMENTOS</span></a>
+<a class="itap-nav-btn" href="sobre.html" style="background:linear-gradient(135deg,#4A148C,#6A1B9A);color:#fff;"><span class="itap-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg></span><span class="itap-nav-label" style="color:#fff;">QUEM SOMOS</span></a>
+</nav>
+</div></header>
 <!-- ========================================
      CARROSSEL ITAPOLITANA
      Arquivo isolado: carrossel.html
@@ -3505,7 +3555,7 @@ function toggleAcc(id) {
   });
   // Abre ou fecha o clicado
   if (isOpen) {
-    el.classList.remove('menu-foco-scroll-livre');
+    _menuFocoDesativar(true);
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -3514,10 +3564,6 @@ function toggleAcc(id) {
     el.classList.remove('open');
     atualizarEstadoHeaderAcc(el, false);
     _trackUiEvent('category_close', { category_id: el.id });
-    // Libera o layout imediatamente para evitar saltos de scroll.
-    if (_menuFocoId === el.id) {
-      _menuFocoDesativar(true);
-    }
   } else {
     _menuFocoAtivar(el);
     el.classList.add('open');
@@ -3529,12 +3575,8 @@ function toggleAcc(id) {
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
       setTimeout(function() {
-        if (el.classList.contains('open')) {
-          // Após a transição, elimina a última trava de altura para o gesto nativo.
-          body.style.maxHeight = 'none';
-          if (_menuFocoId === id) el.classList.add('menu-foco-scroll-livre');
-        }
-      }, 520);
+        if (el.classList.contains('open')) body.style.maxHeight = '';
+      }, 500);
     }
   }
 }
@@ -3555,7 +3597,10 @@ inicializarAcessibilidadeAcc();
 
 // Volta ao topo do cardápio E fecha o accordion atual
 function voltarCardapio(accId) {
-  var eraFoco = _menuFocoId === accId;
+  if (_menuFocoId === accId) {
+    _menuFocoDesativar(true);
+    return;
+  }
   var posicaoAnterior = _cardapioScrollAnterior[accId] || {
     left: window.scrollX || window.pageXOffset || 0,
     top: window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
@@ -3564,21 +3609,13 @@ function voltarCardapio(accId) {
     var el = document.getElementById(accId);
     if (el) {
       el.classList.remove('open');
-      el.classList.remove('menu-foco-ativo');
-      el.classList.remove('menu-foco-scroll-livre');
       var h = el.querySelector('.acc-header');
       if (h) h.setAttribute('aria-expanded', 'false');
       var body = el.querySelector('.acc-body');
-      if (body) {
-        body.style.maxHeight = body.scrollHeight + 'px';
-        requestAnimationFrame(function() { body.style.maxHeight = '0'; });
-      }
+      if (body) body.style.maxHeight = '0';
     }
   }
-  // Libera o layout imediatamente para que a restauração do scroll encontre a altura real da página.
-  if (eraFoco) {
-    _menuFocoDesativar(false);
-  }
+  // 2. Garante que o vc-container permanece aberto (não fecha o cardápio)
   var vcContainer = document.getElementById('vc-container');
   var vcBtn = document.getElementById('vc-btn');
   if (vcContainer) {
@@ -3590,6 +3627,7 @@ function voltarCardapio(accId) {
     vcBtn.classList.add('aberto');
     vcBtn.setAttribute('aria-expanded', 'true');
   }
+  // 3. Libera o accordion e volta à posição exata de onde ele foi aberto.
   if (accId) delete _cardapioScrollAnterior[accId];
   _restaurarPosicaoCardapio(posicaoAnterior.left, posicaoAnterior.top);
 }
@@ -5291,10 +5329,22 @@ function _restaurarPosicaoCardapio(x, y) {
   });
 }
 
-/* MODO GAVETA — a categoria continua no armário e abre no próprio lugar.
-   Não há portal, reparenting, backdrop ou ocultação global. O estado serve
-   somente para preservar a posição de origem e a restauração determinística. */
-function _menuFocoCriarPortal() { return null; }
+/* Modo Foco: transforma a categoria aberta em uma tela independente.
+   O elemento ativo sai temporariamente da árvore original e entra em um
+   portal filho direto do body. O placeholder garante retorno ao mesmo ponto. */
+function _menuFocoCriarPortal() {
+  var portal = document.getElementById('menu-foco-portal');
+  if (!portal) {
+    portal = document.createElement('div');
+    portal.id = 'menu-foco-portal';
+    portal.setAttribute('role', 'dialog');
+    portal.setAttribute('aria-modal', 'true');
+    portal.setAttribute('aria-label', 'Categoria do cardápio em foco');
+    document.body.appendChild(portal);
+  }
+  portal.classList.remove('is-exiting');
+  return portal;
+}
 
 function _menuFocoAtivar(acc) {
   if (!acc || !acc.id || _menuFocoReturning) return;
@@ -5303,35 +5353,64 @@ function _menuFocoAtivar(acc) {
 
   _menuFocoScrollX = window.scrollX || window.pageXOffset || 0;
   _menuFocoScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-  _cardapioScrollAnterior[acc.id] = { left: _menuFocoScrollX, top: _menuFocoScrollY };
-  _menuFocoId = acc.id;
-  _menuFocoPortal = null;
+  document.documentElement.style.setProperty('--menu-foco-scroll-left', _menuFocoScrollX + 'px');
+  document.documentElement.style.setProperty('--menu-foco-scroll-top', _menuFocoScrollY + 'px');
+
+  var parent = acc.parentNode;
+  if (!parent) return;
+  _menuFocoPlaceholder = document.createComment('itapolitana: local original de ' + acc.id);
+  parent.insertBefore(_menuFocoPlaceholder, acc);
+
+  var portal = _menuFocoCriarPortal();
+  _menuFocoPortal = portal;
+  // Move antes de aplicar o bloqueio global, evitando que o próprio ativo seja ocultado.
+  portal.appendChild(acc);
   acc.classList.add('menu-foco-ativo');
-  acc.classList.remove('menu-foco-scroll-livre');
-  var cardapio = document.getElementById('cardapio');
-  var vcWrap = document.getElementById('vc-wrap');
-  if (cardapio) cardapio.classList.add('menu-foco-cardapio');
-  if (vcWrap) vcWrap.classList.add('menu-foco-armario');
+  _menuFocoId = acc.id;
+
+  var back = acc.querySelector(':scope > .menu-foco-back');
+  if (back) back.remove();
+  back = document.createElement('button');
+  back.type = 'button';
+  back.className = 'menu-foco-back';
+  back.setAttribute('aria-label', 'Voltar ao início do cardápio');
+  back.innerHTML = '<span aria-hidden="true" style="font-size:20px;margin-right:8px">←</span> VOLTAR AO INÍCIO';
+  back.addEventListener('click', function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    _menuFocoVoltar(acc);
+  });
+  acc.prepend(back);
+
   document.documentElement.classList.add('menu-foco-aberto');
   document.body.classList.add('menu-foco-aberto');
+  requestAnimationFrame(function() {
+    if (back && document.body.contains(back)) back.focus({ preventScroll: true });
+  });
 }
 
 function _menuFocoDesativar(restaurarPosicao) {
+  if (!_menuFocoId) return;
   var id = _menuFocoId;
-  if (!id) return;
   var acc = document.getElementById(id);
   var x = _menuFocoScrollX;
   var y = _menuFocoScrollY;
+  var portal = _menuFocoPortal || document.getElementById('menu-foco-portal');
+
   if (acc) {
     acc.classList.remove('menu-foco-ativo');
-    acc.classList.remove('menu-foco-scroll-livre');
+    var back = acc.querySelector(':scope > .menu-foco-back');
+    if (back) back.remove();
+    if (_menuFocoPlaceholder && _menuFocoPlaceholder.parentNode) {
+      _menuFocoPlaceholder.parentNode.insertBefore(acc, _menuFocoPlaceholder);
+      _menuFocoPlaceholder.remove();
+    }
   }
-  var cardapio = document.getElementById('cardapio');
-  var vcWrap = document.getElementById('vc-wrap');
-  if (cardapio) cardapio.classList.remove('menu-foco-cardapio');
-  if (vcWrap) vcWrap.classList.remove('menu-foco-armario');
+  if (portal) portal.remove();
   document.documentElement.classList.remove('menu-foco-aberto');
   document.body.classList.remove('menu-foco-aberto');
+  document.documentElement.style.removeProperty('--menu-foco-scroll-left');
+  document.documentElement.style.removeProperty('--menu-foco-scroll-top');
   _menuFocoId = null;
   _menuFocoPlaceholder = null;
   _menuFocoPortal = null;
@@ -5340,24 +5419,25 @@ function _menuFocoDesativar(restaurarPosicao) {
 
 function _menuFocoVoltar(acc) {
   if (!acc || _menuFocoReturning) return;
-  _menuFocoReturning = true;
-  var body = acc.querySelector('.acc-body');
   var id = acc.id;
+  var body = acc.querySelector('.acc-body');
   var x = _menuFocoScrollX;
   var y = _menuFocoScrollY;
-  var fechar = function() {
+  _menuFocoReturning = true;
+
+  // A saída anima o portal inteiro; nenhum elemento externo participa.
+  var portal = _menuFocoPortal || document.getElementById('menu-foco-portal');
+  if (portal) portal.classList.add('is-exiting');
+
+  setTimeout(function() {
     if (body && _nivelAnterior[id]) {
       body.innerHTML = _nivelAnterior[id];
       delete _nivelAnterior[id];
     }
-    acc.classList.remove('open');
-    atualizarEstadoHeaderAcc(acc, false);
-    if (body) body.style.maxHeight = '0';
     _menuFocoDesativar(false);
     _menuFocoReturning = false;
     _restaurarPosicaoCardapio(x, y);
-  };
-  requestAnimationFrame(fechar);
+  }, 210); // mesma duração da saída do portal
 }
 
 
@@ -5369,15 +5449,14 @@ function _menuFocoVoltar(acc) {
 // USO: _semPulo(function() { /* qualquer mudança de conteúdo */ });
 // ═══════════════════════════════════════════════════════════════════════════
 function _semPulo(fn) {
-  var x = window.scrollX || window.pageXOffset || 0;
   var y = window.scrollY || window.pageYOffset || 0;
   fn(); // executa a mudança
-  // Restaura posição em múltiplos frames para garantir estabilidade no mobile
-  var aplicar = function() { window.scrollTo(x, y); };
-  aplicar();
+  // Restaura posição em 2 frames consecutivos para garantir
   requestAnimationFrame(function() {
-    aplicar();
-    requestAnimationFrame(aplicar);
+    window.scrollTo(0, y);
+    requestAnimationFrame(function() {
+      window.scrollTo(0, y);
+    });
   });
 }
 
@@ -5835,7 +5914,7 @@ document.addEventListener('DOMContentLoaded', checkCookies);
   </ul>
 </nav>
 
-	<script src="scripts/nav-active.js?v=20260815-header1" defer></script>
+	<script src="scripts/nav-active.js" defer></script>
 	<script src="scripts/products.js" defer></script>
 	<script src="scripts/ita-bot-engine.js" defer></script>
 	<script src="scripts/ita-bot-widget.js" defer></script>
