@@ -465,7 +465,7 @@
 
     <!-- Modal de Picolés -->
     <div id="modal-picoles" class="modal">
-      <div class="modal-content" style="max-width: 680px; height: 88vh; max-height: 720px; display: flex; flex-direction: column; padding: 20px 18px calc(18px + env(safe-area-inset-bottom));">
+      <div class="modal-content" style="max-width: 680px; height: 88vh; max-height: 720px; display: flex; flex-direction: column; padding: 15px 18px calc(10px + env(safe-area-inset-bottom));">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F2F2F2; padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
           <div>
             <h2 style="margin: 0; font-size: 1.25rem; font-weight: 900; color: var(--primary);">Picolés no Atacado</h2>
@@ -485,9 +485,8 @@
         <!-- Lista Flexível: ocupa exatamente todo o espaço restante do modal, sem desperdício e com rolagem perfeita -->
         <div id="lista-sabores-picole" style="flex: 1; overflow-y: auto; padding: 0 4px 4px 0; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;"></div>
 
-        <div id="status-picoles" class="selection-status" role="status" aria-live="polite" style="margin-top: 8px; padding: 8px 10px; flex-shrink: 0; border-radius: 8px; font-weight: 800; text-align: center; font-size: 0.84rem; line-height: 1.3;">Adicione picolés para liberar a confirmação.</div>
-        
-        <div class="modal-actions" style="margin-top: 8px; padding-top: 0; display: flex; gap: 10px; flex-shrink: 0;">
+        <div id="status-picoles" class="selection-status" role="status" aria-live="polite" style="margin-top: 2px; padding: 4px 8px; flex-shrink: 0; border-radius: 8px; font-weight: 800; text-align: center; font-size: 0.82rem; line-height: 1.2; min-height: auto;">Adicione picolés para liberar a confirmação.</div>
+        <div class="modal-actions" style="margin-top: 4px; padding-top: 0; display: flex; gap: 10px; flex-shrink: 0;">
           <button onclick="window.fecharModal('modal-picoles')" style="flex: 1; min-height: 48px; padding: 12px; border-radius: 12px; border: 1px solid #ccc; background:#fff; font-weight:800; cursor:pointer; font-size: 0.95rem;">Voltar</button>
           <button id="btn-confirmar-picoles" class="confirm-action" onclick="window.confirmarPicole()" disabled style="flex: 2; min-height: 48px; padding: 12px; border-radius: 12px; border: none; background: var(--verde); color: white; font-weight: 900; cursor: pointer; opacity: 0.5; font-size: 0.95rem;">Confirmar Lote</button>
         </div>
@@ -1106,10 +1105,10 @@
         btn.classList.toggle('is-ready', pronto);
         
         if (pronto) {
-            status.textContent = "Lote mínimo atingido · Selecionadas: " + total + " · R$ " + valorFormatado;
+            status.textContent = "Lote OK · Selecionadas: " + total + " · R$ " + valorFormatado;
             status.classList.add('ready');
         } else {
-            status.textContent = "Faltam " + (MIN_PICOLES_ATACADO - total) + " unidades · Selecionadas: " + total + " · R$ " + valorFormatado;
+            status.textContent = "Faltam: " + (MIN_PICOLES_ATACADO - total) + " · Sel: " + total + " · R$ " + valorFormatado;
             status.classList.remove('ready');
         }
     }
