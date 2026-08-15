@@ -9,7 +9,7 @@
 
     // 1. DADOS OFICIAIS (35 SABORES) - Redundância Total
     var SABORES_LISTA = [
-        "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Docê (Blue Ice)", "Amarena", "Ameixa",
+        "Abacaxi ao Vinho", "Abacaxi Suíço", "Blue Ice (Algodão Doce Azul)", "Amarena", "Ameixa",
         "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
         "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
         "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",

@@ -27,10 +27,18 @@
         .banner-alerta { width: 100%; max-width: none; box-sizing: border-box; margin: 12px 0; padding: 12px clamp(12px, 4vw, 18px); font-size: clamp(.82rem, 3.5vw, .95rem); line-height: 1.3; }
         .container { width: 100%; max-width: none; box-sizing: border-box; padding-left: clamp(10px, 3.5vw, 16px); padding-right: clamp(10px, 3.5vw, 16px); }
         .categoria, .categoria-header { width: 100%; box-sizing: border-box; }
-        .categoria-header { padding: 14px clamp(14px, 4vw, 20px); }
+        .categoria-header { padding: 14px clamp(14px, 4vw, 20px); min-height: 58px; }
         .categoria-header > div { min-width: 0; }
         .categoria-header small { font-size: clamp(.82rem, 3.5vw, .95rem); line-height: 1.35; }
         .categoria-conteudo { padding: clamp(14px, 4vw, 20px); }
+        /* Picolés: cabeçalho compacto para priorizar a área nobre dos produtos. */
+        .categoria--picoles .categoria-header { padding: 9px 12px; min-height: 56px; gap: 8px; }
+        .categoria--picoles .categoria-header strong { font-size: clamp(1.08rem, 4.5vw, 1.28rem); line-height: 1.1; margin-bottom: 1px; color: var(--primary); }
+        .categoria--picoles .categoria-header small { font-size: clamp(.72rem, 3vw, .82rem); line-height: 1.15; font-weight: 700; white-space: nowrap; }
+        .categoria--picoles .categoria-header .arrow-icon { font-size: 1.25rem; flex: 0 0 auto; }
+        .categoria--picoles .categoria-conteudo { padding: 10px; }
+        .categoria--picoles .prod-grid { gap: 10px; }
+        .categoria--picoles .picole-grupo { margin-bottom: 8px; }
         .prod-grid { grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); }
         .modal-content { width: 100%; box-sizing: border-box; }
     }
@@ -81,11 +89,12 @@
     }
     .categoria-header strong {
         display: block;
-        font-size: clamp(1.25rem, 4.5vw, 1.6rem);
+        font-size: clamp(1.35rem, 4.8vw, 1.75rem);
         font-weight: 900;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.025em;
         margin-bottom: 4px;
-        color: #1A1A1A;
+        color: var(--primary);
+        line-height: 1.1;
     }
     .categoria-header small {
         display: block;
@@ -301,9 +310,9 @@
   </div>
 
   <!-- Categoria Picolés -->
-  <div class="categoria">
-    <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')">
-      <div><strong>🍭 Picolés (Atacado)</strong><small>Tipo acima · preço e subtotal por sabor · mínimo 100 unidades</small></div>
+  <div class="categoria categoria--picoles">
+    <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')" aria-label="Abrir Picolés no atacado">
+      <div><strong>🍭 Picolés no Atacado</strong><small>Mín. 100 · por sabor</small></div>
       <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-picoles" class="categoria-conteudo">

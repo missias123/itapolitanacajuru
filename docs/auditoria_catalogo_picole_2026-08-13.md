@@ -8,7 +8,7 @@ URL testada: http://127.0.0.1:8000/encomendas.html?auditoria=fonte-unica-2026081
 A página local carregou o modal real de picolés e exibiu quatro categorias:
 
 - Base Água / Frutas (R$ 1,80): Abacaxi, Caju, Goiaba, Groselha, Limão, Melância, Uva, Tamarindo.
-- Recheados (R$ 2,00): Açaí, Blue Ice, Caraxi, Coco Branco, Chocolate, Amarena, Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba, Coco Queimado, Milho Verde, Amendoim, Pistache.
+- Recheados (R$ 2,00): Açaí, Blue Ice (Algodão Doce Azul), Caraxi, Coco Branco, Chocolate, Amarena, Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba, Coco Queimado, Milho Verde, Amendoim, Pistache.
 - Esquimós (R$ 6,00): Bombom, Nutella, Ovomaltine, Leite Ninho, Nata, Morango, Brigadeiro, Prestígio.
 - Especiais (R$ 3,00): Leite Ninho, Ovomaltine.
 

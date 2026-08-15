@@ -207,7 +207,7 @@
         answer: '\ud83c\udf60 Picol\u00e9s Tipo Artesanal!\n\n' +
                 '\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Groselha, Lim\u00e3o, Melancia, Uva...)\n' +
                 '\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n' +
-                '\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice, Morango, Chocolate...)\n' +
+                '\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice (Algodão Doce Azul), Morango, Chocolate...)\n' +
                 '\ud83c\udf3c Picol\u00e9 Especiais \u2014 R$ ' + ninho + ' (Leite Ninho e Ovomaltine)\n' +
                 '\ud83c\udf6b Picol\u00e9 Esquim\u00f3 (coberto) \u2014 R$ ' + eskimo + ' (inc. Ovomaltine)\n' +
                 '\ud83d\udce6 Atacado (m\u00edn. 100 un.) via encomenda!',
