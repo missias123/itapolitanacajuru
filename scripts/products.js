@@ -33,13 +33,11 @@ window.PRODUTOS_DATA = {
         },
         leite_com_recheio: {
             nome: "Picolé Recheado — Base Leite", preço_varejo: 3, preço_atacado: 2,
-            sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"]
+            sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba", "Coco Queimado", "Milho Verde", "Pistache"]
         },
-        leite_ninho: {
-            nome: "Picolé Especial — Base Leite (Leite Ninho)", preço_varejo: 4, preço_atacado: 3, sabores: ["Leite Ninho"]
-        },
-        ovomaltine: {
-            nome: "Picolé Especial — Base Leite (Ovomaltine)", preço_varejo: 4, preço_atacado: 3, sabores: ["Ovomaltine"]
+        leite_especial: {
+            nome: "Picolé Especial — Base Leite", preço_varejo: 4, preço_atacado: 3,
+            sabores: ["Leite Ninho", "Ovomaltine"]
         },
         esquimos: {
             nome: "Picolé Esquimó — Base Leite", preço_varejo: 8, preço_atacado: 6,
