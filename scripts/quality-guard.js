@@ -581,3 +581,25 @@
   };
 
 })();
+
+/**
+ * AUTO-HEALING & INTEGRITY GUARD — Sorveteria Itapolitana Cajuru
+ * Monitora se os grids de produtos estão preenchidos. Se algum grid crítico
+ * ficar vazio por falha de renderização ou rede, re-executa a renderização automaticamente.
+ */
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    try {
+      const gridsCriticos = ['sorvetes-grid', 'milk-grid', 'tacas-grid'];
+      gridsCriticos.forEach(function(gridId) {
+        const el = document.getElementById(gridId);
+        if (el && el.children.length === 0) {
+          console.warn('[Quality Guard] Auto-Healing acionado para grid vazio:', gridId);
+          if (typeof renderTudo === 'function') {
+            renderTudo();
+          }
+        }
+      });
+    } catch(e) {}
+  }, 1200);
+});
