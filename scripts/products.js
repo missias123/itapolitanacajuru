@@ -24,25 +24,25 @@ window.PRODUTOS_DATA = {
     },
     picolés: {
         frutas_agua: {
-            nome: "Picolé de Fruta/Água", preço_varejo: 2.5, preço_atacado: 1.8,
+            nome: "Picolé Frutas / Base Água", preço_varejo: 2.5, preço_atacado: 1.8,
             sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"]
         },
         leite_sem_recheio: {
-            nome: "Picolé de Leite sem Recheio", preço_varejo: 2.5, preço_atacado: 2,
+            nome: "Picolé Sem Recheio — Base Leite", preço_varejo: 2.5, preço_atacado: 2,
             sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"]
         },
         leite_com_recheio: {
-            nome: "Picolé de Leite com Recheio", preço_varejo: 3, preço_atacado: 2,
-            sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"]
+            nome: "Picolé Recheado — Base Leite", preço_varejo: 3, preço_atacado: 2,
+            sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"]
         },
         leite_ninho: {
-            nome: "Picolé Leite Ninho", preço_varejo: 4, preço_atacado: 3, sabores: ["Leite Ninho"]
+            nome: "Picolé Especial — Base Leite (Leite Ninho)", preço_varejo: 4, preço_atacado: 3, sabores: ["Leite Ninho"]
         },
         ovomaltine: {
-            nome: "Picolé de Ovomaltine", preço_varejo: 4, preço_atacado: 3, sabores: ["Ovomaltine"]
+            nome: "Picolé Especial — Base Leite (Ovomaltine)", preço_varejo: 4, preço_atacado: 3, sabores: ["Ovomaltine"]
         },
         esquimos: {
-            nome: "Picolé Esquimó", preço_varejo: 8, preço_atacado: 6,
+            nome: "Picolé Esquimó — Base Leite", preço_varejo: 8, preço_atacado: 6,
             sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"]
         }
     },

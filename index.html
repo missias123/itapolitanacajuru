@@ -3710,6 +3710,9 @@ function abrirModal(id, originEl) {
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && _modalAtivo) fecharModal(_modalAtivo);
 });
+function seloLeitePasteurizado(){
+  return '<span class="selo-leite-pasteurizado" role="note">Leite Pasteurizado da Fazenda</span>';
+}
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
   if (!g) return;
@@ -3721,7 +3724,7 @@ function renderSorvetes(){
       const preço=Object.values(preços)[0];
       const chave='sorvete_'+key+'_'+Object.keys(preços)[0].replace(/\s/g,'_');
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomes[key]||key}</div><div class="prod-desc">${desc[key]||''}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+      c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomes[key]||key}</div>${seloLeitePasteurizado()}<div class="prod-desc">${desc[key]||''}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -3744,7 +3747,7 @@ function renderMilk(){
     if(m.top) Object.entries(m.top).forEach(([tam,preço])=>tipos.push({nome:`Milkshake Top ${tam}`,preço,chave:'milk_top_'+tam.replace(/\s/g,'_')}));
     tipos.forEach(t=>{
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=imgCard(t.chave,'')+`<div class="prod-card-body"><div class="prod-nome">${t.nome}</div><div class="prod-preço">R$ ${t.preço.toFixed(2).replace('.',',')}</div></div>`;
+      c.innerHTML=imgCard(t.chave,'')+`<div class="prod-card-body"><div class="prod-nome">${t.nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${t.preço.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -3765,7 +3768,7 @@ function renderTacas(){
     Object.entries(produtos.tacas.tradicionais).forEach(([nome,preço])=>{
       const chave='taca_trad_'+nome.replace(/\s/g,'_');
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Taça ${nome}</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+      c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Taça ${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -3786,7 +3789,7 @@ function renderTacasP(){
     Object.entries(produtos.tacas.sujas).forEach(([nome,preço])=>{
       const chave='taca_suja_'+nome.replace(/\s/g,'_');
       const c=document.createElement('div');c.className='prod-card';
-      c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Taça Suja – ${nome}</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+      c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Taça Suja – ${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
       g.appendChild(c);
     });
   }
@@ -3965,6 +3968,7 @@ function renderPicolés(){
       d.innerHTML=`
         <div style="font-size:13px;font-weight:900;color:#4A148C;line-height:1.2;margin-bottom:2px">${info.titulo}</div>
         ${info.badge?`<span style="background:${info.badgeColor};color:#fff;font-size:10px;font-weight:800;border-radius:20px;padding:2px 10px;margin-bottom:2px">${info.badge}</span>`:''}
+        ${key === 'frutas_agua' ? '' : seloLeitePasteurizado()}
         <div style="font-size:11px;color:#555;line-height:1.4;margin-bottom:6px;min-height:32px">${info.desc}</div>
         <div style="font-size:15px;font-weight:900;color:#E91E63;margin-bottom:2px">
           R$ ${p.preço_varejo.toFixed(2).replace('.',',')} <span style="font-size:10px;font-weight:500;color:#888">/ un.</span>
@@ -4000,7 +4004,7 @@ function renderIso(){
     Object.entries(produtos.isopores_viagem).forEach(([tam,preço])=>{
       const chave='isopore_'+tam.replace(/\s/g,'_');
       const d=document.createElement('div');d.className='prod-card';
-      d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Isopore ${tam}</div><div class="prod-desc">Leve sorvete para casa</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+      d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Isopore ${tam}</div>${seloLeitePasteurizado()}<div class="prod-desc">Leve sorvete para casa</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
       grid.appendChild(d);
     });
     b.appendChild(grid);
@@ -4027,7 +4031,7 @@ function renderSobremesas(){
       const emoji='';
       const emojiNome='';
       const d=document.createElement('div');d.className='prod-card';
-      d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nome}</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+      d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
       grid.appendChild(d);
     });
     b.appendChild(grid);
