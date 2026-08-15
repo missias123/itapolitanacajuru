@@ -313,9 +313,6 @@
     .prod-card.is-esgotado { opacity:.7; }
     .prod-card__estoque { font-size:.76rem; font-weight:800; color:#166534; margin:-8px 0 12px; }
     .prod-card__estoque.is-esgotado { color:#B42318; }
-    .btn-sabores--acrescimos { background: linear-gradient(135deg, #B71C1C, #E53935); }
-    .acrescimo-card .prod-preco { color: #B71C1C; }
-    .acrescimo-card .prod-card__estoque { margin-bottom: 14px; }
     @media (max-width: 380px) { .picole-linha { grid-template-columns:minmax(0,1fr); gap:8px; } .picole-linha__controle { justify-content:flex-end; } }
     @media (max-width: 480px) {
       .container { padding-inline: 10px; }
@@ -431,20 +428,6 @@
     </button>
     <div id="sec-picoles" class="categoria-conteudo">
       <div id="lista-picoles" class="prod-grid"></div>
-    </div>
-  </div>
-
-  <!-- Categoria Acréscimos -->
-  <div class="categoria">
-    <button class="categoria-header" onclick="window.toggleSecao('sec-acrescimos')" aria-controls="sec-acrescimos" aria-expanded="false">
-      <div class="categoria-header__main">
-        <span class="categoria-header__icon bento-icon-container red" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#icon-chocolate" xlink:href="#icon-chocolate"></use></svg></span>
-        <div class="categoria-header__copy"><strong>Acréscimos</strong><small>Complementos para finalizar seu pedido</small></div>
-      </div>
-      <span class="arrow-icon">▼</span>
-    </button>
-    <div id="sec-acrescimos" class="categoria-conteudo">
-      <div id="lista-acrescimos" class="prod-grid"></div>
     </div>
   </div>
 </div>
@@ -610,13 +593,6 @@
         { id: "cx10l_3s", nome: "Caixa 10 Litros - 3 Sabores", preco: 165, max: 3, estoque: 15, esgotado: false }
     ];
     var TORTA_ESTOQUE = { id: "torta1", nome: "Torta de Sorvete", preco: 100, max: 3, estoque: 10, esgotado: false };
-    var ACRESCIMOS = [
-        { id: "acr_0", nome: "Canudinho Wafer", preco: 0.25, estoque: 100, esgotado: false },
-        { id: "acr_1", nome: "Casquinhas", preco: 0.25, estoque: 100, esgotado: false },
-        { id: "acr_2", nome: "Cascão", preco: 1.00, estoque: 100, esgotado: false },
-        { id: "acr_3", nome: "Cestinha Recheada", preco: 1.00, estoque: 100, esgotado: false },
-        { id: "acr_4", nome: "Cobertura 1.3L", preco: 40.00, estoque: 100, esgotado: false }
-    ];
     var ESTOQUE_CARREGADO = false;
     var ESTOQUE_URL = "dados/produtos.json";
     var MAPA_PICOLES_ESTOQUE = {
@@ -682,11 +658,6 @@
             });
             var tortas = Array.isArray(dados.tortas_enc) ? dados.tortas_enc : [];
             if (tortas[0]) TORTA_ESTOQUE = Object.assign({}, TORTA_ESTOQUE, { preco: Number(tortas[0].preço ?? tortas[0].preco ?? TORTA_ESTOQUE.preco), max: Number(tortas[0].maxSabores || TORTA_ESTOQUE.max), estoque: Number(tortas[0].estoque ?? TORTA_ESTOQUE.estoque), esgotado: Boolean(tortas[0].esgotado || Number(tortas[0].estoque) <= 0) });
-            var acrescimos = Array.isArray(dados.acrescimos) ? dados.acrescimos : [];
-            ACRESCIMOS = ACRESCIMOS.map(function (padrao) {
-                var item = acrescimos.find(function (a) { return a.id === padrao.id; });
-                return item ? Object.assign({}, padrao, { nome: item.nome || padrao.nome, preco: Number(item.preço ?? item.preco ?? padrao.preco), estoque: Number(item.estoque ?? padrao.estoque), esgotado: Boolean(item.esgotado || Number(item.estoque) <= 0) }) : padrao;
-            });
             var rawPicoles = dados.picolés || dados.picoles || {};
             Object.keys(PICOLES_CATALOGO).forEach(function (tipo) {
                 var grupo = PICOLES_CATALOGO[tipo];
@@ -788,86 +759,11 @@
         return '<span class="selo-leite-pasteurizado" role="note">Leite Pasteurizado da Fazenda</span>';
     }
 
-    function quantidadeAcrescimoNoCarrinho(id) {
-        var item = carrinho.find(function (entrada) { return entrada.isAcrescimo && entrada.id === id; });
-        return item ? Number(item.quantidade || 0) : 0;
-    }
-
-    function estoqueDisponivelAcrescimo(id) {
-        var produto = ACRESCIMOS.find(function (entrada) { return entrada.id === id; });
-        if (!produto || produto.esgotado) return 0;
-        return Math.max(0, Number(produto.estoque || 0) - quantidadeAcrescimoNoCarrinho(id));
-    }
-
-    window.alterarQuantidadeAcrescimo = function(id, delta) {
-        var produto = ACRESCIMOS.find(function (entrada) { return entrada.id === id; });
-        if (!produto) return;
-        var indice = carrinho.findIndex(function (entrada) { return entrada.isAcrescimo && entrada.id === id; });
-        var atual = indice >= 0 ? Number(carrinho[indice].quantidade || 0) : 0;
-        var limite = produto.esgotado ? 0 : Math.max(0, Number(produto.estoque || 0));
-        var novaQuantidade = Math.max(0, Math.min(limite, atual + Number(delta || 0)));
-
-        if (novaQuantidade === 0) {
-            if (indice >= 0) carrinho.splice(indice, 1);
-        } else if (indice >= 0) {
-            carrinho[indice].quantidade = novaQuantidade;
-            carrinho[indice].preco = novaQuantidade * produto.preco;
-        } else {
-            carrinho.push({
-                id: produto.id,
-                tipo: 'Acréscimo',
-                nome: produto.nome,
-                precoUnit: produto.preco,
-                quantidade: novaQuantidade,
-                preco: novaQuantidade * produto.preco,
-                sabores: [],
-                isAcrescimo: true,
-                isPicole: false
-            });
-        }
-        window.carrinho = carrinho;
-        renderizarCatalogoEncomendas();
-        atualizarCarrinhoFixo();
-    };
-
-    window.adicionarAcrescimo = function(id) {
-        if (estoqueDisponivelAcrescimo(id) <= 0) {
-            var produto = ACRESCIMOS.find(function (entrada) { return entrada.id === id; });
-            alert((produto ? produto.nome : 'Este acréscimo') + ' está esgotado ou atingiu o limite disponível.');
-            return;
-        }
-        window.alterarQuantidadeAcrescimo(id, 1);
-    };
-
-    function renderizarAcrescimos() {
-        var el = document.getElementById('lista-acrescimos');
-        if (!el) return;
-        el.innerHTML = ACRESCIMOS.map(function (p) {
-            var quantidade = quantidadeAcrescimoNoCarrinho(p.id);
-            var indisponivel = Boolean(p.esgotado || Number(p.estoque || 0) <= 0);
-            var subtotal = quantidade * Number(p.preco || 0);
-            var nome = escaparHtml(p.nome);
-            return `<div class="prod-card prod-card--azul acrescimo-card ${indisponivel ? 'is-esgotado' : ''}">
-                <div class="prod-nome">${nome}</div>
-                <div class="prod-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')} <span style="font-size:.75rem;color:#666;font-weight:700;">/ unidade</span></div>
-                <div class="prod-card__estoque ${indisponivel ? 'is-esgotado' : ''}">${indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)'}</div>
-                <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0 10px;" aria-label="Quantidade de ${nome}">
-                    <button type="button" aria-label="Diminuir quantidade de ${nome}" onclick="window.alterarQuantidadeAcrescimo('${p.id}', -1)" ${quantidade <= 0 ? 'disabled' : ''} style="width:44px;height:44px;border:1px solid #D5D5D5;border-radius:50%;background:#fff;color:#333;font-size:1.2rem;font-weight:900;cursor:pointer;">−</button>
-                    <span id="qtd-acr-${p.id}" style="min-width:30px;text-align:center;font-size:1.15rem;font-weight:900;">${quantidade}</span>
-                    <button type="button" aria-label="Aumentar quantidade de ${nome}" onclick="window.alterarQuantidadeAcrescimo('${p.id}', 1)" ${indisponivel || quantidade >= Number(p.estoque || 0) ? 'disabled' : ''} style="width:44px;height:44px;border:1px solid var(--primary);border-radius:50%;background:var(--primary);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;">+</button>
-                </div>
-                <div id="subtotal-acr-${p.id}" style="font-size:.85rem;color:var(--success);font-weight:900;margin-bottom:12px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
-                <button class="btn-sabores btn-sabores--acrescimos" type="button" onclick="window.adicionarAcrescimo('${p.id}')" ${indisponivel ? 'disabled' : ''}>Adicionar ao carrinho</button>
-            </div>`;
-        }).join('');
-    }
-
     function renderizarCatalogoEncomendas() {
         var caixasEl = document.getElementById('lista-caixas');
         var tortasEl = document.getElementById('lista-tortas');
         var picolesEl = document.getElementById('lista-picoles');
-        var acrescimosEl = document.getElementById('lista-acrescimos');
-        if (!caixasEl || !tortasEl || !picolesEl || !acrescimosEl) return;
+        if (!caixasEl || !tortasEl || !picolesEl) return;
 
         caixasEl.innerHTML = PRODUTOS.map(function (p) {
             var indisponivel = Boolean(p.esgotado || Number(p.estoque || 0) <= 0);
@@ -907,7 +803,6 @@
             <div class="prod-preco">A partir de R$ 1,80 / unidade</div>
             <button class="btn-sabores btn-sabores--picoles" onclick="window.abrirModalPicole()">Montar lote</button>
         </div>`;
-        renderizarAcrescimos();
     }
 
     window.fecharModal = function(id) {
@@ -1153,15 +1048,14 @@
         } else {
             document.getElementById('btn-prosseguir').style.display = 'block';
             lista.innerHTML = carrinho.map((item, i) => {
-                total += Number(item.preco || 0);
-                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : item.isAcrescimo ? `${item.quantidade} unidade(s) · R$ ${item.precoUnit.toFixed(2).replace('.',',')}/un` : 'Sabores: ' + item.sabores.join(', ');
+                total += item.preco;
+                var desc = item.isPicole ? `${item.quantidade} unidades · R$ ${item.precoUnit.toFixed(2)}/un` : 'Sabores: ' + item.sabores.join(', ');
                 return `
                     <div style="padding: 16px; background: #FFF; border: 1px solid #E8E8E8; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                         <div style="flex: 1; padding-right: 15px;">
                             <div style="font-size: 0.75rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">${item.tipo}</div>
                             <div style="font-weight: 900; font-size: 1.1rem; color: #1A1A1A;">${item.nome}</div>
                             <div style="font-size: 0.85rem; color: #666; margin-top: 4px; line-height: 1.3;">${desc}</div>
-                            ${item.isAcrescimo ? `<div style="font-size:.8rem;color:var(--success);font-weight:800;margin-top:4px;">Subtotal do item: R$ ${Number(item.preco).toFixed(2).replace('.',',')}</div>` : ''}
                             <div style="margin-top: 10px; display: flex; gap: 8px;">
                                 <button onclick="window.editarItem(${i})" style="border: none; background: #EEF4FF; color: #1565C0; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">✏️ Editar</button>
                                 <button onclick="window.removerItem(${i})" style="border: none; background: #FFF0F0; color: #D32F2F; font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 8px; cursor: pointer;">🗑️ Excluir</button>
@@ -1308,13 +1202,6 @@
 
     window.editarItem = function(i) {
         var item = carrinho[i];
-        if (!item) return;
-        if (item.isAcrescimo) {
-            window.fecharModal('modal-carrinho');
-            var secaoAcrescimos = document.getElementById('sec-acrescimos');
-            if (secaoAcrescimos && secaoAcrescimos.style.display !== 'block') window.toggleSecao('sec-acrescimos');
-            return;
-        }
         if (item.isPicole) window.abrirModalPicole();
         else if (item.id === 'torta') window.abrirSaboresSorvete('torta', 100, 3, 'Torta de Sorvete', i);
         else {
@@ -1380,29 +1267,17 @@
         
         var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO DE 5 DIAS ÚTEIS APÓS O PAGAMENTO PARA ELABORAR O PEDIDO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
-                var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : item.isAcrescimo ? `${item.quantidade} unidade(s) x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
-                return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
+                var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
+                return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${item.preco.toFixed(2).replace('.',',')}`;
             }).join('\n\n') +
             `\n\nTotal do Pedido: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
             
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
 
-    function abrirSecaoPorRota() {
-        var hash = String(window.location.hash || '').replace(/^#/, '').toLowerCase();
-        var params = new URLSearchParams(window.location.search);
-        var rota = hash || String(params.get('secao') || params.get('categoria') || '').toLowerCase();
-        var mapa = { caixas: 'sec-caixas', tortas: 'sec-tortas', picoles: 'sec-picoles', 'picolés': 'sec-picoles', acrescimos: 'sec-acrescimos', 'acréscimos': 'sec-acrescimos' };
-        var id = mapa[rota];
-        if (id) window.toggleSecao(id);
-    }
-    // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
-    window.addEventListener('hashchange', abrirSecaoPorRota);
-
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
     renderizarCatalogoEncomendas();
     carregarEstoqueEncomendas();
-    abrirSecaoPorRota();
 
 // Fim do script
 </script>

@@ -2471,17 +2471,6 @@ body.cardapio-aberto { padding-bottom: 80px; }
 }
 </style>
 
-<style>
-.enc-preview-list{display:grid;gap:8px;margin:2px 0 4px}
-.enc-preview-item{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:10px 12px;background:#fff;border:1px solid rgba(31,45,61,.12);border-radius:12px;box-shadow:0 2px 8px rgba(31,45,61,.05);font-size:.86rem;line-height:1.25;color:#263238}
-.enc-preview-item span{min-width:0;font-weight:750}
-.enc-preview-item strong{flex:0 0 auto;color:#B71C1C;font-size:.9rem;white-space:nowrap}
-.enc-preview-item.is-esgotado{opacity:.62}
-.enc-preview-item.is-esgotado strong{color:#777}
-.home-enc-comp-card .btn-row-grid{display:grid;grid-template-columns:1fr}
-.home-enc-comp-card .enc-link-btn{display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;border-radius:12px;text-decoration:none;font-weight:900}
-@media (min-width:700px){.enc-preview-list{grid-template-columns:repeat(2,minmax(0,1fr))}.home-enc-comp-card .enc-preview-list{grid-template-columns:1fr}}
-</style>
 </head>
 <body class="fueap-surface fueap-index">
 <noscript>
@@ -2855,7 +2844,9 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
-<div class="acc-body" id="acc-enc-caixas-body"><div id="enc-preview-caixas"></div><div class="btn-row-grid" style="margin-top:12px"><a class="enc-link-btn product-cta--attention" href="encomendas.html#caixas" aria-label="Peça já sorvete em caixa">Peça já</a></div><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-caixas')">← Voltar ao Início do Cardápio</button></div>
+<div class="acc-body" id="acc-enc-caixas-body"><div id="lista-caixas-cardápio"></div><div style="background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:8px"><div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">Para encomendar, acesse a página de Encomendas no menu acima</div><div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px"><a href="encomendas.html#caixas" style="display:inline-block;background:#fff;color:#6A1B9A;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">Consultar caixas</a><a href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20consultar%20sorvete%20em%20caixa%20para%20festa." target="_blank" rel="noopener" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">Falar no WhatsApp</a></div></div>
+<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-caixas')">← Voltar ao Início do Cardápio</button>
+</div>
 </div>
 <div class="acc home-enc-comp-card" id="acc-enc-tortas">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-enc-tortas-body" onclick="toggleAcc('acc-enc-tortas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-tortas');}">
@@ -2865,7 +2856,9 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
-<div class="acc-body" id="acc-enc-tortas-body"><div id="enc-preview-tortas"></div><div class="btn-row-grid" style="margin-top:12px"><a class="enc-link-btn product-cta--attention" href="encomendas.html#tortas" aria-label="Peça já torta de sorvete">Peça já</a></div><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-tortas')">← Voltar ao Início do Cardápio</button></div>
+<div class="acc-body" id="acc-enc-tortas-body">
+<a class="enc-link-btn product-cta--attention" href="encomendas.html#tortas">Encomendar torta</a><a class="enc-link-btn" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20encomendar%20uma%20torta%20de%20sorvete." target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)">Falar no WhatsApp</a><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-tortas')">← Voltar ao Início do Cardápio</button>
+</div>
 </div>
 <div class="acc home-enc-comp-card" id="acc-enc-picolés">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="picolés-enc-body" onclick="toggleAcc('acc-enc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-enc-picolés');}">
@@ -2875,7 +2868,11 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
-<div class="acc-body" id="picolés-enc-body"><div id="enc-preview-picoles"></div><div class="btn-row-grid" style="margin-top:12px"><a class="enc-link-btn product-cta--attention" href="encomendas.html#picoles" aria-label="Peça já picolés no atacado">Peça já</a></div><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-picolés')">← Voltar ao Início do Cardápio</button></div>
+<div class="acc-body" id="picolés-enc-body">
+<a class="enc-link-btn" href="encomendas.html#picolés">Ver picolés</a>
+<a class="enc-link-btn" href="https://wa.me/5516996062046?text=Ol%C3%A1!%20Gostaria%20de%20encomendar%20picol%C3%A9s%20no%20atacado." rel="noopener" target="_blank" style="background:linear-gradient(135deg,#25D366,#128C7E)">Encomendar no WhatsApp</a>
+<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-enc-picolés')">← Voltar ao Início do Cardápio</button>
+</div>
 </div>
 <div class="acc home-enc-comp-card" id="acc-complementos">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="acc-body-complementos" onclick="toggleAcc('acc-complementos')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-complementos');}">
@@ -2885,7 +2882,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
-<div class="acc-body" id="acc-body-complementos"><div id="enc-preview-acrescimos"></div><div class="btn-row-grid" style="margin-top:12px"><a class="enc-link-btn product-cta--attention" href="encomendas.html#acrescimos" aria-label="Peça já acréscimos">Peça já</a></div><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-complementos')">← Voltar ao Início do Cardápio</button></div>
+<div class="acc-body" id="acc-body-complementos"><button type="button" class="btn-voltar-inicio" onclick="voltarCardapio('acc-complementos')">← Voltar ao Início do Cardápio</button></div>
 </div>
 </div>
 </section>
@@ -4509,18 +4506,46 @@ const ITABOT_INTENTS = [
 }());
 // Scripts de chat legados removidos. O Ita Bot agora é gerenciado pelo script ita-bot-widget.js
 function getComplementosCardápio() {
-  const fonte = window.PRODUTOS_DATA || {};
-  return Array.isArray(fonte.acrescimos) ? fonte.acrescimos : [];
+  const PADRAO = [
+    {id:'canudinho',nome:'Canudinho Wafer UN',preço:0.25,estoque:999},
+    {id:'casquinha',nome:'Casquinhas UN',preço:0.25,estoque:999},
+    {id:'cascão',nome:'Cascão UN',preço:1.00,estoque:999},
+    {id:'cestinha',nome:'Cestinha UN',preço:1.00,estoque:999},
+    {id:'cobertura',nome:'Cobertura 1.3L UN',preço:40.00,estoque:999}
+  ];
+  try { const s = localStorage.getItem('itap_complementos'); if(s) return JSON.parse(s); } catch(e){}
+  return PADRAO;
 }
 function renderComplementosCardápio() {
-  const el = document.getElementById('enc-preview-acrescimos');
+  const el = document.getElementById('acc-body-complementos');
   if (!el) return;
-  const comps = Array.isArray(produtos && produtos.acrescimos) ? produtos.acrescimos : getComplementosCardápio().map(c => ({ id: c.id, nome: c.nome, preço: c.preço, estoque: c.estoque }));
-  el.innerHTML = `<div class="enc-preview-list">${comps.map(c => {
-    const preco = Number(c.preço ?? c.preco ?? 0);
-    const esgotado = Number(c.estoque ?? 0) <= 0 || c.esgotado;
-    return `<div class="enc-preview-item ${esgotado ? 'is-esgotado' : ''}"><span>${escHTML(c.nome)}</span><strong>${esgotado ? 'Esgotado' : 'R$ ' + preco.toFixed(2).replace('.',',')}</strong></div>`;
-  }).join('')}</div>`;
+  const comps = getComplementosCardápio();
+  let fotos = {};
+  try { fotos = JSON.parse(localStorage.getItem('itap_fotos') || '{}'); } catch(e){}
+  el.innerHTML = `
+    <div style="padding:4px 0 10px">
+      ${comps.map(c => {
+        const esgotado = c.estoque <= 0;
+        const foto = fotos['comp_enc_'+c.id] || '';
+        const fotoHtml = foto
+          ? `<img decoding="async" loading="lazy" src="${foto}" alt="Complemento Gourmet para Sorvete Tipo artesanal - Sorveteria Itapolitana" style="width:50px;height:50px;object-fit:cover;border-radius:10px;margin-right:12px;flex-shrink:0;" onerror="this.style.display='none'">`
+          : `<div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-right:12px;flex-shrink:0;">🍪</div>`;
+        return `<div style="display:flex;align-items:center;background:${esgotado?'#FFF3F3':'#FAFAFA'};border:1.5px solid ${esgotado?'#FFCDD2':'#E0E0E0'};border-radius:12px;padding:12px;margin-bottom:10px;${esgotado?'opacity:0.6;':''}">
+          ${fotoHtml}
+          <div style="flex:1;">
+            <div style="font-size:0.9rem;font-weight:800;color:#1A0A00;">${c.nome}${esgotado?'<span style="font-size:0.7rem;background:#EF5350;color:#fff;border-radius:4px;padding:2px 6px;margin-left:6px;">ESGOTADO</span>':''}</div>
+            <div style="font-size:0.82rem;color:#B71C1C;font-weight:700;">R$ ${c.preço.toFixed(2).replace('.',',')} / un.</div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);color:#fff;border-radius:12px;padding:14px 18px;text-align:center;margin-top:4px">
+        <div style="font-size:0.88rem;font-weight:700;margin-bottom:10px">🛒 Para encomendar complementos, acesse a página de Encomendas no menu acima</div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
+          <a href="encomendas.html#acréscimos" style="display:inline-block;background:#fff;color:#B71C1C;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">Ver opções</a>
+          <a href="${buildWhatsAppHref('Olá! Gostaria de consultar os acréscimos disponíveis para meu pedido.')}" target="_blank" rel="noopener" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:0.9rem;font-weight:900;cursor:pointer;text-decoration:none">Falar no WhatsApp</a>
+        </div>
+      </div>
+    </div>`;
 }
 // Se houver banner personalizado no admin, sobrepõe o padrão
 async function carregarBanner(){
@@ -4642,11 +4667,6 @@ async function carregarPreçosNuvemCardápio() {
     if (dados.açaí) produtos.açaí = dados.açaí;
     if (dados.acai) produtos.acai = dados.acai;
 
-    // Aplicar dados de Encomendas
-    if (dados.caixas_enc) produtos.caixas_enc = dados.caixas_enc;
-    if (dados.tortas_enc) produtos.tortas_enc = dados.tortas_enc;
-    if (dados.acrescimos) produtos.acrescimos = dados.acrescimos;
-
     // Aplicar caixas e isóporos
     if (dados.caixas_viagem) produtos.caixas_viagem = dados.caixas_viagem;
     if (dados.isopores_viagem) produtos.isopores_viagem = dados.isopores_viagem;
@@ -4681,9 +4701,6 @@ async function carregarPreçosNuvemCardápio() {
             if (p.sabores) produtos.picolés[key].sabores = p.sabores;
           }
         });
-        if (dados.caixas_enc) produtos.caixas_enc = dados.caixas_enc;
-        if (dados.tortas_enc) produtos.tortas_enc = dados.tortas_enc;
-        if (dados.acrescimos) produtos.acrescimos = dados.acrescimos;
         if (dados.milkshake) produtos.milkshake = dados.milkshake;
         if (dados.tacas) produtos.tacas = dados.tacas;
         if (dados.açaí) produtos.açaí = dados.açaí;
@@ -4695,34 +4712,9 @@ async function carregarPreçosNuvemCardápio() {
     return false;
   }
 }
-function formatarPrecoEncomenda(valor) {
-  return 'R$ ' + Number(valor || 0).toFixed(2).replace('.', ',');
-}
-function renderPreviewEncomenda(id, itens, precoGetter) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = `<div class="enc-preview-list" role="list">${itens.map(item => {
-    const nome = item.nome || item.titulo || item.label || '';
-    const preco = precoGetter(item);
-    return `<div class="enc-preview-item" role="listitem"><span>${escHTML(nome)}</span><strong>${formatarPrecoEncomenda(preco)}</strong></div>`;
-  }).join('')}</div>`;
-}
-function renderEncomendasPreviews() {
-  const caixas = Array.isArray(produtos && produtos.caixas_enc) && produtos.caixas_enc.length
-    ? produtos.caixas_enc
-    : Object.entries((produtos && produtos.caixas_viagem) || {}).map(([nome, preco]) => ({ nome, preço: preco }));
-  const tortas = Array.isArray(produtos && produtos.tortas_enc) && produtos.tortas_enc.length
-    ? produtos.tortas_enc
-    : [{ nome: 'Torta de Sorvete', preço: produtos && produtos.sobremesas ? produtos.sobremesas['Torta de Sorvete'] : 100 }];
-  const picoles = Object.entries((produtos && (produtos.picolés || produtos.picoles)) || {}).map(([id, item]) => ({ id, nome: item.nome, preço: item.preço_atacado ?? item.preco_atacado ?? item.preço_varejo ?? item.preco_varejo }));
-  renderPreviewEncomenda('enc-preview-caixas', caixas, item => item.preço ?? item.preco);
-  renderPreviewEncomenda('enc-preview-tortas', tortas, item => item.preço ?? item.preco);
-  renderPreviewEncomenda('enc-preview-picoles', picoles, item => item.preço ?? item.preco);
-  renderComplementosCardápio();
-}
 function renderTudo() {
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAçaí();renderPicolés();renderIso();renderSobremesas();
-  renderEncomendasPreviews();
+  renderComplementosCardápio();
   const tortaFotoArea=document.getElementById('torta-foto-area');
   if(tortaFotoArea)tortaFotoArea.innerHTML=imgCard('sobremesa_Torta_de_Sorvete','🎂');
   const tp=document.getElementById('torta-preço');

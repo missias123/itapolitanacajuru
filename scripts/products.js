@@ -66,6 +66,14 @@ window.PRODUTOS_DATA = {
         "Petit Gâteau (2 bolas)": 25, "Brownie com Sorvete (1 bola)": 20,
         "Brownie com Sorvete (2 bolas)": 25, "Sorvete Diet (1 bola)": 10
     },
+    tortas_enc: [{ id: "torta1", nome: "Torta de Sorvete", preço: 100, maxSabores: 3, estoque: 10, esgotado: false }],
+    acrescimos: [
+        { id: "acr_0", nome: "Canudinho Wafer", preço: 0.25, estoque: 100, esgotado: false },
+        { id: "acr_1", nome: "Casquinhas", preço: 0.25, estoque: 100, esgotado: false },
+        { id: "acr_2", nome: "Cascão", preço: 1, estoque: 100, esgotado: false },
+        { id: "acr_3", nome: "Cestinha Recheada", preço: 1, estoque: 100, esgotado: false },
+        { id: "acr_4", nome: "Cobertura 1.3L", preço: 40, estoque: 100, esgotado: false }
+    ],
     caixas_viagem: { "10 Litros (2 sabores)": 150, "10 Litros (3 sabores)": 165, "5 Litros (2 sabores)": 100, "5 Litros (3 sabores)": 115 },
     isopores_viagem: { "4 Bolas": 25, "7 Bolas": 30, "9 Bolas": 40, "12 Bolas": 50 }
 };
@@ -105,6 +113,7 @@ async function carregarPreçosNuvem() {
     }
 
     if (dados.caixas_enc) {
+      pData.caixas_enc = dados.caixas_enc;
       window._itap_caixas = dados.caixas_enc.map(c => ({
         id: c.id, nome: c.nome, preço: c.preço || c.preco || 100,
         maxSabores: c.maxSabores || 2, estoque: c.estoque || 0,
@@ -113,6 +122,7 @@ async function carregarPreçosNuvem() {
     }
 
     if (dados.tortas_enc) {
+      pData.tortas_enc = dados.tortas_enc;
       window._itap_tortas = dados.tortas_enc.map(t => ({
         id: t.id, nome: t.nome, preço: t.preço || t.preco || 100,
         maxSabores: t.maxSabores || 3, estoque: t.estoque || 0,
@@ -120,6 +130,7 @@ async function carregarPreçosNuvem() {
       }));
     }
 
+    if (dados.acrescimos)       pData.acrescimos       = dados.acrescimos;
     if (dados.milkshake)        pData.milkshake        = dados.milkshake;
     if (dados.tacas)            pData.tacas            = dados.tacas;
     if (dados.açaí || dados.acai) pData.açaí           = dados.açaí || dados.acai;
