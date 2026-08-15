@@ -719,13 +719,14 @@ body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!
    abertura, o usuário vê somente a gaveta ativa, sem seções externas, rodapé
    ou outros botões atravessando o conteúdo. */
 #menu-foco-portal{display:none!important;}
-html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden;}
+html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100%;touch-action:pan-y;-webkit-overflow-scrolling:touch;scroll-behavior:auto!important;}
 #vc-container{position:relative;isolation:isolate;}
 #vc-container .acc{position:relative;overflow:clip;}
-#vc-container .acc.menu-foco-ativo{margin-bottom:18px;transform:none!important;box-shadow:0 12px 32px rgba(0,0,0,.18);}
-#vc-container .acc.menu-foco-ativo .acc-body{position:relative;z-index:1;overflow:hidden;}
+#vc-container .acc.menu-foco-ativo{margin-bottom:18px;transform:none!important;box-shadow:0 12px 32px rgba(0,0,0,.18);overflow:visible;}
+#vc-container .acc.menu-foco-ativo .acc-body{position:relative;z-index:1;overflow:visible;touch-action:pan-y;overscroll-behavior-y:auto;}
+#vc-container .acc.menu-foco-ativo.menu-foco-scroll-livre .acc-body{max-height:none!important;overflow:visible!important;}
 #vc-container .acc.menu-foco-ativo .acc-header{position:relative;z-index:2;}
-#vc-container .acc-body{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+#vc-container .acc-body{overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
 #vc-container .acc-body > .sabores-inline,
 #vc-container .acc-body > .prod-grid,
 #vc-container .acc-body > .btn-row-grid{position:relative;z-index:1;}
@@ -1782,9 +1783,39 @@ body.cardapio-aberto { padding-bottom: 80px; }
 
 @media (max-width: 480px) {
   .prod-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 8px 4px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .prod-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    min-height: 100px;
+    padding: 8px;
+  }
+  .prod-card-img,
+  .prod-card-sem-foto {
+    width: 90px !important;
+    height: 90px !important;
+    flex: 0 0 90px;
+    border-radius: 8px;
+    margin: 0 12px 0 0;
+  }
+  .prod-card-body {
+    min-width: 0;
+    padding: 0;
+    flex: 1 1 auto;
+    text-align: left;
+  }
+  .prod-nome { font-size: 15px; line-height: 1.25; margin-bottom: 2px; }
+  .prod-desc { font-size: 12px; line-height: 1.35; margin-bottom: 6px; }
+  .prod-preço {
+    font-size: 16px;
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 4px;
   }
   .btn-voltar-inicio {
     width: calc(100% - 16px);
@@ -3493,6 +3524,7 @@ function toggleAcc(id) {
   });
   // Abre ou fecha o clicado
   if (isOpen) {
+    el.classList.remove('menu-foco-scroll-livre');
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -3518,8 +3550,12 @@ function toggleAcc(id) {
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
       setTimeout(function() {
-        if (el.classList.contains('open')) body.style.maxHeight = '';
-      }, 500);
+        if (el.classList.contains('open')) {
+          // Após a transição, elimina a última trava de altura para o gesto nativo.
+          body.style.maxHeight = 'none';
+          if (_menuFocoId === id) el.classList.add('menu-foco-scroll-livre');
+        }
+      }, 520);
     }
   }
 }
@@ -3550,6 +3586,7 @@ function voltarCardapio(accId) {
     if (el) {
       el.classList.remove('open');
       el.classList.remove('menu-foco-ativo');
+      el.classList.remove('menu-foco-scroll-livre');
       var h = el.querySelector('.acc-header');
       if (h) h.setAttribute('aria-expanded', 'false');
       var body = el.querySelector('.acc-body');
@@ -5294,6 +5331,7 @@ function _menuFocoAtivar(acc) {
   _menuFocoId = acc.id;
   _menuFocoPortal = null;
   acc.classList.add('menu-foco-ativo');
+  acc.classList.remove('menu-foco-scroll-livre');
   var cardapio = document.getElementById('cardapio');
   var vcWrap = document.getElementById('vc-wrap');
   if (cardapio) cardapio.classList.add('menu-foco-cardapio');
@@ -5308,7 +5346,10 @@ function _menuFocoDesativar(restaurarPosicao) {
   var acc = document.getElementById(id);
   var x = _menuFocoScrollX;
   var y = _menuFocoScrollY;
-  if (acc) acc.classList.remove('menu-foco-ativo');
+  if (acc) {
+    acc.classList.remove('menu-foco-ativo');
+    acc.classList.remove('menu-foco-scroll-livre');
+  }
   var cardapio = document.getElementById('cardapio');
   var vcWrap = document.getElementById('vc-wrap');
   if (cardapio) cardapio.classList.remove('menu-foco-cardapio');

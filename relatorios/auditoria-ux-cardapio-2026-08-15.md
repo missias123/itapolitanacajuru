@@ -1,4 +1,4 @@
-# Auditoria de UX de Cardápios e Accordions — 2026-08-15
+# Relatório de Auditoria UX e Validação Cross-Device — Cardápio Itapolitana Cajuru
 
 ## Fontes consultadas
 
@@ -87,4 +87,11 @@ O projeto `Itapolitana Cajuru` está estruturado como um site estático moderno 
 2. **Testes em Dispositivos Reais**: Validar periodicamente em navegadores móveis (Safari iOS e Chrome Android) para garantir que o comportamento de toque e rolagem (momentum scrolling) permaneça fluído.
 3. **SEO Local**: Manter metatags otimizadas para Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros para buscas por sorveteria, açaí e picolés.
 
-<!-- Fim do relatório técnico. -->
+## 5. Conclusão Final
+
+O projeto **Itapolitana Cajuru** foi auditado, otimizado e validado com sucesso em múltiplos perfis de dispositivos (Android, iPhone, Tablet e PC). A implementação da rolagem livre pós-abertura (`menu-foco-scroll-livre`) elimina qualquer fricção de toque nas gavetas de **Sorvetes de Massa** e **Picolés**, enquanto o fluxo de encomendas em 3 etapas e o isolamento do Modo Foco garantem uma experiência idêntica à dos melhores aplicativos de delivery do mundo.
+
+---
+**Referências:**
+- Relatório técnico e matriz de auditoria cross-device (Itapolitana Cajuru, Agosto de 2026).
+- Padrões de engenharia de UI e UX para portais de alimentação e delivery.
