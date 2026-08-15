@@ -169,18 +169,18 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
 
 /* Mobile admin */
 @media (max-width: 480px) {
-  .admin-nav { 
+  .admin-nav {
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     padding: 4px 8px !important;
     gap: 2px !important;
   }
-  .nav-btn { 
-    font-size: 0.75rem !important; 
+  .nav-btn {
+    font-size: 0.75rem !important;
     padding: 6px 10px !important;
   }
-  .admin-header { 
-    flex-direction: column !important; 
+  .admin-header {
+    flex-direction: column !important;
     gap: 8px !important;
     padding: 10px 12px !important;
   }
@@ -190,28 +190,28 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
     font-size: 16px !important; /* evita zoom no iOS */
   }
   .estoque-campos { grid-template-columns: 1fr !important; }
-  .sabor-item { 
-    flex-direction: row !important; 
+  .sabor-item {
+    flex-direction: row !important;
     flex-wrap: wrap !important;
     gap: 6px !important;
   }
-  .btn-salvar, .btn-cancelar { 
-    width: 100% !important; 
+  .btn-salvar, .btn-cancelar {
+    width: 100% !important;
     margin: 4px 0 !important;
   }
-  .dashboard-cards { 
-    grid-template-columns: repeat(2, 1fr) !important; 
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
   }
   .card-stat { padding: 12px !important; }
   .card-stat .num { font-size: 1.8rem !important; }
-  .login-box { 
-    width: 92% !important; 
+  .login-box {
+    width: 92% !important;
     padding: 24px 16px !important;
   }
-  .toast { 
-    bottom: 16px !important; 
-    left: 12px !important; 
+  .toast {
+    bottom: 16px !important;
+    left: 12px !important;
     right: 12px !important;
     width: auto !important;
   }
@@ -640,6 +640,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
+    <button class="nav-btn nav-btn-tecnico" id="nav-btn-qualidade" onclick="irPara('qualidade-admin',this)">🧪 Qualidade <span id="badge-quality-nav" style="display:none;margin-left:5px;background:#c62828;color:#fff;border-radius:999px;padding:2px 7px;font-size:.7rem;font-weight:800"></span></button>
   </div>
   <div class="admin-content">
     <!-- PÁGINA INICIAL — primeiro botão do site -->
@@ -1051,7 +1052,7 @@ body { overflow-x: hidden; }
 
 	    </div>
 	    </div>
-	
+
 	    <!-- CARDÁPIO TÍTULOS -->
 	    <div class="seção" id="sec-cardapio-titulos">
       <div class="card">
@@ -1224,9 +1225,9 @@ body { overflow-x: hidden; }
             <label>Badges do Hero (um por linha)</label>
             <textarea id="enc-hero-badges" rows="5" placeholder="✨ Tipo Artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
           </div>
-          
+
           <div class="seção-título">🔎 SEO por Página</div>
-          
+
           <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
           <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
@@ -1603,7 +1604,7 @@ body { overflow-x: hidden; }
             </div>
             <div class="hint">📝 Máx. 40 caracteres — apenas letras, espaços e acentos. Ex: <strong>Morango Trufado</strong>, <strong>Doce de Leite</strong>. Aparece automaticamente nas opções de caixas e tortas no site. Não use números ou símbolos especiais.</div>
           </div>
-          
+
           <div class="seção-título">🍭 Picolé de Fruta/Água</div>
           <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
           <div class="sabores-grid">
@@ -1950,7 +1951,7 @@ body { overflow-x: hidden; }
           </div>
           <div class="seção-título" style="margin-top:20px">🍨 Complementos do Açaí</div>
           <div class="hint" style="margin-bottom:8px">Edite os itens de cada categoria de complemento. Salvar atualiza o site imediatamente.</div>
-          
+
           <div class="seção-título">🍨 Complemento: Frutas (R$ 2,0)</div>
           <div class="campo-edit">
             <label>Itens de Frutas (um por linha)</label>
@@ -2572,6 +2573,27 @@ Talento</textarea>
       </div>
     </div>
 
+    <div class="seção" id="sec-qualidade">
+      <div class="card">
+        <div class="card-header" style="gap:10px;flex-wrap:wrap">
+          <h2 style="margin-right:auto">🧪 Painel de Qualidade — mede o site inteiro</h2>
+          <button type="button" class="btn btn-salvar" onclick="executarAuditoriaCompleta()">▶️ Executar auditoria</button>
+          <button type="button" class="btn btn-cinza" onclick="copiarRelatorioQualidade()">📋 Copiar relatório</button>
+        </div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:13px 16px;border-radius:10px;margin-bottom:16px;font-size:.84rem;line-height:1.5;color:#0d47a1"><strong>Como usar:</strong> execute a auditoria, copie o relatório e cole aqui. Cada ocorrência recebe um código <code>ERR-...</code>. A auditoria é somente diagnóstico e não altera os dados.</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:16px">
+            <div style="background:#f5f5f5;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#333" id="quality-total">0</div><div style="font-size:.76rem;color:#666">Ocorrências</div></div>
+            <div style="background:#ffebee;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#c62828" id="quality-critica">0</div><div style="font-size:.76rem;color:#666">Críticas</div></div>
+            <div style="background:#fff3e0;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#e65100" id="quality-alerta">0</div><div style="font-size:.76rem;color:#666">Alertas</div></div>
+            <div style="background:#e8f5e9;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#2e7d32" id="quality-ok">0</div><div style="font-size:.76rem;color:#666">Verificações OK</div></div>
+          </div>
+          <div id="quality-status" style="background:#fafafa;border:1px solid #e0e0e0;border-radius:10px;padding:12px;font-size:.82rem;color:#666;margin-bottom:12px">Nenhuma auditoria executada nesta sessão.</div>
+          <pre id="quality-report" style="display:none;white-space:pre-wrap;word-break:break-word;background:#171717;color:#f5f5f5;border-radius:12px;padding:14px;font-size:.76rem;line-height:1.55;max-height:280px;overflow:auto"></pre>
+          <div id="quality-results"><div style="background:#fafafa;border:1px dashed #bbb;border-radius:12px;padding:24px;text-align:center;color:#777;font-size:.84rem">Clique em <strong>Executar auditoria</strong> para medir páginas, links, imagens, dados, preços, acessibilidade e sinais de responsividade.</div></div>
+        </div>
+      </div>
+    </div>
     <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
 
 </div>
@@ -3366,7 +3388,8 @@ function irPara(seção,btn){
     'promocao-admin': ['promoção','participantes'],
     'dicas-admin':    ['depoimentos'],
     'sobre-admin':    ['sobre'],
-    'galeria-admin':  ['galeria']
+    'galeria-admin':  ['galeria'],
+    'qualidade-admin': ['qualidade']
   };
   console.log(`[irPara] Navegando para: ${seção}`);
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
@@ -4569,7 +4592,7 @@ const POR_PAG_PART = 50;
 if (!STATE.pagPart) STATE.pagPart = 0;
 
 function getParticipantesUnificados() {
-  // Clientes do 
+  // Clientes do
   const cliFid = Object.values(STATE.clientes?.clientes || STATE.fidelidade?.clientes || {});
   // Inscritos nos Sorteios Mensais
   const insSorteio = STATE.fidelidade?.sorteioInscritos || [];
@@ -4683,7 +4706,7 @@ function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
 function excluirParticipante(cel, tipo) {
   const celLimpo = cel.replace(/\D/g,'');
   let nome = cel;
-  
+
   // Tentar encontrar o nome em qualquer lugar
   const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
   const cli = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
@@ -4698,7 +4721,7 @@ function excluirParticipante(cel, tipo) {
       try {
         let salvouAlgo = false;
         mostrarLoading('Excluindo de todos os sistemas...');
-        
+
         // 1. Remover do Sorteio (fidelidade.json)
         if (STATE.fidelidade?.sorteioInscritos) {
           const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
@@ -4708,7 +4731,7 @@ function excluirParticipante(cel, tipo) {
             if (ok) salvouAlgo = true;
           }
         }
-        
+
         // 2. Remover do  (clientes.json ou fidelidade.json)
         // Busca por valor do campo cel (chaves são USR-XXXX, não o número do celular)
         const entradaCliente = Object.entries(STATE.clientes?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
@@ -4725,7 +4748,7 @@ function excluirParticipante(cel, tipo) {
           const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
           if (ok) salvouAlgo = true;
         }
-        
+
         ocultarLoading();
         if (salvouAlgo) {
           toast('🗑️ ' + nome + ' removido(a) com sucesso!', 'ok');
@@ -5090,7 +5113,7 @@ async function toggleBloqueio(clienteId,bloquear){
   }
 }
 // ═══════════════════════════════════════════════════════════
-// FUNÇÕES DE GESTÃO MANUAL DO CLUBE DE 
+// FUNÇÕES DE GESTÃO MANUAL DO CLUBE DE
 // Todas as ações salvam no GitHub (dados/clientes.json / dados/fidelidade.json)
 // para atualização imediata no site — sem cache de CDN.
 // ═══════════════════════════════════════════════════════════
@@ -6475,10 +6498,10 @@ async function salvarConfigFidelidade() {
 
     ok1 = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: sincronizar textos da fidelidade');
   }
-  
+
   // Salvar no config.json (fonte principal do admin)
   const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar configuração de prêmios e textos da fidelidade');
-  
+
   ocultarLoading();
   if (ok1 && ok2) {
     toast('Configurações de fidelidade salvas e sincronizadas!', 'sucesso');
@@ -6994,7 +7017,7 @@ async function salvarEncomendas() {
 }
 
 // =====================================================================
-//  PÁGINA — Carregar e salvar textos de 
+//  PÁGINA — Carregar e salvar textos de
 // =====================================================================
 function carregarFidelidadePagina() {
   const cfg = STATE.config || {};
@@ -7637,14 +7660,14 @@ function initContadores() {
   document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(el => {
     const max = parseInt(el.getAttribute('maxlength'));
     if (!max) return;
-    
+
     // Criar contador
     const counter = document.createElement('span');
     counter.className = 'char-counter';
     counter.textContent = `0/${max}`;
     el.parentElement.style.position = 'relative';
     el.parentElement.appendChild(counter);
-    
+
     // Atualizar contador ao digitar
     el.addEventListener('input', () => {
       const len = el.value.length;
@@ -7662,7 +7685,7 @@ function initContadores() {
         else el.classList.remove('campo-ok');
       }
     });
-    
+
     // Inicializar com valor atual
     if (el.value.length > 0) {
       el.dispatchEvent(new Event('input'));
@@ -7674,13 +7697,13 @@ function initContadores() {
 function initVálidacaoWhatsApp() {
   const el = document.getElementById('cfg-whatsapp');
   if (!el) return;
-  
+
   el.addEventListener('input', () => {
     const val = el.value.replace(/\D/g, '');
     el.value = val; // Remover não-números automaticamente
-    
+
     const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
-    
+
     if (val.length > 0 && (val.length < 12 || val.length > 13)) {
       el.classList.add('campo-erro');
       el.classList.remove('campo-ok');
@@ -7700,7 +7723,7 @@ function initVálidacaoPreços() {
     el.addEventListener('input', () => {
       const val = parseFloat(el.value);
       const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
-      
+
       if (isNaN(val) || val < 0) {
         el.classList.add('campo-erro');
         erroEl.textContent = '⚠️ Preço deve ser um número positivo (ex: 15.00)';
@@ -7732,13 +7755,13 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
     callback(null, 'Arquivo não é uma imagem válida');
     return;
   }
-  
+
   // Verificar tamanho máximo (5MB antes de processar)
   if (file.size > 5 * 1024 * 1024) {
     callback(null, 'Imagem muito grande (máx. 5MB). Escolha uma imagem menor.');
     return;
   }
-  
+
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
@@ -7746,7 +7769,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
       // Calcular dimensões mantendo proporção
       let w = img.width;
       let h = img.height;
-      
+
       if (w > maxWidth) {
         h = Math.round(h * maxWidth / w);
         w = maxWidth;
@@ -7755,21 +7778,21 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
         w = Math.round(w * maxHeight / h);
         h = maxHeight;
       }
-      
+
       // Desenhar no canvas
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
-      
+
       // Exportar como WebP
       canvas.toBlob((blob) => {
         if (!blob) {
           callback(null, 'Erro ao processar imagem');
           return;
         }
-        
+
         const tamanhoKB = Math.round(blob.size / 1024);
         // Converter blob para dataUrl para uso em preview e upload base64
         const reader2 = new FileReader();
@@ -7798,7 +7821,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
 function criarUploadImagem(containerId, opções) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  
+
   const {
     label = 'Imagem',
     maxWidth = 1200,
@@ -7809,7 +7832,7 @@ function criarUploadImagem(containerId, opções) {
     obrigatório = false,
     onProcessada = null
   } = opções;
-  
+
   container.innerHTML = `
     <div class="campo-edit">
       <label class="${obrigatório ? 'label-obrigatório' : ''}">${label}</label>
@@ -7840,7 +7863,7 @@ function criarUploadImagem(containerId, opções) {
       ${hint ? `<div class="hint">${hint}</div>` : ''}
     </div>
   `;
-  
+
   const input = document.getElementById(`${containerId}-input`);
   const previewWrap = document.getElementById(`${containerId}-preview-wrap`);
   const previewImg = document.getElementById(`${containerId}-preview`);
@@ -7848,7 +7871,7 @@ function criarUploadImagem(containerId, opções) {
   const erroEl = document.getElementById(`${containerId}-erro`);
   const progBar = document.getElementById(`${containerId}-prog`);
   const area = document.getElementById(`${containerId}-area`);
-  
+
   // Drag & Drop
   area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('drag-over'); });
   area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
@@ -7858,36 +7881,36 @@ function criarUploadImagem(containerId, opções) {
     const file = e.dataTransfer.files[0];
     if (file) processarUpload(file);
   });
-  
+
   input.addEventListener('change', () => {
     if (input.files[0]) processarUpload(input.files[0]);
   });
-  
+
   function processarUpload(file) {
     erroEl.classList.remove('ativo');
     progBar.parentElement.style.display = 'block';
     progBar.style.width = '30%';
-    
+
     processarImagem(file, maxWidth, maxHeight, qualidade, (info, erro) => {
       progBar.style.width = '100%';
-      
+
       setTimeout(() => {
         progBar.parentElement.style.display = 'none';
         progBar.style.width = '0%';
       }, 500);
-      
+
       if (erro) {
         erroEl.textContent = '❌ ' + erro;
         erroEl.classList.add('ativo');
         previewWrap.classList.remove('ativo');
         return;
       }
-      
+
       // Mostrar preview
       const url = URL.createObjectURL(info.blob);
       previewImg.src = url;
       previewWrap.classList.add('ativo');
-      
+
       // Mostrar informações
       const statusKB = info.tamanhoKB <= maxKB ? 'info-ok' : 'info-aviso';
       infoEl.innerHTML = `
@@ -7895,12 +7918,12 @@ function criarUploadImagem(containerId, opções) {
         <span>${info.width}×${info.height}px</span>
         <span class="${statusKB}">${info.tamanhoKB}KB ${info.reducao > 0 ? `(${info.reducao}% menor)` : ''}</span>
       `;
-      
+
       if (info.tamanhoKB > maxKB) {
         erroEl.textContent = `⚠️ Imagem ainda grande (${info.tamanhoKB}KB). Recomendado: máx. ${maxKB}KB. Tente uma imagem menor.`;
         erroEl.classList.add('ativo');
       }
-      
+
       // Callback com o blob processado
       if (onProcessada) onProcessada(info.blob, info);
     });
@@ -8671,7 +8694,7 @@ async function salvarDepoimentos() {
   if (seoDicasDesc) c.seoPaginas.dicas.descricao = seoDicasDesc.value.trim();
   const seoDicasPal = document.getElementById('cfg-seo-dicas-palavras');
   if (seoDicasPal) c.seoPaginas.dicas.palavrasChave = seoDicasPal.value.trim();
-  
+
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
 }
 
@@ -10012,5 +10035,52 @@ async function zerarPontosNegativos(clienteId){
 })();
 </script>
 
+<script>
+(function(){
+  const pages=[
+    ['index.html','Página Inicial'],['encomendas.html','Encomendas'],['promocao.html','Promoção'],
+    ['dicas.html','Dicas'],['sobre.html','Sobre'],['galeria.html','Galeria']
+  ];
+  const dataFiles=['dados/config.json','dados/produtos.json','dados/promo.json','dados/promocoes.json','dados/clientes.json','dados/encomendas.json','dados/fidelidade.json'];
+  let issues=[], checks=0;
+  const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const add=(code,severity,scope,title,detail,fix)=>issues.push({code,severity,scope,title,detail,fix});
+  const sev=(s)=>s==='critica'?'CRÍTICO':s==='alerta'?'ALERTA':'INFO';
+  function render(){
+    const count=(s)=>issues.filter(i=>i.severity===s).length;
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    set('quality-total',issues.length);set('quality-critica',count('critica'));set('quality-alerta',count('alerta'));set('quality-ok',Math.max(0,checks-issues.length));
+    const badge=document.getElementById('badge-quality-nav');if(badge){badge.textContent=issues.length;badge.style.display=issues.length?'inline-block':'none';}
+    const status=document.getElementById('quality-status');if(status)status.innerHTML=issues.length?'Auditoria concluída: <strong>'+issues.length+'</strong> ocorrência(s) em <strong>'+checks+'</strong> verificações.':'Auditoria concluída sem ocorrências: <strong>'+checks+'</strong> verificações OK.';
+    const report=document.getElementById('quality-report');
+    const lines=issues.map(i=>i.code+' | '+sev(i.severity)+' | '+i.scope+'\n'+i.title+'\n'+i.detail+'\nCorreção: '+i.fix);
+    if(report){report.textContent=lines.length?lines.join('\n\n'):'OK | '+checks+' verificações sem ocorrência.';report.style.display='block';}
+    const box=document.getElementById('quality-results');if(box){box.innerHTML=issues.length?issues.map(i=>'<div class="audit-card '+(i.severity==='critica'?'critica':i.severity==='alerta'?'alta':'baixa')+'"><span class="audit-badge '+(i.severity==='critica'?'critica':i.severity==='alerta'?'alta':'baixa')+'">'+sev(i.severity)+'</span> <strong>'+esc(i.code)+'</strong><div style="font-weight:800;margin-top:6px">'+esc(i.title)+'</div><div style="font-size:.82rem;margin-top:4px;line-height:1.45">'+esc(i.detail)+'</div><div style="font-size:.8rem;color:#1565c0;margin-top:6px"><strong>Escopo:</strong> '+esc(i.scope)+'<br><strong>Correção:</strong> '+esc(i.fix)+'</div></div>').join(''):'<div style="background:#e8f5e9;border-radius:12px;padding:24px;text-align:center;color:#2e7d32;font-weight:800">✅ Nenhum erro detectado nas verificações executadas.</div>';}
+  }
+  async function pageCheck(path,label){
+    checks++;let html;
+    try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);html=await r.text();}catch(e){add('ERR-PAGE-001','critica',path,'Página pública indisponível',e.message,'Verificar arquivo e publicação.');return;}
+    const doc=new DOMParser().parseFromString(html,'text/html');
+    checks++;if(!doc.querySelector('meta[name=viewport]'))add('ERR-RESP-001','alerta',path,'Meta viewport ausente','A página pode ficar desalinhada no celular.','Adicionar meta viewport responsiva.');
+    checks++;if(!doc.title||!doc.title.trim())add('ERR-SEO-001','alerta',path,'Título HTML ausente','A página não possui título.','Preencher o título no Admin.');
+    const ids=[...doc.querySelectorAll('[id]')].map(e=>e.id);const dup=[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];checks++;if(dup.length)add('ERR-DOM-001','alerta',path,'IDs duplicados',dup.join(', '),'Manter cada ID único.');
+    const imgs=[...doc.querySelectorAll('img')];const noAlt=imgs.filter(e=>!(e.getAttribute('alt')||'').trim());checks++;if(noAlt.length)add('ERR-IMG-001','alerta',path,noAlt.length+' imagem(ns) sem alt','Acessibilidade e SEO ficam prejudicados.','Adicionar texto alternativo em português.');
+    const links=[...doc.querySelectorAll('a[href]')].filter(e=>{const h=(e.getAttribute('href')||'').trim();return !h||h==='#'||/^javascript:/i.test(h);});checks++;if(links.length)add('ERR-LNK-001','alerta',path,links.length+' link(s) sem destino','Há link vazio ou sem ação.','Definir destino real ou remover o link.');
+    const body=doc.body?.textContent||'';checks++;if(/R\$\s*1[,.]50|1[,.]50\s*\(Lote/i.test(body))add('ERR-PRC-001','critica',path,'Preço antigo encontrado','Foi encontrada referência a R$ 1,50.','Usar o mínimo oficial de R$ 1,80.');
+  }
+  async function dataCheck(path){
+    checks++;let data;try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}catch(e){add('ERR-DATA-001','critica',path,'JSON indisponível ou inválido',e.message,'Corrigir o arquivo JSON em UTF-8.');return;}
+    const raw=JSON.stringify(data);checks++;if(/R\$\s*1[,.]50|1[,.]50\s*\(Lote/i.test(raw))add('ERR-PRC-003','critica',path,'Texto de preço antigo no JSON','Existe referência a R$ 1,50.','Atualizar para R$ 1,80.');
+    if(path.endsWith('produtos.json')){const nums=[...raw.matchAll(/"(?:pre[cç]o|preco|pre[cç]oAtacado|precoAtacado)"\s*:\s*([0-9]+(?:\.[0-9]+)?)/gi)].map(m=>Number(m[1]));checks++;if(nums.some(n=>n>0&&n<1.8))add('ERR-PRC-002','critica',path,'Preço abaixo de R$ 1,80','Há preço numérico menor que o mínimo.','Corrigir o valor no Admin.');}
+  }
+  window.executarAuditoriaCompleta=async function(){
+    issues=[];checks=0;const status=document.getElementById('quality-status');if(status)status.textContent='Executando auditoria completa...';
+    const button=document.querySelector('#sec-qualidade .btn-salvar');if(button){button.disabled=true;button.textContent='⏳ Auditando...';}
+    try{await Promise.all(pages.map(p=>pageCheck(p[0],p[1])));await Promise.all(dataFiles.map(dataCheck));}catch(e){add('ERR-AUDIT-001','critica','Painel de Qualidade','Falha inesperada',e.message,'Copiar o relatório e enviar para correção.');}
+    render();if(button){button.disabled=false;button.textContent='▶️ Executar auditoria';}if(typeof toast==='function')toast(issues.length?'Auditoria concluída com '+issues.length+' ocorrência(s).':'Auditoria concluída sem erros.','sucesso');
+  };
+  window.copiarRelatorioQualidade=async function(){const report=document.getElementById('quality-report');const value=report?.textContent||'';if(!value){if(typeof toast==='function')toast('Execute a auditoria antes de copiar.','aviso');return;}let ok=false;try{ok=typeof copiarTextoSeguro==='function'?await copiarTextoSeguro(value):false;}catch(e){}if(typeof toast==='function')toast(ok?'Relatório copiado. Cole aqui para correção.':'Selecione o relatório e copie manualmente.',ok?'sucesso':'aviso');};
+})();
+</script>
 </body>
 </html>
