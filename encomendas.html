@@ -1021,9 +1021,11 @@
             if (ciencia) {
                 btnFin.style.opacity = '1';
                 btnFin.style.pointerEvents = 'auto';
+                btnFin.disabled = false;
             } else {
                 btnFin.style.opacity = '0.5';
                 btnFin.style.pointerEvents = 'none';
+                btnFin.disabled = true;
             }
         } else {
             blocoCiencia.style.opacity = '0.4';
@@ -1100,13 +1102,12 @@
 	            return;
 	        }
         
-        var texto = `Olá! Gostaria de fazer uma encomenda.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
+        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO DE 5 DIAS ÚTEIS APÓS O PAGAMENTO PARA ELABORAR O PEDIDO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
                 var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
                 return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${item.preco.toFixed(2).replace('.',',')}`;
             }).join('\n\n') +
-            `\n\nTotal do Pedido: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}` +
-            `\n\n✅ Estou ciente do prazo de 5 dias úteis após o pagamento para elaborar o pedido.`;
+            `\n\nTotal do Pedido: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
             
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
