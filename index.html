@@ -386,18 +386,18 @@ img{max-width:100%;display:block}
 .cardápio-h{contain: layout;font-size:22px;font-weight:900;text-align:center;margin-bottom:20px;letter-spacing:-.5px;color:#1A0A00;font-family:"Poppins",sans-serif;padding:0 16px}
 /* ACCORDION */
 .acc{border-radius:22px;margin-bottom:18px;box-shadow:0 8px 25px rgba(0,0,0,0.15);isolation:isolate;transition:transform .2s,box-shadow .2s;scroll-margin-top:120px;border:2px solid #FFE0B2;}.acc:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.acc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;cursor:pointer;user-select:none;min-height:118px;transition:filter .2s,transform .2s,background-color .2s;scroll-margin-top:80px;width:100%;border:none;background:transparent;text-align:left;gap:14px;touch-action:manipulation}
+.acc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;cursor:pointer;user-select:none;min-height:110px;transition:filter .2s,transform .2s,background-color .2s;scroll-margin-top:80px;width:100%;border:none;background:transparent;text-align:left;gap:12px;box-sizing:border-box;touch-action:manipulation}
 @media (hover:hover) and (pointer:fine){.acc-header:hover{filter:brightness(.95)}}
 .acc-header:active{transform:scale(.99)}
 .acc-header:focus{outline:3px solid rgba(255,255,255,.85);outline-offset:3px;}
 .acc-header:focus:not(:focus-visible){outline:none;}
 .acc-header:focus-visible{outline:3px solid rgba(255,255,255,.9);outline-offset:3px;}
-.acc-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.acc-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0;align-self:center}
 .acc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
 .acc-title{font-size:18px;font-weight:900;color:#fff;letter-spacing:.5px;text-shadow:0 2px 6px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.5);text-transform:uppercase;}
 .acc-sub{font-size:13px;color:#fff;font-weight:800;margin-top:3px;letter-spacing:.3px;font-family:"Nunito",sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.5)}
 /* Indicador neon circular */
-.acc-indicator{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;pointer-events:none}
+.acc-indicator{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;pointer-events:none;align-self:center}
 .acc-circle{width:70px;height:70px;display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.95);border-radius:50%;background:rgba(255,255,255,.12);box-shadow:0 0 12px rgba(255,255,255,.7),0 0 24px rgba(255,255,255,.3);animation:accCirclePulse 2s ease-in-out infinite;transition:box-shadow .3s ease,background .3s ease;flex-shrink:0}
 .acc.open .acc-circle{animation:none;background:rgba(255,255,255,.22);box-shadow:0 0 8px rgba(255,255,255,.4)}
 .acc-arrow{font-size:26px;color:#fff;font-weight:900;line-height:1;transition:transform .3s ease;display:block;pointer-events:none}
@@ -2506,11 +2506,11 @@ body.cardapio-aberto { padding-bottom: 80px; }
 
 <style>
 /* VITRINE DE ENCOMENDAS — cards premium, compactos e legíveis */
-.enc-preview-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 14px}
+.enc-preview-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px auto 14px;justify-content:center;max-width:100%}
 .enc-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 10px;padding:8px 10px;border:1px solid rgba(13,71,161,.12);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(245,249,255,.92));color:#234;font-size:.75rem;font-weight:800;line-height:1.25}
 .enc-preview-kicker{color:#0D47A1;letter-spacing:.5px;text-transform:uppercase}
 .enc-preview-note{color:#64748B;text-align:right;font-weight:700}
-.enc-preview-item{position:relative;display:flex;min-width:0;min-height:76px;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;padding:11px 10px 10px 39px;background:linear-gradient(180deg,#fff,#fffaf3);border:1px solid rgba(20,35,60,.10);border-radius:14px;box-shadow:0 5px 14px rgba(17,31,55,.07);overflow:hidden;transition:transform .18s cubic-bezier(.23,1,.32,1),box-shadow .18s ease,border-color .18s ease}
+.enc-preview-item{position:relative;display:flex;min-width:0;min-height:76px;flex-direction:column;align-items:stretch;justify-content:center;text-align:left;padding:11px 10px 10px 39px;background:linear-gradient(180deg,#fff,#fffaf3);border:1px solid rgba(20,35,60,.10);border-radius:14px;box-shadow:0 5px 14px rgba(17,31,55,.07);overflow:hidden;transition:transform .18s cubic-bezier(.23,1,.32,1),box-shadow .18s ease,border-color .18s ease}
 .enc-preview-item::before{content:'✓';position:absolute;left:11px;top:12px;display:grid;place-items:center;width:20px;height:20px;border-radius:8px;background:rgba(13,71,161,.10);color:#0D47A1;font-size:.72rem;font-weight:950}
 .enc-preview-item:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(17,31,55,.12);border-color:rgba(13,71,161,.28)}
 .enc-preview-item span{display:-webkit-box;max-width:100%;margin:0 0 5px;color:#233044;font-size:.82rem;font-weight:850;line-height:1.22;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
