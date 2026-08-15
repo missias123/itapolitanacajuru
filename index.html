@@ -727,8 +727,21 @@ body.menu-foco-aberto {
  * Assim a posição de rolagem original continua intacta e o acordeão
  * aparece mesmo quando o usuário abriu o cardápio no meio da página.
  */
-body.menu-foco-aberto .acc:not(.menu-foco-ativo) {
+/* Oculta absolutamente tudo exceto o acordeão em foco e seus ancestrais */
+body.menu-foco-aberto > *:not(script):not(style):not(link):not(.vc-container):not(.home-enc-comp-grid) {
   display: none !important;
+}
+body.menu-foco-aberto .vc-container > *:not(.menu-foco-ativo),
+body.menu-foco-aberto .home-enc-comp-grid > *:not(.menu-foco-ativo) {
+  display: none !important;
+}
+/* Garante que o container pai não limite o tamanho do foco */
+body.menu-foco-aberto .vc-container,
+body.menu-foco-aberto .home-enc-comp-grid {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
 }
 .acc.menu-foco-ativo {
   position: fixed !important;
@@ -747,10 +760,38 @@ body.menu-foco-aberto .acc:not(.menu-foco-ativo) {
   background: #FFFDF9 !important;
   padding: 0 0 100px 0 !important;
   box-sizing: border-box;
-  transform: none !important;
-  transition: none !important;
   display: flex !important;
   flex-direction: column !important;
+  animation: itapFadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes itapFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+body.menu-foco-saindo .acc.menu-foco-ativo {
+  animation: itapFadeSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes itapFadeSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(15px) scale(1.02);
+    filter: blur(2px);
+  }
 }
 .acc.menu-foco-ativo .acc-body {
   max-height: none !important;
@@ -759,7 +800,7 @@ body.menu-foco-aberto .acc:not(.menu-foco-ativo) {
 }
 .acc.menu-foco-ativo .acc-header{position:relative;top:auto;z-index:3;min-height:72px;box-shadow:0 3px 14px rgba(0,0,0,.12)}
 .acc.menu-foco-ativo .acc-body{max-height:none!important;overflow:visible!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
-.menu-foco-back{position:relative;top:auto;z-index:2;display:flex!important;width:100%;align-items:center;justify-content:center;min-height:48px;margin:0 0 14px;padding:12px 16px;border:0;border-radius:14px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font:800 14px/1.2 inherit;cursor:pointer;box-shadow:0 5px 16px rgba(232,0,13,.25);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.menu-foco-back{position:sticky;top:0;z-index:10;display:flex!important;width:100%;align-items:center;justify-content:center;min-height:60px;margin:0;padding:12px 16px;border:0;border-radius:0;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font:900 16px/1.2 inherit;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15);touch-action:manipulation;-webkit-tap-highlight-color:transparent;text-transform:uppercase;letter-spacing:0.5px}
 .menu-foco-back:active{transform:scale(.98)}
 @media(min-width:700px){.acc.menu-foco-ativo{margin:16px 0!important;border-radius:22px!important;box-shadow:0 12px 46px rgba(0,0,0,.2)}.acc.menu-foco-ativo .acc-header{border-radius:22px 22px 0 0}}
 @media(prefers-reduced-motion:reduce){.menu-foco-back{transition:none}.acc.menu-foco-ativo{scroll-behavior:auto}}
@@ -5293,15 +5334,14 @@ function _menuFocoAtivar(acc) {
     back.type = 'button';
     back.className = 'menu-foco-back';
     back.setAttribute('aria-label', 'Voltar ao cardápio');
-    back.textContent = '← Voltar ao cardápio';
+    back.innerHTML = '<span style="font-size:20px;margin-right:8px">←</span> VOLTAR AO INÍCIO';
     back.addEventListener('click', function(event) {
       event.preventDefault();
       event.stopPropagation();
       _menuFocoVoltar(acc);
     });
-    var header = acc.querySelector(':scope > .acc-header');
-    if (header && header.nextSibling) acc.insertBefore(back, header.nextSibling);
-    else acc.appendChild(back);
+    // Insere no topo do acordeão para ser a primeira coisa visível
+    acc.prepend(back);
   }
 }
 
@@ -5330,14 +5370,18 @@ function _menuFocoVoltar(acc) {
   var x = _menuFocoScrollX;
   var y = _menuFocoScrollY;
 
-  // Restaura o nível anterior enquanto o painel ainda está fixo.
-  // Assim o reflow não desloca a página antes da liberação do foco.
-  if (body && _nivelAnterior[id]) {
-    body.innerHTML = _nivelAnterior[id];
-    delete _nivelAnterior[id];
-  }
-  _menuFocoDesativar(false);
-  _restaurarPosicaoCardapio(x, y);
+  // Inicia animação de saída
+  document.body.classList.add('menu-foco-saindo');
+
+  setTimeout(function() {
+    if (body && _nivelAnterior[id]) {
+      body.innerHTML = _nivelAnterior[id];
+      delete _nivelAnterior[id];
+    }
+    _menuFocoDesativar(false);
+    document.body.classList.remove('menu-foco-saindo');
+    _restaurarPosicaoCardapio(x, y);
+  }, 300); // tempo da animação CSS
 }
 
 
