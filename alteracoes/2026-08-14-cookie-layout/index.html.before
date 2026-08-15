@@ -239,7 +239,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:18px;-webkit-text-size-adjust:100%;overflow-x:hidden;width:100%}
 body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background-color:#FFF8F0;color:#1A0A00;line-height:1.6;min-height:100vh;position:relative;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;width:100%;max-width:100vw;text-rendering:optimizeLegibility;}
-body::before{content:'';position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80vw;height:80vh;background:url('images/logo.webp') no-repeat center;background-size:contain;opacity:0.02;pointer-events:none;z-index:0}
 .hero::after{content:'';position:absolute;inset:0;background:url('images/logo.webp') no-repeat center 58%;background-size:clamp(180px,42vw,360px);opacity:.035;pointer-events:none;z-index:0}.hero>*{position:relative;z-index:1}
 body>*{position:relative;z-index:1}
 a{text-decoration:none;color:inherit}
@@ -714,43 +713,10 @@ img{max-width:100%;display:block}
 /* TRAVA GLOBAL DA PÁGINA — PADRÃO GRANDES APPS */
 body.modal-aberto{overflow:hidden!important;position:fixed!important;width:100%!important;touch-action:none}
 /* MODO FOCO DO CARDÁPIO — somente index.html; não afeta encomendas/promoção */
-/* MODO FOCO DO CARDÁPIO — PADRÃO PREMIUM iFood/RAPPI */
-html.menu-foco-aberto,
-body.menu-foco-aberto {
-  overflow: hidden !important;
-}
-body.menu-foco-aberto {
-  width: 100% !important;
-}
-/*
- * O foco é um painel fixo sobre o viewport, não o `body` inteiro.
- * Assim a posição de rolagem original continua intacta e o acordeão
- * aparece mesmo quando o usuário abriu o cardápio no meio da página.
- */
-.acc.menu-foco-ativo {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 99999 !important;
-  width: 100% !important;
-  min-height: 100dvh !important;
-  max-height: 100dvh !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  background: #FFFDF9 !important;
-  padding-bottom: 80px !important;
-  box-sizing: border-box;
-  transform: none !important;
-  transition: none !important;
-}
-.acc.menu-foco-ativo .acc-body {
-  max-height: none !important;
-  overflow: visible !important;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-}
+html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden!important;overscroll-behavior:auto}
+body.menu-foco-aberto{top:auto}
+.acc.menu-foco-ativo{position:relative!important;z-index:10!important;margin:12px 0!important;border-radius:18px!important;max-height:none!important;height:auto!important;overflow:visible!important;background:#FFFDF9!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;box-shadow:0 8px 30px rgba(0,0,0,.16)}
+.reveal:has(.menu-foco-ativo), .reveal.foco-pai{transform:none!important;transition:none!important;z-index:10!important;opacity:1!important}
 .acc.menu-foco-ativo .acc-header{position:relative;top:auto;z-index:3;min-height:72px;box-shadow:0 3px 14px rgba(0,0,0,.12)}
 .acc.menu-foco-ativo .acc-body{max-height:none!important;overflow:visible!important;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .menu-foco-back{position:relative;top:auto;z-index:2;display:flex!important;width:100%;align-items:center;justify-content:center;min-height:48px;margin:0 0 14px;padding:12px 16px;border:0;border-radius:14px;background:linear-gradient(135deg,#E8000D,#FF6B35);color:#fff;font:800 14px/1.2 inherit;cursor:pointer;box-shadow:0 5px 16px rgba(232,0,13,.25);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -3494,7 +3460,7 @@ function toggleAcc(id) {
   });
   // Abre ou fecha o clicado
   if (isOpen) {
-    _menuFocoDesativar(true);
+    // Fecha: trava na altura real → anima até 0 (suave, sem salto)
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -3504,12 +3470,18 @@ function toggleAcc(id) {
     atualizarEstadoHeaderAcc(el, false);
     _trackUiEvent('category_close', { category_id: el.id });
   } else {
-    _menuFocoAtivar(el);
+    _cardapioScrollAnterior[id] = {
+      left: window.scrollX || window.pageXOffset || 0,
+      top: window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+    };
     el.classList.add('open');
     atualizarEstadoHeaderAcc(el, true);
     _trackUiEvent('category_open', { category_id: el.id });
+    // Re-renderiza ao abrir para garantir dados carregados
     if (id === 'acc-iso') renderIso();
     if (id === 'acc-sobremesas') renderSobremesas();
+    // Abre: scrollHeight para animação suave → após 500ms remove inline e deixa CSS (max-height:9999px)
+    // assumir o controle — conteúdo dinâmico (chips, sabores) cresce livremente sem novo JS
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -3517,6 +3489,8 @@ function toggleAcc(id) {
         if (el.classList.contains('open')) body.style.maxHeight = '';
       }, 500);
     }
+    // Estabilidade: não mover a página ao abrir uma categoria.
+    // O usuário controla a navegação; somente os botões de Voltar alteram o nível.
   }
 }
 
@@ -3536,14 +3510,11 @@ inicializarAcessibilidadeAcc();
 
 // Volta ao topo do cardápio E fecha o accordion atual
 function voltarCardapio(accId) {
-  if (_menuFocoId === accId) {
-    _menuFocoDesativar(true);
-    return;
-  }
   var posicaoAnterior = _cardapioScrollAnterior[accId] || {
     left: window.scrollX || window.pageXOffset || 0,
     top: window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
   };
+  // 1. Fecha o accordion clicado sem deslocar a página
   if (accId) {
     var el = document.getElementById(accId);
     if (el) {
@@ -3689,8 +3660,6 @@ document.addEventListener('keydown', function (e) {
 });
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
-  if (!g) return;
-  g.innerHTML = '';
   const nomes={casquinha_copo:'Casquinha / Copo',casquinha_copão:'Casquinha / Copo',copo_recheado:'Copo Recheado',copão_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
   const desc={casquinha_copo:'1 bola',casquinha_copão:'1 bola',copo_recheado:'1 bola + recheio',copão_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
   if(produtos&&produtos.sorvetes&&produtos.sorvetes.preços){
@@ -3712,8 +3681,6 @@ function renderSorvetes(){
 }
 function renderMilk(){
   const g=document.getElementById('milk-grid');
-  if (!g) return;
-  g.innerHTML = '';
   if(produtos&&produtos.milkshake){
     const m=produtos.milkshake;
     const tipos=[];
@@ -3736,8 +3703,6 @@ function renderMilk(){
 }
 function renderTacas(){
   const g=document.getElementById('tacas-grid');
-  if (!g) return;
-  g.innerHTML = '';
   if(produtos&&produtos.tacas&&produtos.tacas.tradicionais){
     Object.entries(produtos.tacas.tradicionais).forEach(([nome,preço])=>{
       const chave='taca_trad_'+nome.replace(/\s/g,'_');
@@ -3757,8 +3722,6 @@ function renderTacas(){
 }
 function renderTacasP(){
   const g=document.getElementById('tacas-p-grid');
-  if (!g) return;
-  g.innerHTML = '';
   if(produtos&&produtos.tacas&&produtos.tacas.sujas){
     Object.entries(produtos.tacas.sujas).forEach(([nome,preço])=>{
       const chave='taca_suja_'+nome.replace(/\s/g,'_');
@@ -3963,11 +3926,11 @@ function renderPicolés(){
     ctas.innerHTML=`
       <a class="enc-link-btn product-cta--attention" href="${buildWhatsAppHref('Olá! Gostaria de consultar picolés no atacado para um evento.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('wholesale_cta_click',{page:'home',category:'picoles',cta_type:'consultar_atacado'})">Consultar atacado</a>
       <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de solicitar orçamento para picolés em evento.')}" target="_blank" rel="noopener" onclick="_trackUiEvent('event_quote_cta_click',{page:'home',category:'picoles',cta_type:'solicitar_orcamento'})">Solicitar orçamento</a>`;
-    
-    const _vb=document.createElement('div');_vb.style='padding:10px 0 4px';
-    _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-picolés\')">← Voltar ao Início do Cardápio</button>';
-    b.appendChild(_vb);
   }
+
+  const _vb=document.createElement('div');_vb.style='padding:6px 0 2px';
+  _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-picolés\')">← Voltar ao Início do Cardápio</button>';
+  b.appendChild(_vb);
 }
 
 function renderIso(){
@@ -5279,6 +5242,8 @@ function _menuFocoAtivar(acc) {
   document.documentElement.classList.add('menu-foco-aberto');
   document.body.classList.add('menu-foco-aberto');
   acc.classList.add('menu-foco-ativo');
+  var pai = acc.closest('.reveal');
+  if(pai) pai.classList.add('foco-pai');
   _menuFocoId = acc.id;
 
   var back = acc.querySelector(':scope > .menu-foco-back');
@@ -5306,6 +5271,8 @@ function _menuFocoDesativar(restaurarPosicao) {
   var y = _menuFocoScrollY;
   if (acc) {
     acc.classList.remove('menu-foco-ativo');
+    var pai = acc.closest('.reveal');
+    if(pai) pai.classList.remove('foco-pai');
     var back = acc.querySelector(':scope > .menu-foco-back');
     if (back) back.remove();
   }
@@ -5450,26 +5417,21 @@ function sincronizarCardapioMap() {
 
 // Obtém o acc-body correto usando CARDAPIO_MAP ou closest
 function _getAccBody(el, bodyIdHint) {
-  if (!el) return bodyIdHint ? document.getElementById(bodyIdHint) : null;
   // 1. Tenta closest direto
   var found = el.closest ? el.closest('.acc-body') : null;
   if (found) return found;
-  // 2. Sobe manualmente até 15 níveis
+  // 2. Sobe manualmente até 10 níveis
   var cur = el.parentElement;
-  for (var i = 0; i < 15; i++) {
+  for (var i = 0; i < 10; i++) {
     if (!cur) break;
     if (cur.classList && cur.classList.contains('acc-body')) return cur;
     cur = cur.parentElement;
   }
-  // 3. Tenta encontrar pelo acc pai
-  var acc = el.closest ? el.closest('.acc') : null;
-  if (acc) {
-    var accBody = acc.querySelector('.acc-body');
-    if (accBody) return accBody;
-    if (CARDAPIO_MAP[acc.id]) return document.getElementById(CARDAPIO_MAP[acc.id].bodyId);
-  }
-  // 4. Fallback direto para o ID fornecido
+  // 3. Usa bodyIdHint ou CARDAPIO_MAP
   if (bodyIdHint) return document.getElementById(bodyIdHint);
+  // 4. Tenta encontrar pelo acc pai
+  var acc = el.closest ? el.closest('.acc') : null;
+  if (acc && CARDAPIO_MAP[acc.id]) return document.getElementById(CARDAPIO_MAP[acc.id].bodyId);
   return null;
 }
 
@@ -5518,7 +5480,9 @@ function voltarNivel(btn) {
       delete _nivelAnterior[accId];
     };
     if (focoAtivo) {
-      _semPulo(restaurarNivel);
+      restaurarNivel();
+      _menuFocoDesativar(false);
+      _restaurarPosicaoCardapio(focoX, focoY);
     } else {
       _semPulo(restaurarNivel);
     }
@@ -5670,27 +5634,6 @@ document.addEventListener('DOMContentLoaded', function() {
   </script>
 
 
-<style id="cookie-layout-fix">
-  :root { --cookie-space: 0px; }
-  body.cookie-banner-open { padding-bottom: var(--cookie-space); }
-  #cookie-banner {
-    box-sizing: border-box !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
-    max-height: min(32vh, 220px);
-    overflow: auto;
-    padding: 12px 16px !important;
-  }
-  #cookie-banner > div { box-sizing: border-box; }
-  @media (max-width: 600px) {
-    #cookie-banner { font-size: 12px !important; padding: 10px 12px !important; }
-    #cookie-banner > div { display: grid !important; grid-template-columns: 1fr; gap: 8px !important; }
-    #cookie-banner > div > p { font-size: 12px !important; text-align: left !important; }
-    #cookie-banner > div > div { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px !important; width: 100%; }
-    #cookie-banner button { width: 100% !important; min-width: 0 !important; min-height: 44px !important; padding: 10px 8px !important; font-size: 12px !important; }
-  }
-</style>
-
 <!-- Banner LGPD -->
 <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.92); color: white; padding: 15px 20px; z-index: 9999; text-align: center; font-size: 14px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);">
   <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">
@@ -5703,47 +5646,18 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <script>
-function sincronizarEspacoCookie(ativo) {
-  const banner = document.getElementById('cookie-banner');
-  if (!banner) return;
-  if (window.__cookieResizeHandler) {
-    window.removeEventListener('resize', window.__cookieResizeHandler);
-    window.__cookieResizeHandler = null;
-  }
-  if (!ativo) {
-    document.body.classList.remove('cookie-banner-open');
-    document.documentElement.style.setProperty('--cookie-space', '0px');
-    return;
-  }
-  document.body.classList.add('cookie-banner-open');
-  const atualizar = () => {
-    const altura = Math.ceil(banner.getBoundingClientRect().height || 0);
-    document.documentElement.style.setProperty('--cookie-space', `${altura + 16}px`);
-  };
-  window.__cookieResizeHandler = atualizar;
-  window.addEventListener('resize', atualizar, { passive: true });
-  requestAnimationFrame(atualizar);
-}
 function reabrirCookieBanner() {
   localStorage.removeItem('cookies_aceitos');
   document.getElementById('cookie-banner').style.display = 'block';
-  sincronizarEspacoCookie(true);
 }
 function checkCookies() {
-  const banner = document.getElementById('cookie-banner');
-  if (!banner) return;
   if (!localStorage.getItem('cookies_aceitos')) {
-    banner.style.display = 'block';
-    sincronizarEspacoCookie(true);
-  } else {
-    banner.style.display = 'none';
-    sincronizarEspacoCookie(false);
+    document.getElementById('cookie-banner').style.display = 'block';
   }
 }
 function aceitarCookies() {
   localStorage.setItem('cookies_aceitos', 'true');
   document.getElementById('cookie-banner').style.display = 'none';
-  sincronizarEspacoCookie(false);
   if(typeof gtag === 'function') {
     gtag('consent', 'update', {
       'analytics_storage': 'granted',
@@ -5756,7 +5670,6 @@ function aceitarCookies() {
 function recusarCookies() {
   localStorage.setItem('cookies_aceitos', 'false');
   document.getElementById('cookie-banner').style.display = 'none';
-  sincronizarEspacoCookie(false);
   if(typeof gtag === 'function') {
     gtag('consent', 'update', {
       'analytics_storage': 'denied',
