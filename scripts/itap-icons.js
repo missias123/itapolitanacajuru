@@ -29,9 +29,9 @@
         <path d="M3 12c2 2 4-2 6 2s4-2 6 2 4-2 6 2V9L12 5 3 9v3Z" fill="currentColor" opacity=".72"/>
       </symbol>
       <symbol id="icon-popsicle" viewBox="0 0 24 24">
-        <path d="M7 3h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="currentColor"/>
-        <path d="M11 17h2v5a1 1 0 0 1-2 0z" fill="currentColor" opacity=".8"/>
-        <path d="M8 6h1v6H8z" fill="white" opacity=".32"/>
+        <path d="M5 8c0-4 3-5 7-5s7 1 7 5v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8Z" fill="currentColor"/>
+        <path d="M11 18h2v4a1 1 0 0 1-2 0v-4Z" fill="currentColor" opacity=".8"/>
+        <path d="M8 6c1.5-1 4.5-1 6 0" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
       </symbol>
       <symbol id="icon-acai" viewBox="0 0 24 24">
         <path d="M2 12c0 6 4 10 10 10s10-4 10-10H2Z" fill="currentColor"/>
@@ -41,9 +41,9 @@
         <circle cx="12" cy="6" r=".8" fill="white" opacity=".65"/>
       </symbol>
       <symbol id="icon-scoop" viewBox="0 0 24 24">
-        <path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/>
-        <path d="M17 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" transform="translate(-5 3)"/>
-        <path d="M7 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" transform="translate(5 3)"/>
+        <circle cx="12" cy="8" r="6" fill="currentColor"/>
+        <path d="M6 14c0 3 3 6 6 6s6-3 6-6H6Z" fill="currentColor" opacity=".7"/>
+        <path d="M9 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" fill="white" opacity=".4"/>
       </symbol>
       <symbol id="icon-milkshake" viewBox="0 0 24 24">
         <path d="M7 22h10l1.5-14h-13L7 22Z" fill="currentColor"/>
