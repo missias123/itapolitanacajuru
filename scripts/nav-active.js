@@ -39,6 +39,18 @@
   ];
 
   var CSS = [
+    '/* TOPO CANÔNICO — mesma moldura da tela inicial em todas as abas */',
+    '.itap-header{background:linear-gradient(135deg,#E8000D,#C62828)!important;border-bottom:4px solid #FFD600!important;padding:0 12px!important;position:sticky!important;top:0!important;z-index:99999!important;box-shadow:0 4px 20px rgba(0,0,0,.25)!important;isolation:isolate!important;width:100%!important;box-sizing:border-box!important;}',
+    '.itap-header-inner{max-width:960px!important;margin:0 auto!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:12px!important;width:100%!important;box-sizing:border-box!important;padding:12px 12px 16px!important;}',
+    '.itap-header-top{display:flex!important;justify-content:center!important;align-items:center!important;padding:1px 0!important;width:100%!important;box-sizing:border-box!important;}',
+    '.itap-header-nav{contain:layout!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%!important;box-sizing:border-box!important;grid-auto-rows:minmax(56px,auto)!important;}',
+    '.itap-header-nav .itap-nav-btn{min-height:58px!important;padding:10px 6px!important;border-radius:16px!important;line-height:1.1!important;}',
+    '.itap-header-nav .itap-nav-icon{font-size:1.8em!important;line-height:1!important;margin-bottom:2px!important;}',
+    '.itap-header-nav .itap-nav-label{font-size:clamp(13px,3.5vw,15px)!important;font-weight:900!important;line-height:1.1!important;letter-spacing:.6px!important;}',
+    '@media (min-width:768px){.itap-header-inner{padding:10px 20px!important;}.itap-header-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;}.itap-header-nav .itap-nav-btn{min-height:60px!important;padding:10px 8px!important;}.itap-header-nav .itap-nav-label{font-size:13px!important;}}',
+    '@media (min-width:1024px){.itap-header-nav .itap-nav-btn{min-height:64px!important;padding:12px 10px!important;}.itap-header-nav .itap-nav-icon{font-size:1.9em!important;}.itap-header-nav .itap-nav-label{font-size:14px!important;}}',
+    '@media (min-width:1100px){.itap-header-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;}}',
+    '@media (max-width:600px){.itap-header{padding-inline:max(8px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-right))!important;}.itap-header-inner{padding:10px 8px 12px!important;gap:10px!important;}.itap-header-nav{gap:8px!important;}.itap-header-nav .itap-nav-btn{min-height:56px!important;padding:8px 4px!important;}}',
     '@keyframes nav-home-pulse{',
     '0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(0,0,0,.2),0 0 0 0 rgba(255,255,255,.5);}',
     '50%{transform:scale(1.04);box-shadow:0 6px 20px rgba(0,0,0,.3),0 0 0 7px rgba(255,255,255,0);}',
