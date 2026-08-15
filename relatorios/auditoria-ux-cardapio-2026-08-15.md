@@ -66,3 +66,25 @@ A gaveta `acc-açaí` foi aberta isoladamente. O teste confirmou `has35: false`,
 Na largura de auditoria de 1280 × 1100 px, os cabeçalhos das oito gavetas mantiveram `min-height: 118px` e tipografia de 18 px; os botões internos observados ficaram acima de 53 px de altura, preservando alvos de toque confortáveis. O teste do botão `Voltar ao Início do Cardápio` em Açaí resultou em `categoryOpen: false`, `armarioOpen: true`, `focus: false`, seções externas restauradas e `scrollDelta: 0`.
 
 A largura móvel deve ser confirmada no aparelho real, pois o navegador automatizado desta sessão está em viewport desktop. Os estilos existentes incluem breakpoints móveis e os testes DOM não apontaram sobreposição ou controle inacessível.
+
+
+## Relatório de Auditoria Técnica Completa — 2026-08-15
+
+### 1. Inventário de Arquivos e Arquitetura
+O projeto `Itapolitana Cajuru` está estruturado como um site estático moderno (HTML5, CSS3, JavaScript Vanilla), hospedado no GitHub Pages (`missias123/itapolitanacajuru`). Os principais arquivos são:
+- `index.html`: Página principal com landing, seções institucionais, ItaBot (assistente virtual), carrossel e o "Armário" do cardápio com gavetas acordeão.
+- `encomendas.html`: Página de pedidos com checkout sequencial de 3 etapas (Revisão, Identificação, WhatsApp), carrinho flutuante com borda neon pulsante e regras de antecedência de 5 dias úteis.
+- `scripts/products.js`: A 'Single Source of Truth' (fonte única de verdade) que centraliza o catálogo de produtos e preços.
+- `scripts/quality-guard.js`: Script de monitoramento e auto-cura para evitar grades de produtos vazias.
+
+### 2. Análise Estrutural e Pontos de Atenção
+- **Centralização de Dados (`products.js`)**: Excelente iniciativa. Garante consistência de preços entre a página inicial e a página de encomendas.
+- **Isolamento de Gavetas (`index.html`)**: A arquitetura atual de armário e gavetas elimina sobreposições indevidas ao ocultar elementos externos do DOM quando uma categoria está ativa, mantendo o foco do usuário sem saltos de scroll.
+- **Tipografia e Layout Mobile**: A tipografia utiliza classes utilitárias e Inter/Poppins. Para garantir o padrão mundial em celulares Android e iPhone, os cartões de produtos foram redimensionados para evitar alturas excessivas em viewports verticais estreitas.
+
+### 3. Recomendações de Manutenção e Boas Práticas
+1. **Versionamento de Assets**: Sempre manter backups locais na pasta `.changes` ou `backups/` antes de editar arquivos críticos como `index.html`.
+2. **Testes em Dispositivos Reais**: Validar periodicamente em navegadores móveis (Safari iOS e Chrome Android) para garantir que o comportamento de toque e rolagem (momentum scrolling) permaneça fluído.
+3. **SEO Local**: Manter metatags otimizadas para Cajuru, Santa Cruz da Esperança e Cássia dos Coqueiros para buscas por sorveteria, açaí e picolés.
+
+<!-- Fim do relatório técnico. -->
