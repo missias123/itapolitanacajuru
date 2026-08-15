@@ -3688,6 +3688,8 @@ document.addEventListener('keydown', function (e) {
 });
 function renderSorvetes(){
   const g=document.getElementById('sorvetes-grid');
+  if (!g) return;
+  g.innerHTML = '';
   const nomes={casquinha_copo:'Casquinha / Copo',casquinha_copão:'Casquinha / Copo',copo_recheado:'Copo Recheado',copão_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
   const desc={casquinha_copo:'1 bola',casquinha_copão:'1 bola',copo_recheado:'1 bola + recheio',copão_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
   if(produtos&&produtos.sorvetes&&produtos.sorvetes.preços){
@@ -3709,6 +3711,8 @@ function renderSorvetes(){
 }
 function renderMilk(){
   const g=document.getElementById('milk-grid');
+  if (!g) return;
+  g.innerHTML = '';
   if(produtos&&produtos.milkshake){
     const m=produtos.milkshake;
     const tipos=[];
@@ -3731,6 +3735,8 @@ function renderMilk(){
 }
 function renderTacas(){
   const g=document.getElementById('tacas-grid');
+  if (!g) return;
+  g.innerHTML = '';
   if(produtos&&produtos.tacas&&produtos.tacas.tradicionais){
     Object.entries(produtos.tacas.tradicionais).forEach(([nome,preço])=>{
       const chave='taca_trad_'+nome.replace(/\s/g,'_');
@@ -3750,6 +3756,8 @@ function renderTacas(){
 }
 function renderTacasP(){
   const g=document.getElementById('tacas-p-grid');
+  if (!g) return;
+  g.innerHTML = '';
   if(produtos&&produtos.tacas&&produtos.tacas.sujas){
     Object.entries(produtos.tacas.sujas).forEach(([nome,preço])=>{
       const chave='taca_suja_'+nome.replace(/\s/g,'_');
