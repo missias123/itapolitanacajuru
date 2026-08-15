@@ -4,9 +4,42 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Encomendas | Sorveteria Itapolitana Cajuru</title>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+  <meta content="max-age=31536000; includeSubDomains" http-equiv="Strict-Transport-Security"/>
+  <meta content="nosniff" http-equiv="X-Content-Type-Options"/>
+  <meta content="strict-origin-when-cross-origin" http-equiv="Referrer-Policy"/>
+  <link as="image" href="images/logo.webp" rel="preload" type="image/webp" fetchpriority="high"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <meta content="Faça suas encomendas de sorvetes em caixa (5L e 10L), tortas geladas e picolés no atacado na Sorveteria Itapolitana em Cajuru/SP. Prazo mínimo de 5 dias úteis." name="description"/>
+  <meta content="#EF0129" name="theme-color"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <link rel="apple-touch-icon" href="images/logo.webp">
+  <link rel="manifest" href="manifest.json">
+  <link href="https://itapolitanacajuru.com.br/encomendas.html" rel="canonical"/>
+  
+  <meta content="website" property="og:type"/>
+  <meta content="https://itapolitanacajuru.com.br/encomendas.html" property="og:url"/>
+  <meta content="Encomendas | Sorveteria Itapolitana Cajuru" property="og:title"/>
+  <meta content="Encomende sorvetes e picolés para sua festa ou evento em Cajuru/SP. Qualidade premium e sabores Tipo artesanais." property="og:description"/>
+  <meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "OrderAction",
+    "name": "Encomendas Itapolitana",
+    "description": "Encomendas de sorvetes e picolés em Cajuru/SP",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sorveteria Itapolitana Cajuru"
+    }
+  }
+  </script>
   <style>
     /* Cabeçalho unificado idêntico ao da Index */
     .itap-header { background: linear-gradient(135deg, #EA1D2C 0%, #B3001B 100%); padding: 6px 8px 10px; border-bottom: 2px solid #FFD100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); width: 100%; box-sizing: border-box; }
@@ -29,12 +62,15 @@
         .categoria, .categoria-header { width: 100%; box-sizing: border-box; }
         .categoria-header { padding: 14px clamp(14px, 4vw, 20px); min-height: 58px; }
         .categoria-header > div { min-width: 0; }
-        .categoria-header small { font-size: clamp(.82rem, 3.5vw, .95rem); line-height: 1.35; }
+        .categoria-header__main { gap: 9px; }
+        .categoria-header__icon { width: 38px; height: 38px; flex-basis: 38px; }
+        .categoria-header__icon svg { width: 22px; height: 22px; }
+        .categoria-header small { font-size: clamp(.82rem, 3.5vw, .95rem); line-height: 1.35; overflow-wrap: anywhere; }
         .categoria-conteudo { padding: clamp(14px, 4vw, 20px); }
         /* Picolés: cabeçalho compacto para priorizar a área nobre dos produtos. */
         .categoria--picoles .categoria-header { padding: 9px 12px; min-height: 56px; gap: 8px; }
         .categoria--picoles .categoria-header strong { font-size: clamp(1.08rem, 4.5vw, 1.28rem); line-height: 1.1; margin-bottom: 1px; color: var(--primary); }
-        .categoria--picoles .categoria-header small { font-size: clamp(.72rem, 3vw, .82rem); line-height: 1.15; font-weight: 700; white-space: nowrap; }
+        .categoria--picoles .categoria-header small { font-size: clamp(.72rem, 3vw, .82rem); line-height: 1.15; font-weight: 700; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
         .categoria--picoles .categoria-header .arrow-icon { font-size: 1.25rem; flex: 0 0 auto; }
         .categoria--picoles .categoria-conteudo { padding: 10px; }
         .categoria--picoles .prod-grid { gap: 10px; }
@@ -61,8 +97,8 @@
     .header { background: var(--white); color: var(--primary); padding: 10px 0; text-align: center; border-bottom: 1px solid #EEEEEE; }
     .container { max-width: 800px; margin: 0 auto; padding: 8px; padding-bottom: 120px; }
 
-    .categoria { 
-        background: var(--white); 
+  .categoria {
+        background: var(--white);
         border-radius: 18px; 
         margin-bottom: 18px; 
         border: 1px solid #E8E8E8; 
@@ -75,17 +111,40 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
     .categoria-header {
-        padding: 22px 24px; 
-        background: var(--white); 
-        color: var(--text-main); 
+        padding: 22px 24px;
+        background: var(--white);
+        color: var(--text-main);
         cursor: pointer;
-        display: flex; 
-        justify-content: space-between; 
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        border: none; 
-        width: 100%; 
-        text-align: left; 
+        gap: 14px;
+        border: none;
+        width: 100%;
+        text-align: left;
         transition: all 0.2s;
+    }
+    .categoria-header__main {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+    .categoria-header__copy {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+    .categoria-header__icon {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        margin-right: 0 !important;
+    }
+    .categoria-header__icon svg {
+        display: block;
+        width: 26px;
+        height: 26px;
     }
     .categoria-header strong {
         display: block;
@@ -274,6 +333,46 @@
       50% { transform: scale(1.01); opacity: 0.92; }
       100% { transform: scale(1); opacity: 1; }
     }
+    .picole-aba-btn .bento-icon-container {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      margin-right: 0;
+      border-radius: 8px;
+    }
+    .picole-aba-btn .bento-icon-container svg { width: 16px; height: 16px; }
+    .picole-grupo-sec__titulo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      margin-bottom: 8px;
+      padding: 0 0 6px;
+      border-bottom: 2px solid #FFF0F0;
+      color: var(--primary);
+      font-size: 1.05rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+    .picole-grupo-sec__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+    }
+    .picole-grupo-sec__icon .bento-icon-container {
+      width: 28px;
+      height: 28px;
+      margin-right: 0;
+      border-radius: 8px;
+    }
+    .picole-grupo-sec__icon .bento-icon-container svg { width: 18px; height: 18px; }
+    .picole-grupo-sec__label {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
   </style>
   <link rel="stylesheet" href="css/itap-shared.css?v=20260815-icons-approved-2">
   <script src="scripts/itap-icons.js?v=20260815-icons-approved-2"></script>
@@ -284,16 +383,16 @@
 <div class="itap-header-slot" data-itap-header-slot aria-label="Cabeçalho Itapolitana"></div>
 
 <div class="banner-alerta">
-  🚨 ATENÇÃO: ENCOMENDAS EXIGEM PRAZO MÍNIMO DE 5 DIAS ÚTEIS DE ANTECEDÊNCIA!
+  <h1 style="font-size: inherit; margin: 0; display: inline;">🚨 ATENÇÃO: ENCOMENDAS EXIGEM PRAZO MÍNIMO DE 5 DIAS ÚTEIS DE ANTECEDÊNCIA!</h1>
 </div>
 
 <div class="container">
   <!-- Categoria Caixas -->
-  <div class="categoria">
+    <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-caixas')">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div class="bento-icon-container blue" style="width:40px; height:40px;"><svg><use xlink:href="#icon-box"></use></svg></div>
-        <div><strong>Sorvete em Caixa</strong><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
+      <div class="categoria-header__main">
+        <span class="categoria-header__icon bento-icon-container blue" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#icon-box" xlink:href="#icon-box"></use></svg></span>
+        <div class="categoria-header__copy"><strong>Sorvete em Caixa</strong><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
       </div>
       <span class="arrow-icon">▼</span>
     </button>
@@ -303,11 +402,11 @@
   </div>
 
   <!-- Categoria Tortas -->
-  <div class="categoria">
+    <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-tortas')">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div class="bento-icon-container red" style="width:40px; height:40px;"><svg><use xlink:href="#icon-cake"></use></svg></div>
-        <div><strong>Tortas Geladas</strong><small>Especiais para festas e aniversários</small></div>
+      <div class="categoria-header__main">
+        <span class="categoria-header__icon bento-icon-container red" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#icon-cake" xlink:href="#icon-cake"></use></svg></span>
+        <div class="categoria-header__copy"><strong>Tortas Geladas</strong><small>Especiais para festas e aniversários</small></div>
       </div>
       <span class="arrow-icon">▼</span>
     </button>
@@ -317,11 +416,11 @@
   </div>
 
   <!-- Categoria Picolés -->
-  <div class="categoria">
+    <div class="categoria categoria--picoles">
     <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div class="bento-icon-container orange" style="width:40px; height:40px;"><svg><use xlink:href="#icon-popsicle"></use></svg></div>
-        <div><strong>Picolés no Atacado</strong><small>Mínimo 100 unidades - Ideal para revenda e eventos</small></div>
+      <div class="categoria-header__main">
+        <span class="categoria-header__icon bento-icon-container orange" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#icon-popsicle" xlink:href="#icon-popsicle"></use></svg></span>
+        <div class="categoria-header__copy"><strong>Picolés no Atacado</strong><small>Mínimo 100 unidades - Ideal para revenda e eventos</small></div>
       </div>
       <span class="arrow-icon">▼</span>
     </button>
@@ -350,7 +449,7 @@
       <div class="modal-content" style="max-width: 680px; height: 88vh; max-height: 720px; display: flex; flex-direction: column; padding: 20px 18px calc(18px + env(safe-area-inset-bottom));">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F2F2F2; padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
           <div>
-            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 900; color: var(--primary);">🍭 Picolés no Atacado</h2>
+            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 900; color: var(--primary);">Picolés no Atacado</h2>
             <p style="margin: 2px 0 0; font-size: 0.85rem; color: #555;">Mínimo <strong>100 unidades</strong> · Máx 25 por sabor</p>
           </div>
           <button onclick="window.fecharModal('modal-picoles')" style="background: #F2F2F2; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.15rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
@@ -806,15 +905,15 @@
         
         Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
             var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
-            var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange') : '🍦';
+            var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange small') : '';
             var tipoCurto = tipo.split('(')[0].trim();
             var tipoId = 'grupo-picole-' + index;
             
-            abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">${icon} ${tipoCurto}</button>`;
+            abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">${icon}<span>${tipoCurto}</span></button>`;
             
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
-                <div style="font-size: 1.05rem; font-weight: 900; color: var(--primary); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #FFF0F0; display: flex; align-items: center; gap: 6px;">
-                    <span style="width:24px; height:24px; display:inline-flex;">${icon}</span> <span>${tipo}</span>
+                <div class="picole-grupo-sec__titulo">
+                    <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${tipo}</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">`;
             
