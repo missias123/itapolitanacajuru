@@ -295,13 +295,30 @@
     .cart-item__excluir { background:#FFF0F0; color:#B42318; }
     .cart-status { padding:11px 12px; border-radius:10px; background:#FFF4E5; color:#8A4B00; font-size:.85rem; font-weight:800; margin-top:14px; }
     .cart-status.ready { background:#EAF7ED; color:#166534; }
+    .resumo-economia-picoles { margin:0 0 16px; padding:14px 16px; border:1px solid #D1D5DB; border-left:6px solid #9CA3AF; border-radius:12px; background:#F8FAFC; color:#374151; line-height:1.4; }
+    .resumo-economia-picoles--atacado { border-color:#FCA5A5; border-left-color:#DC2626; background:#FFF1F2; color:#7F1D1D; }
+    .resumo-economia-picoles__titulo { display:block; font-size:.9rem; font-weight:900; }
+    .resumo-economia-picoles__linhas { display:flex; flex-direction:column; gap:4px; margin-top:7px; font-size:.82rem; font-weight:800; }
+    .resumo-economia-picoles__valor { display:block; margin-top:4px; color:#B91C1C; font-size:1.08rem; font-weight:950; }
+    .resumo-economia-picoles__detalhe { display:block; margin-top:7px; color:#475569; font-size:.76rem; font-weight:700; }
+    .resumo-economia-picoles--atacado .resumo-economia-picoles__detalhe { color:#991B1B; }
+    @media (max-width:480px) {
+      .resumo-economia-picoles { padding:12px 13px; }
+      .resumo-economia-picoles__valor { font-size:1.08rem; }
+      .resumo-economia-picoles__detalhe { font-size:.72rem; }
+    }
     .picole-grupo { margin-bottom:12px; border:1px solid #E8E8E8; border-radius:10px; overflow:hidden; background:#fff; }
     .picole-grupo__titulo { margin:0; padding:10px 14px; color:var(--primary); background:#FFF5F5; border-bottom:2px solid var(--primary); font-size:clamp(1.05rem, 3.8vw, 1.22rem); font-weight:900; letter-spacing:-0.01em; }
     .picole-linha { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; padding:8px 10px; border-bottom:1px solid #F0F0F0; }
     .picole-linha:last-child { border-bottom:0; }
     .picole-linha__sabor { font-weight:800; line-height:1.2; font-size:.92rem; }
     .picole-linha__preco { margin-top:1px; color:var(--text-muted); font-size:.72rem; }
-    .picole-linha__subtotal { margin-top:1px; color:var(--success); font-size:.74rem; font-weight:800; }
+    .picole-precos { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:6px; }
+    .picole-preco { display:inline-flex; align-items:center; min-height:24px; padding:4px 7px; border-radius:7px; font-size:clamp(.68rem, 2.8vw, .76rem); line-height:1.1; white-space:nowrap; }
+    .picole-preco--varejo { color:#596273; background:#F3F4F6; border:1px solid #E5E7EB; font-weight:700; }
+    .picole-preco--atacado { color:#065F46; background:#DCFCE7; border:1px solid #34D399; font-weight:900; box-shadow:0 0 0 2px rgba(52,211,153,.16); }
+    .picole-preco--atacado::before { content:'★'; margin-right:4px; color:#047857; font-size:.7rem; }
+    .picole-linha__subtotal { margin-top:6px; color:var(--success); font-size:.74rem; font-weight:800; }
     .picole-linha__controle { display:flex; align-items:center; gap:5px; }
     .picole-linha__controle button { width:30px; height:30px; border:1px solid #D5D5D5; border-radius:50%; background:#fff; color:var(--text-main); font-size:1.05rem; font-weight:900; line-height:1; cursor:pointer; }
     .picole-linha__controle button:active { transform:scale(.96); }
@@ -522,6 +539,17 @@
           </p>
         </div>
 
+        <div id="resumo-economia-picoles" class="resumo-economia-picoles" style="display:none;" role="status" aria-live="polite">
+          <span id="titulo-resumo-picoles" class="resumo-economia-picoles__titulo">RESUMO DOS PICOLÉS</span>
+          <div class="resumo-economia-picoles__linhas">
+            <span id="preco-aplicado-picoles-formulario">Preço aplicado: Varejo</span>
+            <span id="total-varejo-picoles-formulario">Total dos picolés no varejo: R$ 0,00</span>
+            <strong id="desconto-picoles-formulario" class="resumo-economia-picoles__valor">DESCONTO TOTAL NO ATACADO: R$ 0,00</strong>
+            <span id="total-atacado-picoles-formulario">Total dos picolés no atacado: R$ 0,00</span>
+          </div>
+          <small id="detalhe-desconto-picoles" class="resumo-economia-picoles__detalhe">O atacado é ativado automaticamente a partir de 100 unidades.</small>
+        </div>
+
         <div style="display: flex; flex-direction: column; gap: 14px;">
           <div>
             <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">1. Seu Nome Completo *</label>
@@ -595,12 +623,24 @@
     ];
 
     var PICOLES_CATALOGO = {
-        "Frutas / Base Água (R$ 1,80)": { preco: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
-        "Recheados — Base Leite (R$ 2,00)": { preco: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
-        "Sem Recheio — Base Leite (R$ 2,00)": { preco: 2.00, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
-        "Especiais — Base Leite (R$ 3,00)": { preco: 3.00, sabores: ["Leite Ninho", "Ovomaltine"] },
-        "Esquimós — Base Leite (R$ 6,00)": { preco: 6.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
+        "Frutas / Base Água (R$ 1,80)": { precoVarejo: 2.50, precoAtacado: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
+        "Recheados — Base Leite (R$ 2,00)": { precoVarejo: 3.00, precoAtacado: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
+        "Sem Recheio — Base Leite (R$ 2,00)": { precoVarejo: 2.50, precoAtacado: 2.00, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
+        "Especiais — Base Leite (R$ 3,00)": { precoVarejo: 4.00, precoAtacado: 3.00, sabores: ["Leite Ninho", "Ovomaltine"] },
+        "Esquimós — Base Leite (R$ 6,00)": { precoVarejo: 8.00, precoAtacado: 6.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
     };
+
+    function precoAtacadoDoGrupo(grupo) {
+        return Number(grupo && (grupo.precoAtacado ?? grupo.preco) || 0);
+    }
+
+    function precoVarejoDoGrupo(grupo) {
+        return Number(grupo && (grupo.precoVarejo ?? grupo.precoAtacado ?? grupo.preco) || 0);
+    }
+
+    function precoAtualDoGrupo(grupo, totalUnidades) {
+        return Number(totalUnidades >= MIN_PICOLES_ATACADO ? precoAtacadoDoGrupo(grupo) : precoVarejoDoGrupo(grupo));
+    }
 
     var PRODUTOS = [
         { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preco: 100, max: 2, estoque: 18, esgotado: false },
@@ -1022,9 +1062,10 @@
             
             abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">${icon}<span>${tipoCurto}</span></button>`;
             
+            var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
                 <div class="picole-grupo-sec__titulo">
-                    <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${tipo}</span>
+                    <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${tipoCurto}</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">`;
             
@@ -1033,7 +1074,7 @@
                 var qtd = picolesSelecionados[key] || 0;
                 var info = infoEstoquePicole(tipo, s);
                 var indisponivel = Boolean(info.esgotado || Number(info.estoque || 0) <= 0);
-                var subtotal = qtd * grupo.preco;
+                var subtotal = qtd * precoAtualDoGrupo(grupo, totalPicolesSelecionados);
                 var hasSelected = qtd > 0;
                 
                 html += `
@@ -1041,7 +1082,10 @@
                         <div style="flex: 1; padding-right: 10px;">
                             <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
                             ${tipo.indexOf('Base Leite') !== -1 ? seloLeitePasteurizadoHtml() : ''}
-                            <div style="font-size: 0.75rem; color: #666; margin-top: 1px;">R$ ${grupo.preco.toFixed(2).replace('.',',')} un. ${indisponivel ? '· <span style="color:#B42318; font-weight:800;">Esgotado</span>' : ''}</div>
+                            <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
+                                <span class="picole-preco ${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'picole-preco--atacado' : 'picole-preco--varejo'}" data-picole-price-key="${escaparHtml(key)}">${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'Atacado' : 'Varejo'}: R$ ${precoAtualDoGrupo(grupo, totalPicolesSelecionados).toFixed(2).replace('.',',')} / un.</span>
+                            </div>
+                            ${indisponivel ? '<div class="picole-linha__esgotado">Esgotado</div>' : ''}
                             <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;" aria-label="Quantidade de ${escaparHtml(s)}">
@@ -1074,7 +1118,8 @@
         var tipoFull = key.split('|')[0];
         var grupo = PICOLES_CATALOGO[tipoFull];
         var subtotalEl = document.getElementById('sub-' + key);
-        if (subtotalEl && grupo) subtotalEl.textContent = 'Subtotal: R$ ' + (novo * grupo.preco).toFixed(2).replace('.',',');
+        var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
+        if (subtotalEl && grupo) subtotalEl.textContent = 'Subtotal: R$ ' + (novo * precoAtualDoGrupo(grupo, totalPicolesSelecionados)).toFixed(2).replace('.',',');
         var linha = document.querySelector('[data-picole-key="' + CSS.escape(key) + '"]');
         if (linha) {
             var botoes = linha.querySelectorAll('button');
@@ -1085,32 +1130,51 @@
     };
 
     function atualizarAcaoPicoles() {
-        var total = Object.values(picolesSelecionados).reduce((a, b) => a + b, 0);
+        var total = Object.values(picolesSelecionados).reduce((a, b) => a + Number(b || 0), 0);
+        var pronto = total >= MIN_PICOLES_ATACADO;
         var valorTotal = Object.entries(picolesSelecionados).reduce(function (soma, entry) {
             var partes = entry[0].split('|');
             var grupo = PICOLES_CATALOGO[partes[0]];
-            return soma + (Number(entry[1]) * (grupo ? Number(grupo.preco) : 0));
+            return soma + (Number(entry[1]) * precoAtualDoGrupo(grupo, total));
         }, 0);
         var valorFormatado = valorTotal.toFixed(2).replace('.', ',');
-        var pronto = total >= MIN_PICOLES_ATACADO;
+        var modalidadePreco = pronto ? 'Atacado' : 'Varejo';
         var btn = document.getElementById('btn-confirmar-picoles');
         var status = document.getElementById('status-picoles');
         var totalEl = document.getElementById('total-picoles');
         var barra = document.getElementById('progresso-picoles');
-        
+
+        document.querySelectorAll('[data-picole-key]').forEach(function(linha) {
+            var chave = linha.getAttribute('data-picole-key');
+            var tipo = chave.split('|')[0];
+            var grupo = PICOLES_CATALOGO[tipo];
+            var quantidade = Number(picolesSelecionados[chave] || 0);
+            if (!grupo) return;
+            var precoAplicado = precoAtualDoGrupo(grupo, total);
+            var etiqueta = linha.querySelector('[data-picole-price-key]');
+            var subtotal = linha.querySelector('[id^="sub-"]');
+            if (etiqueta) {
+                etiqueta.textContent = modalidadePreco + ': R$ ' + precoAplicado.toFixed(2).replace('.', ',') + ' / un.';
+                etiqueta.classList.toggle('picole-preco--atacado', pronto);
+                etiqueta.classList.toggle('picole-preco--varejo', !pronto);
+            }
+            if (subtotal) subtotal.textContent = 'Subtotal: R$ ' + (quantidade * precoAplicado).toFixed(2).replace('.', ',');
+        });
+
         totalEl.textContent = total + " unidades";
         barra.style.width = Math.min(100, (total/MIN_PICOLES_ATACADO)*100) + "%";
         barra.classList.toggle('ready', pronto);
         btn.disabled = !pronto;
         btn.classList.toggle('is-ready', pronto);
-        
+
         if (pronto) {
-            status.textContent = "Lote OK · Selecionadas: " + total + " · Total: R$ " + valorFormatado;
+            status.textContent = "Lote OK · Preço aplicado: Atacado · Selecionadas: " + total + " · Total: R$ " + valorFormatado;
             status.classList.add('ready');
         } else {
-            status.textContent = "Restante: " + (MIN_PICOLES_ATACADO - total) + " · Selecionados: " + total + " · Total: R$ " + valorFormatado;
+            status.textContent = "Preço aplicado: Varejo · Restante: " + (MIN_PICOLES_ATACADO - total) + " · Selecionados: " + total + " · Total: R$ " + valorFormatado;
             status.classList.remove('ready');
         }
+        if (typeof atualizarResumoEconomiaPicoles === 'function') atualizarResumoEconomiaPicoles();
     }
 
     window.confirmarPicole = function() {
@@ -1122,7 +1186,8 @@
             var parts = key.split('|');
             var tipoFull = parts[0];
             var sabor = parts[1];
-            var precoUnit = PICOLES_CATALOGO[tipoFull].preco;
+            var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
+            var precoUnit = precoAtualDoGrupo(PICOLES_CATALOGO[tipoFull], totalPicolesSelecionados);
             
             carrinho.push({
                 id: key,
@@ -1200,6 +1265,51 @@
         window.abrirModal('modal-carrinho');
     };
 
+    function calcularResumoEconomiaPicoles() {
+        return carrinho.filter(function(item) { return item && item.isPicole; }).reduce(function(resumo, item) {
+            var tipoFull = String(item.id || '').split('|')[0];
+            var grupo = PICOLES_CATALOGO[tipoFull];
+            var quantidade = Number(item.quantidade || 0);
+            var precoVarejo = precoVarejoDoGrupo(grupo);
+            var precoAtacado = precoAtacadoDoGrupo(grupo);
+            resumo.quantidade += quantidade;
+            resumo.varejo += quantidade * precoVarejo;
+            resumo.atacado += quantidade * precoAtacado;
+            return resumo;
+        }, { quantidade: 0, varejo: 0, atacado: 0 });
+    }
+
+    function atualizarResumoEconomiaPicoles() {
+        var resumo = calcularResumoEconomiaPicoles();
+        var bloco = document.getElementById('resumo-economia-picoles');
+        var titulo = document.getElementById('titulo-resumo-picoles');
+        var aplicado = document.getElementById('preco-aplicado-picoles-formulario');
+        var totalVarejo = document.getElementById('total-varejo-picoles-formulario');
+        var valor = document.getElementById('desconto-picoles-formulario');
+        var totalAtacado = document.getElementById('total-atacado-picoles-formulario');
+        var detalhe = document.getElementById('detalhe-desconto-picoles');
+        if (!bloco || !titulo || !aplicado || !totalVarejo || !valor || !totalAtacado || !detalhe) return;
+        if (resumo.quantidade <= 0) {
+            bloco.style.display = 'none';
+            return;
+        }
+
+        var atacadoAtivo = resumo.quantidade >= MIN_PICOLES_ATACADO;
+        var desconto = Math.max(0, resumo.varejo - resumo.atacado);
+        bloco.classList.toggle('resumo-economia-picoles--atacado', atacadoAtivo);
+        titulo.textContent = atacadoAtivo ? 'RESUMO DO ATACADO' : 'RESUMO DO VAREJO';
+        aplicado.textContent = 'Preço aplicado: ' + (atacadoAtivo ? 'Atacado' : 'Varejo');
+        totalVarejo.textContent = (atacadoAtivo ? 'Total dos picolés no varejo (referência): R$ ' : 'Total dos picolés a pagar no varejo: R$ ') + resumo.varejo.toFixed(2).replace('.', ',');
+        totalAtacado.textContent = 'Total dos picolés a pagar no atacado: R$ ' + resumo.atacado.toFixed(2).replace('.', ',');
+        valor.textContent = 'DESCONTO TOTAL NO ATACADO: R$ ' + desconto.toFixed(2).replace('.', ',');
+        valor.style.display = atacadoAtivo ? 'block' : 'none';
+        totalAtacado.style.display = atacadoAtivo ? 'block' : 'none';
+        detalhe.textContent = atacadoAtivo
+            ? resumo.quantidade + ' picolés · desconto aplicado automaticamente a partir de 100 unidades.'
+            : resumo.quantidade + ' picolés · abaixo de 100 unidades, o valor aplicado é o preço de varejo.';
+        bloco.style.display = 'block';
+    }
+
     // FUNÇÕES DO FLUXO DE 3 ETAPAS
     window.irParaFormulario = function() {
         document.getElementById('titulo-etapa-carrinho').textContent = "🛒 Etapa 2: Identificação do Cliente";
@@ -1222,6 +1332,7 @@
         document.getElementById('bloco-ciencia').style.opacity = '0.4';
         document.getElementById('bloco-ciencia').style.pointerEvents = 'none';
         document.getElementById('pedido-ciencia').disabled = true;
+        atualizarResumoEconomiaPicoles();
         
         var btnFin = document.getElementById('btn-finalizar-pedido');
         btnFin.style.opacity = '0.5';
@@ -1377,12 +1488,14 @@
 	            return;
 	        }
         
+        var resumoEconomia = calcularResumoEconomiaPicoles();
+        var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
         var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO DE 5 DIAS ÚTEIS APÓS O PAGAMENTO PARA ELABORAR O PEDIDO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
                 var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : item.isAcrescimo ? `${item.quantidade} unidade(s) x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
                 return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
             }).join('\n\n') +
-            `\n\nTotal do Pedido: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
+            `\n\nTotal de referência dos picolés no varejo: R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\nDESCONTO TOTAL NO ATACADO (PICOLES): R$ ${economiaTotal.toFixed(2).replace('.',',')}\nTotal do pedido a pagar: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
             
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
