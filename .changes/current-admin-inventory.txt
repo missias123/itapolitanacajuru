@@ -1,0 +1,383 @@
+--- ADMIN NAV/ABAS ---
+578:    <button class="nav-btn" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+579:    <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+580:    <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
+581:    <button class="nav-btn" id="nav-btn-promocao" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
+582:    <button class="nav-btn" id="nav-btn-participantes" onclick="irPara('participantes',this)">👥 Participantes</button>
+583:    <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
+584:    <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
+585:    <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
+586:    <button class="nav-btn" id="nav-btn-carrossel" onclick="irPara('carrossel-admin',this)">🎠 Carrossel</button>
+587:    <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🧩 Site Encomendas</button>
+588:    <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
+589:    <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
+590:    <button class="nav-btn" id="nav-btn-auditoria" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
+600:        <div class="dash-item"><div class="di-icon">&#x1F4E6;</div><div class="di-num" id="d-encomendas">-</div><div class="di-txt">Encomendas</div></div>
+601:        <div class="dash-item"><div class="di-icon">&#x1F389;</div><div class="di-num" id="d-promo">-</div><div class="di-txt">Promoção</div></div>
+607:          <button onclick="irPara('pagina-inicial',document.getElementById('nav-btn-pagina-inicial'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
+608:          <button onclick="irPara('encomendas-admin',document.getElementById('nav-btn-encomendas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
+609:          <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
+610:          <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
+611:          <button onclick="irPara('participantes',document.getElementById('nav-btn-participantes'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">👥<span>Participantes</span></button>
+612:          <button onclick="irPara('carrossel-admin',document.getElementById('nav-btn-carrossel'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00838f,#00acc1)">🎠<span>Carrossel</span></button>
+613:          <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
+614:          <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+615:          <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.getElementById('nav-btn-rastreio'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
+616:          <button id="dash-btn-auditoria" onclick="irPara('auditoria-admin',document.getElementById('nav-btn-auditoria'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span id="dash-btn-auditoria-label">Auditoria</span></button>
+623:          <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
+624:          <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
+625:          <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
+626:          <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
+627:          <a id="dash-link-sobre" href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
+628:          <a id="dash-link-galeria" href="galeria.html" target="_blank" class="link-site">&#x1F5BC;&#xFE0F; Galeria</a>
+629:          <a id="dash-link-carrossel" href="carrossel.html" target="_blank" class="link-site">&#x1F3A0; Carrossel</a>
+630:          <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
+637:        <div class="card-header"><h2>&#x1F3E0; Página Inicial - Clone Editável</h2></div>
+653:          <div class="seção-título">🖼️ Imagens do Carrossel (Banners)</div>
+658:            <label>🖼️ Novo Banner para o Carrossel</label>
+688:            <div class="btn-row"><button class="btn btn-salvar" onclick="adicionarBannerCarrossel()">&#x2795; Adicionar ao Carrossel</button></div>
+692:            <div class="btn-row"><button class="btn btn-salvar" onclick="salvarBannersCarrossel()">💾 Salvar Lista de Banners</button></div>
+702:          <div class="seção-título">🧩 Espelho visual — Encomendas &amp; Complementos</div>
+706:          <div class="campo-edit"><label>Título da seção</label><input type="text" id="home-enc-titulo" maxlength="60" placeholder="Encomendas &amp; Complementos"/><div class="hint">Texto exibido acima dos quatro cards.</div></div>
+739:          <div class="campo-edit"><label>Botão Encomendas — Texto</label><input type="text" id="home-nav-encomendas" maxlength="20" placeholder="ENCOMENDAS"/><div class="hint">Texto do botão azul 🛒 no menu. Max. 20 caracteres.</div></div>
+740:          <div class="campo-edit"><label>Botão Promoção — Texto</label><input type="text" id="home-nav-promocao" maxlength="20" placeholder="PROMOÇÃO"/><div class="hint">Texto do botão vermelho 🎉 no menu. Max. 20 caracteres.</div></div>
+741:          <div class="campo-edit"><label>Botão Dicas/Depoimentos — Texto</label><input type="text" id="home-nav-dicas" maxlength="20" placeholder="DICAS/DEPOIMENTOS"/><div class="hint">Texto do botão verde ⭐ no menu. Max. 20 caracteres.</div></div>
+743:          <!-- CAMPOS FASE FINAL - Campos Críticos da Página Inicial -->
+744:          <div class="seção-título" style="margin-top:24px">⭐ Campos Críticos da Página Inicial</div>
+762:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarHome()">&#x1F4BE; Salvar Página Inicial</button></div>
+779:        <div class="card-header"><h2>&#x1F389; Promoção Ativa</h2></div>
+784:          <div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="promo-ativo"/><span class="toggle-slider"></span></label><label>Promoção ativa no site</label></div>
+787:          <div class="seção-título">🏷️ Header da Página de Promoção</div>
+788:          <div class="campo-edit"><label>Título do header</label><input type="text" id="promo-header-titulo" maxlength="60" placeholder="🎉 Grande Sorteio Mensal"/><div class="hint">Título principal no topo da página de Promoção (tag &lt;h1&gt;).</div></div>
+793:          <div class="seção-título">📝 Card Principal da Promoção</div>
+810:          <div class="seção-título" style="margin-top:20px">🔎 SEO da Página Promoção</div>
+816:            <label>🖼️ Imagem da Promoção</label>
+844:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarPromoção()">&#x1F4BE; Salvar Promoção</button></div>
+954:          <div style="font-weight:800;color:#1565c0;margin-bottom:12px" id="promos-form-titulo">➕ Nova Promoção</div>
+956:            <label for="promo-nome">Nome da Promoção</label>
+961:            <label for="promo-descricao">Descrição da Promoção</label>
+978:            <label for="promo-produtos-afetados">Produtos Afetados</label>
+999:            <button type="button" class="btn btn-salvar" id="promo-salvar" onclick="salvarPromocaoItem()" disabled>💾 Salvar Promoção</button>
+1063:          <div class="seção-título" style="background:linear-gradient(135deg,#4A148C,#7B1FA2,#E040FB);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🔥 Açaí em Promoção</div>
+1064:          <div class="campo-edit"><label>Título</label><input type="text" id="acc-açaí-promo-titulo" maxlength="60" placeholder="🔥 Açaí em Promoção"/></div>
+1087:          <div class="seção-título" style="background:linear-gradient(135deg,#1A237E,#283593,#3949AB);color:#fff;padding:10px 14px;border-radius:8px;margin:16px 0 12px">🍰 Sobremesas Geladas</div>
+1088:          <div class="campo-edit"><label>Título</label><input type="text" id="acc-sobremesas-titulo" maxlength="60" placeholder="Sobremesas Geladas"/></div>
+1157:        <div class="card-header"><h2>&#x1F4E6; Registros de Encomendas</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-laranja" onclick="abrirFormNovaEncomenda()">➕ Nova Encomenda</button><button class="btn btn-azul" onclick="sincronizarEncomendasNuvem()" id="btn-sync-encomendas">☁️ Sincronizar Nuvem</button><button class="btn btn-cinza" onclick="exportarEncomendasCSV()">⬇️ CSV</button></div></div>
+1159:          <div class="busca-wrap" style="margin-bottom:10px"><input type="search" id="busca-encomenda" placeholder="Buscar por nº pedido, nome ou telefone..." oninput="renderEncomendas()"/></div>
+1161:            <select id="enc-filtro-status" onchange="renderEncomendas()">
+1174:            <select id="enc-filtro-tipo" onchange="renderEncomendas()">
+1190:        <div class="card-header"><h2>⚙️ Configurações de Encomendas</h2></div>
+1202:          <div class="seção-título">🧩 CMS da Página Encomendas</div>
+1205:            <input type="text" id="enc-hero-titulo" maxlength="100" placeholder="🛒 Cardápio e Encomendas Itapolitana Cajuru"/>
+1218:          <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
+1219:          <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
+1220:          <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
+1221:          <div class="campo-edit"><label>Promoção · Title</label><input type="text" id="cfg-seo-promo-titulo" maxlength="80" placeholder="Promoções | Sorveteria Itapolitana Cajuru"/></div>
+1222:          <div class="campo-edit"><label>Promoção · Meta Description</label><textarea id="cfg-seo-promo-descricao" rows="2" maxlength="180" placeholder="Sorteios e promoções ativas da Itapolitana em Cajuru."></textarea></div>
+1223:          <div class="campo-edit"><label>Promoção · Keywords</label><input type="text" id="cfg-seo-promo-palavras" maxlength="220" placeholder="promoção sorveteria cajuru, sorteio itapolitana"/></div>
+1224:          <div class="campo-edit"><label>Sobre · Title</label><input type="text" id="cfg-seo-sobre-titulo" maxlength="80" placeholder="Sobre a Itapolitana | Sorveteria Itapolitana Cajuru"/></div>
+1225:          <div class="campo-edit"><label>Sobre · Meta Description</label><textarea id="cfg-seo-sobre-descricao" rows="2" maxlength="180" placeholder="Conheça a história e a tradição da Itapolitana em Cajuru."></textarea></div>
+1226:          <div class="campo-edit"><label>Sobre · Keywords</label><input type="text" id="cfg-seo-sobre-palavras" maxlength="220" placeholder="sobre itapolitana cajuru, história sorveteria cajuru"/></div>
+1227:          <div class="campo-edit"><label>Carrossel · Title</label><input type="text" id="cfg-seo-carrossel-titulo" maxlength="80" placeholder="Carrossel | Sorveteria Itapolitana Cajuru"/></div>
+1228:          <div class="campo-edit"><label>Carrossel · Meta Description</label><textarea id="cfg-seo-carrossel-descricao" rows="2" maxlength="180" placeholder="Banners e destaques visuais da Itapolitana em Cajuru."></textarea></div>
+1229:          <div class="campo-edit"><label>Carrossel · Keywords</label><input type="text" id="cfg-seo-carrossel-palavras" maxlength="220" placeholder="carrossel sorveteria cajuru, banners itapolitana"/></div>
+1230:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações de Encomendas</button></div>
+1271:          <h2>📦 Produtos / Combos</h2>
+1274:            <button class="btn btn-cinza" onclick="copiarListaProdutos()">📋 Copiar lista</button>
+1275:            <button class="btn" style="background:#1565c0;color:#fff" onclick="exportarProdutosCSV()">⬇️ Exportar CSV</button>
+1280:            <select id="prod-filtro-cat" onchange="renderProdutosAdmin()">
+2022:        <div class="card-header"><h2>📦 Estoque de Encomendas</h2><button class="btn btn-salvar" onclick="salvarEstoque()">💾 Salvar Estoque</button></div>
+2107:            <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Lista Simples</button>
+2108:            <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV (Excel)</button>
+2119:          <h2>👥 Todos os Participantes</h2>
+2121:            <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV</button>
+2122:            <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Copiar Lista</button>
+2125:            <button class="btn btn-vermelho" onclick="limparListaParticipantes()">🧹 Limpar Lista</button>
+2150:            <input type="search" id="busca-participante" placeholder="🔍 Buscar por nome ou celular..." oninput="renderParticipantes()" style="flex:2;min-width:180px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
+2151:            <select id="filtro-tipo-part" onchange="renderParticipantes()" style="flex:1;min-width:140px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem">
+2231:          <h2 style="color:#e8eaf6">📊 Painel de Qualidade — Métricas do Site</h2>
+2234:            <button class="btn btn-salvar" onclick="carregarMetricasQualidade()" style="font-size:12px;padding:6px 12px">🔄 Atualizar</button>
+2240:            <div class="card-header"><h2>📝 Qualidade — Observações Internas</h2></div>
+2300:          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Checklist de Qualidade — Verificação Automática</div>
+2317:                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Página Inicial</div>
+2329:                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Encomendas</div>
+2352:                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Promoção</div>
+2372:              <button onclick="admQualSetInput('Rodar auditoria completa Lighthouse e atualizar scores')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🔍 Nova Auditoria</button>
+2421:          <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete Tipo Artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
+2424:          <div class="campo-edit"><label>Botão rápido 🔍 Rastreio — texto</label><input type="text" id="cfg-dash-rastreio-texto" maxlength="30" placeholder="Rastreio"/></div>
+2425:          <div class="campo-edit"><label>Botão rápido 🔎 Auditoria — texto</label><input type="text" id="cfg-dash-auditoria-texto" maxlength="30" placeholder="Auditoria"/></div>
+2426:          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — texto</label><input type="text" id="cfg-dash-sobre-texto" maxlength="40" placeholder="🏪 Sobre"/></div>
+2427:          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — URL</label><input type="text" id="cfg-dash-sobre-url" maxlength="120" placeholder="sobre.html"/></div>
+2428:          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — texto</label><input type="text" id="cfg-dash-galeria-texto" maxlength="40" placeholder="🖼️ Galeria"/></div>
+2429:          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — URL</label><input type="text" id="cfg-dash-galeria-url" maxlength="120" placeholder="galeria.html"/></div>
+2430:          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
+2431:          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
+2460:          <div class="seção-título" style="margin-top:20px">🫐 Açaí em Promoção</div>
+2464:          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-açaí-promo-btn" maxlength="30" placeholder="🫐 Ver Combos em Promoção"/></div>
+2509:          <div class="seção-título" style="margin-top:20px">🍨 Sobremesas Geladas</div>
+2511:          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPrecoRow('card-sobremesas-tabela','Ex: Brownie com Sorvete')">➕ Adicionar Sobremesa</button>
+2512:          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-sobremesas-btn" maxlength="30" placeholder="🍨 Ver Sobremesas"/></div>
+2522:        <div class="card-header"><h2>⭐ Dicas e Depoimentos</h2><button class="btn btn-salvar" onclick="salvarDepoimentos()">💾 Salvar</button></div>
+2525:          <div class="campo-edit"><label>H1 Principal (Título da Página)</label><input type="text" id="dicas-h1" maxlength="80" placeholder="Dicas Essenciais da Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal (H1) exibido no topo da página Dicas.</div></div>
+2536:          <div class="seção-título" style="margin-top:20px">💡 Dicas da Sorveteria</div>
+2537:          <div class="campo-edit"><label>Dicas (uma por linha)</label><textarea id="dep-dicas" rows="6" placeholder="Experimente misturar sabores!&#10;O açaí fica ainda melhor com granola e mel.&#10;Peça a taça premium Unicórnio — é a mais pedida!"></textarea></div>
+2538:          <div class="seção-título" style="margin-top:20px">📌 Dicas em Cards (Título, Descrição, Imagem, Link)</div>
+2544:          <div class="campo-edit"><label>Dicas · Title</label><input type="text" id="cfg-seo-dicas-titulo" maxlength="80" placeholder="Depoimentos e Dicas | Sorveteria Itapolitana Cajuru"/></div>
+2545:          <div class="campo-edit"><label>Dicas · Meta Description</label><textarea id="cfg-seo-dicas-descricao" rows="2" maxlength="180" placeholder="Depoimentos e dicas essenciais da Itapolitana para eventos e dia a dia."></textarea></div>
+2546:          <div class="campo-edit"><label>Dicas · Keywords</label><input type="text" id="cfg-seo-dicas-palavras" maxlength="220" placeholder="dicas sorvete cajuru, depoimentos itapolitana, eventos cajuru"/></div>
+2597:          <div class="seção-título" style="margin-top:20px">📢 Botão Promoção (FAB)</div>
+2599:            ✅ Edição consolidada na aba <strong>Promoção Ativa</strong>, campo <strong>Texto do botão flutuante (FAB)</strong> (<code>promo-fab</code> / <code>promo.json.fabLabel</code>).<br>
+2622:        <div class="card-header"><h2>🏪 Página Sobre — Conteúdo Editável</h2><button class="btn btn-salvar" onclick="salvarSobre()">💾 Salvar</button></div>
+2625:            📌 <strong>Sobre a página:</strong> Esta seção controla todos os textos editáveis da página <code>sobre.html</code>. Campos salvos em <code>dados/config.json → sobrePagina{}</code>.
+2654:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarSobre()">💾 Salvar Página Sobre</button></div>
+2662:        <div class="card-header"><h2>🎠 Carrossel — Configurações</h2><button class="btn btn-salvar" onclick="salvarCarrosselConfig()">💾 Salvar</button></div>
+2665:            📌 <strong>Sobre o carrossel:</strong> Configure o título da página e o comportamento do Swiper. As imagens são gerenciadas na aba <strong>Tela Inicial → Imagens do Carrossel</strong>.
+2669:          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="carrossel-titulo" maxlength="80" placeholder="Carrossel de Fotos – Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador.</div></div>
+2670:          <div class="campo-edit"><label>H1 (acessibilidade)</label><input type="text" id="carrossel-h1" maxlength="120" placeholder="Carrossel de Fotos – Sorveteria Itapolitana Cajuru"/><div class="hint">Título invisível para leitores de tela e SEO.</div></div>
+2676:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarCarrosselConfig()">💾 Salvar Configurações do Carrossel</button></div>
+2686:          <h2>🎠 Carrossel de Banners</h2>
+2687:          <a href="carrossel.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">&#x1F441;&#xFE0F; Ver Carrossel</a>
+2690:          📌 <strong>Como usar:</strong> Selecione uma foto (JPG, PNG ou WebP) → ela é convertida para WebP automaticamente → clique em <strong>Adicionar ao Carrossel</strong> → clique em <strong>Salvar Lista</strong>. Pronto! O carrossel se atualiza sozinho.
+2695:            <label>📷 Nova Imagem para o Carrossel</label>
+2702:            <div class="upload-area" id="crs-banner-area" onclick="document.getElementById('crs-banner-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');processarUploadCarrosselDedicado(event.dataTransfer.files[0])">
+2703:              <input type="file" accept="image/*" id="crs-banner-input" style="display:none" onchange="processarUploadCarrosselDedicado(this.files[0])"/>
+2724:              <button class="btn btn-salvar" onclick="adicionarBannerCarrosselDedicado()">➕ Adicionar ao Carrossel</button>
+2735:            <button class="btn btn-salvar" onclick="salvarBannersCarrosselDedicado()">💾 Salvar Lista de Banners</button>
+2742:        <div class="card-header"><h2>📸 Galeria — Configurações</h2><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar</button></div>
+2745:            📌 <strong>Sobre a galeria:</strong> Configure o título, descrição e metadados SEO da página galeria.html. Campos salvos em <code>dados/config.json → galeriaPagina{}</code> e <code>seoPaginas.galeria{}</code>.
+2749:	          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-galeria-titulo" maxlength="80" placeholder="Galeria | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
+2754:	          <div class="campo-edit"><label>H1 da Galeria</label><input type="text" id="galeria-h1" maxlength="120" placeholder="📸 Galeria – Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal exibido na página da galeria.</div></div>
+2757:	          <div class="seção-título" style="margin-top:20px">🖼️ Imagens da Galeria</div>
+2760:	          <div class="btn-row" style="margin-top:10px"><button class="btn btn-verde" type="button" onclick="adicionarImagemGaleria()">➕ Adicionar Imagem</button></div>
+2762:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar Galeria</button></div>
+2770:        <div class="card-header"><h2>🛒 Encomendas — Configurações</h2><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar</button></div>
+2773:            📌 <strong>Sobre encomendas:</strong> Configure o banner hero, badges e metadados SEO da página encomendas.html. Campos salvos em <code>dados/config.json → encomendasPagina{}</code> e <code>seoPaginas.encomendas{}</code>.
+2777:          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-encomendas-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
+2781:          <div class="campo-edit"><label>Título Hero (permite HTML)</label><input type="text" id="encomendas-hero-titulo" maxlength="150" placeholder="🛒 Cardápio e Encomendas <span class=&quot;destaque&quot;>Itapolitana Cajuru</span>"/><div class="hint">Título principal do hero. Pode conter HTML para estilização (ex: &lt;span class="destaque"&gt;).</div></div>
+2785:          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar Encomendas</button></div>
+2794:      <h2>🔍 Rastreio de Encomenda</h2>
+2805:        <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
+2814:    <div class="card-header"><h2>⏱️ Encomendas Recentes</h2></div>
+2825:      <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
+2829:      <select id="audit-filtro-mod" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+2832:        <option value="encomendas">Encomendas</option>
+2834:      <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+2841:      <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
+2842:      <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
+2846:    <div class="card-header"><h2>📝 Auditoria — Observações Internas</h2></div>
+3623:  try{preencherPromoção();}catch(e){console.error('[Admin] preencherPromoção',e);}
+3635:  try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre',e);}
+3636:  try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}
+3637:  try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}
+3638:  try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}
+3689:  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');safeInit('ENCOMENDAS',()=>renderEncomendas());}
+3692:  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');safeInit('PRODUTOS',()=>renderProdutosAdmin());}
+3693:  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');safeInit('PROMOÇÃO',()=>{preencherPromoção();preencherSorteio();renderPromocoesTable();carregarInscritosSorteio();});}
+3694:  if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');safeInit('PARTICIPANTES',()=>renderParticipantes());}
+3720:  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');safeInit('SOBRE',()=>carregarSobre());}
+3721:  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');safeInit('CARROSSEL',()=>carregarCarrosselConfig());}
+3722:  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');safeInit('GALERIA',()=>carregarGaleria());}
+3723:  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');safeInit('ENCOMENDAS CONFIG',()=>carregarEncomendas());}
+3724:  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');safeInit('QUALIDADE',()=>{atualizarScoresQualidade();preencherNotasOperacionais();});}
+3725:  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');safeInit('RASTREIO',()=>renderRastreioRecentes());}
+3726:  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');safeInit('AUDITORIA',()=>executarAuditoria());}
+3754:function atualizarScoresQualidade(){
+3755:  carregarMetricasQualidade();
+3757:function carregarMetricasQualidade(){
+3993:  document.getElementById('home-nav-encomendas').value=cfg.navEncomendas||'ENCOMENDAS';
+3995:  document.getElementById('home-nav-dicas').value=cfg.navDicas||'DICAS/DEPOIMENTOS';
+3997:  // Campos Críticos da Página Inicial (Fase Final)
+4007:  document.getElementById('home-enc-titulo').value=idxPag.encomendasTitulo||'Encomendas & Complementos';
+4026:  renderListaBannersCarrossel();
+4045:  cfg.navEncomendas=document.getElementById('home-nav-encomendas').value.trim()||'ENCOMENDAS';
+4047:  cfg.navDicas=document.getElementById('home-nav-dicas').value.trim()||'DICAS/DEPOIMENTOS';
+4049:  // Campos Críticos da Página Inicial (Fase Final)
+4150:    html+='<div class="seção-título">🔥 Açaí em Promoção — Preços</div>';
+4154:      html+=`<div class="preço-item"><label>${item.nome||('Promoção '+(i+1))}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${item.preco||item.preço||0}" min="0" step="0.5"/></div><div class="hint">${item.desc||''}</div></div>`;
+4160:  html+='<div class="seção-título">🍭 Picolés — Varejo (Cardápio) e Atacado (Encomendas)</div>';
+4184:  html+='<div class="seção-título">Sobremesas Geladas</div><div class="preço-grid">';
+4191:  if(!p){toast('Produtos não carregados.','erro');return;}
+4233:function preencherPromoção(){
+4324:    toast('Imagem processada! Clique em Salvar Promoção para publicar.', 'info');
+4351:    toast('Imagem processada! Clique em Adicionar ao Carrossel para publicar.', 'info');
+4355:async function adicionarBannerCarrossel() {
+4374:        renderListaBannersCarrossel();
+4394:function obterBannersCarrossel(){
+4407:function renderListaBannersCarrossel(){
+4410:  const banners = obterBannersCarrossel();
+4423:        <input type="text" value="${altEsc}" maxlength="120" onchange="atualizarAltBannerCarrossel(${i}, this.value)" style="width:100%;padding:8px 10px;border:1px solid #cfd8dc;border-radius:8px" placeholder="Texto alternativo (alt)"/>
+4426:        <button class="btn btn-cinza" style="padding:6px 10px" onclick="moverBannerCarrossel(${i},-1)" ${i===0?'disabled':''}>↑</button>
+4427:        <button class="btn btn-cinza" style="padding:6px 10px" onclick="moverBannerCarrossel(${i},1)" ${i===banners.length-1?'disabled':''}>↓</button>
+4428:        <button class="btn btn-excluir" style="padding:6px 10px" onclick="removerBannerCarrossel(${i})">✕</button>
+4434:function atualizarAltBannerCarrossel(idx, valor){
+4435:  const banners = obterBannersCarrossel();
+4440:function moverBannerCarrossel(idx, dir){
+4441:  const banners = obterBannersCarrossel();
+4447:  renderListaBannersCarrossel();
+4450:function removerBannerCarrossel(idx){
+4451:  const banners = obterBannersCarrossel();
+4454:  renderListaBannersCarrossel();
+4457:async function salvarBannersCarrossel(){
+4459:  c.banners = obterBannersCarrossel();
+4463:    renderListaBannersCarrossel();
+4468:async function salvarPromoção(){
+4562:function renderEncomendas(){
+4563:  console.log('[renderEncomendas] Iniciando...');
+4565:  console.log('[renderEncomendas] Registros encontrados:', registros.length);
+4620:function exportarEncomendasCSV(){
+4730:  if(ok){fecharFormEncomenda();renderEncomendas();toast(numExistente?`✅ Pedido ${numExistente} atualizado!`:`✅ Encomenda criada com sucesso!`,'sucesso');}
+4790:  if(ok){fecharModalEncomenda();renderEncomendas();toast(`✅ Pedido ${_encModalNum} atualizado!`,'sucesso');}
+4845:  renderEncomendas();
+4861:function getParticipantesUnificados() {
+4906:function renderParticipantes() {
+4907:  const todos = getParticipantesUnificados();
+4968:function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
+5022:          renderParticipantes();
+5060:      renderParticipantes();
+5082:  renderParticipantes();
+5088:function limparListaParticipantes() {
+5090:  const total = getParticipantesUnificados().length;
+5096:    '🧹 Limpar Lista de Participantes',
+5113:      if (ok) { toast('🧹 Lista limpa com sucesso!', 'ok'); renderParticipantes(); }
+5119:function exportarParticipantesCSV() {
+5120:  const todos = getParticipantesUnificados();
+5144:function copiarParticipantes() {
+5145:  const todos = getParticipantesUnificados();
+5154:  const todos = getParticipantesUnificados();
+5182:  const todos = getParticipantesUnificados();
+6797:  const tRast=normalizarTexto(c.adminDashRastreioTexto,'Rastreio');
+6798:  const tAud=normalizarTexto(c.adminDashAuditoriaTexto,'Auditoria');
+6799:  const tSobre=normalizarTexto(c.adminDashLinkSobreTexto,'🏪 Sobre');
+6800:  const uSobre=normalizarLink(c.adminDashLinkSobreUrl,'sobre.html',['sobre.html']);
+6801:  const tGal=normalizarTexto(c.adminDashLinkGaleriaTexto,'🖼️ Galeria');
+6802:  const uGal=normalizarLink(c.adminDashLinkGaleriaUrl,'galeria.html',['galeria.html']);
+6803:  const tCar=normalizarTexto(c.adminDashLinkCarrosselTexto,'🎠 Carrossel');
+6804:  const uCar=normalizarLink(c.adminDashLinkCarrosselUrl,'carrossel.html',['carrossel.html']);
+6807:  const lkS=document.getElementById('dash-link-sobre'); if(lkS){lkS.innerHTML=tSobre; lkS.setAttribute('href',uSobre||'sobre.html');}
+6868:  const dRt=document.getElementById('cfg-dash-rastreio-texto'); if(dRt) dRt.value=cfg.adminDashRastreioTexto||'Rastreio';
+6869:  const dAt=document.getElementById('cfg-dash-auditoria-texto'); if(dAt) dAt.value=cfg.adminDashAuditoriaTexto||'Auditoria';
+6870:  const dSt=document.getElementById('cfg-dash-sobre-texto'); if(dSt) dSt.value=cfg.adminDashLinkSobreTexto||'🏪 Sobre';
+6871:  const dSu=document.getElementById('cfg-dash-sobre-url'); if(dSu) dSu.value=cfg.adminDashLinkSobreUrl||'sobre.html';
+6872:  const dGt=document.getElementById('cfg-dash-galeria-texto'); if(dGt) dGt.value=cfg.adminDashLinkGaleriaTexto||'🖼️ Galeria';
+6873:  const dGu=document.getElementById('cfg-dash-galeria-url'); if(dGu) dGu.value=cfg.adminDashLinkGaleriaUrl||'galeria.html';
+6874:  const dCt=document.getElementById('cfg-dash-carrossel-texto'); if(dCt) dCt.value=cfg.adminDashLinkCarrosselTexto||'🎠 Carrossel';
+6875:  const dCu=document.getElementById('cfg-dash-carrossel-url'); if(dCu) dCu.value=cfg.adminDashLinkCarrosselUrl||'carrossel.html';
+6904:  // Configurações de Encomendas (enc-aviso, enc-min-picolés)
+6948:  const dRtEl=document.getElementById('cfg-dash-rastreio-texto'); if(dRtEl) cfg.adminDashRastreioTexto=dRtEl.value.trim()||'Rastreio';
+6949:  const dAtEl=document.getElementById('cfg-dash-auditoria-texto'); if(dAtEl) cfg.adminDashAuditoriaTexto=dAtEl.value.trim()||'Auditoria';
+6950:  const dStEl=document.getElementById('cfg-dash-sobre-texto'); if(dStEl) cfg.adminDashLinkSobreTexto=dStEl.value.trim()||'🏪 Sobre';
+6951:  const dSuEl=document.getElementById('cfg-dash-sobre-url'); if(dSuEl) cfg.adminDashLinkSobreUrl=dSuEl.value.trim()||'sobre.html';
+6952:  const dGtEl=document.getElementById('cfg-dash-galeria-texto'); if(dGtEl) cfg.adminDashLinkGaleriaTexto=dGtEl.value.trim()||'🖼️ Galeria';
+6953:  const dGuEl=document.getElementById('cfg-dash-galeria-url'); if(dGuEl) cfg.adminDashLinkGaleriaUrl=dGuEl.value.trim()||'galeria.html';
+6954:  const dCtEl=document.getElementById('cfg-dash-carrossel-texto'); if(dCtEl) cfg.adminDashLinkCarrosselTexto=dCtEl.value.trim()||'🎠 Carrossel';
+6955:  const dCuEl=document.getElementById('cfg-dash-carrossel-url'); if(dCuEl) cfg.adminDashLinkCarrosselUrl=dCuEl.value.trim()||'carrossel.html';
+6957:  // Configurações de Encomendas
+7020:function carregarSobre() {
+7021:  if(!ensureConfigBeforeSection('Sobre', carregarSobre)) return;
+7024:  prefillLog('[carregarSobre] cfg.sobrePagina', sp);
+7042:async function salvarSobre() {
+7068:function carregarCarrosselConfig() {
+7071:  document.getElementById('carrossel-titulo').value = cc.titulo || 'Carrossel de Fotos – Sorveteria Itapolitana Cajuru';
+7072:  document.getElementById('carrossel-h1').value = cc.h1 || 'Carrossel de Fotos – Sorveteria Itapolitana Cajuru';
+7076:async function salvarCarrosselConfig() {
+7090:function renderGaleriaImagensEditor(imagens) {
+7126:        <button class="btn btn-excluir" type="button" style="padding:6px 10px" onclick="removerImagemGaleria(${i})">✕</button>
+7132:function lerGaleriaImagensDoDom() {
+7147:function adicionarImagemGaleria() {
+7154:  renderGaleriaImagensEditor(imgs);
+7157:function removerImagemGaleria(idx) {
+7165:  renderGaleriaImagensEditor(imgs);
+7168:function carregarGaleria() {
+7169:  console.log('[carregarGaleria] Iniciando carregamento da seção Galeria');
+7171:    if(!ensureConfigBeforeSection('Galeria', carregarGaleria)) return;
+7175:    prefillLog('[carregarGaleria] seoPaginas.galeria', seo);
+7176:    prefillLog('[carregarGaleria] galeriaPagina', gp);
+7179:    if (tituloEl) tituloEl.value = seo.titulo || 'Galeria | Sorveteria Itapolitana Cajuru';
+7188:    if (h1El) h1El.value = gp.h1 || '📸 Galeria – Sorveteria Itapolitana Cajuru';
+7192:    renderGaleriaImagensEditor(gp.imagens);
+7193:    console.log('[carregarGaleria] Seção Galeria carregada com sucesso');
+7195:    console.error('[carregarGaleria] Falha ao carregar seção Galeria', e);
+7200:async function salvarGaleria() {
+7225:  const imagens = lerGaleriaImagensDoDom();
+--- CONFIG KEYS ---
+adminConteudoPaginas
+banners
+cardapioBadge
+cardapioSubtitulo
+cardapioTitulo
+carrinhoLabel1
+carrinhoLabel2
+carrinhoWhatsMsg
+carrosselConfig
+chatFabTexto
+chatHdrSub
+chatHdrTitulo
+chatMsgInicio
+chatSugestoes
+cidades
+cnpj
+depDica
+depSubtitulo
+depTitulo
+depoimentos
+dicasItens
+dicasPagina
+encomendaAviso
+encomendaMinPicoles
+encomendasPagina
+endereco
+enderecoCompleto
+faleBtnTexto
+faleLabelMsg
+faleLabelNome
+faleModalSub
+faleModalTitulo
+footerCopy
+footerDev
+footerHorario
+fundacao
+galeriaPagina
+googleMaps
+heroBadge
+heroCta
+heroCtaWhats
+heroDescricao
+heroFrases
+heroSubtitulo
+heroTitulo
+horario
+horarioAbre
+horarioDetalhado
+horarioFecha
+indexPagina
+instagram
+instagramUrl
+modalAcaiSub
+modalAcaiTitulo
+modalPicoleSub
+modalPicoleTitulo
+modalSaboresSub
+modalSaboresTitulo
+navDicas
+navEncomendas
+navPromocao
+nomeEmpresa
+numSabores
+promoBadge
+promoDesc
+promoDescEl
+promoFabLabel
+promoH1
+promoTitle
+promoTituloEl
+promocaoAtiva
+promocaoPagina
+seoDescricao
+seoPaginas
+seoPalavrasChave
+seoTitulo
+slogan
+sobrePagina
+stripSensorial
+whatsapp
+whatsappFormatado

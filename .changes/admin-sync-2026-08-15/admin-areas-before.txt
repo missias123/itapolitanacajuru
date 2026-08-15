@@ -1,0 +1,1260 @@
+    <span style="font-size:1.1rem">⚠️</span>
+    <span id="aviso-token-expirado-msg"><strong>Admin em modo somente leitura.</strong> Token GitHub inativo ou expirado.</span>
+    <button onclick="abrirModalGitHubToken()" style="margin-left:auto;background:#e65100;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.82rem;font-weight:700">🔑 Adicionar Token</button>
+  </div>
+  <div id="aviso-github-token" style="display:none;background:#e3f2fd;border-bottom:3px solid #1565c0;padding:8px 16px;align-items:center;gap:10px;font-size:.82rem;color:#0d47a1;flex-wrap:wrap">
+    <span style="font-size:1rem">ℹ️</span>
+    <span><strong>Token GitHub não ativo</strong> — o admin permanece em <strong>modo somente leitura</strong> até que um token GitHub válido seja informado.</span>
+    <button onclick="abrirModalGitHubToken()" aria-label="Adicionar token GitHub" style="margin-left:auto;background:#1565c0;color:#fff;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.8rem;font-weight:700">🔑 Adicionar Token</button>
+  </div>
+  <div class="admin-header">
+    <div class="título"><img class="logo-admin-header" src="images/logo.webp" alt="Logo" onerror="this.style.display='none'"> Admin Itapolitana</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-sair" onclick="recarregarTodosDados()" title="Recarregar todos os dados do GitHub agora">&#x1F504; Recarregar</button>
+      <button class="btn-sair" onclick="sair()">&#x1F6AA; Sair</button>
+    </div>
+  </div>
+  <div class="admin-nav">
+    <button class="nav-btn ativo" id="nav-btn-dashboard" onclick="irPara('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-btn" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+    <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+    <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
+    <button class="nav-btn" id="nav-btn-promocao" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
+    <button class="nav-btn" id="nav-btn-participantes" onclick="irPara('participantes',this)">👥 Participantes</button>
+    <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
+    <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
+    <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
+    <button class="nav-btn" id="nav-btn-carrossel" onclick="irPara('carrossel-admin',this)">🎠 Carrossel</button>
+    <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🧩 Site Encomendas</button>
+    <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
+    <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
+    <button class="nav-btn" id="nav-btn-auditoria" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
+  </div>
+  <div class="admin-content">
+    <!-- DASHBOARD -->
+    <div class="seção ativo" id="sec-dashboard">
+      <div class="dash-grid">
+        <div class="dash-item"><div class="di-icon">&#x1F465;</div><div class="di-num" id="d-total">-</div><div class="di-txt">Clientes</div></div>
+        <div class="dash-item"><div class="di-icon">&#x2705;</div><div class="di-num" id="d-ativos">-</div><div class="di-txt">Ativos</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F6AB;</div><div class="di-num" id="d-bloqueados">-</div><div class="di-txt">Bloqueados</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F3AB;</div><div class="di-num" id="d-cupons">-</div><div class="di-txt">Cupons</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F4E6;</div><div class="di-num" id="d-encomendas">-</div><div class="di-txt">Encomendas</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F389;</div><div class="di-num" id="d-promo">-</div><div class="di-txt">Promoção</div></div>
+      </div>
+      <!-- AÇÕES RÁPIDAS — navegação interna -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><h2>⚡ Ações Rápidas — Editar Seções</h2></div>
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
+          <button onclick="irPara('pagina-inicial',document.getElementById('nav-btn-pagina-inicial'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
+          <button onclick="irPara('encomendas-admin',document.getElementById('nav-btn-encomendas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
+          <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
+          <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
+          <button onclick="irPara('participantes',document.getElementById('nav-btn-participantes'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">👥<span>Participantes</span></button>
+          <button onclick="irPara('carrossel-admin',document.getElementById('nav-btn-carrossel'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00838f,#00acc1)">🎠<span>Carrossel</span></button>
+          <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
+          <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+          <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.getElementById('nav-btn-rastreio'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
+          <button id="dash-btn-auditoria" onclick="irPara('auditoria-admin',document.getElementById('nav-btn-auditoria'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span id="dash-btn-auditoria-label">Auditoria</span></button>
+        </div>
+      </div>
+      <!-- ABRIR NO SITE — links externos -->
+      <div class="card">
+        <div class="card-header"><h2>&#x1F310; Abrir Página no Site</h2></div>
+        <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
+          <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
+          <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
+          <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
+          <a id="dash-link-sobre" href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
+          <a id="dash-link-galeria" href="galeria.html" target="_blank" class="link-site">&#x1F5BC;&#xFE0F; Galeria</a>
+          <a id="dash-link-carrossel" href="carrossel.html" target="_blank" class="link-site">&#x1F3A0; Carrossel</a>
+          <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
+        </div>
+      </div>
+    </div>
+    <!-- HOME -->
+    <div class="seção" id="sec-home">
+      <div class="card">
+        <div class="card-header"><h2>&#x1F3E0; Página Inicial - Clone Editável</h2></div>
+        <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:12px 16px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+          ✅ <strong>Regra:</strong> Cada campo editado aqui atualiza o site imediatamente ao salvar. Nada pode estar diferente entre o Admin e o Site.
+        </div>
+        <div class="card-body">
+          <div class="seção-título">&#x1F3AF; Hero - Topo da Página</div>
+          <div class="campo-edit"><label>Badge do Hero (linha pequena acima do título)</label><input type="text" id="home-badge" maxlength="60" placeholder="35 sabores Tipo Artesanal"/><div class="hint">Max. 60 caracteres. Aparece em destaque acima do título principal.</div></div>
+          <div class="campo-edit"><label>Título principal (H1)</label><input type="text" id="home-titulo" maxlength="80" placeholder="O Sorvete que Cajuru Ama de Verdade"/><div class="hint">Max. 80 caracteres. É o título H1 da página — impacta SEO. Use palavras-chave.</div></div>
+          <div class="campo-edit"><label>Descrição do Hero</label><textarea id="home-descricao" rows="3" maxlength="200" placeholder="Cremosidade real, sabores que encantam..."></textarea><div class="hint">Max. 200 caracteres. Texto de apoio abaixo do título. Descreva o diferencial da sorveteria. Ex: Sorvete Tipo Artesanal, feito com leite fresco e ingredientes selecionados.</div></div>
+          <div class="campo-edit"><label>Botão principal - Ver Cardápio</label><input type="text" id="home-cta" maxlength="40" placeholder="Ver Cardápio Completo"/><div class="hint">Max. 40 caracteres. Texto do botão verde que rola até o cardápio.</div></div>
+          <div class="campo-edit"><label>Botão WhatsApp - Pedir Agora</label><input type="text" id="home-cta-whats" maxlength="40" placeholder="Pedir Agora pelo WhatsApp"/><div class="hint">Max. 40 caracteres. Texto do botão laranja do WhatsApp.</div></div>
+          <div class="campo-edit"><label>Subtítulo do Hero</label>
+            <input type="text" id="home-subtitulo" maxlength="100" placeholder="35 sabores Tipo Artesanal — feitos com ingredientes selecionados"/>
+            <div class="hint">Max. 100 caracteres. Linha de apoio abaixo do título principal.</div></div>
+          <div class="campo-edit"><label>Frases rotativas do carrossel (uma por linha)</label><textarea id="home-frases" rows="10" placeholder="O sorvete mais cremoso de Cajuru, desde 2007!"></textarea><div class="hint">Cada linha é uma frase que aparece no carrossel de texto do hero</div></div>
+
+          <div class="seção-título">🖼️ Imagens do Carrossel (Banners)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>Regra:</strong> Adicione até 12 banners no carrossel. A primeira imagem carrega imediatamente (LCP), as demais são carregadas sob demanda. Toda imagem é convertida para WebP automaticamente.
+          </div>
+          <div class="campo-edit">
+            <label>🖼️ Novo Banner para o Carrossel</label>
+            <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
+              <strong>📋 Especificações obrigatórias:</strong><br>
+              📐 <strong>Dimensões ideais:</strong> 1536 × 1024 px (proporção 3:2) — redimensionado automaticamente se maior<br>
+              💾 <strong>Tamanho máximo:</strong> 250 KB após conversão — use foto de alta qualidade mas compacta<br>
+              🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
+              ⚡ <strong>Conversão automática:</strong> toda imagem é convertida para WebP antes de salvar<br>
+              📱 <strong>Uso:</strong> Aparece no carrossel principal da página inicial — foto do produto em destaque
+            </div>
+            <div class="upload-area" id="home-banner-area">
+              <input type="file" accept="image/*" id="home-banner-input" onchange="processarUploadBanner(this.files[0])"/>
+              <div class="upload-icon">📷</div>
+              <div class="upload-texto">Clique ou arraste o banner aqui</div>
+              <div class="upload-regras">
+                <span>📐 1536×1024px</span>
+                <span>💾 Máx. 250KB</span>
+                <span>🖼️ JPG · PNG · WebP</span>
+                <span>⚡ → WebP automático</span>
+              </div>
+            </div>
+            <div class="img-preview-wrap" id="home-banner-preview-wrap">
+              <img class="img-preview" id="home-banner-preview" src="" alt="Preview banner"/>
+              <div class="img-preview-info" id="home-banner-info"></div>
+            </div>
+            <div class="erro-inline" id="home-banner-erro"></div>
+            <div class="campo-edit" style="margin-top:10px">
+              <label>Texto alternativo (alt) do banner</label>
+              <input type="text" id="home-banner-alt" maxlength="120" placeholder="Ex: Taça Unicórnio — Sorveteria Itapolitana Cajuru"/>
+              <div class="hint">Descreva o que aparece na foto. Importante para SEO e acessibilidade. Max. 120 caracteres.</div>
+            </div>
+            <div class="btn-row"><button class="btn btn-salvar" onclick="adicionarBannerCarrossel()">&#x2795; Adicionar ao Carrossel</button></div>
+            <div class="seção-título" style="margin-top:16px">📚 Banners Existentes (ordem, alt e exclusão)</div>
+            <div class="hint" style="margin-bottom:10px">A ordem exibida aqui é a ordem do <code>carrossel.html</code>. Use ↑/↓ para reordenar, edite o ALT e clique em Salvar Lista.</div>
+            <div id="home-banners-lista" style="display:grid;gap:10px"></div>
+            <div class="btn-row"><button class="btn btn-salvar" onclick="salvarBannersCarrossel()">💾 Salvar Lista de Banners</button></div>
+          </div>
+
+          <div class="seção-título">🔄 Strip Sensorial (faixa animada)</div>
+          <div class="campo-edit"><label>Textos da faixa animada (um por linha)</label><textarea id="home-strip" rows="4" placeholder="Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores"></textarea><div class="hint">Cada linha é um texto da faixa animada colorida</div></div>
+          <div class="seção-título">&#x1F366; Cardápio</div>
+          <div class="campo-edit"><label>Título do Cardápio</label><input type="text" id="home-cardápio-título" maxlength="60" placeholder="🍦 Escolha sua Felicidade Hoje"/><div class="hint">Aparece como título da seção de cardápio no site. Max. 60 caracteres.</div></div>
+          <div class="campo-edit"><label>Subtítulo do Cardápio</label><input type="text" id="home-cardápio-sub" maxlength="80" placeholder="Toque numa categoria e descubra sabores irresistíveis"/><div class="hint">Max. 80 caracteres. Linha descritiva abaixo do título do cardápio.</div></div>
+          <div class="campo-edit"><label>Badge do Cardápio</label><input type="text" id="home-cardápio-badge" maxlength="50" placeholder="✨ Feito com amor desde 2007"/><div class="hint">Max. 50 caracteres. Pequena etiqueta colorida acima do título do cardápio. Ex: ✨ Feito com amor desde 2007.</div></div>
+
+          <div class="seção-título">🧩 Espelho visual — Encomendas &amp; Complementos</div>
+          <div style="background:#eef5ff;border-left:4px solid #1557b0;padding:12px 16px;border-radius:10px;margin:0 0 14px;font-size:.82rem;line-height:1.55">
+            <strong>Referência oficial:</strong> esta ordem reproduz exatamente os quatro cards da página inicial de hoje. Edite aqui somente os textos visíveis no cabeçalho dos cards; os produtos e preços continuam sendo carregados da base única de produtos.
+          </div>
+          <div class="campo-edit"><label>Título da seção</label><input type="text" id="home-enc-titulo" maxlength="60" placeholder="Encomendas &amp; Complementos"/><div class="hint">Texto exibido acima dos quatro cards.</div></div>
+          <div class="campo-edit"><label>Subtítulo da seção</label><input type="text" id="home-enc-subtitulo" maxlength="90" placeholder="Peça com antecedência · Retirada na loja"/><div class="hint">Mensagem exibida logo abaixo do título.</div></div>
+          <div class="admin-site-mirror-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px">
+            <div class="admin-site-mirror-card" style="border:1px solid #b7c9e8;border-radius:14px;padding:14px;background:linear-gradient(145deg,#123b97,#1f56c3);color:#fff">
+              <strong style="display:block;font-size:1rem;margin-bottom:10px">1 · Sorvete em Caixa</strong>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#eaf2ff">Título do card</label><input type="text" id="home-enc-caixas-titulo" maxlength="40" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#eaf2ff">Subtítulo</label><input type="text" id="home-enc-caixas-subtitulo" maxlength="80" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#eaf2ff">Ação</label><input type="text" id="home-enc-caixas-acao" maxlength="30" style="width:100%;box-sizing:border-box"/>
+            </div>
+            <div class="admin-site-mirror-card" style="border:1px solid #e6b5b8;border-radius:14px;padding:14px;background:linear-gradient(145deg,#b61721,#d92b35);color:#fff">
+              <strong style="display:block;font-size:1rem;margin-bottom:10px">2 · Torta de Sorvete</strong>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff5f5">Título do card</label><input type="text" id="home-enc-tortas-titulo" maxlength="40" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff5f5">Subtítulo</label><input type="text" id="home-enc-tortas-subtitulo" maxlength="80" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff5f5">Ação</label><input type="text" id="home-enc-tortas-acao" maxlength="30" style="width:100%;box-sizing:border-box"/>
+            </div>
+            <div class="admin-site-mirror-card" style="border:1px solid #f5b58b;border-radius:14px;padding:14px;background:linear-gradient(145deg,#db4d06,#f07c10);color:#fff">
+              <strong style="display:block;font-size:1rem;margin-bottom:10px">3 · Picolés</strong>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff8ef">Título do card</label><input type="text" id="home-enc-picoles-titulo" maxlength="40" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff8ef">Subtítulo</label><input type="text" id="home-enc-picoles-subtitulo" maxlength="80" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff8ef">Ação</label><input type="text" id="home-enc-picoles-acao" maxlength="30" style="width:100%;box-sizing:border-box"/>
+            </div>
+            <div class="admin-site-mirror-card" style="border:1px solid #f2b1b5;border-radius:14px;padding:14px;background:linear-gradient(145deg,#db2632,#f34350);color:#fff">
+              <strong style="display:block;font-size:1rem;margin-bottom:10px">4 · Acréscimos</strong>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff5f5">Título do card</label><input type="text" id="home-enc-acrescimos-titulo" maxlength="40" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff5f5">Subtítulo</label><input type="text" id="home-enc-acrescimos-subtitulo" maxlength="80" style="width:100%;box-sizing:border-box"/>
+              <label style="display:block;font-size:.75rem;margin:8px 0 4px;color:#fff5f5">Ação</label><input type="text" id="home-enc-acrescimos-acao" maxlength="30" style="width:100%;box-sizing:border-box"/>
+            </div>
+          </div>
+
+          <div class="seção-título">🔗 Botões de Navegação (Menu do Site)</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>Sincronismo:</strong> Alterar aqui muda o texto dos botões do menu do site imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Botão Encomendas — Texto</label><input type="text" id="home-nav-encomendas" maxlength="20" placeholder="ENCOMENDAS"/><div class="hint">Texto do botão azul 🛒 no menu. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Botão Promoção — Texto</label><input type="text" id="home-nav-promocao" maxlength="20" placeholder="PROMOÇÃO"/><div class="hint">Texto do botão vermelho 🎉 no menu. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Botão Dicas/Depoimentos — Texto</label><input type="text" id="home-nav-dicas" maxlength="20" placeholder="DICAS/DEPOIMENTOS"/><div class="hint">Texto do botão verde ⭐ no menu. Max. 20 caracteres.</div></div>
+
+          <!-- CAMPOS FASE FINAL - Campos Críticos da Página Inicial -->
+          <div class="seção-título" style="margin-top:24px">⭐ Campos Críticos da Página Inicial</div>
+          <div class="campo-edit"><label>Hero H1 Principal</label><input type="text" id="index-hero-h1-principal" maxlength="120" placeholder="Sorvetes Tipo artesanais em Cajuru, picolés diferenciados e Açaí Natureon"/><div class="hint">Título H1 principal do hero. Max. 120 caracteres. Pode conter HTML (ex: &lt;span&gt;). Este é o título principal da página inicial e impacta fortemente no SEO.</div></div>
+          <div class="campo-edit"><label>Hero Descrição Principal</label><textarea id="index-hero-descricao-principal" rows="3" maxlength="250" placeholder="Do nosso balcão aqui em Cajuru para a sua casa: sorvete Tipo Artesanal, picolés diferenciados e o melhor açaí da região, com pedido rápido pelo WhatsApp."></textarea><div class="hint">Descrição principal do hero. Max. 250 caracteres. Aparece logo abaixo do H1 principal.</div></div>
+          <div class="campo-edit"><label>Strip Sensorial Texto</label><input type="text" id="index-strip-sensorial-texto" maxlength="150" placeholder="🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · Tipo Artesanal · 🍦"/><div class="hint">Texto da faixa animada horizontal (strip sensorial). Max. 150 caracteres. Use · para separar palavras.</div></div>
+          <div class="campo-edit"><label>Cardápio H2 Título</label><input type="text" id="index-cardapio-h2-titulo" maxlength="120" placeholder="🍦 Cardápio Itapolitana: sorvetes Tipo artesanais, picolés diferenciados e Açaí Natureon em Cajuru"/><div class="hint">Título H2 da seção do cardápio. Max. 120 caracteres. Importante para SEO e estrutura da página.</div></div>
+          <div class="campo-edit"><label>Hero Badge Açaí</label><input type="text" id="index-hero-badge-acai" maxlength="80" placeholder="🍇 O melhor açaí de Cajuru — Natureon!"/><div class="hint">Badge do açaí Natureon no hero. Max. 80 caracteres. Destaca o diferencial do açaí na seção hero.</div></div>
+          <div class="campo-edit"><label>Horário Status Texto</label><input type="text" id="index-horario-status-texto" maxlength="60" placeholder="Aberto agora · Fecha às 22h"/><div class="hint">Texto do status de horário exibido na página. Max. 60 caracteres. Ex: "Aberto agora · Fecha às 22h" ou "Fechado · Abre às 10h".</div></div>
+          <div class="campo-edit"><label>Quem Somos Título</label><input type="text" id="index-quem-somos-titulo" maxlength="40" placeholder="Quem somos"/><div class="hint">Título da seção "Quem Somos" na página inicial. Max. 40 caracteres.</div></div>
+
+          <div class="seção-título">🛒 Carrinho para Eventos</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>carrinho-label1</code> e <code>carrinho-label2</code>. Alterar aqui muda os textos do cartão do carrinho na página inicial imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Label 1 — Título do Cartão (ID: carrinho-label1)</label><input type="text" id="home-carrinho-label1" maxlength="40" placeholder="🛒 Carrinho para Eventos"/><div class="hint">Texto em destaque laranja no card do carrinho. Max. 40 caracteres. Ex: 🛒 Carrinho para Eventos</div></div>
+          <div class="campo-edit"><label>Label 2 — Subtexto do Cartão (ID: carrinho-label2)</label><input type="text" id="home-carrinho-label2" maxlength="40" placeholder="Toque para consultar"/><div class="hint">Texto menor abaixo do título. Max. 40 caracteres. Ex: Toque para consultar</div></div>
+          <div class="campo-edit"><label>Link do WhatsApp — Mensagem pré-preenchida</label><input type="text" id="home-carrinho-whats" maxlength="200" placeholder="Olá! Gostaria de consultar a disponibilidade do carrinho..."/><div class="hint">Mensagem que abre no WhatsApp ao clicar no cartão. Será codificada automaticamente.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarCarrinhoEvento()">&#x1F4BE; Salvar Carrinho para Eventos</button></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarHome()">&#x1F4BE; Salvar Página Inicial</button></div>
+        </div>
+      </div>
+    </div>
+    <!-- PRECOS -->
+    <div class="seção" id="sec-preços">
+      <div class="card">
+        <div class="card-header"><h2>&#x1F4B0; Preços do Cardápio</h2><button class="btn btn-salvar" onclick="salvarPreços()">&#x1F4BE; Salvar Preços</button></div>
+        <div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin:0 0 4px;font-size:.82rem">
+          💰 <strong>Regra:</strong> Todos os preços são em R$ com até 2 casas decimais. Use ponto (.) como separador decimal. Salvar atualiza o site imediatamente. Mínimo: R$ 0,00.
+        </div>
+        <div class="card-body" id="preços-body"><p style="color:#999;text-align:center;padding:20px">Carregando preços...</p></div>
+      </div>
+    </div>
+    <!-- PROMOCAO -->
+    <div class="seção" id="sec-promoção">
+      <div class="card">
+        <div class="card-header"><h2>&#x1F389; Promoção Ativa</h2></div>
+        <div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:8px;margin:0 0 4px;font-size:.82rem">
+
+--- SECOES OPERACIONAIS ---
+                <span class="estoque-preço-badge">R$ <span id="cx5l_2s_preço_badge">100,00</span></span>
+              </div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preço-inp"><span>R$</span><input type="number" id="cx5l_2s_preço" value="100" min="0" step="5"/></div><div class="hint">Preço atual da caixa. Atualiza no site ao salvar.</div></div>
+                <div class="campo-edit"><label>Estoque (unidades)</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx5l_2s',-1)">−</button><input type="number" id="cx5l_2s_estoque" value="20" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx5l_2s',1)">+</button></div><div class="hint">0 = Esgotado. Máx. 999 unidades.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx5l_2s_esgotado" onchange="toggleEsgotado('cx5l_2s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div><div class="hint">Ativa tarja ESGOTADO independente do estoque.</div></div>
+              </div>
+            </div>
+            <div class="estoque-card">
+              <div class="estoque-header"><span class="estoque-nome">📦 Caixa 5 Litros – 3 Sabores</span><span class="estoque-preço-badge">R$ <span id="cx5l_3s_preço_badge">115,00</span></span></div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preço-inp"><span>R$</span><input type="number" id="cx5l_3s_preço" value="115" min="0" step="5"/></div><div class="hint">Preço atual da caixa.</div></div>
+                <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx5l_3s',-1)">−</button><input type="number" id="cx5l_3s_estoque" value="20" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx5l_3s',1)">+</button></div><div class="hint">0 = Esgotado.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx5l_3s_esgotado" onchange="toggleEsgotado('cx5l_3s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+              </div>
+            </div>
+            <div class="estoque-card">
+              <div class="estoque-header"><span class="estoque-nome">📦 Caixa 10 Litros – 2 Sabores</span><span class="estoque-preço-badge">R$ <span id="cx10l_2s_preço_badge">150,00</span></span></div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preço-inp"><span>R$</span><input type="number" id="cx10l_2s_preço" value="150" min="0" step="5"/></div><div class="hint">Preço atual da caixa.</div></div>
+                <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx10l_2s',-1)">−</button><input type="number" id="cx10l_2s_estoque" value="15" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx10l_2s',1)">+</button></div><div class="hint">0 = Esgotado.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx10l_2s_esgotado" onchange="toggleEsgotado('cx10l_2s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+              </div>
+            </div>
+            <div class="estoque-card">
+              <div class="estoque-header"><span class="estoque-nome">📦 Caixa 10 Litros – 3 Sabores</span><span class="estoque-preço-badge">R$ <span id="cx10l_3s_preço_badge">165,00</span></span></div>
+              <div class="estoque-campos">
+                <div class="campo-edit"><label>Preço (R$)</label><div class="preço-inp"><span>R$</span><input type="number" id="cx10l_3s_preço" value="165" min="0" step="5"/></div><div class="hint">Preço atual da caixa.</div></div>
+                <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('cx10l_3s',-1)">−</button><input type="number" id="cx10l_3s_estoque" value="15" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('cx10l_3s',1)">+</button></div><div class="hint">0 = Esgotado.</div></div>
+                <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="cx10l_3s_esgotado" onchange="toggleEsgotado('cx10l_3s')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TORTA DE SORVETE -->
+          <div class="seção-título" style="margin-top:20px">🎂 Torta de Sorvete</div>
+          <div class="hint" style="margin-bottom:12px">Permite seleção de até 3 sabores. Quando esgotada, bloqueia no site.</div>
+          <div class="estoque-card">
+            <div class="estoque-header"><span class="estoque-nome">🎂 Torta de Sorvete</span><span class="estoque-preço-badge">R$ <span id="torta1_preço_badge">100,00</span></span></div>
+            <div class="estoque-campos">
+              <div class="campo-edit"><label>Preço (R$)</label><div class="preço-inp"><span>R$</span><input type="number" id="torta1_preço" value="100" min="0" step="5"/></div><div class="hint">Preço da torta de sorvete. Atualiza no site ao salvar.</div></div>
+              <div class="campo-edit"><label>Estoque</label><div style="display:flex;align-items:center;gap:10px"><button class="btn-qty-est" onclick="ajustarEstoque('torta1',-1)">−</button><input type="number" id="torta1_estoque" value="10" min="0" max="999" style="width:70px;text-align:center;font-size:1.2rem;font-weight:700;border:2px solid #e0e0e0;border-radius:8px;padding:6px"/><button class="btn-qty-est btn-add" onclick="ajustarEstoque('torta1',1)">+</button></div><div class="hint">0 = Esgotado. Máx. 999.</div></div>
+              <div class="campo-edit"><label>Status</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="torta1_esgotado" onchange="toggleEsgotado('torta1')"/><span class="toggle-slider"></span></label><label>Marcar como Esgotado manualmente</label></div></div>
+            </div>
+          </div>
+
+          <!-- PICOLÉS -->
+          <div class="seção-título" style="margin-top:20px">🍭 Picolés (5 categorias — Varejo e Atacado)</div>
+          <div class="hint" style="margin-bottom:12px">Cada categoria tem preço de <strong>Varejo</strong> (cardápio) e <strong>Atacado</strong> (encomendas mín. 100 un.). Sabores esgotados por categoria ficam bloqueados no site.</div>
+          <div id="estoque-picolés-body"></div>
+
+          <!-- ACRÉSCIMOS -->
+          <div class="seção-título" style="margin-top:20px">🍪 Acréscimos</div>
+          <div class="hint" style="margin-bottom:12px">Canudinho, casquinha, cobertura e mais. Cada acréscimo tem preço e estoque independentes.</div>
+          <div id="estoque-acréscimos-body"></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEstoque()">💾 Salvar Todo o Estoque</button></div>
+        </div>
+      </div>
+    </div>
+    <!-- PARTICIPANTES GERAL -->
+    <div class="seção" id="sec-participantes">
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="part-total">-</div><div class="txt">Total Geral</div></div>
+        <div class="stat-card"><div class="num" id="part-sorteio" style="color:#2e7d32">-</div><div class="txt">Sorteios Mensais</div></div>
+      </div>
+      <div class="card" style="border-top:4px solid #2e7d32;margin-bottom:12px">
+        <div class="card-body" style="padding:14px 20px">
+          <div style="font-size:.8rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📋 Ações Rápidas de Cópia</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" style="background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff" onclick="copiarTodosDados()">📋 Copiar Todos os Dados</button>
+            <button class="btn" style="background:linear-gradient(135deg,#2e7d32,#388e3c);color:#fff" onclick="copiarApenassorteio()">🎁 Copiar Só Sorteio</button>
+            <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Lista Simples</button>
+            <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV (Excel)</button>
+          </div>
+          <div style="font-size:.75rem;color:#888;margin-top:8px">
+            • <strong>Copiar Todos os Dados</strong>: formato completo com nº, nome, WhatsApp e data de cadastro<br>
+            • <strong>Copiar Só Sorteio</strong>: apenas inscritos no sorteio mensal, numerados sequencialmente para sortear<br>
+            • <strong>Exportar CSV</strong>: planilha para Excel/Google Sheets com todos os campos
+          </div>
+        </div>
+      </div>
+        <div class="card">
+        <div class="card-header">
+          <h2>👥 Todos os Participantes</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-verde" onclick="exportarParticipantesCSV()">📊 Exportar CSV</button>
+            <button class="btn btn-copiar-sorteio" onclick="copiarParticipantes()">📋 Copiar Lista</button>
+            <button class="btn" style="background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff" onclick="copiarTodosDados()">📋 Copiar Todos os Dados</button>
+            <button class="btn" style="background:linear-gradient(135deg,#2e7d32,#388e3c);color:#fff" onclick="copiarApenassorteio()">🎁 Copiar Só Sorteio</button>
+            <button class="btn btn-vermelho" onclick="limparListaParticipantes()">🧹 Limpar Lista</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Formulário de adição manual -->
+          <div style="background:#fff8e1;border:2px solid #f9a825;border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="font-size:.85rem;font-weight:700;color:#555;margin-bottom:10px">➕ Adicionar Participante Manualmente</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+              <div style="flex:2;min-width:160px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Nome completo</label>
+                <input type="text" id="add-part-nome" placeholder="Nome do participante" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
+              </div>
+              <div style="flex:1;min-width:140px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Celular (WhatsApp)</label>
+                <input type="tel" id="add-part-cel" placeholder="(16) 99999-9999" oninput="mascaraTelAdmin(this)" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
+              </div>
+              <div style="flex:1;min-width:160px">
+                <label style="font-size:.78rem;color:#777;display:block;margin-bottom:4px">Data de nascimento</label>
+                <input type="date" id="add-part-nasc" style="width:100%;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;box-sizing:border-box"/>
+              </div>
+              <input type="hidden" id="add-part-tipo" value="sorteio"/>
+              <button class="btn btn-verde" onclick="adicionarParticipanteManual()" style="padding:10px 18px;white-space:nowrap">➕ Adicionar</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <input type="search" id="busca-participante" placeholder="🔍 Buscar por nome ou celular..." oninput="renderParticipantes()" style="flex:2;min-width:180px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem"/>
+            <select id="filtro-tipo-part" onchange="renderParticipantes()" style="flex:1;min-width:140px;padding:9px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem">
+              <option value="">Todos os cadastros</option>
+              <option value="sorteio">🎁 Sorteios Mensais</option>
+            </select>
+          </div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>ID</th><th>Nome</th><th>Celular</th><th>Tipo</th><th>Pts</th><th>Cadastro</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabela-participantes"></tbody>
+            </table>
+          </div>
+          <div class="paginacao" id="pag-participantes"></div>
+          <div style="font-size:.75rem;color:#888;margin-top:8px;text-align:right" id="part-info-pag"></div>
+        </div>
+      </div>
+    </div>
+    <!-- CLIENTES -->
+    <div class="seção" id="sec-clientes">
+      <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
+        ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
+      </div>
+      <!-- form panel para add/edit cliente -->
+      <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
+        <div style="font-weight:900;font-size:1rem;color:#e65100;margin-bottom:14px" id="cliente-form-titulo">➕ Adicionar Cliente</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Nome completo</label><input type="text" id="cli-f-nome" maxlength="100" placeholder="Nome do cliente"/></div>
+          <div class="campo-edit"><label>WhatsApp (somente números)</label><input type="tel" id="cli-f-cel" placeholder="16999999999" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Data de nascimento (AAAA-MM-DD)</label><input type="date" id="cli-f-nasc"/></div>
+          <div class="campo-edit"><label>Pontos</label><input type="number" id="cli-f-pontos" min="0" value="0" placeholder="0"/></div>
+        </div>
+        <input type="hidden" id="cli-f-cel-orig"/>
+        <div class="btn-row">
+          <button class="btn btn-salvar" data-fid-write onclick="salvarClienteForm()">💾 Salvar</button>
+          <button class="btn btn-cinza" onclick="fecharFormCliente()">✕ Cancelar</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="sc-total">-</div><div class="txt">Total</div></div>
+        <div class="stat-card"><div class="num" id="sc-ativos">-</div><div class="txt">Ativos</div></div>
+        <div class="stat-card"><div class="num" id="sc-bloqueados">-</div><div class="txt">Bloqueados</div></div>
+        <div class="stat-card"><div class="num" id="sc-fraudes">-</div><div class="txt">Fraudes</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn btn-cinza" onclick="copiarListaClientes()">📋 Copiar lista</button><button class="btn" style="background:#1565c0;color:#fff" onclick="exportarClientesCSV()">⬇️ Exportar CSV</button><button class="btn btn-laranja" data-fid-write onclick="abrirFormCliente()">➕ Adicionar cliente</button></div></div>
+        <div class="card-body">
+          <div class="busca-wrap"><input type="search" id="busca-cliente" placeholder="Buscar por nome ou WhatsApp..." oninput="renderClientes()"/></div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Nome</th><th>WhatsApp</th><th>Pts</th><th>Inscrio</th><th>Status</th><th>Ao</th></tr></thead>
+              <tbody id="tabela-clientes"></tbody>
+            </table>
+          </div>
+          <div class="paginacao" id="pag-clientes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POTENCIAL DUPLICIDADE -->
+    <div class="card" id="card-duplicidades" style="display:none">
+      <div class="card-header" style="background:linear-gradient(135deg,#b71c1c,#c62828)">
+        <h2>&#x26A0;&#xFE0F; Potencial Duplicidade — Revisão Necessária</h2>
+        <span id="badge-duplicidades" style="background:#fff;color:#b71c1c;border-radius:20px;padding:3px 12px;font-weight:900;font-size:.9rem">0</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:.85rem;color:#555;margin-bottom:14px">
+          Estes clientes tentaram se cadastrar com o mesmo nome e data de nascimento, mas com um celular diferente do já cadastrado.
+          Revise cada caso e decida: <strong>atualizar o celular</strong> do cadastro original, <strong>ignorar</strong> (manter como está) ou <strong>bloquear</strong> a tentativa.
+        </p>
+        <div id="lista-duplicidades"></div>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+
+    <!-- QUALIDADE -->
+    <div class="seção" id="sec-qualidade">
+      <div class="card" style="background:#0d1117;border:1px solid #30363d">
+        <div class="card-header" style="background:#161b22;border-bottom:1px solid #30363d">
+          <h2 style="color:#e8eaf6">📊 Painel de Qualidade — Métricas do Site</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:#8b949e" id="adm-qual-ts">Última leitura: aguardando...</span>
+            <button class="btn btn-salvar" onclick="carregarMetricasQualidade()" style="font-size:12px;padding:6px 12px">🔄 Atualizar</button>
+            <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">🔗 Nova Aba</a>
+          </div>
+        </div>
+        <div class="card-body" style="padding:16px;background:#0d1117">
+          <div class="card" style="margin-bottom:16px;border-left:4px solid #3949ab;background:#f7fbff">
+            <div class="card-header"><h2>📝 Qualidade — Observações Internas</h2></div>
+            <div class="card-body">
+              <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="qualidade-observacoes" rows="4" placeholder="Registre decisões, pendências e anotações internas desta seção."></textarea></div>
+              <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+            </div>
+          </div>
+
+          <!-- SCORES LIGHTHOUSE -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Scores Google Lighthouse</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-perf">98</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-perf" style="height:100%;background:#4caf50;border-radius:3px;width:98%;transition:width 1s"></div></div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-acess">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-acess" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-bp">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-bp" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-seo">100</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-seo" style="height:100%;background:#4caf50;border-radius:3px;width:100%;transition:width 1s"></div></div>
+            </div>
+          </div>
+
+          <!-- CORE WEB VITALS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Core Web Vitals — Dados Reais da Sessão</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+            <div id="adm-vital-lcp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">LCP — Carregamento</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-lcp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 2.5s · <span id="adm-lcp-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-cls" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">CLS — Estabilidade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-cls-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 0.1 · <span id="adm-cls-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-inp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">INP — Interatividade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-inp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 200ms · <span id="adm-inp-status">aguardando...</span></div>
+            </div>
+          </div>
+
+          <!-- SERVICE WORKER -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">PWA — Service Worker (Cache Offline)</div>
+          <div style="background:#161b22;border-radius:10px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span id="adm-sw-badge" style="background:#3949ab;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px">⚙️ Verificando...</span>
+            <span style="font-size:12px;color:#7986cb" id="adm-sw-desc">O Service Worker permite que o site funcione offline e carregue mais rápido.</span>
+          </div>
+
+          <!-- CHECKLIST -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Checklist de Qualidade — Verificação Automática</div>
+          <div id="adm-checklist" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#7986cb;font-size:13px">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>
+          </div>
+
+          <!-- ERROS JS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Erros JavaScript Detectados</div>
+          <div id="adm-erros" style="margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>
+          </div>
+
+          <!-- PÁGINAS AUDITADAS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Páginas Auditadas</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+            <a href="https://itapolitanacajuru.com.br" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🏠</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Página Inicial</div>
+                <div style="font-size:11px;color:#5c6bc0">itapolitanacajuru.com.br</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 98</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 96</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/encomendas.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🛒</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Encomendas</div>
+                <div style="font-size:11px;color:#5c6bc0">/encomendas.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">⭐</div>
+              <div>
+                <div style="font-size:11px;color:#5c6bc0">/</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 91</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/promocao.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🎁</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Promoção</div>
+                <div style="font-size:11px;color:#5c6bc0">/promocao.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 95</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- FERRAMENTA COPILOTO -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Copiloto — Solicitar Melhoria</div>
+          <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:10px">🤖 O que você quer melhorar no site hoje?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+              <button onclick="admQualSetInput('Otimizar imagens pesadas para melhorar performance')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">⚡ Otimizar Imagens</button>
+              <button onclick="admQualSetInput('Melhorar velocidade de carregamento — LCP abaixo de 2.5s')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🚀 Mais Velocidade</button>
+              <button onclick="admQualSetInput('Verificar e corrigir erros de JavaScript no console')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🐛 Corrigir Erros JS</button>
+              <button onclick="admQualSetInput('Melhorar experiência do usuário no celular')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">📱 UX Mobile</button>
+              <button onclick="admQualSetInput('Rodar auditoria completa Lighthouse e atualizar scores')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🔍 Nova Auditoria</button>
+              <button onclick="admQualSetInput('Melhorar o design visual do site')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🎨 Melhorar Design</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input id="adm-copiloto-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
+              <button onclick="admQualEnviarCopiloto()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Copiloto</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO ESTRELA DO DIA -->
+    <div class="seção" id="sec-config">
+      <div class="card">
+        <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
+        <div class="card-body">
+          <div class="seção-título">&#x1F4F1; Contato e Redes Sociais</div>
+          <div class="campo-edit"><label class="label-obrigatório">WhatsApp (somente números, sem espaços)</label><input type="text" id="cfg-whatsapp" maxlength="15" inputmode="numeric" pattern="[0-9]+" pattern="[0-9]+" placeholder="5516996062046"/><div class="hint">⚠️ SOMENTE NÚMEROS, sem espaços, traço ou parênteses. Formato: 55 + DDD + número (ex: 5516996062046). Errar aqui quebra o WhatsApp do site inteiro.</div></div>
+          <div class="campo-edit"><label>WhatsApp formatado (exibição no site)</label><input type="text" id="cfg-whats-fmt" maxlength="20" placeholder="(16) 99606-2046"/><div class="hint">Formato visual com parênteses e traço. Exemplo: (16) 99606-2046. Max. 20 caracteres.</div></div>
+          <div class="campo-edit"><label>Instagram (com arroba)</label><input type="text" id="cfg-instagram" maxlength="50" placeholder="@sorveteriaitapolitanacajuru"/><div class="hint">Incluir o @ no início. Max. 50 caracteres. Exemplo: @sorveteriaitapolitanacajuru</div></div>
+          <div class="campo-edit"><label>URL do Instagram</label><input type="url" id="cfg-instagram-url" placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/><div class="hint hint-aviso">⚠️ Deve começar com https://. Exemplo: https://www.instagram.com/sorveteriaitapolitanacajuru</div placeholder="https://www.instagram.com/sorveteriaitapolitanacajuru"/></div>
+          <div class="seção-título">&#x1F4CD; Endereço e Localização</div>
+          <div class="campo-edit"><label>Endereço curto (exibição no hero)</label><input type="text" id="cfg-endereco" maxlength="40" placeholder="Cajuru - SP"/><div class="hint">Max. 40 caracteres. Aparece no topo do site. Exemplo: Cajuru - SP</div></div>
+          <div class="campo-edit"><label>Endereço completo</label><input type="text" id="cfg-endereço-completo" maxlength="100" placeholder="Sorveteria Itapolitana . Cajuru/SP"/></div>
+          <div class="campo-edit"><label>Link Google Maps</label><input type="url" id="cfg-maps" placeholder="https://www.google.com/maps/..."/></div>
+          <div class="seção-título">&#x23F0; Horário de Funcionamento</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="campo-edit"><label>Horário de abertura (hora)</label><input type="number" id="cfg-hora-abre" min="0" max="23" placeholder="10"/></div>
+            <div class="campo-edit"><label>Horário de fechamento (hora)</label><input type="number" id="cfg-hora-fecha" min="0" max="23" placeholder="22"/></div>
+          </div>
+          <div class="campo-edit"><label class="label-obrigatório">Horário resumido (exibição no site)</label><input type="text" id="cfg-horario" maxlength="50" placeholder="Todos os dias: 10h as 22h"/></div>
+          <div class="campo-edit"><label>Horário detalhado</label><input type="text" id="cfg-horário-det" maxlength="100" placeholder="Segunda a Domingo: 10h às 22h"/><div class="hint">Max. 100 caracteres. Horário completo exibido na página de contato. Ex: Segunda a Domingo: 10h às 22h.</div></div>
+          <div class="campo-edit"><label>Horário no rodapé</label><textarea id="cfg-footer-horário" rows="2" placeholder="Todos os dias: 10h as 22h&#10;Segunda a Domingo"></textarea></div>
+          <div class="seção-título">&#x1F3E2; Dados da Empresa</div>
+          <div class="campo-edit"><label class="label-obrigatório">Nome da empresa</label><input type="text" id="cfg-nome-empresa" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru"/></div>
+          <div class="campo-edit"><label>Slogan</label><input type="text" id="cfg-slogan" maxlength="80" placeholder="Sorvete Tipo Artesanal desde 2007"/></div>
+          <div class="campo-edit"><label>Ano de fundação</label><input type="text" id="cfg-fundação" maxlength="4" pattern="[0-9]{4}" placeholder="2007"/><div class="hint">4 digitos. Exemplo: 2007. Usado no copyright e no hero.</div></div>
+          <div class="campo-edit"><label for="cfg-num-sabores">Número de sabores de sorvete</label><input type="number" id="cfg-num-sabores" min="1" max="999" placeholder="35"/><div class="hint">Atualiza automaticamente botões, badges e chatbot com o número correto. Exemplo: 35.</div></div>
+          <div class="campo-edit"><label>CNPJ (formato: XX.XXX.XXX/XXXX-XX)</label><input type="text" id="cfg-CNPJ" maxlength="18" placeholder="08.922.044/0001-80"/><div class="hint">Formato: 08.922.044/0001-80. Max. 18 caracteres.</div></div>
+          <div class="seção-título">&#x1F4C4; Rodapé do Site</div>
+          <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" maxlength="80" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
+          <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" maxlength="60" placeholder="SgtMissiascacarato"/><div class="hint">Max. 60 caracteres. Aparece no rodapé do site. Pode deixar em branco.</div></div>
+          <div class="seção-título">&#x1F50D; SEO — Visibilidade no Google</div>
+          <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            &#x1F4CC; <strong>O que é SEO?</strong> São os textos que aparecem no Google quando alguém pesquisa sua sorveteria. Preencher corretamente aumenta as visitas ao site.
+          </div>
+          <div class="campo-edit"><label class="label-obrigatório">Título da página (aparece na aba do navegador e no Google)</label><input type="text" id="cfg-seo-titulo" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés"/><div class="hint">&#x26A0;&#xFE0F; Máximo 60 caracteres. Inclua o nome da cidade. Exemplo: <em>Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés</em></div></div>
+          <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete Tipo Artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
+          <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete Tipo Artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
+          <div class="seção-título">🧭 Dashboard do Admin — Atalhos Editáveis</div>
+          <div class="campo-edit"><label>Botão rápido 🔍 Rastreio — texto</label><input type="text" id="cfg-dash-rastreio-texto" maxlength="30" placeholder="Rastreio"/></div>
+          <div class="campo-edit"><label>Botão rápido 🔎 Auditoria — texto</label><input type="text" id="cfg-dash-auditoria-texto" maxlength="30" placeholder="Auditoria"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — texto</label><input type="text" id="cfg-dash-sobre-texto" maxlength="40" placeholder="🏪 Sobre"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — URL</label><input type="text" id="cfg-dash-sobre-url" maxlength="120" placeholder="sobre.html"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — texto</label><input type="text" id="cfg-dash-galeria-texto" maxlength="40" placeholder="🖼️ Galeria"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — URL</label><input type="text" id="cfg-dash-galeria-url" maxlength="120" placeholder="galeria.html"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
+          <div class="seção-título">&#x1F512; Segurança</div>
+          <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
+          <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarConfig()">&#x1F4BE; Salvar Configurações</button></div>
+        </div>
+      </div>
+    </div>
+    <!-- CARDÁPIO COMPLETO -->
+    <div class="seção" id="sec-cardápio">
+      <div class="card">
+        <div class="card-header"><h2>🍦 Cardápio — Clone Editável por Categoria</h2><button class="btn btn-salvar" onclick="salvarCardápio()">💾 Salvar Cardápio</button></div>
+        <div class="card-body">
+
+          <div class="seção-título">🍨 Sorvetes de Massa</div>
+          <div class="hint" style="margin-bottom:12px">Cada linha = 1 sabor. Separe com Enter. Ordem de exibição = ordem das linhas.</div>
+          <div class="campo-edit"><label>Lista de sabores (um por linha)</label><textarea id="card-sorvetes-sabores" rows="12" placeholder="Chocolate&#10;Leite Ninho&#10;Morango Trufado&#10;Ferrero Rocher&#10;Pistache&#10;Kinder Ovo"></textarea></div>
+          <div class="campo-edit"><label>Texto do botão "Ver Sabores"</label><input type="text" id="card-sorvetes-btn" maxlength="30" placeholder="🍦 Ver 35 Sabores"/></div>
+          <div class="campo-edit"><label>Descrição curta da categoria</label><input type="text" id="card-sorvetes-desc" maxlength="80" placeholder="Cremoso, gelado, irresistível · 35 sabores pra você escolher"/></div>
+
+          <div class="seção-título" style="margin-top:20px">🧊 Picolés</div>
+          <div class="campo-edit"><label>Picolés de Fruta/Água (um por linha)</label><textarea id="card-picoles-fruta" rows="6" placeholder="Abacaxi&#10;Caju&#10;Goiaba&#10;Groselha&#10;Limão&#10;Melância&#10;Uva&#10;Tamarindo"></textarea></div>
+          <div class="campo-edit"><label>Picolés de Leite (um por linha)</label><textarea id="card-picoles-leite" rows="4" placeholder="Coco Queimado&#10;Milho Verde&#10;Amendoim&#10;Pistache"></textarea></div>
+          <div class="campo-edit"><label>Picolés Recheados (um por linha)</label><textarea id="card-picoles-recheado" rows="4" placeholder="Açaí&#10;Blue Ice&#10;Caraxi&#10;Chocolate&#10;Amarena&#10;Leite Condensado"></textarea></div>
+          <div class="campo-edit"><label>Picolés Ninho (um por linha)</label><textarea id="card-picoles-ninho" rows="3" placeholder="Leite Ninho"></textarea></div>
+          <div class="campo-edit"><label>Picolés Ovomaltine (um por linha)</label><textarea id="card-picoles-ovomaltine" rows="3" placeholder="Ovomaltine"></textarea></div>
+          <div class="campo-edit"><label>Picolés Esquimó (um por linha)</label><textarea id="card-picoles-esquimo" rows="3" placeholder="Bombom&#10;Nutella&#10;Ovomaltine&#10;Leite Ninho&#10;Nata&#10;Morango&#10;Brigadeiro&#10;Prestígio"></textarea></div>
+          <div class="campo-edit"><label>Texto do botão "Ver Picolés"</label><input type="text" id="card-picoles-btn" maxlength="30" placeholder="🧊 Ver Sabores de Picolés"/></div>
+
+          <div class="seção-título" style="margin-top:20px">🫐 Açaí em Promoção</div>
+          <div class="hint" style="margin-bottom:10px">Cada combo tem nome, descrição curta e preço. Padrão iFood: nome direto + destaque do tamanho.</div>
+          <div id="card-açaí-promo-tabela"></div>
+          <button class="btn btn-verde" style="margin-top:8px;padding:6px 16px;font-size:.85rem" onclick="addCardapioPromoCombo()">➕ Adicionar Combo</button>
+          <div class="campo-edit" style="margin-top:12px"><label>Texto do botão</label><input type="text" id="card-açaí-promo-btn" maxlength="30" placeholder="🫐 Ver Combos em Promoção"/></div>
+
+
+--- SECOES SITE/PUBLICAS ---
+          <div class="campo-edit"><label>Subtexto do Modal (ID: fale-modal-sub)</label><input type="text" id="fc-modal-sub" maxlength="80" placeholder="Envie sua mensagem via WhatsApp"/><div class="hint">Linha de apoio abaixo do título do modal.</div></div>
+          <div class="campo-edit"><label>Label do campo Nome (ID: fale-label-nome)</label><input type="text" id="fc-label-nome" maxlength="40" placeholder="Seu nome"/><div class="hint">Texto do rótulo do campo nome no formulário.</div></div>
+          <div class="campo-edit"><label>Label do campo Mensagem (ID: fale-label-msg)</label><input type="text" id="fc-label-msg" maxlength="40" placeholder="Sua mensagem"/><div class="hint">Texto do rótulo do campo mensagem no formulário.</div></div>
+          <div class="campo-edit"><label>Texto do botão Enviar (ID: fale-btn-texto)</label><input type="text" id="fc-btn-texto" maxlength="50" placeholder="💬 Enviar via WhatsApp"/><div class="hint">Texto do botão de envio do formulário.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarModalFaleConosco()">&#x1F4BE; Salvar Modal Fale Conosco</button></div>
+
+          <div class="seção-título" style="margin-top:20px">🤖 Chat — Botão Flutuante e Assistente</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>chat-fab-texto</code>, <code>chat-hdr-titulo</code>, <code>chat-hdr-sub</code>, <code>chat-msg-inicio</code>, <code>chat-sug-1</code> a <code>chat-sug-6</code>. Alterar aqui muda o chat imediatamente ao salvar.
+          </div>
+          <div class="campo-edit"><label>Texto do botão flutuante Chat (ID: chat-fab-texto)</label><input type="text" id="fc-chat-fab" maxlength="30" placeholder="💬 Fale Conosco"/><div class="hint">Texto do botão verde fixo no canto inferior esquerdo.</div></div>
+          <div class="campo-edit"><label>Título do Chat (ID: chat-hdr-titulo)</label><input type="text" id="fc-chat-hdr-titulo" maxlength="40" placeholder="💬 Fale Conosco"/><div class="hint">Título exibido no cabeçalho do chat.</div></div>
+          <div class="campo-edit"><label>Subtexto do Chat (ID: chat-hdr-sub)</label><input type="text" id="fc-chat-hdr-sub" maxlength="60" placeholder="Assistente Itapolitana · Responde na hora"/><div class="hint">Linha de apoio no cabeçalho do chat.</div></div>
+          <div class="campo-edit"><label>Sugestões rápidas — 6 botões (IDs: chat-sug-1 a chat-sug-6, um por linha)</label><textarea id="fc-chat-opcoes" rows="6" placeholder="Horário&#10;Como encomendar&#10;Sabores&#10;Preços&#10;Localização&#10;Picolés"></textarea><div class="hint">Exatamente 6 linhas. Cada linha = 1 botão de sugestão no chat.</div></div>
+          <div class="campo-edit"><label>Mensagem fora do horário do Chat (config.chatForaHorario)</label><input type="text" id="fc-chat-fora" maxlength="220" placeholder="Estamos fechados agora. Retornaremos em breve!"/><div class="hint">Aparece quando o usuário tenta conversar sobre atendimento/pedido fora do horário de funcionamento.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarChat()">&#x1F4BE; Salvar Chat</button></div>
+
+          <div class="seção-título" style="margin-top:20px">📢 Botão Promoção (FAB)</div>
+          <div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            ✅ Edição consolidada na aba <strong>Promoção Ativa</strong>, campo <strong>Texto do botão flutuante (FAB)</strong> (<code>promo-fab</code> / <code>promo.json.fabLabel</code>).<br>
+            Este bloco foi mantido apenas para referência e não possui edição para evitar duplicidade.
+          </div>
+
+          <div class="seção-título" style="margin-top:20px">💬 Modais do Cardápio</div>
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+            📌 <strong>IDs no site:</strong> <code>ms-título</code>, <code>ms-sub</code> (sorvetes), <code>mp-título</code> (picolé), <code>modal-comp-titulo</code>, <code>modal-comp-sub</code> (açaí). Alterar aqui muda os títulos dos modais do cardápio.
+          </div>
+          <div class="campo-edit"><label>Título Modal Sorvetes (ID: ms-título)</label><input type="text" id="fc-modal-sorvetes-titulo" maxlength="50" placeholder="Sabores Disponíveis"/><div class="hint">Título do modal que abre ao clicar em Ver Sabores.</div></div>
+          <div class="campo-edit"><label>Subtexto Modal Sorvetes (ID: ms-sub)</label><input type="text" id="fc-modal-sorvetes-sub" maxlength="80" placeholder="Informe o sabor desejado ao fazer seu pedido na loja"/><div class="hint">Instrução exibida no modal de sabores.</div></div>
+          <div class="campo-edit"><label>Título Modal Picolé (ID: mp-título)</label><input type="text" id="fc-modal-picole-titulo" maxlength="50" placeholder="Sabores do Picolé"/><div class="hint">Título do modal de sabores de picolé.</div></div>
+          <div class="campo-edit"><label>Título Modal Açaí (ID: modal-comp-titulo)</label><input type="text" id="fc-modal-açaí-titulo" maxlength="50" placeholder="🫐 Complementos do Açaí"/><div class="hint">Título do modal de complementos do açaí.</div></div>
+          <div class="campo-edit"><label>Subtexto Modal Açaí (ID: modal-comp-sub)</label><input type="text" id="fc-modal-açaí-sub" maxlength="80" placeholder="Disponíveis para o Açaí Personalizado"/><div class="hint">Instrução exibida no modal de complementos do açaí.</div></div>
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarModaisCardapio()">&#x1F4BE; Salvar Modais do Cardápio</button></div>
+
+          <div class="btn-row" style="margin-top:24px"><button class="btn btn-salvar" onclick="salvarFaleConosco()">&#x1F4BE; Salvar Fale Conosco (Geral)</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SEÇÃO SOBRE (Página sobre.html) ═══════ -->
+    <div class="seção" id="sec-sobre">
+      <div class="card">
+        <div class="card-header"><h2>🏪 Página Sobre — Conteúdo Editável</h2><button class="btn btn-salvar" onclick="salvarSobre()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+            📌 <strong>Sobre a página:</strong> Esta seção controla todos os textos editáveis da página <code>sobre.html</code>. Campos salvos em <code>dados/config.json → sobrePagina{}</code>.
+          </div>
+
+          <div class="seção-título">🏪 Quem Somos</div>
+          <div class="campo-edit"><label>Ano de Fundação</label><input type="text" id="sobre-quem-somos-ano" maxlength="4" placeholder="2007"/><div class="hint">Ano em que a sorveteria foi fundada.</div></div>
+          <div class="campo-edit"><label>Endereço (linha 1)</label><input type="text" id="sobre-quem-somos-endereco" maxlength="120" placeholder="R. Cel. Manoel Caetano, 311 – Praça Largo São Bento"/><div class="hint">Endereço completo da loja.</div></div>
+          <div class="campo-edit"><label>Cidade</label><input type="text" id="sobre-quem-somos-cidade" maxlength="60" placeholder="Cajuru, SP"/><div class="hint">Cidade e estado.</div></div>
+          <div class="campo-edit"><label>Texto 1 (Parágrafo 1)</label><textarea id="sobre-quem-somos-texto1" rows="3" maxlength="600" placeholder="Desde 2007..."></textarea><div class="hint">Primeiro parágrafo da seção Quem Somos. Aceita HTML básico (&lt;strong&gt;).</div></div>
+          <div class="campo-edit"><label>Texto 2 (Parágrafo 2)</label><textarea id="sobre-quem-somos-texto2" rows="3" maxlength="600" placeholder="Estamos localizados..."></textarea><div class="hint">Segundo parágrafo da seção Quem Somos. Aceita HTML básico (&lt;strong&gt;).</div></div>
+
+          <div class="seção-título" style="margin-top:20px">📊 Estatísticas (Cards)</div>
+          <div class="campo-edit"><label>Anos de Tradição</label><input type="text" id="sobre-stat-anos-trad" maxlength="10" placeholder="19+"/><div class="hint">Número exibido no card de anos de tradição.</div></div>
+          <div class="campo-edit"><label>Sabores Tipo Artesanais</label><input type="text" id="sobre-stat-sabores" maxlength="10" placeholder="35+"/><div class="hint">Número de sabores Tipo artesanais.</div></div>
+          <div class="campo-edit"><label>Nota no Google</label><input type="text" id="sobre-stat-nota-google" maxlength="10" placeholder="4,8"/><div class="hint">Avaliação média no Google.</div></div>
+          <div class="campo-edit"><label>Feito com Amor</label><input type="text" id="sobre-stat-amor" maxlength="10" placeholder="100%"/><div class="hint">Percentual de amor no produto.</div></div>
+
+          <div class="seção-título" style="margin-top:20px">📖 Nossa História</div>
+          <div class="campo-edit"><label>Título da Seção</label><input type="text" id="sobre-historia-titulo" maxlength="60" placeholder="📖 Nossa História"/><div class="hint">Título da seção História.</div></div>
+          <div class="campo-edit"><label>Texto 1 (Parágrafo 1)</label><textarea id="sobre-historia-texto1" rows="3" maxlength="800" placeholder="A Itapolitana nasceu..."></textarea><div class="hint">Primeiro parágrafo da história. Aceita HTML básico (&lt;strong&gt;).</div></div>
+          <div class="campo-edit"><label>Texto 2 (Parágrafo 2)</label><textarea id="sobre-historia-texto2" rows="4" maxlength="800" placeholder="Nossos sorvetes..."></textarea><div class="hint">Segundo parágrafo da história. Aceita HTML básico (&lt;strong&gt;).</div></div>
+
+          <div class="seção-título" style="margin-top:20px">🍦 O que fazemos</div>
+          <div class="campo-edit"><label>Título da Seção</label><input type="text" id="sobre-fazemos-titulo" maxlength="60" placeholder="🍦 O que fazemos"/><div class="hint">Título da seção O que fazemos.</div></div>
+          <div class="campo-edit"><label>Resumo (antes da lista)</label><textarea id="sobre-fazemos-texto" rows="3" maxlength="500" placeholder="Oferecemos 35 sabores..."></textarea><div class="hint">Texto resumido exibido antes da lista de produtos.</div></div>
+
+          <div class="seção-título" style="margin-top:20px">🍦 CTA Final</div>
+          <div class="campo-edit"><label>Título do CTA</label><input type="text" id="sobre-cta-titulo" maxlength="60" placeholder="🍦 Vem Provar!"/><div class="hint">Título da caixa de Call-to-Action final.</div></div>
+          <div class="campo-edit"><label>Texto do CTA</label><textarea id="sobre-cta-texto" rows="2" maxlength="300" placeholder="Conheça o cardápio..."></textarea><div class="hint">Texto de convite final.</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarSobre()">💾 Salvar Página Sobre</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SEÇÃO CARROSSEL (Página carrossel.html) ═══════ -->
+    <div class="seção" id="sec-carrossel-config">
+      <div class="card">
+        <div class="card-header"><h2>🎠 Carrossel — Configurações</h2><button class="btn btn-salvar" onclick="salvarCarrosselConfig()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+            📌 <strong>Sobre o carrossel:</strong> Configure o título da página e o comportamento do Swiper. As imagens são gerenciadas na aba <strong>Tela Inicial → Imagens do Carrossel</strong>.
+          </div>
+
+          <div class="seção-título">🏷️ Metadados da Página</div>
+          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="carrossel-titulo" maxlength="80" placeholder="Carrossel de Fotos – Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador.</div></div>
+          <div class="campo-edit"><label>H1 (acessibilidade)</label><input type="text" id="carrossel-h1" maxlength="120" placeholder="Carrossel de Fotos – Sorveteria Itapolitana Cajuru"/><div class="hint">Título invisível para leitores de tela e SEO.</div></div>
+
+          <div class="seção-título" style="margin-top:20px">⚙️ Configurações do Swiper</div>
+          <div class="campo-edit"><label>Delay entre slides (ms)</label><input type="number" id="carrossel-autoplay-delay" min="1000" max="10000" step="100" placeholder="3000"/><div class="hint">Tempo em milissegundos que cada slide fica visível (padrão: 3000 = 3 segundos).</div></div>
+          <div class="campo-edit"><label>Velocidade de transição (ms)</label><input type="number" id="carrossel-transition-speed" min="200" max="2000" step="50" placeholder="800"/><div class="hint">Velocidade da animação de troca entre slides (padrão: 800ms).</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarCarrosselConfig()">💾 Salvar Configurações do Carrossel</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SEÇÃO GALERIA (Página galeria.html) ═══════ -->
+    <!-- CARROSSEL -->
+    <div class="seção" id="sec-carrossel-admin">
+      <div class="card">
+        <div class="card-header">
+          <h2>🎠 Carrossel de Banners</h2>
+          <a href="carrossel.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">&#x1F441;&#xFE0F; Ver Carrossel</a>
+        </div>
+        <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:12px 16px;border-radius:8px;margin:0 0 12px;font-size:.82rem">
+          📌 <strong>Como usar:</strong> Selecione uma foto (JPG, PNG ou WebP) → ela é convertida para WebP automaticamente → clique em <strong>Adicionar ao Carrossel</strong> → clique em <strong>Salvar Lista</strong>. Pronto! O carrossel se atualiza sozinho.
+        </div>
+        <div class="card-body">
+          <!-- UPLOAD NOVO BANNER -->
+          <div class="campo-edit">
+            <label>📷 Nova Imagem para o Carrossel</label>
+            <div style="background:#fff3e0;border:1.5px solid #ffcc80;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:.8rem;color:#bf360c;line-height:1.7">
+              📐 <strong>Dimensões ideais:</strong> 1536 × 1024 px (proporção 3:2) — redimensionado automaticamente se maior<br>
+              💾 <strong>Tamanho máximo:</strong> 250 KB após conversão<br>
+              🖼️ <strong>Formatos aceitos:</strong> JPG, JPEG, PNG, WebP, HEIC<br>
+              ⚡ <strong>Conversão automática:</strong> toda imagem é convertida para WebP antes de salvar
+            </div>
+            <div class="upload-area" id="crs-banner-area" onclick="document.getElementById('crs-banner-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');processarUploadCarrosselDedicado(event.dataTransfer.files[0])">
+              <input type="file" accept="image/*" id="crs-banner-input" style="display:none" onchange="processarUploadCarrosselDedicado(this.files[0])"/>
+              <div class="upload-icon">📷</div>
+              <div class="upload-texto">Clique ou arraste a imagem aqui</div>
+              <div class="upload-regras">
+                <span>📐 1536×1024px</span>
+                <span>💾 Máx. 250KB</span>
+                <span>🖼️ JPG · PNG · WebP</span>
+                <span>⚡ → WebP automático</span>
+              </div>
+            </div>
+            <div class="img-preview-wrap" id="crs-banner-preview-wrap">
+              <img class="img-preview" id="crs-banner-preview" src="" alt="Preview banner"/>
+              <div class="img-preview-info" id="crs-banner-info"></div>
+            </div>
+            <div class="erro-inline" id="crs-banner-erro"></div>
+            <div class="campo-edit" style="margin-top:10px">
+              <label>Texto alternativo (alt) do banner</label>
+              <input type="text" id="crs-banner-alt" maxlength="120" placeholder="Ex: Taças Gourmet Açaí Natureon — Sorveteria Itapolitana Cajuru"/>
+              <div class="hint">Descreva o que aparece na foto. Importante para SEO e acessibilidade. Max. 120 caracteres.</div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-salvar" onclick="adicionarBannerCarrosselDedicado()">➕ Adicionar ao Carrossel</button>
+            </div>
+          </div>
+
+          <!-- LISTA DE BANNERS -->
+          <div class="seção-título" style="margin-top:16px">📚 Banners Existentes — Ordem, Alt e Exclusão</div>
+          <div class="hint" style="margin-bottom:10px">Use ↑/↓ para reordenar, edite o ALT e clique em Salvar Lista.</div>
+          <div id="crs-banners-lista" style="display:grid;gap:10px">
+            <div style="padding:12px;border:1px dashed #cfd8dc;border-radius:10px;background:#fafafa;color:#546e7a;font-size:.82rem">Carregando lista de banners...</div>
+          </div>
+          <div class="btn-row" style="margin-top:12px">
+            <button class="btn btn-salvar" onclick="salvarBannersCarrosselDedicado()">💾 Salvar Lista de Banners</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="seção" id="sec-galeria">
+      <div class="card">
+        <div class="card-header"><h2>📸 Galeria — Configurações</h2><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+            📌 <strong>Sobre a galeria:</strong> Configure o título, descrição e metadados SEO da página galeria.html. Campos salvos em <code>dados/config.json → galeriaPagina{}</code> e <code>seoPaginas.galeria{}</code>.
+          </div>
+
+	          <div class="seção-título">🏷️ Metadados SEO</div>
+	          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-galeria-titulo" maxlength="80" placeholder="Galeria | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
+	          <div class="campo-edit"><label>Descrição Meta (SEO)</label><textarea id="cfg-seo-galeria-descricao" rows="2" maxlength="160" placeholder="Fotos dos produtos e da loja Itapolitana em Cajuru."></textarea><div class="hint">Descrição exibida nos resultados de busca do Google (máx. 160 caracteres).</div></div>
+	          <div class="campo-edit"><label>Palavras-chave (SEO)</label><input type="text" id="cfg-seo-galeria-palavras" maxlength="220" placeholder="galeria sorveteria cajuru, fotos itapolitana"/><div class="hint">Opcional. Ajuda em organização interna; o Google não usa mais meta keywords como sinal direto.</div></div>
+
+	          <div class="seção-título" style="margin-top:20px">📄 Conteúdo da Página</div>
+	          <div class="campo-edit"><label>H1 da Galeria</label><input type="text" id="galeria-h1" maxlength="120" placeholder="📸 Galeria – Sorveteria Itapolitana Cajuru"/><div class="hint">Título principal exibido na página da galeria.</div></div>
+	          <div class="campo-edit"><label>Descrição</label><textarea id="galeria-descricao" rows="2" maxlength="200" placeholder="Sorvete Tipo Artesanal, açaí, picolés e muito mais desde 2007 em Cajuru/SP."></textarea><div class="hint">Texto descritivo exibido abaixo do título da galeria.</div></div>
+
+	          <div class="seção-título" style="margin-top:20px">🖼️ Imagens da Galeria</div>
+	          <div class="hint" style="margin-bottom:10px">Cada item = 1 imagem na grade. Preencha URL (relativa do repo ou https://), texto alternativo (alt) e um título curto.</div>
+	          <div id="galeria-imagens-lista"></div>
+	          <div class="btn-row" style="margin-top:10px"><button class="btn btn-verde" type="button" onclick="adicionarImagemGaleria()">➕ Adicionar Imagem</button></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarGaleria()">💾 Salvar Galeria</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SEÇÃO ENCOMENDAS (Página encomendas.html) ═══════ -->
+    <div class="seção" id="sec-encomendas-config">
+      <div class="card">
+        <div class="card-header"><h2>🛒 Encomendas — Configurações</h2><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar</button></div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:10px 14px;border-radius:8px;margin:0 0 16px;font-size:.82rem">
+            📌 <strong>Sobre encomendas:</strong> Configure o banner hero, badges e metadados SEO da página encomendas.html. Campos salvos em <code>dados/config.json → encomendasPagina{}</code> e <code>seoPaginas.encomendas{}</code>.
+          </div>
+
+          <div class="seção-título">🏷️ Metadados SEO</div>
+          <div class="campo-edit"><label>Título da Página (&lt;title&gt;)</label><input type="text" id="cfg-seo-encomendas-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/><div class="hint">Título exibido na aba do navegador e nos resultados de busca.</div></div>
+          <div class="campo-edit"><label>Descrição Meta (SEO)</label><textarea id="cfg-seo-encomendas-descricao" rows="2" maxlength="160" placeholder="Faça sua encomenda de sorvetes, tortas e picolés para festas e eventos em Cajuru/SP."></textarea><div class="hint">Descrição exibida nos resultados de busca do Google (máx. 160 caracteres).</div></div>
+
+          <div class="seção-título" style="margin-top:20px">🎯 Hero Banner</div>
+          <div class="campo-edit"><label>Título Hero (permite HTML)</label><input type="text" id="encomendas-hero-titulo" maxlength="150" placeholder="🛒 Cardápio e Encomendas <span class=&quot;destaque&quot;>Itapolitana Cajuru</span>"/><div class="hint">Título principal do hero. Pode conter HTML para estilização (ex: &lt;span class="destaque"&gt;).</div></div>
+          <div class="campo-edit"><label>Descrição Hero</label><textarea id="encomendas-hero-descricao" rows="3" maxlength="250" placeholder="Sorvete Tipo Artesanal em caixa, tortas geladas, picolés em atacado e acréscimos..."></textarea><div class="hint">Texto descritivo abaixo do título hero (máx. 250 caracteres).</div></div>
+          <div class="campo-edit"><label>Badges do Hero (um por linha)</label><textarea id="encomendas-hero-badges" rows="5" maxlength="300" placeholder="✨ Tipo Artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea><div class="hint">Badges exibidos abaixo do hero (uma linha = um badge).</div></div>
+
+          <div class="btn-row"><button class="btn btn-salvar" onclick="salvarEncomendas()">💾 Salvar Encomendas</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
+    <div class="seção" id="sec-rastreio">
+  <div class="card">
+    <div class="card-header">
+      <h2>🔍 Rastreio de Encomenda</h2>
+      <span style="font-size:.8rem;color:#888">Consulta como o cliente vê o pedido</span>
+    </div>
+    <div class="card-body">
+      <div class="campo-edit">
+        <label>Observações Internas / Conteúdo da Página</label>
+        <textarea id="rastreio-observacoes" rows="3" placeholder="Registre orientações internas do rastreio para a equipe."></textarea>
+      </div>
+      <div class="btn-row" style="margin-bottom:12px"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <input type="text" id="rastreio-busca" style="flex:1;min-width:200px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none" placeholder="Digite nº do pedido (ITA-001-...) ou telefone..."/>
+        <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
+      </div>
+      <div id="rastreio-resultado">
+        <p style="color:#aaa;text-align:center;padding:30px;font-size:.9rem">Digite o número do pedido ou telefone para rastrear.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Últimas encomendas para acesso rápido -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><h2>⏱️ Encomendas Recentes</h2></div>
+    <div class="card-body" id="rastreio-recentes">
+      <p style="color:#aaa;font-size:.85rem">Carregando...</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SEÇÃO AUDITORIA ════════════════════════ -->
+<div class="seção" id="sec-auditoria">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
+      <p style="font-size:.82rem;color:#888;margin-top:2px">Inconsistências detectadas automaticamente nos dados</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="audit-filtro-mod" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todos módulos</option>
+        <option value="clientes">Clientes</option>
+        <option value="encomendas">Encomendas</option>
+      </select>
+      <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todas severidades</option>
+        <option value="critica">Crítica</option>
+        <option value="alta">Alta</option>
+        <option value="media">Média</option>
+        <option value="baixa">Baixa</option>
+      </select>
+      <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
+      <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>📝 Auditoria — Observações Internas</h2></div>
+    <div class="card-body">
+      <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="auditoria-observacoes" rows="3" placeholder="Registre decisões da auditoria, ações pendentes e histórico resumido."></textarea></div>
+      <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+    </div>
+  </div>
+  <!-- Stats de auditoria -->
+  <div class="stats-row" id="audit-stats">
+    <div class="stat-card" style="border-color:#c62828"><div class="num" id="audit-cnt-critica" style="color:#c62828">0</div><div class="txt">Críticas</div></div>
+    <div class="stat-card" style="border-color:#e65100"><div class="num" id="audit-cnt-alta" style="color:#e65100">0</div><div class="txt">Altas</div></div>
+    <div class="stat-card" style="border-color:#f57c00"><div class="num" id="audit-cnt-media" style="color:#f57c00">0</div><div class="txt">Médias</div></div>
+    <div class="stat-card" style="border-color:#43a047"><div class="num" id="audit-cnt-baixa" style="color:#43a047">0</div><div class="txt">Baixas</div></div>
+    <div class="stat-card"><div class="num" id="audit-cnt-total">0</div><div class="txt">Total</div></div>
+  </div>
+  <!-- Lista de inconsistências -->
+
+--- INIT/ROTEAMENTO ---
+    loginErro.innerHTML='⚠️ Não foi possível carregar a configuração do admin. Verifique a conexão e tente novamente.';
+    loginErro.style.display='block';
+    return;
+  }
+  const senhaOk = STATE.senhaAdmin && (senhaHash === STATE.senhaAdmin || senha === STATE.senhaAdmin);
+  if(!senhaOk){
+    ocultarLoading();
+    loginErro.innerHTML='&#x274C; Senha incorreta.';
+    loginErro.style.display='block';
+    return;
+  }
+  // --- GitHub Token: validar token e habilitar escrita ---
+  let tokenOk=false;
+  if(githubToken){
+    if(!tokenFormatoValido(githubToken)){
+      atualizarStatusGitHubToken('⚠️ Token GitHub com formato inválido. Admin em modo somente leitura.','warning');
+    }else{
+      const validacao=await validarToken(githubToken);
+      if(validacao.ok){
+        ssSet('itap_github_token',githubToken);
+        GITHUB_PAT=githubToken;
+        GH_WRITE_ALLOWED=validacao.canWrite!==false;
+        GH_TOKEN_CAN_WRITE=validacao.canWrite;
+        tokenOk=true;
+        if(GH_WRITE_ALLOWED){
+          atualizarStatusGitHubToken('✅ Token GitHub válido. Edição e salvamento liberados.','success');
+        }else if(validacao.canWrite===false){
+          atualizarStatusGitHubToken('⚠️ Token válido, mas sem permissão de escrita no repositório. Admin em modo somente leitura.','warning');
+        }else{
+          atualizarStatusGitHubToken('⚠️ Token válido, mas permissões não confirmadas. Admin em modo somente leitura.','warning');
+        }
+      }else{
+        atualizarStatusGitHubToken('⚠️ Token GitHub inválido ou expirado. Admin em modo somente leitura.','warning');
+      }
+    }
+  }
+  if(!tokenOk){
+    GH_WRITE_ALLOWED=false;
+    GITHUB_PAT='';
+    if(!githubToken){
+      atualizarStatusGitHubToken('ℹ️ Token GitHub não informado. Admin em modo somente leitura.','info');
+    }
+  }
+  const workerAuth=await iniciarSessaoWorkerComSenha(senha);
+  if(!workerAuth.ok){
+    console.warn('[Admin] Sessão do Worker indisponível:',workerAuth.error);
+    clearWorkerSessionToken();
+  }
+  ocultarLoading();
+  loginErro.style.display='none';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-app').style.display='block';
+  atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
+  if(!GH_WRITE_ALLOWED)toast('ℹ️ Você entrou em modo somente leitura. Informe um token GitHub válido para salvar alterações.','aviso');
+  await carregarTudo();
+  const btnPaginaInicial=document.getElementById('nav-btn-pagina-inicial');
+  irPara('pagina-inicial',btnPaginaInicial);
+}
+async function reativarTokenGitHub(){
+  const input=document.getElementById('github-token-modal-input');
+  const token=(input?.value||'').trim();
+  if(!token){
+    toast('Informe o token GitHub para continuar.','aviso');
+    if(input)input.focus();
+    return;
+  }
+  if(!tokenFormatoValido(token)){
+    toast('⚠️ Token GitHub com formato inválido.','aviso');
+    if(input)input.focus();
+    return;
+  }
+  mostrarLoading('Validando token GitHub...');
+  try{
+    const validacao=await validarToken(token);
+    if(!validacao.ok){
+      toast('⚠️ Não foi possível validar o token GitHub. Confira o token e tente novamente.','aviso');
+      if(input)input.focus();
+      return;
+    }
+    if(validacao.canWrite===false){
+      toast('⚠️ Token válido, mas sem permissão de escrita no repositório.','aviso');
+    }
+    ssSet('itap_github_token',token);
+    GITHUB_PAT=token;
+    GH_WRITE_ALLOWED=validacao.canWrite!==false;
+    GH_TOKEN_CAN_WRITE=validacao.canWrite;
+    atualizarStatusGitHubToken('✅ Token GitHub validado. Edição e salvamento liberados.','success');
+    atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
+    fecharModalGitHubToken();
+    toast('✅ Token GitHub ativado com sucesso!','sucesso');
+  }finally{
+    ocultarLoading();
+  }
+  await carregarTudo();
+}
+// Mantém compatibilidade com código legado
+async function reativarSessaoWorker(){await reativarTokenGitHub();}
+function sair(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('admin-app').style.display='none';
+  document.getElementById('inp-senha').value='';
+  const tokenInput=document.getElementById('inp-github-token');
+  if(tokenInput)tokenInput.value='';
+  document.getElementById('login-erro').style.display='none';
+  // Limpar token GitHub ao sair
+  ssRemove('itap_github_token');
+  clearWorkerSessionToken();
+  GITHUB_PAT='';
+  GH_WRITE_ALLOWED=false;
+}
+async function carregarTudo(){
+  mostrarLoading('Carregando dados...');
+  let pr={content:null,sha:null},cl={content:null,sha:null},fi={content:null,sha:null},en={content:null,sha:null},prod={content:null,sha:null},promos={content:null,sha:null},cfg={content:null,sha:null};
+  try{
+    const fontes=['promo','clientes','fidelidade','encomendas','produtos','promocoes','config'];
+    const resultados=await Promise.allSettled([ghGet(PATHS.promo),ghGet(PATHS.clientes),ghGet(PATHS.fidelidade),ghGet(PATHS.encomendas),ghGet(PATHS.produtos),ghGet(PATHS.promocoes),ghGet(PATHS.config)]);
+    resultados.forEach((r,idx)=>{if(r.status==='rejected')console.warn('[BOOT] Fonte',fontes[idx],'falhou:',r.reason);});
+    [pr,cl,fi,en,prod,promos,cfg]=resultados.map(r=>r.status==='fulfilled'?r.value:{content:null,sha:null});
+    if(pr.content){STATE.promo=pr.content;STATE.promoSha=pr.sha;}
+    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}else{console.error('[BOOT] Falha ao carregar clientes');}
+    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
+    if(en.content){STATE.encomendas=en.content;STATE.encomendasSha=en.sha;}
+    if(prod.content){STATE.produtos=prod.content;STATE.produtosSha=prod.sha;}
+    if(promos.content){STATE.promocoes=promos.content;STATE.promocoesSha=promos.sha;}else{STATE.promocoes={promocoes:[]};}
+    if(cfg.content){STATE.config=cfg.content;STATE.configSha=cfg.sha;if(!STATE.senhaAdmin&&cfg.content.senhaAdmin)STATE.senhaAdmin=cfg.content.senhaAdmin;}else{console.error('[BOOT] Falha ao carregar config');}
+    const falhasCarregamento=[
+      [PATHS.promo,pr],
+      [PATHS.clientes,cl],
+      [PATHS.fidelidade,fi],
+      [PATHS.encomendas,en],
+      [PATHS.produtos,prod],
+      [PATHS.promocoes,promos],
+      [PATHS.config,cfg]
+    ].filter(([,resp])=>!resp.content).map(([path])=>path);
+    if(falhasCarregamento.length){
+      toast(`⚠️ Falha ao carregar: ${falhasCarregamento.join(', ')}. Alguns campos podem ficar vazios até recarregar.`,'aviso');
+    }
+    const arquivosSemSha=[
+      [PATHS.promo,pr],
+      [PATHS.clientes,cl],
+      [PATHS.fidelidade,fi],
+      [PATHS.encomendas,en],
+      [PATHS.produtos,prod],
+      [PATHS.promocoes,promos],
+      [PATHS.config,cfg]
+    ].filter(([_,resp])=>Boolean(resp?.content)&&!resp?.sha).map(([path])=>path);
+    if(arquivosSemSha.length){
+      console.warn('[ADMIN][SHA] Arquivos carregados sem SHA:',arquivosSemSha);
+      toast(`⚠️ Arquivos sem SHA (somente leitura parcial): ${arquivosSemSha.join(', ')}.`,'aviso');
+    }
+    console.table([
+      {arquivo:PATHS.promo,sha:Boolean(STATE.promoSha),readonly:Boolean(pr?.readonly),carregado:Boolean(pr?.content)},
+      {arquivo:PATHS.clientes,sha:Boolean(STATE.clientesSha),readonly:Boolean(cl?.readonly),carregado:Boolean(cl?.content)},
+      {arquivo:PATHS.fidelidade,sha:Boolean(STATE.fidelidadeSha),readonly:Boolean(fi?.readonly),carregado:Boolean(fi?.content)},
+      {arquivo:PATHS.encomendas,sha:Boolean(STATE.encomendasSha),readonly:Boolean(en?.readonly),carregado:Boolean(en?.content)},
+      {arquivo:PATHS.produtos,sha:Boolean(STATE.produtosSha),readonly:Boolean(prod?.readonly),carregado:Boolean(prod?.content)},
+      {arquivo:PATHS.promocoes,sha:Boolean(STATE.promocoesSha),readonly:Boolean(promos?.readonly),carregado:Boolean(promos?.content)},
+      {arquivo:PATHS.config,sha:Boolean(STATE.configSha),readonly:Boolean(cfg?.readonly),carregado:Boolean(cfg?.content)}
+    ]);
+    // Banner de escrita: exibe quando algum arquivo do admin caiu em leitura, falhou no carregamento ou o token não está válido
+    const semToken=[pr,cl,fi,en,prod,promos,cfg].some(r=>r.content&&r.readonly)||!GH_WRITE_ALLOWED;
+    const avisoComFalhas=Boolean(falhasCarregamento.length||arquivosSemSha.length);
+    const banner=document.getElementById('aviso-token-expirado');
+    const bannerMsg=document.getElementById('aviso-token-expirado-msg');
+    if(banner){
+      banner.style.display=(semToken||avisoComFalhas)?'flex':'none';
+    }
+    if(bannerMsg){
+      bannerMsg.innerHTML=avisoComFalhas
+        ?`<strong>Falha parcial no carregamento dos dados.</strong> Verifique conexão/token e use “🔄 Recarregar Dados”. ${falhasCarregamento.length?`Falha ao carregar: ${falhasCarregamento.map(esc).join(', ')}. `:''}${arquivosSemSha.length?`Sem SHA: ${arquivosSemSha.map(esc).join(', ')}.`:''}`
+        :'<strong>Admin em modo somente leitura.</strong> Adicione um token GitHub para liberar edição e salvamento.';
+    }
+    // Banner: mostrar quando token de escrita não está válido
+    atualizarBannerGitHubToken(GH_WRITE_ALLOWED);
+  }catch(e){
+    console.error('[BOOT] carregarTudo falhou',e);
+    toast('⚠️ Falha ao carregar parte dos dados. Verifique a conexão/token e tente Recarregar.','aviso');
+  }finally{
+    ocultarLoading();
+  }
+  ensureSafeState();
+  renderDashboard();
+  try{preencherHome();}catch(e){console.error('[Admin] preencherHome',e);}
+  try{preencherPromoção();}catch(e){console.error('[Admin] preencherPromoção',e);}
+  try{preencherConfig();}catch(e){console.error('[Admin] preencherConfig',e);}
+  try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
+  try{preencherSorteio();}catch(e){console.error('[Admin] preencherSorteio',e);}
+  try{renderPreços();}catch(e){console.error('[Admin] renderPreços',e);}
+  try{renderizarEstoqueAdmin();}catch(e){console.error('[Admin] renderizarEstoqueAdmin',e);}
+  try{carregarTitulosCardapio();}catch(e){console.error('[Admin] carregarTitulosCardapio',e);}
+  try{renderizarSaboresAdmin();}catch(e){console.error('[Admin] renderizarSaboresAdmin',e);}
+  try{preencherCardapio();}catch(e){console.error('[Admin] preencherCardapio',e);}
+  try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
+  try{preencherFaleConosco();}catch(e){console.error('[Admin] preencherFaleConosco',e);}
+  try{preencherNotasOperacionais();}catch(e){console.error('[Admin] preencherNotasOperacionais',e);}
+  try{carregarSobre();}catch(e){console.error('[Admin] carregarSobre',e);}
+  try{carregarCarrosselConfig();}catch(e){console.error('[Admin] carregarCarrosselConfig',e);}
+  try{carregarGaleria();}catch(e){console.error('[Admin] carregarGaleria',e);}
+  try{carregarEncomendas();}catch(e){console.error('[Admin] carregarEncomendas',e);}
+  try{carregarFidelidadePagina();}catch(e){console.error('[Admin] carregarFidelidadePagina',e);}
+  fidApplyReadOnlyGuard();
+}
+function irPara(seção,btn){
+  if(!checkDirty())return; // avisa se há alterações não salvas
+  const safeInit=(tabName,fn)=>{
+    try{fn();}
+    catch(e){
+      console.error(`[irPara] Falha ao inicializar ${tabName}: ${e?.message||e}`,e);
+      toast(`⚠️ Erro ao abrir a aba ${tabName}. Veja o console para detalhes.`,'erro');
+    }
+  };
+  // Mapa: aba → lista de seções que compõem cada página do site
+  const sectionMap={
+    'dashboard':      ['dashboard'],
+    'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
+    'encomendas-admin':['encomendas','sabores','estoque'],
+    'produtos-admin': ['produtos'],
+    'promocao-admin': ['promoção','participantes'],
+    'fidelidade-admin':['clientes','fidelidade'],
+    'dicas-admin':    ['depoimentos'],
+    'sobre-admin':    ['sobre','carrossel-config'],
+    'galeria-admin':  ['galeria'],
+    'encomendas-config-admin': ['encomendas-config'],
+    'qualidade':      ['qualidade'],
+    'rastreio-admin': ['rastreio'],
+    'auditoria-admin':['auditoria']
+  };
+  console.log(`[irPara] Navegando para: ${seção}`);
+  document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('ativo'));
+  const ids=sectionMap[seção]||[seção];
+  console.log(`[irPara] IDs das seções a ativar:`, ids);
+  ids.forEach(id=>{
+    const el=document.getElementById('sec-'+id);
+    if(el){
+      el.classList.add('ativo');
+      console.log(`[irPara] ✓ Seção ativada: sec-${id}`);
+    }else{
+      console.error(`[irPara] ✗ Seção NÃO encontrada: sec-${id}`);
+    }
+  });
+  if(btn)btn.classList.add('ativo');
+  // Inicializar funções necessárias para cada seção visível
+  if(ids.includes('home')){console.log('[irPara] Inicializando HOME');safeInit('HOME',()=>preencherHome());}
+  if(ids.includes('preços')){console.log('[irPara] Inicializando PREÇOS');safeInit('PREÇOS',()=>renderPreços());}
+  if(ids.includes('cardapio-titulos')){console.log('[irPara] Inicializando CARDAPIO TITULOS');safeInit('CARDAPIO TITULOS',()=>carregarTitulosCardapio());}
+  if(ids.includes('cardápio')){console.log('[irPara] Inicializando CARDÁPIO');safeInit('CARDÁPIO',()=>preencherCardapio());}
+  if(ids.includes('fale-conosco')){console.log('[irPara] Inicializando FALE CONOSCO');safeInit('FALE CONOSCO',()=>preencherFaleConosco());}
+  if(ids.includes('config')){console.log('[irPara] Inicializando CONFIG');safeInit('CONFIG',()=>preencherConfig());}
+  if(ids.includes('encomendas')){console.log('[irPara] Inicializando ENCOMENDAS');safeInit('ENCOMENDAS',()=>renderEncomendas());}
+  if(ids.includes('sabores')){console.log('[irPara] Inicializando SABORES');safeInit('SABORES',()=>renderizarSaboresAdmin());}
+  if(ids.includes('estoque')){console.log('[irPara] Inicializando ESTOQUE');safeInit('ESTOQUE',()=>renderizarEstoqueAdmin());}
+  if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');safeInit('PRODUTOS',()=>renderProdutosAdmin());}
+  if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMOÇÃO');safeInit('PROMOÇÃO',()=>{preencherPromoção();preencherSorteio();renderPromocoesTable();carregarInscritosSorteio();});}
+  if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');safeInit('PARTICIPANTES',()=>renderParticipantes());}
+  if(ids.includes('clientes')){
+    console.log('[irPara] Inicializando CLIENTES');
+    safeInit('CLIENTES',()=>{
+      renderClientes();
+      if(typeof renderDuplicidades==='function')renderDuplicidades();
+    });
+  }
+  if(ids.includes('fidelidade')){
+    console.log('[irPara] Inicializando ');
+    try{preencherFidelidade();}catch(e){console.error('[Admin] preencherFidelidade',e);}
+    try{if(typeof renderCódigos==='function')renderCódigos();}catch(e){console.error('[Admin] renderCódigos',e);}
+    try{if(typeof fidRenderProgresso==='function')fidRenderProgresso();if(typeof fidRenderLoteAtual==='function')fidRenderLoteAtual();}catch(e){console.error('[Admin] fidRender',e);}
+    try{if(typeof carregarConfigSorteio==='function')carregarConfigSorteio();}catch(e){console.error('[Admin] carregarConfigSorteio',e);}
+    try{if(typeof carregarRegrasPontuacao==='function')carregarRegrasPontuacao();}catch(e){console.error('[Admin] carregarRegrasPontuacao',e);}
+    try{if(typeof carregarFidelidadePagina==='function')carregarFidelidadePagina();}catch(e){console.error('[Admin] carregarFidelidadePagina',e);}
+    const secFidelidade=document.getElementById('sec-fidelidade');
+    if(seção==='fidelidade-admin'&&secFidelidade){
+      secFidelidade.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  }
+  if(ids.includes('clientes')||ids.includes('fidelidade')) { if(typeof fidApplyReadOnlyGuard==='function') fidApplyReadOnlyGuard(); }
+  if(ids.includes('depoimentos')){
+    console.log('[irPara] Inicializando DEPOIMENTOS');
+    try{preencherDepoimentos();}catch(e){console.error('[Admin] preencherDepoimentos',e);}
+  }
+  if(ids.includes('sobre')){console.log('[irPara] Inicializando SOBRE');safeInit('SOBRE',()=>carregarSobre());}
+  if(ids.includes('carrossel-config')){console.log('[irPara] Inicializando CARROSSEL');safeInit('CARROSSEL',()=>carregarCarrosselConfig());}
+  if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');safeInit('GALERIA',()=>carregarGaleria());}
+  if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando ENCOMENDAS CONFIG');safeInit('ENCOMENDAS CONFIG',()=>carregarEncomendas());}
+  if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');safeInit('QUALIDADE',()=>{atualizarScoresQualidade();preencherNotasOperacionais();});}
+  if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');safeInit('RASTREIO',()=>renderRastreioRecentes());}
+  if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');safeInit('AUDITORIA',()=>executarAuditoria());}
+  if(ids.includes('rastreio')||ids.includes('auditoria'))safeInit('NOTAS OPERACIONAIS',()=>preencherNotasOperacionais());
+  // Scroll para o topo ao trocar de aba — funciona para seções dentro e fora do .admin-content
+  window.scrollTo({top:0,behavior:'auto'});
+  const content=document.querySelector('.admin-content');
+  if(content)content.scrollTop=0;
+}
+
+async function atualizarListaFidelidade(){
+  const btn=document.getElementById('btn-refresh-fidelidade');
+  if(btn){btn.disabled=true;btn.textContent='Atualizando...';}
+  try{
+    const[cl,fi]=await Promise.all([ghGet(PATHS.clientes),ghGet(PATHS.fidelidade)]);
+    if(cl.content){STATE.clientes=cl.content;STATE.clientesSha=cl.sha;}
+    if(fi.content){STATE.fidelidade=fi.content;STATE.fidelidadeSha=fi.sha;}
+    try{renderClientes();renderDuplicidades();}catch(e){console.error('[Admin] atualizarListaFidelidade renderClientes',e);}
+    try{preencherFidelidade();}catch(e){console.error('[Admin] atualizarListaFidelidade preencherFidelidade',e);}
+    try{renderCódigos();}catch(e){console.error('[Admin] atualizarListaFidelidade renderCódigos',e);}
+    try{fidRenderProgresso();fidRenderLoteAtual();}catch(e){console.error('[Admin] atualizarListaFidelidade fidRender',e);}
+    fidApplyReadOnlyGuard();
+    toast('✅ Lista de Fidelidade atualizada com sucesso!','sucesso');
+  }catch(e){
+    console.error('[Admin] atualizarListaFidelidade',e);
+    toast('❌ Erro ao atualizar lista de Fidelidade.','erro');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar Lista';}
+  }
+}
+function atualizarScoresQualidade(){
+  carregarMetricasQualidade();
+}
+function carregarMetricasQualidade(){
+  const QG_KEY='itap_quality_guard';
+  let dados={};
+  try{ dados=JSON.parse(localStorage.getItem(QG_KEY)||'{}'); }catch(e){}
