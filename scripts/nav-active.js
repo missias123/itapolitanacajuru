@@ -9,31 +9,31 @@
     {
       href: 'index.html',
       label: 'TELA INICIAL',
-      icon: '🏠',
+      icon: 'home',
       bg: 'background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);'
     },
     {
       href: 'promocao.html',
       label: 'PROMOÇÃO',
-      icon: '🎉',
+      icon: 'promo',
       bg: 'background:linear-gradient(135deg,#E8000D,#C62828);'
     },
     {
       href: 'dicas.html',
       label: 'DICAS/DEPOIMENTOS',
-      icon: '⭐',
+      icon: 'star',
       bg: 'background:linear-gradient(135deg,#00C853,#009624);'
     },
     {
       href: 'sobre.html',
       label: 'QUEM SOMOS',
-      icon: '🏪',
+      icon: 'info',
       bg: 'background:linear-gradient(135deg,#4A148C,#6A1B9A);'
     },
     {
       href: 'encomendas.html',
       label: 'ENCOMENDAS',
-      icon: '📦',
+      icon: 'box',
       bg: 'background:linear-gradient(135deg,#0D47A1,#00288F);'
     }
   ];
@@ -111,8 +111,12 @@
       a.setAttribute('aria-current', 'page');
     }
 
+    var iconHtml = (typeof window.ItapIcon === 'function')
+      ? window.ItapIcon(item.icon, 'white')
+      : '<span class="itap-nav-icon-legacy">' + item.icon + '</span>';
+
     a.innerHTML =
-      '<span class="itap-nav-icon">' + item.icon + '</span>' +
+      '<span class="itap-nav-icon">' + iconHtml + '</span>' +
       '<span class="itap-nav-label">' + item.label + '</span>';
     return a;
   }

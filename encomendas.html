@@ -275,8 +275,9 @@
       100% { transform: scale(1); opacity: 1; }
     }
   </style>
-  <link rel="stylesheet" href="css/itap-shared.css">
-  <script src="scripts/nav-active.js?v=20260815-header1" defer></script>
+  <link rel="stylesheet" href="css/itap-shared.css?v=20260815-icons-approved-2">
+  <script src="scripts/itap-icons.js?v=20260815-icons-approved-2"></script>
+<script src="scripts/nav-active.js?v=20260815-header1" defer></script>
 </head>
 <body class="fueap-surface fueap-encomendas">
 
@@ -290,7 +291,10 @@
   <!-- Categoria Caixas -->
   <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-caixas')">
-      <div><strong>🍦 Sorvete em Caixa</strong><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="bento-icon-container blue" style="width:40px; height:40px;"><svg><use xlink:href="#icon-box"></use></svg></div>
+        <div><strong>Sorvete em Caixa</strong><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
+      </div>
       <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-caixas" class="categoria-conteudo">
@@ -301,7 +305,10 @@
   <!-- Categoria Tortas -->
   <div class="categoria">
     <button class="categoria-header" onclick="window.toggleSecao('sec-tortas')">
-      <div><strong>🎂 Tortas Geladas</strong><small>Até 3 Sabores Tipo Artesanal</small></div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="bento-icon-container red" style="width:40px; height:40px;"><svg><use xlink:href="#icon-cake"></use></svg></div>
+        <div><strong>Tortas Geladas</strong><small>Especiais para festas e aniversários</small></div>
+      </div>
       <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-tortas" class="categoria-conteudo">
@@ -310,9 +317,12 @@
   </div>
 
   <!-- Categoria Picolés -->
-  <div class="categoria categoria--picoles">
-    <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')" aria-label="Abrir Picolés no atacado">
-      <div><strong>🍭 Picolés no Atacado</strong><small>Mín. 100 · por sabor</small></div>
+  <div class="categoria">
+    <button class="categoria-header" onclick="window.toggleSecao('sec-picoles')">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="bento-icon-container orange" style="width:40px; height:40px;"><svg><use xlink:href="#icon-popsicle"></use></svg></div>
+        <div><strong>Picolés no Atacado</strong><small>Mínimo 100 unidades - Ideal para revenda e eventos</small></div>
+      </div>
       <span class="arrow-icon">▼</span>
     </button>
     <div id="sec-picoles" class="categoria-conteudo">
@@ -604,7 +614,8 @@
                 var btnVoltar = document.createElement('div');
                 btnVoltar.className = 'btn-voltar-encomenda';
                 btnVoltar.style = 'margin-bottom: 20px;';
-                btnVoltar.innerHTML = '<div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;"><button type="button" class="btn-voltar-nivel" onclick="window.fecharSecaoEncomenda(\'' + id + '\')" style="width:50px; height:50px; border-radius:50%; border:none; background:#EA1D2C; color:#fff; font-weight:900; font-size:1.2rem; cursor:pointer; box-shadow:0 4px 12px rgba(232,0,13,0.4); display:flex; align-items:center; justify-content:center; animation: neonPulse 2s infinite;">←</button><span style="font-weight:800; color:#EA1D2C; font-size:1.1rem;">Voltar</span></div>';
+                var iconVoltar = (typeof window.ItapIcon === 'function') ? window.ItapIcon('truck', 'white') : '←';
+                btnVoltar.innerHTML = '<div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;"><button type="button" class="btn-voltar-nivel" onclick="window.fecharSecaoEncomenda(\'' + id + '\')" style="width:50px; height:50px; border-radius:50%; border:none; background:#EA1D2C; color:#fff; font-weight:900; font-size:1.2rem; cursor:pointer; box-shadow:0 4px 12px rgba(232,0,13,0.4); display:flex; align-items:center; justify-content:center; animation: neonPulse 2s infinite;">' + iconVoltar + '</button><span style="font-weight:800; color:#EA1D2C; font-size:1.1rem;">Voltar</span></div>';
                 conteudoEl.insertBefore(btnVoltar, conteudoEl.firstChild);
             }
         }
@@ -794,15 +805,16 @@
         var html = '';
         
         Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
-            var icon = tipo.includes('Água') ? '💧' : tipo.includes('Recheado') ? '🍫' : tipo.includes('Esquimó') ? '🍦' : '⭐';
+            var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
+            var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange') : '🍦';
             var tipoCurto = tipo.split('(')[0].trim();
             var tipoId = 'grupo-picole-' + index;
             
-            abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto;">${icon} ${tipoCurto}</button>`;
+            abasHtml += `<button type="button" class="picole-aba-btn" data-tipo-id="${tipoId}" onclick="window.filtrarSecaoPicole('${tipoId}')" style="padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #f7f7f7; color: #333; font-weight: 800; font-size: 0.8rem; cursor: pointer; white-space: nowrap; flex: 0 0 auto; display: flex; align-items: center; gap: 6px;">${icon} ${tipoCurto}</button>`;
             
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
                 <div style="font-size: 1.05rem; font-weight: 900; color: var(--primary); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #FFF0F0; display: flex; align-items: center; gap: 6px;">
-                    <span>${icon}</span> <span>${tipo}</span>
+                    <span style="width:24px; height:24px; display:inline-flex;">${icon}</span> <span>${tipo}</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">`;
             
@@ -822,9 +834,9 @@
                             <div id="sub-${key}" style="font-size: 0.78rem; font-weight: 800; color: var(--success); margin-top: 2px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;" aria-label="Quantidade de ${escaparHtml(s)}">
-                            <button type="button" aria-label="Remover" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''} style="width: 34px; height: 34px; border: 1px solid #D5D5D5; border-radius: 50%; background: #fff; color: #333; font-size: 1.1rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
-                            <span id="q-${key}" style="min-width: 26px; text-align: center; font-weight: 900; font-size: 1rem; color: ${hasSelected ? 'var(--success)' : '#333'};">${qtd}</span>
-                            <button type="button" aria-label="Adicionar" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''} style="width: 34px; height: 34px; border: 1px solid var(--primary); border-radius: 50%; background: var(--primary); color: #fff; font-size: 1.1rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+                            <button type="button" aria-label="Remover" onclick="window.addPicole('${key}', -1)" ${qtd <= 0 ? 'disabled' : ''} style="width: 44px; height: 44px; border: 1px solid #D5D5D5; border-radius: 50%; background: #fff; color: #333; font-size: 1.2rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">−</button>
+                            <span id="q-' + key + '" style="min-width: 26px; text-align: center; font-weight: 900; font-size: 1.1rem; color: ${hasSelected ? 'var(--success)' : '#333'};">${qtd}</span>
+                            <button type="button" aria-label="Adicionar" onclick="window.addPicole('${key}', 1)" ${indisponivel || qtd >= MAX_PICOLES_POR_SABOR ? 'disabled' : ''} style="width: 44px; height: 44px; border: 1px solid var(--primary); border-radius: 50%; background: var(--primary); color: #fff; font-size: 1.2rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
                         </div>
                     </div>
                 `;
