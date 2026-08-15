@@ -12,37 +12,57 @@ O Nielsen Norman Group recomenda que accordions mobile ajudem o usuário a ver o
 
 A Shopify recomenda cabeçalhos curtos e claros, indicador visual de expansão, animações discretas, ARIA controls/expanded, suporte a teclado e uma única fonte de verdade para o estado. Também recomenda evitar listas excessivamente longas e não ocultar informações críticas. Para o Itapolitana, o clique deve operar em um único handler, o corpo deve abrir com `max-height` calculado, e a renderização dos produtos deve ser idempotente, sem limpar um grid que ainda não recebeu dados.
 
-A documentação da Rappi descreve menus como uma estrutura hierárquica de categorias, produtos e filhos/opções, com ordem, nomes, descrições, preços e validação imediata. Para o Itapolitana, isso reforça separar: categoria > produto > sabores/opções; cada produto deve ter identificação estável e a lista geral de 35 sabores não deve ser misturada com Picolés ou Açaí.
+La documentación de Rappi describe menus como una estructura jerárquica de categorias, produtos e filhos/opções, com ordem, nomes, descrições, preços e validação imediata. Para o Itapolitana, isso reforça separar: categoria > produto > sabores/opções; cada produto deve ter identificação estável e a lista geral de 35 sabores não deve ser misturada com Picolés ou Açaí.
 
-## Decisão técnica
+## Decisão técnica para o "Armário" e "Gavetas"
 
-Não usar `display:none` global em `.reveal`, nem `position:fixed` no `body` para o acordeão principal. Essas técnicas podem esconder o cardápio ou alterar o contexto de toque, como ocorreu com o primeiro botão. Usar um acordeão progressivo simples: apenas o painel clicado abre, o cabeçalho permanece no fluxo, o botão Voltar fecha o painel e restaura o `scrollY` salvo. O Modo Foco deve ser aplicado somente ao painel de detalhes que realmente possuir um container compatível, nunca depender de `.reveal` para localizar o acordeão principal.
+O modelo aprovado pelo usuário (armário principal contendo gavetas de categorias) reflete o padrão de grandes aplicativos de delivery (iFood, Rappi, Uber Eats). Nesses sistemas:
+- O cardápio atua como um container pai expandível (o armário).
+- Cada categoria funciona como um acordeão independente (gaveta), abrindo inline logo abaixo do seu cabeçalho.
+- Ao abrir uma gaveta, as demais se recolhem automaticamente, garantindo que apenas uma categoria fique ativa por vez.
+- O conteúdo de cada gaveta é estritamente isolado: nenhuma seção externa, rodapé ou categoria adjacente "vaza" para dentro ou por cima do produto.
+- O botão Voltar ou fechar recolhe a gaveta e restaura o scroll de forma determinística, sem saltos.
 
-## Critérios de aceite
+## Validação do fluxo armário → gaveta — 2026-08-15
 
-- O primeiro botão Sorvetes abre com clique humano e teclado.
-- O grid de produtos contém itens antes e depois da abertura.
-- O botão Ver 35 Sabores renderiza exatamente 35 chips.
-- Picolés e Açaí preservam suas listas específicas.
-- Fechar/Voltar retorna ao mesmo `scrollY`, sem salto perceptível.
-- Abrir uma categoria não esconde o cardápio inteiro.
-- Todos os handlers são únicos, sem duplicidade de `onclick` e `addEventListener` concorrentes.
-- A página permanece operável em celular, tablet e desktop.
+O fluxo de Sorvetes foi testado no navegador: o armário permaneceu aberto; Sorvetes abriu inline com altura aproximada de 472 px; a subgaveta `Ver 35 Sabores` exibiu exatamente 35 chips dentro de `#acc-sorvetes`; o botão `← Voltar` retornou ao conteúdo original mantendo a gaveta de Sorvetes aberta; o botão `← Voltar ao Início do Cardápio` fechou somente a categoria, manteve `#vc-container` aberto e removeu `menu-foco-aberto` sem portal visível.
 
-## Diagnóstico observado no site ao vivo
+Foi executada uma varredura das oito categorias principais: `acc-sorvetes`, `acc-picolés`, `acc-açaí`, `acc-milk`, `acc-tacas`, `acc-tacas-p`, `acc-iso` e `acc-sobremesas`. Cada uma abriu com corpo visível, exatamente um acordeão aberto por vez e sem portal/overlay visível. Após fechar cada uma, o armário permaneceu aberto e terminou sem categorias abertas.
 
-O DOM ao vivo possui `#acc-sorvetes`, `#sorvetes-body` e `#sorvetes-grid`; o grid tinha conteúdo e o corpo tinha `scrollHeight` de 665px, mas estava com `max-height: 0px` durante a tentativa de clique. Os accordions principais não estão dentro de `.reveal`. Portanto, qualquer foco baseado em `acc.closest('.reveal')` é inadequado para eles e deve ser removido do caminho principal de abertura.
 
-## Próximo passo
+## Auditoria geométrica de sobreposição — 2026-08-15
 
-Refatorar somente o fluxo de acordeão de `index.html`, preservando o restante do site e criando uma cópia/backup antes da edição. Testar primeiro localmente, depois no navegador, e só então publicar.
+A varredura mediu cada gaveta após a animação de abertura. As oito categorias abriram com exatamente um estado `.acc.open`, nenhum cabeçalho vizinho ficou dentro do retângulo vertical do corpo ativo (`overlaps: []`) e o delta de rolagem após o fechamento foi 0 px em todas. Alturas observadas: Sorvetes 472 px, Picolés 757 px, Açaí 5.319 px, Milkshakes 717 px, Taças 699 px, Taças Premium 735 px, Isopores 542 px e Sobremesas 911 px. O armário principal permaneceu aberto.
 
-## Validação intermediária no navegador local
+## Auditoria de subgavetas por categoria — 2026-08-15
 
-O servidor local foi aberto em `http://127.0.0.1:4173/index.html`. O botão `VER CARDÁPIO` abriu o painel, e o primeiro acordeão `Sorvetes de massa Tipo artesanais` também abriu. Antes da alteração, o HTML já continha `#sorvetes-grid`, quatro cards de produto e o botão `Ver 35 Sabores`; o problema principal confirmado no código era o Modo Foco transformar o `body` inteiro em `position: fixed` e esconder todos os `.reveal` que não fossem o pai do acordeão. Como o primeiro acordeão está em `<section class="cardápio">` e não em `.reveal`, essa estratégia era estruturalmente frágil.
+Os botões de sabores das categorias Sorvetes, Milkshakes, Taças, Taças Premium, Isopores e Sobremesas abriram conteúdo inline dentro da própria gaveta, sem exibir o modal legado `#modal-sabores`. Sorvetes, Milkshakes, Isopores e Sobremesas exibiram 35 chips; Taças e Taças Premium exibiram suas opções próprias junto da seção geral de sabores, sem sair do respectivo corpo. Em todos os casos a categoria permaneceu aberta e o botão Voltar retornou ao conteúdo base.
 
-A correção aplicada no backup de trabalho mantém o `body` apenas com overflow bloqueado e transforma somente `.acc.menu-foco-ativo` em painel `position: fixed`, com `inset: 0`, `100dvh`, rolagem interna e sem `display:none` global. Também foram removidas as dependências de `acc.closest('.reveal')` do JavaScript.
+Açaí Natureon foi auditado separadamente. A categoria não possui botão de sabores gerais nem injetou a lista de 35 sabores, preservando a regra definida para Açaí. O título e os complementos permanecem próprios da categoria.
 
-## Diagnóstico pós-recarregamento
 
-A primeira leitura do navegador ainda refletia o CSS antigo em cache: `getComputedStyle(#acc-sorvetes).position` retornava `relative`, e a regra encontrada no stylesheet ainda era a versão anterior. Depois de recarregar com query string de versão, o cardápio voltou ao estado fechado e pronto para novo clique; a validação seguinte deve medir o estilo computado no documento versionado, evitando concluir com base no cache antigo.
+## Validação de isolamento visual — 2026-08-15
+
+No teste local `gaveta-isolamento-final-1`, a abertura de `acc-sorvetes` manteve apenas o armário e a gaveta ativa visíveis: `#acai-natureon` ficou com `display: none`, as demais categorias ficaram ocultas e somente `acc-sorvetes` permaneceu aberto. A visualização confirmou que não houve vazamento do rodapé, do cabeçalho ou de outra categoria.
+
+A subgaveta de 35 sabores abriu dentro de Sorvetes, mantendo a mesma moldura e o botão interno `← Voltar`. A lista renderizou os 35 sabores esperados, sem trazer conteúdo de Picolés ou Açaí. A transição permaneceu inline, sem portal ou sobreposição.
+
+Próxima validação: percorrer todas as categorias, testar subgavetas específicas, fechar pelo botão de retorno e verificar responsividade.
+
+## Varredura de isolamento das oito gavetas — 2026-08-15
+
+Em estado inicial limpo, cada uma das oito categorias foi aberta e fechada com espera de 520 ms para concluir a animação. Em todas as categorias (`acc-sorvetes`, `acc-picolés`, `acc-açaí`, `acc-milk`, `acc-tacas`, `acc-tacas-p`, `acc-iso` e `acc-sobremesas`), o teste registrou `activeCountWhileOpen: 1`, `externalHidden: true`, `siblingsHidden: true`, `closedScrollDelta: 0` e nenhum erro de console. O armário permaneceu aberto, sem portal ou overlay.
+
+## Validação de Picolés — 2026-08-15
+
+A gaveta `acc-picolés` abriu com seus seis controles de sabores. A primeira subgaveta exibiu 8 chips específicos dentro do próprio `acc-picolés`, manteve as seções externas ocultas, deixou as demais categorias invisíveis e não exibiu o título nem a lista geral de 35 sabores. A separação Picolés ≠ 35 sabores foi preservada.
+
+## Validação visual de Açaí Natureon — 2026-08-15
+
+A gaveta `acc-açaí` foi aberta isoladamente. O teste confirmou `has35: false`, presença de complementos próprios, seções externas ocultas e nenhuma categoria irmã visível. A inspeção visual mostrou somente o cabeçalho e o conteúdo do Açaí, com seus produtos e botões de WhatsApp dentro da própria gaveta.
+
+## Responsividade e retorno — 2026-08-15
+
+Na largura de auditoria de 1280 × 1100 px, os cabeçalhos das oito gavetas mantiveram `min-height: 118px` e tipografia de 18 px; os botões internos observados ficaram acima de 53 px de altura, preservando alvos de toque confortáveis. O teste do botão `Voltar ao Início do Cardápio` em Açaí resultou em `categoryOpen: false`, `armarioOpen: true`, `focus: false`, seções externas restauradas e `scrollDelta: 0`.
+
+A largura móvel deve ser confirmada no aparelho real, pois o navegador automatizado desta sessão está em viewport desktop. Os estilos existentes incluem breakpoints móveis e os testes DOM não apontaram sobreposição ou controle inacessível.
