@@ -2472,16 +2472,29 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </style>
 
 <style>
-.enc-preview-list{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:10px;margin:8px 0 16px}
-.enc-preview-item{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 10px;background:#fff;border:2px solid #F2F2F2;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.2s}
-.enc-preview-item:hover{transform:translateY(-2px)}
-.enc-preview-item span{font-weight:800;font-size:0.95rem;color:#333;margin-bottom:6px;line-height:1.2}
-.enc-preview-item strong{color:#008C45;font-size:1.1rem;font-weight:900}
-.enc-preview-item.is-esgotado{opacity:0.6;filter:grayscale(1)}
-.enc-preview-item.is-esgotado strong{color:#999}
+/* VITRINE DE ENCOMENDAS — cards premium, compactos e legíveis */
+.enc-preview-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 14px}
+.enc-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 0 10px;padding:8px 10px;border:1px solid rgba(13,71,161,.12);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(245,249,255,.92));color:#234;font-size:.75rem;font-weight:800;line-height:1.25}
+.enc-preview-kicker{color:#0D47A1;letter-spacing:.5px;text-transform:uppercase}
+.enc-preview-note{color:#64748B;text-align:right;font-weight:700}
+.enc-preview-item{position:relative;display:flex;min-width:0;min-height:76px;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;padding:11px 10px 10px 39px;background:linear-gradient(180deg,#fff,#fffaf3);border:1px solid rgba(20,35,60,.10);border-radius:14px;box-shadow:0 5px 14px rgba(17,31,55,.07);overflow:hidden;transition:transform .18s cubic-bezier(.23,1,.32,1),box-shadow .18s ease,border-color .18s ease}
+.enc-preview-item::before{content:'✓';position:absolute;left:11px;top:12px;display:grid;place-items:center;width:20px;height:20px;border-radius:8px;background:rgba(13,71,161,.10);color:#0D47A1;font-size:.72rem;font-weight:950}
+.enc-preview-item:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(17,31,55,.12);border-color:rgba(13,71,161,.28)}
+.enc-preview-item span{display:-webkit-box;max-width:100%;margin:0 0 5px;color:#233044;font-size:.82rem;font-weight:850;line-height:1.22;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.enc-preview-item strong{color:#008C45;font-size:.98rem;font-weight:950;letter-spacing:-.2px;white-space:nowrap}
+.enc-preview-item.is-esgotado{opacity:.6;filter:grayscale(1)}
+.enc-preview-item.is-esgotado strong{color:#64748B}
+#enc-preview-caixas .enc-preview-item::before{background:rgba(13,71,161,.12);color:#0D47A1}
+#enc-preview-tortas .enc-preview-item::before{background:rgba(198,40,40,.12);color:#C62828}
+#enc-preview-picoles .enc-preview-item::before{background:rgba(230,81,0,.13);color:#E65100}
+#enc-preview-acrescimos .enc-preview-item::before{background:rgba(194,65,12,.13);color:#BF360C}
 .home-enc-comp-card .btn-row-grid{margin-top:12px}
-.home-enc-comp-card .enc-link-btn{display:flex;align-items:center;justify-content:center;padding:16px;border-radius:14px;text-decoration:none;font-weight:900;font-size:1.1rem;box-shadow:0 4px 14px rgba(0,0,0,0.1)}
-@media (max-width:480px){.enc-preview-list{grid-template-columns:repeat(2, 1fr)}}
+.home-enc-comp-card .enc-link-btn{display:flex;align-items:center;justify-content:center;min-height:50px;padding:14px 18px;border-radius:15px;text-decoration:none;font-weight:950;font-size:1.03rem;letter-spacing:.15px;box-shadow:0 6px 16px rgba(13,71,161,.18);transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.home-enc-comp-card .enc-link-btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(13,71,161,.24);filter:saturate(1.08)}
+.home-enc-comp-card .enc-link-btn:active{transform:scale(.97)}
+@media (max-width:540px){.enc-preview-list{gap:8px}.enc-preview-item{min-height:72px;padding-left:37px}.enc-preview-item span{font-size:.78rem}.enc-preview-item strong{font-size:.92rem}.enc-preview-heading{align-items:flex-start;flex-direction:column;gap:3px}.enc-preview-note{text-align:left}}
+@media (max-width:360px){.enc-preview-list{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.enc-preview-item,.home-enc-comp-card .enc-link-btn{transition:none}.enc-preview-item:hover,.home-enc-comp-card .enc-link-btn:hover{transform:none}}
 </style>
 </head>
 <body class="fueap-surface fueap-index">
@@ -3981,6 +3994,7 @@ function renderPicolés(){
         <div style="font-size:15px;font-weight:900;color:#E91E63;margin-bottom:2px">
           R$ ${p.preço_varejo.toFixed(2).replace('.',',')} <span style="font-size:10px;font-weight:500;color:#888">/ un.</span>
         </div>
+        <a href="encomendas.html#picoles" style="font-size:10px;color:#0D47A1;font-weight:700;text-decoration:underline;margin-bottom:4px" onclick="event.stopPropagation()">Ver preço atacado</a>
         <button type="button" class="btn-sabores" style="font-size:11px;padding:8px 12px;width:100%;margin-top:4px" onclick="event.stopPropagation();abrirPicoléInline('${key}','${info.titulo}',this)">
           ${temSabores?qtdSabores+' Sabores':'Ver Sabores'}
         </button>
@@ -3992,7 +4006,14 @@ function renderPicolés(){
     // CTA de atacado e eventos
     const nota=document.createElement('div');
     nota.style='background:linear-gradient(135deg,#FBD100,#F9A825);color:#1A1A1A;border-radius:12px;padding:12px 16px;text-align:center;margin-bottom:12px;font-size:13px;font-weight:900;box-shadow:0 4px 12px rgba(251,209,0,0.3);border:2px solid #fff';
-    nota.innerHTML='<span style="display:block;font-size:14px;margin-bottom:2px">🚀 ECONOMIZE NO ATACADO!</span>Preços a partir de R$ 1,50 (Lote 100 un)';
+    const precosAtacado = Object.values((produtos && (produtos.picolés || produtos.picoles)) || {})
+      .map(item => Number(item.preço_atacado ?? item.preco_atacado))
+      .filter(Number.isFinite);
+    const menorPrecoAtacado = precosAtacado.length ? Math.min(...precosAtacado) : null;
+    const textoPrecoAtacado = menorPrecoAtacado !== null
+      ? `A partir de R$ ${menorPrecoAtacado.toFixed(2).replace('.',',')} · lote mínimo de 100 un.`
+      : 'Consulte as condições para lotes de 100 un.';
+    nota.innerHTML=`<span style="display:block;font-size:14px;margin-bottom:2px">🚀 ECONOMIZE NO ATACADO!</span>${textoPrecoAtacado}`;
     b.appendChild(nota);
     
     const ctas=createCtaStack(b,'home-cta-picoles');
@@ -4704,10 +4725,14 @@ async function carregarPreçosNuvemCardápio() {
 function formatarPrecoEncomenda(valor) {
   return 'R$ ' + Number(valor || 0).toFixed(2).replace('.', ',');
 }
-function renderPreviewEncomenda(id, itens, precoGetter) {
+function renderPreviewEncomenda(id, itens, precoGetter, options = {}) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.innerHTML = `<div class="enc-preview-list" role="list">${itens.map(item => {
+  const lista = Array.isArray(itens) ? itens : [];
+  const kicker = options.kicker || 'Opções disponíveis';
+  const note = options.note || '';
+  const heading = `<div class="enc-preview-heading"><span class="enc-preview-kicker">${escHTML(kicker)}</span>${note ? `<span class="enc-preview-note">${escHTML(note)}</span>` : ''}</div>`;
+  const body = lista.length ? `<div class="enc-preview-list" role="list">${lista.map(item => {
     const nome = item.nome || item.titulo || item.label || '';
     const preco = precoGetter(item);
     const esgotado = item.estoque !== undefined && Number(item.estoque) <= 0;
@@ -4715,31 +4740,28 @@ function renderPreviewEncomenda(id, itens, precoGetter) {
       <span>${escHTML(nome)}</span>
       <strong>${esgotado ? 'Esgotado' : formatarPrecoEncomenda(preco)}</strong>
     </div>`;
-  }).join('')}</div>`;
+  }).join('')}</div>` : '<p class="enc-preview-empty">Consulte as opções disponíveis.</p>';
+  el.innerHTML = heading + body;
 }
 function renderEncomendasPreviews() {
   const caixas = Array.isArray(produtos && produtos.caixas_enc) && produtos.caixas_enc.length
     ? produtos.caixas_enc
     : Object.entries((produtos && produtos.caixas_viagem) || {}).map(([nome, preco]) => ({ nome, preço: preco }));
-  
   const tortas = Array.isArray(produtos && produtos.tortas_enc) && produtos.tortas_enc.length
     ? produtos.tortas_enc
     : [{ nome: 'Torta de Sorvete', preço: (produtos && produtos.sobremesas) ? produtos.sobremesas['Torta de Sorvete'] : 100 }];
-
-  // Para picolés, mostramos as categorias e o preço de atacado
+  // Na vitrine da home, picolés aparecem por categoria com preço de atacado.
   const picolesData = (produtos && (produtos.picolés || produtos.picoles)) || {};
-  const picoles = Object.entries(picolesData).map(([id, item]) => ({ 
-    nome: item.nome || id, 
+  const picoles = Object.entries(picolesData).map(([id, item]) => ({
+    nome: item.nome || id,
     preço: item.preço_atacado ?? item.preco_atacado ?? item.preço_varejo ?? item.preco_varejo,
     estoque: item.estoque
   }));
-
   const acrescimos = Array.isArray(produtos && produtos.acrescimos) ? produtos.acrescimos : [];
-
-  renderPreviewEncomenda('enc-preview-caixas', caixas, item => item.preço ?? item.preco);
-  renderPreviewEncomenda('enc-preview-tortas', tortas, item => item.preço ?? item.preco);
-  renderPreviewEncomenda('enc-preview-picoles', picoles, item => item.preço ?? item.preco);
-  renderPreviewEncomenda('enc-preview-acrescimos', acrescimos, item => item.preço ?? item.preco);
+  renderPreviewEncomenda('enc-preview-caixas', caixas, item => item.preço ?? item.preco, { kicker: 'Caixas sob encomenda', note: '5 L e 10 L' });
+  renderPreviewEncomenda('enc-preview-tortas', tortas, item => item.preço ?? item.preco, { kicker: 'Torta artesanal', note: 'Até 3 sabores' });
+  renderPreviewEncomenda('enc-preview-picoles', picoles, item => item.preço ?? item.preco, { kicker: 'Preço de atacado', note: 'A partir de 100 un.' });
+  renderPreviewEncomenda('enc-preview-acrescimos', acrescimos, item => item.preço ?? item.preco, { kicker: 'Complementos', note: 'Para personalizar' });
 }
 function renderTudo() {
   renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAçaí();renderPicolés();renderIso();renderSobremesas();

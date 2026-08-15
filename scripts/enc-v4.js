@@ -179,7 +179,7 @@
         carrinho.push({
             id: 'pic_' + Date.now(),
             nome: "Lote de Picolés (" + total + " un)",
-            preco: total * 1.50, // Preço de atacado
+            preco: total * 1.80, // Preço oficial de atacado
             detalhes: resumo.join(", "),
             tipo: 'picole',
             qtd: 1
@@ -308,7 +308,7 @@
                 '<div class="prod-card-sem-foto">🍭</div>' +
                 '<div class="prod-card-body">' +
                     '<div class="prod-nome">Picolés em Atacado</div>' +
-                    '<div class="prod-preco">R$ 1,50 (unidade)</div>' +
+                    '<div class="prod-preco">R$ 1,80 (unidade)</div>' +
                     '<button class="btn-sabores" onclick="window.abrirModalPicole()">Escolher Sabores</button>' +
                 '</div>' +
             '</div>';

@@ -100,7 +100,7 @@
         var detalhes = Object.entries(picolesSelecionados).filter(e => e[1] > 0).map(e => e[1] + 'x ' + e[0]).join(', ');
         carrinho.push({
             nome: "Lote de Picolés (" + total + " un)",
-            preco: total * 1.50,
+            preco: total * 1.80,
             detalhes: detalhes
         });
         window.fecharModal('modal-picoles');
@@ -176,7 +176,7 @@
     document.getElementById('lista-picoles').innerHTML = `
         <div class="prod-card">
             <div class="prod-nome">Lote Picolés</div>
-            <div class="prod-preco">R$ 1,50 / un</div>
+            <div class="prod-preco">R$ 1,80 / un</div>
             <button class="btn-sabores" onclick="window.abrirModalPicole()">Escolher Sabores</button>
         </div>
     `;
