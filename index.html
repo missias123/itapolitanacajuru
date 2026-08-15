@@ -3991,13 +3991,14 @@ function renderPicolés(){
 
     // CTA de atacado e eventos
     const nota=document.createElement('div');
-    nota.style='background:linear-gradient(135deg,#1A237E,#283593);color:#fff;border-radius:12px;padding:12px 16px;text-align:center;margin-bottom:10px;font-size:12px';
-    nota.innerHTML='<strong>Atacado e Eventos:</strong> Consulte condições e orçamento no WhatsApp.';
+    nota.style='background:linear-gradient(135deg,#FBD100,#F9A825);color:#1A1A1A;border-radius:12px;padding:12px 16px;text-align:center;margin-bottom:12px;font-size:13px;font-weight:900;box-shadow:0 4px 12px rgba(251,209,0,0.3);border:2px solid #fff';
+    nota.innerHTML='<span style="display:block;font-size:14px;margin-bottom:2px">🚀 ECONOMIZE NO ATACADO!</span>Preços a partir de R$ 1,50 (Lote 100 un)';
     b.appendChild(nota);
+    
     const ctas=createCtaStack(b,'home-cta-picoles');
     ctas.innerHTML=`
-      <a class="enc-link-btn product-cta--attention" href="${buildWhatsAppHref('Olá! Gostaria de consultar picolés no atacado para um evento.')}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#25D366,#128C7E)" onclick="_trackUiEvent('wholesale_cta_click',{page:'home',category:'picoles',cta_type:'consultar_atacado'})">Consultar atacado</a>
-      <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de solicitar orçamento para picolés em evento.')}" target="_blank" rel="noopener" onclick="_trackUiEvent('event_quote_cta_click',{page:'home',category:'picoles',cta_type:'solicitar_orcamento'})">Solicitar orçamento</a>`;
+      <a class="enc-link-btn product-cta--attention" href="encomendas.html#picoles" style="background:linear-gradient(135deg,#E8000D,#C62828)" onclick="_trackUiEvent('wholesale_redirect_click',{page:'home',category:'picoles',cta_type:'ir_encomendas'})">Ir para Encomendas Atacado ➔</a>
+      <a class="enc-link-btn" href="${buildWhatsAppHref('Olá! Gostaria de solicitar orçamento para picolés em evento.')}" target="_blank" rel="noopener" style="background:#fff;color:#0D47A1;border:2px solid #0D47A1" onclick="_trackUiEvent('event_quote_cta_click',{page:'home',category:'picoles',cta_type:'solicitar_orcamento'})">Orçamento para Eventos</a>`;
     
     const _vb=document.createElement('div');_vb.style='padding:10px 0 4px';
     _vb.innerHTML='<button type="button" class="btn-voltar-inicio" onclick="voltarCardapio(\'acc-picolés\')">← Voltar ao Início do Cardápio</button>';
