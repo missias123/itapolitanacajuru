@@ -3,6 +3,30 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<!-- BARREIRA ANTI-TELA-BRANCA & ANTI-CACHE (Padrão 1 Milhão de Sites) -->
+<script>
+  // 1. Limpeza automática de Service Workers antigos que geram cache obsoleto
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+  // 2. Error Boundary Global: Se qualquer script falhar e esconder a tela, força a exibição
+  window.addEventListener('error', function(e) {
+    console.warn('ItapGuard recuperou erro de renderização:', e.message);
+    document.documentElement.style.visibility = 'visible';
+    document.documentElement.style.opacity = '1';
+    document.body.style.visibility = 'visible';
+    document.body.style.opacity = '1';
+    document.querySelectorAll('.modal, .categoria-conteudo').forEach(function(el) {
+      if(el.style.display === 'none') {
+        // Mantém fechado se o usuário não abriu
+      }
+    });
+  });
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- Google Consent Mode v2 — padrão negado até o usuário escolher no banner de cookies -->
 <script>
