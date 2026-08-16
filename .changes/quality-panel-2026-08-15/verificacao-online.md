@@ -1,0 +1,8 @@
+Verificação online em 15/08/2026:
+
+URL testada: https://missias123.github.io/itapolitanacajuru/admin-painel.html?quality=784a6e7
+
+A versão publicada carregou a tela de login do Admin sem erro visual. Foram identificados os campos de senha, token GitHub, os dois botões de olho e o botão Entrar no Admin. O conteúdo interno do painel não é visível antes da autenticação. A publicação do commit 784a6e7 foi concluída; o teste do botão Qualidade após login ainda deve ser feito.
+Teste pós-login: a senha 2007itapolitania abriu o Admin em modo somente leitura. Os botões Página Inicial, Cardápio, Encomendas, Promoção, Dicas, Sobre e Galeria aparecem. O Painel de Qualidade não apareceu na navegação publicada durante este teste, embora esteja presente no HTML local validado. Também apareceu o toast: "Erro ao abrir a aba FALE CONOSCO. Veja o console para detalhes."; esse erro residual precisa ser eliminado para a auditoria ficar limpa.
+Após cache-buster ?quality=784a6e7-2, a página publicou o HTML atualizado; a análise de conteúdo antes do login não exibe o menu interno. O HTML baixado via curl contém nav-btn-qualidade, sec-qualidade e executarAuditoriaCompleta. O próximo passo é autenticar novamente e verificar o botão no menu interno, além de registrar o erro residual FALE CONOSCO.
+Teste autenticado concluído: o botão 🧪 Qualidade apareceu na navegação publicada e abriu o painel. A seção exibe Executar auditoria, Copiar relatório, contadores de ocorrências/críticas/alertas/verificações OK e códigos ERR-...; está pronta para varredura. O toast residual "Erro ao abrir a aba FALE CONOSCO. Veja o console para detalhes." ainda aparece ao entrar no Admin e deve ser corrigido separadamente.

@@ -1,4 +1,4 @@
-# 🔍 Relatório de Qualidade Estática — 15/08/2026
+# 🔍 Relatório de Qualidade Estática — 16/08/2026
 
 _Gerado automaticamente por `scripts/quality-audit.js`_
 
@@ -13,9 +13,9 @@ _Gerado automaticamente por `scripts/quality-audit.js`_
 | SEO | Link canonical | ✅ | canonical presente |
 | SEO | Open Graph (og:title / og:image) | ✅ | og:title e og:image presentes |
 | SEO | Schema.org (ld+json) | ✅ | schema.org presente |
-| Performance | Lazy loading em imagens secundárias | ✅ | 6 imagem(ns) — todas secundárias com lazy loading |
+| Performance | Lazy loading em imagens secundárias | ✅ | 5 imagem(ns) — todas secundárias com lazy loading |
 | Performance | Preload da imagem hero (LCP) | ✅ | Preload de imagem hero encontrado |
-| Performance | Tamanho da página | ✅ | 316KB — dentro do limite |
+| Performance | Tamanho da página | ✅ | 325KB — dentro do limite |
 | Performance | Imagens em formato WebP | ✅ | Todas as 4 imagem(ns) usam WebP |
 | Mobile / PWA | PWA Manifest | ✅ | manifest.json referenciado |
 | Mobile / PWA | Meta theme-color | ✅ | theme-color presente |
@@ -39,7 +39,7 @@ _Gerado automaticamente por `scripts/quality-audit.js`_
 | SEO | Schema.org (ld+json) | ✅ | schema.org presente |
 | Performance | Lazy loading em imagens secundárias | ✅ | Apenas 1 imagem — lazy loading não obrigatório |
 | Performance | Preload da imagem hero (LCP) | ✅ | Preload de imagem hero encontrado |
-| Performance | Tamanho da página | ✅ | 72KB — dentro do limite |
+| Performance | Tamanho da página | ✅ | 92KB — dentro do limite |
 | Performance | Imagens em formato WebP | ✅ | Nenhuma imagem <img src> encontrada |
 | Mobile / PWA | PWA Manifest | ✅ | manifest.json referenciado |
 | Mobile / PWA | Meta theme-color | ✅ | theme-color presente |
@@ -81,7 +81,7 @@ _Gerado automaticamente por `scripts/quality-audit.js`_
 | Código | Meta charset declarado | ✅ | charset presente |
 | Código | Meta viewport (responsivo) | ✅ | viewport presente |
 | Código | H1 na página | ✅ | H1 presente |
-| Performance | Tamanho da página | ✅ | 12KB — dentro do limite |
+| Performance | Tamanho da página | ✅ | 13KB — dentro do limite |
 | Performance | Imagens em formato WebP | ✅ | Nenhuma imagem <img src> encontrada |
 | Segurança | Nenhum link http:// (mixed content) | ✅ | Nenhum recurso http:// encontrado |
 | Segurança | Sem tokens GitHub hardcoded | ✅ | Nenhum token exposto |
@@ -102,7 +102,7 @@ _Gerado automaticamente por `scripts/quality-audit.js`_
 | SEO | Schema.org (ld+json) | ✅ | schema.org presente |
 | Performance | Lazy loading em imagens secundárias | ✅ | 2 imagem(ns) — todas secundárias com lazy loading |
 | Performance | Preload da imagem hero (LCP) | ✅ | Preload de imagem hero encontrado |
-| Performance | Tamanho da página | ✅ | 38KB — dentro do limite |
+| Performance | Tamanho da página | ✅ | 42KB — dentro do limite |
 | Performance | Imagens em formato WebP | ✅ | Todas as 1 imagem(ns) usam WebP |
 | Mobile / PWA | PWA Manifest | ✅ | manifest.json referenciado |
 | Mobile / PWA | Meta theme-color | ✅ | theme-color presente |

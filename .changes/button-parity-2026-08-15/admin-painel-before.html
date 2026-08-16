@@ -169,18 +169,18 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
 
 /* Mobile admin */
 @media (max-width: 480px) {
-  .admin-nav {
+  .admin-nav { 
     flex-wrap: nowrap !important;
     overflow-x: auto !important;
     padding: 4px 8px !important;
     gap: 2px !important;
   }
-  .nav-btn {
-    font-size: 0.75rem !important;
+  .nav-btn { 
+    font-size: 0.75rem !important; 
     padding: 6px 10px !important;
   }
-  .admin-header {
-    flex-direction: column !important;
+  .admin-header { 
+    flex-direction: column !important; 
     gap: 8px !important;
     padding: 10px 12px !important;
   }
@@ -190,28 +190,28 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
     font-size: 16px !important; /* evita zoom no iOS */
   }
   .estoque-campos { grid-template-columns: 1fr !important; }
-  .sabor-item {
-    flex-direction: row !important;
+  .sabor-item { 
+    flex-direction: row !important; 
     flex-wrap: wrap !important;
     gap: 6px !important;
   }
-  .btn-salvar, .btn-cancelar {
-    width: 100% !important;
+  .btn-salvar, .btn-cancelar { 
+    width: 100% !important; 
     margin: 4px 0 !important;
   }
-  .dashboard-cards {
-    grid-template-columns: repeat(2, 1fr) !important;
+  .dashboard-cards { 
+    grid-template-columns: repeat(2, 1fr) !important; 
     gap: 10px !important;
   }
   .card-stat { padding: 12px !important; }
   .card-stat .num { font-size: 1.8rem !important; }
-  .login-box {
-    width: 92% !important;
+  .login-box { 
+    width: 92% !important; 
     padding: 24px 16px !important;
   }
-  .toast {
-    bottom: 16px !important;
-    left: 12px !important;
+  .toast { 
+    bottom: 16px !important; 
+    left: 12px !important; 
     right: 12px !important;
     width: auto !important;
   }
@@ -588,7 +588,7 @@ body { overflow-x: hidden; }
 <!-- cache-bust:20260419_000000 -->
   <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
-<body class="itap-world">
+<bodyclass="fueap-surface fueap-admin-painel">
 <div class="loading-overlay" id="loading-overlay" style="display:none">
   <div class="loading-box"><div class="spin2"></div><p id="loading-txt">Salvando...</p></div>
 </div>
@@ -632,18 +632,64 @@ body { overflow-x: hidden; }
       <button class="btn-sair" onclick="sair()">&#x1F6AA; Sair</button>
     </div>
   </div>
-  <div class="admin-nav" aria-label="Navegação espelhada do site">
-    <button class="nav-btn ativo" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
-    <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('cardapio-admin',this)">🍦 Cardápio</button>
-    <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">📦 Encomendas</button>
+  <div class="admin-nav">
+    <button class="nav-btn ativo" id="nav-btn-dashboard" onclick="irPara('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-btn" id="nav-btn-pagina-inicial" data-section="pagina-inicial" onclick="irPara('pagina-inicial',this)">🏠 Página Inicial</button>
+    <button class="nav-btn" id="nav-btn-encomendas" onclick="irPara('encomendas-admin',this)">🛒 Encomendas</button>
+    <button class="nav-btn" id="nav-btn-produtos" onclick="irPara('produtos-admin',this)">📦 Produtos</button>
     <button class="nav-btn" id="nav-btn-promocao" onclick="irPara('promocao-admin',this)">🎉 Promoção</button>
+    <button class="nav-btn" id="nav-btn-participantes" onclick="irPara('participantes',this)">👥 Participantes</button>
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
-    <button class="nav-btn nav-btn-tecnico" id="nav-btn-qualidade" onclick="irPara('qualidade-admin',this)">🧪 Qualidade <span id="badge-quality-nav" style="display:none;margin-left:5px;background:#c62828;color:#fff;border-radius:999px;padding:2px 7px;font-size:.7rem;font-weight:800"></span></button>
+    <button class="nav-btn" id="nav-btn-carrossel" onclick="irPara('carrossel-admin',this)">🎠 Carrossel</button>
+    <button class="nav-btn" id="nav-btn-encomendas-config" onclick="irPara('encomendas-config-admin',this)">🧩 Site Encomendas</button>
+    <button class="nav-btn" id="nav-btn-qualidade" onclick="irPara('qualidade',this)">📊 Qualidade</button>
+    <button class="nav-btn" id="nav-btn-rastreio" onclick="irPara('rastreio-admin',this)">🔍 Rastreio</button>
+    <button class="nav-btn" id="nav-btn-auditoria" onclick="irPara('auditoria-admin',this)">🔎 Auditoria <span class="nav-badge" id="badge-audit-nav" style="display:none">0</span></button>
   </div>
   <div class="admin-content">
-    <!-- PÁGINA INICIAL — primeiro botão do site -->
+    <!-- DASHBOARD -->
+    <div class="seção ativo" id="sec-dashboard">
+      <div class="dash-grid">
+        <div class="dash-item"><div class="di-icon">&#x1F465;</div><div class="di-num" id="d-total">-</div><div class="di-txt">Clientes</div></div>
+        <div class="dash-item"><div class="di-icon">&#x2705;</div><div class="di-num" id="d-ativos">-</div><div class="di-txt">Ativos</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F6AB;</div><div class="di-num" id="d-bloqueados">-</div><div class="di-txt">Bloqueados</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F3AB;</div><div class="di-num" id="d-cupons">-</div><div class="di-txt">Cupons</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F4E6;</div><div class="di-num" id="d-encomendas">-</div><div class="di-txt">Encomendas</div></div>
+        <div class="dash-item"><div class="di-icon">&#x1F389;</div><div class="di-num" id="d-promo">-</div><div class="di-txt">Promoção</div></div>
+      </div>
+      <!-- AÇÕES RÁPIDAS — navegação interna -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header"><h2>⚡ Ações Rápidas — Editar Seções</h2></div>
+        <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px">
+          <button onclick="irPara('pagina-inicial',document.getElementById('nav-btn-pagina-inicial'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1b5e20,#2e7d32)">🏠<span>Página Inicial</span></button>
+          <button onclick="irPara('encomendas-admin',document.getElementById('nav-btn-encomendas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#0d47a1,#1565c0)">🛒<span>Encomendas</span></button>
+          <button onclick="irPara('produtos-admin',document.getElementById('nav-btn-produtos'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#2e7d32,#43a047)">📦<span>Produtos</span></button>
+          <button onclick="irPara('promocao-admin',document.getElementById('nav-btn-promocao'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#e65100,#f57c00)">🎉<span>Promoção</span></button>
+          <button onclick="irPara('participantes',document.getElementById('nav-btn-participantes'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#4a148c,#6a1b9a)">👥<span>Participantes</span></button>
+          <button onclick="irPara('carrossel-admin',document.getElementById('nav-btn-carrossel'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00838f,#00acc1)">🎠<span>Carrossel</span></button>
+          <button onclick="irPara('dicas-admin',document.getElementById('nav-btn-dicas'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#f9a825,#fbc02d);color:#333">⭐<span>Dicas e Depoimentos</span></button>
+          <button onclick="irPara('qualidade',document.getElementById('nav-btn-qualidade'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">📊<span>Qualidade</span></button>
+          <button id="dash-btn-rastreio" onclick="irPara('rastreio-admin',document.getElementById('nav-btn-rastreio'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#00695c,#00897b)">🔍<span id="dash-btn-rastreio-label">Rastreio</span></button>
+          <button id="dash-btn-auditoria" onclick="irPara('auditoria-admin',document.getElementById('nav-btn-auditoria'))" class="btn-acao-rapida" style="background:linear-gradient(135deg,#b71c1c,#c62828)">🔎<span id="dash-btn-auditoria-label">Auditoria</span></button>
+        </div>
+      </div>
+      <!-- ABRIR NO SITE — links externos -->
+      <div class="card">
+        <div class="card-header"><h2>&#x1F310; Abrir Página no Site</h2></div>
+        <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
+          <a href="index.html" target="_blank" class="link-site">&#x1F3E0; Página Inicial</a>
+          <a href="encomendas.html" target="_blank" class="link-site">&#x1F4E6; Encomendas</a>
+          <a href="promocao.html" target="_blank" class="link-site">&#x1F389; Promoção</a>
+          <a href="dicas.html" target="_blank" class="link-site">&#x2B50; Dicas</a>
+          <a id="dash-link-sobre" href="sobre.html" target="_blank" class="link-site">&#x1F3EA; Sobre</a>
+          <a id="dash-link-galeria" href="galeria.html" target="_blank" class="link-site">&#x1F5BC;&#xFE0F; Galeria</a>
+          <a id="dash-link-carrossel" href="carrossel.html" target="_blank" class="link-site">&#x1F3A0; Carrossel</a>
+          <a href="painel-qualidade.html" target="_blank" class="link-site">&#x1F4CA; Qualidade</a>
+        </div>
+      </div>
+    </div>
     <!-- HOME -->
     <div class="seção" id="sec-home">
       <div class="card">
@@ -1052,7 +1098,7 @@ body { overflow-x: hidden; }
 
 	    </div>
 	    </div>
-
+	
 	    <!-- CARDÁPIO TÍTULOS -->
 	    <div class="seção" id="sec-cardapio-titulos">
       <div class="card">
@@ -1225,9 +1271,9 @@ body { overflow-x: hidden; }
             <label>Badges do Hero (um por linha)</label>
             <textarea id="enc-hero-badges" rows="5" placeholder="✨ Tipo Artesanal&#10;🍦 35 Sabores&#10;🎂 Tortas Especiais"></textarea>
           </div>
-
+          
           <div class="seção-título">🔎 SEO por Página</div>
-
+          
           <div class="campo-edit"><label>Encomendas · Title</label><input type="text" id="cfg-seo-enc-titulo" maxlength="80" placeholder="Encomendas | Sorveteria Itapolitana Cajuru"/></div>
           <div class="campo-edit"><label>Encomendas · Meta Description</label><textarea id="cfg-seo-enc-descricao" rows="2" maxlength="180" placeholder="Faça sua encomenda de sorvetes..."></textarea></div>
           <div class="campo-edit"><label>Encomendas · Keywords</label><input type="text" id="cfg-seo-enc-palavras" maxlength="220" placeholder="encomenda sorvete cajuru, torta gelada cajuru"/></div>
@@ -1604,7 +1650,7 @@ body { overflow-x: hidden; }
             </div>
             <div class="hint">📝 Máx. 40 caracteres — apenas letras, espaços e acentos. Ex: <strong>Morango Trufado</strong>, <strong>Doce de Leite</strong>. Aparece automaticamente nas opções de caixas e tortas no site. Não use números ou símbolos especiais.</div>
           </div>
-
+          
           <div class="seção-título">🍭 Picolé de Fruta/Água</div>
           <div class="hint" style="margin-bottom:8px">Desativar um sabor = aparece como Esgotado no site. Não afeta outros sabores da categoria.</div>
           <div class="sabores-grid">
@@ -1951,7 +1997,7 @@ body { overflow-x: hidden; }
           </div>
           <div class="seção-título" style="margin-top:20px">🍨 Complementos do Açaí</div>
           <div class="hint" style="margin-bottom:8px">Edite os itens de cada categoria de complemento. Salvar atualiza o site imediatamente.</div>
-
+          
           <div class="seção-título">🍨 Complemento: Frutas (R$ 2,0)</div>
           <div class="campo-edit">
             <label>Itens de Frutas (um por linha)</label>
@@ -2178,6 +2224,224 @@ Talento</textarea>
       </div>
     </div>
     <!-- CLIENTES -->
+    <div class="seção" id="sec-clientes">
+      <div class="hint fid-readonly-aviso" style="display:none;background:#fff3e0;border:1px solid #ffb74d;padding:10px;border-radius:8px;margin-bottom:10px">
+        ⚠️ Modo somente leitura ativo: token GitHub inativo. Você pode visualizar dados, mas as edições estão bloqueadas.
+      </div>
+      <!-- form panel para add/edit cliente -->
+      <div id="cliente-form-panel" style="display:none;background:#fff;border:2px solid #e65100;border-radius:14px;padding:20px;margin-bottom:16px">
+        <div style="font-weight:900;font-size:1rem;color:#e65100;margin-bottom:14px" id="cliente-form-titulo">➕ Adicionar Cliente</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Nome completo</label><input type="text" id="cli-f-nome" maxlength="100" placeholder="Nome do cliente"/></div>
+          <div class="campo-edit"><label>WhatsApp (somente números)</label><input type="tel" id="cli-f-cel" placeholder="16999999999" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="campo-edit"><label>Data de nascimento (AAAA-MM-DD)</label><input type="date" id="cli-f-nasc"/></div>
+          <div class="campo-edit"><label>Pontos</label><input type="number" id="cli-f-pontos" min="0" value="0" placeholder="0"/></div>
+        </div>
+        <input type="hidden" id="cli-f-cel-orig"/>
+        <div class="btn-row">
+          <button class="btn btn-salvar" data-fid-write onclick="salvarClienteForm()">💾 Salvar</button>
+          <button class="btn btn-cinza" onclick="fecharFormCliente()">✕ Cancelar</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="sc-total">-</div><div class="txt">Total</div></div>
+        <div class="stat-card"><div class="num" id="sc-ativos">-</div><div class="txt">Ativos</div></div>
+        <div class="stat-card"><div class="num" id="sc-bloqueados">-</div><div class="txt">Bloqueados</div></div>
+        <div class="stat-card"><div class="num" id="sc-fraudes">-</div><div class="txt">Fraudes</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>&#x1F465; Lista de Clientes</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-verde" onclick="copiarSorteio()">&#x1F396;&#xFE0F; Copiar para Sorteio</button><button class="btn btn-cinza" onclick="copiarListaClientes()">📋 Copiar lista</button><button class="btn" style="background:#1565c0;color:#fff" onclick="exportarClientesCSV()">⬇️ Exportar CSV</button><button class="btn btn-laranja" data-fid-write onclick="abrirFormCliente()">➕ Adicionar cliente</button></div></div>
+        <div class="card-body">
+          <div class="busca-wrap"><input type="search" id="busca-cliente" placeholder="Buscar por nome ou WhatsApp..." oninput="renderClientes()"/></div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Nome</th><th>WhatsApp</th><th>Pts</th><th>Inscrio</th><th>Status</th><th>Ao</th></tr></thead>
+              <tbody id="tabela-clientes"></tbody>
+            </table>
+          </div>
+          <div class="paginacao" id="pag-clientes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POTENCIAL DUPLICIDADE -->
+    <div class="card" id="card-duplicidades" style="display:none">
+      <div class="card-header" style="background:linear-gradient(135deg,#b71c1c,#c62828)">
+        <h2>&#x26A0;&#xFE0F; Potencial Duplicidade — Revisão Necessária</h2>
+        <span id="badge-duplicidades" style="background:#fff;color:#b71c1c;border-radius:20px;padding:3px 12px;font-weight:900;font-size:.9rem">0</span>
+      </div>
+      <div class="card-body">
+        <p style="font-size:.85rem;color:#555;margin-bottom:14px">
+          Estes clientes tentaram se cadastrar com o mesmo nome e data de nascimento, mas com um celular diferente do já cadastrado.
+          Revise cada caso e decida: <strong>atualizar o celular</strong> do cadastro original, <strong>ignorar</strong> (manter como está) ou <strong>bloquear</strong> a tentativa.
+        </p>
+        <div id="lista-duplicidades"></div>
+      </div>
+    </div>
+
+    <!-- CONFIG -->
+
+    <!-- QUALIDADE -->
+    <div class="seção" id="sec-qualidade">
+      <div class="card" style="background:#0d1117;border:1px solid #30363d">
+        <div class="card-header" style="background:#161b22;border-bottom:1px solid #30363d">
+          <h2 style="color:#e8eaf6">📊 Painel de Qualidade — Métricas do Site</h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:11px;color:#8b949e" id="adm-qual-ts">Última leitura: aguardando...</span>
+            <button class="btn btn-salvar" onclick="carregarMetricasQualidade()" style="font-size:12px;padding:6px 12px">🔄 Atualizar</button>
+            <a href="painel-qualidade.html" target="_blank" class="btn btn-salvar" style="text-decoration:none;font-size:12px;padding:6px 12px">🔗 Nova Aba</a>
+          </div>
+        </div>
+        <div class="card-body" style="padding:16px;background:#0d1117">
+          <div class="card" style="margin-bottom:16px;border-left:4px solid #3949ab;background:#f7fbff">
+            <div class="card-header"><h2>📝 Qualidade — Observações Internas</h2></div>
+            <div class="card-body">
+              <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="qualidade-observacoes" rows="4" placeholder="Registre decisões, pendências e anotações internas desta seção."></textarea></div>
+              <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+            </div>
+          </div>
+
+          <!-- SCORES LIGHTHOUSE -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Scores Google Lighthouse</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Performance</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-perf">98</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-perf" style="height:100%;background:#4caf50;border-radius:3px;width:98%;transition:width 1s"></div></div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Acessibilidade</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-acess">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-acess" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Boas Práticas</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-bp">96</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-bp" style="height:100%;background:#4caf50;border-radius:3px;width:96%;transition:width 1s"></div></div>
+            </div>
+            <div style="text-align:center;background:#161b22;border:2px solid #4caf50;border-radius:12px;padding:14px 8px">
+              <div style="font-size:.7rem;color:#8b949e;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">SEO</div>
+              <div style="font-size:2.2rem;font-weight:900;color:#4caf50;line-height:1" id="adm-score-seo">100</div>
+              <div style="height:5px;background:#2a2d3e;border-radius:3px;margin-top:8px;overflow:hidden"><div id="adm-bar-seo" style="height:100%;background:#4caf50;border-radius:3px;width:100%;transition:width 1s"></div></div>
+            </div>
+          </div>
+
+          <!-- CORE WEB VITALS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Core Web Vitals — Dados Reais da Sessão</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+            <div id="adm-vital-lcp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">LCP — Carregamento</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-lcp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 2.5s · <span id="adm-lcp-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-cls" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">CLS — Estabilidade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-cls-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 0.1 · <span id="adm-cls-status">aguardando...</span></div>
+            </div>
+            <div id="adm-vital-inp" style="background:#161b22;border-radius:12px;padding:14px;border-left:4px solid #3949ab">
+              <div style="font-size:11px;color:#9fa8da;font-weight:700;text-transform:uppercase;letter-spacing:.5px">INP — Interatividade</div>
+              <div style="font-size:24px;font-weight:900;margin:4px 0;color:#9fa8da" id="adm-inp-val">—</div>
+              <div style="font-size:11px;color:#5c6bc0">Ideal: &lt; 200ms · <span id="adm-inp-status">aguardando...</span></div>
+            </div>
+          </div>
+
+          <!-- SERVICE WORKER -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">PWA — Service Worker (Cache Offline)</div>
+          <div style="background:#161b22;border-radius:10px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span id="adm-sw-badge" style="background:#3949ab;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px">⚙️ Verificando...</span>
+            <span style="font-size:12px;color:#7986cb" id="adm-sw-desc">O Service Worker permite que o site funcione offline e carregue mais rápido.</span>
+          </div>
+
+          <!-- CHECKLIST -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Checklist de Qualidade — Verificação Automática</div>
+          <div id="adm-checklist" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#7986cb;font-size:13px">⚙️ Abra o site principal para carregar os dados do Quality Guard</div>
+          </div>
+
+          <!-- ERROS JS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Erros JavaScript Detectados</div>
+          <div id="adm-erros" style="margin-bottom:20px">
+            <div style="background:#161b22;border-radius:10px;padding:12px 14px;color:#4caf50;font-size:13px">✅ Nenhum erro detectado nesta sessão</div>
+          </div>
+
+          <!-- PÁGINAS AUDITADAS -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Páginas Auditadas</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px">
+            <a href="https://itapolitanacajuru.com.br" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🏠</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Página Inicial</div>
+                <div style="font-size:11px;color:#5c6bc0">itapolitanacajuru.com.br</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 98</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 96</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/encomendas.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🛒</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Encomendas</div>
+                <div style="font-size:11px;color:#5c6bc0">/encomendas.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">⭐</div>
+              <div>
+                <div style="font-size:11px;color:#5c6bc0">/</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 91</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 100</span>
+                </div>
+              </div>
+            </a>
+            <a href="https://itapolitanacajuru.com.br/promocao.html" target="_blank" style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px;text-decoration:none;display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">🎁</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#e8eaf6">Promoção</div>
+                <div style="font-size:11px;color:#5c6bc0">/promocao.html</div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Perf 90</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">SEO 100</span>
+                  <span style="background:#1b5e20;color:#69f0ae;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px">Acess 95</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- FERRAMENTA COPILOTO -->
+          <div style="font-size:11px;font-weight:800;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ferramenta Copiloto — Solicitar Melhoria</div>
+          <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#e8eaf6;margin-bottom:10px">🤖 O que você quer melhorar no site hoje?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+              <button onclick="admQualSetInput('Otimizar imagens pesadas para melhorar performance')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">⚡ Otimizar Imagens</button>
+              <button onclick="admQualSetInput('Melhorar velocidade de carregamento — LCP abaixo de 2.5s')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🚀 Mais Velocidade</button>
+              <button onclick="admQualSetInput('Verificar e corrigir erros de JavaScript no console')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🐛 Corrigir Erros JS</button>
+              <button onclick="admQualSetInput('Melhorar experiência do usuário no celular')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">📱 UX Mobile</button>
+              <button onclick="admQualSetInput('Rodar auditoria completa Lighthouse e atualizar scores')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🔍 Nova Auditoria</button>
+              <button onclick="admQualSetInput('Melhorar o design visual do site')" style="background:#1e2130;border:1px solid #3949ab;color:#9fa8da;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer">🎨 Melhorar Design</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input id="adm-copiloto-input" type="text" placeholder="Descreva o que quer melhorar ou corrigir..." style="flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e8eaf6;padding:10px 14px;font-size:13px;outline:none"/>
+              <button onclick="admQualEnviarCopiloto()" style="background:#3949ab;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer">Enviar ao Copiloto</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO ESTRELA DO DIA -->
     <div class="seção" id="sec-config">
       <div class="card">
         <div class="card-header"><h2>&#x2699;&#xFE0F; Configurações Gerais do Site</h2></div>
@@ -2215,6 +2479,15 @@ Talento</textarea>
           <div class="campo-edit"><label class="label-obrigatório">Título da página (aparece na aba do navegador e no Google)</label><input type="text" id="cfg-seo-titulo" maxlength="60" placeholder="Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés"/><div class="hint">&#x26A0;&#xFE0F; Máximo 60 caracteres. Inclua o nome da cidade. Exemplo: <em>Sorveteria Itapolitana Cajuru — Sorvete Tipo Artesanal, Açaí e Picolés</em></div></div>
           <div class="campo-edit"><label>Descrição da página (aparece no Google abaixo do título)</label><textarea id="cfg-seo-descricao" rows="3" maxlength="160" placeholder="Sorvete Tipo Artesanal, açaí, picolés e milkshakes em Cajuru/SP. 35 sabores, produção própria com leite fresco. Encomendas pelo WhatsApp."></textarea><div class="hint">Máximo 160 caracteres. Descreva o que a sorveteria oferece e onde fica. Inclua: sorvete, açaí, picolés, Cajuru.</div></div>
           <div class="campo-edit"><label>Palavras-chave (separadas por vírgula)</label><input type="text" id="cfg-seo-palavras" maxlength="200" placeholder="sorveteria cajuru, sorvete Tipo Artesanal cajuru, açaí cajuru, picolés cajuru"/><div class="hint">Palavras que as pessoas digitam no Google para encontrar sua sorveteria. Separe por vírgula. Inclua o nome da cidade.</div></div>
+          <div class="seção-título">🧭 Dashboard do Admin — Atalhos Editáveis</div>
+          <div class="campo-edit"><label>Botão rápido 🔍 Rastreio — texto</label><input type="text" id="cfg-dash-rastreio-texto" maxlength="30" placeholder="Rastreio"/></div>
+          <div class="campo-edit"><label>Botão rápido 🔎 Auditoria — texto</label><input type="text" id="cfg-dash-auditoria-texto" maxlength="30" placeholder="Auditoria"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — texto</label><input type="text" id="cfg-dash-sobre-texto" maxlength="40" placeholder="🏪 Sobre"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🏪 Sobre — URL</label><input type="text" id="cfg-dash-sobre-url" maxlength="120" placeholder="sobre.html"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — texto</label><input type="text" id="cfg-dash-galeria-texto" maxlength="40" placeholder="🖼️ Galeria"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🖼️ Galeria — URL</label><input type="text" id="cfg-dash-galeria-url" maxlength="120" placeholder="galeria.html"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — texto</label><input type="text" id="cfg-dash-carrossel-texto" maxlength="40" placeholder="🎠 Carrossel"/></div>
+          <div class="campo-edit"><label>Link "Abrir no Site" 🎠 Carrossel — URL</label><input type="text" id="cfg-dash-carrossel-url" maxlength="120" placeholder="carrossel.html"/></div>
           <div class="seção-título">&#x1F512; Segurança</div>
           <div class="campo-edit"><label>Nova senha do Admin (deixe em branco para manter)</label><div class="inp-wrap"><input type="password" id="cfg-nova-senha" placeholder="Nova senha..."/><button class="eye" onclick="toggleSenhaCfg()">&#x1F441;&#xFE0F;</button></div></div>
           <div class="campo-edit"><label>Confirmar nova senha</label><input type="password" id="cfg-conf-senha" placeholder="Confirmar senha..."/></div>
@@ -2573,29 +2846,83 @@ Talento</textarea>
       </div>
     </div>
 
-    <div class="seção" id="sec-qualidade">
-      <div class="card">
-        <div class="card-header" style="gap:10px;flex-wrap:wrap">
-          <h2 style="margin-right:auto">🧪 Painel de Qualidade — mede o site inteiro</h2>
-          <button type="button" class="btn btn-salvar" onclick="executarAuditoriaCompleta()">▶️ Executar auditoria</button>
-          <button type="button" class="btn btn-cinza" onclick="copiarRelatorioQualidade()">📋 Copiar relatório</button>
-        </div>
-        <div class="card-body">
-          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:13px 16px;border-radius:10px;margin-bottom:16px;font-size:.84rem;line-height:1.5;color:#0d47a1"><strong>Como usar:</strong> execute a auditoria, copie o relatório e cole aqui. Cada ocorrência recebe um código <code>ERR-...</code>. A auditoria é somente diagnóstico e não altera os dados.</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:16px">
-            <div style="background:#f5f5f5;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#333" id="quality-total">0</div><div style="font-size:.76rem;color:#666">Ocorrências</div></div>
-            <div style="background:#ffebee;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#c62828" id="quality-critica">0</div><div style="font-size:.76rem;color:#666">Críticas</div></div>
-            <div style="background:#fff3e0;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#e65100" id="quality-alerta">0</div><div style="font-size:.76rem;color:#666">Alertas</div></div>
-            <div style="background:#e8f5e9;border-radius:12px;padding:14px;text-align:center"><div style="font-size:1.65rem;font-weight:900;color:#2e7d32" id="quality-ok">0</div><div style="font-size:.76rem;color:#666">Verificações OK</div></div>
-          </div>
-          <div id="quality-status" style="background:#fafafa;border:1px solid #e0e0e0;border-radius:10px;padding:12px;font-size:.82rem;color:#666;margin-bottom:12px">Nenhuma auditoria executada nesta sessão.</div>
-          <pre id="quality-report" style="display:none;white-space:pre-wrap;word-break:break-word;background:#171717;color:#f5f5f5;border-radius:12px;padding:14px;font-size:.76rem;line-height:1.55;max-height:280px;overflow:auto"></pre>
-          <div id="quality-results"><div style="background:#fafafa;border:1px dashed #bbb;border-radius:12px;padding:24px;text-align:center;color:#777;font-size:.84rem">Clique em <strong>Executar auditoria</strong> para medir páginas, links, imagens, dados, preços, acessibilidade e sinais de responsividade.</div></div>
-        </div>
+    <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
+    <div class="seção" id="sec-rastreio">
+  <div class="card">
+    <div class="card-header">
+      <h2>🔍 Rastreio de Encomenda</h2>
+      <span style="font-size:.8rem;color:#888">Consulta como o cliente vê o pedido</span>
+    </div>
+    <div class="card-body">
+      <div class="campo-edit">
+        <label>Observações Internas / Conteúdo da Página</label>
+        <textarea id="rastreio-observacoes" rows="3" placeholder="Registre orientações internas do rastreio para a equipe."></textarea>
+      </div>
+      <div class="btn-row" style="margin-bottom:12px"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <input type="text" id="rastreio-busca" style="flex:1;min-width:200px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none" placeholder="Digite nº do pedido (ITA-001-...) ou telefone..."/>
+        <button class="btn btn-laranja" onclick="buscarRastreio()">🔍 Buscar</button>
+      </div>
+      <div id="rastreio-resultado">
+        <p style="color:#aaa;text-align:center;padding:30px;font-size:.9rem">Digite o número do pedido ou telefone para rastrear.</p>
       </div>
     </div>
-    <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
+  </div>
+  <!-- Últimas encomendas para acesso rápido -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><h2>⏱️ Encomendas Recentes</h2></div>
+    <div class="card-body" id="rastreio-recentes">
+      <p style="color:#aaa;font-size:.85rem">Carregando...</p>
+    </div>
+  </div>
+</div>
 
+<!-- ═══════════════ SEÇÃO AUDITORIA ════════════════════════ -->
+<div class="seção" id="sec-auditoria">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+    <div>
+      <h2 style="font-size:1.1rem;font-weight:900;color:#333">🔎 Auditoria Visual</h2>
+      <p style="font-size:.82rem;color:#888;margin-top:2px">Inconsistências detectadas automaticamente nos dados</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="audit-filtro-mod" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todos módulos</option>
+        <option value="clientes">Clientes</option>
+        <option value="encomendas">Encomendas</option>
+      </select>
+      <select id="audit-filtro-sev" onchange="renderAuditoria()" style="padding:7px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.82rem;outline:none">
+        <option value="">Todas severidades</option>
+        <option value="critica">Crítica</option>
+        <option value="alta">Alta</option>
+        <option value="media">Média</option>
+        <option value="baixa">Baixa</option>
+      </select>
+      <button class="btn btn-laranja" onclick="executarAuditoria()">🔄 Re-auditar</button>
+      <button class="btn btn-cinza" onclick="exportarRelatorioAuditoria()">⬇️ Exportar</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>📝 Auditoria — Observações Internas</h2></div>
+    <div class="card-body">
+      <div class="campo-edit"><label>Observações Internas / Conteúdo da Página</label><textarea id="auditoria-observacoes" rows="3" placeholder="Registre decisões da auditoria, ações pendentes e histórico resumido."></textarea></div>
+      <div class="btn-row"><button class="btn btn-salvar" onclick="salvarNotasOperacionais()">💾 Salvar Observações</button></div>
+    </div>
+  </div>
+  <!-- Stats de auditoria -->
+  <div class="stats-row" id="audit-stats">
+    <div class="stat-card" style="border-color:#c62828"><div class="num" id="audit-cnt-critica" style="color:#c62828">0</div><div class="txt">Críticas</div></div>
+    <div class="stat-card" style="border-color:#e65100"><div class="num" id="audit-cnt-alta" style="color:#e65100">0</div><div class="txt">Altas</div></div>
+    <div class="stat-card" style="border-color:#f57c00"><div class="num" id="audit-cnt-media" style="color:#f57c00">0</div><div class="txt">Médias</div></div>
+    <div class="stat-card" style="border-color:#43a047"><div class="num" id="audit-cnt-baixa" style="color:#43a047">0</div><div class="txt">Baixas</div></div>
+    <div class="stat-card"><div class="num" id="audit-cnt-total">0</div><div class="txt">Total</div></div>
+  </div>
+  <!-- Lista de inconsistências -->
+  <div id="audit-lista">
+    <p style="color:#aaa;text-align:center;padding:30px">Clique em "Re-auditar" para detectar inconsistências.</p>
+  </div>
+</div>
+
+</div>
 </div>
 <script>
 // ────────────────────────────────────────────────────────────
@@ -3382,14 +3709,19 @@ function irPara(seção,btn){
   };
   // Mapa: aba → lista de seções que compõem cada página do site
   const sectionMap={
-    'pagina-inicial': ['home','carrossel-config','carrossel-admin','fale-conosco','config'],
-    'cardapio-admin': ['preços','cardapio-titulos','cardápio','produtos','sabores'],
-    'encomendas-admin':['encomendas','estoque','encomendas-config'],
+    'dashboard':      ['dashboard'],
+    'pagina-inicial': ['home','preços','cardapio-titulos','cardápio','fale-conosco','config'],
+    'encomendas-admin':['encomendas','sabores','estoque'],
+    'produtos-admin': ['produtos'],
     'promocao-admin': ['promoção','participantes'],
+    'fidelidade-admin':['clientes','fidelidade'],
     'dicas-admin':    ['depoimentos'],
-    'sobre-admin':    ['sobre'],
+    'sobre-admin':    ['sobre','carrossel-config'],
     'galeria-admin':  ['galeria'],
-    'qualidade-admin': ['qualidade']
+    'encomendas-config-admin': ['encomendas-config'],
+    'qualidade':      ['qualidade'],
+    'rastreio-admin': ['rastreio'],
+    'auditoria-admin':['auditoria']
   };
   console.log(`[irPara] Navegando para: ${seção}`);
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
@@ -3696,18 +4028,12 @@ function renderDashboard(){
   const cupons=Object.keys(códigos).length;
   const encomendas=STATE.encomendas?.registros?.length||0;
   const promoAtiva=STATE.promo?.ativo?'SIM':'NÃO';
-  const indicadores={
-    'd-total':clientes.length,
-    'd-ativos':ativos,
-    'd-bloqueados':bloqueados,
-    'd-cupons':cupons,
-    'd-encomendas':encomendas,
-    'd-promo':promoAtiva
-  };
-  Object.entries(indicadores).forEach(([id,value])=>{
-    const el=document.getElementById(id);
-    if(el)el.textContent=value;
-  });
+  document.getElementById('d-total').textContent=clientes.length;
+  document.getElementById('d-ativos').textContent=ativos;
+  document.getElementById('d-bloqueados').textContent=bloqueados;
+  document.getElementById('d-cupons').textContent=cupons;
+  document.getElementById('d-encomendas').textContent=encomendas;
+  document.getElementById('d-promo').textContent=promoAtiva;
 }
 function preencherHome(){
   const cfg=STATE.config||{};
@@ -4592,7 +4918,7 @@ const POR_PAG_PART = 50;
 if (!STATE.pagPart) STATE.pagPart = 0;
 
 function getParticipantesUnificados() {
-  // Clientes do
+  // Clientes do 
   const cliFid = Object.values(STATE.clientes?.clientes || STATE.fidelidade?.clientes || {});
   // Inscritos nos Sorteios Mensais
   const insSorteio = STATE.fidelidade?.sorteioInscritos || [];
@@ -4706,7 +5032,7 @@ function irPagPart(p) { STATE.pagPart = p; renderParticipantes(); }
 function excluirParticipante(cel, tipo) {
   const celLimpo = cel.replace(/\D/g,'');
   let nome = cel;
-
+  
   // Tentar encontrar o nome em qualquer lugar
   const ins = STATE.fidelidade?.sorteioInscritos?.find(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
   const cli = STATE.clientes?.clientes?.[celLimpo] || STATE.fidelidade?.clientes?.[celLimpo];
@@ -4721,7 +5047,7 @@ function excluirParticipante(cel, tipo) {
       try {
         let salvouAlgo = false;
         mostrarLoading('Excluindo de todos os sistemas...');
-
+        
         // 1. Remover do Sorteio (fidelidade.json)
         if (STATE.fidelidade?.sorteioInscritos) {
           const idx = STATE.fidelidade.sorteioInscritos.findIndex(c => (c.cel||'').replace(/\D/g,'') === celLimpo);
@@ -4731,7 +5057,7 @@ function excluirParticipante(cel, tipo) {
             if (ok) salvouAlgo = true;
           }
         }
-
+        
         // 2. Remover do  (clientes.json ou fidelidade.json)
         // Busca por valor do campo cel (chaves são USR-XXXX, não o número do celular)
         const entradaCliente = Object.entries(STATE.clientes?.clientes || {}).find(([,v]) => String(v.cel||'').replace(/\D/g,'') === celLimpo);
@@ -4748,7 +5074,7 @@ function excluirParticipante(cel, tipo) {
           const ok = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: excluir participante ' + nome + ' da fidelidade');
           if (ok) salvouAlgo = true;
         }
-
+        
         ocultarLoading();
         if (salvouAlgo) {
           toast('🗑️ ' + nome + ' removido(a) com sucesso!', 'ok');
@@ -5113,7 +5439,7 @@ async function toggleBloqueio(clienteId,bloquear){
   }
 }
 // ═══════════════════════════════════════════════════════════
-// FUNÇÕES DE GESTÃO MANUAL DO CLUBE DE
+// FUNÇÕES DE GESTÃO MANUAL DO CLUBE DE 
 // Todas as ações salvam no GitHub (dados/clientes.json / dados/fidelidade.json)
 // para atualização imediata no site — sem cache de CDN.
 // ═══════════════════════════════════════════════════════════
@@ -6214,7 +6540,7 @@ function fidColetarCodigosParaEtiquetas(){
        margin-top:0;
      }
   </style>
-</head><body class="itap-world">
+</head><body>
   <div class="barra">
     <div>
       <div style="font-weight:900">${esc(titulo)}</div>
@@ -6498,10 +6824,10 @@ async function salvarConfigFidelidade() {
 
     ok1 = await salvarArquivo(PATHS.fidelidade, STATE.fidelidade, 'fidelidadeSha', 'Admin: sincronizar textos da fidelidade');
   }
-
+  
   // Salvar no config.json (fonte principal do admin)
   const ok2 = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar configuração de prêmios e textos da fidelidade');
-
+  
   ocultarLoading();
   if (ok1 && ok2) {
     toast('Configurações de fidelidade salvas e sincronizadas!', 'sucesso');
@@ -7017,7 +7343,7 @@ async function salvarEncomendas() {
 }
 
 // =====================================================================
-//  PÁGINA — Carregar e salvar textos de
+//  PÁGINA — Carregar e salvar textos de 
 // =====================================================================
 function carregarFidelidadePagina() {
   const cfg = STATE.config || {};
@@ -7660,14 +7986,14 @@ function initContadores() {
   document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(el => {
     const max = parseInt(el.getAttribute('maxlength'));
     if (!max) return;
-
+    
     // Criar contador
     const counter = document.createElement('span');
     counter.className = 'char-counter';
     counter.textContent = `0/${max}`;
     el.parentElement.style.position = 'relative';
     el.parentElement.appendChild(counter);
-
+    
     // Atualizar contador ao digitar
     el.addEventListener('input', () => {
       const len = el.value.length;
@@ -7685,7 +8011,7 @@ function initContadores() {
         else el.classList.remove('campo-ok');
       }
     });
-
+    
     // Inicializar com valor atual
     if (el.value.length > 0) {
       el.dispatchEvent(new Event('input'));
@@ -7697,13 +8023,13 @@ function initContadores() {
 function initVálidacaoWhatsApp() {
   const el = document.getElementById('cfg-whatsapp');
   if (!el) return;
-
+  
   el.addEventListener('input', () => {
     const val = el.value.replace(/\D/g, '');
     el.value = val; // Remover não-números automaticamente
-
+    
     const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
-
+    
     if (val.length > 0 && (val.length < 12 || val.length > 13)) {
       el.classList.add('campo-erro');
       el.classList.remove('campo-ok');
@@ -7723,7 +8049,7 @@ function initVálidacaoPreços() {
     el.addEventListener('input', () => {
       const val = parseFloat(el.value);
       const erroEl = el.parentElement.querySelector('.erro-inline') || criarErroInline(el);
-
+      
       if (isNaN(val) || val < 0) {
         el.classList.add('campo-erro');
         erroEl.textContent = '⚠️ Preço deve ser um número positivo (ex: 15.00)';
@@ -7755,13 +8081,13 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
     callback(null, 'Arquivo não é uma imagem válida');
     return;
   }
-
+  
   // Verificar tamanho máximo (5MB antes de processar)
   if (file.size > 5 * 1024 * 1024) {
     callback(null, 'Imagem muito grande (máx. 5MB). Escolha uma imagem menor.');
     return;
   }
-
+  
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
@@ -7769,7 +8095,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
       // Calcular dimensões mantendo proporção
       let w = img.width;
       let h = img.height;
-
+      
       if (w > maxWidth) {
         h = Math.round(h * maxWidth / w);
         w = maxWidth;
@@ -7778,21 +8104,21 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
         w = Math.round(w * maxHeight / h);
         h = maxHeight;
       }
-
+      
       // Desenhar no canvas
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
-
+      
       // Exportar como WebP
       canvas.toBlob((blob) => {
         if (!blob) {
           callback(null, 'Erro ao processar imagem');
           return;
         }
-
+        
         const tamanhoKB = Math.round(blob.size / 1024);
         // Converter blob para dataUrl para uso em preview e upload base64
         const reader2 = new FileReader();
@@ -7821,7 +8147,7 @@ function processarImagem(file, maxWidth, maxHeight, qualidade, callback) {
 function criarUploadImagem(containerId, opções) {
   const container = document.getElementById(containerId);
   if (!container) return;
-
+  
   const {
     label = 'Imagem',
     maxWidth = 1200,
@@ -7832,7 +8158,7 @@ function criarUploadImagem(containerId, opções) {
     obrigatório = false,
     onProcessada = null
   } = opções;
-
+  
   container.innerHTML = `
     <div class="campo-edit">
       <label class="${obrigatório ? 'label-obrigatório' : ''}">${label}</label>
@@ -7863,7 +8189,7 @@ function criarUploadImagem(containerId, opções) {
       ${hint ? `<div class="hint">${hint}</div>` : ''}
     </div>
   `;
-
+  
   const input = document.getElementById(`${containerId}-input`);
   const previewWrap = document.getElementById(`${containerId}-preview-wrap`);
   const previewImg = document.getElementById(`${containerId}-preview`);
@@ -7871,7 +8197,7 @@ function criarUploadImagem(containerId, opções) {
   const erroEl = document.getElementById(`${containerId}-erro`);
   const progBar = document.getElementById(`${containerId}-prog`);
   const area = document.getElementById(`${containerId}-area`);
-
+  
   // Drag & Drop
   area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('drag-over'); });
   area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
@@ -7881,36 +8207,36 @@ function criarUploadImagem(containerId, opções) {
     const file = e.dataTransfer.files[0];
     if (file) processarUpload(file);
   });
-
+  
   input.addEventListener('change', () => {
     if (input.files[0]) processarUpload(input.files[0]);
   });
-
+  
   function processarUpload(file) {
     erroEl.classList.remove('ativo');
     progBar.parentElement.style.display = 'block';
     progBar.style.width = '30%';
-
+    
     processarImagem(file, maxWidth, maxHeight, qualidade, (info, erro) => {
       progBar.style.width = '100%';
-
+      
       setTimeout(() => {
         progBar.parentElement.style.display = 'none';
         progBar.style.width = '0%';
       }, 500);
-
+      
       if (erro) {
         erroEl.textContent = '❌ ' + erro;
         erroEl.classList.add('ativo');
         previewWrap.classList.remove('ativo');
         return;
       }
-
+      
       // Mostrar preview
       const url = URL.createObjectURL(info.blob);
       previewImg.src = url;
       previewWrap.classList.add('ativo');
-
+      
       // Mostrar informações
       const statusKB = info.tamanhoKB <= maxKB ? 'info-ok' : 'info-aviso';
       infoEl.innerHTML = `
@@ -7918,12 +8244,12 @@ function criarUploadImagem(containerId, opções) {
         <span>${info.width}×${info.height}px</span>
         <span class="${statusKB}">${info.tamanhoKB}KB ${info.reducao > 0 ? `(${info.reducao}% menor)` : ''}</span>
       `;
-
+      
       if (info.tamanhoKB > maxKB) {
         erroEl.textContent = `⚠️ Imagem ainda grande (${info.tamanhoKB}KB). Recomendado: máx. ${maxKB}KB. Tente uma imagem menor.`;
         erroEl.classList.add('ativo');
       }
-
+      
       // Callback com o blob processado
       if (onProcessada) onProcessada(info.blob, info);
     });
@@ -7937,7 +8263,7 @@ function criarUploadImagem(containerId, opções) {
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 0. Guard: remove qualquer texto "solto" no <body class="itap-world"> (bug clássico quando algo fica fora de <script>/<style>)
+  // 0. Guard: remove qualquer texto "solto" no <body> (bug clássico quando algo fica fora de <script>/<style>)
   // Isso evita aparecer texto indesejado abaixo do painel admin em caso de regressões de marcação.
   try{
     const soltos = Array.from(document.body.childNodes)
@@ -8694,7 +9020,7 @@ async function salvarDepoimentos() {
   if (seoDicasDesc) c.seoPaginas.dicas.descricao = seoDicasDesc.value.trim();
   const seoDicasPal = document.getElementById('cfg-seo-dicas-palavras');
   if (seoDicasPal) c.seoPaginas.dicas.palavrasChave = seoDicasPal.value.trim();
-
+  
   const ok = await salvarArquivo(PATHS.config, c, 'configSha', 'Admin: atualizar depoimentos e dicas');
 }
 
@@ -10035,52 +10361,5 @@ async function zerarPontosNegativos(clienteId){
 })();
 </script>
 
-<script>
-(function(){
-  const pages=[
-    ['index.html','Página Inicial'],['encomendas.html','Encomendas'],['promocao.html','Promoção'],
-    ['dicas.html','Dicas'],['sobre.html','Sobre'],['galeria.html','Galeria']
-  ];
-  const dataFiles=['dados/config.json','dados/produtos.json','dados/promo.json','dados/promocoes.json','dados/clientes.json','dados/encomendas.json','dados/fidelidade.json'];
-  let issues=[], checks=0;
-  const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const add=(code,severity,scope,title,detail,fix)=>issues.push({code,severity,scope,title,detail,fix});
-  const sev=(s)=>s==='critica'?'CRÍTICO':s==='alerta'?'ALERTA':'INFO';
-  function render(){
-    const count=(s)=>issues.filter(i=>i.severity===s).length;
-    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-    set('quality-total',issues.length);set('quality-critica',count('critica'));set('quality-alerta',count('alerta'));set('quality-ok',Math.max(0,checks-issues.length));
-    const badge=document.getElementById('badge-quality-nav');if(badge){badge.textContent=issues.length;badge.style.display=issues.length?'inline-block':'none';}
-    const status=document.getElementById('quality-status');if(status)status.innerHTML=issues.length?'Auditoria concluída: <strong>'+issues.length+'</strong> ocorrência(s) em <strong>'+checks+'</strong> verificações.':'Auditoria concluída sem ocorrências: <strong>'+checks+'</strong> verificações OK.';
-    const report=document.getElementById('quality-report');
-    const lines=issues.map(i=>i.code+' | '+sev(i.severity)+' | '+i.scope+'\n'+i.title+'\n'+i.detail+'\nCorreção: '+i.fix);
-    if(report){report.textContent=lines.length?lines.join('\n\n'):'OK | '+checks+' verificações sem ocorrência.';report.style.display='block';}
-    const box=document.getElementById('quality-results');if(box){box.innerHTML=issues.length?issues.map(i=>'<div class="audit-card '+(i.severity==='critica'?'critica':i.severity==='alerta'?'alta':'baixa')+'"><span class="audit-badge '+(i.severity==='critica'?'critica':i.severity==='alerta'?'alta':'baixa')+'">'+sev(i.severity)+'</span> <strong>'+esc(i.code)+'</strong><div style="font-weight:800;margin-top:6px">'+esc(i.title)+'</div><div style="font-size:.82rem;margin-top:4px;line-height:1.45">'+esc(i.detail)+'</div><div style="font-size:.8rem;color:#1565c0;margin-top:6px"><strong>Escopo:</strong> '+esc(i.scope)+'<br><strong>Correção:</strong> '+esc(i.fix)+'</div></div>').join(''):'<div style="background:#e8f5e9;border-radius:12px;padding:24px;text-align:center;color:#2e7d32;font-weight:800">✅ Nenhum erro detectado nas verificações executadas.</div>';}
-  }
-  async function pageCheck(path,label){
-    checks++;let html;
-    try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);html=await r.text();}catch(e){add('ERR-PAGE-001','critica',path,'Página pública indisponível',e.message,'Verificar arquivo e publicação.');return;}
-    const doc=new DOMParser().parseFromString(html,'text/html');
-    checks++;if(!doc.querySelector('meta[name=viewport]'))add('ERR-RESP-001','alerta',path,'Meta viewport ausente','A página pode ficar desalinhada no celular.','Adicionar meta viewport responsiva.');
-    checks++;if(!doc.title||!doc.title.trim())add('ERR-SEO-001','alerta',path,'Título HTML ausente','A página não possui título.','Preencher o título no Admin.');
-    const ids=[...doc.querySelectorAll('[id]')].map(e=>e.id);const dup=[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];checks++;if(dup.length)add('ERR-DOM-001','alerta',path,'IDs duplicados',dup.join(', '),'Manter cada ID único.');
-    const imgs=[...doc.querySelectorAll('img')];const noAlt=imgs.filter(e=>!(e.getAttribute('alt')||'').trim());checks++;if(noAlt.length)add('ERR-IMG-001','alerta',path,noAlt.length+' imagem(ns) sem alt','Acessibilidade e SEO ficam prejudicados.','Adicionar texto alternativo em português.');
-    const links=[...doc.querySelectorAll('a[href]')].filter(e=>{const h=(e.getAttribute('href')||'').trim();return !h||h==='#'||/^javascript:/i.test(h);});checks++;if(links.length)add('ERR-LNK-001','alerta',path,links.length+' link(s) sem destino','Há link vazio ou sem ação.','Definir destino real ou remover o link.');
-    const body=doc.body?.textContent||'';checks++;if(/R\$\s*1[,.]50|1[,.]50\s*\(Lote/i.test(body))add('ERR-PRC-001','critica',path,'Preço antigo encontrado','Foi encontrada referência a R$ 1,50.','Usar o mínimo oficial de R$ 1,80.');
-  }
-  async function dataCheck(path){
-    checks++;let data;try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}catch(e){add('ERR-DATA-001','critica',path,'JSON indisponível ou inválido',e.message,'Corrigir o arquivo JSON em UTF-8.');return;}
-    const raw=JSON.stringify(data);checks++;if(/R\$\s*1[,.]50|1[,.]50\s*\(Lote/i.test(raw))add('ERR-PRC-003','critica',path,'Texto de preço antigo no JSON','Existe referência a R$ 1,50.','Atualizar para R$ 1,80.');
-    if(path.endsWith('produtos.json')){const picoles=data.picolés||data.picoles||{};const atacados=Object.values(picoles).map(item=>Number(item?.preço_atacado??item?.preco_atacado)).filter(Number.isFinite);checks++;if(atacados.some(n=>n>0&&n<1.8))add('ERR-PRC-002','critica',path,'Preço de atacado abaixo de R$ 1,80','Há preço_atacado de picolé menor que o mínimo oficial. Acréscimos e complementos têm regra própria.','Corrigir somente o preço de atacado do picolé no Admin.');}
-  }
-  window.executarAuditoriaCompleta=async function(){
-    issues=[];checks=0;const status=document.getElementById('quality-status');if(status)status.textContent='Executando auditoria completa...';
-    const button=document.querySelector('#sec-qualidade .btn-salvar');if(button){button.disabled=true;button.textContent='⏳ Auditando...';}
-    try{await Promise.all(pages.map(p=>pageCheck(p[0],p[1])));await Promise.all(dataFiles.map(dataCheck));}catch(e){add('ERR-AUDIT-001','critica','Painel de Qualidade','Falha inesperada',e.message,'Copiar o relatório e enviar para correção.');}
-    render();if(button){button.disabled=false;button.textContent='▶️ Executar auditoria';}if(typeof toast==='function')toast(issues.length?'Auditoria concluída com '+issues.length+' ocorrência(s).':'Auditoria concluída sem erros.','sucesso');
-  };
-  window.copiarRelatorioQualidade=async function(){const report=document.getElementById('quality-report');const value=report?.textContent||'';if(!value){if(typeof toast==='function')toast('Execute a auditoria antes de copiar.','aviso');return;}let ok=false;try{ok=typeof copiarTextoSeguro==='function'?await copiarTextoSeguro(value):false;}catch(e){}if(typeof toast==='function')toast(ok?'Relatório copiado. Cole aqui para correção.':'Selecione o relatório e copie manualmente.',ok?'sucesso':'aviso');};
-})();
-</script>
 </body>
 </html>

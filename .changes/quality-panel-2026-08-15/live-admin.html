@@ -588,7 +588,7 @@ body { overflow-x: hidden; }
 <!-- cache-bust:20260419_000000 -->
   <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
-<body class="itap-world">
+<body class="fueap-surface fueap-admin-painel">
 <div class="loading-overlay" id="loading-overlay" style="display:none">
   <div class="loading-box"><div class="spin2"></div><p id="loading-txt">Salvando...</p></div>
 </div>
@@ -6214,7 +6214,7 @@ function fidColetarCodigosParaEtiquetas(){
        margin-top:0;
      }
   </style>
-</head><body class="itap-world">
+</head><body>
   <div class="barra">
     <div>
       <div style="font-weight:900">${esc(titulo)}</div>
@@ -7937,7 +7937,7 @@ function criarUploadImagem(containerId, opções) {
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 0. Guard: remove qualquer texto "solto" no <body class="itap-world"> (bug clássico quando algo fica fora de <script>/<style>)
+  // 0. Guard: remove qualquer texto "solto" no <body> (bug clássico quando algo fica fora de <script>/<style>)
   // Isso evita aparecer texto indesejado abaixo do painel admin em caso de regressões de marcação.
   try{
     const soltos = Array.from(document.body.childNodes)
@@ -10071,7 +10071,7 @@ async function zerarPontosNegativos(clienteId){
   async function dataCheck(path){
     checks++;let data;try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}catch(e){add('ERR-DATA-001','critica',path,'JSON indisponível ou inválido',e.message,'Corrigir o arquivo JSON em UTF-8.');return;}
     const raw=JSON.stringify(data);checks++;if(/R\$\s*1[,.]50|1[,.]50\s*\(Lote/i.test(raw))add('ERR-PRC-003','critica',path,'Texto de preço antigo no JSON','Existe referência a R$ 1,50.','Atualizar para R$ 1,80.');
-    if(path.endsWith('produtos.json')){const picoles=data.picolés||data.picoles||{};const atacados=Object.values(picoles).map(item=>Number(item?.preço_atacado??item?.preco_atacado)).filter(Number.isFinite);checks++;if(atacados.some(n=>n>0&&n<1.8))add('ERR-PRC-002','critica',path,'Preço de atacado abaixo de R$ 1,80','Há preço_atacado de picolé menor que o mínimo oficial. Acréscimos e complementos têm regra própria.','Corrigir somente o preço de atacado do picolé no Admin.');}
+    if(path.endsWith('produtos.json')){const nums=[...raw.matchAll(/"(?:pre[cç]o|preco|pre[cç]oAtacado|precoAtacado)"\s*:\s*([0-9]+(?:\.[0-9]+)?)/gi)].map(m=>Number(m[1]));checks++;if(nums.some(n=>n>0&&n<1.8))add('ERR-PRC-002','critica',path,'Preço abaixo de R$ 1,80','Há preço numérico menor que o mínimo.','Corrigir o valor no Admin.');}
   }
   window.executarAuditoriaCompleta=async function(){
     issues=[];checks=0;const status=document.getElementById('quality-status');if(status)status.textContent='Executando auditoria completa...';
