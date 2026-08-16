@@ -5418,17 +5418,26 @@ function toggleAcc(id) {
   var el = document.getElementById(id);
   if (!el) return;
   
+  var scrollYAntes = window.scrollY || window.pageYOffset || 0;
   var isOpen = el.classList.contains('open');
   var body = el.querySelector('.acc-body');
   
   if (isOpen) {
-    // FECHAR
+    // FECHAR — TRAVA DE SCROLL ABSOLUTA (Anti-Salto)
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
       requestAnimationFrame(function() { body.style.maxHeight = '0'; });
     }
     el.classList.remove('open');
     atualizarEstadoHeaderAcc(el, false);
+    
+    // Restaura a posição exata da tela instantaneamente para evitar qualquer pulo para cima/fora
+    requestAnimationFrame(function() {
+      window.scrollTo(0, scrollYAntes);
+    });
+    setTimeout(function() {
+      window.scrollTo(0, scrollYAntes);
+    }, 50);
   } else {
     // ABRIR
     el.classList.add('open');
@@ -5448,14 +5457,6 @@ function toggleAcc(id) {
         if (el.classList.contains('open')) body.style.maxHeight = 'none';
       }, 400);
     }
-    
-    // Scroll suave para o item aberto se estiver fora da tela
-    setTimeout(function() {
-      var rect = el.getBoundingClientRect();
-      if (rect.top < 0) {
-        window.scrollBy({ top: rect.top - 20, behavior: 'smooth' });
-      }
-    }, 450);
   }
 }
 
