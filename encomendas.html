@@ -851,20 +851,26 @@
             var rawPicoles = dados.picolés || dados.picoles || {};
             
             // SINCRONISMO GLOBAL: Atualiza catálogos de picolés do JSON
-            var chavesPicoles = {
-                "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": "frutas_agua",
-                "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": "leite_com_recheio",
-                "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": "leite_sem_recheio",
-                "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": "leite_especial",
-                "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": "esquimós"
-            };
-
+            // Suporta tanto chaves técnicas quanto as chaves legíveis presentes no produtos.json
             Object.keys(PICOLES_CATALOGO).forEach(function (tipo) {
-                var chaveJson = chavesPicoles[tipo];
-                if (chaveJson && rawPicoles[chaveJson]) {
-                    var catJson = rawPicoles[chaveJson];
-                    PICOLES_CATALOGO[tipo].precoVarejo = Number(catJson.preco_varejo || PICOLES_CATALOGO[tipo].precoVarejo);
-                    PICOLES_CATALOGO[tipo].precoAtacado = Number(catJson.preco_atacado || PICOLES_CATALOGO[tipo].precoAtacado);
+                var catJson = rawPicoles[tipo];
+                
+                // Fallback para chaves técnicas se a chave legível não existir
+                if (!catJson) {
+                    var chavesTecnicas = {
+                        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": "frutas_agua",
+                        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": "leite_com_recheio",
+                        "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": "leite_sem_recheio",
+                        "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": "leite_especial",
+                        "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": "esquimós"
+                    };
+                    catJson = rawPicoles[chavesTecnicas[tipo]];
+                }
+
+                if (catJson) {
+                    PICOLES_CATALOGO[tipo].precoVarejo = Number(catJson.preco_varejo || PICOLES_CATALOGO[tipo].precoVarejo || PICOLES_CATALOGO[tipo].preco);
+                    PICOLES_CATALOGO[tipo].precoAtacado = Number(catJson.preco_atacado || PICOLES_CATALOGO[tipo].precoAtacado || PICOLES_CATALOGO[tipo].preco);
+                    
                     if (Array.isArray(catJson.sabores)) {
                         var novosSabores = catJson.sabores.map(s => typeof s === 'string' ? s : s.nome);
                         PICOLES_CATALOGO[tipo].sabores = novosSabores;
@@ -878,9 +884,14 @@
                 var grupo = PICOLES_CATALOGO[tipo];
                 var porSabor = {};
                 (MAPA_PICOLES_ESTOQUE[tipo] || []).forEach(function (origem) {
-                    var estados = normalizarCategoriaPicolé(rawPicoles, origem.chave, origem.sabores);
+                    // Tenta usar a chave do grupo legível primeiro, depois a chave técnica
+                    var estados = normalizarCategoriaPicolé(rawPicoles, tipo, origem.sabores);
+                    if (Object.keys(estados).length === 0) {
+                        estados = normalizarCategoriaPicolé(rawPicoles, origem.chave, origem.sabores);
+                    }
+                    
                     origem.sabores.forEach(function (sabor) {
-                        var estado = estados[sabor] || { estoque: 0, esgotado: true };
+                        var estado = estados[sabor] || { estoque: 200, esgotado: false }; // Fallback para estoque 200 se não encontrado
                         porSabor[sabor] = Object.assign({}, estado, { chaveEstoque: origem.chave });
                     });
                 });
