@@ -31,7 +31,7 @@ var faleTemas = {
     emoji: '🍦',
     titulo: 'Sabores e Cardápio',
     palavras: [
-      '✅ Mais de 35 sabores de sorvete Tipo artesanal.',
+      '✅ Mais de 38 Sabores de sorvete Tipo artesanal.',
       '✅ Servidos em bolas, casquinhas, cascões, cestinhas e copos.',
       '✅ Também temos açaí, picolés, milkshakes e taças especiais.',
       '✅ Alguns sabores variam conforme a produção do dia.',

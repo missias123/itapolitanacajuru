@@ -323,7 +323,7 @@ async function salvarEncomendas() {
 3. Adicionar badges:
    ```
    ✨ tipo artesanal
-   🍦 35 Sabores
+   🍦 38 Sabores
    🎂 Tortas Especiais
    ```
 4. Clicar "💾 Salvar"

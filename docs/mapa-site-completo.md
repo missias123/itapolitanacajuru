@@ -15,7 +15,7 @@
 - Hero banner dinâmico (frases rotativas, badges, CTAs para cardápio e WhatsApp)
 - Strip sensorial animado (faixa de texto deslizante)
 - Cardápio interativo por abas (Sorvetes, Açaí, Milkshake, Taças, Picolés, Sobremesas, Complementos)
-- Modal de sabores de sorvete (35 sabores)
+- Modal de sabores de sorvete (38 Sabores)
 - Modal de complementos do açaí
 - Seção de isopores para viagem
 - Carrinho para eventos (FAB + link WhatsApp)

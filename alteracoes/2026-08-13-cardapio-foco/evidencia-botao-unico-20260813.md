@@ -5,7 +5,7 @@ Escopo: somente `index.html` / cardápio da página inicial.
 
 ## Correção aplicada
 
-Foi removido o CTA duplicado `Ver sabores` injetado pela função `renderSorvetes()`. O botão principal existente no bloco do produto, `Ver 35 Sabores`, foi preservado. O link `Falar no WhatsApp` permanece separado.
+Foi removido o CTA duplicado `Ver sabores` injetado pela função `renderSorvetes()`. O botão principal existente no bloco do produto, `Ver 38 Sabores`, foi preservado. O link `Falar no WhatsApp` permanece separado.
 
 ## Validação local
 
@@ -13,7 +13,7 @@ URL: `http://127.0.0.1:8080/index.html?qa=single-flavor-button-20260813-3`
 
 O DOM local mostrou, dentro de `#acc-sorvetes`:
 
-- Um único botão de ação para sabores: `Ver 35 Sabores`.
+- Um único botão de ação para sabores: `Ver 38 Sabores`.
 - Um link separado: `Falar no WhatsApp`.
 - Nenhum link duplicado `Ver sabores`.
 - JavaScript inline compilado: `scripts_js=10 errors=0`.

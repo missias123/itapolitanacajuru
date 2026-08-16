@@ -216,7 +216,7 @@ function sincronizarCardapioMap() {
       bodyId: 'tacas-body',
       titulo: function() {
         var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
-        return '🍨 Taças – ' + Object.keys(t).length + ' Opções + 35 Sabores';
+        return '🍨 Taças – ' + Object.keys(t).length + ' Opções + 38 Sabores';
       },
       sub: 'Escolha a taça e o sabor desejado ao fazer seu pedido na loja',
       getSabores: function() {
@@ -229,7 +229,7 @@ function sincronizarCardapioMap() {
       bodyId: 'tacas-p-body',
       titulo: function() {
         var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
-        return '👑 Taças Premium – ' + Object.keys(t).length + ' Opções + 35 Sabores';
+        return '👑 Taças Premium – ' + Object.keys(t).length + ' Opções + 38 Sabores';
       },
       sub: 'Escolha a taça e o sabor desejado ao fazer seu pedido na loja',
       getSabores: function() {
@@ -378,7 +378,7 @@ function abrirTacasTradicionaisInline(el) {
   var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
   var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
   var sabores = getSaboresDisponíveis();
-  // Mostra: seção de opções de taças + seção dos 35 sabores
+  // Mostra: seção de opções de taças + seção dos 38 Sabores
   mostrarDuasSecoes(accBody,
     '🍨 Taças – ' + opcoes.length + ' Opções', 'Escolha a taça desejada ao fazer seu pedido na loja', opcoes,
     '🍦 ' + sabores.length + ' Sabores Disponíveis', 'Informe o sabor desejado ao fazer seu pedido na loja', sabores

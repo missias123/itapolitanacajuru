@@ -238,7 +238,7 @@ function carregarEncomendas() {
 ### 1.5 Cardápio e Modais
 
 #### ✅ Conteúdo de Modais Editável
-**Ação no Admin:** Alterar conteúdo de modais (ex: "Ver 35 Sabores", "Ver Sabores do Milkshake")
+**Ação no Admin:** Alterar conteúdo de modais (ex: "Ver 38 Sabores", "Ver Sabores do Milkshake")
 
 **Verificação:**
 - ✅ Títulos do cardápio editáveis via `cardapioTitulo` (matriz linha 22-28)

@@ -1,6 +1,6 @@
 ## Evidências visuais — 2026-08-15
 
-A captura Android 360×800, feita após a abertura da gaveta, mostra somente o conteúdo do cardápio ativo, sem cabeçalho, banner, Açaí Natureon, rodapé ou categorias vizinhas. Os cards estão em formato horizontal, com imagem à esquerda e nome, descrição e preço à direita. A parte inferior apresenta os CTAs `Ver 35 Sabores`, `Falar no WhatsApp` e `Voltar ao Início do Cardápio`, todos com área ampla de toque. A captura corresponde a uma posição rolada no fim do drawer, demonstrando que o documento pode ser percorrido até os últimos produtos; não há corte lateral visível no card ativo.
+A captura Android 360×800, feita após a abertura da gaveta, mostra somente o conteúdo do cardápio ativo, sem cabeçalho, banner, Açaí Natureon, rodapé ou categorias vizinhas. Os cards estão em formato horizontal, com imagem à esquerda e nome, descrição e preço à direita. A parte inferior apresenta os CTAs `Ver 38 Sabores`, `Falar no WhatsApp` e `Voltar ao Início do Cardápio`, todos com área ampla de toque. A captura corresponde a uma posição rolada no fim do drawer, demonstrando que o documento pode ser percorrido até os últimos produtos; não há corte lateral visível no card ativo.
 
 A primeira captura Android feita antes da correção do roteiro registrava a tela inicial e o banner de cookies, portanto não era evidência válida do drawer aberto. O roteiro foi corrigido para capturar somente depois da interação e das medições.
 

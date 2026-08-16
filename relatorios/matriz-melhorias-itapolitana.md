@@ -9,7 +9,7 @@ Esta matriz classifica todas as melhorias propostas para o site com base no **ri
 | **Sombras & Contraste** | Adicionar elevação suave (`box-shadow`) e bordas definidas nos cartões (*Bento Grid*). | **Baixo** | **Médio** | **Aplicar imediatamente**. |
 | **Acessibilidade** | Garantir estados de foco (`:focus-visible`), contraste adequado e atributos ARIA nos accordions. | **Baixo** | **Alto** | **Aplicar em fases**. |
 | **Navegação Inline** | Lógica de abertura de acordião com Modo Foco e retorno de scroll (`_semPulo`). | **Médio** | **Alto** | **Isolar e testar em sandbox antes de publicar**. |
-| **Centralização de Dados** | Unificar catálogo de 35 sabores em fonte única (`products.js`). | **Médio** | **Alto** | **Manter compatibilidade com páginas existentes**. |
+| **Centralização de Dados** | Unificar catálogo de 38 Sabores em fonte única (`products.js`). | **Médio** | **Alto** | **Manter compatibilidade com páginas existentes**. |
 | **Lógica de Pedidos** | Regras de atacado, carrinho, mínimo de 100 picolés e limite por sabor. | **Alto (Crítico)** | **Crítico** | **PROIBIDO ALTERAR** (área protegida). |
 
 ## Regras de Ouro para Operação Segura

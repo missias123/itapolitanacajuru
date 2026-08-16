@@ -20,7 +20,7 @@ Grandes plataformas globais de pedidos de alimentos (como iFood, Rappi, Domino's
 
 | Dimensão de Análise | Padrão Global de Referência | Estado Atual no Itapolitana | Alinhamento e Adaptação Necessária |
 | :--- | :--- | :--- | :--- |
-| **Arquitetura de Dados** | Fonte Única de Verdade (Single Source of Truth) centralizada em módulos JS/JSON. | Dados distribuídos entre arquivos estáticos e scripts inline. | Centralizar catálogos e listas de 35 sabores em `products.js` para evitar duplicação e divergências. |
+| **Arquitetura de Dados** | Fonte Única de Verdade (Single Source of Truth) centralizada em módulos JS/JSON. | Dados distribuídos entre arquivos estáticos e scripts inline. | Centralizar catálogos e listas de 38 Sabores em `products.js` para evitar duplicação e divergências. |
 | **Tipografia & Legibilidade** | Escala tipográfica fluida (mín. 0.95rem em botões, 1.1rem em títulos de produtos) [1] [2]. | Presença de tamanhos reduzidos (`0.82rem`) em alguns rótulos de seleção. | Expandir o padrão de tipografia em blocos de sabores e formulários, garantindo conforto visual em telas compactas. |
 | **Ergonomia de Toque** | Alvos de toque com altura mínima de 48px a 52px e espaçamento adequado (Bento Grid). | Botões de sabor e acordeões com tamanhos variados entre páginas. | Padronizar todos os botões de seleção de sabores no formato retangular intermediário otimizado para toque. |
 | **Navegação & Scroll** | Preservação rigorosa da posição de rolagem (`scrollRestoration`) ao fechar modais ou accordions. | Comportamento sujeito a saltos caso o foco altere o layout da viewport. | Consolidar a lógica `_semPulo` e Modo Foco sem dependência de recarregamento de página. |
@@ -31,7 +31,7 @@ Grandes plataformas globais de pedidos de alimentos (como iFood, Rappi, Domino's
 ## 3. Análise Ponto a Ponto por Componente
 
 ### 3.1. Arquitetura e Catálogo de Sabores
-- **Achado:** O site possui a lista oficial dos **35 sabores Tipo Artesanal** (de Abacaxi ao Vinho a Torta de Chocolate). No entanto, o carregamento dessas listas em diferentes seções do cardápio e da página de encomendas por vezes recorria a abordagens inconsistentes.
+- **Achado:** O site possui a lista oficial dos **38 Sabores Tipo Artesanal** (de Abacaxi ao Vinho a Torta de Chocolate). No entanto, o carregamento dessas listas em diferentes seções do cardápio e da página de encomendas por vezes recorria a abordagens inconsistentes.
 - **Padrão Ideal:** Os grandes portais utilizam um array unificado no motor JavaScript da aplicação, injetando os elementos no DOM apenas sob demanda (lazy render), o que reduz o peso da página e garante sincronia instantânea.
 
 ### 3.2. Área Administrativa e Segurança

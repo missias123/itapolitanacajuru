@@ -542,7 +542,7 @@ function carregarTitulosCardapio() {
     : JSON.parse(localStorage.getItem('cfg_titulos_cardapio') || '{}');
   var campos = [
     ['acc-sorvetes-titulo','Sorvetes de Massa'],
-    ['acc-sorvetes-sub','Cremoso, gelado, irresistível · 35 sabores pra você escolher'],
+    ['acc-sorvetes-sub','Cremoso, gelado, irresistível · 38 Sabores pra você escolher'],
     ['acc-picoles-titulo','Picolés'],
     ['acc-picoles-sub','Refrescante e gostoso · Fruta, Leite, Recheado, Ninho, Esquimó'],
     ['acc-açaí-promo-titulo','🔥 Açaí em Promoção'],
@@ -550,7 +550,7 @@ function carregarTitulosCardapio() {
     ['acc-açaí-titulo','Açaí Natureon'],
     ['acc-açaí-sub','O melhor açaí da região · Cremoso, gelado e com muitos complementos'],
     ['acc-milk-titulo','Milkshakes'],
-    ['acc-milk-sub','Cremoso e gelado · Tradicional e Top · 35 sabores'],
+    ['acc-milk-sub','Cremoso e gelado · Tradicional e Top · 38 Sabores'],
     ['acc-tacas-titulo','Taças'],
     ['acc-tacas-sub','Uma experiência única · Colegial, Sundae, Banana Split e mais'],
     ['acc-tacas-p-titulo','Taças Premium (Taças Sujas)'],
@@ -739,8 +739,8 @@ function preencherCardapio() {
 
   // Botões e textos (config)
   const c = STATE.config || {};
-  document.getElementById('card-sorvetes-btn').value = c.cardSorvetesBtn || '🍦 Ver 35 Sabores';
-  document.getElementById('card-sorvetes-desc').value = c.cardSorvetesDesc || 'Cremoso, gelado, irresistível · 35 sabores pra você escolher';
+  document.getElementById('card-sorvetes-btn').value = c.cardSorvetesBtn || '🍦 Ver 38 Sabores';
+  document.getElementById('card-sorvetes-desc').value = c.cardSorvetesDesc || 'Cremoso, gelado, irresistível · 38 Sabores pra você escolher';
   document.getElementById('card-picoles-btn').value = c.cardPicolesBtn || '🧊 Ver Sabores de Picolés';
   document.getElementById('card-açaí-promo-btn').value = c.cardAçaíPromoBtn || '🫐 Ver Combos em Promoção';
   document.getElementById('card-açaí-btn').value = c.cardAçaíBtn || '🍇 Montar Meu Açaí';
