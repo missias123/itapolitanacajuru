@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
   
-  <meta content="Faça suas encomendas de sorvetes em caixa (5L e 10L), tortas geladas e picolés no atacado na Sorveteria Itapolitana em Cajuru/SP. Prazo mínimo de 5 dias úteis." name="description"/>
+  <meta content="Faça suas encomendas de sorvetes em caixa (5L e 10L), tortas geladas e picolés no atacado na Sorveteria Itapolitana em Cajuru/SP. Prazo mínimo de 03 dias úteis após a confirmação via WhatsApp e pagamento antecipado." name="description"/>
   <meta content="#EF0129" name="theme-color"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
@@ -635,7 +635,7 @@
       <div id="etapa-formulario" style="display: none;">
         <div style="padding: 16px; background: #FFF9C4; border: 1px solid #FFEE58; border-radius: 12px; margin-bottom: 16px;">
           <p style="font-size: 0.85rem; color: #5D4037; margin: 0; line-height: 1.4;">
-            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias úteis</strong> para encomendas pelo site. Logo entraremos em contato para confirmar o pedido e combinar o pagamento.
+            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>03 dias úteis</strong> após a confirmação via WhatsApp da sorveteria e mediante pagamento antecipado para encomendas pelo site.
           </p>
         </div>
 
@@ -670,7 +670,7 @@
           <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
               <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
-              <span>Estou ciente do prazo de 5 dias úteis após o pagamento para elaborar o pedido.</span>
+              <span>Estou ciente do prazo mínimo de 03 dias úteis após a confirmação via WhatsApp e pagamento antecipado.</span>
             </label>
           </div>
         </div>
@@ -1686,7 +1686,7 @@
         
         var resumoEconomia = calcularResumoEconomiaPicoles();
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
-        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO DE 5 DIAS ÚTEIS APÓS O PAGAMENTO PARA ELABORAR O PEDIDO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
+        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO MÍNIMO DE 03 DIAS ÚTEIS APÓS A CONFIRMAÇÃO VIA WHATSAPP E PAGAMENTO ANTECIPADO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
                 var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : item.isAcrescimo ? `${item.quantidade} unidade(s) x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
                 return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
