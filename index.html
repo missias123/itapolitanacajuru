@@ -2290,7 +2290,17 @@ body.cardapio-aberto { padding-bottom: 80px; }
 }
 /* Mão Pulsante e Efeito de Descoberta */
 .vc-row { position: relative; }
-.vc-btn { position: relative; overflow: hidden; }
+.vc-btn {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(255, 212, 59, 0.4);
+  animation: neonPulse 2s ease-in-out infinite;
+  border: 2px solid #FFD43B !important;
+}
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 212, 59, 0.5), inset 0 0 4px rgba(255, 212, 59, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(255, 212, 59, 0.9), inset 0 0 10px rgba(255, 212, 59, 0.4); }
+}
 .vc-hand-indicator {
   position: absolute;
   top: 50%;
