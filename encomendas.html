@@ -1125,8 +1125,14 @@
             var isLancamento = s.toLowerCase().includes("bem casado") || s.toLowerCase().includes("cheesecake") || s.toLowerCase().includes("passas ao rum");
             var corStyle = getCorSabor(s);
             var cls = "sabor-item " + (sel ? "sel " : "") + (isLancamento ? "itap-lancamento-neon " : "");
-            var badge = isLancamento ? '<span class="tag-lancamento">Lançamento</span><br>' : '';
-            return `<div class="${cls}" style="${corStyle}" onclick="window.toggleSabor('${s}', this)">${badge}${s}</div>`;
+            var badge = isLancamento ? '<span class="tag-lancamento">Lançamento</span>' : '';
+            
+            var partes = s.split(' (');
+            var nome = partes[0];
+            var desc = partes[1] ? partes[1].replace(')', '') : '';
+            var textoHtml = '<strong>' + nome + '</strong>' + (desc ? '<small>' + desc + '</small>' : '');
+            
+            return `<div class="${cls}" style="${corStyle}" onclick="window.toggleSabor('${s}', this)">${badge}${textoHtml}</div>`;
         }).join('');
         
         atualizarAcaoSabores();

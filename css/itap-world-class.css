@@ -196,10 +196,9 @@ body.itap-world .chips-inline {
   padding: 15px;
 }
 body.itap-world .chip-inline {
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 800;
+  padding: 14px 10px;
+  border-radius: 16px;
+  font-size: 14px;
   text-align: center;
   border: 2px solid #E2E8F0;
   background: #FFF;
@@ -207,28 +206,58 @@ body.itap-world .chip-inline {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 2px;
   position: relative;
+  min-height: 70px;
+  line-height: 1.2;
 }
-body.itap-world .itap-lancamento-neon {
-  border-color: #FF4081 !important;
-  box-shadow: 0 0 10px rgba(255,64,129,0.4);
-  animation: pulseNeon 1.5s infinite;
-}
-@keyframes pulseNeon {
-  0% { box-shadow: 0 0 5px rgba(255,64,129,0.4); }
-  50% { box-shadow: 0 0 15px rgba(255,64,129,0.8); }
-  100% { box-shadow: 0 0 5px rgba(255,64,129,0.4); }
-}
-body.itap-world .tag-lancamento {
-  font-size: 9px;
-  background: #FF4081;
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
+body.itap-world .chip-inline strong {
+  font-family: var(--itap-font-heading);
   font-weight: 900;
-  letter-spacing: 0.5px;
+  display: block;
+  letter-spacing: -0.02em;
+}
+body.itap-world .chip-inline small {
+  font-family: var(--itap-font-body);
+  font-weight: 700;
+  font-size: 11px;
+  opacity: 0.85;
+  display: block;
+  margin-top: 2px;
+}
+/* ESTILO LANÇAMENTO PREMIUM — NEON PULSANTE E TAG NO TOPO */
+.chip-inline, .sabor-item, .picolé-item { position: relative !important; }
+
+body.itap-world .itap-lancamento-neon {
+  border: 2px solid #FF4081 !important;
+  animation: pulseNeonCard 2s infinite ease-in-out;
+  z-index: 1;
+}
+
+@keyframes pulseNeonCard {
+  0% { box-shadow: 0 0 5px rgba(255,64,129,0.3), inset 0 0 2px rgba(255,64,129,0.2); border-color: rgba(255,64,129,0.6); }
+  50% { box-shadow: 0 0 20px rgba(255,64,129,0.7), inset 0 0 8px rgba(255,64,129,0.4); border-color: rgba(255,64,129,1); }
+  100% { box-shadow: 0 0 5px rgba(255,64,129,0.3), inset 0 0 2px rgba(255,64,129,0.2); border-color: rgba(255,64,129,0.6); }
+}
+
+body.itap-world .tag-lancamento {
+  position: absolute !important;
+  top: -10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  font-size: 10px !important;
+  background: linear-gradient(135deg, #FF4081, #E8000D) !important;
+  color: white !important;
+  padding: 3px 10px !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 10px rgba(232,0,13,0.4) !important;
+  z-index: 10 !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
 }
 
 @media (max-width: 600px) {
