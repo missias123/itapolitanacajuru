@@ -1,0 +1,47 @@
+/* GAVETAS INTERNAS DO ARMÁRIO — uma gaveta aberta por vez.
+   A categoria continua no fluxo normal, mas o foco é exclusivo: durante a
+   abertura, o usuário vê somente a gaveta ativa, sem seções externas, rodapé
+   ou outros botões atravessando o conteúdo. */
+#menu-foco-portal{display:none!important;}
+html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100vh;touch-action:pan-y;-webkit-overflow-scrolling:touch;scroll-behavior:auto!important;background:#FFFDF9;}
+#itap-ghost-spacer{display:none;width:100%;background:transparent;margin:0;padding:0;border:none;pointer-events:none;}
+#vc-container{position:relative;isolation:isolate;}
+#vc-container .acc{position:relative;overflow:clip;}
+#vc-container .acc.menu-foco-ativo{margin-bottom:18px;transform:none!important;box-shadow:0 12px 32px rgba(0,0,0,.18);overflow:visible;background:#FFFDF9;z-index:100;}
+#vc-container .acc.menu-foco-ativo .acc-body{position:relative;z-index:1;overflow:visible;touch-action:pan-y;overscroll-behavior-y:auto;}
+#vc-container .acc.menu-foco-ativo.menu-foco-scroll-livre .acc-body{max-height:none!important;overflow:visible!important;}
+#vc-container .acc.menu-foco-ativo .acc-header{position:relative;z-index:2;}
+#vc-container .acc-body{overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+#vc-container .acc-body > .sabores-inline,
+#vc-container .acc-body > .prod-grid,
+#vc-container .acc-body > .btn-row-grid{position:relative;z-index:1;}
+.menu-foco-back{display:none!important;}
+
+/* Foco exclusivo da gaveta: o armário permanece no lugar, mas nenhum
+   elemento externo ou irmão pode vazar durante a leitura do conteúdo. */
+body.menu-foco-aberto #conteudo-principal > header,
+body.menu-foco-aberto #conteudo-principal > #itp-crs-style,
+body.menu-foco-aberto #conteudo-principal > #itp-crs-wrap,
+body.menu-foco-aberto #conteudo-principal > #strip-sensorial,
+body.menu-foco-aberto #conteudo-principal > .hero,
+body.menu-foco-aberto #conteudo-principal > #acai-natureon,
+body.menu-foco-aberto #conteudo-principal > #linha-festas,
+body.menu-foco-aberto #conteudo-principal > #quem-somos-itapolitana,
+body.menu-foco-aberto #conteudo-principal > #avaliacoes,
+body.menu-foco-aberto #conteudo-principal > footer,
+body.menu-foco-aberto > #cookie-banner,
+body.menu-foco-aberto > #itap-mobile-nav,
+body.menu-foco-aberto > .itap-pwa-banner,
+body.menu-foco-aberto > .skip-link{display:none!important;}
+body.menu-foco-aberto #cardapio > *:not(#vc-wrap):not(.home-enc-comp-grid),
+body.menu-foco-aberto #vc-wrap > .vc-banner,
+body.menu-foco-aberto #vc-container > .menu-categorias-cardapio,
+body.menu-foco-aberto #vc-container > .acc:not(.menu-foco-ativo){display:none!important;}
+body.menu-foco-aberto #cardapio > .home-enc-comp-grid{display:grid!important;visibility:visible!important;opacity:1!important;}
+body.itap-lock-fixed { position: fixed; width: 100%; overflow: hidden; left: 0; right: 0; z-index: 1; }
+body.menu-foco-aberto #cardapio > .home-enc-comp-grid > .acc:not(.menu-foco-ativo){display:none!important;}
+body.menu-foco-aberto #vc-wrap,
+body.menu-foco-aberto #vc-container{max-height:none!important;min-height:0!important;opacity:1!important;overflow:visible!important;display:block!important;}
+body.menu-foco-aberto #vc-container > .acc.menu-foco-ativo{display:block!important;visibility:visible!important;pointer-events:auto!important;}
+body.menu-foco-aberto #cardapio, body.menu-foco-aberto #vc-wrap, body.menu-foco-aberto #vc-container { min-height: 100vh; }
+@media(prefers-reduced-motion:reduce){#vc-container .acc-body{transition:none!important}.acc-header,.acc-arrow,.acc-circle{transition:none!important}}
