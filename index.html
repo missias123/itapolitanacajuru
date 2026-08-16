@@ -5667,6 +5667,7 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
 }
 
 function voltarNivel(btn) {
+  var scrollYAntes = window.scrollY || window.pageYOffset || 0;
   var accBody = btn.closest ? btn.closest('.acc-body') : null;
   if (!accBody) {
     var cur = btn.parentElement;
@@ -5682,6 +5683,14 @@ function voltarNivel(btn) {
   if (accId && _nivelAnterior[accId]) {
     accBody.innerHTML = _nivelAnterior[accId];
     delete _nivelAnterior[accId];
+    
+    // ANTI-SALTO: Restaura posição após voltar nível
+    requestAnimationFrame(function() {
+      window.scrollTo(0, scrollYAntes);
+    });
+    setTimeout(function() {
+      window.scrollTo(0, scrollYAntes);
+    }, 50);
   }
 }
 
