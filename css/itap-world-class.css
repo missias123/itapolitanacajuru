@@ -133,6 +133,22 @@ body.itap-world :where(main > section, .content-section, .section) {
   margin-block: clamp(20px, 3.5vw, 48px);
 }
 
+/* Marca d’água perceptível nas superfícies claras, sem interferir na leitura. */
+body.itap-world :where(#conteudo-principal, .cardápio, .itap-local-section, .avaliacoes-section, .admin-content) {
+  background-size: 100% 100%, clamp(260px, 28vw, 360px);
+  background-repeat: no-repeat, repeat;
+  background-position: center, center top;
+}
+body.itap-world :where(#conteudo-principal, .cardápio, .admin-content) {
+  background-image: linear-gradient(rgba(255, 255, 255, .94), rgba(255, 255, 255, .94)), url('../images/logo-watermark.png');
+}
+body.itap-world :where(.itap-local-section) {
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(255, 248, 240, .94)), url('../images/logo-watermark.png');
+}
+body.itap-world :where(.avaliacoes-section) {
+  background-image: linear-gradient(rgba(255, 248, 249, .94), rgba(255, 248, 249, .94)), url('../images/logo-watermark.png');
+}
+
 /* Consistent surfaces without forcing product/category colors. */
 body.itap-world :where(.card, .info-card, .item-card, .promo-card, .feature-card, .depoimento-card) {
   border-radius: var(--itap-radius-md);
