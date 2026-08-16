@@ -813,35 +813,43 @@ html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden;overflow-y:auto!im
 
 /* Foco exclusivo da gaveta: o armário permanece no lugar, mas nenhum
    elemento externo ou irmão pode vazar durante a leitura do conteúdo. */
-body.menu-foco-aberto #conteudo-principal > header,
-body.menu-foco-aberto #conteudo-principal > #itp-crs-style,
-body.menu-foco-aberto #conteudo-principal > #itp-crs-wrap,
-body.menu-foco-aberto #conteudo-principal > #strip-sensorial,
-body.menu-foco-aberto #conteudo-principal > .hero,
-body.menu-foco-aberto #conteudo-principal > #acai-natureon,
-body.menu-foco-aberto #conteudo-principal > #linha-festas,
-body.menu-foco-aberto #conteudo-principal > #quem-somos-itapolitana,
-body.menu-foco-aberto #conteudo-principal > #avaliacoes,
-body.menu-foco-aberto #conteudo-principal > footer,
-body.menu-foco-aberto > #cookie-banner,
-body.menu-foco-aberto > #itap-mobile-nav,
-body.menu-foco-aberto > .itap-pwa-banner,
-body.menu-foco-aberto > .skip-link{display:none!important;}
-body.menu-foco-aberto #cardapio > *:not(#vc-wrap):not(#vc-container):not(.home-enc-comp-grid),
-body.menu-foco-aberto #vc-container > .acc:not(.menu-foco-ativo):not(.home-enc-comp-grid){display:none!important;}
-body.menu-foco-aberto #cardapio > .home-enc-comp-grid{display:grid!important;visibility:visible!important;opacity:1!important;}
-body.itap-lock-fixed { position: fixed; width: 100%; overflow: hidden; left: 0; right: 0; z-index: 1; }
-body.menu-foco-aberto #cardapio > .home-enc-comp-grid > .acc:not(.menu-foco-ativo){display:none!important;}
-body.menu-foco-aberto #vc-wrap,
-body.menu-foco-aberto #vc-container{max-height:none!important;min-height:0!important;opacity:1!important;overflow:visible!important;display:block!important;}
-body.menu-foco-aberto #vc-container > .acc.menu-foco-ativo{display:block!important;visibility:visible!important;pointer-events:auto!important;}
-			body.menu-foco-aberto #cardapio, 
-			body.menu-foco-aberto #vc-wrap, 
-			body.menu-foco-aberto #vc-container { min-height: 100vh; background: transparent !important; position: relative; z-index: 100; opacity: 1 !important; visibility: visible !important; }
-			body.menu-foco-aberto #conteudo-principal { background: transparent !important; position: relative; z-index: 90; }
-			body.menu-foco-aberto .acc.menu-foco-ativo { display: block !important; opacity: 1 !important; visibility: visible !important; background: #FFFDF9 !important; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-			body.menu-foco-aberto .acc.menu-foco-ativo * { opacity: 1 !important; visibility: visible !important; }
+/* MODO BENTO UI — Foco Suave e Estabilidade Total.
+   Removido o display:none agressivo que causava tela branca.
+   Agora o site permanece visível, mas a categoria ganha destaque premium. */
+body.menu-foco-aberto #conteudo-principal { position: relative; }
+body.menu-foco-aberto .acc.menu-foco-ativo { 
+  display: block !important; 
+  opacity: 1 !important; 
+  visibility: visible !important; 
+  background: #FFFDF9 !important; 
+  border-radius: 24px; 
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+  border: 2px solid rgba(224,64,251,0.1);
+  margin-top: 10px;
+  margin-bottom: 30px;
+  z-index: 1000;
+}
+body.itap-lock-fixed { 
+  position: fixed; 
+  width: 100%; 
+  overflow: hidden; 
+  left: 0; 
+  right: 0; 
+  z-index: 1; 
+}
+/* Overlay sutil para destacar a categoria sem sumir com o site */
+body.menu-foco-aberto::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeInOverlay .3s ease forwards;
+}
 @media(prefers-reduced-motion:reduce){#vc-container .acc-body{transition:none!important}.acc-header,.acc-arrow,.acc-circle{transition:none!important}}
+
+/* Estilos Bento UI e Sabores movidos para itap-world-class.css para consistência global. */
 
 /* MODAL CENTRALIZADO — PADRÃO GRANDES APPS */
 .modal-overlay{display:none;position:fixed;inset:0;background:#08080A;z-index:2147483000;isolation:isolate;contain:paint;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overscroll-behavior:contain;backdrop-filter:blur(6px)}
@@ -2961,17 +2969,33 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 <div class="acc-body" id="iso-body"></div>
 </div>
-<div class="acc" id="acc-sobremesas">
-<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
-<div class="acc-left">
-<span class="acc-icon" aria-hidden="true"><div class="bento-icon-container brown"><svg><use xlink:href="#icon-cake"></use></svg></div></span>
-<div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
-</div>
-<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
-</div>
-<div class="acc-body" id="sobremesas-body"></div>
-</div>
-  </div>
+	<div class="acc" id="acc-sobremesas">
+	<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
+	<div class="acc-left">
+	<span class="acc-icon" aria-hidden="true"><div class="bento-icon-container brown"><svg><use xlink:href="#icon-cake"></use></svg></div></span>
+	<div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
+	</div>
+	<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
+	</div>
+	<div class="acc-body" id="sobremesas-body"></div>
+	</div>
+	
+	<!-- ÚLTIMA GAVETA: TODOS OS 38 SABORES -->
+	<div class="acc" id="acc-todos-sabores">
+	<div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="todos-sabores-body" onclick="toggleAcc('acc-todos-sabores')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-todos-sabores');}">
+	<div class="acc-left">
+	<span class="acc-icon" aria-hidden="true"><div class="bento-icon-container purple"><svg><use xlink:href="#icon-scoop"></use></svg></div></span>
+	<div><div class="acc-title">Nossos 38 Sabores Artesanais</div><div class="acc-sub">A lista completa de sorvetes da Itapolitana Cajuru</div></div>
+	</div>
+	<span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
+	</div>
+	<div class="acc-body" id="todos-sabores-body">
+	  <div class="btn-row-grid" style="margin-top:14px">
+	    <button class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Lista Oficial de Sabores','38 Opções Artesanais para você escolher',this)" type="button">Ver Lista Completa</button>
+	  </div>
+	</div>
+	</div>
+	  </div>
 </div>
 <!-- VER NOSSO CARDÁPIO - FIM -->
 
@@ -4197,21 +4221,27 @@ function renderSobremesas(){
 // A constante SABORES_35_OFICIAL foi removida em favor do sincronismo global via produtos.json.
 
 function getSaboresDisponíveis() {
+  var sabores = [];
   // SINCRONISMO GLOBAL: Tenta ler do dataset carregado via JSON primeiro
   if (window.PRODUTOS_DATA && window.PRODUTOS_DATA.sorvetes && window.PRODUTOS_DATA.sorvetes.sabores) {
-    return window.PRODUTOS_DATA.sorvetes.sabores.map(function(s) { return typeof s === 'string' ? s : s.nome; });
+    sabores = window.PRODUTOS_DATA.sorvetes.sabores.map(function(s) { return typeof s === 'string' ? s : s.nome; });
+  } else {
+    // Fallback oficial dos 38 sabores
+    sabores = [
+      "Abacaxi Suíço (c/caramelo)", "Abacaxi ao Vinho", "Amarena (Cereja Italiana Azeda)", "Ameixa", "Banana com Nutella",
+      "Bem Casado (ninho+doce leite+nozes)", "Bis e Trufa", "Blue Ice (Algodão Doce Azul)", "Cereja Trufada", "Cheesecake (f. vermelha + geleias + biscoito)",
+      "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris (crocante)", "Croquer (amendoim x doce leite)",
+      "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo (choc. branco)", "Leite Condensado",
+      "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo", "Limão (base água)", "Limão Suíço (base leite)",
+      "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva",
+      "Nozes", "Nutella", "Ovomaltine", "Passas ao Rum", "Pistache",
+      "Prestígio", "Sensação (morango x choc.)", "Torta de Chocolate"
+    ];
   }
-  // Fallback oficial dos 38 sabores + Açaí
-  return [
-    "Abacaxi Suíço (c/caramelo)", "Abacaxi ao Vinho", "Amarena (Cereja Italiana Azeda)", "Ameixa", "Banana com Nutella",
-    "Bem Casado (ninho+doce leite+nozes)", "Bis e Trufa", "Blue Ice (Algodão Doce Azul)", "Cereja Trufada", "Cheesecake (f. vermelha + geleias + biscoito)",
-    "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris (crocante)", "Croquer (amendoim x doce leite)",
-    "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo (choc. branco)", "Leite Condensado",
-    "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo", "Limão (base água)", "Limão Suíço (base leite)",
-    "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva",
-    "Nozes", "Nutella", "Ovomaltine", "Passas ao Rum", "Pistache",
-    "Prestígio", "Sensação (morango x choc.)", "Torta de Chocolate", "Açaí"
-  ];
+  // ORDENAÇÃO ALFABÉTICA MANTENDO O PADRÃO WORLD CLASS
+  return sabores.sort(function(a, b) {
+    return a.localeCompare(b, 'pt', { sensitivity: 'base' });
+  });
 }
 function abrirSabores(tipo,título,el){
   // Convertido para inline — sem modal, sem scroll
@@ -5488,28 +5518,26 @@ function _menuFocoAtivar(acc) {
   if (_menuFocoId === acc.id) return;
   if (_menuFocoId) _menuFocoDesativar(false);
 
-  // 1. Captura da posição
-  var scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-  _menuFocoScrollX = window.scrollX || window.pageXOffset || 0;
+  // 1. Captura da posição exata antes de travar
+  var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+  _menuFocoScrollX = window.pageXOffset || document.documentElement.scrollLeft;
   _menuFocoScrollY = scrollY;
-  _cardapioScrollAnterior[acc.id] = { left: _menuFocoScrollX, top: scrollY };
   _menuFocoId = acc.id;
   
-  // 2. TÉCNICA ANTI-PULO: Trava o body com position fixed
+  // 2. TÉCNICA WORLD CLASS ANTI-PULO
+  // Salva o scroll, trava o body no lugar e compensa a largura da barra de scroll
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  document.body.style.paddingRight = scrollbarWidth + 'px';
   document.body.style.top = '-' + scrollY + 'px';
   document.body.classList.add('itap-lock-fixed');
-
-  // 3. Aplica as classes de foco
-  acc.classList.add('menu-foco-ativo');
-  acc.classList.remove('menu-foco-scroll-livre');
-  
-  var cardapio = document.getElementById('cardapio');
-  var vcWrap = document.getElementById('vc-wrap');
-  if (cardapio) cardapio.classList.add('menu-foco-cardapio');
-  if (vcWrap) vcWrap.classList.add('menu-foco-armario');
-  
-  document.documentElement.classList.add('menu-foco-aberto');
   document.body.classList.add('menu-foco-aberto');
+  document.documentElement.classList.add('menu-foco-aberto');
+
+  // 3. Aplica as classes de foco na categoria
+  acc.classList.add('menu-foco-ativo');
+  
+  // Centraliza a categoria suavemente para o usuário
+  acc.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function _menuFocoDesativar(restaurarPosicao) {
@@ -5521,27 +5549,22 @@ function _menuFocoDesativar(restaurarPosicao) {
   
   if (acc) {
     acc.classList.remove('menu-foco-ativo');
-    acc.classList.remove('menu-foco-scroll-livre');
   }
   
-  var cardapio = document.getElementById('cardapio');
-  var vcWrap = document.getElementById('vc-wrap');
-  if (cardapio) cardapio.classList.remove('menu-foco-cardapio');
-  if (vcWrap) vcWrap.classList.remove('menu-foco-armario');
-  
-  document.documentElement.classList.remove('menu-foco-aberto');
-  document.body.classList.remove('menu-foco-aberto');
-  
-  // Remove a trava de Fixed Body
+  // Remove as travas e classes de foco
   document.body.classList.remove('itap-lock-fixed');
+  document.body.classList.remove('menu-foco-aberto');
+  document.documentElement.classList.remove('menu-foco-aberto');
   document.body.style.top = '';
+  document.body.style.paddingRight = '';
   
   _menuFocoId = null;
   
   if (restaurarPosicao) {
+    // Restauração imediata e sem pulo
     window.scrollTo(x, y);
-    // Reforço para navegadores mobile
-    setTimeout(function() { window.scrollTo(x, y); }, 10);
+    // Reforço para garantir que o navegador mobile não ignore o comando
+    requestAnimationFrame(() => { window.scrollTo(x, y); });
   }
 }
 
@@ -5709,22 +5732,22 @@ function _getAccBody(el, bodyIdHint) {
 
 function getCorSabor(sabor) {
     var s = String(sabor).toLowerCase();
-    // VERDE: Limão, Menta, Pistache, Kiwi
-    if (s.includes("limão") || s.includes("menta") || s.includes("pistache") || s.includes("kiwi")) return "color: #008C45 !important; border-color: #008C45 !important;";
-    // VERMELHO: Morango, Cereja, Amarena, Cheesecake, Sensação, Groselha, Melância, Goiaba
-    if (s.includes("morango") || s.includes("cereja") || s.includes("amarena") || s.includes("cheesecake") || s.includes("sensação") || s.includes("groselha") || s.includes("melância") || s.includes("goiaba")) return "color: #E8000D !important; border-color: #E8000D !important;";
-    // MARROM: Chocolate, Trufa, Nutella, Ovomaltine, Prestígio, Ferrero, Bis, Bombom, Brigadeiro, Café, Nozes, Croquer, Passas ao Rum, Amendoim
-    if (s.includes("chocolate") || s.includes("trufa") || s.includes("nutella") || s.includes("ovomaltine") || s.includes("prestígio") || s.includes("ferrero") || s.includes("bis") || s.includes("bombom") || s.includes("brigadeiro") || s.includes("café") || s.includes("nozes") || s.includes("croquer") || s.includes("passas") || s.includes("amendoim")) return "color: #5D4037 !important; border-color: #5D4037 !important;";
-    // AMARELO/LARANJA: Abacaxi, Milho, Maracujá, Banana, Caju, Mamão, Nata, Creme, Caramelo, Doce de Leite, Bem Casado, Baunilha
-    if (s.includes("abacaxi") || s.includes("milho") || s.includes("maracujá") || s.includes("banana") || s.includes("caju") || s.includes("mamão") || s.includes("nata") || s.includes("creme") || s.includes("caramelo") || s.includes("doce de leite") || s.includes("bem casado") || s.includes("baunilha")) return "color: #F9A825 !important; border-color: #F9A825 !important;";
-    // ROXO/VINHO: Uva, Ameixa, Açaí, Tamarindo, Vinho
-    if (s.includes("uva") || s.includes("ameixa") || s.includes("açaí") || s.includes("tamarindo") || s.includes("vinho")) return "color: #6A1B9A !important; border-color: #6A1B9A !important;";
-    // AZUL: Blue Ice, Algodão Doce
-    if (s.includes("blue ice") || s.includes("algodão doce")) return "color: #0288D1 !important; border-color: #0288D1 !important;";
-    // BEGE/BRANCO: Leite Ninho, Coco, Flocos, Leite Condensado, Oreo, Kinder
-    if (s.includes("ninho") || s.includes("coco") || s.includes("flocos") || s.includes("leite condensado") || s.includes("oreo") || s.includes("kinder")) return "color: #8D6E63 !important; border-color: #D7CCC8 !important;";
+    // VERDE VIBRANTE: Limão, Menta, Pistache, Kiwi
+    if (s.includes("limão") || s.includes("menta") || s.includes("pistache") || s.includes("kiwi")) return "color: #2E7D32 !important; border-color: #A5D6A7 !important; background: #F1F8E9 !important;";
+    // VERMELHO PAIXÃO: Morango, Cereja, Amarena, Cheesecake, Sensação, Groselha, Melância, Goiaba
+    if (s.includes("morango") || s.includes("cereja") || s.includes("amarena") || s.includes("cheesecake") || s.includes("sensação") || s.includes("groselha") || s.includes("melância") || s.includes("goiaba")) return "color: #C62828 !important; border-color: #EF9A9A !important; background: #FFEBEE !important;";
+    // MARROM CHOCOLATE: Chocolate, Trufa, Nutella, Ovomaltine, Prestígio, Ferrero, Bis, Bombom, Brigadeiro, Café, Nozes, Croquer, Passas ao Rum, Amendoim
+    if (s.includes("chocolate") || s.includes("trufa") || s.includes("nutella") || s.includes("ovomaltine") || s.includes("prestígio") || s.includes("ferrero") || s.includes("bis") || s.includes("bombom") || s.includes("brigadeiro") || s.includes("café") || s.includes("nozes") || s.includes("croquer") || s.includes("passas") || s.includes("amendoim")) return "color: #4E342E !important; border-color: #BCAAA4 !important; background: #EFEBE9 !important;";
+    // AMARELO/LARANJA OURO: Abacaxi, Milho, Maracujá, Banana, Caju, Mamão, Nata, Creme, Caramelo, Doce de Leite, Bem Casado, Baunilha
+    if (s.includes("abacaxi") || s.includes("milho") || s.includes("maracujá") || s.includes("banana") || s.includes("caju") || s.includes("mamão") || s.includes("nata") || s.includes("creme") || s.includes("caramelo") || s.includes("doce de leite") || s.includes("bem casado") || s.includes("baunilha")) return "color: #F57F17 !important; border-color: #FFF59D !important; background: #FFFDE7 !important;";
+    // ROXO/VINHO NOBRE: Uva, Ameixa, Açaí, Tamarindo, Vinho
+    if (s.includes("uva") || s.includes("ameixa") || s.includes("açaí") || s.includes("tamarindo") || s.includes("vinho")) return "color: #4A148C !important; border-color: #CE93D8 !important; background: #F3E5F5 !important;";
+    // AZUL CÉU: Blue Ice, Algodão Doce
+    if (s.includes("blue ice") || s.includes("algodão doce")) return "color: #01579B !important; border-color: #81D4FA !important; background: #E1F5FE !important;";
+    // BEGE/BRANCO LEITE: Leite Ninho, Coco, Flocos, Leite Condensado, Oreo, Kinder
+    if (s.includes("ninho") || s.includes("coco") || s.includes("flocos") || s.includes("leite condensado") || s.includes("oreo") || s.includes("kinder")) return "color: #5D4037 !important; border-color: #D7CCC8 !important; background: #FAFAFA !important;";
     
-    return "color: #1A1A1A !important; border-color: #E2E8F0 !important;";
+    return "color: #374151 !important; border-color: #E5E7EB !important; background: #F9FAFB !important;";
 }
 
 // Mostra sabores/itens inline dentro do acc-body — SEM PULO (padrão iFood)
@@ -5739,7 +5762,8 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
     var isLancamento = s.toLowerCase().includes("bem casado") || s.toLowerCase().includes("cheesecake") || s.toLowerCase().includes("passas ao rum");
     var corStyle = getCorSabor(s);
     var cls = "chip-inline " + (isLancamento ? "itap-lancamento-neon " : "");
-    return '<span class="' + cls + '" style="' + corStyle + '">' + s + '</span>';
+    var badge = isLancamento ? '<span class="tag-lancamento">Lançamento</span>' : '';
+    return '<span class="' + cls + '" style="' + corStyle + '">' + badge + s + '</span>';
   }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
   _semPulo(function() {

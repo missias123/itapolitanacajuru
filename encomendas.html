@@ -275,6 +275,27 @@
         border-color: var(--success);
         box-shadow: 0 4px 12px rgba(0, 137, 18, 0.2);
     }
+    .itap-lancamento-neon {
+        border-color: #FF4081 !important;
+        box-shadow: 0 0 10px rgba(255,64,129,0.4);
+        animation: pulseNeon 1.5s infinite;
+    }
+    @keyframes pulseNeon {
+        0% { box-shadow: 0 0 5px rgba(255,64,129,0.4); }
+        50% { box-shadow: 0 0 15px rgba(255,64,129,0.8); }
+        100% { box-shadow: 0 0 5px rgba(255,64,129,0.4); }
+    }
+    .tag-lancamento {
+        font-size: 8px;
+        background: #FF4081;
+        color: white;
+        padding: 1px 4px;
+        border-radius: 3px;
+        text-transform: uppercase;
+        font-weight: 900;
+        display: inline-block;
+        margin-bottom: 2px;
+    }
     .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
 
     .btn-carrinho-fixo {
@@ -682,22 +703,22 @@
 
     function getCorSabor(sabor) {
         var s = String(sabor).toLowerCase();
-        // VERDE: Limão, Menta, Pistache, Kiwi
-        if (s.includes("limão") || s.includes("menta") || s.includes("pistache") || s.includes("kiwi")) return "color: #008C45 !important; border-color: #008C45 !important;";
-        // VERMELHO: Morango, Cereja, Amarena, Cheesecake, Sensação, Groselha, Melância, Goiaba
-        if (s.includes("morango") || s.includes("cereja") || s.includes("amarena") || s.includes("cheesecake") || s.includes("sensação") || s.includes("groselha") || s.includes("melância") || s.includes("goiaba")) return "color: #E8000D !important; border-color: #E8000D !important;";
-        // MARROM: Chocolate, Trufa, Nutella, Ovomaltine, Prestígio, Ferrero, Bis, Bombom, Brigadeiro, Café, Nozes, Croquer, Passas ao Rum, Amendoim
-        if (s.includes("chocolate") || s.includes("trufa") || s.includes("nutella") || s.includes("ovomaltine") || s.includes("prestígio") || s.includes("ferrero") || s.includes("bis") || s.includes("bombom") || s.includes("brigadeiro") || s.includes("café") || s.includes("nozes") || s.includes("croquer") || s.includes("passas") || s.includes("amendoim")) return "color: #5D4037 !important; border-color: #5D4037 !important;";
-        // AMARELO/LARANJA: Abacaxi, Milho, Maracujá, Banana, Caju, Mamão, Nata, Creme, Caramelo, Doce de Leite, Bem Casado, Baunilha
-        if (s.includes("abacaxi") || s.includes("milho") || s.includes("maracujá") || s.includes("banana") || s.includes("caju") || s.includes("mamão") || s.includes("nata") || s.includes("creme") || s.includes("caramelo") || s.includes("doce de leite") || s.includes("bem casado") || s.includes("baunilha")) return "color: #F9A825 !important; border-color: #F9A825 !important;";
-        // ROXO/VINHO: Uva, Ameixa, Açaí, Tamarindo, Vinho
-        if (s.includes("uva") || s.includes("ameixa") || s.includes("açaí") || s.includes("tamarindo") || s.includes("vinho")) return "color: #6A1B9A !important; border-color: #6A1B9A !important;";
-        // AZUL: Blue Ice, Algodão Doce
-        if (s.includes("blue ice") || s.includes("algodão doce")) return "color: #0288D1 !important; border-color: #0288D1 !important;";
-        // BEGE/BRANCO: Leite Ninho, Coco, Flocos, Leite Condensado, Oreo, Kinder
-        if (s.includes("ninho") || s.includes("coco") || s.includes("flocos") || s.includes("leite condensado") || s.includes("oreo") || s.includes("kinder")) return "color: #8D6E63 !important; border-color: #D7CCC8 !important;";
+        // VERDE VIBRANTE: Limão, Menta, Pistache, Kiwi
+        if (s.includes("limão") || s.includes("menta") || s.includes("pistache") || s.includes("kiwi")) return "color: #2E7D32 !important; border-color: #A5D6A7 !important; background: #F1F8E9 !important;";
+        // VERMELHO PAIXÃO: Morango, Cereja, Amarena, Cheesecake, Sensação, Groselha, Melância, Goiaba
+        if (s.includes("morango") || s.includes("cereja") || s.includes("amarena") || s.includes("cheesecake") || s.includes("sensação") || s.includes("groselha") || s.includes("melância") || s.includes("goiaba")) return "color: #C62828 !important; border-color: #EF9A9A !important; background: #FFEBEE !important;";
+        // MARROM CHOCOLATE: Chocolate, Trufa, Nutella, Ovomaltine, Prestígio, Ferrero, Bis, Bombom, Brigadeiro, Café, Nozes, Croquer, Passas ao Rum, Amendoim
+        if (s.includes("chocolate") || s.includes("trufa") || s.includes("nutella") || s.includes("ovomaltine") || s.includes("prestígio") || s.includes("ferrero") || s.includes("bis") || s.includes("bombom") || s.includes("brigadeiro") || s.includes("café") || s.includes("nozes") || s.includes("croquer") || s.includes("passas") || s.includes("amendoim")) return "color: #4E342E !important; border-color: #BCAAA4 !important; background: #EFEBE9 !important;";
+        // AMARELO/LARANJA OURO: Abacaxi, Milho, Maracujá, Banana, Caju, Mamão, Nata, Creme, Caramelo, Doce de Leite, Bem Casado, Baunilha
+        if (s.includes("abacaxi") || s.includes("milho") || s.includes("maracujá") || s.includes("banana") || s.includes("caju") || s.includes("mamão") || s.includes("nata") || s.includes("creme") || s.includes("caramelo") || s.includes("doce de leite") || s.includes("bem casado") || s.includes("baunilha")) return "color: #F57F17 !important; border-color: #FFF59D !important; background: #FFFDE7 !important;";
+        // ROXO/VINHO NOBRE: Uva, Ameixa, Açaí, Tamarindo, Vinho
+        if (s.includes("uva") || s.includes("ameixa") || s.includes("açaí") || s.includes("tamarindo") || s.includes("vinho")) return "color: #4A148C !important; border-color: #CE93D8 !important; background: #F3E5F5 !important;";
+        // AZUL CÉU: Blue Ice, Algodão Doce
+        if (s.includes("blue ice") || s.includes("algodão doce")) return "color: #01579B !important; border-color: #81D4FA !important; background: #E1F5FE !important;";
+        // BEGE/BRANCO LEITE: Leite Ninho, Coco, Flocos, Leite Condensado, Oreo, Kinder
+        if (s.includes("ninho") || s.includes("coco") || s.includes("flocos") || s.includes("leite condensado") || s.includes("oreo") || s.includes("kinder")) return "color: #5D4037 !important; border-color: #D7CCC8 !important; background: #FAFAFA !important;";
         
-        return "color: #1A1A1A !important; border-color: #E2E8F0 !important;";
+        return "color: #374151 !important; border-color: #E5E7EB !important; background: #F9FAFB !important;";
     }
 
     var PICOLES_CATALOGO = {
@@ -1104,7 +1125,8 @@
             var isLancamento = s.toLowerCase().includes("bem casado") || s.toLowerCase().includes("cheesecake") || s.toLowerCase().includes("passas ao rum");
             var corStyle = getCorSabor(s);
             var cls = "sabor-item " + (sel ? "sel " : "") + (isLancamento ? "itap-lancamento-neon " : "");
-            return `<div class="${cls}" style="${corStyle}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
+            var badge = isLancamento ? '<span class="tag-lancamento">Lançamento</span><br>' : '';
+            return `<div class="${cls}" style="${corStyle}" onclick="window.toggleSabor('${s}', this)">${badge}${s}</div>`;
         }).join('');
         
         atualizarAcaoSabores();
