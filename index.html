@@ -5650,7 +5650,8 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
     var desc = partes[1] ? partes[1].replace(')', '') : '';
     var textoHtml = '<strong>' + nome + '</strong>' + (desc ? '<small>' + desc + '</small>' : '');
     
-    return '<span class="' + cls + '" style="' + corStyle + '">' + badge + textoHtml + '</span>';
+    // NO CARDAPIO: Sabores são fixos e não clicáveis (pointer-events: none)
+    return '<span class="' + cls + '" style="' + corStyle + '; cursor: default; pointer-events: none;">' + badge + textoHtml + '</span>';
   }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
   _semPulo(function() {

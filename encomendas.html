@@ -251,30 +251,44 @@
         .sabor-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     }
     .sabor-item {
-        min-height: 52px;
+        min-height: 70px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 12px 14px;
+        padding: 14px 10px;
         border: 2px solid #E2E8F0;
-        border-radius: 12px;
+        border-radius: 16px;
         cursor: pointer;
         text-align: center;
-        font-weight: 800;
-        font-size: 0.95rem;
-        background: #fff;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-        line-height: 1.25;
-        letter-spacing: -0.01em;
+        line-height: 1.2;
+        position: relative;
+    }
+    .sabor-item strong {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 900;
+        font-size: 14px;
+        display: block;
+        letter-spacing: -0.02em;
+    }
+    .sabor-item small {
+        font-family: 'Nunito', sans-serif;
+        font-weight: 700;
+        font-size: 11px;
+        opacity: 0.85;
+        display: block;
+        margin-top: 2px;
     }
     .sabor-item:active { transform: scale(0.95); }
     .sabor-item.sel {
-        background: var(--success);
-        color: white;
-        border-color: var(--success);
-        box-shadow: 0 4px 12px rgba(0, 137, 18, 0.2);
+        background: var(--success) !important;
+        color: white !important;
+        border-color: var(--success) !important;
+        box-shadow: 0 4px 12px rgba(0, 137, 18, 0.3);
     }
+    .sabor-item.sel * { color: white !important; }
     .itap-lancamento-neon {
         border-color: #FF4081 !important;
         box-shadow: 0 0 10px rgba(255,64,129,0.4);
@@ -286,15 +300,22 @@
         100% { box-shadow: 0 0 5px rgba(255,64,129,0.4); }
     }
     .tag-lancamento {
-        font-size: 8px;
-        background: #FF4081;
-        color: white;
-        padding: 1px 4px;
-        border-radius: 3px;
-        text-transform: uppercase;
-        font-weight: 900;
-        display: inline-block;
-        margin-bottom: 2px;
+        position: absolute !important;
+        top: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        font-size: 9px !important;
+        background: linear-gradient(135deg, #FF4081, #E8000D) !important;
+        color: white !important;
+        padding: 2px 8px !important;
+        border-radius: 20px !important;
+        text-transform: uppercase !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.5px !important;
+        white-space: nowrap !important;
+        box-shadow: 0 2px 8px rgba(232,0,13,0.3) !important;
+        z-index: 10 !important;
+        pointer-events: none !important; /* GARANTE QUE O CLIQUE PASSE PARA O CARD */
     }
     .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
 
