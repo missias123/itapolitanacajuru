@@ -3705,17 +3705,11 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('DOMContentLoaded', inicializarAcessibilidadeAcc);
 inicializarAcessibilidadeAcc();
 
-// Volta ao topo do cardápio E fecha o accordion atual
+// Volta ao topo do cardápio E fecha o accordion atual de forma limpa
 function voltarCardapio(accId) {
-  // 1. Identifica se está no modo foco e captura a posição ANTES de qualquer alteração
-  var eraFoco = _menuFocoId === accId;
-  var x = _menuFocoScrollX;
-  var y = _menuFocoScrollY;
-  
   if (accId) {
     var el = document.getElementById(accId);
     if (el) {
-      // 2. Fecha o accordion visualmente
       el.classList.remove('open');
       var body = el.querySelector('.acc-body');
       if (body) {
@@ -3726,16 +3720,6 @@ function voltarCardapio(accId) {
       if (h) h.setAttribute('aria-expanded', 'false');
     }
   }
-
-  // 3. Se era foco, desativa usando a técnica restaurarPosicao=true para acionar o Ghost Spacer
-  if (eraFoco) {
-    _menuFocoDesativar(true);
-  } else {
-    // Caso não fosse foco (segurança), restaura manualmente
-    _restaurarPosicaoCardapio(x, y);
-  }
-
-  // 4. Restaura estado dos containers principais
   var vcContainer = document.getElementById('vc-container');
   var vcBtn = document.getElementById('vc-btn');
   if (vcContainer) {
@@ -3747,8 +3731,6 @@ function voltarCardapio(accId) {
     vcBtn.classList.add('aberto');
     vcBtn.setAttribute('aria-expanded', 'true');
   }
-  
-  if (accId) delete _cardapioScrollAnterior[accId];
 }
 /* =====================================================
    SISTEMA UNIFICADO DE MODAL — PADRÃO PROFISSIONAL
