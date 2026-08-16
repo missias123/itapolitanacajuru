@@ -27,7 +27,7 @@ A mesma consulta mostrou que várias categorias permanecem no DOM e visíveis ao
 O resultado da consulta foi salvo também em `/home/ubuntu/console_outputs/exec_result_2026-08-14_22-18-06_950.txt`.
 
 ## Inspeção do botão publicado
-O botão está ligado a `abrirSaboresInline('sorvetes','35 Sabores de Sorvete',this)`. A função existe no navegador e `getSaboresDisponíveis()` retorna exatamente 35 itens, começando por `Abacaxi ao Vinho`, `Abacaxi Suíço`, `Blue Ice (Algodão Doce Azul)`, `Amarena (Cereja Italiana)` e `Ameixa`. Portanto, a fonte de dados não está vazia.
+O botão está ligado a `abrirSaboresInline('sorvetes','35 Sabores de Sorvete',this)`. A função existe no navegador e `getSaboresDisponíveis()` retorna exatamente 35 itens, começando por `Abacaxi ao Vinho`, `Abacaxi Suíço (c/caramelo)`, `Blue Ice (Algodão Doce Azul)`, `Amarena (Cereja Italiana Azeda)` e `Ameixa`. Portanto, a fonte de dados não está vazia.
 
 No momento da inspeção, o corpo `sorvetes-body` ainda continha somente os cards de produtos, o botão, o CTA de WhatsApp e o botão de voltar. Isso mostra que o clique não concluiu a renderização esperada ou que o navegador publicou uma versão cuja função encontrou um problema no caminho. A causa ainda não deve ser afirmada sem inspecionar `_getAccBody` e `mostrarSaboresInline` e executar a função diretamente de modo controlado.
 
@@ -44,7 +44,7 @@ Após dois cliques humanos no botão `← Voltar`, o navegador continuou listand
 ## Teste humano de Picolés
 Após reiniciar a página e abrir o cardápio, o clique no acordeão `PICOLÉS DIFERENCIADOS` funcionou: o rótulo mudou para `Fechar opções`.
 
-O clique no primeiro botão `8 Sabores` também funcionou e abriu o nível inline `🍭 Sabores – Picolé de Frutas`, mostrando oito sabores específicos: `Abacaxi`, `Caju`, `Goiaba`, `Groselha`, `Limão`, `Melância`, `Uva` e `Tamarindo`. Nesse fluxo a lista de 35 sabores não apareceu, o que está de acordo com a separação exigida para Picolés.
+O clique no primeiro botão `8 Sabores` também funcionou e abriu o nível inline `🍭 Sabores – Picolé de Frutas`, mostrando oito sabores específicos: `Abacaxi`, `Caju`, `Goiaba`, `Groselha`, `Limão (base água)`, `Melância`, `Uva` e `Tamarindo`. Nesse fluxo a lista de 35 sabores não apareceu, o que está de acordo com a separação exigida para Picolés.
 
 O nível aberto apresentou `← Voltar ao cardápio` e `← Voltar`. A posição visual e o funcionamento do retorno ainda precisam ser confirmados em um clique seguinte; a abertura e a separação de dados foram confirmadas.
 

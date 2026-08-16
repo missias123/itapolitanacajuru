@@ -3,7 +3,7 @@
 Fonte: `dados/produtos.json`
 
 ## sorvetes (`sorvetes`)
-- Sabores (35): Abacaxi ao Vinho, Abacaxi Suíço, Algodão Doce (Blue Ice), Amarena (Cereja Italiana), Ameixa, Banana com Nutella, Bis e Trufa, Cereja Trufada, Chocolate, Chocolate com Café, Coco Queimado, Creme Paris, Croquer, Doce de Leite, Ferrero Rocher, Flocos, Kinder Ovo, Leite Condensado, Leite Ninho, Leite Ninho Folheado, Leite Ninho com Oreo, Limão, Limão Suíço, Menta com Chocolate, Milho Verde, Morango Trufado, Mousse de Maracujá, Mousse de Uva, Nozes, Nutella, Ovomaltine, Pistache, Prestígio, Sensação, Torta de Chocolate
+- Sabores (35): Abacaxi ao Vinho, Abacaxi Suíço (c/caramelo), Algodão Doce (Blue Ice), Amarena (Cereja Italiana Azeda), Ameixa, Banana com Nutella, Bis e Trufa, Cereja Trufada, Chocolate, Chocolate com Café, Coco Queimado, Creme Paris (crocante), Croquer (amendoim x doce leite), Doce de Leite, Ferrero Rocher, Flocos, Kinder Ovo (choc. branco), Leite Condensado, Leite Ninho, Leite Ninho Folheado, Leite Ninho com Oreo, Limão (base água), Limão (base água) Suíço, Menta com Chocolate, Milho Verde, Morango Trufado, Mousse de Maracujá, Mousse de Uva, Nozes, Nutella, Ovomaltine, Pistache, Prestígio, Sensação (morango x choc.), Torta de Chocolate
 
 ## acai (`acai`)
 - Açaí — 250 ml:
@@ -89,7 +89,7 @@ Fonte: `dados/produtos.json`
 ## isopores_viagem (`isopores_viagem`)
 
 ## milkshake (`milkshake`)
-- Sabores (8): Chocolate, Morango, Baunilha, Nutella, Ovomaltine, Caramelo, Maracujá, Limão
+- Sabores (8): Chocolate, Morango, Baunilha, Nutella, Ovomaltine, Caramelo, Maracujá, Limão (base água)
 
 ## tacas (`tacas`)
 
@@ -99,7 +99,7 @@ Fonte: `dados/produtos.json`
 - Picolé de Fruta/Água:
   - preço_varejo: R$ 2,50
   - preço_atacado: R$ 1,80
-  - Sabores (8): Abacaxi, Caju, Goiaba, Groselha, Limão, Melância, Uva, Tamarindo
+  - Sabores (8): Abacaxi, Caju, Goiaba, Groselha, Limão (base água), Melância, Uva, Tamarindo
 - Picolé de Leite sem Recheio:
   - preço_varejo: R$ 2,50
   - preço_atacado: R$ 2,00
@@ -107,7 +107,7 @@ Fonte: `dados/produtos.json`
 - Picolé de Leite com Recheio:
   - preço_varejo: R$ 3,00
   - preço_atacado: R$ 2,00
-  - Sabores (12): Açaí, Blue Ice, Caraxi, Coco Branco, Chocolate, Amarena (Cereja Italiana), Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba
+  - Sabores (12): Açaí, Blue Ice, Caraxi, Coco Branco, Chocolate, Amarena (Cereja Italiana Azeda), Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba
 - Picolé Leite Ninho:
   - preço_varejo: R$ 4,00
   - preço_atacado: R$ 3,00

@@ -61,7 +61,7 @@
       'telefone':      '\ud83d\udcf1 WhatsApp: (16) 99606-2046. Chame para encomendas, d\u00favidas ou eventos!',
       'contato':       '\ud83d\udcf1 Fale conosco pelo WhatsApp: (16) 99606-2046.',
       'instagram':     '\ud83d\udcf8 Nos siga: @sorveteriaitapolitanacajuru',
-      'sabor':         '\ud83c\udf66 Temos 35 sabores Tipo Artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo e muito mais.',
+      'sabor':         '\ud83c\udf66 Temos 35 sabores Tipo Artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco) e muito mais.',
       'sabores':       '\ud83c\udf66 Temos 35 sabores Tipo Artesanal! Digite o nome de um sabor para saber o pre\u00e7o.',
       'nutella':       '\ud83c\udf66 Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutella e mais! \ud83d\ude0b',
       'chocolate':     '\ud83c\udf6b Temos Chocolate, Chocolate com Caf\u00e9, Bis e Trufa, Menta com Chocolate, Prest\u00edgio e Torta de Chocolate!',
@@ -173,7 +173,7 @@
       var n    = sabores.length || 35;
       var prev = sabores.length > 0
         ? sabores.slice(0, 8).join(', ') + ' e mais ' + (sabores.length - 8) + '...'
-        : 'Chocolate, Nutella, Morango Trufado, Pistache, Kinder Ovo e mais!';
+        : 'Chocolate, Nutella, Morango Trufado, Pistache, Kinder Ovo (choc. branco) e mais!';
       var cp0  = (precos && precos.casquinha_copo && precos.casquinha_copo['1 Bola'] != null) ? precos.casquinha_copo : null;
       var pMin = cp0 ? 'R$ ' + cp0['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
       return {

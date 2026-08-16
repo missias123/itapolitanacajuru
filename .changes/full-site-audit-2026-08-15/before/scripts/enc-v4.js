@@ -9,13 +9,13 @@
 
     // --- 1. CONFIGURAÇÕES E DADOS (35 SABORES OFICIAIS) ---
     var SABORES_LISTA = [
-        "Abacaxi ao Vinho", "Abacaxi Suíço", "Blue Ice (Algodão Doce Azul)", "Amarena (Cereja Italiana)", "Ameixa",
+        "Abacaxi ao Vinho", "Abacaxi Suíço (c/caramelo)", "Blue Ice (Algodão Doce Azul)", "Amarena (Cereja Italiana Azeda)", "Ameixa",
         "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
-        "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
-        "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
-        "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
+        "Coco Queimado", "Creme Paris (crocante)", "Croquer (amendoim x doce leite)", "Doce de Leite", "Ferrero Rocher", "Flocos",
+        "Kinder Ovo (choc. branco)", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
+        "Limão (base água)", "Limão (base água) Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
         "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
-        "Prestígio", "Sensação", "Torta de Chocolate"
+        "Prestígio", "Sensação (morango x choc.)", "Torta de Chocolate"
     ];
 
     var PRODUTOS_CAIXAS = [

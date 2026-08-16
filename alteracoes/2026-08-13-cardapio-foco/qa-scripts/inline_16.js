@@ -698,7 +698,7 @@ function abrirMilkshakeSabores(el) {
     sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   } else {
     // Fallback caso a lista esteja vazia
-    const fallback=['Chocolate','Morango','Creme','Flocos','Leite Ninho','Ovomaltine','Nutella','Sensação','Prestígio','Milho Verde','Coco','Abacaxi'];
+    const fallback=['Chocolate','Morango','Creme','Flocos','Leite Ninho','Ovomaltine','Nutella','Sensação (morango x choc.)','Prestígio','Milho Verde','Coco','Abacaxi'];
     fallback.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
   }
   
@@ -963,8 +963,8 @@ const RESPOSTAS={
   'contato':'Fale conosco pelo WhatsApp: (16) 99606-2046. Ou use o formulário "Fale Conosco" no site!',
   'instagram':'Nos siga no Instagram para ver novidades, sabores e promoções! Busque @sorveteriaitapolitanacajuru.',
   // ── CARDÁPIO E SABORES ──
-  'sabor':'Temos 35 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
-  'sabores':'Temos 35 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
+  'sabor':'Temos 35 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco), Ovomaltine e muito mais. Veja o cardápio completo no site!',
+  'sabores':'Temos 35 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco), Ovomaltine e muito mais. Veja o cardápio completo no site!',
   'cardápio':'Abra a área de Encomendas/Cardápio para ver categorias, produtos e próximos passos do pedido.',
   'nutella':'Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutella e muito mais! Delicioso! ',
   'chocolate':'Temos Chocolate, Chocolate com Café, Bis e Trufa, Menta com Chocolate, Prestígio e Torta de Chocolate! ',

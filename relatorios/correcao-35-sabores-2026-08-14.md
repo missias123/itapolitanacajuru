@@ -66,4 +66,4 @@ Após a correção de espaço da barra de cookies, o botão ficou acessível e n
 
 ## Validação bem-sucedida do Milkshake
 
-Após a atualização robusta de `_getAccBody`, o clique no botão do Milkshake localizou corretamente o elemento `.acc-body` (`milk-body`), renderizando exatamente 35 chips com os sabores oficiais (`Abacaxi ao Vinho`, `Abacaxi Suíço`, etc.) sem causar saltos de rolagem (`_semPulo`).
+Após a atualização robusta de `_getAccBody`, o clique no botão do Milkshake localizou corretamente o elemento `.acc-body` (`milk-body`), renderizando exatamente 35 chips com os sabores oficiais (`Abacaxi ao Vinho`, `Abacaxi Suíço (c/caramelo)`, etc.) sem causar saltos de rolagem (`_semPulo`).
