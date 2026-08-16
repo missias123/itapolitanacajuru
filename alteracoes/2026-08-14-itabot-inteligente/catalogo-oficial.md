@@ -3,7 +3,7 @@
 Fonte: `dados/produtos.json`
 
 ## sorvetes (`sorvetes`)
-- Sabores (35): Abacaxi ao Vinho, Abacaxi Suíço, Algodão Doce (Blue Ice), Amarena, Ameixa, Banana com Nutella, Bis e Trufa, Cereja Trufada, Chocolate, Chocolate com Café, Coco Queimado, Creme Paris, Croquer, Doce de Leite, Ferrero Rocher, Flocos, Kinder Ovo, Leite Condensado, Leite Ninho, Leite Ninho Folheado, Leite Ninho com Oreo, Limão, Limão Suíço, Menta com Chocolate, Milho Verde, Morango Trufado, Mousse de Maracujá, Mousse de Uva, Nozes, Nutella, Ovomaltine, Pistache, Prestígio, Sensação, Torta de Chocolate
+- Sabores (35): Abacaxi ao Vinho, Abacaxi Suíço, Algodão Doce (Blue Ice), Amarena (Cereja Italiana), Ameixa, Banana com Nutella, Bis e Trufa, Cereja Trufada, Chocolate, Chocolate com Café, Coco Queimado, Creme Paris, Croquer, Doce de Leite, Ferrero Rocher, Flocos, Kinder Ovo, Leite Condensado, Leite Ninho, Leite Ninho Folheado, Leite Ninho com Oreo, Limão, Limão Suíço, Menta com Chocolate, Milho Verde, Morango Trufado, Mousse de Maracujá, Mousse de Uva, Nozes, Nutella, Ovomaltine, Pistache, Prestígio, Sensação, Torta de Chocolate
 
 ## acai (`acai`)
 - Açaí — 250 ml:
@@ -107,7 +107,7 @@ Fonte: `dados/produtos.json`
 - Picolé de Leite com Recheio:
   - preço_varejo: R$ 3,00
   - preço_atacado: R$ 2,00
-  - Sabores (12): Açaí, Blue Ice, Caraxi, Coco Branco, Chocolate, Amarena, Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba
+  - Sabores (12): Açaí, Blue Ice, Caraxi, Coco Branco, Chocolate, Amarena (Cereja Italiana), Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba
 - Picolé Leite Ninho:
   - preço_varejo: R$ 4,00
   - preço_atacado: R$ 3,00

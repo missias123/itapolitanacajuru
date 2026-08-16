@@ -2,7 +2,7 @@
 (function(window, document) {
     'use strict';
     
-    var SABORES = ["Abacaxi ao Vinho", "Amarena", "Chocolate", "Ferrero Rocher", "Leite Ninho", "Morango Trufado", "Nutella", "Pistache", "Sensação", "Torta de Chocolate"];
+    var SABORES = ["Abacaxi ao Vinho", "Amarena (Cereja Italiana)", "Chocolate", "Ferrero Rocher", "Leite Ninho", "Morango Trufado", "Nutella", "Pistache", "Sensação", "Torta de Chocolate"];
     var PRODUTOS = [
         { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preco: 100, max: 2, cat: 'caixas' },
         { id: "cx5l_3s", nome: "Caixa 5 Litros - 3 Sabores", preco: 115, max: 3, cat: 'caixas' },

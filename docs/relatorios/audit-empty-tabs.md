@@ -1,13 +1,13 @@
 # Auditoria Forense - Abas Vazias Admin-Painel
 
-**Data**: 2026-05-20T01:10:41.450Z
-**Status Geral**: ✅ TODAS APROVADAS
+**Data**: 2026-08-16T13:31:06.252Z
+**Status Geral**: ❌ PROBLEMAS ENCONTRADOS
 
 ## Resumo Executivo
 
-- ✅ Sucessos: 29
+- ✅ Sucessos: 27
 - ⚠️  Avisos: 1
-- ❌ Problemas: 0
+- ❌ Problemas: 2
 
 ## Abas Auditadas
 
@@ -16,7 +16,7 @@
 | Sobre | ✅ | 7 | 1 | 0 |
 | Galeria | ✅ | 8 | 0 | 0 |
 | Pág. Encomendas | ✅ | 8 | 0 | 0 |
-| Rastreio | ✅ | 6 | 0 | 0 |
+| Rastreio | ❌ | 4 | 0 | 2 |
 
 ---
 
@@ -90,29 +90,24 @@
 **Seção HTML**: `sec-rastreio`
 **Função de carregamento**: `renderRastreioRecentes()`
 
-### ✅ Sucessos (6)
+### ✅ Sucessos (4)
 
-- ✅ Seção HTML id="sec-rastreio" encontrada
-- ✅ Todos os 4 campos HTML encontrados
 - ✅ Função renderRastreioRecentes() implementada
 - ✅ Função renderRastreioRecentes() é chamada em irPara()
 - ✅ Chave config "adminConteudoPaginas.rastreio" presente e populada
 - ✅ Seção "rastreio" mapeada em irPara()
 
-**Status**: ✅ APROVADA
+### ❌ Problemas Críticos (2)
+
+- ❌ CRÍTICO: Seção HTML id="sec-rastreio" NÃO ENCONTRADA
+- ❌ CRÍTICO: NENHUM campo HTML encontrado (0/4)
+
+**Status**: ❌ REPROVADA
 
 ---
 
 ## Conclusão
 
-✅ **Todas as 4 abas possuem:**
+❌ **Problemas encontrados na estrutura das abas.**
 
-1. Seção HTML completa com ID correto
-2. Campos HTML de entrada (inputs/textareas) presentes
-3. Função JavaScript de carregamento implementada
-4. Dados correspondentes no config.json
-5. Mapeamento correto na função irPara()
-
-**Diagnóstico**: As abas estão tecnicamente corretas. Se aparecem vazias no navegador, o problema está no fluxo de execução JavaScript (config não carregado, erro JS bloqueando execução, ou CSS ocultando as seções).
-
-**Próximo passo**: Auditoria visual no navegador com DevTools para capturar erros JavaScript em tempo de execução.
+Veja os detalhes acima para identificar elementos HTML ausentes, funções não implementadas ou dados faltantes no config.json.

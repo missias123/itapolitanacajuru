@@ -430,6 +430,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/itap-contrast-fix.css?v=20260816-contrast">
+
+<style id="itap-integral-contrast-patch">
+/* CORREÇÃO INTEGRAL DE CONTRASTE E RODAPÉ */
+.cta-btn-primary, .cta-btn-secondary, .btn-primario, .btn-sucesso, .btn-sabores, .btn-picolé, .btn-add-picoles {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+  font-weight: 900 !important;
+}
+.itap-footer-lnk, .itap-footer-pill, a.itap-footer-pill, a.itap-footer-lnk {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  font-weight: 800 !important;
+}
+</style>
+
 </head>
 <body class="fueap-surface fueap-encomendas itap-world">
 
@@ -641,7 +656,7 @@
     var picolesSelecionados = window.picolesSelecionados;
 
     var SABORES_SORVETE = [
-        "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa",
+        "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena (Cereja Italiana)", "Ameixa",
         "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
         "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
         "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
@@ -652,7 +667,7 @@
 
     var PICOLES_CATALOGO = {
         "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
-        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 3.00, precoAtacado: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
+        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 3.00, precoAtacado: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena (Cereja Italiana)", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
         "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 2.00, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
         "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": { precoVarejo: 4.00, precoAtacado: 3.00, sabores: ["Leite Ninho", "Ovomaltine"] },
         "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": { precoVarejo: 8.00, precoAtacado: 6.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
@@ -688,7 +703,7 @@
     var ESTOQUE_URL = "dados/produtos.json";
     var MAPA_PICOLES_ESTOQUE = {
         "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": [{ chave: "frutas_agua", sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] }],
-        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_com_recheio", sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] }],
+        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_com_recheio", sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena (Cereja Italiana)", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] }],
         "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_sem_recheio", sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] }],
         "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": [
             { chave: "leite_especial", sabores: ["Leite Ninho", "Ovomaltine"] }

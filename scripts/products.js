@@ -7,7 +7,7 @@
 window.PRODUTOS_DATA = {
     sorvetes: {
         sabores: [
-            "Abacaxi ao Vinho", "Abacaxi Suíço", "Blue Ice (Algodão Doce Azul)", "Amarena", "Ameixa",
+            "Abacaxi ao Vinho", "Abacaxi Suíço", "Blue Ice (Algodão Doce Azul)", "Amarena (Cereja Italiana)", "Ameixa",
             "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
             "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
             "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
@@ -33,7 +33,7 @@ window.PRODUTOS_DATA = {
         },
         leite_com_recheio: {
             nome: "Picolé Recheado — Base Leite", preço_varejo: 3, preço_atacado: 2,
-            sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba", "Coco Queimado", "Milho Verde", "Pistache"]
+            sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena (Cereja Italiana)", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba", "Coco Queimado", "Milho Verde", "Pistache"]
         },
         leite_especial: {
             nome: "Picolé Especial — Base Leite", preço_varejo: 4, preço_atacado: 3,

@@ -5,7 +5,7 @@ A classificação confirmada para todo o site é:
 | Categoria | Sabores | Preço atacado |
 |---|---|---:|
 | **Base Água / Frutas** | Abacaxi, Caju, Goiaba, Groselha, Limão, Melância, Uva, Tamarindo | R$ 1,80 |
-| **Recheados — Base Leite** | Açaí, Blue Ice (Algodão Doce Azul), Caraxi (Abacaxi com Caramelo), Coco Branco, Chocolate, Amarena, Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba | R$ 2,00 |
+| **Recheados — Base Leite** | Açaí, Blue Ice (Algodão Doce Azul), Caraxi (Abacaxi com Caramelo), Coco Branco, Chocolate, Amarena (Cereja Italiana), Leite Condensado, Mamão Papaia, Maracujá, Morango, Menta com Chocolate, Nata com Goiaba | R$ 2,00 |
 | **Sem Recheio — Base Leite** | Coco Queimado, Milho Verde, Amendoim, Pistache | R$ 2,00 |
 | **Especiais — Base Leite** | Leite Ninho, Ovomaltine | R$ 3,00 |
 | **Esquimós — Base Leite** | Bombom, Nutella, Ovomaltine, Leite Ninho, Nata, Morango, Brigadeiro, Prestígio | R$ 6,00 |
