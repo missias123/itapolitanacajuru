@@ -675,9 +675,9 @@
     
     function getSaboresAtuais() {
         if (window.PRODUTOS_DATA && window.PRODUTOS_DATA.sorvetes && window.PRODUTOS_DATA.sorvetes.sabores) {
-            return window.PRODUTOS_DATA.sorvetes.sabores;
+            return window.PRODUTOS_DATA.sorvetes.sabores.map(function(s) { return typeof s === 'string' ? s : s.nome; });
         }
-        return SABORES_SORVETE; // Fallback se o JSON falhar
+        return SABORES_SORVETE.map(function(s) { return typeof s === 'string' ? s : s.nome; });
     }
 
     function getCorSabor(sabor) {

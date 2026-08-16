@@ -827,10 +827,8 @@ body.menu-foco-aberto > #cookie-banner,
 body.menu-foco-aberto > #itap-mobile-nav,
 body.menu-foco-aberto > .itap-pwa-banner,
 body.menu-foco-aberto > .skip-link{display:none!important;}
-body.menu-foco-aberto #cardapio > *:not(#vc-wrap):not(.home-enc-comp-grid),
-body.menu-foco-aberto #vc-wrap > .vc-banner,
-body.menu-foco-aberto #vc-container > .menu-categorias-cardapio,
-body.menu-foco-aberto #vc-container > .acc:not(.menu-foco-ativo){display:none!important;}
+body.menu-foco-aberto #cardapio > *:not(#vc-wrap):not(#vc-container):not(.home-enc-comp-grid),
+body.menu-foco-aberto #vc-container > .acc:not(.menu-foco-ativo):not(.home-enc-comp-grid){display:none!important;}
 body.menu-foco-aberto #cardapio > .home-enc-comp-grid{display:grid!important;visibility:visible!important;opacity:1!important;}
 body.itap-lock-fixed { position: fixed; width: 100%; overflow: hidden; left: 0; right: 0; z-index: 1; }
 body.menu-foco-aberto #cardapio > .home-enc-comp-grid > .acc:not(.menu-foco-ativo){display:none!important;}
@@ -4218,7 +4216,7 @@ function renderSobremesas(){
 function getSaboresDisponíveis() {
   // SINCRONISMO GLOBAL: Tenta ler do dataset carregado via JSON primeiro
   if (window.PRODUTOS_DATA && window.PRODUTOS_DATA.sorvetes && window.PRODUTOS_DATA.sorvetes.sabores) {
-    return window.PRODUTOS_DATA.sorvetes.sabores;
+    return window.PRODUTOS_DATA.sorvetes.sabores.map(function(s) { return typeof s === 'string' ? s : s.nome; });
   }
   // Fallback oficial dos 38 sabores + Açaí
   return [
