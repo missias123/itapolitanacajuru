@@ -813,39 +813,14 @@ html.menu-foco-aberto,body.menu-foco-aberto{overflow-x:hidden;overflow-y:auto!im
 
 /* Foco exclusivo da gaveta: o armário permanece no lugar, mas nenhum
    elemento externo ou irmão pode vazar durante a leitura do conteúdo. */
-/* MODO BENTO UI — Foco Suave e Estabilidade Total.
-   Removido o display:none agressivo que causava tela branca.
-   Agora o site permanece visível, mas a categoria ganha destaque premium. */
-body.menu-foco-aberto #conteudo-principal { position: relative; }
-body.menu-foco-aberto .acc.menu-foco-ativo { 
-  display: block !important; 
-  opacity: 1 !important; 
-  visibility: visible !important; 
+/* MODO BENTO UI — Navegação Fluida e Natural.
+   Removida a trava de tela e o overlay para garantir o processo normal de navegação. */
+.acc.open { 
   background: #FFFDF9 !important; 
-  border-radius: 24px; 
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
-  border: 2px solid rgba(224,64,251,0.1);
-  margin-top: 10px;
-  margin-bottom: 30px;
-  z-index: 1000;
-}
-body.itap-lock-fixed { 
-  position: fixed; 
-  width: 100%; 
-  overflow: hidden; 
-  left: 0; 
-  right: 0; 
-  z-index: 1; 
-}
-/* Overlay sutil para destacar a categoria sem sumir com o site */
-body.menu-foco-aberto::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(4px);
-  z-index: 999;
-  animation: fadeInOverlay .3s ease forwards;
+  border-radius: 20px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+  border: 1px solid rgba(224,64,251,0.1);
+  margin-bottom: 20px;
 }
 @media(prefers-reduced-motion:reduce){#vc-container .acc-body{transition:none!important}.acc-header,.acc-arrow,.acc-circle{transition:none!important}}
 
@@ -3673,13 +3648,8 @@ function toggleAcc(id) {
     }
   });
 
-  // Abre ou fecha o clicado usando a técnica anti-pulo centralizada
+  // Abre ou fecha o clicado — PROCESSO NORMAL (PADRÃO 1 MILHÃO DE SITES)
   if (isOpen) {
-    // FECHAR: Captura posição atual antes de desativar o foco
-    var x = window.scrollX || window.pageXOffset || 0;
-    var y = window.scrollY || window.pageYOffset || 0;
-    
-    el.classList.remove('menu-foco-scroll-livre');
     var body = el.querySelector('.acc-body');
     if (body) {
       body.style.maxHeight = body.scrollHeight + 'px';
@@ -3687,12 +3657,8 @@ function toggleAcc(id) {
     }
     el.classList.remove('open');
     atualizarEstadoHeaderAcc(el, false);
-    
-    if (_menuFocoId === el.id) {
-      _menuFocoDesativar(true);
-    }
+    _menuFocoDesativar(false);
   } else {
-    // ABRIR: Ativa foco com Ghost Spacer para travar a tela
     _menuFocoAtivar(el);
     el.classList.add('open');
     atualizarEstadoHeaderAcc(el, true);
@@ -5516,56 +5482,29 @@ function _menuFocoCriarPortal() { return null; }
 function _menuFocoAtivar(acc) {
   if (!acc || !acc.id || _menuFocoReturning) return;
   if (_menuFocoId === acc.id) return;
-  if (_menuFocoId) _menuFocoDesativar(false);
-
-  // 1. Captura da posição exata antes de travar
-  var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-  _menuFocoScrollX = window.pageXOffset || document.documentElement.scrollLeft;
-  _menuFocoScrollY = scrollY;
+  
   _menuFocoId = acc.id;
   
-  // 2. TÉCNICA WORLD CLASS ANTI-PULO
-  // Salva o scroll, trava o body no lugar e compensa a largura da barra de scroll
-  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-  document.body.style.paddingRight = scrollbarWidth + 'px';
-  document.body.style.top = '-' + scrollY + 'px';
-  document.body.classList.add('itap-lock-fixed');
-  document.body.classList.add('menu-foco-aberto');
-  document.documentElement.classList.add('menu-foco-aberto');
-
-  // 3. Aplica as classes de foco na categoria
+  // Apenas destaca visualmente sem travar a tela
   acc.classList.add('menu-foco-ativo');
   
-  // Centraliza a categoria suavemente para o usuário
-  acc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Ajuste suave de posição se necessário (opcional, para não perder o item de vista)
+  var rect = acc.getBoundingClientRect();
+  if (rect.top < 0 || rect.bottom > window.innerHeight) {
+    acc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 function _menuFocoDesativar(restaurarPosicao) {
   var id = _menuFocoId;
   if (!id) return;
   var acc = document.getElementById(id);
-  var x = _menuFocoScrollX;
-  var y = _menuFocoScrollY;
   
   if (acc) {
     acc.classList.remove('menu-foco-ativo');
   }
   
-  // Remove as travas e classes de foco
-  document.body.classList.remove('itap-lock-fixed');
-  document.body.classList.remove('menu-foco-aberto');
-  document.documentElement.classList.remove('menu-foco-aberto');
-  document.body.style.top = '';
-  document.body.style.paddingRight = '';
-  
   _menuFocoId = null;
-  
-  if (restaurarPosicao) {
-    // Restauração imediata e sem pulo
-    window.scrollTo(x, y);
-    // Reforço para garantir que o navegador mobile não ignore o comando
-    requestAnimationFrame(() => { window.scrollTo(x, y); });
-  }
 }
 
 function _menuFocoVoltar(acc) {
@@ -6089,10 +6028,11 @@ document.addEventListener('DOMContentLoaded', checkCookies);
   </ul>
 </nav>
 
-	<script src="scripts/itap-icons.js?v=V3_FINAL"></script>
-<script src="scripts/nav-active.js?v=V3_FINAL" defer></script>
-	<script src="scripts/ita-bot-engine.js?v=V3_FINAL" defer></script>
-	<script src="scripts/ita-bot-widget.js?v=V3_FINAL" defer></script>
+	<script src="scripts/products.js?v=20260816_WORLD_CLASS"></script>
+	<script src="scripts/itap-icons.js?v=20260816_WORLD_CLASS"></script>
+	<script src="scripts/nav-active.js?v=20260816_WORLD_CLASS" defer></script>
+	<script src="scripts/ita-bot-engine.js?v=20260816_WORLD_CLASS" defer></script>
+	<script src="scripts/ita-bot-widget.js?v=20260816_WORLD_CLASS" defer></script>
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div>
 </body>
 </html>
