@@ -2289,22 +2289,24 @@ body.cardapio-aberto { padding-bottom: 80px; }
   50%{transform:translateX(-6px);}
 }
 /* Mão Pulsante e Efeito de Descoberta */
+.vc-row { position: relative; }
 .vc-btn { position: relative; overflow: hidden; }
 .vc-hand-indicator {
   position: absolute;
-  top: -12px;
-  right: 10%;
-  width: 32px;
-  height: 32px;
-  z-index: 10;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  z-index: 999;
   pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-  animation: handDiscover 2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  animation: handDiscover 1.5s ease-in-out infinite;
 }
 .vc-hand-indicator svg { fill: #FFD43B; width: 100%; height: 100%; }
 @keyframes handDiscover {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.9; }
-  50% { transform: translateY(-8px) scale(1.15); opacity: 1; }
+  0%, 100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.95; }
+  50% { transform: translateX(-50%) translateY(-15px) scale(1.25); opacity: 1; }
 }
 .vc-shimmer {
   position: absolute;
@@ -2318,7 +2320,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
   100% { left: 200%; }
 }
 @media (max-width: 640px) {
-  .vc-hand-indicator { width: 26px; height: 26px; top: -10px; right: 8%; }
+  .vc-hand-indicator { width: 46px; height: 46px; top: -28px; }
 }
 /* Acordeão */
 .vc-container{max-height:0;overflow:hidden;transition:max-height .55s ease,opacity .4s ease;opacity:0;}
@@ -2792,11 +2794,11 @@ body.cardapio-aberto { padding-bottom: 80px; }
         <span class="vc-btn-icon" aria-hidden="true">🍦</span>
         <span>VER CARDÁPIO</span>
         <span class="vc-btn-circle" aria-hidden="true"><i class="vc-seta">▼</i></span>
-        <!-- Mão Pulsante de Descoberta -->
-        <span class="vc-hand-indicator" aria-hidden="true">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg>
-        </span>
       </button>
+      <!-- Mão Pulsante de Descoberta (Fora do botão para evitar overflow:hidden) -->
+      <span class="vc-hand-indicator" id="vc-hand-indicator" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg>
+      </span>
       <span class="vc-arrow-hint" aria-hidden="true">←</span>
     </div>
   </div>
@@ -5259,7 +5261,9 @@ function atualizarStatusHorário() {
 function toggleCardápio() {
   var btn = document.getElementById('vc-btn');
   var c   = document.getElementById('vc-container');
+  var hand = document.getElementById('vc-hand-indicator');
   var ab  = c.classList.contains('aberto');
+  if (hand) hand.style.display = ab ? 'block' : 'none';
 
   if (ab) {
     // Fecha: trava a altura atual antes de animar para 0 (evita pulo)
