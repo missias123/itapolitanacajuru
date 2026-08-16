@@ -7,13 +7,14 @@
 window.PRODUTOS_DATA = {
     sorvetes: {
         sabores: [
-            "Abacaxi ao Vinho", "Abacaxi Suíço (c/caramelo)", "Blue Ice (Algodão Doce Azul)", "Amarena (Cereja Italiana Azeda)", "Ameixa",
-            "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
-            "Coco Queimado", "Creme Paris (crocante)", "Croquer (amendoim x doce leite)", "Doce de Leite", "Ferrero Rocher", "Flocos",
-            "Kinder Ovo (choc. branco)", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
-            "Limão (base água)", "Limão (base água) Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
-            "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
-            "Prestígio", "Sensação (morango x choc.)", "Torta de Chocolate"
+            "Abacaxi Suíço (c/caramelo)", "Abacaxi ao Vinho", "Amarena (Cereja Italiana Azeda)", "Ameixa", "Banana com Nutella",
+            "Bem Casado (ninho+doce leite+nozes)", "Bis e Trufa", "Blue Ice (Algodão Doce Azul)", "Cereja Trufada", "Cheesecake (f. vermelha + geleias + biscoito)",
+            "Chocolate", "Chocolate com Café", "Coco Queimado", "Creme Paris (crocante)", "Croquer (amendoim x doce leite)",
+            "Doce de Leite", "Ferrero Rocher", "Flocos", "Kinder Ovo (choc. branco)", "Leite Condensado",
+            "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo", "Limão (base água)", "Limão Suíço (base leite)",
+            "Menta com Chocolate", "Milho Verde", "Morango Trufado", "Mousse de Maracujá", "Mousse de Uva",
+            "Nozes", "Nutella", "Ovomaltine", "Passas ao Rum", "Pistache",
+            "Prestígio", "Sensação (morango x choc.)", "Torta de Chocolate", "Açaí"
         ],
         preços: {
             casquinha_copão: { "1 Bola": 8, "2 Bolas": 10, "3 Bolas": 12 },
@@ -39,7 +40,7 @@ window.PRODUTOS_DATA = {
             nome: "Picolé Especial — Base Leite", preço_varejo: 4, preço_atacado: 3,
             sabores: ["Leite Ninho", "Ovomaltine"]
         },
-        esquimos: {
+        "esquimós": {
             nome: "Picolé Esquimó — Base Leite", preço_varejo: 8, preço_atacado: 6,
             sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"]
         }

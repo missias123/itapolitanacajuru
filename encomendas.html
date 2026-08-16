@@ -21,6 +21,7 @@
   <link rel="apple-touch-icon" href="images/logo.webp">
   <link rel="manifest" href="manifest.json">
   <link href="https://itapolitanacajuru.com.br/encomendas.html" rel="canonical"/>
+  <script src="scripts/products.js" defer></script>
   
   <meta content="website" property="og:type"/>
   <meta content="https://itapolitanacajuru.com.br/encomendas.html" property="og:url"/>
@@ -245,9 +246,9 @@
         border-radius: 12px;
         cursor: pointer;
         text-align: center;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 0.95rem;
-        background: var(--white);
+        background: #fff;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 2px 6px rgba(0,0,0,0.06);
         line-height: 1.25;
@@ -655,19 +656,39 @@
     var carrinho = window.carrinho;
     var picolesSelecionados = window.picolesSelecionados;
 
-    var SABORES_SORVETE = [
-        "Abacaxi ao Vinho", "Abacaxi Suíço (c/caramelo)", "Algodão Doce (Blue Ice)", "Amarena (Cereja Italiana Azeda)", "Ameixa",
-        "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
-        "Coco Queimado", "Creme Paris (crocante)", "Croquer (amendoim x doce leite)", "Doce de Leite", "Ferrero Rocher", "Flocos",
-        "Kinder Ovo (choc. branco)", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
-        "Limão (base água)", "Limão (base água) Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
-        "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
-        "Prestígio", "Sensação (morango x choc.)", "Torta de Chocolate"
-    ];
+    // SINCRONISMO GLOBAL: A lista oficial vem do produtos.json carregado via scripts/products.js
+    var SABORES_SORVETE = []; 
+    
+    function getSaboresAtuais() {
+        if (window.PRODUTOS_DATA && window.PRODUTOS_DATA.sorvetes && window.PRODUTOS_DATA.sorvetes.sabores) {
+            return window.PRODUTOS_DATA.sorvetes.sabores;
+        }
+        return SABORES_SORVETE; // Fallback se o JSON falhar
+    }
+
+    function getCorSabor(sabor) {
+        var s = String(sabor).toLowerCase();
+        // VERDE: Limão, Menta, Pistache, Kiwi
+        if (s.includes("limão") || s.includes("menta") || s.includes("pistache") || s.includes("kiwi")) return "color: #008C45 !important; border-color: #008C45 !important;";
+        // VERMELHO: Morango, Cereja, Amarena, Cheesecake, Sensação, Groselha, Melância, Goiaba
+        if (s.includes("morango") || s.includes("cereja") || s.includes("amarena") || s.includes("cheesecake") || s.includes("sensação") || s.includes("groselha") || s.includes("melância") || s.includes("goiaba")) return "color: #E8000D !important; border-color: #E8000D !important;";
+        // MARROM: Chocolate, Trufa, Nutella, Ovomaltine, Prestígio, Ferrero, Bis, Bombom, Brigadeiro, Café, Nozes, Croquer, Passas ao Rum, Amendoim
+        if (s.includes("chocolate") || s.includes("trufa") || s.includes("nutella") || s.includes("ovomaltine") || s.includes("prestígio") || s.includes("ferrero") || s.includes("bis") || s.includes("bombom") || s.includes("brigadeiro") || s.includes("café") || s.includes("nozes") || s.includes("croquer") || s.includes("passas") || s.includes("amendoim")) return "color: #5D4037 !important; border-color: #5D4037 !important;";
+        // AMARELO/LARANJA: Abacaxi, Milho, Maracujá, Banana, Caju, Mamão, Nata, Creme, Caramelo, Doce de Leite, Bem Casado, Baunilha
+        if (s.includes("abacaxi") || s.includes("milho") || s.includes("maracujá") || s.includes("banana") || s.includes("caju") || s.includes("mamão") || s.includes("nata") || s.includes("creme") || s.includes("caramelo") || s.includes("doce de leite") || s.includes("bem casado") || s.includes("baunilha")) return "color: #F9A825 !important; border-color: #F9A825 !important;";
+        // ROXO/VINHO: Uva, Ameixa, Açaí, Tamarindo, Vinho
+        if (s.includes("uva") || s.includes("ameixa") || s.includes("açaí") || s.includes("tamarindo") || s.includes("vinho")) return "color: #6A1B9A !important; border-color: #6A1B9A !important;";
+        // AZUL: Blue Ice, Algodão Doce
+        if (s.includes("blue ice") || s.includes("algodão doce")) return "color: #0288D1 !important; border-color: #0288D1 !important;";
+        // BEGE/BRANCO: Leite Ninho, Coco, Flocos, Leite Condensado, Oreo, Kinder
+        if (s.includes("ninho") || s.includes("coco") || s.includes("flocos") || s.includes("leite condensado") || s.includes("oreo") || s.includes("kinder")) return "color: #8D6E63 !important; border-color: #D7CCC8 !important;";
+        
+        return "color: #1A1A1A !important; border-color: #E2E8F0 !important;";
+    }
 
     var PICOLES_CATALOGO = {
-        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão (base água)", "Melância", "Uva", "Tamarindo"] },
-        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 3.00, precoAtacado: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena (Cereja Italiana Azeda)", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
+        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
+        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 3.00, precoAtacado: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena (Cereja Italiana Azeda)", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba", "Coco Queimado", "Milho Verde", "Pistache"] },
         "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 2.00, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
         "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": { precoVarejo: 4.00, precoAtacado: 3.00, sabores: ["Leite Ninho", "Ovomaltine"] },
         "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": { precoVarejo: 8.00, precoAtacado: 6.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
@@ -702,13 +723,11 @@
     var ESTOQUE_CARREGADO = false;
     var ESTOQUE_URL = "dados/produtos.json";
     var MAPA_PICOLES_ESTOQUE = {
-        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": [{ chave: "frutas_agua", sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão (base água)", "Melância", "Uva", "Tamarindo"] }],
-        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_com_recheio", sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena (Cereja Italiana Azeda)", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] }],
-        "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_sem_recheio", sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] }],
-        "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": [
-            { chave: "leite_especial", sabores: ["Leite Ninho", "Ovomaltine"] }
-        ],
-        "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": [{ chave: "esquimós", sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }]
+        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": [{ chave: "frutas_agua", sabores: [] }],
+        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_com_recheio", sabores: [] }],
+        "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_sem_recheio", sabores: [] }],
+        "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": [{ chave: "leite_especial", sabores: [] }],
+        "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": [{ chave: "esquimós", sabores: [] }]
     }; 
     var ESTOQUE_PICOLES = {}; 
 
@@ -768,8 +787,38 @@
                 var item = acrescimos.find(function (a) { return a.id === padrao.id; });
                 return item ? Object.assign({}, padrao, { nome: item.nome || padrao.nome, preco: Number(item.preço ?? item.preco ?? padrao.preco), estoque: Number(item.estoque ?? padrao.estoque), esgotado: Boolean(item.esgotado || Number(item.estoque) <= 0) }) : padrao;
             });
+            // SINCRONISMO GLOBAL: Atualiza sabores de sorvete do JSON
+            if (dados.sorvetes && Array.isArray(dados.sorvetes.sabores)) {
+                SABORES_SORVETE = dados.sorvetes.sabores;
+            }
+
             var rawPicoles = dados.picolés || dados.picoles || {};
+            
+            // SINCRONISMO GLOBAL: Atualiza catálogos de picolés do JSON
+            var chavesPicoles = {
+                "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": "frutas_agua",
+                "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": "leite_com_recheio",
+                "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": "leite_sem_recheio",
+                "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": "leite_especial",
+                "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": "esquimós"
+            };
+
             Object.keys(PICOLES_CATALOGO).forEach(function (tipo) {
+                var chaveJson = chavesPicoles[tipo];
+                if (chaveJson && rawPicoles[chaveJson]) {
+                    var catJson = rawPicoles[chaveJson];
+                    PICOLES_CATALOGO[tipo].precoVarejo = Number(catJson.preco_varejo || PICOLES_CATALOGO[tipo].precoVarejo);
+                    PICOLES_CATALOGO[tipo].precoAtacado = Number(catJson.preco_atacado || PICOLES_CATALOGO[tipo].precoAtacado);
+                    if (Array.isArray(catJson.sabores)) {
+                        var novosSabores = catJson.sabores.map(s => typeof s === 'string' ? s : s.nome);
+                        PICOLES_CATALOGO[tipo].sabores = novosSabores;
+                        // Atualiza também o mapa de estoque para que a renderização use os novos sabores
+                        if (MAPA_PICOLES_ESTOQUE[tipo] && MAPA_PICOLES_ESTOQUE[tipo][0]) {
+                            MAPA_PICOLES_ESTOQUE[tipo][0].sabores = novosSabores;
+                        }
+                    }
+                }
+
                 var grupo = PICOLES_CATALOGO[tipo];
                 var porSabor = {};
                 (MAPA_PICOLES_ESTOQUE[tipo] || []).forEach(function (origem) {
@@ -797,11 +846,17 @@
     // Chave: "Tipo|Sabor"; cada linha mantém preço, quantidade e subtotal próprios.
     var MAX_PICOLES_POR_SABOR = 25;
     var MIN_PICOLES_ATACADO = 100;
+    var _scrollPosEncomenda = 0;
+
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);
         var catPai = el.closest('.categoria');
         var isOpen = el.style.display === 'block';
         
+        if (!isOpen) {
+            _scrollPosEncomenda = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        }
+
         document.querySelectorAll('.categoria-conteudo').forEach(c => c.style.display = 'none');
         document.querySelectorAll('.categoria').forEach(cat => {
             cat.style.display = 'block';
@@ -811,6 +866,7 @@
         if (isOpen) {
             el.style.display = 'none';
             if (catPai) catPai.classList.remove('open');
+            window.scrollTo(0, _scrollPosEncomenda);
         } else {
             el.style.display = 'block';
             if (catPai) catPai.classList.add('open');
@@ -818,6 +874,8 @@
             document.querySelectorAll('.categoria').forEach(cat => {
                 if (!cat.contains(el)) cat.style.display = 'none';
             });
+            window.scrollTo(0, 0); // Foca no topo do conteúdo aberto
+            
             // Garante botão voltar dentro do conteúdo se não existir
             var conteudoEl = el;
             if (!conteudoEl.querySelector('.btn-voltar-encomenda')) {
@@ -837,7 +895,7 @@
         if (el) el.style.display = 'none';
         if (catPai) catPai.classList.remove('open');
         document.querySelectorAll('.categoria').forEach(cat => cat.style.display = 'block');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, _scrollPosEncomenda);
     };
 
     window.abrirModal = function(id) {
@@ -1026,9 +1084,13 @@
         document.getElementById('modal-subtitulo-sabores').textContent = "Selecione " + max + " sabores Tipo Artesanal:";
         
         var grid = document.getElementById('grid-sabores');
-        grid.innerHTML = SABORES_SORVETE.map(s => {
+        var listaSabores = getSaboresAtuais();
+        grid.innerHTML = listaSabores.map(s => {
             var sel = saboresSelecionados.includes(s);
-            return `<div class="sabor-item ${sel?'sel':''}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
+            var isLancamento = s.toLowerCase().includes("bem casado") || s.toLowerCase().includes("cheesecake") || s.toLowerCase().includes("passas ao rum");
+            var corStyle = getCorSabor(s);
+            var cls = "sabor-item " + (sel ? "sel " : "") + (isLancamento ? "itap-lancamento-neon " : "");
+            return `<div class="${cls}" style="${corStyle}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
         }).join('');
         
         atualizarAcaoSabores();
@@ -1134,10 +1196,12 @@
                 var subtotal = qtd * precoAtualDoGrupo(grupo, totalPicolesSelecionados);
                 var hasSelected = qtd > 0;
                 
+                var corStyle = getCorSabor(s);
+                
                 html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: ${hasSelected ? '#F0FDF4' : '#FAFAFA'}; border: 1.5px solid ${hasSelected ? '#86EFAC' : '#E5E7EB'}; border-radius: 12px; transition: all 0.2s;" data-picole-key="${key}" class="${indisponivel ? 'is-esgotado' : ''}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: ${hasSelected ? '#F0FDF4' : '#FAFAFA'}; border: 1.5px solid ${hasSelected ? '#86EFAC' : '#E5E7EB'}; border-radius: 12px; transition: all 0.2s; ${corStyle.replace('color:', '/*color:*/')}" data-picole-key="${key}" class="${indisponivel ? 'is-esgotado' : ''}">
                         <div style="flex: 1; padding-right: 10px;">
-                            <div style="font-weight: 800; font-size: 0.92rem; color: #1A1A1A;">${escaparHtml(s)}</div>
+                            <div style="font-weight: 800; font-size: 0.92rem; ${corStyle.split(';')[0]}">${escaparHtml(s)}</div>
                             ${tipo.indexOf('Base Leite') !== -1 ? seloLeitePasteurizadoHtml() : ''}
                             <div class="picole-precos" aria-label="Preço aplicado conforme a quantidade">
                                 <span class="picole-preco ${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'picole-preco--atacado' : 'picole-preco--varejo'}" data-picole-price-key="${escaparHtml(key)}">${totalPicolesSelecionados >= MIN_PICOLES_ATACADO ? 'Atacado' : 'Varejo'}: R$ ${precoAtualDoGrupo(grupo, totalPicolesSelecionados).toFixed(2).replace('.',',')} / un.</span>

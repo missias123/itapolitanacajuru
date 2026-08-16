@@ -8380,14 +8380,25 @@ function preencherCardapio() {
     document.getElementById('card-sorvetes-sabores').value = p.sorvetes.sabores.join('\n');
   }
 
-  // Picolés
-  if (p.picoles) {
-    if (p.picoles.frutas_agua) document.getElementById('card-picoles-fruta').value = (p.picoles.frutas_agua.sabores || []).join('\n');
-    if (p.picoles.leite_sem_recheio) document.getElementById('card-picoles-leite').value = (p.picoles.leite_sem_recheio.sabores || []).join('\n');
-    if (p.picoles.leite_com_recheio) document.getElementById('card-picoles-recheado').value = (p.picoles.leite_com_recheio.sabores || []).join('\n');
-    if (p.picoles.leite_ninho) document.getElementById('card-picoles-ninho').value = (p.picoles.leite_ninho.sabores || []).join('\n');
-    if (p.picoles.ovomaltine) document.getElementById('card-picoles-ovomaltine').value = (p.picoles.ovomaltine.sabores || []).join('\n');
-    if (p.picoles.esquimós) document.getElementById('card-picoles-esquimo').value = (p.picoles.esquimós.sabores || []).join('\n');
+  // Picolés — Sincronismo Global
+  const pic = p.picoles || p.picolés;
+  if (pic) {
+    if (pic.frutas_agua) document.getElementById('card-picoles-fruta').value = (pic.frutas_agua.sabores || []).join('\n');
+    if (pic.leite_sem_recheio) document.getElementById('card-picoles-leite').value = (pic.leite_sem_recheio.sabores || []).join('\n');
+    if (pic.leite_com_recheio) document.getElementById('card-picoles-recheado').value = (pic.leite_com_recheio.sabores || []).join('\n');
+    
+    // Se existir leite_especial, divide os sabores entre os campos de Ninho e Ovomaltine
+    if (pic.leite_especial) {
+        const sabs = pic.leite_especial.sabores || [];
+        document.getElementById('card-picoles-ninho').value = sabs.filter(s => s.toLowerCase().includes('ninho')).join('\n');
+        document.getElementById('card-picoles-ovomaltine').value = sabs.filter(s => s.toLowerCase().includes('ovomaltine')).join('\n');
+    } else {
+        if (pic.leite_ninho) document.getElementById('card-picoles-ninho').value = (pic.leite_ninho.sabores || []).join('\n');
+        if (pic.ovomaltine) document.getElementById('card-picoles-ovomaltine').value = (pic.ovomaltine.sabores || []).join('\n');
+    }
+    
+    const keyE = pic.esquimós ? 'esquimós' : 'esquimos';
+    if (pic[keyE]) document.getElementById('card-picoles-esquimo').value = (pic[keyE].sabores || []).join('\n');
   }
 
   // Açaí Promoção — tabela 3 colunas
@@ -8449,14 +8460,27 @@ async function salvarCardápio() {
   // Sorvetes
   if (p.sorvetes) p.sorvetes.sabores = document.getElementById('card-sorvetes-sabores').value.split('\n').map(s => s.trim()).filter(s => s);
 
-  // Picolés
-  if (p.picoles) {
-    if (p.picoles.frutas_agua) p.picoles.frutas_agua.sabores = document.getElementById('card-picoles-fruta').value.split('\n').map(s => s.trim()).filter(s => s);
-    if (p.picoles.leite_sem_recheio) p.picoles.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s => s.trim()).filter(s => s);
-    if (p.picoles.leite_com_recheio) p.picoles.leite_com_recheio.sabores = document.getElementById('card-picoles-recheado').value.split('\n').map(s => s.trim()).filter(s => s);
-    if (p.picoles.leite_ninho) p.picoles.leite_ninho.sabores = document.getElementById('card-picoles-ninho').value.split('\n').map(s => s.trim()).filter(s => s);
-    if (p.picoles.ovomaltine) p.picoles.ovomaltine.sabores = document.getElementById('card-picoles-ovomaltine').value.split('\n').map(s => s.trim()).filter(s => s);
-    if (p.picoles.esquimós) p.picoles.esquimós.sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s => s.trim()).filter(s => s);
+  // Picolés — Sincronismo Global
+  if (p.picoles || p.picolés) {
+    const pic = p.picoles || p.picolés;
+    if (pic.frutas_agua) pic.frutas_agua.sabores = document.getElementById('card-picoles-fruta').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (pic.leite_sem_recheio) pic.leite_sem_recheio.sabores = document.getElementById('card-picoles-leite').value.split('\n').map(s => s.trim()).filter(s => s);
+    if (pic.leite_com_recheio) pic.leite_com_recheio.sabores = document.getElementById('card-picoles-recheado').value.split('\n').map(s => s.trim()).filter(s => s);
+    
+    // Unifica Leite Ninho e Ovomaltine em 'leite_especial' se existir no JSON
+    if (pic.leite_especial) {
+        const sabsNinho = document.getElementById('card-picoles-ninho').value.split('\n').map(s => s.trim()).filter(s => s);
+        const sabsOvo = document.getElementById('card-picoles-ovomaltine').value.split('\n').map(s => s.trim()).filter(s => s);
+        pic.leite_especial.sabores = [...new Set([...sabsNinho, ...sabsOvo])];
+    } else {
+        if (pic.leite_ninho) pic.leite_ninho.sabores = document.getElementById('card-picoles-ninho').value.split('\n').map(s => s.trim()).filter(s => s);
+        if (pic.ovomaltine) pic.ovomaltine.sabores = document.getElementById('card-picoles-ovomaltine').value.split('\n').map(s => s.trim()).filter(s => s);
+    }
+    
+    if (pic.esquimós || pic.esquimos) {
+        const key = pic.esquimós ? 'esquimós' : 'esquimos';
+        pic[key].sabores = document.getElementById('card-picoles-esquimo').value.split('\n').map(s => s.trim()).filter(s => s);
+    }
   }
 
   // Açaí Promoção — tabela 3 colunas
