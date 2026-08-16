@@ -25,7 +25,7 @@
   <link as="image" href="images/logo.webp" rel="preload" type="image/webp" fetchpriority="high"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
   
   <meta content="Faça suas encomendas de sorvetes em caixa (5L e 10L), tortas geladas e picolés no atacado na Sorveteria Itapolitana em Cajuru/SP. Prazo mínimo de 5 dias úteis." name="description"/>
   <meta content="#EF0129" name="theme-color"/>
@@ -1347,8 +1347,9 @@
         totalEl.textContent = total + " unidades";
         barra.style.width = Math.min(100, (total/MIN_PICOLES_ATACADO)*100) + "%";
         barra.classList.toggle('ready', pronto);
-        btn.disabled = !pronto;
-        btn.classList.toggle('is-ready', pronto);
+        // LIBERADO: Pode confirmar qualquer quantidade acima de 0
+        btn.disabled = total <= 0;
+        btn.classList.toggle('is-ready', total > 0);
 
         if (pronto) {
             status.textContent = "Lote OK · Preço aplicado: Atacado · Selecionadas: " + total + " · Total: R$ " + valorFormatado;
@@ -1429,16 +1430,17 @@
         var status = document.getElementById('status-carrinho');
         var btnProsseguir = document.getElementById('btn-prosseguir');
         
-        if (carrinho.length > 0 && picoleOk) {
+        if (carrinho.length > 0) {
             status.style.display = 'none';
             btnProsseguir.disabled = false;
             btnProsseguir.style.opacity = '1';
-        } else if (temPicole && !picoleOk) {
-            status.style.display = 'block';
-            status.textContent = "O lote de picolés precisa de 100 unidades. Faltam " + (MIN_PICOLES_ATACADO - totalPicoles) + ".";
-            status.className = "cart-status";
-            btnProsseguir.disabled = true;
-            btnProsseguir.style.opacity = '0.5';
+            
+            // Apenas aviso visual se não atingiu o atacado, mas permite prosseguir
+            if (temPicole && !picoleOk) {
+                status.style.display = 'block';
+                status.textContent = "Aviso: Lote de picolés abaixo de 100 un. (Preço de Varejo aplicado).";
+                status.className = "cart-status-info"; // Estilo de aviso, não de erro
+            }
         } else {
             status.style.display = 'none';
             btnProsseguir.disabled = true;
