@@ -742,9 +742,18 @@ img{max-width:100%;display:block}
 /* ── BOTÃO "COMPLEMENTOS" — âmbar: calor, apetite, personalização ── */
 .btn-comp{display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:13px 20px;min-height:48px;width:100%;background:linear-gradient(135deg,#BF360C,#E65100);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:900;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 16px rgba(191,54,12,.4);letter-spacing:.3px;text-shadow:0 1px 4px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.45)}
 .btn-comp:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 7px 22px rgba(191,54,12,.55)}
-/* ── BOTÃO "VOLTAR AO INÍCIO" — azul: navegação confiável ── */
-.btn-voltar-inicio{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 4px;padding:13px 24px;min-height:48px;width:100%;background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:900;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 16px rgba(13,71,161,.4);letter-spacing:.3px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.45)}
-.btn-voltar-inicio:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 7px 22px rgba(13,71,161,.55)}
+	/* ── BOTÃO "VOLTAR AO INÍCIO" — azul: navegação confiável ── */
+	.btn-voltar-inicio{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 4px;padding:13px 24px;min-height:48px;width:100%;background:linear-gradient(135deg,#0D47A1,#1565C0);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:900;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 16px rgba(13,71,161,.4);letter-spacing:.3px;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.45)}
+	.btn-voltar-inicio:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 7px 22px rgba(13,71,161,.55)}
+
+    /* ── EFEITO LIVRO 3D EXCLUSIVO (TESTE SORVETES) ── */
+    .livro-container { perspective: 1500px; transform-style: preserve-3d; }
+    .livro-abrir-3d { animation: livroAbrir3D 0.65s cubic-bezier(0.645, 0.045, 0.355, 1) forwards; transform-origin: top center; backface-visibility: hidden; }
+    @keyframes livroAbrir3D { 0% { opacity: 0; transform: rotateX(-90deg); } 100% { opacity: 1; transform: rotateX(0deg); } }
+    .livro-virar-3d { animation: livroVirar3D 0.6s cubic-bezier(0.645, 0.045, 0.355, 1) forwards; transform-origin: left center; }
+    @keyframes livroVirar3D { 0% { opacity: 0; transform: rotateY(90deg); } 100% { opacity: 1; transform: rotateY(0deg); } }
+    .livro-voltar-3d { animation: livroVoltar3D 0.6s cubic-bezier(0.645, 0.045, 0.355, 1) forwards; transform-origin: right center; }
+    @keyframes livroVoltar3D { 0% { opacity: 0; transform: rotateY(-90deg); } 100% { opacity: 1; transform: rotateY(0deg); } }
 /* ── CARD DO AÇAÍ — roxo profundo: cor real do açaí, ativa memória sensorial ── */
 /* HIERARQUIA: nome + preço na mesma linha (row) → descrição abaixo */
 .açaí-item{background:#FFFDF9;border:1px solid #CE93D8;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 0 0 2px #6A1B9A,0 4px 12px rgba(106,27,154,.15)}
@@ -5452,6 +5461,10 @@ function toggleAcc(id) {
     if (id === 'acc-complementos') renderEncomendasPreviews();
     
     if (body) {
+      if (id === 'acc-sorvetes') {
+          body.classList.add('livro-abrir-3d');
+          body.parentElement.classList.add('livro-container');
+      }
       body.style.maxHeight = body.scrollHeight + 'px';
       setTimeout(function() {
         if (el.classList.contains('open')) body.style.maxHeight = 'none';
@@ -5656,8 +5669,10 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
   }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
   _semPulo(function() {
+    var isSorvete = titulo.toLowerCase().includes("sorvete");
+    var animClass = isSorvete ? 'livro-virar-3d' : '';
     accBodyEl.innerHTML =
-      '<div class="sabores-inline">' +
+      '<div class="sabores-inline ' + animClass + '">' +
         '<div class="sabores-inline-titulo">' + titulo + '</div>' +
         '<div class="sabores-inline-sub">' + sub + '</div>' +
         '<div class="chips-inline">' + chipsHtml + '</div>' +
@@ -5681,16 +5696,12 @@ function voltarNivel(btn) {
   var acc = accBody.closest ? accBody.closest('.acc') : null;
   var accId = acc ? acc.id : accBody.id;
   if (accId && _nivelAnterior[accId]) {
-    accBody.innerHTML = _nivelAnterior[accId];
-    delete _nivelAnterior[accId];
-    
-    // ANTI-SALTO: Restaura posição após voltar nível
-    requestAnimationFrame(function() {
-      window.scrollTo(0, scrollYAntes);
+    _semPulo(function() {
+      var isSorvete = accId === 'acc-sorvetes';
+      var animClass = isSorvete ? 'livro-voltar-3d' : '';
+      accBody.innerHTML = '<div class="' + animClass + '">' + _nivelAnterior[accId] + '</div>';
+      delete _nivelAnterior[accId];
     });
-    setTimeout(function() {
-      window.scrollTo(0, scrollYAntes);
-    }, 50);
   }
 }
 
