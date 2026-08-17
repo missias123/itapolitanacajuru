@@ -5776,7 +5776,9 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
  if (acc) _menuFocoAtivar(acc);
 
  var chipsHtml = (chips && chips.length > 0) ? chips.map(function(s) {
-  return '<span class="chip-inline">' + s + '</span>';
+  var nome = typeof s === 'object' && s !== null ? s.nome : s;
+  var esgotado = typeof s === 'object' && s !== null && (s.esgotado || s.estoque <= 0);
+  return '<span class="chip-inline" style="' + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + nome + (esgotado ? ' ✕' : '') + '</span>';
  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
  _semPulo(function() {
