@@ -93,7 +93,7 @@
       'sorteio':       '\ud83c\udf81 Sorteio mensal gratuito! Cadastre-se na p\u00e1gina de Promo\u00e7\u00e3o no menu. Boa sorte! \ud83c\udf40',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
-      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
+      'tradicional':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
       'anos':          '\ud83c\udf66 A Sorveteria Itapolitana est\u00e1 em Cajuru desde 2007 \u2014 mais de 19 anos!',
       'historia':      '\ud83c\udf66 Fundada em 2007 em Cajuru/SP, mais de 19 anos de tradi\u00e7\u00e3o!'
     };
