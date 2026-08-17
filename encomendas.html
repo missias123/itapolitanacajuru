@@ -25,7 +25,7 @@
   <meta content="website" property="og:type"/>
   <meta content="https://itapolitanacajuru.com.br/encomendas.html" property="og:url"/>
   <meta content="Encomendas | Sorveteria Itapolitana Cajuru" property="og:title"/>
-  <meta content="Encomende sorvetes e picolés para sua festa ou evento em Cajuru/SP. Qualidade premium e sabores Tipo artesanais." property="og:description"/>
+  <meta content="Encomende sorvetes e picolés para sua festa ou evento em Cajuru/SP. Qualidade premium e sabores ." property="og:description"/>
   <meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
   
   <script type="application/ld+json">
@@ -440,7 +440,7 @@
     <button class="categoria-header" onclick="window.toggleSecao('sec-caixas')">
       <div class="categoria-header__main">
         <span class="categoria-header__icon bento-icon-container blue" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#icon-box" xlink:href="#icon-box"></use></svg></span>
-        <div class="categoria-header__copy"><strong>Sorvete em Caixa</strong><small>5L e 10L - 35 Sabores Tipo Artesanal</small></div>
+        <div class="categoria-header__copy"><strong>Sorvete em Caixa</strong><small>5L e 10L - 38 Sabores Tipo Artesanal</small></div>
       </div>
       <span class="arrow-icon">▼</span>
     </button>
@@ -512,7 +512,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #F2F2F2; padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
           <div>
             <h2 style="margin: 0; font-size: 1.25rem; font-weight: 900; color: var(--primary);">Picolés no Atacado</h2>
-            <p style="margin: 2px 0 0; font-size: 0.85rem; color: #555;">Mínimo <strong>100 unidades</strong> · Máx 25 por sabor</p>
+            <p style="margin: 2px 0 0; font-size: 0.85rem; color: #555;">Mínimo <strong>100 unidades</strong> · Máx 250 por sabor</p>
           </div>
           <button onclick="window.fecharModal('modal-picoles')" style="background: #F2F2F2; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.15rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
         </div>
@@ -634,25 +634,9 @@
 
     var carrinho = window.carrinho;
     var picolesSelecionados = window.picolesSelecionados;
-
-    var SABORES_SORVETE = [
-        "Abacaxi ao Vinho", "Abacaxi Suíço", "Algodão Doce (Blue Ice)", "Amarena", "Ameixa",
-        "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
-        "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
-        "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
-        "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
-        "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
-        "Prestígio", "Sensação", "Torta de Chocolate"
-    ];
-
-    var PICOLES_CATALOGO = {
-        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 1.80, sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] },
-        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 3.00, precoAtacado: 2.00, sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] },
-        "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": { precoVarejo: 2.50, precoAtacado: 2.00, sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] },
-        "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": { precoVarejo: 4.00, precoAtacado: 3.00, sabores: ["Leite Ninho", "Ovomaltine"] },
-        "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": { precoVarejo: 8.00, precoAtacado: 6.00, sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }
-    };
-
+    // Catálogos ativos são montados exclusivamente de dados/produtos.json.
+    var SABORES_SORVETE = [];
+    var PICOLES_CATALOGO = {};
     function precoAtacadoDoGrupo(grupo) {
         return Number(grupo && (grupo.precoAtacado ?? grupo.preco) || 0);
     }
@@ -681,16 +665,37 @@
     ];
     var ESTOQUE_CARREGADO = false;
     var ESTOQUE_URL = "dados/produtos.json";
-    var MAPA_PICOLES_ESTOQUE = {
-        "Frutas / Base Água — Atacado R$ 1,80 acima de 100 un.": [{ chave: "frutas_agua", sabores: ["Abacaxi", "Caju", "Goiaba", "Groselha", "Limão", "Melância", "Uva", "Tamarindo"] }],
-        "Recheados — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_com_recheio", sabores: ["Açaí", "Blue Ice (Algodão Doce Azul)", "Caraxi (Abacaxi com Caramelo)", "Coco Branco", "Chocolate", "Amarena", "Leite Condensado", "Mamão Papaia", "Maracujá", "Morango", "Menta com Chocolate", "Nata com Goiaba"] }],
-        "Sem Recheio — Base Leite — Atacado R$ 2,00 acima de 100 un.": [{ chave: "leite_sem_recheio", sabores: ["Coco Queimado", "Milho Verde", "Amendoim", "Pistache"] }],
-        "Especiais — Base Leite — Atacado R$ 3,00 acima de 100 un.": [
-            { chave: "leite_especial", sabores: ["Leite Ninho", "Ovomaltine"] }
-        ],
-        "Esquimós — Base Leite — Atacado R$ 6,00 acima de 100 un.": [{ chave: "esquimós", sabores: ["Bombom", "Nutella", "Ovomaltine", "Leite Ninho", "Nata", "Morango", "Brigadeiro", "Prestígio"] }]
-    }; 
-    var ESTOQUE_PICOLES = {}; 
+    var MAPA_PICOLES_ESTOQUE = {};
+    var ESTOQUE_PICOLES = {};
+
+    function montarCatalogoOficial(dados) {
+        var massas = Array.isArray(dados && dados.sabores_sorvete) ? dados.sabores_sorvete : [];
+        SABORES_SORVETE = massas.map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
+        var raw = (dados && (dados.picolés || dados.picoles)) || {};
+        var catalogo = {};
+        var mapa = {};
+        var rotulos = {
+            frutas_agua: 'Frutas / Base Água',
+            leite_com_recheio: 'Recheados — Base Leite',
+            leite_sem_recheio: 'Sem Recheio — Base Leite',
+            especiais: 'Especiais — Base Leite',
+            'esquimós': 'Esquimós — Base Leite',
+            esquimos: 'Esquimós — Base Leite'
+        };
+        Object.keys(raw).forEach(function (chave) {
+            var grupo = raw[chave] || {};
+            var sabores = Array.isArray(grupo.sabores) ? grupo.sabores : [];
+            var nomes = sabores.map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
+            var varejo = Number(grupo.preço_varejo ?? grupo.preco_varejo ?? 0);
+            var atacado = Number(grupo.preço_atacado ?? grupo.preco_atacado ?? varejo);
+            var titulo = (rotulos[chave] || grupo.nome || chave) + ' — Atacado R$ ' + atacado.toFixed(2).replace('.', ',') + ' acima de 100 un.';
+            catalogo[titulo] = { precoVarejo: varejo, precoAtacado: atacado, sabores: nomes };
+            mapa[titulo] = [{ chave: chave, sabores: nomes }];
+        });
+        PICOLES_CATALOGO = catalogo;
+        MAPA_PICOLES_ESTOQUE = mapa;
+    }
+ 
 
     function chaveSegura(valor) {
         return String(valor).replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -736,6 +741,7 @@
             var resposta = await fetch(ESTOQUE_URL + '?v=' + Date.now(), { cache: 'no-store' });
             if (!resposta.ok) throw new Error('Não foi possível ler o estoque oficial.');
             var dados = await resposta.json();
+            montarCatalogoOficial(dados);
             var caixas = Array.isArray(dados.caixas_enc) ? dados.caixas_enc : [];
             PRODUTOS = PRODUTOS.map(function (padrao) {
                 var item = caixas.find(function (c) { return c.id === padrao.id; });
@@ -775,7 +781,7 @@
     var produtoAtual = null;
     var saboresSelecionados = [];
     // Chave: "Tipo|Sabor"; cada linha mantém preço, quantidade e subtotal próprios.
-    var MAX_PICOLES_POR_SABOR = 25;
+    var MAX_PICOLES_POR_SABOR = 250;
     var MIN_PICOLES_ATACADO = 100;
     window.toggleSecao = function(id) {
         var el = document.getElementById(id);

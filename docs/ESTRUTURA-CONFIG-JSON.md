@@ -130,7 +130,7 @@ Estrutura aninhada em `seoPaginas`:
 ```json
 "heroFrases": [
   "🍦 \"O sorvete mais cremoso de Cajuru, desde 2007!\"",
-  "🍨 \"35 sabores tipo artesanal que encantam na primeira colherada\"",
+  "🍨 \"38 sabores tipo artesanal que encantam na primeira colherada\"",
   "🍭 \"Açaí, milkshake, taças e sobremesas geladas — tudo aqui!\""
 ]
 ```
@@ -145,7 +145,7 @@ Estrutura aninhada em `seoPaginas`:
 
 ```json
 "stripSensorial": [
-  "🍦 Cremoso · Cremoso · Leite Puro · Feito com Amor · 35 Sabores · Desde 2007 · tipo artesanal · 🍦",
+  "🍦 Cremoso · Cremoso · Leite Puro · Feito com Amor · 38 sabores · Desde 2007 · tipo artesanal · 🍦",
   "🍨 Sorvete de Massa · Picolés Recheados · Açaí Premium · Tortas · Milkshakes · Taças · 🍨",
   "🎂 Encomende sua Torta de Sorvete · Caixas 5L e 10L · Picolés Atacado · Acréscimos · 🎂"
 ]
@@ -474,7 +474,7 @@ const linkWhats = `https://wa.me/${config.whatsapp}?text=Olá!`;
 ```json
 {
   "seoTitulo": "Sorveteria Itapolitana Cajuru – Sorvete Tipo Artesanal | Desde 2007",
-  "seoDescricao": "Sorveteria Itapolitana em Cajuru/SP: sorvete tipo artesanal cremoso com 35 sabores, açaí, picolés e tortas geladas. Encomendas para festas. Desde 2007!",
+  "seoDescricao": "Sorveteria Itapolitana em Cajuru/SP: sorvete tipo artesanal cremoso com 38 sabores, açaí, picolés e tortas geladas. Encomendas para festas. Desde 2007!",
   "seoPalavrasChave": "sorveteria cajuru, sorvete tipo artesanal, açaí cajuru, picolé cajuru, torta sorvete"
 }
 ```
@@ -482,7 +482,7 @@ const linkWhats = `https://wa.me/${config.whatsapp}?text=Olá!`;
 **Checklist de SEO:**
 - ✅ Inclui palavra-chave principal no início
 - ✅ Menciona localização (Cajuru)
-- ✅ Inclui diferencial (desde 2007, 35 sabores)
+- ✅ Inclui diferencial (desde 2007, 38 sabores)
 - ✅ Tom atrativo mas não exagerado
 - ✅ Sem CAPS LOCK ou excesso de emojis
 

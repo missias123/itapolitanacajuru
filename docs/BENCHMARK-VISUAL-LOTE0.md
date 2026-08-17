@@ -231,7 +231,7 @@
 Implementados como **accordions (`.acc`)** em vez de cards visuais:
 
 ```
-[Accordion] Sorvetes de Massa (35 sabores)
+[Accordion] Sorvetes de Massa (38 sabores)
 [Accordion] Açaí
 [Accordion] Picolés
 [Accordion] Taças e Sobremesas

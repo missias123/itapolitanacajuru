@@ -9,7 +9,7 @@ Este documento consolida as informações oficiais extraídas do site para a bas
 - **Horário:** Todos os dias (incluindo feriados), das 10h às 22h.
 
 ## 2. Produtos e Preços (Base)
-- **Sorvetes (35 sabores):** 1 bola R$ 8, 2 bolas R$ 10, 3 bolas R$ 12.
+- **Sorvetes (38 sabores):** 1 bola R$ 8, 2 bolas R$ 10, 3 bolas R$ 12.
 - **Picolés:** Fruta/Água R$ 2,50 | Leite R$ 2,50 | Recheados R$ 3,00 | Ninho/Ovomaltine R$ 4,00 | Esquimó R$ 8,00.
 - **Açaí Natureon:** Copos de 250ml (R$ 13) a 700ml (R$ 27). Taças Gourmet R$ 30.
 - **Milkshakes:** Tradicional a partir de R$ 17. Top a partir de R$ 20.

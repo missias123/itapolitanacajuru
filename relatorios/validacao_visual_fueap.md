@@ -1,6 +1,6 @@
 ## Evidência 1 — Encomendas e modal de sabores
 
-Após a aplicação da FUEAP, a categoria **Sorvete em Caixa** abriu normalmente. Os quatro produtos apareceram em cards alinhados, com os botões “Escolher Sabores” preservados. Ao abrir a Caixa de 5 Litros, o modal exibiu os 35 sabores Tipo Artesanal em grid de três colunas na largura de desktop do navegador. Os itens mantiveram proporção quadrada, texto centralizado e espaçamento uniforme; o modal permaneceu contido com rolagem interna, sem rolagem horizontal da página de fundo. IDs, handlers e scripts foram preservados pelo fingerprint do aplicador.
+Após a aplicação da FUEAP, a categoria **Sorvete em Caixa** abriu normalmente. Os quatro produtos apareceram em cards alinhados, com os botões “Escolher Sabores” preservados. Ao abrir a Caixa de 5 Litros, o modal exibiu os 38 sabores Tipo Artesanal em grid de três colunas na largura de desktop do navegador. Os itens mantiveram proporção quadrada, texto centralizado e espaçamento uniforme; o modal permaneceu contido com rolagem interna, sem rolagem horizontal da página de fundo. IDs, handlers e scripts foram preservados pelo fingerprint do aplicador.
 
 Observação: a marcação colorida da captura pertence ao modo de inspeção do navegador, não ao site.
 

@@ -3,7 +3,7 @@
 URL: https://itapolitanacajuru.com.br/index.html?v=debug-buttons-missing-1
 
 ## Observação
-Ao clicar no botão "Ver 35 Sabores" (índice 13) no site oficial, a tela não ativou o Modo Foco esperado. O cardápio expandiu apenas o accordion padrão, mas o conteúdo interno (os botões dos sabores) não foi renderizado ou permaneceu oculto.
+Ao clicar no botão "Ver 38 sabores" (índice 13) no site oficial, a tela não ativou o Modo Foco esperado. O cardápio expandiu apenas o accordion padrão, mas o conteúdo interno (os botões dos sabores) não foi renderizado ou permaneceu oculto.
 
 ## Suspeitas Técnicas
 1. **Cache de Script**: O navegador pode estar usando uma versão antiga do `index.html` ou de `scripts/products.js` onde o Modo Foco ainda não existia ou o alias `produtos` não estava definido.

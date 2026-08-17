@@ -1,0 +1,50 @@
+Validação local — 16/08/2026
+
+URL testada: http://127.0.0.1:8002/carrossel.html
+URL da página inicial: http://127.0.0.1:8002/index.html
+
+Carrossel:
+- A imagem anexada de Tortas de Sorvete aparece como primeiro slide.
+- A imagem foi salva em images/carrossel/tortas-sorvete-encomendas.jpeg.
+- A antiga sétima imagem v3_b8_sorvetes_montanha.webp foi removida da lista DEFAULT_BANNERS.
+- O carrossel renderizou 14 indicadores.
+- A primeira imagem carregou visualmente no navegador.
+
+Página inicial:
+- O botão VER CARDÁPIO está presente.
+- O bloco de Massas mostra 38 sabores.
+- Os grupos de Picolés permanecem visíveis e separados.
+- Próximo teste: abrir o cardápio, abrir Massas, abrir Picolés, testar retorno e acessar Encomendas.
+
+
+Teste do cardápio:
+
+O botão principal abriu o cardápio. O bloco “Sorvetes de Massa” respondeu ao toque e mudou para “Fechar opções”, revelando quatro formatos de produto, o botão “Ver 38 Sabores”, o contato pelo WhatsApp e o retorno ao início do cardápio. A etapa foi aprovada visual e funcionalmente no navegador local.
+
+
+A página inicial foi reiniciada para continuar o teste. O conteúdo local mantém o botão VER CARDÁPIO, o bloco de Picolés diferenciados e cinco grupos visíveis com contagens 8, 4, 15, 2 e 8. A soma exibida é 37, portanto a divisão pública atual não fecha 34; isso foi registrado como ponto de atenção independente da alteração do carrossel.
+
+
+Teste da seção de Picolés:
+
+O bloco “Picolés diferenciados” respondeu ao toque e mudou para “Fechar opções”. Foram exibidos cinco grupos com botões individuais de sabores, preços e links “Ver preço atacado”, além de “Ir para Encomendas Atacado”, “Orçamento para Eventos” e retorno ao início. Não houve travamento nessa etapa. Observação: os rótulos públicos somam 37 (8+4+15+2+8), enquanto a lista oficial registrada indica 34; não alterar sabores sem confirmação do usuário.
+
+
+Teste de transição para Encomendas:
+
+O link “Ir para Encomendas Atacado” abriu `encomendas.html#picoles` sem erro. O botão “Montar lote” abriu o modal com os 34 sabores, controles −/+, meta mínima de 100 e indicação “Máx 250 por sabor”. Foi observado, porém, que alguns SKUs aparecem como “Esgotado” no estado atual do catálogo (Blue Ice, Caraxi, Leite Ninho e Ovomaltine em grupos específicos); isso precisa ser tratado como estado manual existente, não como baixa causada pelo teste.
+
+
+Teste do limite por sabor:
+
+O modal exibe “Máx 250 por sabor” e o primeiro clique manual alterou Abacaxi de 0 para 1. Uma simulação de 300 cliques via console não reproduziu a elevação esperada; o contador permaneceu em 1. Isso indica que a rotina precisa ser inspecionada antes de declarar o teto aprovado. Nenhum pedido foi confirmado e nenhum arquivo de catálogo foi alterado durante o teste.
+
+
+Diagnóstico do teste de quantidade:
+
+A primeira simulação atingiu um botão de acréscimo (Canudinho Wafer), não o Picolé. O modal usa rótulos aria genéricos “Adicionar” nos controles dos sabores, por isso o teste precisa identificar o card pelo nome/SKU antes de clicar. Não houve alteração persistente no catálogo.
+
+
+Teste correto do limite de Picolé:
+
+O botão do SKU/sabor Abacaxi foi identificado pelo atributo `onclick` e recebeu 300 tentativas de adição. O resultado foi exatamente 250 unidades, subtotal de R$ 450,00 e botão “+” desabilitado. O teto de 250 por sabor foi aprovado. Nenhum pedido foi confirmado.

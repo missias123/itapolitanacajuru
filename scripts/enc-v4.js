@@ -6,17 +6,14 @@
 (function(window, document) {
     'use strict';
     console.log("🍦 Sistema de Encomendas v4.0 (Modern-Classic) Ativo!");
-
-    // --- 1. CONFIGURAÇÕES E DADOS (35 SABORES OFICIAIS) ---
-    var SABORES_LISTA = [
-        "Abacaxi ao Vinho", "Abacaxi Suíço", "Blue Ice (Algodão Doce Azul)", "Amarena", "Ameixa",
-        "Banana com Nutella", "Bis e Trufa", "Cereja Trufada", "Chocolate", "Chocolate com Café",
-        "Coco Queimado", "Creme Paris", "Croquer", "Doce de Leite", "Ferrero Rocher", "Flocos",
-        "Kinder Ovo", "Leite Condensado", "Leite Ninho", "Leite Ninho Folheado", "Leite Ninho com Oreo",
-        "Limão", "Limão Suíço", "Menta com Chocolate", "Milho Verde", "Morango Trufado",
-        "Mousse de Maracujá", "Mousse de Uva", "Nozes", "Nutella", "Ovomaltine", "Pistache",
-        "Prestígio", "Sensação", "Torta de Chocolate"
-    ];
+    // --- 1. CONFIGURAÇÕES E DADOS (somente fonte oficial) ---
+    var SABORES_LISTA = [];
+    fetch('dados/produtos.json?v=' + Date.now(), { cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : {}; })
+        .then(function (dados) {
+            SABORES_LISTA = (dados.sabores_sorvete || []).map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
+        })
+        .catch(function (e) { console.warn('[Encomendas v4] fonte oficial indisponível:', e.message); });
 
     var PRODUTOS_CAIXAS = [
         { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preco: 100, max: 2 },

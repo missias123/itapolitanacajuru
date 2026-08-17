@@ -61,8 +61,8 @@
       'telefone':      '\ud83d\udcf1 WhatsApp: (16) 99606-2046. Chame para encomendas, d\u00favidas ou eventos!',
       'contato':       '\ud83d\udcf1 Fale conosco pelo WhatsApp: (16) 99606-2046.',
       'instagram':     '\ud83d\udcf8 Nos siga: @sorveteriaitapolitanacajuru',
-      'sabor':         '\ud83c\udf66 Temos 35 sabores Tipo Artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo e muito mais.',
-      'sabores':       '\ud83c\udf66 Temos 35 sabores Tipo Artesanal! Digite o nome de um sabor para saber o pre\u00e7o.',
+      'sabor':         '\ud83c\udf66 Temos 38 sabores Tipo Artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo e muito mais.',
+      'sabores':       '\ud83c\udf66 Temos 38 sabores Tipo Artesanal! Digite o nome de um sabor para saber o pre\u00e7o.',
       'nutella':       '\ud83c\udf66 Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutella e mais! \ud83d\ude0b',
       'chocolate':     '\ud83c\udf6b Temos Chocolate, Chocolate com Caf\u00e9, Bis e Trufa, Menta com Chocolate, Prest\u00edgio e Torta de Chocolate!',
       'leite ninho':   '\ud83e\udd5b Temos Leite Ninho, Leite Ninho Folheado e Leite Ninho com Oreo! Os favoritos das crian\u00e7as!',
@@ -93,7 +93,7 @@
       'sorteio':       '\ud83c\udf81 Sorteio mensal gratuito! Cadastre-se na p\u00e1gina de Promo\u00e7\u00e3o no menu. Boa sorte! \ud83c\udf40',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
-      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Tipo Artesanal \u2014 cremosos, em bolas redondas, com 35 sabores incr\u00edveis!',
+      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Tipo Artesanal \u2014 cremosos, em bolas redondas, com 38 sabores incr\u00edveis!',
       'anos':          '\ud83c\udf66 A Sorveteria Itapolitana est\u00e1 em Cajuru desde 2007 \u2014 mais de 19 anos!',
       'historia':      '\ud83c\udf66 Fundada em 2007 em Cajuru/SP, mais de 19 anos de tradi\u00e7\u00e3o!'
     };
@@ -415,7 +415,7 @@
         ? Object.keys(cp).map(function (k) { return k + ': R$ ' + cp[k].toFixed(2).replace('.', ','); }).join(' \u00b7 ')
         : '1 bola R$ 8,00 \u00b7 2 bolas R$ 10,00 \u00b7 3 bolas R$ 12,00';
       return {
-        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Tipo Artesanal!\n\nCasquinha/Copo: ' + linhaPrecos + '\n\n35 sabores para escolher! Veja o card\u00e1pio completo:',
+        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Tipo Artesanal!\n\nCasquinha/Copo: ' + linhaPrecos + '\n\n38 sabores para escolher! Veja o card\u00e1pio completo:',
         linkText: '\ud83c\udf66 Ver card\u00e1pio',
         linkHref: 'encomendas.html'
       };

@@ -630,7 +630,7 @@ function renderIso(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Sabores para Isopore',this)">Ver os 35 Sabores</button></div>`;
+    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Sabores para Isopore',this)">Ver os 38 sabores</button></div>`;
     b.appendChild(btn);
     const ctas=createCtaStack(b,'home-cta-iso');
     ctas.innerHTML=`
@@ -657,7 +657,7 @@ function renderSobremesas(){
     });
     b.appendChild(grid);
     const btn=document.createElement('div');btn.style='margin-top:12px';
-    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Sabores para Sobremesas',this)">Ver os 35 Sabores</button></div>`;
+    btn.innerHTML=`<div class="btn-row-grid"><button type="button" class="btn-sabores" onclick="abrirSaboresInline('sorvetes','Sabores para Sobremesas',this)">Ver os 38 sabores</button></div>`;
     b.appendChild(btn);
     const ctas=createCtaStack(b,'home-cta-sobremesas');
     ctas.innerHTML=`
@@ -963,8 +963,8 @@ const RESPOSTAS={
   'contato':'Fale conosco pelo WhatsApp: (16) 99606-2046. Ou use o formulário "Fale Conosco" no site!',
   'instagram':'Nos siga no Instagram para ver novidades, sabores e promoções! Busque @sorveteriaitapolitanacajuru.',
   // ── CARDÁPIO E SABORES ──
-  'sabor':'Temos 35 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
-  'sabores':'Temos 35 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
+  'sabor':'Temos 38 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
+  'sabores':'Temos 38 sabores Tipo artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo, Ovomaltine e muito mais. Veja o cardápio completo no site!',
   'cardápio':'Abra a área de Encomendas/Cardápio para ver categorias, produtos e próximos passos do pedido.',
   'nutella':'Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutella e muito mais! Delicioso! ',
   'chocolate':'Temos Chocolate, Chocolate com Café, Bis e Trufa, Menta com Chocolate, Prestígio e Torta de Chocolate! ',
@@ -1026,7 +1026,7 @@ const RESPOSTAS={
   // ── SOBRE A SORVETERIA ──
   'anos':'A Sorveteria Itapolitana está em Cajuru desde 2007 — mais de 19 anos de tradição e sabor!',
   'historia':'A Sorveteria Itapolitana foi fundada em 2007 em Cajuru/SP. São mais de 19 anos servindo sorvetes Tipo artesanal com muito carinho!',
-  'tipo artesanal':'Nossos sorvetes são Tipo artesanal — cremosos, em bolas redondas, com 35 sabores incríveis. Feitos com ingredientes selecionados!',
+  'tipo artesanal':'Nossos sorvetes são Tipo artesanal — cremosos, em bolas redondas, com 38 sabores incríveis. Feitos com ingredientes selecionados!',
   'qualidade':'Trabalhamos com ingredientes selecionados e muito carinho desde 2007. Qualidade é nossa tradição!',
   // ── DICAS E DEPOIMENTOS ──
   'dicas':       'Temos uma página de Dicas com orientações para festas e eventos: quanto sorvete comprar, como conservar, quais sabores escolher. Acesse "Dicas/Depoimentos" no menu!',
@@ -1183,7 +1183,7 @@ async function carregarBanner(){
 }
 const FRASES_SENSORIAIS = [
   '🍦 "O sorvete mais cremoso de Cajuru, desde 2007!"',
-  '🍨 "35 sabores Tipo artesanal que encantam na primeira colherada"',
+  '🍨 "38 sabores Tipo artesanal que encantam na primeira colherada"',
   '🍭 "Açaí, milkshake, taças e sobremesas geladas — tudo aqui!"',
   '✨ "Feito com ingredientes selecionados e muito carinho"',
   '🎂 "Encomende sua torta de sorvete para festas e eventos"',
@@ -1207,7 +1207,7 @@ setInterval(() => {
 }, 4000);
 // [frase-rotativa fundida no DOMContentLoaded principal]
 const STRIPS = [
-  '🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 35 Sabores · Desde 2007 · Tipo artesanal · 🍦',
+  '🍦 Cremoso · Gelado · Irresistível · Feito com Amor · 38 sabores · Desde 2007 · Tipo artesanal · 🍦',
   '🍨 Sorvete de Massa · Picolés Recheados · Açaí Premium · Tortas · Milkshakes · Taças · 🍨',
   '🎂 Encomende sua Torta de Sorvete · Caixas 5L e 10L · Picolés Atacado · Acréscimos · 🎂',
 ];
@@ -1447,7 +1447,7 @@ function aplicarConfig(c) {
   // --- NÚMERO DE SABORES (numSabores) ---
   if (c.numSabores) {
     const ns = c.numSabores;
-    // Botões "Ver 35 Sabores" no cardápio
+    // Botões "Ver 38 sabores" no cardápio
     document.querySelectorAll('.btn-sabores').forEach(function (btn) {
       btn.textContent = btn.textContent.replace(/\b\d+\s+sabores\b/gi, function (m) {
         return m.replace(/\d+/, ns);
@@ -1459,7 +1459,7 @@ function aplicarConfig(c) {
         return m.replace(/\d+/, ns);
       });
     });
-    // Chatbot: substituir "35 sabores" em todas as respostas
+    // Chatbot: substituir "38 sabores" em todas as respostas
     if (window.RESPOSTAS) {
       Object.keys(window.RESPOSTAS).forEach(function (k) {
         if (typeof window.RESPOSTAS[k] !== 'string') return;

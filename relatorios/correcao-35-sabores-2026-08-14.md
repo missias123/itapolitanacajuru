@@ -1,4 +1,4 @@
-# Correção dos 35 sabores — evidências verificadas
+# Correção dos 38 sabores — evidências verificadas
 
 ## Diagnóstico
 
@@ -14,7 +14,7 @@
 ## Verificação após a correção
 
 - Após recarregar o arquivo local, `window.getSaboresDisponíveis` passou a existir e retornou `35` itens.
-- O HTML do botão continua chamando `abrirSaboresInline('sorvetes','35 Sabores de Sorvete',this)`.
+- O HTML do botão continua chamando `abrirSaboresInline('sorvetes','38 sabores de Sorvete',this)`.
 - O console não apresentou erro de sintaxe do `index.html`; os avisos observados no modo `file://` são falhas de `fetch` esperadas nesse protocolo local, com fallback de dados.
 - O clique visual ainda precisa ser validado com o botão efetivamente enquadrado na viewport; uma inspeção geométrica mostrou que o ponto calculado do botão estava coberto por `.vc-banner`, portanto não se deve declarar o fluxo aprovado antes de corrigir/testar essa sobreposição.
 
@@ -27,7 +27,7 @@ Não foram alterados preços, carrinho, estoque, regras de encomenda, senha admi
 ## Evidência do teste humano local após a remoção do watermark repetido
 
 - A categoria `acc-sorvetes` abriu visualmente e exibiu os quatro produtos.
-- O botão `Ver 35 Sabores` ficou visível no fluxo normal após rolar até sua posição.
+- O botão `Ver 38 sabores` ficou visível no fluxo normal após rolar até sua posição.
 - A inspeção do DOM confirmou que, antes do clique final, a função inline ainda não havia sido executada: não havia painel adicional de sabores.
 - A marca d’água repetida deixou de aparecer no estado local testado; o fundo do cardápio ficou limpo.
 - O banner de cookies permanece sobreposto na parte inferior da viewport durante o teste e pode cobrir controles nessa região; isso deve ser tratado separadamente do problema da lista.
@@ -37,7 +37,7 @@ Status: diagnóstico em andamento; a correção ainda não deve ser declarada co
 
 ## Confirmação do fluxo completo
 
-O teste humano foi concluído na cópia local. Primeiro, a categoria Sorvetes de Massa foi aberta; depois, o botão `Ver 35 Sabores` foi acionado quando estava enquadrado na viewport. O painel exibiu visualmente os 35 botões em grade, com a lista completa iniciando em `Abacaxi ao Vinho` e terminando em `Torta de Chocolate`. A inspeção textual do navegador também retornou os 35 nomes, sem lista vazia. O botão `Voltar` apareceu abaixo da lista.
+O teste humano foi concluído na cópia local. Primeiro, a categoria Sorvetes de Massa foi aberta; depois, o botão `Ver 38 sabores` foi acionado quando estava enquadrado na viewport. O painel exibiu visualmente os 35 botões em grade, com a lista completa iniciando em `Abacaxi ao Vinho` e terminando em `Torta de Chocolate`. A inspeção textual do navegador também retornou os 35 nomes, sem lista vazia. O botão `Voltar` apareceu abaixo da lista.
 
 Resultado desta etapa: **aprovado localmente para Sorvete de Massa**. Ainda falta validar o retorno sem pulo, outros produtos que devem usar a lista, separação de Picolés/Açaí, publicação e regressão das outras páginas.
 
@@ -45,7 +45,7 @@ Resultado desta etapa: **aprovado localmente para Sorvete de Massa**. Ainda falt
 
 Fonte: cópia local `file:///home/ubuntu/itapolitanacajuru/index.html?watermark-fix=1`, navegador Chromium, viewport aproximada de 895×766.
 
-Após fechar o painel de Sorvete de Massa, o clique no botão `PICOLÉS DIFERENCIADOS` abriu a categoria corretamente. O DOM e a tela exibiram seis grupos específicos: Picolé de Frutas (8 sabores), Picolé de Leite (4), Picolé Recheado (12), Picolé Leite Ninho (1), Picolé de Ovomaltine (1) e Picolé Esquimó (8). Nenhum grupo exibiu a lista de 35 sabores de sorvete. O painel de Picolés mostrou os botões de grupos, links de atacado/orçamento e o botão de retorno ao início do cardápio.
+Após fechar o painel de Sorvete de Massa, o clique no botão `PICOLÉS DIFERENCIADOS` abriu a categoria corretamente. O DOM e a tela exibiram seis grupos específicos: Picolé de Frutas (8 sabores), Picolé de Leite (4), Picolé Recheado (12), Picolé Leite Ninho (1), Picolé de Ovomaltine (1) e Picolé Esquimó (8). Nenhum grupo exibiu a lista de 38 sabores de sorvete. O painel de Picolés mostrou os botões de grupos, links de atacado/orçamento e o botão de retorno ao início do cardápio.
 
 O teste confirma a separação visual inicial entre Sorvete de Massa e Picolés. Ainda falta abrir individualmente cada grupo e testar o botão de retorno de cada nível.
 

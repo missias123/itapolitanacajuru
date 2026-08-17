@@ -16,7 +16,7 @@ Esta evidência comprova o comportamento em 360×800 px localmente. Ainda não c
 Cópia local: `file:///home/ubuntu/itapolitanacajuru/encomendas.html`.
 
 ## Regressão funcional pós-correção
-Na cópia local, o clique humano em `Sorvete em Caixa` abriu os quatro produtos normalmente. O clique em `Escolher sabores` abriu o seletor correto, com os 35 sabores exibidos, contador de seleção, botão `Voltar` e botão `Confirmar`. A alteração visual não impediu a abertura do acordeão nem do seletor. Este teste comprova o fluxo local dessa categoria; ainda faltam confirmar seleção, confirmação, carrinho, picolés, tortas, açaí, index.html, publicação e administração.
+Na cópia local, o clique humano em `Sorvete em Caixa` abriu os quatro produtos normalmente. O clique em `Escolher sabores` abriu o seletor correto, com os 38 sabores exibidos, contador de seleção, botão `Voltar` e botão `Confirmar`. A alteração visual não impediu a abertura do acordeão nem do seletor. Este teste comprova o fluxo local dessa categoria; ainda faltam confirmar seleção, confirmação, carrinho, picolés, tortas, açaí, index.html, publicação e administração.
 
 ## Teste adicional de larguras móveis
 Foram geradas reproduções em 320×900, 390×900 e 430×900 px. Em 320 px, menu, alerta e cartões permanecem dentro da viewport; o rótulo `DICAS/DEPOIMENTOS` quebra em duas linhas, mas não gera overflow horizontal. Em 430 px, as duas colunas do cabeçalho ficam equilibradas e os cartões usam a largura disponível com texto mais confortável. A quebra em 320 px é aceitável como fallback de largura mínima; não é uma falha funcional, mas pode ser refinada futuramente com rótulo mais curto ou ajuste de fonte se o usuário desejar.

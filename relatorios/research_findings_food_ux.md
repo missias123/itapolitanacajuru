@@ -27,7 +27,7 @@ Na página oficial da McDonald's, a hierarquia pública observada é consistente
 
 O Itapolitana deve usar uma única camada visual FUEAP com os seguintes tokens: margem móvel de 16px como base, gutter móvel de 8–12px, margem de tablet de 24px e container desktop limitado; grids com `minmax(0, 1fr)` para evitar overflow; cards de sabor com proporção 1:1; textos com quebra controlada; modais com scroll interno e `overscroll-behavior: contain`; botão primário visualmente único por etapa; e preservação integral de IDs, `onclick`, funções globais e sequência do carrinho.
 
-A fórmula não deve copiar marca, textos, imagens ou código proprietário dos benchmarks. Ela deve adaptar apenas princípios públicos de estrutura e usabilidade ao catálogo da sorveteria, incluindo a separação entre 35 sabores Tipo Artesanal e o catálogo especializado de picolés.
+A fórmula não deve copiar marca, textos, imagens ou código proprietário dos benchmarks. Ela deve adaptar apenas princípios públicos de estrutura e usabilidade ao catálogo da sorveteria, incluindo a separação entre 38 sabores Tipo Artesanal e o catálogo especializado de picolés.
 
 ## Fontes
 
