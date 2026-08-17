@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════
  * REGRA: Single Source of Truth
  * Tudo que existe no site existe no Admin e vice-versa.
- * Este módulo carrega config.json e injeta em TODAS as páginas.
+ * Este módulo carrega config.js?v=1786979144on e injeta em TODAS as páginas.
  *
  * Desenvolvedor: SgtMissiascacarato
  * Versão: 2.0 — 04/04/2026
@@ -15,7 +15,7 @@
   // ═══════════════════════════════════════════════
   // CONFIGURAÇÃO
   // ═══════════════════════════════════════════════
-  const CONFIG_PATH = 'dados/config.json';
+  const CONFIG_PATH = 'dados/config.js?v=1786979144on';
   const CACHE_KEY   = 'itap_site_config';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutos
   const LOCAL_FETCH_TIMEOUT_MS = 5000;
@@ -83,7 +83,7 @@
       });
       clearTimeout(timeout);
       if (!resp.ok) return null;
-      return await resp.json();
+      return await resp.js?v=1786979144on();
     } catch (e) {
       return null;
     }
@@ -500,7 +500,7 @@
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-label', 'Aviso de cookies');
     banner.setAttribute('aria-live', 'polite');
-    banner.style.cssText = 'display:none;position:fixed;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.92);color:#fff;padding:15px 20px;z-index:9999;text-align:center;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,0.2)';
+    banner.style.css?v=1786979144Text = 'display:none;position:fixed;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.92);color:#fff;padding:15px 20px;z-index:9999;text-align:center;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,0.2)';
     banner.innerHTML = '<div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px;">'
       + '<p style="margin:0;flex:1;text-align:left;line-height:1.5;">Usamos cookies essenciais para o funcionamento do site e, com seu consentimento, cookies de análise (Google Analytics) para melhorar sua experiência. Você pode aceitar todos ou recusar os não essenciais. <a href="/politica-privacidade.html" aria-label="Saiba mais sobre nossa política de privacidade" style="color:#FBD100;font-weight:700;text-decoration:underline;">Saiba mais →</a></p>'
       + '<div style="display:flex;gap:10px;flex-shrink:0;">'
@@ -545,12 +545,12 @@
     link.href = '#conteudo-principal';
     link.className = 'skip-link';
     link.textContent = 'Pular para o conteúdo principal';
-    link.style.cssText = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
+    link.style.css?v=1786979144Text = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
     link.addEventListener('focus', function() {
-      link.style.cssText = 'position:fixed;left:16px;top:0;width:auto;height:auto;overflow:visible;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none;outline:2px solid #fff;outline-offset:2px';
+      link.style.css?v=1786979144Text = 'position:fixed;left:16px;top:0;width:auto;height:auto;overflow:visible;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none;outline:2px solid #fff;outline-offset:2px';
     });
     link.addEventListener('blur', function() {
-      link.style.cssText = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
+      link.style.css?v=1786979144Text = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
     });
     document.body.insertBefore(link, document.body.firstChild);
   }
