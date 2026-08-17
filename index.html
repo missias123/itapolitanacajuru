@@ -2281,6 +2281,10 @@ body.cardapio-aberto { padding-bottom: 80px; }
 .vc-seta{display:inline-block;font-style:normal;line-height:1;transition:transform .35s;}
 .vc-btn.aberto .vc-seta{transform:rotate(180deg);}
 /* Pulso suave no botão (anel externo) */
+@keyframes handPulse{
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
 @keyframes vcPulse{
  0%{opacity:.55;transform:scale(.97);}
  70%{opacity:0;transform:scale(1.07);}
@@ -2891,7 +2895,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
     aria-label="Abrir o cardápio da Sorveteria Itapolitana"
     aria-expanded="false"
     aria-controls="vc-container">
-    <span class="vc-btn-icon" aria-hidden="true">🍦</span>
+    <span class="vc-btn-icon vc-btn-icon-hand" aria-hidden="true" style="display:inline-block;animation:handPulse 1.2s ease-in-out infinite;">👉</span>
     <span>VER CARDÁPIO</span>
     <span class="vc-btn-circle" aria-hidden="true"><i class="vc-seta">▼</i></span>
    </button>
