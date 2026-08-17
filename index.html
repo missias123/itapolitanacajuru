@@ -5776,8 +5776,18 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
  if (acc) _menuFocoAtivar(acc);
 
  var chipsHtml = (chips && chips.length > 0) ? chips.map(function(s) {
-  var nome = typeof s === 'object' && s !== null ? s.nome : s;
-  var esgotado = typeof s === 'object' && s !== null && (s.esgotado || s.estoque <= 0);
+  var nome = "";
+  var esgotado = false;
+  if (typeof s === 'object' && s !== null) {
+    nome = s.nome || s.sabor || (s.toString && s.toString() !== "[object Object]" ? s.toString() : "Sabor");
+    esgotado = !!(s.esgotado || (s.estoque !== undefined && s.estoque <= 0));
+  } else {
+    nome = String(s);
+  }
+  if (nome === "[object Object]") {
+    // Fallback caso o objeto não tenha 'nome' ou 'sabor'
+    try { nome = s.nome || "Sabor"; } catch(e) { nome = "Sabor"; }
+  }
   return '<span class="chip-inline" style="' + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + nome + (esgotado ? ' ✕' : '') + '</span>';
  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
@@ -5869,9 +5879,10 @@ function abrirTacasSujasInline(el) {
 function abrirPicoléInline(key, nome, el) {
  var accBody = _getAccBody(el, 'picolés-body');
  if (!accBody) return;
- var sabs = produtos && produtos.picolés && produtos.picolés[key] && produtos.picolés[key].sabores ? produtos.picolés[key].sabores : [];
- var chips = sabs;
- mostrarSaboresInline(accBody, '🍭 Sabores – ' + nome, 'Sabores disponíveis para este tipo de picolé', chips);
+ var pData = (produtos && (produtos.picolés || produtos.picoles)) || {};
+ var cat = pData[key] || {};
+ var sabs = cat.sabores || [];
+ mostrarSaboresInline(accBody, '🍭 Sabores – ' + nome, 'Sabores disponíveis para este tipo de picolé', sabs);
 }
 
 function abrirComplementosInline(el) {
