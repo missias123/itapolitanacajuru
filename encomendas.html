@@ -440,7 +440,7 @@
     <button class="categoria-header" onclick="window.toggleSecao('sec-caixas')">
       <div class="categoria-header__main">
         <span class="categoria-header__icon bento-icon-container blue" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><use href="#icon-box" xlink:href="#icon-box"></use></svg></span>
-        <div class="categoria-header__copy"><strong>Sorvete em Caixa</strong><small>5L e 10L - 38 Sabores Tipo Artesanal</small></div>
+        <div class="categoria-header__copy"><strong>Sorvete em Caixa</strong><small>5L e 10L - 38 Sabores Sorvete Itapolitana</small></div>
       </div>
       <span class="arrow-icon">▼</span>
     </button>
@@ -960,7 +960,7 @@
             return `<div class="prod-card ${cores.card} ${indisponivel ? 'is-esgotado' : ''}">
                 <div class="prod-nome">${nome}</div>
                 ${seloLeitePasteurizadoHtml()}
-                <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">${p.max} Sabores Tipo Artesanal</div>
+                <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">${p.max} Sabores Sorvete Itapolitana</div>
                 <div class="prod-card__estoque">${status}</div>
                 <div class="prod-preco">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                 <button class="btn-sabores ${cores.btn}" onclick="window.abrirSaboresSorvete('${p.id}', ${p.preco}, ${p.max}, '${nome}')" ${indisponivel ? 'disabled' : ''}>Escolher sabores</button>
@@ -971,7 +971,7 @@
         tortasEl.innerHTML = `<div class="prod-card prod-card--verde ${tortaIndisponivel ? 'is-esgotado' : ''}">
             <div class="prod-nome">Torta de Sorvete</div>
             ${seloLeitePasteurizadoHtml()}
-            <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">Até 3 Sabores Tipo Artesanal</div>
+            <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">Até 3 Sabores Sorvete Itapolitana</div>
             <div class="prod-card__estoque">${statusEstoqueProduto(TORTA_ESTOQUE)}</div>
             <div class="prod-preco">R$ ${TORTA_ESTOQUE.preco.toFixed(2).replace('.',',')}</div>
             <button class="btn-sabores btn-sabores--tortas" onclick="window.abrirSaboresSorvete('torta', ${TORTA_ESTOQUE.preco}, ${TORTA_ESTOQUE.max}, 'Torta de Sorvete')" ${tortaIndisponivel ? 'disabled' : ''}>Escolher sabores</button>
@@ -1009,7 +1009,7 @@
         saboresSelecionados = (editIndex !== undefined && carrinho[editIndex]) ? carrinho[editIndex].sabores.slice() : [];
         
         document.getElementById('modal-titulo-sabores').textContent = nome;
-        document.getElementById('modal-subtitulo-sabores').textContent = "Selecione " + max + " sabores Tipo Artesanal:";
+        document.getElementById('modal-subtitulo-sabores').textContent = "Selecione " + max + " sabores Sorvete Itapolitana:";
         
         var grid = document.getElementById('grid-sabores');
         grid.innerHTML = SABORES_SORVETE.map(s => {

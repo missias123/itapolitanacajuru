@@ -61,8 +61,8 @@
       'telefone':      '\ud83d\udcf1 WhatsApp: (16) 99606-2046. Chame para encomendas, d\u00favidas ou eventos!',
       'contato':       '\ud83d\udcf1 Fale conosco pelo WhatsApp: (16) 99606-2046.',
       'instagram':     '\ud83d\udcf8 Nos siga: @sorveteriaitapolitanacajuru',
-      'sabor':         '\ud83c\udf66 Temos 38 Sabores Tipo Artesanal! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco) e muito mais.',
-      'sabores':       '\ud83c\udf66 Temos 38 Sabores Tipo Artesanal! Digite o nome de um sabor para saber o pre\u00e7o.',
+      'sabor':         '\ud83c\udf66 Temos 38 Sabores Sorvete Itapolitana! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco) e muito mais.',
+      'sabores':       '\ud83c\udf66 Temos 38 Sabores Sorvete Itapolitana! Digite o nome de um sabor para saber o pre\u00e7o.',
       'nutella':       '\ud83c\udf66 Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutella e mais! \ud83d\ude0b',
       'chocolate':     '\ud83c\udf6b Temos Chocolate, Chocolate com Caf\u00e9, Bis e Trufa, Menta com Chocolate, Prest\u00edgio e Torta de Chocolate!',
       'leite ninho':   '\ud83e\udd5b Temos Leite Ninho, Leite Ninho Folheado e Leite Ninho com Oreo! Os favoritos das crian\u00e7as!',
@@ -93,7 +93,7 @@
       'sorteio':       '\ud83c\udf81 Sorteio mensal gratuito! Cadastre-se na p\u00e1gina de Promo\u00e7\u00e3o no menu. Boa sorte! \ud83c\udf40',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
-      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Tipo Artesanal \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
+      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
       'anos':          '\ud83c\udf66 A Sorveteria Itapolitana est\u00e1 em Cajuru desde 2007 \u2014 mais de 19 anos!',
       'historia':      '\ud83c\udf66 Fundada em 2007 em Cajuru/SP, mais de 19 anos de tradi\u00e7\u00e3o!'
     };
@@ -177,7 +177,7 @@
       var cp0  = (precos && precos.casquinha_copo && precos.casquinha_copo['1 Bola'] != null) ? precos.casquinha_copo : null;
       var pMin = cp0 ? 'R$ ' + cp0['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
       return {
-        answer: '\ud83c\udf66 Temos ' + n + ' sabores Tipo Artesanal!\n\n\u2728 Destaques: ' + prev + '\n\n\ud83d\udcb0 A partir de ' + pMin + ' (1 bola na casquinha/copo).\nVer card\u00e1pio completo e fazer pedido:',
+        answer: '\ud83c\udf66 Temos ' + n + ' sabores Sorvete Itapolitana!\n\n\u2728 Destaques: ' + prev + '\n\n\ud83d\udcb0 A partir de ' + pMin + ' (1 bola na casquinha/copo).\nVer card\u00e1pio completo e fazer pedido:',
         linkText: '\ud83c\udf66 Ver todos os sabores',
         linkHref: 'encomendas.html',
         chips: ['\ud83e\uddd0 Pre\u00e7os de sorvete', '\ud83e\uddc2 Caixas para festas', '\ud83c\udf78 Milkshakes', '\ud83e\uded0 A\u00e7a\u00ed']
@@ -190,7 +190,7 @@
         ? Object.keys(copos).map(function (k) { return k + ' R$ ' + copos[k].toFixed(2).replace('.', ','); }).join(' \u00b7 ')
         : '300ml R$ 15 \u00b7 360ml R$ 16 \u00b7 400ml R$ 17 \u00b7 600ml R$ 20';
       return {
-        answer: '\ud83e\uded0 A\u00e7a\u00ed Tipo Artesanal!\n\nTamanhos: ' + linha + '\n\nComplementos:\n\ud83c\udf53 Frutas: Morango, Banana, Uva, Kiwi, Abacaxi \u2192 R$ 2,00\n\ud83c\udf6b Cremes (Nutella, Ninho, Pistache) \u2192 R$ 3,00\n\ud83c\udf6d Guloseimas (Granola, Ovomaltine, Leite Cond.) \u2192 R$ 2,00\n\ud83c\udf2b Chocolates (Kit Kat, Oreo, Kinder Bueno) \u2192 R$ 4,00',
+        answer: '\ud83e\uded0 A\u00e7a\u00ed Sorvete Itapolitana!\n\nTamanhos: ' + linha + '\n\nComplementos:\n\ud83c\udf53 Frutas: Morango, Banana, Uva, Kiwi, Abacaxi \u2192 R$ 2,00\n\ud83c\udf6b Cremes (Nutella, Ninho, Pistache) \u2192 R$ 3,00\n\ud83c\udf6d Guloseimas (Granola, Ovomaltine, Leite Cond.) \u2192 R$ 2,00\n\ud83c\udf2b Chocolates (Kit Kat, Oreo, Kinder Bueno) \u2192 R$ 4,00',
         linkText: '\ud83e\uded0 Ver card\u00e1pio completo',
         linkHref: 'encomendas.html',
         chips: ['\ud83c\udf66 Sorvetes', '\ud83c\udf78 Milkshakes', '\ud83c\udf60 Picol\u00e9s', '\ud83c\udf68 Ta\u00e7as']
@@ -204,7 +204,7 @@
       var ninho  = (p && p.leite_ninho  && p.leite_ninho.preco_varejo  != null)           ? p.leite_ninho.preco_varejo.toFixed(2).replace('.', ',')       : '4,00';
       var eskimo = (p && (p.esquímós || p.esquimos) && (p.esquímós || p.esquimos).preco_varejo != null) ? (p.esquímós || p.esquimos).preco_varejo.toFixed(2).replace('.', ',') : '8,00';
       return {
-        answer: '\ud83c\udf60 Picol\u00e9s Tipo Artesanal!\n\n' +
+        answer: '\ud83c\udf60 Picol\u00e9s Sorvete Itapolitana!\n\n' +
                 '\ud83c\udf4a Fruta/\u00c1gua \u2014 R$ ' + fruta + ' (Abacaxi, Caju, Groselha, Lim\u00e3o, Melancia, Uva...)\n' +
                 '\ud83e\udd5b Leite sem Recheio \u2014 R$ 2,50 (Coco Queimado, Milho Verde, Amendoim, Pistache)\n' +
                 '\ud83c\udf53 Leite com Recheio \u2014 R$ ' + leite + ' (A\u00e7a\u00ed, Blue Ice (Algodão Doce Azul), Morango, Chocolate...)\n' +
@@ -396,7 +396,7 @@
     function _respPromoAcai() {
       var copos = (_prodData && _prodData.acai && _prodData.acai.copos) ? _prodData.acai.copos : null;
       var acaiPromo = (_prodData && _prodData.acai_promocao) ? _prodData.acai_promocao : null;
-      var txt = '\ud83e\uded0 Pre\u00e7os do A\u00e7a\u00ed Tipo Artesanal!\n\n';
+      var txt = '\ud83e\uded0 Pre\u00e7os do A\u00e7a\u00ed Sorvete Itapolitana!\n\n';
       if (copos) {
         txt += Object.keys(copos).map(function (k) { return k + ': R$ ' + copos[k].toFixed(2).replace('.', ','); }).join('\n');
       } else {
@@ -415,7 +415,7 @@
         ? Object.keys(cp).map(function (k) { return k + ': R$ ' + cp[k].toFixed(2).replace('.', ','); }).join(' \u00b7 ')
         : '1 bola R$ 8,00 \u00b7 2 bolas R$ 10,00 \u00b7 3 bolas R$ 12,00';
       return {
-        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Tipo Artesanal!\n\nCasquinha/Copo: ' + linhaPrecos + '\n\n38 Sabores para escolher! Veja o card\u00e1pio completo:',
+        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Sorvete Itapolitana!\n\nCasquinha/Copo: ' + linhaPrecos + '\n\n38 Sabores para escolher! Veja o card\u00e1pio completo:',
         linkText: '\ud83c\udf66 Ver card\u00e1pio',
         linkHref: 'encomendas.html'
       };
