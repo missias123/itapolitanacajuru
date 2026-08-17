@@ -701,8 +701,23 @@
         return String(valor).replace(/[^a-zA-Z0-9_-]/g, '_');
     }
 
+    
     function normalizarCategoriaPicolé(dados, chave, fallback) {
-        var cat = (dados && (dados[chave] || dados[chave.replace('esquímós', 'esquimós')])) || {};
+        var cat = (dados && (dados[chave] || dados[chave.replace("esquímós", "esquimós")])) || {};
+        var lista = Array.isArray(cat.sabores) ? cat.sabores : fallback;
+        var estados = {};
+        lista.forEach(function (item) {
+            var nome = typeof item === "string" ? item : item && item.nome;
+            if (!nome) return;
+            var itemEsgotado = Boolean((item && typeof item === "object" && item.esgotado === true) || cat.esgotado === true);
+            estados[nome] = {
+                estoque: itemEsgotado ? 0 : 250,
+                esgotado: itemEsgotado
+            };
+        });
+        return estados;
+    }
+;
         var lista = Array.isArray(cat.sabores) ? cat.sabores : fallback;
         var estados = {};
         lista.forEach(function (item) {
