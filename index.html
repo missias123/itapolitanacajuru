@@ -649,7 +649,7 @@ img{max-width:100%;display:block}
 /* ═══════════════════════════════════════════════════════════════
   SELOS DE DESTAQUE — "Mais Pedido" / "Favorito"
   Infraestrutura HTML+CSS pronta.
-  Ativação futura: verificar campo is_featured em produtos.js?v=1786979144on
+  Ativação futura: verificar campo is_featured em produtos.json?v=1786979144
   e injetar <span class="badge-mais-pedido">Mais pedido</span>
   ou <span class="badge-favorito">Favorito</span> dentro de
   .prod-card-body ao renderizar via renderTudo().
@@ -4454,10 +4454,10 @@ async function _buscarDadosPromo(){
  try{
   const ctrl=new AbortController();
   const tid=setTimeout(()=>ctrl.abort(),3000);
-  const resp=await fetch('/dados/promo.js?v=1786979144on?t=' + Date.now(),{signal:ctrl.signal,cache:'no-store'});
+  const resp=await fetch('/dados/promo.json?v=1786979144?t=' + Date.now(),{signal:ctrl.signal,cache:'no-store'});
   clearTimeout(tid);
   if(resp.ok){
-   _dadosPromoCache=await resp.js?v=1786979144on();
+   _dadosPromoCache=await resp.json();
    try{sessionStorage.setItem('itap_promo_sess',JSON.stringify(_dadosPromoCache));}catch(e){}
    localStorage.setItem('itap_promo_cache',JSON.stringify(_dadosPromoCache));
    return _dadosPromoCache;
@@ -4684,10 +4684,10 @@ const ITABOT_INTENTS = [
 (function carregarFaqsItaBot() {
  'use strict';
  var FAQ_ARQUIVOS = [
-  'dados/faq_horarios_localizacao.js?v=1786979144on',
-  'dados/faq_cardapio.js?v=1786979144on',
-  'dados/faq_encomendas.js?v=1786979144on',
-  'dados/faq_sorteio_promocoes.js?v=1786979144on'
+  'dados/faq_horarios_localizacao.json?v=1786979144',
+  'dados/faq_cardapio.json?v=1786979144',
+  'dados/faq_encomendas.json?v=1786979144',
+  'dados/faq_sorteio_promocoes.json?v=1786979144'
  ];
 
  function normalizarTag(t) {
@@ -4710,7 +4710,7 @@ const ITABOT_INTENTS = [
 
  FAQ_ARQUIVOS.forEach(function(url) {
   fetch(url + '?v=' + (window._itapV || Date.now()))
-   .then(function(r) { return r.ok ? r.js?v=1786979144on() : null; })
+   .then(function(r) { return r.ok ? r.json() : null; })
    .catch(function() { return null; })
    .then(function(faq) { if (faq) mesclarFaq(faq); });
  });
@@ -4788,14 +4788,14 @@ setInterval(() => {
 }, 5000);
 // ─────────────────────────────────────────────────────────────────────────
 // SINCRONISMO DE PRODUTOS — Single Source of Truth
-// Fonte: /dados/produtos.js?v=1786979144on — mesmo arquivo que o admin salva
+// Fonte oficial: dados/produtos.json — mesmo catálogo usado pelo carregador global
 // Padrão: iFood / Shopify / Nubank
 // ─────────────────────────────────────────────────────────────────────────
-const ITAP_PRODUTOS_URL = '/dados/produtos.js?v=1786979144on';
+const ITAP_PRODUTOS_URL = 'dados/produtos.json';
 
-// Compatibilidade do cardápio: o dataset oficial é carregado por scripts/products.js?v=1786979144
+// Compatibilidade do cardápio: o dataset oficial é carregado por scripts/products.js
 // como window.PRODUTOS_DATA. O alias dinâmico evita ReferenceError em botões
-// acionados após o carregamento, sem modificar o dataset ou as outras páginas.
+// acionados após o carregamento, sem duplicar listas ou fontes de dados.
 if (!Object.getOwnPropertyDescriptor(window, 'produtos')) {
  Object.defineProperty(window, 'produtos', {
   configurable: true,
@@ -4808,8 +4808,8 @@ if (!Object.getOwnPropertyDescriptor(window, 'produtos')) {
 async function carregarPreçosNuvemCardápio() {
  try {
   const resp = await fetch(ITAP_PRODUTOS_URL + '?t=' + Date.now(), { cache: 'no-store' });
-  if (!resp.ok) throw new Error('produtos.js?v=1786979144on indisponível');
-  const dados = await resp.js?v=1786979144on();
+  if (!resp.ok) throw new Error('dados/produtos.json indisponível');
+  const dados = await resp.json();
 
   // Aplicar a lista oficial de massas (objetos com código e status).
   const massasOficiais = Array.isArray(dados.sabores_sorvete) ? dados.sabores_sorvete : [];
@@ -4860,7 +4860,7 @@ async function carregarPreçosNuvemCardápio() {
   return true;
 
  } catch(e) {
-  console.warn('[Itap Cardápio] Falha ao carregar produtos.js?v=1786979144on, usando cache local:', e.message);
+  console.warn('[Itap Cardápio] Falha ao carregar dados/produtos.json, usando cache local:', e.message);
   const cache = localStorage.getItem('itap_produtos_nuvem');
   if (cache) {
    try {
@@ -4948,7 +4948,7 @@ function renderTudo() {
 /* ============================================================
   SINCRONISMO TOTAL — SINGLE SOURCE OF TRUTH
   Padrão: iFood / Nubank / Shopify
-  Fonte: dados/config.js?v=1786979144on (GitHub Raw)
+  Fonte: dados/config.json?v=1786979144 (GitHub Raw)
   Aplica em todos os elementos do site ao carregar
   Fallback: localStorage para offline/falha de rede
   ============================================================ */
@@ -4956,7 +4956,7 @@ function aplicarConfig(c) {
  if (!c) return;
 
  // ─────────────────────────────────────────────────────────────────────────
- // HERO — sincronismo total via config.js?v=1786979144on
+ // HERO — sincronismo total via config.json?v=1786979144
  // ─────────────────────────────────────────────────────────────────────────
  const heroBadge = document.getElementById('hero-badge');
  if (heroBadge && c.heroBadge) heroBadge.textContent = c.heroBadge;
@@ -5199,7 +5199,7 @@ function aplicarConfig(c) {
  renderChatSugestoes(c.chatSugestoes);
 
  // --- PROMO FAB LABEL ---
- // (o FAB lê fabLabel diretamente de promo.js?v=1786979144on; este campo não é mais necessário aqui)
+ // (o FAB lê fabLabel diretamente de promo.json?v=1786979144; este campo não é mais necessário aqui)
 
  // Salvar no localStorage como fallback
  try { localStorage.setItem('itap_config_cache', JSON.stringify(c)); } catch(e) {}
@@ -5266,7 +5266,7 @@ document.addEventListener('DOMContentLoaded', () => {
  // 2. Carregar config (textos, hero, footer, strip)
  carregarConfig();
 
- // 2c. Carregar estado da promoção (top bar + FAB) diretamente de promo.js?v=1786979144on
+ // 2c. Carregar estado da promoção (top bar + FAB) diretamente de promo.json?v=1786979144
  carregarBarraPromo();
 
  // 2b. Aplicar títulos dos accordions (fallback localStorage; GitHub sobrescreve em aplicarConfig)
@@ -5322,7 +5322,7 @@ function atualizarStatusHorário() {
  let aberto = false;
  let fechaEm = '';
 
- // Horários dinâmicos via config.js?v=1786979144on
+ // Horários dinâmicos via config.json?v=1786979144
  const hAbre = window.ITAP_HORA_ABRE !== undefined ? window.ITAP_HORA_ABRE : 10;
  const hFecha = window.ITAP_HORA_FECHA !== undefined ? window.ITAP_HORA_FECHA : 22;
  if (horaAtual >= hAbre && horaAtual < hFecha) {
@@ -5462,7 +5462,7 @@ function atualizarStatusLoja() {
  const min = agora.getMinutes();
  const horaAtual = hora + min / 60;
 
- // Horários dinâmicos via config.js?v=1786979144on (fallback: 10h–22h)
+ // Horários dinâmicos via config.json?v=1786979144 (fallback: 10h–22h)
  const abre = window.ITAP_HORA_ABRE !== undefined ? window.ITAP_HORA_ABRE : 10;
  const fecha = window.ITAP_HORA_FECHA !== undefined ? window.ITAP_HORA_FECHA : 22;
  const aberto = horaAtual >= abre && horaAtual < fecha;
@@ -5634,7 +5634,7 @@ function _semPulo(fn) {
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CARDAPIO_MAP — Tabela Mestre do Cardápio
-// Sincronizada automaticamente com dados/produtos.js?v=1786979144on via Admin
+// Sincronizada automaticamente com dados/produtos.json?v=1786979144 via Admin
 // Estrutura: accId → { bodyId, titulo, tipo, getSabores() }
 // ═══════════════════════════════════════════════════════════════════════════
 
