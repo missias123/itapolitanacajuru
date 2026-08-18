@@ -232,54 +232,71 @@
         .sabor-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     }
     .sabor-item {
+        position: relative;
         min-height: 52px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 12px 14px;
-        border: 2px solid #E2E8F0;
-        border-radius: 12px;
+        padding: 11px 14px;
+        border: 1px solid var(--sabor-accent, #CBD5E1);
+        border-left-width: 3px;
+        border-radius: 10px;
         cursor: pointer;
         text-align: center;
-        font-weight: 700;
+        font-weight: 750;
         font-size: 0.95rem;
-        background: var(--white);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        color: #263244;
+        background: linear-gradient(180deg, #FFFFFF 0%, var(--sabor-tint, #F8FAFC) 100%);
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+        box-shadow: 0 2px 8px rgba(15,23,42,.06), inset 0 0 0 1px rgba(255,255,255,.75);
         line-height: 1.25;
         letter-spacing: -0.01em;
     }
-    .sabor-item:active { transform: scale(0.95); }
+    .sabor-item::before {
+        content: '';
+        position: absolute;
+        left: -1px;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        border-radius: 4px;
+        background: var(--sabor-accent, #CBD5E1);
+    }
+    .sabor-item:hover,
+    .sabor-item:focus-visible {
+        transform: translateY(-2px);
+        border-color: var(--sabor-accent, #94A3B8);
+        box-shadow: 0 0 0 2px rgba(255,255,255,.96), 0 0 13px var(--sabor-glow, rgba(148,163,184,.28)), 0 5px 14px rgba(15,23,42,.10);
+        outline: none;
+    }
+    .sabor-item:active { transform: translateY(0) scale(.98); }
     .sabor-item.sel {
-        border-color: #000;
-        box-shadow: 0 0 0 3px rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15);
-        transform: scale(1.05);
+        border-color: var(--sabor-accent, #334155);
+        box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--sabor-accent, #334155), 0 0 18px var(--sabor-glow, rgba(51,65,85,.32));
+        transform: translateY(-1px);
         z-index: 2;
     }
     .sabor-item.sel::after {
         content: '✓';
         position: absolute;
-        top: 5px;
-        right: 8px;
-        font-size: 1.2rem;
+        top: 4px;
+        right: 7px;
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        font-size: .82rem;
         font-weight: 900;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        color: #FFFFFF;
+        background: var(--sabor-accent, #334155);
+        text-shadow: none;
     }
-    /* Cores Temáticas dos Sabores */
-    .sabor-c-chocolate { background: linear-gradient(135deg, #5D4037, #3E2723); color: #fff; border-color: #3E2723; }
-    .sabor-c-morango { background: linear-gradient(135deg, #F06292, #E91E63); color: #fff; border-color: #C2185B; }
-    .sabor-c-limao { background: linear-gradient(135deg, #DCE775, #AFB42B); color: #1A1A1A; border-color: #9E9D24; }
-    .sabor-c-ninho { background: linear-gradient(135deg, #FFFFFF, #F5F5F5); color: #333; border-color: #E0E0E0; }
-    .sabor-c-uva-vinho { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: #fff; border-color: #311B92; }
-    .sabor-c-maracuja-milho { background: linear-gradient(135deg, #FFF176, #FBC02D); color: #1A1A1A; border-color: #F9A825; }
-    .sabor-c-coco { background: linear-gradient(135deg, #FAFAFA, #E0E0E0); color: #333; border-color: #BDBDBD; }
-    .sabor-c-menta { background: linear-gradient(135deg, #B9F6CA, #00C853); color: #1A1A1A; border-color: #00A144; }
-    .sabor-c-laranja-banana { background: linear-gradient(135deg, #FFB74D, #F57C00); color: #fff; border-color: #E65100; }
-    .sabor-c-azul { background: linear-gradient(135deg, #64B5F6, #1976D2); color: #fff; border-color: #0D47A1; }
-    .sabor-c-pistache { background: linear-gradient(135deg, #C5E1A5, #689F38); color: #1A1A1A; border-color: #33691E; }
-    .sabor-c-bege-nozes { background: linear-gradient(135deg, #D7CCC8, #A1887F); color: #fff; border-color: #795548; }
-    .sabor-c-padrao { background: #fff; color: #333; border-color: #E2E8F0; }
-    .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+    .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(.55); pointer-events: none; }
+    @media (prefers-reduced-motion: reduce) {
+        .sabor-item { transition: none; }
+        .sabor-item:hover, .sabor-item:focus-visible, .sabor-item.sel { transform: none; }
+    }
 
     .btn-carrinho-fixo {
         position: fixed; bottom: max(12px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 24px), 480px); max-width: 480px; min-height: 56px;
@@ -1031,27 +1048,56 @@
         document.getElementById('modal-subtitulo-sabores').textContent = "Selecione " + max + " sabores Sorvete Itapolitana:";
 
         var grid = document.getElementById('grid-sabores');
-        function getSaborClass(nome) {
-            const n = nome.toLowerCase();
-            if (n.includes('chocolate') || n.includes('belga') || n.includes('ferrero') || n.includes('bis') || n.includes('nutella') || n.includes('ovomaltine') || n.includes('prestígio')) return 'sabor-c-chocolate';
-            if (n.includes('morango') || n.includes('sensação') || n.includes('amarena') || n.includes('cereja')) return 'sabor-c-morango';
-            if (n.includes('limão')) return 'sabor-c-limao';
-            if (n.includes('ninho')) return 'sabor-c-ninho';
-            if (n.includes('vinho') || n.includes('uva') || n.includes('ameixa')) return 'sabor-c-uva-vinho';
-            if (n.includes('maracujá') || n.includes('milho')) return 'sabor-c-maracuja-milho';
-            if (n.includes('coco')) return 'sabor-c-coco';
-            if (n.includes('menta')) return 'sabor-c-menta';
-            if (n.includes('doce de leite') || n.includes('banana') || n.includes('passas')) return 'sabor-c-laranja-banana';
-            if (n.includes('blue ice')) return 'sabor-c-azul';
-            if (n.includes('pistache')) return 'sabor-c-pistache';
-            if (n.includes('nozes') || n.includes('creme') || n.includes('cheesecake') || n.includes('croquer') || n.includes('flocos') || n.includes('casado')) return 'sabor-c-bege-nozes';
-            return 'sabor-c-padrao';
+        // Fonte visual compartilhada com o Cardápio: uma cor por sabor, sempre na borda.
+        var SABOR_MASSA_PALETA = {
+            'abacaxi ao vinho': ['#F59E0B', '#FFFBEB', 'rgba(245,158,11,.36)'],
+            'abacaxi suíço': ['#FACC15', '#FEFCE8', 'rgba(250,204,21,.40)'],
+            'amarena': ['#E11D48', '#FFF1F2', 'rgba(225,29,72,.34)'],
+            'ameixa': ['#7C3AED', '#F5F3FF', 'rgba(124,58,237,.32)'],
+            'banana com nutella': ['#D97706', '#FFF7ED', 'rgba(217,119,6,.32)'],
+            'bem casado': ['#C08457', '#FFF7ED', 'rgba(192,132,87,.34)'],
+            'bis e trufa': ['#7C3F2C', '#FFF7ED', 'rgba(124,63,44,.34)'],
+            'blue ice': ['#38BDF8', '#F0F9FF', 'rgba(56,189,248,.38)'],
+            'cereja trufada': ['#BE123C', '#FFF1F2', 'rgba(190,18,60,.34)'],
+            'cheesecake': ['#E2A77A', '#FFF7ED', 'rgba(226,167,122,.34)'],
+            'chocolate belga': ['#6B3E26', '#FFF7ED', 'rgba(107,62,38,.36)'],
+            'chocolate com café': ['#4B2E25', '#F8FAFC', 'rgba(75,46,37,.36)'],
+            'coco queimado': ['#A16207', '#FFFBEB', 'rgba(161,98,7,.34)'],
+            'creme paris': ['#D4A017', '#FFFBEB', 'rgba(212,160,23,.34)'],
+            'croquer': ['#B45309', '#FFF7ED', 'rgba(180,83,9,.34)'],
+            'doce de leite': ['#B7794B', '#FFF7ED', 'rgba(183,121,75,.34)'],
+            'ferrero rocher': ['#A16207', '#FFFBEB', 'rgba(161,98,7,.36)'],
+            'flocos': ['#64748B', '#F8FAFC', 'rgba(100,116,139,.32)'],
+            'kinder ovo': ['#2563EB', '#EFF6FF', 'rgba(37,99,235,.34)'],
+            'leite condensado': ['#CBD5E1', '#F8FAFC', 'rgba(148,163,184,.34)'],
+            'leite ninho': ['#60A5FA', '#EFF6FF', 'rgba(96,165,250,.38)'],
+            'leite ninho folheado': ['#38BDF8', '#F0F9FF', 'rgba(56,189,248,.38)'],
+            'leite ninho com oreo': ['#60A5FA', '#EFF6FF', 'rgba(96,165,250,.38)'],
+            'leite ninho trufado': ['#3B82F6', '#EFF6FF', 'rgba(59,130,246,.38)'],
+            'limão': ['#84CC16', '#F7FEE7', 'rgba(132,204,22,.34)'],
+            'limão suíço': ['#A3E635', '#F7FEE7', 'rgba(163,230,53,.38)'],
+            'menta com chocolate': ['#10B981', '#ECFDF5', 'rgba(16,185,129,.34)'],
+            'milho verde': ['#EAB308', '#FEFCE8', 'rgba(234,179,8,.36)'],
+            'morango trufado': ['#F43F5E', '#FFF1F2', 'rgba(244,63,94,.36)'],
+            'mousse de maracujá': ['#F59E0B', '#FFFBEB', 'rgba(245,158,11,.36)'],
+            'mousse de uva': ['#A78BFA', '#F5F3FF', 'rgba(167,139,250,.36)'],
+            'nozes': ['#8D6E63', '#FAF7F5', 'rgba(141,110,99,.34)'],
+            'nutella': ['#7C2D12', '#FFF7ED', 'rgba(124,45,18,.36)'],
+            'ovomaltine': ['#B45309', '#FFF7ED', 'rgba(180,83,9,.36)'],
+            'passas ao rum': ['#7F1D1D', '#FFF1F2', 'rgba(127,29,29,.36)'],
+            'pistache': ['#65A30D', '#F7FEE7', 'rgba(101,163,13,.34)'],
+            'prestígio': ['#5B3A29', '#FFF7ED', 'rgba(91,58,41,.36)'],
+            'sensação': ['#EC4899', '#FDF2F8', 'rgba(236,72,153,.36)']
+        };
+        function getSaborMassaStyle(nome) {
+            var cor = SABOR_MASSA_PALETA[String(nome || '').trim().toLowerCase()] || ['#94A3B8', '#F8FAFC', 'rgba(148,163,184,.30)'];
+            return ' --sabor-accent:' + cor[0] + ';--sabor-tint:' + cor[1] + ';--sabor-glow:' + cor[2] + ';';
         }
 
         grid.innerHTML = SABORES_SORVETE.map(s => {
             var sel = saboresSelecionados.includes(s);
-            var corClass = getSaborClass(s);
-            return `<div class="sabor-item ${corClass} ${sel?'sel':''}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
+            var style = getSaborMassaStyle(s);
+            return `<div class="sabor-item ${sel?'sel':''}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${s}</div>`;
         }).join('');
 
         atualizarAcaoSabores();
@@ -1606,6 +1652,7 @@
 
   <script src="scripts/ita-bot-engine.js?v=20260818-global" defer></script>
   <script src="scripts/ita-bot-widget.js?v=20260818-fale-clean-1" defer></script>
+  <script src="scripts/itap-device-adapter.js?v=100" defer></script>
   <script src="scripts/gaveta-navegacao-mestra.js?v=501" defer></script>
 </body>
 </html>
