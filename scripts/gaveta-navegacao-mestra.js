@@ -141,48 +141,63 @@
           min-width: 0 !important;
           width: 100% !important;
           max-width: none !important;
-          min-height: 116px !important;
-          height: 116px !important;
-          padding: 16px 10px !important;
-          border-radius: 20px !important;
-          border-width: 2px !important;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.35) !important;
-          gap: 4px;
+          min-height: 54px !important;
+          height: 54px !important;
+          padding: 6px 8px !important;
+          border-radius: 14px !important;
+          border-width: 1.5px !important;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+          gap: 2px;
+          flex-direction: row !important;
+          justify-content: flex-start !important;
+          align-items: center !important;
+          padding-left: 14px !important;
         }
-        /* FEEDBACK fica sozinho na primeira linha e ocupa toda a largura */
+        /* FEEDBACK fica sozinho na primeira linha e ocupa toda a largura, bem compacto */
         .itap-nav-btn:nth-child(3) {
           grid-column: 1 / -1 !important;
           order: -1 !important;
-          min-height: 142px !important;
-          height: 142px !important;
-          padding-block: 20px !important;
-          border-radius: 24px !important;
+          min-height: 60px !important;
+          height: 60px !important;
+          padding: 8px 16px !important;
+          border-radius: 16px !important;
           background: linear-gradient(135deg, #2E7D32 0%, #43A047 52%, #1B5E20 100%) !important;
-          box-shadow: 0 10px 28px rgba(27,94,32,0.42), 0 0 0 2px rgba(255,255,255,0.28) inset, 0 0 22px rgba(67,160,71,0.32) !important;
+          box-shadow: 0 6px 18px rgba(27,94,32,0.35), 0 0 0 1.5px rgba(255,255,255,0.25) inset !important;
+          justify-content: center !important;
+          flex-direction: row !important;
+          gap: 8px !important;
         }
         .itap-nav-icon {
-          height: 48px !important;
-          margin-bottom: 8px !important;
+          height: 24px !important;
+          margin-bottom: 0 !important;
+          margin-right: 8px !important;
         }
         .itap-nav-icon svg, .itap-nav-icon-fallback {
-          width: 44px !important;
-          height: 44px !important;
-          font-size: 40px !important;
-          filter: drop-shadow(0 3px 5px rgba(0,0,0,0.28));
+          width: 22px !important;
+          height: 22px !important;
+          font-size: 20px !important;
+          filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+        }
+        .itap-nav-btn:nth-child(3) .itap-nav-icon svg, .itap-nav-btn:nth-child(3) .itap-nav-icon-fallback {
+          width: 26px !important;
+          height: 26px !important;
+          font-size: 24px !important;
         }
         .itap-nav-label {
           max-width: 100% !important;
           overflow-wrap: anywhere !important;
           white-space: normal !important;
-          font-size: clamp(16px, 4.8vw, 19px) !important;
-          font-weight: 950 !important;
-          line-height: 1.12 !important;
-          letter-spacing: 0.8px !important;
-          text-shadow: 0 2px 5px rgba(0,0,0,0.34);
+          font-size: 13px !important;
+          font-weight: 900 !important;
+          line-height: 1.1 !important;
+          letter-spacing: 0.5px !important;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          text-align: left !important;
         }
         .itap-nav-btn:nth-child(3) .itap-nav-label {
-          font-size: clamp(19px, 5.8vw, 24px) !important;
-          letter-spacing: 1px !important;
+          font-size: 15px !important;
+          letter-spacing: 0.8px !important;
+          text-align: center !important;
         }
       }
       @media (max-width: 380px) {
