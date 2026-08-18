@@ -590,6 +590,7 @@ body { overflow-x: hidden; }
   <link rel="stylesheet" href="styles/fueap-premium.css">
 </head>
 <body class="fueap-surface fueap-admin-painel">
+  <div data-itap-header-slot></div>
 <div class="loading-overlay" id="loading-overlay" style="display:none">
   <div class="loading-box"><div class="spin2"></div><p id="loading-txt">Salvando...</p></div>
 </div>
@@ -6216,6 +6217,7 @@ function fidColetarCodigosParaEtiquetas(){
      }
   </style>
 </head><body>
+  <div data-itap-header-slot></div>
   <div class="barra">
     <div>
       <div style="font-weight:900">${esc(titulo)}</div>
@@ -6230,6 +6232,7 @@ function fidColetarCodigosParaEtiquetas(){
   ${folhasHtml}
 
 
+  <script src="scripts/nav-active-world-class.js?v=200" defer></script>
 </body></html>`);
    win.document.close();
    try{ win.focus(); }catch(e){}
@@ -7938,7 +7941,8 @@ function criarUploadImagem(containerId, opções) {
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 0. Guard: remove qualquer texto "solto" no <body> (bug clássico quando algo fica fora de <script>/<style>)
+  // 0. Guard: remove qualquer texto "solto" no <body>
+  <div data-itap-header-slot></div> (bug clássico quando algo fica fora de <script>/<style>)
   // Isso evita aparecer texto indesejado abaixo do painel admin em caso de regressões de marcação.
   try{
     const soltos = Array.from(document.body.childNodes)
@@ -10083,5 +10087,6 @@ async function zerarPontosNegativos(clienteId){
   window.copiarRelatorioQualidade=async function(){const report=document.getElementById('quality-report');const value=report?.textContent||'';if(!value){if(typeof toast==='function')toast('Execute a auditoria antes de copiar.','aviso');return;}let ok=false;try{ok=typeof copiarTextoSeguro==='function'?await copiarTextoSeguro(value):false;}catch(e){}if(typeof toast==='function')toast(ok?'Relatório copiado. Cole aqui para correção.':'Selecione o relatório e copie manualmente.',ok?'sucesso':'aviso');};
 })();
 </script>
+  <script src="scripts/nav-active-world-class.js?v=200" defer></script>
 </body>
 </html>
