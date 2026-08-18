@@ -1,0 +1,115 @@
+/* ==========================================================================
+   ITAPOLITANA CAJURU — WORLD CLASS ELITE STYLING (2026)
+   Inspirado nos maiores padrões globais de UX/UI para sorveterias de luxo
+   ========================================================================== */
+
+:root {
+  --itap-red: #E8000D;
+  --itap-red-dark: #C62828;
+  --itap-gold: #FFD600;
+  --itap-gold-accent: #F9A825;
+  --itap-blue: #0D47A1;
+  --itap-green: #00C853;
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow-glossy: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Efeito Glossy / Glassmorphism universal para cards */
+.glossy-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glossy);
+  border-radius: 20px;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s ease;
+}
+
+.glossy-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(232, 0, 13, 0.2);
+}
+
+/* Botão Magnético 'VER CARDÁPIO' com Neon Branco Pulsante e Mão Fluida */
+.vc-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  background: linear-gradient(135deg, #E8000D, #C62828) !important;
+  color: #fff !important;
+  border: 2px solid rgba(255, 255, 255, 0.7) !important;
+  border-radius: 50px !important;
+  padding: 16px 36px !important;
+  font-size: 19px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 25px rgba(232, 0, 13, 0.45), 0 0 20px rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.25s ease !important;
+  width: 100% !important;
+  max-width: 340px !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  animation: neonWhitePulse 2s infinite ease-in-out !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: .5px !important;
+  text-transform: uppercase !important;
+}
+
+@keyframes neonWhitePulse {
+  0%, 100% {
+    box-shadow: 0 8px 25px rgba(232, 0, 13, 0.4), 0 0 8px rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 10px 30px rgba(232, 0, 13, 0.6), 0 0 25px rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 1);
+    transform: scale(1.02);
+  }
+}
+
+.vc-btn-icon-hand {
+  display: inline-block !important;
+  animation: handPulse 1.2s ease-in-out infinite !important;
+  font-size: 1.2em !important;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+@keyframes handPulse {
+  0%, 100% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(6px) scale(1.15); }
+}
+
+/* Destaque Neon Vermelho Pulsante para Sabores de Lançamento (Bem Casado, Cheesecake, Passas ao Rum) */
+.lancamento-neon-badge {
+  background: linear-gradient(135deg, #FF1744, #D50000) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  padding: 4px 12px !important;
+  border-radius: 50px !important;
+  border: 1.5px solid #FFD600 !important;
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.8), 0 0 20px rgba(255, 214, 0, 0.5) !important;
+  animation: lancamentoPulse 1.8s infinite ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+@keyframes lancamentoPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 23, 68, 0.7), 0 0 15px rgba(255, 214, 0, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 23, 68, 1), 0 0 30px rgba(255, 214, 0, 0.8);
+    transform: scale(1.05);
+  }
+}
