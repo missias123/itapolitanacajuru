@@ -110,15 +110,11 @@
       '.itabot-face-led.is-on { opacity:1; transform:scale(1); background:#E81123 !important; box-shadow:inset 0 0 8px rgba(0,0,0,.5), 0 0 16px rgba(232,17,35,.9) !important; border-color:#FFD600 !important; }',
       '.itabot-face-led::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.15) 0 1px,transparent 1px 3px); mix-blend-mode:overlay; pointer-events:none; }',
       '.itabot-face-led-track { display:inline-block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 6.5px/1 Arial,sans-serif; letter-spacing:.4px; text-shadow:-1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 0 6px #000; white-space:nowrap; animation:itabot-led-marquee 7.4s linear infinite; }',
-      '.itabot-launcher-copy { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; padding:0; margin-top:0; }',
-      '.itabot-launcher-name { display:none; }',
-      '.itabot-launcher-question { margin:0; font-size:12px; font-weight:950; letter-spacing:1.6px; text-transform:uppercase; color:#ffffff; background:linear-gradient(135deg, #FF0000, #B71C1C); padding:5px 14px; border-radius:999px; white-space:nowrap; border:2px solid #fff; box-shadow:0 0 15px rgba(255,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4); animation:itabot-fale-pulse 1.4s ease-in-out infinite; transform-origin:center; }',
-      '@keyframes itabot-fale-pulse { 0%,100% { transform:scale(1); box-shadow:0 0 10px rgba(232,0,13,0.5), 0 2px 6px rgba(0,0,0,.3); filter:brightness(1); } 50% { transform:scale(1.08); box-shadow:0 0 20px rgba(232,0,13,0.8), 0 4px 10px rgba(0,0,0,.4); filter:brightness(1.2); } }',
       '.itabot-launcher-dot { display:none; }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
       '@keyframes itabot-led-marquee { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-question, .itabot-face-led-track { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:116px; } .itabot-launcher-robot { flex-basis:90px; width:70px; height:90px; } .itabot-face-led-track { font-size:5.5px; } .itabot-launcher-question { font-size:11px; padding:3px 8px; letter-spacing:1.1px; } }',
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-face-led-track { animation:none; transition:none; } }',
+      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:116px; } .itabot-launcher-robot { flex-basis:90px; width:70px; height:90px; } .itabot-face-led-track { font-size:5.5px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -133,13 +129,12 @@
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
-    launcher.setAttribute('aria-label', 'Abrir ItaBot — Fale Conosco');
+    launcher.setAttribute('aria-label', 'Abrir ItaBot — Dúvidas');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d.png" alt="" draggable="false"/>',
         '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
-      '<span class="itabot-launcher-copy"><span class="itabot-launcher-name">ItaBot</span><span class="itabot-launcher-question">Fale</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);
