@@ -5271,11 +5271,8 @@ function aplicarConfig(c) {
  if (chatMsgInicio && c.chatMsgInicio) chatMsgInicio.innerHTML = sanitizarHtmlRicoChat(c.chatMsgInicio);
  window.ITAP_CHAT_FORA_HORARIO = c.chatForaHorario || c.fcChatFora || window.ITAP_CHAT_FORA_HORARIO || '';
 
- // --- CHAT SUGESTÕES (compatibilidade com versões antigas) ---
- // O ItaBot atual não usa o markup legado; só chama o renderer se uma página antiga o fornecer.
- if (typeof window.renderChatSugestoes === 'function') {
-  window.renderChatSugestoes(c.chatSugestoes);
- }
+ // --- CHAT SUGESTÕES (botões rápidos) ---
+ renderChatSugestoes(c.chatSugestoes);
 
  // --- PROMO FAB LABEL ---
  // (o FAB lê fabLabel diretamente de promo.json?v=1786979144; este campo não é mais necessário aqui)

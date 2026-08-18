@@ -59,13 +59,6 @@
       '  height: calc(100dvh - var(--keyboard-height, 0px)) !important;',
       '  max-height: calc(100dvh - var(--keyboard-height, 0px)) !important;',
       '}',
-      '/* Tela de dúvidas do launcher: usa a área visual real quando o teclado mobile abre. */',
-      '@media (max-width:600px) { #chat-dialog.itabot-fullscreen-mode .chat-box { height:var(--itabot-vv-height, 100dvh); max-height:none; } #chat-dialog.itabot-fullscreen-mode.itabot-keyboard-open .chat-box { position:fixed; top:var(--itabot-vv-top, 0px); bottom:auto; height:var(--itabot-vv-height, 100dvh) !important; max-height:none !important; } }',
-      '#chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-scroll { flex:1 1 auto !important; min-height:0; overflow-y:auto !important; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scroll-padding-bottom:24px; }',
-      '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message { scroll-margin-bottom:24px; }',
-      '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message input, #chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { font-size:16px !important; line-height:1.35; }',
-      '#chat-dialog.itabot-fullscreen-mode.itabot-keyboard-open .itabot-fullscreen-footer { display:none !important; }',
-      '#chat-dialog.itabot-fullscreen-mode.itabot-keyboard-open .itabot-direct-message { margin-bottom:32px !important; }',
       '.chat-msgs { flex:1 1 auto; min-height:0; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; background:#f9f9f9; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }',
       '.chat-inp-row { flex:0 0 auto; position:relative; padding:12px; background:#fff; border-top:1px solid #eee; display:flex; gap:8px; align-items:center; padding-bottom:max(12px, env(safe-area-inset-bottom, 0px)); }',
       '.chat-inp { flex:1; border:1px solid #ddd; border-radius:24px; padding:10px 16px; font-size:16px !important; outline:none; }',
@@ -109,11 +102,10 @@
       '.itabot-launcher-robot svg { display:block; width:100%; height:100%; overflow:visible; }',
       '.itabot-launcher-copy { min-width:0; display:flex; flex-direction:column; align-items:flex-start; line-height:1.06; padding-right:2px; }',
       '.itabot-launcher-name { font-size:11px; font-weight:950; letter-spacing:.35px; color:#07579c; }',
-      '.itabot-launcher-question { margin-top:2px; font-size:10px; font-weight:900; letter-spacing:.55px; text-transform:uppercase; color:#12304b; white-space:nowrap; animation:itabot-question-pulse 1.8s ease-in-out infinite; transform-origin:left center; }',
-      '@keyframes itabot-question-pulse { 0%,100% { opacity:.72; text-shadow:0 0 0 rgba(34,194,255,0); transform:scale(1); } 50% { opacity:1; text-shadow:0 0 9px rgba(34,194,255,.85); transform:scale(1.04); } }',
+      '.itabot-launcher-question { margin-top:2px; font-size:10px; font-weight:900; letter-spacing:.55px; text-transform:uppercase; color:#12304b; white-space:nowrap; }',
       '.itabot-launcher-dot { position:absolute; top:3px; right:6px; width:7px; height:7px; border-radius:50%; background:#29D17D; box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 10px rgba(41,209,125,.75); }',
       '@keyframes itabot-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }',
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-question { animation:none; transition:none; } }',
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot { animation:none; transition:none; } }',
       '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(76px + env(safe-area-inset-bottom, 0px)); max-width:156px; padding:5px 8px 5px 6px; } .itabot-launcher-robot { flex-basis:38px; width:38px; height:46px; } .itabot-launcher-name { font-size:10px; } .itabot-launcher-question { font-size:9px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(22px + env(safe-area-inset-bottom, 0px)); right:calc(22px + env(safe-area-inset-right, 0px)); } }',
@@ -267,7 +259,7 @@
       var wrap = document.createElement('div');
       wrap.id = 'chat-dialog';
       wrap.innerHTML = [
-        '<div class="chat-box itabot-fullscreen-box" role="dialog" aria-modal="true" aria-labelledby="fale-modal-titulo">',
+        '<div class="chat-box" role="dialog" aria-modal="true" aria-labelledby="fale-modal-titulo">',
           '<div class="chat-hdr">',
             '<div class="chat-hdr-logo-row">',
               '<div class="chat-hdr-brand">',
@@ -280,7 +272,7 @@
               '<button class="chat-close" type="button" aria-label="Fechar" onclick="_itabotFecharTelaCheia()">✕</button>',
             '</div>',
           '</div>',
-          '<div id="fale-tela-temas" class="itabot-fullscreen-scroll" style="overflow-y:auto;flex:1;padding:16px;background:#f9f9f9;">',
+          '<div id="fale-tela-temas" style="overflow-y:auto;flex:1;padding:16px;background:#f9f9f9;">',
             '<p style="font-size:13px;color:#666;text-align:center;margin:0 0 16px;font-weight:700;">Toque em um tema para ver a resposta imediata</p>',
             '<div style="display:flex;flex-direction:column;gap:10px;max-width:600px;margin:0 auto;">',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'promocao\')"><span style="font-size:18px;">🎉</span><span style="flex:1;text-align:left;font-weight:900;">Promoções e Sorteios</span><span style="font-size:18px;color:#888;">›</span></button>',
@@ -292,25 +284,23 @@
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'avaliacoes\')"><span style="font-size:18px;">⭐</span><span style="flex:1;text-align:left;font-weight:900;">Dicas e Avaliações</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'precos\')"><span style="font-size:18px;">💰</span><span style="flex:1;text-align:left;font-weight:900;">Preços</span><span style="font-size:18px;color:#888;">›</span></button>',
             '</div>',
-            '<div class="itabot-direct-message" style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
+            '<div style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
               '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
               '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
               '<textarea id="itabot-msg" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
               '<button type="button" onclick="_itabotEnviarWhatsApp()" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
             '</div>',
           '</div>',
-          '<div id="fale-tela-resposta" class="itabot-fullscreen-scroll" style="display:none;overflow-y:auto;flex:1;padding:20px;background:#f9f9f9;">',
+          '<div id="fale-tela-resposta" style="display:none;overflow-y:auto;flex:1;padding:20px;background:#f9f9f9;">',
             '<button type="button" onclick="_itabotVoltarTemas()" style="background:none;border:none;color:#07579c;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;gap:6px;">‹ Voltar para os temas</button>',
             '<div id="fale-resposta-conteudo" style="max-width:600px;margin:0 auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);"></div>',
           '</div>',
-          '<div class="itabot-fullscreen-footer" style="padding:12px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:center;">',
+          '<div style="padding:12px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:center;">',
             '<button type="button" onclick="_itabotFecharTelaCheia()" style="background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,0,13,.3);">Fechar e Voltar ao Site</button>',
           '</div>',
         '</div>'
       ].join('');
       document.body.appendChild(wrap);
-      wrap.classList.add('itabot-fullscreen-mode');
-      _itabotVincularTeclado(wrap);
       
       // Inserir estilos dos botões de tema
       if (!document.getElementById('itabot-temas-css')) {
@@ -437,88 +427,6 @@
     window.open('https://wa.me/5516999999999?text=' + encodeURIComponent(texto), '_blank');
   };
 
-  /* ─── Teclado mobile: mantém qualquer campo ativo acima do Gboard ─── */
-  function _itabotVincularTeclado(dialog) {
-    if (!dialog || dialog.__itabotKeyboardBound) return;
-    dialog.__itabotKeyboardBound = true;
-
-    var viewport = window.visualViewport;
-    if (!viewport) return;
-
-    var raf = 0;
-    var mobileViewport = function () {
-      return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
-    };
-    var isTextField = function (el) {
-      return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
-    };
-    var keyboardIsOpen = function () {
-      var layoutHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
-      return mobileViewport() && viewport.height < layoutHeight - 80;
-    };
-    var scrollFieldIntoView = function () {
-      var active = document.activeElement;
-      if (!isTextField(active) || !dialog.contains(active)) return;
-      var scrollArea = active.closest('.itabot-fullscreen-scroll, .chat-msgs');
-      var visibleTop = viewport.offsetTop || 0;
-      var visibleBottom = visibleTop + viewport.height;
-      var rect = active.getBoundingClientRect();
-      var margin = 20;
-      if (rect.bottom > visibleBottom - margin && scrollArea) {
-        scrollArea.scrollTop += rect.bottom - (visibleBottom - margin);
-      } else if (rect.top < visibleTop + margin && scrollArea) {
-        scrollArea.scrollTop -= (visibleTop + margin) - rect.top;
-      }
-      try {
-        active.scrollIntoView({ block:'nearest', inline:'nearest' });
-      } catch (err) {
-        active.scrollIntoView(false);
-      }
-    };
-    var update = function () {
-      raf = 0;
-      var layoutHeight = Math.max(window.innerHeight || 0, document.documentElement.clientHeight || 0);
-      var visibleHeight = Math.max(1, Math.round(viewport.height));
-      var visibleTop = Math.max(0, Math.round(viewport.offsetTop || 0));
-      var keyboardOpen = keyboardIsOpen();
-      var chatBox = dialog.querySelector('.chat-box');
-      if (chatBox && mobileViewport()) {
-        chatBox.style.height = visibleHeight + 'px';
-        chatBox.style.top = visibleTop + 'px';
-        chatBox.style.bottom = 'auto';
-      } else if (chatBox) {
-        chatBox.style.height = '';
-        chatBox.style.top = '';
-        chatBox.style.bottom = '';
-      }
-      dialog.style.setProperty('--itabot-vv-height', visibleHeight + 'px');
-      dialog.style.setProperty('--itabot-vv-top', visibleTop + 'px');
-      dialog.style.setProperty('--keyboard-height', Math.max(0, layoutHeight - visibleHeight) + 'px');
-      dialog.classList.toggle('keyboard-open', keyboardOpen);
-      dialog.classList.toggle('itabot-keyboard-open', keyboardOpen && dialog.classList.contains('itabot-fullscreen-mode'));
-      if (keyboardOpen) {
-        requestAnimationFrame(scrollFieldIntoView);
-      }
-    };
-    var schedule = function () {
-      if (raf) return;
-      raf = window.requestAnimationFrame(update);
-    };
-
-    viewport.addEventListener('resize', schedule, { passive:true });
-    viewport.addEventListener('scroll', schedule, { passive:true });
-    window.addEventListener('resize', schedule, { passive:true });
-    dialog.addEventListener('focusin', function (event) {
-      if (!isTextField(event.target)) return;
-      setTimeout(schedule, 60);
-      setTimeout(scrollFieldIntoView, 320);
-    });
-    dialog.addEventListener('focusout', function () {
-      setTimeout(schedule, 120);
-    });
-    schedule();
-  }
-
   /* ─── Injeção de HTML ─── */
   function _itabotInjetarHtml() {
     if (document.getElementById('chat-dialog')) {
@@ -563,7 +471,65 @@
       if (e.target === div) _itabotFecharItaBot();
     };
 
-    _itabotVincularTeclado(div);
+    /* ─── Lógica Ultra-Robusta para Teclado Mobile (Padrão Elite) ─── */
+    if (window.visualViewport) {
+      var viewport = window.visualViewport;
+      var chatDialog = div;
+      var chatBox = div.querySelector('.chat-box');
+      var inputEl = document.getElementById('itabot-input');
+
+      function updateChatViewport() {
+        var vh = viewport.height;
+        var offset = viewport.offsetTop;
+        
+        if (window.innerWidth <= 600) {
+          chatBox.style.height = vh + 'px';
+          chatBox.style.top = offset + 'px';
+          chatBox.style.bottom = 'auto';
+          
+          var inpRow = document.querySelector('.chat-inp-row');
+          var chatMsgs = document.getElementById('itabot-msgs');
+          var chatBoxInner = document.querySelector('.chat-box');
+          var chatHdr = document.querySelector('.chat-hdr');
+
+          if (vh < window.innerHeight * 0.82) {
+            chatDialog.classList.add('keyboard-open');
+            // Mover input row para o topo (abaixo do cabeçalho) no celular quando o teclado sobe
+            if (inpRow && chatHdr && chatBoxInner && inpRow.parentElement !== chatHdr.parentElement) {
+              chatHdr.insertAdjacentElement('afterend', inpRow);
+              inpRow.style.borderTop = 'none';
+              inpRow.style.borderBottom = '1px solid #eee';
+              inpRow.style.background = '#fff';
+            }
+            setTimeout(function() {
+              if (chatMsgs) chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            }, 100);
+          } else {
+            chatDialog.classList.remove('keyboard-open');
+            // Restaurar input row para o rodapé
+            if (inpRow && chatBoxInner && inpRow.parentElement !== chatBoxInner) {
+              chatBoxInner.appendChild(inpRow);
+              inpRow.style.borderTop = '1px solid #eee';
+              inpRow.style.borderBottom = 'none';
+            }
+            chatBox.style.top = '0';
+          }
+        }
+      }
+
+      viewport.addEventListener('resize', updateChatViewport);
+      viewport.addEventListener('scroll', updateChatViewport);
+      
+      if (inputEl) {
+        inputEl.addEventListener('focus', function() {
+          // Pequeno delay para o teclado subir totalmente no iOS/Android
+          setTimeout(updateChatViewport, 300);
+        });
+        inputEl.addEventListener('blur', function() {
+          setTimeout(updateChatViewport, 100);
+        });
+      }
+    }
   }
 
   /* ─── Lógica de abertura/fechamento ─── */
