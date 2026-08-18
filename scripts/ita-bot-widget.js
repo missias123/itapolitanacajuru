@@ -108,8 +108,8 @@
       '.itabot-launcher-robot svg { display:block; width:100%; height:100%; overflow:visible; }',
       '.itabot-launcher-copy { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; padding:0; margin-top:0; }',
       '.itabot-launcher-name { display:none; }',
-      '.itabot-launcher-question { margin:0; font-size:12px; font-weight:950; letter-spacing:1.4px; text-transform:uppercase; color:#ffffff; background:linear-gradient(135deg, rgba(7,87,156,.92), rgba(10,140,226,.92)); padding:4px 10px; border-radius:999px; white-space:nowrap; border:1px solid rgba(115,224,255,.65); box-shadow:0 0 10px rgba(34,194,255,.45), 0 2px 6px rgba(0,0,0,.3); animation:itabot-fale-pulse 1.6s ease-in-out infinite; transform-origin:center; }',
-      '@keyframes itabot-fale-pulse { 0%,100% { transform:scale(1); box-shadow:0 0 8px rgba(34,194,255,.4), 0 2px 6px rgba(0,0,0,.3); filter:brightness(1); } 50% { transform:scale(1.06); box-shadow:0 0 16px rgba(34,194,255,.8), 0 3px 8px rgba(0,0,0,.4); filter:brightness(1.15); } }',
+      '.itabot-launcher-question { margin:0; font-size:12px; font-weight:950; letter-spacing:1.6px; text-transform:uppercase; color:#ffffff; background:linear-gradient(135deg, #FF0000, #B71C1C); padding:5px 14px; border-radius:999px; white-space:nowrap; border:2px solid #fff; box-shadow:0 0 15px rgba(255,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4); animation:itabot-fale-pulse 1.4s ease-in-out infinite; transform-origin:center; }',
+      '@keyframes itabot-fale-pulse { 0%,100% { transform:scale(1); box-shadow:0 0 10px rgba(232,0,13,0.5), 0 2px 6px rgba(0,0,0,.3); filter:brightness(1); } 50% { transform:scale(1.08); box-shadow:0 0 20px rgba(232,0,13,0.8), 0 4px 10px rgba(0,0,0,.4); filter:brightness(1.2); } }',
       '.itabot-launcher-dot { display:none; }',
       '@keyframes itabot-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }',
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-question { animation:none; transition:none; } }',
@@ -128,7 +128,7 @@
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
-    launcher.setAttribute('aria-label', 'Abrir ItaBot — Dúvidas');
+    launcher.setAttribute('aria-label', 'Abrir ItaBot — Fale Conosco');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<svg viewBox="0 0 80 96" role="img" aria-hidden="true">',
@@ -172,7 +172,7 @@
           '</g>',
         '</svg>',
       '</span>',
-      '<span class="itabot-launcher-copy"><span class="itabot-launcher-name">ItaBot</span><span class="itabot-launcher-question">FALE</span></span>',
+      '<span class="itabot-launcher-copy"><span class="itabot-launcher-name">ItaBot</span><span class="itabot-launcher-question">Fale</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);
