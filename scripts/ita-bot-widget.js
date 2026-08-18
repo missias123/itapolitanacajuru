@@ -99,21 +99,26 @@
       '.msg-link-btn:active { transform: scale(0.98); background: #1565C0; }',
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
-      '/* Launcher inteligente do itaBot: compacto, acessível e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:94px; height:116px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
+      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:94px; height:128px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:94px; height:116px; padding:0; justify-content:flex-start; gap:2px; }',
-      '.itabot-launcher-robot { position:relative; flex:0 0 80px; width:72px; height:80px; display:block; filter:drop-shadow(0 6px 8px rgba(2,56,104,.35)); animation:itabot-float 3.2s ease-in-out infinite; }',
-      '.itabot-launcher-robot svg { display:block; width:100%; height:100%; overflow:visible; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:94px; height:128px; padding:0; justify-content:flex-start; gap:2px; }',
+      '.itabot-launcher-robot { position:relative; flex:0 0 102px; width:78px; height:102px; display:block; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
+      '.itabot-launcher-image { display:block; width:100%; height:100%; object-fit:contain; object-position:center; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
+      '.itabot-face-led { position:absolute; left:24%; top:10.5%; width:52%; height:27%; display:flex; align-items:center; overflow:hidden; border:1px solid rgba(104,240,255,.85); border-radius:28% / 30%; background:linear-gradient(180deg,rgba(3,18,39,.94),rgba(0,4,14,.96)); box-shadow:inset 0 0 8px rgba(0,221,255,.5),0 0 8px rgba(0,190,255,.44); opacity:0; transform:scale(.92); transition:opacity .45s ease,transform .45s ease; pointer-events:none; z-index:2; }',
+      '.itabot-face-led.is-on { opacity:1; transform:scale(1); }',
+      '.itabot-face-led::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(120,245,255,.14) 0 1px,transparent 1px 3px); mix-blend-mode:screen; pointer-events:none; }',
+      '.itabot-face-led-track { display:inline-block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#9effff; font:900 6px/1 Arial,sans-serif; letter-spacing:.35px; text-shadow:0 0 4px #00ddff; white-space:nowrap; animation:itabot-led-marquee 7.4s linear infinite; }',
       '.itabot-launcher-copy { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; padding:0; margin-top:0; }',
       '.itabot-launcher-name { display:none; }',
       '.itabot-launcher-question { margin:0; font-size:12px; font-weight:950; letter-spacing:1.6px; text-transform:uppercase; color:#ffffff; background:linear-gradient(135deg, #FF0000, #B71C1C); padding:5px 14px; border-radius:999px; white-space:nowrap; border:2px solid #fff; box-shadow:0 0 15px rgba(255,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4); animation:itabot-fale-pulse 1.4s ease-in-out infinite; transform-origin:center; }',
       '@keyframes itabot-fale-pulse { 0%,100% { transform:scale(1); box-shadow:0 0 10px rgba(232,0,13,0.5), 0 2px 6px rgba(0,0,0,.3); filter:brightness(1); } 50% { transform:scale(1.08); box-shadow:0 0 20px rgba(232,0,13,0.8), 0 4px 10px rgba(0,0,0,.4); filter:brightness(1.2); } }',
       '.itabot-launcher-dot { display:none; }',
-      '@keyframes itabot-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }',
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-question { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:102px; } .itabot-launcher-robot { flex-basis:68px; width:60px; height:68px; } .itabot-launcher-question { font-size:11px; padding:3px 8px; letter-spacing:1.1px; } }',
+      '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
+      '@keyframes itabot-led-marquee { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-question, .itabot-face-led-track { animation:none; transition:none; } }',
+      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:116px; } .itabot-launcher-robot { flex-basis:90px; width:70px; height:90px; } .itabot-face-led-track { font-size:5.5px; } .itabot-launcher-question { font-size:11px; padding:3px 8px; letter-spacing:1.1px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -131,51 +136,42 @@
     launcher.setAttribute('aria-label', 'Abrir ItaBot — Fale Conosco');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<svg viewBox="0 0 80 96" role="img" aria-hidden="true">',
-          '<defs>',
-            '<linearGradient id="itabotBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2fbff"/><stop offset=".4" stop-color="#4ac5f5"/><stop offset="1" stop-color="#0f59a8"/></linearGradient>',
-            '<linearGradient id="itabotHelmet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0fdff"/><stop offset=".45" stop-color="#55d0f7"/><stop offset="1" stop-color="#1464b5"/></linearGradient>',
-            '<linearGradient id="itabotScreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d2b45"/><stop offset=".5" stop-color="#04121f"/><stop offset="1" stop-color="#01060b"/></linearGradient>',
-            '<filter id="itabotGlow"><feGaussianBlur stdDeviation="1.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
-            '<filter id="blueOutline"><feMorphology operator="dilate" radius="1.8" in="SourceAlpha" result="dilated"/><feFlood flood-color="#00d4ff" result="blue"/><feComposite in="blue" in2="dilated" operator="in" result="outline"/><feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
-            '<clipPath id="itabotTickerClip"><rect x="18" y="32.5" width="44" height="5" rx="1.8"/></clipPath>',
-          '</defs>',
-          '<g filter="url(#blueOutline)">',
-            '<!-- Corpo perolizado -->',
-            '<path d="M20 45c0-8 9-14 20-14s20 6 20 14v28c0 8-8 13-20 13S20 81 20 73Z" fill="url(#itabotBody)" stroke="#b8e8ff" stroke-width="1.4"/>',
-            '<!-- Capacete -->',
-            '<path d="M12 31C12 14 24 5 40 5s28 9 28 26v7H12Z" fill="url(#itabotHelmet)" stroke="#b8e8ff" stroke-width="1.4"/>',
-            '<!-- Visor de TV LED (olhos, boca e mensagens integrados) -->',
-            '<path d="M16 27c2-13 10-20 24-20s22 7 24 20v11H16Z" fill="url(#itabotScreen)" stroke="#5ff4ff" stroke-width="1.2"/>',
-            '<path d="M19 33h42" stroke="#164e6f" stroke-width=".8" opacity=".9"/>',
-            '<!-- Olhos LED expressivos (^ ^) -->',
-            '<path d="M26 22 q4 -5.5 8 0" fill="none" stroke="#7effff" stroke-width="2.6" stroke-linecap="round" filter="url(#itabotGlow)"/>',
-            '<path d="M46 22 q4 -5.5 8 0" fill="none" stroke="#7effff" stroke-width="2.6" stroke-linecap="round" filter="url(#itabotGlow)"/>',
-            '<!-- Boca LED amigável -->',
-            '<path d="M34 29 q6 6 12 0" fill="none" stroke="#7effff" stroke-width="2.2" stroke-linecap="round" filter="url(#itabotGlow)"/>',
-            '<!-- Ticker LED passando mensagens na própria tela -->',
-            '<g clip-path="url(#itabotTickerClip)">',
-              '<text class="itabot-ticker-text" x="65" y="36.5" fill="#ffffff" font-size="3.4" font-family="Arial, sans-serif" font-weight="900" letter-spacing=".4">ITABOT • SORVETE • SABORES</text>',
-              '<text class="itabot-ticker-text" x="65" y="36.5" fill="#9effff" font-size="3.4" font-family="Arial, sans-serif" font-weight="900" letter-spacing=".4"><animate attributeName="x" from="65" to="-75" dur="5.5s" repeatCount="indefinite"/>ITABOT • SORVETE • SABORES</text>',
-            '</g>',
-            '<!-- Antena piscante -->',
-            '<line x1="40" y1="5" x2="40" y2="1" stroke="#5ff4ff" stroke-width="2" stroke-linecap="round"/>',
-            '<circle cx="40" cy="1" r="2.5" fill="#ff2a6d" filter="url(#itabotGlow)"/>',
-            '<!-- Braços articulados -->',
-            '<path d="M13 55 5 63M67 55l8 5" stroke="#68d5ff" stroke-width="5.5" stroke-linecap="round"/>',
-            '<!-- Sorvete delicioso na mão -->',
-            '<polygon points="73,53 83,53 78,67" fill="#e5ab4b" stroke="#8d5b10" stroke-width="1"/>',
-            '<path d="M71 53 a6.5 6.5 0 0 1 13 0 z" fill="#ff2a6d"/>',
-            '<circle cx="78" cy="46" r="3" fill="#ffe600"/>',
-            '<!-- Pernas -->',
-            '<path d="M29 82v7M51 82v7" stroke="#48b5f0" stroke-width="6.5" stroke-linecap="round"/>',
-          '</g>',
-        '</svg>',
+        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d.png" alt="" draggable="false"/>',
+        '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
       '<span class="itabot-launcher-copy"><span class="itabot-launcher-name">ItaBot</span><span class="itabot-launcher-question">Fale</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);
+
+    // Face LED: entra em períodos curtos para preservar a expressão e destacar a marca.
+    var ledFace = launcher.querySelector('.itabot-face-led');
+    var ledTrack = launcher.querySelector('.itabot-face-led-track');
+    var ledMessages = [
+      'ITAPOLITANA',
+      'SORVETE ARTESANAL',
+      'MAIS DE 38 SABORES',
+      'PISTACHE • CHEESECAKE • BEM CASADO',
+      'RETIRE NA LOJA • CAJURU'
+    ];
+    var ledIndex = 0;
+    var ledReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var showLedMessage = function () {
+      if (!ledFace || !ledTrack || ledReduced || document.hidden) return;
+      ledTrack.textContent = ledMessages[ledIndex % ledMessages.length] + ' • ';
+      ledIndex += 1;
+      ledTrack.style.animation = 'none';
+      void ledTrack.offsetWidth;
+      ledTrack.style.animation = '';
+      ledFace.classList.add('is-on');
+      window.setTimeout(function () {
+        if (ledFace) ledFace.classList.remove('is-on');
+      }, 7200);
+    };
+    if (!ledReduced) {
+      window.setTimeout(showLedMessage, 3200);
+      window.setInterval(showLedMessage, 11800);
+    }
 
     var lastLayout = '';
     var raf = 0;
@@ -425,8 +421,8 @@
   window._itabotFecharTelaCheia = function () {
     var dialog = document.getElementById('chat-dialog');
     if (dialog) dialog.classList.remove('aberto');
-    document.body.classList.remove('chat-open');
-    window.location.href = 'index.html';
+  document.body.classList.remove('chat-open', 'modal-aberto');
+  window.location.href = 'index.html';
   };
 
   var _itabotConteudoTemas = {

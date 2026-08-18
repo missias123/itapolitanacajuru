@@ -126,50 +126,72 @@
       }
       .itap-nav-icon svg { width: 18px; height: 18px; }
       @media (max-width: 600px) {
+        .itap-header {
+          padding: 10px 0 14px;
+        }
         .itap-nav-container {
           display: grid !important;
-          grid-template-columns: 1fr 1fr !important;
-          gap: 12px !important;
-          padding: 10px 15px !important;
-          overflow-x: visible !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 14px !important;
+          padding: 8px 14px !important;
+          overflow: visible !important;
         }
         .itap-nav-btn {
+          box-sizing: border-box !important;
           min-width: 0 !important;
+          width: 100% !important;
           max-width: none !important;
-          min-height: 88px !important;
-          height: 88px !important;
-          padding: 14px 10px !important;
-          border-radius: 18px !important;
-          box-shadow: 0 5px 14px rgba(0,0,0,0.18) !important;
+          min-height: 116px !important;
+          height: 116px !important;
+          padding: 16px 10px !important;
+          border-radius: 20px !important;
+          border-width: 2px !important;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.35) !important;
+          gap: 4px;
         }
-        /* Botão FEEDBACK (3º item no array NAV_ITEMS) no topo sozinho */
+        /* FEEDBACK fica sozinho na primeira linha e ocupa toda a largura */
         .itap-nav-btn:nth-child(3) {
-          grid-column: 1 / span 2 !important;
+          grid-column: 1 / -1 !important;
           order: -1 !important;
-          min-height: 98px !important;
-          height: 98px !important;
-          background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+          min-height: 142px !important;
+          height: 142px !important;
+          padding-block: 20px !important;
+          border-radius: 24px !important;
+          background: linear-gradient(135deg, #2E7D32 0%, #43A047 52%, #1B5E20 100%) !important;
+          box-shadow: 0 10px 28px rgba(27,94,32,0.42), 0 0 0 2px rgba(255,255,255,0.28) inset, 0 0 22px rgba(67,160,71,0.32) !important;
         }
         .itap-nav-icon {
-          height: 38px !important;
+          height: 48px !important;
           margin-bottom: 8px !important;
         }
         .itap-nav-icon svg, .itap-nav-icon-fallback {
-          width: 36px !important;
-          height: 36px !important;
-          font-size: 34px !important;
+          width: 44px !important;
+          height: 44px !important;
+          font-size: 40px !important;
+          filter: drop-shadow(0 3px 5px rgba(0,0,0,0.28));
         }
         .itap-nav-label {
-          font-size: clamp(14px, 4vw, 16px) !important;
-          font-weight: 900 !important;
-          line-height: 1.15 !important;
-          letter-spacing: 0.6px !important;
+          max-width: 100% !important;
+          overflow-wrap: anywhere !important;
+          white-space: normal !important;
+          font-size: clamp(16px, 4.8vw, 19px) !important;
+          font-weight: 950 !important;
+          line-height: 1.12 !important;
+          letter-spacing: 0.8px !important;
+          text-shadow: 0 2px 5px rgba(0,0,0,0.34);
+        }
+        .itap-nav-btn:nth-child(3) .itap-nav-label {
+          font-size: clamp(19px, 5.8vw, 24px) !important;
+          letter-spacing: 1px !important;
         }
       }
       @media (max-width: 380px) {
-        .itap-nav-label { font-size: 13px !important; }
-        .itap-nav-btn { min-height: 82px !important; height: 82px !important; padding-inline: 8px !important; }
-        .itap-nav-btn:nth-child(3) { min-height: 92px !important; height: 92px !important; }
+        .itap-header { padding-bottom: 12px; }
+        .itap-nav-container { gap: 12px !important; padding-inline: 10px !important; }
+        .itap-nav-btn { min-height: 106px !important; height: 106px !important; padding-inline: 8px !important; }
+        .itap-nav-btn:nth-child(3) { min-height: 132px !important; height: 132px !important; }
+        .itap-nav-label { font-size: clamp(15px, 4.7vw, 18px) !important; }
+        .itap-nav-btn:nth-child(3) .itap-nav-label { font-size: clamp(18px, 5.6vw, 22px) !important; }
       }
     `;
     document.head.appendChild(style);
