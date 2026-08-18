@@ -3,7 +3,7 @@
  * ═══════════════════════════════════════════════
  * REGRA: Single Source of Truth
  * Tudo que existe no site existe no Admin e vice-versa.
- * Este módulo carrega config_v2.json e injeta em TODAS as páginas.
+ * Este módulo carrega config.json e injeta em TODAS as páginas.
  *
  * Desenvolvedor: SgtMissiascacarato
  * Versão: 2.1 — 18/08/2026
@@ -15,7 +15,7 @@
   // ═══════════════════════════════════════════════
   // CONFIGURAÇÃO
   // ═══════════════════════════════════════════════
-  const CONFIG_PATH = 'dados/config_v2.json';
+  const CONFIG_PATH = 'dados/config.json';
   const CACHE_KEY   = 'itap_site_config';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutos
   const LOCAL_FETCH_TIMEOUT_MS = 5000;

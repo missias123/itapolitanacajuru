@@ -729,15 +729,10 @@
   }
 
   /* ─── Inicialização ─── */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      _itabotBindTriggers();
-      _itabotCarregarConhecimento();
-    });
-  } else {
-    _itabotBindTriggers();
-    _itabotCarregarConhecimento();
-  }
+  _itabotInjetarCss();
+  _itabotInjetarLauncher();
+  _itabotBindTriggers();
+  _itabotCarregarConhecimento();
 
   // Escutar evento do site-loader para atualizar dados se carregarem depois
   window.addEventListener('siteConfigLoaded', function(e) {
@@ -755,8 +750,9 @@
     }
   });
 
-  // Exportar globalmente para fallback
+    // Exportar globalmente para fallback
   window.abrirItaBot = _itabotAbrirItaBot;
   window.abrirChat = _itabotAbrirItaBot;
+  window._itabotAbrirTelaCheia = _itabotAbrirTelaCheia;
 
 })();

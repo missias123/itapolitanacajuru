@@ -359,9 +359,8 @@
     .prod-card.is-esgotado { opacity:.7; }
     .prod-card__estoque { font-size:.76rem; font-weight:800; color:#166534; margin:-8px 0 12px; }
     .prod-card__estoque.is-esgotado { color:#B42318; }
+    .btn-sabores--acrescimos { background: linear-gradient(135deg, #B71C1C, #E53935); }
     .acrescimo-card .prod-preco { color: #B71C1C; }
-    .acrescimo-total-carrinho { min-height: 38px; display:flex; align-items:center; justify-content:center; margin-top:2px; padding:9px 12px; border:1px solid rgba(22,101,52,.18); border-radius:12px; background:linear-gradient(135deg,rgba(240,253,244,.96),rgba(220,252,231,.86)); color:#166534; font-size:.82rem; line-height:1.25; font-weight:900; text-align:center; }
-    .acrescimo-card.is-esgotado .acrescimo-total-carrinho { color:#7f1d1d; border-color:rgba(127,29,29,.16); background:#fff1f2; }
     .acrescimo-card .prod-card__estoque { margin-bottom: 14px; }
     @media (max-width: 380px) { .picole-linha { grid-template-columns:minmax(0,1fr); gap:8px; } .picole-linha__controle { justify-content:flex-end; } }
     @media (max-width: 480px) {
@@ -953,7 +952,8 @@
                     <span id="qtd-acr-${p.id}" style="min-width:30px;text-align:center;font-size:1.15rem;font-weight:900;">${quantidade}</span>
                     <button type="button" aria-label="Aumentar quantidade de ${nome}" onclick="window.alterarQuantidadeAcrescimo('${p.id}', 1)" ${indisponivel || quantidade >= Number(p.estoque || 0) ? 'disabled' : ''} style="width:44px;height:44px;border:1px solid var(--primary);border-radius:50%;background:var(--primary);color:#fff;font-size:1.2rem;font-weight:900;cursor:pointer;">+</button>
                 </div>
-                <div id="subtotal-acr-${p.id}" class="acrescimo-total-carrinho" aria-live="polite">${quantidade > 0 ? '✓ ' + quantidade + ' un. no carrinho · Total: R$ ' + subtotal.toFixed(2).replace('.',',') : 'Aguardando seleção...'}</div>
+                <div id="subtotal-acr-${p.id}" style="font-size:.85rem;color:var(--success);font-weight:900;margin-bottom:12px;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</div>
+                <button class="btn-sabores btn-sabores--acrescimos" type="button" onclick="window.adicionarAcrescimo('${p.id}')" ${indisponivel ? 'disabled' : ''}>Adicionar ao carrinho</button>
             </div>`;
         }).join('');
     }
@@ -1604,8 +1604,6 @@
 // Fim do script
 </script>
 
-  <script src="scripts/ita-bot-engine.js?v=20260818-global" defer></script>
-  <script src="scripts/ita-bot-widget.js?v=20260818-global" defer></script>
   <script src="scripts/gaveta-navegacao-mestra.js?v=501" defer></script>
 </body>
 </html>
