@@ -3,10 +3,10 @@
  * ═══════════════════════════════════════════════
  * REGRA: Single Source of Truth
  * Tudo que existe no site existe no Admin e vice-versa.
- * Este módulo carrega config.js?v=1786979144on e injeta em TODAS as páginas.
+ * Este módulo carrega config_v2.json e injeta em TODAS as páginas.
  *
  * Desenvolvedor: SgtMissiascacarato
- * Versão: 2.0 — 04/04/2026
+ * Versão: 2.1 — 18/08/2026
  */
 
 (function() {
@@ -15,7 +15,7 @@
   // ═══════════════════════════════════════════════
   // CONFIGURAÇÃO
   // ═══════════════════════════════════════════════
-  const CONFIG_PATH = 'dados/config.js?v=1786979144on';
+  const CONFIG_PATH = 'dados/config_v2.json';
   const CACHE_KEY   = 'itap_site_config';
   const CACHE_TTL   = 5 * 60 * 1000; // 5 minutos
   const LOCAL_FETCH_TIMEOUT_MS = 5000;
@@ -83,7 +83,7 @@
       });
       clearTimeout(timeout);
       if (!resp.ok) return null;
-      return await resp.js?v=1786979144on();
+      return await resp.json();
     } catch (e) {
       return null;
     }
@@ -92,485 +92,75 @@
   async function buscarConfigRemoto() {
     const stamp = Date.now();
 
-    // 1) Preferir o arquivo local publicado no próprio domínio (fonte canônica em produção)
+    // 1) Preferir o arquivo local publicado no próprio domínio
     const local = await fetchJsonComTimeout('/' + CONFIG_PATH + '?t=' + stamp, LOCAL_FETCH_TIMEOUT_MS);
     if (local) return local;
 
-    console.warn('[site-loader] Falha ao carregar /' + CONFIG_PATH + ' no domínio atual. Funcionalidades configuráveis podem ficar indisponíveis.');
-    // 2) Sem fallback externo: manter fonte no próprio domínio
+    console.warn('[site-loader] Falha ao carregar /' + CONFIG_PATH + ' no domínio atual.');
     return null;
   }
 
   // ═══════════════════════════════════════════════
-  // APLICAR CONFIG NO SITE — INJEÇÃO AUTOMÁTICA
+  // APLICAR CONFIGURAÇÃO NA UI
   // ═══════════════════════════════════════════════
   function aplicarConfig(cfg) {
     if (!cfg) return;
 
-    // ── Atributos data-config ──────────────────
-    // Qualquer elemento com data-config="campo" recebe o valor automaticamente
-    // Tags HTML seguras permitidas em campos de texto rico
-    const SAFE_TAGS = ['STRONG', 'EM', 'B', 'I', 'BR', 'SPAN', 'A'];
-    function sanitizeHTML(str) {
-      const temp = document.createElement('div');
-      temp.innerHTML = String(str);
-      temp.querySelectorAll('*').forEach(node => {
-        if (!SAFE_TAGS.includes(node.tagName)) {
-          node.replaceWith(document.createTextNode(node.textContent));
-        } else {
-          // Remover atributos perigosos (onclick, onerror, etc)
-          [...node.attributes].forEach(attr => {
-            if (attr.name.startsWith('on') || attr.name === 'style' && attr.value.includes('expression')) {
-              node.removeAttribute(attr.name);
-            }
-          });
-          // Para links, garantir que href é seguro
-          if (node.tagName === 'A') {
-            const href = (node.getAttribute('href') || '').trim();
-            let protocol = '';
-            try {
-              protocol = new URL(href, document.baseURI).protocol.replace(':', '').toLowerCase();
-            } catch (_) {
-              protocol = '';
-            }
-            if (protocol === 'javascript' || protocol === 'data') node.removeAttribute('href');
-          }
-        }
-      });
-      // Remover scripts injetados
-      temp.querySelectorAll('script,iframe,object,embed').forEach(n => n.remove());
-      return temp.innerHTML;
-    }
-
+    // ── Textos Dinâmicos (data-config) ──────────
     document.querySelectorAll('[data-config]').forEach(el => {
-      const campo = el.getAttribute('data-config');
-      const valor = getValor(cfg, campo);
-      if (valor !== undefined && valor !== null) {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-          el.value = valor;
-        } else if (el.tagName === 'A') {
-          if (campo.toLowerCase().includes('link') || campo.toLowerCase().includes('url')) {
-            definirHrefSeguro(el, valor);
-          } else {
-            el.textContent = valor;
-          }
-        } else if (el.hasAttribute('data-config-html') || campo.toLowerCase().includes('texto') || campo.toLowerCase().includes('titulo') || campo.toLowerCase().includes('título') || el.tagName === 'H2' || el.tagName === 'H1') {
-          // Campos de texto rico, títulos e tags H1/H2: permitir HTML seguro (strong, em, br, span)
-          el.innerHTML = sanitizeHTML(valor);
+      const key = el.getAttribute('data-config');
+      const val = extrairValor(cfg, key);
+      if (val !== undefined && val !== null) {
+        if (el.tagName === 'META') {
+          el.setAttribute('content', val);
+        } else if (el.tagName === 'TITLE') {
+          document.title = val;
         } else {
-          el.textContent = valor;
+          el.innerHTML = val;
         }
       }
     });
 
-    // ── Atributos data-config-href ─────────────
-    document.querySelectorAll('[data-config-href]').forEach(el => {
-      const campo = el.getAttribute('data-config-href');
-      const valor = getValor(cfg, campo);
-      definirHrefSeguro(el, valor);
-    });
+    // ── SEO e Meta Tags ───────────────────────
+    if (cfg.seo) {
+      if (cfg.seo.title) document.title = cfg.seo.title;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc && cfg.seo.description) metaDesc.setAttribute('content', cfg.seo.description);
+    }
 
     // ── Coleções dinâmicas ─────────────────────
-    renderCollections(cfg);
+    if (typeof window.renderCollections === 'function') {
+      window.renderCollections(cfg);
+    }
 
-    // ── Menu principal (.itap-nav-label) ─────────
-    document.querySelectorAll('.itap-header-nav a[href], .itap-nav-btn[href]').forEach(a => {
-      const label = a.querySelector('.itap-nav-label');
-      if (!label) return;
-      const page = extrairNomePagina(a.getAttribute('href') || '');
-      if (page === 'encomendas.html' && cfg.navEncomendas) label.textContent = cfg.navEncomendas;
-      else if (page === 'promocao.html' && cfg.navPromocao) label.textContent = cfg.navPromocao;
-      else if (page === 'dicas.html' && cfg.navDicas) label.textContent = cfg.navDicas;
-    });
+    // REMOVIDO: Lógica de renomeação de labels que causava inconsistência.
+    // Agora o nav-active.js é a única fonte de verdade para o menu superior.
 
-    // ── WhatsApp: todos os links wa.me ─────────
+    // ── WhatsApp ──────────────────────────────
     if (cfg.whatsapp) {
       const wpp = cfg.whatsapp.replace(/\D/g, '');
       document.querySelectorAll('a[href*="wa.me"]').forEach(el => {
-        const url = new URL(el.href);
-        const texto = url.searchParams.get('text') || '';
-        el.href = `https://wa.me/${wpp}?text=${encodeURIComponent(texto)}`;
-      });
-      // Links sem texto
-      document.querySelectorAll('[data-whatsapp]').forEach(el => {
-        const msg = el.getAttribute('data-whatsapp') || '';
-        el.href = `https://wa.me/${wpp}?text=${encodeURIComponent(msg)}`;
+        try {
+          const url = new URL(el.href);
+          url.pathname = '/' + wpp;
+          el.href = url.toString();
+        } catch(e) {}
       });
     }
 
-    // ── Frases rotativas ───────────────────────
-    if (cfg.heroFrases && Array.isArray(cfg.heroFrases)) {
-      window._FRASES_SENSORIAIS = cfg.heroFrases;
-    }
-
-    // ── Strip sensorial ────────────────────────
-    if (cfg.stripSensorial && Array.isArray(cfg.stripSensorial)) {
-      window._STRIPS = cfg.stripSensorial;
-      const strip = document.getElementById('strip-sensorial');
-      if (strip) strip.textContent = cfg.stripSensorial[0];
-    }
-
-    // ── Horário dinâmico ───────────────────────
-    if (cfg.horarioAbre !== undefined && cfg.horarioFecha !== undefined) {
-      window._HORARIO_ABRE  = cfg.horarioAbre;
-      window._HORARIO_FECHA = cfg.horarioFecha;
-    }
-
-    // ── Hero ───────────────────────────────────
-    const heroTítulo = document.getElementById('hero-título');
-    if (heroTítulo && cfg.heroTitulo) heroTítulo.textContent = cfg.heroTitulo;
-
-    const heroSub = document.getElementById('hero-subtítulo');
-    if (heroSub && cfg.heroSubtitulo) heroSub.textContent = cfg.heroSubtitulo;
-
-    const heroBadge = document.getElementById('hero-badge');
-    if (heroBadge && cfg.heroBadge) heroBadge.textContent = cfg.heroBadge;
-
-    const heroDesc = document.getElementById('hero-descrição');
-    if (heroDesc && cfg.heroDescricao) heroDesc.textContent = cfg.heroDescricao;
-
-    const heroCta = document.getElementById('hero-cta');
-    if (heroCta && cfg.heroCta) heroCta.textContent = cfg.heroCta;
-
-    const heroCtaWhats = document.getElementById('hero-cta-whats');
-    if (heroCtaWhats && cfg.heroCtaWhats) heroCtaWhats.textContent = cfg.heroCtaWhats;
-
-    // ── Cardápio ───────────────────────────────
-    const cardápioTítulo = document.getElementById('cardápio-título');
-    if (cardápioTítulo && cfg.cardapioTitulo) cardápioTítulo.textContent = cfg.cardapioTitulo;
-
-    const cardápioSub = document.getElementById('cardápio-subtítulo');
-    if (cardápioSub && cfg.cardapioSubtitulo) cardápioSub.textContent = cfg.cardapioSubtitulo;
-
-    const cardápioBadge = document.getElementById('cardápio-badge');
-    if (cardápioBadge && cfg.cardapioBadge) cardápioBadge.textContent = cfg.cardapioBadge;
-
-    // ── Footer ─────────────────────────────────
-    const footerCopy = document.getElementById('footer-copy');
-    if (footerCopy && cfg.footerCopy) footerCopy.textContent = cfg.footerCopy;
-
-    const footerDev = document.getElementById('footer-dev');
-    if (footerDev && cfg.footerDev) footerDev.textContent = cfg.footerDev;
-
-    const footerHorário = document.getElementById('footer-horário');
-    if (footerHorário && cfg.footerHorario) {
-      footerHorário.style.whiteSpace = 'pre-line';
-      footerHorário.textContent = cfg.footerHorario;
-    }
-
-      const pontosCaixaTxt = pontosCaixa !== null ? `${pontosCaixa} pontos` : null;
-      const premioMilkTxt = cfg.premioMilkshake || cfg.prêmioMilkshake || null;
-      const premioCaixaTxt = cfg.premioCaixa || cfg.prêmioCaixa || null;
-      document.querySelectorAll('[data-pontos-milk]').forEach(el => {
-        if (pontosMilkTxt) el.textContent = pontosMilkTxt;
-      });
-      document.querySelectorAll('[data-pontos-caixa]').forEach(el => {
-        if (pontosCaixaTxt) el.textContent = pontosCaixaTxt;
-      });
-      document.querySelectorAll('[data-prêmio-milk]').forEach(el => {
-        if (premioMilkTxt) el.textContent = premioMilkTxt;
-      });
-      document.querySelectorAll('[data-prêmio-caixa]').forEach(el => {
-        if (premioCaixaTxt) el.textContent = premioCaixaTxt;
-      });
-    }
-
-    // ── Encomenda: aviso e mínimo picolés ──────
-    if (cfg.encomendaAviso) {
-      window._ENCOMENDA_AVISO = cfg.encomendaAviso;
-      document.querySelectorAll('[data-encomenda-aviso]').forEach(el => {
-        el.textContent = cfg.encomendaAviso;
-      });
-    }
-    if (cfg.encomendaMinPicoles !== undefined) {
-      const minPicoles = Number(cfg.encomendaMinPicoles);
-      if (!Number.isNaN(minPicoles)) {
-        window.encomendaMinPicoles = minPicoles;
-        window._MIN_PICOLES = minPicoles; // compatibilidade retroativa
-      }
-    }
-
-    // ── SEO: title + meta description + meta keywords ─────────────
-    const pageKey = obterPaginaAtual();
-    const seoPagina = (cfg.seoPaginas && cfg.seoPaginas[pageKey]) || {};
-    const seoTitulo = seoPagina.titulo || cfg.seoTitulo;
-    const seoDescricao = seoPagina.descricao || cfg.seoDescricao;
-    const seoPalavras = seoPagina.palavrasChave || cfg.seoPalavrasChave;
-    if (seoTitulo) {
-      document.title = seoTitulo;
-    }
-    if (seoDescricao) {
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.setAttribute('content', seoDescricao);
-    }
-    if (seoPalavras) {
-      let metaKw = document.querySelector('meta[name="keywords"]');
-      if (!metaKw) {
-        metaKw = document.createElement('meta');
-        metaKw.setAttribute('name', 'keywords');
-        document.head.appendChild(metaKw);
-      }
-      metaKw.setAttribute('content', seoPalavras);
-    }
-
-    // ── Disparar evento para outros scripts ────
-    window.dispatchEvent(new CustomEvent('siteConfigLoaded', { detail: cfg }));
+    // Disparar evento de conclusão
+    document.dispatchEvent(new CustomEvent('itapConfigApplied', { detail: cfg }));
   }
 
-  // ═══════════════════════════════════════════════
-  // HELPER: acessar campo aninhado por string
-  // Ex: "açaí.copos.300ml" → cfg.açaí.copos["300ml"]
-  // ═══════════════════════════════════════════════
-  function getValor(obj, caminho) {
-    return caminho.split('.').reduce((acc, k) => {
-      if (acc === undefined || acc === null) return undefined;
-      return acc[k];
-    }, obj);
+  function extrairValor(obj, path) {
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   }
 
-  function parseNumero(valor) {
-    const n = Number(valor);
-    return Number.isFinite(n) ? n : null;
-  }
-
-  function extrairNomePagina(href) {
-    if (!href) return '';
-    try {
-      const url = new URL(href, window.location.origin);
-      const clean = (url.pathname || '').replace(/\/+$/, '');
-      const parts = clean.split('/');
-      return (parts[parts.length - 1] || 'index.html').toLowerCase();
-    } catch(e) {
-      return '';
-    }
-  }
-
-  function obterPaginaAtual() {
-    const nome = extrairNomePagina(window.location.pathname || '');
-    if (!nome || nome === 'index.html') return 'home';
-    if (nome === 'encomendas.html') return 'encomendas';
-    if (nome === 'promocao.html') return 'promocao';
-    if (nome === 'dicas.html') return 'dicas';
-    if (nome === 'sobre.html') return 'sobre';
-    if (nome === 'galeria.html') return 'galeria';
-    if (nome === 'carrossel.html') return 'carrossel';
-    return nome.replace('.html', '');
-  }
-
-  function renderCollections(cfg) {
-    document.querySelectorAll('[data-config-collection]').forEach(el => {
-      const campo = el.getAttribute('data-config-collection');
-      const dados = getValor(cfg, campo);
-      if (!Array.isArray(dados)) return;
-
-      const tagRaw = (el.getAttribute('data-item-tag') || 'div').toLowerCase();
-      const allowedTags = new Set(['div', 'span', 'li', 'p', 'small', 'strong']);
-      const tag = allowedTags.has(tagRaw) ? tagRaw : 'div';
-      const className = el.getAttribute('data-item-class') || '';
-      const layout = (el.getAttribute('data-item-layout') || '').toLowerCase();
-      el.innerHTML = '';
-      dados.forEach((item, idx) => {
-        if (layout === 'flow-step') {
-          const wrapper = document.createElement('div');
-          wrapper.className = className || 'itap-flow-step';
-          const stepNum = document.createElement('span');
-          stepNum.className = 'itap-flow-step__num';
-          stepNum.textContent = String(idx + 1);
-          const stepText = document.createElement('p');
-          stepText.textContent = item && typeof item === 'object'
-            ? String(item.text || item.label || item.titulo || item.descricao || '')
-            : String(item ?? '');
-          wrapper.appendChild(stepNum);
-          wrapper.appendChild(stepText);
-          el.appendChild(wrapper);
-          return;
-        }
-        if (layout === 'tip-card') {
-          const card = document.createElement('article');
-          card.className = className || 'itap-tip-card';
-          if (item && typeof item === 'object') {
-            const titulo = String(item.titulo || item.title || item.label || '');
-            const descricao = String(item.descricao || item.text || '');
-            const imagem = String(item.imagem || item.image || '');
-            const link = String(item.link || item.url || '');
-            if (imagem && urlSegura(imagem)) {
-              const img = document.createElement('img');
-              img.src = imagem;
-              img.alt = titulo ? `Imagem da dica: ${titulo}` : 'Dica da Sorveteria Itapolitana';
-              card.appendChild(img);
-            }
-            if (titulo) {
-              const h = document.createElement('h3');
-              h.textContent = titulo;
-              card.appendChild(h);
-            }
-            if (descricao) {
-              const p = document.createElement('p');
-              p.textContent = descricao;
-              card.appendChild(p);
-            }
-            if (link && urlSegura(link)) {
-              const a = document.createElement('a');
-              a.href = link;
-              a.target = '_blank';
-              a.rel = 'noopener';
-              a.textContent = 'Saiba mais';
-              card.appendChild(a);
-            }
-          } else {
-            card.textContent = String(item ?? '');
-          }
-          el.appendChild(card);
-          return;
-        }
-        if (layout === 'gallery-item') {
-          if (item && typeof item === 'object') {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = className || 'gallery-item';
-            const imgEl = document.createElement('img');
-            imgEl.src = String(item.url || '');
-            imgEl.alt = String(item.alt || '');
-            imgEl.loading = 'lazy';
-            imgEl.decoding = 'async';
-            const overlayDiv = document.createElement('div');
-            overlayDiv.className = 'gallery-overlay';
-            const overlayP = document.createElement('p');
-            overlayP.textContent = String(item.titulo || '');
-            overlayDiv.appendChild(overlayP);
-            itemDiv.appendChild(imgEl);
-            itemDiv.appendChild(overlayDiv);
-            el.appendChild(itemDiv);
-          }
-          return;
-        }
-        const node = document.createElement(tag);
-        if (className) node.className = className;
-        if (item && typeof item === 'object') {
-          node.textContent = item.text || item.label || item.titulo || item.descricao || '';
-        } else {
-          node.textContent = String(item ?? '');
-        }
-        el.appendChild(node);
-      });
-    });
-  }
-
-  function urlSegura(url) {
-    if (!url) return false;
-    try {
-      const alvo = new URL(url, window.location.origin);
-      return alvo.protocol === 'http:' || alvo.protocol === 'https:';
-    } catch(e) {
-      return false;
-    }
-  }
-
-  function definirHrefSeguro(el, valor) {
-    if (!el || !valor) return;
-    if (urlSegura(valor)) el.setAttribute('href', valor);
-  }
-
-  // ═══════════════════════════════════════════════
-  // INVALIDAR CACHE (chamado pelo Admin após salvar)
-  // ═══════════════════════════════════════════════
-  window.siteLoaderInválidarCache = function() {
-    try { localStorage.removeItem(CACHE_KEY); } catch(e) {}
-  };
-
-  // ═══════════════════════════════════════════════
-  // RECARREGAR CONFIG (chamado pelo Admin)
-  // ═══════════════════════════════════════════════
-  window.siteLoaderRecarregar = async function() {
-    window.siteLoaderInválidarCache();
-    return await carregarConfig();
-  };
-
-  // ═══════════════════════════════════════════════
-  // COOKIE BANNER LGPD — injeta em todas as páginas
-  // ═══════════════════════════════════════════════
-  function injetarCookieBanner() {
-    if (document.getElementById('cookie-banner')) return; // já existe (index.html)
-    var banner = document.createElement('div');
-    banner.id = 'cookie-banner';
-    banner.setAttribute('role', 'dialog');
-    banner.setAttribute('aria-label', 'Aviso de cookies');
-    banner.setAttribute('aria-live', 'polite');
-    banner.style.css?v=1786979144Text = 'display:none;position:fixed;bottom:0;left:0;width:100%;background:rgba(0,0,0,0.92);color:#fff;padding:15px 20px;z-index:9999;text-align:center;font-size:14px;box-shadow:0 -2px 10px rgba(0,0,0,0.2)';
-    banner.innerHTML = '<div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px;">'
-      + '<p style="margin:0;flex:1;text-align:left;line-height:1.5;">Usamos cookies essenciais para o funcionamento do site e, com seu consentimento, cookies de análise (Google Analytics) para melhorar sua experiência. Você pode aceitar todos ou recusar os não essenciais. <a href="/politica-privacidade.html" aria-label="Saiba mais sobre nossa política de privacidade" style="color:#FBD100;font-weight:700;text-decoration:underline;">Saiba mais →</a></p>'
-      + '<div style="display:flex;gap:10px;flex-shrink:0;">'
-      + '<button id="btn-aceitar-cookies" style="background:#e91e63;color:#fff;border:none;padding:12px 24px;border-radius:20px;cursor:pointer;font-weight:800;font-size:14px;min-height:44px;min-width:100px;"><span aria-hidden="true">✅</span> Aceitar todos</button>'
-      + '<button id="btn-recusar-cookies" style="background:rgba(255,255,255,0.15);color:#fff;border:2px solid #fff;padding:12px 24px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:700;min-height:44px;min-width:100px;"><span aria-hidden="true">❌</span> Recusar não essenciais</button>'
-      + '</div></div>';
-    document.body.appendChild(banner);
-
-    function checkCookiesBanner() {
-      if (localStorage.getItem('cookies_aceitos') === null) banner.style.display = 'block';
-    }
-    function aceitarCookiesBanner() {
-      localStorage.setItem('cookies_aceitos', 'true');
-      banner.style.display = 'none';
-      if (typeof gtag === 'function') {
-        gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' });
-      }
-    }
-    function recusarCookiesBanner() {
-      localStorage.setItem('cookies_aceitos', 'false');
-      banner.style.display = 'none';
-      if (typeof gtag === 'function') {
-        gtag('consent', 'update', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
-      }
-    }
-    var btnAceitar = document.getElementById('btn-aceitar-cookies');
-    var btnRecusar = document.getElementById('btn-recusar-cookies');
-    if (btnAceitar) btnAceitar.addEventListener('click', aceitarCookiesBanner);
-    if (btnRecusar) btnRecusar.addEventListener('click', recusarCookiesBanner);
-    checkCookiesBanner();
-  }
-
-  // ═══════════════════════════════════════════════
-  // SKIP LINK — injeta em páginas sem um existente
-  // ═══════════════════════════════════════════════
-  function injetarSkipLink() {
-    if (document.querySelector('.skip-link')) return; // já existe
-    var main = document.querySelector('main') || document.querySelector('[id="conteudo-principal"]');
-    if (!main) return;
-    if (!main.id) main.id = 'conteudo-principal';
-    var link = document.createElement('a');
-    link.href = '#conteudo-principal';
-    link.className = 'skip-link';
-    link.textContent = 'Pular para o conteúdo principal';
-    link.style.css?v=1786979144Text = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
-    link.addEventListener('focus', function() {
-      link.style.css?v=1786979144Text = 'position:fixed;left:16px;top:0;width:auto;height:auto;overflow:visible;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none;outline:2px solid #fff;outline-offset:2px';
-    });
-    link.addEventListener('blur', function() {
-      link.style.css?v=1786979144Text = 'position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;background:#1565C0;color:#fff;padding:10px 16px;z-index:10001;border-radius:0 0 12px 12px;font-weight:800;text-decoration:none';
-    });
-    document.body.insertBefore(link, document.body.firstChild);
-  }
-
-  // ═══════════════════════════════════════════════
-  // INICIALIZAÇÃO AUTOMÁTICA
-  // ═══════════════════════════════════════════════
-  function inicializar() {
-    injetarCookieBanner();
-    injetarSkipLink();
+  // Iniciar
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', carregarConfig);
+  } else {
     carregarConfig();
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializar);
-  } else {
-    inicializar();
-  }
-
-  // Expor função para uso externo
-  window.siteLoaderCarregar = carregarConfig;
 
 })();

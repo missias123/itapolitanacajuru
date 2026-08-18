@@ -2,6 +2,7 @@
  * NAV ACTIVE — Sorveteria Itapolitana
  * Design: Ultra Compacto, Glossy & World Class
  * Objetivo: Cabeçalho unificado, baixo (compacto) e responsivo para todas as abas.
+ * Versão: 2.2 — 18/08/2026 — Unificação Total Final
  */
 (function () {
   'use strict';
