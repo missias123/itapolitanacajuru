@@ -2604,7 +2604,6 @@ body.cardapio-aberto { padding-bottom: 80px; }
   <link rel="stylesheet" href="css/gaveta-estilos-premium.css?v=500">
 </head>
 <body class="fueap-surface fueap-index">
-  <div data-itap-header-slot></div>
 <noscript>
 <!-- Conteúdo do cardápio para rastreadores de busca e usuários sem JavaScript -->
 <!-- O conteúdo será inserido aqui pelo script Python -->
@@ -2631,7 +2630,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
 <!-- Barra de promoção removida a pedido do usuário -->
 <main id="conteudo-principal">
-
+<div class="itap-header-slot" data-itap-header-slot aria-label="Cabeçalho Itapolitana"></div>
 <!-- ========================================
    CARROSSEL ITAPOLITANA
    Arquivo isolado: carrossel.html
@@ -2884,7 +2883,17 @@ body.cardapio-aberto { padding-bottom: 80px; }
  </div>
 
  <div class="vc-container" id="vc-container">
-
+<nav class="menu-categorias-cardapio" id="menu-categorias-cardapio" aria-label="Categorias do cardápio" style="display:none">
+ <div class="menu-categorias-inner">
+  <!-- IDs de âncora: #acc-sorvetes #acc-picolés #acc-açaí #acc-tacas #acc-sobremesas #acc-encomendas -->
+  <a class="cat-pill" href="#acc-sorvetes" data-acc="acc-sorvetes">Massas & Sabores</a>
+  <a class="cat-pill" href="#acc-picolés" data-acc="acc-picolés">Picolés</a>
+  <a class="cat-pill" href="#acc-açaí" data-acc="acc-açaí">Açaí Natureon</a>
+  <a class="cat-pill" href="#acc-tacas" data-acc="acc-tacas">Taças</a>
+  <a class="cat-pill" href="#acc-sobremesas" data-acc="acc-sobremesas">Sobremesas</a>
+  <a class="cat-pill" href="#acc-encomendas" data-acc="acc-enc-caixas">Festas e encomendas (5L, 10L, tortas)</a>
+ </div>
+</nav>
 <div class="acc" id="acc-sorvetes">
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sorvetes-body" onclick="toggleAcc('acc-sorvetes')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sorvetes');}">
 <div class="acc-left">
@@ -6075,10 +6084,43 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 
 <!-- ══ BARRA DE NAVEGAÇÃO MOBILE ══
    Exibida apenas em telas ≤ 767px (CSS em itap-refinements.css?v=1786979144). -->
-
+<nav id="itap-mobile-nav" aria-label="Navegação rápida">
+ <ul class="itap-mobile-nav__list">
+  <li class="itap-mobile-nav__item">
+   <a class="itap-mobile-nav__link" href="index.html">
+    <span class="itap-mobile-nav__icon" aria-hidden="true"><div class="bento-icon-container white small"><svg><use xlink:href="#icon-home"></use></svg></div></span>
+    <span class="itap-mobile-nav__label">Início</span>
+   </a>
+  </li>
+  <li class="itap-mobile-nav__item">
+   <a class="itap-mobile-nav__link" href="index.html#cardapio">
+    <span class="itap-mobile-nav__icon" aria-hidden="true"><div class="bento-icon-container white small"><svg><use xlink:href="#icon-scoop"></use></svg></div></span>
+    <span class="itap-mobile-nav__label">Cardápio</span>
+   </a>
+  </li>
+  <li class="itap-mobile-nav__item">
+   <a class="itap-mobile-nav__link" href="promocao.html">
+    <span class="itap-mobile-nav__icon" aria-hidden="true"><div class="bento-icon-container white small"><svg><use xlink:href="#icon-star"></use></svg></div></span>
+    <span class="itap-mobile-nav__label">Promoções</span>
+   </a>
+  </li>
+  <li class="itap-mobile-nav__item">
+   <a class="itap-mobile-nav__link" href="encomendas.html">
+    <span class="itap-mobile-nav__icon" aria-hidden="true"><div class="bento-icon-container white small"><svg><use xlink:href="#icon-box"></use></svg></div></span>
+    <span class="itap-mobile-nav__label">Encomendas</span>
+   </a>
+  </li>
+  <li class="itap-mobile-nav__item itap-mobile-nav__item--cta">
+   <a class="itap-mobile-nav__link" href="https://wa.me/5516996062046" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+    <span class="itap-mobile-nav__icon" aria-hidden="true"><div class="bento-icon-container white small"><svg><use xlink:href="#icon-info"></use></svg></div></span>
+    <span class="itap-mobile-nav__label">Contato</span>
+   </a>
+  </li>
+ </ul>
+</nav>
 
 	<script src="scripts/itap-icons.js?v=1786979144-icons-approved-2"></script>
-<script src="scripts/nav-active-world-class.js?v=300" defer></script>
+<script src="scripts/nav-active.js?v=20260818-V7-FINAL" defer></script>
 	<script src="scripts/products.js?v=1786979144" defer></script>
 	<script src="scripts/ita-bot-engine.js?v=1786979144" defer></script>
 	<script src="scripts/ita-bot-widget.js?v=1786979144-overlay-2" defer></script>
