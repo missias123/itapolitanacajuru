@@ -12,22 +12,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+  
   <meta content="Faça suas encomendas de sorvetes em caixa (5L e 10L), tortas geladas e picolés no atacado na Sorveteria Itapolitana em Cajuru/SP. Prazo mínimo de 5 dias úteis." name="description"/>
   <meta content="#EF0129" name="theme-color"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <link rel="apple-touch-icon" href="images/logo.webp">
-  <link rel="manifest" href="manifest.json?v=20260818-1">
+  <link rel="manifest" href="manifest.js?v=1786979144on">
   <link href="https://itapolitanacajuru.com.br/encomendas.html" rel="canonical"/>
-
+  
   <meta content="website" property="og:type"/>
   <meta content="https://itapolitanacajuru.com.br/encomendas.html" property="og:url"/>
   <meta content="Encomendas | Sorveteria Itapolitana Cajuru" property="og:title"/>
   <meta content="Encomende sorvetes e picolés para sua festa ou evento em Cajuru/SP. Qualidade premium e sabores ." property="og:description"/>
   <meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
-
+  
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -40,407 +40,11 @@
     }
   }
   </script>
-
+  
   <link rel="stylesheet" href="css/itap-shared.css?v=1786979144-icons-approved-2">
   <script src="scripts/itap-icons.js?v=1786979144-icons-approved-2"></script>
-  <!-- A lógica de encomendas é mantida no controlador único inline desta página; não carregar enc-v4.js em paralelo. -->
+<script src="scripts/nav-active-world-class.js?v=300" defer></script>
   <link rel="stylesheet" href="css/gaveta-estilos-premium.css?v=500">
-
-  <!-- Estilos visuais restaurados do último estado íntegro ec97d57^ -->
-  <style>
-    /* Cabeçalho unificado idêntico ao da Index */
-    .ita-bot-duvidas-btn { background: #fff; color: var(--primary); border: 2px solid #FFD100; padding: 6px 16px; border-radius: 99px; font-weight: 800; font-size: 0.8rem; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-    @media (max-width: 768px) {
-        .itap-nav-icon { flex: 0 0 auto; line-height: 1; }
-        .itap-nav-label { min-width: 0; overflow-wrap: anywhere; }
-        .banner-alerta { width: 100%; max-width: none; box-sizing: border-box; margin: 12px 0; padding: 12px clamp(12px, 4vw, 18px); font-size: clamp(.82rem, 3.5vw, .95rem); line-height: 1.3; }
-        .container { width: 100%; max-width: none; box-sizing: border-box; padding-left: clamp(10px, 3.5vw, 16px); padding-right: clamp(10px, 3.5vw, 16px); }
-        .categoria, .categoria-header { width: 100%; box-sizing: border-box; }
-        .categoria-header { padding: 14px clamp(14px, 4vw, 20px); min-height: 58px; }
-        .categoria-header > div { min-width: 0; }
-        .categoria-header__main { gap: 9px; }
-        .categoria-header__icon { width: 38px; height: 38px; flex-basis: 38px; }
-        .categoria-header__icon svg { width: 22px; height: 22px; }
-        .categoria-header small { font-size: clamp(.82rem, 3.5vw, .95rem); line-height: 1.35; overflow-wrap: anywhere; }
-        .categoria-conteudo { padding: clamp(14px, 4vw, 20px); }
-        /* Picolés: cabeçalho compacto para priorizar a área nobre dos produtos. */
-        .categoria--picoles .categoria-header { padding: 9px 12px; min-height: 56px; gap: 8px; }
-        .categoria--picoles .categoria-header strong { font-size: clamp(1.08rem, 4.5vw, 1.28rem); line-height: 1.1; margin-bottom: 1px; color: var(--primary); }
-        .categoria--picoles .categoria-header small { font-size: clamp(.72rem, 3vw, .82rem); line-height: 1.15; font-weight: 700; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-        .categoria--picoles .categoria-header .arrow-icon { font-size: 1.25rem; flex: 0 0 auto; }
-        .categoria--picoles .categoria-conteudo { padding: 10px; }
-        .categoria--picoles .prod-grid { gap: 10px; }
-        .categoria--picoles .picole-grupo { margin-bottom: 8px; }
-        .prod-grid { grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); }
-        .modal-content { width: 100%; box-sizing: border-box; }
-    }
-
-    :root {
-      --primary: #EA1D2C;
-      --secondary: #1A1A1A;
-      --success: #008912;
-      --bg-light: #F2F2F2;
-      --white: #FFFFFF;
-      --text-main: #1A1A1A;
-      --text-muted: #666666;
-      --azul: #0D47A1;
-      --verde: #008912;
-    }
-    html { box-sizing: border-box; }
-    *, *::before, *::after { box-sizing: inherit; }
-    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-light); color: var(--text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; position: relative; }
-    body::before { content: ""; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vh; background: url('images/logo.webp') no-repeat center; background-size: contain; opacity: 0.02; pointer-events: none; z-index: -1; }
-    .header { background: var(--white); color: var(--primary); padding: 10px 0; text-align: center; border-bottom: 1px solid #EEEEEE; }
-    .container { width: min(100%, 1120px); max-width: 1120px; margin: 0 auto; padding: 10px clamp(12px, 2.5vw, 24px) calc(140px + env(safe-area-inset-bottom, 0px)); }
-
-  .categoria {
-        background: var(--white);
-        border-radius: 18px;
-        margin-bottom: 18px;
-        border: 1px solid #E8E8E8;
-        overflow: hidden;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .categoria:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    .categoria-header {
-        padding: clamp(16px, 3vw, 22px) clamp(14px, 3vw, 24px);
-        background: var(--white);
-        color: var(--text-main);
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 14px;
-        border: none;
-        width: 100%;
-        text-align: left;
-        transition: all 0.2s;
-    }
-    .categoria-header__main {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-        flex: 1 1 auto;
-    }
-    .categoria-header__copy {
-        min-width: 0;
-        flex: 1 1 auto;
-    }
-    .categoria-header__icon {
-        width: 40px;
-        height: 40px;
-        flex: 0 0 40px;
-        margin-right: 0 !important;
-    }
-    .categoria-header__icon svg {
-        display: block;
-        width: 26px;
-        height: 26px;
-    }
-    .categoria-header strong {
-        display: block;
-        font-size: clamp(1.35rem, 4.8vw, 1.75rem);
-        font-weight: 900;
-        letter-spacing: -0.025em;
-        margin-bottom: 4px;
-        color: var(--primary);
-        line-height: 1.1;
-    }
-    .categoria-header small {
-        display: block;
-        font-size: clamp(0.95rem, 3.8vw, 1.1rem);
-        font-weight: 600;
-        color: #666;
-        line-height: 1.3;
-    }
-    .categoria-header .arrow-icon {
-        font-size: 1.5rem;
-        color: var(--primary);
-        transition: transform 0.3s;
-    }
-    .categoria.open .categoria-header .arrow-icon {
-        transform: rotate(180deg);
-    }
-    .categoria-header:active { background: #F9F9F9; }
-    .categoria-conteudo { display: none; padding: clamp(14px, 3vw, 24px); border-top: 1px solid #F2F2F2; background: #FAFAFA; min-width: 0; }
-
-    .prod-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: clamp(10px, 2vw, 16px); min-width: 0; }
-    .prod-card { min-width: 0; border: 2px solid #F2F2F2; border-radius: 16px; padding: clamp(14px, 2.5vw, 20px); text-align: center; background: var(--white); transition: all 0.2s; }
-    .prod-card--azul { border-color: #1565C0; box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1); }
-    .prod-card--verde { border-color: #008C45; box-shadow: 0 4px 12px rgba(0, 140, 69, 0.1); }
-    .prod-card--amarela { border-color: #FFD600; box-shadow: 0 4px 12px rgba(255, 214, 0, 0.1); }
-    .prod-card--roxa { border-color: #6A1B9A; box-shadow: 0 4px 12px rgba(106, 27, 154, 0.1); }
-    .prod-nome { font-weight: 800; font-size: 1.18rem; color: var(--text-main); margin-bottom: 8px; letter-spacing: -0.01em; }
-    .prod-preco { color: var(--success); font-weight: 800; font-size: 1.28rem; margin-bottom: 20px; }
-    .btn-sabores {
-        background: var(--primary); color: var(--white); border: none; padding: 16px 20px;
-        border-radius: 12px; cursor: pointer; font-weight: 800; width: 100%; font-size: 1.05rem;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .btn-sabores:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
-    .btn-sabores:active { opacity: 0.85; }
-    /* Cores distintas por categoria: não confundir seleção com o carrinho. */
-    .btn-sabores--caixas { background: linear-gradient(135deg, #0D47A1, #1565C0); }
-    .btn-sabores--caixa-azul { background: linear-gradient(135deg, #0D47A1, #1565C0); }
-    .btn-sabores--caixa-verde { background: linear-gradient(135deg, #008C45, #00B85A); }
-    .btn-sabores--caixa-amarela { background: linear-gradient(135deg, #FFD600, #F9A825); color: #1A1A1A; }
-    .btn-sabores--caixa-roxa { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
-    .btn-sabores--tortas { background: linear-gradient(135deg, #008C45, #00B85A); }
-    .btn-sabores--picoles { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
-    .btn-sabores:disabled { opacity: 0.55; cursor: not-allowed; }
-
-    /* Camada única de tela inteira: a etapa ativa cobre tudo que ficou atrás. */
-    .modal {
-        position: fixed; inset: 0; width: 100%; height: 100%;
-        padding: env(safe-area-inset-top, 0px) max(0px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(0px, env(safe-area-inset-left, 0px));
-        background: #08080A; display: none; align-items: center; justify-content: center;
-        z-index: 2147483000; isolation: isolate; contain: paint; pointer-events: auto;
-        overscroll-behavior: contain; backdrop-filter: blur(6px);
-        animation: folhaEntrada .22s cubic-bezier(.22,.8,.24,1) both;
-    }
-    .modal-content {
-        position: relative; z-index: 1; background: white; width: min(100%, 760px); max-width: 760px; height: min(100%, 900px); max-height: min(94dvh, 900px);
-        min-height: 0; border-radius: 0; padding: clamp(16px, 3vw, 30px); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column;
-        box-shadow: 0 18px 60px rgba(0,0,0,.45);
-    }
-    @keyframes folhaEntrada { from { opacity: 0; transform: translateX(5%); } to { opacity: 1; transform: translateX(0); } }
-    body.lock-scroll > header,
-    body.lock-scroll > nav,
-    body.lock-scroll .btn-carrinho-fixo,
-    body.lock-scroll .header,
-    body.lock-scroll [data-fixed-ui] { visibility: hidden !important; pointer-events: none !important; }
-    @media (min-width: 641px) {
-        .modal { align-items: center; }
-        .modal-content { height: 90vh; border-radius: 20px; max-height: 850px; padding: 30px; }
-    }
-    .sabor-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-        margin-top: 14px;
-    }
-    @media (min-width: 481px) {
-        .sabor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
-    }
-    @media (min-width: 769px) {
-        .sabor-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-    }
-    .sabor-item {
-        min-height: 52px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 14px;
-        border: 2px solid #E2E8F0;
-        border-radius: 12px;
-        cursor: pointer;
-        text-align: center;
-        font-weight: 700;
-        font-size: 0.95rem;
-        background: var(--white);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-        line-height: 1.25;
-        letter-spacing: -0.01em;
-    }
-    .sabor-item:active { transform: scale(0.95); }
-    .sabor-item.sel {
-        border-color: #000;
-        box-shadow: 0 0 0 3px rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15);
-        transform: scale(1.05);
-        z-index: 2;
-    }
-    .sabor-item.sel::after {
-        content: '✓';
-        position: absolute;
-        top: 5px;
-        right: 8px;
-        font-size: 1.2rem;
-        font-weight: 900;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-    /* Cores Temáticas dos Sabores */
-    .sabor-c-chocolate { background: linear-gradient(135deg, #5D4037, #3E2723); color: #fff; border-color: #3E2723; }
-    .sabor-c-morango { background: linear-gradient(135deg, #F06292, #E91E63); color: #fff; border-color: #C2185B; }
-    .sabor-c-limao { background: linear-gradient(135deg, #DCE775, #AFB42B); color: #1A1A1A; border-color: #9E9D24; }
-    .sabor-c-ninho { background: linear-gradient(135deg, #FFFFFF, #F5F5F5); color: #333; border-color: #E0E0E0; }
-    .sabor-c-uva-vinho { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: #fff; border-color: #311B92; }
-    .sabor-c-maracuja-milho { background: linear-gradient(135deg, #FFF176, #FBC02D); color: #1A1A1A; border-color: #F9A825; }
-    .sabor-c-coco { background: linear-gradient(135deg, #FAFAFA, #E0E0E0); color: #333; border-color: #BDBDBD; }
-    .sabor-c-menta { background: linear-gradient(135deg, #B9F6CA, #00C853); color: #1A1A1A; border-color: #00A144; }
-    .sabor-c-laranja-banana { background: linear-gradient(135deg, #FFB74D, #F57C00); color: #fff; border-color: #E65100; }
-    .sabor-c-azul { background: linear-gradient(135deg, #64B5F6, #1976D2); color: #fff; border-color: #0D47A1; }
-    .sabor-c-pistache { background: linear-gradient(135deg, #C5E1A5, #689F38); color: #1A1A1A; border-color: #33691E; }
-    .sabor-c-bege-nozes { background: linear-gradient(135deg, #D7CCC8, #A1887F); color: #fff; border-color: #795548; }
-    .sabor-c-padrao { background: #fff; color: #333; border-color: #E2E8F0; }
-    .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
-
-    .btn-carrinho-fixo {
-        position: fixed; bottom: max(12px, env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(calc(100% - 24px), 480px); max-width: 480px; min-height: 56px;
-        background: linear-gradient(135deg, #E8000D, #C62828); color: var(--white);
-        padding: 18px 24px; border-radius: 50px; font-weight: 900; font-size: 1.1rem;
-        box-shadow: 0 8px 32px rgba(232, 0, 13, 0.4);
-        display: none; justify-content: space-between; align-items: center; z-index: 1500; border: 2px solid rgba(255,255,255,0.2);
-        cursor: pointer;
-        animation: neonPulse 2s infinite;
-        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .btn-carrinho-fixo:active { transform: translateX(-50%) scale(0.95); }
-
-    @keyframes neonPulse {
-        0% { box-shadow: 0 0 5px #E8000D, 0 0 10px #E8000D, 0 8px 32px rgba(232, 0, 13, 0.4); }
-        50% { box-shadow: 0 0 15px #FF5252, 0 0 30px #FF5252, 0 8px 40px rgba(232, 0, 13, 0.6); border-color: rgba(255,255,255,0.6); }
-        100% { box-shadow: 0 0 5px #E8000D, 0 0 10px #E8000D, 0 8px 32px rgba(232, 0, 13, 0.4); }
-    }
-
-    .modal-actions { display: flex; gap: 10px; margin-top: 25px; }
-    .confirm-action { flex: 2; padding: 15px; border-radius: 15px; border: none; font-weight: 800; transition: all 0.3s; }
-    .confirm-action:disabled { background: #ccc !important; color: #666 !important; cursor: not-allowed; }
-    .confirm-action.is-ready { background: var(--verde) !important; color: white !important; }
-
-    .selection-status { display: block; width: 100%; min-height: 22px; text-align: center; margin-top: 15px; padding-inline: 4px; font-weight: 800; font-size: clamp(.82rem, 2.6vw, .95rem); line-height: 1.35; color: var(--primary); overflow-wrap: anywhere; }
-    .selection-status.ready { color: var(--success); }
-
-    .lock-scroll { overflow: hidden !important; }
-    .fluxo-progresso { margin: 12px 0 18px; }
-    .fluxo-progresso__linha { display:flex; justify-content:space-between; gap:8px; font-size:.9rem; font-weight:800; color:var(--text-main); margin-bottom:9px; }
-    .fluxo-progresso__barra { height:12px; border-radius:99px; background:#E9E9E9; overflow:hidden; box-shadow:inset 0 1px 3px rgba(0,0,0,0.1); }
-    .fluxo-progresso__valor { height:100%; width:0; border-radius:99px; background:var(--primary); transition:width .2s ease, background .2s ease; }
-    .fluxo-progresso__valor.ready { background:var(--success); }
-    .fluxo-aviso { margin-top:12px; padding:14px 16px; border-radius:12px; background:#FFF4E5; color:#8A4B00; font-size:.95rem; font-weight:700; line-height:1.4; }
-    .fluxo-aviso.ready { background:#EAF7ED; color:#166534; }
-    .cart-item__tipo { color:var(--primary); font-size:.7rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
-    .cart-item__nome { font-weight:800; color:var(--text-main); margin-top:2px; }
-    .cart-item__descricao { color:var(--text-muted); font-size:.82rem; line-height:1.45; margin-top:4px; }
-    .cart-item__acoes { display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap; margin-top:7px; }
-    .cart-item__acoes button { border:0; padding:6px 9px; border-radius:7px; cursor:pointer; font-weight:800; font-size:.76rem; }
-    .cart-item__editar { background:#EEF4FF; color:var(--azul); }
-    .cart-item__excluir { background:#FFF0F0; color:#B42318; }
-    .cart-status { padding:11px 12px; border-radius:10px; background:#FFF4E5; color:#8A4B00; font-size:.85rem; font-weight:800; margin-top:14px; }
-    .cart-status.ready { background:#EAF7ED; color:#166534; }
-    .resumo-economia-picoles { margin:0 0 16px; padding:14px 16px; border:1px solid #D1D5DB; border-left:6px solid #9CA3AF; border-radius:12px; background:#F8FAFC; color:#374151; line-height:1.4; }
-    .resumo-economia-picoles--atacado { border-color:#D1D5DB; border-left-color:#111827; background:#F8FAFC; color:#111827; }
-    .resumo-economia-picoles__titulo { display:block; font-size:.9rem; font-weight:900; }
-    .resumo-economia-picoles__linhas { display:flex; flex-direction:column; gap:4px; margin-top:7px; font-size:.82rem; font-weight:800; }
-    .resumo-economia-picoles__valor { display:block; margin-top:4px; color:#B91C1C; font-size:1.08rem; font-weight:950; }
-    .resumo-economia-picoles__detalhe { display:block; margin-top:7px; color:#475569; font-size:.76rem; font-weight:700; }
-    .resumo-economia-picoles--atacado .resumo-economia-picoles__detalhe { color:#475569; }
-    @media (max-width:480px) {
-      .resumo-economia-picoles { padding:12px 13px; }
-      .resumo-economia-picoles__valor { font-size:1.08rem; }
-      .resumo-economia-picoles__detalhe { font-size:.72rem; }
-    }
-    .picole-grupo { margin-bottom:12px; border:1px solid #E8E8E8; border-radius:10px; overflow:hidden; background:#fff; }
-    .picole-grupo__titulo { margin:0; padding:10px 14px; color:var(--primary); background:#FFF5F5; border-bottom:2px solid var(--primary); font-size:clamp(1.05rem, 3.8vw, 1.22rem); font-weight:900; letter-spacing:-0.01em; }
-    .picole-linha { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; padding:8px 10px; border-bottom:1px solid #F0F0F0; }
-    .picole-linha:last-child { border-bottom:0; }
-    .picole-linha__sabor { font-weight:800; line-height:1.2; font-size:.92rem; }
-    .picole-linha__preco { margin-top:1px; color:var(--text-muted); font-size:.72rem; }
-    .picole-precos { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:6px; }
-    .picole-preco { display:inline-flex; align-items:center; min-height:24px; padding:4px 7px; border-radius:7px; font-size:clamp(.68rem, 2.8vw, .76rem); line-height:1.1; white-space:nowrap; }
-    .picole-preco--varejo { color:#596273; background:#F3F4F6; border:1px solid #E5E7EB; font-weight:700; }
-    .picole-preco--atacado { color:#000; background:#F3F4F6; border:1px solid #111827; font-weight:900; box-shadow:0 0 0 2px rgba(17,24,39,.12); }
-    .picole-preco--atacado::before { content:'★'; margin-right:4px; color:#000; font-size:.7rem; }
-    .picole-linha__subtotal { margin-top:6px; color:var(--success); font-size:.74rem; font-weight:800; }
-    .picole-linha__controle { display:flex; align-items:center; gap:5px; }
-    .picole-linha__controle button { width:30px; height:30px; border:1px solid #D5D5D5; border-radius:50%; background:#fff; color:var(--text-main); font-size:1.05rem; font-weight:900; line-height:1; cursor:pointer; }
-    .picole-linha__controle button:active { transform:scale(.96); }
-    .picole-linha__qtd { min-width:24px; text-align:center; font-weight:900; }
-    .picole-linha.is-esgotado { background:#FAFAFA; color:#888; }
-    .picole-linha.is-esgotado .picole-linha__sabor { color:#777; }
-    .picole-linha__esgotado { margin-top:5px; color:#B42318; font-size:.78rem; font-weight:900; }
-    .picole-linha__estoque { margin-top:5px; color:#166534; font-size:.74rem; font-weight:700; }
-    .prod-card.is-esgotado { opacity:.7; }
-    .prod-card__estoque { font-size:.76rem; font-weight:800; color:#166534; margin:-8px 0 12px; }
-    .prod-card__estoque.is-esgotado { color:#B42318; }
-    .btn-sabores--acrescimos { background: linear-gradient(135deg, #B71C1C, #E53935); }
-    .acrescimo-card .prod-preco { color: #B71C1C; }
-    .acrescimo-card .prod-card__estoque { margin-bottom: 14px; }
-    @media (max-width: 380px) { .picole-linha { grid-template-columns:minmax(0,1fr); gap:8px; } .picole-linha__controle { justify-content:flex-end; } }
-    @media (max-width: 480px) {
-      .container { padding-inline: 10px; }
-      .modal-content { width: 100%; height: 100%; max-height: 100dvh; border-radius: 0; padding:16px 12px calc(16px + env(safe-area-inset-bottom)); }
-      .sabor-grid { gap: 7px; }
-      .sabor-item { min-height: 48px; padding: 7px 5px; font-size: 0.74rem; border-radius: 7px; }
-      .modal-actions { position:sticky; bottom:calc(-18px - env(safe-area-inset-bottom)); background:#fff; padding:12px 0 calc(10px + env(safe-area-inset-bottom)); z-index:2; }
-    }
-
-    .banner-alerta {
-      background: linear-gradient(135deg, #EA1D2C 0%, #b5121d 100%);
-      color: white; padding: 12px 16px; text-align: center;
-      font-weight: 800; font-size: 0.95rem; border-radius: 8px;
-      margin: 12px auto; max-width: 800px;
-      box-shadow: 0 4px 15px rgba(234, 29, 44, 0.3);
-      animation: fueapPulse 2s infinite ease-in-out;
-    }
-    @keyframes fueapPulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.01); opacity: 0.92; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .picole-grupo-sec__titulo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-      margin-bottom: 8px;
-      padding: 0 0 6px;
-      border-bottom: 2px solid #FFF0F0;
-      color: var(--primary);
-      font-size: 1.05rem;
-      font-weight: 900;
-      line-height: 1.2;
-    }
-    .picole-grupo-sec__icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      flex: 0 0 28px;
-    }
-    .picole-grupo-sec__icon .bento-icon-container {
-      width: 28px;
-      height: 28px;
-      margin-right: 0;
-      border-radius: 8px;
-    }
-    .picole-grupo-sec__icon .bento-icon-container svg { width: 18px; height: 18px; }
-    .picole-grupo-sec__label {
-      min-width: 0;
-      overflow-wrap: anywhere;
-      color: #1F2937;
-    }
-    .picole-grupo-sec__atacado {
-      display: inline-flex;
-      align-items: center;
-      flex: 0 1 auto;
-      max-width: 100%;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: #FFD100;
-      color: #111827;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: clamp(.68rem, 2.8vw, .78rem);
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: .01em;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      box-shadow: 0 1px 0 rgba(0,0,0,.12);
-    }
-    @media (max-width: 520px) {
-      .picole-grupo-sec__titulo { align-items: flex-start; flex-wrap: wrap; }
-      .picole-grupo-sec__label { flex: 1 1 150px; }
-      .picole-grupo-sec__atacado { flex: 0 1 auto; margin-left: 36px; }
-    }
-  </style>
 </head>
 <body class="fueap-surface fueap-encomendas">
   <div data-itap-header-slot></div>
@@ -557,12 +161,12 @@
       <h2 id="titulo-etapa-carrinho" style="margin: 0; font-size: 1.4rem; font-weight: 900; color: #1A1A1A;">🛒 Etapa 1: Revisão do Carrinho</h2>
       <button onclick="window.fecharModal('modal-carrinho')" style="background: #F2F2F2; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
     </div>
-
+    
     <div style="flex: 1; overflow-y: auto; padding-right: 4px;">
       <!-- ETAPA 1: LISTA DE ITENS -->
       <div id="etapa-revisao">
         <div id="lista-carrinho" style="display: flex; flex-direction: column; gap: 12px;"></div>
-
+        
         <div style="margin-top: 20px; padding: 18px; background: #1A1A1A; color: white; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 1.1rem; font-weight: 700;">Total do Pedido:</span>
           <span id="total-carrinho" style="font-size: 1.4rem; font-weight: 900; color: #00E676;">R$ 0,00</span>
@@ -575,7 +179,7 @@
       <div id="etapa-formulario" style="display: none;">
         <div style="padding: 16px; background: #FFF9C4; border: 1px solid #FFEE58; border-radius: 12px; margin-bottom: 16px;">
           <p style="font-size: 0.85rem; color: #5D4037; margin: 0; line-height: 1.4;">
-            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias úteis</strong> após a confirmação e o pagamento. A encomenda será <strong>retirada na loja</strong>; não realizamos delivery. Entraremos em contato pelo WhatsApp para confirmar tudo.
+            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias úteis</strong> para encomendas pelo site. Logo entraremos em contato para confirmar o pedido e combinar o pagamento.
           </p>
         </div>
 
@@ -596,11 +200,9 @@
             <input id="pedido-nome" type="text" oninput="window.validarNome()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Digite seu nome completo" />
           </div>
 
-          <div id="bloco-retirada" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; padding: 14px; background: #FFF8E1; border: 2px solid #FFE082; border-radius: 12px;">
-            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.92rem; font-weight: 800; color: #5D4037; line-height: 1.4;">
-              <input id="pedido-retirada" type="checkbox" onchange="window.validarRetirada()" style="width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto;" disabled />
-              <span><strong>2. Retirada na loja *</strong><br><small style="font-weight: 600;">Confirmo que vou retirar a encomenda na loja da Itapolitana Cajuru. Não realizamos delivery.</small></span>
-            </label>
+          <div id="bloco-endereco" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">2. Endereço de Entrega Completo *</label>
+            <input id="pedido-endereco" type="text" oninput="window.validarEndereco()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Rua, Número, Bairro, Cidade" disabled />
           </div>
 
           <div id="bloco-whatsapp" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
@@ -612,7 +214,7 @@
           <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
               <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
-              <span>4. Estou ciente do prazo de 5 dias úteis após o pagamento e da retirada obrigatória na loja.</span>
+              <span>Estou ciente do prazo de 5 dias úteis após o pagamento para elaborar o pedido.</span>
             </label>
           </div>
         </div>
@@ -653,7 +255,7 @@
 
     var carrinho = window.carrinho;
     var picolesSelecionados = window.picolesSelecionados;
-    // Catálogos ativos são montados exclusivamente de dados/produtos.json com cache-busting controlado.
+    // Catálogos ativos são montados exclusivamente de dados/produtos.js?v=1786979144on.
     var SABORES_SORVETE = [];
     var PICOLES_CATALOGO = {};
     function precoAtacadoDoGrupo(grupo) {
@@ -683,7 +285,7 @@
         { id: "acr_4", nome: "Cobertura 1.3L", preco: 40.00, estoque: 100, esgotado: false }
     ];
     var ESTOQUE_CARREGADO = false;
-    var ESTOQUE_URL = "dados/produtos.json";
+    var ESTOQUE_URL = "dados/produtos.js?v=1786979144on";
     var MAPA_PICOLES_ESTOQUE = {};
     var ESTOQUE_PICOLES = {};
 
@@ -714,7 +316,7 @@
         PICOLES_CATALOGO = catalogo;
         MAPA_PICOLES_ESTOQUE = mapa;
     }
-
+ 
 
     function chaveSegura(valor) {
         return String(valor).replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -806,13 +408,13 @@
         var el = document.getElementById(id);
         var catPai = el.closest('.categoria');
         var isOpen = el.style.display === 'block';
-
+        
         document.querySelectorAll('.categoria-conteudo').forEach(c => c.style.display = 'none');
         document.querySelectorAll('.categoria').forEach(cat => {
             cat.style.display = 'block';
             cat.classList.remove('open');
         });
-
+        
         if (isOpen) {
             el.style.display = 'none';
             if (catPai) catPai.classList.remove('open');
@@ -973,7 +575,7 @@
                 cx10l_2s: { btn: 'btn-sabores--caixa-amarela', card: 'prod-card--amarela' },
                 cx10l_3s: { btn: 'btn-sabores--caixa-roxa', card: 'prod-card--roxa' }
             }[p.id] || { btn: 'btn-sabores--caixa-azul', card: 'prod-card--azul' };
-
+            
             var status = indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)';
             var nome = escaparHtml(p.nome);
             return `<div class="prod-card ${cores.card} ${indisponivel ? 'is-esgotado' : ''}">
@@ -1026,34 +628,16 @@
         }
         produtoAtual = { id: id, preco: preco, max: max, nome: nome, editIndex: editIndex };
         saboresSelecionados = (editIndex !== undefined && carrinho[editIndex]) ? carrinho[editIndex].sabores.slice() : [];
-
+        
         document.getElementById('modal-titulo-sabores').textContent = nome;
         document.getElementById('modal-subtitulo-sabores').textContent = "Selecione " + max + " sabores Sorvete Itapolitana:";
-
+        
         var grid = document.getElementById('grid-sabores');
-        function getSaborClass(nome) {
-            const n = nome.toLowerCase();
-            if (n.includes('chocolate') || n.includes('belga') || n.includes('ferrero') || n.includes('bis') || n.includes('nutella') || n.includes('ovomaltine') || n.includes('prestígio')) return 'sabor-c-chocolate';
-            if (n.includes('morango') || n.includes('sensação') || n.includes('amarena') || n.includes('cereja')) return 'sabor-c-morango';
-            if (n.includes('limão')) return 'sabor-c-limao';
-            if (n.includes('ninho')) return 'sabor-c-ninho';
-            if (n.includes('vinho') || n.includes('uva') || n.includes('ameixa')) return 'sabor-c-uva-vinho';
-            if (n.includes('maracujá') || n.includes('milho')) return 'sabor-c-maracuja-milho';
-            if (n.includes('coco')) return 'sabor-c-coco';
-            if (n.includes('menta')) return 'sabor-c-menta';
-            if (n.includes('doce de leite') || n.includes('banana') || n.includes('passas')) return 'sabor-c-laranja-banana';
-            if (n.includes('blue ice')) return 'sabor-c-azul';
-            if (n.includes('pistache')) return 'sabor-c-pistache';
-            if (n.includes('nozes') || n.includes('creme') || n.includes('cheesecake') || n.includes('croquer') || n.includes('flocos') || n.includes('casado')) return 'sabor-c-bege-nozes';
-            return 'sabor-c-padrao';
-        }
-
         grid.innerHTML = SABORES_SORVETE.map(s => {
             var sel = saboresSelecionados.includes(s);
-            var corClass = getSaborClass(s);
-            return `<div class="sabor-item ${corClass} ${sel?'sel':''}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
+            return `<div class="sabor-item ${sel?'sel':''}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
         }).join('');
-
+        
         atualizarAcaoSabores();
         window.abrirModal('modal-sabores');
     };
@@ -1077,7 +661,7 @@
         var pronto = saboresSelecionados.length === produtoAtual.max;
         btn.disabled = !pronto;
         btn.classList.toggle('is-ready', pronto);
-
+        
         if (pronto) {
             status.textContent = "Tudo certo! Pode confirmar.";
             status.classList.add('ready');
@@ -1133,22 +717,22 @@
             return;
         }
         var html = '';
-
+        
         Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
             var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
             var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange small') : '';
             var tipoCurto = tipo.replace(/\s+—\s+Atacado R\$ [0-9]+,[0-9]{2} acima de 100 un\.$/, '').trim();
             var precoAtacadoTitulo = precoAtacadoDoGrupo(grupo).toFixed(2).replace('.', ',');
             var tipoId = 'grupo-picole-' + index;
-
-
+            
+            
             var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
                 <div class="picole-grupo-sec__titulo">
                     <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${escaparHtml(tipoCurto)}</span><span class="picole-grupo-sec__atacado">Atacado R$ ${precoAtacadoTitulo} acima de 100 un.</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">`;
-
+            
             grupo.sabores.forEach(s => {
                 var key = tipo + "|" + s;
                 var qtd = picolesSelecionados[key] || 0;
@@ -1156,7 +740,7 @@
                 var indisponivel = Boolean(info.esgotado || Number(info.estoque || 0) <= 0);
                 var subtotal = qtd * precoAtualDoGrupo(grupo, totalPicolesSelecionados);
                 var hasSelected = qtd > 0;
-
+                
                 html += `
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: ${hasSelected ? '#F0FDF4' : '#FAFAFA'}; border: 1.5px solid ${hasSelected ? '#86EFAC' : '#E5E7EB'}; border-radius: 12px; transition: all 0.2s;" data-picole-key="${key}" class="${indisponivel ? 'is-esgotado' : ''}">
                         <div style="flex: 1; padding-right: 10px;">
@@ -1178,7 +762,7 @@
             });
             html += `</div></div>`;
         });
-
+        
         document.getElementById('lista-sabores-picole').innerHTML = html;
         atualizarAcaoPicoles();
         window.abrirModal('modal-picoles');
@@ -1260,14 +844,14 @@
         // Remover picolés antigos para reinserir por sabor
         carrinho = carrinho.filter(i => !i.isPicole);
         window.carrinho = carrinho;
-
+        
         Object.entries(picolesSelecionados).forEach(([key, qtd]) => {
             var parts = key.split('|');
             var tipoFull = parts[0];
             var sabor = parts[1];
             var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             var precoUnit = precoAtualDoGrupo(PICOLES_CATALOGO[tipoFull], totalPicolesSelecionados);
-
+            
             carrinho.push({
                 id: key,
                 tipo: "Picolé " + tipoFull.split('(')[0].trim(),
@@ -1278,7 +862,7 @@
                 isPicole: true
             });
         });
-
+        
         window.fecharModal('modal-picoles');
         atualizarCarrinhoFixo();
     };
@@ -1286,10 +870,10 @@
     window.abrirCarrinho = function() {
         // Sempre abre na Etapa 1 (Revisão)
         window.voltarParaRevisao();
-
+        
         var lista = document.getElementById('lista-carrinho');
         var total = 0;
-
+        
         if (carrinho.length === 0) {
             lista.innerHTML = '<div style="text-align:center; padding: 40px 20px; color:#666;"><div style="font-size: 3rem; margin-bottom: 10px;">🛒</div><strong style="font-size: 1.2rem;">Seu carrinho está vazio</strong><p style="font-size: 0.9rem; margin-top: 5px;">Adicione caixas de sorvete, tortas ou picolés para encomendar.</p></div>';
             document.getElementById('btn-prosseguir').style.display = 'none';
@@ -1315,16 +899,16 @@
                 `;
             }).join('');
         }
-
+        
         document.getElementById('total-carrinho').textContent = "R$ " + total.toFixed(2).replace('.',',');
-
+        
         var totalPicoles = carrinho.filter(i => i.isPicole).reduce((a, b) => a + b.quantidade, 0);
         var temPicole = totalPicoles > 0;
         var picoleOk = !temPicole || totalPicoles >= MIN_PICOLES_ATACADO;
-
+        
         var status = document.getElementById('status-carrinho');
         var btnProsseguir = document.getElementById('btn-prosseguir');
-
+        
         if (carrinho.length > 0 && picoleOk) {
             status.style.display = 'none';
             btnProsseguir.disabled = false;
@@ -1340,7 +924,7 @@
             btnProsseguir.disabled = true;
             btnProsseguir.style.opacity = '0.5';
         }
-
+        
         window.abrirModal('modal-carrinho');
     };
 
@@ -1396,15 +980,15 @@
         document.getElementById('etapa-formulario').style.display = 'block';
         document.getElementById('botoes-etapa-1').style.display = 'none';
         document.getElementById('botoes-etapa-2').style.display = 'flex';
-
+        
         // Reset form state
         document.getElementById('pedido-nome').value = '';
-        document.getElementById('pedido-retirada').checked = false;
+        document.getElementById('pedido-endereco').value = '';
         document.getElementById('pedido-whatsapp').value = '';
         document.getElementById('pedido-ciencia').checked = false;
-        document.getElementById('bloco-retirada').style.opacity = '0.4';
-        document.getElementById('bloco-retirada').style.pointerEvents = 'none';
-        document.getElementById('pedido-retirada').disabled = true;
+        document.getElementById('bloco-endereco').style.opacity = '0.4';
+        document.getElementById('bloco-endereco').style.pointerEvents = 'none';
+        document.getElementById('pedido-endereco').disabled = true;
         document.getElementById('bloco-whatsapp').style.opacity = '0.4';
         document.getElementById('bloco-whatsapp').style.pointerEvents = 'none';
         document.getElementById('pedido-whatsapp').disabled = true;
@@ -1412,7 +996,7 @@
         document.getElementById('bloco-ciencia').style.pointerEvents = 'none';
         document.getElementById('pedido-ciencia').disabled = true;
         atualizarResumoEconomiaPicoles();
-
+        
         var btnFin = document.getElementById('btn-finalizar-pedido');
         btnFin.style.opacity = '0.5';
         btnFin.style.pointerEvents = 'none';
@@ -1428,28 +1012,28 @@
 
     window.validarNome = function() {
         var nome = document.getElementById('pedido-nome').value.trim();
-        var blocoRetirada = document.getElementById('bloco-retirada');
-        var inputRetirada = document.getElementById('pedido-retirada');
-
+        var blocoEnd = document.getElementById('bloco-endereco');
+        var inputEnd = document.getElementById('pedido-endereco');
+        
         if (nome.length >= 3) {
-            blocoRetirada.style.opacity = '1';
-            blocoRetirada.style.pointerEvents = 'auto';
-            inputRetirada.disabled = false;
+            blocoEnd.style.opacity = '1';
+            blocoEnd.style.pointerEvents = 'auto';
+            inputEnd.disabled = false;
         } else {
-            blocoRetirada.style.opacity = '0.4';
-            blocoRetirada.style.pointerEvents = 'none';
-            inputRetirada.disabled = true;
-            inputRetirada.checked = false;
-            window.validarRetirada();
+            blocoEnd.style.opacity = '0.4';
+            blocoEnd.style.pointerEvents = 'none';
+            inputEnd.disabled = true;
+            inputEnd.value = '';
+            window.validarEndereco();
         }
     };
 
-    window.validarRetirada = function() {
-        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
+    window.validarEndereco = function() {
+        var end = document.getElementById('pedido-endereco').value.trim();
         var blocoWp = document.getElementById('bloco-whatsapp');
         var inputWp = document.getElementById('pedido-whatsapp');
-
-        if (retiradaConfirmada) {
+        
+        if (end.length >= 5) {
             blocoWp.style.opacity = '1';
             blocoWp.style.pointerEvents = 'auto';
             inputWp.disabled = false;
@@ -1467,15 +1051,15 @@
         var tel = zap.replace(/\D/g, '');
         var ciencia = document.getElementById('pedido-ciencia').checked;
         var btnFin = document.getElementById('btn-finalizar-pedido');
-
+        
         var blocoCiencia = document.getElementById('bloco-ciencia');
         var inputCiencia = document.getElementById('pedido-ciencia');
-
+        
         if (/^16\d{8,9}$/.test(tel)) {
             blocoCiencia.style.opacity = '1';
             blocoCiencia.style.pointerEvents = 'auto';
             inputCiencia.disabled = false;
-
+            
             if (ciencia) {
                 btnFin.style.opacity = '1';
                 btnFin.style.pointerEvents = 'auto';
@@ -1545,43 +1129,37 @@
         }
     }
 
-    window.finalizarPedido = function() {
-        var nome = document.getElementById('pedido-nome').value.trim();
-        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
-        var zap = document.getElementById('pedido-whatsapp').value.trim();
-        var tel = zap.replace(/\D/g, '');
-
-        if (nome.length < 3) {
-            alert("Por favor, preencha seu Nome Completo.");
-            document.getElementById('pedido-nome').focus();
-            return;
-        }
-        if (!retiradaConfirmada) {
-            alert("Confirme que a encomenda será retirada na loja. Não realizamos delivery.");
-            document.getElementById('pedido-retirada').focus();
-            return;
-        }
-        if (!/^16\d{8,9}$/.test(tel)) {
+	    window.finalizarPedido = function() {
+	        var nome = document.getElementById('pedido-nome').value.trim();
+	        var end = document.getElementById('pedido-endereco').value.trim();
+	        var zap = document.getElementById('pedido-whatsapp').value.trim();
+	        var tel = zap.replace(/\D/g, '');
+	        
+	        if (nome.length < 3) {
+	            alert("Por favor, preencha seu Nome Completo.");
+	            document.getElementById('pedido-nome').focus();
+	            return;
+	        }
+	        if (end.length < 5) {
+	            alert("Por favor, preencha o Endereço de Entrega Completo.");
+	            document.getElementById('pedido-endereco').focus();
+	            return;
+	        }
+	        if (!/^16\d{8,9}$/.test(tel)) {
 	            alert("Atenção: Apenas telefones com o DDD 16 são aceitos para encomendas nesta região.");
 	            document.getElementById('pedido-whatsapp').focus();
 	            return;
 	        }
-
-        if (!document.getElementById('pedido-ciencia').checked) {
-            alert("Confirme o prazo de 5 dias úteis e a retirada na loja antes de finalizar.");
-            document.getElementById('pedido-ciencia').focus();
-            return;
-        }
-
+        
         var resumoEconomia = calcularResumoEconomiaPicoles();
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
-        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ Estou ciente do prazo mínimo de 5 dias úteis após o pagamento.\n✅ A encomenda será retirada na loja da Itapolitana Cajuru. Não realizam delivery.\n\nCliente: ${nome}\nRetirada: Loja Itapolitana Cajuru\nWhatsApp: ${zap}\n\nItens:\n` +
+        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO DE 5 DIAS ÚTEIS APÓS O PAGAMENTO PARA ELABORAR O PEDIDO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
                 var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : item.isAcrescimo ? `${item.quantidade} unidade(s) x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
                 return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
             }).join('\n\n') +
             `\n\nTotal de referência dos picolés no varejo: R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\nDESCONTO TOTAL NO ATACADO (PICOLES): R$ ${economiaTotal.toFixed(2).replace('.',',')}\nTotal do pedido a pagar: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
-
+            
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
 
@@ -1603,7 +1181,6 @@
 
 // Fim do script
 </script>
-
-  <script src="scripts/gaveta-navegacao-mestra.js?v=501" defer></script>
+  <script src="scripts/gaveta-navegacao-mestra.js?v=500" defer></script>
 </body>
 </html>

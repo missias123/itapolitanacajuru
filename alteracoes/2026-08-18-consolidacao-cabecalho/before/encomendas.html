@@ -12,22 +12,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+  
   <meta content="Faça suas encomendas de sorvetes em caixa (5L e 10L), tortas geladas e picolés no atacado na Sorveteria Itapolitana em Cajuru/SP. Prazo mínimo de 5 dias úteis." name="description"/>
   <meta content="#EF0129" name="theme-color"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <link rel="apple-touch-icon" href="images/logo.webp">
-  <link rel="manifest" href="manifest.json?v=20260818-1">
+  <link rel="manifest" href="manifest.js?v=1786979144on">
   <link href="https://itapolitanacajuru.com.br/encomendas.html" rel="canonical"/>
-
+  
   <meta content="website" property="og:type"/>
   <meta content="https://itapolitanacajuru.com.br/encomendas.html" property="og:url"/>
   <meta content="Encomendas | Sorveteria Itapolitana Cajuru" property="og:title"/>
   <meta content="Encomende sorvetes e picolés para sua festa ou evento em Cajuru/SP. Qualidade premium e sabores ." property="og:description"/>
   <meta content="https://itapolitanacajuru.com.br/images/logo.webp" property="og:image"/>
-
+  
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -40,10 +40,10 @@
     }
   }
   </script>
-
+  
   <link rel="stylesheet" href="css/itap-shared.css?v=1786979144-icons-approved-2">
   <script src="scripts/itap-icons.js?v=1786979144-icons-approved-2"></script>
-  <!-- A lógica de encomendas é mantida no controlador único inline desta página; não carregar enc-v4.js em paralelo. -->
+<script src="scripts/nav-active-world-class.js?v=300" defer></script>
   <link rel="stylesheet" href="css/gaveta-estilos-premium.css?v=500">
 
   <!-- Estilos visuais restaurados do último estado íntegro ec97d57^ -->
@@ -74,7 +74,7 @@
         .prod-grid { grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); }
         .modal-content { width: 100%; box-sizing: border-box; }
     }
-
+    
     :root {
       --primary: #EA1D2C;
       --secondary: #1A1A1A;
@@ -95,10 +95,10 @@
 
   .categoria {
         background: var(--white);
-        border-radius: 18px;
-        margin-bottom: 18px;
-        border: 1px solid #E8E8E8;
-        overflow: hidden;
+        border-radius: 18px; 
+        margin-bottom: 18px; 
+        border: 1px solid #E8E8E8; 
+        overflow: hidden; 
         box-shadow: 0 6px 16px rgba(0,0,0,0.06);
         transition: transform 0.2s, box-shadow 0.2s;
     }
@@ -251,34 +251,11 @@
     }
     .sabor-item:active { transform: scale(0.95); }
     .sabor-item.sel {
-        border-color: #000;
-        box-shadow: 0 0 0 3px rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15);
-        transform: scale(1.05);
-        z-index: 2;
+        background: var(--success);
+        color: white;
+        border-color: var(--success);
+        box-shadow: 0 4px 12px rgba(0, 137, 18, 0.2);
     }
-    .sabor-item.sel::after {
-        content: '✓';
-        position: absolute;
-        top: 5px;
-        right: 8px;
-        font-size: 1.2rem;
-        font-weight: 900;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-    /* Cores Temáticas dos Sabores */
-    .sabor-c-chocolate { background: linear-gradient(135deg, #5D4037, #3E2723); color: #fff; border-color: #3E2723; }
-    .sabor-c-morango { background: linear-gradient(135deg, #F06292, #E91E63); color: #fff; border-color: #C2185B; }
-    .sabor-c-limao { background: linear-gradient(135deg, #DCE775, #AFB42B); color: #1A1A1A; border-color: #9E9D24; }
-    .sabor-c-ninho { background: linear-gradient(135deg, #FFFFFF, #F5F5F5); color: #333; border-color: #E0E0E0; }
-    .sabor-c-uva-vinho { background: linear-gradient(135deg, #7B1FA2, #4A148C); color: #fff; border-color: #311B92; }
-    .sabor-c-maracuja-milho { background: linear-gradient(135deg, #FFF176, #FBC02D); color: #1A1A1A; border-color: #F9A825; }
-    .sabor-c-coco { background: linear-gradient(135deg, #FAFAFA, #E0E0E0); color: #333; border-color: #BDBDBD; }
-    .sabor-c-menta { background: linear-gradient(135deg, #B9F6CA, #00C853); color: #1A1A1A; border-color: #00A144; }
-    .sabor-c-laranja-banana { background: linear-gradient(135deg, #FFB74D, #F57C00); color: #fff; border-color: #E65100; }
-    .sabor-c-azul { background: linear-gradient(135deg, #64B5F6, #1976D2); color: #fff; border-color: #0D47A1; }
-    .sabor-c-pistache { background: linear-gradient(135deg, #C5E1A5, #689F38); color: #1A1A1A; border-color: #33691E; }
-    .sabor-c-bege-nozes { background: linear-gradient(135deg, #D7CCC8, #A1887F); color: #fff; border-color: #795548; }
-    .sabor-c-padrao { background: #fff; color: #333; border-color: #E2E8F0; }
     .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
 
     .btn-carrinho-fixo {
@@ -286,13 +263,13 @@
         background: linear-gradient(135deg, #E8000D, #C62828); color: var(--white);
         padding: 18px 24px; border-radius: 50px; font-weight: 900; font-size: 1.1rem;
         box-shadow: 0 8px 32px rgba(232, 0, 13, 0.4);
-        display: none; justify-content: space-between; align-items: center; z-index: 1500; border: 2px solid rgba(255,255,255,0.2);
+        display: none; justify-content: space-between; align-items: center; z-index: 1500; border: 2px solid rgba(255,255,255,0.2); 
         cursor: pointer;
         animation: neonPulse 2s infinite;
         transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .btn-carrinho-fixo:active { transform: translateX(-50%) scale(0.95); }
-
+    
     @keyframes neonPulse {
         0% { box-shadow: 0 0 5px #E8000D, 0 0 10px #E8000D, 0 8px 32px rgba(232, 0, 13, 0.4); }
         50% { box-shadow: 0 0 15px #FF5252, 0 0 30px #FF5252, 0 8px 40px rgba(232, 0, 13, 0.6); border-color: rgba(255,255,255,0.6); }
@@ -557,12 +534,12 @@
       <h2 id="titulo-etapa-carrinho" style="margin: 0; font-size: 1.4rem; font-weight: 900; color: #1A1A1A;">🛒 Etapa 1: Revisão do Carrinho</h2>
       <button onclick="window.fecharModal('modal-carrinho')" style="background: #F2F2F2; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
     </div>
-
+    
     <div style="flex: 1; overflow-y: auto; padding-right: 4px;">
       <!-- ETAPA 1: LISTA DE ITENS -->
       <div id="etapa-revisao">
         <div id="lista-carrinho" style="display: flex; flex-direction: column; gap: 12px;"></div>
-
+        
         <div style="margin-top: 20px; padding: 18px; background: #1A1A1A; color: white; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 1.1rem; font-weight: 700;">Total do Pedido:</span>
           <span id="total-carrinho" style="font-size: 1.4rem; font-weight: 900; color: #00E676;">R$ 0,00</span>
@@ -575,7 +552,7 @@
       <div id="etapa-formulario" style="display: none;">
         <div style="padding: 16px; background: #FFF9C4; border: 1px solid #FFEE58; border-radius: 12px; margin-bottom: 16px;">
           <p style="font-size: 0.85rem; color: #5D4037; margin: 0; line-height: 1.4;">
-            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias úteis</strong> após a confirmação e o pagamento. A encomenda será <strong>retirada na loja</strong>; não realizamos delivery. Entraremos em contato pelo WhatsApp para confirmar tudo.
+            ⚠️ <strong>Importante:</strong> Prazo mínimo de <strong>5 dias úteis</strong> para encomendas pelo site. Logo entraremos em contato para confirmar o pedido e combinar o pagamento.
           </p>
         </div>
 
@@ -596,11 +573,9 @@
             <input id="pedido-nome" type="text" oninput="window.validarNome()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Digite seu nome completo" />
           </div>
 
-          <div id="bloco-retirada" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; padding: 14px; background: #FFF8E1; border: 2px solid #FFE082; border-radius: 12px;">
-            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.92rem; font-weight: 800; color: #5D4037; line-height: 1.4;">
-              <input id="pedido-retirada" type="checkbox" onchange="window.validarRetirada()" style="width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto;" disabled />
-              <span><strong>2. Retirada na loja *</strong><br><small style="font-weight: 600;">Confirmo que vou retirar a encomenda na loja da Itapolitana Cajuru. Não realizamos delivery.</small></span>
-            </label>
+          <div id="bloco-endereco" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
+            <label style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 6px; color: #333;">2. Endereço de Entrega Completo *</label>
+            <input id="pedido-endereco" type="text" oninput="window.validarEndereco()" style="width:100%; padding:14px; border:2px solid #DDD; border-radius:10px; font-size: 1rem;" placeholder="Rua, Número, Bairro, Cidade" disabled />
           </div>
 
           <div id="bloco-whatsapp" style="opacity: 0.4; pointer-events: none; transition: all 0.3s;">
@@ -612,7 +587,7 @@
           <div id="bloco-ciencia" style="opacity: 0.4; pointer-events: none; transition: all 0.3s; margin-top: 10px; padding: 12px; background: #F8F9FA; border-radius: 10px; border: 1px solid #DEE2E6;">
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; color: #333; line-height: 1.4;">
               <input id="pedido-ciencia" type="checkbox" onchange="window.validarWhatsapp()" style="width: 20px; height: 20px; margin-top: 2px;" disabled />
-              <span>4. Estou ciente do prazo de 5 dias úteis após o pagamento e da retirada obrigatória na loja.</span>
+              <span>Estou ciente do prazo de 5 dias úteis após o pagamento para elaborar o pedido.</span>
             </label>
           </div>
         </div>
@@ -653,7 +628,7 @@
 
     var carrinho = window.carrinho;
     var picolesSelecionados = window.picolesSelecionados;
-    // Catálogos ativos são montados exclusivamente de dados/produtos.json com cache-busting controlado.
+    // Catálogos ativos são montados exclusivamente de dados/produtos.js?v=1786979144on.
     var SABORES_SORVETE = [];
     var PICOLES_CATALOGO = {};
     function precoAtacadoDoGrupo(grupo) {
@@ -683,7 +658,7 @@
         { id: "acr_4", nome: "Cobertura 1.3L", preco: 40.00, estoque: 100, esgotado: false }
     ];
     var ESTOQUE_CARREGADO = false;
-    var ESTOQUE_URL = "dados/produtos.json";
+    var ESTOQUE_URL = "dados/produtos.js?v=1786979144on";
     var MAPA_PICOLES_ESTOQUE = {};
     var ESTOQUE_PICOLES = {};
 
@@ -714,7 +689,7 @@
         PICOLES_CATALOGO = catalogo;
         MAPA_PICOLES_ESTOQUE = mapa;
     }
-
+ 
 
     function chaveSegura(valor) {
         return String(valor).replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -806,13 +781,13 @@
         var el = document.getElementById(id);
         var catPai = el.closest('.categoria');
         var isOpen = el.style.display === 'block';
-
+        
         document.querySelectorAll('.categoria-conteudo').forEach(c => c.style.display = 'none');
         document.querySelectorAll('.categoria').forEach(cat => {
             cat.style.display = 'block';
             cat.classList.remove('open');
         });
-
+        
         if (isOpen) {
             el.style.display = 'none';
             if (catPai) catPai.classList.remove('open');
@@ -973,7 +948,7 @@
                 cx10l_2s: { btn: 'btn-sabores--caixa-amarela', card: 'prod-card--amarela' },
                 cx10l_3s: { btn: 'btn-sabores--caixa-roxa', card: 'prod-card--roxa' }
             }[p.id] || { btn: 'btn-sabores--caixa-azul', card: 'prod-card--azul' };
-
+            
             var status = indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)';
             var nome = escaparHtml(p.nome);
             return `<div class="prod-card ${cores.card} ${indisponivel ? 'is-esgotado' : ''}">
@@ -1026,34 +1001,16 @@
         }
         produtoAtual = { id: id, preco: preco, max: max, nome: nome, editIndex: editIndex };
         saboresSelecionados = (editIndex !== undefined && carrinho[editIndex]) ? carrinho[editIndex].sabores.slice() : [];
-
+        
         document.getElementById('modal-titulo-sabores').textContent = nome;
         document.getElementById('modal-subtitulo-sabores').textContent = "Selecione " + max + " sabores Sorvete Itapolitana:";
-
+        
         var grid = document.getElementById('grid-sabores');
-        function getSaborClass(nome) {
-            const n = nome.toLowerCase();
-            if (n.includes('chocolate') || n.includes('belga') || n.includes('ferrero') || n.includes('bis') || n.includes('nutella') || n.includes('ovomaltine') || n.includes('prestígio')) return 'sabor-c-chocolate';
-            if (n.includes('morango') || n.includes('sensação') || n.includes('amarena') || n.includes('cereja')) return 'sabor-c-morango';
-            if (n.includes('limão')) return 'sabor-c-limao';
-            if (n.includes('ninho')) return 'sabor-c-ninho';
-            if (n.includes('vinho') || n.includes('uva') || n.includes('ameixa')) return 'sabor-c-uva-vinho';
-            if (n.includes('maracujá') || n.includes('milho')) return 'sabor-c-maracuja-milho';
-            if (n.includes('coco')) return 'sabor-c-coco';
-            if (n.includes('menta')) return 'sabor-c-menta';
-            if (n.includes('doce de leite') || n.includes('banana') || n.includes('passas')) return 'sabor-c-laranja-banana';
-            if (n.includes('blue ice')) return 'sabor-c-azul';
-            if (n.includes('pistache')) return 'sabor-c-pistache';
-            if (n.includes('nozes') || n.includes('creme') || n.includes('cheesecake') || n.includes('croquer') || n.includes('flocos') || n.includes('casado')) return 'sabor-c-bege-nozes';
-            return 'sabor-c-padrao';
-        }
-
         grid.innerHTML = SABORES_SORVETE.map(s => {
             var sel = saboresSelecionados.includes(s);
-            var corClass = getSaborClass(s);
-            return `<div class="sabor-item ${corClass} ${sel?'sel':''}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
+            return `<div class="sabor-item ${sel?'sel':''}" onclick="window.toggleSabor('${s}', this)">${s}</div>`;
         }).join('');
-
+        
         atualizarAcaoSabores();
         window.abrirModal('modal-sabores');
     };
@@ -1077,7 +1034,7 @@
         var pronto = saboresSelecionados.length === produtoAtual.max;
         btn.disabled = !pronto;
         btn.classList.toggle('is-ready', pronto);
-
+        
         if (pronto) {
             status.textContent = "Tudo certo! Pode confirmar.";
             status.classList.add('ready');
@@ -1133,22 +1090,22 @@
             return;
         }
         var html = '';
-
+        
         Object.entries(PICOLES_CATALOGO).forEach(([tipo, grupo], index) => {
             var iconId = tipo.includes('Água') ? 'drop' : tipo.includes('Recheado') ? 'chocolate' : tipo.includes('Esquimó') ? 'popsicle' : 'star';
             var icon = (typeof window.ItapIcon === 'function') ? window.ItapIcon(iconId, 'orange small') : '';
             var tipoCurto = tipo.replace(/\s+—\s+Atacado R\$ [0-9]+,[0-9]{2} acima de 100 un\.$/, '').trim();
             var precoAtacadoTitulo = precoAtacadoDoGrupo(grupo).toFixed(2).replace('.', ',');
             var tipoId = 'grupo-picole-' + index;
-
-
+            
+            
             var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             html += `<div class="picole-grupo-sec" data-tipo-id="${tipoId}" style="margin-bottom: 16px;">
                 <div class="picole-grupo-sec__titulo">
                     <span class="picole-grupo-sec__icon">${icon}</span><span class="picole-grupo-sec__label">${escaparHtml(tipoCurto)}</span><span class="picole-grupo-sec__atacado">Atacado R$ ${precoAtacadoTitulo} acima de 100 un.</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">`;
-
+            
             grupo.sabores.forEach(s => {
                 var key = tipo + "|" + s;
                 var qtd = picolesSelecionados[key] || 0;
@@ -1156,7 +1113,7 @@
                 var indisponivel = Boolean(info.esgotado || Number(info.estoque || 0) <= 0);
                 var subtotal = qtd * precoAtualDoGrupo(grupo, totalPicolesSelecionados);
                 var hasSelected = qtd > 0;
-
+                
                 html += `
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: ${hasSelected ? '#F0FDF4' : '#FAFAFA'}; border: 1.5px solid ${hasSelected ? '#86EFAC' : '#E5E7EB'}; border-radius: 12px; transition: all 0.2s;" data-picole-key="${key}" class="${indisponivel ? 'is-esgotado' : ''}">
                         <div style="flex: 1; padding-right: 10px;">
@@ -1178,7 +1135,7 @@
             });
             html += `</div></div>`;
         });
-
+        
         document.getElementById('lista-sabores-picole').innerHTML = html;
         atualizarAcaoPicoles();
         window.abrirModal('modal-picoles');
@@ -1260,14 +1217,14 @@
         // Remover picolés antigos para reinserir por sabor
         carrinho = carrinho.filter(i => !i.isPicole);
         window.carrinho = carrinho;
-
+        
         Object.entries(picolesSelecionados).forEach(([key, qtd]) => {
             var parts = key.split('|');
             var tipoFull = parts[0];
             var sabor = parts[1];
             var totalPicolesSelecionados = Object.values(picolesSelecionados).reduce((soma, quantidade) => soma + Number(quantidade || 0), 0);
             var precoUnit = precoAtualDoGrupo(PICOLES_CATALOGO[tipoFull], totalPicolesSelecionados);
-
+            
             carrinho.push({
                 id: key,
                 tipo: "Picolé " + tipoFull.split('(')[0].trim(),
@@ -1278,7 +1235,7 @@
                 isPicole: true
             });
         });
-
+        
         window.fecharModal('modal-picoles');
         atualizarCarrinhoFixo();
     };
@@ -1286,10 +1243,10 @@
     window.abrirCarrinho = function() {
         // Sempre abre na Etapa 1 (Revisão)
         window.voltarParaRevisao();
-
+        
         var lista = document.getElementById('lista-carrinho');
         var total = 0;
-
+        
         if (carrinho.length === 0) {
             lista.innerHTML = '<div style="text-align:center; padding: 40px 20px; color:#666;"><div style="font-size: 3rem; margin-bottom: 10px;">🛒</div><strong style="font-size: 1.2rem;">Seu carrinho está vazio</strong><p style="font-size: 0.9rem; margin-top: 5px;">Adicione caixas de sorvete, tortas ou picolés para encomendar.</p></div>';
             document.getElementById('btn-prosseguir').style.display = 'none';
@@ -1315,16 +1272,16 @@
                 `;
             }).join('');
         }
-
+        
         document.getElementById('total-carrinho').textContent = "R$ " + total.toFixed(2).replace('.',',');
-
+        
         var totalPicoles = carrinho.filter(i => i.isPicole).reduce((a, b) => a + b.quantidade, 0);
         var temPicole = totalPicoles > 0;
         var picoleOk = !temPicole || totalPicoles >= MIN_PICOLES_ATACADO;
-
+        
         var status = document.getElementById('status-carrinho');
         var btnProsseguir = document.getElementById('btn-prosseguir');
-
+        
         if (carrinho.length > 0 && picoleOk) {
             status.style.display = 'none';
             btnProsseguir.disabled = false;
@@ -1340,7 +1297,7 @@
             btnProsseguir.disabled = true;
             btnProsseguir.style.opacity = '0.5';
         }
-
+        
         window.abrirModal('modal-carrinho');
     };
 
@@ -1396,15 +1353,15 @@
         document.getElementById('etapa-formulario').style.display = 'block';
         document.getElementById('botoes-etapa-1').style.display = 'none';
         document.getElementById('botoes-etapa-2').style.display = 'flex';
-
+        
         // Reset form state
         document.getElementById('pedido-nome').value = '';
-        document.getElementById('pedido-retirada').checked = false;
+        document.getElementById('pedido-endereco').value = '';
         document.getElementById('pedido-whatsapp').value = '';
         document.getElementById('pedido-ciencia').checked = false;
-        document.getElementById('bloco-retirada').style.opacity = '0.4';
-        document.getElementById('bloco-retirada').style.pointerEvents = 'none';
-        document.getElementById('pedido-retirada').disabled = true;
+        document.getElementById('bloco-endereco').style.opacity = '0.4';
+        document.getElementById('bloco-endereco').style.pointerEvents = 'none';
+        document.getElementById('pedido-endereco').disabled = true;
         document.getElementById('bloco-whatsapp').style.opacity = '0.4';
         document.getElementById('bloco-whatsapp').style.pointerEvents = 'none';
         document.getElementById('pedido-whatsapp').disabled = true;
@@ -1412,7 +1369,7 @@
         document.getElementById('bloco-ciencia').style.pointerEvents = 'none';
         document.getElementById('pedido-ciencia').disabled = true;
         atualizarResumoEconomiaPicoles();
-
+        
         var btnFin = document.getElementById('btn-finalizar-pedido');
         btnFin.style.opacity = '0.5';
         btnFin.style.pointerEvents = 'none';
@@ -1428,28 +1385,28 @@
 
     window.validarNome = function() {
         var nome = document.getElementById('pedido-nome').value.trim();
-        var blocoRetirada = document.getElementById('bloco-retirada');
-        var inputRetirada = document.getElementById('pedido-retirada');
-
+        var blocoEnd = document.getElementById('bloco-endereco');
+        var inputEnd = document.getElementById('pedido-endereco');
+        
         if (nome.length >= 3) {
-            blocoRetirada.style.opacity = '1';
-            blocoRetirada.style.pointerEvents = 'auto';
-            inputRetirada.disabled = false;
+            blocoEnd.style.opacity = '1';
+            blocoEnd.style.pointerEvents = 'auto';
+            inputEnd.disabled = false;
         } else {
-            blocoRetirada.style.opacity = '0.4';
-            blocoRetirada.style.pointerEvents = 'none';
-            inputRetirada.disabled = true;
-            inputRetirada.checked = false;
-            window.validarRetirada();
+            blocoEnd.style.opacity = '0.4';
+            blocoEnd.style.pointerEvents = 'none';
+            inputEnd.disabled = true;
+            inputEnd.value = '';
+            window.validarEndereco();
         }
     };
 
-    window.validarRetirada = function() {
-        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
+    window.validarEndereco = function() {
+        var end = document.getElementById('pedido-endereco').value.trim();
         var blocoWp = document.getElementById('bloco-whatsapp');
         var inputWp = document.getElementById('pedido-whatsapp');
-
-        if (retiradaConfirmada) {
+        
+        if (end.length >= 5) {
             blocoWp.style.opacity = '1';
             blocoWp.style.pointerEvents = 'auto';
             inputWp.disabled = false;
@@ -1467,15 +1424,15 @@
         var tel = zap.replace(/\D/g, '');
         var ciencia = document.getElementById('pedido-ciencia').checked;
         var btnFin = document.getElementById('btn-finalizar-pedido');
-
+        
         var blocoCiencia = document.getElementById('bloco-ciencia');
         var inputCiencia = document.getElementById('pedido-ciencia');
-
+        
         if (/^16\d{8,9}$/.test(tel)) {
             blocoCiencia.style.opacity = '1';
             blocoCiencia.style.pointerEvents = 'auto';
             inputCiencia.disabled = false;
-
+            
             if (ciencia) {
                 btnFin.style.opacity = '1';
                 btnFin.style.pointerEvents = 'auto';
@@ -1545,43 +1502,37 @@
         }
     }
 
-    window.finalizarPedido = function() {
-        var nome = document.getElementById('pedido-nome').value.trim();
-        var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
-        var zap = document.getElementById('pedido-whatsapp').value.trim();
-        var tel = zap.replace(/\D/g, '');
-
-        if (nome.length < 3) {
-            alert("Por favor, preencha seu Nome Completo.");
-            document.getElementById('pedido-nome').focus();
-            return;
-        }
-        if (!retiradaConfirmada) {
-            alert("Confirme que a encomenda será retirada na loja. Não realizamos delivery.");
-            document.getElementById('pedido-retirada').focus();
-            return;
-        }
-        if (!/^16\d{8,9}$/.test(tel)) {
+	    window.finalizarPedido = function() {
+	        var nome = document.getElementById('pedido-nome').value.trim();
+	        var end = document.getElementById('pedido-endereco').value.trim();
+	        var zap = document.getElementById('pedido-whatsapp').value.trim();
+	        var tel = zap.replace(/\D/g, '');
+	        
+	        if (nome.length < 3) {
+	            alert("Por favor, preencha seu Nome Completo.");
+	            document.getElementById('pedido-nome').focus();
+	            return;
+	        }
+	        if (end.length < 5) {
+	            alert("Por favor, preencha o Endereço de Entrega Completo.");
+	            document.getElementById('pedido-endereco').focus();
+	            return;
+	        }
+	        if (!/^16\d{8,9}$/.test(tel)) {
 	            alert("Atenção: Apenas telefones com o DDD 16 são aceitos para encomendas nesta região.");
 	            document.getElementById('pedido-whatsapp').focus();
 	            return;
 	        }
-
-        if (!document.getElementById('pedido-ciencia').checked) {
-            alert("Confirme o prazo de 5 dias úteis e a retirada na loja antes de finalizar.");
-            document.getElementById('pedido-ciencia').focus();
-            return;
-        }
-
+        
         var resumoEconomia = calcularResumoEconomiaPicoles();
         var economiaTotal = Math.max(0, resumoEconomia.varejo - resumoEconomia.atacado);
-        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ Estou ciente do prazo mínimo de 5 dias úteis após o pagamento.\n✅ A encomenda será retirada na loja da Itapolitana Cajuru. Não realizam delivery.\n\nCliente: ${nome}\nRetirada: Loja Itapolitana Cajuru\nWhatsApp: ${zap}\n\nItens:\n` +
+        var texto = `Olá! Gostaria de fazer uma encomenda.\n\n✅ ESTOU CIENTE DO PRAZO DE 5 DIAS ÚTEIS APÓS O PAGAMENTO PARA ELABORAR O PEDIDO.\n\nCliente: ${nome}\nEndereço: ${end}\nWhatsApp: ${zap}\n\nItens:\n` +
             carrinho.map(item => {
                 var desc = item.isPicole ? `${item.quantidade} un x R$ ${item.precoUnit.toFixed(2)}` : item.isAcrescimo ? `${item.quantidade} unidade(s) x R$ ${item.precoUnit.toFixed(2)}` : `Sabores: ${item.sabores.join(', ')}`;
                 return `▪ ${item.tipo}: ${item.nome}\n  ${desc}\n  Subtotal: R$ ${Number(item.preco || 0).toFixed(2).replace('.',',')}`;
             }).join('\n\n') +
             `\n\nTotal de referência dos picolés no varejo: R$ ${resumoEconomia.varejo.toFixed(2).replace('.',',')}\nDESCONTO TOTAL NO ATACADO (PICOLES): R$ ${economiaTotal.toFixed(2).replace('.',',')}\nTotal do pedido a pagar: R$ ${carrinho.reduce((a,b)=>a+b.preco,0).toFixed(2).replace('.',',')}`;
-
+            
         window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
     };
 
@@ -1603,7 +1554,6 @@
 
 // Fim do script
 </script>
-
-  <script src="scripts/gaveta-navegacao-mestra.js?v=501" defer></script>
+  <script src="scripts/gaveta-navegacao-mestra.js?v=500" defer></script>
 </body>
 </html>

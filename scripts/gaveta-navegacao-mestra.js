@@ -11,7 +11,7 @@
     { label: 'PROMOÇÃO', href: 'promocao.html', icon: 'promo', bg: 'linear-gradient(135deg, #E65100, #EF6C00)' },
     { label: 'FEEDBACK', href: 'dicas.html', icon: 'star', bg: 'linear-gradient(135deg, #2E7D32, #388E3C)' },
     { label: 'HISTÓRIA', href: 'sobre.html', icon: 'info', bg: 'linear-gradient(135deg, #4A148C, #6A1B9A)' },
-    { label: 'COMPRAR', href: 'encomendas.html', icon: 'box', bg: 'linear-gradient(135deg, #0D47A1, #1565C0)' }
+    { label: 'ENCOMENDAS', href: 'encomendas.html', icon: 'box', bg: 'linear-gradient(135deg, #0D47A1, #1565C0)' }
   ];
 
   function renderNavbar() {
