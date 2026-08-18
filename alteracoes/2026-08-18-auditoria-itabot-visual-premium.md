@@ -60,3 +60,7 @@ Na página `encomendas.html`, o ItaBot foi encontrado como um único launcher, e
 ## Regressão final desktop e mobile
 
 O teste automatizado foi concluído sem erros de JavaScript e sem recursos ausentes (HTTP 4xx/5xx). No desktop, o painel abriu, o pulso `itabot-question-pulse` permaneceu ativo e os campos de identificação/mensagem estavam presentes. No mobile simulado em 390×844 px, a abertura do teclado reduziu o painel para 420 px, ocultou o rodapé auxiliar e manteve o campo de mensagem com `fieldBottom=396`, acima do limite simulado de 420 px; a rolagem interna foi ajustada para 508 px. Resultado: aprovado.
+
+## Selo WhatsApp fixo no carrossel
+
+Foi escolhido o canto superior esquerdo do carrossel, com selo compacto de 168×46 px em desktop. A posição mantém a paginação inferior e o ItaBot inferior direito livres. O selo está sobre o frame do carrossel, portanto permanece visível durante a troca dos 14 banners; a medição confirmou a mesma posição em todos os slides e nenhuma sobreposição com paginação ou ItaBot. O link funcional aponta para `https://wa.me/5516996062046` com mensagem inicial contextualizada sobre o carrossel.
