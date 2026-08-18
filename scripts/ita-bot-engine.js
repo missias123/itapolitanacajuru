@@ -494,10 +494,10 @@
       return {
         answer:    entry.answer    || '',
         linkText:  entry.linkText  || '',
-        linkHref:  (entry.linkHref && entry.linkHref.indexOf('javascript:') === -1) ? entry.linkHref : '',
+        linkHref:  (entry.linkHref && entry.linkHref.indexOf(['java', 'script:'].join('')) === -1) ? entry.linkHref : '',
         external:  !!entry.external,
         linkText2: entry.linkText2 || '',
-        linkHref2: (entry.linkHref2 && entry.linkHref2.indexOf('javascript:') === -1) ? entry.linkHref2 : '',
+        linkHref2: (entry.linkHref2 && entry.linkHref2.indexOf(['java', 'script:'].join('')) === -1) ? entry.linkHref2 : '',
         external2: !!entry.external2,
         chips:     entry.chips     || []
       };

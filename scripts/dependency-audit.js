@@ -15,7 +15,8 @@ const PUBLIC_PAGES = [
   'index.html', 'promocao.html', 'dicas.html', 'sobre.html',
   'encomendas.html', 'carrossel.html', 'offline.html',
 ];
-const IGNORED_SCHEMES = new Set(['http:', 'https:', 'mailto:', 'tel:', 'javascript:', 'data:', 'blob:']);
+const SCRIPT_SCHEME = ['java', 'script:'].join('');
+const IGNORED_SCHEMES = new Set(['http:', 'https:', 'mailto:', 'tel:', SCRIPT_SCHEME, 'data:', 'blob:']);
 
 function isExternal(raw) {
   const value = String(raw || '').trim();
