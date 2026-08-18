@@ -550,6 +550,8 @@
       /* ── Esquimó genérico (sem Ovomaltine) ── */
       if (temEskimo && !temOvo) return _respEskimo(temAtac);
 
+
+
       /* ── Picolé de Leite Ninho ── */
       if (temNinho && !temOvo && !temEskimo && (temPicol || temAtac)) return _respPicoleLeiteNinho(temAtac);
 
@@ -579,11 +581,37 @@
         };
       }
 
+      /* ── Picolés genéricos ou específicos ── */
+      if (temPicol || l.indexOf('picole') !== -1 || l.indexOf('picolé') !== -1 || l.indexOf('sorvete no pau') !== -1) {
+        if (temNinho) return _respPicoleLeiteNinho(temAtac);
+        return _respPicoles();
+      }
+
+      /* ── Açaí ── */
+      if (l.indexOf('acai') !== -1 || l.indexOf('açai') !== -1) {
+        return _respAcai();
+      }
+
+      /* ── Milkshakes ── */
+      if (l.indexOf('milk') !== -1 || l.indexOf('shake') !== -1) {
+        return _respMilkshake();
+      }
+
+      /* ── Taças e Sobremesas ── */
+      if (l.indexOf('taca') !== -1 || l.indexOf('taça') !== -1 || l.indexOf('sobremesa') !== -1 || l.indexOf('brownie') !== -1 || l.indexOf('fondue') !== -1) {
+        return _respTacas();
+      }
+
+      /* ── Encomendas, Retirada e Caixas ── */
+      if (l.indexOf('encomen') !== -1 || l.indexOf('retirada') !== -1 || l.indexOf('caixa') !== -1 || l.indexOf('torta') !== -1 || l.indexOf('festa') !== -1 || l.indexOf('pedido') !== -1) {
+        return _respEncomendas();
+      }
+
       /* ── Fidelidade ── */
       if (l.indexOf('fidelidade') !== -1 || l.indexOf('pontos') !== -1 || l.indexOf('cadastro') !== -1) {
         _ctxData = {};
         _ctx = 'await_fid_nome';
-        return { answer: 'Vamos consultar seu cadastro \ud83d\ude0a Qual \u00e9 seu nome completo?' };
+        return { answer: 'Vamos consultar seu cadastro 😊 Qual é seu nome completo?' };
       }
 
       /* ── Base de conhecimento ── */

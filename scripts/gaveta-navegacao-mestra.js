@@ -125,10 +125,51 @@
         letter-spacing: 0.6px;
       }
       .itap-nav-icon svg { width: 18px; height: 18px; }
-      @media (max-width: 480px) {
-        .itap-nav-container { gap: 5px; padding: 0 6px; }
-        .itap-nav-btn { min-width: 62px; padding: 5px 2px; }
-        .itap-nav-label { font-size: 7px; }
+      @media (max-width: 600px) {
+        .itap-nav-container {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 12px !important;
+          padding: 10px 15px !important;
+          overflow-x: visible !important;
+        }
+        .itap-nav-btn {
+          min-width: 0 !important;
+          max-width: none !important;
+          min-height: 88px !important;
+          height: 88px !important;
+          padding: 14px 10px !important;
+          border-radius: 18px !important;
+          box-shadow: 0 5px 14px rgba(0,0,0,0.18) !important;
+        }
+        /* Botão FEEDBACK (3º item no array NAV_ITEMS) no topo sozinho */
+        .itap-nav-btn:nth-child(3) {
+          grid-column: 1 / span 2 !important;
+          order: -1 !important;
+          min-height: 98px !important;
+          height: 98px !important;
+          background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+        }
+        .itap-nav-icon {
+          height: 38px !important;
+          margin-bottom: 8px !important;
+        }
+        .itap-nav-icon svg, .itap-nav-icon-fallback {
+          width: 36px !important;
+          height: 36px !important;
+          font-size: 34px !important;
+        }
+        .itap-nav-label {
+          font-size: clamp(14px, 4vw, 16px) !important;
+          font-weight: 900 !important;
+          line-height: 1.15 !important;
+          letter-spacing: 0.6px !important;
+        }
+      }
+      @media (max-width: 380px) {
+        .itap-nav-label { font-size: 13px !important; }
+        .itap-nav-btn { min-height: 82px !important; height: 82px !important; padding-inline: 8px !important; }
+        .itap-nav-btn:nth-child(3) { min-height: 92px !important; height: 92px !important; }
       }
     `;
     document.head.appendChild(style);

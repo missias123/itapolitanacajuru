@@ -113,7 +113,7 @@
       '.itabot-launcher-dot { display:none; }',
       '@keyframes itabot-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }',
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-question { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(76px + env(safe-area-inset-bottom, 0px)); width:82px; height:102px; } .itabot-launcher-robot { flex-basis:68px; width:60px; height:68px; } .itabot-launcher-question { font-size:11px; padding:3px 8px; letter-spacing:1.1px; } }',
+      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:102px; } .itabot-launcher-robot { flex-basis:68px; width:60px; height:68px; } .itabot-launcher-question { font-size:11px; padding:3px 8px; letter-spacing:1.1px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -320,19 +320,27 @@
 
   function _itabotAbrirTelaCheia() {
     var dialog = document.getElementById('chat-dialog');
+
+    // Se o diálogo existe mas NÃO é o de tela cheia (é o de chat bubble), removemos para recriar
+    if (dialog && !dialog.classList.contains('itabot-fullscreen-mode')) {
+      dialog.remove();
+      dialog = null;
+    }
+
     if (!dialog) {
       // Cria a estrutura de tela cheia se ainda não existir
       var wrap = document.createElement('div');
       wrap.id = 'chat-dialog';
+      wrap.className = 'itabot-fullscreen-mode';
       wrap.innerHTML = [
         '<div class="chat-box itabot-fullscreen-box" role="dialog" aria-modal="true" aria-labelledby="fale-modal-titulo">',
           '<div class="chat-hdr">',
             '<div class="chat-hdr-logo-row">',
               '<div class="chat-hdr-brand">',
-                '<img src="images/logo.webp" alt="Itapolitana" class="chat-hdr-logo-img"/>',
+                '<img src="' + _base + 'images/logo.webp" alt="Itapolitana" class="chat-hdr-logo-img"/>',
                 '<div>',
                   '<div class="chat-hdr-logo-text" id="fale-modal-titulo">ItaBot · Dúvidas</div>',
-                  '<div style="font-size:11px;opacity:.85;" id="fale-modal-sub">Assistente Itapolitana · Responde na hora</div>',
+                  '<div class="itabot-status-line" id="fale-modal-sub"><span class="itabot-status-dot" aria-hidden="true"></span> ONLINE · IA ITAPOLITANA</div>',
                 '</div>',
               '</div>',
               '<button class="chat-close" type="button" aria-label="Fechar" onclick="_itabotFecharTelaCheia()">✕</button>',
@@ -367,7 +375,6 @@
         '</div>'
       ].join('');
       document.body.appendChild(wrap);
-      wrap.classList.add('itabot-fullscreen-mode');
       _itabotVincularTeclado(wrap);
       
       // Inserir estilos dos botões de tema
@@ -375,15 +382,44 @@
         var st = document.createElement('style');
         st.id = 'itabot-temas-css';
         st.textContent = [
-          '.fale-tema-btn { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:14px 16px; width:100%; cursor:pointer; font-size:15px; color:#1a202c; transition:transform .15s, background .15s, border-color .15s; box-shadow:0 2px 6px rgba(0,0,0,.03); }',
-          '.fale-tema-btn:hover { background:#f0f9ff; border-color:#0284c7; transform:translateY(-1px); }',
-          '.fale-tema-btn:active { transform:scale(.98); }'
+          '#chat-dialog.itabot-fullscreen-mode { background:linear-gradient(135deg,rgba(3,22,45,.78),rgba(4,82,120,.72)) !important; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-box { background:linear-gradient(180deg,#f7fcff 0%,#eef8ff 100%); border:1px solid rgba(255,255,255,.72); box-shadow:0 28px 80px rgba(0,22,54,.42),0 0 0 1px rgba(34,194,255,.18); }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-hdr { background:linear-gradient(135deg,#062c63 0%,#0b72b8 58%,#16b9d4 100%); padding:18px 20px; position:relative; overflow:hidden; }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-hdr::after { content:""; position:absolute; width:220px; height:220px; right:-100px; top:-150px; border-radius:50%; background:rgba(255,255,255,.16); pointer-events:none; }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-hdr-brand, #chat-dialog.itabot-fullscreen-mode .chat-hdr-logo-row { position:relative; z-index:1; }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-hdr-logo-img { width:48px; height:48px; box-shadow:0 0 0 3px rgba(255,255,255,.2),0 0 22px rgba(101,232,255,.55); }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-hdr-logo-text { font-size:19px; letter-spacing:.2px; }',
+          '.itabot-status-line { display:flex; align-items:center; gap:6px; margin-top:3px; color:rgba(255,255,255,.86); font-size:10px; font-weight:900; letter-spacing:1px; }',
+          '.itabot-status-dot { width:7px; height:7px; border-radius:50%; background:#59ffb3; box-shadow:0 0 0 4px rgba(89,255,179,.16),0 0 12px rgba(89,255,179,.85); animation:itabot-status-pulse 1.8s ease-in-out infinite; }',
+          '@keyframes itabot-status-pulse { 0%,100%{opacity:.68;transform:scale(.9)} 50%{opacity:1;transform:scale(1.12)} }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-scroll { padding:18px !important; background:linear-gradient(180deg,#f5fbff,#edf7ff) !important; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-scroll > p { color:#416075 !important; font-size:13px !important; letter-spacing:.1px; }',
+          '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn { display:flex; align-items:center; gap:13px; background:rgba(255,255,255,.9); border:1px solid rgba(13,71,161,.12); border-radius:18px; padding:16px 17px; width:100%; min-height:58px; cursor:pointer; font-size:15px; color:#102a43; transition:transform .16s cubic-bezier(.23,1,.32,1),background .16s,border-color .16s,box-shadow .16s; box-shadow:0 7px 18px rgba(10,58,95,.07); }',
+          '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:hover { background:#fff; border-color:#22c2ff; transform:translateY(-2px); box-shadow:0 12px 26px rgba(10,91,145,.14),0 0 0 3px rgba(34,194,255,.08); }',
+          '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:active { transform:scale(.98); }',
+          '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:focus-visible { outline:3px solid #fbd100; outline-offset:3px; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message { background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(232,248,255,.92)) !important; border:1px solid rgba(34,194,255,.16); box-shadow:0 12px 28px rgba(10,58,95,.1) !important; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message input, #chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { border:1px solid #b8d9ea !important; background:#fff !important; min-height:46px; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { min-height:92px; }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-close { min-width:44px; min-height:44px; border-radius:14px; position:relative; z-index:2; background:rgba(255,255,255,.14); transition:background .16s,transform .16s; }',
+          '#chat-dialog.itabot-fullscreen-mode .chat-close:hover { background:rgba(255,255,255,.28); transform:rotate(4deg) scale(1.04); }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-footer { background:rgba(255,255,255,.88) !important; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding-bottom:max(12px,env(safe-area-inset-bottom,0px)) !important; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-footer button { min-height:48px; padding-inline:26px !important; }',
+          '#itabot-launcher::before { content:""; position:absolute; inset:11px 6px 27px; border-radius:30px; background:radial-gradient(circle,rgba(34,194,255,.22),transparent 68%); filter:blur(6px); opacity:.9; pointer-events:none; z-index:-1; }',
+          '#itabot-launcher:active { transform:scale(.96); }',
+          '@media (max-width:600px) { #chat-dialog.itabot-fullscreen-mode .fale-tema-btn { min-height:62px; padding:16px 15px; font-size:15px; } #chat-dialog.itabot-fullscreen-mode .chat-hdr { padding-top:max(18px,env(safe-area-inset-top,0px)); } #chat-dialog.itabot-fullscreen-mode .itabot-fullscreen-scroll { padding:16px 14px !important; } }',
+          '@media (prefers-reduced-motion:reduce) { .itabot-status-dot { animation:none; } #chat-dialog.itabot-fullscreen-mode .fale-tema-btn, #itabot-launcher, #itabot-launcher::before { transition:none; } }'
         ].join('');
         document.head.appendChild(st);
       }
+      dialog = wrap;
     }
-    document.body.classList.add('chat-open');
-    document.getElementById('chat-dialog').classList.add('aberto');
+    document.body.classList.add('chat-open', 'modal-aberto');
+    dialog.classList.add('aberto');
+
+    // Resetar para a tela de temas ao abrir
+    document.getElementById('fale-tela-temas').style.display = 'block';
+    document.getElementById('fale-tela-resposta').style.display = 'none';
   }
 
   window._itabotFecharTelaCheia = function () {
@@ -492,7 +528,7 @@
     var nome = document.getElementById('itabot-nome').value.trim();
     var msg = document.getElementById('itabot-msg').value.trim();
     var texto = 'Olá, meu nome é ' + (nome || 'Cliente') + '. ' + (msg || 'Gostaria de tirar uma dúvida sobre a Itapolitana.');
-    window.open('https://wa.me/5516999999999?text=' + encodeURIComponent(texto), '_blank');
+    window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
   };
 
   /* ─── Teclado mobile: mantém qualquer campo ativo acima do Gboard ─── */
@@ -793,7 +829,7 @@
       var trigger = event.target.closest('[data-role="duvidas"], .ita-bot-duvidas-btn, #ita-bot-duvidas, [data-itabot-open="true"]');
       if (!trigger) return;
       event.preventDefault();
-      _itabotAbrirItaBot();
+      _itabotAbrirTelaCheia();
     });
   }
 
