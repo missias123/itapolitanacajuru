@@ -105,9 +105,9 @@ function isTransparent(c) { return !c || c.a === 0; }
     '## Ocorrências priorizadas', ''
   ];
   for (const f of Object.values(grouped).slice(0, 250)) {
-    if (f.type === 'low-contrast') lines.push(`- **Baixo contraste ${f.ratio}:1** — ${f.file} — ${f.viewport} — \\`${f.element.tag}.${f.element.cls || ''}#${f.element.id || ''}\\` — “${f.element.text}” — foreground ${f.element.color}, fundo ${f.element.bg}`);
+    if (f.type === 'low-contrast') lines.push(`- **Baixo contraste ${f.ratio}:1** — ${f.file} — ${f.viewport} — \`${f.element.tag}.${f.element.cls || ''}#${f.element.id || ''}\` — “${f.element.text}” — foreground ${f.element.color}, fundo ${f.element.bg}`);
     else if (f.type === 'small-target') lines.push(`- **Alvo pequeno ${f.element.width}×${f.element.height}px** — ${f.file} — ${f.viewport} — “${f.element.text}”`);
-    else if (f.type === 'missing-text') lines.push(`- **Sem texto acessível** — ${f.file} — ${f.viewport} — \\`${f.element.tag}.${f.element.cls || ''}#${f.element.id || ''}\\``);
+    else if (f.type === 'missing-text') lines.push(`- **Sem texto acessível** — ${f.file} — ${f.viewport} — \`${f.element.tag}.${f.element.cls || ''}#${f.element.id || ''}\``);
     else if (f.type === 'horizontal-overflow') lines.push(`- **Overflow horizontal** — ${f.file} — ${f.viewport} — scrollWidth ${f.scrollWidth}px / viewport ${f.clientWidth}px`);
   }
   fs.writeFileSync(md, lines.join('\n') + '\n');
