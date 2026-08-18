@@ -91,10 +91,331 @@
       '.msg-link-btn { display: flex; align-items: center; justify-content: center; padding: 12px 16px; background: #0D47A1; color: #fff !important; border-radius: 12px; font-size: 14px; font-weight: 800; text-decoration: none !important; transition: all 0.2s; border: none; text-align: center; box-shadow: 0 2px 8px rgba(13,71,161,0.2); }',
       '.msg-link-btn:active { transform: scale(0.98); background: #1565C0; }',
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
-      '.msg-link-btn.secondary:active { background: #EF6C00; }'
+      '.msg-link-btn.secondary:active { background: #EF6C00; }',
+      '/* Launcher inteligente do itaBot: compacto, acessível e reposicionável */',
+      '#itabot-launcher { position:fixed; right:calc(12px + env(safe-area-inset-right, 0px)); bottom:calc(14px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; align-items:center; gap:8px; width:max-content; max-width:min(184px, calc(100vw - 24px)); padding:6px 9px 6px 7px; border:1px solid rgba(255,255,255,.86); border-radius:999px; color:#08233f; background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(224,244,255,.96)); box-shadow:0 7px 20px rgba(7,44,88,.22),0 0 0 1px rgba(17,112,198,.13),0 0 18px rgba(27,155,235,.16); cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, box-shadow .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 10px 26px rgba(7,44,88,.28),0 0 24px rgba(27,155,235,.25); }',
+      '#itabot-launcher:focus-visible { outline:3px solid #0D7FDB; outline-offset:3px; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:58px; height:58px; padding:4px; justify-content:center; gap:0; }',
+      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-copy { display:none; }',
+      '.itabot-launcher-robot { position:relative; flex:0 0 43px; width:43px; height:52px; display:block; filter:drop-shadow(0 4px 4px rgba(2,56,104,.25)); animation:itabot-float 3.5s ease-in-out infinite; }',
+      '.itabot-launcher-robot svg { display:block; width:100%; height:100%; overflow:visible; }',
+      '.itabot-launcher-copy { min-width:0; display:flex; flex-direction:column; align-items:flex-start; line-height:1.06; padding-right:2px; }',
+      '.itabot-launcher-name { font-size:11px; font-weight:950; letter-spacing:.35px; color:#07579c; }',
+      '.itabot-launcher-question { margin-top:2px; font-size:10px; font-weight:900; letter-spacing:.55px; text-transform:uppercase; color:#12304b; white-space:nowrap; }',
+      '.itabot-launcher-dot { position:absolute; top:3px; right:6px; width:7px; height:7px; border-radius:50%; background:#29D17D; box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 10px rgba(41,209,125,.75); }',
+      '@keyframes itabot-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }',
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot { animation:none; transition:none; } }',
+      '@media (max-width:600px) { #itabot-launcher { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(76px + env(safe-area-inset-bottom, 0px)); max-width:156px; padding:5px 8px 5px 6px; } .itabot-launcher-robot { flex-basis:38px; width:38px; height:46px; } .itabot-launcher-name { font-size:10px; } .itabot-launcher-question { font-size:9px; } }',
+      '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
+      '@media (min-width:1025px) { #itabot-launcher { bottom:calc(22px + env(safe-area-inset-bottom, 0px)); right:calc(22px + env(safe-area-inset-right, 0px)); } }',
+      'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
     ].join('');
     document.head.appendChild(style);
   }
+
+  /* ─── Launcher flutuante inteligente ─── */
+  function _itabotInjetarLauncher() {
+    if (document.getElementById('itabot-launcher')) return;
+    var launcher = document.createElement('button');
+    launcher.id = 'itabot-launcher';
+    launcher.type = 'button';
+    launcher.setAttribute('data-role', 'duvidas');
+    launcher.setAttribute('aria-label', 'Abrir ItaBot — Dúvidas');
+    launcher.innerHTML = [
+      '<span class="itabot-launcher-robot" aria-hidden="true">',
+        '<svg viewBox="0 0 80 96" role="img" aria-hidden="true">',
+          '<defs>',
+            '<linearGradient id="itabotHelmet" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9f1ff"/><stop offset=".42" stop-color="#1aa8e8"/><stop offset="1" stop-color="#07539d"/></linearGradient>',
+            '<linearGradient id="itabotBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#54d9ff"/><stop offset=".5" stop-color="#117fc6"/><stop offset="1" stop-color="#063a78"/></linearGradient>',
+            '<linearGradient id="itabotGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaffff" stop-opacity=".92"/><stop offset="1" stop-color="#64c9f2" stop-opacity=".42"/></linearGradient>',
+            '<filter id="itabotGlow"><feGaussianBlur stdDeviation="1.6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>',
+          '</defs>',
+          '<ellipse cx="40" cy="92" rx="23" ry="3" fill="#063a78" opacity=".22"/>',
+          '<path d="M20 45c0-8 9-14 20-14s20 6 20 14v28c0 8-8 13-20 13S20 81 20 73Z" fill="url(#itabotBody)" stroke="#052e60" stroke-width="2"/>',
+          '<path d="M27 46h26v22c-4 4-9 6-13 6s-9-2-13-6Z" fill="#082f66" opacity=".56"/>',
+          '<path d="M12 31C12 14 24 5 40 5s28 9 28 26v7H12Z" fill="url(#itabotHelmet)" stroke="#052e60" stroke-width="2"/>',
+          '<path d="M21 28c2-10 10-16 19-16s17 6 19 16Z" fill="url(#itabotGlass)" stroke="#eaffff" stroke-width="1.3" opacity=".94"/>',
+          '<circle cx="31" cy="30" r="4.3" fill="#eaffff" stroke="#063a78" stroke-width="1.4"/><circle cx="49" cy="30" r="4.3" fill="#eaffff" stroke="#063a78" stroke-width="1.4"/>',
+          '<circle cx="31" cy="30" r="1.8" fill="#082f66"/><circle cx="49" cy="30" r="1.8" fill="#082f66"/>',
+          '<path d="M34 39q6 4 12 0" fill="none" stroke="#eaffff" stroke-width="2" stroke-linecap="round"/>',
+          '<path d="M40 5V1" stroke="#07539d" stroke-width="2.5" stroke-linecap="round"/><circle cx="40" cy="1" r="3" fill="#35e6a0" stroke="#fff" stroke-width="1.2" filter="url(#itabotGlow)"/>',
+          '<path d="M14 55 5 61M66 55l9 6" stroke="#07539d" stroke-width="4" stroke-linecap="round"/><circle cx="4" cy="62" r="3" fill="#35e6a0"/><circle cx="76" cy="62" r="3" fill="#35e6a0"/>',
+          '<rect x="34" y="55" width="12" height="9" rx="3" fill="#092f62" stroke="#8cecff" stroke-width="1.2"/><circle cx="40" cy="59.5" r="2" fill="#35e6a0"/>',
+          '<path d="M29 79v7M51 79v7" stroke="#07539d" stroke-width="5" stroke-linecap="round"/><path d="M24 87h10M46 87h10" stroke="#052e60" stroke-width="3" stroke-linecap="round"/>',
+        '</svg>',
+      '</span>',
+      '<span class="itabot-launcher-copy"><span class="itabot-launcher-name">ItaBot</span><span class="itabot-launcher-question">Dúvidas?</span></span>',
+      '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
+    ].join('');
+    document.body.appendChild(launcher);
+
+    var lastLayout = '';
+    var raf = 0;
+    var mobile = function () { return window.matchMedia && window.matchMedia('(max-width: 600px)').matches; };
+    var visible = function (el) {
+      if (!el || el === launcher || el === document.body || el === document.documentElement) return false;
+      var cs = window.getComputedStyle(el);
+      var r = el.getBoundingClientRect();
+      return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity || '1') > .08 && r.width > 2 && r.height > 2 && r.bottom > 0 && r.right > 0 && r.top < window.innerHeight && r.left < window.innerWidth;
+    };
+    var blockedAt = function (x, y) {
+      var el = document.elementFromPoint(x, y);
+      if (!visible(el)) return false;
+      if (el.closest && el.closest('#itabot-launcher')) return false;
+      var cs = window.getComputedStyle(el);
+      if (cs.pointerEvents === 'none') return false;
+      return true;
+    };
+    var isFree = function (x, y, w, h) {
+      var pad = 6;
+      var cols = 4, rows = 3;
+      for (var row = 0; row < rows; row++) {
+        for (var col = 0; col < cols; col++) {
+          var px = x + pad + ((w - pad * 2) * (col + .5) / cols);
+          var py = y + pad + ((h - pad * 2) * (row + .5) / rows);
+          if (blockedAt(px, py)) return false;
+        }
+      }
+      return true;
+    };
+    var layout = function () {
+      if (!document.body || document.body.classList.contains('chat-open') || document.body.classList.contains('modal-aberto')) return;
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var narrow = mobile();
+      launcher.style.visibility = 'hidden';
+      launcher.style.pointerEvents = 'none';
+      launcher.classList.remove('itabot-launcher-icon-only');
+      var fullW = Math.min(narrow ? 156 : 184, vw - 24);
+      var fullH = narrow ? 58 : 66;
+      var iconW = 58, iconH = 58;
+      var safeBottom = narrow ? 86 : (vw < 1025 ? 24 : 28);
+      var margin = narrow ? 10 : 16;
+      var candidates = [
+        [vw - fullW - margin, vh - fullH - safeBottom, 'br'],
+        [margin, vh - fullH - safeBottom, 'bl'],
+        [vw - fullW - margin, Math.max(12, vh * .22), 'tr'],
+        [margin, Math.max(12, vh * .22), 'tl'],
+        [vw - fullW - margin, Math.max(12, vh * .5 - fullH / 2), 'mr'],
+        [margin, Math.max(12, vh * .5 - fullH / 2), 'ml']
+      ];
+      var chosen = null;
+      for (var i = 0; i < candidates.length; i++) {
+        if (candidates[i][0] >= 0 && candidates[i][1] >= 0 && isFree(candidates[i][0], candidates[i][1], fullW, fullH)) { chosen = { x:candidates[i][0], y:candidates[i][1], mode:candidates[i][2], icon:false }; break; }
+      }
+      if (!chosen) {
+        launcher.classList.add('itabot-launcher-icon-only');
+        for (var j = 0; j < candidates.length; j++) {
+          if (candidates[j][0] >= 0 && candidates[j][1] >= 0 && isFree(candidates[j][0], candidates[j][1], iconW, iconH)) { chosen = { x:candidates[j][0], y:candidates[j][1], mode:candidates[j][2], icon:true }; break; }
+        }
+      }
+      if (!chosen) {
+        launcher.style.visibility = 'hidden';
+        launcher.setAttribute('aria-hidden', 'true');
+        lastLayout = 'hidden';
+        return;
+      }
+      launcher.style.left = Math.round(chosen.x) + 'px';
+      launcher.style.top = Math.round(chosen.y) + 'px';
+      launcher.style.right = 'auto';
+      launcher.style.bottom = 'auto';
+      launcher.style.visibility = 'visible';
+      launcher.style.pointerEvents = 'auto';
+      launcher.setAttribute('aria-hidden', 'false');
+      var next = chosen.mode + (chosen.icon ? '-icon' : '-full');
+      if (next !== lastLayout) {
+        launcher.dataset.position = chosen.mode;
+        lastLayout = next;
+      }
+    };
+    var schedule = function () { if (raf) return; raf = window.requestAnimationFrame(function () { raf = 0; layout(); }); };
+    window.addEventListener('resize', schedule, { passive:true });
+    window.addEventListener('orientationchange', function () { setTimeout(schedule, 80); }, { passive:true });
+    window.addEventListener('scroll', schedule, { passive:true });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', schedule, { passive:true });
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.body);
+    if (window.MutationObserver) new MutationObserver(schedule).observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class','style','hidden'] });
+    setTimeout(layout, 60);
+
+    launcher.addEventListener('click', function () {
+      _itabotAbrirTelaCheia();
+    });
+  }
+
+  function _itabotAbrirTelaCheia() {
+    var dialog = document.getElementById('chat-dialog');
+    if (!dialog) {
+      // Cria a estrutura de tela cheia se ainda não existir
+      var wrap = document.createElement('div');
+      wrap.id = 'chat-dialog';
+      wrap.innerHTML = [
+        '<div class="chat-box" role="dialog" aria-modal="true" aria-labelledby="fale-modal-titulo">',
+          '<div class="chat-hdr">',
+            '<div class="chat-hdr-logo-row">',
+              '<div class="chat-hdr-brand">',
+                '<img src="images/logo.webp" alt="Itapolitana" class="chat-hdr-logo-img"/>',
+                '<div>',
+                  '<div class="chat-hdr-logo-text" id="fale-modal-titulo">ItaBot · Dúvidas</div>',
+                  '<div style="font-size:11px;opacity:.85;" id="fale-modal-sub">Assistente Itapolitana · Responde na hora</div>',
+                '</div>',
+              '</div>',
+              '<button class="chat-close" type="button" aria-label="Fechar" onclick="_itabotFecharTelaCheia()">✕</button>',
+            '</div>',
+          '</div>',
+          '<div id="fale-tela-temas" style="overflow-y:auto;flex:1;padding:16px;background:#f9f9f9;">',
+            '<p style="font-size:13px;color:#666;text-align:center;margin:0 0 16px;font-weight:700;">Toque em um tema para ver a resposta imediata</p>',
+            '<div style="display:flex;flex-direction:column;gap:10px;max-width:600px;margin:0 auto;">',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'promocao\')"><span style="font-size:18px;">🎉</span><span style="flex:1;text-align:left;font-weight:900;">Promoções e Sorteios</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'horario\')"><span style="font-size:18px;">⏰</span><span style="flex:1;text-align:left;font-weight:900;">Horário de Funcionamento</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'sabores\')"><span style="font-size:18px;">🍨</span><span style="flex:1;text-align:left;font-weight:900;">Sabores e Cardápio</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'encomendas\')"><span style="font-size:18px;">📦</span><span style="flex:1;text-align:left;font-weight:900;">Encomendas e Retirada na Loja</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'picoles\')"><span style="font-size:18px;">🍧</span><span style="flex:1;text-align:left;font-weight:900;">Picolés</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'localizacao\')"><span style="font-size:18px;">📍</span><span style="font-size:18px;flex:1;text-align:left;font-weight:900;">Como Chegar</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'avaliacoes\')"><span style="font-size:18px;">⭐</span><span style="flex:1;text-align:left;font-weight:900;">Dicas e Avaliações</span><span style="font-size:18px;color:#888;">›</span></button>',
+              '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'precos\')"><span style="font-size:18px;">💰</span><span style="flex:1;text-align:left;font-weight:900;">Preços</span><span style="font-size:18px;color:#888;">›</span></button>',
+            '</div>',
+            '<div style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
+              '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
+              '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
+              '<textarea id="itabot-msg" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
+              '<button type="button" onclick="_itabotEnviarWhatsApp()" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
+            '</div>',
+          '</div>',
+          '<div id="fale-tela-resposta" style="display:none;overflow-y:auto;flex:1;padding:20px;background:#f9f9f9;">',
+            '<button type="button" onclick="_itabotVoltarTemas()" style="background:none;border:none;color:#07579c;font-size:14px;font-weight:900;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;gap:6px;">‹ Voltar para os temas</button>',
+            '<div id="fale-resposta-conteudo" style="max-width:600px;margin:0 auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);"></div>',
+          '</div>',
+          '<div style="padding:12px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:center;">',
+            '<button type="button" onclick="_itabotFecharTelaCheia()" style="background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,0,13,.3);">Fechar e Voltar ao Site</button>',
+          '</div>',
+        '</div>'
+      ].join('');
+      document.body.appendChild(wrap);
+      
+      // Inserir estilos dos botões de tema
+      if (!document.getElementById('itabot-temas-css')) {
+        var st = document.createElement('style');
+        st.id = 'itabot-temas-css';
+        st.textContent = [
+          '.fale-tema-btn { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:14px 16px; width:100%; cursor:pointer; font-size:15px; color:#1a202c; transition:transform .15s, background .15s, border-color .15s; box-shadow:0 2px 6px rgba(0,0,0,.03); }',
+          '.fale-tema-btn:hover { background:#f0f9ff; border-color:#0284c7; transform:translateY(-1px); }',
+          '.fale-tema-btn:active { transform:scale(.98); }'
+        ].join('');
+        document.head.appendChild(st);
+      }
+    }
+    document.body.classList.add('chat-open');
+    document.getElementById('chat-dialog').classList.add('aberto');
+  }
+
+  window._itabotFecharTelaCheia = function () {
+    var dialog = document.getElementById('chat-dialog');
+    if (dialog) dialog.classList.remove('aberto');
+    document.body.classList.remove('chat-open');
+    window.location.href = 'index.html';
+  };
+
+  var _itabotConteudoTemas = {
+    promocao: {
+      titulo: '🎉 Promoções e Sorteios',
+      textos: [
+        '✅ Temos promoções semanais e mensais para clientes e seguidores.',
+        '✅ Para participar: comente nos posts oficiais do Instagram e cadastre-se na aba Promoção do site.',
+        '✅ Sorteios auditados mensalmente com caixas de sorvete exclusivas.'
+      ],
+      linkTexto: 'Ver Página de Promoção',
+      linkUrl: 'promocao.html'
+    },
+    horario: {
+      titulo: '⏰ Horário de Funcionamento',
+      textos: [
+        '✅ Segunda a Domingo das 10:00 às 22:00.',
+        '✅ Atendimento direto na sorveteria em Cajuru - SP.'
+      ],
+      linkTexto: 'Ver Localização',
+      linkUrl: 'sobre.html'
+    },
+    sabores: {
+      titulo: '🍨 Sabores e Cardápio',
+      textos: [
+        '✅ Mais de 38 sabores artesanais exclusivos de massas.',
+        '✅ Opções de milkshakes, caixas para viagem (5L e 10L) e complementos para açaí.'
+      ],
+      linkTexto: 'Ver Cardápio na Início',
+      linkUrl: 'index.html'
+    },
+    encomendas: {
+      titulo: '📦 Encomendas e Retirada',
+      textos: [
+        '✅ Pedidos de caixas de sorvete e picolés em atacado (mín. 100 un.).',
+        '✅ Retirada exclusiva na loja física com antecedência de até 5 dias úteis.',
+        '✅ Não realizamos entregas (delivery).'
+      ],
+      linkTexto: 'Fazer Encomenda',
+      linkUrl: 'encomendas.html'
+    },
+    picoles: {
+      titulo: '🍧 Picolés',
+      textos: [
+        '✅ Linha completa de picolés tradicionais, recheados, cremosos e de fruta.',
+        '✅ Vendas individuais na loja ou em lotes para atacado e eventos.'
+      ],
+      linkTexto: 'Ver Encomendas',
+      linkUrl: 'encomendas.html'
+    },
+    localizacao: {
+      titulo: '📍 Como Chegar',
+      textos: [
+        '✅ Sorveteria Itapolitana Cajuru - SP.',
+        '✅ Local de fácil acesso com estacionamento e ambiente acolhedor.'
+      ],
+      linkTexto: 'Ver Sobre Nós',
+      linkUrl: 'sobre.html'
+    },
+    avaliacoes: {
+      titulo: '⭐ Dicas e Avaliações',
+      textos: [
+        '✅ Venha conhecer o melhor sorvete da região com nota máxima de satisfação.',
+        '✅ Deixe seu feedback e nos ajude a melhorar sempre.'
+      ],
+      linkTexto: 'Ver Dicas',
+      linkUrl: 'dicas.html'
+    },
+    precos: {
+      titulo: '💰 Preços',
+      textos: [
+        '✅ Preços justos para consumo na hora, caixas e atacado de picolés.',
+        '✅ Consulte o cardápio interativo na página inicial para valores atualizados.'
+      ],
+      linkTexto: 'Ver Início',
+      linkUrl: 'index.html'
+    }
+  };
+
+  window._itabotMostrarTema = function (temaKey) {
+    var dados = _itabotConteudoTemas[temaKey];
+    if (!dados) return;
+    var html = '<div style="font-size:18px;font-weight:900;color:#07579c;margin-bottom:12px;">' + dados.titulo + '</div>';
+    dados.textos.forEach(function (t) {
+      html += '<p style="font-size:14px;color:#333;margin:0 0 10px;line-height:1.5;">' + t + '</p>';
+    });
+    html += '<a href="' + dados.linkUrl + '" onclick="_itabotFecharTelaCheia()" style="display:block;text-align:center;background:linear-gradient(135deg,#07579c,#033663);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:900;text-decoration:none;margin-top:16px;box-shadow:0 4px 12px rgba(7,87,156,.25);">' + dados.linkTexto + '</a>';
+    document.getElementById('fale-resposta-conteudo').innerHTML = html;
+    document.getElementById('fale-tela-temas').style.display = 'none';
+    document.getElementById('fale-tela-resposta').style.display = 'block';
+  };
+
+  window._itabotVoltarTemas = function () {
+    document.getElementById('fale-tela-resposta').style.display = 'none';
+    document.getElementById('fale-tela-temas').style.display = 'block';
+  };
+
+  window._itabotEnviarWhatsApp = function () {
+    var nome = document.getElementById('itabot-nome').value.trim();
+    var msg = document.getElementById('itabot-msg').value.trim();
+    var texto = 'Olá, meu nome é ' + (nome || 'Cliente') + '. ' + (msg || 'Gostaria de tirar uma dúvida sobre a Itapolitana.');
+    window.open('https://wa.me/5516999999999?text=' + encodeURIComponent(texto), '_blank');
+  };
 
   /* ─── Injeção de HTML ─── */
   function _itabotInjetarHtml() {

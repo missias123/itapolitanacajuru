@@ -6,11 +6,11 @@ Este documento estabelece as diretrizes de design, experiência do usuário (UX)
 
 ---
 
-## 1. Identidade Visual e Interação Rápida
-A "Primeira Impressão" é baseada em reconhecimento visual imediato, reduzindo a carga cognitiva do cliente.
+## 1. Identidade Visual e Interação Rápida (Regra de Ouro)
+A "Primeira Impressão" é baseada em reconhecimento visual imediato, reduzindo a carga cognitiva do cliente. O padrão de **retângulos coloridos temáticos** é a marca registrada da Itapolitana para facilitar a escolha.
 
-### 1.1 Matriz de Cores dos 38 Sabores
-Cada sabor deve possuir um retângulo com gradiente temático. O cérebro humano processa cores 60.000 vezes mais rápido que textos.
+### 1.1 Matriz de Cores Exclusiva para os 38 Sabores de Massa
+Esta matriz aplica-se **apenas** aos 38 sabores de sorvete de massa, incluindo suas derivações (Milkshakes, Isopor, Sobremesas). O cérebro humano processa cores 60.000 vezes mais rápido que textos.
 
 | Categoria | Exemplo de Sabores | Gradiente / Cor | Objetivo Visual |
 | :--- | :--- | :--- | :--- |
@@ -20,7 +20,12 @@ Cada sabor deve possuir um retângulo com gradiente temático. O cérebro humano
 | **Especiais** | Pistache, Menta | `#C5E1A5` → `#689F38` | Exclusividade e sofisticação. |
 | **Clássicos** | Ninho, Coco, Creme | `#FFFFFF` → `#F5F5F5` | Pureza, cremosidade e base. |
 
-> **Regra de Ouro:** O retângulo selecionado deve apresentar uma borda de contraste (`#000`) e um checkmark (`✓`) no canto superior direito para confirmação tátil instantânea.
+### 1.2 Regras de Exceção e Preservação
+Para manter a clareza e evitar confusão entre tipos de produtos, as seguintes regras de memória devem ser seguidas:
+
+*   **Picolés**: Possuem sabores próprios divididos em tipos (Fruta, Recheado, Esquimó). Devem manter o visual de lista/cards originais com foco na categoria do picolé, **sem usar** os retângulos coloridos das massas.
+*   **Açaí**: São montagens pré-definidas (Natureon) já configuradas no site. Devem manter o visual de "Ingredientes do Açaí" original.
+*   **Confirmação Tátil**: O retângulo de massa selecionado deve apresentar uma borda de contraste (`#000`) e um checkmark (`✓`) para confirmação instantânea.
 
 ---
 

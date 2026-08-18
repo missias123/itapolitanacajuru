@@ -1621,6 +1621,20 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
  min-height: 44px;
  text-align: center;
 }
+
+/* Cores Temáticas EXCLUSIVAS para os 38 Sabores de Massa (World Class) */
+.sabor-massa-chocolate { background: linear-gradient(135deg, #5D4037, #3E2723) !important; color: #fff !important; border-color: #3E2723 !important; }
+.sabor-massa-morango { background: linear-gradient(135deg, #F06292, #E91E63) !important; color: #fff !important; border-color: #C2185B !important; }
+.sabor-massa-limao { background: linear-gradient(135deg, #DCE775, #AFB42B) !important; color: #1A1A1A !important; border-color: #9E9D24 !important; }
+.sabor-massa-ninho { background: linear-gradient(135deg, #FFFFFF, #F5F5F5) !important; color: #333 !important; border-color: #E0E0E0 !important; }
+.sabor-massa-uva { background: linear-gradient(135deg, #7B1FA2, #4A148C) !important; color: #fff !important; border-color: #311B92 !important; }
+.sabor-massa-amarelo { background: linear-gradient(135deg, #FFF176, #FBC02D) !important; color: #1A1A1A !important; border-color: #F9A825 !important; }
+.sabor-massa-coco { background: linear-gradient(135deg, #FAFAFA, #E0E0E0) !important; color: #333 !important; border-color: #BDBDBD !important; }
+.sabor-massa-menta { background: linear-gradient(135deg, #B9F6CA, #00C853) !important; color: #1A1A1A !important; border-color: #00A144 !important; }
+.sabor-massa-laranja { background: linear-gradient(135deg, #FFB74D, #F57C00) !important; color: #fff !important; border-color: #E65100 !important; }
+.sabor-massa-azul { background: linear-gradient(135deg, #64B5F6, #1976D2) !important; color: #fff !important; border-color: #0D47A1 !important; }
+.sabor-massa-pistache { background: linear-gradient(135deg, #C5E1A5, #689F38) !important; color: #1A1A1A !important; border-color: #33691E !important; }
+.sabor-massa-bege { background: linear-gradient(135deg, #D7CCC8, #A1887F) !important; color: #fff !important; border-color: #795548 !important; }
 .chip-inline:hover {
  border-color: #EA1D2C;
  color: #EA1D2C;
@@ -5746,12 +5760,32 @@ function _getAccBody(el, bodyIdHint) {
 }
 
 // Mostra sabores/itens inline dentro do acc-body — SEM PULO (padrão iFood)
+function getSaborMassaClass(nome) {
+  const n = nome.toLowerCase();
+  if (n.includes('chocolate') || n.includes('belga') || n.includes('ferrero') || n.includes('bis') || n.includes('nutella') || n.includes('ovomaltine') || n.includes('prestígio')) return 'sabor-massa-chocolate';
+  if (n.includes('morango') || n.includes('sensação') || n.includes('amarena') || n.includes('cereja')) return 'sabor-massa-morango';
+  if (n.includes('limão')) return 'sabor-massa-limao';
+  if (n.includes('ninho')) return 'sabor-massa-ninho';
+  if (n.includes('vinho') || n.includes('uva') || n.includes('ameixa')) return 'sabor-massa-uva';
+  if (n.includes('maracujá') || n.includes('milho')) return 'sabor-massa-amarelo';
+  if (n.includes('coco')) return 'sabor-massa-coco';
+  if (n.includes('menta')) return 'sabor-massa-menta';
+  if (n.includes('doce de leite') || n.includes('banana') || n.includes('passas')) return 'sabor-massa-laranja';
+  if (n.includes('blue ice')) return 'sabor-massa-azul';
+  if (n.includes('pistache')) return 'sabor-massa-pistache';
+  if (n.includes('nozes') || n.includes('creme') || n.includes('cheesecake') || n.includes('croquer') || n.includes('flocos') || n.includes('casado')) return 'sabor-massa-bege';
+  return '';
+}
+
 function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
  if (!accBodyEl) return;
  var accId = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc').id : accBodyEl.id;
  if (accId) _nivelAnterior[accId] = accBodyEl.innerHTML;
  var acc = accBodyEl.closest && accBodyEl.closest('.acc') ? accBodyEl.closest('.acc') : null;
  if (acc) _menuFocoAtivar(acc);
+
+ // Regra: Cores apenas se for Massa/Milkshake (não picolé/açaí)
+ var isMassa = titulo.toLowerCase().includes('sabores') && !titulo.toLowerCase().includes('picolé') && !titulo.toLowerCase().includes('açaí');
 
  var chipsHtml = (chips && chips.length > 0) ? chips.map(function(s) {
   var nome = "";
@@ -5766,7 +5800,8 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
     // Fallback caso o objeto não tenha 'nome' ou 'sabor'
     try { nome = s.nome || "Sabor"; } catch(e) { nome = "Sabor"; }
   }
-  return '<span class="chip-inline" style="' + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + nome + (esgotado ? ' ✕' : '') + '</span>';
+  var extraClass = isMassa ? getSaborMassaClass(nome) : '';
+  return '<span class="chip-inline ' + extraClass + '" style="' + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + nome + (esgotado ? ' ✕' : '') + '</span>';
  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
  _semPulo(function() {
@@ -5911,7 +5946,10 @@ function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chip
  if (acc) _menuFocoAtivar(acc);
 
  var chips1Html = chips1.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
- var chips2Html = chips2.map(function(s) { return '<span class="chip-inline">' + s + '</span>'; }).join('');
+ var chips2Html = chips2.map(function(s) { 
+  var extraClass = getSaborMassaClass(s);
+  return '<span class="chip-inline ' + extraClass + '">' + s + '</span>'; 
+ }).join('');
 
  _semPulo(function() {
   accBodyEl.innerHTML =
