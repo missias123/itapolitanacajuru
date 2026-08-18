@@ -8,33 +8,27 @@
   var MENU_ITEMS = [
     {
       href: 'index.html',
-      label: 'TELA INICIAL',
-      icon: 'home',
-      bg: 'background:linear-gradient(135deg,#B71C1C,#E53935,#FF5252);'
+      label: 'COMPRAR',
+      icon: 'box',
+      bg: 'background:linear-gradient(135deg,#0D47A1,#00288F);'
     },
     {
       href: 'promocao.html',
-      label: 'PROMOÇÃO',
+      label: 'PROMO',
       icon: 'promo',
       bg: 'background:linear-gradient(135deg,#E8000D,#C62828);'
     },
     {
       href: 'dicas.html',
-      label: 'DICAS/DEPOIMENTOS',
+      label: 'FEEDBACK',
       icon: 'star',
       bg: 'background:linear-gradient(135deg,#00C853,#009624);'
     },
     {
       href: 'sobre.html',
-      label: 'QUEM SOMOS',
+      label: 'HISTÓRIA',
       icon: 'info',
       bg: 'background:linear-gradient(135deg,#4A148C,#6A1B9A);'
-    },
-    {
-      href: 'encomendas.html',
-      label: 'ENCOMENDAS',
-      icon: 'box',
-      bg: 'background:linear-gradient(135deg,#0D47A1,#00288F);'
     }
   ];
 
@@ -49,7 +43,7 @@
     '.itap-header-nav .itap-nav-label{font-size:clamp(13px,3.5vw,15px)!important;font-weight:900!important;line-height:1.1!important;letter-spacing:.6px!important;}',
     '@media (min-width:768px){.itap-header-inner{padding:10px 20px!important;}.itap-header-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;}.itap-header-nav .itap-nav-btn{min-height:60px!important;padding:10px 8px!important;}.itap-header-nav .itap-nav-label{font-size:13px!important;}}',
     '@media (min-width:1024px){.itap-header-nav .itap-nav-btn{min-height:64px!important;padding:12px 10px!important;}.itap-header-nav .itap-nav-icon{font-size:1.9em!important;}.itap-header-nav .itap-nav-label{font-size:14px!important;}}',
-    '@media (min-width:1100px){.itap-header-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;}}',
+    '@media (min-width:1100px){.itap-header-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important;}}',
     '@media (max-width:600px){.itap-header{padding-inline:max(8px,env(safe-area-inset-left)) max(8px,env(safe-area-inset-right))!important;}.itap-header-inner{padding:10px 8px 12px!important;gap:10px!important;}.itap-header-nav{gap:8px!important;}.itap-header-nav .itap-nav-btn{min-height:56px!important;padding:8px 4px!important;}}',
     '@keyframes nav-home-pulse{',
     '0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(0,0,0,.2),0 0 0 0 rgba(255,255,255,.5);}',
@@ -65,8 +59,7 @@
     '.itap-header-nav.itap-header-nav--full .itap-nav-btn{min-height:58px;}',
     '.itap-header-nav.itap-header-nav--full .itap-nav-btn--home{animation:nav-home-pulse 1.8s ease-in-out infinite;}',
     '.itap-header-nav.itap-header-nav--full .itap-nav-btn--home:hover,.itap-header-nav.itap-header-nav--full .itap-nav-btn--home:focus{animation-play-state:paused;}',
-    '@media (min-width:768px){.itap-header-nav.itap-header-nav--full{grid-template-columns:repeat(3,minmax(0,1fr));max-height:none;overflow:visible;padding-right:0;}}',
-    '@media (min-width:1100px){.itap-header-nav.itap-header-nav--full{grid-template-columns:repeat(5,minmax(0,1fr));}}'
+    '@media (min-width:768px){.itap-header-nav.itap-header-nav--full{grid-template-columns:repeat(4,minmax(0,1fr));max-height:none;overflow:visible;padding-right:0;}}'
   ].join('');
 
   function injectCSS() {
@@ -108,7 +101,7 @@
     a.href = item.href;
     a.className = 'itap-nav-btn';
     a.setAttribute('style', item.bg + 'border-color:rgba(255,255,255,.6);');
-    if (item.label === 'TELA INICIAL') a.classList.add('itap-nav-btn--home');
+    if (item.label === 'COMPRAR') a.classList.add('itap-nav-btn--home');
     if (item.action) a.dataset.navAction = item.action;
     if (item.target) a.target = item.target;
     if (item.rel) a.rel = item.rel;
