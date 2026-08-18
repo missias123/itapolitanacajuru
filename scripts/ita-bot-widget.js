@@ -228,9 +228,9 @@
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      var fullW = Math.min(narrow ? 156 : 184, vw - 24);
-      var fullH = narrow ? 58 : 66;
-      var iconW = 58, iconH = 58;
+      var fullW = narrow ? 82 : 94;
+      var fullH = narrow ? 102 : 116;
+      var iconW = narrow ? 82 : 94, iconH = narrow ? 102 : 116;
       var safeBottom = narrow ? 86 : (vw < 1025 ? 24 : 28);
       var margin = narrow ? 10 : 16;
       var overlayBottom = safeBottom;
@@ -245,7 +245,7 @@
         if (fixedStyle.pointerEvents === 'none' || fixedStyle.visibility === 'hidden' || parseFloat(fixedStyle.opacity || '1') <= .08) continue;
         if (fixedRect.bottom >= vh - 2 && fixedRect.top > 0) overlayBottom = Math.max(overlayBottom, vh - fixedRect.top + 12);
       }
-      var bottomY = Math.max(10, vh - fullH - overlayBottom);
+      var bottomY = Math.max(16, vh - fullH - overlayBottom - 8);
       var candidates = [
         [vw - fullW - margin, bottomY, 'br'],
         [margin, bottomY, 'bl'],
