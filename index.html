@@ -258,31 +258,7 @@ img{max-width:100%;display:block}
 @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
 .promo-top-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2.5s infinite}
 /* HEADER */
-.itap-header{background:linear-gradient(135deg,#E8000D,#C62828);border-bottom:4px solid #FFD600;padding:0 12px;position:sticky;top:0;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.25);isolation:isolate;width:100%;box-sizing:border-box;border-top:none;}
-.itap-header-inner{contain: layout;max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px 12px 16px}
-.brand{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;padding:0;flex-shrink:0}
-.brand-icon{width:90px;min-width:90px;flex-shrink:0;background:transparent;display:flex;align-items:center;justify-content:center;padding:0;margin:0 0 4px 0}.brand-icon img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 3px #C62828,0 0 0 6px #F9A825,0 0 0 9px #0D47A1,0 4px 18px rgba(0,0,0,.18)}
-.brand-name{font-size:17px;font-weight:800;color:#E8000D;line-height:1.1;text-shadow:1px 1px 2px rgba(0,0,0,.25);letter-spacing:.3px;text-transform:uppercase;font-family:"Poppins",sans-serif}
-.brand-sub{font-size:11px;color:#FFD600;font-weight:700;letter-spacing:.3px}
-.itap-header-nav{contain: layout;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;box-sizing:border-box;grid-auto-rows:minmax(56px,auto)}
-
-/* Ajuste Mobile-First para Android: Logo no topo, botões 2x2 abaixo */
-@media (max-width: 600px) {
- .header-inner { padding: 10px 8px; gap: 10px; }
- .brand { margin-bottom: 5px; }
- .brand-icon { width: 80px; min-width: 80px; }
- .brand-icon img { width: 80px; height: 80px; }
- .header-nav { grid-template-columns: repeat(2, 1fr); gap: 6px; }
- .nav-btn { min-height: 50px; padding: 8px 4px; }
-}
-.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 6px;border-radius:16px;font-size:12px;font-weight:900;min-height:75px;transition:all .2s cubic-bezier(.34,1.56,.64,1);white-space:normal;overflow:hidden;word-break:break-word;width:100%;text-align:center;letter-spacing:0px;border:2px solid rgba(255,255,255,0.35);font-family:"Poppins",sans-serif;box-sizing:border-box;margin-bottom:0;flex-grow:1;line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
-.nav-btn .nav-icon{font-size:1.8em;line-height:1;display:block;margin-bottom:2px;}
-.nav-btn .nav-label{font-size:clamp(13px,3.5vw,15px);font-weight:900;line-height:1.1;word-break:break-word;display:block;text-shadow:0 2px 5px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.6);letter-spacing:.6px;text-transform:uppercase;}
-.nav-btn:active{transform:scale(.95);filter:brightness(1.3);box-shadow:0 2px 8px rgba(0,0,0,0.1); /* Efeito de "clicar" */}
-.nav-btn:hover{transform:translateY(-2px);filter:brightness(1.2);box-shadow:0 6px 20px rgba(0,0,0,0.2); /* Efeito de "acender" */}
-.nav-purple{background:linear-gradient(135deg,#0D47A1,#00288F);color:#fff;box-shadow:0 4px 14px rgba(13,71,161,.4); /* Azul da logomarca */}
-.nav-green{background:linear-gradient(135deg,#00C853,#009624);color:#fff;box-shadow:0 4px 14px rgba(0,200,83,.4); /* Verde da logomarca */}
-.nav-yellow{background:linear-gradient(135deg,#F9A825,#F57C00);color:#fff;box-shadow:0 4px 14px rgba(249,168,37,.4); /* Amarelo da logomarca */}
+/* Estilos de cabeçalho unificados via nav-active.js */
 /* ── SEÇÃO PRINCIPAL (HERO) ── */
 /* Gradiente vanilla → caramelo: ativa memória sensorial de sorvete cremoso */
 /* Técnica: color priming — a cor do produto antes de vê-lo aumenta o desejo */
@@ -2908,11 +2884,11 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <nav class="menu-categorias-cardapio" id="menu-categorias-cardapio" aria-label="Categorias do cardápio" style="display:none">
  <div class="menu-categorias-inner">
   <!-- IDs de âncora: #acc-sorvetes #acc-picolés #acc-açaí #acc-tacas #acc-sobremesas #acc-encomendas -->
-  <a class="cat-pill" href="#acc-sorvetes" data-acc="acc-sorvetes">Sorvetes de massa </a>
-  <a class="cat-pill" href="#acc-picolés" data-acc="acc-picolés">Picolés diferenciados</a>
+  <a class="cat-pill" href="#acc-sorvetes" data-acc="acc-sorvetes">Massas & Sabores</a>
+  <a class="cat-pill" href="#acc-picolés" data-acc="acc-picolés">Picolés</a>
   <a class="cat-pill" href="#acc-açaí" data-acc="acc-açaí">Açaí Natureon</a>
-  <a class="cat-pill" href="#acc-tacas" data-acc="acc-tacas">Taças e sobremesas</a>
-  <a class="cat-pill" href="#acc-sobremesas" data-acc="acc-sobremesas">Sobremesas geladas</a>
+  <a class="cat-pill" href="#acc-tacas" data-acc="acc-tacas">Taças</a>
+  <a class="cat-pill" href="#acc-sobremesas" data-acc="acc-sobremesas">Sobremesas</a>
   <a class="cat-pill" href="#acc-encomendas" data-acc="acc-enc-caixas">Festas e encomendas (5L, 10L, tortas)</a>
  </div>
 </nav>
@@ -2920,7 +2896,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sorvetes-body" onclick="toggleAcc('acc-sorvetes')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sorvetes');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container orange"><svg><use xlink:href="#icon-scoop"></use></svg></div></span>
-<div><div class="acc-title">Sorvetes de massa </div><div class="acc-sub">Feitos com carinho em Cajuru · 38 sabores para o dia a dia e para festas</div></div>
+<div><div class="acc-title">Massas & Sabores</div><div class="acc-sub">Feitos com carinho em Cajuru · 38 sabores para o dia a dia e para festas</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -2935,7 +2911,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="picolés-body" onclick="toggleAcc('acc-picolés')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-picolés');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container red"><svg><use xlink:href="#icon-popsicle"></use></svg></div></span>
-<div><div class="acc-title">Picolés diferenciados</div><div class="acc-sub">Sabores clássicos e especiais para refrescar o dia em Cajuru</div></div>
+<div><div class="acc-title">Picolés</div><div class="acc-sub">Sabores clássicos e especiais para refrescar o dia em Cajuru</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -2945,7 +2921,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="açaí-body" onclick="toggleAcc('acc-açaí')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-açaí');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container purple"><svg><use xlink:href="#icon-acai"></use></svg></div></span>
-<div><div class="acc-title">Cardápio Natureon Açaí</div><div class="acc-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais</div></div>
+<div><div class="acc-title">Açaí Natureon</div><div class="acc-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -2955,7 +2931,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="milk-body" onclick="toggleAcc('acc-milk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-milk');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container blue"><svg><use xlink:href="#icon-milkshake"></use></svg></div></span>
-<div><div class="acc-title">Milkshakes</div><div class="acc-sub">Cremoso e gelado · Tradicional e Top · 38 sabores</div></div>
+<div><div class="acc-title">Milkshake</div><div class="acc-sub">Cremoso e gelado · Tradicional e Top · 38 sabores</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -2985,7 +2961,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="tacas-p-body" onclick="toggleAcc('acc-tacas-p')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-tacas-p');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container orange"><svg><use xlink:href="#icon-star"></use></svg></div></span>
-<div><div class="acc-title">Taças Premium (Taças Sujas)</div><div class="acc-sub">O melhor da sorveteria · Prestígio, Kit Kat, Unicórnio e mais</div></div>
+<div><div class="acc-title">Taças Premium</div><div class="acc-sub">O melhor da sorveteria · Prestígio, Kit Kat, Unicórnio e mais</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -3000,7 +2976,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="iso-body" onclick="toggleAcc('acc-iso')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-iso');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container blue"><svg><use xlink:href="#icon-snowflake"></use></svg></div></span>
-<div><div class="acc-title">Isopores de Viagem</div><div class="acc-sub">Leve o prazer para casa · 4 tamanhos disponíveis</div></div>
+<div><div class="acc-title">Isopores Viagem</div><div class="acc-sub">Leve o prazer para casa · 4 tamanhos disponíveis</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -3010,7 +2986,7 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="acc-header" role="button" tabindex="0" aria-expanded="false" aria-controls="sobremesas-body" onclick="toggleAcc('acc-sobremesas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAcc('acc-sobremesas');}">
 <div class="acc-left">
 <span class="acc-icon" aria-hidden="true"><div class="bento-icon-container brown"><svg><use xlink:href="#icon-cake"></use></svg></div></span>
-<div><div class="acc-title">Sobremesas Geladas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
+<div><div class="acc-title">Sobremesas</div><div class="acc-sub">Momentos especiais merecem isso · Fondue, Petit Gâteau, Brownie e mais</div></div>
 </div>
 <span class="acc-indicator" aria-hidden="true"><span class="acc-circle"><span class="acc-arrow"><svg class="itap-chevron"><use xlink:href="#icon-chevron"></use></svg></span></span><span class="acc-label">Clique para abrir</span></span>
 </div>
@@ -6142,7 +6118,7 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 </nav>
 
 	<script src="scripts/itap-icons.js?v=1786979144-icons-approved-2"></script>
-<script src="scripts/nav-active.js?v=1786979144-header-canonical-1" defer></script>
+<script src="scripts/nav-active.js?v=20260818-V7-FINAL" defer></script>
 	<script src="scripts/products.js?v=1786979144" defer></script>
 	<script src="scripts/ita-bot-engine.js?v=1786979144" defer></script>
 	<script src="scripts/ita-bot-widget.js?v=1786979144-overlay-2" defer></script>
