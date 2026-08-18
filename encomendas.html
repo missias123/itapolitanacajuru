@@ -262,6 +262,39 @@
         border-radius: 4px;
         background: var(--sabor-accent, #CBD5E1);
     }
+    .sabor-novo-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        min-width: 36px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #E8000D, #B5121D);
+        color: #FFFFFF;
+        font-size: .58rem;
+        font-weight: 950;
+        letter-spacing: .05em;
+        line-height: 1;
+        box-shadow: 0 0 0 2px #FFFFFF, 0 0 10px rgba(232,0,13,.5);
+        text-shadow: 0 1px 2px rgba(0,0,0,.35);
+        pointer-events: none;
+        user-select: none;
+        z-index: 1;
+        animation: saborNovoPulse 1.8s ease-in-out infinite;
+    }
+    .sabor-item.sabor-novo { padding-right: 52px; }
+    @keyframes saborNovoPulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 0 2px #FFFFFF, 0 0 8px rgba(232,0,13,.42); }
+        50% { transform: scale(1.08); box-shadow: 0 0 0 2px #FFFFFF, 0 0 16px rgba(232,0,13,.78); }
+    }
+    .sabor-item.sabor-novo.sel::after { right: 48px; }
+    @media (prefers-reduced-motion: reduce) {
+        .sabor-novo-badge { animation: none; }
+    }
     .sabor-item:hover,
     .sabor-item:focus-visible {
         transform: translateY(-2px);
@@ -1096,8 +1129,12 @@
 
         grid.innerHTML = SABORES_SORVETE.map(s => {
             var sel = saboresSelecionados.includes(s);
+            var nomeNormalizado = String(s || '').trim().toLowerCase();
+            var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
+            var classeNovo = isSaborNovo ? ' sabor-novo' : '';
+            var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
             var style = getSaborMassaStyle(s);
-            return `<div class="sabor-item ${sel?'sel':''}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${s}</div>`;
+            return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${novoBadge}<span class="sabor-label">${s}</span></div>`;
         }).join('');
 
         atualizarAcaoSabores();

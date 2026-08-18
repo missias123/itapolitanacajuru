@@ -1641,6 +1641,38 @@ html.chat-open,body.chat-open{position:fixed;width:100%;height:100dvh;overflow:h
  border-radius: 4px;
  background: var(--sabor-accent, #CBD5E1);
 }
+.sabor-novo-badge {
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ position:absolute;
+ top:4px;
+ right:6px;
+ min-width:36px;
+ height:22px;
+ padding:0 6px;
+ border-radius:999px;
+ background:linear-gradient(135deg,#E8000D,#B5121D);
+ color:#FFFFFF;
+ font-size:9px;
+ font-weight:950;
+ letter-spacing:.05em;
+ line-height:1;
+ box-shadow:0 0 0 2px #FFFFFF,0 0 10px rgba(232,0,13,.5);
+ text-shadow:0 1px 2px rgba(0,0,0,.35);
+ pointer-events:none;
+ user-select:none;
+ z-index:1;
+ animation:sabor-novo-pulse 1.8s ease-in-out infinite;
+}
+.sabor-massa-premium.sabor-novo { padding-right:50px; }
+@keyframes sabor-novo-pulse {
+ 0%,100% { transform:scale(1); box-shadow:0 0 0 2px #FFFFFF,0 0 8px rgba(232,0,13,.42); }
+ 50% { transform:scale(1.08); box-shadow:0 0 0 2px #FFFFFF,0 0 16px rgba(232,0,13,.78); }
+}
+@media (prefers-reduced-motion: reduce) {
+ .sabor-novo-badge { animation:none; }
+}
 .chip-inline:hover,
 .chip-inline:focus-visible {
  border-color: var(--sabor-accent, #94A3B8);
@@ -5653,9 +5685,12 @@ function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
     // Fallback caso o objeto não tenha 'nome' ou 'sabor'
     try { nome = s.nome || "Sabor"; } catch(e) { nome = "Sabor"; }
   }
-  var extraClass = isMassa ? 'sabor-massa-premium' : '';
+  var nomeNormalizado = String(nome || '').trim().toLowerCase();
+  var isSaborNovo = isMassa && ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
+  var extraClass = (isMassa ? 'sabor-massa-premium ' : '') + (isSaborNovo ? 'sabor-novo' : '');
   var paletteStyle = isMassa ? getSaborMassaStyle(nome) : '';
-  return '<span class="chip-inline ' + extraClass + '" style="' + paletteStyle + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + nome + (esgotado ? ' ✕' : '') + '</span>';
+  var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
+  return '<span class="chip-inline ' + extraClass.trim() + '" style="' + paletteStyle + (esgotado ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + novoBadge + nome + (esgotado ? ' ✕' : '') + '</span>';
  }).join('') : '<div style="font-size:12px;color:#888;padding:10px">Sabores indisponíveis no momento.</div>';
 
  _semPulo(function() {
