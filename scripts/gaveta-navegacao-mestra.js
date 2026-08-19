@@ -84,6 +84,7 @@
       }
       .itap-nav-container::-webkit-scrollbar { display: none; }
       .itap-nav-btn {
+        --neon-rgb: 255,255,255;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -94,19 +95,34 @@
         text-decoration: none;
         color: white !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(255,255,255,0.2);
+        border: 1px solid rgba(var(--neon-rgb), 0.72);
+        box-shadow: 0 0 0 1px rgba(var(--neon-rgb), 0.16) inset, 0 0 7px rgba(var(--neon-rgb), 0.18);
         flex: 1;
         max-width: 110px;
       }
-      .itap-nav-btn:hover {
+      .itap-nav-btn:nth-child(1) { --neon-rgb: 239, 1, 41; }
+      .itap-nav-btn:nth-child(2) { --neon-rgb: 239, 108, 0; }
+      .itap-nav-btn:nth-child(3) { --neon-rgb: 46, 125, 50; }
+      .itap-nav-btn:nth-child(4) { --neon-rgb: 106, 27, 154; }
+      .itap-nav-btn:nth-child(5) { --neon-rgb: 21, 101, 192; }
+      .itap-nav-btn:hover,
+      .itap-nav-btn:focus-visible {
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-        filter: brightness(1.1);
+        border-color: rgba(var(--neon-rgb), 1);
+        box-shadow: 0 0 0 1px rgba(var(--neon-rgb), 0.45) inset, 0 0 10px rgba(var(--neon-rgb), 0.7), 0 0 23px rgba(var(--neon-rgb), 0.46);
+        filter: brightness(1.12) saturate(1.12);
+        outline: none;
+      }
+      .itap-nav-btn:active {
+        transform: translateY(0) scale(0.97);
+        border-color: rgba(var(--neon-rgb), 1);
+        box-shadow: 0 0 0 1px rgba(var(--neon-rgb), 0.65) inset, 0 0 13px rgba(var(--neon-rgb), 0.88), 0 0 28px rgba(var(--neon-rgb), 0.58);
+        filter: brightness(1.18) saturate(1.16);
       }
       .itap-nav-btn[aria-current="page"] {
-        border: 2px solid white;
-        box-shadow: 0 0 12px rgba(255,255,255,0.6);
-        filter: brightness(1.2);
+        border: 2px solid rgba(var(--neon-rgb), 1);
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.55) inset, 0 0 10px rgba(var(--neon-rgb), 0.72), 0 0 20px rgba(var(--neon-rgb), 0.42);
+        filter: brightness(1.12) saturate(1.08);
         transform: scale(1.05);
       }
       .itap-nav-icon {
@@ -127,13 +143,15 @@
       .itap-nav-icon svg { width: 18px; height: 18px; }
       @media (max-width: 600px) {
         .itap-header {
-          padding: 10px 0 14px;
+          padding: 3px 0 5px;
         }
         .itap-nav-container {
           display: grid !important;
+          width: min(calc(100% - 16px), 420px) !important;
+          margin: 0 auto !important;
           grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          gap: 14px !important;
-          padding: 8px 14px !important;
+          gap: 4px !important;
+          padding: 0 !important;
           overflow: visible !important;
         }
         .itap-nav-btn {
@@ -141,72 +159,70 @@
           min-width: 0 !important;
           width: 100% !important;
           max-width: none !important;
-          min-height: 54px !important;
-          height: 54px !important;
-          padding: 6px 8px !important;
-          border-radius: 14px !important;
-          border-width: 1.5px !important;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.3) !important;
-          gap: 2px;
+          min-height: 38px !important;
+          height: 38px !important;
+          padding: 0 4px !important;
+          border-radius: 9px !important;
+          border-width: 1px !important;
+          box-shadow: 0 0 0 1px rgba(var(--neon-rgb), 0.22) inset, 0 0 7px rgba(var(--neon-rgb), 0.18) !important;
+          gap: 0;
           flex-direction: row !important;
-          justify-content: flex-start !important;
+          justify-content: center !important;
           align-items: center !important;
-          padding-left: 14px !important;
+          padding-left: 4px !important;
+          transform: none !important;
+        }
+        .itap-nav-btn[aria-current="page"] {
+          transform: none !important;
+          box-shadow: 0 0 0 2px rgba(var(--neon-rgb), 0.76) inset, 0 0 10px rgba(var(--neon-rgb), 0.7), 0 0 18px rgba(var(--neon-rgb), 0.4) !important;
         }
         /* FEEDBACK fica sozinho na primeira linha e ocupa toda a largura, bem compacto */
         .itap-nav-btn:nth-child(3) {
           grid-column: 1 / -1 !important;
           order: -1 !important;
-          min-height: 60px !important;
-          height: 60px !important;
-          padding: 8px 16px !important;
-          border-radius: 16px !important;
+          width: 100% !important;
+          justify-self: stretch !important;
+          min-height: 38px !important;
+          height: 38px !important;
+          padding: 0 8px !important;
+          border-radius: 9px !important;
           background: linear-gradient(135deg, #2E7D32 0%, #43A047 52%, #1B5E20 100%) !important;
-          box-shadow: 0 6px 18px rgba(27,94,32,0.35), 0 0 0 1.5px rgba(255,255,255,0.25) inset !important;
+          box-shadow: 0 4px 10px rgba(27,94,32,0.24), 0 0 0 1px rgba(255,255,255,0.22) inset !important;
           justify-content: center !important;
           flex-direction: row !important;
-          gap: 8px !important;
+          gap: 0 !important;
         }
-        .itap-nav-icon {
-          height: 24px !important;
-          margin-bottom: 0 !important;
-          margin-right: 8px !important;
-        }
-        .itap-nav-icon svg, .itap-nav-icon-fallback {
-          width: 22px !important;
-          height: 22px !important;
-          font-size: 20px !important;
-          filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
-        }
-        .itap-nav-btn:nth-child(3) .itap-nav-icon svg, .itap-nav-btn:nth-child(3) .itap-nav-icon-fallback {
-          width: 26px !important;
-          height: 26px !important;
-          font-size: 24px !important;
+        /* No Android, os botões exibem somente os nomes; os símbolos ficam ocultos. */
+        .itap-nav-icon,
+        .itap-nav-icon svg,
+        .itap-nav-icon-fallback {
+          display: none !important;
         }
         .itap-nav-label {
           max-width: 100% !important;
-          overflow-wrap: anywhere !important;
-          white-space: normal !important;
-          font-size: 13px !important;
-          font-weight: 900 !important;
-          line-height: 1.1 !important;
-          letter-spacing: 0.5px !important;
+          overflow-wrap: normal !important;
+          white-space: nowrap !important;
+          font-family: 'Segoe UI', 'Trebuchet MS', Arial, sans-serif !important;
+          font-size: clamp(11px, 3.2vw, 13px) !important;
+          font-weight: 800 !important;
+          line-height: 1 !important;
+          letter-spacing: 0.2px !important;
           text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-          text-align: left !important;
+          text-align: center !important;
         }
         .itap-nav-btn:nth-child(3) .itap-nav-label {
-          font-size: 15px !important;
-          letter-spacing: 0.8px !important;
+          font-size: clamp(11.5px, 3.35vw, 13.5px) !important;
+          letter-spacing: 0.25px !important;
           text-align: center !important;
         }
       }
       @media (max-width: 380px) {
-        .itap-header { padding-bottom: 12px; }
-        .itap-nav-container { gap: 12px !important; padding-inline: 10px !important; }
-        .itap-nav-btn { min-height: 106px !important; height: 106px !important; padding-inline: 8px !important; }
-        .itap-nav-btn:nth-child(3) { min-height: 132px !important; height: 132px !important; }
-        .itap-nav-label { font-size: clamp(15px, 4.7vw, 18px) !important; }
-        .itap-nav-btn:nth-child(3) .itap-nav-label { font-size: clamp(18px, 5.6vw, 22px) !important; }
+        .itap-header { padding-bottom: 4px; }
+        .itap-nav-container { width: min(calc(100% - 16px), 420px) !important; gap: 3px !important; padding-inline: 0 !important; }
+        .itap-nav-btn { min-height: 36px !important; height: 36px !important; padding-inline: 3px !important; }
+        .itap-nav-btn:nth-child(3) { min-height: 36px !important; height: 36px !important; width: 100% !important; }
+        .itap-nav-label { font-size: 11px !important; letter-spacing: 0.15px !important; }
+        .itap-nav-btn:nth-child(3) .itap-nav-label { font-size: 11.5px !important; }
       }
     `;
     document.head.appendChild(style);

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><title>Medição mobile</title><style>body{font:16px system-ui;margin:20px}iframe{position:absolute;left:-9999px;top:0;width:100%;height:900px;border:0}pre{white-space:pre-wrap}</style></head>
+<body><h1>Medição dos botões mobile</h1><pre id="report">carregando...</pre><iframe id="target" src="../index.html?button-measure=20260818"></iframe>
+<script>
+const output = document.getElementById('report');
+const target = document.getElementById('target');
+target.addEventListener('load', () => {
+  const doc = target.contentDocument;
+  const buttons = [...doc.querySelectorAll('.itap-nav-btn')];
+  output.textContent = JSON.stringify(buttons.map(button => {
+    const rect = button.getBoundingClientRect();
+    return { label: button.innerText.trim().replace(/\\s+/g, ' '), width: Math.round(rect.width * 10) / 10, height: Math.round(rect.height * 10) / 10, top: Math.round(rect.top * 10) / 10, left: Math.round(rect.left * 10) / 10, oneLine: button.querySelector('.itap-nav-label')?.getClientRects().length === 1, overflow: button.scrollWidth > button.clientWidth };
+  }), null, 2);
+});
+</script></body></html>

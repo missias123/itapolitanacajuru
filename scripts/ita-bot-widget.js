@@ -131,13 +131,13 @@
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
-    launcher.setAttribute('aria-label', 'Abrir ItaBot — Dúvidas');
+    launcher.setAttribute('aria-label', 'Abrir ItaBot — Dúvida');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d.png" alt="" draggable="false"/>',
         '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
-      '<span class="itabot-launcher-label" aria-hidden="true">DÚVIDAS</span>',
+      '<span class="itabot-launcher-label" aria-hidden="true">DÚVIDA</span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);

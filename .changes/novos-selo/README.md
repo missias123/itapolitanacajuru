@@ -19,3 +19,9 @@ Validações realizadas: `node --check scripts/ita-bot-widget.js`, `git diff --c
 ## Ajuste de posição do selo
 
 O selo `NOVO` foi reposicionado para a parte inferior direita nos chips do Cardápio e nos cards de Encomendas. O sinal `✓` permanece no canto superior direito quando o sabor é selecionado. No teste local, Cheesecake foi selecionado normalmente, a mensagem passou para `Faltam 1 sabores.` e o selo continuou visual, sem bloquear o clique.
+
+## Confirmação pública pós-deploy
+
+Após o deploy do commit `94f696d`, a página pública de Encomendas carregou o modal dos 38 sabores com exatamente três selos `NOVO`: Bem Casado, Cheesecake e Passas ao Rum. Visualmente, os selos aparecem na parte inferior direita dos cards, enquanto a área superior permanece disponível para o tic de seleção.
+
+A medição do DOM público confirmou `38` cards e `3` selos. No card Cheesecake, o selo apresenta `bottom: 4px`, `height: 18px`, `right: 6px` e `pointer-events: none`; o card mantém `padding-bottom: 24px` para evitar sobreposição do nome.
