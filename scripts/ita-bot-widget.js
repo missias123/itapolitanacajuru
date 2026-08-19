@@ -427,9 +427,9 @@
     promocao: {
       titulo: '🎉 Promoções e Sorteios',
       textos: [
-        '✅ Temos promoções semanais e mensais para clientes e seguidores.',
-        '✅ Para participar: comente nos posts oficiais do Instagram e cadastre-se na aba Promoção do site.',
-        '✅ Sorteios auditados mensalmente com caixas de sorvete exclusivas.'
+        '⚠️ As inscrições do sorteio de 2026 já foram encerradas. Já temos mais de 1.400 inscritos.',
+        '🍰 Em 2027 haverá sorteio mensal de uma torta de sorvete.',
+        '📝 Para concorrer, o cadastro deverá ser feito pelo site oficial: itapolitanacajuru.com.br. Acompanhe a aba Promoção para ver as informações e regras.'
       ],
       linkTexto: 'Ver Página de Promoção',
       linkUrl: 'promocao.html'
