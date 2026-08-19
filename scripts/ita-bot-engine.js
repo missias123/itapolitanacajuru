@@ -90,7 +90,7 @@
       'fondue':        '\ud83e\udd6e Fondue de Sorvete R$ 25. Perfeito para compartilhar!',
       'evento':        '\ud83c\udfaa Temos Carrinho para Eventos! Consulte pelo WhatsApp: (16) 99606-2046.',
       'festa':         '\ud83c\udf89 Fazemos encomendas para festas: Torta, Caixas, Picol\u00e9s no atacado e Carrinho para Eventos!',
-      'sorteio':       '\ud83d\udea8 As inscri\u00e7\u00f5es do sorteio de 2026 foram encerradas: j\u00e1 temos mais de 1.400 inscritos. Em 2027 teremos sorteio mensal de uma torta de sorvete. O cadastro ser\u00e1 feito pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
+      'sorteio':       '\ud83d\udea8 O sorteio da caixa de sorvete foi encerrado; a campanha anterior teve mais de 1.400 inscritos. Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete, exclusivamente pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o. O sorteio come\u00e7a em janeiro de 2027.',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
       'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
@@ -386,8 +386,8 @@
         };
       }
       return {
-        answer: '\ud83d\udea8 Inscri\u00e7\u00f5es de 2026 encerradas: j\u00e1 temos mais de 1.400 inscritos.\n\nEm 2027 haver\u00e1 sorteio mensal de uma torta de sorvete. O cadastro ser\u00e1 feito pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
-        linkText: '\ud83c\udf81 Ver informa\u00e7\u00f5es de 2027',
+        answer: '\ud83d\udea8 O sorteio da caixa de sorvete foi encerrado; a campanha anterior teve mais de 1.400 inscritos.\n\nInscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio come\u00e7a em janeiro de 2027. Cadastre-se exclusivamente pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
+        linkText: '\ud83c\udf81 Ver inscri\u00e7\u00e3o para 2027',
         linkHref: 'promocao.html',
         chips: ['\ud83e\uded0 Promo\u00e7\u00f5es de a\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de sorvete']
       };

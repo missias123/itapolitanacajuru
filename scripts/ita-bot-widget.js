@@ -427,9 +427,9 @@
     promocao: {
       titulo: '🎉 Promoções e Sorteios',
       textos: [
-        '⚠️ As inscrições do sorteio de 2026 já foram encerradas. Já temos mais de 1.400 inscritos.',
-        '🍰 Em 2027 haverá sorteio mensal de uma torta de sorvete.',
-        '📝 Para concorrer, o cadastro deverá ser feito pelo site oficial: itapolitanacajuru.com.br. Acompanhe a aba Promoção para ver as informações e regras.'
+        '⚠️ As inscrições para o sorteio da caixa de sorvete foram encerradas. A campanha anterior teve mais de 1.400 inscritos.',
+        '🍰 Inscrições já estão abertas para o sorteio mensal de uma torta de sorvete. O sorteio começa em janeiro de 2027.',
+        '📝 Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promoção.'
       ],
       linkTexto: 'Ver Página de Promoção',
       linkUrl: 'promocao.html'

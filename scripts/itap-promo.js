@@ -117,7 +117,7 @@
         var regId = dados.registrationId || 'SRT-2027-' + Math.floor(1000 + Math.random() * 9000);
         var msgSucesso = `
           <div style="font-size: 1.1rem; margin-bottom: 8px;">🎉 <strong>Inscrição Confirmada com Sucesso!</strong> 🎉</div>
-          <div style="font-size: 0.9rem; margin-bottom: 12px; color: #333;">Seu cadastro está registrado para concorrer aos sorteios mensais de 2027 de uma Torta de Sorvete. As inscrições de 2026 foram encerradas com mais de 1.400 inscritos.</div>
+          <div style="font-size: 0.9rem; margin-bottom: 12px; color: #333;">Seu cadastro está confirmado para concorrer aos sorteios mensais de uma Torta de Sorvete. As inscrições já estão abertas pelo site oficial da Itapolitana Cajuru e o primeiro sorteio será em janeiro de 2027.</div>
           <div class="ticket-sorte">
             <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Seu Ticket da Sorte Itapolitana</div>
             <div class="ticket-codigo">${regId}</div>
