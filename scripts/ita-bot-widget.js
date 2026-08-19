@@ -111,7 +111,7 @@
       '.itabot-face-led::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.15) 0 1px,transparent 1px 3px); mix-blend-mode:overlay; pointer-events:none; }',
       '.itabot-face-led-track { display:inline-block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 6.5px/1 Arial,sans-serif; letter-spacing:.4px; text-shadow:-1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 0 6px #000; white-space:nowrap; animation:itabot-led-marquee 7.4s linear infinite; }',
       '.itabot-launcher-dot { display:none; }',
-      '.itabot-launcher-label { display:inline-flex; align-items:center; justify-content:center; min-width:64px; min-height:22px; padding:3px 9px; border:1px solid rgba(255,255,255,.92); border-radius:999px; background:linear-gradient(135deg,#E8000D,#B5121D); color:#FFFFFF; font:900 10px/1 Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 12px rgba(232,0,13,.62); text-shadow:0 1px 2px rgba(0,0,0,.45); pointer-events:none; user-select:none; animation:itabot-label-pulse 1.8s ease-in-out infinite; }',
+      '.itabot-launcher-label { display:inline-flex; align-items:center; justify-content:center; min-width:64px; min-height:22px; padding:3px 9px; border:1px solid rgba(255,255,255,.92); border-radius:999px; background:#FF0000; color:#FFFFFF; font:900 10px/1 Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 12px rgba(255,0,0,.62); text-shadow:0 1px 2px rgba(0,0,0,.45); pointer-events:none; user-select:none; animation:itabot-label-pulse 1.8s ease-in-out infinite; }',
       '@keyframes itabot-label-pulse { 0%,100% { transform:scale(1); filter:brightness(1); } 50% { transform:scale(1.06); filter:brightness(1.16); } }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
       '@keyframes itabot-led-marquee { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
@@ -134,7 +134,7 @@
     launcher.setAttribute('aria-label', 'Abrir ItaBot — Dúvida');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d.png" alt="" draggable="false"/>',
+        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png" alt="" draggable="false"/>',
         '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
       '<span class="itabot-launcher-label" aria-hidden="true">DÚVIDA</span>',
