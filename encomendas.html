@@ -326,7 +326,7 @@
         background: var(--sabor-accent, #334155);
         text-shadow: none;
     }
-    .grid-sabores.limite-atingido .sabor-item:not(.sel) { opacity: 0.5; filter: grayscale(.55); pointer-events: none; }
+    .grid-sabores.limite-atingido .sabor-item:not(.sel) { display: none !important; }
     @media (prefers-reduced-motion: reduce) {
         .sabor-item { transition: none; }
         .sabor-item:hover, .sabor-item:focus-visible, .sabor-item.sel { transform: none; }
@@ -353,7 +353,8 @@
     .modal-actions { display: flex; gap: 10px; margin-top: 25px; }
     .confirm-action { flex: 2; padding: 15px; border-radius: 15px; border: none; font-weight: 800; transition: all 0.3s; }
     .confirm-action:disabled { background: #ccc !important; color: #666 !important; cursor: not-allowed; }
-    .confirm-action.is-ready { background: var(--verde) !important; color: white !important; }
+    .confirm-action.is-ready { background: #16A34A !important; color: white !important; box-shadow: 0 0 20px rgba(22, 163, 74, 0.6), 0 0 40px rgba(22, 163, 74, 0.3); transform: scale(1.02); }
+    .confirm-action { background: #E2E8F0; color: #475569; }
 
     .selection-status { display: block; width: 100%; min-height: 22px; text-align: center; margin-top: 15px; padding-inline: 4px; font-weight: 800; font-size: clamp(.82rem, 2.6vw, .95rem); line-height: 1.35; color: var(--primary); overflow-wrap: anywhere; }
     .selection-status.ready { color: var(--success); }
@@ -1128,15 +1129,21 @@
             return ' --sabor-accent:' + cor[0] + ';--sabor-tint:' + cor[1] + ';--sabor-glow:' + cor[2] + ';';
         }
 
-        grid.innerHTML = SABORES_SORVETE.map(s => {
-            var sel = saboresSelecionados.includes(s);
-            var nomeNormalizado = String(s || '').trim().toLowerCase();
-            var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
-            var classeNovo = isSaborNovo ? ' sabor-novo' : '';
-            var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
-            var style = getSaborMassaStyle(s);
-            return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${novoBadge}<span class="sabor-label">${s}</span></div>`;
-        }).join('');
+        function renderizarGridSabores() {
+            var atingiuLimite = saboresSelecionados.length >= produtoAtual.max;
+            grid.classList.toggle('limite-atingido', atingiuLimite);
+            grid.innerHTML = SABORES_SORVETE.map(s => {
+                var sel = saboresSelecionados.includes(s);
+                if (atingiuLimite && !sel) return '';
+                var nomeNormalizado = String(s || '').trim().toLowerCase();
+                var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
+                var classeNovo = isSaborNovo ? ' sabor-novo' : '';
+                var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
+                var style = getSaborMassaStyle(s);
+                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${novoBadge}<span class="sabor-label">${s}</span></div>`;
+            }).join('');
+        }
+        renderizarGridSabores();
 
         atualizarAcaoSabores();
         window.abrirModal('modal-sabores');
@@ -1146,12 +1153,11 @@
         var idx = saboresSelecionados.indexOf(sabor);
         if (idx > -1) {
             saboresSelecionados.splice(idx, 1);
-            el.classList.remove('sel');
         } else {
             if (saboresSelecionados.length >= produtoAtual.max) return;
             saboresSelecionados.push(sabor);
-            el.classList.add('sel');
         }
+        renderizarGridSabores();
         atualizarAcaoSabores();
     };
 
