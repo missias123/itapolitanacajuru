@@ -247,7 +247,8 @@
         font-size: 0.95rem;
         color: #263244;
         background: linear-gradient(180deg, #FFFFFF 0%, var(--sabor-tint, #F8FAFC) 100%);
-        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+        /* Adicionado filter e opacity na transição para suavidade World Class */
+        transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .25s ease, filter .3s ease, opacity .3s ease;
         box-shadow: 0 2px 8px rgba(15,23,42,.06), inset 0 0 0 1px rgba(255,255,255,.75);
         line-height: 1.25;
         letter-spacing: -0.01em;
@@ -326,7 +327,12 @@
         background: var(--sabor-accent, #334155);
         text-shadow: none;
     }
-    .grid-sabores.limite-atingido .sabor-item:not(.sel) { display: none !important; }
+    /* Regra de Ouro: Em vez de ocultar, deixamos cinza e opaco para clareza visual total */
+    .grid-sabores.limite-atingido .sabor-item:not(.sel) {
+        filter: grayscale(1) opacity(0.35);
+        pointer-events: none;
+        cursor: default;
+    }
     @media (prefers-reduced-motion: reduce) {
         .sabor-item { transition: none; }
         .sabor-item:hover, .sabor-item:focus-visible, .sabor-item.sel { transform: none; }
@@ -1150,16 +1156,29 @@
 
         window.renderizarGridSabores = function() {
             var atingiuLimite = saboresSelecionados.length >= produtoAtual.max;
+            // A classe 'limite-atingido' no grid controla o acinzentamento via CSS
             grid.classList.toggle('limite-atingido', atingiuLimite);
+            
             grid.innerHTML = SABORES_SORVETE.map(s => {
                 var sel = saboresSelecionados.includes(s);
-                var grayStyle = (atingiuLimite && !sel) ? 'filter: grayscale(1) opacity(0.3); pointer-events: none;' : '';
                 var nomeNormalizado = String(s || '').trim().toLowerCase();
                 var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
                 var classeNovo = isSaborNovo ? ' sabor-novo' : '';
                 var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
-                var style = getSaborMassaStyle(s) + grayStyle;
-                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${novoBadge}<span class="sabor-label">${s}</span></div>`;
+                
+                // Usamos apenas o estilo de cores, a opacidade é controlada pela classe do grid
+                var style = getSaborMassaStyle(s);
+                
+                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" 
+                             style="${style}" 
+                             tabindex="0" 
+                             role="button" 
+                             aria-pressed="${sel?'true':'false'}" 
+                             onclick="window.toggleSabor('${s}', this)" 
+                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">
+                            ${novoBadge}
+                            <span class="sabor-label">${s}</span>
+                        </div>`;
             }).join('');
         };
         window.renderizarGridSabores();
