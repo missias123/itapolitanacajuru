@@ -330,10 +330,23 @@
         text-shadow: none;
     }
     /* Regra de Ouro: Em vez de ocultar, deixamos cinza e opaco para clareza visual total */
-    .sabor-grid.limite-atingido .sabor-item:not(.sel) {
-        filter: grayscale(1) opacity(0.35);
-        pointer-events: none;
-        cursor: default;
+        /* Regra de Ouro Definitiva (World Class): Alta prioridade via ID */
+    #grid-sabores.limite-atingido .sabor-item:not(.sel) {
+        filter: grayscale(1) opacity(0.25) !important;
+        pointer-events: none !important;
+        cursor: default !important;
+        transform: scale(0.95);
+        border-color: #ddd !important;
+        box-shadow: none !important;
+    }
+    
+    /* Destaque Neon para os selecionados quando o limite é atingido */
+    #grid-sabores.limite-atingido .sabor-item.sel {
+        filter: none !important;
+        opacity: 1 !important;
+        transform: scale(1.05);
+        box-shadow: 0 0 20px var(--sabor-glow), 0 0 40px var(--sabor-glow) !important;
+        z-index: 10;
     }
     @media (prefers-reduced-motion: reduce) {
         .sabor-item { transition: none; }
@@ -1157,11 +1170,19 @@
         }
 
         window.renderizarGridSabores = function() {
-            var atingiuLimite = saboresSelecionados.length >= produtoAtual.max;
-            // A classe 'limite-atingido' no grid controla o acinzentamento via CSS
-            grid.classList.toggle('limite-atingido', atingiuLimite);
+            var gridInterno = document.getElementById('grid-sabores');
+            if (!gridInterno) return;
             
-            grid.innerHTML = SABORES_SORVETE.map(s => {
+            var atingiuLimite = saboresSelecionados.length >= produtoAtual.max;
+            
+            // Aplica a classe de estado no contêiner pai (Método Validado)
+            if (atingiuLimite) {
+                gridInterno.classList.add('limite-atingido');
+            } else {
+                gridInterno.classList.remove('limite-atingido');
+            }
+            
+            gridInterno.innerHTML = SABORES_SORVETE.map(s => {
                 var sel = saboresSelecionados.includes(s);
                 var nomeNormalizado = String(s || '').trim().toLowerCase();
                 var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
