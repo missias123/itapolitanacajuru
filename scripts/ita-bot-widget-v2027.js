@@ -106,19 +106,16 @@
       '#itabot-launcher.itabot-launcher-icon-only { width:94px; height:150px; padding:0; justify-content:flex-start; gap:2px; }',
       '.itabot-launcher-robot { position:relative; flex:0 0 82px; width:78px; height:82px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
-      '.itabot-face-led { position:absolute; left:24%; top:10.5%; width:52%; height:27%; display:flex; align-items:center; overflow:hidden; border:1px solid rgba(0,221,255,.5); border-radius:28% / 30%; background:#050B14; box-shadow:inset 0 0 6px rgba(0,0,0,.8); opacity:0; transform:scale(.92); transition:all .35s ease; pointer-events:none; z-index:2; }',
-      '.itabot-face-led.is-on { opacity:1; transform:scale(1); background:#E81123 !important; box-shadow:inset 0 0 8px rgba(0,0,0,.5), 0 0 16px rgba(232,17,35,.9) !important; border-color:#FFD600 !important; }',
-      '.itabot-face-led::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.15) 0 1px,transparent 1px 3px); mix-blend-mode:overlay; pointer-events:none; }',
-      '.itabot-face-led-track { display:inline-block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 6.5px/1 Arial,sans-serif; letter-spacing:.4px; text-shadow:-1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 0 6px #000; white-space:nowrap; animation:itabot-led-marquee 7.4s linear infinite; }',
+
       '.itabot-launcher-dot { display:none; }',
-      '.itabot-launcher-led-panel { position:relative; display:flex; align-items:center; width:50%; min-width:46px; height:15px; margin-top:1px; padding:0 5px; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
+      '.itabot-launcher-led-panel { position:relative; display:flex; flex:0 0 15px; align-items:center; width:50%; min-width:46px; min-height:15px; height:15px; margin-top:1px; padding:0 5px; box-sizing:border-box; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
       '.itabot-launcher-led-panel::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px); mix-blend-mode:multiply; pointer-events:none; }',
       '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 7.5px/13px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 3px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
       '@keyframes itabot-launcher-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
-      '@keyframes itabot-led-marquee { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-face-led-track, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:100px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { flex-basis:74px; width:70px; height:74px; } .itabot-launcher-led-panel { width:50%; min-width:42px; height:13px; margin-top:1px; padding:0 4px; } .itabot-launcher-led-track { font-size:6.5px; line-height:11px; } .itabot-face-led-track { font-size:5.5px; } }',
+
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
+      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:100px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { flex-basis:74px; width:70px; height:74px; } .itabot-launcher-led-panel { flex:0 0 15px; width:50%; min-width:42px; min-height:15px; height:15px; margin-top:1px; padding:0 4px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:6.5px; line-height:13px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -137,41 +134,11 @@
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
-        '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);
-
-    // Face LED: entra em períodos curtos para preservar a expressão e destacar a marca.
-    var ledFace = launcher.querySelector('.itabot-face-led');
-    var ledTrack = launcher.querySelector('.itabot-face-led-track');
-    var ledMessages = [
-      'ITAPOLITANA',
-      'SORVETE ARTESANAL',
-      'MAIS DE 38 SABORES',
-      'PISTACHE • CHEESECAKE • BEM CASADO',
-      'RETIRE NA LOJA • CAJURU'
-    ];
-    var ledIndex = 0;
-    var ledReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var showLedMessage = function () {
-      if (!ledFace || !ledTrack || ledReduced || document.hidden) return;
-      ledTrack.textContent = ledMessages[ledIndex % ledMessages.length] + ' • ';
-      ledIndex += 1;
-      ledTrack.style.animation = 'none';
-      void ledTrack.offsetWidth;
-      ledTrack.style.animation = '';
-      ledFace.classList.add('is-on');
-      window.setTimeout(function () {
-        if (ledFace) ledFace.classList.remove('is-on');
-      }, 7200);
-    };
-    if (!ledReduced) {
-      window.setTimeout(showLedMessage, 3200);
-      window.setInterval(showLedMessage, 11800);
-    }
 
     var lastLayout = '';
     var raf = 0;
