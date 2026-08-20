@@ -1153,12 +1153,12 @@
             grid.classList.toggle('limite-atingido', atingiuLimite);
             grid.innerHTML = SABORES_SORVETE.map(s => {
                 var sel = saboresSelecionados.includes(s);
-                var displayStyle = (atingiuLimite && !sel) ? 'display:none;' : '';
+                var grayStyle = (atingiuLimite && !sel) ? 'filter: grayscale(1) opacity(0.3); pointer-events: none;' : '';
                 var nomeNormalizado = String(s || '').trim().toLowerCase();
                 var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
                 var classeNovo = isSaborNovo ? ' sabor-novo' : '';
                 var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
-                var style = getSaborMassaStyle(s) + displayStyle;
+                var style = getSaborMassaStyle(s) + grayStyle;
                 return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${novoBadge}<span class="sabor-label">${s}</span></div>`;
             }).join('');
         };
