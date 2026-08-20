@@ -1148,7 +1148,7 @@
             return ' --sabor-accent:' + cor[0] + ';--sabor-tint:' + cor[1] + ';--sabor-glow:' + cor[2] + ';';
         }
 
-        function renderizarGridSabores() {
+        window.renderizarGridSabores = function() {
             var atingiuLimite = saboresSelecionados.length >= produtoAtual.max;
             grid.classList.toggle('limite-atingido', atingiuLimite);
             grid.innerHTML = SABORES_SORVETE.map(s => {
@@ -1161,8 +1161,8 @@
                 var style = getSaborMassaStyle(s) + displayStyle;
                 return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" style="${style}" tabindex="0" role="button" aria-pressed="${sel?'true':'false'}" onclick="window.toggleSabor('${s}', this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">${novoBadge}<span class="sabor-label">${s}</span></div>`;
             }).join('');
-        }
-        renderizarGridSabores();
+        };
+        window.renderizarGridSabores();
 
         atualizarAcaoSabores();
         window.abrirModal('modal-sabores');
