@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Prévia de aprovação — itaBot</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --red: #e8000d;
+      --red-bright: #ff1f2b;
+      --blue: #0a7dff;
+      --ink: #06101f;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      min-height: 100svh;
+      overflow-x: hidden;
+      display: grid;
+      place-items: center;
+      padding: max(18px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+      background:
+        radial-gradient(circle at 50% 24%, rgba(8, 125, 255, .24), transparent 35%),
+        linear-gradient(145deg, #071b36 0%, #041122 48%, #020914 100%);
+      color: #fff;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .preview {
+      width: min(100%, 620px);
+      display: grid;
+      gap: 16px;
+      justify-items: center;
+    }
+    .heading {
+      width: min(100%, 520px);
+      text-align: center;
+    }
+    .heading-kicker {
+      margin: 0 0 5px;
+      color: #9fdcff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(22px, 6vw, 32px);
+      line-height: 1.08;
+      letter-spacing: -.02em;
+    }
+    .heading-copy {
+      max-width: 430px;
+      margin: 9px auto 0;
+      color: #e8f5ff;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .stage {
+      position: relative;
+      width: min(100%, 390px);
+      min-height: min(72svh, 590px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
+      padding: 16px 16px 28px;
+      border: 1px solid rgba(156, 221, 255, .32);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(10, 48, 89, .75), rgba(2, 13, 28, .85));
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(255, 255, 255, .13);
+      overflow: hidden;
+    }
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 5px);
+      opacity: .28;
+    }
+    .stage-label {
+      position: relative;
+      z-index: 2;
+      align-self: flex-start;
+      margin: 0 0 8px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(0, 11, 27, .72);
+      color: #d8f2ff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .robot-button {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: min(100%, 330px);
+      margin: 0;
+      padding: 0 0 4px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .robot-button:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 7px;
+      border-radius: 22px;
+    }
+    .robot {
+      display: block;
+      width: min(100%, 320px);
+      height: auto;
+      filter: drop-shadow(0 18px 18px rgba(0, 0, 0, .42));
+      user-select: none;
+      -webkit-user-drag: none;
+      animation: float 4.8s ease-in-out infinite;
+    }
+    .marquee-shell {
+      position: relative;
+      width: min(100%, 265px);
+      min-height: 38px;
+      margin-top: -5px;
+      padding: 7px 12px;
+      border: 2px solid #ff6670;
+      border-radius: 999px;
+      background: var(--red);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, .95), 0 0 20px rgba(232, 0, 13, .85), inset 0 0 13px rgba(70, 0, 0, .55);
+      overflow: hidden;
+    }
+    .marquee-shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(180deg, rgba(0,0,0,.16) 0 1px, transparent 1px 4px);
+      mix-blend-mode: multiply;
+    }
+    .marquee-track {
+      display: block;
+      width: max-content;
+      padding-left: 100%;
+      color: #fff;
+      font: 950 15px/22px Arial, sans-serif;
+      letter-spacing: .05em;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 6px #000;
+      white-space: nowrap;
+      animation: marquee 6.4s linear infinite;
+    }
+    .note {
+      position: relative;
+      z-index: 2;
+      max-width: 340px;
+      margin: auto 0 0;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 14px;
+      background: rgba(0,0,0,.28);
+      color: #eef9ff;
+      font-size: 12px;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .approved-action {
+      min-height: 48px;
+      padding: 11px 18px;
+      border: 0;
+      border-radius: 14px;
+      background: #fff;
+      color: #071326;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(0,0,0,.24);
+    }
+    .approved-action:active { transform: scale(.98); }
+    .status {
+      min-height: 22px;
+      margin: 0;
+      color: #bcf5d1;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(-.6deg); }
+      50% { transform: translate3d(0, -7px, 0) rotate(.6deg); }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
+    @media (min-width: 700px) {
+      body { padding: 28px; }
+      .stage { width: min(100%, 430px); min-height: 670px; }
+      .robot { width: 350px; }
+      .marquee-shell { width: 290px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .robot, .marquee-track { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview" aria-labelledby="title">
+    <header class="heading">
+      <p class="heading-kicker">Prévia isolada · não implementada</p>
+      <h1 id="title">Letreiro no pé do itaBot</h1>
+      <p class="heading-copy">Abaixo está a posição proposta para substituir a palavra fixa “DÚVIDA”. O robô e o letreiro ainda não foram alterados no site.</p>
+    </header>
+    <section class="stage" aria-label="Prévia visual do itaBot">
+      <div class="stage-label">Área atual do launcher</div>
+      <button class="robot-button" type="button" aria-label="Prévia: clicar em qualquer parte do robô abre dúvidas">
+        <img class="robot" src="../images/itabot-3d-full-body-transparent.png" alt="itaBot 3D com picolé azul e sorvete colorido" draggable="false">
+        <span class="marquee-shell" aria-hidden="true"><span class="marquee-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>
+      </button>
+      <p class="note">Proposta: o clique ficará em toda a área do robô e do letreiro, abrindo o HTML de dúvidas. O letreiro permanece abaixo dos pés, sem cobrir botões do site.</p>
+    </section>
+    <button class="approved-action" type="button" onclick="document.getElementById('status').textContent='Prévia aprovada visualmente nesta tela.'">Aprovar esta posição</button>
+    <p id="status" class="status" aria-live="polite"></p>
+  </main>
+</body>
+</html>
