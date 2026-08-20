@@ -1171,12 +1171,15 @@
     window.toggleSabor = function(sabor, el) {
         var idx = saboresSelecionados.indexOf(sabor);
         if (idx > -1) {
+            // Se já está selecionado, o segundo clique desmarca (ELIMINA A SELEÇÃO)
             saboresSelecionados.splice(idx, 1);
         } else {
+            // Se não está selecionado, verifica o limite
             if (saboresSelecionados.length >= produtoAtual.max) return;
             saboresSelecionados.push(sabor);
         }
-        renderizarGridSabores();
+        // Re-renderiza para "acender" ou "apagar" os sabores conforme o novo estado
+        window.renderizarGridSabores();
         atualizarAcaoSabores();
     };
 
