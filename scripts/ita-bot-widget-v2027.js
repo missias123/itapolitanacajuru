@@ -136,7 +136,7 @@
       launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png" alt="" draggable="false"/>',
+        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
         '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
