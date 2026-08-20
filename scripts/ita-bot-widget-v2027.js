@@ -12,7 +12,7 @@
   var _base = (function () {
     var scripts = document.querySelectorAll('script[src*="ita-bot-widget"]');
     if (scripts.length) {
-      return scripts[scripts.length - 1].src.replace(/scripts\/ita-bot-widget\.js.*$/, '');
+      return scripts[scripts.length - 1].src.replace(/scripts\/ita-bot-widget.*\.js.*$/, '');
     }
     return '';
   })();
