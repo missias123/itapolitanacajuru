@@ -68,3 +68,8 @@
 - [ ] Unificar todos os produtos em uma lista administrativa integrada à edição manual segura e à base oficial.
 - [ ] Adaptar busca, confirmação de salvamento, filtros e proteção contra edição acidental ao painel administrativo.
 - [ ] Validar SKU obrigatório, formato permitido e unicidade antes de salvar qualquer edição manual.
+- [ ] Exigir confirmação explícita antes de esgotar e antes de reativar produto, sabor ou embalagem.
+- [ ] Usar o botão Atualizar site para enviar ao GitHub apenas alterações de disponibilidade já confirmadas.
+- [ ] Criar comprovante térmico de 80 mm com margem zero, alto contraste, texto legível e sem corte lateral para pedidos administrativos.
+- [ ] Revisar todos os textos do Peça e retire para eliminar interpretação ambígua sobre produto, sabor, embalagem, valor, horário e envio.
+- [ ] Pesquisar e adaptar padrões internacionais de instrução e revisão de pedidos de alimentos ao fluxo Peça e retire.
