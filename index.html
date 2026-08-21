@@ -719,8 +719,10 @@ img{max-width:100%;display:block}
 .natureon-card-nome{font-size:13px;font-weight:800;color:#2E0050;line-height:1.4}
 .natureon-card-ingredientes{font-size:11.5px;color:#7B2D8B;font-weight:600;line-height:1.4}
 .natureon-card-preco{font-size:20px;font-weight:900;color:#C62828;letter-spacing:-.5px;margin-top:auto}
-.natureon-card-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:999px;padding:7px 14px;font-size:11.5px;font-weight:800;cursor:pointer;text-decoration:none;margin-top:4px;transition:filter .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.natureon-card-btn:hover{filter:brightness(1.08)}
+.natureon-card-btn,.product-pickup-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;margin-top:6px;transition:filter .15s,transform .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.natureon-card-btn:hover,.product-pickup-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.natureon-card-btn:focus-visible,.product-pickup-btn:focus-visible{outline:3px solid #0D47A1;outline-offset:3px}
+.prod-card-body .product-pickup-btn{width:100%;font-size:11px;margin-top:10px}
 .natureon-info-card{background:linear-gradient(135deg,#F8F0FF,#EDE7F6);border:1.5px solid #CE93D8;border-radius:14px;padding:14px 16px;margin-bottom:4px}
 .natureon-info-item{font-size:13px;font-weight:700;color:#4A148C;padding:4px 0;border-bottom:1px solid #E1BEE7}
 .natureon-info-item:last-child{border-bottom:none}
@@ -2854,7 +2856,12 @@ body.cardapio-aberto { padding-bottom: 80px; }
 <div class="sabores-badge" id="hero-badge">38 sabores — feitos com ingredientes selecionados</div>
 <div data-config="indexPagina.heroBadgeAcai" style="margin:10px auto 8px;max-width:420px;background:linear-gradient(135deg,#4A148C,#7B1FA2);border:1px solid #CE93D8;border-radius:999px;padding:8px 14px;font-size:.82rem;font-weight:800;color:#F3E5F5;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.6);">O melhor açaí de Cajuru — Natureon!</div>
 <div class="frase-sensorial" id="frase-rotativa" style="font-family:'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:-0.01em;color:#C62828;margin-bottom:6px;">"Tradição e Sabor Inconfundível em Cada Mordida."</div>
-<h1 id="hero-título" data-config="indexPagina.heroH1Principal">Sorvetes em Cajuru, picolés diferenciados e <span class="destaque-texto">Açaí Natureon</span></h1>
+<style>
+  #hero-título .acai-natureon-link { color: inherit; text-decoration: underline; text-decoration-color: currentColor; text-decoration-thickness: 2px; text-underline-offset: .12em; }
+  #hero-título .acai-natureon-link:hover { opacity: .78; }
+  #hero-título .acai-natureon-link:focus-visible { outline: 3px solid #6A1B9A; outline-offset: 4px; border-radius: 4px; }
+</style>
+<h1 id="hero-título" data-config="indexPagina.heroH1Principal">Sorvetes em Cajuru, picolés diferenciados e <a class="destaque-texto acai-natureon-link" href="cardapio-acai-natureon.html" aria-label="Abrir cardápio Açaí Natureon">Açaí Natureon</a></h1>
 <p id="hero-descrição" data-config="indexPagina.heroDescricaoPrincipal">Do nosso balcão aqui em Cajuru para a sua casa: sorvete , picolés diferenciados e o melhor açaí da região, com pedido rápido pelo WhatsApp.</p>
 <div style="display:flex;align-items:center;justify-content:center;gap:6px;background:#FFF3E0;border:1.5px solid #FFCCBC;border-radius:10px;padding:8px 14px;margin-top:10px;font-size:0.82rem;font-weight:700;color:#BF360C;" role="note" aria-label="Informação importante: não fazemos delivery, somente retirada na loja">🚫 Não fazemos delivery · Encomende e retire na loja</div>
 </div>
@@ -3784,18 +3791,41 @@ document.addEventListener('keydown', function (e) {
 function seloLeitePasteurizado(){
  return '<span class="selo-leite-pasteurizado" role="note">Leite Pasteurizado da Fazenda</span>';
 }
+function chaveCadastroSku(valor){
+ return String(valor).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+}
+function obterSkuProduto(chave){
+ const cadastro=produtos&&produtos.cadastro_skus&&produtos.cadastro_skus.por_chave;
+ return cadastro&&cadastro[chave]&&cadastro[chave].sku?cadastro[chave].sku:'';
+}
+function mensagemPeçaERetire(nome,detalhe,preco,sku){
+ const valor=Number(preco);
+ const linhaDetalhe=detalhe?`\n• Detalhe: ${detalhe}`:'';
+ const linhaPreco=Number.isFinite(valor)?`\n• Valor: R$ ${valor.toFixed(2).replace('.',',')}`:'';
+ const linhaSku=sku?`\n• Código: ${sku}`:'';
+ return `Olá! Quero pedir:${linhaSku}${linhaDetalhe}\n• Produto: ${nome}${linhaPreco}\n\nRetirada na loja. O pedido será produzido após a confirmação do pagamento.`;
+}
+function botaoPeçaERetire(nome,detalhe,preco,categoria,chaveSku){
+ const sku=obterSkuProduto(chaveSku);
+ const href=buildWhatsAppHref(mensagemPeçaERetire(nome,detalhe,preco,sku));
+ const aria=escHTML(`Pedir ${nome}${sku?`, código ${sku}`:''} e retirar na loja pelo WhatsApp`);
+ const cat=escHTML(categoria||'cardapio');
+ return `<a class="product-pickup-btn" href="${href}" target="_blank" rel="noopener" data-sku="${escHTML(sku)}" aria-label="${aria}" onclick="_trackUiEvent('whatsapp_pickup_click',{page:'home',category:'${cat}',cta_type:'peca_e_retire',sku:'${escHTML(sku)}'})"><span aria-hidden="true">↗</span>Peça e retire</a>`;
+}
 function renderSorvetes(){
  const g=document.getElementById('sorvetes-grid');
  if (!g) return;
  g.innerHTML = '';
- const nomes={casquinha_copo:'Casquinha / Copo',casquinha_copão:'Casquinha / Copo',copo_recheado:'Copo Recheado',copão_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
+ const nomes={casquinha_copo:'Casquinha/copo',casquinha_copão:'Casquinha/copo',copo_recheado:'Copo recheado',copão_recheado:'Copo recheado',cascão:'Cascão',cestinha:'Cestinha'};
  const desc={casquinha_copo:'1 bola',casquinha_copão:'1 bola',copo_recheado:'1 bola + recheio',copão_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
  if(produtos&&produtos.sorvetes&&produtos.sorvetes.preços){
   Object.entries(produtos.sorvetes.preços).forEach(([key,preços])=>{
    const preço=Object.values(preços)[0];
    const chave='sorvete_'+key+'_'+Object.keys(preços)[0].replace(/\s/g,'_');
    const c=document.createElement('div');c.className='prod-card';
-   c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomes[key]||key}</div>${seloLeitePasteurizado()}<div class="prod-desc">${desc[key]||''}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+   const nomeProduto=nomes[key]||key;
+   const tamanhoInicial=Object.keys(preços)[0];
+   c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomeProduto}</div>${seloLeitePasteurizado()}<div class="prod-desc">${desc[key]||''}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(nomeProduto,tamanhoInicial,preço,'sorvetes',`sorvetes.${key}.${chaveCadastroSku(tamanhoInicial)}`)}</div>`;
    g.appendChild(c);
   });
  }
@@ -3814,11 +3844,11 @@ function renderMilk(){
  if(produtos&&produtos.milkshake){
   const m=produtos.milkshake;
   const tipos=[];
-  if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,preço])=>tipos.push({nome:`Milkshake Tradicional ${tam}`,preço,chave:'milk_trad_'+tam.replace(/\s/g,'_')}));
-  if(m.top) Object.entries(m.top).forEach(([tam,preço])=>tipos.push({nome:`Milkshake Top ${tam}`,preço,chave:'milk_top_'+tam.replace(/\s/g,'_')}));
+  if(m.tradicional) Object.entries(m.tradicional).forEach(([tam,preço])=>tipos.push({nome:`Milkshake Tradicional ${tam}`,preço,chave:'milk_trad_'+tam.replace(/\s/g,'_'),chaveSku:`milkshake.tradicional.${chaveCadastroSku(tam)}`}));
+  if(m.top) Object.entries(m.top).forEach(([tam,preço])=>tipos.push({nome:`Milkshake Top ${tam}`,preço,chave:'milk_top_'+tam.replace(/\s/g,'_'),chaveSku:`milkshake.top.${chaveCadastroSku(tam)}`}));
   tipos.forEach(t=>{
    const c=document.createElement('div');c.className='prod-card';
-   c.innerHTML=imgCard(t.chave,'')+`<div class="prod-card-body"><div class="prod-nome">${t.nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${t.preço.toFixed(2).replace('.',',')}</div></div>`;
+   c.innerHTML=imgCard(t.chave,'')+`<div class="prod-card-body"><div class="prod-nome">${t.nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${t.preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(t.nome,'',t.preço,'milkshakes',t.chaveSku)}</div>`;
    g.appendChild(c);
   });
  }
@@ -3836,10 +3866,11 @@ function renderTacas(){
  if (!g) return;
  g.innerHTML = '';
  if(produtos&&produtos.tacas&&produtos.tacas.tradicionais){
-  Object.entries(produtos.tacas.tradicionais).forEach(([nome,preço])=>{
+  Object.entries(produtos.tacas.tradicionais).forEach(([nome,preço],index)=>{
    const chave='taca_trad_'+nome.replace(/\s/g,'_');
    const c=document.createElement('div');c.className='prod-card';
-   c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Taça ${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+   const nomeProduto=`Taça ${nome}`;
+   c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomeProduto}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(nomeProduto,'',preço,'tacas',`tacas.tradicionais.${index+1}`)}</div>`;
    g.appendChild(c);
   });
  }
@@ -3857,10 +3888,11 @@ function renderTacasP(){
  if (!g) return;
  g.innerHTML = '';
  if(produtos&&produtos.tacas&&produtos.tacas.sujas){
-  Object.entries(produtos.tacas.sujas).forEach(([nome,preço])=>{
+  Object.entries(produtos.tacas.sujas).forEach(([nome,preço],index)=>{
    const chave='taca_suja_'+nome.replace(/\s/g,'_');
    const c=document.createElement('div');c.className='prod-card';
-   c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Taça Suja – ${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+   const nomeProduto=`Taça Suja – ${nome}`;
+   c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomeProduto}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(nomeProduto,'',preço,'tacas_premium',`tacas.sujas.${index+1}`)}</div>`;
    g.appendChild(c);
   });
  }
@@ -3880,10 +3912,6 @@ function renderAçaí(){
  const _ac=produtos&&(produtos.açaí||produtos.acai)||{};
  const categorias=_ac.categorias||[];
 
- function waLink(nome,tamanho,preco){
-  const msg=`Olá! Quero pedir: ${nome}, tamanho ${tamanho}, por R$ ${Number(preco).toFixed(2).replace('.',',')}.`;
-  return buildWhatsAppHref(msg);
- }
 
  if(!categorias.length){
   b.innerHTML='<p style="color:#7B2D8B;font-weight:700;padding:12px">Cardápio em atualização. Em breve!</p>';
@@ -3930,7 +3958,7 @@ function renderAçaí(){
   // Extrair tamanho para mensagem WA — usa label da categoria
   const tamLabel=cat.label||cat.titulo;
 
-  cat.produtos.forEach(p=>{
+  cat.produtos.forEach((p,index)=>{
    if(p.preco===null||p.preco===undefined){return;}
    const card=document.createElement('div');card.className='natureon-card';
    card.setAttribute('role','article');
@@ -3944,7 +3972,7 @@ function renderAçaí(){
    const ingredParts=partes.slice(1).map(s=>s.trim());
    const ingredText=ingredParts.length?ingredParts.join(' · '):'';
 
-   const wh=p.preco?`<a class="natureon-card-btn" href="${waLink(p.nome,tamLabel,p.preco)}" target="_blank" rel="noopener" aria-label="Pedir ${p.nome} pelo WhatsApp"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir pelo WhatsApp</a>`:'';
+   const wh=p.preco?botaoPeçaERetire(p.nome,tamLabel,p.preco,'acai',`acai.${cat.id}.${index+1}`):'';
 
    card.innerHTML=`
     <div class="natureon-card-size" aria-hidden="true">${tamLabel}</div>
@@ -4045,6 +4073,7 @@ function renderPicolés(){
      R$ ${p.preço_varejo.toFixed(2).replace('.',',')} <span style="font-size:10px;font-weight:500;color:#888">/ un.</span>
     </div>
     <a href="encomendas.html#picoles" style="font-size:10px;color:#0D47A1;font-weight:700;text-decoration:underline;margin-bottom:4px" onclick="event.stopPropagation()">Ver preço atacado</a>
+    ${botaoPeçaERetire(info.titulo,'1 unidade',p.preço_varejo,'picoles',`picoles.${key}`)}
     <button type="button" class="btn-sabores" style="font-size:11px;padding:8px 12px;width:100%;margin-top:4px" onclick="event.stopPropagation();abrirPicoléInline('${key}','${info.titulo}',this)">
      ${temSabores?qtdSabores+' Sabores':'Ver Sabores'}
     </button>
@@ -4084,7 +4113,8 @@ function renderIso(){
   Object.entries(produtos.isopores_viagem).forEach(([tam,preço])=>{
    const chave='isopore_'+tam.replace(/\s/g,'_');
    const d=document.createElement('div');d.className='prod-card';
-   d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">Isopore ${tam}</div>${seloLeitePasteurizado()}<div class="prod-desc">Leve sorvete para casa</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+   const nomeProduto=`Isopore ${tam}`;
+   d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomeProduto}</div>${seloLeitePasteurizado()}<div class="prod-desc">Leve sorvete para casa</div><div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(nomeProduto,'',preço,'isopores',`isopores.${chaveCadastroSku(tam)}`)}</div>`;
    grid.appendChild(d);
   });
   b.appendChild(grid);
@@ -4105,13 +4135,13 @@ function renderSobremesas(){
  const b=document.getElementById('sobremesas-body');if(!b)return;b.innerHTML='';
  if(produtos&&produtos.sobremesas){
   const grid=document.createElement('div');grid.className='prod-grid';
-  Object.entries(produtos.sobremesas).forEach(([nome,preço])=>{
+  Object.entries(produtos.sobremesas).forEach(([nome,preço],index)=>{
    const chave='sobremesa_'+nome.replace(/\s/g,'_');
    const nomeLow=nome.toLowerCase();
    const emoji='';
    const emojiNome='';
    const d=document.createElement('div');d.className='prod-card';
-   d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div></div>`;
+   d.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nome}</div>${seloLeitePasteurizado()}<div class="prod-preço">R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(nome,'',preço,'sobremesas',`sobremesas.${index+1}`)}</div>`;
    grid.appendChild(d);
   });
   b.appendChild(grid);
@@ -4841,8 +4871,13 @@ function aplicarConfig(c) {
    .replace(/"/g, '&quot;')
    .replace(/'/g, '&#39;');
   heroTituloEl.innerHTML = _titulo.replace(
-   /(Cajuru|Itapolitana|sorvete|açaí|picolé|cremoso)/gi,
-   '<span class="destaque-texto">$1</span>'
+   /(Açaí Natureon|Cajuru|Itapolitana|sorvete|açaí|picolé|cremoso)/gi,
+   function (texto) {
+    if (texto.toLocaleLowerCase('pt-BR') === 'açaí natureon') {
+     return '<a class="destaque-texto acai-natureon-link" href="cardapio-acai-natureon.html" aria-label="Abrir cardápio Açaí Natureon">' + texto + '</a>';
+    }
+    return '<span class="destaque-texto">' + texto + '</span>';
+   }
   );
  }
 
