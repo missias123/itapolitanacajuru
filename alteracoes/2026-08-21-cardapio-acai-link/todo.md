@@ -92,3 +92,8 @@
 - [x] Vincular a embalagem de viagem à mesma quantidade do produto, incluindo e removendo ambos na mesma ação.
 - [x] Aplicar às tortas de sorvete aviso e validação de retirada com antecedência mínima de 48 horas.
 - [x] Reforçar no Peça e retire que todos os itens e a execução dependem de confirmação manual da sorveteria antes da produção.
+- [x] Usar somente horário nos pedidos do mesmo dia e exibir data obrigatória apenas quando houver torta de sorvete no carrinho.
+- [x] Mostrar ao escolher torta uma tarja vermelha obrigatória: pronta entrega somente mediante consulta pelo WhatsApp; produção com 48 horas de antecedência.
+- [x] No Peça e retire, permitir para torta escolher consulta de pronta entrega pelo WhatsApp ou produção com 48 horas e informar data e horário.
+- [x] Bloquear retiradas comuns com menos de uma hora e manter tortas com data mínima de 48 horas, sem dispensar confirmação manual.
+- [x] Destacar um campo livre de observações adicionais para a pessoa escrever o que quiser à sorveteria.
