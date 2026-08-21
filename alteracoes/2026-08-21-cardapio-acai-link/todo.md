@@ -1,6 +1,5 @@
-# Auditoria de links Açaí Natureon
+# Correção do título principal
 
-- [x] Listar ocorrências visíveis no site.
-- [x] Verificar quais abrem o modal visual do PDF.
-- [x] Confirmar que a barra do cardápio continua abrindo a seção normal.
-- [x] Corrigir apenas ocorrências externas que não estejam clicáveis.
+- [x] Identificar a atualização dinâmica do título grande da página inicial.
+- [x] Reaplicar o link do modal após o título ser renderizado.
+- [x] Testar o clique no Açaí Natureon do título principal após a atualização do painel.

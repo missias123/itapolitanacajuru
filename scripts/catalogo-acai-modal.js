@@ -13,6 +13,38 @@
     return 'images/cardapio-acai-pdf/pagina-' + String(index + 1).padStart(2, '0') + '.webp';
   });
 
+  function createCatalogLink(text) {
+    var link = document.createElement('a');
+    link.className = 'destaque-texto acai-natureon-link';
+    link.href = '#catalogo-acai-natureon';
+    link.dataset.acaiModalTrigger = '';
+    link.setAttribute('aria-haspopup', 'dialog');
+    link.setAttribute('aria-controls', 'catalogo-acai-natureon');
+    link.setAttribute('aria-label', 'Abrir cardápio visual Açaí Natureon');
+    link.textContent = text;
+    return link;
+  }
+
+  function makeHeroAcaiClickable() {
+    var hero = document.getElementById('hero-título');
+    if (!hero) return;
+    var walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
+    var nodes = [], node;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement && node.parentElement.closest('a')) continue;
+      if (/Açaí Natureon/i.test(node.nodeValue)) nodes.push(node);
+    }
+    nodes.forEach(function (textNode) {
+      var fragments = textNode.nodeValue.split(/(Açaí Natureon)/i);
+      var fragment = document.createDocumentFragment();
+      fragments.forEach(function (part, index) {
+        if (index % 2 === 1) fragment.appendChild(createCatalogLink(part));
+        else if (part) fragment.appendChild(document.createTextNode(part));
+      });
+      textNode.parentNode.replaceChild(fragment, textNode);
+    });
+  }
+
   function renderVisualPages() {
     body.innerHTML = '<div class="catalogo-acai-paginas" aria-label="Páginas visuais do cardápio de Açaí Natureon">' + pages.map(function (src, index) {
       var page = index + 1;
@@ -42,9 +74,16 @@
     if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus({ preventScroll: true });
   }
 
-  document.querySelectorAll('[data-acai-modal-trigger]').forEach(function (trigger) {
-    trigger.addEventListener('click', function (event) { event.preventDefault(); showCatalog(trigger); });
+  document.addEventListener('click', function (event) {
+    if (!(event.target instanceof Element)) return;
+    var trigger = event.target.closest('[data-acai-modal-trigger]');
+    if (!trigger) return;
+    event.preventDefault();
+    showCatalog(trigger);
   });
+  makeHeroAcaiClickable();
+  var heroTitle = document.getElementById('hero-título');
+  if (heroTitle) new MutationObserver(makeHeroAcaiClickable).observe(heroTitle, { childList: true, subtree: true });
   closeButton.addEventListener('click', closeCatalog);
   dialog.addEventListener('cancel', function (event) { event.preventDefault(); closeCatalog(); });
   dialog.addEventListener('click', function (event) { if (event.target === dialog) closeCatalog(); });
