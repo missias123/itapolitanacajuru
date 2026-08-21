@@ -729,7 +729,7 @@
           <button onclick="window.voltarParaRevisao()" style="width: 44px; height: 44px; border-radius: 50%; border: none; background: #EA1D2C; color: #FFF; font-weight: 900; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(234,29,44,0.4);" title="Voltar">←</button>
           <span style="display: flex; align-items: center; font-weight: 800; color: #666; font-size: 0.9rem;">Voltar ao Carrinho</span>
         </div>
-        <button id="btn-finalizar-pedido" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: #25D366; color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(37,211,102,0.35); opacity: 0.5; pointer-events: none;">Enviar Pedido via WhatsApp ➔</button>
+        <button id="btn-finalizar-pedido" data-order-window="encomendas" onclick="window.finalizarPedido()" style="width: 100%; padding: 18px; border-radius: 14px; border: none; background: #25D366; color: white; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 6px 20px rgba(37,211,102,0.35); opacity: 0.5; pointer-events: none;">Enviar Pedido via WhatsApp ➔</button>
       </div>
     </div>
   </div>
@@ -1628,8 +1628,9 @@
 
         var blocoCiencia = document.getElementById('bloco-ciencia');
         var inputCiencia = document.getElementById('pedido-ciencia');
+        var encomendasAbertas = !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('encomendas');
 
-        if (/^16\d{8,9}$/.test(tel)) {
+        if (/^16\d{8,9}$/.test(tel) && encomendasAbertas) {
             blocoCiencia.style.opacity = '1';
             blocoCiencia.style.pointerEvents = 'auto';
             inputCiencia.disabled = false;
@@ -1704,6 +1705,10 @@
     }
 
     window.finalizarPedido = function() {
+        if (window.ItapHorarioPedidos && !window.ItapHorarioPedidos.estaAberto('encomendas')) {
+            window.ItapHorarioPedidos.aviso('encomendas');
+            return;
+        }
         var nome = document.getElementById('pedido-nome').value.trim();
         var retiradaConfirmada = document.getElementById('pedido-retirada').checked;
         var zap = document.getElementById('pedido-whatsapp').value.trim();
@@ -1753,6 +1758,7 @@
     }
     // Permite trocar de gaveta por link/hash sem recarregar a página e sem criar outro renderizador.
     window.addEventListener('hashchange', abrirSecaoPorRota);
+    window.addEventListener('itap:horario-pedidos-atualizado', function() { window.validarWhatsapp(); });
 
     // Inicialização única: renderiza uma prévia e, em seguida, substitui pelos dados oficiais do estoque.
     renderizarCatalogoEncomendas();
@@ -1766,5 +1772,6 @@
   <script src="scripts/ita-bot-widget-v2027.js?v=2027-resilience-final" defer></script>
   <script src="scripts/itap-device-adapter.js?v=100" defer></script>
   <script src="scripts/gaveta-navegacao-mestra.js?v=501" defer></script>
+  <script src="scripts/horario-pedidos.js?v=20260821-horarios"></script>
 </body>
 </html>

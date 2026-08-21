@@ -3854,11 +3854,11 @@ function mensagemPeçaERetire(nome,detalhe,preco,sku){
  return `Olá! Quero pedir:${linhaSku}${linhaDetalhe}\n• Produto: ${nome}${linhaPreco}\n\nRetirada na loja. O pedido será produzido após a confirmação do pagamento.`;
 }
 function botaoPeçaERetire(nome,detalhe,preco,categoria,chaveSku){
- const sku=obterSkuProduto(chaveSku);
- const href=buildWhatsAppHref(mensagemPeçaERetire(nome,detalhe,preco,sku));
- const aria=escHTML(`Pedir ${nome}${sku?`, código ${sku}`:''} e retirar na loja pelo WhatsApp`);
- const cat=escHTML(categoria||'cardapio');
- return `<a class="product-pickup-btn" href="${href}" target="_blank" rel="noopener" data-sku="${escHTML(sku)}" aria-label="${aria}" onclick="_trackUiEvent('whatsapp_pickup_click',{page:'home',category:'${cat}',cta_type:'peca_e_retire',sku:'${escHTML(sku)}'})"><span aria-hidden="true">↗</span>Peça e retire</a>`;
+	 const sku=obterSkuProduto(chaveSku);
+	 const href='retirada.html#catalogo';
+	 const aria=escHTML(`Abrir o pedido de retirada para escolher produtos, incluindo ${nome}${sku?`, código ${sku}`:''}`);
+	 const cat=escHTML(categoria||'cardapio');
+	 return `<a class="product-pickup-btn" href="${href}" data-order-window="retirada" data-sku="${escHTML(sku)}" aria-label="${aria}" onclick="if(window.ItapHorarioPedidos&&!window.ItapHorarioPedidos.impedirForaDoHorario(event,'retirada'))return false;_trackUiEvent('pickup_catalog_click',{page:'home',category:'${cat}',cta_type:'peca_e_retire',sku:'${escHTML(sku)}'})"><span aria-hidden="true">→</span>Peça e retire</a>`;
 }
 function renderSorvetes(){
  const g=document.getElementById('sorvetes-grid');
@@ -6110,6 +6110,7 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 
   <script src="scripts/itap-device-adapter.js?v=100" defer></script>
   <script src="scripts/gaveta-navegacao-mestra.js?v=501" defer></script>
+	<script src="scripts/horario-pedidos.js?v=20260821-horarios" defer></script>
 </body>
 </html>
 

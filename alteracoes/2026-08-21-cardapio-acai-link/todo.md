@@ -1,6 +1,50 @@
-# Garantia de proporção das páginas
+# Botão Peça e retire
 
-- [ ] Medir a razão de largura e altura de cada imagem publicada.
-- [ ] Verificar que o CSS usa encaixe proporcional sem estiramento.
-- [ ] Testar a razão visual em celular, tablet e desktop.
-- [ ] Confirmar que nenhuma página é cortada ou deformada.
+- [x] Identificar todos os botões de compra e retirada existentes.
+- [x] Padronizar o rótulo ativo para Peça e retire.
+- [ ] Fazer cada botão preencher o formulário com produto e SKU.
+- [ ] Manter bloqueios para itens indisponíveis e regras especiais.
+- [ ] Exibir confirmação manual obrigatória da sorveteria antes da produção.
+- [ ] Informar prazo de até uma hora após a confirmação para preparo.
+- [ ] Mostrar regras reduzidas antes do envio da solicitação.
+- [ ] Informar que a ausência de confirmação em 15 minutos indica falha técnica e cancela a solicitação, sem elaboração do produto.
+- [ ] Exigir aceite explícito do cliente sobre essa condição antes de permitir o envio.
+- [ ] Planejar futuramente o Delivery em outro repositório e ambiente de testes, sem alterar o site principal nesta etapa.
+- [x] Aplicar os botões somente no cardápio principal, sem modificar a página ou as regras de Encomendas.
+- [x] Conferir o total de produtos com SKU na fonte oficial antes de alterar o cardápio.
+- [x] Conferir o total de produtos renderizados no cardápio principal antes de aplicar os botões.
+- [x] Criar carrinho de retirada único para reunir vários SKUs escolhidos em seções diferentes do cardápio.
+- [x] Manter o resumo do carrinho acessível durante a navegação no celular.
+- [x] Preservar integralmente os fluxos, regras e páginas de Encomendas.
+- [x] Permitir que o cliente navegue entre abas sem perder os produtos e SKUs previamente selecionados.
+- [x] Concluir auditoria do pedido de retirada multisseção, baseada em padrões de grandes sites, antes de implementar o novo carrinho.
+- [x] Apresentar o fluxo auditado para aprovação antes de alterar o cardápio.
+- [x] Garantir linguagem, botões, resumo e aceite compreensíveis por pessoas de todas as idades e com pouca experiência digital.
+- [x] Permitir excluir itens e ajustar quantidade exclusivamente antes do envio do pedido.
+- [x] Oferecer ação visível para continuar escolhendo produtos sem perder a seleção atual.
+- [x] Disponibilizar no formulário uma lista única, organizada e pesquisável dos 198 produtos com SKU.
+- [x] Fazer o botão Peça e retire abrir uma página própria com todos os 198 produtos enumerados por seção.
+- [x] Reutilizar, para produtos que exigem sabores, a mesma lógica clara de seleção existente em Encomendas.
+- [x] Informar que sabores, itens e observações dependem de disponibilidade e serão confirmados manualmente pela sorveteria no WhatsApp.
+- [x] Criar um HTML separado de retirada com todos os produtos, tamanhos, sabores e SKUs da sorveteria, usando a lógica de sabores de Encomendas.
+- [x] Alterar somente os botões Peça e retire do cardápio para direcionar ao novo HTML.
+- [x] Manter açaís com combinações fixas, sem abrir seleção dos 38 sabores de massa.
+- [x] Aplicar os 38 sabores de massa apenas aos produtos que permitem essa escolha.
+- [x] Aplicar aos picolés preço de varejo abaixo de 100 unidades e preço de atacado a partir de 100, como em Encomendas.
+- [ ] Validar cada etapa da retirada em celular, tablet e computador, sem sobreposição, deformação ou perda de navegação.
+- [ ] Garantir que Peça e retire use a mesma validação de quantidade, disponibilidade, seleção e confirmação de sabores de Encomendas.
+- [ ] Reaplicar no novo HTML o padrão de cores de identificação e seleção dos sabores de Encomendas.
+- [ ] Apresentar prévia visual mobile e desktop do padrão de retirada antes de aplicar a camada visual definitiva.
+- [ ] Manter o comportamento de um toque para selecionar e outro toque no mesmo sabor para remover a escolha antes da confirmação.
+- [ ] Após os sabores, exigir escolha entre consumir na loja e embalar para viagem nos produtos de massa elegíveis, exceto picolés e açaís.
+- [ ] Acrescentar R$ 1,00 de embalagem para cada produto marcado para viagem.
+- [ ] Discriminar a modalidade, a embalagem e o valor de embalagem por produto no resumo final e na mensagem do WhatsApp.
+- [ ] Limitar o horário de retirada de 10h00 a 20h00 no formulário e validar esse intervalo antes do envio.
+- [ ] Liberar botões de pedido e retirada somente das 11h00 às 20h00 e bloqueá-los nos demais horários com aviso claro.
+- [ ] Exibir ao toque fora do horário: Pedidos para retirada disponíveis das 11h00 às 20h00. Volte nesse horário para montar seu pedido.
+- [ ] Bloquear automaticamente o botão de envio pelo WhatsApp fora de 11h00 a 20h00, mesmo que o formulário esteja preenchido.
+- [ ] Usar uma única regra de disponibilidade por horário no cardápio, na retirada e no envio, com estado visual bloqueado e aviso acessível.
+- [ ] Exibir em Encomendas fora do período: Encomendas disponíveis todos os dias, das 10h00 às 20h00. Volte nesse período para enviar sua encomenda.
+- [ ] Consolidar a retirada como fluxo-piloto para orientar futuramente o Delivery em outro repositório.
+- [ ] Abrir automaticamente o carrinho após confirmar um produto e alinhar carrinho e formulário visualmente ao fluxo de Encomendas.
+- [ ] Adaptar o fluxo Peça e retire ao padrão de escolha, revisão e confirmação simples usado por grandes plataformas de alimentação.
