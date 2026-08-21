@@ -1,5 +1,6 @@
-# Correção do título principal
+# Animação Açaí Natureon com prioridade mobile
 
-- [x] Identificar a atualização dinâmica do título grande da página inicial.
-- [x] Reaplicar o link do modal após o título ser renderizado.
-- [x] Testar o clique no Açaí Natureon do título principal após a atualização do painel.
+- [x] Garantir que o título roxo não quebre nem perca área de toque em celular.
+- [x] Manter as frutinhas dentro da largura útil e fora das letras.
+- [x] Reduzir intensidade e duração em telas pequenas.
+- [x] Validar primeiro em 390 px de largura antes de desktop.

@@ -21,8 +21,36 @@
     link.setAttribute('aria-haspopup', 'dialog');
     link.setAttribute('aria-controls', 'catalogo-acai-natureon');
     link.setAttribute('aria-label', 'Abrir cardápio visual Açaí Natureon');
-    link.textContent = text;
+    decorateHeroBrandLink(link, text);
     return link;
+  }
+
+  function createBerrySprig(side) {
+    var sprig = document.createElement('span');
+    sprig.className = 'acai-berry-sprig acai-berry-sprig--' + side;
+    sprig.setAttribute('aria-hidden', 'true');
+    ['one', 'two', 'three'].forEach(function (name) {
+      var berry = document.createElement('i');
+      berry.className = 'acai-berry acai-berry--' + name;
+      sprig.appendChild(berry);
+    });
+    var leaf = document.createElement('i');
+    leaf.className = 'acai-berry-leaf';
+    sprig.appendChild(leaf);
+    return sprig;
+  }
+
+  function decorateHeroBrandLink(link, text) {
+    if (link.dataset.acaiHeroDecorated === 'true') return;
+    link.dataset.acaiHeroDecorated = 'true';
+    link.classList.add('acai-hero-brand');
+    var label = document.createElement('span');
+    label.className = 'acai-hero-label';
+    label.textContent = text || link.textContent.trim() || 'Açaí Natureon';
+    link.textContent = '';
+    link.appendChild(createBerrySprig('start'));
+    link.appendChild(label);
+    link.appendChild(createBerrySprig('end'));
   }
 
   function makeHeroAcaiClickable() {
@@ -43,6 +71,7 @@
       });
       textNode.parentNode.replaceChild(fragment, textNode);
     });
+    hero.querySelectorAll('a.acai-natureon-link').forEach(function (link) { decorateHeroBrandLink(link); });
   }
 
   function renderVisualPages() {
