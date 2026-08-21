@@ -1,6 +1,6 @@
-# Link visual fora da barra do cardápio
+# Auditoria de links Açaí Natureon
 
-- [x] Identificar cada texto Açaí Natureon fora da barra do cardápio.
-- [x] Restaurar o botão Açaí Natureon da barra ao comportamento anterior.
-- [x] Conectar somente os textos externos ao modal de imagens do PDF.
-- [x] Validar o modal visual e a abertura normal da barra do cardápio.
+- [x] Listar ocorrências visíveis no site.
+- [x] Verificar quais abrem o modal visual do PDF.
+- [x] Confirmar que a barra do cardápio continua abrindo a seção normal.
+- [x] Corrigir apenas ocorrências externas que não estejam clicáveis.
