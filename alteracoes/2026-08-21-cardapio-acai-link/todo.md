@@ -1,7 +1,6 @@
-# Cadastro centralizado de produtos
+# Regra de atacado para picolés
 
-- [x] Inventariar os dados atuais de produtos e seus campos.
-- [x] Atribuir um código único e estável a cada produto.
-- [x] Manter código, nome, preço e tamanho em uma única fonte de dados.
-- [x] Inserir o código na mensagem Peça e retire.
-- [x] Validar ausência de duplicidades e códigos ausentes.
+- [x] Confirmar o limite de 100 unidades no carrinho.
+- [x] Armazenar preço de varejo e atacado no mesmo cadastro de SKU.
+- [x] Converter o valor automaticamente quando a quantidade atingir 100.
+- [x] Validar estoque, total e mensagem de pedido.

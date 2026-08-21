@@ -3426,7 +3426,8 @@ body.cardapio-aberto { padding-bottom: 80px; }
 </div>
 
 <script src="scripts/site-loader.js?v=1786979144_FINAL_V2" defer></script>
-<script src="scripts/products.js?v=1786979144_FINAL_V2" defer></script>
+<script src="scripts/catalogo-mestre.js?v=20260821" defer></script>
+<script src="scripts/products.js?v=20260821" defer></script>
 <script src="scripts/quality-guard.js?v=1786979144" defer></script>
 <script>
 function getFotos(){try{return JSON.parse(localStorage.getItem('itap_fotos')||'{}');}catch(e){return {};}}
@@ -4708,7 +4709,10 @@ async function carregarPreçosNuvemCardápio() {
  try {
   const resp = await fetch(ITAP_PRODUTOS_URL + '?t=' + Date.now(), { cache: 'no-store' });
   if (!resp.ok) throw new Error('dados/produtos.json indisponível');
-  const dados = await resp.json();
+  const bruto = await resp.json();
+  const dados = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
+   ? window.ITAP_CATALOGO_MESTRE.aplicar(bruto)
+   : bruto;
 
   // Aplicar a lista oficial de massas (objetos com código e status).
   const massasOficiais = Array.isArray(dados.sabores_sorvete) ? dados.sabores_sorvete : [];
@@ -4755,7 +4759,7 @@ async function carregarPreçosNuvemCardápio() {
   if (dados.sobremesas) produtos.sobremesas = dados.sobremesas;
 
   // Cache local como fallback offline
-  try { localStorage.setItem('itap_produtos_nuvem', JSON.stringify(dados)); } catch(e) {}
+  try { localStorage.setItem('itap_produtos_nuvem', JSON.stringify(bruto)); } catch(e) {}
   return true;
 
  } catch(e) {
@@ -4763,7 +4767,10 @@ async function carregarPreçosNuvemCardápio() {
   const cache = localStorage.getItem('itap_produtos_nuvem');
   if (cache) {
    try {
-    const dados = JSON.parse(cache);
+    const bruto = JSON.parse(cache);
+    const dados = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
+     ? window.ITAP_CATALOGO_MESTRE.aplicar(bruto)
+     : bruto;
     if (Array.isArray(dados.sabores_sorvete)) {
      produtos.sorvetes = produtos.sorvetes || {};
      produtos.sorvetes.sabores = dados.sabores_sorvete.map(item => typeof item === 'string' ? item : item.nome).filter(Boolean);
@@ -6047,7 +6054,8 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 
 
 	<script src="scripts/itap-icons.js?v=1786979144-icons-approved-2"></script>
-	<script src="scripts/products.js?v=1786979144" defer></script>
+<script src="scripts/catalogo-mestre.js?v=20260821" defer></script>
+<script src="scripts/products.js?v=20260821" defer></script>
 	<script src="scripts/ita-bot-engine.js?v=1786979144" defer></script>
 	<script src="scripts/ita-bot-widget-v2027.js?v=2027-resilience-final"></script>
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="live-region"></div>

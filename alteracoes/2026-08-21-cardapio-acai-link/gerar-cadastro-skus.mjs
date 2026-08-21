@@ -50,12 +50,14 @@ const acai = data['açaí'] || data.acai || {};
 
 const codigoPicole = { frutas_agua: 'FRT', leite_com_recheio: 'RCH', leite_sem_recheio: 'LTS', especiais: 'ESP', esquimós: 'ESQ' };
 Object.entries(data['picolés'] || {}).forEach(([tipo, produto]) => {
+  const precoVarejo = money(produto.preço_varejo);
+  const precoAtacado = money(produto.preço_atacado);
   cadastrar(`picoles.${tipo}`, `PCT-${codigoPicole[tipo] || keyPart(tipo).toUpperCase()}`, {
-    categoria: 'Picolés', nome: produto.nome, tamanho: '1 unidade', preco: money(produto.preço_varejo), ativo: !produto.esgotado,
+    categoria: 'Picolés', nome: produto.nome, tamanho: '1 unidade', preco: precoVarejo, preco_varejo: precoVarejo, preco_atacado: precoAtacado, quantidade_minima_atacado: 100, ativo: !produto.esgotado,
   });
   (produto.sabores || []).forEach((sabor) => {
     cadastrar(`picoles.${tipo}.${sabor.codigo}`, sabor.codigo, {
-      categoria: 'Picolés', nome: sabor.nome, tamanho: '1 unidade', preco: money(produto.preço_varejo), ativo: !sabor.esgotado,
+      categoria: 'Picolés', nome: sabor.nome, tamanho: '1 unidade', preco: precoVarejo, preco_varejo: precoVarejo, preco_atacado: precoAtacado, quantidade_minima_atacado: 100, ativo: !sabor.esgotado,
     });
   });
 });

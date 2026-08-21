@@ -794,14 +794,16 @@
             'esquimós': 'Esquimós — Base Leite',
             esquimos: 'Esquimós — Base Leite'
         };
+        var mestre = (dados && dados.cadastro_skus && dados.cadastro_skus.por_chave) || {};
         Object.keys(raw).forEach(function (chave) {
             var grupo = raw[chave] || {};
+            var registroMestre = mestre['picoles.' + chave] || {};
             var sabores = Array.isArray(grupo.sabores) ? grupo.sabores : [];
             var nomes = sabores.map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
-            var varejo = Number(grupo.preço_varejo ?? grupo.preco_varejo ?? 0);
-            var atacado = Number(grupo.preço_atacado ?? grupo.preco_atacado ?? varejo);
+            var varejo = Number(registroMestre.preco_varejo ?? registroMestre.preco ?? grupo.preço_varejo ?? grupo.preco_varejo ?? 0);
+            var atacado = Number(registroMestre.preco_atacado ?? grupo.preço_atacado ?? grupo.preco_atacado ?? varejo);
             var titulo = (rotulos[chave] || grupo.nome || chave) + ' — Atacado R$ ' + atacado.toFixed(2).replace('.', ',') + ' acima de 100 un.';
-            catalogo[titulo] = { precoVarejo: varejo, precoAtacado: atacado, sabores: nomes };
+            catalogo[titulo] = { precoVarejo: varejo, precoAtacado: atacado, quantidadeMinimaAtacado: Number(registroMestre.quantidade_minima_atacado ?? 100), sabores: nomes };
             mapa[titulo] = [{ chave: chave, sabores: nomes }];
         });
         PICOLES_CATALOGO = catalogo;

@@ -12,9 +12,13 @@
       return resp.json();
     })
     .then(function (dados) {
-      window.PRODUTOS_DATA = dados;
-      window.dispatchEvent(new CustomEvent('produtosNuvemCarregados', { detail: dados }));
-      return dados;
+      const catalogo = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
+        ? window.ITAP_CATALOGO_MESTRE.aplicar(dados)
+        : dados;
+      window.PRODUTOS_DATA_RAW = dados;
+      window.PRODUTOS_DATA = catalogo;
+      window.dispatchEvent(new CustomEvent('produtosNuvemCarregados', { detail: catalogo }));
+      return catalogo;
     })
     .catch(function (erro) {
       console.warn('[Itap] produtos.json não carregado:', erro.message);

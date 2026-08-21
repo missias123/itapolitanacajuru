@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Catálogo Mestre | Itapolitana</title>
+  <style>
+    :root{--ink:#1f1a18;--muted:#6d625e;--line:#e8dfda;--paper:#fffdfb;--wine:#982d28;--cream:#f8f1eb;--green:#117a57;--amber:#9e6509}
+    *{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,sans-serif;line-height:1.4}.shell{max-width:1540px;margin:0 auto;padding:28px 22px 80px}.masthead{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}.eyebrow{margin:0 0 7px;color:var(--wine);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}h1{margin:0;font-size:clamp(28px,4vw,48px);letter-spacing:-.045em}.lead{max-width:720px;margin:12px 0 0;color:var(--muted)}.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.button{display:inline-flex;min-height:44px;align-items:center;justify-content:center;border-radius:9px;border:1px solid var(--line);padding:10px 14px;background:#fff;color:var(--ink);font-weight:800;text-decoration:none;cursor:pointer}.button.primary{border-color:var(--wine);background:var(--wine);color:#fff}.button:disabled{opacity:.55;cursor:not-allowed}.notice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin:0 0 18px;border-left:4px solid var(--amber);background:#fff7e8;color:#5f450e;border-radius:7px}.notice.success{border-left-color:var(--green);background:#eaf8f2;color:#126040}.toolbar{display:grid;grid-template-columns:minmax(230px,1fr) minmax(180px,.35fr) auto;gap:12px;margin:18px 0}.field{width:100%;min-height:44px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;color:var(--ink);font:inherit}.summary{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 20px}.metric{padding:8px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px}.metric strong{font-size:15px}.group{margin:28px 0;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 5px 20px rgba(49,31,22,.05)}.group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:#fff8f3;border-bottom:1px solid var(--line)}.group-head h2{margin:0;font-size:18px}.count{font-size:12px;font-weight:800;color:var(--wine)}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:920px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:middle}th{background:#fff;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}td{font-size:13px}.sku{font-family:ui-monospace,monospace;font-weight:800;white-space:nowrap;color:#4e302d}.cell-input{width:100%;border:1px solid transparent;border-radius:6px;padding:8px;background:transparent;font:inherit;color:inherit}.cell-input:hover,.cell-input:focus{border-color:#d7c3b8;background:#fff;outline:none}.cell-input.price{min-width:100px;text-align:right}.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800}.status input{width:17px;height:17px;accent-color:var(--green)}.empty{padding:34px;color:var(--muted);text-align:center}.footerbar{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 0;background:linear-gradient(0deg,var(--cream) 70%,transparent)}.save-note{font-size:12px;color:var(--muted);max-width:620px}.hide{display:none!important}@media(max-width:760px){.shell{padding:20px 14px 70px}.masthead{display:block}.actions{justify-content:flex-start;margin-top:16px}.toolbar{grid-template-columns:1fr}.footerbar{align-items:stretch;flex-direction:column}.footerbar .button{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Administração · fonte oficial</p>
+        <h1>Lista única de produtos</h1>
+        <p class="lead">Cada linha representa um produto ou variante vendável. SKU, nome, tamanho, valor e status são mantidos aqui uma única vez; o restante do site apenas consulta esse cadastro.</p>
+      </div>
+      <div class="actions">
+        <a class="button" href="admin-painel.html">Voltar ao painel</a>
+        <button class="button primary" id="save" type="button" disabled>Salvar alterações</button>
+      </div>
+    </header>
+
+    <div class="notice" id="notice">Carregando o cadastro mestre de produtos…</div>
+    <section class="toolbar" aria-label="Filtros do catálogo">
+      <input class="field" id="search" type="search" placeholder="Buscar por SKU, nome, tamanho ou categoria">
+      <select class="field" id="category"><option value="">Todas as categorias</option></select>
+      <button class="button" id="activeOnly" type="button" aria-pressed="false">Somente ativos</button>
+    </section>
+    <div class="summary" id="summary" aria-live="polite"></div>
+    <section id="catalog" aria-live="polite"></section>
+    <div class="footerbar">
+      <p class="save-note">A gravação exige a sessão administrativa com token do GitHub aberta em <strong>Administração</strong>. Antes de salvar, o sistema bloqueia SKU duplicado, nome vazio e preço inválido.</p>
+      <button class="button primary" id="saveBottom" type="button" disabled>Salvar alterações</button>
+    </div>
+  </main>
+
+  <script>
+  (function(){
+    'use strict';
+    const REPO='missias123/itapolitanacajuru', PATH='dados/produtos.json', BRANCH='main';
+    const state={raw:null,records:[],query:'',category:'',activeOnly:false,dirty:false};
+    const $=id=>document.getElementById(id);
+    const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'—';
+    const getToken=()=>{try{return sessionStorage.getItem('itap_github_token')||''}catch(e){return ''}};
+    const notice=(text,type='')=>{$('notice').textContent=text;$('notice').className='notice '+type};
+    const entryList=()=>Object.entries(state.raw?.cadastro_skus?.por_chave||{}).map(([key,item])=>({key,...item}));
+    const groups=()=>{const q=state.query.trim().toLowerCase();return state.records.filter(r=>{const hay=[r.sku,r.nome,r.tamanho,r.categoria,r.key].join(' ').toLowerCase();return (!q||hay.includes(q))&&(!state.category||r.categoria===state.category)&&(!state.activeOnly||r.ativo!==false)}).sort((a,b)=>a.categoria.localeCompare(b.categoria,'pt-BR')||a.nome.localeCompare(b.nome,'pt-BR')||a.sku.localeCompare(b.sku)).reduce((map,r)=>{(map[r.categoria]??=[]).push(r);return map},{})};
+    const updateSave=()=>{const enabled=state.dirty&&!!getToken();$('save').disabled=!enabled;$('saveBottom').disabled=!enabled};
+    function render(){
+      const all=state.records, byGroup=groups(), categories=[...new Set(all.map(r=>r.categoria))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+      const selected=$('category').value; $('category').innerHTML='<option value="">Todas as categorias</option>'+categories.map(c=>`<option value="${esc(c)}"${c===selected?' selected':''}>${esc(c)}</option>`).join('');
+      const shown=Object.values(byGroup).reduce((n,rows)=>n+rows.length,0), duplicateSkus=all.length-new Set(all.map(r=>r.sku)).size;
+      $('summary').innerHTML=`<span class="metric"><strong>${all.length}</strong> produtos cadastrados</span><span class="metric"><strong>${shown}</strong> exibidos</span><span class="metric"><strong>${categories.length}</strong> categorias</span><span class="metric"><strong>${duplicateSkus}</strong> SKU duplicado</span>`;
+      const markup=Object.entries(byGroup).map(([categoria,rows])=>{const isPicole=categoria==='Picolés';return `<article class="group"><div class="group-head"><h2>${esc(categoria)}</h2><span class="count">${rows.length} item(ns)</span></div><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Produto</th><th>Tamanho</th><th>${isPicole?'Varejo':'Valor'}</th>${isPicole?'<th>Atacado ≥ 100</th>':''}<th>Ativo</th></tr></thead><tbody>${rows.map(r=>`<tr data-key="${esc(r.key)}"><td class="sku">${esc(r.sku)}</td><td><input class="cell-input" data-field="nome" value="${esc(r.nome)}" aria-label="Nome de ${esc(r.sku)}"></td><td><input class="cell-input" data-field="tamanho" value="${esc(r.tamanho)}" aria-label="Tamanho de ${esc(r.sku)}"></td><td><input class="cell-input price" data-field="${isPicole?'preco_varejo':'preco'}" inputmode="decimal" value="${(isPicole?r.preco_varejo??r.preco:r.preco)==null?'':String(isPicole?r.preco_varejo??r.preco:r.preco).replace('.',',')}" aria-label="${isPicole?'Preço de varejo':'Valor'} de ${esc(r.sku)}"></td>${isPicole?`<td><input class="cell-input price" data-field="preco_atacado" inputmode="decimal" value="${r.preco_atacado==null?'':String(r.preco_atacado).replace('.',',')}" aria-label="Preço de atacado de ${esc(r.sku)}"></td>`:''}<td><label class="status"><input type="checkbox" data-field="ativo" ${r.ativo!==false?'checked':''}>Disponível</label></td></tr>`).join('')}</tbody></table></div></article>`}).join('');
+      $('catalog').innerHTML=markup||'<div class="group empty">Nenhum produto encontrado com este filtro.</div>'; updateSave();
+    }
+    function registerChange(event){const input=event.target, row=input.closest('tr[data-key]');if(!row)return;const record=state.records.find(r=>r.key===row.dataset.key);if(!record)return;const field=input.dataset.field;if(field==='ativo')record.ativo=input.checked;else if(field==='preco'||field==='preco_varejo'||field==='preco_atacado'){const value=input.value.trim().replace(',','.');record[field]=value===''?null:Number(value);if(field==='preco_varejo')record.preco=record[field]}else record[field]=input.value.trim();state.dirty=true;updateSave()}
+    function validate(){const seen=new Set(),issues=[];state.records.forEach(r=>{if(!/^[A-Z0-9][A-Z0-9-]{1,63}$/.test(String(r.sku||'')))issues.push(`${r.key}: SKU inválido`);if(seen.has(r.sku))issues.push(`${r.key}: SKU duplicado (${r.sku})`);seen.add(r.sku);if(!String(r.nome||'').trim())issues.push(`${r.sku}: nome obrigatório`);if(r.preco!==null&&(!Number.isFinite(Number(r.preco))||Number(r.preco)<0))issues.push(`${r.sku}: valor inválido`);if(r.categoria==='Picolés'&&((!Number.isFinite(Number(r.preco_varejo))||Number(r.preco_varejo)<0)||(!Number.isFinite(Number(r.preco_atacado))||Number(r.preco_atacado)<0)))issues.push(`${r.sku}: preços de varejo e atacado obrigatórios`)});return issues}
+    async function save(){const errors=validate();if(errors.length){notice(`Não foi possível salvar: ${errors.slice(0,3).join(' · ')}${errors.length>3?' …':''}`);return}const token=getToken();if(!token){notice('Abra esta página após entrar no painel administrativo com o token do GitHub habilitado.');return}try{$('save').disabled=true;$('saveBottom').disabled=true;notice('Salvando a lista única no catálogo mestre…');const url=`https://api.github.com/repos/${REPO}/contents/${PATH}`;const current=await fetch(url+`?ref=${BRANCH}`,{headers:{Authorization:`token ${token}`,Accept:'application/vnd.github+json'}});if(!current.ok)throw Error('Não foi possível obter a versão atual do catálogo.');const currentJson=await current.json();const copy=structuredClone(state.raw);copy.cadastro_skus.por_chave=Object.fromEntries(state.records.map(({key,...record})=>[key,record]));const json=JSON.stringify(copy,null,2)+'\n';const content=btoa(unescape(encodeURIComponent(json)));const put=await fetch(url,{method:'PUT',headers:{Authorization:`token ${token}`,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Admin: atualizar cadastro mestre de produtos',branch:BRANCH,sha:currentJson.sha,content})});if(!put.ok){const detail=await put.json().catch(()=>({}));throw Error(detail.message||'Falha ao salvar o catálogo.')}state.raw=copy;state.dirty=false;notice('Cadastro mestre salvo. O site agora usará os mesmos dados de SKU, nome, tamanho, valor e status.','success');updateSave()}catch(error){notice(`Erro ao salvar: ${error.message}`)}}
+    async function load(){try{const response=await fetch('dados/produtos.json?v='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('Cadastro indisponível');state.raw=await response.json();state.records=entryList();if(!state.records.length)throw Error('Cadastro mestre sem produtos');notice(getToken()?'Catálogo mestre carregado. Edite a lista e salve quando necessário.':'Catálogo mestre carregado em modo de consulta. Para editar, entre primeiro pelo painel administrativo.','success');render()}catch(error){notice(`Não foi possível carregar a lista única: ${error.message}`);$('catalog').innerHTML='<div class="group empty">Tente atualizar a página.</div>'}}
+    $('search').addEventListener('input',e=>{state.query=e.target.value;render()});$('category').addEventListener('change',e=>{state.category=e.target.value;render()});$('activeOnly').addEventListener('click',()=>{state.activeOnly=!state.activeOnly;$('activeOnly').setAttribute('aria-pressed',String(state.activeOnly));$('activeOnly').textContent=state.activeOnly?'Mostrando ativos':'Somente ativos';render()});$('catalog').addEventListener('change',registerChange);$('catalog').addEventListener('input',e=>{if(e.target.dataset.field==='nome'||e.target.dataset.field==='tamanho'||e.target.dataset.field==='preco')registerChange(e)});$('save').addEventListener('click',save);$('saveBottom').addEventListener('click',save);load();
+  })();
+  </script>
+</body>
+</html>
