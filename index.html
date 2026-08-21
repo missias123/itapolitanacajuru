@@ -3855,7 +3855,7 @@ function mensagemPeçaERetire(nome,detalhe,preco,sku){
 }
 function botaoPeçaERetire(nome,detalhe,preco,categoria,chaveSku){
 	 const sku=obterSkuProduto(chaveSku);
-	 const href='retirada.html#catalogo';
+	 const href=`retirada.html${sku?`?sku=${encodeURIComponent(sku)}`:''}#catalogo`;
 	 const aria=escHTML(`Abrir o pedido de retirada para escolher produtos, incluindo ${nome}${sku?`, código ${sku}`:''}`);
 	 const cat=escHTML(categoria||'cardapio');
 	 return `<a class="product-pickup-btn" href="${href}" data-order-window="retirada" data-sku="${escHTML(sku)}" aria-label="${aria}" onclick="if(window.ItapHorarioPedidos&&!window.ItapHorarioPedidos.impedirForaDoHorario(event,'retirada'))return false;_trackUiEvent('pickup_catalog_click',{page:'home',category:'${cat}',cta_type:'peca_e_retire',sku:'${escHTML(sku)}'})"><span aria-hidden="true">→</span>Peça e retire</a>`;

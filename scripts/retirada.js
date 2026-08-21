@@ -35,14 +35,19 @@
   }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
   function retiradaAberta() { return !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('retirada'); }
+  function productAvailable(data, item) {
+    if (!item || item.ativo === false) return false;
+    const packages = data?.disponibilidade?.embalagens || {};
+    return (item.dependencias_embalagem || []).every((sku) => packages[sku]?.ativo !== false);
+  }
   function buildCatalog(data) {
-    const entries = Object.values(data.cadastro_skus?.por_chave || {}).filter((item) => item.ativo !== false);
+    const entries = Object.values(data.cadastro_skus?.por_chave || {});
     const picoMeta = new Map();
     Object.entries(data.picolés || {}).forEach(([groupId, group]) => (group.sabores || []).forEach((flavor) => picoMeta.set(flavor.codigo, { groupId, groupName: group.nome, varejo: Number(group.preço_varejo), atacado: Number(group.preço_atacado), stock: Number(flavor.estoque ?? group.estoque ?? 0), unavailable: Boolean(flavor.esgotado || group.esgotado) })));
     return entries.map((item) => {
       const meta = picoMeta.get(item.sku);
       const category = item.categoria || 'Outros produtos';
-      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false, type: meta ? 'picole' : productType(category), picole: meta || null, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
+      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false, available: productAvailable(data, item), type: meta ? 'picole' : productType(category), picole: meta || null, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
     });
   }
   function cartKey(product, flavors, serviceMode = '') { return `${product.sku}::${(flavors || []).map((item) => item.code || item).sort().join('|')}::${serviceMode}`; }
@@ -104,8 +109,8 @@
     const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => {
       const row = document.createElement('article'); row.className = 'product'; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake';
       const meta = product.size ? product.size : hasFlavor ? flavorRule(product).label : 'Produto pronto para retirada';
-      row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(product.name)}</p><p class="product__meta">${escape(meta)}</p><span class="product__sku">${escape(product.sku)}</span><p class="product__price">${money(product.price)}</p></div>`;
-      const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; button.textContent = hasFlavor ? 'Escolher' : 'Adicionar'; button.disabled = !product.selectable || !retiradaAberta();
+      row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(product.name)}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}</p><span class="product__sku">${escape(product.sku)}</span><p class="product__price">${money(product.price)}</p></div>`;
+      const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; button.textContent = !product.available ? 'Esgotado' : hasFlavor ? 'Escolher' : 'Adicionar'; button.disabled = !product.selectable || !product.available || !retiradaAberta();
       button.addEventListener('click', () => hasFlavor ? beginFlavors(product) : addProduct(product)); row.append(button); list.append(row);
     }); section.append(list);
   }
@@ -120,7 +125,7 @@
   function renderFlavorGrid() {
     const product = state.flavorProduct; if (!product) return;
     const rule = flavorRule(product); const grid = $('#flavor-grid'); grid.innerHTML = '';
-    const options = rule.source === 'milkshake' ? (state.data.milkshake?.sabores || []).map((name, i) => ({ code: `MLK-${i + 1}`, name, unavailable: false })) : (state.data.sabores_sorvete || []).map((item) => ({ code: item.codigo, name: item.nome, unavailable: Boolean(item.esgotado) }));
+    const options = rule.source === 'milkshake' ? (state.data.milkshake?.sabores || []).map((name, i) => ({ code: `MLK-${i + 1}`, name, unavailable: false })) : (state.data.sabores_sorvete || []).map((item) => ({ code: item.codigo, name: item.nome, unavailable: Boolean(item.esgotado || state.data.cadastro_skus?.por_chave?.['massas.' + item.codigo]?.ativo === false) }));
     const count = state.selectedFlavors.length; grid.classList.toggle('limite-atingido', count >= rule.required);
     options.forEach((flavor) => {
       const selected = state.selectedFlavors.some((item) => item.code === flavor.code); const normalized = normalize(flavor.name); const novo = rule.source === 'massa' && SABORES_NOVOS.has(normalized);

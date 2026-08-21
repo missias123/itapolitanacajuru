@@ -48,3 +48,23 @@
 - [ ] Consolidar a retirada como fluxo-piloto para orientar futuramente o Delivery em outro repositório.
 - [ ] Abrir automaticamente o carrinho após confirmar um produto e alinhar carrinho e formulário visualmente ao fluxo de Encomendas.
 - [ ] Adaptar o fluxo Peça e retire ao padrão de escolha, revisão e confirmação simples usado por grandes plataformas de alimentação.
+- [ ] Auditar todos os 198 SKUs e os controles de disponibilidade existentes antes de criar a administração única.
+- [ ] Cadastrar embalagens de 5 L, 10 L, 7 bolas, 9 bolas e 12 bolas como itens esgotáveis com dependências explícitas.
+- [ ] Criar painel administrativo único para produtos, sabores, SKUs e embalagens, sem listas duplicadas.
+- [ ] Propagar a alteração de disponibilidade do painel para todo o site e refletir mudanças operacionais de volta no painel.
+- [ ] Separar no painel o esgotamento de embalagens do esgotamento de sabores de massa.
+- [ ] Manter picolés e açaís com esgotamento exclusivamente pelo próprio produto/SKU.
+- [ ] Exibir tarja Esgotado e bloquear a seleção quando um SKU de produto ou uma embalagem dependente estiver indisponível.
+- [ ] Bloquear apenas o sabor indisponível nas escolhas de massa, mantendo o produto disponível com os demais sabores.
+- [ ] Permitir esgotar individualmente um produto, um sabor ou uma embalagem e também esgotar em lote todos os SKUs de uma linha.
+- [ ] Auditar produtos exibidos sem SKU oficial ou ligados a fontes paralelas e migrá-los para a base única.
+- [ ] Executar auditoria de engenharia de SKUs, fontes, carrinhos, retirada, Encomendas, administração e dependências antes de novas correções.
+- [ ] Garantir que botões Peça e retire de açaí e demais produtos redirecionem ao HTML de retirada pelo SKU oficial.
+- [ ] Garantir que todos os botões Peça e retire do cardápio principal usem retirada.html?sku=SKU_OFICIAL, exceto produtos exclusivos de Encomendas.
+- [ ] Auditar produto a produto os botões Peça e retire, seus SKUs e os destinos no HTML de pedidos.
+- [ ] Extrair itens exibidos sem SKU oficial, classificar o risco por fluxo e só corrigir vínculos que não causem regressões.
+- [ ] Usar inventário, testes em cópia controlada, correções reversíveis e validação de fluxos antes de alterar itens sem SKU.
+- [ ] Exibir SKU oficial ao lado da descrição em todas as linhas do painel administrativo único.
+- [ ] Unificar todos os produtos em uma lista administrativa integrada à edição manual segura e à base oficial.
+- [ ] Adaptar busca, confirmação de salvamento, filtros e proteção contra edição acidental ao painel administrativo.
+- [ ] Validar SKU obrigatório, formato permitido e unicidade antes de salvar qualquer edição manual.

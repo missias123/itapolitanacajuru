@@ -1311,7 +1311,7 @@
     }
   ],
   "cadastro_skus": {
-    "versao": 1,
+    "versao": 2,
     "descricao": "Cadastro único de SKU usado para identificar produtos no site, no painel e nas mensagens de pedido.",
     "por_chave": {
       "sorvetes.casquinha_copo.1_bola": {
@@ -2541,7 +2541,10 @@
         "nome": "Isopore 7 Bolas",
         "tamanho": "7 Bolas",
         "preco": 30,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-7B"
+        ]
       },
       "isopores.9_bolas": {
         "sku": "ISO-09_",
@@ -2549,7 +2552,10 @@
         "nome": "Isopore 9 Bolas",
         "tamanho": "9 Bolas",
         "preco": 40,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-9B"
+        ]
       },
       "isopores.12_bolas": {
         "sku": "ISO-12_",
@@ -2557,7 +2563,10 @@
         "nome": "Isopore 12 Bolas",
         "tamanho": "12 Bolas",
         "preco": 50,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-12B"
+        ]
       },
       "sobremesas.1": {
         "sku": "SOB-001",
@@ -2637,7 +2646,10 @@
         "nome": "Caixa 5 Litros - 2 Sabores",
         "tamanho": "",
         "preco": 100,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-5L"
+        ]
       },
       "caixas.cx5l_3s": {
         "sku": "CAX-5L_3S",
@@ -2645,7 +2657,10 @@
         "nome": "Caixa 5 Litros - 3 Sabores",
         "tamanho": "",
         "preco": 115,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-5L"
+        ]
       },
       "caixas.cx10l_2s": {
         "sku": "CAX-10L_2S",
@@ -2653,7 +2668,10 @@
         "nome": "Caixa 10 Litros - 2 Sabores",
         "tamanho": "",
         "preco": 150,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-10L"
+        ]
       },
       "caixas.cx10l_3s": {
         "sku": "CAX-10L_3S",
@@ -2661,7 +2679,10 @@
         "nome": "Caixa 10 Litros - 3 Sabores",
         "tamanho": "",
         "preco": 165,
-        "ativo": true
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-10L"
+        ]
       },
       "tortas.torta1": {
         "sku": "TOR-001",
@@ -3014,6 +3035,65 @@
         "tamanho": "",
         "preco": null,
         "ativo": true
+      }
+    }
+  },
+  "disponibilidade": {
+    "versao": 1,
+    "descricao": "Fonte única de disponibilidade do site. Produtos e sabores usam ativo no SKU oficial; embalagens operacionais usam este bloco e bloqueiam seus SKUs dependentes.",
+    "regras": {
+      "produto": "O produto fica indisponível quando seu SKU ativo for falso ou quando alguma embalagem dependente estiver inativa.",
+      "sabor_massa": "O sabor de massa fica indisponível somente quando o SKU MAS correspondente estiver inativo.",
+      "picole": "O sabor de picolé fica indisponível somente quando seu SKU PIC correspondente estiver inativo.",
+      "acai": "Cada copo de açaí é um produto fechado e fica indisponível somente quando seu próprio SKU estiver inativo."
+    },
+    "embalagens": {
+      "EMB-5L": {
+        "sku": "EMB-5L",
+        "nome": "Embalagem Caixa 5 Litros",
+        "tipo": "embalagem_operacional",
+        "ativo": true,
+        "dependencias_sku": [
+          "CAX-5L_2S",
+          "CAX-5L_3S"
+        ]
+      },
+      "EMB-10L": {
+        "sku": "EMB-10L",
+        "nome": "Embalagem Caixa 10 Litros",
+        "tipo": "embalagem_operacional",
+        "ativo": true,
+        "dependencias_sku": [
+          "CAX-10L_2S",
+          "CAX-10L_3S"
+        ]
+      },
+      "EMB-7B": {
+        "sku": "EMB-7B",
+        "nome": "Embalagem Isopor 7 Bolas",
+        "tipo": "embalagem_operacional",
+        "ativo": true,
+        "dependencias_sku": [
+          "ISO-07_"
+        ]
+      },
+      "EMB-9B": {
+        "sku": "EMB-9B",
+        "nome": "Embalagem Isopor 9 Bolas",
+        "tipo": "embalagem_operacional",
+        "ativo": true,
+        "dependencias_sku": [
+          "ISO-09_"
+        ]
+      },
+      "EMB-12B": {
+        "sku": "EMB-12B",
+        "nome": "Embalagem Isopor 12 Bolas",
+        "tipo": "embalagem_operacional",
+        "ativo": true,
+        "dependencias_sku": [
+          "ISO-12_"
+        ]
       }
     }
   }

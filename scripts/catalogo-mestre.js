@@ -1,8 +1,8 @@
 /**
  * ITAPOLITANA — adaptador do catálogo mestre.
  * Fonte oficial: dados/produtos.json > cadastro_skus.por_chave.
- * As telas recebem uma visão agrupada em memória; nome, preço, tamanho e SKU
- * nunca são alterados fora do cadastro mestre.
+ * As telas recebem uma visão agrupada em memória; nome, preço, tamanho, SKU
+ * e disponibilidade nunca são alterados fora do cadastro mestre.
  */
 (function (window) {
   'use strict';
@@ -23,31 +23,50 @@
     return master[key] || null;
   }
 
+  function embalagemAtiva(raw, sku) {
+    var embalagem = raw && raw.disponibilidade && raw.disponibilidade.embalagens
+      ? raw.disponibilidade.embalagens[sku]
+      : null;
+    return !embalagem || embalagem.ativo !== false;
+  }
+
+  function registroDisponivel(raw, registro) {
+    if (!registro || registro.ativo === false) return false;
+    return (registro.dependencias_embalagem || []).every(function (skuEmbalagem) {
+      return embalagemAtiva(raw, skuEmbalagem);
+    });
+  }
+
   function apply(raw) {
-    const view = clone(raw);
-    const master = getMaster(raw);
+    var view = clone(raw);
+    var master = getMaster(view);
     if (!Object.keys(master).length) return view;
 
+    Object.keys(master).forEach(function (chave) {
+      master[chave].disponivel = registroDisponivel(raw, master[chave]);
+    });
+
     // Formatos de massa: cada tamanho é uma variante vendável com SKU próprio.
-    const formatos = (view.sorvetes && (view.sorvetes.preços || view.sorvetes.precos)) || {};
+    var formatos = (view.sorvetes && (view.sorvetes.preços || view.sorvetes.precos)) || {};
     Object.keys(formatos).forEach(function (formato) {
-      const tabela = formatos[formato] || {};
+      var tabela = formatos[formato] || {};
       Object.keys(tabela).forEach(function (tamanho) {
-        const registro = item(master, 'sorvetes.' + formato + '.' + keyPart(tamanho));
+        var registro = item(master, 'sorvetes.' + formato + '.' + keyPart(tamanho));
         if (registro && Number.isFinite(Number(registro.preco))) tabela[tamanho] = Number(registro.preco);
       });
     });
 
-    // Açaí: cada receita/tamanho aponta para o registro mestre equivalente.
-    const acai = view['açaí'] || view.acai;
+    // Açaí: cada receita/tamanho é um SKU fechado e independente.
+    var acai = view['açaí'] || view.acai;
     if (acai && Array.isArray(acai.categorias)) {
       acai.categorias.forEach(function (categoria) {
         (categoria.produtos || []).forEach(function (produto, index) {
-          const registro = item(master, 'acai.' + categoria.id + '.' + (index + 1));
+          var registro = item(master, 'acai.' + keyPart(categoria.id) + '.' + (index + 1));
           if (!registro) return;
           produto.nome = registro.nome;
           produto.preco = registro.preco;
           produto.preço = registro.preco;
+          produto.esgotado = registro.disponivel === false;
           if (registro.tamanho) categoria.label = registro.tamanho;
         });
       });
@@ -59,7 +78,7 @@
     if (view.milkshake) {
       ['tradicional', 'top'].forEach(function (linha) {
         Object.keys(view.milkshake[linha] || {}).forEach(function (tamanho) {
-          const registro = item(master, 'milkshake.' + linha + '.' + keyPart(tamanho));
+          var registro = item(master, 'milkshake.' + linha + '.' + keyPart(tamanho));
           if (registro && Number.isFinite(Number(registro.preco))) view.milkshake[linha][tamanho] = Number(registro.preco);
         });
       });
@@ -69,49 +88,54 @@
     if (view.tacas) {
       ['tradicionais', 'sujas'].forEach(function (linha) {
         Object.keys(view.tacas[linha] || {}).forEach(function (nome, index) {
-          const registro = item(master, 'tacas.' + linha + '.' + (index + 1));
+          var registro = item(master, 'tacas.' + linha + '.' + (index + 1));
           if (registro && Number.isFinite(Number(registro.preco))) view.tacas[linha][nome] = Number(registro.preco);
         });
       });
     }
     Object.keys(view.isopores_viagem || {}).forEach(function (tamanho) {
-      const registro = item(master, 'isopores.' + keyPart(tamanho));
+      var registro = item(master, 'isopores.' + keyPart(tamanho));
       if (registro && Number.isFinite(Number(registro.preco))) view.isopores_viagem[tamanho] = Number(registro.preco);
     });
+    view.isopores_disponibilidade = {};
+    Object.keys(view.isopores_viagem || {}).forEach(function (tamanho) {
+      var registro = item(master, 'isopores.' + keyPart(tamanho));
+      view.isopores_disponibilidade[tamanho] = !registro || registro.disponivel !== false;
+    });
     Object.keys(view.sobremesas || {}).forEach(function (nome, index) {
-      const registro = item(master, 'sobremesas.' + (index + 1));
+      var registro = item(master, 'sobremesas.' + (index + 1));
       if (registro && Number.isFinite(Number(registro.preco))) view.sobremesas[nome] = Number(registro.preco);
     });
 
     // Produtos de encomenda e extras.
     ['caixas_enc', 'tortas_enc', 'acrescimos'].forEach(function (grupo) {
       (view[grupo] || []).forEach(function (produto) {
-        const prefixo = grupo === 'caixas_enc' ? 'caixas.' : grupo === 'tortas_enc' ? 'tortas.' : 'acrescimos.';
-        const registro = item(master, prefixo + produto.id);
+        var prefixo = grupo === 'caixas_enc' ? 'caixas.' : grupo === 'tortas_enc' ? 'tortas.' : 'acrescimos.';
+        var registro = item(master, prefixo + produto.id);
         if (!registro) return;
         produto.nome = registro.nome;
         produto.preco = registro.preco;
         produto.preço = registro.preco;
-        produto.esgotado = registro.ativo === false;
+        produto.esgotado = registro.disponivel === false;
       });
     });
 
-    // Picolés: grupo e sabores têm SKU próprio; preço e disponibilidade vêm do mestre.
-    const picoles = view['picolés'] || view.picoles;
+    // Picolés: grupo e sabores têm SKU próprio; disponibilidade depende só do SKU do produto.
+    var picoles = view['picolés'] || view.picoles;
     Object.keys(picoles || {}).forEach(function (tipo) {
-      const grupo = picoles[tipo];
-      const registroGrupo = item(master, 'picoles.' + tipo);
+      var grupo = picoles[tipo];
+      var registroGrupo = item(master, 'picoles.' + tipo);
       if (registroGrupo) {
         grupo.nome = registroGrupo.nome;
         grupo.preço_varejo = Number(registroGrupo.preco_varejo ?? registroGrupo.preco);
         grupo.preço_atacado = Number(registroGrupo.preco_atacado ?? registroGrupo.preco_varejo ?? registroGrupo.preco);
-        grupo.esgotado = registroGrupo.ativo === false;
+        grupo.esgotado = registroGrupo.disponivel === false;
       }
       (grupo.sabores || []).forEach(function (sabor) {
-        const registro = item(master, 'picoles.' + tipo + '.' + sabor.codigo);
+        var registro = item(master, 'picoles.' + tipo + '.' + sabor.codigo);
         if (!registro) return;
         sabor.nome = registro.nome;
-        sabor.esgotado = registro.ativo === false;
+        sabor.esgotado = registro.disponivel === false;
       });
     });
     if (picoles) {
@@ -119,13 +143,13 @@
       view.picoles = picoles;
     }
 
-    // Sabores de massa: preserva códigos oficiais e status a partir do mestre.
+    // Sabores de massa: bloqueia apenas o sabor cujo SKU MAS estiver inativo.
     if (Array.isArray(view.sabores_sorvete)) {
       view.sabores_sorvete.forEach(function (sabor) {
-        const registro = item(master, 'massas.' + sabor.codigo);
+        var registro = item(master, 'massas.' + sabor.codigo);
         if (!registro) return;
         sabor.nome = registro.nome;
-        sabor.esgotado = registro.ativo === false;
+        sabor.esgotado = registro.disponivel === false;
       });
     }
 
@@ -137,6 +161,7 @@
     aplicar: apply,
     chaveNormalizada: keyPart,
     obterRegistro: function (raw, chave) { return item(getMaster(raw), chave); },
+    disponivel: function (raw, chave) { return registroDisponivel(raw, item(getMaster(raw), chave)); },
     listar: function (raw) { return Object.values(getMaster(raw)); },
   };
 })(window);

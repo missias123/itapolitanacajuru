@@ -739,6 +739,7 @@
   🛒 <span id="carrinho-qtd">0</span> itens - <span id="carrinho-total">R$ 0,00</span>
 </button>
 
+<script src="scripts/catalogo-mestre.js?v=20260821-disponibilidade"></script>
 <script>
 // Estado único do pedido, também exposto para auditoria e testes.
     window.carrinho = window.carrinho || [];
@@ -854,19 +855,40 @@
         try {
             var resposta = await fetch(ESTOQUE_URL + '?v=' + Date.now(), { cache: 'no-store' });
             if (!resposta.ok) throw new Error('Não foi possível ler o estoque oficial.');
-            var dados = await resposta.json();
+            var dadosBrutos = await resposta.json();
+            var dados = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
+                ? window.ITAP_CATALOGO_MESTRE.aplicar(dadosBrutos)
+                : dadosBrutos;
             montarCatalogoOficial(dados);
             var caixas = Array.isArray(dados.caixas_enc) ? dados.caixas_enc : [];
-            PRODUTOS = PRODUTOS.map(function (padrao) {
-                var item = caixas.find(function (c) { return c.id === padrao.id; });
-                return item ? Object.assign({}, padrao, { preco: Number(item.preço ?? item.preco ?? padrao.preco), max: Number(item.maxSabores || padrao.max), estoque: Number(item.estoque ?? padrao.estoque), esgotado: Boolean(item.esgotado || Number(item.estoque) <= 0) }) : padrao;
+            PRODUTOS = caixas.map(function (item) {
+                return {
+                    id: item.id,
+                    nome: item.nome,
+                    preco: Number(item.preço ?? item.preco ?? 0),
+                    max: Number(item.maxSabores || 1),
+                    estoque: Number(item.estoque ?? 0),
+                    esgotado: Boolean(item.esgotado)
+                };
             });
             var tortas = Array.isArray(dados.tortas_enc) ? dados.tortas_enc : [];
-            if (tortas[0]) TORTA_ESTOQUE = Object.assign({}, TORTA_ESTOQUE, { preco: Number(tortas[0].preço ?? tortas[0].preco ?? TORTA_ESTOQUE.preco), max: Number(tortas[0].maxSabores || TORTA_ESTOQUE.max), estoque: Number(tortas[0].estoque ?? TORTA_ESTOQUE.estoque), esgotado: Boolean(tortas[0].esgotado || Number(tortas[0].estoque) <= 0) });
+            if (tortas[0]) TORTA_ESTOQUE = {
+                id: tortas[0].id,
+                nome: tortas[0].nome,
+                preco: Number(tortas[0].preço ?? tortas[0].preco ?? 0),
+                max: Number(tortas[0].maxSabores || 1),
+                estoque: Number(tortas[0].estoque ?? 0),
+                esgotado: Boolean(tortas[0].esgotado)
+            };
             var acrescimos = Array.isArray(dados.acrescimos) ? dados.acrescimos : [];
-            ACRESCIMOS = ACRESCIMOS.map(function (padrao) {
-                var item = acrescimos.find(function (a) { return a.id === padrao.id; });
-                return item ? Object.assign({}, padrao, { nome: item.nome || padrao.nome, preco: Number(item.preço ?? item.preco ?? padrao.preco), estoque: Number(item.estoque ?? padrao.estoque), esgotado: Boolean(item.esgotado || Number(item.estoque) <= 0) }) : padrao;
+            ACRESCIMOS = acrescimos.map(function (item) {
+                return {
+                    id: item.id,
+                    nome: item.nome,
+                    preco: Number(item.preço ?? item.preco ?? 0),
+                    estoque: Number(item.estoque ?? 0),
+                    esgotado: Boolean(item.esgotado)
+                };
             });
             var rawPicoles = dados.picolés || dados.picoles || {};
             Object.keys(PICOLES_CATALOGO).forEach(function (tipo) {
