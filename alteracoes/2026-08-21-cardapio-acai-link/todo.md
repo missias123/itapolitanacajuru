@@ -73,3 +73,6 @@
 - [ ] Criar comprovante térmico de 80 mm com margem zero, alto contraste, texto legível e sem corte lateral para pedidos administrativos.
 - [ ] Revisar todos os textos do Peça e retire para eliminar interpretação ambígua sobre produto, sabor, embalagem, valor, horário e envio.
 - [ ] Pesquisar e adaptar padrões internacionais de instrução e revisão de pedidos de alimentos ao fluxo Peça e retire.
+- [ ] Destacar na página inicial a chamada Não fazemos delivery · Peça e retire na loja, com link responsivo para retirada.html.
+- [x] Exibir no HTML de pedidos somente produtos vendáveis do cardápio; sabores de massa e picolé devem aparecer apenas dentro da escolha de cada produto.
+- [x] Manter a sequência pública limpa, iniciando com sorvetes de massa e açaí, sem blocos de sabores entre as seções.

@@ -7,7 +7,7 @@
     'abacaxi ao vinho':['#F59E0B','#FFFBEB','rgba(245,158,11,.36)'],'abacaxi suíço':['#FACC15','#FEFCE8','rgba(250,204,21,.40)'],'amarena':['#E11D48','#FFF1F2','rgba(225,29,72,.34)'],'ameixa':['#7C3AED','#F5F3FF','rgba(124,58,237,.32)'],'banana com nutella':['#D97706','#FFF7ED','rgba(217,119,6,.32)'],'bem casado':['#C08457','#FFF7ED','rgba(192,132,87,.34)'],'bis e trufa':['#7C3F2C','#FFF7ED','rgba(124,63,44,.34)'],'blue ice':['#38BDF8','#F0F9FF','rgba(56,189,248,.38)'],'cereja trufada':['#BE123C','#FFF1F2','rgba(190,18,60,.34)'],'cheesecake':['#E2A77A','#FFF7ED','rgba(226,167,122,.34)'],'chocolate belga':['#6B3E26','#FFF7ED','rgba(107,62,38,.36)'],'chocolate com café':['#4B2E25','#F8FAFC','rgba(75,46,37,.36)'],'coco queimado':['#A16207','#FFFBEB','rgba(161,98,7,.34)'],'creme paris':['#D4A017','#FFFBEB','rgba(212,160,23,.34)'],'croquer':['#B45309','#FFF7ED','rgba(180,83,9,.34)'],'doce de leite':['#B7794B','#FFF7ED','rgba(183,121,75,.34)'],'ferrero rocher':['#A16207','#FFFBEB','rgba(161,98,7,.36)'],'flocos':['#64748B','#F8FAFC','rgba(100,116,139,.32)'],'kinder ovo':['#2563EB','#EFF6FF','rgba(37,99,235,.34)'],'leite condensado':['#CBD5E1','#F8FAFC','rgba(148,163,184,.34)'],'leite ninho':['#60A5FA','#EFF6FF','rgba(96,165,250,.38)'],'leite ninho folheado':['#38BDF8','#F0F9FF','rgba(56,189,248,.38)'],'leite ninho com oreo':['#60A5FA','#EFF6FF','rgba(96,165,250,.38)'],'leite ninho trufado':['#3B82F6','#EFF6FF','rgba(59,130,246,.38)'],'limão':['#84CC16','#F7FEE7','rgba(132,204,22,.34)'],'limão suíço':['#A3E635','#F7FEE7','rgba(163,230,53,.38)'],'menta com chocolate':['#10B981','#ECFDF5','rgba(16,185,129,.34)'],'milho verde':['#EAB308','#FEFCE8','rgba(234,179,8,.36)'],'morango trufado':['#F43F5E','#FFF1F2','rgba(244,63,94,.36)'],'mousse de maracujá':['#F59E0B','#FFFBEB','rgba(245,158,11,.36)'],'mousse de uva':['#A78BFA','#F5F3FF','rgba(167,139,250,.36)'],'nozes':['#8D6E63','#FAF7F5','rgba(141,110,99,.34)'],'nutella':['#7C2D12','#FFF7ED','rgba(124,45,18,.36)'],'ovomaltine':['#B45309','#FFF7ED','rgba(180,83,9,.36)'],'passas ao rum':['#7F1D1D','#FFF1F2','rgba(127,29,29,.36)'],'pistache':['#65A30D','#F7FEE7','rgba(101,163,13,.34)'],'prestígio':['#5B3A29','#FFF7ED','rgba(91,58,41,.36)'],'sensação':['#EC4899','#FDF2F8','rgba(236,72,153,.36)']
   };
   const STORAGE_KEY = 'itap_retirada_v1';
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, selectedFlavors: [], serviceMode: '', containerType: '', query: '' };
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], serviceMode: '', containerType: '', query: '' };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
@@ -78,31 +78,30 @@
   function categoryRank(category) {
     const value = normalize(category);
     if (value.includes('sorvetes de massa')) return 0;
-    if (value.includes('sabores de massa')) return 1;
+    if (value.includes('acai')) return 1;
     if (value.includes('picoles')) return 2;
-    if (value.includes('milk') && value.includes('acai')) return 4;
-    if (value.includes('acai')) return 3;
-    if (value === 'milkshake') return 5;
-    if (value.includes('tacas tradicionais')) return 6;
-    if (value.includes('tacas premium')) return 7;
-    if (value.includes('isopores')) return 8;
-    if (value.includes('sobremesas')) return 9;
-    if (value.includes('caixas')) return 10;
-    if (value.includes('tortas')) return 11;
-    if (value.includes('acrescimos')) return 12;
+    if (value === 'milkshake') return 3;
+    if (value.includes('tacas tradicionais')) return 4;
+    if (value.includes('tacas premium')) return 5;
+    if (value.includes('sobremesas')) return 6;
     return 99;
   }
   function categoryOrder(categories) { return [...categories].sort((a, b) => categoryRank(a) - categoryRank(b) || a.localeCompare(b, 'pt-BR')); }
+  function isPublicOrderProduct(product) {
+    const category = normalize(product.category);
+    const exclusiveOrderCategories = ['sabores de massa', 'caixas para encomenda', 'isopores para viagem', 'tortas por encomenda', 'acrescimos'];
+    return product.selectable && !exclusiveOrderCategories.some((item) => category.includes(item));
+  }
   function renderCatalog() {
     const root = $('#catalog'); const query = normalize(state.query); const grouped = new Map();
-    state.catalog.filter((product) => !query || productSearchText(product).includes(query)).forEach((product) => { if (!grouped.has(product.category)) grouped.set(product.category, []); grouped.get(product.category).push(product); });
+    state.catalog.filter(isPublicOrderProduct).filter((product) => !query || productSearchText(product).includes(query)).forEach((product) => { if (!grouped.has(product.category)) grouped.set(product.category, []); grouped.get(product.category).push(product); });
     root.innerHTML = ''; $('#section-nav').innerHTML = '';
     if (!grouped.size) { root.innerHTML = '<div class="empty-state">Não encontramos produto com esse nome ou código. Tente buscar outro termo.</div>'; return; }
     categoryOrder(grouped.keys()).forEach((category) => {
       const products = grouped.get(category); const section = document.createElement('section'); section.className = 'catalog-section'; section.id = `sec-${slug(category)}`;
-      const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<h2>${escape(category)}</h2><p>${category === 'Sabores de massa' ? '38 sabores que aparecem ao escolher produtos de massa.' : `${products.length} item${products.length !== 1 ? 's' : ''} na lista oficial.`}</p>`; section.append(head);
+      const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<h2>${escape(category)}</h2><p>${category === 'Picolés' ? 'Escolha o tipo e depois o sabor do picolé.' : `${products.length} produto${products.length !== 1 ? 's' : ''} para pedir.`}</p>`; section.append(head);
       const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = category; nav.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' })); $('#section-nav').append(nav);
-      if (category === 'Picolés') renderPopsicles(products, section); else if (category === 'Sabores de massa') renderMassFlavorReference(products, section); else renderProducts(products, section);
+      if (category === 'Picolés') renderPopsicles(products, section); else renderProducts(products, section);
       root.append(section);
     });
   }
@@ -111,17 +110,68 @@
     const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => {
       const row = document.createElement('article'); row.className = 'product'; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake';
       const meta = product.size ? product.size : hasFlavor ? flavorRule(product).label : 'Produto pronto para retirada';
-      row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p><span class="product__sku">${escape(product.sku)}</span><p class="product__price">${money(product.price)}</p></div>`;
+      row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p><p class="product__price">${money(product.price)}</p></div>`;
       const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; button.textContent = !product.available ? 'Esgotado' : needsContainerChoice(product) ? 'Escolher recipiente' : hasFlavor ? 'Escolher sabores' : 'Adicionar ao pedido'; button.disabled = !product.selectable || !product.available || !retiradaAberta();
       button.addEventListener('click', () => hasFlavor ? beginFlavors(product) : addProduct(product)); row.append(button); list.append(row);
     }); section.append(list);
   }
-  function renderMassFlavorReference(products, section) { const info = document.createElement('div'); info.className = 'flavor-info'; info.textContent = 'Estes 38 sabores não são produtos separados. Eles aparecem somente quando você toca em “Escolher sabores” em um produto de massa.'; section.append(info); const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => { const row = document.createElement('div'); row.className = 'product'; row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(product.name)}</p><span class="product__sku">${escape(product.sku)}</span></div><span class="product__meta">Sabor disponível para produtos de massa</span>`; list.append(row); }); section.append(list); }
   function renderPopsicles(products, section) {
-    const grid = document.createElement('div'); grid.className = 'popsicle-grid'; const byGroup = new Map(); const base = [];
-    products.forEach((product) => { if (product.picole) { const id = product.picole.groupId; if (!byGroup.has(id)) byGroup.set(id, []); byGroup.get(id).push(product); } else base.push(product); });
-    base.forEach((product) => { const row = document.createElement('div'); row.className = 'base-row'; row.innerHTML = `<strong>${escape(product.name)}</strong> · Escolha um sabor correspondente abaixo.`; grid.append(row); });
-    byGroup.forEach((list, id) => { const group = list[0].picole; const holder = document.createElement('section'); holder.className = 'popsicle-group'; holder.innerHTML = `<div class="popsicle-group__head"><h3 class="popsicle-group__title">${escape(group.groupName)}</h3><p class="popsicle-group__price">Varejo ${money(group.varejo)} · Atacado ${money(group.atacado)} a partir de 100 picolés somados no pedido</p></div>`; list.forEach((product) => { const item = state.cart.find((entry) => entry.sku === product.sku); const qty = item?.quantity || 0; const unavailable = product.picole.unavailable || product.picole.stock <= 0; const row = document.createElement('div'); row.className = `popsicle-row${unavailable ? ' is-unavailable' : ''}`; row.innerHTML = `<div><p class="product__name">${escape(product.name)} ${unavailable ? '<span class="stock-tag">Esgotado</span>' : ''}</p><span class="product__sku">${escape(product.sku)}</span></div>`; const control = document.createElement('div'); control.className = 'qty'; const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${product.name}`); minus.disabled = !qty || !retiradaAberta(); minus.addEventListener('click', () => item && updateQuantity(item.key, -1)); const count = document.createElement('span'); count.textContent = qty; const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${product.name}`); plus.disabled = unavailable || qty >= product.picole.stock || !retiradaAberta(); plus.addEventListener('click', () => { const current = state.cart.find((entry) => entry.sku === product.sku); if (current) updateQuantity(current.key, 1); else addProduct(product, [], '', false); }); control.append(minus, count, plus); row.append(control); holder.append(row); }); grid.append(holder); }); section.append(grid);
+    const list = document.createElement('div');
+    const byGroup = new Map();
+    list.className = 'product-list';
+    products.filter((product) => product.picole).forEach((product) => {
+      const id = product.picole.groupId;
+      if (!byGroup.has(id)) byGroup.set(id, []);
+      byGroup.get(id).push(product);
+    });
+    byGroup.forEach((groupProducts) => {
+      const group = groupProducts[0].picole;
+      const availableFlavors = groupProducts.filter((product) => !product.picole.unavailable && product.picole.stock > 0).length;
+      const availabilityText = availableFlavors === 1 ? '1 sabor disponível.' : `${availableFlavors} sabores disponíveis.`;
+      const row = document.createElement('article');
+      row.className = 'product';
+      row.innerHTML = `<div><p class="product__name">${escape(group.groupName)}${availableFlavors ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${availabilityText} Escolha os sabores dentro do botão.</p><p class="product__price">Varejo ${money(group.varejo)} · Atacado ${money(group.atacado)} a partir de 100 unidades</p></div>`;
+      const button = document.createElement('button');
+      button.className = 'add-btn'; button.type = 'button';
+      button.textContent = availableFlavors ? 'Escolher sabores' : 'Esgotado';
+      button.disabled = !availableFlavors || !retiradaAberta();
+      button.addEventListener('click', () => beginPopsicleGroup(groupProducts));
+      row.append(button); list.append(row);
+    });
+    section.append(list);
+  }
+  function beginPopsicleGroup(products) {
+    state.popsicleGroup = products;
+    const group = products[0]?.picole;
+    $('#popsicle-title').textContent = group ? group.groupName : 'Escolha os sabores do picolé';
+    $('#popsicle-subtitle').textContent = 'Toque em + para adicionar cada sabor. Você pode diminuir ou retirar antes de enviar.';
+    renderPopsicleDialog();
+    openDialog('popsicle-dialog');
+  }
+  function renderPopsicleDialog() {
+    const root = $('#popsicle-list');
+    const products = state.popsicleGroup || [];
+    const selected = products.reduce((sum, product) => sum + Number(state.cart.find((item) => item.sku === product.sku)?.quantity || 0), 0);
+    root.innerHTML = '';
+    $('#popsicle-status').textContent = selected ? `${selected} picolé${selected !== 1 ? 's' : ''} deste tipo no pedido.` : 'Toque em + para adicionar cada sabor ao pedido.';
+    products.forEach((product) => {
+      const item = state.cart.find((entry) => entry.sku === product.sku);
+      const qty = item?.quantity || 0;
+      const unavailable = product.picole.unavailable || product.picole.stock <= 0 || !product.available;
+      const stockText = product.picole.stock === 1 ? '1 unidade disponível.' : `${product.picole.stock} unidades disponíveis.`;
+      const row = document.createElement('div');
+      row.className = `popsicle-row${unavailable ? ' is-unavailable' : ''}`;
+      row.innerHTML = `<div><p class="product__name">${escape(product.name)}${unavailable ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${unavailable ? 'Este sabor está indisponível.' : stockText}</p></div>`;
+      const control = document.createElement('div'); control.className = 'qty';
+      const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${product.name}`);
+      minus.disabled = !qty || !retiradaAberta();
+      minus.addEventListener('click', () => { if (item) { updateQuantity(item.key, -1); renderPopsicleDialog(); } });
+      const count = document.createElement('span'); count.textContent = qty;
+      const plus = document.createElement('button'); plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', `Adicionar ${product.name}`);
+      plus.disabled = unavailable || qty >= product.picole.stock || !retiradaAberta();
+      plus.addEventListener('click', () => { const current = state.cart.find((entry) => entry.sku === product.sku); if (current) updateQuantity(current.key, 1); else addProduct(product, [], '', false); renderPopsicleDialog(); });
+      control.append(minus, count, plus); row.append(control); root.append(row);
+    });
   }
   function beginFlavors(product) { state.flavorProduct = product; state.selectedFlavors = []; state.serviceMode = ''; state.containerType = ''; const rule = flavorRule(product); $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${product.size ? `${product.size} · ` : ''}${needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
   function renderFlavorGrid() {
@@ -187,6 +237,6 @@
   $('#continue-shopping').addEventListener('click', () => { closeDialog('cart-dialog'); $('#catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   $('#pickup-form').addEventListener('submit', submitOrder);
   window.addEventListener('itap:horario-pedidos-atualizado', () => { if (state.catalog.length) renderCatalog(); });
-  $$('[data-close]').forEach((button) => button.addEventListener('click', () => closeDialog(button.dataset.close)));
+  $$('[data-close]').forEach((button) => button.addEventListener('click', () => { if (button.dataset.close === 'popsicle-dialog') state.popsicleGroup = null; closeDialog(button.dataset.close); }));
   init();
 }());
