@@ -76,3 +76,19 @@
 - [ ] Destacar na página inicial a chamada Não fazemos delivery · Peça e retire na loja, com link responsivo para retirada.html.
 - [x] Exibir no HTML de pedidos somente produtos vendáveis do cardápio; sabores de massa e picolé devem aparecer apenas dentro da escolha de cada produto.
 - [x] Manter a sequência pública limpa, iniciando com sorvetes de massa e açaí, sem blocos de sabores entre as seções.
+- [x] Auditar no formulário de retirada os controles de aumentar, diminuir por unidade e excluir cada produto antes do envio.
+- [x] Permitir que cada milkshake seja pedido com um ou até dois sabores e identificar chantilly e Nutella nos modelos Top.
+- [ ] Validar e ajustar o fluxo de retirada com prioridade para telas de celular, incluindo catálogo, modais, carrinho e formulário.
+- [x] Corrigir controles travados de aumentar, diminuir por unidade e excluir em itens já adicionados ao carrinho de retirada.
+- [x] Definir 50 unidades como estoque inicial de cada sabor de picolé na base central.
+- [x] Exibir no formulário de retirada uma ação clara de voltar para comprar mais sem perder os itens já selecionados.
+- [ ] Aplicar no Peça e retire as regras visuais de cores, botões e estados da página Encomendas.
+- [x] Corrigir carrinho de retirada que mostra pedido vazio com total residual e controles inconsistentes.
+- [x] Revisar e validar somas de quantidade, subtotais, embalagem e total geral após cada alteração no carrinho.
+- [x] Remover automaticamente a embalagem e seu valor quando a última unidade do produto correspondente for retirada do carrinho.
+- [ ] Adaptar ao Peça e retire as cores, os estados e a hierarquia de botões usados em Encomendas.
+- [x] Garantir que excluir todos os produtos deixe itens, embalagens, subtotais e total geral em R$ 0,00.
+- [x] Executar testes completos e consolidar um formulário de retirada validado, inspirado em grandes sites de alimentação e adaptado à sorveteria.
+- [x] Vincular a embalagem de viagem à mesma quantidade do produto, incluindo e removendo ambos na mesma ação.
+- [x] Aplicar às tortas de sorvete aviso e validação de retirada com antecedência mínima de 48 horas.
+- [x] Reforçar no Peça e retire que todos os itens e a execução dependem de confirmação manual da sorveteria antes da produção.
