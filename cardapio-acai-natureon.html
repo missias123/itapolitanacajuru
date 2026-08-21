@@ -44,6 +44,12 @@
     (function () {
       var button = document.getElementById('fechar-cardapio');
       button.addEventListener('click', function () {
+        try {
+          if (sessionStorage.getItem('itap_cardapio_acai_retorno')) {
+            window.location.assign('index.html?retorno-cardapio-acai=1');
+            return;
+          }
+        } catch (e) {}
         var cameFromThisSite = document.referrer && new URL(document.referrer).origin === window.location.origin;
         if (cameFromThisSite && window.history.length > 1) window.history.back();
         else window.location.assign('index.html#hero-título');

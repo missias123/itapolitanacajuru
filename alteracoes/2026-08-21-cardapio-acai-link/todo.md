@@ -1,6 +1,7 @@
-# Regra de atacado para picolés
+# Catálogo modal de Açaí Natureon
 
-- [x] Confirmar o limite de 100 unidades no carrinho.
-- [x] Armazenar preço de varejo e atacado no mesmo cadastro de SKU.
-- [x] Converter o valor automaticamente quando a quantidade atingir 100.
-- [x] Validar estoque, total e mensagem de pedido.
+- [x] Mapear produtos de açaí, milkshake de açaí e taças gourmet no cadastro mestre.
+- [x] Criar modal sem carrinho, pedido, checkout ou WhatsApp.
+- [x] Renderizar grupos e produtos em HTML semântico somente para leitura.
+- [x] Abrir pelo texto Açaí Natureon e devolver o foco ao fechar.
+- [x] Validar ESC, rolagem interna e visualização móvel.
