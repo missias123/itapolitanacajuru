@@ -1,7 +1,6 @@
-# Catálogo modal de Açaí Natureon
+# Link visual fora da barra do cardápio
 
-- [x] Mapear produtos de açaí, milkshake de açaí e taças gourmet no cadastro mestre.
-- [x] Criar modal sem carrinho, pedido, checkout ou WhatsApp.
-- [x] Renderizar grupos e produtos em HTML semântico somente para leitura.
-- [x] Abrir pelo texto Açaí Natureon e devolver o foco ao fechar.
-- [x] Validar ESC, rolagem interna e visualização móvel.
+- [x] Identificar cada texto Açaí Natureon fora da barra do cardápio.
+- [x] Restaurar o botão Açaí Natureon da barra ao comportamento anterior.
+- [x] Conectar somente os textos externos ao modal de imagens do PDF.
+- [x] Validar o modal visual e a abertura normal da barra do cardápio.
