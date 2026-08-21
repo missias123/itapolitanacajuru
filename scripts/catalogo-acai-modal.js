@@ -9,9 +9,11 @@
   var live = document.getElementById('catalogo-acai-status');
   var lastTrigger = null;
   var loaded = false;
+  var visualObserver = null;
   var pages = Array.from({ length: 12 }, function (_, index) {
     return 'images/cardapio-acai-pdf/pagina-' + String(index + 1).padStart(2, '0') + '.webp';
   });
+  var imagePlaceholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="1697"%3E%3C/svg%3E';
 
   function createCatalogLink(text) {
     var link = document.createElement('a');
@@ -77,11 +79,45 @@
   function renderVisualPages() {
     body.innerHTML = '<div class="catalogo-acai-paginas" aria-label="Páginas visuais do cardápio de Açaí Natureon">' + pages.map(function (src, index) {
       var page = index + 1;
+      var immediate = index < 2;
       return '<figure class="catalogo-acai-pagina">' +
-        '<img src="' + src + '" alt="Página ' + page + ' do cardápio de Açaí Natureon" width="1200" height="1697" loading="' + (index < 2 ? 'eager' : 'lazy') + '" decoding="async"' + (index === 0 ? ' fetchpriority="high"' : '') + '>' +
+        '<img src="' + (immediate ? src : imagePlaceholder) + '"' + (immediate ? '' : ' data-src="' + src + '"') + ' alt="Página ' + page + ' do cardápio de Açaí Natureon" width="1200" height="1697" loading="eager" decoding="async"' + (index === 0 ? ' fetchpriority="high"' : '') + '>' +
       '</figure>';
     }).join('') + '</div>';
     loaded = true;
+    setupProgressiveImages();
+  }
+
+  function loadVisualImage(image) {
+    if (!image || !image.dataset.src) return;
+    image.src = image.dataset.src;
+    image.removeAttribute('data-src');
+    image.closest('.catalogo-acai-pagina').classList.add('catalogo-acai-pagina--carregando');
+    image.addEventListener('load', function () {
+      image.closest('.catalogo-acai-pagina').classList.remove('catalogo-acai-pagina--carregando');
+    }, { once: true });
+  }
+
+  function setupProgressiveImages() {
+    var pending = Array.prototype.slice.call(body.querySelectorAll('img[data-src]'));
+    if (!pending.length) return;
+    if ('IntersectionObserver' in window) {
+      visualObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          loadVisualImage(entry.target);
+          visualObserver.unobserve(entry.target);
+        });
+      }, { root: body, rootMargin: '180% 0px' });
+      pending.forEach(function (image) { visualObserver.observe(image); });
+    } else {
+      pending.forEach(loadVisualImage);
+    }
+    /* O cardápio inteiro pesa cerca de 2,6 MB: após abrir, as páginas restantes
+       entram em fila curta para garantir que nenhuma suma durante a rolagem. */
+    pending.forEach(function (image, index) {
+      window.setTimeout(function () { loadVisualImage(image); }, 90 * (index + 1));
+    });
   }
 
   function showCatalog(trigger) {

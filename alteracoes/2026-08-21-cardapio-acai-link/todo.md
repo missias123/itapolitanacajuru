@@ -1,6 +1,6 @@
-# Animação Açaí Natureon com prioridade mobile
+# Garantia de proporção das páginas
 
-- [x] Garantir que o título roxo não quebre nem perca área de toque em celular.
-- [x] Manter as frutinhas dentro da largura útil e fora das letras.
-- [x] Reduzir intensidade e duração em telas pequenas.
-- [x] Validar primeiro em 390 px de largura antes de desktop.
+- [ ] Medir a razão de largura e altura de cada imagem publicada.
+- [ ] Verificar que o CSS usa encaixe proporcional sem estiramento.
+- [ ] Testar a razão visual em celular, tablet e desktop.
+- [ ] Confirmar que nenhuma página é cortada ou deformada.
