@@ -260,6 +260,57 @@
 - [x] Manter as categorias especiais claramente identificadas, sem ocultar produto ou regra de pedido.
 - [x] Inserir em cada barra o ponto-chave de compra aplicável àquela seção.
 
+## Taças Gourmet Açaí Natureon
+
+- [ ] Identificar as quatro taças de 500 ml e preservar seus SKUs e preços atuais.
+- [ ] Mover a apresentação para dentro da seção Açaí Natureon, após as combinações prontas.
+- [ ] Exibir o grupo com o nome “Taças Gourmet Açaí Natureon” para evitar confusão.
+- [ ] Validar a adição direta das quatro receitas, sem seleção de sabores.
+
+## Confirmação humana simplificada
+
+- [ ] Reduzir a repetição de regras no bloco final do formulário.
+- [ ] Destacar ligação em até 15 minutos, conferência integral e cancelamento sem resposta.
+- [ ] Preservar a regra de que nada é elaborado antes da confirmação e, em Pix, do pagamento confirmado.
+
+## Registro de ciência no WhatsApp
+
+- [ ] Colocar no início da mensagem os dados e regras prioritárias para a sorveteria.
+- [ ] Registrar que o cliente marcou o aceite e foi informado sobre ligação, 15 minutos, sabores, alterações, retirada e pagamento.
+- [ ] Manter o resumo de itens e preços após o bloco prioritário, sem ocultar dados de execução.
+
+## Validação sem erros no formulário
+
+- [ ] Validar cada campo no momento adequado, com mensagem curta junto ao erro.
+- [ ] Manter bloqueio de envio até dados, horário, pagamento e aceite estarem válidos.
+- [ ] Organizar a mensagem recebida pela sorveteria com resumo prioritário e registro de ciência do cliente.
+
+## Horário de Brasília e CNPJ
+
+- [x] Calcular a antecedência mínima usando sempre o horário de Brasília.
+- [x] Exibir aviso vermelho no campo de horário se a escolha tiver menos de uma hora de antecedência.
+- [x] Impedir o envio enquanto o horário estiver abaixo do mínimo.
+- [x] Localizar o CNPJ configurado e retirar sua exposição dos arquivos públicos.
+
+## Pagamento por Pix
+
+- [x] Verificar se existe chave Pix ou QR Code de cobrança confiável configurado para a sorveteria.
+- [x] Cancelar a exibição de QR Code e comprovante por orientação da sorveteria.
+- [x] Não criar, inventar ou publicar uma chave Pix que não tenha sido fornecida pela sorveteria.
+
+## Pagamento presencial e proteção de dados
+
+- [x] Remover Pix como opção do formulário de retirada.
+- [x] Exibir somente pagamento presencial na loja após a confirmação humana.
+- [x] Não exibir ou encaminhar o CNPJ no fluxo Peça e retire.
+- [x] Preservar as demais áreas do site; a regra de pagamento presencial é exclusiva do Peça e retire.
+
+## Retirada global de Pix
+
+- [ ] Remover referências públicas a Pix da página inicial, FAQ e chatbot.
+- [ ] Substituir instruções de pagamento antecipado por pagamento presencial após confirmação humana.
+- [ ] Confirmar que nenhuma página pública exiba Pix, QR Code, chave Pix ou CNPJ.
+
 ## Infraestrutura GitHub e Cloudflare
 
 - [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.

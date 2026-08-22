@@ -94,7 +94,6 @@
     'cfg-horario':                 { min:5,  destino:'Horário geral (rodapé, chatbot, página Sobre)' },
     'cfg-horário-det':             { min:5,  destino:'Horário detalhado (página Sobre, FAQ)' },
     'cfg-instagram':               { tipo:'instagram', destino:'Link do Instagram (rodapé, chatbot)' },
-    'cfg-CNPJ':                    { tipo:'cnpj', destino:'CNPJ (página Sobre)' },
     'cfg-nome-empresa':            { min:3,  destino:'Nome da empresa (SEO, rodapé, schema)' },
     'cfg-slogan':                  { min:5,  destino:'Slogan (meta tags, schema)' },
     'cfg-footer-copy':             { min:10, destino:'Texto de copyright no rodapé' },
@@ -312,17 +311,6 @@
     var INSTA_URL_RE = /^https?:\/\/(www\.)?instagram\.com\//;
     if (!INSTA_PREFIX_RE.test(val) && !INSTA_URL_RE.test(val)) {
       mostrarErroCampo(campo, '⚠️ Informe o @usuário do Instagram (ex: @sorveteriaitapolitanacajuru) ou o link completo.');
-      return;
-    }
-    limparErroCampo(campo);
-  }
-
-  /** Validação de CNPJ */
-  function validarCNPJ(campo) {
-    var val = campo.value.replace(/\D/g, '');
-    if (!val) return;
-    if (val.length !== 14) {
-      mostrarErroCampo(campo, '⚠️ O CNPJ deve ter 14 dígitos. Exemplo: 08922044000180 ou 08.922.044/0001-80');
       return;
     }
     limparErroCampo(campo);

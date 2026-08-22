@@ -2209,7 +2209,6 @@ Talento</textarea>
           <div class="campo-edit"><label>Slogan</label><input type="text" id="cfg-slogan" maxlength="80" placeholder="Sorvete Sorvete Itapolitana desde 2007"/></div>
           <div class="campo-edit"><label>Ano de fundação</label><input type="text" id="cfg-fundação" maxlength="4" pattern="[0-9]{4}" placeholder="2007"/><div class="hint">4 digitos. Exemplo: 2007. Usado no copyright e no hero.</div></div>
           <div class="campo-edit"><label for="cfg-num-sabores">Número de sabores de sorvete</label><input type="number" id="cfg-num-sabores" min="1" max="999" placeholder="35"/><div class="hint">Atualiza automaticamente botões, badges e chatbot com o número correto. Exemplo: 35.</div></div>
-          <div class="campo-edit"><label>CNPJ (formato: XX.XXX.XXX/XXXX-XX)</label><input type="text" id="cfg-CNPJ" maxlength="18" placeholder="08.922.044/0001-80"/><div class="hint">Formato: 08.922.044/0001-80. Max. 18 caracteres.</div></div>
           <div class="seção-título">&#x1F4C4; Rodapé do Site</div>
           <div class="campo-edit"><label>Texto de copyright</label><input type="text" id="cfg-footer-copy" maxlength="80" placeholder="2007-2026 Sorveteria Itapolitana . Cajuru/SP"/></div>
           <div class="campo-edit"><label>Nome do desenvolvedor</label><input type="text" id="cfg-footer-dev" maxlength="60" placeholder="SgtMissiascacarato"/><div class="hint">Max. 60 caracteres. Aparece no rodapé do site. Pode deixar em branco.</div></div>
@@ -6612,7 +6611,6 @@ function preencherConfig(){
   document.getElementById('cfg-slogan').value=cfg.slogan||'';
   document.getElementById('cfg-fundação').value=cfg.fundacao||'2007';
   document.getElementById('cfg-num-sabores').value=cfg.numSabores||35;
-  document.getElementById('cfg-CNPJ').value=cfg.cnpj||'';
   document.getElementById('cfg-footer-copy').value=cfg.footerCopy||'';
   document.getElementById('cfg-footer-dev').value=cfg.footerDev||'';
   // SEO
@@ -6692,7 +6690,6 @@ async function salvarConfig(){
   cfg.slogan=document.getElementById('cfg-slogan').value.trim();
   cfg.fundacao=document.getElementById('cfg-fundação').value.trim();
   cfg.numSabores=parseInt(document.getElementById('cfg-num-sabores').value,10)||35;
-  cfg.cnpj=document.getElementById('cfg-CNPJ').value.trim();
   cfg.footerCopy=document.getElementById('cfg-footer-copy').value.trim();
   cfg.footerDev=document.getElementById('cfg-footer-dev').value.trim();
   // SEO
