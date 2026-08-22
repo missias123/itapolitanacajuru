@@ -240,6 +240,15 @@
 - [x] Preservar as cores específicas apenas nos controles de seleção de sabores.
 - [x] Replicar o padrão visual das barras de produtos da página inicial nos cabeçalhos do Peça e retire.
 
+## Sete cores de separação visual
+
+- [x] Identificar as cores funcionais já usadas em Encomendas e na página principal.
+- [x] Atribuir uma cor única a cada uma das sete seções de produto, sem repetição.
+- [x] Aplicar a mesma cor no cabeçalho e nos botões internos da respectiva seção.
+- [x] Usar blocos neutros e contraste para manter preço, texto e ações legíveis.
+- [x] Reutilizar as cores apenas como identificação dos blocos relacionados do formulário.
+- [x] Fazer cada campo de produto herdar a cor da sua seção no cabeçalho, cartão e botão.
+
 ## Composição de cores para compra
 
 - [x] Usar a barra da seção como identificação do grupo, com texto centralizado e contraste alto.

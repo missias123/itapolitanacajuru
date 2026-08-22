@@ -139,6 +139,7 @@
   function displayCategory(product) {
     if (isTraditionalMilkshake(product) || isAcaiMilkshake(product)) return 'Milk-shakes';
     if (normalize(product?.category).includes('acai')) return 'Açaí Natureon';
+    if (normalize(product?.category).includes('tacas')) return 'Taças';
     return product.category;
   }
   function productSearchText(product) { return normalize([product.category, displayCategory(product), product.name, product.size, product.sku, product.picole?.groupName].filter(Boolean).join(' ')); }
@@ -149,19 +150,19 @@
     if (value.includes('acai')) return 1;
     if (value === 'milk-shakes') return 2;
     if (value.includes('picoles')) return 3;
-    if (value.includes('tacas tradicionais')) return 4;
-    if (value.includes('tacas premium')) return 5;
-    if (value.includes('tacas gourmet')) return 6;
-    if (value.includes('sobremesas')) return 7;
+    if (value === 'tacas') return 4;
+    if (value.includes('sobremesas')) return 5;
     return 99;
   }
   function categoryOrder(categories) { return [...categories].sort((a, b) => categoryRank(a) - categoryRank(b) || a.localeCompare(b, 'pt-BR')); }
   const SECTION_GUIDES = [
-    { id: 'massa', title: 'Sorvetes de massa', hint: 'Tamanhos, bolas e caixas', matches: (category) => normalize(category).includes('sorvetes de massa') || normalize(category).includes('isopores para viagem') },
+    { id: 'massa', title: 'Sorvetes de massa', hint: 'Tamanhos, bolas e sabores', matches: (category) => normalize(category).includes('sorvetes de massa') },
+    { id: 'caixas', title: 'Caixas para viagem', hint: '4 a 12 bolas', matches: (category) => normalize(category).includes('isopores para viagem') },
     { id: 'acai', title: 'Açaí Natureon', hint: 'Combinações prontas', matches: (category) => { const value = normalize(category); return value.includes('acai') && !value.includes('milk-shake'); } },
     { id: 'milkshake', title: 'Milk-shakes', hint: 'Tradicional ou Açaí pronto', matches: (category) => normalize(category) === 'milk-shakes' },
     { id: 'picoles', title: 'Picolés', hint: 'Sabores e quantidade', matches: (category) => normalize(category).includes('picoles') },
-    { id: 'tacas', title: 'Taças e sobremesas', hint: 'Ingredientes e sabores', matches: (category) => { const value = normalize(category); return value.includes('tacas') || value.includes('sobremesas'); } }
+    { id: 'tacas', title: 'Taças', hint: 'Ingredientes e sabores', matches: (category) => normalize(category) === 'tacas' },
+    { id: 'sobremesas', title: 'Sobremesas', hint: 'Especiais e tortas', matches: (category) => normalize(category).includes('sobremesas') }
   ];
   function sectionGuide(category) { return SECTION_GUIDES.find((guide) => guide.matches(category)) || { id: 'outros', title: category, hint: 'Ver produtos desta seção', matches: () => false }; }
   function sectionPresentation(category) {
@@ -171,9 +172,7 @@
     if (value.includes('acai')) return { tone: 'acai', title: 'Açaí Natureon', point: 'Combinações prontas e Taças Gourmet · adicione direto ao pedido' };
     if (value === 'milk-shakes') return { tone: 'milkshake', title: 'Milk-shakes', point: 'Tradicional: até 2 sabores · Açaí: receita pré-montada' };
     if (value.includes('picoles')) return { tone: 'picoles', title: 'Picolés', point: 'Escolha os sabores conforme o estoque' };
-    if (value.includes('tacas tradicionais')) return { tone: 'tacas-tradicionais', title: 'Taças tradicionais', point: 'Veja os ingredientes e escolha sabores quando necessário' };
-    if (value.includes('tacas premium')) return { tone: 'tacas-premium', title: 'Taças premium', point: 'Ingredientes especiais · escolha com calma' };
-    if (value.includes('tacas gourmet')) return { tone: 'tacas-gourmet', title: 'Taças Gourmet', point: 'Sobremesas especiais prontas para retirar' };
+    if (value === 'tacas') return { tone: 'tacas', title: 'Taças', point: 'Ingredientes especiais · escolha sabores quando necessário' };
     if (value.includes('sobremesas')) return { tone: 'sobremesas', title: 'Sobremesas', point: 'Tortas e especiais · confira o prazo quando indicado' };
     return { tone: 'outros', title: category, point: 'Escolha o produto e avance para o pedido' };
   }

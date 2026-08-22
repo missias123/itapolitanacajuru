@@ -57,6 +57,30 @@
     .rules--compact{display:grid;gap:6px;font-size:12px;line-height:1.35}
     .rules--compact span{display:block}
   </style>
+  <style>
+    /* Sistema de sete cores: cada campo herda a identidade da sua seção para orientar a compra sem repetir cores. */
+    .catalog-section[data-section-tone="massa"]{--section-bar:#EA1D2C;--section-detail:#8A1F2D;--section-tint:#FFF0F1;--section-action-text:#fff}
+    .catalog-section[data-section-tone="caixas"]{--section-bar:#0D47A1;--section-detail:#0B3B82;--section-tint:#EEF5FF;--section-action-text:#fff}
+    .catalog-section[data-section-tone="acai"]{--section-bar:#6D163F;--section-detail:#5A1537;--section-tint:#F9EEF4;--section-action-text:#fff}
+    .catalog-section[data-section-tone="milkshake"]{--section-bar:#008C45;--section-detail:#075A3A;--section-tint:#EFFAF4;--section-action-text:#fff}
+    .catalog-section[data-section-tone="picoles"]{--section-bar:#6A1B9A;--section-detail:#56147E;--section-tint:#F8EEFC;--section-action-text:#fff}
+    .catalog-section[data-section-tone="tacas"]{--section-bar:#B45309;--section-detail:#7C3F05;--section-tint:#FFF6E8;--section-action-text:#fff}
+    .catalog-section[data-section-tone="sobremesas"]{--section-bar:#FFD100;--section-detail:#6A4A00;--section-tint:#FFFBEB;--section-action-text:#1A1A1A}
+    .catalog-section[data-section-tone] .product{border-left:5px solid var(--section-bar);background:linear-gradient(90deg,var(--section-tint) 0%,#fff 32%)}
+    .catalog-section[data-section-tone] .product__number{color:var(--section-detail)}
+    .catalog-section[data-section-tone] .product-subgroup,.catalog-section[data-section-tone] .popsicle-group__head{border-left:5px solid var(--section-bar);background:var(--section-tint);color:var(--section-detail)}
+    .catalog-section[data-section-tone] .product-subgroup strong,.catalog-section[data-section-tone] .popsicle-group__title{color:var(--section-detail)}
+    .catalog-section[data-section-tone] .add-btn:not(:disabled):not(.is-order-closed){background:linear-gradient(135deg,var(--section-bar),color-mix(in srgb,var(--section-bar) 82%,#000))!important;color:var(--section-action-text)!important;box-shadow:0 5px 12px color-mix(in srgb,var(--section-bar) 28%,transparent)!important}
+    .catalog-section[data-section-tone] .add-btn:hover:not(:disabled):not(.is-order-closed){background:var(--section-bar)!important;filter:brightness(.94)}
+    .section-choice[data-section-guide="massa"]{--choice-bar:#EA1D2C;--choice-tint:#FFF0F1;--choice-action:#EA1D2C}
+    .section-choice[data-section-guide="caixas"]{--choice-bar:#0D47A1;--choice-tint:#EEF5FF;--choice-action:#0D47A1}
+    .section-choice[data-section-guide="acai"]{--choice-bar:#6D163F;--choice-tint:#F9EEF4;--choice-action:#6D163F}
+    .section-choice[data-section-guide="milkshake"]{--choice-bar:#008C45;--choice-tint:#EFFAF4;--choice-action:#008C45}
+    .section-choice[data-section-guide="picoles"]{--choice-bar:#6A1B9A;--choice-tint:#F8EEFC;--choice-action:#6A1B9A}
+    .section-choice[data-section-guide="tacas"]{--choice-bar:#B45309;--choice-tint:#FFF6E8;--choice-action:#B45309}
+    .section-choice[data-section-guide="sobremesas"]{--choice-bar:#A87900;--choice-tint:#FFFBEB;--choice-action:#A87900}
+    @media(max-width:560px){.catalog-section[data-section-tone] .product{border-left-width:4px;background:linear-gradient(90deg,var(--section-tint) 0%,#fff 46%)}}
+  </style>
 </head>
 <body>
   <a class="skip" href="#catalogo">Pular para os produtos</a>
@@ -113,6 +137,6 @@
   </dialog>
   <div class="sr-only" id="live-region" aria-live="polite" aria-atomic="true"></div>
   <script src="scripts/horario-pedidos.js?v=20260821-horarios"></script>
-  <script src="scripts/retirada.js?v=20260822-horario-brasilia-pagamento-loja"></script>
+  <script src="scripts/retirada.js?v=20260822-sete-cores-campos"></script>
 </body>
 </html>
