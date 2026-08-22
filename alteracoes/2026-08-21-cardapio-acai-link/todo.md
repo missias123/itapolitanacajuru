@@ -324,6 +324,34 @@
 - [x] Montar um pedido simples em Peça e retire em largura de 1280 px, confirmando carrinho, etapas e botão final.
 - [x] Garantir que a simulação não abra WhatsApp nem envie pedido real.
 
+## Caixas de sorvete — 5 e 10 litros no Peça e retire
+
+- [x] Incluir as quatro caixas oficiais de 5 e 10 litros na seção de caixas do Peça e retire, identificadas pelo SKU.
+- [x] Preservar preço, capacidade e regra de 2 ou 3 sabores de cada caixa.
+- [x] Ajustar o campo Observações adicionais para orientar outros sabores ou até 4 substituições, sujeitos à confirmação humana.
+- [x] Validar os cartões, a seleção de sabores e a mensagem simulada sem encaminhar pedido real.
+
+## Consulta e encomenda — tortas e caixas de 5 e 10 litros
+
+- [x] Manter as caixas grandes abaixo das caixas de 4, 7, 9 e 12 bolas.
+- [x] Fazer Consultar disponibilidade abrir somente o WhatsApp, sem formulário, para tortas e caixas grandes.
+- [x] Fazer Encomendar para 48 horas seguir para o formulário, exigindo data e horário com antecedência mínima de 48 horas.
+
+## Destaque de tamanhos e bolas
+
+- [x] Dar destaque visual prioritário ao tamanho do copo e à quantidade de bolas logo no primeiro olhar dos cartões do Peça e retire.
+- [x] Reforçar tamanho e quantidade na etapa de escolha de sabores, com leitura confortável em celular e computador.
+- [x] Aplicar padrão premium: selo de tamanho antes do nome, preço e botão, com contraste e leitura rápida.
+
+## Preferências de sabores — Opções 1, 2 e 3
+
+- [x] Exigir uma combinação principal e duas alternativas diferentes da primeira, respeitando a quantidade de sabores do produto nos itens elegíveis de bolas e picolés.
+- [x] Manter o mesmo valor do produto para todas as combinações e excluir açaí Natureon das preferências de sabor.
+- [x] Manter uma única escolha para o grupo de picolés especiais, que contém Leite Ninho e Ovomaltine; definir as combinações dos outros tipos pelo catálogo oficial.
+- [x] Bloquear a adição ao carrinho e a finalização até todas as combinações obrigatórias estarem preenchidas.
+- [x] Registrar as preferências na revisão do carrinho e na mensagem de solicitação, sem troca automática de sabores.
+- [ ] Basear o fluxo em seleção sequencial, rótulos claros de preferência, retorno visual imediato e mensagem curta de confirmação humana.
+
 ## Horário de Brasília e CNPJ
 
 - [x] Calcular a antecedência mínima usando sempre o horário de Brasília.
