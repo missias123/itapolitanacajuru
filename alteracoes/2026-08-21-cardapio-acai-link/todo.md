@@ -157,6 +157,39 @@
 - [x] Preservar o cardápio principal, o cadastro mestre e a página de Encomendas.
 - [x] Validar que o produto Diet não possa ser encontrado ou pedido na retirada.
 
+## Complementação textual e lista de SKUs
+
+- [x] Extrair do PDF apenas descrições, nomes e ingredientes, ignorando todos os preços do documento.
+- [x] Vincular cada texto apenas ao SKU oficial correspondente, preservando preços e disponibilidade do site.
+- [x] Gerar uma lista completa atualizada de SKUs para conferência em tela.
+- [x] Registrar itens do PDF sem correspondência inequívoca para validação manual, sem criar texto ou SKU novo.
+
+## Auditoria de SKUs sem descrição
+
+- [ ] Filtrar produtos que não possuem ingredientes ou texto descritivo no cadastro central.
+- [ ] Gerar e entregar a lista organizada por categoria para conferência.
+
+## Visualização de ingredientes e seleção de sabores
+
+- [x] Conferir no Peça e retire os SKUs que receberam ingredientes do PDF.
+- [x] Padronizar os limites de sabores, contadores e confirmações para as taças alteradas.
+- [x] Capturar e mostrar a demonstração móvel dos produtos alterados na tela.
+
+## Regra geral do botão Peça e retire
+
+- [x] Aplicar a exibição de ingredientes fixos para qualquer SKU que os possua.
+- [x] Exigir seleção de sabores somente quando o SKU indicar sabores de sorvete.
+- [x] Exibir limite, contador e bloqueio de confirmação até a seleção ficar válida.
+- [x] Preservar regras especiais: picolés por estoque, caixas por bolas, milkshake até 2 sabores e tortas com 3 sabores.
+
+## Confirmação humana após o pedido
+
+- [x] Exibir antes do envio o aviso de ligação para confirmar o recebimento pelo WhatsApp da sorveteria.
+- [x] Informar que, sem ligação nem resposta em até 15 minutos, a solicitação será cancelada.
+- [x] Incluir a orientação no aceite e na mensagem enviada para o WhatsApp.
+- [x] Destacar no formulário recebido pela sorveteria que a confirmação depende de ligação e resposta humana.
+- [x] Determinar no formulário enviado que a ligação confirma itens, quantidades, sabores, alterações, retirada e pagamento antes da elaboração.
+
 ## Infraestrutura GitHub e Cloudflare
 
 - [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.
