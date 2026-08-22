@@ -212,6 +212,19 @@
 - [x] Carrinho persistente com quantidade, total e retorno para continuar comprando.
 - [x] Revisão final sem surpresa, com alteração de quantidades e confirmação humana destacada.
 
+## Teste móvel ao vivo
+
+- [x] Abrir o domínio público em largura de celular.
+- [x] Demonstrar as seções, a abertura de um produto e o carrinho sem enviar pedido.
+- [x] Mostrar as telas da demonstração ao responsável.
+
+## Compra simulada completa
+
+- [x] Inventariar todos os produtos públicos e seus tipos de fluxo de escolha.
+- [x] Simular a inclusão de cada produto no carrinho sem abrir ou enviar WhatsApp.
+- [x] Conferir limites de sabores, estoque de picolés, embalagem, complementos, torta e totais.
+- [x] Registrar falhas por SKU e repetir os testes após qualquer correção.
+
 ## Infraestrutura GitHub e Cloudflare
 
 - [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.

@@ -3,6 +3,7 @@ import { writeFileSync } from 'node:fs';
 
 const root = '/home/ubuntu/itapolitanacajuru-source/alteracoes/2026-08-21-cardapio-acai-link';
 const port = 9231;
+const baseUrl = process.argv[2] || 'http://127.0.0.1:4173';
 const chrome = spawn('chromium', [
   '--headless=new', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage',
   `--remote-debugging-port=${port}`, `--user-data-dir=/tmp/itap-confirmacao-${Date.now()}`,
@@ -48,7 +49,7 @@ async function screenshot(name) {
 }
 
 await command('Emulation.setDeviceMetricsOverride', { width: 375, height: 812, deviceScaleFactor: 1, mobile: true });
-await command('Page.navigate', { url: 'http://127.0.0.1:4173/retirada.html?sku=TAC-TRD-001#catalogo' });
+await command('Page.navigate', { url: `${baseUrl.replace(/\/$/, '')}/retirada.html?sku=TAC-TRD-001#catalogo` });
 await wait(4000);
 await evaluate(`(() => {
   const product = document.querySelector('[data-catalog-sku="TAC-TRD-001"]');
