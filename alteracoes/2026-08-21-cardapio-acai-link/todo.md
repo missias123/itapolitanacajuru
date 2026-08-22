@@ -350,6 +350,13 @@
 - [x] Manter uma única escolha para o grupo de picolés especiais, que contém Leite Ninho e Ovomaltine; definir as combinações dos outros tipos pelo catálogo oficial.
 - [x] Bloquear a adição ao carrinho e a finalização até todas as combinações obrigatórias estarem preenchidas.
 - [x] Registrar as preferências na revisão do carrinho e na mensagem de solicitação, sem troca automática de sabores.
+
+## Reversão solicitada — seleção direta de sabores
+
+- [x] Remover Opção 1, Opção 2 e Opção 3 dos diálogos, carrinho e mensagem de solicitação.
+- [x] Restaurar a seleção direta de sabores com os limites originais de cada produto.
+- [x] Manter apenas os selos grandes de tamanho e quantidade de bolas nos cartões.
+- [x] Orientar substituições de sabores exclusivamente no campo Observações adicionais.
 - [ ] Basear o fluxo em seleção sequencial, rótulos claros de preferência, retorno visual imediato e mensagem curta de confirmação humana.
 
 ## Horário de Brasília e CNPJ
