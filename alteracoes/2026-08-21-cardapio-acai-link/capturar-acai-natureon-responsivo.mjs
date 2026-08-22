@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 
 const root = '/home/ubuntu/itapolitanacajuru-source/alteracoes/2026-08-21-cardapio-acai-link';
-const url = 'http://127.0.0.1:4173/index.html#catalogo-acai-natureon';
+const url = process.argv[2] || 'http://127.0.0.1:4173/index.html#catalogo-acai-natureon';
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function capture(name, width, height, mobile) {
@@ -27,9 +27,11 @@ async function capture(name, width, height, mobile) {
   await wait(450);
   const screenshot = await command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
   writeFileSync(`${root}/demonstracao-${name}-acai-natureon-responsivo.png`, Buffer.from(screenshot.data, 'base64'));
+  const closeResult = await command('Runtime.evaluate', { expression: "(() => { const modal = document.getElementById('catalogo-acai-natureon'); const wasOpen = Boolean(modal?.open); modal?.querySelector('button')?.click(); return { wasOpen, closed: !modal?.open }; })()", returnByValue: true });
   socket.close(); process.kill(-chrome.pid, 'SIGTERM');
+  return closeResult.result?.value || { wasOpen: false, closed: false };
 }
 
-await capture('mobile', 375, 812, true);
-await capture('desktop', 1280, 720, false);
-console.log('Capturas responsivas do Açaí Natureon criadas.');
+const mobile = await capture('mobile', 375, 812, true);
+const desktop = await capture('desktop', 1280, 720, false);
+console.log(JSON.stringify({ mobile, desktop }, null, 2));

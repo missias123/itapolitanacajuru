@@ -318,6 +318,12 @@
 - [x] Ajustar tipografia, espaçamento, grade e alvos de toque por breakpoint.
 - [x] Confirmar que os links de pedido funcionam nas duas larguras de tela.
 
+## Reteste em tela de computador — 22/08/2026
+
+- [x] Abrir e fechar o modal visual Açaí Natureon em largura de 1280 px, conferindo escala e proporção.
+- [x] Montar um pedido simples em Peça e retire em largura de 1280 px, confirmando carrinho, etapas e botão final.
+- [x] Garantir que a simulação não abra WhatsApp nem envie pedido real.
+
 ## Horário de Brasília e CNPJ
 
 - [x] Calcular a antecedência mínima usando sempre o horário de Brasília.
