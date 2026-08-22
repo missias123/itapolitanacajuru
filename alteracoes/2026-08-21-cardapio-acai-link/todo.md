@@ -117,3 +117,7 @@
 - [x] Copiar para as caixas de 4 a 12 bolas os complementos compatíveis do fluxo de Encomendas.
 - [x] Integrar os complementos para viagem após a escolha dos sabores das caixas de 4 a 12 bolas.
 - [x] Alinhar fontes, cores, botões e estados de erro do fluxo de caixas ao padrão de Encomendas em celular e computador.
+- [x] Abrir a prévia salva do Peça e retire para conferência visual do usuário.
+- [x] Corrigir os botões de Escolher sabores que ficaram cinza e bloqueados indevidamente na prévia.
+- [x] Reproduzir fielmente no Peça e retire a tipografia, cores, cartões e botões de Encomendas, sem adaptação parcial.
+- [x] Auditar de ponta a ponta o Peça e retire: catálogo, botões, sabores, caixas, complementos, carrinho, prazos, formulário e WhatsApp.

@@ -59,13 +59,25 @@
   function displayName(name) { return String(name || '').replace(/Casquinha\/copo/gi, 'Casquinha ou copo'); }
   function flavorRule(product) {
     if (product.category === 'Milkshake') return { source: 'milkshake', min: 1, max: 2, label: 'Escolha 1 sabor ou até 2 sabores para o milkshake' };
-    if (hasFixedThreeFlavorLimit(product)) return { source: 'massa', min: 3, max: 3, label: 'Escolha até 3 sabores de sorvete' };
+    if (hasFixedThreeFlavorLimit(product)) return { source: 'massa', min: 3, max: 3, label: 'Escolha 3 sabores de sorvete' };
     const required = productBallCount(product) || 1;
     if (usesFlavorDistribution(product)) return { source: 'massa', min: required, max: required, ballCount: required, distribution: true, label: `Distribua ${required} bola${required > 1 ? 's' : ''} entre os sabores que quiser` };
     return { source: 'massa', min: required, max: required, label: `Escolha ${required} sabor${required > 1 ? 'es' : ''} de sorvete (${required} bola${required > 1 ? 's' : ''})` };
   }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
   function retiradaAberta() { return !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('retirada'); }
+  function applyOrderButtonState(button, label, available = true) {
+    const open = retiradaAberta(); const closed = available && !open;
+    button.disabled = !available;
+    button.classList.toggle('is-order-closed', closed);
+    button.setAttribute('aria-disabled', String(!available || closed));
+    button.title = closed ? (window.ItapHorarioPedidos?.textoAviso('retirada') || 'Pedidos indisponíveis neste momento.') : '';
+    button.textContent = !available ? 'Esgotado' : closed ? 'Ver horário de retirada' : label;
+  }
+  function runWhenRetiradaOpen(callback) {
+    if (retiradaAberta()) return callback();
+    window.ItapHorarioPedidos?.aviso('retirada');
+  }
   function productAvailable(data, item) {
     if (!item || item.ativo === false) return false;
     const packages = data?.disponibilidade?.embalagens || {};
@@ -158,8 +170,8 @@
       const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong> ${escape(product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).join(', '))}</p>` : '';
       const ballCount = productBallCount(product); const ballRule = usesFlavorDistribution(product) && ballCount ? `<p class="product__ball-rule"><strong>${ballCount} bola${ballCount > 1 ? 's' : ''}:</strong> ${ballCount === 1 ? 'escolha 1 sabor.' : `pode distribuir ${ballCount} bolas entre os sabores que quiser — todas do mesmo sabor ou em sabores diferentes.`}</p>` : '';
       row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${escape(extras)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p>${fixedIngredients}${ballRule}<p class="product__price">${money(product.price)}</p></div>`;
-      const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; button.textContent = !product.available ? 'Esgotado' : needsContainerChoice(product) ? 'Escolher recipiente' : hasFlavor ? 'Escolher sabores' : 'Adicionar ao pedido'; button.disabled = !product.selectable || !product.available || !retiradaAberta();
-      button.addEventListener('click', () => { state.lastCatalogSku = product.sku; hasFlavor ? beginFlavors(product) : addProduct(product); }); row.append(button); list.append(row);
+      const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; const label = needsContainerChoice(product) ? 'Escolher recipiente' : hasFlavor ? 'Escolher sabores' : 'Adicionar ao pedido'; applyOrderButtonState(button, label, Boolean(product.selectable && product.available));
+      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = product.sku; hasFlavor ? beginFlavors(product) : addProduct(product); })); row.append(button); list.append(row);
     }); section.append(list);
   }
   function renderPopsicles(products, section) {
@@ -180,9 +192,8 @@
       row.innerHTML = `<div><p class="product__name">${escape(group.groupName)}${availableFlavors ? '' : ' <span class="stock-tag">Esgotado</span>'}</p><p class="product__meta">${availabilityText} Escolha os sabores dentro do botão.</p><p class="product__price">Varejo ${money(group.varejo)} · Atacado ${money(group.atacado)} a partir de 100 unidades</p></div>`;
       const button = document.createElement('button');
       button.className = 'add-btn'; button.type = 'button';
-      button.textContent = availableFlavors ? 'Escolher sabores' : 'Esgotado';
-      button.disabled = !availableFlavors || !retiradaAberta();
-      button.addEventListener('click', () => { state.lastCatalogSku = groupProducts[0].sku; beginPopsicleGroup(groupProducts); });
+      applyOrderButtonState(button, 'Escolher sabores', Boolean(availableFlavors));
+      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = groupProducts[0].sku; beginPopsicleGroup(groupProducts); }));
       row.append(button); list.append(row);
     });
     section.append(list);
