@@ -127,3 +127,6 @@
 - [ ] Vincular todos os botões Peça o seu e Peça e retire à página de retirada com o SKU correspondente quando houver produto associado.
 - [ ] Limitar a auditoria de vínculos ao cardápio inicial entre Sorvetes de massa e Sobremesas.
 - [ ] Padronizar todos os botões desse trecho como Peça e retire na loja, com link por SKU e destaque pulsante responsivo.
+- [ ] Demonstrar em celular um pedido de teste com produtos representativos, sem enviar mensagem real ao WhatsApp.
+- [ ] Atualizar o rótulo dos botões vinculados para Peça e retire na loja e remover o sufixo visual Indisponível, mantendo aviso de horário ao toque.
+- [ ] Liberar temporariamente a prévia para a demonstração e restaurar a regra real de 11h00 às 20h00 ao final.

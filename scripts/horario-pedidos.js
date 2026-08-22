@@ -1,4 +1,4 @@
-/* Regra central de funcionamento: retirada 11h–20h e Encomendas 10h–20h, todos os dias. */
+/* Regra central: retirada liberada para testes até 22/08/2026 11h; depois, 11h–20h. Encomendas 10h–20h. */
 (function () {
   'use strict';
 
@@ -7,12 +7,21 @@
     encomendas: { inicio: 10 * 60, fim: 20 * 60, mensagem: 'Encomendas disponíveis todos os dias, das 10h00 às 20h00. Volte nesse período para enviar sua encomenda.' }
   });
 
+  const parametros = new URLSearchParams(location.search);
+  const demonstracaoAberta = location.hostname.includes('.manus.computer') && (parametros.get('demo-retirada') === 'aberta' || location.hash.includes('demo-retirada=aberta'));
+  // Liberação solicitada para testes. Ao chegar neste instante, a regra diária de 11h–20h volta a valer automaticamente.
+  const RETORNO_HORARIO_NORMAL = new Date(2026, 7, 22, 11, 0, 0, 0);
+
   const estilo = document.createElement('style');
-  estilo.textContent = '[data-order-window].is-order-closed{background:#8f878b!important;color:#fff!important;filter:grayscale(1);cursor:not-allowed!important;box-shadow:none!important;transform:none!important;opacity:.88!important}[data-order-window].is-order-closed::after{content:" Indisponível";font-size:.72em;font-weight:900}';
+  estilo.textContent = '@keyframes itap-retirada-pulse{0%,100%{box-shadow:0 0 0 0 rgba(237,28,52,.34);transform:translateY(0)}50%{box-shadow:0 0 0 7px rgba(237,28,52,0);transform:translateY(-1px)}}[data-order-window]:not(.is-order-closed){animation:itap-retirada-pulse 1.8s ease-in-out infinite}[data-order-window].is-order-closed{background:#8f878b!important;color:#fff!important;filter:grayscale(1);cursor:pointer!important;box-shadow:none!important;transform:none!important;opacity:.78!important;animation:none!important}@media (prefers-reduced-motion:reduce){[data-order-window]:not(.is-order-closed){animation:none!important}}';
   document.head.appendChild(estilo);
 
   function minutosAgora(data) { const agora = data || new Date(); return agora.getHours() * 60 + agora.getMinutes(); }
-  function estaAberto(tipo, data) { const janela = JANELAS[tipo]; const minutos = minutosAgora(data); return Boolean(janela && minutos >= janela.inicio && minutos < janela.fim); }
+  function liberacaoTemporariaAtiva(data) { return (data || new Date()).getTime() < RETORNO_HORARIO_NORMAL.getTime(); }
+  function estaAberto(tipo, data) {
+    if (tipo === 'retirada' && (demonstracaoAberta || liberacaoTemporariaAtiva(data))) return true;
+    const janela = JANELAS[tipo]; const minutos = minutosAgora(data); return Boolean(janela && minutos >= janela.inicio && minutos < janela.fim);
+  }
   function textoAviso(tipo) { return JANELAS[tipo]?.mensagem || 'Pedidos indisponíveis neste momento.'; }
 
   function aviso(tipo) {
