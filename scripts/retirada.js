@@ -133,28 +133,49 @@
   }
   function updateQuantity(key, delta) { const current = state.cart.find((item) => item.key === key); if (!current) return; const limit = current.type === 'picole' && Number.isFinite(current.stock) ? current.stock : Infinity; current.quantity = Math.max(0, Math.min(limit, current.quantity + delta)); setCart(current); }
   function removeItem(key) { state.cart = state.cart.filter((item) => item.key !== key); refreshCartUi(); announce('Produto excluído do pedido.'); }
-  function productSearchText(product) { return normalize([product.category, product.name, product.size, product.sku, product.picole?.groupName].filter(Boolean).join(' ')); }
+  function isTraditionalMilkshake(product) { return normalize(product?.category) === 'milkshake'; }
+  function isAcaiMilkshake(product) { return normalize(product?.category).includes('milk-shake de acai'); }
+  function displayCategory(product) {
+    if (isTraditionalMilkshake(product) || isAcaiMilkshake(product)) return 'Milk-shakes';
+    if (normalize(product?.category).includes('acai')) return 'Açaí Natureon';
+    return product.category;
+  }
+  function productSearchText(product) { return normalize([product.category, displayCategory(product), product.name, product.size, product.sku, product.picole?.groupName].filter(Boolean).join(' ')); }
   function categoryRank(category) {
     const value = normalize(category);
     if (value.includes('sorvetes de massa')) return 0;
     if (value.includes('isopores para viagem')) return .5;
     if (value.includes('acai')) return 1;
-    if (value.includes('picoles')) return 2;
-    if (value === 'milkshake') return 3;
+    if (value === 'milk-shakes') return 2;
+    if (value.includes('picoles')) return 3;
     if (value.includes('tacas tradicionais')) return 4;
     if (value.includes('tacas premium')) return 5;
-    if (value.includes('sobremesas')) return 6;
+    if (value.includes('tacas gourmet')) return 6;
+    if (value.includes('sobremesas')) return 7;
     return 99;
   }
   function categoryOrder(categories) { return [...categories].sort((a, b) => categoryRank(a) - categoryRank(b) || a.localeCompare(b, 'pt-BR')); }
   const SECTION_GUIDES = [
     { id: 'massa', title: 'Sorvetes de massa', hint: 'Tamanhos, bolas e caixas', matches: (category) => normalize(category).includes('sorvetes de massa') || normalize(category).includes('isopores para viagem') },
-    { id: 'acai', title: 'Açaí Natureon', hint: 'Combinações prontas', matches: (category) => normalize(category).includes('acai') },
+    { id: 'acai', title: 'Açaí Natureon', hint: 'Combinações prontas', matches: (category) => { const value = normalize(category); return value.includes('acai') && !value.includes('milk-shake'); } },
+    { id: 'milkshake', title: 'Milk-shakes', hint: 'Tradicional ou Açaí pronto', matches: (category) => normalize(category) === 'milk-shakes' },
     { id: 'picoles', title: 'Picolés', hint: 'Sabores e quantidade', matches: (category) => normalize(category).includes('picoles') },
-    { id: 'milkshake', title: 'Milk-shakes', hint: 'Escolha até 2 sabores', matches: (category) => normalize(category).includes('milkshake') },
     { id: 'tacas', title: 'Taças e sobremesas', hint: 'Ingredientes e sabores', matches: (category) => { const value = normalize(category); return value.includes('tacas') || value.includes('sobremesas'); } }
   ];
   function sectionGuide(category) { return SECTION_GUIDES.find((guide) => guide.matches(category)) || { id: 'outros', title: category, hint: 'Ver produtos desta seção', matches: () => false }; }
+  function sectionPresentation(category) {
+    const value = normalize(category);
+    if (value.includes('sorvetes de massa')) return { tone: 'massa', title: 'Sorvetes de massa', point: 'Escolha tamanho, recipiente e sabores' };
+    if (value.includes('isopores para viagem')) return { tone: 'caixas', title: 'Caixas de sorvete — 4 a 12 bolas', point: 'Para viagem · distribua as bolas como preferir' };
+    if (value.includes('acai')) return { tone: 'acai', title: 'Açaí Natureon', point: 'Combinações prontas · adicione direto ao pedido' };
+    if (value === 'milk-shakes') return { tone: 'milkshake', title: 'Milk-shakes', point: 'Tradicional: até 2 sabores · Açaí: receita pré-montada' };
+    if (value.includes('picoles')) return { tone: 'picoles', title: 'Picolés', point: 'Escolha os sabores conforme o estoque' };
+    if (value.includes('tacas tradicionais')) return { tone: 'tacas-tradicionais', title: 'Taças tradicionais', point: 'Veja os ingredientes e escolha sabores quando necessário' };
+    if (value.includes('tacas premium')) return { tone: 'tacas-premium', title: 'Taças premium', point: 'Ingredientes especiais · escolha com calma' };
+    if (value.includes('tacas gourmet')) return { tone: 'tacas-gourmet', title: 'Taças Gourmet', point: 'Sobremesas especiais prontas para retirar' };
+    if (value.includes('sobremesas')) return { tone: 'sobremesas', title: 'Sobremesas', point: 'Tortas e especiais · confira o prazo quando indicado' };
+    return { tone: 'outros', title: category, point: 'Escolha o produto e avance para o pedido' };
+  }
   function isPublicOrderProduct(product) {
     const category = normalize(product.category);
     const exclusiveOrderCategories = ['sabores de massa', 'caixas para encomenda', 'tortas por encomenda', 'acrescimos'];
@@ -162,12 +183,12 @@
   }
   function renderCatalog() {
     const root = $('#catalog'); const query = normalize(state.query); const grouped = new Map(); const renderedSections = new Map();
-    state.catalog.filter(isPublicOrderProduct).filter((product) => !query || productSearchText(product).includes(query)).forEach((product) => { if (!grouped.has(product.category)) grouped.set(product.category, []); grouped.get(product.category).push(product); });
+    state.catalog.filter(isPublicOrderProduct).filter((product) => !query || productSearchText(product).includes(query)).forEach((product) => { const category = displayCategory(product); if (!grouped.has(category)) grouped.set(category, []); grouped.get(category).push(product); });
     root.innerHTML = ''; $('#section-nav').innerHTML = ''; $('#section-chooser-list').innerHTML = '';
     if (!grouped.size) { root.innerHTML = '<div class="empty-state">Não encontramos produto com esse nome ou código. Tente buscar outro termo.</div>'; return; }
     categoryOrder(grouped.keys()).forEach((category) => {
-      const products = grouped.get(category); const title = category === 'Isopores para viagem' ? 'Caixas de sorvete — 4 a 12 bolas' : category; const section = document.createElement('section'); section.className = 'catalog-section'; section.id = `sec-${slug(category)}`; renderedSections.set(category, section);
-      const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<h2>${escape(title)}</h2><p>${category === 'Picolés' ? 'Escolha o tipo e depois o sabor do picolé.' : category === 'Isopores para viagem' ? 'Distribua livremente todas as bolas entre os sabores que quiser.' : `${products.length} produto${products.length !== 1 ? 's' : ''} para pedir.`}</p>`; section.append(head);
+      const products = grouped.get(category); const presentation = sectionPresentation(category); const title = presentation.title; const section = document.createElement('section'); section.className = 'catalog-section'; section.dataset.sectionTone = presentation.tone; section.id = `sec-${slug(category)}`; renderedSections.set(category, section);
+      const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<div class="catalog-section__bar"><h2>${escape(title)}</h2></div><p class="catalog-section__summary"><strong>${escape(presentation.point)}</strong><span>${products.length} produto${products.length !== 1 ? 's' : ''} para pedir</span></p>`; section.append(head);
       const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = title; nav.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' })); $('#section-nav').append(nav);
       if (category === 'Picolés') renderPopsicles(products, section); else renderProducts(products, section);
       root.append(section);
@@ -198,7 +219,7 @@
     });
   }
   function slug(value) { return normalize(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-  function renderProducts(products, section) {
+  function buildProductList(products) {
     const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => {
       const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake';
       const meta = isIceCreamCake(product) ? `${product.size || 'Torta de sorvete'} · Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : product.size ? product.size : hasFlavor ? flavorRule(product).label : 'Produto pronto para retirada';
@@ -208,7 +229,19 @@
       row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${escape(extras)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p>${fixedIngredients}${ballRule}<p class="product__price">${money(product.price)}</p></div>`;
       const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; const label = needsContainerChoice(product) ? 'Escolher recipiente' : hasFlavor ? 'Escolher sabores' : 'Adicionar ao pedido'; applyOrderButtonState(button, label, Boolean(product.selectable && product.available));
       button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = product.sku; hasFlavor ? beginFlavors(product) : addProduct(product); })); row.append(button); list.append(row);
-    }); section.append(list);
+    }); return list;
+  }
+  function milkshakeSubgroup(title, point, group) {
+    const heading = document.createElement('div'); heading.className = `product-subgroup product-subgroup--${group}`; heading.innerHTML = `<strong>${escape(title)}</strong><span>${escape(point)}</span>`; return heading;
+  }
+  function renderProducts(products, section) {
+    if (section.dataset.sectionTone === 'milkshake') {
+      const traditional = products.filter(isTraditionalMilkshake); const acai = products.filter(isAcaiMilkshake);
+      if (traditional.length) { section.append(milkshakeSubgroup('Milk-shakes tradicionais', 'Escolha 1 sabor ou até 2 sabores.', 'traditional'), buildProductList(traditional)); }
+      if (acai.length) { section.append(milkshakeSubgroup('Milk-shakes de Açaí Natureon', 'Receitas pré-montadas · adicione direto ao pedido.', 'acai'), buildProductList(acai)); }
+      return;
+    }
+    section.append(buildProductList(products));
   }
   function renderPopsicles(products, section) {
     const list = document.createElement('div');

@@ -225,6 +225,41 @@
 - [x] Conferir limites de sabores, estoque de picolés, embalagem, complementos, torta e totais.
 - [x] Registrar falhas por SKU e repetir os testes após qualquer correção.
 
+## Aba única de milk-shakes
+
+- [x] Reunir Milkshake e Milk-shake de Açaí Natureon em uma única seção de pedidos.
+- [x] Separar visualmente as opções tradicionais das combinações prontas de açaí dentro da mesma aba.
+- [x] Preservar a escolha de até dois sabores no tradicional e a adição direta no de açaí.
+- [x] Testar ambos os fluxos em celular antes de publicar.
+- [x] Confirmar que os milk-shakes de Açaí Natureon não abram seleção de sabores.
+
+## Barras de seção do catálogo
+
+- [x] Usar barras de largura total e textos centralizados para cada seção, no computador e no celular.
+- [x] Aplicar somente as cores institucionais já usadas no site nas barras de categoria.
+- [x] Preservar as cores específicas apenas nos controles de seleção de sabores.
+- [x] Replicar o padrão visual das barras de produtos da página inicial nos cabeçalhos do Peça e retire.
+
+## Composição de cores para compra
+
+- [x] Usar a barra da seção como identificação do grupo, com texto centralizado e contraste alto.
+- [x] Usar botão em cor complementar e distinta da barra para indicar a única ação principal do produto.
+- [x] Manter preço e disponibilidade em cores funcionais, sem competir com a ação de compra.
+- [x] Validar que as divisões de produto sejam visualmente reconhecíveis no celular e no computador.
+
+## Identificação por cor no formulário final
+
+- [x] Separar visualmente dados, retirada, pagamento, regras e aceite com cores institucionais funcionais.
+- [x] Manter a cor do botão final distinta dos blocos de identificação.
+- [x] Validar a leitura e o contraste do formulário em celular e computador.
+
+## Sequência lógica de produtos
+
+- [x] Ordenar as seções pela facilidade de decisão e frequência de compra.
+- [x] Apresentar itens simples antes dos produtos com escolhas, opções prontas e itens com antecedência.
+- [x] Manter as categorias especiais claramente identificadas, sem ocultar produto ou regra de pedido.
+- [x] Inserir em cada barra o ponto-chave de compra aplicável àquela seção.
+
 ## Infraestrutura GitHub e Cloudflare
 
 - [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.
