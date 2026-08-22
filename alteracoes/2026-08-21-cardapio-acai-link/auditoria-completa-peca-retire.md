@@ -1,5 +1,9 @@
 # Auditoria completa — Peça e retire
 
+## Atualização de auditoria — 22/08/2026
+
+O site público ainda possui uma chamada direta na hero para `retirada.html`. Isso contraria a regra atual: a página de retirada deve abrir somente quando o cliente tocar em um botão de produto dentro do cardápio. Essa chamada pública será removida antes da nova validação dos botões por SKU.
+
 ## Escopo
 
 | Fluxo | Critério de auditoria | Situação inicial |
@@ -65,3 +69,17 @@ As capturas de 375 × 812 e 1280 × 900 confirmaram que o cabeçalho, a introdu�
 ## Conclusão da auditoria
 
 Não foram identificados erros de sintaxe no controlador ou no HTML após as correções. O único erro funcional encontrado na auditoria foi o estado cinza e inerte dos botões fora do horário; ele foi substituído por uma ação clicável que explica a indisponibilidade. A auditoria não enviou nenhuma mensagem real ao WhatsApp nem acionou produção, pagamento ou confirmação automática.
+
+## Auditoria dos botões internos — 22/08/2026
+
+Foram identificados **109 botões internos** de produto no cardápio. A validação verificou, para cada um, o rótulo padronizado, o SKU no próprio botão, o destino `retirada.html?sku=SKU#catalogo` e a resposta da página pública de retirada.
+
+| Critério | Resultado |
+|---|---:|
+| Botões internos renderizados | 109 |
+| Destinos públicos disponíveis | 109 |
+| SKUs preservados no destino | 109 |
+| Falhas de vínculo ou destino | 0 |
+| Links diretos fora do cardápio na versão local corrigida | 0 |
+
+Também foi executado um clique real em largura de celular no botão da Casquinha/copo. O botão com SKU `SVM-CC-01` abriu `retirada.html?sku=SVM-CC-01#catalogo`. A demonstração não inseriu produto no carrinho, não abriu o WhatsApp e não enviou pedido.

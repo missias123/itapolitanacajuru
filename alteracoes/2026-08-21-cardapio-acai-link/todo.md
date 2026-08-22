@@ -130,3 +130,38 @@
 - [ ] Demonstrar em celular um pedido de teste com produtos representativos, sem enviar mensagem real ao WhatsApp.
 - [ ] Atualizar o rótulo dos botões vinculados para Peça e retire na loja e remover o sufixo visual Indisponível, mantendo aviso de horário ao toque.
 - [ ] Liberar temporariamente a prévia para a demonstração e restaurar a regra real de 11h00 às 20h00 ao final.
+
+## Acesso restrito à retirada
+
+- [ ] Remover qualquer acesso direto, menu ou chamada pública para `retirada.html`.
+- [ ] Manter o fluxo oculto e acessível somente pelos botões internos de produtos no cardápio.
+- [ ] Preservar em cada botão interno o SKU oficial do produto para abrir a retirada correspondente.
+- [ ] Validar que hero, cabeçalho, rodapé e páginas institucionais não exponham a retirada.
+
+## Auditoria ao vivo dos botões do cardápio
+
+- [x] Extrair a lista completa de botões internos “Peça o seu” e “Peça e retire” com produto, SKU e destino esperado.
+- [x] Testar cada botão no cardápio sem enviar pedido ao WhatsApp.
+- [x] Confirmar em cada teste que a página de retirada abre e recebe o SKU oficial correspondente.
+- [ ] Corrigir somente vínculos ausentes, duplicados ou incompatíveis, mantendo o padrão do Açaí Natureon.
+
+## Demonstração móvel do redirecionamento
+
+- [ ] Abrir o cardápio em largura de celular e exibir um botão interno de produto.
+- [ ] Demonstrar o toque no botão e a abertura de `retirada.html` com o SKU do produto na URL.
+- [ ] Confirmar que a demonstração não adiciona item, não envia pedido e não abre o WhatsApp.
+
+## Infraestrutura GitHub e Cloudflare
+
+- [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.
+- [ ] Revisar proteção da branch principal, permissões, alertas de dependências e histórico de implantação no GitHub.
+- [ ] Revisar domínio, HTTPS, redirecionamentos, cache, cabeçalhos de segurança e páginas de erro no Cloudflare.
+- [ ] Definir publicação previsível por ambiente, com validação antes de disponibilizar alterações ao público.
+- [ ] Aplicar somente ajustes reversíveis que não alterem Encomendas, preços, SKUs ou as regras de confirmação manual.
+- [ ] Validar o domínio público após cada alteração de infraestrutura e registrar o resultado da publicação.
+
+## Acesso ao pedido de retirada
+
+- [ ] Remover qualquer link público solto para `retirada.html` fora dos botões internos dos produtos do cardápio.
+- [ ] Preservar nos botões internos o vínculo por SKU oficial para que cada produto abra o pedido correspondente.
+- [ ] Validar que menus, hero, rodapé e páginas institucionais não exibam acesso direto à retirada.
