@@ -374,6 +374,11 @@
 - [x] Revisar vertical e horizontalmente cards, botões, preços, títulos, grades e espaços das páginas principais.
 - [x] Aplicar correções responsivas de alto impacto para celular e computador sem alterar regras comerciais.
 
+## Reteste público após publicação
+
+- [x] Confirmar a disponibilidade pública da página e da versão atual do script.
+- [x] Retestar os fluxos principais publicados sem abrir WhatsApp nem enviar pedido real.
+
 ## Preferências de sabores — Opções 1, 2 e 3
 
 - [x] Exigir uma combinação principal e duas alternativas diferentes da primeira, respeitando a quantidade de sabores do produto nos itens elegíveis de bolas e picolés.
