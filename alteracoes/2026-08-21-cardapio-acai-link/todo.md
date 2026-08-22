@@ -97,3 +97,7 @@
 - [x] No Peça e retire, permitir para torta escolher consulta de pronta entrega pelo WhatsApp ou produção com 48 horas e informar data e horário.
 - [x] Bloquear retiradas comuns com menos de uma hora e manter tortas com data mínima de 48 horas, sem dispensar confirmação manual.
 - [x] Destacar um campo livre de observações adicionais para a pessoa escrever o que quiser à sorveteria.
+- [ ] Auditar commits, sincronização remota e publicação das regras solicitadas para o Peça e retire.
+- [x] Comparar o PDF recebido com o cardápio central e completar apenas ingredientes ausentes, sem alterar preços.
+- [x] Preservar todos os preços existentes e validar que nenhuma alteração de preço ocorreu ao completar ingredientes por SKU.
+- [x] Auditar a estrutura do cardápio-mãe por SKU e listar produtos com ingredientes ainda ausentes.
