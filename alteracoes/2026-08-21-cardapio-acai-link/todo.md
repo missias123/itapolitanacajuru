@@ -109,3 +109,11 @@
 - [x] Permitir sabores livres e repetidos nos produtos por bolas, limitando caixas de 5L/10L e tortas a três sabores.
 - [x] Aplicar de forma cirúrgica um controle de distribuição por quantidade, mantendo o restante do fluxo de retirada intacto.
 - [x] Aplicar no controle de distribuição o padrão visual de cartões, cores e estados usado em Encomendas.
+- [x] Demonstrar ao vivo a validação da distribuição, a inclusão no carrinho, a exclusão e o total zerado.
+- [x] Corrigir a exibição indevida de data de torta em pedidos de caixas por bolas.
+- [x] Criar controles de mais e menos por sabor que somem exatamente a quantidade de bolas de cada produto, mantendo caixas e tortas na escolha fixa atual.
+- [x] Exibir em cada produto por bolas a instrução de que cada bola corresponde a um sabor distribuível pelos controles de mais e menos.
+- [x] Configurar caixas de 4 a 12 bolas exclusivamente para viagem, com embalagem automática e sem opção de consumo na loja.
+- [x] Copiar para as caixas de 4 a 12 bolas os complementos compatíveis do fluxo de Encomendas.
+- [x] Integrar os complementos para viagem após a escolha dos sabores das caixas de 4 a 12 bolas.
+- [x] Alinhar fontes, cores, botões e estados de erro do fluxo de caixas ao padrão de Encomendas em celular e computador.
