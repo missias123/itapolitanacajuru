@@ -284,15 +284,39 @@
 
 ## Registro de ciência no WhatsApp
 
-- [ ] Colocar no início da mensagem os dados e regras prioritárias para a sorveteria.
-- [ ] Registrar que o cliente marcou o aceite e foi informado sobre ligação, 15 minutos, sabores, alterações, retirada e pagamento.
-- [ ] Manter o resumo de itens e preços após o bloco prioritário, sem ocultar dados de execução.
+- [x] Colocar no início da mensagem os dados e regras prioritárias para a sorveteria.
+- [x] Registrar que o cliente marcou o aceite e foi informado sobre ligação, 15 minutos, sabores, alterações, retirada e pagamento.
+- [x] Manter o resumo de itens e preços após o bloco prioritário, sem ocultar dados de execução.
 
 ## Validação sem erros no formulário
 
-- [ ] Validar cada campo no momento adequado, com mensagem curta junto ao erro.
-- [ ] Manter bloqueio de envio até dados, horário, pagamento e aceite estarem válidos.
-- [ ] Organizar a mensagem recebida pela sorveteria com resumo prioritário e registro de ciência do cliente.
+- [x] Validar cada campo no momento adequado, com mensagem curta junto ao erro.
+- [x] Manter bloqueio de envio até dados, horário, pagamento e aceite estarem válidos.
+- [x] Organizar a mensagem recebida pela sorveteria com resumo prioritário e registro de ciência do cliente.
+
+## Formulário guiado com DDD 16
+
+- [x] Exibir o prefixo fixo (16) no campo de telefone e aceitar somente o número do cliente.
+- [x] Validar oito ou nove dígitos após o DDD antes de liberar a etapa seguinte.
+- [x] Liberar dados, retirada, pagamento, observações e aceite na ordem de cima para baixo.
+- [x] Manter o botão de envio cinza até todas as etapas ficarem válidas e pulsar somente o aceite pendente.
+- [x] Rolar para a próxima etapa liberada e, ao final, para o botão de envio ativo.
+- [x] Exibir uma instrução curta no bloco atualmente liberado e manter os demais em estado de espera legível.
+
+## Auditoria de qualidade máxima do Peça e retire
+
+- [ ] Avaliar a entrada do catálogo, seções, busca e orientação inicial.
+- [ ] Avaliar escolha de produto, sabores, modalidades e prevenção de erro.
+- [ ] Avaliar carrinho, quantidades, totais, retorno e revisão.
+- [ ] Avaliar formulário, acessibilidade, validação progressiva e confirmação humana.
+- [ ] Documentar recomendações priorizadas e implementar as melhorias de maior impacto.
+
+## Responsividade do Açaí Natureon na página inicial
+
+- [x] Revisar a escala da área em computador, sem deixar cartões e chamadas pequenos.
+- [x] Revisar a escala da área em celular, sem ampliar demais texto, cartões ou botões.
+- [x] Ajustar tipografia, espaçamento, grade e alvos de toque por breakpoint.
+- [x] Confirmar que os links de pedido funcionam nas duas larguras de tela.
 
 ## Horário de Brasília e CNPJ
 

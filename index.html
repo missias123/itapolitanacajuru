@@ -392,6 +392,10 @@ img{max-width:100%;display:block}
 @media(max-width:720px){.catalogo-acai-modal{--catalogo-topo-altura:72px;width:100vw;height:100dvh;border-radius:0}.catalogo-acai-corpo{padding:0}.catalogo-acai-pagina{min-height:calc(100dvh - var(--catalogo-topo-altura));padding:16px max(14px,env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}.catalogo-acai-pagina img{max-height:calc(100dvh - var(--catalogo-topo-altura) - 34px);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.12)}}
 @media(min-width:721px) and (max-width:1024px){.catalogo-acai-modal{--catalogo-topo-altura:80px;width:min(940px,calc(100vw - 36px));height:calc(100dvh - 36px)}.catalogo-acai-pagina{padding:28px}.catalogo-acai-pagina img{max-height:calc(100dvh - var(--catalogo-topo-altura) - 88px)}}
 @media(prefers-reduced-motion:reduce){.catalogo-acai-corpo{scroll-behavior:auto}}
+/* Catálogo visual Natureon: amplo no computador, confortável e sem zoom forçado no celular. */
+@media(max-width:720px){.catalogo-acai-pagina{padding:12px max(12px,env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}.catalogo-acai-pagina img{width:min(100%,350px);max-height:calc(100dvh - var(--catalogo-topo-altura) - 28px)}}
+@media(min-width:721px){.catalogo-acai-modal{width:min(1240px,calc(100vw - 24px));height:calc(100dvh - 24px)}.catalogo-acai-pagina{min-height:calc(100dvh - var(--catalogo-topo-altura) - 24px);padding:12px}.catalogo-acai-pagina img{max-height:calc(100dvh - var(--catalogo-topo-altura) - 30px)}}
+@media(min-width:1280px){.catalogo-acai-pagina{padding:14px}.catalogo-acai-pagina img{max-height:calc(100dvh - var(--catalogo-topo-altura) - 28px)}}
 .acc-sub{font-size:13px;color:#fff;font-weight:800;margin-top:3px;letter-spacing:.3px;font-family:"Nunito",sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.5)}
 /* Indicador neon circular */
 .acc-indicator{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;pointer-events:none;align-self:center}
@@ -748,6 +752,15 @@ img{max-width:100%;display:block}
 .natureon-info-item:last-child{border-bottom:none}
 .natureon-wrap{padding:16px 4px 4px}
 .natureon-card-size{font-size:10.5px;font-weight:800;color:#9C27B0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+/* Natureon responsivo: escala própria por aparelho, sem esticar a composição desktop no celular. */
+.natureon-wrap{max-width:1180px;margin:0 auto;padding:clamp(14px,2.3vw,30px) clamp(12px,2.2vw,26px) clamp(16px,2.2vw,28px)}
+.natureon-header{padding:clamp(20px,3vw,34px) clamp(16px,3.2vw,38px) clamp(18px,2.4vw,28px)}
+.natureon-title{font-size:clamp(23px,2.5vw,34px);letter-spacing:-.02em}.natureon-sub{font-size:clamp(14px,1.28vw,17px);max-width:700px;margin-left:auto;margin-right:auto}
+.natureon-categoria{margin-bottom:clamp(18px,2.5vw,30px)}.natureon-cat-header{padding:clamp(12px,1.7vw,17px) clamp(14px,2vw,22px);gap:11px;border-radius:14px}.natureon-cat-emoji{font-size:clamp(21px,2vw,27px)}.natureon-cat-titulo{font-size:clamp(16px,1.55vw,21px)}
+.natureon-grid{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:clamp(12px,1.7vw,20px)}.natureon-card{min-height:222px;padding:clamp(16px,1.8vw,22px);gap:9px;border-radius:16px}.natureon-card-nome{font-size:clamp(15px,1.22vw,18px);line-height:1.38}.natureon-card-ingredientes{font-size:clamp(12px,1.02vw,14px);line-height:1.45}.natureon-card-preco{font-size:clamp(22px,2vw,28px);margin-top:auto}.natureon-card-size{font-size:clamp(11px,.9vw,13px)}.natureon-card-btn,.product-pickup-btn{min-height:52px;padding:11px 16px;font-size:clamp(13px,1.05vw,15px);margin-top:8px}
+@media(max-width:640px){.natureon-wrap{padding:14px 10px 18px}.natureon-header{padding:20px 14px 18px;border-radius:14px 14px 0 0}.natureon-title{font-size:24px}.natureon-sub{font-size:14px}.natureon-categoria{margin-bottom:20px}.natureon-cat-header{padding:12px 13px;margin-bottom:10px}.natureon-cat-titulo{font-size:16px}.natureon-grid{grid-template-columns:1fr;gap:12px}.natureon-card{min-height:0;padding:16px;gap:8px}.natureon-card-nome{font-size:16px}.natureon-card-ingredientes{font-size:13px}.natureon-card-preco{font-size:23px}.natureon-card-btn,.product-pickup-btn{min-height:54px;font-size:14px}.prod-card-body .product-pickup-btn{font-size:14px;min-height:52px}}
+@media(min-width:641px) and (max-width:980px){.natureon-wrap{padding:20px 18px}.natureon-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.natureon-card{min-height:236px}}
+@media(min-width:981px){.natureon-wrap{padding-top:30px}.natureon-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.natureon-card{min-height:248px}.natureon-card-btn,.product-pickup-btn{min-height:54px}}
 /* ── CARD DO PICOLÉ — âmbar quente: refrescante, energético ── */
 .picolé-item{background:#FFFDF9;border:1px solid #FFCC80;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 0 0 2px #E65100,0 4px 12px rgba(230,81,0,.15)}
 .picolé-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
