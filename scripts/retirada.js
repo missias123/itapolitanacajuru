@@ -26,6 +26,7 @@
   function loadCart() { try { return normalizeCart(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')); } catch { return []; } }
   function saveCart() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.cart)); }
   function announce(message) { $('#live-region').textContent = message; }
+  function setOrderStage(stage) { $$('[data-order-step]').forEach((item) => item.classList.toggle('is-current', Number(item.dataset.orderStep) === Number(stage))); }
   function openDialog(id) { const dialog = document.getElementById(id); if (dialog && !dialog.open) dialog.showModal(); }
   function closeDialog(id) { const dialog = document.getElementById(id); if (dialog?.open) dialog.close(); }
   function fixedScoopCount(product) {
@@ -126,6 +127,7 @@
     const item = current || { key, sku: product.sku, name: product.name, size: product.size, category: product.category, type: product.type, price: product.price, flavors, flavorDistribution, boxAddOns, includedExtras: product.includedExtras || [], fixedIngredients: product.fixedIngredients || [], serviceMode, containerType, cakeChoice, packagingSku: serviceMode === 'travel' ? travelPackaging.sku : '', packagingName: serviceMode === 'travel' ? travelPackaging.name : '', packagingFee: serviceMode === 'travel' ? travelPackaging.price : 0, quantity: 0, retail: product.picole?.varejo, wholesale: product.picole?.atacado, stock: product.picole?.stock };
     item.quantity += 1;
     setCart(item);
+    setOrderStage(2);
     if (openReview) { renderCart(); openDialog('cart-dialog'); }
     announce(`${displayName(product.name)} foi adicionado ao pedido.`);
   }
@@ -145,22 +147,54 @@
     return 99;
   }
   function categoryOrder(categories) { return [...categories].sort((a, b) => categoryRank(a) - categoryRank(b) || a.localeCompare(b, 'pt-BR')); }
+  const SECTION_GUIDES = [
+    { id: 'massa', title: 'Sorvetes de massa', hint: 'Tamanhos, bolas e caixas', matches: (category) => normalize(category).includes('sorvetes de massa') || normalize(category).includes('isopores para viagem') },
+    { id: 'acai', title: 'Açaí Natureon', hint: 'Combinações prontas', matches: (category) => normalize(category).includes('acai') },
+    { id: 'picoles', title: 'Picolés', hint: 'Sabores e quantidade', matches: (category) => normalize(category).includes('picoles') },
+    { id: 'milkshake', title: 'Milk-shakes', hint: 'Escolha até 2 sabores', matches: (category) => normalize(category).includes('milkshake') },
+    { id: 'tacas', title: 'Taças e sobremesas', hint: 'Ingredientes e sabores', matches: (category) => { const value = normalize(category); return value.includes('tacas') || value.includes('sobremesas'); } }
+  ];
+  function sectionGuide(category) { return SECTION_GUIDES.find((guide) => guide.matches(category)) || { id: 'outros', title: category, hint: 'Ver produtos desta seção', matches: () => false }; }
   function isPublicOrderProduct(product) {
     const category = normalize(product.category);
     const exclusiveOrderCategories = ['sabores de massa', 'caixas para encomenda', 'tortas por encomenda', 'acrescimos'];
     return product.selectable && !exclusiveOrderCategories.some((item) => category.includes(item));
   }
   function renderCatalog() {
-    const root = $('#catalog'); const query = normalize(state.query); const grouped = new Map();
+    const root = $('#catalog'); const query = normalize(state.query); const grouped = new Map(); const renderedSections = new Map();
     state.catalog.filter(isPublicOrderProduct).filter((product) => !query || productSearchText(product).includes(query)).forEach((product) => { if (!grouped.has(product.category)) grouped.set(product.category, []); grouped.get(product.category).push(product); });
-    root.innerHTML = ''; $('#section-nav').innerHTML = '';
+    root.innerHTML = ''; $('#section-nav').innerHTML = ''; $('#section-chooser-list').innerHTML = '';
     if (!grouped.size) { root.innerHTML = '<div class="empty-state">Não encontramos produto com esse nome ou código. Tente buscar outro termo.</div>'; return; }
     categoryOrder(grouped.keys()).forEach((category) => {
-      const products = grouped.get(category); const title = category === 'Isopores para viagem' ? 'Caixas de sorvete — 4 a 12 bolas' : category; const section = document.createElement('section'); section.className = 'catalog-section'; section.id = `sec-${slug(category)}`;
+      const products = grouped.get(category); const title = category === 'Isopores para viagem' ? 'Caixas de sorvete — 4 a 12 bolas' : category; const section = document.createElement('section'); section.className = 'catalog-section'; section.id = `sec-${slug(category)}`; renderedSections.set(category, section);
       const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<h2>${escape(title)}</h2><p>${category === 'Picolés' ? 'Escolha o tipo e depois o sabor do picolé.' : category === 'Isopores para viagem' ? 'Distribua livremente todas as bolas entre os sabores que quiser.' : `${products.length} produto${products.length !== 1 ? 's' : ''} para pedir.`}</p>`; section.append(head);
       const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = title; nav.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' })); $('#section-nav').append(nav);
       if (category === 'Picolés') renderPopsicles(products, section); else renderProducts(products, section);
       root.append(section);
+    });
+    renderSectionChooser(grouped, renderedSections);
+  }
+  function renderSectionChooser(grouped, renderedSections) {
+    const root = $('#section-chooser-list'); if (!root) return;
+    const used = new Set();
+    SECTION_GUIDES.forEach((guide) => {
+      const categories = categoryOrder([...grouped.keys()].filter((category) => guide.matches(category)));
+      if (!categories.length) return;
+      categories.forEach((category) => used.add(category));
+      const productCount = categories.reduce((sum, category) => sum + (grouped.get(category)?.length || 0), 0);
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'section-choice'; button.dataset.sectionGuide = guide.id;
+      button.innerHTML = `<span><span class="section-choice__title">${escape(guide.title)}</span><span class="section-choice__hint">${escape(guide.hint)}</span></span><span class="section-choice__count">${productCount}</span>`;
+      button.addEventListener('click', () => {
+        $$('.section-choice', root).forEach((item) => item.classList.toggle('is-active', item === button));
+        renderedSections.get(categories[0])?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        announce(`${guide.title}: ${productCount} produtos disponíveis.`);
+      });
+      root.append(button);
+    });
+    categoryOrder([...grouped.keys()].filter((category) => !used.has(category))).forEach((category) => {
+      const products = grouped.get(category) || []; const button = document.createElement('button'); button.type = 'button'; button.className = 'section-choice';
+      button.innerHTML = `<span><span class="section-choice__title">${escape(category)}</span><span class="section-choice__hint">Ver produtos desta seção</span></span><span class="section-choice__count">${products.length}</span>`;
+      button.addEventListener('click', () => renderedSections.get(category)?.scrollIntoView({ behavior: 'smooth', block: 'start' })); root.append(button);
     });
   }
   function slug(value) { return normalize(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
@@ -353,16 +387,16 @@
     });
     const schedule = hasCakeProductionLead() ? `Data desejada: ${form.data_retirada}` : 'Retirada: no mesmo dia, com prazo mínimo de 1 hora'; lines.push('', `Total dos produtos: ${money(totalProducts())}`, `Total de complementos para viagem: ${money(totalAddOns())}`, `Total de embalagens para viagem: ${money(totalPackaging())}`, `Total informado: ${money(total())}`, '', `Nome para retirada: ${form.nome}`, `WhatsApp: ${form.telefone}`, schedule, `Horário desejado: ${form.horario}`, `Pagamento: ${form.pagamento}`, `Observações adicionais: ${form.observacoes || 'Nenhuma'}`, '', 'CONFIRMAÇÃO HUMANA OBRIGATÓRIA — CONFERÊNCIA INTEGRAL', '• Cliente orientado a ligar imediatamente para (16) 99606-2046 para confirmar o recebimento desta solicitação.', '• Status inicial: AGUARDANDO LIGAÇÃO E RESPOSTA DA SORVETERIA.', '• Na ligação, conferir item por item: produtos, quantidades, sabores, alterações solicitadas, disponibilidade, retirada e pagamento.', '• Qualquer alteração somente vale após a confirmação humana. Não separar, elaborar ou iniciar produção antes dessa conferência.', '• Sem ligação do cliente nem resposta humana em até 15 minutos, considerar esta solicitação CANCELADA.', '', 'AVISOS IMPORTANTES', '• Este pedido é apenas uma solicitação; nenhum produto será elaborado ou separado automaticamente.', '• A sorveteria confirma manualmente no WhatsApp a disponibilidade dos produtos e a execução do pedido antes de iniciar a produção.', '• Pedidos comuns exigem retirada com prazo mínimo de 1 hora.', '• Tortas de sorvete em produção exigem antecedência mínima de 48 horas; pronta entrega depende de consulta no WhatsApp.', '• Em Pix, a produção começa somente após a confirmação do pagamento.', '', 'ACEITE DO CLIENTE', 'Declaro que li, compreendi e aceito as regras acima, incluindo a ligação, a conferência integral e o prazo de 15 minutos.'); return lines.join('\n');
   }
-  function submitOrder(event) { event.preventDefault(); const error = $('#form-error'); error.classList.remove('is-visible'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError('Pedidos para retirada disponíveis das 11h00 às 20h00. Volte nesse horário para montar seu pedido.'); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Informe um WhatsApp com DDD 16, por exemplo: (16) 99999-9999.'); if (!validPickupTime(form.horario)) return showFormError('Escolha um horário de retirada entre 11h00 e 20h00.'); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para torta em produção, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Tortas de sorvete em produção precisam ser retiradas com antecedência mínima de 48 horas. Escolha outra data e horário.'); } else if (!validCommonLeadTime(form.horario)) return showFormError('A retirada precisa ser agendada com pelo menos 1 hora de antecedência. Escolha outro horário.'); if (!form.pagamento) return showFormError('Escolha como deseja pagar.'); if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }
+  function submitOrder(event) { event.preventDefault(); const error = $('#form-error'); error.classList.remove('is-visible'); if (!retiradaAberta()) { window.ItapHorarioPedidos?.aviso('retirada'); return showFormError('Pedidos para retirada disponíveis das 11h00 às 20h00. Volte nesse horário para montar seu pedido.'); } const form = Object.fromEntries(new FormData(event.currentTarget).entries()); if (!state.cart.length) return showFormError('Escolha pelo menos um produto antes de enviar.'); if (!form.nome?.trim()) return showFormError('Informe o nome de quem vai retirar.'); if (!validatePhone(form.telefone || '')) return showFormError('Informe um WhatsApp com DDD 16, por exemplo: (16) 99999-9999.'); if (!validPickupTime(form.horario)) return showFormError('Escolha um horário de retirada entre 11h00 e 20h00.'); if (hasCakeProductionLead()) { if (!form.data_retirada) return showFormError('Para torta em produção, escolha a data desejada para retirar.'); if (!validCakeLeadTime(form.data_retirada, form.horario)) return showFormError('Tortas de sorvete em produção precisam ser retiradas com antecedência mínima de 48 horas. Escolha outra data e horário.'); } else if (!validCommonLeadTime(form.horario)) return showFormError('A retirada precisa ser agendada com pelo menos 1 hora de antecedência. Escolha outro horário.'); if (!form.pagamento) return showFormError('Escolha como deseja pagar.'); if (!form.aceite) return showFormError('Leia e marque o aceite das regras antes de enviar.'); setOrderStage(3); const text = buildMessage(form); window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); }
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); syncPickupDateConstraint(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { document.getElementById(`sec-${slug(product.category)}`)?.scrollIntoView({ block: 'start' }); announce(`${product.name} está destacado na seção correspondente.`); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
+  async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { document.getElementById(`sec-${slug(product.category)}`)?.scrollIntoView({ block: 'start' }); announce(`${product.name} está destacado na seção correspondente.`); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
   $('#summary-bar').addEventListener('click', () => { renderCart(); openDialog('cart-dialog'); });
   $('#confirm-flavors').addEventListener('click', confirmFlavors);
   $$('input[name="item-mode"]').forEach((input) => input.addEventListener('change', (event) => { state.serviceMode = event.target.value; renderFlavorGrid(); }));
   $$('input[name="item-container"]').forEach((input) => input.addEventListener('change', (event) => { state.containerType = event.target.value; renderFlavorGrid(); }));
   $$('input[name="cake-choice"]').forEach((input) => input.addEventListener('change', (event) => { state.cakeChoice = event.target.value; renderFlavorGrid(); }));
-  $('#continue-shopping').addEventListener('click', () => { closeDialog('cart-dialog'); requestAnimationFrame(() => { const target = state.lastCatalogSku ? document.querySelector(`[data-catalog-sku="${state.lastCatalogSku}"]`) : null; const destination = target || $('#catalogo'); destination.scrollIntoView({ behavior: 'smooth', block: 'center' }); target?.querySelector('button')?.focus({ preventScroll: true }); }); });
+  $('#continue-shopping').addEventListener('click', () => { setOrderStage(1); closeDialog('cart-dialog'); requestAnimationFrame(() => { const target = state.lastCatalogSku ? document.querySelector(`[data-catalog-sku="${state.lastCatalogSku}"]`) : null; const destination = target || $('#catalogo'); destination.scrollIntoView({ behavior: 'smooth', block: 'center' }); target?.querySelector('button')?.focus({ preventScroll: true }); }); });
   $('#pickup-form').addEventListener('submit', submitOrder);
   window.addEventListener('itap:horario-pedidos-atualizado', () => { if (state.catalog.length) renderCatalog(); });
   $$('[data-close]').forEach((button) => button.addEventListener('click', () => { if (button.dataset.close === 'popsicle-dialog') state.popsicleGroup = null; closeDialog(button.dataset.close); }));

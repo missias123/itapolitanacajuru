@@ -190,6 +190,28 @@
 - [x] Destacar no formulário recebido pela sorveteria que a confirmação depende de ligação e resposta humana.
 - [x] Determinar no formulário enviado que a ligação confirma itens, quantidades, sabores, alterações, retirada e pagamento antes da elaboração.
 
+## Fluxo premium do Peça e retire
+
+- [x] Pesquisar padrões de navegação, descoberta de produtos e checkout de plataformas de alimentos.
+- [x] Simplificar a entrada por seções e orientar a pessoa durante a escolha de produtos.
+- [x] Reforçar ações de voltar, continuar comprando, revisar pedido e seguir para a confirmação.
+- [x] Preservar integralmente regras de sabores, estoque, retirada, embalagem e confirmação humana.
+- [x] Validar a jornada completa no celular antes de publicar.
+
+## Critérios para reduzir confusão
+
+- [x] Reduzir escolhas simultâneas e apresentar somente a próxima decisão necessária.
+- [x] Manter carrinho, retorno e continuidade sempre claros em todas as etapas.
+- [x] Separar produtos por intenção de compra e não por campos técnicos do cadastro.
+
+## Regras premium do pedido
+
+- [x] Uma decisão por tela ou etapa: produto, sabor, modalidade, revisão e confirmação.
+- [x] Categorias curtas, com nomes de compra compreensíveis e quantidade de produtos visível.
+- [x] Regras e limites junto da escolha correspondente, não escondidos no final do formulário.
+- [x] Carrinho persistente com quantidade, total e retorno para continuar comprando.
+- [x] Revisão final sem surpresa, com alteração de quantidades e confirmação humana destacada.
+
 ## Infraestrutura GitHub e Cloudflare
 
 - [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.

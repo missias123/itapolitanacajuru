@@ -66,19 +66,22 @@ const result = await evaluate(`(() => {
   return {
     dialogOpen: document.getElementById('cart-dialog')?.open,
     itemCount: JSON.parse(localStorage.getItem('itap_retirada_v1') || '[]').length,
-    selectedFlavorCount: plus.length >= 2 ? 2 : 0
+    selectedFlavorCount: plus.length >= 2 ? 2 : 0,
+    etapaAtual: document.querySelector('.order-step.is-current')?.dataset.orderStep
   };
 })()`);
 await wait(650);
 await evaluate(`document.getElementById('call-confirmation-rule')?.scrollIntoView({ block: 'center' })`);
 await wait(500);
 await screenshot('demonstracao-mobile-confirmacao-ligacao.png');
+const returnStage = await evaluate(`(() => { document.getElementById('continue-shopping')?.click(); return document.querySelector('.order-step.is-current')?.dataset.orderStep; })()`);
 writeFileSync(`${root}/resultado-demonstracao-confirmacao.json`, `${JSON.stringify({
   sku: 'TAC-TRD-001',
   regraSabores: '2 sabores de sorvete com contador e limite',
   confirmacaoLigacao: true,
   pedidoEnviado: false,
-  resultado: result.result?.value || null
+  resultado: result.result?.value || null,
+  etapaAposContinuarComprando: returnStage.result?.value || null
 }, null, 2)}\n`);
 socket.close();
 process.kill(-chrome.pid, 'SIGTERM');
