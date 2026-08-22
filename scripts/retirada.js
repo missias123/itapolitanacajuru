@@ -7,7 +7,7 @@
     'abacaxi ao vinho':['#F59E0B','#FFFBEB','rgba(245,158,11,.36)'],'abacaxi suíço':['#FACC15','#FEFCE8','rgba(250,204,21,.40)'],'amarena':['#E11D48','#FFF1F2','rgba(225,29,72,.34)'],'ameixa':['#7C3AED','#F5F3FF','rgba(124,58,237,.32)'],'banana com nutella':['#D97706','#FFF7ED','rgba(217,119,6,.32)'],'bem casado':['#C08457','#FFF7ED','rgba(192,132,87,.34)'],'bis e trufa':['#7C3F2C','#FFF7ED','rgba(124,63,44,.34)'],'blue ice':['#38BDF8','#F0F9FF','rgba(56,189,248,.38)'],'cereja trufada':['#BE123C','#FFF1F2','rgba(190,18,60,.34)'],'cheesecake':['#E2A77A','#FFF7ED','rgba(226,167,122,.34)'],'chocolate belga':['#6B3E26','#FFF7ED','rgba(107,62,38,.36)'],'chocolate com café':['#4B2E25','#F8FAFC','rgba(75,46,37,.36)'],'coco queimado':['#A16207','#FFFBEB','rgba(161,98,7,.34)'],'creme paris':['#D4A017','#FFFBEB','rgba(212,160,23,.34)'],'croquer':['#B45309','#FFF7ED','rgba(180,83,9,.34)'],'doce de leite':['#B7794B','#FFF7ED','rgba(183,121,75,.34)'],'ferrero rocher':['#A16207','#FFFBEB','rgba(161,98,7,.36)'],'flocos':['#64748B','#F8FAFC','rgba(100,116,139,.32)'],'kinder ovo':['#2563EB','#EFF6FF','rgba(37,99,235,.34)'],'leite condensado':['#CBD5E1','#F8FAFC','rgba(148,163,184,.34)'],'leite ninho':['#60A5FA','#EFF6FF','rgba(96,165,250,.38)'],'leite ninho folheado':['#38BDF8','#F0F9FF','rgba(56,189,248,.38)'],'leite ninho com oreo':['#60A5FA','#EFF6FF','rgba(96,165,250,.38)'],'leite ninho trufado':['#3B82F6','#EFF6FF','rgba(59,130,246,.38)'],'limão':['#84CC16','#F7FEE7','rgba(132,204,22,.34)'],'limão suíço':['#A3E635','#F7FEE7','rgba(163,230,53,.38)'],'menta com chocolate':['#10B981','#ECFDF5','rgba(16,185,129,.34)'],'milho verde':['#EAB308','#FEFCE8','rgba(234,179,8,.36)'],'morango trufado':['#F43F5E','#FFF1F2','rgba(244,63,94,.36)'],'mousse de maracujá':['#F59E0B','#FFFBEB','rgba(245,158,11,.36)'],'mousse de uva':['#A78BFA','#F5F3FF','rgba(167,139,250,.36)'],'nozes':['#8D6E63','#FAF7F5','rgba(141,110,99,.34)'],'nutella':['#7C2D12','#FFF7ED','rgba(124,45,18,.36)'],'ovomaltine':['#B45309','#FFF7ED','rgba(180,83,9,.36)'],'passas ao rum':['#7F1D1D','#FFF1F2','rgba(127,29,29,.36)'],'pistache':['#65A30D','#F7FEE7','rgba(101,163,13,.34)'],'prestígio':['#5B3A29','#FFF7ED','rgba(91,58,41,.36)'],'sensação':['#EC4899','#FDF2F8','rgba(236,72,153,.36)']
   };
   const STORAGE_KEY = 'itap_retirada_v1';
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], serviceMode: '', containerType: '', cakeChoice: '', query: '', lastCatalogSku: null };
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, serviceMode: '', containerType: '', cakeChoice: '', query: '', lastCatalogSku: null };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
@@ -25,9 +25,26 @@
   function announce(message) { $('#live-region').textContent = message; }
   function openDialog(id) { const dialog = document.getElementById(id); if (dialog && !dialog.open) dialog.showModal(); }
   function closeDialog(id) { const dialog = document.getElementById(id); if (dialog?.open) dialog.close(); }
+  function fixedScoopCount(product) {
+    const match = (product.fixedIngredients || []).join(' ').match(/\b(\d+)\s*sabores?\s+de\s+sorvete\b/i);
+    return match ? Number(match[1]) : 0;
+  }
+  function productBallCount(product) {
+    const fixed = fixedScoopCount(product);
+    if (fixed) return fixed;
+    const match = `${product.name} ${product.size}`.match(/(\d+)\s*bolas?/i);
+    return match ? Number(match[1]) : 0;
+  }
+  function hasFixedThreeFlavorLimit(product) {
+    return isIceCreamCake(product) || product.category === 'Tortas por encomenda' || product.category === 'Caixas para encomenda';
+  }
+  function usesFlavorDistribution(product) {
+    return !hasFixedThreeFlavorLimit(product) && product.category !== 'Milkshake' && productBallCount(product) > 0;
+  }
   function needsMassFlavors(product) {
     if (product.fixedAcai) return false;
     if (isIceCreamCake(product)) return true;
+    if (fixedScoopCount(product) > 0) return true;
     if (product.category === 'Sorvetes de massa' || product.category === 'Caixas para encomenda' || product.category === 'Tortas por encomenda') return true;
     if (product.category === 'Isopores para viagem') return true;
     return /\b\d+\s*bola/i.test(`${product.name} ${product.size}`) && product.category === 'Sobremesas';
@@ -40,9 +57,10 @@
   function displayName(name) { return String(name || '').replace(/Casquinha\/copo/gi, 'Casquinha ou copo'); }
   function flavorRule(product) {
     if (product.category === 'Milkshake') return { source: 'milkshake', min: 1, max: 2, label: 'Escolha 1 sabor ou até 2 sabores para o milkshake' };
-    const match = `${product.name} ${product.size}`.match(/(\d+)\s*(?:Bolas?|Sabores?)/i);
-    const required = isIceCreamCake(product) || product.category === 'Tortas por encomenda' ? 3 : match ? Number(match[1]) : 1;
-    return { source: 'massa', min: required, max: required, label: `Escolha ${required} sabor${required > 1 ? 'es' : ''} de massa` };
+    if (hasFixedThreeFlavorLimit(product)) return { source: 'massa', min: 3, max: 3, label: 'Escolha até 3 sabores de sorvete' };
+    const required = productBallCount(product) || 1;
+    if (usesFlavorDistribution(product)) return { source: 'massa', min: required, max: required, ballCount: required, distribution: true, label: `Distribua ${required} bola${required > 1 ? 's' : ''} entre os sabores que quiser` };
+    return { source: 'massa', min: required, max: required, label: `Escolha ${required} sabor${required > 1 ? 'es' : ''} de sorvete (${required} bola${required > 1 ? 's' : ''})` };
   }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
   function retiradaAberta() { return !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('retirada'); }
@@ -61,10 +79,10 @@
     return entries.map((item) => {
       const meta = picoMeta.get(item.sku);
       const category = item.categoria || 'Outros produtos';
-      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false, available: productAvailable(data, item), type: meta ? 'picole' : productType(category), picole: meta || null, includedExtras: Array.isArray(item.acrescimos_inclusos) ? item.acrescimos_inclusos : [], travelPackaging, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
+      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false, available: productAvailable(data, item), type: meta ? 'picole' : productType(category), picole: meta || null, includedExtras: Array.isArray(item.acrescimos_inclusos) ? item.acrescimos_inclusos : [], fixedIngredients: Array.isArray(item.ingredientes) ? item.ingredientes : [], travelPackaging, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
     });
   }
-  function cartKey(product, flavors, serviceMode = '', containerType = '', cakeChoice = '') { return `${product.sku}::${(flavors || []).map((item) => item.code || item).sort().join('|')}::${serviceMode}::${containerType}::${cakeChoice}`; }
+  function cartKey(product, flavors, serviceMode = '', containerType = '', cakeChoice = '', flavorDistribution = '') { return `${product.sku}::${(flavors || []).map((item) => `${item.code || item}:${Number(item.quantity) || 1}`).sort().join('|')}::${serviceMode}::${containerType}::${cakeChoice}::${normalize(flavorDistribution).replace(/\s+/g, ' ')}`; }
   function currentPopsicleCount() { return state.cart.filter((item) => item.type === 'picole').reduce((sum, item) => sum + Number(item.quantity || 0), 0); }
   function priceFor(item) { if (item.type === 'picole') return currentPopsicleCount() >= 100 ? item.wholesale : item.retail; return item.price; }
   function itemBaseTotal(item) { return Number(item.quantity || 0) * priceFor(item); }
@@ -82,12 +100,12 @@
     if ($('#cart-dialog')?.open) renderCart();
   }
   function setCart(item) { const index = state.cart.findIndex((entry) => entry.key === item.key); if (index >= 0) state.cart[index] = item; else state.cart.push(item); refreshCartUi(); }
-  function addProduct(product, flavors = [], serviceMode = '', openReview = true, containerType = '', cakeChoice = '') {
+  function addProduct(product, flavors = [], serviceMode = '', openReview = true, containerType = '', cakeChoice = '', flavorDistribution = '') {
     state.lastCatalogSku = product.sku;
-    const key = cartKey(product, flavors, serviceMode, containerType, cakeChoice);
+    const key = cartKey(product, flavors, serviceMode, containerType, cakeChoice, flavorDistribution);
     const current = state.cart.find((item) => item.key === key);
     const travelPackaging = product.travelPackaging || { sku: 'EMB-VIAGEM', name: 'Embalagem para viagem', price: 1, available: true };
-    const item = current || { key, sku: product.sku, name: product.name, size: product.size, category: product.category, type: product.type, price: product.price, flavors, includedExtras: product.includedExtras || [], serviceMode, containerType, cakeChoice, packagingSku: serviceMode === 'travel' ? travelPackaging.sku : '', packagingName: serviceMode === 'travel' ? travelPackaging.name : '', packagingFee: serviceMode === 'travel' ? travelPackaging.price : 0, quantity: 0, retail: product.picole?.varejo, wholesale: product.picole?.atacado, stock: product.picole?.stock };
+    const item = current || { key, sku: product.sku, name: product.name, size: product.size, category: product.category, type: product.type, price: product.price, flavors, flavorDistribution, includedExtras: product.includedExtras || [], fixedIngredients: product.fixedIngredients || [], serviceMode, containerType, cakeChoice, packagingSku: serviceMode === 'travel' ? travelPackaging.sku : '', packagingName: serviceMode === 'travel' ? travelPackaging.name : '', packagingFee: serviceMode === 'travel' ? travelPackaging.price : 0, quantity: 0, retail: product.picole?.varejo, wholesale: product.picole?.atacado, stock: product.picole?.stock };
     item.quantity += 1;
     setCart(item);
     if (openReview) { renderCart(); openDialog('cart-dialog'); }
@@ -99,6 +117,7 @@
   function categoryRank(category) {
     const value = normalize(category);
     if (value.includes('sorvetes de massa')) return 0;
+    if (value.includes('isopores para viagem')) return .5;
     if (value.includes('acai')) return 1;
     if (value.includes('picoles')) return 2;
     if (value === 'milkshake') return 3;
@@ -110,7 +129,7 @@
   function categoryOrder(categories) { return [...categories].sort((a, b) => categoryRank(a) - categoryRank(b) || a.localeCompare(b, 'pt-BR')); }
   function isPublicOrderProduct(product) {
     const category = normalize(product.category);
-    const exclusiveOrderCategories = ['sabores de massa', 'caixas para encomenda', 'isopores para viagem', 'tortas por encomenda', 'acrescimos'];
+    const exclusiveOrderCategories = ['sabores de massa', 'caixas para encomenda', 'tortas por encomenda', 'acrescimos'];
     return product.selectable && !exclusiveOrderCategories.some((item) => category.includes(item));
   }
   function renderCatalog() {
@@ -119,9 +138,9 @@
     root.innerHTML = ''; $('#section-nav').innerHTML = '';
     if (!grouped.size) { root.innerHTML = '<div class="empty-state">Não encontramos produto com esse nome ou código. Tente buscar outro termo.</div>'; return; }
     categoryOrder(grouped.keys()).forEach((category) => {
-      const products = grouped.get(category); const section = document.createElement('section'); section.className = 'catalog-section'; section.id = `sec-${slug(category)}`;
-      const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<h2>${escape(category)}</h2><p>${category === 'Picolés' ? 'Escolha o tipo e depois o sabor do picolé.' : `${products.length} produto${products.length !== 1 ? 's' : ''} para pedir.`}</p>`; section.append(head);
-      const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = category; nav.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' })); $('#section-nav').append(nav);
+      const products = grouped.get(category); const title = category === 'Isopores para viagem' ? 'Caixas de sorvete — 4 a 12 bolas' : category; const section = document.createElement('section'); section.className = 'catalog-section'; section.id = `sec-${slug(category)}`;
+      const head = document.createElement('div'); head.className = 'catalog-section__head'; head.innerHTML = `<h2>${escape(title)}</h2><p>${category === 'Picolés' ? 'Escolha o tipo e depois o sabor do picolé.' : category === 'Isopores para viagem' ? 'Distribua livremente todas as bolas entre os sabores que quiser.' : `${products.length} produto${products.length !== 1 ? 's' : ''} para pedir.`}</p>`; section.append(head);
+      const nav = document.createElement('button'); nav.type = 'button'; nav.textContent = title; nav.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' })); $('#section-nav').append(nav);
       if (category === 'Picolés') renderPopsicles(products, section); else renderProducts(products, section);
       root.append(section);
     });
@@ -132,7 +151,8 @@
       const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake';
       const meta = isIceCreamCake(product) ? `${product.size || 'Torta de sorvete'} · Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : product.size ? product.size : hasFlavor ? flavorRule(product).label : 'Produto pronto para retirada';
       const extras = product.includedExtras?.length ? ` · Inclui ${product.includedExtras.join(' e ')}.` : '';
-      row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${escape(extras)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p><p class="product__price">${money(product.price)}</p></div>`;
+      const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong> ${escape(product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).join(', '))}</p>` : '';
+      row.innerHTML = `<div><p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${escape(extras)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p>${fixedIngredients}<p class="product__price">${money(product.price)}</p></div>`;
       const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; button.textContent = !product.available ? 'Esgotado' : needsContainerChoice(product) ? 'Escolher recipiente' : hasFlavor ? 'Escolher sabores' : 'Adicionar ao pedido'; button.disabled = !product.selectable || !product.available || !retiradaAberta();
       button.addEventListener('click', () => { state.lastCatalogSku = product.sku; hasFlavor ? beginFlavors(product) : addProduct(product); }); row.append(button); list.append(row);
     }); section.append(list);
@@ -195,10 +215,22 @@
       control.append(minus, count, plus); row.append(control); root.append(row);
     });
   }
-  function beginFlavors(product) { state.flavorProduct = product; state.selectedFlavors = []; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; const rule = flavorRule(product); $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${product.size ? `${product.size} · ` : ''}${isIceCreamCake(product) ? 'Escolha primeiro como deseja prosseguir com a torta.' : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
+  function flavorDistributionTotal(value) { return (String(value || '').match(/\d+/g) || []).reduce((sum, number) => sum + Number(number), 0); }
+  function beginFlavors(product) { state.flavorProduct = product; state.selectedFlavors = []; state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; const rule = flavorRule(product); $('#flavor-title').textContent = displayName(product.name); $('#flavor-subtitle').textContent = `${product.size ? `${product.size} · ` : ''}${isIceCreamCake(product) ? 'Escolha primeiro como deseja prosseguir com a torta.' : needsContainerChoice(product) ? 'Escolha primeiro o recipiente e depois os sabores.' : rule.label + '.'}`; renderFlavorGrid(); openDialog('flavor-dialog'); }
   function renderFlavorGrid() {
     const product = state.flavorProduct; if (!product) return;
-    const rule = flavorRule(product); const grid = $('#flavor-grid'); const status = $('#flavor-status'); const needsContainer = needsContainerChoice(product); const isCake = isIceCreamCake(product); const cakeBox = $('#cake-choice'); cakeBox.hidden = !isCake; $$('[data-cake-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.cakeChoice === state.cakeChoice)); $$('input[name="cake-choice"]').forEach((input) => { input.checked = input.value === state.cakeChoice; }); const containerBox = $('#item-container'); containerBox.hidden = !needsContainer; $$('[data-container-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.containerChoice === state.containerType)); $$('input[name="item-container"]').forEach((input) => { input.checked = input.value === state.containerType; }); if (isCake && !state.cakeChoice) { grid.hidden = true; grid.innerHTML = ''; $('#item-mode').hidden = true; status.textContent = 'Escolha: consultar pronta entrega pelo WhatsApp ou produzir a torta com 48 horas de antecedência.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; } if (needsContainer && !state.containerType) { grid.hidden = true; grid.innerHTML = ''; $('#item-mode').hidden = true; status.textContent = 'Primeiro escolha se deseja casquinha ou copo.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; } grid.hidden = false; grid.innerHTML = '';
+    const rule = flavorRule(product); const grid = $('#flavor-grid'); const status = $('#flavor-status'); const distributionBox = $('#flavor-distribution'); const distributionInput = $('#flavor-distribution-input'); const distributionHint = $('#flavor-distribution-hint'); const distributionCounter = $('#flavor-distribution-counter'); const needsContainer = needsContainerChoice(product); const isCake = isIceCreamCake(product); const cakeBox = $('#cake-choice'); cakeBox.hidden = !isCake; $$('[data-cake-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.cakeChoice === state.cakeChoice)); $$('input[name="cake-choice"]').forEach((input) => { input.checked = input.value === state.cakeChoice; }); const containerBox = $('#item-container'); containerBox.hidden = !needsContainer; $$('[data-container-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.containerChoice === state.containerType)); $$('input[name="item-container"]').forEach((input) => { input.checked = input.value === state.containerType; }); if (isCake && !state.cakeChoice) { grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = true; $('#item-mode').hidden = true; status.textContent = 'Escolha: consultar pronta entrega pelo WhatsApp ou produzir a torta com 48 horas de antecedência.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; } if (needsContainer && !state.containerType) { grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = true; $('#item-mode').hidden = true; status.textContent = 'Primeiro escolha se deseja casquinha ou copo.'; status.classList.remove('ready'); $('#confirm-flavors').disabled = true; return; }
+    if (rule.distribution) {
+      grid.hidden = true; grid.innerHTML = ''; distributionBox.hidden = false; distributionInput.value = state.flavorDistribution;
+      distributionHint.textContent = `Informe como distribuir exatamente ${rule.ballCount} bolas entre os sabores. Você pode repetir o mesmo sabor ou combinar vários.`;
+      const distributed = flavorDistributionTotal(state.flavorDistribution); const ready = distributed === rule.ballCount;
+      distributionCounter.textContent = state.flavorDistribution.trim() ? (ready ? `Distribuição completa: ${distributed} de ${rule.ballCount} bolas.` : `Distribuição informada: ${distributed} de ${rule.ballCount} bolas. Ajuste até fechar a quantidade.`) : `Faltam informar ${rule.ballCount} bolas.`;
+      distributionCounter.classList.toggle('is-ready', ready);
+      const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; });
+      status.textContent = !ready ? `Informe a quantidade por sabor até totalizar ${rule.ballCount} bolas.` : (requiresMode && !state.serviceMode ? 'Agora escolha como deseja receber este produto.' : 'Tudo certo! Revise e adicione este produto ao pedido.');
+      status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode)); return;
+    }
+    distributionBox.hidden = true; grid.hidden = false; grid.innerHTML = '';
     const options = rule.source === 'milkshake' ? (state.data.milkshake?.sabores || []).map((name, i) => ({ code: `MLK-${i + 1}`, name, unavailable: false })) : (state.data.sabores_sorvete || []).map((item) => ({ code: item.codigo, name: item.nome, unavailable: Boolean(item.esgotado || state.data.cadastro_skus?.por_chave?.['massas.' + item.codigo]?.ativo === false) }));
     const count = state.selectedFlavors.length; grid.classList.toggle('limite-atingido', count >= rule.max);
     options.forEach((flavor) => {
@@ -211,19 +243,19 @@
     });
     const ready = count >= rule.min && count <= rule.max; const requiresMode = needsPackagingChoice(product); const modeBox = $('#item-mode'); modeBox.hidden = !(ready && requiresMode); $$('[data-mode-choice]').forEach((choice) => choice.classList.toggle('is-selected', choice.dataset.modeChoice === state.serviceMode)); $$('input[name="item-mode"]').forEach((input) => { input.checked = input.value === state.serviceMode; }); const missing = rule.min - count; const optional = rule.max - count; const cakeLabel = isCake ? (state.cakeChoice === 'producao_48h' ? ' Depois, informe data e horário no mínimo 48 horas à frente.' : ' A pronta entrega será consultada e confirmada manualmente pelo WhatsApp.') : ''; status.textContent = missing > 0 ? `Escolha mais ${missing} sabor${missing !== 1 ? 'es' : ''}.` : (optional > 0 ? `Você pode adicionar mais ${optional} sabor${optional !== 1 ? 'es' : ''} ou continuar com a escolha atual.${cakeLabel}` : (requiresMode && !state.serviceMode ? 'Agora escolha como deseja receber este produto.' : `Tudo certo! Revise e adicione este produto ao pedido.${cakeLabel}`)); status.classList.toggle('ready', ready && (!requiresMode || Boolean(state.serviceMode))); $('#confirm-flavors').disabled = !(ready && (!requiresMode || state.serviceMode) && (!isCake || Boolean(state.cakeChoice)));
   }
-  function confirmFlavors() { if (!state.flavorProduct) return; const rule = flavorRule(state.flavorProduct); if (state.selectedFlavors.length < rule.min || state.selectedFlavors.length > rule.max) return; if (isIceCreamCake(state.flavorProduct) && !state.cakeChoice) return; if (needsContainerChoice(state.flavorProduct) && !state.containerType) return; if (needsPackagingChoice(state.flavorProduct) && !state.serviceMode) return; addProduct(state.flavorProduct, state.selectedFlavors.slice(), state.serviceMode, true, state.containerType, state.cakeChoice); closeDialog('flavor-dialog'); state.flavorProduct = null; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; }
+  function confirmFlavors() { if (!state.flavorProduct) return; const rule = flavorRule(state.flavorProduct); const validSelection = rule.distribution ? flavorDistributionTotal(state.flavorDistribution) === rule.ballCount : state.selectedFlavors.length >= rule.min && state.selectedFlavors.length <= rule.max; if (!validSelection) return; if (isIceCreamCake(state.flavorProduct) && !state.cakeChoice) return; if (needsContainerChoice(state.flavorProduct) && !state.containerType) return; if (needsPackagingChoice(state.flavorProduct) && !state.serviceMode) return; addProduct(state.flavorProduct, state.selectedFlavors.slice(), state.serviceMode, true, state.containerType, state.cakeChoice, state.flavorDistribution); closeDialog('flavor-dialog'); state.flavorProduct = null; state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = ''; }
   function renderCartSummary() { const bar = $('#summary-bar'); const count = totalItems(); bar.classList.toggle('is-visible', count > 0); $('#summary-small').textContent = count ? `${count} item${count !== 1 ? 's' : ''} selecionado${count !== 1 ? 's' : ''}` : 'Seu pedido está vazio'; $('#summary-large').textContent = count ? `Ver pedido · ${money(total())}` : `Ver pedido · ${money(0)}`; }
   function renderCart() {
     const list = $('#cart-list'); list.innerHTML = '';
     if (!state.cart.length) { list.innerHTML = '<div class="empty-state">Seu pedido ainda está vazio. Volte e escolha os produtos que deseja retirar.</div>'; $('#cart-breakdown').innerHTML = `<div><span>Total dos produtos</span><span>${money(0)}</span></div><div><span>Embalagens para viagem</span><span>${money(0)}</span></div>`; $('#cart-total').textContent = money(0); syncPickupDateConstraint(); return; }
     state.cart.forEach((item) => {
       const row = document.createElement('article'); row.className = 'cart-item';
-      const flavors = item.flavors?.length ? `Sabores: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}` : ''; const includedExtras = item.includedExtras?.length ? `Inclusos: ${item.includedExtras.join(' e ')}` : ''; const container = item.containerType ? `Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = isIceCreamCake(item) ? `Torta: ${item.cakeChoice === 'producao_48h' ? 'produção com 48 horas' : 'consultar pronta entrega no WhatsApp'}` : '';
+      const flavors = item.flavors?.length ? `Sabores escolhidos: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}` : ''; const flavorDistribution = item.flavorDistribution ? `Distribuição das bolas: ${item.flavorDistribution}` : ''; const fixedIngredients = item.fixedIngredients?.length ? `Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}` : ''; const includedExtras = item.includedExtras?.length ? `Inclusos: ${item.includedExtras.join(' e ')}` : ''; const container = item.containerType ? `Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}` : ''; const cakeChoice = isIceCreamCake(item) ? `Torta: ${item.cakeChoice === 'producao_48h' ? 'produção com 48 horas' : 'consultar pronta entrega no WhatsApp'}` : '';
       const mode = item.serviceMode === 'travel' ? 'Embalar para viagem' : item.serviceMode === 'store' ? 'Consumir na loja' : '';
       const pricing = [`<span>Produto: ${money(itemBaseTotal(item))}</span>`];
       if (mode) pricing.push(`<span>${mode}: ${item.serviceMode === 'travel' ? `${escape(item.packagingName || 'Embalagem para viagem')} · SKU ${escape(item.packagingSku || 'EMB-VIAGEM')} · ${money(itemPackagingTotal(item))}` : 'sem taxa de embalagem'}</span>`);
       pricing.push(`<strong>Subtotal: ${money(itemTotal(item))}</strong>`);
-      row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p><p class="cart-item__meta">${escape([item.sku, item.size, container, flavors, includedExtras, cakeChoice].filter(Boolean).join(' · '))}</p></div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
+      row.innerHTML = `<div class="cart-item__head"><div><p class="cart-item__name">${escape(displayName(item.name))}</p><p class="cart-item__meta">${escape([item.sku, item.size, container, flavors, flavorDistribution, fixedIngredients, includedExtras, cakeChoice].filter(Boolean).join(' · '))}</p></div><p class="cart-item__value">${money(itemTotal(item))}</p></div><div class="cart-item__pricing">${pricing.join('')}</div>`;
       const bottom = document.createElement('div'); bottom.className = 'cart-item__bottom'; const control = document.createElement('div'); control.className = 'qty';
       const minus = document.createElement('button'); minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', `Diminuir ${item.name}`); minus.addEventListener('click', () => updateQuantity(item.key, -1));
       const count = document.createElement('span'); count.textContent = item.quantity;
@@ -251,6 +283,8 @@
       lines.push(`${index + 1}. ${item.name}${item.size ? ` — ${item.size}` : ''}`); lines.push(`   Código: ${item.sku} · Quantidade: ${item.quantity}`);
       if (item.containerType) lines.push(`   Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}`);
       if (item.flavors?.length) lines.push(`   Sabores: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}`);
+      if (item.flavorDistribution) lines.push(`   Distribuição das bolas por sabor: ${item.flavorDistribution}`);
+      if (item.fixedIngredients?.length) lines.push(`   Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}`);
       if (item.includedExtras?.length) lines.push(`   Inclusos: ${item.includedExtras.join(' e ')}`);
       if (isIceCreamCake(item)) lines.push(`   Torta: ${item.cakeChoice === 'producao_48h' ? 'produção com antecedência mínima de 48 horas' : 'consultar pronta entrega pelo WhatsApp'}`);
       lines.push(`   Produto: ${money(itemBaseTotal(item))}`);
@@ -269,6 +303,7 @@
   $$('input[name="item-mode"]').forEach((input) => input.addEventListener('change', (event) => { state.serviceMode = event.target.value; renderFlavorGrid(); }));
   $$('input[name="item-container"]').forEach((input) => input.addEventListener('change', (event) => { state.containerType = event.target.value; renderFlavorGrid(); }));
   $$('input[name="cake-choice"]').forEach((input) => input.addEventListener('change', (event) => { state.cakeChoice = event.target.value; renderFlavorGrid(); }));
+  $('#flavor-distribution-input').addEventListener('input', (event) => { state.flavorDistribution = event.target.value; renderFlavorGrid(); });
   $('#continue-shopping').addEventListener('click', () => { closeDialog('cart-dialog'); requestAnimationFrame(() => { const target = state.lastCatalogSku ? document.querySelector(`[data-catalog-sku="${state.lastCatalogSku}"]`) : null; const destination = target || $('#catalogo'); destination.scrollIntoView({ behavior: 'smooth', block: 'center' }); target?.querySelector('button')?.focus({ preventScroll: true }); }); });
   $('#pickup-form').addEventListener('submit', submitOrder);
   window.addEventListener('itap:horario-pedidos-atualizado', () => { if (state.catalog.length) renderCatalog(); });

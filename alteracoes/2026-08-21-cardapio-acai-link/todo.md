@@ -101,3 +101,11 @@
 - [x] Comparar o PDF recebido com o cardápio central e completar apenas ingredientes ausentes, sem alterar preços.
 - [x] Preservar todos os preços existentes e validar que nenhuma alteração de preço ocorreu ao completar ingredientes por SKU.
 - [x] Auditar a estrutura do cardápio-mãe por SKU e listar produtos com ingredientes ainda ausentes.
+- [ ] Comparar a lista ampliada de sabores de sorvete e atualizar seus SKUs no cardápio-mãe e no Peça e retire.
+- [ ] Aplicar no Peça e retire a regra de que cada bola do produto equivale a exatamente um sabor escolhido.
+- [x] Aplicar no Peça e retire a regra de que cada bola do produto equivale a exatamente um sabor escolhido.
+- [x] Permitir distribuir bolas por sabor em caixas de 4 a 12 bolas, mantendo caixas de 5L/10L e tortas com no máximo 3 sabores.
+- [x] Adicionar nas caixas de 4 a 12 bolas um campo de observação da quantidade desejada por sabor, exibido no carrinho e no WhatsApp.
+- [x] Permitir sabores livres e repetidos nos produtos por bolas, limitando caixas de 5L/10L e tortas a três sabores.
+- [x] Aplicar de forma cirúrgica um controle de distribuição por quantidade, mantendo o restante do fluxo de retirada intacto.
+- [x] Aplicar no controle de distribuição o padrão visual de cartões, cores e estados usado em Encomendas.
