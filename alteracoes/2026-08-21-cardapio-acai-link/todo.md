@@ -124,3 +124,6 @@
 - [ ] Sincronizar a branch main e publicar a versão aprovada no site público pelo fluxo conectado do Cloudflare.
 - [ ] Validar no cardápio principal o botão Peça e retire, incluindo o redirecionamento de Açaí Natureon com SKU correto.
 - [ ] Auditar todos os botões Peça e retire e comparar seus destinos com os SKUs oficiais do catálogo central.
+- [ ] Vincular todos os botões Peça o seu e Peça e retire à página de retirada com o SKU correspondente quando houver produto associado.
+- [ ] Limitar a auditoria de vínculos ao cardápio inicial entre Sorvetes de massa e Sobremesas.
+- [ ] Padronizar todos os botões desse trecho como Peça e retire na loja, com link por SKU e destaque pulsante responsivo.
