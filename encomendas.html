@@ -788,15 +788,19 @@
         var catalogo = {};
         var mapa = {};
         var rotulos = {
-            frutas_agua: 'Frutas / Base Água',
-            leite_com_recheio: 'Recheados — Base Leite',
-            leite_sem_recheio: 'Sem Recheio — Base Leite',
-            especiais: 'Especiais — Base Leite',
-            'esquimós': 'Esquimós — Base Leite',
-            esquimos: 'Esquimós — Base Leite'
+            frutas_agua: 'Picolés Base Água & Frutas',
+            leite_sem_recheio: 'Picolés AO LEITE Cremosos S/ Recheio',
+            leite_com_recheio: 'Picolés AO LEITE Cremosos Recheados',
+            especiais: 'Picolés AO LEITE Especiais',
+            'esquimós': 'Picolés AO LEITE Premium Eskimós',
+            esquimos: 'Picolés AO LEITE Premium Eskimós'
         };
         var mestre = (dados && dados.cadastro_skus && dados.cadastro_skus.por_chave) || {};
-        Object.keys(raw).forEach(function (chave) {
+        var ordemPicoles = ['frutas_agua', 'leite_sem_recheio', 'leite_com_recheio', 'especiais', 'esquimós', 'esquimos'];
+        Object.keys(raw).sort(function (a, b) {
+            var indiceA = ordemPicoles.indexOf(a); var indiceB = ordemPicoles.indexOf(b);
+            return (indiceA < 0 ? Number.MAX_SAFE_INTEGER : indiceA) - (indiceB < 0 ? Number.MAX_SAFE_INTEGER : indiceB);
+        }).forEach(function (chave) {
             var grupo = raw[chave] || {};
             var registroMestre = mestre['picoles.' + chave] || {};
             var sabores = Array.isArray(grupo.sabores) ? grupo.sabores : [];

@@ -264,7 +264,7 @@
       };
     }
 
-    /* ── Picolé Esquimó de Ovomaltine ── */
+    /* ── Picolés AO LEITE Premium Eskimós de Ovomaltine ── */
     function _respEskimoOvomaltine(atacado) {
       var p      = _prodData && _prodData.picoles && _prodData.picoles.esqu\u00edm\u00f3s;
       var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 8;
@@ -288,7 +288,7 @@
       };
     }
 
-    /* ── Picolé Especial de Leite Ninho ── */
+    /* ── Picolés AO LEITE Especiais de Leite Ninho ── */
     function _respPicoleLeiteNinho(atacado) {
       var p      = _prodData && _prodData.picoles && _prodData.picoles.leite_ninho;
       var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 4;
@@ -312,7 +312,7 @@
       };
     }
 
-    /* ── Picolé Esquimó genérico (sem Ovomaltine) ── */
+    /* ── Picolés AO LEITE Premium Eskimós genérico (sem Ovomaltine) ── */
     function _respEskimo(atacado) {
       var p      = _prodData && _prodData.picoles && _prodData.picoles.esqu\u00edm\u00f3s;
       var varejo = (p && p.preco_varejo  != null) ? p.preco_varejo  : 8;

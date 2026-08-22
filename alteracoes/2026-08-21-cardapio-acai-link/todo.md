@@ -343,6 +343,37 @@
 - [x] Reforçar tamanho e quantidade na etapa de escolha de sabores, com leitura confortável em celular e computador.
 - [x] Aplicar padrão premium: selo de tamanho antes do nome, preço e botão, com contraste e leitura rápida.
 
+## Milk-shakes — sabores e acompanhamentos
+
+- [x] Permitir a escolha de um ou até dois dos 38 sabores de massa nos milk-shakes tradicionais.
+- [x] Manter os milk-shakes de Açaí Natureon como receitas pré-montadas, sem seleção de sabores.
+- [x] Informar e registrar no Peça e retire que o Milk-shake TOP inclui chantilly e Nutella.
+- [x] Oferecer adicional opcional de Ovomaltine por R$ 3,00 em todos os milk-shakes tradicionais e TOP, sem oferecer esse adicional nos produtos de Açaí Natureon.
+- [x] Validar cardápio, carrinho e mensagem simulada sem encaminhar pedido real.
+
+## Copos recheados e cestinhas — coberturas e complementos
+
+- [x] Oferecer cobertura de morango, chocolate ou as duas juntas apenas nos copos recheados e cestinhas.
+- [x] Oferecer granulado de chocolate ao leite e canudinho wafer nas mesmas opções de produto.
+- [x] Manter todas as escolhas opcionais e incluídas no preço final, sem adicionar taxa mesmo quando o cliente marcar os complementos.
+- [x] Registrar as escolhas no carrinho e na mensagem de solicitação sem aplicar as opções a outros produtos.
+
+## Total de picolés em tempo real
+
+- [x] Mostrar a quantidade de picolés no pedido e o valor acumulado ao lado do total, atualizando após cada adição, remoção ou ajuste de quantidade.
+- [x] Aplicar automaticamente o preço de atacado aos picolés quando a quantidade total atingir 100 unidades e retornar ao varejo abaixo desse limite.
+
+## Alinhamento de rodapé dos cards
+
+- [x] Fixar os botões de ação no rodapé visual de cada card para que fiquem alinhados entre colunas, independentemente da altura do conteúdo.
+- [x] Manter o alinhamento e alvos de toque confortáveis em computador e celular.
+
+## Auditoria global de responsividade e alinhamento
+
+- [x] Pesquisar padrões de alinhamento, hierarquia e conversão em sites de alimentação de alto nível.
+- [x] Revisar vertical e horizontalmente cards, botões, preços, títulos, grades e espaços das páginas principais.
+- [x] Aplicar correções responsivas de alto impacto para celular e computador sem alterar regras comerciais.
+
 ## Preferências de sabores — Opções 1, 2 e 3
 
 - [x] Exigir uma combinação principal e duas alternativas diferentes da primeira, respeitando a quantidade de sabores do produto nos itens elegíveis de bolas e picolés.
@@ -357,6 +388,38 @@
 - [x] Restaurar a seleção direta de sabores com os limites originais de cada produto.
 - [x] Manter apenas os selos grandes de tamanho e quantidade de bolas nos cartões.
 - [x] Orientar substituições de sabores exclusivamente no campo Observações adicionais.
+
+## Nomenclatura de picolés no Peça e retire
+
+- [x] Mapear os SKUs existentes de picolé por tipo, preço e sabores cadastrados.
+- [x] Definir os nomes exibidos para água/frutas, leite sem recheio, leite recheado, especiais e premium Eskimós.
+- [x] Aplicar somente os nomes exibidos, sem modificar SKU, preço, estoque ou sabores.
+
+## Migração global de SKUs e categorias de picolés
+
+- [x] Atualizar SKUs e nomes em todos os lugares ativos do site para: Base Água & Frutas; AO LEITE Cremosos S/ Recheio; AO LEITE Cremosos Recheados; AO LEITE Especiais; AO LEITE Premium Eskimós.
+- [x] Preservar preços, sabores, disponibilidade e estoque de cada item durante a migração.
+- [x] Validar que catálogo, carrinho, mensagens e Encomendas usam os novos SKUs e categorias.
+
+## Qualidade de nomenclatura das linhas de picolé
+
+- [x] Pesquisar nomenclaturas de linhas de marcas de sorvetes e picolés para elevar a percepção de qualidade da Itapolitana.
+- [x] Propor nomes curtos, claros e premium que separem base água/frutas, leite sem recheio, leite recheado, especiais e Eskimós.
+
+## Padrão aprovado — linhas e SKUs de picolés
+
+- [x] 1. Picolés Base Água & Frutas: `PIC-AG-001` a `PIC-AG-008`.
+- [x] 2. Picolés AO LEITE Cremosos S/ Recheio: `PIC-CR-001` a `PIC-CR-004`.
+- [x] 3. Picolés AO LEITE Cremosos Recheados: `PIC-REC-001` a `PIC-REC-012`.
+- [x] 4. Picolés AO LEITE Especiais: `PIC-ESP-001` a `PIC-ESP-002`.
+- [x] 5. Picolés AO LEITE Premium Eskimós: `PIC-PREM-ESKIMO-001` a `PIC-PREM-ESKIMO-008`.
+
+- [x] Manter a apresentação em ordem crescente de preço: Base Água & Frutas, Cremosos S/ Recheio, Cremosos Recheados, Especiais e Premium Eskimós.
+
+## Integridade da base de alimentos
+
+- [x] Garantir que cada novo SKU de picolé seja único na base de alimentos do site.
+- [x] Confirmar que a alteração de SKU deve ocorrer no cadastro mestre e em todos os lugares do site onde os picolés são usados.
 - [ ] Basear o fluxo em seleção sequencial, rótulos claros de preferência, retorno visual imediato e mensagem curta de confirmação humana.
 
 ## Horário de Brasília e CNPJ

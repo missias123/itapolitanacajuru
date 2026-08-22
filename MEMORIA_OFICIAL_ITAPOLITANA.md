@@ -8,7 +8,7 @@ Este documento estabelece as diretrizes definitivas, contagens e regras de negó
 
 ## 1. Regras de Ouro e Arquitetura
 1. **Single Source of Truth**: Toda a renderização do site público (`index.html`), do sistema de encomendas (`encomendas.html`) e do painel de controle (`admin-painel.html`) deve ler exclusivamente de `/dados/produtos.json`. Nenhuma lista de sabores estática ou codificada de forma rígida em arquivos JavaScript (`scripts/products.js`, `scripts/enc-v4.js`) é permitida.
-2. **Identificação por SKU**: Todos os produtos possuem códigos únicos (`MAS-001` a `MAS-038` para massas e `PIC-001` a `PIC-034` para picolés) para eliminar ambiguidades e evitar erros de sincronismo.
+2. **Identificação por SKU**: Todos os produtos possuem códigos únicos (`MAS-001` a `MAS-038` para massas e `PIC-AG-001` a `PIC-PREM-ESKIMO-008` para picolés) para eliminar ambiguidades e evitar erros de sincronismo.
 3. **Terminologia Profissional (Glossy / World Class)**: O termo "artesanal" foi completamente banido do projeto. O design adota o padrão *Premium Glossy* (nítido, sem borrões, com botões finos e responsivos para Android e iOS).
 4. **Contagem Inegociável**:
    - **38 Massas** oficiais.
@@ -60,51 +60,51 @@ Codificadas de `MAS-001` a `MAS-038`:
 ---
 
 ## 3. Catálogo Oficial de Picolés (34 Sabores em 5 Categorias)
-Codificados de `PIC-001` a `PIC-034`:
+Codificados de `PIC-AG-001` a `PIC-PREM-ESKIMO-008`:
 
-### A. Frutas / Base Água (8 sabores)
-- `PIC-001`: Abacaxi
-- `PIC-002`: Caju
-- `PIC-003`: Goiaba
-- `PIC-004`: Groselha
-- `PIC-005`: Limão
-- `PIC-006`: Melância
-- `PIC-007`: Uva
-- `PIC-008`: Tamarindo
+### A. Picolés Base Água & Frutas (8 sabores)
+- `PIC-AG-001`: Abacaxi
+- `PIC-AG-002`: Caju
+- `PIC-AG-003`: Goiaba
+- `PIC-AG-004`: Groselha
+- `PIC-AG-005`: Limão
+- `PIC-AG-006`: Melância
+- `PIC-AG-007`: Uva
+- `PIC-AG-008`: Tamarindo
 
-### B. Recheados — Base Leite (12 sabores)
-- `PIC-009`: Açaí
-- `PIC-010`: Blue Ice
-- `PIC-011`: Caraxi *(Abacaxi + Caramelo)*
-- `PIC-012`: Coco Branco
-- `PIC-013`: Chocolate
-- `PIC-014`: Amarena
-- `PIC-015`: Leite Condensado
-- `PIC-016`: Mamão Papaia
-- `PIC-017`: Maracujá
-- `PIC-018`: Morango
-- `PIC-019`: Menta com Chocolate
-- `PIC-020`: Nata com Goiaba
+### B. Picolés AO LEITE Cremosos Recheados (12 sabores)
+- `PIC-REC-001`: Açaí
+- `PIC-REC-002`: Blue Ice
+- `PIC-REC-003`: Caraxi *(Abacaxi + Caramelo)*
+- `PIC-REC-004`: Coco Branco
+- `PIC-REC-005`: Chocolate
+- `PIC-REC-006`: Amarena
+- `PIC-REC-007`: Leite Condensado
+- `PIC-REC-008`: Mamão Papaia
+- `PIC-REC-009`: Maracujá
+- `PIC-REC-010`: Morango
+- `PIC-REC-011`: Menta com Chocolate
+- `PIC-REC-012`: Nata com Goiaba
 
-### C. Sem Recheio — Base Leite (4 sabores)
-- `PIC-021`: Coco Queimado
-- `PIC-022`: Milho Verde
-- `PIC-023`: Amendoim
-- `PIC-024`: Pistache
+### C. Picolés AO LEITE Cremosos S/ Recheio (4 sabores)
+- `PIC-CR-001`: Coco Queimado
+- `PIC-CR-002`: Milho Verde
+- `PIC-CR-003`: Amendoim
+- `PIC-CR-004`: Pistache
 
-### D. Especiais — Base Leite (2 sabores)
-- `PIC-025`: Leite Ninho
-- `PIC-026`: Ovomaltine
+### D. Picolés AO LEITE Especiais (2 sabores)
+- `PIC-ESP-001`: Leite Ninho
+- `PIC-ESP-002`: Ovomaltine
 
-### E. Esquimós — Base Leite (8 sabores)
-- `PIC-027`: Bombom
-- `PIC-028`: Nutella
-- `PIC-029`: Ovomaltine
-- `PIC-030`: Leite Ninho
-- `PIC-031`: Nata
-- `PIC-032`: Morango
-- `PIC-033`: Brigadeiro
-- `PIC-034`: Prestígio
+### E. Picolés AO LEITE Premium Eskimós (8 sabores)
+- `PIC-PREM-ESKIMO-001`: Bombom
+- `PIC-PREM-ESKIMO-002`: Nutella
+- `PIC-PREM-ESKIMO-003`: Ovomaltine
+- `PIC-PREM-ESKIMO-004`: Leite Ninho
+- `PIC-PREM-ESKIMO-005`: Nata
+- `PIC-PREM-ESKIMO-006`: Morango
+- `PIC-PREM-ESKIMO-007`: Brigadeiro
+- `PIC-PREM-ESKIMO-008`: Prestígio
 
 ---
 
