@@ -151,6 +151,12 @@
 - [ ] Demonstrar o toque no botão e a abertura de `retirada.html` com o SKU do produto na URL.
 - [ ] Confirmar que a demonstração não adiciona item, não envia pedido e não abre o WhatsApp.
 
+## Exclusão restrita do sorvete Diet
+
+- [x] Localizar o SKU Diet e remover o item exclusivamente do catálogo Peça e retire.
+- [x] Preservar o cardápio principal, o cadastro mestre e a página de Encomendas.
+- [x] Validar que o produto Diet não possa ser encontrado ou pedido na retirada.
+
 ## Infraestrutura GitHub e Cloudflare
 
 - [ ] Inventariar a origem que publica `itapolitanacajuru.com.br` e corrigir o caminho de publicação de `retirada.html`.
