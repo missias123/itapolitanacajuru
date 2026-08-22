@@ -166,8 +166,8 @@
 
 ## Auditoria de SKUs sem descrição
 
-- [ ] Filtrar produtos que não possuem ingredientes ou texto descritivo no cadastro central.
-- [ ] Gerar e entregar a lista organizada por categoria para conferência.
+- [x] Filtrar produtos que não possuem ingredientes ou texto descritivo no cadastro central.
+- [x] Gerar e entregar a lista organizada por categoria para conferência.
 
 ## Visualização de ingredientes e seleção de sabores
 
