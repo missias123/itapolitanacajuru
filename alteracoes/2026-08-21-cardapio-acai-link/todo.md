@@ -379,6 +379,15 @@
 - [x] Confirmar a disponibilidade pública da página e da versão atual do script.
 - [x] Retestar os fluxos principais publicados sem abrir WhatsApp nem enviar pedido real.
 
+## Auditoria de todos os botões clicáveis
+
+- [x] Inventariar todos os botões e destinos ativos no site, incluindo cardápios, Peça e retire, Encomendas, modais, carrinhos e navegação.
+- [x] Simular jornadas humanas sem abrir WhatsApp ou enviar pedidos, registrando saltos, links quebrados e perda de posição.
+- [x] Comparar os problemas encontrados com padrões de continuidade de compra de grandes sites de alimentos e aplicar correções prioritárias.
+- [x] Retestar todos os botões após as correções e publicar o relatório de auditoria.
+
+> Evidências de 22/08/2026: 494 controles inventariados em 13 páginas; 122 destinos internos responderam com sucesso; 109 vínculos de SKU apontam para itens ativos; a suíte de 19 testes passou sem abrir WhatsApp ou enviar pedidos. O retorno ao último picolé preservou a posição com diferença de 0 px em 1280×900 e 375×812.
+
 ## Preferências de sabores — Opções 1, 2 e 3
 
 - [x] Exigir uma combinação principal e duas alternativas diferentes da primeira, respeitando a quantidade de sabores do produto nos itens elegíveis de bolas e picolés.

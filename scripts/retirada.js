@@ -9,7 +9,7 @@
   const STORAGE_KEY = 'itap_retirada_v1';
   // Regra exclusiva do Peça e retire: o cadastro mestre e Encomendas não são alterados.
   const RETIRADA_SKUS_OCULTOS = new Set(['SOB-009']);
-  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', query: '', lastCatalogSku: null };
+  const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', query: '', lastCatalogSku: null, lastCatalogViewport: null };
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
@@ -29,6 +29,23 @@
   function setOrderStage(stage) { $$('[data-order-step]').forEach((item) => item.classList.toggle('is-current', Number(item.dataset.orderStep) === Number(stage))); }
   function openDialog(id) { const dialog = document.getElementById(id); if (dialog && !dialog.open) dialog.showModal(); }
   function closeDialog(id) { const dialog = document.getElementById(id); if (dialog?.open) dialog.close(); }
+  function captureCatalogViewport(sku = state.lastCatalogSku) {
+    const target = sku ? document.querySelector(`[data-catalog-sku="${sku}"]`) : null;
+    state.lastCatalogViewport = { sku: sku || '', scrollY: window.scrollY, targetOffset: target ? target.getBoundingClientRect().top : null };
+  }
+  function restoreCatalogViewport() {
+    const snapshot = state.lastCatalogViewport; const target = snapshot?.sku ? document.querySelector(`[data-catalog-sku="${snapshot.sku}"]`) : null;
+    const fallback = snapshot?.scrollY ?? window.scrollY;
+    window.setTimeout(() => requestAnimationFrame(() => {
+      const restoredTarget = snapshot?.sku ? document.querySelector(`[data-catalog-sku="${snapshot.sku}"]`) : null;
+      const targetY = restoredTarget && Number.isFinite(snapshot?.targetOffset) ? Math.max(0, window.scrollY + restoredTarget.getBoundingClientRect().top - snapshot.targetOffset) : fallback;
+      const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const destination = Math.min(Math.max(0, targetY), maxY);
+      document.activeElement instanceof HTMLElement && document.activeElement.blur();
+      window.scrollTo({ top: destination, behavior: 'smooth' });
+      restoredTarget?.querySelector('button')?.focus({ preventScroll: true });
+    }), 120);
+  }
   function fixedScoopCount(product) {
     const match = (product.fixedIngredients || []).join(' ').match(/\b(\d+)\s*sabores?\s+de\s+sorvete\b/i);
     return match ? Number(match[1]) : 0;
@@ -254,7 +271,7 @@
       const sizeBadge = productSizeBadge(product); const badge = sizeBadge ? `<p class="product__size-badge product__size-badge--${sizeBadge.type}"><span>${escape(sizeBadge.detail)}</span><strong>${escape(sizeBadge.label)}</strong></p>` : '';
       row.innerHTML = `<div>${badge}<p class="product__name"><span class="product__number">${String(index + 1).padStart(2, '0')}</span>${escape(displayName(product.name))}${!product.available ? ' <span class="stock-tag">Esgotado</span>' : ''}</p><p class="product__meta">${escape(meta)}${escape(extras)}${needsContainerChoice(product) ? ' · Primeiro escolha casquinha ou copo.' : ''}</p>${skuLine}${fixedIngredients}${ballRule}<p class="product__price">${money(product.price)}</p></div>`;
       const button = document.createElement('button'); button.className = 'add-btn'; button.type = 'button'; const label = needsContainerChoice(product) ? 'Escolher recipiente' : hasFlavor ? 'Escolher sabores' : 'Adicionar ao pedido'; applyOrderButtonState(button, label, Boolean(product.selectable && product.available));
-      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = product.sku; hasFlavor ? beginFlavors(product) : addProduct(product); })); row.append(button); list.append(row);
+      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = product.sku; captureCatalogViewport(product.sku); hasFlavor ? beginFlavors(product) : addProduct(product); })); row.append(button); list.append(row);
     }); return list;
   }
   function milkshakeSubgroup(title, point, group) {
@@ -305,7 +322,7 @@
       const button = document.createElement('button');
       button.className = 'add-btn'; button.type = 'button';
       applyOrderButtonState(button, 'Escolher sabores', Boolean(availableFlavors));
-      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = groupProducts[0].sku; beginPopsicleGroup(groupProducts); }));
+      button.addEventListener('click', () => runWhenRetiradaOpen(() => { state.lastCatalogSku = groupProducts[0].sku; captureCatalogViewport(groupProducts[0].sku); beginPopsicleGroup(groupProducts); }));
       row.append(button); list.append(row);
     });
     section.append(list);
@@ -528,13 +545,13 @@
   function showFormError(message) { const error = $('#form-error'); error.textContent = message; error.classList.add('is-visible'); error.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   async function init() { try { const response = await fetch('dados/produtos.json?v=20260822-textos-skus'); if (!response.ok) throw new Error('Não foi possível carregar o catálogo.'); state.data = await response.json(); state.catalog = buildCatalog(state.data); $('#loading').remove(); renderCatalog(); renderCartSummary(); setOrderStage(state.cart.length ? 2 : 1); syncPickupDateConstraint(); syncGuidedForm(); const sku = new URLSearchParams(location.search).get('sku'); if (sku) { const product = state.catalog.find((item) => item.sku === sku); if (product) { document.getElementById(`sec-${slug(product.category)}`)?.scrollIntoView({ block: 'start' }); announce(`${product.name} está destacado na seção correspondente.`); } } } catch (error) { $('#loading').textContent = 'Não foi possível carregar os produtos agora. Volte ao cardápio e tente novamente.'; console.error(error); } }
   $('#search').addEventListener('input', (event) => { state.query = event.target.value; renderCatalog(); });
-  $('#summary-bar').addEventListener('click', () => { renderCart(); openDialog('cart-dialog'); });
+  $('#summary-bar').addEventListener('click', () => { captureCatalogViewport(); renderCart(); openDialog('cart-dialog'); });
   $('#confirm-flavors').addEventListener('click', confirmFlavors);
   $('#confirm-popsicle-preferences').addEventListener('click', confirmPopsiclePreferences);
   $$('input[name="item-mode"]').forEach((input) => input.addEventListener('change', (event) => { state.serviceMode = event.target.value; renderFlavorGrid(); }));
   $$('input[name="item-container"]').forEach((input) => input.addEventListener('change', (event) => { state.containerType = event.target.value; renderFlavorGrid(); }));
   $$('input[name="cake-choice"]').forEach((input) => input.addEventListener('change', (event) => { const product = state.flavorProduct; if (event.target.value === 'pronta_consulta' && needsAvailabilityChoice(product)) { event.target.checked = false; consultAvailability(product); return; } state.cakeChoice = event.target.value; renderFlavorGrid(); }));
-  $('#continue-shopping').addEventListener('click', () => { setOrderStage(1); closeDialog('cart-dialog'); requestAnimationFrame(() => { const target = state.lastCatalogSku ? document.querySelector(`[data-catalog-sku="${state.lastCatalogSku}"]`) : null; const destination = target || $('#catalogo'); destination.scrollIntoView({ behavior: 'smooth', block: 'center' }); target?.querySelector('button')?.focus({ preventScroll: true }); }); });
+  $('#continue-shopping').addEventListener('click', () => { setOrderStage(1); closeDialog('cart-dialog'); restoreCatalogViewport(); });
   $('#pickup-form').addEventListener('submit', submitOrder);
   $('#client-phone').addEventListener('input', (event) => { event.target.value = formatPhone(event.target.value); syncGuidedForm({ scroll: true }); });
   $('#client-name').addEventListener('input', () => syncGuidedForm({ scroll: true }));

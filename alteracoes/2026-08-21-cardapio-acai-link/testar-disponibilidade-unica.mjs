@@ -15,7 +15,7 @@ const mestre = dados.cadastro_skus.por_chave;
 const registros = Object.values(mestre);
 const problemas = [];
 
-if (registros.length !== 198) problemas.push(`Esperados 198 SKUs vendáveis; encontrados ${registros.length}.`);
+if (registros.length !== 199) problemas.push(`Esperados 199 SKUs vendáveis; encontrados ${registros.length}.`);
 if (new Set(registros.map((item) => item.sku)).size !== registros.length) problemas.push('Há SKU duplicado no cadastro mestre.');
 
 for (const embalagem of Object.values(dados.disponibilidade.embalagens || {})) {
