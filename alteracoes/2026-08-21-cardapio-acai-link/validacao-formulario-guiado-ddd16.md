@@ -14,3 +14,7 @@
 | Segurança do teste | Aprovado | Nenhuma janela do WhatsApp foi aberta e nenhum pagamento foi realizado. |
 
 A captura `demonstracao-mobile-formulario-guiado-ddd16.png` confirma a última etapa em largura de 390 px: textos legíveis, confirmação humana destacada, aceite marcado e botão final ativo. O teste interceptou somente a URL que seria aberta, sem executar a abertura do WhatsApp.
+
+## Publicação
+
+O commit `3696033` foi enviado para `main` e o GitHub Pages reportou estado `built`, com origem na raiz da branch `main`. A consulta ao endereço público de `retirada.html` respondeu com a estrutura atual da página, incluindo o título “Pedido guiado para retirada” e a instrução de confirmação humana. Uma atualização visual adicional pelo navegador conectado não foi concluída porque a extensão local não respondeu dentro do prazo; isso não afetou a confirmação do build nem a validação local documentada acima.
