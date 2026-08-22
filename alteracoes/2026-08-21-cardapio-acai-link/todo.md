@@ -121,3 +121,6 @@
 - [x] Corrigir os botões de Escolher sabores que ficaram cinza e bloqueados indevidamente na prévia.
 - [x] Reproduzir fielmente no Peça e retire a tipografia, cores, cartões e botões de Encomendas, sem adaptação parcial.
 - [x] Auditar de ponta a ponta o Peça e retire: catálogo, botões, sabores, caixas, complementos, carrinho, prazos, formulário e WhatsApp.
+- [ ] Sincronizar a branch main e publicar a versão aprovada no site público pelo fluxo conectado do Cloudflare.
+- [ ] Validar no cardápio principal o botão Peça e retire, incluindo o redirecionamento de Açaí Natureon com SKU correto.
+- [ ] Auditar todos os botões Peça e retire e comparar seus destinos com os SKUs oficiais do catálogo central.
