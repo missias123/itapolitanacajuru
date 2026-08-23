@@ -1,16 +1,13 @@
-/* Regra central: retirada liberada de segunda a sexta, 11h–20h (exceto feriados nacionais e municipais de Cajuru). Encomendas 10h–20h. */
+/* Regra central: retirada liberada de segunda a sexta, 11h–20h, exceto feriados regionais de Cajuru/SP. Encomendas 10h–20h. */
 (function () {
   'use strict';
 
   const TIMEZONE = 'America/Sao_Paulo';
-  const DIAS_UTEIS = new Set([1, 2, 3, 4, 5]);
-  const FERIADOS_NACIONAIS_FIXOS = new Set(['01-01', '04-21', '05-01', '09-07', '10-12', '11-02', '11-15', '12-25']);
-  // Feriados municipais de Cajuru/SP: São Sebastião, Nossa Senhora de Fátima, São Bento, Aniversário da cidade.
-  const FERIADOS_MUNICIPAIS_CAJURU = new Set(['01-20', '05-13', '07-11', '08-18']);
-  const FERIADOS_MOVEIS_CACHE = new Map();
-
+  const DIAS_RETIRADA = new Set([1, 2, 3, 4, 5]);
+  // Feriados regionais de Cajuru/SP: São Sebastião, Nossa Senhora de Fátima, São Bento, aniversário da cidade.
+  const FERIADOS_REGIONAIS_CAJURU = new Set(['01-20', '05-13', '07-11', '08-18']);
   const JANELAS = Object.freeze({
-    retirada: { inicio: 11 * 60, fim: 20 * 60, mensagem: 'Pedidos para retirada disponíveis de segunda a sexta, das 11h00 às 20h00, exceto feriados (incluindo os regionais de Cajuru). Volte nesse horário para montar seu pedido.' },
+    retirada: { inicio: 11 * 60, fim: 20 * 60, mensagem: 'Retirada somente neste período: de segunda a sexta, das 11h00 às 20h00, exceto sábados, domingos e feriados regionais de Cajuru/SP.' },
     encomendas: { inicio: 10 * 60, fim: 20 * 60, mensagem: 'Encomendas disponíveis todos os dias, das 10h00 às 20h00. Volte nesse período para enviar sua encomenda.' }
   });
 
@@ -38,49 +35,14 @@
     const weekday = new Date(Date.parse(`${year}-${month}-${day}T12:00:00-03:00`)).getUTCDay();
     return { year, month, day, weekday, mmdd: `${month}-${day}`, isoDate: `${year}-${month}-${day}`, minutes: Number(valores.hour) * 60 + Number(valores.minute) };
   }
-  function domingoDePascoa(ano) {
-    const a = ano % 19;
-    const b = Math.floor(ano / 100);
-    const c = ano % 100;
-    const d = Math.floor(b / 4);
-    const e = b % 4;
-    const f = Math.floor((b + 8) / 25);
-    const g = Math.floor((b - f + 1) / 3);
-    const h = (19 * a + b - d - g + 15) % 30;
-    const i = Math.floor(c / 4);
-    const k = c % 4;
-    const l = (32 + 2 * e + 2 * i - h - k) % 7;
-    const m = Math.floor((a + 11 * h + 22 * l) / 451);
-    const mes = Math.floor((h + l - 7 * m + 114) / 31);
-    const dia = ((h + l - 7 * m + 114) % 31) + 1;
-    return new Date(Date.UTC(ano, mes - 1, dia));
-  }
-  function toIsoDate(dataUtc) { return dataUtc.toISOString().slice(0, 10); }
-  function feriadosMoveisDoAno(ano) {
-    if (!FERIADOS_MOVEIS_CACHE.has(ano)) {
-      const pascoa = domingoDePascoa(ano);
-      const diaMs = 24 * 60 * 60 * 1000;
-      const set = new Set([
-        toIsoDate(new Date(pascoa.getTime() - 48 * diaMs)), // Carnaval (segunda)
-        toIsoDate(new Date(pascoa.getTime() - 47 * diaMs)), // Carnaval (terça)
-        toIsoDate(new Date(pascoa.getTime() - 2 * diaMs)), // Sexta-feira Santa
-        toIsoDate(new Date(pascoa.getTime() + 60 * diaMs)) // Corpus Christi
-      ]);
-      FERIADOS_MOVEIS_CACHE.set(ano, set);
-    }
-    return FERIADOS_MOVEIS_CACHE.get(ano);
-  }
-  function ehFeriadoRetirada(partes) {
-    return FERIADOS_NACIONAIS_FIXOS.has(partes.mmdd) || FERIADOS_MUNICIPAIS_CAJURU.has(partes.mmdd) || feriadosMoveisDoAno(partes.year).has(partes.isoDate);
-  }
   function estaAberto(tipo, data) {
     if (tipo === 'retirada' && demonstracaoAberta) return true;
     const janela = JANELAS[tipo];
     const partes = partesBrasilia(data);
     if (!janela) return false;
     if (tipo === 'retirada') {
-      if (!DIAS_UTEIS.has(partes.weekday)) return false;
-      if (ehFeriadoRetirada(partes)) return false;
+      if (!DIAS_RETIRADA.has(partes.weekday)) return false;
+      if (FERIADOS_REGIONAIS_CAJURU.has(partes.mmdd)) return false;
     }
     return partes.minutes >= janela.inicio && partes.minutes < janela.fim;
   }
