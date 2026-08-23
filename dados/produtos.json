@@ -371,10 +371,12 @@
     ]
   },
   "caixas_viagem": {
+    "5 Litros (2 sabores)": 100,
+    "5 Litros (3 sabores)": 115,
     "10 Litros (2 sabores)": 150,
     "10 Litros (3 sabores)": 165,
-    "5 Litros (2 sabores)": 100,
-    "5 Litros (3 sabores)": 115
+    "_sku_5l": "CAX-5L",
+    "_sku_10l": "CAX-10L"
   },
   "isopores_viagem": {
     "4 Bolas": 25,
@@ -469,34 +471,20 @@
   },
   "caixas_enc": [
     {
-      "id": "cx5l_2s",
-      "nome": "Caixa 5 Litros - 2 Sabores",
-      "preço": 100,
-      "maxSabores": 2,
+      "id": "cx5l",
+      "sku": "CAX-5L",
+      "nome": "Caixa 5 Litros",
+      "preco_2sabores": 100,
+      "preco_3sabores": 115,
       "estoque": 18,
       "esgotado": false
     },
     {
-      "id": "cx5l_3s",
-      "nome": "Caixa 5 Litros - 3 Sabores",
-      "preço": 115,
-      "maxSabores": 3,
-      "estoque": 18,
-      "esgotado": false
-    },
-    {
-      "id": "cx10l_2s",
-      "nome": "Caixa 10 Litros - 2 Sabores",
-      "preço": 150,
-      "maxSabores": 2,
-      "estoque": 15,
-      "esgotado": false
-    },
-    {
-      "id": "cx10l_3s",
-      "nome": "Caixa 10 Litros - 3 Sabores",
-      "preço": 165,
-      "maxSabores": 3,
+      "id": "cx10l",
+      "sku": "CAX-10L",
+      "nome": "Caixa 10 Litros",
+      "preco_2sabores": 150,
+      "preco_3sabores": 165,
       "estoque": 15,
       "esgotado": false
     }
@@ -1341,33 +1329,9 @@
     }
   ],
   "cadastro_skus": {
-    "versao": 2,
-    "descricao": "Cadastro único de SKU usado para identificar produtos no site, no painel e nas mensagens de pedido.",
+    "versao": 3,
+    "descricao": "Casquinha e Copo desmembrados em SKUs independentes",
     "por_chave": {
-      "sorvetes.casquinha_copo.1_bola": {
-        "sku": "SVM-CC-01",
-        "categoria": "Sorvetes de massa",
-        "nome": "Casquinha/copo",
-        "tamanho": "1 Bola",
-        "preco": 8,
-        "ativo": true
-      },
-      "sorvetes.casquinha_copo.2_bolas": {
-        "sku": "SVM-CC-02",
-        "categoria": "Sorvetes de massa",
-        "nome": "Casquinha/copo",
-        "tamanho": "2 Bolas",
-        "preco": 10,
-        "ativo": true
-      },
-      "sorvetes.casquinha_copo.3_bolas": {
-        "sku": "SVM-CC-03",
-        "categoria": "Sorvetes de massa",
-        "nome": "Casquinha/copo",
-        "tamanho": "3 Bolas",
-        "preco": 12,
-        "ativo": true
-      },
       "sorvetes.copo_recheado.1_bola": {
         "sku": "SVM-CR-01",
         "categoria": "Sorvetes de massa",
@@ -2791,50 +2755,6 @@
         "preco": 10,
         "ativo": true
       },
-      "caixas.cx5l_2s": {
-        "sku": "CAX-5L_2S",
-        "categoria": "Caixas para encomenda",
-        "nome": "Caixa 5 Litros - 2 Sabores",
-        "tamanho": "",
-        "preco": 100,
-        "ativo": true,
-        "dependencias_embalagem": [
-          "EMB-5L"
-        ]
-      },
-      "caixas.cx5l_3s": {
-        "sku": "CAX-5L_3S",
-        "categoria": "Caixas para encomenda",
-        "nome": "Caixa 5 Litros - 3 Sabores",
-        "tamanho": "",
-        "preco": 115,
-        "ativo": true,
-        "dependencias_embalagem": [
-          "EMB-5L"
-        ]
-      },
-      "caixas.cx10l_2s": {
-        "sku": "CAX-10L_2S",
-        "categoria": "Caixas para encomenda",
-        "nome": "Caixa 10 Litros - 2 Sabores",
-        "tamanho": "",
-        "preco": 150,
-        "ativo": true,
-        "dependencias_embalagem": [
-          "EMB-10L"
-        ]
-      },
-      "caixas.cx10l_3s": {
-        "sku": "CAX-10L_3S",
-        "categoria": "Caixas para encomenda",
-        "nome": "Caixa 10 Litros - 3 Sabores",
-        "tamanho": "",
-        "preco": 165,
-        "ativo": true,
-        "dependencias_embalagem": [
-          "EMB-10L"
-        ]
-      },
       "tortas.torta1": {
         "sku": "TOR-001",
         "categoria": "Tortas por encomenda",
@@ -3202,6 +3122,78 @@
         "tamanho": "",
         "preco": null,
         "ativo": true
+      },
+      "sorvetes.casquinha.1_bola": {
+        "sku": "SVM-CASK-01",
+        "categoria": "Sorvetes de massa",
+        "nome": "Casquinha",
+        "tamanho": "1 Bola",
+        "preco": 8,
+        "ativo": true
+      },
+      "sorvetes.casquinha.2_bolas": {
+        "sku": "SVM-CASK-02",
+        "categoria": "Sorvetes de massa",
+        "nome": "Casquinha",
+        "tamanho": "2 Bolas",
+        "preco": 10,
+        "ativo": true
+      },
+      "sorvetes.casquinha.3_bolas": {
+        "sku": "SVM-CASK-03",
+        "categoria": "Sorvetes de massa",
+        "nome": "Casquinha",
+        "tamanho": "3 Bolas",
+        "preco": 12,
+        "ativo": true
+      },
+      "sorvetes.copo.1_bola": {
+        "sku": "SVM-COPO-01",
+        "categoria": "Sorvetes de massa",
+        "nome": "Copo",
+        "tamanho": "1 Bola",
+        "preco": 8,
+        "ativo": true
+      },
+      "sorvetes.copo.2_bolas": {
+        "sku": "SVM-COPO-02",
+        "categoria": "Sorvetes de massa",
+        "nome": "Copo",
+        "tamanho": "2 Bolas",
+        "preco": 10,
+        "ativo": true
+      },
+      "sorvetes.copo.3_bolas": {
+        "sku": "SVM-COPO-03",
+        "categoria": "Sorvetes de massa",
+        "nome": "Copo",
+        "tamanho": "3 Bolas",
+        "preco": 12,
+        "ativo": true
+      },
+      "caixas.cx5l": {
+        "sku": "CAX-5L",
+        "categoria": "Caixas para encomenda",
+        "nome": "Caixa 5 Litros",
+        "tamanho": "",
+        "preco_2sabores": 100,
+        "preco_3sabores": 115,
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-5L"
+        ]
+      },
+      "caixas.cx10l": {
+        "sku": "CAX-10L",
+        "categoria": "Caixas para encomenda",
+        "nome": "Caixa 10 Litros",
+        "tamanho": "",
+        "preco_2sabores": 150,
+        "preco_3sabores": 165,
+        "ativo": true,
+        "dependencias_embalagem": [
+          "EMB-10L"
+        ]
       }
     }
   },
@@ -3221,8 +3213,7 @@
         "tipo": "embalagem_operacional",
         "ativo": true,
         "dependencias_sku": [
-          "CAX-5L_2S",
-          "CAX-5L_3S"
+          "CAX-5L"
         ]
       },
       "EMB-10L": {
@@ -3231,8 +3222,7 @@
         "tipo": "embalagem_operacional",
         "ativo": true,
         "dependencias_sku": [
-          "CAX-10L_2S",
-          "CAX-10L_3S"
+          "CAX-10L"
         ]
       },
       "EMB-7B": {
