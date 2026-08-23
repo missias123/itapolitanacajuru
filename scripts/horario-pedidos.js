@@ -112,14 +112,16 @@
 
   function impedirForaDoHorario(evento, tipo) {
     if (estaAberto(tipo)) return true;
-    if (evento) { evento.preventDefault(); evento.stopPropagation(); }
+    if (evento) evento.preventDefault();
     aviso(tipo); return false;
   }
 
   window.ItapHorarioPedidos = Object.freeze({ estaAberto, textoAviso, aviso, atualizarEstado, impedirForaDoHorario });
   document.addEventListener('click', (evento) => {
     const controle = evento.target.closest('[data-order-window]');
-    if (controle && !estaAberto(controle.dataset.orderWindow)) impedirForaDoHorario(evento, controle.dataset.orderWindow);
+    if (!controle) return;
+    if (!controle.matches('a,button,input[type="submit"]')) return;
+    if (!estaAberto(controle.dataset.orderWindow)) impedirForaDoHorario(evento, controle.dataset.orderWindow);
   }, true);
   document.addEventListener('DOMContentLoaded', atualizarEstado);
   setInterval(atualizarEstado, 30000);
