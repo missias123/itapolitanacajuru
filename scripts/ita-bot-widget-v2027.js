@@ -7,7 +7,7 @@
   'use strict';
   if (window.__ITABOT_WIDGET_V2027_RUNNING__) return;
   window.__ITABOT_WIDGET_V2027_RUNNING__ = true;
-  var ITABOT_BUILD = '20260823-led-faq-panel';
+  var ITABOT_BUILD = '20260823-led-marquee-fix';
   var ITABOT_IMG_VERSION = '20260823-no-legs';
 
   console.log('ItaBot Widget: Inicializando...');
@@ -65,7 +65,7 @@
     var mensagem = String(texto || '').trim();
     if (!mensagem) mensagem = 'DÚVIDAS? CLIQUE AQUI';
     for (var i = 0; i < copies.length; i++) {
-      copies[i].textContent = mensagem + ' •';
+      copies[i].textContent = mensagem + '   \u2022   ';
     }
     track.style.color = cor || '';
   }
@@ -121,9 +121,12 @@
 
   /* ─── Injeção de CSS ─── */
   function _itabotInjetarCss() {
-    if (document.getElementById('itabot-css')) return;
+    var existing = document.getElementById('itabot-css');
+    if (existing && existing.getAttribute('data-itabot-build') === ITABOT_BUILD) return;
+    if (existing) existing.remove();
     var style = document.createElement('style');
     style.id = 'itabot-css';
+    style.setAttribute('data-itabot-build', ITABOT_BUILD);
     style.textContent = [
       '#chat-dialog { display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:2147483000 !important; background:#08080A !important; isolation:isolate; contain:paint; overflow:hidden; align-items:center; justify-content:center; }',
       '#chat-dialog.aberto { display:flex !important; }',
@@ -187,7 +190,7 @@
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
       '.itabot-launcher-led-panel { position:relative; display:block; width:clamp(82px, 9vw, 102px); height:24px; margin-top:-20px; border:1.4px solid #ffd4d8; border-radius:9px; background:linear-gradient(180deg,#5a0409 0%,#3f0207 100%); box-shadow:0 0 0 1px rgba(255,255,255,.82),0 5px 12px rgba(232,0,13,.48),inset 0 0 7px rgba(0,0,0,.7); overflow:hidden; pointer-events:none; }',
       '.itabot-launcher-led-panel::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 1.4px 50%, rgba(255,255,255,.22) 0 .8px, transparent 1px) 0 0/4px 4px; opacity:.46; }',
-      '.itabot-launcher-led-track { position:absolute; left:0; top:50%; z-index:1; display:inline-flex; align-items:center; gap:20px; width:max-content; min-width:max-content; padding:0; color:#ffe17d; font:900 9.4px/1 "Arial Black",Arial,sans-serif; letter-spacing:.04em; text-shadow:0 0 2px rgba(0,0,0,.98),0 0 7px rgba(255,214,0,.5); white-space:nowrap; text-transform:uppercase; will-change:transform; transform:translate3d(0,-50%,0); animation:itabot-led-scroll 10.5s linear infinite; }',
+      '.itabot-launcher-led-track { position:absolute; left:0; top:50%; z-index:1; display:inline-flex; align-items:center; gap:0; width:max-content; min-width:max-content; padding:0; color:#ffe17d; font:900 9.4px/1 "Arial Black",Arial,sans-serif; letter-spacing:.04em; text-shadow:0 0 2px rgba(0,0,0,.98),0 0 7px rgba(255,214,0,.5); white-space:nowrap; text-transform:uppercase; will-change:transform; transform:translate3d(0,-50%,0); animation:itabot-led-scroll 10.5s linear infinite; }',
       '.itabot-launcher-led-copy { flex:0 0 auto; display:inline-block; }',
       '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { display:block; opacity:1; }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
@@ -246,7 +249,7 @@
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=' + ITABOT_IMG_VERSION + '" alt="" draggable="false"/>',
       '</span>',
-      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track"><span class="itabot-launcher-led-copy">DÚVIDAS? CLIQUE AQUI •</span><span class="itabot-launcher-led-copy">DÚVIDAS? CLIQUE AQUI •</span></span></span>'
+      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track"><span class="itabot-launcher-led-copy">D\u00DAVIDAS? CLIQUE AQUI   \u2022   </span><span class="itabot-launcher-led-copy">D\u00DAVIDAS? CLIQUE AQUI   \u2022   </span></span></span>'
     ].join('');
     document.body.appendChild(launcher);
     _itabotSetLedText('DÚVIDAS? CLIQUE AQUI');
