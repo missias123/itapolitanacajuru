@@ -5,9 +5,9 @@
   const TIMEZONE = 'America/Sao_Paulo';
   const DIAS_UTEIS = new Set([1, 2, 3, 4, 5]);
   const FERIADOS_NACIONAIS_FIXOS = new Set(['01-01', '04-21', '05-01', '09-07', '10-12', '11-02', '11-15', '12-25']);
+  // Feriados municipais de Cajuru/SP: São Sebastião, Nossa Senhora de Fátima, São Bento, Aniversário da cidade.
   const FERIADOS_MUNICIPAIS_CAJURU = new Set(['01-20', '05-13', '07-11', '08-18']);
   const FERIADOS_MOVEIS_CACHE = new Map();
-  const WEEKDAY_INDEX = Object.freeze({ sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 });
 
   const JANELAS = Object.freeze({
     retirada: { inicio: 11 * 60, fim: 20 * 60, mensagem: 'Pedidos para retirada disponíveis de segunda a sexta, das 11h00 às 20h00, exceto feriados (incluindo os regionais de Cajuru). Volte nesse horário para montar seu pedido.' },
@@ -31,13 +31,12 @@
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      hourCycle: 'h23',
-      weekday: 'short'
+      hourCycle: 'h23'
     }).formatToParts(data || new Date()).filter((parte) => parte.type !== 'literal').map((parte) => [parte.type, parte.value]));
-    const weekday = WEEKDAY_INDEX[String(valores.weekday || '').toLowerCase().slice(0, 3)];
     const year = Number(valores.year);
     const month = String(valores.month);
     const day = String(valores.day);
+    const weekday = new Date(Date.parse(`${year}-${month}-${day}T12:00:00-03:00`)).getUTCDay();
     return { year, month, day, weekday, mmdd: `${month}-${day}`, isoDate: `${year}-${month}-${day}`, minutes: Number(valores.hour) * 60 + Number(valores.minute) };
   }
   function domingoDePascoa(ano) {
