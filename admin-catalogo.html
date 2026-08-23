@@ -53,7 +53,7 @@
   <dialog id="tokenDialog" aria-labelledby="tokenTitle">
     <div class="token-card">
       <h2 id="tokenTitle">Token GitHub</h2>
-      <p class="sub">Necessário para salvar alterações no catálogo. O token fica apenas na memória desta aba e é apagado ao fechar o navegador.</p>
+      <p class="sub">Necessário para salvar alterações no catálogo. O token é salvo no navegador e permanece ativo entre sessões. Clique em "Remover token" para apagá-lo.</p>
       <div id="tokenActiveBar" class="token-active-bar hide">✅ Token ativo — edições serão salvas no GitHub.</div>
       <div class="token-field-wrap">
         <input type="password" id="tokenInput" placeholder="ghp_…" autocomplete="off" spellcheck="false">
@@ -88,8 +88,8 @@
     const $=id=>document.getElementById(id);
     const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'—';
-    const getToken=()=>{try{return sessionStorage.getItem('itap_github_token')||''}catch(e){return ''}};
-    const setToken=v=>{try{if(v)sessionStorage.setItem('itap_github_token',v);else sessionStorage.removeItem('itap_github_token')}catch(e){}};
+    const getToken=()=>{try{return localStorage.getItem('itap_github_token')||''}catch(e){return ''}};
+    const setToken=v=>{try{if(v)localStorage.setItem('itap_github_token',v);else localStorage.removeItem('itap_github_token')}catch(e){}};
     const updateTokenBtn=()=>{const has=!!getToken();$('tokenBtn').className='button token-btn'+(has?' active':'');$('tokenBtn').textContent=has?'🔑 Token ativo':'🔑 Token GitHub'};
     const clone=value=>JSON.parse(JSON.stringify(value));
     const notice=(text,type='')=>{$('notice').textContent=text;$('notice').className='notice '+type};
