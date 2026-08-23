@@ -158,10 +158,16 @@
       const status=effective(record);
       const label=row.querySelector('label.status');
       const checkbox=row.querySelector('input[data-field="ativo"]');
+      const action=row.querySelector('[data-availability-action]');
       if(checkbox)checkbox.checked=record.ativo!==false;
       if(label){
         label.className=`status ${status.available?'':'off'}`;
         syncStatusLabel(label,status.available?'Disponível':`Esgotado${status.reason?' · '+status.reason:''}`);
+      }
+      if(action){
+        action.textContent=status.available?'Esgotar manualmente':'Voltar ao site';
+        action.classList.toggle('off',status.available);
+        action.classList.toggle('on',!status.available);
       }
     }
     function autoLockEditedProduct(row,record){

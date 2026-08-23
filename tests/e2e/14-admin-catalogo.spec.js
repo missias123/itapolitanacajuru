@@ -19,6 +19,7 @@ test.describe('Admin catálogo - edição manual', () => {
 
     await expect(row.locator('label.status')).toContainText('Esgotado');
     await expect(row.locator('input[data-field="ativo"]')).not.toBeChecked();
+    await expect(row.locator('[data-availability-action]')).toContainText('Voltar ao site');
     await expect(page.locator('#pending')).toContainText('alteração');
     await expect(page.locator('#save')).toBeEnabled();
     await expect(page.locator('#notice')).toContainText('marcado como esgotado automaticamente');
