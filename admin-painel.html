@@ -3868,7 +3868,7 @@ function renderPreços(){
   const _sv_raw=p.sorvetes?.precos||p.sorvetes?.preços||{};
   if(!p.sorvetes)p.sorvetes={};
   p.sorvetes.preços={};
-  const _svMap={casquinha_copo:'Casquinha / Copo',casquinha_copão:'Casquinha / Copo',copo_recheado:'Copo Recheado',copão_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
+  const _svMap={casquinha_copo:'Casquinha e Copo',copo_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
   for(const[k,v]of Object.entries(_sv_raw)){p.sorvetes.preços[k]=v;}
   const _pic_raw=p['picoles']||p.picolés||{};
   p.picolés={};
@@ -9218,19 +9218,20 @@ function renderCatalogo() {
     <div class="card-header"><h2>🍦 Sorvetes de Massa</h2>
       ${_catBadge('#7b1fa2','38 sabores disponíveis')}
       <div style="font-size:.76rem;color:#888;margin-top:4px;width:100%">
-        💡 Casquinha e Copo compartilham o mesmo preço mas são embalagens diferentes.
-        Alterar o preço de um atualiza automaticamente o outro.
+        💡 Casquinha e Copo têm SKUs independentes mas compartilham os mesmos preços da tabela <code>casquinha_copo</code> no JSON.
       </div>
     </div>
     <div class="card-body">`;
 
-  // Embalagens de sorvete: SVM-CC (Casquinha + Copo), SVM-CR, SVM-CS, SVM-CT
+  // Embalagens de sorvete: SVM-CASK (Casquinha), SVM-COPO (Copo), SVM-CR, SVM-CS, SVM-CT
   const gruposEmb = [
-    { key:'casquinha_copo', label:'Casquinha / Copo', bolas:['1 Bola','2 Bolas','3 Bolas'],
+    { key:'casquinha_copo', label:'Casquinha', bolas:['1 Bola','2 Bolas','3 Bolas'],
       produtos:[
-        {sku:'SVM-CASK', nome:'Casquinha', emb:'Embalagem casquinha'},
-        {sku:'SVM-COPO', nome:'Copo', emb:'Embalagem copo plástico'}
+        {sku:'SVM-CASK', nome:'Casquinha', emb:'Embalagem casquinha'}
       ]
+    },
+    { key:'casquinha_copo', label:'Copo', bolas:['1 Bola','2 Bolas','3 Bolas'],
+      produtos:[{sku:'SVM-COPO', nome:'Copo', emb:'Embalagem copo plástico'}]
     },
     { key:'copo_recheado', label:'Copo Recheado', bolas:['1 Bola','2 Bolas','3 Bolas'],
       produtos:[{sku:'SVM-CR', nome:'Copo Recheado', emb:'Copo com recheio'}]
@@ -9251,21 +9252,14 @@ function renderCatalogo() {
       const precoBase = sv[grupo.key]?.[bola] ?? sv[grupo.key]?.[bola.replace(' ','_')] ?? 0;
       const bolaSafe = bola.replace(/\s/g,'_');
 
-      grupo.produtos.forEach((prod, idx) => {
+      grupo.produtos.forEach((prod) => {
         const sku = prod.sku + '_' + bolaSafe;
-        // Para Casquinha/Copo: o preço é compartilhado — o primeiro campo define, o segundo é readonly visual
-        const ehCompartilhado = grupo.key === 'casquinha_copo' && grupo.produtos.length === 2;
-        const precoId = ehCompartilhado
-          ? `cat_sv_${grupo.key}_${bolaSafe}_preco`  // mesma chave para os dois
-          : `cat_sv_${grupo.key}_${bolaSafe}_preco`;
+        const precoId = `cat_sv_${grupo.key}_${bolaSafe}_preco`;
         const statusId = `cat_sv_status_${prod.sku}_${bolaSafe}`;
-        const skuKey = `sorvetes.${grupo.key.replace(/\s/g,'_')}.${bolaSafe.toLowerCase()}`;
         const skuObj = skus_sv[`sorvetes.${grupo.key}.${bola.replace(/\s/g,'_').toLowerCase()}`] || {};
         const ativo = skuObj.ativo !== false;
-
-        // Label descritivo
         const nomeProd = `${prod.nome} — ${bola}`;
-        h += _linhaItem(sku, nomeProd, precoId, precoBase, statusId, ativo, prod.emb, ehCompartilhado && idx === 1);
+        h += _linhaItem(sku, nomeProd, precoId, precoBase, statusId, ativo, prod.emb, false);
       });
     });
 
