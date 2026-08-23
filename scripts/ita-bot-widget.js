@@ -247,11 +247,13 @@
         if (iconOnly) launcher.classList.add('itabot-launcher-icon-only');
         else launcher.classList.remove('itabot-launcher-icon-only');
         var rect = launcher.getBoundingClientRect();
-        var rawW = Math.ceil(rect.width || (iconOnly ? 164 : 188));
-        var rawH = Math.ceil(rect.height || (iconOnly ? 220 : 300));
+        var fallbackW = narrow ? 136 : 144;
+        var fallbackH = narrow ? 196 : 220;
+        var rawW = Math.ceil(rect.width || fallbackW);
+        var rawH = Math.ceil(rect.height || fallbackH);
         return {
-          w: Math.max(82, Math.min(rawW, Math.max(82, vw - margin * 2))),
-          h: Math.max(102, Math.min(rawH, Math.max(102, vh - 8)))
+          w: Math.max(82, Math.min(rawW, vw - margin * 2)),
+          h: Math.max(102, Math.min(rawH, vh - 8))
         };
       };
       var fullBox = measureBox(false);
