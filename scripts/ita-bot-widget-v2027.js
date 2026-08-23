@@ -5,6 +5,10 @@
  */
 (function () {
   'use strict';
+  if (window.__ITABOT_WIDGET_V2027_RUNNING__) return;
+  window.__ITABOT_WIDGET_V2027_RUNNING__ = true;
+  var ITABOT_BUILD = '20260823-no-legs-single';
+  var ITABOT_IMG_VERSION = '20260823-no-legs';
 
   console.log('ItaBot Widget: Inicializando...');
 
@@ -100,22 +104,22 @@
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:clamp(144px, 18vw, 188px); height:clamp(220px, 30vh, 300px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; width:clamp(102px, 12.5vw, 128px); height:clamp(142px, 21vh, 180px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(144px, 18vw, 188px); height:clamp(220px, 30vh, 300px); padding:0; justify-content:flex-start; gap:2px; }',
-      '.itabot-launcher-robot { position:relative; flex:0 0 clamp(126px, 14vw, 164px); width:clamp(118px, 13vw, 156px); height:clamp(126px, 14vw, 164px); display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(102px, 12.5vw, 128px); height:clamp(142px, 21vh, 180px); padding:0; justify-content:flex-start; gap:4px; }',
+      '.itabot-launcher-robot { position:relative; flex:0 0 clamp(96px, 10.5vw, 122px); width:clamp(92px, 10vw, 116px); height:clamp(96px, 10.5vw, 122px); display:block; overflow:visible; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
 
-      '.itabot-launcher-dot { display:none; }',
-      '.itabot-launcher-led-panel { position:relative; display:flex; align-items:center; width:100%; min-width:128px; height:clamp(42px, 5.2vh, 52px); margin-top:1px; padding:0 12px; border:2px solid #FF6B73; border-radius:5px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 12px rgba(232,0,13,.88),inset 0 0 8px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
+      '.itabot-launcher-dot { display:inline-flex; align-items:center; justify-content:center; min-width:86px; height:24px; padding:0 8px; border:1.5px solid #FFFFFF; border-radius:7px; background:linear-gradient(135deg,#FF2020,#E8000D,#C62828); color:#fff; font:900 11px/1 Arial,sans-serif; letter-spacing:.6px; text-shadow:0 1px 2px rgba(0,0,0,.45); box-shadow:0 0 0 1px rgba(90,0,0,.38),0 0 12px rgba(232,0,13,.58); white-space:nowrap; pointer-events:none; }',
+      '.itabot-launcher-led-panel { display:none !important; }',
       '.itabot-launcher-led-panel::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px); mix-blend-mode:multiply; pointer-events:none; }',
-      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 clamp(12px, 1.55vw, 16px)/42px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 5px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
+      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 clamp(12px, 1.55vw, 16px)/42px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 5px #000; white-space:nowrap; animation:none; }',
       '@keyframes itabot-launcher-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(136px, 46vw, 176px); height:clamp(196px, 58vh, 240px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(116px, 40vw, 152px); width:clamp(108px, 37vw, 144px); height:clamp(116px, 40vw, 152px); } .itabot-launcher-led-panel { min-width:124px; height:clamp(40px, 7vh, 50px); margin-top:1px; padding:0 9px; } .itabot-launcher-led-track { font-size:clamp(12px, 3.5vw, 15px); line-height:40px; } }',
+      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(92px, 32vw, 120px); height:clamp(132px, 29vh, 168px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(86px, 26vw, 112px); width:clamp(82px, 24vw, 108px); height:clamp(86px, 26vw, 112px); } .itabot-launcher-dot { min-width:74px; height:22px; font-size:10px; border-radius:6px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -142,19 +146,32 @@
 
   /* ─── Launcher flutuante inteligente ─── */
   function _itabotInjetarLauncher() {
-    if (document.getElementById('itabot-launcher')) return;
+    var legacyWraps = document.querySelectorAll('.itabot-wrap');
+    for (var lw = 0; lw < legacyWraps.length; lw++) legacyWraps[lw].remove();
+    var existentes = document.querySelectorAll('#itabot-launcher');
+    var manter = null;
+    for (var ex = 0; ex < existentes.length; ex++) {
+      var build = existentes[ex].getAttribute('data-itabot-build');
+      if (!manter && build === ITABOT_BUILD) {
+        manter = existentes[ex];
+        continue;
+      }
+      existentes[ex].remove();
+    }
+    if (manter) return;
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
+    launcher.setAttribute('data-itabot-build', ITABOT_BUILD);
     launcher.setAttribute('data-role', 'duvidas');
     launcher.setAttribute('data-page-code', _paginaCodigo);
     launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=20260823-no-legs" alt="" draggable="false"/>',
+        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=' + ITABOT_IMG_VERSION + '" alt="" draggable="false"/>',
       '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
-      '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
+      '<span class="itabot-launcher-dot" aria-hidden="true">CLIQUE AQUI</span>'
     ].join('');
     document.body.appendChild(launcher);
 
@@ -214,8 +231,8 @@
         if (iconOnly) launcher.classList.add('itabot-launcher-icon-only');
         else launcher.classList.remove('itabot-launcher-icon-only');
         var rect = launcher.getBoundingClientRect();
-        var fallbackW = narrow ? 136 : 144;
-        var fallbackH = narrow ? 196 : 220;
+        var fallbackW = narrow ? 92 : 102;
+        var fallbackH = narrow ? 132 : 142;
         var rawW = Math.ceil(rect.width || fallbackW);
         var rawH = Math.ceil(rect.height || fallbackH);
         return {
@@ -225,6 +242,7 @@
       };
       var fullBox = measureBox(false);
       var iconBox = measureBox(true);
+      launcher.classList.remove('itabot-launcher-icon-only');
       var fullW = fullBox.w;
       var fullH = fullBox.h;
       var iconW = iconBox.w, iconH = iconBox.h;
