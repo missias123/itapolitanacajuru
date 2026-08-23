@@ -4186,7 +4186,7 @@ function renderPicolés(){
   const nota=document.createElement('div');
   nota.style='background:linear-gradient(135deg,#FBD100,#F9A825);color:#1A1A1A;border-radius:12px;padding:12px 16px;text-align:center;margin-bottom:12px;font-size:13px;font-weight:900;box-shadow:0 4px 12px rgba(251,209,0,0.3);border:2px solid #fff';
   const precosAtacado = Object.values((produtos && (produtos.picolés || produtos.picoles)) || {})
-   .map(item => Number(item.preço_atacado ?? item.preco_atacado))
+   .map(item => Number(item.preço_atacado !== undefined ? item.preço_atacado : item.preco_atacado))
    .filter(Number.isFinite);
   const menorPrecoAtacado = precosAtacado.length ? Math.min(...precosAtacado) : null;
   const textoPrecoAtacado = menorPrecoAtacado !== null
@@ -4728,8 +4728,8 @@ function renderComplementosCardápio() {
  if (!el) return;
  const comps = Array.isArray(produtos && produtos.acrescimos) ? produtos.acrescimos : getComplementosCardápio().map(c => ({ id: c.id, nome: c.nome, preço: c.preço, estoque: c.estoque }));
  el.innerHTML = `<div class="enc-preview-list">${comps.map(c => {
-  const preco = Number(c.preço ?? c.preco ?? 0);
-  const esgotado = Number(c.estoque ?? 0) <= 0 || c.esgotado;
+  const preco = Number(c.preço !== undefined ? c.preço : (c.preco !== undefined ? c.preco : 0));
+  const esgotado = Number(c.estoque !== undefined ? c.estoque : 0) <= 0 || c.esgotado;
   return `<div class="enc-preview-item ${esgotado ? 'is-esgotado' : ''}"><span>${escHTML(c.nome)}</span><strong>${esgotado ? 'Esgotado' : 'R$ ' + preco.toFixed(2).replace('.',',')}</strong></div>`;
  }).join('')}</div>`;
 }
@@ -4939,14 +4939,14 @@ function renderEncomendasPreviews() {
  const picolesData = (produtos && (produtos.picolés || produtos.picoles)) || {};
  const picoles = Object.entries(picolesData).map(([id, item]) => ({
   nome: item.nome || id,
-  preço: item.preço_atacado ?? item.preco_atacado ?? item.preço_varejo ?? item.preco_varejo,
+  preço: item.preço_atacado !== undefined ? item.preço_atacado : (item.preco_atacado !== undefined ? item.preco_atacado : (item.preço_varejo !== undefined ? item.preço_varejo : item.preco_varejo)),
   estoque: item.estoque
  })).slice(0, 4); // Limitar a 4 para manter enquadramento limpo
  const acrescimos = Array.isArray(produtos && produtos.acrescimos) ? produtos.acrescimos.slice(0, 4) : [];
- renderPreviewEncomenda('enc-preview-caixas', caixas.slice(0, 4), item => item.preço ?? item.preco, { kicker: 'Caixas sob encomenda', note: '5 L e 10 L' });
- renderPreviewEncomenda('enc-preview-tortas', tortas.slice(0, 4), item => item.preço ?? item.preco, { kicker: 'Torta ', note: 'Até 3 sabores' });
- renderPreviewEncomenda('enc-preview-picoles', picoles, item => item.preço ?? item.preco, { kicker: 'Preço de atacado', note: 'A partir de 100 un.' });
- renderPreviewEncomenda('enc-preview-acrescimos', acrescimos, item => item.preço ?? item.preco, { kicker: 'Complementos', note: 'Para personalizar' });
+ renderPreviewEncomenda('enc-preview-caixas', caixas.slice(0, 4), item => item.preço !== undefined ? item.preço : item.preco, { kicker: 'Caixas sob encomenda', note: '5 L e 10 L' });
+ renderPreviewEncomenda('enc-preview-tortas', tortas.slice(0, 4), item => item.preço !== undefined ? item.preço : item.preco, { kicker: 'Torta ', note: 'Até 3 sabores' });
+ renderPreviewEncomenda('enc-preview-picoles', picoles, item => item.preço !== undefined ? item.preço : item.preco, { kicker: 'Preço de atacado', note: 'A partir de 100 un.' });
+ renderPreviewEncomenda('enc-preview-acrescimos', acrescimos, item => item.preço !== undefined ? item.preço : item.preco, { kicker: 'Complementos', note: 'Para personalizar' });
 }
 function renderTudo() {
  renderSorvetes();renderMilk();renderTacas();renderTacasP();renderAçaí();renderPicolés();renderIso();renderSobremesas();
