@@ -166,6 +166,13 @@ Nunca enviar hash de senha ao navegador e nunca persistir `ADMIN_SECRET` no stor
 | PUT    | `/api/encomendas/bulk`        | Admin   | Substituir coleção completa         |
 | POST   | `/api/fidelidade/resgatar`    | Público | Resgatar código de fidelidade       |
 
+### Promoção do picolé com randomização automática
+
+- O Worker mantém a campanha de picolé ativa automaticamente.
+- Quando não existir campanha válida, ele cria uma nova campanha de 30 dias iniciando no dia atual.
+- Cada dia recebe um horário aleatório interno entre **11:00 e 20:00**.
+- Os horários ficam apenas no servidor (KV) e não são expostos ao cliente.
+
 ### Autenticação admin — fluxo de sessão (recomendado)
 
 O `ADMIN_SECRET` **nunca deve ser armazenado no browser** — apenas usado na tela de login:

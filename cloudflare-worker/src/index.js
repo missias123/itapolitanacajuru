@@ -710,6 +710,9 @@ function handleAdminAuth(request, env) {
 
 // Fuso horário de São Paulo
 const SP_TIMEZONE = 'America/Sao_Paulo';
+const PICOLE_CAMPANHA_DIAS = 30;
+const PICOLE_JANELA_INICIO = '11:00';
+const PICOLE_JANELA_FIM = '20:00';
 
 // Retorna a data local em SP no formato YYYY-MM-DD
 function hojeEmSP() {
@@ -760,6 +763,78 @@ function gerarHorariosDiversificados(n) {
   return horarios;
 }
 
+function montarCampanhaPicole(dataInicio, agoraIso) {
+  const dataFim = adicionarDias(dataInicio, PICOLE_CAMPANHA_DIAS - 1);
+  return {
+    id: `promo-picole-30-dias-${dataInicio}`,
+    nome: 'Picolé de Fruta Grátis',
+    dataInicio,
+    dataFim,
+    fusoHorario: SP_TIMEZONE,
+    quantidadeDias: PICOLE_CAMPANHA_DIAS,
+    ativo: true,
+    pausado: false,
+    produtoDescricao: '1 picolé de fruta, conforme disponibilidade da loja',
+    regras: { umGanhadorPorDia: true, inicioJanela: PICOLE_JANELA_INICIO, fimJanela: PICOLE_JANELA_FIM },
+    criadoEm: agoraIso,
+    atualizadoEm: agoraIso,
+  };
+}
+
+async function persistirCampanhaPicole(env, campanha, agoraIso) {
+  const horarios = gerarHorariosDiversificados(PICOLE_CAMPANHA_DIAS);
+  await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
+  const dias = [];
+  for (let i = 0; i < PICOLE_CAMPANHA_DIAS; i++) {
+    const dataLocal = adicionarDias(campanha.dataInicio, i);
+    const dia = {
+      id: `${campanha.id}-${String(i + 1).padStart(3, '0')}`,
+      campanhaId: campanha.id,
+      dataLocal,
+      horarioSorteado: horarios[i],
+      status: 'agendado',
+      vencedorId: null,
+      criadoEm: agoraIso,
+      atualizadoEm: agoraIso,
+    };
+    await env.PROMO_KV.put(`picole:dia:${dataLocal}`, JSON.stringify(dia));
+    dias.push({ dataLocal, id: dia.id });
+  }
+  return dias;
+}
+
+async function criarCampanhaPicole(env, { dataInicio, forcar = false, origem = 'manual' } = {}) {
+  if (!env.PROMO_KV) return { ok: false, error: 'PROMO_KV não configurado. Crie o namespace e atualize wrangler.toml.' };
+  const inicio = sanitizeString(dataInicio || hojeEmSP(), 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(inicio)) {
+    return { ok: false, error: 'dataInicio inválida. Use YYYY-MM-DD.' };
+  }
+  const campanhaExistente = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (campanhaExistente && campanhaExistente.ativo && !forcar) {
+    return { ok: false, error: 'Já existe uma campanha ativa. Use forcar:true para sobrescrever.' };
+  }
+  const agora = new Date().toISOString();
+  const campanha = { ...montarCampanhaPicole(inicio, agora), origem };
+  const dias = await persistirCampanhaPicole(env, campanha, agora);
+  return { ok: true, campanha, dias };
+}
+
+async function garantirCampanhaPicoleAutomatica(env) {
+  if (!env.PROMO_KV) return null;
+  const hoje = hojeEmSP();
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (campanha && campanha.ativo && campanha.pausado) return campanha;
+  if (campanha && campanha.ativo && hoje >= campanha.dataInicio && hoje <= campanha.dataFim) return campanha;
+  if (campanha && campanha.ativo && hoje > campanha.dataFim) {
+    campanha.ativo = false;
+    campanha.atualizadoEm = new Date().toISOString();
+    await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
+  }
+  const criada = await criarCampanhaPicole(env, { dataInicio: hoje, forcar: true, origem: 'auto' });
+  if (!criada.ok) return null;
+  return criada.campanha;
+}
+
 // Adiciona N dias a uma data YYYY-MM-DD
 function adicionarDias(dataStr, n) {
   const d = new Date(`${dataStr}T12:00:00Z`);
@@ -802,7 +877,7 @@ async function handlePicoleStatus(request, env) {
   const rl = await checkRateLimit(env, ip, 'picole-status');
   if (!rl.allowed) return jsonResp({ status: 'inativo', motivo: 'rate_limit' }, 429);
 
-  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  const campanha = await garantirCampanhaPicoleAutomatica(env);
   if (!campanha || !campanha.ativo) {
     return jsonResp({ status: 'campanha_encerrada' });
   }
@@ -866,7 +941,7 @@ async function handlePicoleReservar(request, env) {
   const rl = await checkRateLimit(env, ip, 'picole-reservar');
   if (!rl.allowed) return jsonResp({ sucesso: false, codigo: 'RATE_LIMIT', mensagem: 'Muitas tentativas. Aguarde.' }, 429);
 
-  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  const campanha = await garantirCampanhaPicoleAutomatica(env);
   if (!campanha || !campanha.ativo || campanha.pausado) {
     return jsonResp({ sucesso: false, status: 'campanha_encerrada', codigo: 'CAMPANHA_INATIVA', mensagem: 'A promoção não está disponível no momento.' });
   }
@@ -1073,61 +1148,20 @@ async function handlePicoleReservaForm(reservaId, request, env) {
 // ─── Handlers administrativos ─────────────────────────────────────────────────
 
 async function handlePicoleAdminIniciar(request, env) {
-  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado. Crie o namespace e atualize wrangler.toml.' }, 503);
   let body;
   try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
-
-  const hoje = hojeEmSP();
-  const dataInicio = sanitizeString(body.dataInicio || hoje, 10);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio)) {
-    return jsonResp({ ok: false, error: 'dataInicio inválida. Use YYYY-MM-DD.' }, 400);
+  const criada = await criarCampanhaPicole(env, {
+    dataInicio: body.dataInicio || hojeEmSP(),
+    forcar: !!body.forcar,
+    origem: 'manual',
+  });
+  if (!criada.ok) {
+    if (criada.error && criada.error.includes('PROMO_KV não configurado')) return jsonResp({ ok: false, error: criada.error }, 503);
+    if (criada.error && criada.error.includes('dataInicio inválida')) return jsonResp({ ok: false, error: criada.error }, 400);
+    if (criada.error && criada.error.includes('campanha ativa')) return jsonResp({ ok: false, error: criada.error }, 409);
+    return jsonResp({ ok: false, error: criada.error || 'Falha ao iniciar campanha.' }, 500);
   }
-  const dataFim = adicionarDias(dataInicio, 29);
-
-  // Verifica se já existe campanha ativa
-  const campanhaExistente = await env.PROMO_KV.get('picole:campanha', 'json');
-  if (campanhaExistente && campanhaExistente.ativo && !body.forcar) {
-    return jsonResp({ ok: false, error: 'Já existe uma campanha ativa. Use forcar:true para sobrescrever.' }, 409);
-  }
-
-  const horarios = gerarHorariosDiversificados(30);
-  const agora = new Date().toISOString();
-
-  const campanha = {
-    id: `promo-picole-30-dias-${dataInicio}`,
-    nome: 'Picolé de Fruta Grátis',
-    dataInicio,
-    dataFim,
-    fusoHorario: SP_TIMEZONE,
-    quantidadeDias: 30,
-    ativo: true,
-    pausado: false,
-    produtoDescricao: '1 picolé de fruta, conforme disponibilidade da loja',
-    regras: { umGanhadorPorDia: true, inicioJanela: '11:00', fimJanela: '20:00' },
-    criadoEm: agora,
-    atualizadoEm: agora,
-  };
-  await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
-
-  // Cria os 30 registros de dia (horários ficam apenas no servidor)
-  const dias = [];
-  for (let i = 0; i < 30; i++) {
-    const dataLocal = adicionarDias(dataInicio, i);
-    const dia = {
-      id: `${campanha.id}-${String(i + 1).padStart(3, '0')}`,
-      campanhaId: campanha.id,
-      dataLocal,
-      horarioSorteado: horarios[i],
-      status: 'agendado',
-      vencedorId: null,
-      criadoEm: agora,
-      atualizadoEm: agora,
-    };
-    await env.PROMO_KV.put(`picole:dia:${dataLocal}`, JSON.stringify(dia));
-    dias.push({ dataLocal, id: dia.id });
-  }
-
-  return jsonResp({ ok: true, campanha: { ...campanha }, totalDias: 30, dias }, 201);
+  return jsonResp({ ok: true, campanha: { ...criada.campanha }, totalDias: PICOLE_CAMPANHA_DIAS, dias: criada.dias }, 201);
 }
 
 async function handlePicoleAdminCampanha(env) {
