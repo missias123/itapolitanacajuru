@@ -118,6 +118,13 @@
   function _atualizarRobo(novoEstado) {
     var launcher = document.getElementById('itabot-launcher');
     var ledTrack = document.querySelector('.itabot-launcher-led-track');
+    var setLedText = typeof window._itabotSetLedText === 'function'
+      ? window._itabotSetLedText
+      : function (texto, cor) {
+        if (!ledTrack) return;
+        ledTrack.textContent = texto;
+        ledTrack.style.color = cor || '';
+      };
 
     if (novoEstado === 'ativo') {
       if (launcher) {
@@ -125,20 +132,14 @@
         launcher.setAttribute('data-picole', 'ativo');
         launcher.style.filter = 'drop-shadow(0 0 18px rgba(255,214,0,0.85))';
       }
-      if (ledTrack) {
-        ledTrack.textContent = 'CLIQUE EM MIM E GANHE UM PICOLÉ! 🍦   •   ';
-        ledTrack.style.color = '#FFD600';
-      }
+      setLedText('CLIQUE EM MIM E GANHE UM PICOLÉ! 🍦', '#FFD600');
     } else if (novoEstado === 'reservado') {
       if (launcher) {
         launcher.setAttribute('aria-label', 'Abrir painel de dúvidas do ItaBot');
         launcher.removeAttribute('data-picole');
         launcher.style.filter = '';
       }
-      if (ledTrack) {
-        ledTrack.textContent = 'DÚVIDAS? CLIQUE AQUI   •   ';
-        ledTrack.style.color = '';
-      }
+      setLedText('DÚVIDAS? CLIQUE AQUI');
     } else {
       // inativo / campanha_encerrada
       if (launcher) {
@@ -146,10 +147,7 @@
         launcher.removeAttribute('data-picole');
         launcher.style.filter = '';
       }
-      if (ledTrack) {
-        ledTrack.textContent = 'DÚVIDAS? CLIQUE AQUI   •   ';
-        ledTrack.style.color = '';
-      }
+      setLedText('DÚVIDAS? CLIQUE AQUI');
     }
   }
 

@@ -7,7 +7,7 @@
   'use strict';
   if (window.__ITABOT_WIDGET_V2027_RUNNING__) return;
   window.__ITABOT_WIDGET_V2027_RUNNING__ = true;
-  var ITABOT_BUILD = '20260823-no-legs-led-tight';
+  var ITABOT_BUILD = '20260823-led-faq-panel';
   var ITABOT_IMG_VERSION = '20260823-no-legs';
 
   console.log('ItaBot Widget: Inicializando...');
@@ -26,6 +26,9 @@
   var _ctx        = null;   // estado de contexto conversacional
   var _prodData   = null;   // cache de dados/produtos.json
   var _promoData  = null;   // cache de dados/promo.json
+  var _faqCatalog = [];     // catálogo de FAQs para o painel HTML
+  var _faqMap     = {};     // índice para evitar duplicações
+  var _faqPending = 0;      // número de fontes FAQ ainda carregando
   var _saudacao   = false;  // flag: saudação inicial já mostrada
   var _scrollY    = 0;      // para page-lock
   var _engine     = null;   // instância do motor compartilhado (ItaBotEngine)
@@ -44,6 +47,76 @@
   function _norm(s) {
     var ACCENT_RE = /[\u0300-\u036f]/g;
     return String(s || '').toLowerCase().normalize('NFD').replace(ACCENT_RE, '').trim();
+  }
+
+  function _itabotEscapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function _itabotSetLedText(texto, cor) {
+    var track = document.querySelector('.itabot-launcher-led-track');
+    if (!track) return;
+    var copies = track.querySelectorAll('.itabot-launcher-led-copy');
+    var mensagem = String(texto || '').trim();
+    if (!mensagem) mensagem = 'DÚVIDAS? CLIQUE AQUI';
+    for (var i = 0; i < copies.length; i++) {
+      copies[i].textContent = mensagem + ' •';
+    }
+    track.style.color = cor || '';
+  }
+
+  function _itabotRegistrarFaqs(modulo, perguntas) {
+    if (!perguntas || !perguntas.length) return;
+    perguntas.forEach(function (p) {
+      if (!p || !p.resposta || !p.tags || !p.tags.length) return;
+      var chave = _norm(p.tags[0] + '|' + p.resposta);
+      if (_faqMap[chave]) return;
+      _faqMap[chave] = true;
+      _faqCatalog.push({
+        modulo: modulo || '',
+        pergunta: p.tags[0],
+        aliases: p.tags.slice(1),
+        resposta: p.resposta
+      });
+    });
+  }
+
+  function _itabotRenderFaqCatalog() {
+    var container = document.getElementById('itabot-faq-catalog');
+    var status = document.getElementById('itabot-faq-catalog-status');
+    if (!container || !status) return;
+    if (_faqCatalog.length) {
+      status.textContent = _faqCatalog.length + ' dúvidas configuradas no site.';
+      container.innerHTML = _faqCatalog.map(function (item) {
+        var aliases = item.aliases && item.aliases.length
+          ? '<div class="itabot-faq-tags">' + item.aliases.map(function (tag) {
+            return '<span>' + _itabotEscapeHtml(tag) + '</span>';
+          }).join('') + '</div>'
+          : '';
+        return [
+          '<details class="itabot-faq-item">',
+            '<summary>',
+              '<span class="itabot-faq-question">' + _itabotEscapeHtml(item.pergunta) + '</span>',
+              '<span class="itabot-faq-arrow" aria-hidden="true">›</span>',
+            '</summary>',
+            '<div class="itabot-faq-answer">',
+              '<p>' + _itabotEscapeHtml(item.resposta) + '</p>',
+              aliases,
+            '</div>',
+          '</details>'
+        ].join('');
+      }).join('');
+      return;
+    }
+    status.textContent = _faqPending > 0
+      ? 'Carregando dúvidas configuradas do site...'
+      : 'As dúvidas configuradas não puderam ser carregadas agora.';
+    container.innerHTML = '';
   }
 
   /* ─── Injeção de CSS ─── */
@@ -107,20 +180,21 @@
       '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 172px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 166px); padding:0; justify-content:flex-start; gap:0; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 172px); padding:0; justify-content:flex-start; gap:0; }',
       '.itabot-launcher-robot { position:relative; flex:0 0 clamp(96px, 10.5vw, 122px); width:clamp(92px, 10vw, 116px); height:clamp(96px, 10.5vw, 122px); display:block; overflow:visible; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-robot::before { content:""; position:absolute; left:50%; top:58%; transform:translate(-50%,-50%); width:28%; height:22%; border:1.6px solid rgba(33,168,255,.9); border-bottom:none; border-radius:999px 999px 0 0; box-shadow:0 0 6px rgba(33,168,255,.55); pointer-events:none; z-index:2; }',
       '.itabot-launcher-robot::after { content:"ITA"; position:absolute; left:50%; top:60.5%; transform:translate(-50%,-50%); min-width:22%; height:12%; padding:0 3px; border:1.2px solid rgba(255,255,255,.9); border-radius:999px; background:linear-gradient(180deg,#1aa6ff 0%,#0478d0 100%); color:#fff; font:900 7px/1 "Arial Black",Arial,sans-serif; letter-spacing:.08em; display:flex; align-items:center; justify-content:center; text-shadow:0 1px 2px rgba(0,0,0,.45); box-shadow:0 0 6px rgba(4,120,208,.55); pointer-events:none; z-index:3; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
-      '.itabot-launcher-led-panel { position:relative; display:block; width:clamp(62px, 7.2vw, 76px); height:20px; margin-top:-18px; border:1.3px solid #ffd4d8; border-radius:8px; background:linear-gradient(180deg,#5a0409 0%,#3f0207 100%); box-shadow:0 0 0 1px rgba(255,255,255,.82),0 5px 12px rgba(232,0,13,.48),inset 0 0 7px rgba(0,0,0,.7); overflow:hidden; pointer-events:none; }',
+      '.itabot-launcher-led-panel { position:relative; display:block; width:clamp(82px, 9vw, 102px); height:24px; margin-top:-20px; border:1.4px solid #ffd4d8; border-radius:9px; background:linear-gradient(180deg,#5a0409 0%,#3f0207 100%); box-shadow:0 0 0 1px rgba(255,255,255,.82),0 5px 12px rgba(232,0,13,.48),inset 0 0 7px rgba(0,0,0,.7); overflow:hidden; pointer-events:none; }',
       '.itabot-launcher-led-panel::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 1.4px 50%, rgba(255,255,255,.22) 0 .8px, transparent 1px) 0 0/4px 4px; opacity:.46; }',
-      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; width:max-content; min-width:100%; padding:4px 0 0 100%; color:#ffe17d; font:900 8.4px/1.1 "Arial Black",Arial,sans-serif; letter-spacing:.08em; text-shadow:0 0 2px rgba(0,0,0,.95),0 0 6px rgba(255,214,0,.44); white-space:nowrap; text-transform:uppercase; animation:itabot-led-scroll 6.3s linear infinite; }',
-      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { display:none; }',
+      '.itabot-launcher-led-track { position:absolute; left:0; top:50%; z-index:1; display:inline-flex; align-items:center; gap:20px; width:max-content; min-width:max-content; padding:0; color:#ffe17d; font:900 9.4px/1 "Arial Black",Arial,sans-serif; letter-spacing:.04em; text-shadow:0 0 2px rgba(0,0,0,.98),0 0 7px rgba(255,214,0,.5); white-space:nowrap; text-transform:uppercase; will-change:transform; transform:translate3d(0,-50%,0); animation:itabot-led-scroll 10.5s linear infinite; }',
+      '.itabot-launcher-led-copy { flex:0 0 auto; display:inline-block; }',
+      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { display:block; opacity:1; }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
-      '@keyframes itabot-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
+      '@keyframes itabot-led-scroll { from { transform:translate3d(0,-50%,0); } to { transform:translate3d(-50%,-50%,0); } }',
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } .itabot-launcher-led-track { transform:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(96px, 32vw, 120px); height:clamp(132px, 29vh, 166px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(88px, 26.8vw, 110px); width:clamp(84px, 24.6vw, 106px); height:clamp(88px, 26.8vw, 110px); } .itabot-launcher-robot::before { border-width:1.4px; } .itabot-launcher-robot::after { font-size:6.4px; border-width:1px; } .itabot-launcher-led-panel { width:clamp(58px, 18vw, 72px); height:18px; margin-top:-16px; border-radius:7px; } .itabot-launcher-led-track { padding-top:3px; font-size:7.5px; } }',
+      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(100px, 32vw, 124px); height:clamp(136px, 29vh, 170px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(88px, 26.8vw, 110px); width:clamp(84px, 24.6vw, 106px); height:clamp(88px, 26.8vw, 110px); } .itabot-launcher-robot::before { border-width:1.4px; } .itabot-launcher-robot::after { font-size:6.4px; border-width:1px; } .itabot-launcher-led-panel { width:clamp(78px, 24vw, 94px); height:22px; margin-top:-18px; border-radius:8px; } .itabot-launcher-led-track { font-size:8.2px; gap:18px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -163,6 +237,7 @@
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
+    launcher.className = 'ita-bot-duvidas-btn itabot-duvidas-btn';
     launcher.setAttribute('data-itabot-build', ITABOT_BUILD);
     launcher.setAttribute('data-role', 'duvidas');
     launcher.setAttribute('data-page-code', _paginaCodigo);
@@ -171,9 +246,10 @@
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=' + ITABOT_IMG_VERSION + '" alt="" draggable="false"/>',
       '</span>',
-      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDAS? CLIQUE AQUI • </span></span>'
+      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track"><span class="itabot-launcher-led-copy">DÚVIDAS? CLIQUE AQUI •</span><span class="itabot-launcher-led-copy">DÚVIDAS? CLIQUE AQUI •</span></span></span>'
     ].join('');
     document.body.appendChild(launcher);
+    _itabotSetLedText('DÚVIDAS? CLIQUE AQUI');
 
     var lastLayout = '';
     var raf = 0;
@@ -391,6 +467,11 @@
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'avaliacoes\')"><span style="font-size:18px;">⭐</span><span style="flex:1;text-align:left;font-weight:900;">Dicas e Avaliações</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'precos\')"><span style="font-size:18px;">💰</span><span style="flex:1;text-align:left;font-weight:900;">Preços</span><span style="font-size:18px;color:#888;">›</span></button>',
             '</div>',
+            '<div class="itabot-faq-catalog-wrap">',
+              '<div class="itabot-faq-headline">📘 Todas as dúvidas configuradas no site</div>',
+              '<p id="itabot-faq-catalog-status" class="itabot-faq-status">Carregando dúvidas configuradas do site...</p>',
+              '<div id="itabot-faq-catalog" class="itabot-faq-catalog"></div>',
+            '</div>',
             '<div class="itabot-direct-message" style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
               '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
               '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
@@ -403,7 +484,7 @@
             '<div id="fale-resposta-conteudo" style="max-width:600px;margin:0 auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);"></div>',
           '</div>',
           '<div class="itabot-fullscreen-footer" style="padding:12px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:center;">',
-            '<button type="button" onclick="_itabotFecharTelaCheia()" style="background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,0,13,.3);">Fechar e Voltar ao Site</button>',
+            '<button type="button" onclick="_itabotFecharTelaCheia()" style="background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,0,13,.3);">Fechar painel</button>',
           '</div>',
         '</div>'
       ].join('');
@@ -431,6 +512,21 @@
           '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:hover { background:#fff; border-color:#22c2ff; transform:translateY(-2px); box-shadow:0 12px 26px rgba(10,91,145,.14),0 0 0 3px rgba(34,194,255,.08); }',
           '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:active { transform:scale(.98); }',
           '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:focus-visible { outline:3px solid #fbd100; outline-offset:3px; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-catalog-wrap { max-width:600px; margin:18px auto 0; padding:18px; border-radius:20px; background:rgba(255,255,255,.9); border:1px solid rgba(13,71,161,.1); box-shadow:0 10px 24px rgba(10,58,95,.08); }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-headline { color:#07579c; font-size:15px; font-weight:900; margin-bottom:6px; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-status { margin:0 0 12px; color:#527089; font-size:12px; font-weight:700; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-catalog { display:flex; flex-direction:column; gap:10px; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item { border:1px solid rgba(13,71,161,.1); border-radius:16px; background:#fff; overflow:hidden; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; font-size:14px; font-weight:900; color:#102a43; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item summary::-webkit-details-marker { display:none; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item[open] summary { background:rgba(34,194,255,.08); }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-question { flex:1; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-arrow { color:#07579c; font-size:20px; line-height:1; transform:rotate(90deg); transition:transform .16s ease; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item[open] .itabot-faq-arrow { transform:rotate(-90deg); }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-answer { padding:0 16px 16px; color:#334e68; font-size:14px; line-height:1.55; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-answer p { margin:0; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }',
+          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-tags span { display:inline-flex; align-items:center; min-height:28px; padding:6px 10px; border-radius:999px; background:rgba(7,87,156,.08); color:#07579c; font-size:11px; font-weight:800; }',
           '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message { background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(232,248,255,.92)) !important; border:1px solid rgba(34,194,255,.16); box-shadow:0 12px 28px rgba(10,58,95,.1) !important; }',
           '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message input, #chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { border:1px solid #b8d9ea !important; background:#fff !important; min-height:46px; }',
           '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { min-height:92px; }',
@@ -453,13 +549,13 @@
     // Resetar para a tela de temas ao abrir
     document.getElementById('fale-tela-temas').style.display = 'block';
     document.getElementById('fale-tela-resposta').style.display = 'none';
+    _itabotRenderFaqCatalog();
   }
 
   window._itabotFecharTelaCheia = function () {
     var dialog = document.getElementById('chat-dialog');
     if (dialog) dialog.classList.remove('aberto');
-  document.body.classList.remove('chat-open', 'modal-aberto');
-  window.location.href = 'index.html';
+    document.body.classList.remove('chat-open', 'modal-aberto');
   };
 
   var _itabotConteudoTemas = {
@@ -869,10 +965,9 @@
   /* ─── Carregamento de Conhecimento ─── */
   function _itabotCarregarConhecimento() {
     var eng = _getEngine();
-    if (!eng) return;
 
     // 1. Carregar dados de produtos e promo do window se já existirem (via site-loader)
-    if (window.SITE_CONFIG) {
+    if (eng && window.SITE_CONFIG) {
       eng.loadData(window.PRODUTOS_DATA || null, window.SITE_CONFIG.promo || null);
     }
 
@@ -883,19 +978,32 @@
       'dados/faq_sorteio_promocoes.json'
     ];
 
+    _faqPending = faqs.length;
+    _itabotRenderFaqCatalog();
+    var finalizarFaq = function () {
+      _faqPending = Math.max(0, _faqPending - 1);
+      _itabotRenderFaqCatalog();
+    };
     faqs.forEach(function(url) {
       fetch(_base + url)
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data && data.perguntas) {
-            data.perguntas.forEach(function(p) {
-              p.tags.forEach(function(tag) {
-                eng.mergeRespostas(tag, p.resposta);
+            _itabotRegistrarFaqs(data.modulo || url, data.perguntas);
+            if (eng) {
+              data.perguntas.forEach(function(p) {
+                p.tags.forEach(function(tag) {
+                  eng.mergeRespostas(tag, p.resposta);
+                });
               });
-            });
+            }
           }
+          finalizarFaq();
         })
-        .catch(function(err) { console.warn('ItaBot: Erro ao carregar FAQ ' + url, err); });
+        .catch(function(err) {
+          console.warn('ItaBot: Erro ao carregar FAQ ' + url, err);
+          finalizarFaq();
+        });
     });
   }
 
@@ -925,5 +1033,6 @@
   window.abrirItaBot = _itabotAbrirItaBot;
   window.abrirChat = _itabotAbrirItaBot;
   window._itabotAbrirTelaCheia = _itabotAbrirTelaCheia;
+  window._itabotSetLedText = _itabotSetLedText;
 
 })();
