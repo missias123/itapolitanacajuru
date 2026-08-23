@@ -222,13 +222,30 @@
       esquimos:'Premium Esquimós',
       esquimós:'Premium Esquimós'
     };
+    const PICOLE_TITULOS_CARDAPIO={
+      frutas_agua:'Picolés Base Água & Frutas',
+      leite_sem_recheio:'Picolés AO LEITE Cremosos S/ Recheio',
+      leite_com_recheio:'Picolés AO LEITE Cremosos Recheados',
+      especiais:'Picolés AO LEITE Especiais',
+      esquimos:'Picolés AO LEITE Premium Eskimós',
+      esquimós:'Picolés AO LEITE Premium Eskimós'
+    };
     const picoleTipo=value=>PICOLE_TIPOS[value]||String(value||'').replace(/_/g,' ');
+    const picoleTipoTituloCardapio=value=>PICOLE_TITULOS_CARDAPIO[value]||`Picolés ${picoleTipo(value)}`;
     const categoriaVisual=record=>{
       const base=record.categoria||'Sem categoria';
       if(normalize(base)!=='picoles') return base;
       const tipo=String(record.key||'').split('.')[1]||'';
       if(!tipo) return base;
       return `Picolés · ${picoleTipo(tipo)}`;
+    };
+    const descricaoCatalogo=record=>{
+      const categoria=record.categoria||'Sem categoria';
+      const tamanho=record.tamanho||'Sem tamanho';
+      if(normalize(categoria)!=='picoles') return `${categoria} · ${tamanho}`;
+      const tipo=String(record.key||'').split('.')[1]||'';
+      if(!tipo) return `${categoria} · ${tamanho}`;
+      return `${picoleTipoTituloCardapio(tipo)} · ${tamanho}`;
     };
     const productSort=(orderMap)=>(a,b)=>{
       const categoryA=categoriaVisual(a),categoryB=categoriaVisual(b);
@@ -362,7 +379,7 @@
       $('packagingPanel').innerHTML=`<article class="section"><div class="section-head"><div><h2>Embalagens operacionais</h2><p>Quando uma embalagem estiver esgotada, os produtos vinculados ficam indisponíveis automaticamente.</p></div></div><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Embalagem</th><th>Produtos dependentes</th><th>Estado</th><th>Ação manual</th></tr></thead><tbody>${packs.map(pack=>{const dependencies=(index[pack.sku]||[]).map(sku=>{const product=findBySku(sku);return `<span class="tag">${esc(sku)} · ${esc(product?.nome||'SKU')}</span>`}).join(' ');const available=pack.ativo!==false;return `<tr data-packaging="${esc(pack.sku)}" class="${available?'':'row-off'}"><td class="sku">${esc(pack.sku)}</td><td>${esc(pack.nome)}</td><td>${dependencies||'—'}</td><td><span class="status-pill ${available?'on':'off'}">${available?'Disponível':'Esgotada'}</span><label class="status ${available?'':'off'}"><input type="checkbox" data-packaging-field="ativo" ${available?'checked':''}>${available?'Disponível':'Esgotada'}</label></td><td>${availabilityButton('embalagem',pack.sku,available)}</td></tr>`}).join('')}</tbody></table></div></article>`;
     }
     function availabilityRows(){
-      const products=records().map(record=>({kind:'produto',id:record.key,sku:record.sku,nome:record.nome,descricao:`${record.categoria||'Sem categoria'} · ${record.tamanho||'Sem tamanho'}`,controller:record,effective:effective(record)}));
+      const products=records().map(record=>({kind:'produto',id:record.key,sku:record.sku,nome:record.nome,descricao:descricaoCatalogo(record),controller:record,effective:effective(record)}));
       const flavors=(state.raw?.sabores_sorvete||[]).map(flavor=>{const id='massas.'+flavor.codigo,record=master()[id];return {kind:'sabor',id,sku:record?.sku||flavor.codigo,nome:record?.nome||flavor.nome,descricao:'Sabor de massa · bloqueia somente esta opção',controller:record,effective:{available:record?.ativo!==false,reason:''}}});
       const index=packagingIndex();
       const packs=Object.values(packaging()).map(pack=>({kind:'embalagem',id:pack.sku,sku:pack.sku,nome:pack.nome,descricao:`${(index[pack.sku]||[]).length} SKU(s) dependente(s)`,controller:pack,effective:{available:pack.ativo!==false,reason:''}}));
