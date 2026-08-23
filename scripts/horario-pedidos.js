@@ -16,6 +16,7 @@
 
   const parametros = new URLSearchParams(location.search);
   const demonstracaoAberta = location.hostname.includes('.manus.computer') && (parametros.get('demo-retirada') === 'aberta' || location.hash.includes('demo-retirada=aberta'));
+  const SELETOR_ACIONAVEL_PEDIDO = 'a,button,[role="button"],input[type="submit"],input[type="button"],input[type="image"]';
 
   const estilo = document.createElement('style');
   estilo.textContent = '@keyframes itap-retirada-pulse{0%,100%{box-shadow:0 0 0 0 rgba(237,28,52,.34);transform:translateY(0)}50%{box-shadow:0 0 0 7px rgba(237,28,52,0);transform:translateY(-1px)}}[data-order-window]:not(.is-order-closed){animation:itap-retirada-pulse 1.8s ease-in-out infinite}[data-order-window].is-order-closed{background:#8f878b!important;color:#fff!important;filter:grayscale(1);cursor:pointer!important;box-shadow:none!important;transform:none!important;opacity:.78!important;animation:none!important}@media (prefers-reduced-motion:reduce){[data-order-window]:not(.is-order-closed){animation:none!important}}';
@@ -118,10 +119,9 @@
 
   window.ItapHorarioPedidos = Object.freeze({ estaAberto, textoAviso, aviso, atualizarEstado, impedirForaDoHorario });
   document.addEventListener('click', (evento) => {
-    const seletorAcionavel = 'a,button,[role="button"],input[type="submit"],input[type="button"],input[type="image"]';
     const controle = evento.target.closest('[data-order-window]');
     if (!controle) return;
-    if (!evento.target.closest(seletorAcionavel)) return;
+    if (!evento.target.closest(SELETOR_ACIONAVEL_PEDIDO)) return;
     if (!estaAberto(controle.dataset.orderWindow)) impedirForaDoHorario(evento, controle.dataset.orderWindow);
   }, true);
   document.addEventListener('DOMContentLoaded', atualizarEstado);
