@@ -119,8 +119,9 @@
   window.ItapHorarioPedidos = Object.freeze({ estaAberto, textoAviso, aviso, atualizarEstado, impedirForaDoHorario });
   document.addEventListener('click', (evento) => {
     const controle = evento.target.closest('[data-order-window]');
+    const acionavel = evento.target.closest('a,button,input[type="submit"]');
     if (!controle) return;
-    if (!controle.matches('a,button,input[type="submit"]')) return;
+    if (!acionavel || !controle.contains(acionavel)) return;
     if (!estaAberto(controle.dataset.orderWindow)) impedirForaDoHorario(evento, controle.dataset.orderWindow);
   }, true);
   document.addEventListener('DOMContentLoaded', atualizarEstado);
