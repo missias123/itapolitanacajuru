@@ -3885,22 +3885,12 @@ function renderSorvetes(){
  const g=document.getElementById('sorvetes-grid');
  if (!g) return;
  g.innerHTML = '';
- const nomes={casquinha_copo:'Casquinha/copo',copo_recheado:'Copo recheado',cascão:'Cascão',cestinha:'Cestinha'};
- const desc={casquinha_copo:'1 bola',copo_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
+ const nomes={casquinha:'Casquinha',copo:'Copo',copo_recheado:'Copo recheado',cascão:'Cascão',cestinha:'Cestinha'};
+ const desc={casquinha:'Sorvete na casquinha crocante',copo:'Sorvete no copo plástico',copo_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
  if(produtos&&produtos.sorvetes&&produtos.sorvetes.preços){
   Object.entries(produtos.sorvetes.preços).forEach(([key,preços])=>{
    const preço=Object.values(preços)[0];
    const tamanhoInicial=Object.keys(preços)[0];
-   // Casquinha e Copo são duas embalagens distintas com o mesmo preço
-   if(key==='casquinha_copo'){
-    [{id:'casquinha',nome:'Casquinha',descr:'Sorvete na casquinha crocante'},{id:'copo',nome:'Copo',descr:'Sorvete no copo plástico'}].forEach(emb=>{
-     const chave='sorvete_'+emb.id+'_'+tamanhoInicial.replace(/\s/g,'_');
-     const c=document.createElement('div');c.className='prod-card';
-     c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${emb.nome}</div>${seloLeitePasteurizado()}<div class="prod-desc">${emb.descr}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(emb.nome,tamanhoInicial,preço,'sorvetes','sorvetes.casquinha_copo.'+chaveCadastroSku(tamanhoInicial))}</div>`;
-     g.appendChild(c);
-    });
-    return;
-   }
    const chave='sorvete_'+key+'_'+tamanhoInicial.replace(/\s/g,'_');
    const c=document.createElement('div');c.className='prod-card';
    const nomeProduto=nomes[key]||key;
@@ -4552,8 +4542,8 @@ const RESPOSTAS={
  'vegano':'Para informações sobre opções veganas, entre em contato pelo WhatsApp: (16) 99606-2046.',
  'lactose':'Para informações sobre opções sem lactose, fale conosco pelo WhatsApp: (16) 99606-2046.',
  // ── PREÇOS ──
- 'preço':function(){try{return 'Sorvetes: casquinha/copo a partir de R$ '+Object.values(produtos.sorvetes.preços.casquinha_copão)[0].toFixed(2).replace('.',',')+' · Milkshakes a partir de R$ '+Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')+' · Açaí a partir de R$ '+Object.values(produtos.açaí.copos)[0].toFixed(2).replace('.',',')+'. Veja o cardápio completo no site!';}catch(e){return 'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Açaí a partir de R$ 15,00. Veja o cardápio completo no site!';}},
- 'preços':function(){try{return 'Sorvetes: casquinha/copo a partir de R$ '+Object.values(produtos.sorvetes.preços.casquinha_copão)[0].toFixed(2).replace('.',',')+' · Milkshakes a partir de R$ '+Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')+' · Açaí a partir de R$ '+Object.values(produtos.açaí.copos)[0].toFixed(2).replace('.',',')+'. Veja o cardápio completo no site!';}catch(e){return 'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Açaí a partir de R$ 15,00. Veja o cardápio completo no site!';}},
+ 'preço':function(){try{return 'Casquinha a partir de R$ '+Object.values(produtos.sorvetes.preços.casquinha)[0].toFixed(2).replace('.',',')+' · Copo a partir de R$ '+Object.values(produtos.sorvetes.preços.copo)[0].toFixed(2).replace('.',',')+' · Milkshakes a partir de R$ '+Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')+' · Açaí a partir de R$ '+Object.values(produtos.açaí.copos)[0].toFixed(2).replace('.',',')+'. Veja o cardápio completo no site!';}catch(e){return 'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Açaí a partir de R$ 15,00. Veja o cardápio completo no site!';}},
+ 'preços':function(){try{return 'Casquinha a partir de R$ '+Object.values(produtos.sorvetes.preços.casquinha)[0].toFixed(2).replace('.',',')+' · Copo a partir de R$ '+Object.values(produtos.sorvetes.preços.copo)[0].toFixed(2).replace('.',',')+' · Milkshakes a partir de R$ '+Object.values(produtos.milkshake.tradicional)[0].toFixed(2).replace('.',',')+' · Açaí a partir de R$ '+Object.values(produtos.açaí.copos)[0].toFixed(2).replace('.',',')+'. Veja o cardápio completo no site!';}catch(e){return 'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Açaí a partir de R$ 15,00. Veja o cardápio completo no site!';}};
  'quanto':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Açaí a partir de R$ 15,00 · Picolés a partir de R$ 2,50. Veja o cardápio completo no site!',
  'valor':'Sorvetes a partir de R$ 8,00 · Milkshakes a partir de R$ 17,00 · Açaí a partir de R$ 15,00. Veja o cardápio completo no site!',
  // ── PAGAMENTO ──
@@ -4805,7 +4795,8 @@ async function carregarPreçosNuvemCardápio() {
    // Normalizar chaves do JSON para o formato interno
    const p = dados.sorvetes.precos;
    produtos.sorvetes.preços = {
-    casquinha_copo: p.casquinha_copo,
+    casquinha: p.casquinha_copo,
+    copo: p.casquinha_copo,
     copo_recheado: p.copo_recheado,
     cascão: p.cascão,
     cestinha: p.cestinha
@@ -4859,8 +4850,9 @@ async function carregarPreçosNuvemCardápio() {
     if (dados.sorvetes && dados.sorvetes.precos) {
      const p = dados.sorvetes.precos;
      produtos.sorvetes.preços = {
-      casquinha_copão: p.casquinha_copo || p.casquinha_copão,
-      copão_recheado: p.copo_recheado || p.copão_recheado,
+      casquinha: p.casquinha_copo,
+      copo: p.casquinha_copo,
+      copo_recheado: p.copo_recheado,
       cascão: p.cascão,
       cestinha: p.cestinha
      };
