@@ -527,8 +527,13 @@
     const lines = ['🍦 PEDIDO DE RETIRADA — ITAPOLITANA', '', '👤 CLIENTE', `• Nome: ${form.nome}`, `• WhatsApp: ${phoneForMessage(form.telefone)}`, '', '🕒 RETIRADA', schedule, `• Horário: ${form.horario} (Brasília)`, '', '💳 PAGAMENTO', `• Forma: ${form.pagamento}`, '', '🧾 RESUMO', `• Total final: ${money(total())}`, `• Observações: ${form.observacoes || 'Nenhuma'}`, '', '🍨 ITENS'];
     state.cart.forEach((item, index) => {
       lines.push(`${index + 1}) ${item.quantity}x ${item.name}${item.size ? ` — ${item.size}` : ''} (${item.sku})`);
+      if (item.containerType) lines.push(`• Recipiente: ${item.containerType === 'casquinha' ? 'Casquinha' : 'Copo'}`);
       if (item.flavors?.length) lines.push(`• Sabores: ${item.flavors.map((flavor) => flavor.name || flavor).join(', ')}`);
-      if (item.boxAddOns?.length) lines.push(`• Adicionais: ${item.boxAddOns.map((addOn) => `${addOn.quantity}x ${addOn.name}`).join(' | ')}`);
+      if (item.flavorDistribution) lines.push(`• Distribuição: ${item.flavorDistribution}`);
+      if (item.boxAddOns?.length) lines.push(`• Adicionais: ${item.boxAddOns.map((addOn) => `${addOn.quantity}x ${addOn.name} (${addOn.sku}) ${money(Number(addOn.quantity) * Number(addOn.price))}`).join(' | ')}`);
+      if (item.fixedIngredients?.length) lines.push(`• Ingredientes fixos: ${item.fixedIngredients.filter((ingredient) => !/sabores? de sorvete/i.test(ingredient)).join(', ')}`);
+      if (item.includedExtras?.length) lines.push(`• Inclusos: ${item.includedExtras.join(' e ')}`);
+      if (needsAvailabilityChoice(item)) lines.push(`• ${isLargeIceCreamBox(item) ? 'Caixa grande' : 'Torta'}: antecedência mínima de 48h`);
       if (item.serviceMode === 'travel') lines.push('• Embalagem: para viagem');
       if (item.serviceMode === 'store') lines.push('• Embalagem: consumo na loja');
       lines.push(`• Subtotal: ${money(itemTotal(item))}`, '');

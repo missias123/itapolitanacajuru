@@ -16,8 +16,6 @@
 
   const parametros = new URLSearchParams(location.search);
   const demonstracaoAberta = location.hostname.includes('.manus.computer') && (parametros.get('demo-retirada') === 'aberta' || location.hash.includes('demo-retirada=aberta'));
-  // Liberação solicitada para testes. Ao chegar neste instante, a regra diária de 11h–20h volta a valer automaticamente.
-  const RETORNO_HORARIO_NORMAL = new Date(2026, 7, 22, 11, 0, 0, 0);
 
   const estilo = document.createElement('style');
   estilo.textContent = '@keyframes itap-retirada-pulse{0%,100%{box-shadow:0 0 0 0 rgba(237,28,52,.34);transform:translateY(0)}50%{box-shadow:0 0 0 7px rgba(237,28,52,0);transform:translateY(-1px)}}[data-order-window]:not(.is-order-closed){animation:itap-retirada-pulse 1.8s ease-in-out infinite}[data-order-window].is-order-closed{background:#8f878b!important;color:#fff!important;filter:grayscale(1);cursor:pointer!important;box-shadow:none!important;transform:none!important;opacity:.78!important;animation:none!important}@media (prefers-reduced-motion:reduce){[data-order-window]:not(.is-order-closed){animation:none!important}}';
@@ -74,9 +72,8 @@
   function ehFeriadoRetirada(partes) {
     return FERIADOS_NACIONAIS_FIXOS.has(partes.mmdd) || FERIADOS_MUNICIPAIS_CAJURU.has(partes.mmdd) || feriadosMoveisDoAno(partes.year).has(partes.isoDate);
   }
-  function liberacaoTemporariaAtiva(data) { return (data || new Date()).getTime() < RETORNO_HORARIO_NORMAL.getTime(); }
   function estaAberto(tipo, data) {
-    if (tipo === 'retirada' && (demonstracaoAberta || liberacaoTemporariaAtiva(data))) return true;
+    if (tipo === 'retirada' && demonstracaoAberta) return true;
     const janela = JANELAS[tipo];
     const partes = partesBrasilia(data);
     if (!janela) return false;
