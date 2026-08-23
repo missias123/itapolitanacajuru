@@ -29,6 +29,21 @@ binding    = "PROMO_KV"
 id         = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
 preview_id = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
 
+# ─── Durable Object para reserva atômica do Picolé ────────────────────────────
+# REQUISITO: Cloudflare Workers Paid Plan (mínimo US$5/mês — Workers Paid).
+# INSTRUÇÕES: o Cloudflare cria a classe automaticamente via a migration abaixo
+# na primeira implantação. Nenhuma ação manual adicional é necessária além
+# de ter o plano pago ativo na conta.
+[durable_objects]
+bindings = [
+  { name = "PICOLE_RESERVA_DO", class_name = "PicoleReservaDO" }
+]
+
+# Migration obrigatória — registra a classe PicoleReservaDO no primeiro deploy
+[[migrations]]
+tag         = "v1"
+new_classes = ["PicoleReservaDO"]
+
 # ─── Variáveis de ambiente públicas ───────────────────────────────────────────
 [vars]
 ENVIRONMENT = "production"
@@ -56,10 +71,14 @@ binding    = "PROMO_KV"
 id         = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
 preview_id = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
 
+[env.production.durable_objects]
+bindings = [
+  { name = "PICOLE_RESERVA_DO", class_name = "PicoleReservaDO" }
+]
+
 # ─── Rota personalizada — domínio de produção ─────────────────────────────────
 # NOTA: Requer que a zona itapolitanacajuru.com.br esteja gerenciada pelo Cloudflare
 # e que exista um registro DNS para api.itapolitanacajuru.com.br (ex: A 192.0.2.1, proxied).
 [[env.production.routes]]
 pattern   = "api.itapolitanacajuru.com.br/*"
 zone_name = "itapolitanacajuru.com.br"
-

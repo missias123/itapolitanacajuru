@@ -82,6 +82,74 @@ const RATE_LIMITS = {
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// ─── DURABLE OBJECT — reserva atômica do Picolé ──────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// Um DO por dia (idFromName = data local). Garante que somente UMA reserva é
+// criada por dia, independente de quantas requisições simultâneas cheguem.
+export class PicoleReservaDO {
+  constructor(state, _env) {
+    this.state = state;
+  }
+
+  async fetch(request) {
+    const url    = new URL(request.url);
+    const action = url.searchParams.get('action');
+
+    // ── Ação: tentar reservar ────────────────────────────────────────────────
+    if (action === 'reservar') {
+      // blockConcurrencyWhile impede que qualquer outra requisição entre
+      // enquanto este bloco crítico estiver em execução — leitura + escrita são atômicas.
+      return this.state.blockConcurrencyWhile(async () => {
+        const existente = await this.state.storage.get('reservaId');
+        if (existente) {
+          // Já há um vencedor: retorna o reservaId existente para rejeitar o pedido atual
+          return new Response(
+            JSON.stringify({ ganhou: false, reservaIdVencedor: existente }),
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        // Primeiro pedido: registra o novo reservaId de forma atômica
+        const reservaId = url.searchParams.get('reservaId') || '';
+        if (!reservaId) {
+          return new Response(
+            JSON.stringify({ ganhou: false, erro: 'reservaId ausente' }),
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        await this.state.storage.put('reservaId', reservaId);
+        return new Response(
+          JSON.stringify({ ganhou: true, reservaId }),
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+      });
+    }
+
+    // ── Ação: consultar quem ganhou (uso admin/debug) ────────────────────────
+    if (action === 'consultar') {
+      const reservaId = await this.state.storage.get('reservaId');
+      return new Response(
+        JSON.stringify({ reservaId: reservaId || null }),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // ── Ação: resetar (uso exclusivo de cancelamento admin) ──────────────────
+    if (action === 'resetar') {
+      await this.state.storage.delete('reservaId');
+      return new Response(
+        JSON.stringify({ ok: true }),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ erro: 'Ação inválida' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}
+
 // ─── Entry point ─────────────────────────────────────────────────────────────
 export default {
   async fetch(request, env) {
@@ -795,41 +863,41 @@ async function handlePicoleReservar(request, env) {
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_EXPIRADA', mensagem: 'A promoção de hoje já encerrou.' });
   }
 
-  // Verificar se já existe vencedor para hoje
-  const vencedorExistente = await env.PROMO_KV.get(`picole:winner:${hoje}`);
-  if (vencedorExistente) {
-    return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
-  }
-
-  // ── Mecanismo de reserva com dupla verificação ─────────────────────────────
-  // NOTA: Cloudflare KV é eventualmente consistente. Para atomicidade perfeita,
-  // seria necessário usar Durable Objects. Para este caso de uso (promoção local
-  // com tráfego limitado), usamos dupla verificação com espera para minimizar
-  // a janela de race condition. A probabilidade de colisão é muito baixa e
-  // aceitável para uma promoção de sorveteria local.
+  // ── Reserva atômica via Durable Object ────────────────────────────────────
+  // O DO é identificado pelo dia local (uma instância por dia).
+  // blockConcurrencyWhile dentro do DO garante atomicidade total —
+  // impossível duas requisições simultâneas vencerem.
   const reservaId = gerarReservaId();
-  const agora2 = new Date().toISOString();
+  const agora2    = new Date().toISOString();
 
-  // Escrita atômica (best-effort): usa o reservaId como valor do lock
-  await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
+  let doResult;
+  if (env.PICOLE_RESERVA_DO) {
+    // Caminho preferido: Durable Object (atomicidade garantida)
+    const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
+    const doStub = env.PICOLE_RESERVA_DO.get(doId);
+    const doResp = await doStub.fetch(
+      new Request(`https://do-internal/picole?action=reservar&reservaId=${encodeURIComponent(reservaId)}`)
+    );
+    doResult = await doResp.json();
+  } else {
+    // Caminho de fallback: KV com double-check (menos seguro, apenas se DO não estiver configurado)
+    // Aviso: pode haver race condition em casos extremamente raros de concorrência global.
+    const existente = await env.PROMO_KV.get(`picole:winner:${hoje}`);
+    if (existente) {
+      doResult = { ganhou: false };
+    } else {
+      await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
+      await new Promise(r => setTimeout(r, 300));
+      const confirmado = await env.PROMO_KV.get(`picole:winner:${hoje}`);
+      doResult = confirmado === reservaId ? { ganhou: true, reservaId } : { ganhou: false };
+    }
+  }
 
-  // Aguarda propagação global do KV (200ms reduz drasticamente a janela de race)
-  await new Promise(r => setTimeout(r, 200));
-
-  // Primeira verificação: nossa escrita venceu?
-  const confirmado1 = await env.PROMO_KV.get(`picole:winner:${hoje}`);
-  if (confirmado1 !== reservaId) {
+  if (!doResult.ganhou) {
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
   }
 
-  // Segunda verificação após pausa adicional (aumenta confiança contra edge nodes diferentes)
-  await new Promise(r => setTimeout(r, 200));
-  const confirmado2 = await env.PROMO_KV.get(`picole:winner:${hoje}`);
-  if (confirmado2 !== reservaId) {
-    return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
-  }
-
-  // Somos o vencedor!
+  // Somos o vencedor! Persiste o registro completo no KV.
   const reserva = {
     reservaId,
     campanhaId: campanha.id,
@@ -837,12 +905,18 @@ async function handlePicoleReservar(request, env) {
     ipCliente: ip,
     criadoEm: agora2,
     atualizadoEm: agora2,
-    statusFormulario: 'aguardando',  // 'aguardando' | 'preenchido' | 'expirado'
+    statusFormulario: 'aguardando',   // 'aguardando' | 'preenchido'
     codigoRetirada: null,
-    statusRetirada: 'pendente',       // 'pendente' | 'retirado' | 'nao_retirado' | 'cancelado'
+    statusRetirada: 'pendente',        // 'pendente' | 'retirado' | 'nao_retirado' | 'cancelado'
     dadosVencedor: null,
+    historico: [],
   };
+
+  // Persiste a reserva no KV (TTL generoso — 25 horas para cobrir plenamente o dia)
   await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
+
+  // Índice secundário KV: espelha o winner para o status endpoint e admin
+  await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
 
   // Atualiza o registro do dia
   dia.status = 'reservado';
@@ -916,12 +990,15 @@ async function handlePicoleReservaForm(reservaId, request, env) {
   }
 
   // Gera código de retirada único
+  // Guarda no KV ANTES de atualizar o status para evitar duplo incremento
   const contStr = await env.PROMO_KV.get('picole:meta:contador_retiradas') || '0';
   const cont = parseInt(contStr, 10) + 1;
   const codigoRetirada = gerarCodigoRetirada(cont);
   await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
 
   const agora = new Date().toISOString();
+  if (!reserva.historico) reserva.historico = [];
+  reserva.historico.push({ evento: 'formulario_preenchido', em: agora, ip });
   reserva.statusFormulario = 'preenchido';
   reserva.codigoRetirada = codigoRetirada;
   reserva.atualizadoEm = agora;
