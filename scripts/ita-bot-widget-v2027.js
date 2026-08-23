@@ -196,11 +196,13 @@
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      var fullW = narrow ? 82 : 94;
-      var fullH = narrow ? 102 : 116;
-      var iconW = narrow ? 82 : 94, iconH = narrow ? 102 : 116;
+      // Tamanhos dobrados para corresponder ao CSS
+      // mobile ≤480px: 140×180, phablet 481-767: 164×220, tablet 768-1024: 176×280, desktop: 188×300
+      var fullW = vw <= 480 ? 140 : (vw <= 767 ? 164 : (vw <= 1024 ? 176 : 188));
+      var fullH = vw <= 480 ? 180 : (vw <= 767 ? 220 : (vw <= 1024 ? 280 : 300));
+      var iconW = fullW, iconH = fullH;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
-      var margin = narrow ? 10 : 16;
+      var margin = narrow ? 10 : 20;
       var overlayBottom = safeBottom;
       var fixedNodes = document.querySelectorAll('body *');
       for (var f = 0; f < fixedNodes.length; f++) {
