@@ -5,10 +5,6 @@
  */
 (function () {
   'use strict';
-  if (window.__ITABOT_WIDGET_V2027_RUNNING__) return;
-  window.__ITABOT_WIDGET_V2027_RUNNING__ = true;
-  var ITABOT_BUILD = '20260823-led-marquee-fix';
-  var ITABOT_IMG_VERSION = '20260823-no-legs';
 
   console.log('ItaBot Widget: Inicializando...');
 
@@ -26,9 +22,6 @@
   var _ctx        = null;   // estado de contexto conversacional
   var _prodData   = null;   // cache de dados/produtos.json
   var _promoData  = null;   // cache de dados/promo.json
-  var _faqCatalog = [];     // catálogo de FAQs para o painel HTML
-  var _faqMap     = {};     // índice para evitar duplicações
-  var _faqPending = 0;      // número de fontes FAQ ainda carregando
   var _saudacao   = false;  // flag: saudação inicial já mostrada
   var _scrollY    = 0;      // para page-lock
   var _engine     = null;   // instância do motor compartilhado (ItaBotEngine)
@@ -49,84 +42,11 @@
     return String(s || '').toLowerCase().normalize('NFD').replace(ACCENT_RE, '').trim();
   }
 
-  function _itabotEscapeHtml(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function _itabotSetLedText(texto, cor) {
-    var track = document.querySelector('.itabot-launcher-led-track');
-    if (!track) return;
-    var copies = track.querySelectorAll('.itabot-launcher-led-copy');
-    var mensagem = String(texto || '').trim();
-    if (!mensagem) mensagem = 'DÚVIDAS? CLIQUE AQUI';
-    for (var i = 0; i < copies.length; i++) {
-      copies[i].textContent = mensagem + '   \u2022   ';
-    }
-    track.style.color = cor || '';
-  }
-
-  function _itabotRegistrarFaqs(modulo, perguntas) {
-    if (!perguntas || !perguntas.length) return;
-    perguntas.forEach(function (p) {
-      if (!p || !p.resposta || !p.tags || !p.tags.length) return;
-      var chave = _norm(p.tags[0] + '|' + p.resposta);
-      if (_faqMap[chave]) return;
-      _faqMap[chave] = true;
-      _faqCatalog.push({
-        modulo: modulo || '',
-        pergunta: p.tags[0],
-        aliases: p.tags.slice(1),
-        resposta: p.resposta
-      });
-    });
-  }
-
-  function _itabotRenderFaqCatalog() {
-    var container = document.getElementById('itabot-faq-catalog');
-    var status = document.getElementById('itabot-faq-catalog-status');
-    if (!container || !status) return;
-    if (_faqCatalog.length) {
-      status.textContent = _faqCatalog.length + ' dúvidas configuradas no site.';
-      container.innerHTML = _faqCatalog.map(function (item) {
-        var aliases = item.aliases && item.aliases.length
-          ? '<div class="itabot-faq-tags">' + item.aliases.map(function (tag) {
-            return '<span>' + _itabotEscapeHtml(tag) + '</span>';
-          }).join('') + '</div>'
-          : '';
-        return [
-          '<details class="itabot-faq-item">',
-            '<summary>',
-              '<span class="itabot-faq-question">' + _itabotEscapeHtml(item.pergunta) + '</span>',
-              '<span class="itabot-faq-arrow" aria-hidden="true">›</span>',
-            '</summary>',
-            '<div class="itabot-faq-answer">',
-              '<p>' + _itabotEscapeHtml(item.resposta) + '</p>',
-              aliases,
-            '</div>',
-          '</details>'
-        ].join('');
-      }).join('');
-      return;
-    }
-    status.textContent = _faqPending > 0
-      ? 'Carregando dúvidas configuradas do site...'
-      : 'As dúvidas configuradas não puderam ser carregadas agora.';
-    container.innerHTML = '';
-  }
-
   /* ─── Injeção de CSS ─── */
   function _itabotInjetarCss() {
-    var existing = document.getElementById('itabot-css');
-    if (existing && existing.getAttribute('data-itabot-build') === ITABOT_BUILD) return;
-    if (existing) existing.remove();
+    if (document.getElementById('itabot-css')) return;
     var style = document.createElement('style');
     style.id = 'itabot-css';
-    style.setAttribute('data-itabot-build', ITABOT_BUILD);
     style.textContent = [
       '#chat-dialog { display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:2147483000 !important; background:#08080A !important; isolation:isolate; contain:paint; overflow:hidden; align-items:center; justify-content:center; }',
       '#chat-dialog.aberto { display:flex !important; }',
@@ -180,24 +100,22 @@
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 172px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:94px; height:150px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 172px); padding:0; justify-content:flex-start; gap:0; }',
-      '.itabot-launcher-robot { position:relative; flex:0 0 clamp(96px, 10.5vw, 122px); width:clamp(92px, 10vw, 116px); height:clamp(96px, 10.5vw, 122px); display:block; overflow:visible; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
-      '.itabot-launcher-robot::before { content:""; position:absolute; left:50%; top:58%; transform:translate(-50%,-50%); width:28%; height:22%; border:1.6px solid rgba(33,168,255,.9); border-bottom:none; border-radius:999px 999px 0 0; box-shadow:0 0 6px rgba(33,168,255,.55); pointer-events:none; z-index:2; }',
-      '.itabot-launcher-robot::after { content:"ITA"; position:absolute; left:50%; top:60.5%; transform:translate(-50%,-50%); min-width:22%; height:12%; padding:0 3px; border:1.2px solid rgba(255,255,255,.9); border-radius:999px; background:linear-gradient(180deg,#1aa6ff 0%,#0478d0 100%); color:#fff; font:900 7px/1 "Arial Black",Arial,sans-serif; letter-spacing:.08em; display:flex; align-items:center; justify-content:center; text-shadow:0 1px 2px rgba(0,0,0,.45); box-shadow:0 0 6px rgba(4,120,208,.55); pointer-events:none; z-index:3; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:94px; height:150px; padding:0; justify-content:flex-start; gap:2px; }',
+      '.itabot-launcher-robot { position:relative; flex:0 0 82px; width:78px; height:82px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
-      '.itabot-launcher-led-panel { position:relative; display:block; width:clamp(82px, 9vw, 102px); height:24px; margin-top:-20px; border:1.4px solid #ffd4d8; border-radius:9px; background:linear-gradient(180deg,#5a0409 0%,#3f0207 100%); box-shadow:0 0 0 1px rgba(255,255,255,.82),0 5px 12px rgba(232,0,13,.48),inset 0 0 7px rgba(0,0,0,.7); overflow:hidden; pointer-events:none; }',
-      '.itabot-launcher-led-panel::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 1.4px 50%, rgba(255,255,255,.22) 0 .8px, transparent 1px) 0 0/4px 4px; opacity:.46; }',
-      '.itabot-launcher-led-track { position:absolute; left:0; top:50%; z-index:1; display:inline-flex; align-items:center; gap:0; width:max-content; min-width:max-content; padding:0; color:#ffe17d; font:900 9.4px/1 "Arial Black",Arial,sans-serif; letter-spacing:.04em; text-shadow:0 0 2px rgba(0,0,0,.98),0 0 7px rgba(255,214,0,.5); white-space:nowrap; text-transform:uppercase; will-change:transform; transform:translate3d(0,-50%,0); animation:itabot-led-scroll 10.5s linear infinite; }',
-      '.itabot-launcher-led-copy { flex:0 0 auto; display:inline-block; }',
-      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { display:block; opacity:1; }',
-      '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
-      '@keyframes itabot-led-scroll { from { transform:translate3d(0,-50%,0); } to { transform:translate3d(-50%,-50%,0); } }',
 
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } .itabot-launcher-led-track { transform:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(100px, 32vw, 124px); height:clamp(136px, 29vh, 170px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(88px, 26.8vw, 110px); width:clamp(84px, 24.6vw, 106px); height:clamp(88px, 26.8vw, 110px); } .itabot-launcher-robot::before { border-width:1.4px; } .itabot-launcher-robot::after { font-size:6.4px; border-width:1px; } .itabot-launcher-led-panel { width:clamp(78px, 24vw, 94px); height:22px; margin-top:-18px; border-radius:8px; } .itabot-launcher-led-track { font-size:8.2px; gap:18px; } }',
+      '.itabot-launcher-dot { display:none; }',
+      '.itabot-launcher-led-panel { position:relative; display:flex; flex:0 0 15px; align-items:center; width:50%; min-width:46px; min-height:15px; height:15px; margin-top:1px; padding:0 5px; box-sizing:border-box; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
+      '.itabot-launcher-led-panel::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px); mix-blend-mode:multiply; pointer-events:none; }',
+      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 7.5px/13px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 3px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
+      '@keyframes itabot-launcher-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
+      '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
+
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
+      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:100px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { flex-basis:74px; width:70px; height:74px; } .itabot-launcher-led-panel { flex:0 0 15px; width:50%; min-width:42px; min-height:15px; height:15px; margin-top:1px; padding:0 4px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:6.5px; line-height:13px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -205,54 +123,22 @@
     document.head.appendChild(style);
   }
 
-  /* ─── Resolve código da página (sistema site-codigos.json) ─── */
-  var _paginaCodigo = (function () {
-    if (window.ITABOT_PAGE_CODE) return window.ITABOT_PAGE_CODE;
-    var path = (location.pathname || '').replace(/.*\//, '').replace(/\.html$/, '') || 'index';
-    var mapa = {
-      'index': 'ROB-HOME', '': 'ROB-HOME',
-      'sobre': 'ROB-SOBRE',
-      'dicas': 'ROB-DICAS',
-      'encomendas': 'ROB-ENC',
-      'promocao': 'ROB-PROMO',
-      'politica-privacidade': 'ROB-PRIV',
-      '404': 'ROB-404',
-      'offline': 'ROB-OFF'
-    };
-    return mapa[path] || ('ROB-' + path.toUpperCase().replace(/[^A-Z0-9]/g, '-'));
-  })();
-
   /* ─── Launcher flutuante inteligente ─── */
   function _itabotInjetarLauncher() {
-    var legacyWraps = document.querySelectorAll('.itabot-wrap');
-    for (var lw = 0; lw < legacyWraps.length; lw++) legacyWraps[lw].remove();
-    var existentes = document.querySelectorAll('#itabot-launcher');
-    var manter = null;
-    for (var ex = 0; ex < existentes.length; ex++) {
-      var build = existentes[ex].getAttribute('data-itabot-build');
-      if (!manter && build === ITABOT_BUILD) {
-        manter = existentes[ex];
-        continue;
-      }
-      existentes[ex].remove();
-    }
-    if (manter) return;
+    if (document.getElementById('itabot-launcher')) return;
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
-    launcher.className = 'ita-bot-duvidas-btn itabot-duvidas-btn';
-    launcher.setAttribute('data-itabot-build', ITABOT_BUILD);
     launcher.setAttribute('data-role', 'duvidas');
-    launcher.setAttribute('data-page-code', _paginaCodigo);
-    launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
+      launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=' + ITABOT_IMG_VERSION + '" alt="" draggable="false"/>',
+        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
       '</span>',
-      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track"><span class="itabot-launcher-led-copy">D\u00DAVIDAS? CLIQUE AQUI   \u2022   </span><span class="itabot-launcher-led-copy">D\u00DAVIDAS? CLIQUE AQUI   \u2022   </span></span></span>'
+      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
+      '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);
-    _itabotSetLedText('DÚVIDAS? CLIQUE AQUI');
 
     var lastLayout = '';
     var raf = 0;
@@ -302,30 +188,14 @@
       if (!document.body || document.body.classList.contains('chat-open') || document.body.classList.contains('modal-aberto')) return;
       var vw = window.innerWidth, vh = window.innerHeight;
       var narrow = mobile();
-      var margin = narrow ? 10 : 16;
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      var measureBox = function (iconOnly) {
-        if (iconOnly) launcher.classList.add('itabot-launcher-icon-only');
-        else launcher.classList.remove('itabot-launcher-icon-only');
-        var rect = launcher.getBoundingClientRect();
-        var fallbackW = narrow ? 92 : 102;
-        var fallbackH = narrow ? 132 : 142;
-        var rawW = Math.ceil(rect.width || fallbackW);
-        var rawH = Math.ceil(rect.height || fallbackH);
-        return {
-          w: Math.max(82, Math.min(rawW, vw - margin * 2)),
-          h: Math.max(102, Math.min(rawH, vh - 8))
-        };
-      };
-      var fullBox = measureBox(false);
-      var iconBox = measureBox(true);
-      launcher.classList.remove('itabot-launcher-icon-only');
-      var fullW = fullBox.w;
-      var fullH = fullBox.h;
-      var iconW = iconBox.w, iconH = iconBox.h;
+      var fullW = narrow ? 82 : 94;
+      var fullH = narrow ? 102 : 116;
+      var iconW = narrow ? 82 : 94, iconH = narrow ? 102 : 116;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
+      var margin = narrow ? 10 : 16;
       var overlayBottom = safeBottom;
       var fixedNodes = document.querySelectorAll('body *');
       for (var f = 0; f < fixedNodes.length; f++) {
@@ -338,39 +208,25 @@
         if (fixedStyle.pointerEvents === 'none' || fixedStyle.visibility === 'hidden' || parseFloat(fixedStyle.opacity || '1') <= .08) continue;
         if (fixedRect.bottom >= vh - 2 && fixedRect.top > 0) overlayBottom = Math.max(overlayBottom, vh - fixedRect.top + 12);
       }
-      var clampPos = function (x, y, w, h) {
-        return {
-          x: Math.min(Math.max(margin, x), Math.max(margin, vw - w - margin)),
-          y: Math.min(Math.max(8, y), Math.max(8, vh - h - 8))
-        };
-      };
-      var candidatesFor = function (w, h) {
-        var bottomY = Math.max(8, vh - h - overlayBottom - 16);
-        var topY = Math.max(8, vh * .22);
-        var midY = Math.max(8, vh * .5 - h / 2);
-        var rightX = Math.max(margin, vw - w - margin);
-        return [
-          [rightX, bottomY, 'br'],
-          [margin, bottomY, 'bl'],
-          [rightX, topY, 'tr'],
-          [margin, topY, 'tl'],
-          [rightX, midY, 'mr'],
-          [margin, midY, 'ml']
-        ];
-      };
+      var bottomY = Math.max(24, vh - fullH - overlayBottom - 16);
+      var candidates = [
+        [vw - fullW - margin, bottomY, 'br'],
+        [margin, bottomY, 'bl'],
+        [vw - fullW - margin, Math.max(12, vh * .22), 'tr'],
+        [margin, Math.max(12, vh * .22), 'tl'],
+        [vw - fullW - margin, Math.max(12, vh * .5 - fullH / 2), 'mr'],
+        [margin, Math.max(12, vh * .5 - fullH / 2), 'ml']
+      ];
       var chosen = null;
       var findFree = function (w, h, icon) {
-        var candidates = candidatesFor(w, h);
         for (var k = 0; k < candidates.length; k++) {
-          var p = clampPos(candidates[k][0], candidates[k][1], w, h);
-          if (isFree(p.x, p.y, w, h)) return { x:p.x, y:p.y, mode:candidates[k][2], icon:icon, w:w, h:h };
+          if (candidates[k][0] >= 0 && candidates[k][1] >= 0 && isFree(candidates[k][0], candidates[k][1], w, h)) return { x:candidates[k][0], y:candidates[k][1], mode:candidates[k][2], icon:icon };
         }
         // Grade mais densa: procura uma área livre entre cartões, textos e controles.
         var stepX = Math.max(24, Math.round(vw / 8)), stepY = Math.max(24, Math.round(vh / 8));
-        for (var gy = 8; gy <= Math.max(8, vh - h - 8); gy += stepY) {
+        for (var gy = 10; gy <= Math.max(10, vh - h - overlayBottom); gy += stepY) {
           for (var gx = margin; gx <= Math.max(margin, vw - w - margin); gx += stepX) {
-            var gp = clampPos(gx, gy, w, h);
-            if (isFree(gp.x, gp.y, w, h)) return { x:gp.x, y:gp.y, mode:'grid', icon:icon, w:w, h:h };
+            if (isFree(gx, gy, w, h)) return { x:gx, y:gy, mode:'grid', icon:icon };
           }
         }
         return null;
@@ -382,20 +238,17 @@
       }
       if (!chosen) {
         // Último recurso: escolhe o ponto com menos colisões, mantendo o widget acessível.
-        var bestPos = clampPos(vw - iconW - margin, vh - iconH - overlayBottom - 16, iconW, iconH);
-        var best = { score: Infinity, x:bestPos.x, y:bestPos.y, mode:'br-fallback' };
-        var fallbackPoints = candidatesFor(iconW, iconH).concat([[best.x, best.y, 'br-fallback']]);
+        var best = { score: Infinity, x:Math.max(8, vw - iconW - margin), y:Math.max(8, bottomY), mode:'br-fallback' };
+        var fallbackPoints = candidates.concat([[best.x, best.y, 'br-fallback']]);
         for (var b = 0; b < fallbackPoints.length; b++) {
-          var fp = clampPos(fallbackPoints[b][0], fallbackPoints[b][1], iconW, iconH);
-          var score = collisionScore(fp.x, fp.y, iconW, iconH);
-          if (score < best.score) best = { score:score, x:fp.x, y:fp.y, mode:fallbackPoints[b][2] };
+          var score = collisionScore(fallbackPoints[b][0], fallbackPoints[b][1], iconW, iconH);
+          if (score < best.score) best = { score:score, x:fallbackPoints[b][0], y:fallbackPoints[b][1], mode:fallbackPoints[b][2] };
         }
         launcher.classList.add('itabot-launcher-icon-only');
-        chosen = { x:best.x, y:best.y, mode:best.mode, icon:true, w:iconW, h:iconH };
+        chosen = { x:best.x, y:best.y, mode:best.mode, icon:true };
       }
-      var finalPos = clampPos(chosen.x, chosen.y, chosen.w || iconW, chosen.h || iconH);
-      launcher.style.top = Math.round(finalPos.y) + 'px';
-      launcher.style.left = Math.round(finalPos.x) + 'px';
+      launcher.style.left = Math.round(chosen.x) + 'px';
+      launcher.style.top = Math.round(chosen.y) + 'px';
       launcher.style.right = 'auto';
       launcher.style.bottom = 'auto';
       launcher.style.visibility = 'visible';
@@ -470,11 +323,6 @@
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'avaliacoes\')"><span style="font-size:18px;">⭐</span><span style="flex:1;text-align:left;font-weight:900;">Dicas e Avaliações</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'precos\')"><span style="font-size:18px;">💰</span><span style="flex:1;text-align:left;font-weight:900;">Preços</span><span style="font-size:18px;color:#888;">›</span></button>',
             '</div>',
-            '<div class="itabot-faq-catalog-wrap">',
-              '<div class="itabot-faq-headline">📘 Todas as dúvidas configuradas no site</div>',
-              '<p id="itabot-faq-catalog-status" class="itabot-faq-status">Carregando dúvidas configuradas do site...</p>',
-              '<div id="itabot-faq-catalog" class="itabot-faq-catalog"></div>',
-            '</div>',
             '<div class="itabot-direct-message" style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
               '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
               '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
@@ -487,7 +335,7 @@
             '<div id="fale-resposta-conteudo" style="max-width:600px;margin:0 auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);"></div>',
           '</div>',
           '<div class="itabot-fullscreen-footer" style="padding:12px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:center;">',
-            '<button type="button" onclick="_itabotFecharTelaCheia()" style="background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,0,13,.3);">Fechar painel</button>',
+            '<button type="button" onclick="_itabotFecharTelaCheia()" style="background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(232,0,13,.3);">Fechar e Voltar ao Site</button>',
           '</div>',
         '</div>'
       ].join('');
@@ -515,21 +363,6 @@
           '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:hover { background:#fff; border-color:#22c2ff; transform:translateY(-2px); box-shadow:0 12px 26px rgba(10,91,145,.14),0 0 0 3px rgba(34,194,255,.08); }',
           '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:active { transform:scale(.98); }',
           '#chat-dialog.itabot-fullscreen-mode .fale-tema-btn:focus-visible { outline:3px solid #fbd100; outline-offset:3px; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-catalog-wrap { max-width:600px; margin:18px auto 0; padding:18px; border-radius:20px; background:rgba(255,255,255,.9); border:1px solid rgba(13,71,161,.1); box-shadow:0 10px 24px rgba(10,58,95,.08); }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-headline { color:#07579c; font-size:15px; font-weight:900; margin-bottom:6px; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-status { margin:0 0 12px; color:#527089; font-size:12px; font-weight:700; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-catalog { display:flex; flex-direction:column; gap:10px; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item { border:1px solid rgba(13,71,161,.1); border-radius:16px; background:#fff; overflow:hidden; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; font-size:14px; font-weight:900; color:#102a43; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item summary::-webkit-details-marker { display:none; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item[open] summary { background:rgba(34,194,255,.08); }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-question { flex:1; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-arrow { color:#07579c; font-size:20px; line-height:1; transform:rotate(90deg); transition:transform .16s ease; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-item[open] .itabot-faq-arrow { transform:rotate(-90deg); }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-answer { padding:0 16px 16px; color:#334e68; font-size:14px; line-height:1.55; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-answer p { margin:0; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }',
-          '#chat-dialog.itabot-fullscreen-mode .itabot-faq-tags span { display:inline-flex; align-items:center; min-height:28px; padding:6px 10px; border-radius:999px; background:rgba(7,87,156,.08); color:#07579c; font-size:11px; font-weight:800; }',
           '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message { background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(232,248,255,.92)) !important; border:1px solid rgba(34,194,255,.16); box-shadow:0 12px 28px rgba(10,58,95,.1) !important; }',
           '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message input, #chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { border:1px solid #b8d9ea !important; background:#fff !important; min-height:46px; }',
           '#chat-dialog.itabot-fullscreen-mode .itabot-direct-message textarea { min-height:92px; }',
@@ -552,13 +385,13 @@
     // Resetar para a tela de temas ao abrir
     document.getElementById('fale-tela-temas').style.display = 'block';
     document.getElementById('fale-tela-resposta').style.display = 'none';
-    _itabotRenderFaqCatalog();
   }
 
   window._itabotFecharTelaCheia = function () {
     var dialog = document.getElementById('chat-dialog');
     if (dialog) dialog.classList.remove('aberto');
-    document.body.classList.remove('chat-open', 'modal-aberto');
+  document.body.classList.remove('chat-open', 'modal-aberto');
+  window.location.href = 'index.html';
   };
 
   var _itabotConteudoTemas = {
@@ -968,9 +801,10 @@
   /* ─── Carregamento de Conhecimento ─── */
   function _itabotCarregarConhecimento() {
     var eng = _getEngine();
+    if (!eng) return;
 
     // 1. Carregar dados de produtos e promo do window se já existirem (via site-loader)
-    if (eng && window.SITE_CONFIG) {
+    if (window.SITE_CONFIG) {
       eng.loadData(window.PRODUTOS_DATA || null, window.SITE_CONFIG.promo || null);
     }
 
@@ -981,32 +815,19 @@
       'dados/faq_sorteio_promocoes.json'
     ];
 
-    _faqPending = faqs.length;
-    _itabotRenderFaqCatalog();
-    var finalizarFaq = function () {
-      _faqPending = Math.max(0, _faqPending - 1);
-      _itabotRenderFaqCatalog();
-    };
     faqs.forEach(function(url) {
       fetch(_base + url)
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data && data.perguntas) {
-            _itabotRegistrarFaqs(data.modulo || url, data.perguntas);
-            if (eng) {
-              data.perguntas.forEach(function(p) {
-                p.tags.forEach(function(tag) {
-                  eng.mergeRespostas(tag, p.resposta);
-                });
+            data.perguntas.forEach(function(p) {
+              p.tags.forEach(function(tag) {
+                eng.mergeRespostas(tag, p.resposta);
               });
-            }
+            });
           }
-          finalizarFaq();
         })
-        .catch(function(err) {
-          console.warn('ItaBot: Erro ao carregar FAQ ' + url, err);
-          finalizarFaq();
-        });
+        .catch(function(err) { console.warn('ItaBot: Erro ao carregar FAQ ' + url, err); });
     });
   }
 
@@ -1036,6 +857,5 @@
   window.abrirItaBot = _itabotAbrirItaBot;
   window.abrirChat = _itabotAbrirItaBot;
   window._itabotAbrirTelaCheia = _itabotAbrirTelaCheia;
-  window._itabotSetLedText = _itabotSetLedText;
 
 })();
