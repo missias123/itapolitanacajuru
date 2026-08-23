@@ -44,7 +44,7 @@
     <section id="packagingPanel" class="hide" aria-live="polite"></section>
     <section id="skuPanel" class="hide" aria-live="polite"></section>
     <div class="footerbar">
-      <p class="save-note">Produtos, sabores e embalagens são administrados no mesmo arquivo oficial. Ao esgotar uma embalagem, seus SKUs dependentes ficam indisponíveis no site; ao esgotar um sabor de massa, somente aquele sabor é bloqueado.</p>
+      <p class="save-note">Produtos, sabores e embalagens são administrados no mesmo arquivo oficial. Ao editar manualmente nome, tamanho ou preço de um produto, ele é marcado como esgotado automaticamente até você salvar a base; ao esgotar uma embalagem, seus SKUs dependentes ficam indisponíveis no site.</p>
       <div><span class="pending" id="pending"></span><button class="button primary" id="saveBottom" type="button" disabled>Atualizar site</button></div>
     </div>
   </main>
@@ -108,7 +108,8 @@
       const missing=(record.dependencias_embalagem||[]).find(sku=>packaging()[sku]?.ativo===false);
       return missing?{available:false,reason:`Embalagem ${missing} esgotada`}:{available:true,reason:''};
     };
-    const updateSave=()=>{const enabled=state.dirty&&!!getToken();$('save').disabled=!enabled;$('saveBottom').disabled=!enabled;$('pending').textContent=state.pending.length?`${state.pending.length} alteração(ões) confirmada(s), pronta(s) para atualizar.`:'';updateTokenBtn()};
+    const appendPending=message=>{if(message&&!state.pending.includes(message))state.pending.push(message)};
+    const updateSave=()=>{const enabled=state.dirty&&!!getToken();$('save').disabled=!enabled;$('saveBottom').disabled=!enabled;$('pending').textContent=state.pending.length?`${state.pending.length} alteração(ões) pronta(s) para atualizar.`:'';updateTokenBtn()};
     const setDirty=()=>{state.dirty=true;updateSave()};
     const visibleProducts=()=>{
       const q=state.query.trim().toLowerCase();
@@ -143,6 +144,31 @@
       const price=isPicole?r.preco_varejo??r.preco:r.preco;
       return `<tr data-key="${esc(r.key)}"><td class="sku">${esc(r.sku)}</td><td><input class="cell-input" data-field="nome" value="${esc(r.nome)}" aria-label="Nome de ${esc(r.sku)}"></td><td><input class="cell-input" data-field="tamanho" value="${esc(r.tamanho)}" aria-label="Tamanho de ${esc(r.sku)}"></td><td><input class="cell-input price" data-field="${isPicole?'preco_varejo':'preco'}" inputmode="decimal" value="${price==null?'':String(price).replace('.',',')}" aria-label="Preço de ${esc(r.sku)}"></td>${isPicole?`<td><input class="cell-input price" data-field="preco_atacado" inputmode="decimal" value="${r.preco_atacado==null?'':String(r.preco_atacado).replace('.',',')}" aria-label="Preço atacado de ${esc(r.sku)}"></td>`:''}<td>${dependencies}</td><td><label class="status ${status.available?'':'off'}"><input type="checkbox" data-field="ativo" ${selected}>${esc(statusText)}</label></td></tr>`;
     }
+    function syncStatusLabel(label,statusText){
+      if(!label)return;
+      const textNode=[...label.childNodes].find(node=>node.nodeType===Node.TEXT_NODE);
+      if(textNode)textNode.textContent=statusText;
+      else label.append(document.createTextNode(statusText));
+    }
+    function syncProductAvailability(row,record){
+      if(!row||!record)return;
+      const status=effective(record);
+      const label=row.querySelector('label.status');
+      const checkbox=row.querySelector('input[data-field="ativo"]');
+      if(checkbox)checkbox.checked=record.ativo!==false;
+      if(label){
+        label.className=`status ${status.available?'':'off'}`;
+        syncStatusLabel(label,status.available?'Disponível':`Esgotado${status.reason?' · '+status.reason:''}`);
+      }
+    }
+    function autoLockEditedProduct(row,record){
+      if(!row||!record||row.dataset.key.startsWith('massas.')||record.ativo===false)return false;
+      record.ativo=false;
+      appendPending(`${record.sku}: esgotado automaticamente após edição manual`);
+      syncProductAvailability(row,record);
+      notice(`${record.sku} foi marcado como esgotado automaticamente. Salve para refletir no site.`,'success');
+      return true;
+    }
     function renderFlavors(){
       const flavors=state.raw?.sabores_sorvete||[];
       $('flavorsPanel').innerHTML=`<article class="section"><div class="section-head"><div><h2>38 sabores de massa</h2><p>Desativar um sabor bloqueia somente ele nas escolhas de copos, casquinhas, taças, caixas, tortas e itens de massa.</p></div><div class="bulk-actions"><button class="button warning" type="button" data-flavor-batch="off">Esgotar todos</button><button class="button good" type="button" data-flavor-batch="on">Ativar todos</button></div></div><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Sabor</th><th>Estado</th></tr></thead><tbody>${flavors.map(flavor=>{const key='massas.'+flavor.codigo,record=master()[key]||{},available=record.ativo!==false;return `<tr data-key="${esc(key)}"><td class="sku">${esc(record.sku||flavor.codigo)}</td><td>${esc(record.nome||flavor.nome)}</td><td><label class="status ${available?'':'off'}"><input type="checkbox" data-field="ativo" ${available?'checked':''}>${available?'Disponível':'Esgotado'}</label></td></tr>`}).join('')}</tbody></table></div></article>`;
@@ -171,7 +197,7 @@
     function controllerFor(kind,id){if(kind==='embalagem')return packaging()[id]||null;return getRecord(id)}
     function requestAvailability(kind,id,forced){const controller=controllerFor(kind,id);if(!controller)return;const next=typeof forced==='boolean'?forced:controller.ativo===false;const row=availabilityRows().find(item=>item.kind===kind&&item.id===id);const label=next?'Confirmar retorno do produto':'Confirmar esgotamento';const packDeps=kind==='embalagem'?(packagingIndex()[row.sku]||[]):[];const impact=kind==='embalagem'?`A embalagem ${row.sku} possui ${packDeps.length} SKU(s) dependente(s). Eles ${next?'voltarão a ficar disponíveis, se os próprios SKUs estiverem ativos.':'receberão a tarja Esgotado e ficarão bloqueados.'}`:kind==='sabor'?`O sabor ${row.sku} ${next?'voltará a aparecer':'ficará bloqueado'} apenas nas escolhas de produtos de massa.`:`O SKU ${row.sku} ${next?'voltará a ficar disponível':'receberá a tarja Esgotado'} no site.`;state.confirmation={kind,id,next,label:row.nome,sku:row.sku};$('confirmTitle').textContent=label;$('confirmDescription').textContent=`${row.sku} · ${row.nome}`;$('confirmImpact').textContent=impact;$('confirmAvailability').textContent=next?'Confirmar retorno':'Confirmar esgotamento';$('availabilityDialog').showModal()}
     function applyConfirmation(){const action=state.confirmation;if(!action)return;const controller=controllerFor(action.kind,action.id);if(!controller)return;controller.ativo=action.next;state.pending.push(`${action.sku}: ${action.next?'reativado':'esgotado'}`);state.confirmation=null;$('availabilityDialog').close();setDirty();render();notice(`Alteração confirmada para ${action.sku}. Clique em Atualizar site para enviar a base oficial ao GitHub.`,'success')}
-    function updateRecord(input){const row=input.closest('tr[data-key]');if(!row)return;const record=getRecord(row.dataset.key);if(!record)return;const field=input.dataset.field;if(field==='ativo'){input.checked=record.ativo!==false;requestAvailability(row.dataset.key.startsWith('massas.')?'sabor':'produto',row.dataset.key);return}else if(['preco','preco_varejo','preco_atacado'].includes(field)){const value=input.value.trim().replace(',','.');record[field]=value===''?null:Number(value);if(field==='preco_varejo')record.preco=record[field]}else record[field]=input.value.trim();setDirty();renderSummary();}
+    function updateRecord(input){const row=input.closest('tr[data-key]');if(!row)return;const record=getRecord(row.dataset.key);if(!record)return;const field=input.dataset.field;if(field==='ativo'){input.checked=record.ativo!==false;requestAvailability(row.dataset.key.startsWith('massas.')?'sabor':'produto',row.dataset.key);return}else if(['preco','preco_varejo','preco_atacado'].includes(field)){const value=input.value.trim().replace(',','.');record[field]=value===''?null:Number(value);if(field==='preco_varejo')record.preco=record[field]}else record[field]=input.value.trim();const autoLocked=autoLockEditedProduct(row,record);setDirty();renderSummary();if(autoLocked&&state.activeOnly)render();}
     function updatePackaging(input){const row=input.closest('tr[data-packaging]');const pack=packaging()[row?.dataset.packaging];if(!pack)return;input.checked=pack.ativo!==false;requestAvailability('embalagem',row.dataset.packaging)}
     function applyBatch(category,active){const rows=records().filter(r=>(r.categoria||'Sem categoria')===category);if(!rows.length)return;state.confirmation={kind:'lote',rows:rows.map(r=>r.key),next:active,label:category,sku:`${rows.length} SKU(s)`};$('confirmTitle').textContent=active?'Confirmar retorno da linha':'Confirmar esgotamento da linha';$('confirmDescription').textContent=`${category} · ${rows.length} SKU(s)`;$('confirmImpact').textContent=`Todos os produtos desta linha serão ${active?'reativados':'marcados como esgotados'}.`;$('confirmAvailability').textContent=active?'Confirmar retorno':'Confirmar esgotamento';$('availabilityDialog').showModal()}
     function applyFlavorBatch(active){const rows=(state.raw?.sabores_sorvete||[]).map(flavor=>'massas.'+flavor.codigo);state.confirmation={kind:'lote',rows,next:active,label:'38 sabores de massa',sku:`${rows.length} sabores`};$('confirmTitle').textContent=active?'Confirmar retorno dos sabores':'Confirmar esgotamento dos sabores';$('confirmDescription').textContent=`38 sabores de massa`;$('confirmImpact').textContent=`Todos os sabores de massa serão ${active?'reativados':'marcados como esgotados'}.`;$('confirmAvailability').textContent=active?'Confirmar retorno':'Confirmar esgotamento';$('availabilityDialog').showModal()}
