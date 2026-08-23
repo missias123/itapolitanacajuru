@@ -125,6 +125,36 @@ export class PicoleReservaDO {
       });
     }
 
+    // ── Ação: preencher formulário (atômico — impede duplo envio) ───────────────
+    if (action === 'preencherFormulario') {
+      return this.state.blockConcurrencyWhile(async () => {
+        const reservaId = url.searchParams.get('reservaId') || '';
+        const ganhadorId = await this.state.storage.get('reservaId');
+        // Só o vencedor do dia pode preencher
+        if (!ganhadorId || ganhadorId !== reservaId) {
+          return new Response(
+            JSON.stringify({ ok: false, erro: 'reservaId não corresponde ao vencedor do dia' }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        const jaPreenchido = await this.state.storage.get('formularioPreenchido');
+        if (jaPreenchido) {
+          const codigo = await this.state.storage.get('codigoRetirada');
+          return new Response(
+            JSON.stringify({ ok: true, jaPreenchido: true, codigoRetirada: codigo }),
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        const codigoRetirada = url.searchParams.get('codigoRetirada') || '';
+        await this.state.storage.put('formularioPreenchido', true);
+        await this.state.storage.put('codigoRetirada', codigoRetirada);
+        return new Response(
+          JSON.stringify({ ok: true, jaPreenchido: false, codigoRetirada }),
+          { headers: { 'Content-Type': 'application/json' } }
+        );
+      });
+    }
+
     // ── Ação: consultar quem ganhou (uso admin/debug) ────────────────────────
     if (action === 'consultar') {
       const reservaId = await this.state.storage.get('reservaId');
@@ -690,7 +720,6 @@ function hojeEmSP() {
 function localHorarioParaUtc(dataLocal, horarioLocal) {
   // Monta string ISO sem fuso, interpreta como hora local de SP via Intl
   // Técnica: usamos Date.parse com offset real calculado para SP
-  const [h, m, s] = horarioLocal.split(':').map(Number);
   // Cria uma data "naive" em UTC que representa o horário de SP
   // Calculamos: obter offset de SP para uma data específica
   const naive = new Date(`${dataLocal}T${horarioLocal}`);
@@ -989,12 +1018,34 @@ async function handlePicoleReservaForm(reservaId, request, env) {
     return jsonResp({ sucesso: false, mensagem: 'É necessário aceitar os termos para participar.' }, 400);
   }
 
-  // Gera código de retirada único
-  // Guarda no KV ANTES de atualizar o status para evitar duplo incremento
+  // ── Gera código de retirada e grava via DO (atômico) ──────────────────────
+  // O DO garante que dois envios simultâneos não geram dois códigos diferentes.
   const contStr = await env.PROMO_KV.get('picole:meta:contador_retiradas') || '0';
   const cont = parseInt(contStr, 10) + 1;
   const codigoRetirada = gerarCodigoRetirada(cont);
-  await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
+
+  if (env.PICOLE_RESERVA_DO) {
+    const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
+    const doStub = env.PICOLE_RESERVA_DO.get(doId);
+    const doUrl  = `https://do/picole?action=preencherFormulario&reservaId=${encodeURIComponent(reservaId)}&codigoRetirada=${encodeURIComponent(codigoRetirada)}`;
+    const doRes  = await doStub.fetch(doUrl);
+    const doData = await doRes.json();
+    if (!doData.ok) {
+      return jsonResp({ sucesso: false, mensagem: 'Não foi possível confirmar o formulário. Tente novamente.' }, 409);
+    }
+    if (doData.jaPreenchido) {
+      return jsonResp({
+        sucesso: true,
+        codigoRetirada: doData.codigoRetirada,
+        mensagem: 'Cadastro já realizado. Apresente este código na loja para retirar seu picolé.',
+      });
+    }
+    // DO confirmou — agora incrementa o contador (apenas uma vez)
+    await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
+  } else {
+    // Fallback sem DO: persiste mesmo assim
+    await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
+  }
 
   const agora = new Date().toISOString();
   if (!reserva.historico) reserva.historico = [];
@@ -1002,10 +1053,12 @@ async function handlePicoleReservaForm(reservaId, request, env) {
   reserva.statusFormulario = 'preenchido';
   reserva.codigoRetirada = codigoRetirada;
   reserva.atualizadoEm = agora;
-  // Armazena apenas o necessário para atendimento (LGPD)
+  // Armazena dados necessários para atendimento e registro LGPD
   reserva.dadosVencedor = {
     nome,
     celular,
+    aceiteTermos,
+    aceiteLGPD,
     preenchidoEm: agora,
   };
   await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
@@ -1086,7 +1139,25 @@ async function handlePicoleAdminCampanha(env) {
   for (let i = 0; i < 30; i++) {
     const dataLocal = adicionarDias(campanha.dataInicio, i);
     const dia = await env.PROMO_KV.get(`picole:dia:${dataLocal}`, 'json');
-    if (dia) dias.push(dia);
+    if (dia) {
+      const diaAdmin = { ...dia };
+      // Enriquece com nome do vencedor se existir
+      if (dia.vencedorId) {
+        const reserva = await env.PROMO_KV.get(`picole:reserva:${dia.vencedorId}`, 'json');
+        if (reserva) {
+          diaAdmin.nomeVencedor = (reserva.dadosVencedor || {}).nome || null;
+          diaAdmin.celularVencedor = (reserva.dadosVencedor || {}).celular || null;
+          diaAdmin.statusFormulario = reserva.statusFormulario || null;
+          diaAdmin.codigoRetirada = reserva.codigoRetirada || null;
+          try {
+            diaAdmin.horarioCliqueSP = new Date(reserva.criadoEm)
+              .toLocaleString('pt-BR', { timeZone: SP_TIMEZONE, hour12: false })
+              .replace(',', '');
+          } catch (_) { diaAdmin.horarioCliqueSP = reserva.criadoEm; }
+        }
+      }
+      dias.push(diaAdmin);
+    }
   }
   return jsonResp({ ok: true, campanha, dias });
 }
@@ -1123,12 +1194,26 @@ async function handlePicoleAdminGanhadores(env) {
       const r = await env.PROMO_KV.get(k.name, 'json');
       if (r) {
         const { ipCliente: _ip, ...safe } = r;
+        // Enriquece com o horário agendado do dia (admin pode ver)
+        const dia = await env.PROMO_KV.get(`picole:dia:${safe.dataLocal}`, 'json');
+        if (dia) {
+          safe.horarioSorteado = dia.horarioSorteado;
+          safe.statusDia = dia.status;
+        }
+        // Converte criadoEm (UTC) para horário legível em SP
+        if (safe.criadoEm) {
+          try {
+            safe.horarioCliqueSP = new Date(safe.criadoEm)
+              .toLocaleString('pt-BR', { timeZone: SP_TIMEZONE, hour12: false })
+              .replace(',', '');
+          } catch (_) { safe.horarioCliqueSP = safe.criadoEm; }
+        }
         ganhadores.push(safe);
       }
     }
     cursor = lista.list_complete ? undefined : lista.cursor;
   } while (cursor);
-  ganhadores.sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
+  ganhadores.sort((a, b) => (b.dataLocal || '').localeCompare(a.dataLocal || ''));
   return jsonResp({ ok: true, total: ganhadores.length, ganhadores });
 }
 

@@ -84,33 +84,6 @@
     e.returnValue = msg;
     return msg;
   }
-  function _escapeHtml(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function _maskPhone(v) {
-    var d = String(v).replace(/\D/g, '').slice(0, 11);
-    if (d.length <= 2) return '(' + d;
-    if (d.length <= 7) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
-    if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
-    return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
-  }
-
-  function _validPhone(v) {
-    var d = String(v).replace(/\D/g, '');
-    return /^\d{10,11}$/.test(d);
-  }
-
-  function _validFullName(v) {
-    var parts = String(v || '').trim().split(/\s+/).filter(function (p) { return p.length >= 2; });
-    return parts.length >= 2 && v.trim().length >= 5;
-  }
-
   // ── Utilitários ─────────────────────────────────────────────────────────────
   function _escapeHtml(str) {
     return String(str || '')

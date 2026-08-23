@@ -289,25 +289,48 @@
           wrap.innerHTML = '<div class="empty-state">Nenhum ganhador ainda.</div>';
           return;
         }
-        var html = '<table><thead><tr><th>Data</th><th>Nome</th><th>Celular</th><th>Clique</th><th>Formulário</th><th>Código</th><th>Retirada</th><th>Ações</th></tr></thead><tbody>';
+        var html = '<div style="overflow-x:auto"><table><thead><tr>' +
+          '<th>Data</th>' +
+          '<th>Horário Promoção</th>' +
+          '<th>Horário do Clique (SP)</th>' +
+          '<th>Nome</th>' +
+          '<th>Celular</th>' +
+          '<th>Formulário</th>' +
+          '<th>Preenchido em</th>' +
+          '<th>Aceite Termos</th>' +
+          '<th>Aceite LGPD</th>' +
+          '<th>Código Retirada</th>' +
+          '<th>Status Retirada</th>' +
+          '<th>Ações</th>' +
+          '</tr></thead><tbody>';
         d.ganhadores.forEach(function (g) {
           var venc = (g.dadosVencedor || {});
           var badgeForm = g.statusFormulario === 'preenchido' ?
-            '<span class="badge badge-green">Preenchido</span>' :
-            '<span class="badge badge-yellow">Aguardando</span>';
+            '<span class="badge badge-green">✅ Preenchido</span>' :
+            '<span class="badge badge-yellow">⏳ Aguardando</span>';
+          var badgeAceiteTermos = venc.aceiteTermos
+            ? '<span class="badge badge-green">Sim</span>'
+            : '<span class="badge badge-gray">—</span>';
+          var badgeAceiteLGPD = venc.aceiteLGPD
+            ? '<span class="badge badge-green">Sim</span>'
+            : '<span class="badge badge-gray">—</span>';
           var badgeRet = _badgeRetirada(g.statusRetirada);
           html += '<tr>';
-          html += '<td>' + _esc(g.dataLocal || '') + '</td>';
-          html += '<td>' + _esc(venc.nome || '—') + '</td>';
+          html += '<td><strong>' + _esc(g.dataLocal || '') + '</strong></td>';
+          html += '<td style="font-size:.82rem;color:#1565c0;font-weight:700">' + _esc(g.horarioSorteado || '—') + '</td>';
+          html += '<td style="font-size:.8rem;color:#555;white-space:nowrap">' + _esc(g.horarioCliqueSP || (g.criadoEm ? g.criadoEm.slice(0,19).replace('T',' ') : '—')) + '</td>';
+          html += '<td><strong>' + _esc(venc.nome || '—') + '</strong></td>';
           html += '<td>' + _esc(venc.celular ? _maskPhone(venc.celular) : '—') + '</td>';
-          html += '<td style="font-size:.75rem;color:#888">' + _esc(g.criadoEm ? g.criadoEm.slice(0,19).replace('T',' ') : '') + '</td>';
           html += '<td>' + badgeForm + '</td>';
-          html += '<td><strong>' + _esc(g.codigoRetirada || '—') + '</strong></td>';
+          html += '<td style="font-size:.75rem;color:#888;white-space:nowrap">' + _esc(venc.preenchidoEm ? venc.preenchidoEm.slice(0,19).replace('T',' ') : '—') + '</td>';
+          html += '<td>' + badgeAceiteTermos + '</td>';
+          html += '<td>' + badgeAceiteLGPD + '</td>';
+          html += '<td><strong style="color:#1a237e">' + _esc(g.codigoRetirada || '—') + '</strong></td>';
           html += '<td>' + badgeRet + '</td>';
-          html += '<td><button class="btn btn-yellow" onclick="editarGanhador(\'' + _esc(g.reservaId) + '\')" type="button">✏️ Editar</button></td>';
+          html += '<td><button class="btn btn-yellow" onclick="editarGanhador(\'' + _esc(g.reservaId) + '\')" type="button" style="font-size:.75rem;padding:6px 10px">✏️ Editar</button></td>';
           html += '</tr>';
         });
-        html += '</tbody></table>';
+        html += '</tbody></table></div>';
         wrap.innerHTML = html;
       })
       .catch(function () { wrap.innerHTML = '<div class="empty-state">Erro de conexão.</div>'; });
@@ -324,47 +347,81 @@
   window.editarGanhador = function (reservaId) {
     var modal = document.getElementById('modal-ganhador');
     var body = document.getElementById('mg-body');
-    body.innerHTML = '<p style="font-size:.88rem;color:#555;margin-bottom:12px">Atualize o status de retirada do prêmio:</p>' +
-      '<div class="campo"><label>Status de Retirada</label>' +
-      '<select id="mg-status-select">' +
-      '<option value="pendente">Pendente</option>' +
-      '<option value="retirado">Retirado</option>' +
-      '<option value="nao_retirado">Não Retirado</option>' +
-      '<option value="cancelado">Cancelado</option>' +
-      '</select></div>' +
-      '<div class="campo"><label>Nota Admin (opcional)</label><input type="text" id="mg-nota" maxlength="200" placeholder="Observações..."></div>' +
-      '<div class="btn-row"><button class="btn btn-green" id="mg-salvar" type="button">💾 Salvar</button>' +
-      '<button class="btn btn-gray" id="mg-cancelar" type="button">Cancelar</button></div>' +
-      '<div id="mg-msg" class="msg"></div>';
+    // Busca os dados atuais para exibir no modal
+    body.innerHTML = '<div class="empty-state" style="padding:20px">Carregando...</div>';
     modal.style.display = 'flex';
     document.getElementById('mg-box').focus();
-
-    document.getElementById('mg-cancelar').addEventListener('click', _fecharModalGanhador);
     document.getElementById('mg-close').addEventListener('click', _fecharModalGanhador);
-    document.getElementById('mg-salvar').addEventListener('click', function () {
-      var status = document.getElementById('mg-status-select').value;
-      var nota = document.getElementById('mg-nota').value.trim();
-      var btnS = document.getElementById('mg-salvar');
-      var msgEl = document.getElementById('mg-msg');
-      btnS.disabled = true;
-      _patch('/api/admin/promocao/picole/ganhadores/' + encodeURIComponent(reservaId), { statusRetirada: status, notaAdmin: nota })
-        .then(function (d) {
-          btnS.disabled = false;
-          if (d.ok) {
-            msgEl.textContent = 'Status atualizado!';
-            msgEl.className = 'msg vis msg-ok';
-            setTimeout(function () { _fecharModalGanhador(); _carregarGanhadores(); }, 1200);
-          } else {
-            msgEl.textContent = d.error || 'Erro ao salvar.';
-            msgEl.className = 'msg vis msg-err';
-          }
-        })
-        .catch(function () {
-          btnS.disabled = false;
-          msgEl.textContent = 'Erro de conexão.';
-          msgEl.className = 'msg vis msg-err';
+
+    _get('/api/admin/promocao/picole/ganhadores')
+      .then(function (d) {
+        var g = d.ganhadores && d.ganhadores.find(function (x) { return x.reservaId === reservaId; });
+        var venc = (g && g.dadosVencedor) || {};
+        var infoHtml = g ? (
+          '<div style="background:#f5f7ff;border-radius:10px;padding:14px;margin-bottom:14px;font-size:.85rem;line-height:1.7">' +
+          '<div><strong>📅 Data:</strong> ' + _esc(g.dataLocal || '—') + '</div>' +
+          '<div><strong>⏰ Horário Promoção:</strong> <span style="color:#1565c0;font-weight:700">' + _esc(g.horarioSorteado || '—') + '</span></div>' +
+          '<div><strong>🖱️ Clicou em:</strong> ' + _esc(g.horarioCliqueSP || '—') + '</div>' +
+          '<hr style="margin:8px 0;border:none;border-top:1px solid #e0e0e0">' +
+          '<div><strong>👤 Nome:</strong> ' + _esc(venc.nome || '—') + '</div>' +
+          '<div><strong>📱 Celular:</strong> ' + _esc(venc.celular ? _maskPhone(venc.celular) : '—') + '</div>' +
+          '<div><strong>📋 Formulário:</strong> ' + (g.statusFormulario === 'preenchido' ? '<span style="color:#2e7d32;font-weight:700">✅ Preenchido</span>' : '<span style="color:#f57f17;font-weight:700">⏳ Aguardando</span>') + '</div>' +
+          (venc.preenchidoEm ? '<div><strong>📝 Preenchido em:</strong> ' + _esc(venc.preenchidoEm.slice(0,19).replace('T',' ')) + '</div>' : '') +
+          '<div><strong>✅ Aceite Termos:</strong> ' + (venc.aceiteTermos ? '<span style="color:#2e7d32">Sim</span>' : '<span style="color:#c62828">Não/Pendente</span>') + '</div>' +
+          '<div><strong>🔒 Aceite LGPD:</strong> ' + (venc.aceiteLGPD ? '<span style="color:#2e7d32">Sim</span>' : '<span style="color:#c62828">Não/Pendente</span>') + '</div>' +
+          (g.codigoRetirada ? '<div><strong>🎟️ Código:</strong> <span style="font-weight:800;color:#1a237e">' + _esc(g.codigoRetirada) + '</span></div>' : '') +
+          '</div>'
+        ) : '';
+
+        body.innerHTML = infoHtml +
+          '<p style="font-size:.88rem;color:#555;margin-bottom:12px">Atualize o status de retirada do prêmio:</p>' +
+          '<div class="campo"><label>Status de Retirada</label>' +
+          '<select id="mg-status-select">' +
+          '<option value="pendente">Pendente</option>' +
+          '<option value="retirado">Retirado ✅</option>' +
+          '<option value="nao_retirado">Não Retirado</option>' +
+          '<option value="cancelado">Cancelado</option>' +
+          '</select></div>' +
+          '<div class="campo"><label>Nota Admin (opcional)</label><input type="text" id="mg-nota" maxlength="200" placeholder="Observações..."></div>' +
+          '<div class="btn-row"><button class="btn btn-green" id="mg-salvar" type="button">💾 Salvar</button>' +
+          '<button class="btn btn-gray" id="mg-cancelar" type="button">Cancelar</button></div>' +
+          '<div id="mg-msg" class="msg"></div>';
+
+        // Pre-seleciona o status atual
+        if (g && g.statusRetirada) {
+          var sel = document.getElementById('mg-status-select');
+          if (sel) sel.value = g.statusRetirada;
+        }
+
+        document.getElementById('mg-cancelar').addEventListener('click', _fecharModalGanhador);
+        document.getElementById('mg-salvar').addEventListener('click', function () {
+          var status = document.getElementById('mg-status-select').value;
+          var nota = document.getElementById('mg-nota').value.trim();
+          var btnS = document.getElementById('mg-salvar');
+          var msgEl = document.getElementById('mg-msg');
+          btnS.disabled = true;
+          _patch('/api/admin/promocao/picole/ganhadores/' + encodeURIComponent(reservaId), { statusRetirada: status, notaAdmin: nota })
+            .then(function (d) {
+              btnS.disabled = false;
+              if (d.ok) {
+                msgEl.textContent = 'Status atualizado!';
+                msgEl.className = 'msg vis msg-ok';
+                setTimeout(function () { _fecharModalGanhador(); _carregarGanhadores(); }, 1200);
+              } else {
+                msgEl.textContent = d.error || 'Erro ao salvar.';
+                msgEl.className = 'msg vis msg-err';
+              }
+            })
+            .catch(function () {
+              btnS.disabled = false;
+              msgEl.textContent = 'Erro de conexão.';
+              msgEl.className = 'msg vis msg-err';
+            });
         });
-    });
+      })
+      .catch(function () {
+        body.innerHTML = '<div class="empty-state">Erro ao carregar dados.</div>';
+      });
   };
 
   function _fecharModalGanhador() {
@@ -399,12 +456,28 @@
           '</table>';
 
         if (d.dias && d.dias.length) {
-          var html = '<table><thead><tr><th>Data</th><th>Horário Sorteado (SP)</th><th>Status</th><th>Vencedor</th></tr></thead><tbody>';
-          d.dias.forEach(function (dia) {
+          var html = '<div style="overflow-x:auto"><table><thead><tr>' +
+            '<th>#</th><th>Data</th><th>Horário Sorteado (SP)</th><th>Status</th>' +
+            '<th>Ganhador</th><th>Celular</th><th>Horário Clique (SP)</th><th>Formulário</th><th>Código Retirada</th>' +
+            '</tr></thead><tbody>';
+          d.dias.forEach(function (dia, idx) {
             var badgeStatus = _badgeDia(dia.status);
-            html += '<tr><td>' + _esc(dia.dataLocal) + '</td><td><strong>' + _esc(dia.horarioSorteado) + '</strong></td><td>' + badgeStatus + '</td><td>' + _esc(dia.vencedorId ? dia.vencedorId.slice(0,12) + '…' : '—') + '</td></tr>';
+            var badgeForm = dia.statusFormulario === 'preenchido'
+              ? '<span class="badge badge-green">✅ Preenchido</span>'
+              : dia.nomeVencedor ? '<span class="badge badge-yellow">⏳ Aguardando</span>' : '';
+            html += '<tr>';
+            html += '<td style="color:#888;font-size:.75rem">' + (idx + 1) + '</td>';
+            html += '<td><strong>' + _esc(dia.dataLocal) + '</strong></td>';
+            html += '<td><strong style="color:#1565c0">' + _esc(dia.horarioSorteado) + '</strong></td>';
+            html += '<td>' + badgeStatus + '</td>';
+            html += '<td>' + _esc(dia.nomeVencedor || '—') + '</td>';
+            html += '<td>' + _esc(dia.celularVencedor ? _maskPhone(dia.celularVencedor) : '—') + '</td>';
+            html += '<td style="font-size:.78rem;color:#555;white-space:nowrap">' + _esc(dia.horarioCliqueSP || '—') + '</td>';
+            html += '<td>' + (badgeForm || '<span style="color:#bbb">—</span>') + '</td>';
+            html += '<td><strong style="color:#1a237e">' + _esc(dia.codigoRetirada || '—') + '</strong></td>';
+            html += '</tr>';
           });
-          html += '</tbody></table>';
+          html += '</tbody></table></div>';
           tabelaDias.innerHTML = html;
         }
       })
