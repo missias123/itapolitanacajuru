@@ -3885,15 +3885,25 @@ function renderSorvetes(){
  const g=document.getElementById('sorvetes-grid');
  if (!g) return;
  g.innerHTML = '';
- const nomes={casquinha_copo:'Casquinha/copo',casquinha_copão:'Casquinha/copo',copo_recheado:'Copo recheado',copão_recheado:'Copo recheado',cascão:'Cascão',cestinha:'Cestinha'};
- const desc={casquinha_copo:'1 bola',casquinha_copão:'1 bola',copo_recheado:'1 bola + recheio',copão_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
+ const nomes={casquinha_copo:'Casquinha/copo',copo_recheado:'Copo recheado',cascão:'Cascão',cestinha:'Cestinha'};
+ const desc={casquinha_copo:'1 bola',copo_recheado:'1 bola + recheio',cascão:'Casquinha grande',cestinha:'Cestinha recheada crocante'};
  if(produtos&&produtos.sorvetes&&produtos.sorvetes.preços){
   Object.entries(produtos.sorvetes.preços).forEach(([key,preços])=>{
    const preço=Object.values(preços)[0];
-   const chave='sorvete_'+key+'_'+Object.keys(preços)[0].replace(/\s/g,'_');
+   const tamanhoInicial=Object.keys(preços)[0];
+   // Casquinha e Copo são duas embalagens distintas com o mesmo preço
+   if(key==='casquinha_copo'){
+    [{id:'casquinha',nome:'Casquinha',descr:'Sorvete na casquinha crocante'},{id:'copo',nome:'Copo',descr:'Sorvete no copo plástico'}].forEach(emb=>{
+     const chave='sorvete_'+emb.id+'_'+tamanhoInicial.replace(/\s/g,'_');
+     const c=document.createElement('div');c.className='prod-card';
+     c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${emb.nome}</div>${seloLeitePasteurizado()}<div class="prod-desc">${emb.descr}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(emb.nome,tamanhoInicial,preço,'sorvetes','sorvetes.casquinha_copo.'+chaveCadastroSku(tamanhoInicial))}</div>`;
+     g.appendChild(c);
+    });
+    return;
+   }
+   const chave='sorvete_'+key+'_'+tamanhoInicial.replace(/\s/g,'_');
    const c=document.createElement('div');c.className='prod-card';
    const nomeProduto=nomes[key]||key;
-   const tamanhoInicial=Object.keys(preços)[0];
    c.innerHTML=imgCard(chave,'')+`<div class="prod-card-body"><div class="prod-nome">${nomeProduto}</div>${seloLeitePasteurizado()}<div class="prod-desc">${desc[key]||''}</div><div class="prod-preço">A partir de R$ ${preço.toFixed(2).replace('.',',')}</div>${botaoPeçaERetire(nomeProduto,tamanhoInicial,preço,'sorvetes',`sorvetes.${key}.${chaveCadastroSku(tamanhoInicial)}`)}</div>`;
    g.appendChild(c);
   });
@@ -4795,8 +4805,8 @@ async function carregarPreçosNuvemCardápio() {
    // Normalizar chaves do JSON para o formato interno
    const p = dados.sorvetes.precos;
    produtos.sorvetes.preços = {
-    casquinha_copão: p.casquinha_copo || p.casquinha_copão,
-    copão_recheado: p.copo_recheado || p.copão_recheado,
+    casquinha_copo: p.casquinha_copo,
+    copo_recheado: p.copo_recheado,
     cascão: p.cascão,
     cestinha: p.cestinha
    };
