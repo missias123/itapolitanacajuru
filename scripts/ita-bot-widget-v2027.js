@@ -191,7 +191,7 @@
       '.itabot-launcher-led-copy { flex:0 0 auto; display:inline-block; }',
       '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { display:block; opacity:1; }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
-      '@keyframes itabot-led-scroll { from { transform:translate3d(0,-50%,0); } to { transform:translate3d(calc(-50% - 10px),-50%,0); } }',
+      '@keyframes itabot-led-scroll { from { transform:translate3d(0,-50%,0); } to { transform:translate3d(-50%,-50%,0); } }',
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } .itabot-launcher-led-track { transform:none; } }',
       '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(100px, 32vw, 124px); height:clamp(136px, 29vh, 170px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(88px, 26.8vw, 110px); width:clamp(84px, 24.6vw, 106px); height:clamp(88px, 26.8vw, 110px); } .itabot-launcher-robot::before { border-width:1.4px; } .itabot-launcher-robot::after { font-size:6.4px; border-width:1px; } .itabot-launcher-led-panel { width:clamp(78px, 24vw, 94px); height:22px; margin-top:-18px; border-radius:8px; } .itabot-launcher-led-track { font-size:8.2px; gap:18px; } }',
@@ -980,6 +980,10 @@
 
     _faqPending = faqs.length;
     _itabotRenderFaqCatalog();
+    var finalizarFaq = function () {
+      _faqPending = Math.max(0, _faqPending - 1);
+      _itabotRenderFaqCatalog();
+    };
     faqs.forEach(function(url) {
       fetch(_base + url)
         .then(function(r) { return r.json(); })
@@ -994,11 +998,11 @@
               });
             }
           }
+          finalizarFaq();
         })
-        .catch(function(err) { console.warn('ItaBot: Erro ao carregar FAQ ' + url, err); })
-        .finally(function() {
-          _faqPending = Math.max(0, _faqPending - 1);
-          _itabotRenderFaqCatalog();
+        .catch(function(err) {
+          console.warn('ItaBot: Erro ao carregar FAQ ' + url, err);
+          finalizarFaq();
         });
     });
   }
