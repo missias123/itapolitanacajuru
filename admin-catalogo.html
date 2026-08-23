@@ -105,7 +105,7 @@
     const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'—';
     const getToken=()=>{try{return localStorage.getItem('itap_github_token')||sessionStorage.getItem('itap_github_token')||''}catch(e){try{return sessionStorage.getItem('itap_github_token')||''}catch(_e){return ''}}};
-    const setToken=v=>{try{if(v)localStorage.setItem('itap_github_token',v);else localStorage.removeItem('itap_github_token')}catch(e){}try{if(v)sessionStorage.setItem('itap_github_token',v);else sessionStorage.removeItem('itap_github_token')}catch(e){}};
+    const setToken=v=>{let localOk=false;try{if(v)localStorage.setItem('itap_github_token',v);else localStorage.removeItem('itap_github_token');localOk=true}catch(e){}try{if(!localOk){if(v)sessionStorage.setItem('itap_github_token',v);else sessionStorage.removeItem('itap_github_token')}else sessionStorage.removeItem('itap_github_token')}catch(e){}};
     const updateTokenBtn=()=>{const has=!!getToken();$('tokenBtn').className='button token-btn'+(has?' active':'');$('tokenBtn').textContent=has?'🔑 Token ativo':'🔑 Token GitHub'};
     const clone=value=>JSON.parse(JSON.stringify(value));
     const notice=(text,type='')=>{$('notice').textContent=text;$('notice').className='notice '+type};
@@ -163,6 +163,7 @@
       const orderMap=new Map(keys.map((key,index)=>[key,index]));
       records().sort(productSort(orderMap)).forEach(record=>{ordered[record.key]=source[record.key]});
       keys.filter(key=>key.startsWith('embalagens.')).sort((a,b)=>a.localeCompare(b,'pt-BR')).forEach(key=>{ordered[key]=source[key]});
+      keys.forEach(key=>{if(!(key in ordered))ordered[key]=source[key]});
       state.raw.cadastro_skus.por_chave=ordered;
     }
     const visibleProducts=()=>{
@@ -195,7 +196,7 @@
         const guide=sectionGuide(category);
         return `<article class="section" id="sec-${slug(category)}"><div class="section-head"><div><h2><span class="section-order">${String(index+1).padStart(2,'0')}</span>${esc(guide.title)}</h2><p>${rows.length} registro(s) na base oficial.</p><div class="section-hint">${esc(guide.hint)}</div></div><div class="bulk-actions"><button class="button warning" type="button" data-batch="off" data-category="${esc(category)}">Esgotar linha</button><button class="button good" type="button" data-batch="on" data-category="${esc(category)}">Ativar linha</button></div></div><div class="table-wrap"><table><thead><tr><th>SKU</th><th>Produto</th><th>Descrição</th><th>Tamanho</th><th>${isPicole?'Varejo':'Valor'}</th>${isPicole?'<th>Atacado ≥100</th>':''}<th>Dependência</th><th>Status</th><th>Ação manual</th></tr></thead><tbody>${rows.map(r=>productRow(r,isPicole)).join('')}</tbody></table></div></article>`;
       }).join('');
-      $('productsPanel').innerHTML=(chooser+markup)||'<div class="section empty">Nenhum produto encontrado com este filtro.</div>';
+      $('productsPanel').innerHTML=entries.length?(chooser+markup):'<div class="section empty">Nenhum produto encontrado com este filtro.</div>';
     }
     function productRow(r,isPicole){
       const status=effective(r), dependencies=(r.dependencias_embalagem||[]).map(sku=>`<span class="tag warn">${esc(sku)}</span>`).join(' ')||'<span class="tag">Sem embalagem dependente</span>';
