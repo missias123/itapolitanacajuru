@@ -123,6 +123,23 @@
     document.head.appendChild(style);
   }
 
+  /* ─── Resolve código da página (sistema site-codigos.json) ─── */
+  var _paginaCodigo = (function () {
+    if (window.ITABOT_PAGE_CODE) return window.ITABOT_PAGE_CODE;
+    var path = (location.pathname || '').replace(/.*\//, '').replace(/\.html$/, '') || 'index';
+    var mapa = {
+      'index': 'ROB-HOME', '': 'ROB-HOME',
+      'sobre': 'ROB-SOBRE',
+      'dicas': 'ROB-DICAS',
+      'encomendas': 'ROB-ENC',
+      'promocao': 'ROB-PROMO',
+      'politica-privacidade': 'ROB-PRIV',
+      '404': 'ROB-404',
+      'offline': 'ROB-OFF'
+    };
+    return mapa[path] || ('ROB-' + path.toUpperCase().replace(/[^A-Z0-9]/g, '-'));
+  })();
+
   /* ─── Launcher flutuante inteligente ─── */
   function _itabotInjetarLauncher() {
     if (document.getElementById('itabot-launcher')) return;
@@ -130,10 +147,11 @@
     launcher.id = 'itabot-launcher';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
-      launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
+    launcher.setAttribute('data-page-code', _paginaCodigo);
+    launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
+        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png" alt="" draggable="false"/>',
       '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
