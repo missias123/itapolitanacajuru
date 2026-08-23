@@ -68,13 +68,16 @@ const ADMIN_PBKDF2_ALGO         = 'pbkdf2-sha256';
 const ADMIN_PBKDF2_VERSION      = '1';
 
 const RATE_LIMITS = {
-  'post-cliente':  { max: 10, windowMs: 3_600_000 },
-  'login':         { max: 20, windowMs: 3_600_000 },
-  'admin-login':   { max: 10, windowMs: 3_600_000 },
-  'post-enc':      { max: 10, windowMs: 3_600_000 },
-  'resgatar':      { max: 10, windowMs: 3_600_000 },
-  'post-sorteio':  { max: 3,  windowMs: 1_800_000 }, // 3 tentativas por 30 min (sorteio)
-  'buscar-sorteio': { max: 5, windowMs: 3_600_000 }, // 5 buscas por hora
+  'post-cliente':     { max: 10, windowMs: 3_600_000 },
+  'login':            { max: 20, windowMs: 3_600_000 },
+  'admin-login':      { max: 10, windowMs: 3_600_000 },
+  'post-enc':         { max: 10, windowMs: 3_600_000 },
+  'resgatar':         { max: 10, windowMs: 3_600_000 },
+  'post-sorteio':     { max: 3,  windowMs: 1_800_000 },
+  'buscar-sorteio':   { max: 5,  windowMs: 3_600_000 },
+  'picole-status':    { max: 240, windowMs: 3_600_000 }, // polling ~20s = 180/hr + buffer
+  'picole-reservar':  { max: 5,  windowMs: 3_600_000 },  // 5 tentativas por hora por IP
+  'picole-form':      { max: 5,  windowMs: 3_600_000 },  // 5 envios por hora por IP
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
@@ -342,6 +345,47 @@ async function router(request, env) {
     if (method === 'DELETE') return handleDeleteSorteioInscrito(id, env);
   }
 
+  if (path === '/api/promocao/picole/status' && method === 'GET') return handlePicoleStatus(request, env);
+  if (path === '/api/promocao/picole/reservar' && method === 'POST') return handlePicoleReservar(request, env);
+
+  const mPicoleReserva = path.match(/^\/api\/promocao\/picole\/reserva\/([A-Za-z0-9_-]{10,64})$/);
+  if (mPicoleReserva) {
+    const reservaId = mPicoleReserva[1];
+    if (method === 'GET')  return handlePicoleReservaGet(reservaId, request, env);
+    if (method === 'POST') return handlePicoleReservaForm(reservaId, request, env);
+  }
+
+  if (path === '/api/admin/promocao/picole/iniciar' && method === 'POST') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handlePicoleAdminIniciar(request, env);
+  }
+  if (path === '/api/admin/promocao/picole/campanha' && method === 'GET') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handlePicoleAdminCampanha(env);
+  }
+  if (path === '/api/admin/promocao/picole/campanha' && method === 'DELETE') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handlePicoleAdminCancelarCampanha(request, env);
+  }
+  if (path === '/api/admin/promocao/picole/pausar' && method === 'POST') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handlePicoleAdminTogglePausa(env, true);
+  }
+  if (path === '/api/admin/promocao/picole/retomar' && method === 'POST') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handlePicoleAdminTogglePausa(env, false);
+  }
+  if (path === '/api/admin/promocao/picole/ganhadores' && method === 'GET') {
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    return handlePicoleAdminGanhadores(env);
+  }
+  const mPicoleGanhador = path.match(/^\/api\/admin\/promocao\/picole\/ganhadores\/([A-Za-z0-9_-]{10,64})$/);
+  if (mPicoleGanhador) {
+    const gid = mPicoleGanhador[1];
+    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    if (method === 'PATCH') return handlePicoleAdminPatchGanhador(gid, request, env);
+  }
+
   return jsonResp({ ok: false, error: 'Rota não encontrada' }, 404);
 }
 
@@ -560,4 +604,462 @@ async function handleDeleteSorteioInscritosLoteMes(loteMes, env) {
 
 function handleAdminAuth(request, env) {
   return handleAdminSession(request, env);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ─── PROMOÇÃO PICOLÉ 30 DIAS ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Fuso horário de São Paulo
+const SP_TIMEZONE = 'America/Sao_Paulo';
+
+// Retorna a data local em SP no formato YYYY-MM-DD
+function hojeEmSP() {
+  return new Date().toLocaleDateString('sv-SE', { timeZone: SP_TIMEZONE });
+}
+
+// Converte "HH:MM:SS" + data local "YYYY-MM-DD" em timestamp UTC (ms)
+function localHorarioParaUtc(dataLocal, horarioLocal) {
+  // Monta string ISO sem fuso, interpreta como hora local de SP via Intl
+  // Técnica: usamos Date.parse com offset real calculado para SP
+  const [h, m, s] = horarioLocal.split(':').map(Number);
+  // Cria uma data "naive" em UTC que representa o horário de SP
+  // Calculamos: obter offset de SP para uma data específica
+  const naive = new Date(`${dataLocal}T${horarioLocal}`);
+  // Offset real de SP naquela data/hora (pode ser -3 ou -2 no horário de verão)
+  const spDateStr = naive.toLocaleString('en-CA', { timeZone: SP_TIMEZONE, hour12: false });
+  // spDateStr: YYYY-MM-DD, HH:MM:SS
+  const parts = spDateStr.match(/^(\d{4}-\d{2}-\d{2}),?\s+(\d{2}:\d{2}:\d{2})$/);
+  if (!parts) {
+    // fallback: assume UTC-3
+    return naive.getTime() + 3 * 3_600_000;
+  }
+  const spDate = new Date(`${parts[1]}T${parts[2]}Z`);
+  const offset = naive.getTime() - spDate.getTime();
+  return naive.getTime() + offset;
+}
+
+// Gera 30 horários aleatórios bem distribuídos entre 11:00 e 20:00
+// Usa segmentos de 18 minutos para garantir diversidade
+function gerarHorariosDiversificados(n) {
+  // Janela: 11:00:00 a 19:59:59 = 32400 segundos
+  const INICIO_S = 11 * 3600;
+  const FIM_S    = 20 * 3600 - 1;
+  const SPAN_S   = FIM_S - INICIO_S + 1; // 32400
+  // Divide em n segmentos e pega um valor aleatório em cada
+  const segSize  = Math.floor(SPAN_S / n);
+  const horarios = [];
+  const arr32 = new Uint32Array(n);
+  crypto.getRandomValues(arr32);
+  for (let i = 0; i < n; i++) {
+    const base  = INICIO_S + i * segSize;
+    const extra = arr32[i] % segSize;
+    const total = base + extra;
+    const h = String(Math.floor(total / 3600)).padStart(2, '0');
+    const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+    const s = String(total % 60).padStart(2, '0');
+    horarios.push(`${h}:${m}:${s}`);
+  }
+  return horarios;
+}
+
+// Adiciona N dias a uma data YYYY-MM-DD
+function adicionarDias(dataStr, n) {
+  const d = new Date(`${dataStr}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+// Gera um reservaId criptograficamente seguro
+function gerarReservaId() {
+  const arr = new Uint8Array(24);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(36).padStart(2, '0')).join('').slice(0, 32);
+}
+
+// Gera código de retirada legível
+function gerarCodigoRetirada(contador) {
+  const ano = new Date().getFullYear();
+  return `ITP-${ano}-${String(contador).padStart(4, '0')}`;
+}
+
+// Normaliza celular: aceita formatos variados, retorna apenas dígitos (10 ou 11)
+function normalizarCelularPicole(raw) {
+  const digits = String(raw || '').replace(/\D/g, '');
+  // Aceita qualquer DDD brasileiro (10 ou 11 dígitos)
+  if (/^\d{10,11}$/.test(digits)) return digits;
+  return null;
+}
+
+// Valida nome completo (pelo menos 2 palavras, min 3 chars each)
+function validarNomeCompleto(nome) {
+  const parts = String(nome || '').trim().split(/\s+/).filter(p => p.length >= 2);
+  return parts.length >= 2 && nome.trim().length >= 5;
+}
+
+// ─── Handlers públicos ────────────────────────────────────────────────────────
+
+async function handlePicoleStatus(request, env) {
+  if (!env.PROMO_KV) return jsonResp({ status: 'inativo', motivo: 'campanha_nao_configurada' });
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'picole-status');
+  if (!rl.allowed) return jsonResp({ status: 'inativo', motivo: 'rate_limit' }, 429);
+
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (!campanha || !campanha.ativo) {
+    return jsonResp({ status: 'campanha_encerrada' });
+  }
+  if (campanha.pausado) {
+    return jsonResp({ status: 'inativo', motivo: 'campanha_pausada' });
+  }
+
+  const hoje = hojeEmSP();
+  // Verifica se a campanha ainda está dentro do período
+  if (hoje < campanha.dataInicio || hoje > campanha.dataFim) {
+    if (hoje > campanha.dataFim && campanha.ativo) {
+      // Encerra a campanha automaticamente
+      campanha.ativo = false;
+      campanha.atualizadoEm = new Date().toISOString();
+      await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
+    }
+    return jsonResp({ status: 'campanha_encerrada' });
+  }
+
+  const dia = await env.PROMO_KV.get(`picole:dia:${hoje}`, 'json');
+  if (!dia) return jsonResp({ status: 'inativo' });
+
+  const agora = Date.now();
+  const inicio = localHorarioParaUtc(hoje, dia.horarioSorteado);
+
+  if (dia.status === 'reservado' || dia.status === 'encerrado') {
+    return jsonResp({ status: 'reservado' });
+  }
+
+  // Janela: promoção dura até o fim do dia (ou até ser reservada)
+  const fimDia = localHorarioParaUtc(hoje, '23:59:59');
+
+  if (agora < inicio) {
+    return jsonResp({ status: 'inativo' });
+  }
+
+  if (agora >= inicio && agora <= fimDia && dia.status !== 'reservado' && dia.status !== 'encerrado') {
+    // Atualiza status para ativo se ainda era agendado/aguardando
+    if (dia.status === 'agendado' || dia.status === 'aguardando_inicio') {
+      dia.status = 'ativo';
+      dia.atualizadoEm = new Date().toISOString();
+      await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
+    }
+    return jsonResp({ status: 'ativo' });
+  }
+
+  // Passou do fim do dia sem reserva → expira
+  if (agora > fimDia && dia.status !== 'reservado' && dia.status !== 'encerrado') {
+    dia.status = 'expirado';
+    dia.atualizadoEm = new Date().toISOString();
+    await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
+    return jsonResp({ status: 'inativo' });
+  }
+
+  return jsonResp({ status: 'inativo' });
+}
+
+async function handlePicoleReservar(request, env) {
+  if (!env.PROMO_KV) return jsonResp({ sucesso: false, codigo: 'CAMPANHA_INATIVA', mensagem: 'Campanha não configurada.' }, 503);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'picole-reservar');
+  if (!rl.allowed) return jsonResp({ sucesso: false, codigo: 'RATE_LIMIT', mensagem: 'Muitas tentativas. Aguarde.' }, 429);
+
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (!campanha || !campanha.ativo || campanha.pausado) {
+    return jsonResp({ sucesso: false, status: 'campanha_encerrada', codigo: 'CAMPANHA_INATIVA', mensagem: 'A promoção não está disponível no momento.' });
+  }
+
+  const hoje = hojeEmSP();
+  if (hoje < campanha.dataInicio || hoje > campanha.dataFim) {
+    return jsonResp({ sucesso: false, status: 'campanha_encerrada', codigo: 'CAMPANHA_ENCERRADA', mensagem: 'A campanha de 30 dias foi encerrada.' });
+  }
+
+  const dia = await env.PROMO_KV.get(`picole:dia:${hoje}`, 'json');
+  if (!dia) {
+    return jsonResp({ sucesso: false, status: 'inativo', codigo: 'DIA_NAO_ENCONTRADO', mensagem: 'A promoção não está ativa hoje.' });
+  }
+
+  const agora = Date.now();
+  const inicio = localHorarioParaUtc(hoje, dia.horarioSorteado);
+  const fimDia = localHorarioParaUtc(hoje, '23:59:59');
+
+  if (agora < inicio) {
+    return jsonResp({ sucesso: false, status: 'inativo', codigo: 'PROMOCAO_NAO_INICIADA', mensagem: 'A promoção ainda não foi ativada hoje.' });
+  }
+  if (agora > fimDia) {
+    return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_EXPIRADA', mensagem: 'A promoção de hoje já encerrou.' });
+  }
+
+  // Verificar se já existe vencedor para hoje
+  const vencedorExistente = await env.PROMO_KV.get(`picole:winner:${hoje}`);
+  if (vencedorExistente) {
+    return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
+  }
+
+  // ── Mecanismo de reserva otimista ──────────────────────────────────────────
+  // Gera ID único para esta tentativa
+  const reservaId = gerarReservaId();
+  const agora2 = new Date().toISOString();
+
+  // Escreve a tentativa como vencedor (TTL = 25 horas para cobrir o dia todo)
+  await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
+
+  // Aguarda propagação do KV (reduz janela de race condition)
+  await new Promise(r => setTimeout(r, 200));
+
+  // Relê para confirmar que nossa escrita venceu
+  const confirmado = await env.PROMO_KV.get(`picole:winner:${hoje}`);
+  if (confirmado !== reservaId) {
+    // Outro pedido venceu durante a janela de race
+    return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
+  }
+
+  // Somos o vencedor! Cria o registro de reserva completo
+  const reserva = {
+    reservaId,
+    campanhaId: campanha.id,
+    dataLocal: hoje,
+    ipCliente: ip,
+    criadoEm: agora2,
+    atualizadoEm: agora2,
+    statusFormulario: 'aguardando',  // 'aguardando' | 'preenchido' | 'expirado'
+    codigoRetirada: null,
+    statusRetirada: 'pendente',       // 'pendente' | 'retirado' | 'nao_retirado' | 'cancelado'
+    dadosVencedor: null,
+  };
+  await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
+
+  // Atualiza o registro do dia
+  dia.status = 'reservado';
+  dia.vencedorId = reservaId;
+  dia.atualizadoEm = agora2;
+  await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
+
+  return jsonResp({
+    sucesso: true,
+    status: 'reservado',
+    reservaId,
+    mensagem: 'Você foi a primeira pessoa! Preencha seus dados para retirar seu picolé.',
+  }, 201);
+}
+
+async function handlePicoleReservaGet(reservaId, request, env) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'Serviço indisponível' }, 503);
+  const reserva = await env.PROMO_KV.get(`picole:reserva:${reservaId}`, 'json');
+  if (!reserva) return jsonResp({ ok: false, error: 'Reserva não encontrada' }, 404);
+  // Verifica se a reserva é do dia atual
+  const hoje = hojeEmSP();
+  if (reserva.dataLocal !== hoje) {
+    return jsonResp({ ok: false, error: 'Reserva de outro dia não pode ser retomada' }, 410);
+  }
+  return jsonResp({
+    ok: true,
+    statusFormulario: reserva.statusFormulario,
+    codigoRetirada: reserva.codigoRetirada,
+    dataLocal: reserva.dataLocal,
+  });
+}
+
+async function handlePicoleReservaForm(reservaId, request, env) {
+  if (!env.PROMO_KV) return jsonResp({ sucesso: false, mensagem: 'Serviço indisponível' }, 503);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env, ip, 'picole-form');
+  if (!rl.allowed) return jsonResp({ sucesso: false, mensagem: 'Muitas tentativas. Aguarde.' }, 429);
+
+  const reserva = await env.PROMO_KV.get(`picole:reserva:${reservaId}`, 'json');
+  if (!reserva) return jsonResp({ sucesso: false, mensagem: 'Reserva não encontrada ou expirada.' }, 404);
+
+  const hoje = hojeEmSP();
+  if (reserva.dataLocal !== hoje) {
+    return jsonResp({ sucesso: false, mensagem: 'Esta reserva é de outro dia e não pode ser preenchida.' }, 410);
+  }
+  if (reserva.statusFormulario === 'preenchido') {
+    // Permite retomada: retorna os dados já salvos
+    return jsonResp({
+      sucesso: true,
+      codigoRetirada: reserva.codigoRetirada,
+      mensagem: 'Cadastro já realizado. Apresente este código na loja para retirar seu picolé.',
+    });
+  }
+
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ sucesso: false, mensagem: 'JSON inválido' }, 400); }
+
+  const nome = sanitizeString(body.nome || body.name, 200);
+  const celular = normalizarCelularPicole(body.celular || body.phone);
+  const aceiteTermos = !!body.aceiteTermos;
+  const aceiteLGPD = !!body.aceiteLGPD;
+
+  if (!validarNomeCompleto(nome)) {
+    return jsonResp({ sucesso: false, mensagem: 'Informe seu nome completo (nome e sobrenome).' }, 400);
+  }
+  if (!celular) {
+    return jsonResp({ sucesso: false, mensagem: 'Informe um número de celular válido com DDD.' }, 400);
+  }
+  if (!aceiteTermos || !aceiteLGPD) {
+    return jsonResp({ sucesso: false, mensagem: 'É necessário aceitar os termos para participar.' }, 400);
+  }
+
+  // Gera código de retirada único
+  const contStr = await env.PROMO_KV.get('picole:meta:contador_retiradas') || '0';
+  const cont = parseInt(contStr, 10) + 1;
+  const codigoRetirada = gerarCodigoRetirada(cont);
+  await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
+
+  const agora = new Date().toISOString();
+  reserva.statusFormulario = 'preenchido';
+  reserva.codigoRetirada = codigoRetirada;
+  reserva.atualizadoEm = agora;
+  // Armazena apenas o necessário para atendimento (LGPD)
+  reserva.dadosVencedor = {
+    nome,
+    celular,
+    preenchidoEm: agora,
+  };
+  await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
+
+  return jsonResp({
+    sucesso: true,
+    codigoRetirada,
+    mensagem: 'Cadastro realizado. Apresente este código na loja para retirar seu picolé.',
+  }, 201);
+}
+
+// ─── Handlers administrativos ─────────────────────────────────────────────────
+
+async function handlePicoleAdminIniciar(request, env) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado. Crie o namespace e atualize wrangler.toml.' }, 503);
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const hoje = hojeEmSP();
+  const dataInicio = sanitizeString(body.dataInicio || hoje, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio)) {
+    return jsonResp({ ok: false, error: 'dataInicio inválida. Use YYYY-MM-DD.' }, 400);
+  }
+  const dataFim = adicionarDias(dataInicio, 29);
+
+  // Verifica se já existe campanha ativa
+  const campanhaExistente = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (campanhaExistente && campanhaExistente.ativo && !body.forcar) {
+    return jsonResp({ ok: false, error: 'Já existe uma campanha ativa. Use forcar:true para sobrescrever.' }, 409);
+  }
+
+  const horarios = gerarHorariosDiversificados(30);
+  const agora = new Date().toISOString();
+
+  const campanha = {
+    id: `promo-picole-30-dias-${dataInicio}`,
+    nome: 'Picolé de Fruta Grátis',
+    dataInicio,
+    dataFim,
+    fusoHorario: SP_TIMEZONE,
+    quantidadeDias: 30,
+    ativo: true,
+    pausado: false,
+    produtoDescricao: '1 picolé de fruta, conforme disponibilidade da loja',
+    regras: { umGanhadorPorDia: true, inicioJanela: '11:00', fimJanela: '20:00' },
+    criadoEm: agora,
+    atualizadoEm: agora,
+  };
+  await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
+
+  // Cria os 30 registros de dia (horários ficam apenas no servidor)
+  const dias = [];
+  for (let i = 0; i < 30; i++) {
+    const dataLocal = adicionarDias(dataInicio, i);
+    const dia = {
+      id: `${campanha.id}-${String(i + 1).padStart(3, '0')}`,
+      campanhaId: campanha.id,
+      dataLocal,
+      horarioSorteado: horarios[i],
+      status: 'agendado',
+      vencedorId: null,
+      criadoEm: agora,
+      atualizadoEm: agora,
+    };
+    await env.PROMO_KV.put(`picole:dia:${dataLocal}`, JSON.stringify(dia));
+    dias.push({ dataLocal, id: dia.id });
+  }
+
+  return jsonResp({ ok: true, campanha: { ...campanha }, totalDias: 30, dias }, 201);
+}
+
+async function handlePicoleAdminCampanha(env) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (!campanha) return jsonResp({ ok: false, error: 'Nenhuma campanha encontrada' }, 404);
+  // Inclui os registros dos dias com horários (apenas para admin)
+  const dias = [];
+  for (let i = 0; i < 30; i++) {
+    const dataLocal = adicionarDias(campanha.dataInicio, i);
+    const dia = await env.PROMO_KV.get(`picole:dia:${dataLocal}`, 'json');
+    if (dia) dias.push(dia);
+  }
+  return jsonResp({ ok: true, campanha, dias });
+}
+
+async function handlePicoleAdminTogglePausa(env, pausar) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (!campanha) return jsonResp({ ok: false, error: 'Nenhuma campanha encontrada' }, 404);
+  campanha.pausado = pausar;
+  campanha.atualizadoEm = new Date().toISOString();
+  await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
+  return jsonResp({ ok: true, pausado: pausar });
+}
+
+async function handlePicoleAdminCancelarCampanha(request, env) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
+  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
+  if (!campanha) return jsonResp({ ok: false, error: 'Nenhuma campanha encontrada' }, 404);
+  campanha.ativo = false;
+  campanha.cancelado = true;
+  campanha.atualizadoEm = new Date().toISOString();
+  await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
+  return jsonResp({ ok: true, mensagem: 'Campanha cancelada.' });
+}
+
+async function handlePicoleAdminGanhadores(env) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
+  const lista = await env.PROMO_KV.list({ prefix: 'picole:reserva:' });
+  const ganhadores = [];
+  for (const k of lista.keys) {
+    const r = await env.PROMO_KV.get(k.name, 'json');
+    if (r) {
+      // Não expõe IP do cliente nem dados desnecessários
+      const { ipCliente: _ip, ...safe } = r;
+      ganhadores.push(safe);
+    }
+  }
+  ganhadores.sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
+  return jsonResp({ ok: true, total: ganhadores.length, ganhadores });
+}
+
+async function handlePicoleAdminPatchGanhador(reservaId, request, env) {
+  if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
+  const reserva = await env.PROMO_KV.get(`picole:reserva:${reservaId}`, 'json');
+  if (!reserva) return jsonResp({ ok: false, error: 'Reserva não encontrada' }, 404);
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+
+  const statusValidos = ['pendente', 'retirado', 'nao_retirado', 'cancelado'];
+  if (body.statusRetirada && statusValidos.includes(body.statusRetirada)) {
+    reserva.statusRetirada = body.statusRetirada;
+  }
+  if (body.notaAdmin) {
+    reserva.notaAdmin = sanitizeString(body.notaAdmin, 500);
+  }
+  reserva.atualizadoEm = new Date().toISOString();
+  // Histórico de alterações
+  if (!reserva.historico) reserva.historico = [];
+  reserva.historico.push({ campo: 'statusRetirada', valor: reserva.statusRetirada, em: reserva.atualizadoEm });
+
+  await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
+  return jsonResp({ ok: true, reserva: { ...reserva, ipCliente: undefined } });
 }
