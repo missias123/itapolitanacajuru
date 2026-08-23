@@ -45,6 +45,10 @@ test.describe('Admin catálogo - edição manual', () => {
 
     await expect(row.locator('label.status')).toContainText('Disponível');
     await expect(row.locator('[data-availability-action]')).toContainText('Esgotar manualmente');
-    await expect(page.locator('#pending')).toContainText('alteração');
+    await row.locator('[data-availability-action]').click();
+    await page.click('#confirmAvailability');
+
+    await expect(row.locator('label.status')).toContainText('Esgotado');
+    await expect(page.locator('#pending')).toContainText('3 alteração');
   });
 });

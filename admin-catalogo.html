@@ -109,7 +109,7 @@
       const missing=(record.dependencias_embalagem||[]).find(sku=>packaging()[sku]?.ativo===false);
       return missing?{available:false,reason:`Embalagem ${missing} esgotada`}:{available:true,reason:''};
     };
-    const appendPending=message=>{if(message&&!state.pending.includes(message))state.pending.push(message)};
+    const appendPending=(message,{dedupe=false}={})=>{if(!message)return;if(dedupe&&state.pending.includes(message))return;state.pending.push(message)};
     const updateSave=()=>{const enabled=state.dirty&&!!getToken();$('save').disabled=!enabled;$('saveBottom').disabled=!enabled;$('pending').textContent=state.pending.length?`${state.pending.length} alteração(ões) pronta(s) para atualizar.`:'';updateTokenBtn()};
     const setDirty=()=>{state.dirty=true;updateSave()};
     const visibleProducts=()=>{
@@ -167,7 +167,7 @@
     function autoLockEditedProduct(row,record){
       if(!row||!record||row.dataset.key.startsWith('massas.')||record.ativo===false)return false;
       record.ativo=false;
-      appendPending(`${record.sku}: esgotado automaticamente após edição manual`);
+      appendPending(`${record.sku}: esgotado automaticamente após edição manual`,{dedupe:true});
       syncProductAvailability(row,record);
       notice(`${record.sku} foi marcado como esgotado automaticamente. Salve para refletir no site.`,'success');
       return true;
