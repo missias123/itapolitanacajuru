@@ -19,6 +19,31 @@ binding    = "RATE_KV"
 id         = "7b024fbb09224336b65bfc5aa0080a56"
 preview_id = "7b024fbb09224336b65bfc5aa0080a56"
 
+# ─── KV namespace para a promoção do Picolé (30 dias) ─────────────────────────
+# INSTRUÇÕES: antes de fazer deploy, crie o namespace no dashboard do Cloudflare:
+#   1. Acesse Workers & Pages → KV → Create namespace → nome: "PROMO_KV"
+#   2. Copie o ID gerado e substitua os dois valores abaixo.
+#   3. Faça o mesmo para o ambiente de produção (env.production) mais abaixo.
+[[kv_namespaces]]
+binding    = "PROMO_KV"
+id         = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
+preview_id = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
+
+# ─── Durable Object para reserva atômica do Picolé ────────────────────────────
+# REQUISITO: Cloudflare Workers Paid Plan (mínimo US$5/mês — Workers Paid).
+# INSTRUÇÕES: o Cloudflare cria a classe automaticamente via a migration abaixo
+# na primeira implantação. Nenhuma ação manual adicional é necessária além
+# de ter o plano pago ativo na conta.
+[durable_objects]
+bindings = [
+  { name = "PICOLE_RESERVA_DO", class_name = "PicoleReservaDO" }
+]
+
+# Migration obrigatória — registra a classe PicoleReservaDO no primeiro deploy
+[[migrations]]
+tag         = "v1"
+new_classes = ["PicoleReservaDO"]
+
 # ─── Variáveis de ambiente públicas ───────────────────────────────────────────
 [vars]
 ENVIRONMENT = "production"
@@ -41,6 +66,15 @@ preview_id = "733a7c99a6fb406196a68aebb2c8fb88"
 binding    = "RATE_KV"
 id         = "7b024fbb09224336b65bfc5aa0080a56"
 preview_id = "7b024fbb09224336b65bfc5aa0080a56"
+[[env.production.kv_namespaces]]
+binding    = "PROMO_KV"
+id         = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
+preview_id = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
+
+[env.production.durable_objects]
+bindings = [
+  { name = "PICOLE_RESERVA_DO", class_name = "PicoleReservaDO" }
+]
 
 # ─── Rota personalizada — domínio de produção ─────────────────────────────────
 # NOTA: Requer que a zona itapolitanacajuru.com.br esteja gerenciada pelo Cloudflare
@@ -48,4 +82,3 @@ preview_id = "7b024fbb09224336b65bfc5aa0080a56"
 [[env.production.routes]]
 pattern   = "api.itapolitanacajuru.com.br/*"
 zone_name = "itapolitanacajuru.com.br"
-

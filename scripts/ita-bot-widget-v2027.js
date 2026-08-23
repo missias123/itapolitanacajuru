@@ -277,6 +277,8 @@
     setTimeout(layout, 60);
 
     launcher.addEventListener('click', function () {
+      // Hook para promoções externas (ex: picolé): se retornar true, intercepta o clique
+      if (typeof window._itabotClickInterceptor === 'function' && window._itabotClickInterceptor()) return;
       _itabotAbrirTelaCheia();
     });
   }

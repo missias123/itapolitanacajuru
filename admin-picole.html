@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Admin Picolé – Sorveteria Itapolitana Cajuru</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+    #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e8650a 0%,#ff6b35 45%,#1565c0 100%)}
+    .login-card{background:#fff;border-radius:24px;padding:40px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3)}
+    .login-card h1{font-size:1.5rem;font-weight:900;color:#333;margin-bottom:8px}
+    .login-card p{color:#555;font-size:.95rem;margin-bottom:20px}
+    .inp-wrap{position:relative;margin-bottom:12px}
+    .inp-wrap input{width:100%;padding:14px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;font-weight:700;outline:none;transition:.2s}
+    .inp-wrap input:focus{border-color:#e65100}
+    .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#e65100,#f57c00);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}
+    .btn-login:hover{opacity:.9}
+    .login-erro{color:#c62828;font-size:.85rem;margin-top:10px;display:none}
+    #app{display:none;min-height:100vh}
+    .header{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 40%,#1565c0 100%);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 3px 16px rgba(0,0,0,.25)}
+    .header h1{font-size:1rem;font-weight:900}
+    .btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer}
+    .content{padding:20px;max-width:1000px;margin:0 auto}
+    .card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:20px;overflow:hidden}
+    .card-hdr{padding:14px 18px;border-bottom:2px solid #f0f2f5;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .card-hdr h2{font-size:.95rem;font-weight:800}
+    .card-body{padding:18px}
+    .btn{padding:9px 16px;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;transition:.15s}
+    .btn:hover{opacity:.85}
+    .btn-primary{background:#e65100;color:#fff}
+    .btn-green{background:#2e7d32;color:#fff}
+    .btn-red{background:#c62828;color:#fff}
+    .btn-yellow{background:#f57f17;color:#fff}
+    .btn-gray{background:#757575;color:#fff}
+    .btn-blue{background:#1565c0;color:#fff}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .campo{margin-bottom:12px}
+    .campo label{display:block;font-size:.8rem;font-weight:700;color:#555;margin-bottom:4px;text-transform:uppercase}
+    .campo input,.campo select{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:.9rem;outline:none;transition:.2s;font-family:inherit}
+    .campo input:focus,.campo select:focus{border-color:#e65100}
+    .hint{font-size:.75rem;color:#888;margin-top:3px}
+    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
+    .badge-green{background:#e8f5e9;color:#2e7d32}
+    .badge-red{background:#ffebee;color:#c62828}
+    .badge-yellow{background:#fff8e1;color:#f57f17}
+    .badge-blue{background:#e3f2fd;color:#1565c0}
+    .badge-gray{background:#f5f5f5;color:#666}
+    table{width:100%;border-collapse:collapse;font-size:.88rem}
+    th{text-align:left;padding:10px 12px;font-size:.75rem;font-weight:800;color:#888;text-transform:uppercase;border-bottom:2px solid #f0f2f5;background:#fafafa}
+    td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:top}
+    tr:hover td{background:#fafafa}
+    .empty-state{text-align:center;padding:40px 20px;color:#888}
+    .msg{padding:10px 14px;border-radius:8px;font-size:.88rem;font-weight:700;margin-top:10px;display:none}
+    .msg.vis{display:block}
+    .msg-ok{background:#e8f5e9;color:#2e7d32}
+    .msg-err{background:#ffebee;color:#c62828}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .section{display:none}
+    .section.ativo{display:block}
+    .tab-nav{background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;gap:4px;padding:8px 16px}
+    .tab-btn{padding:8px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:700;color:#888;cursor:pointer}
+    .tab-btn.ativo{color:#e65100;border-bottom-color:#e65100}
+    .back-link{display:inline-flex;align-items:center;gap:6px;color:#e65100;font-size:.85rem;font-weight:700;text-decoration:none;margin-bottom:16px}
+    .back-link:hover{opacity:.8}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div style="font-size:2.5rem;margin-bottom:12px">🍦</div>
+    <h1>Admin Picolé</h1>
+    <p>Promoção 30 Dias · Itapolitana Cajuru</p>
+    <div class="inp-wrap">
+      <input type="password" id="login-pwd" placeholder="Senha administrativa" autocomplete="current-password" required>
+    </div>
+    <button class="btn-login" id="login-btn" type="button">Entrar</button>
+    <div class="login-erro" id="login-erro">Senha incorreta.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <h1>🍦 Admin Picolé – Itapolitana</h1>
+    <button class="btn-sair" id="btn-sair" type="button">Sair</button>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn ativo" data-tab="tab-ganhadores">🏆 Ganhadores</button>
+    <button class="tab-btn" data-tab="tab-campanha">⚙️ Campanha</button>
+    <button class="tab-btn" data-tab="tab-iniciar">🚀 Iniciar/Configurar</button>
+  </div>
+
+  <div class="content">
+    <a href="admin-painel.html" class="back-link">← Voltar ao Painel Principal</a>
+
+    <!-- ABA: GANHADORES -->
+    <div id="tab-ganhadores" class="section ativo">
+      <div class="card">
+        <div class="card-hdr">
+          <h2>🏆 Ganhadores do Dia</h2>
+          <button class="btn btn-blue" id="btn-atualizar-ganhadores" type="button">🔄 Atualizar</button>
+        </div>
+        <div class="card-body">
+          <div id="tabela-ganhadores-wrap">
+            <div class="empty-state">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA: STATUS DA CAMPANHA -->
+    <div id="tab-campanha" class="section">
+      <div class="card">
+        <div class="card-hdr">
+          <h2>⚙️ Status da Campanha</h2>
+          <button class="btn btn-blue" id="btn-atualizar-campanha" type="button">🔄 Atualizar</button>
+        </div>
+        <div class="card-body">
+          <div id="campanha-info"><div class="empty-state">Carregando...</div></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn btn-yellow" id="btn-pausar" type="button">⏸ Pausar Campanha</button>
+            <button class="btn btn-green" id="btn-retomar" type="button">▶️ Retomar Campanha</button>
+            <button class="btn btn-red" id="btn-cancelar" type="button">❌ Cancelar Campanha</button>
+          </div>
+          <div id="msg-campanha" class="msg"></div>
+          <h3 style="margin-top:20px;font-size:.9rem;font-weight:800">Cronograma dos 30 Dias</h3>
+          <div id="tabela-dias" style="margin-top:10px"><div class="empty-state">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA: INICIAR CAMPANHA -->
+    <div id="tab-iniciar" class="section">
+      <div class="card">
+        <div class="card-hdr"><h2>🚀 Iniciar Nova Campanha de 30 Dias</h2></div>
+        <div class="card-body">
+          <p style="font-size:.88rem;color:#555;margin-bottom:16px">Preencha a data de início e clique em <strong>Iniciar Campanha</strong>. O sistema irá gerar automaticamente 30 horários aleatórios diversificados entre 11:00 e 20:00 (horário de SP).</p>
+          <div class="campo">
+            <label for="ini-data">Data de Início (fuso SP)</label>
+            <input type="date" id="ini-data">
+            <div class="hint">Deixe em branco para usar a data de hoje.</div>
+          </div>
+          <div class="campo">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="ini-forcar" style="accent-color:#e65100;width:18px;height:18px">
+              Sobrescrever campanha existente (usar com cuidado)
+            </label>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-iniciar-camp" type="button">🚀 Iniciar Campanha</button>
+          </div>
+          <div id="msg-iniciar" class="msg"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><h2>📋 Como Testar Sem Esperar o Horário Real</h2></div>
+        <div class="card-body" style="font-size:.88rem;color:#444;line-height:1.6">
+          <ol style="margin-left:18px">
+            <li>Inicie a campanha com a data de hoje.</li>
+            <li>No Cloudflare KV (painel → Workers &amp; Pages → KV → PROMO_KV), encontre a chave <code>picole:dia:YYYY-MM-DD</code> do dia atual.</li>
+            <li>Edite o campo <code>horarioSorteado</code> para um horário já passado (ex: <code>00:01:00</code>).</li>
+            <li>Aguarde até 30 segundos para o status mudar para "ativo" no letreiro do robô.</li>
+            <li>Para forçar imediatamente: abra o console do navegador e execute <code>fetch('https://api.itapolitanacajuru.com.br/api/promocao/picole/status').then(r=>r.json()).then(console.log)</code>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><h2>ℹ️ Variáveis de Ambiente Necessárias</h2></div>
+        <div class="card-body" style="font-size:.88rem;color:#444;line-height:1.6">
+          <ul style="margin-left:18px">
+            <li><strong>PROMO_KV</strong> — KV namespace (criar no dashboard Cloudflare e atualizar wrangler.toml)</li>
+            <li><strong>ADMIN_PASSWORD_RECORD</strong> ou <strong>ADMIN_SECRET</strong> — senha do painel admin</li>
+            <li><strong>Número WhatsApp da sorveteria</strong> — configurável em <code>scripts/itap-picole-promo.js</code> (variável <code>wppNum</code>)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<!-- MODAL EDIÇÃO DE GANHADOR -->
+<div id="modal-ganhador" role="dialog" aria-modal="true" aria-labelledby="mg-titulo" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.4)" tabindex="-1" id="mg-box">
+    <div style="background:linear-gradient(135deg,#e65100,#ff9800);color:#fff;padding:18px 20px;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center">
+      <h2 id="mg-titulo" style="font-size:1rem;font-weight:900">✏️ Atualizar Status</h2>
+      <button id="mg-close" type="button" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="padding:20px" id="mg-body"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://api.itapolitanacajuru.com.br';
+  var _token = sessionStorage.getItem('adm_picole_tok') || '';
+
+  // ── Login ───────────────────────────────────────────────────────────────────
+  var loginBtn = document.getElementById('login-btn');
+  var loginPwd = document.getElementById('login-pwd');
+  var loginErro = document.getElementById('login-erro');
+
+  if (_token) _mostrarApp();
+
+  loginBtn.addEventListener('click', _fazerLogin);
+  loginPwd.addEventListener('keydown', function (e) { if (e.key === 'Enter') _fazerLogin(); });
+
+  function _fazerLogin() {
+    var pwd = loginPwd.value;
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="spinner"></span>Entrando…';
+    loginErro.style.display = 'none';
+    fetch(API + '/api/admin/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Entrar';
+        if (d.ok && d.token) {
+          _token = d.token;
+          sessionStorage.setItem('adm_picole_tok', _token);
+          _mostrarApp();
+        } else {
+          loginErro.style.display = 'block';
+        }
+      })
+      .catch(function () {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Entrar';
+        loginErro.textContent = 'Erro de conexão.';
+        loginErro.style.display = 'block';
+      });
+  }
+
+  function _mostrarApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    _carregarGanhadores();
+    _carregarCampanha();
+  }
+
+  document.getElementById('btn-sair').addEventListener('click', function () {
+    sessionStorage.removeItem('adm_picole_tok');
+    _token = '';
+    location.reload();
+  });
+
+  // ── Abas ────────────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('ativo'); });
+      document.querySelectorAll('.section').forEach(function (s) { s.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      var target = btn.getAttribute('data-tab');
+      var sec = document.getElementById(target);
+      if (sec) sec.classList.add('ativo');
+      if (target === 'tab-ganhadores') _carregarGanhadores();
+      if (target === 'tab-campanha') _carregarCampanha();
+    });
+  });
+
+  // ── Ganhadores ───────────────────────────────────────────────────────────────
+  document.getElementById('btn-atualizar-ganhadores').addEventListener('click', _carregarGanhadores);
+
+  function _carregarGanhadores() {
+    var wrap = document.getElementById('tabela-ganhadores-wrap');
+    wrap.innerHTML = '<div class="empty-state">Carregando...</div>';
+    _get('/api/admin/promocao/picole/ganhadores')
+      .then(function (d) {
+        if (!d.ok) { wrap.innerHTML = '<div class="empty-state">Erro ao carregar: ' + _esc(d.error || '') + '</div>'; return; }
+        if (!d.ganhadores || d.ganhadores.length === 0) {
+          wrap.innerHTML = '<div class="empty-state">Nenhum ganhador ainda.</div>';
+          return;
+        }
+        var html = '<div style="overflow-x:auto"><table><thead><tr>' +
+          '<th>Data</th>' +
+          '<th>Horário Promoção</th>' +
+          '<th>Horário do Clique (SP)</th>' +
+          '<th>Nome</th>' +
+          '<th>Celular</th>' +
+          '<th>Formulário</th>' +
+          '<th>Preenchido em</th>' +
+          '<th>Aceite Termos</th>' +
+          '<th>Aceite LGPD</th>' +
+          '<th>Código Retirada</th>' +
+          '<th>Status Retirada</th>' +
+          '<th>Ações</th>' +
+          '</tr></thead><tbody>';
+        d.ganhadores.forEach(function (g) {
+          var venc = (g.dadosVencedor || {});
+          var badgeForm = g.statusFormulario === 'preenchido' ?
+            '<span class="badge badge-green">✅ Preenchido</span>' :
+            '<span class="badge badge-yellow">⏳ Aguardando</span>';
+          var badgeAceiteTermos = venc.aceiteTermos
+            ? '<span class="badge badge-green">Sim</span>'
+            : '<span class="badge badge-gray">—</span>';
+          var badgeAceiteLGPD = venc.aceiteLGPD
+            ? '<span class="badge badge-green">Sim</span>'
+            : '<span class="badge badge-gray">—</span>';
+          var badgeRet = _badgeRetirada(g.statusRetirada);
+          html += '<tr>';
+          html += '<td><strong>' + _esc(g.dataLocal || '') + '</strong></td>';
+          html += '<td style="font-size:.82rem;color:#1565c0;font-weight:700">' + _esc(g.horarioSorteado || '—') + '</td>';
+          html += '<td style="font-size:.8rem;color:#555;white-space:nowrap">' + _esc(g.horarioCliqueSP || (g.criadoEm ? g.criadoEm.slice(0,19).replace('T',' ') : '—')) + '</td>';
+          html += '<td><strong>' + _esc(venc.nome || '—') + '</strong></td>';
+          html += '<td>' + _esc(venc.celular ? _maskPhone(venc.celular) : '—') + '</td>';
+          html += '<td>' + badgeForm + '</td>';
+          html += '<td style="font-size:.75rem;color:#888;white-space:nowrap">' + _esc(venc.preenchidoEm ? venc.preenchidoEm.slice(0,19).replace('T',' ') : '—') + '</td>';
+          html += '<td>' + badgeAceiteTermos + '</td>';
+          html += '<td>' + badgeAceiteLGPD + '</td>';
+          html += '<td><strong style="color:#1a237e">' + _esc(g.codigoRetirada || '—') + '</strong></td>';
+          html += '<td>' + badgeRet + '</td>';
+          html += '<td><button class="btn btn-yellow" onclick="editarGanhador(\'' + _esc(g.reservaId) + '\')" type="button" style="font-size:.75rem;padding:6px 10px">✏️ Editar</button></td>';
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+        wrap.innerHTML = html;
+      })
+      .catch(function () { wrap.innerHTML = '<div class="empty-state">Erro de conexão.</div>'; });
+  }
+
+  function _badgeRetirada(status) {
+    var map = { pendente: 'badge-yellow', retirado: 'badge-green', nao_retirado: 'badge-red', cancelado: 'badge-gray' };
+    var labels = { pendente: 'Pendente', retirado: 'Retirado', nao_retirado: 'Não Retirado', cancelado: 'Cancelado' };
+    var cls = map[status] || 'badge-gray';
+    return '<span class="badge ' + cls + '">' + (labels[status] || _esc(status || 'Pendente')) + '</span>';
+  }
+
+  // ── Edição de ganhador ───────────────────────────────────────────────────────
+  window.editarGanhador = function (reservaId) {
+    var modal = document.getElementById('modal-ganhador');
+    var body = document.getElementById('mg-body');
+    // Busca os dados atuais para exibir no modal
+    body.innerHTML = '<div class="empty-state" style="padding:20px">Carregando...</div>';
+    modal.style.display = 'flex';
+    document.getElementById('mg-box').focus();
+    document.getElementById('mg-close').addEventListener('click', _fecharModalGanhador);
+
+    _get('/api/admin/promocao/picole/ganhadores')
+      .then(function (d) {
+        var g = d.ganhadores && d.ganhadores.find(function (x) { return x.reservaId === reservaId; });
+        var venc = (g && g.dadosVencedor) || {};
+        var infoHtml = g ? (
+          '<div style="background:#f5f7ff;border-radius:10px;padding:14px;margin-bottom:14px;font-size:.85rem;line-height:1.7">' +
+          '<div><strong>📅 Data:</strong> ' + _esc(g.dataLocal || '—') + '</div>' +
+          '<div><strong>⏰ Horário Promoção:</strong> <span style="color:#1565c0;font-weight:700">' + _esc(g.horarioSorteado || '—') + '</span></div>' +
+          '<div><strong>🖱️ Clicou em:</strong> ' + _esc(g.horarioCliqueSP || '—') + '</div>' +
+          '<hr style="margin:8px 0;border:none;border-top:1px solid #e0e0e0">' +
+          '<div><strong>👤 Nome:</strong> ' + _esc(venc.nome || '—') + '</div>' +
+          '<div><strong>📱 Celular:</strong> ' + _esc(venc.celular ? _maskPhone(venc.celular) : '—') + '</div>' +
+          '<div><strong>📋 Formulário:</strong> ' + (g.statusFormulario === 'preenchido' ? '<span style="color:#2e7d32;font-weight:700">✅ Preenchido</span>' : '<span style="color:#f57f17;font-weight:700">⏳ Aguardando</span>') + '</div>' +
+          (venc.preenchidoEm ? '<div><strong>📝 Preenchido em:</strong> ' + _esc(venc.preenchidoEm.slice(0,19).replace('T',' ')) + '</div>' : '') +
+          '<div><strong>✅ Aceite Termos:</strong> ' + (venc.aceiteTermos ? '<span style="color:#2e7d32">Sim</span>' : '<span style="color:#c62828">Não/Pendente</span>') + '</div>' +
+          '<div><strong>🔒 Aceite LGPD:</strong> ' + (venc.aceiteLGPD ? '<span style="color:#2e7d32">Sim</span>' : '<span style="color:#c62828">Não/Pendente</span>') + '</div>' +
+          (g.codigoRetirada ? '<div><strong>🎟️ Código:</strong> <span style="font-weight:800;color:#1a237e">' + _esc(g.codigoRetirada) + '</span></div>' : '') +
+          '</div>'
+        ) : '';
+
+        body.innerHTML = infoHtml +
+          '<p style="font-size:.88rem;color:#555;margin-bottom:12px">Atualize o status de retirada do prêmio:</p>' +
+          '<div class="campo"><label>Status de Retirada</label>' +
+          '<select id="mg-status-select">' +
+          '<option value="pendente">Pendente</option>' +
+          '<option value="retirado">Retirado ✅</option>' +
+          '<option value="nao_retirado">Não Retirado</option>' +
+          '<option value="cancelado">Cancelado</option>' +
+          '</select></div>' +
+          '<div class="campo"><label>Nota Admin (opcional)</label><input type="text" id="mg-nota" maxlength="200" placeholder="Observações..."></div>' +
+          '<div class="btn-row"><button class="btn btn-green" id="mg-salvar" type="button">💾 Salvar</button>' +
+          '<button class="btn btn-gray" id="mg-cancelar" type="button">Cancelar</button></div>' +
+          '<div id="mg-msg" class="msg"></div>';
+
+        // Pre-seleciona o status atual
+        if (g && g.statusRetirada) {
+          var sel = document.getElementById('mg-status-select');
+          if (sel) sel.value = g.statusRetirada;
+        }
+
+        document.getElementById('mg-cancelar').addEventListener('click', _fecharModalGanhador);
+        document.getElementById('mg-salvar').addEventListener('click', function () {
+          var status = document.getElementById('mg-status-select').value;
+          var nota = document.getElementById('mg-nota').value.trim();
+          var btnS = document.getElementById('mg-salvar');
+          var msgEl = document.getElementById('mg-msg');
+          btnS.disabled = true;
+          _patch('/api/admin/promocao/picole/ganhadores/' + encodeURIComponent(reservaId), { statusRetirada: status, notaAdmin: nota })
+            .then(function (d) {
+              btnS.disabled = false;
+              if (d.ok) {
+                msgEl.textContent = 'Status atualizado!';
+                msgEl.className = 'msg vis msg-ok';
+                setTimeout(function () { _fecharModalGanhador(); _carregarGanhadores(); }, 1200);
+              } else {
+                msgEl.textContent = d.error || 'Erro ao salvar.';
+                msgEl.className = 'msg vis msg-err';
+              }
+            })
+            .catch(function () {
+              btnS.disabled = false;
+              msgEl.textContent = 'Erro de conexão.';
+              msgEl.className = 'msg vis msg-err';
+            });
+        });
+      })
+      .catch(function () {
+        body.innerHTML = '<div class="empty-state">Erro ao carregar dados.</div>';
+      });
+  };
+
+  function _fecharModalGanhador() {
+    document.getElementById('modal-ganhador').style.display = 'none';
+  }
+
+  // ── Campanha ─────────────────────────────────────────────────────────────────
+  document.getElementById('btn-atualizar-campanha').addEventListener('click', _carregarCampanha);
+
+  function _carregarCampanha() {
+    var info = document.getElementById('campanha-info');
+    var tabelaDias = document.getElementById('tabela-dias');
+    info.innerHTML = '<div class="empty-state">Carregando...</div>';
+    tabelaDias.innerHTML = '';
+    _get('/api/admin/promocao/picole/campanha')
+      .then(function (d) {
+        if (!d.ok) {
+          info.innerHTML = '<div class="empty-state">Nenhuma campanha encontrada. Use a aba Iniciar para criar.</div>';
+          tabelaDias.innerHTML = '';
+          return;
+        }
+        var c = d.campanha;
+        var statusBadge = c.ativo && !c.cancelado && !c.pausado ? '<span class="badge badge-green">Ativa</span>' :
+          c.pausado ? '<span class="badge badge-yellow">Pausada</span>' :
+          '<span class="badge badge-red">Encerrada/Cancelada</span>';
+        info.innerHTML = '<table style="max-width:500px">' +
+          '<tr><th>ID</th><td>' + _esc(c.id) + '</td></tr>' +
+          '<tr><th>Início</th><td>' + _esc(c.dataInicio) + '</td></tr>' +
+          '<tr><th>Fim</th><td>' + _esc(c.dataFim) + '</td></tr>' +
+          '<tr><th>Status</th><td>' + statusBadge + '</td></tr>' +
+          '<tr><th>Criado em</th><td>' + _esc((c.criadoEm || '').replace('T',' ').slice(0,19)) + '</td></tr>' +
+          '</table>';
+
+        if (d.dias && d.dias.length) {
+          var html = '<div style="overflow-x:auto"><table><thead><tr>' +
+            '<th>#</th><th>Data</th><th>Horário Sorteado (SP)</th><th>Status</th>' +
+            '<th>Ganhador</th><th>Celular</th><th>Horário Clique (SP)</th><th>Formulário</th><th>Código Retirada</th>' +
+            '</tr></thead><tbody>';
+          d.dias.forEach(function (dia, idx) {
+            var badgeStatus = _badgeDia(dia.status);
+            var badgeForm = dia.statusFormulario === 'preenchido'
+              ? '<span class="badge badge-green">✅ Preenchido</span>'
+              : dia.nomeVencedor ? '<span class="badge badge-yellow">⏳ Aguardando</span>' : '';
+            html += '<tr>';
+            html += '<td style="color:#888;font-size:.75rem">' + (idx + 1) + '</td>';
+            html += '<td><strong>' + _esc(dia.dataLocal) + '</strong></td>';
+            html += '<td><strong style="color:#1565c0">' + _esc(dia.horarioSorteado) + '</strong></td>';
+            html += '<td>' + badgeStatus + '</td>';
+            html += '<td>' + _esc(dia.nomeVencedor || '—') + '</td>';
+            html += '<td>' + _esc(dia.celularVencedor ? _maskPhone(dia.celularVencedor) : '—') + '</td>';
+            html += '<td style="font-size:.78rem;color:#555;white-space:nowrap">' + _esc(dia.horarioCliqueSP || '—') + '</td>';
+            html += '<td>' + (badgeForm || '<span style="color:#bbb">—</span>') + '</td>';
+            html += '<td><strong style="color:#1a237e">' + _esc(dia.codigoRetirada || '—') + '</strong></td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table></div>';
+          tabelaDias.innerHTML = html;
+        }
+      })
+      .catch(function () { info.innerHTML = '<div class="empty-state">Erro de conexão.</div>'; });
+  }
+
+  function _badgeDia(status) {
+    var map = { agendado:'badge-gray', aguardando_inicio:'badge-blue', ativo:'badge-green', reservado:'badge-green', encerrado:'badge-gray', expirado:'badge-yellow', cancelado:'badge-red' };
+    var cls = map[status] || 'badge-gray';
+    return '<span class="badge ' + cls + '">' + _esc(status || '') + '</span>';
+  }
+
+  document.getElementById('btn-pausar').addEventListener('click', function () {
+    _post('/api/admin/promocao/picole/pausar', {}).then(function (d) {
+      var msgEl = document.getElementById('msg-campanha');
+      if (d.ok) { msgEl.textContent = 'Campanha pausada.'; msgEl.className = 'msg vis msg-ok'; _carregarCampanha(); }
+      else { msgEl.textContent = d.error || 'Erro.'; msgEl.className = 'msg vis msg-err'; }
+    });
+  });
+  document.getElementById('btn-retomar').addEventListener('click', function () {
+    _post('/api/admin/promocao/picole/retomar', {}).then(function (d) {
+      var msgEl = document.getElementById('msg-campanha');
+      if (d.ok) { msgEl.textContent = 'Campanha retomada.'; msgEl.className = 'msg vis msg-ok'; _carregarCampanha(); }
+      else { msgEl.textContent = d.error || 'Erro.'; msgEl.className = 'msg vis msg-err'; }
+    });
+  });
+  document.getElementById('btn-cancelar').addEventListener('click', function () {
+    if (!confirm('Cancelar a campanha permanentemente? Isso não pode ser desfeito.')) return;
+    _delete('/api/admin/promocao/picole/campanha').then(function (d) {
+      var msgEl = document.getElementById('msg-campanha');
+      if (d.ok) { msgEl.textContent = 'Campanha cancelada.'; msgEl.className = 'msg vis msg-ok'; _carregarCampanha(); }
+      else { msgEl.textContent = d.error || 'Erro.'; msgEl.className = 'msg vis msg-err'; }
+    });
+  });
+
+  // ── Iniciar campanha ──────────────────────────────────────────────────────────
+  document.getElementById('btn-iniciar-camp').addEventListener('click', function () {
+    var btn = this;
+    var msgEl = document.getElementById('msg-iniciar');
+    var dataVal = document.getElementById('ini-data').value;
+    var forcar = document.getElementById('ini-forcar').checked;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Iniciando…';
+    msgEl.className = 'msg';
+    _post('/api/admin/promocao/picole/iniciar', { dataInicio: dataVal || undefined, forcar: forcar })
+      .then(function (d) {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Iniciar Campanha';
+        if (d.ok) {
+          msgEl.textContent = 'Campanha criada! ' + d.totalDias + ' dias gerados de ' + d.campanha.dataInicio + ' a ' + d.campanha.dataFim;
+          msgEl.className = 'msg vis msg-ok';
+          _carregarCampanha();
+        } else {
+          msgEl.textContent = d.error || 'Erro ao iniciar.';
+          msgEl.className = 'msg vis msg-err';
+        }
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Iniciar Campanha';
+        msgEl.textContent = 'Erro de conexão.';
+        msgEl.className = 'msg vis msg-err';
+      });
+  });
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function _headers() {
+    return { 'Content-Type': 'application/json', 'X-Itap-Session-Token': _token };
+  }
+  function _get(path) {
+    return fetch(API + path, { headers: _headers(), cache: 'no-store' }).then(function (r) { return r.json(); });
+  }
+  function _post(path, body) {
+    return fetch(API + path, { method: 'POST', headers: _headers(), body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
+  function _patch(path, body) {
+    return fetch(API + path, { method: 'PATCH', headers: _headers(), body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
+  function _delete(path) {
+    return fetch(API + path, { method: 'DELETE', headers: _headers() }).then(function (r) { return r.json(); });
+  }
+  function _esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function _maskPhone(v) {
+    var d = String(v).replace(/\D/g,'').slice(0,11);
+    if (d.length<=2) return '('+d;
+    if (d.length<=7) return '('+d.slice(0,2)+') '+d.slice(2);
+    if (d.length<=10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
+    return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+  }
+})();
+</script>
+</body>
+</html>
