@@ -118,9 +118,10 @@
 
   window.ItapHorarioPedidos = Object.freeze({ estaAberto, textoAviso, aviso, atualizarEstado, impedirForaDoHorario });
   document.addEventListener('click', (evento) => {
+    const seletorAcionavel = 'a,button,[role="button"],input[type="submit"],input[type="button"],input[type="image"]';
     const controle = evento.target.closest('[data-order-window]');
     if (!controle) return;
-    if (!evento.target.closest('a,button,input[type="submit"]')) return;
+    if (!evento.target.closest(seletorAcionavel)) return;
     if (!estaAberto(controle.dataset.orderWindow)) impedirForaDoHorario(evento, controle.dataset.orderWindow);
   }, true);
   document.addEventListener('DOMContentLoaded', atualizarEstado);
