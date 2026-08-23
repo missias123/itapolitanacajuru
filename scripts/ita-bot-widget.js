@@ -100,25 +100,25 @@
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:188px; height:300px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:clamp(144px, 18vw, 188px); height:clamp(220px, 30vh, 300px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:188px; height:300px; padding:0; justify-content:flex-start; gap:2px; }',
-      '.itabot-launcher-robot { position:relative; flex:0 0 164px; width:156px; height:164px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(144px, 18vw, 188px); height:clamp(220px, 30vh, 300px); padding:0; justify-content:flex-start; gap:2px; }',
+      '.itabot-launcher-robot { position:relative; flex:0 0 clamp(126px, 14vw, 164px); width:clamp(118px, 13vw, 156px); height:clamp(126px, 14vw, 164px); display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
       '.itabot-face-led { position:absolute; left:24%; top:10.5%; width:52%; height:27%; display:flex; align-items:center; overflow:hidden; border:1px solid rgba(0,221,255,.5); border-radius:28% / 30%; background:#050B14; box-shadow:inset 0 0 6px rgba(0,0,0,.8); opacity:0; transform:scale(.92); transition:all .35s ease; pointer-events:none; z-index:2; }',
       '.itabot-face-led.is-on { opacity:1; transform:scale(1); background:#E81123 !important; box-shadow:inset 0 0 8px rgba(0,0,0,.5), 0 0 16px rgba(232,17,35,.9) !important; border-color:#FFD600 !important; }',
       '.itabot-face-led::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.15) 0 1px,transparent 1px 3px); mix-blend-mode:overlay; pointer-events:none; }',
       '.itabot-face-led-track { display:inline-block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 6.5px/1 Arial,sans-serif; letter-spacing:.4px; text-shadow:-1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 0 6px #000; white-space:nowrap; animation:itabot-led-marquee 7.4s linear infinite; }',
       '.itabot-launcher-dot { display:none; }',
-      '.itabot-launcher-led-panel { position:relative; display:flex; align-items:center; width:100%; min-width:164px; height:52px; margin-top:1px; padding:0 14px; border:2px solid #FF6B73; border-radius:5px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 12px rgba(232,0,13,.88),inset 0 0 8px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
+      '.itabot-launcher-led-panel { position:relative; display:flex; align-items:center; width:100%; min-width:128px; height:clamp(42px, 5.2vh, 52px); margin-top:1px; padding:0 12px; border:2px solid #FF6B73; border-radius:5px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 12px rgba(232,0,13,.88),inset 0 0 8px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
       '.itabot-launcher-led-panel::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px); mix-blend-mode:multiply; pointer-events:none; }',
-      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 16px/44px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 5px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
+      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 clamp(12px, 1.55vw, 16px)/42px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 5px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
       '@keyframes itabot-launcher-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
       '@keyframes itabot-led-marquee { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-face-led-track, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:188px; height:240px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { flex-basis:164px; width:156px; height:164px; } .itabot-launcher-led-panel { min-width:164px; height:52px; margin-top:1px; padding:0 10px; } .itabot-launcher-led-track { font-size:15px; line-height:44px; } .itabot-face-led-track { font-size:11px; } }',
+      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(136px, 46vw, 176px); height:clamp(196px, 58vh, 240px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(116px, 40vw, 152px); width:clamp(108px, 37vw, 144px); height:clamp(116px, 40vw, 152px); } .itabot-launcher-led-panel { min-width:124px; height:clamp(40px, 7vh, 50px); margin-top:1px; padding:0 9px; } .itabot-launcher-led-track { font-size:clamp(12px, 3.5vw, 15px); line-height:40px; } .itabot-face-led-track { font-size:11px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -239,14 +239,27 @@
       if (!document.body || document.body.classList.contains('chat-open') || document.body.classList.contains('modal-aberto')) return;
       var vw = window.innerWidth, vh = window.innerHeight;
       var narrow = mobile();
+      var margin = narrow ? 10 : 16;
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      var fullW = narrow ? 82 : 94;
-      var fullH = narrow ? 102 : 116;
-      var iconW = narrow ? 82 : 94, iconH = narrow ? 102 : 116;
+      var measureBox = function (iconOnly) {
+        if (iconOnly) launcher.classList.add('itabot-launcher-icon-only');
+        else launcher.classList.remove('itabot-launcher-icon-only');
+        var rect = launcher.getBoundingClientRect();
+        var rawW = Math.ceil(rect.width || (iconOnly ? 164 : 188));
+        var rawH = Math.ceil(rect.height || (iconOnly ? 220 : 300));
+        return {
+          w: Math.max(82, Math.min(rawW, Math.max(82, vw - margin * 2))),
+          h: Math.max(102, Math.min(rawH, Math.max(102, vh - 8)))
+        };
+      };
+      var fullBox = measureBox(false);
+      var iconBox = measureBox(true);
+      var fullW = fullBox.w;
+      var fullH = fullBox.h;
+      var iconW = iconBox.w, iconH = iconBox.h;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
-      var margin = narrow ? 10 : 16;
       var overlayBottom = safeBottom;
       var fixedNodes = document.querySelectorAll('body *');
       for (var f = 0; f < fixedNodes.length; f++) {
@@ -259,25 +272,39 @@
         if (fixedStyle.pointerEvents === 'none' || fixedStyle.visibility === 'hidden' || parseFloat(fixedStyle.opacity || '1') <= .08) continue;
         if (fixedRect.bottom >= vh - 2 && fixedRect.top > 0) overlayBottom = Math.max(overlayBottom, vh - fixedRect.top + 12);
       }
-      var bottomY = Math.max(24, vh - fullH - overlayBottom - 16);
-      var candidates = [
-        [vw - fullW - margin, bottomY, 'br'],
-        [margin, bottomY, 'bl'],
-        [vw - fullW - margin, Math.max(12, vh * .22), 'tr'],
-        [margin, Math.max(12, vh * .22), 'tl'],
-        [vw - fullW - margin, Math.max(12, vh * .5 - fullH / 2), 'mr'],
-        [margin, Math.max(12, vh * .5 - fullH / 2), 'ml']
-      ];
+      var clampPos = function (x, y, w, h) {
+        return {
+          x: Math.min(Math.max(margin, x), Math.max(margin, vw - w - margin)),
+          y: Math.min(Math.max(8, y), Math.max(8, vh - h - 8))
+        };
+      };
+      var candidatesFor = function (w, h) {
+        var bottomY = Math.max(8, vh - h - overlayBottom - 16);
+        var topY = Math.max(8, vh * .22);
+        var midY = Math.max(8, vh * .5 - h / 2);
+        var rightX = Math.max(margin, vw - w - margin);
+        return [
+          [rightX, bottomY, 'br'],
+          [margin, bottomY, 'bl'],
+          [rightX, topY, 'tr'],
+          [margin, topY, 'tl'],
+          [rightX, midY, 'mr'],
+          [margin, midY, 'ml']
+        ];
+      };
       var chosen = null;
       var findFree = function (w, h, icon) {
+        var candidates = candidatesFor(w, h);
         for (var k = 0; k < candidates.length; k++) {
-          if (candidates[k][0] >= 0 && candidates[k][1] >= 0 && isFree(candidates[k][0], candidates[k][1], w, h)) return { x:candidates[k][0], y:candidates[k][1], mode:candidates[k][2], icon:icon };
+          var p = clampPos(candidates[k][0], candidates[k][1], w, h);
+          if (isFree(p.x, p.y, w, h)) return { x:p.x, y:p.y, mode:candidates[k][2], icon:icon, w:w, h:h };
         }
         // Grade mais densa: procura uma área livre entre cartões, textos e controles.
         var stepX = Math.max(24, Math.round(vw / 8)), stepY = Math.max(24, Math.round(vh / 8));
-        for (var gy = 10; gy <= Math.max(10, vh - h - overlayBottom); gy += stepY) {
+        for (var gy = 8; gy <= Math.max(8, vh - h - 8); gy += stepY) {
           for (var gx = margin; gx <= Math.max(margin, vw - w - margin); gx += stepX) {
-            if (isFree(gx, gy, w, h)) return { x:gx, y:gy, mode:'grid', icon:icon };
+            var gp = clampPos(gx, gy, w, h);
+            if (isFree(gp.x, gp.y, w, h)) return { x:gp.x, y:gp.y, mode:'grid', icon:icon, w:w, h:h };
           }
         }
         return null;
@@ -289,17 +316,20 @@
       }
       if (!chosen) {
         // Último recurso: escolhe o ponto com menos colisões, mantendo o widget acessível.
-        var best = { score: Infinity, x:Math.max(8, vw - iconW - margin), y:Math.max(8, bottomY), mode:'br-fallback' };
-        var fallbackPoints = candidates.concat([[best.x, best.y, 'br-fallback']]);
+        var bestPos = clampPos(vw - iconW - margin, vh - iconH - overlayBottom - 16, iconW, iconH);
+        var best = { score: Infinity, x:bestPos.x, y:bestPos.y, mode:'br-fallback' };
+        var fallbackPoints = candidatesFor(iconW, iconH).concat([[best.x, best.y, 'br-fallback']]);
         for (var b = 0; b < fallbackPoints.length; b++) {
-          var score = collisionScore(fallbackPoints[b][0], fallbackPoints[b][1], iconW, iconH);
-          if (score < best.score) best = { score:score, x:fallbackPoints[b][0], y:fallbackPoints[b][1], mode:fallbackPoints[b][2] };
+          var fp = clampPos(fallbackPoints[b][0], fallbackPoints[b][1], iconW, iconH);
+          var score = collisionScore(fp.x, fp.y, iconW, iconH);
+          if (score < best.score) best = { score:score, x:fp.x, y:fp.y, mode:fallbackPoints[b][2] };
         }
         launcher.classList.add('itabot-launcher-icon-only');
-        chosen = { x:best.x, y:best.y, mode:best.mode, icon:true };
+        chosen = { x:best.x, y:best.y, mode:best.mode, icon:true, w:iconW, h:iconH };
       }
-      launcher.style.left = Math.round(chosen.x) + 'px';
-      launcher.style.top = Math.round(chosen.y) + 'px';
+      var finalPos = clampPos(chosen.x, chosen.y, chosen.w || iconW, chosen.h || iconH);
+      launcher.style.left = Math.round(finalPos.x) + 'px';
+      launcher.style.top = Math.round(finalPos.y) + 'px';
       launcher.style.right = 'auto';
       launcher.style.bottom = 'auto';
       launcher.style.visibility = 'visible';
