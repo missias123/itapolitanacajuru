@@ -20,7 +20,7 @@
 
   var API_BASE = 'https://api.itapolitanacajuru.com.br';
   var POLL_INTERVAL_MS = 20_000; // 20 segundos
-  var MODAL_ID = 'picole-promo-modal';
+  var PAINEL_ID = 'picole-dialog'; // mesmo padrão do #chat-dialog do widget
 
   // ── Estado interno ──────────────────────────────────────────────────────────
   var _estado = 'inativo'; // 'inativo' | 'ativo' | 'reservado' | 'campanha_encerrada'
@@ -28,8 +28,10 @@
   var _polling = false;
   var _reservandoEmAndamento = false;
   var _reservaId = null;           // ID da reserva desta sessão (apenas UX, não é fonte de verdade)
-  var _modalAberto = false;
+  var _painelAberto = false;
   var _pendingUnloadGuard = false; // true enquanto há reserva sem formulário preenchido
+  var _janelaAtiva = false;        // true durante os 5 segundos de janela de clique
+  var _janela5sTimer = null;       // timer que encerra a janela de 5 segundos
 
   // ── Armazenamento local — somente para UX (retomada de formulário) ───────────
   // O localStorage persiste entre abas e recargas, tornando a recuperação mais robusta.
@@ -167,13 +169,33 @@
 
         if (novoEstado === 'campanha_encerrada') {
           _estado = 'campanha_encerrada';
+          _janelaAtiva = false;
+          if (_janela5sTimer) { clearTimeout(_janela5sTimer); _janela5sTimer = null; }
           _atualizarRobo('inativo');
           _pararPolling();
           return;
         }
 
+        // Primeira vez detectando 'ativo': abre janela de 5 segundos
+        if (novoEstado === 'ativo' && !_janelaAtiva) {
+          _janelaAtiva = true;
+          _atualizarRobo('ativo');
+          _janela5sTimer = setTimeout(function () {
+            _janelaAtiva = false;
+            _janela5sTimer = null;
+            // Reverte LED se o painel não foi aberto
+            if (!_painelAberto) _atualizarRobo('inativo');
+          }, 5000);
+        }
+
+        // Estado voltou para não-ativo (vencedor encontrado etc.)
+        if (novoEstado !== 'ativo') {
+          _janelaAtiva = false;
+          if (_janela5sTimer) { clearTimeout(_janela5sTimer); _janela5sTimer = null; }
+        }
+
         _estado = novoEstado;
-        _atualizarRobo(novoEstado);
+        if (novoEstado !== 'ativo') _atualizarRobo(novoEstado);
       })
       .catch(function () {
         _polling = false;
@@ -195,71 +217,83 @@
 
   // ── Interceptor de clique no robô ────────────────────────────────────────────
   window._itabotClickInterceptor = function () {
-    if (_estado === 'ativo') {
-      _abrirModal('promo');
-      return true; // intercepta
-    }
-    if (_estado === 'reservado') {
-      _abrirModal('encerrado');
-      return true; // intercepta para mostrar mensagem
+    if (_estado === 'ativo' && _janelaAtiva) {
+      _abrirPainel('promo');
+      return true; // intercepta — abre painel de cadastro
     }
     return false; // passa para o comportamento padrão (dúvidas)
   };
 
-  // ── Modal ────────────────────────────────────────────────────────────────────
-  function _injetarCssModal() {
-    if (document.getElementById('picole-modal-css')) return;
+  // ── Painel de promoção (mesmo formato visual do painel de dúvidas) ───────────
+  // Usa a mesma estrutura CSS do #chat-dialog.itabot-fullscreen-mode do widget,
+  // garantindo aparência idêntica: header azul, logo, scroll area, footer.
+  function _injetarCssPainel() {
+    if (document.getElementById('picole-painel-css')) return;
     var s = document.createElement('style');
-    s.id = 'picole-modal-css';
+    s.id = 'picole-painel-css';
+    var D = '#' + PAINEL_ID;
     s.textContent = [
-      '#' + MODAL_ID + '{display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,0.72);align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;}',
-      '#' + MODAL_ID + '.aberto{display:flex!important;}',
-      '#' + MODAL_ID + ' .pm-box{background:#fff;border-radius:24px;width:100%;max-width:440px;max-height:92dvh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.4);outline:none;display:flex;flex-direction:column;}',
-      '#' + MODAL_ID + ' .pm-hdr{background:linear-gradient(135deg,#E8000D,#FF6D00);color:#fff;padding:20px 20px 16px;border-radius:24px 24px 0 0;position:relative;}',
-      '#' + MODAL_ID + ' .pm-hdr h2{font-family:\'Poppins\',sans-serif;font-size:1.1rem;font-weight:900;margin:0;padding-right:36px;}',
-      '#' + MODAL_ID + ' .pm-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;}',
-      '#' + MODAL_ID + ' .pm-close:focus-visible{outline:2px solid #FFD600;outline-offset:2px;}',
-      '#' + MODAL_ID + ' .pm-body{padding:20px;flex:1;}',
-      '#' + MODAL_ID + ' .pm-msg{text-align:center;padding:12px 0 8px;}',
-      '#' + MODAL_ID + ' .pm-msg .pm-emoji{font-size:3rem;line-height:1;margin-bottom:8px;}',
-      '#' + MODAL_ID + ' .pm-msg p{color:#555;font-size:.95rem;line-height:1.5;margin:6px 0 0;}',
-      '#' + MODAL_ID + ' .pm-form{display:flex;flex-direction:column;gap:14px;}',
-      '#' + MODAL_ID + ' .pm-field{display:grid;gap:5px;}',
-      '#' + MODAL_ID + ' .pm-field label{font-size:.88rem;font-weight:700;color:#333;}',
-      '#' + MODAL_ID + ' .pm-field input{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-size:1rem;font-family:inherit;outline:none;transition:border-color .2s;}',
-      '#' + MODAL_ID + ' .pm-field input:focus{border-color:#E8000D;box-shadow:0 0 0 3px rgba(232,0,13,.1);}',
-      '#' + MODAL_ID + ' .pm-field input[aria-invalid="true"]{border-color:#C62828;}',
-      '#' + MODAL_ID + ' .pm-field .pm-err{color:#C62828;font-size:.8rem;font-weight:700;display:none;}',
-      '#' + MODAL_ID + ' .pm-field .pm-err.vis{display:block;}',
-      '#' + MODAL_ID + ' .pm-check{display:flex;gap:10px;align-items:flex-start;font-size:.84rem;color:#444;line-height:1.4;}',
-      '#' + MODAL_ID + ' .pm-check input[type="checkbox"]{margin-top:2px;accent-color:#E8000D;width:18px;height:18px;flex-shrink:0;}',
-      '#' + MODAL_ID + ' .pm-lgpd{background:#FFF8E1;border:1px solid #FFE082;border-radius:10px;padding:10px 12px;font-size:.8rem;color:#5D4037;line-height:1.5;margin:4px 0;}',
-      '#' + MODAL_ID + ' .pm-lgpd a{color:#E65100;font-weight:700;}',
-      '#' + MODAL_ID + ' .pm-btn{width:100%;padding:14px;border:none;border-radius:14px;font-family:\'Poppins\',sans-serif;font-weight:900;font-size:.98rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s;}',
-      '#' + MODAL_ID + ' .pm-btn:disabled{opacity:.55;cursor:not-allowed;}',
-      '#' + MODAL_ID + ' .pm-btn-reservar{background:linear-gradient(135deg,#E8000D,#FF6D00);color:#fff;box-shadow:0 6px 20px rgba(232,0,13,.3);}',
-      '#' + MODAL_ID + ' .pm-btn-enviar{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 6px 20px rgba(37,211,102,.3);}',
-      '#' + MODAL_ID + ' .pm-btn-wpp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 6px 20px rgba(37,211,102,.3);text-decoration:none;margin-top:4px;}',
-      '#' + MODAL_ID + ' .pm-ticket{background:linear-gradient(135deg,#1A237E,#303F9F);color:#fff;border-radius:14px;padding:18px;text-align:center;border:2px dashed #FFD600;margin:8px 0;}',
-      '#' + MODAL_ID + ' .pm-ticket-code{font-size:1.5rem;font-weight:900;color:#FFD600;letter-spacing:3px;background:rgba(0,0,0,.3);padding:8px 12px;border-radius:8px;margin:10px 0;display:block;}',
-      '#' + MODAL_ID + ' .pm-spinner{width:22px;height:22px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:pm-spin .7s linear infinite;display:none;}',
-      '#' + MODAL_ID + ' .pm-spinner.vis{display:block;}',
+      // ── Shell do painel (idêntico ao #chat-dialog.itabot-fullscreen-mode) ──
+      D + '{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;background:linear-gradient(135deg,rgba(3,22,45,.82),rgba(4,82,120,.76));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);align-items:center;justify-content:center;}',
+      D + '.aberto{display:flex!important;}',
+      D + ' .chat-box{width:100%;max-width:460px;height:100%;max-height:100dvh;background:linear-gradient(180deg,#f7fcff 0%,#eef8ff 100%);border-radius:28px 28px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 28px 80px rgba(0,22,54,.42);position:absolute;bottom:0;left:0;right:0;margin:0 auto;padding-bottom:env(safe-area-inset-bottom,0px);}',
+      D + ' .chat-hdr{background:linear-gradient(135deg,#062c63 0%,#0b72b8 58%,#16b9d4 100%);padding:18px 20px;position:relative;overflow:hidden;flex-shrink:0;}',
+      D + ' .chat-hdr::after{content:"";position:absolute;width:220px;height:220px;right:-100px;top:-150px;border-radius:50%;background:rgba(255,255,255,.16);pointer-events:none;}',
+      D + ' .chat-hdr-logo-row{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}',
+      D + ' .chat-hdr-brand{display:flex;align-items:center;gap:12px;}',
+      D + ' .chat-hdr-logo-img{width:48px;height:48px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 3px rgba(255,255,255,.2),0 0 22px rgba(101,232,255,.55);}',
+      D + ' .chat-hdr-logo-text{font-size:18px;font-weight:900;color:#fff;letter-spacing:.2px;}',
+      D + ' .itabot-status-line{display:flex;align-items:center;gap:6px;margin-top:3px;color:rgba(255,255,255,.86);font-size:10px;font-weight:900;letter-spacing:1px;}',
+      D + ' .chat-close{min-width:44px;min-height:44px;border-radius:14px;background:rgba(255,255,255,.14);border:none;color:#fff;font-size:22px;cursor:pointer;position:relative;z-index:2;line-height:1;transition:background .16s;}',
+      D + ' .chat-close:hover{background:rgba(255,255,255,.28);}',
+      D + ' .chat-close:focus-visible{outline:2px solid #FFD600;outline-offset:2px;}',
+      D + ' .itabot-fullscreen-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding:20px;background:linear-gradient(180deg,#f5fbff,#edf7ff);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}',
+      D + ' .itabot-fullscreen-footer{flex-shrink:0;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:12px 20px;padding-bottom:max(12px,env(safe-area-inset-bottom,0px));border-top:1px solid #eee;display:flex;justify-content:center;}',
+      D + ' .itabot-fullscreen-footer button{background:#E8000D;color:#fff;border:none;border-radius:24px;padding:12px 32px;font-size:15px;font-weight:900;cursor:pointer;min-height:48px;box-shadow:0 4px 14px rgba(232,0,13,.3);}',
+      // ── Responsivo mobile ────────────────────────────────────────────────────
+      '@media (min-width:601px){' + D + ' .chat-box{height:90%;max-height:800px;border-radius:28px;position:relative;bottom:auto;}}',
+      '@media (max-width:600px){' + D + ' .chat-hdr{padding-top:max(18px,env(safe-area-inset-top,0px));}' + D + ' .itabot-fullscreen-scroll{padding:16px 14px;}}',
+      // ── CSS dos elementos internos do formulário ─────────────────────────────
+      D + ' .pm-msg{text-align:center;padding:12px 0 8px;}',
+      D + ' .pm-msg .pm-emoji{font-size:3rem;line-height:1;margin-bottom:8px;display:block;}',
+      D + ' .pm-msg h3{margin:0 0 8px;}',
+      D + ' .pm-msg p{color:#555;font-size:.95rem;line-height:1.5;margin:6px 0 0;}',
+      D + ' .pm-form{display:flex;flex-direction:column;gap:14px;}',
+      D + ' .pm-field{display:grid;gap:5px;}',
+      D + ' .pm-field label{font-size:.88rem;font-weight:700;color:#333;}',
+      D + ' .pm-field input{width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;font-family:inherit;outline:none;transition:border-color .2s;box-sizing:border-box;}',
+      D + ' .pm-field input:focus{border-color:#0b72b8;box-shadow:0 0 0 3px rgba(11,114,184,.1);}',
+      D + ' .pm-field input[aria-invalid="true"]{border-color:#C62828;}',
+      D + ' .pm-field .pm-err{color:#C62828;font-size:.8rem;font-weight:700;display:none;}',
+      D + ' .pm-field .pm-err.vis{display:block;}',
+      D + ' .pm-check{display:flex;gap:10px;align-items:flex-start;font-size:.84rem;color:#444;line-height:1.4;}',
+      D + ' .pm-check input[type="checkbox"]{margin-top:2px;accent-color:#0b72b8;width:18px;height:18px;flex-shrink:0;}',
+      D + ' .pm-lgpd{background:#e3f2fd;border:1px solid #90caf9;border-radius:10px;padding:10px 12px;font-size:.8rem;color:#1a237e;line-height:1.5;margin:4px 0;}',
+      D + ' .pm-lgpd a{color:#0b72b8;font-weight:700;}',
+      D + ' .pm-btn{width:100%;padding:14px;border:none;border-radius:14px;font-weight:900;font-size:.98rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s;font-family:inherit;}',
+      D + ' .pm-btn:disabled{opacity:.55;cursor:not-allowed;}',
+      D + ' .pm-btn-reservar{background:linear-gradient(135deg,#0b72b8,#062c63);color:#fff;box-shadow:0 6px 20px rgba(11,114,184,.3);}',
+      D + ' .pm-btn-enviar{background:linear-gradient(135deg,#0b72b8,#062c63);color:#fff;box-shadow:0 6px 20px rgba(11,114,184,.3);}',
+      D + ' .pm-btn-wpp{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 6px 20px rgba(37,211,102,.3);text-decoration:none;margin-top:4px;}',
+      D + ' .pm-ticket{background:linear-gradient(135deg,#062c63,#0b72b8);color:#fff;border-radius:14px;padding:18px;text-align:center;border:2px dashed #FFD600;margin:8px 0;}',
+      D + ' .pm-ticket-code{font-size:1.5rem;font-weight:900;color:#FFD600;letter-spacing:3px;background:rgba(0,0,0,.3);padding:8px 12px;border-radius:8px;margin:10px 0;display:block;}',
+      D + ' .pm-spinner{width:22px;height:22px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:pm-spin .7s linear infinite;display:none;}',
+      D + ' .pm-spinner.vis{display:block;}',
       '@keyframes pm-spin{to{transform:rotate(360deg)}}',
-      '#' + MODAL_ID + ' .pm-status-msg{text-align:center;padding:8px 0;font-size:.9rem;font-weight:700;color:#C62828;display:none;}',
-      '#' + MODAL_ID + ' .pm-status-msg.vis{display:block;}',
+      // Dot animation (fallback if widget CSS not yet injected)
+      D + ' .itabot-status-dot{width:7px;height:7px;border-radius:50%;background:#59ffb3;box-shadow:0 0 0 4px rgba(89,255,179,.16),0 0 12px rgba(89,255,179,.85);display:inline-block;animation:itabot-status-pulse 1.8s ease-in-out infinite;}',
+      '@keyframes itabot-status-pulse{0%,100%{opacity:.68;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}',
+      D + ' .pm-status-msg{text-align:center;padding:8px 0;font-size:.9rem;font-weight:700;color:#C62828;display:none;}',
+      D + ' .pm-status-msg.vis{display:block;}',
     ].join('');
     document.head.appendChild(s);
   }
 
-  function _fecharModal() {
-    var modal = document.getElementById(MODAL_ID);
-    if (modal) {
-      modal.classList.remove('aberto');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('modal-aberto');
-    }
-    _modalAberto = false;
-    // Restaura foco ao launcher
+  function _fecharPainel() {
+    var painel = document.getElementById(PAINEL_ID);
+    if (painel) painel.classList.remove('aberto');
+    document.body.classList.remove('chat-open', 'modal-aberto');
+    _painelAberto = false;
     var launcher = document.getElementById('itabot-launcher');
     if (launcher) launcher.focus();
   }
@@ -267,17 +301,17 @@
   function _construirConteudoModal(tela, dados) {
     dados = dados || {};
     if (tela === 'encerrado') {
-      return '<div class="pm-msg"><div class="pm-emoji" aria-hidden="true">😔</div>' +
+      return '<div class="pm-msg"><span class="pm-emoji" aria-hidden="true">😔</span>' +
         '<h3 style="font-size:1.1rem;font-weight:900;color:#C62828;margin:0 0 8px">Promoção encerrada!</h3>' +
         '<p>A promoção de hoje já foi encerrada.<br><strong>Tente novamente amanhã!</strong></p></div>';
     }
     if (tela === 'campanha_encerrada') {
-      return '<div class="pm-msg"><div class="pm-emoji" aria-hidden="true">🍦</div>' +
+      return '<div class="pm-msg"><span class="pm-emoji" aria-hidden="true">🍦</span>' +
         '<h3 style="font-size:1.1rem;font-weight:900;color:#1A237E;margin:0 0 8px">Campanha encerrada</h3>' +
         '<p>A promoção de 30 dias foi encerrada.<br>Consulte nossas outras ofertas!</p></div>';
     }
     if (tela === 'ganhou') {
-      return '<div class="pm-msg"><div class="pm-emoji" aria-hidden="true">🎉</div>' +
+      return '<div class="pm-msg"><span class="pm-emoji" aria-hidden="true">🎉</span>' +
         '<h3 style="font-size:1.1rem;font-weight:900;color:#2E7D32;margin:0 0 4px">Você foi a primeira pessoa de hoje!</h3>' +
         '<p style="font-size:.88rem;color:#555">Preencha seus dados para garantir seu picolé.</p></div>' +
         '<form id="pm-form-vencedor" class="pm-form" novalidate>' +
@@ -296,7 +330,7 @@
     }
     if (tela === 'confirmacao') {
       var cod = _escapeHtml(dados.codigoRetirada || '—');
-      var wppNum = '5516996062046'; // número da sorveteria (configurável via variável no servidor)
+      var wppNum = '5516996062046';
       var wppMsg = encodeURIComponent(
         '🍦 Resgate do Picolé – Sorveteria Itapolitana Cajuru\n\n' +
         'Nome: ' + (dados.nome || '') + '\n' +
@@ -308,7 +342,7 @@
         '(Sujeito aos sabores disponíveis no momento da retirada)\n\n' +
         'Apresente este código e o celular cadastrado na loja. ✅'
       );
-      return '<div class="pm-msg"><div class="pm-emoji" aria-hidden="true">✅</div>' +
+      return '<div class="pm-msg"><span class="pm-emoji" aria-hidden="true">✅</span>' +
         '<h3 style="font-size:1.1rem;font-weight:900;color:#2E7D32;margin:0 0 4px">Cadastro realizado!</h3></div>' +
         '<div class="pm-ticket" role="region" aria-label="Código de retirada">' +
         '<div style="font-size:.85rem;font-weight:700;opacity:.8">Seu código de retirada</div>' +
@@ -326,8 +360,8 @@
         '<div style="font-size:.75rem;color:#888;text-align:center;margin-top:6px">* Você ainda precisará tocar em Enviar no WhatsApp.</div>';
     }
     // tela 'promo' — tela inicial de reserva
-    return '<div class="pm-msg"><div class="pm-emoji" aria-hidden="true">🍦</div>' +
-      '<h3 style="font-size:1.2rem;font-weight:900;color:#E8000D;margin:0 0 4px">VOCÊ PODE GANHAR UM PICOLÉ!</h3>' +
+    return '<div class="pm-msg"><span class="pm-emoji" aria-hidden="true">🍦</span>' +
+      '<h3 style="font-size:1.2rem;font-weight:900;color:#062c63;margin:0 0 4px">VOCÊ PODE GANHAR UM PICOLÉ!</h3>' +
       '<p style="font-size:.9rem;color:#555">Clique em <strong>Reservar agora</strong>. Somente a primeira pessoa ganha.<br><em>1 picolé de fruta grátis por dia.</em></p></div>' +
       '<div id="pm-status-reserva" class="pm-status-msg" role="alert"></div>' +
       '<button type="button" class="pm-btn pm-btn-reservar" id="pm-btn-reservar" aria-label="Reservar promoção do picolé grátis">' +
@@ -385,59 +419,85 @@
     }
   }
 
-  function _abrirModal(tela, dados) {
-    _injetarCssModal();
-    var modal = document.getElementById(MODAL_ID);
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = MODAL_ID;
-      modal.setAttribute('role', 'dialog');
-      modal.setAttribute('aria-modal', 'true');
-      modal.setAttribute('aria-labelledby', 'pm-titulo');
-      document.body.appendChild(modal);
+  function _abrirPainel(tela, dados) {
+    _injetarCssPainel();
+
+    var painel = document.getElementById(PAINEL_ID);
+    if (!painel) {
+      painel = document.createElement('div');
+      painel.id = PAINEL_ID;
+      painel.setAttribute('role', 'dialog');
+      painel.setAttribute('aria-modal', 'true');
+      painel.setAttribute('aria-labelledby', 'pm-titulo');
+
+      // Detecta base URL da imagem da logo (mesmo esquema do widget)
+      var logoSrc = 'images/logo.webp';
+      try {
+        var scripts = document.querySelectorAll('script[src*="ita-bot-widget"]');
+        if (scripts.length) {
+          var src = scripts[0].getAttribute('src');
+          var base = src.substring(0, src.lastIndexOf('/') + 1);
+          if (base) logoSrc = base + '../images/logo.webp';
+        }
+      } catch (_e) {}
+
+      painel.innerHTML = [
+        '<div class="chat-box" tabindex="-1">',
+          '<div class="chat-hdr">',
+            '<div class="chat-hdr-logo-row">',
+              '<div class="chat-hdr-brand">',
+                '<img src="images/logo.webp" alt="Itapolitana" class="chat-hdr-logo-img" onerror="this.src=\'' + logoSrc + '\'">',
+                '<div>',
+                  '<div class="chat-hdr-logo-text" id="pm-titulo">🍦 Promoção do Dia</div>',
+                  '<div class="itabot-status-line"><span class="itabot-status-dot" aria-hidden="true"></span> PICOLÉ GRÁTIS · ITAPOLITANA</div>',
+                '</div>',
+              '</div>',
+              '<button class="chat-close" id="pm-close" type="button" aria-label="Fechar">✕</button>',
+            '</div>',
+          '</div>',
+          '<div id="pm-body" class="itabot-fullscreen-scroll">',
+          '</div>',
+          '<div class="itabot-fullscreen-footer">',
+            '<button type="button" id="pm-btn-fechar">Fechar e Voltar ao Site</button>',
+          '</div>',
+        '</div>',
+      ].join('');
+      document.body.appendChild(painel);
+
+      // Fechar ao clicar no overlay escuro
+      painel.addEventListener('click', function (e) { if (e.target === painel) _fecharPainel(); });
+      // Fechar com Escape
+      painel.addEventListener('keydown', function (e) { if (e.key === 'Escape') _fecharPainel(); });
+      document.getElementById('pm-close').addEventListener('click', _fecharPainel);
+      document.getElementById('pm-btn-fechar').addEventListener('click', _fecharPainel);
     }
 
-    var titulo = tela === 'ativo' || tela === 'promo' ? 'Promoção do Dia' :
-                 tela === 'ganhou' ? 'Você Ganhou!' :
-                 tela === 'confirmacao' ? 'Confirmação' : 'Promoção';
+    // Atualiza título
+    var titulos = { promo: '🍦 Promoção do Dia', ganhou: '🍦 Você Ganhou!', confirmacao: '🍦 Cadastro Confirmado!', encerrado: '🍦 Promoção Encerrada', campanha_encerrada: '🍦 Campanha Encerrada' };
+    var tituloEl = document.getElementById('pm-titulo');
+    if (tituloEl) tituloEl.textContent = titulos[tela] || '🍦 Promoção';
 
-    modal.innerHTML = '<div class="pm-box" tabindex="-1">' +
-      '<div class="pm-hdr"><h2 id="pm-titulo">🍦 ' + _escapeHtml(titulo) + '</h2>' +
-      '<button type="button" class="pm-close" id="pm-close" aria-label="Fechar">✕</button></div>' +
-      '<div class="pm-body" id="pm-body">' + _construirConteudoModal(tela, dados) + '</div>' +
-      '</div>';
+    // Injeta conteúdo da tela
+    var body = document.getElementById('pm-body');
+    if (body) body.innerHTML = _construirConteudoModal(tela, dados);
 
-    modal.classList.add('aberto');
-    modal.removeAttribute('aria-hidden');
-    document.body.classList.add('modal-aberto');
-    _modalAberto = true;
+    // Abre o painel (mesmo padrão do widget)
+    document.body.classList.add('chat-open', 'modal-aberto');
+    painel.classList.add('aberto');
+    _painelAberto = true;
 
-    // Foca a caixa do modal
-    var box = modal.querySelector('.pm-box');
+    // Foca
+    var box = painel.querySelector('.chat-box');
     if (box) setTimeout(function () { box.focus(); }, 50);
-
-    // Botão fechar
-    var btnClose = document.getElementById('pm-close');
-    if (btnClose) btnClose.addEventListener('click', _fecharModal);
-
-    // Fechar com Escape
-    modal.addEventListener('keydown', function onKey(e) {
-      if (e.key === 'Escape') { _fecharModal(); modal.removeEventListener('keydown', onKey); }
-    });
-    // Fechar ao clicar fora
-    modal.addEventListener('click', function onOuter(e) {
-      if (e.target === modal) { _fecharModal(); modal.removeEventListener('click', onOuter); }
-    });
-
-    // Prende foco dentro do modal (trap)
-    _trapFocus(modal);
 
     // Inicializa handlers da tela
     if (tela === 'promo') _inicializarTelaPromo();
     if (tela === 'ganhou') _inicializarTelaFormulario(dados);
+
+    _trapFocus(painel);
   }
 
-  // ── Foco preso no modal ──────────────────────────────────────────────────────
+  // ── Foco preso no painel ─────────────────────────────────────────────────────
   function _trapFocus(modal) {
     modal.addEventListener('keydown', function (e) {
       if (e.key !== 'Tab') return;
