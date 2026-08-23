@@ -8,8 +8,10 @@ test.describe('Admin catálogo - edição manual', () => {
 
     await page.goto('/admin-catalogo.html', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#notice')).toContainText('Base única carregada');
+    await expect(page.locator('#skuTotal')).toContainText('SKU(s) oficiais no catálogo');
 
     const row = page.locator('#productsPanel tr[data-key]').first();
+    await expect(row.locator('.sku-linked-badge')).toContainText('SKU');
     const nome = row.locator('input[data-field="nome"]');
     const valorOriginal = await nome.inputValue();
 
