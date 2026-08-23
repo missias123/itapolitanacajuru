@@ -258,7 +258,7 @@
         '🍦 Resgate do Picolé – Sorveteria Itapolitana Cajuru\n\n' +
         'Nome: ' + (dados.nome || '') + '\n' +
         'Celular: ' + (dados.celular || '') + '\n' +
-        'Data: ' + (dados.dataLocal || hojeFormatado()) + '\n' +
+        'Data: ' + (dados.dataLocal || _hojeFormatado()) + '\n' +
         'Código de Retirada: ' + (dados.codigoRetirada || '') + '\n\n' +
         'Prêmio: 1 picolé de fruta grátis\n' +
         'Retirada: pessoalmente na Sorveteria Itapolitana, Cajuru/SP\n' +
@@ -551,7 +551,7 @@
     return new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
-  function hojeFormatado() {
+  function _hojeFormatado() {
     return _dataHojeFormatada();
   }
 

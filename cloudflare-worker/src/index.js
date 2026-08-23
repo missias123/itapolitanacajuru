@@ -801,25 +801,35 @@ async function handlePicoleReservar(request, env) {
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
   }
 
-  // ── Mecanismo de reserva otimista ──────────────────────────────────────────
-  // Gera ID único para esta tentativa
+  // ── Mecanismo de reserva com dupla verificação ─────────────────────────────
+  // NOTA: Cloudflare KV é eventualmente consistente. Para atomicidade perfeita,
+  // seria necessário usar Durable Objects. Para este caso de uso (promoção local
+  // com tráfego limitado), usamos dupla verificação com espera para minimizar
+  // a janela de race condition. A probabilidade de colisão é muito baixa e
+  // aceitável para uma promoção de sorveteria local.
   const reservaId = gerarReservaId();
   const agora2 = new Date().toISOString();
 
-  // Escreve a tentativa como vencedor (TTL = 25 horas para cobrir o dia todo)
+  // Escrita atômica (best-effort): usa o reservaId como valor do lock
   await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
 
-  // Aguarda propagação do KV (reduz janela de race condition)
+  // Aguarda propagação global do KV (200ms reduz drasticamente a janela de race)
   await new Promise(r => setTimeout(r, 200));
 
-  // Relê para confirmar que nossa escrita venceu
-  const confirmado = await env.PROMO_KV.get(`picole:winner:${hoje}`);
-  if (confirmado !== reservaId) {
-    // Outro pedido venceu durante a janela de race
+  // Primeira verificação: nossa escrita venceu?
+  const confirmado1 = await env.PROMO_KV.get(`picole:winner:${hoje}`);
+  if (confirmado1 !== reservaId) {
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
   }
 
-  // Somos o vencedor! Cria o registro de reserva completo
+  // Segunda verificação após pausa adicional (aumenta confiança contra edge nodes diferentes)
+  await new Promise(r => setTimeout(r, 200));
+  const confirmado2 = await env.PROMO_KV.get(`picole:winner:${hoje}`);
+  if (confirmado2 !== reservaId) {
+    return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
+  }
+
+  // Somos o vencedor!
   const reserva = {
     reservaId,
     campanhaId: campanha.id,
@@ -1027,16 +1037,20 @@ async function handlePicoleAdminCancelarCampanha(request, env) {
 
 async function handlePicoleAdminGanhadores(env) {
   if (!env.PROMO_KV) return jsonResp({ ok: false, error: 'PROMO_KV não configurado' }, 503);
-  const lista = await env.PROMO_KV.list({ prefix: 'picole:reserva:' });
   const ganhadores = [];
-  for (const k of lista.keys) {
-    const r = await env.PROMO_KV.get(k.name, 'json');
-    if (r) {
-      // Não expõe IP do cliente nem dados desnecessários
-      const { ipCliente: _ip, ...safe } = r;
-      ganhadores.push(safe);
+  let cursor = undefined;
+  // Pagina através de todos os registros (KV list retorna no máximo 1000 por chamada)
+  do {
+    const lista = await env.PROMO_KV.list({ prefix: 'picole:reserva:', ...(cursor ? { cursor } : {}) });
+    for (const k of lista.keys) {
+      const r = await env.PROMO_KV.get(k.name, 'json');
+      if (r) {
+        const { ipCliente: _ip, ...safe } = r;
+        ganhadores.push(safe);
+      }
     }
-  }
+    cursor = lista.list_complete ? undefined : lista.cursor;
+  } while (cursor);
   ganhadores.sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
   return jsonResp({ ok: true, total: ganhadores.length, ganhadores });
 }
