@@ -7,7 +7,7 @@
   'use strict';
   if (window.__ITABOT_WIDGET_V2027_RUNNING__) return;
   window.__ITABOT_WIDGET_V2027_RUNNING__ = true;
-  var ITABOT_BUILD = '20260823-no-legs-single';
+  var ITABOT_BUILD = '20260823-no-legs-led-tight';
   var ITABOT_IMG_VERSION = '20260823-no-legs';
 
   console.log('ItaBot Widget: Inicializando...');
@@ -104,19 +104,21 @@
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; width:clamp(102px, 12.5vw, 128px); height:clamp(142px, 21vh, 180px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 172px); max-width:calc(100vw - 20px); max-height:calc(100vh - 16px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(102px, 12.5vw, 128px); height:clamp(142px, 21vh, 180px); padding:0; justify-content:flex-start; gap:4px; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:clamp(102px, 12.4vw, 126px); height:clamp(136px, 20vh, 166px); padding:0; justify-content:flex-start; gap:0; }',
       '.itabot-launcher-robot { position:relative; flex:0 0 clamp(96px, 10.5vw, 122px); width:clamp(92px, 10vw, 116px); height:clamp(96px, 10.5vw, 122px); display:block; overflow:visible; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
-
-      '.itabot-launcher-dot { display:inline-flex; align-items:center; justify-content:center; min-width:86px; height:24px; padding:0 8px; border:1.5px solid #FFFFFF; border-radius:7px; background:linear-gradient(135deg,#FF2020,#E8000D,#C62828); color:#fff; font:900 11px/1 Arial,sans-serif; letter-spacing:.6px; text-shadow:0 1px 2px rgba(0,0,0,.45); box-shadow:0 0 0 1px rgba(90,0,0,.38),0 0 12px rgba(232,0,13,.58); white-space:nowrap; pointer-events:none; }',
-      '.itabot-launcher-led-panel { display:none !important; }',
+      '.itabot-launcher-led-panel { position:relative; display:block; width:clamp(62px, 7.2vw, 76px); height:20px; margin-top:-18px; border:1.3px solid #ffd4d8; border-radius:8px; background:linear-gradient(180deg,#5a0409 0%,#3f0207 100%); box-shadow:0 0 0 1px rgba(255,255,255,.82),0 5px 12px rgba(232,0,13,.48),inset 0 0 7px rgba(0,0,0,.7); overflow:hidden; pointer-events:none; }',
+      '.itabot-launcher-led-panel::before { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 1.4px 50%, rgba(255,255,255,.22) 0 .8px, transparent 1px) 0 0/4px 4px; opacity:.46; }',
+      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; width:max-content; min-width:100%; padding:4px 0 0 100%; color:#ffe17d; font:900 8.4px/1.1 "Arial Black",Arial,sans-serif; letter-spacing:.08em; text-shadow:0 0 2px rgba(0,0,0,.95),0 0 6px rgba(255,214,0,.44); white-space:nowrap; text-transform:uppercase; animation:itabot-led-scroll 6.3s linear infinite; }',
+      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { display:none; }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
+      '@keyframes itabot-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
 
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(92px, 32vw, 120px); height:clamp(132px, 29vh, 168px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(86px, 26vw, 112px); width:clamp(82px, 24vw, 108px); height:clamp(86px, 26vw, 112px); } .itabot-launcher-dot { min-width:74px; height:22px; font-size:10px; border-radius:6px; } }',
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } .itabot-launcher-led-track { transform:none; } }',
+      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:clamp(96px, 32vw, 120px); height:clamp(132px, 29vh, 166px); max-width:calc(100vw - 20px); max-height:calc(100vh - 20px); } .itabot-launcher-robot { flex-basis:clamp(88px, 26.8vw, 110px); width:clamp(84px, 24.6vw, 106px); height:clamp(88px, 26.8vw, 110px); } .itabot-launcher-led-panel { width:clamp(58px, 18vw, 72px); height:18px; margin-top:-16px; border-radius:7px; } .itabot-launcher-led-track { padding-top:3px; font-size:7.5px; } }',
       '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
@@ -167,7 +169,7 @@
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=' + ITABOT_IMG_VERSION + '" alt="" draggable="false"/>',
       '</span>',
-      '<span class="itabot-launcher-dot" aria-hidden="true">CLIQUE AQUI</span>'
+      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDAS? CLIQUE AQUI • </span></span>'
     ].join('');
     document.body.appendChild(launcher);
 
