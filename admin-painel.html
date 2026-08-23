@@ -645,6 +645,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-dicas" onclick="irPara('dicas-admin',this)">⭐ Dicas</button>
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
+    <button class="nav-btn" id="nav-btn-catalogo" onclick="irPara('catalogo-admin',this)">🗂️ Catálogo</button>
     <button class="nav-btn nav-btn-tecnico" id="nav-btn-qualidade" onclick="irPara('qualidade-admin',this)">🧪 Qualidade <span id="badge-quality-nav" style="display:none;margin-left:5px;background:#c62828;color:#fff;border-radius:999px;padding:2px 7px;font-size:.7rem;font-weight:800"></span></button>
   </div>
   <div class="admin-content">
@@ -2034,6 +2035,22 @@ Talento</textarea>
       </div>
     </div>
 
+    <!-- CATÁLOGO POR SEÇÃO -->
+    <div class="seção" id="sec-catalogo">
+      <div style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:.82rem">
+        🗂️ <strong>Gerenciamento de Catálogo por Seção.</strong>
+        Ative ou desative produtos individualmente. Preços compartilhados entre produtos do mesmo grupo ficam sincronizados.
+        <strong>Pagamento somente na loja, retirada presencial.</strong>
+      </div>
+      <div id="catalogo-body">
+        <p style="color:#999;text-align:center;padding:30px">Carregando catálogo...</p>
+      </div>
+      <div class="btn-row" style="padding:0 0 20px">
+        <button class="btn btn-salvar" onclick="salvarCatalogo()">💾 Salvar Catálogo</button>
+        <button class="btn btn-cinza" onclick="renderCatalogo()">🔄 Recarregar</button>
+      </div>
+    </div>
+
     <!-- ESTOQUE COMPRAR -->
     <div class="seção" id="sec-estoque">
       <div class="card">
@@ -3398,6 +3415,7 @@ function irPara(seção,btn){
   const sectionMap={
     'pagina-inicial': ['home','carrossel-config','carrossel-admin','fale-conosco','config'],
     'cardapio-admin': ['preços','cardapio-titulos','cardápio','produtos','sabores'],
+    'catalogo-admin': ['catalogo'],
     'encomendas-admin':['encomendas','estoque','encomendas-config'],
     'promocao-admin': ['promoção','participantes'],
     'dicas-admin':    ['depoimentos'],
@@ -3463,6 +3481,7 @@ function irPara(seção,btn){
   if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');safeInit('GALERIA',()=>carregarGaleria());}
   if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando COMPRAR CONFIG');safeInit('COMPRAR CONFIG',()=>carregarEncomendas());}
   if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');safeInit('QUALIDADE',()=>{atualizarScoresQualidade();preencherNotasOperacionais();});}
+  if(ids.includes('catalogo')){console.log('[irPara] Inicializando CATÁLOGO');safeInit('CATÁLOGO',()=>renderCatalogo());}
   if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');safeInit('RASTREIO',()=>renderRastreioRecentes());}
   if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');safeInit('AUDITORIA',()=>executarAuditoria());}
   if(ids.includes('rastreio')||ids.includes('auditoria'))safeInit('NOTAS OPERACIONAIS',()=>preencherNotasOperacionais());
@@ -9121,6 +9140,431 @@ function excluirProduto(cat, id) {
       if (ok) { toast('🗑️ Produto excluído.','ok'); renderProdutosAdmin(); }
     }
   );
+}
+
+
+// ================================================================
+// CATÁLOGO POR SEÇÃO — gerenciamento completo de produtos reais
+// Casquinha e Copo são dois produtos distintos com o mesmo preço
+// ================================================================
+function _catBadge(cor, texto) {
+  return `<span style="background:${cor}20;color:${cor};border:1px solid ${cor}40;border-radius:10px;padding:2px 8px;font-size:.72rem;font-weight:800">${texto}</span>`;
+}
+
+function _toggleHtml(id, checked, onchange) {
+  return `<label class="toggle" title="Ativo / Esgotado" style="display:inline-flex;align-items:center;vertical-align:middle">
+    <input type="checkbox" id="${id}" ${checked?'checked':''} onchange="${onchange}"/>
+    <span class="toggle-slider"></span>
+  </label>`;
+}
+
+function _statusBadge(ativo) {
+  return ativo
+    ? '<span style="color:#2e7d32;font-weight:700;font-size:.78rem">✅ Disponível</span>'
+    : '<span style="color:#c62828;font-weight:700;font-size:.78rem">❌ Esgotado</span>';
+}
+
+function _precoInp(id, valor, shared) {
+  const hint = shared ? '<div style="font-size:.7rem;color:#888;margin-top:2px">⚠️ Mesmo preço para ambos</div>' : '';
+  return `<div style="display:flex;align-items:center;gap:4px">
+    <span style="color:#e65100;font-weight:700;font-size:.85rem">R$</span>
+    <input type="number" id="${id}" value="${valor}" min="0" step="0.5"
+      style="width:72px;padding:5px 7px;border:1.5px solid #e0e0e0;border-radius:7px;font-weight:700;font-size:.88rem;outline:none"
+      onfocus="this.style.borderColor='#e65100'" onblur="this.style.borderColor='#e0e0e0'"/>
+  </div>${hint}`;
+}
+
+// Linha de produto individual na tabela de catálogo
+function _linhaItem(sku, nome, precoId, precoVal, statusId, ativo, embalagem, compartilhado) {
+  return `<tr id="linha_${sku}" style="${ativo?'':'background:#fff8f8'}">
+    <td style="font-weight:700;font-size:.88rem">${nome}</td>
+    <td style="font-size:.78rem;color:#555">${embalagem}</td>
+    <td>${_precoInp(precoId, precoVal, compartilhado)}</td>
+    <td>${_toggleHtml(statusId, ativo, `toggleCatItem('${sku}','${statusId}')`)}</td>
+    <td id="badge_${sku}">${_statusBadge(ativo)}</td>
+  </tr>`;
+}
+
+function toggleCatItem(sku, chkId) {
+  const el = document.getElementById(chkId);
+  const ativo = el ? el.checked : true;
+  const badge = document.getElementById('badge_'+sku);
+  const linha = document.getElementById('linha_'+sku);
+  if (badge) badge.innerHTML = _statusBadge(ativo);
+  if (linha) linha.style.background = ativo ? '' : '#fff8f8';
+}
+
+function renderCatalogo() {
+  const p = STATE.produtos;
+  const body = document.getElementById('catalogo-body');
+  if (!p || !body) { if(body) body.innerHTML='<p style="color:#c62828;padding:20px">Erro ao carregar dados.</p>'; return; }
+
+  let h = '';
+  const th = `<thead><tr>
+    <th style="width:38%">Produto</th>
+    <th style="width:18%">Embalagem</th>
+    <th style="width:16%">Preço</th>
+    <th style="width:12%">Ativo</th>
+    <th style="width:16%">Status</th>
+  </tr></thead>`;
+
+  // ── 1. SORVETES DE MASSA ─────────────────────────────────────
+  // Casquinha e Copo = mesmo preço (SVM-CC), mas dois produtos distintos
+  const sv = p.sorvetes?.preços || p.sorvetes?.precos || {};
+  const saboresMassa = Array.isArray(p.sabores_sorvete) ? p.sabores_sorvete : [];
+  const skus_sv = p.cadastro_skus?.por_chave || {};
+
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>🍦 Sorvetes de Massa</h2>
+      ${_catBadge('#7b1fa2','38 sabores disponíveis')}
+      <div style="font-size:.76rem;color:#888;margin-top:4px;width:100%">
+        💡 Casquinha e Copo compartilham o mesmo preço mas são embalagens diferentes.
+        Alterar o preço de um atualiza automaticamente o outro.
+      </div>
+    </div>
+    <div class="card-body">`;
+
+  // Embalagens de sorvete: SVM-CC (Casquinha + Copo), SVM-CR, SVM-CS, SVM-CT
+  const gruposEmb = [
+    { key:'casquinha_copo', label:'Casquinha / Copo', bolas:['1 Bola','2 Bolas','3 Bolas'],
+      produtos:[
+        {sku:'SVM-CASK', nome:'Casquinha', emb:'Embalagem casquinha'},
+        {sku:'SVM-COPO', nome:'Copo', emb:'Embalagem copo plástico'}
+      ]
+    },
+    { key:'copo_recheado', label:'Copo Recheado', bolas:['1 Bola','2 Bolas','3 Bolas'],
+      produtos:[{sku:'SVM-CR', nome:'Copo Recheado', emb:'Copo com recheio'}]
+    },
+    { key:'cascão', label:'Cascão', bolas:['1 Bola','2 Bolas'],
+      produtos:[{sku:'SVM-CS', nome:'Cascão', emb:'Embalagem cascão'}]
+    },
+    { key:'cestinha', label:'Cestinha Recheada', bolas:['1 Bola','2 Bolas','3 Bolas'],
+      produtos:[{sku:'SVM-CT', nome:'Cestinha Recheada', emb:'Cesta com recheio'}]
+    }
+  ];
+
+  gruposEmb.forEach(grupo => {
+    h += `<div class="seção-título" style="margin-top:16px">${grupo.label}</div>
+    <div style="overflow-x:auto"><table class="tabela" style="font-size:.85rem">${th}<tbody>`;
+
+    grupo.bolas.forEach(bola => {
+      const precoBase = sv[grupo.key]?.[bola] ?? sv[grupo.key]?.[bola.replace(' ','_')] ?? 0;
+      const bolaSafe = bola.replace(/\s/g,'_');
+
+      grupo.produtos.forEach((prod, idx) => {
+        const sku = prod.sku + '_' + bolaSafe;
+        // Para Casquinha/Copo: o preço é compartilhado — o primeiro campo define, o segundo é readonly visual
+        const ehCompartilhado = grupo.key === 'casquinha_copo' && grupo.produtos.length === 2;
+        const precoId = ehCompartilhado
+          ? `cat_sv_${grupo.key}_${bolaSafe}_preco`  // mesma chave para os dois
+          : `cat_sv_${grupo.key}_${bolaSafe}_preco`;
+        const statusId = `cat_sv_status_${prod.sku}_${bolaSafe}`;
+        const skuKey = `sorvetes.${grupo.key.replace(/\s/g,'_')}.${bolaSafe.toLowerCase()}`;
+        const skuObj = skus_sv[`sorvetes.${grupo.key}.${bola.replace(/\s/g,'_').toLowerCase()}`] || {};
+        const ativo = skuObj.ativo !== false;
+
+        // Label descritivo
+        const nomeProd = `${prod.nome} — ${bola}`;
+        h += _linhaItem(sku, nomeProd, precoId, precoBase, statusId, ativo, prod.emb, ehCompartilhado && idx === 1);
+      });
+    });
+
+    h += '</tbody></table></div>';
+  });
+
+  // Sabores de massa (toggle esgotado)
+  h += `<div class="seção-título" style="margin-top:20px">🎨 Sabores de Massa (${saboresMassa.length})</div>
+  <div style="font-size:.78rem;color:#666;margin-bottom:10px">Desativar um sabor remove-o do cardápio. O preço vem da embalagem escolhida acima.</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">`;
+
+  saboresMassa.forEach(s => {
+    const nome = s.nome || s;
+    const ativo = !s.esgotado;
+    const sid = 'cat_mas_' + (s.codigo||nome).replace(/[^a-zA-Z0-9]/g,'_');
+    h += `<div style="display:flex;align-items:center;justify-content:space-between;background:${ativo?'#f8f9fa':'#fff3f3'};border:1.5px solid ${ativo?'#e0e0e0':'#ffcdd2'};border-radius:9px;padding:8px 12px;gap:8px">
+      <span style="font-size:.82rem;font-weight:700;color:${ativo?'#333':'#999'}">${nome}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        ${_toggleHtml(sid, ativo, `toggleCatMassa('${sid}','${(s.codigo||nome)}')`)}
+        <span id="badge_mas_${sid}" style="font-size:.7rem">${ativo?'✅':'❌'}</span>
+      </div>
+    </div>`;
+  });
+  h += '</div>';
+  h += '</div></div>'; // fim card sorvetes
+
+  // ── 2. PICOLÉS ───────────────────────────────────────────────
+  const picolés = p.picolés || p['picoles'] || {};
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>🍭 Picolés</h2>${_catBadge('#f57f17','34 sabores · 5 categorias')}</div>
+    <div class="card-body">`;
+
+  const picNomes = {
+    frutas_agua:'🍉 Base Água & Frutas',
+    leite_sem_recheio:'🥛 AO LEITE Cremosos S/ Recheio',
+    leite_com_recheio:'🍫 AO LEITE Cremosos Recheados',
+    especiais:'⭐ AO LEITE Especiais',
+    esquimós:'👑 AO LEITE Premium Eskimós'
+  };
+
+  Object.entries(picolés).forEach(([cat, info]) => {
+    if (!info || typeof info !== 'object') return;
+    const catNome = picNomes[cat] || cat;
+    const sabores = info.sabores || [];
+    const pVarejo = info.preço_varejo ?? info.preco_varejo ?? 0;
+    const pAtacado = info.preço_atacado ?? info.preco_atacado ?? 0;
+
+    h += `<div class="seção-título" style="margin-top:16px">${catNome}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="preço-item">
+        <label style="font-size:.75rem;font-weight:700;color:#555;display:block;margin-bottom:4px">💰 Varejo (cardápio)</label>
+        ${_precoInp('cat_pic_'+cat+'_varejo', pVarejo, false)}
+      </div>
+      <div class="preço-item">
+        <label style="font-size:.75rem;font-weight:700;color:#555;display:block;margin-bottom:4px">📦 Atacado (encomendas mín. 100 un.)</label>
+        ${_precoInp('cat_pic_'+cat+'_atacado', pAtacado, false)}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:7px">`;
+
+    sabores.forEach(sab => {
+      const nome = sab.nome || sab;
+      const ativo = !sab.esgotado;
+      const sid = 'cat_pic_' + (sab.codigo||nome).replace(/[^a-zA-Z0-9]/g,'_');
+      h += `<div style="display:flex;align-items:center;justify-content:space-between;background:${ativo?'#fffde7':'#fff3f3'};border:1.5px solid ${ativo?'#ffe082':'#ffcdd2'};border-radius:9px;padding:7px 10px;gap:6px">
+        <span style="font-size:.8rem;font-weight:700;color:${ativo?'#333':'#999'}">${nome}</span>
+        <div style="display:flex;align-items:center;gap:5px">
+          ${_toggleHtml(sid, ativo, `toggleCatPicole('${sid}','${cat}','${nome}')`)}
+          <span id="badge_pic_${sid}" style="font-size:.68rem">${ativo?'✅':'❌'}</span>
+        </div>
+      </div>`;
+    });
+
+    h += '</div>';
+  });
+  h += '</div></div>';
+
+  // ── 3. MILKSHAKES ────────────────────────────────────────────
+  const mlk = p.milkshake || {};
+  const mlkSkus = {'MLK-TRD-300':'300ml','MLK-TRD-400':'400ml','MLK-TRD-500':'500ml','MLK-TRD-750':'750ml','MLK-TOP-360':'360ml','MLK-TOP-600':'600ml'};
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>🥤 Milkshakes</h2>${_catBadge('#0277bd','6 tamanhos')}</div>
+    <div class="card-body">
+    <div style="font-size:.78rem;color:#666;margin-bottom:10px">Sabores: mesmos 38 sabores de massa. Ative/desative cada tamanho individualmente.</div>
+    <div style="overflow-x:auto"><table class="tabela" style="font-size:.85rem">${th}<tbody>`;
+
+  const mlkGrupos = [
+    {label:'Tradicional', itens:{...mlk.tradicional}},
+    {label:'Top', itens:{...mlk.top}}
+  ];
+  mlkGrupos.forEach(g => {
+    Object.entries(g.itens||{}).forEach(([tam, preco]) => {
+      if (typeof preco !== 'number') return;
+      const sku = 'MLK_'+g.label.toUpperCase()+'_'+tam.replace(/\W/g,'_');
+      const skuObj = Object.values(skus_sv).find(x => x.nome?.includes(g.label) && x.tamanho === tam) || {};
+      const ativo = skuObj.ativo !== false;
+      h += _linhaItem(sku, `${g.label} ${tam}`, 'cat_mlk_'+sku+'_preco', preco, 'cat_mlk_'+sku+'_status', ativo, `Milkshake ${g.label}`, false);
+    });
+  });
+  h += '</tbody></table></div></div></div>';
+
+  // ── 4. TAÇAS ─────────────────────────────────────────────────
+  const tacas = p.tacas || {};
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>🍨 Taças</h2>${_catBadge('#ad1457','15 taças · 2 categorias')}</div>
+    <div class="card-body">`;
+
+  const tacaGrupos = [
+    {key:'tradicionais', label:'🍨 Tradicionais'},
+    {key:'sujas', label:'👑 Premium (Sujas)'}
+  ];
+  tacaGrupos.forEach(tg => {
+    const itens = tacas[tg.key] || {};
+    if (!Object.keys(itens).length) return;
+    h += `<div class="seção-título" style="margin-top:12px">${tg.label}</div>
+    <div style="overflow-x:auto"><table class="tabela" style="font-size:.85rem">${th}<tbody>`;
+    Object.entries(itens).forEach(([nome, preco]) => {
+      if (typeof preco !== 'number') return;
+      const sku = 'TAC_'+tg.key+'_'+nome.replace(/[^a-zA-Z0-9]/g,'_');
+      const skuObj = Object.values(skus_sv).find(x => x.nome?.includes(nome)) || {};
+      const ativo = skuObj.ativo !== false;
+      h += _linhaItem(sku, nome, 'cat_tac_'+sku+'_preco', preco, 'cat_tac_'+sku+'_status', ativo, tg.label.replace(/[🍨👑] /,''), false);
+    });
+    h += '</tbody></table></div>';
+  });
+  h += '</div></div>';
+
+  // ── 5. AÇAÍ NATUREON ─────────────────────────────────────────
+  const acaiCats = p.acai?.categorias || p['acai']?.categorias || p.açaí?.categorias || [];
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>🫐 Açaí Natureon</h2>${_catBadge('#4a148c','62 combinações · 6 tamanhos')}</div>
+    <div class="card-body">`;
+
+  if (acaiCats.length > 0) {
+    acaiCats.forEach(cat => {
+      h += `<div class="seção-título" style="margin-top:12px">${cat.titulo||cat.id} — ${_catBadge('#7e57c2', cat.label||'')}</div>
+      <div style="overflow-x:auto"><table class="tabela" style="font-size:.82rem">${th}<tbody>`;
+      (cat.produtos||[]).forEach((prod, idx) => {
+        const sku = 'ACA_'+cat.id+'_'+idx;
+        const skuKey = Object.keys(skus_sv).find(k => k.startsWith('acai') && skus_sv[k]?.nome === prod.nome);
+        const skuObj = skuKey ? skus_sv[skuKey] : {};
+        const ativo = skuObj.ativo !== false;
+        const preco = prod.preco ?? prod.preço ?? 0;
+        h += _linhaItem(sku, prod.nome, 'cat_aca_'+sku+'_preco', preco, 'cat_aca_'+sku+'_status', ativo, cat.label||cat.id, false);
+      });
+      h += '</tbody></table></div>';
+    });
+  } else {
+    // Fallback: usar cadastro_skus
+    const acaiSkus = Object.entries(skus_sv).filter(([k]) => k.startsWith('acai'));
+    const porCat = {};
+    acaiSkus.forEach(([k,v]) => {
+      const cat = v.categoria||'Açaí';
+      if(!porCat[cat]) porCat[cat]=[];
+      porCat[cat].push([k,v]);
+    });
+    Object.entries(porCat).forEach(([cat, itens]) => {
+      h += `<div class="seção-título" style="margin-top:12px">${cat}</div>
+      <div style="overflow-x:auto"><table class="tabela" style="font-size:.82rem">${th}<tbody>`;
+      itens.forEach(([k,v]) => {
+        const ativo = v.ativo !== false;
+        h += _linhaItem(v.sku, v.nome, 'cat_aca_'+v.sku+'_preco', v.preco||0, 'cat_aca_'+v.sku+'_status', ativo, v.tamanho||'', false);
+      });
+      h += '</tbody></table></div>';
+    });
+  }
+  h += '</div></div>';
+
+  // ── 6. SOBREMESAS ────────────────────────────────────────────
+  const sob = p.sobremesas || {};
+  const sobSkus = Object.entries(skus_sv).filter(([k,v])=>v.categoria==='Sobremesas');
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>🍰 Sobremesas</h2>${_catBadge('#00695c','9 produtos')}</div>
+    <div class="card-body">
+    <div style="overflow-x:auto"><table class="tabela" style="font-size:.85rem">${th}<tbody>`;
+
+  Object.entries(sob).forEach(([nome, preco]) => {
+    if (typeof preco !== 'number') return;
+    const skuPair = sobSkus.find(([k,v]) => v.nome === nome);
+    const skuId = skuPair ? skuPair[1].sku : 'SOB_'+nome.replace(/[^a-zA-Z0-9]/g,'_');
+    const ativo = skuPair ? skuPair[1].ativo !== false : true;
+    h += _linhaItem(skuId, nome, 'cat_sob_'+skuId+'_preco', preco, 'cat_sob_'+skuId+'_status', ativo, 'Sobremesa gelada', false);
+  });
+  h += '</tbody></table></div></div></div>';
+
+  // ── 7. EMBALAGENS OPERACIONAIS ───────────────────────────────
+  const embs = p.disponibilidade?.embalagens || {};
+  h += `<div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h2>📦 Embalagens Operacionais</h2>${_catBadge('#bf360c','6 embalagens')}</div>
+    <div class="card-body">
+    <div style="background:#fff3e0;border-left:4px solid #e65100;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:.8rem">
+      ⚠️ <strong>Desativar uma embalagem bloqueia automaticamente todos os produtos que dependem dela.</strong>
+      Verifique os produtos dependentes antes de desativar.
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">`;
+
+  Object.entries(embs).forEach(([k, emb]) => {
+    const ativo = emb.ativo !== false;
+    const deps = emb.dependencias_sku || [];
+    const sid = 'cat_emb_'+emb.sku.replace(/[^a-zA-Z0-9]/g,'_');
+    h += `<div style="background:${ativo?'#f8f9fa':'#fff3f3'};border:1.5px solid ${ativo?'#e0e0e0':'#ffcdd2'};border-radius:12px;padding:14px 16px">
+      <div style="font-weight:800;font-size:.9rem;color:#333;margin-bottom:6px">${emb.nome}</div>
+      <div style="font-size:.72rem;color:#888;margin-bottom:8px">SKU: ${emb.sku} · ${emb.tipo}</div>
+      ${deps.length ? `<div style="font-size:.72rem;color:#e65100;margin-bottom:8px">⚠️ Afeta: ${deps.join(', ')}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:8px">
+        ${_toggleHtml(sid, ativo, `toggleCatEmbalagem('${sid}','${emb.sku}')`)}
+        <span id="badge_emb_${sid}">${_statusBadge(ativo)}</span>
+      </div>
+    </div>`;
+  });
+  h += '</div></div></div>';
+
+  body.innerHTML = h;
+}
+
+function toggleCatMassa(sid, codigo) {
+  const el = document.getElementById(sid);
+  const ativo = el ? el.checked : true;
+  const badge = document.getElementById('badge_mas_'+sid);
+  if (badge) badge.textContent = ativo ? '✅' : '❌';
+  // Marca no wrap
+  const wrap = el?.closest('div');
+  if (wrap) {
+    wrap.style.background = ativo ? '#f8f9fa' : '#fff3f3';
+    wrap.style.borderColor = ativo ? '#e0e0e0' : '#ffcdd2';
+  }
+}
+
+function toggleCatPicole(sid, cat, nome) {
+  const el = document.getElementById(sid);
+  const ativo = el ? el.checked : true;
+  const badge = document.getElementById('badge_pic_'+sid);
+  if (badge) badge.textContent = ativo ? '✅' : '❌';
+  const wrap = el?.closest('div');
+  if (wrap) {
+    wrap.style.background = ativo ? '#fffde7' : '#fff3f3';
+    wrap.style.borderColor = ativo ? '#ffe082' : '#ffcdd2';
+  }
+}
+
+function toggleCatEmbalagem(sid, sku) {
+  const el = document.getElementById(sid);
+  const ativo = el ? el.checked : true;
+  const badge = document.getElementById('badge_emb_'+sid);
+  if (badge) badge.innerHTML = _statusBadge(ativo);
+  const wrap = el?.closest('div');
+  if (wrap) {
+    wrap.style.background = ativo ? '#f8f9fa' : '#fff3f3';
+    wrap.style.borderColor = ativo ? '#e0e0e0' : '#ffcdd2';
+  }
+}
+
+async function salvarCatalogo() {
+  if (!GH_WRITE_ALLOWED) { toast('⚠️ Modo somente leitura. Adicione um token GitHub para salvar.', 'aviso'); return; }
+  const p = STATE.produtos;
+  if (!p) { toast('Dados não carregados.','erro'); return; }
+
+  // Salvar status dos sabores de massa
+  const saboresMassa = Array.isArray(p.sabores_sorvete) ? p.sabores_sorvete : [];
+  saboresMassa.forEach(s => {
+    const codigo = s.codigo || s.nome;
+    const sid = 'cat_mas_' + codigo.replace(/[^a-zA-Z0-9]/g,'_');
+    const el = document.getElementById(sid);
+    if (el) s.esgotado = !el.checked;
+  });
+  p.sabores_sorvete = saboresMassa;
+
+  // Salvar status dos picolés
+  const picolés = p.picolés || p['picoles'] || {};
+  Object.entries(picolés).forEach(([cat, info]) => {
+    if (!info?.sabores) return;
+    // preço varejo/atacado
+    const elV = document.getElementById('cat_pic_'+cat+'_varejo');
+    const elA = document.getElementById('cat_pic_'+cat+'_atacado');
+    if (elV) { info.preço_varejo = parseFloat(elV.value)||0; }
+    if (elA) { info.preço_atacado = parseFloat(elA.value)||0; }
+    // sabores
+    info.sabores.forEach(sab => {
+      const nome = sab.nome || sab;
+      const sid = 'cat_pic_' + (sab.codigo||nome).replace(/[^a-zA-Z0-9]/g,'_');
+      const el = document.getElementById(sid);
+      if (el) sab.esgotado = !el.checked;
+    });
+  });
+  p.picolés = picolés;
+  if (p['picoles']) p['picoles'] = picolés;
+
+  // Salvar embalagens
+  const embs = p.disponibilidade?.embalagens || {};
+  Object.entries(embs).forEach(([k, emb]) => {
+    const sid = 'cat_emb_'+emb.sku.replace(/[^a-zA-Z0-9]/g,'_');
+    const el = document.getElementById(sid);
+    if (el) emb.ativo = el.checked;
+  });
+  if (p.disponibilidade) p.disponibilidade.embalagens = embs;
+
+  STATE.produtos = p;
+  const ok = await salvarArquivo(PATHS.produtos, p, 'produtosSha', 'Admin: atualizar catálogo por seção');
+  if (ok) toast('✅ Catálogo salvo com sucesso!', 'ok');
 }
 
 function copiarListaProdutos() {
