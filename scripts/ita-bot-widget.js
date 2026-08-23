@@ -116,9 +116,6 @@
       '.itabot-face-led-track { display:inline-block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 6.5px/1 Arial,sans-serif; letter-spacing:.4px; text-shadow:-1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 0 6px #000; white-space:nowrap; animation:itabot-led-marquee 7.4s linear infinite; }',
       '.itabot-launcher-dot { display:inline-flex; align-items:center; justify-content:center; min-width:86px; height:24px; padding:0 8px; border:1.5px solid #FFFFFF; border-radius:7px; background:linear-gradient(135deg,#FF2020,#E8000D,#C62828); color:#fff; font:900 11px/1 Arial,sans-serif; letter-spacing:.6px; text-shadow:0 1px 2px rgba(0,0,0,.45); box-shadow:0 0 0 1px rgba(90,0,0,.38),0 0 12px rgba(232,0,13,.58); white-space:nowrap; pointer-events:none; }',
       '.itabot-launcher-led-panel { display:none !important; }',
-      '.itabot-launcher-led-panel::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px); mix-blend-mode:multiply; pointer-events:none; }',
-      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 clamp(12px, 1.55vw, 16px)/42px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 5px #000; white-space:nowrap; animation:none; }',
-      '@keyframes itabot-launcher-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
       '@keyframes itabot-led-marquee { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-face-led-track, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
@@ -174,7 +171,6 @@
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-dual-icecream-clean.png?v=' + ITABOT_IMG_VERSION + '" alt="" draggable="false"/>',
         '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
       '</span>',
-      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true">CLIQUE AQUI</span>'
     ].join('');
     document.body.appendChild(launcher);
