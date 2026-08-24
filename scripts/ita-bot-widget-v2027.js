@@ -336,11 +336,13 @@
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'avaliacoes\')"><span style="font-size:18px;">⭐</span><span style="flex:1;text-align:left;font-weight:900;">Dicas e Avaliações</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'precos\')"><span style="font-size:18px;">💰</span><span style="flex:1;text-align:left;font-weight:900;">Preços</span><span style="font-size:18px;color:#888;">›</span></button>',
             '</div>',
-            '<div class="itabot-direct-message" style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
+            '<div id="chat-input-area" style="margin:24px auto;max-width:600px;">',
+            '<div class="itabot-direct-message" id="itabot-input-area" style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
               '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
               '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
-              '<textarea id="itabot-msg" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
-              '<button type="button" onclick="_itabotEnviarWhatsApp()" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
+              '<textarea id="chat-inp" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
+              '<button type="button" class="chat-send" onclick="_itabotEnviarWhatsApp()" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
+            '</div>',
             '</div>',
           '</div>',
           '<div id="fale-tela-resposta" class="itabot-fullscreen-scroll" style="display:none;overflow-y:auto;flex:1;padding:20px;background:#f9f9f9;">',
@@ -504,7 +506,8 @@
 
   window._itabotEnviarWhatsApp = function () {
     var nome = document.getElementById('itabot-nome').value.trim();
-    var msg = document.getElementById('itabot-msg').value.trim();
+    var msgField = document.getElementById('chat-inp') || document.getElementById('itabot-msg');
+    var msg = msgField.value.trim();
     var texto = 'Olá, meu nome é ' + (nome || 'Cliente') + '. ' + (msg || 'Gostaria de tirar uma dúvida sobre a Itapolitana.');
     window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
   };
