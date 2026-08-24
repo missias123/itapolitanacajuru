@@ -36,64 +36,85 @@
   var _janela5sTimer = null;       // timer que encerra a janela de 5 segundos
   var _enviandoFormulario = false; // trava contra duplo envio local
 
-  // ── Armazenamento local — somente para UX temporária de retomada ─────────────
-  // Após cadastro concluído, não mantemos dados persistentes no navegador.
-  var LS_KEY = 'itap_picole_reserva';
+  // ── Armazenamento local — SOMENTE flags de controle diário (nunca dados do form) ──
+  // Regras absolutas:
+  //   1. Jamais salvar dados do formulário em localStorage.
+  //   2. "ganhou hoje" e "clicou hoje" persistem até meia-noite do dispositivo.
+  //   3. Log de auditoria diário: eventos com timestamp, nunca dados pessoais.
+  var LS_GANHOU_D  = 'itap_picole_gd';   // valor = data ISO do ganho
+  var LS_CLICOU_D  = 'itap_picole_cd';   // valor = data ISO do clique
+  var LS_AUDIT     = 'itap_picole_audit'; // array JSON de eventos do dia
   var _ganhouHojeSessao = false;
   var _clicouHojeSessao = false;
 
   function _hojeISO() {
-    // Data local do dispositivo — usada apenas para expirar o registro de UX
     return new Date().toLocaleDateString('sv-SE');
   }
 
-  function _lsGet() {
-    try {
-      var raw = localStorage.getItem(LS_KEY);
-      if (!raw) return null;
-      var obj = JSON.parse(raw);
-      // Expira automaticamente se não for do dia atual
-      if (!obj || obj.dia !== _hojeISO()) { _lsClear(); return null; }
-      return obj;
-    } catch (e) { return null; }
-  }
-
-  function _lsSet(reservaId, statusFormulario) {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify({
-        reservaId: reservaId,
-        dia: _hojeISO(),
-        statusFormulario: statusFormulario || 'aguardando',
-      }));
-    } catch (e) {}
-  }
-
-  function _lsClear() {
-    try { localStorage.removeItem(LS_KEY); } catch (e) {}
-  }
-
-  function _limparCacheLocalPromo() {
-    _lsClear();
-    // Limpeza defensiva de chaves legadas
-    try { localStorage.removeItem('itap_picole_ganhou_dia'); } catch (e) {}
-    try { localStorage.removeItem('itap_picole_clique_dia'); } catch (e) {}
-  }
-
+  // ── Flags de controle diário ─────────────────────────────────────────────────
   function _marcarGanhouHojeSessao() {
     _ganhouHojeSessao = true;
+    try { localStorage.setItem(LS_GANHOU_D, _hojeISO()); } catch (e) {}
   }
 
   function _ganhouHojeNesteDispositivo() {
-    return _ganhouHojeSessao;
+    if (_ganhouHojeSessao) return true;
+    try { return localStorage.getItem(LS_GANHOU_D) === _hojeISO(); } catch (e) { return false; }
   }
 
   function _marcarCliqueHojeSessao() {
     _clicouHojeSessao = true;
+    try { localStorage.setItem(LS_CLICOU_D, _hojeISO()); } catch (e) {}
   }
 
   function _clicouHojeNesteDispositivo() {
-    return _clicouHojeSessao;
+    if (_clicouHojeSessao) return true;
+    try { return localStorage.getItem(LS_CLICOU_D) === _hojeISO(); } catch (e) { return false; }
   }
+
+  // ── Limpeza total de cache ────────────────────────────────────────────────────
+  function _limparCacheLocalPromo() {
+    try {
+      // Remove todas as chaves relacionadas à promoção (atuais e legadas)
+      var chaves = [
+        LS_GANHOU_D, LS_CLICOU_D, LS_AUDIT,
+        'itap_picole_reserva', 'itap_picole_ganhou_dia', 'itap_picole_clique_dia'
+      ];
+      chaves.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    } catch (e) {}
+  }
+
+  // ── Log de auditoria diária ──────────────────────────────────────────────────
+  // Registra apenas tipo de evento + timestamp. Nunca grava nome, celular ou código.
+  // Mantido no localStorage por 7 dias; acessível na aba Auditoria do admin.
+  function _auditLog(tipo, meta) {
+    try {
+      var raw = localStorage.getItem(LS_AUDIT);
+      var log = [];
+      try { log = JSON.parse(raw) || []; } catch (_) { log = []; }
+      // Expira entradas com mais de 7 dias
+      var limite = new Date();
+      limite.setDate(limite.getDate() - 7);
+      var limiteISO = limite.toLocaleDateString('sv-SE');
+      log = log.filter(function (e) { return e.dia >= limiteISO; });
+      log.push({
+        dia: _hojeISO(),
+        ts: new Date().toISOString(),
+        tipo: tipo,
+        meta: meta || {}
+      });
+      localStorage.setItem(LS_AUDIT, JSON.stringify(log));
+    } catch (e) {}
+  }
+
+  // Expõe log de auditoria para leitura pelo admin
+  window._itapPicoleAuditLog = function () {
+    try { return JSON.parse(localStorage.getItem(LS_AUDIT) || '[]'); } catch (e) { return []; }
+  };
+  window._itapPicoleAuditHoje = function () {
+    var hoje = _hojeISO();
+    return (window._itapPicoleAuditLog() || []).filter(function (e) { return e.dia === hoje; });
+  };
 
   // Ativa aviso de saída enquanto o formulário não foi preenchido
   function _ativarGuardaSaida() {
@@ -253,16 +274,19 @@
   }
 
   // ── Interceptor de clique no robô ────────────────────────────────────────────
+  // Regra: só intercepta UMA VEZ por dia, apenas quando LED = PICOLÉ GRÁTIS ativo.
+  // Após clicar ou ganhar hoje, o robô sempre vai para dúvidas.
   window._itabotClickInterceptor = function () {
     if (_ganhouHojeNesteDispositivo() || _clicouHojeNesteDispositivo()) {
-      return false;
+      return false; // já usou chance do dia → vai para dúvidas
     }
     if (_estado === 'ativo' && _janelaAtiva) {
       _marcarCliqueHojeSessao();
+      _auditLog('clique_interceptado', { estado: _estado });
       _abrirPainel('promo');
       return true; // intercepta — abre painel de cadastro
     }
-    return false; // passa para o comportamento padrão (dúvidas)
+    return false; // promoção inativa → vai para dúvidas
   };
 
   // ── Painel de promoção (mesmo formato visual do painel de dúvidas) ───────────
@@ -335,6 +359,10 @@
     if (painel) painel.classList.remove('aberto');
     document.body.classList.remove('chat-open', 'modal-aberto');
     _painelAberto = false;
+    // Nunca deixar cache: limpa qualquer dado temporário ao fechar
+    _desativarGuardaSaida();
+    _reservaId = null;
+    try { localStorage.removeItem('itap_picole_reserva'); } catch (e) {}
     var launcher = document.getElementById('itabot-launcher');
     if (launcher) launcher.focus();
   }
@@ -400,64 +428,13 @@
         '💬 Enviar confirmação pelo WhatsApp</a>' +
         '<div style="font-size:.75rem;color:#888;text-align:center;margin-top:6px">* Você ainda precisará tocar em Enviar no WhatsApp.</div>';
     }
-    // tela 'promo' — tela inicial de reserva
+    // tela 'promo' — tela inicial de reserva (sem botão de recuperação)
     return '<div class="pm-msg"><span class="pm-emoji" aria-hidden="true">🍦</span>' +
       '<h3 style="font-size:1.2rem;font-weight:900;color:#062c63;margin:0 0 4px">VOCÊ PODE GANHAR UM PICOLÉ!</h3>' +
-      '<p style="font-size:.9rem;color:#555">Seu clique no robô já inicia a reserva automaticamente. Somente a primeira pessoa ganha.<br><em>1 picolé de fruta grátis por dia.</em></p></div>' +
+      '<p style="font-size:.9rem;color:#555">Somente a primeira pessoa a clicar ganha.<br><em>1 picolé de fruta grátis por dia. Uma chance por dia.</em></p></div>' +
       '<div id="pm-status-reserva" class="pm-status-msg vis" role="alert">Validando automaticamente o primeiro clique do dia...</div>' +
       '<button type="button" class="pm-btn pm-btn-reservar" id="pm-btn-reservar" aria-label="Validação automática da promoção" disabled>' +
-      '<span id="pm-spinner-reserva" class="pm-spinner vis" aria-hidden="true"></span><span id="pm-btn-reservar-label">Validando clique vencedor 🍦</span></button>' +
-      '<div style="text-align:center;margin-top:10px">' +
-      '<button type="button" id="pm-btn-ja-ganhei" style="background:none;border:none;color:#888;font-size:.8rem;cursor:pointer;text-decoration:underline;padding:4px">' +
-      'Já ganhei hoje mas fechei a página</button></div>';
-  }
-
-  // ── Tela de recuperação de reserva ───────────────────────────────────────────
-  function _renderizarTelaRecuperacao() {
-    var body = document.getElementById('pm-body');
-    var titulo = document.getElementById('pm-titulo');
-    if (titulo) titulo.textContent = '🍦 Recuperar Formulário';
-    if (!body) return;
-    body.innerHTML = '<div class="pm-msg">' +
-      '<p style="font-size:.9rem;color:#555;margin-bottom:14px">Se você já ganhou hoje mas fechou a página antes de preencher seus dados, ' +
-      'reabrimos seu formulário automaticamente. Clique em <strong>Verificar</strong> para recuperar.</p></div>' +
-      '<div id="pm-rec-status" class="pm-status-msg" role="alert"></div>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-      '<button type="button" class="pm-btn pm-btn-reservar" id="pm-btn-verificar-rec" style="flex:1">' +
-      '<span id="pm-spinner-rec" class="pm-spinner" aria-hidden="true"></span>Verificar minha reserva</button>' +
-      '<button type="button" class="pm-btn" style="flex:0 0 auto;background:#eee;color:#333" id="pm-btn-voltar-rec">Voltar</button>' +
-      '</div>';
-
-    var btnVerificar = document.getElementById('pm-btn-verificar-rec');
-    var btnVoltar    = document.getElementById('pm-btn-voltar-rec');
-    var recStatus    = document.getElementById('pm-rec-status');
-    var spinnerRec   = document.getElementById('pm-spinner-rec');
-
-    if (btnVoltar) btnVoltar.addEventListener('click', function () {
-      _renderizarTelaPromoInicial();
-    });
-
-    if (btnVerificar) btnVerificar.addEventListener('click', function () {
-      var lsData = _lsGet();
-      if (!lsData || !lsData.reservaId) {
-        recStatus.textContent = 'Nenhuma reserva encontrada para hoje neste dispositivo. Se você ganhou em outro aparelho, entre em contato com a sorveteria.';
-        recStatus.classList.add('vis');
-        return;
-      }
-      btnVerificar.disabled = true;
-      if (spinnerRec) spinnerRec.classList.add('vis');
-      _verificarRetomada(lsData.reservaId);
-    });
-  }
-
-  function _renderizarTelaPromoInicial() {
-    var body = document.getElementById('pm-body');
-    var titulo = document.getElementById('pm-titulo');
-    if (titulo) titulo.textContent = '🍦 Promoção do Dia';
-    if (body) {
-      body.innerHTML = _construirConteudoModal('promo', {});
-      _inicializarTelaPromo();
-    }
+      '<span id="pm-spinner-reserva" class="pm-spinner vis" aria-hidden="true"></span><span id="pm-btn-reservar-label">Validando clique vencedor 🍦</span></button>';
   }
 
   function _abrirPainel(tela, dados) {
@@ -556,90 +533,35 @@
   }
 
   // ── Tela de reserva ──────────────────────────────────────────────────────────
+  // Regra: uma vez por dia. Sem recuperação de reserva pendente.
   function _inicializarTelaPromo() {
     var btn = document.getElementById('pm-btn-reservar');
-    var btnJaGanhei = document.getElementById('pm-btn-ja-ganhei');
     var statusMsg = document.getElementById('pm-status-reserva');
     if (!btn) return;
 
     if (_ganhouHojeNesteDispositivo()) {
       btn.disabled = true;
-      if (btnJaGanhei) btnJaGanhei.disabled = true;
       if (statusMsg) {
-        statusMsg.textContent = 'Você já garantiu seu picolé hoje neste dispositivo. Tente novamente amanhã.';
+        statusMsg.textContent = 'Você já garantiu seu picolé hoje. Volte amanhã! 🍦';
         statusMsg.classList.add('vis');
       }
       _estado = 'reservado';
       _atualizarRobo('reservado');
+      _auditLog('bloqueio_ganhou_hoje');
       return;
     }
     if (_clicouHojeNesteDispositivo()) {
       btn.disabled = true;
-      if (btnJaGanhei) btnJaGanhei.disabled = false;
       if (statusMsg) {
-        statusMsg.textContent = 'Clique diário já utilizado neste dispositivo. Aguarde o próximo dia para nova tentativa.';
+        statusMsg.textContent = 'Seu clique diário já foi utilizado. Tente novamente amanhã.';
         statusMsg.classList.add('vis');
       }
+      _auditLog('bloqueio_clicou_hoje');
       return;
     }
 
-    // Verifica se há reservaId no localStorage (retomada automática)
-    var lsData = _lsGet();
-    if (lsData && lsData.reservaId) {
-      _verificarRetomada(lsData.reservaId);
-      return;
-    } else {
-      if (btnJaGanhei) {
-        btnJaGanhei.addEventListener('click', function () {
-          _renderizarTelaRecuperacao();
-        });
-      }
-      _tentarReservar();
-    }
-  }
-
-  function _verificarRetomada(savedId) {
-    var btn = document.getElementById('pm-btn-reservar');
-    var btnJaGanhei = document.getElementById('pm-btn-ja-ganhei');
-    if (btn) btn.disabled = true;
-    if (btnJaGanhei) btnJaGanhei.disabled = true;
-
-    var statusMsg = document.getElementById('pm-status-reserva');
-    if (statusMsg) { statusMsg.textContent = 'Verificando sua reserva…'; statusMsg.classList.add('vis'); }
-
-    fetch(API_BASE + '/api/promocao/picole/reserva/' + encodeURIComponent(savedId), {
-      method: 'GET', headers: { 'Accept': 'application/json' }, cache: 'no-store',
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (data.ok && data.statusFormulario === 'aguardando') {
-          // Reserva ainda aguarda formulário — redireciona para o formulário
-          _reservaId = savedId;
-          _lsSet(savedId, 'aguardando');
-          _ativarGuardaSaida();
-          _renderizarTelaFormulario({ reservaId: savedId });
-        } else if (data.ok && data.statusFormulario === 'preenchido') {
-          // Formulário já foi preenchido — exibe confirmação diretamente
-          _limparCacheLocalPromo();
-          _marcarGanhouHojeSessao();
-          _renderizarTelaConfirmacao({ codigoRetirada: data.codigoRetirada });
-        } else {
-          // Reserva expirada, inválida ou de outro dia — limpa e mostra botão normal
-          _lsClear();
-          if (statusMsg) { statusMsg.textContent = ''; statusMsg.classList.remove('vis'); }
-          if (btn) { btn.disabled = false; btn.addEventListener('click', _tentarReservar); }
-          if (btnJaGanhei) btnJaGanhei.disabled = false;
-        }
-      })
-      .catch(function () {
-        // Falha de rede — mantém estado e permite retomada manual
-        if (statusMsg) {
-          statusMsg.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
-          statusMsg.classList.add('vis');
-        }
-        if (btn) { btn.disabled = false; btn.addEventListener('click', _tentarReservar); }
-        if (btnJaGanhei) btnJaGanhei.disabled = false;
-      });
+    // Sem recuperação de cache — inicia reserva direto
+    _tentarReservar();
   }
 
   function _tentarReservar() {
@@ -654,6 +576,8 @@
     if (spinner) spinner.classList.add('vis');
     if (statusMsg) { statusMsg.textContent = ''; statusMsg.classList.remove('vis'); }
 
+    _auditLog('tentativa_reserva');
+
     fetch(API_BASE + '/api/promocao/picole/reservar', {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -665,29 +589,30 @@
         if (spinner) spinner.classList.remove('vis');
         if (data.sucesso && data.reservaId) {
           _reservaId = data.reservaId;
-          _lsSet(data.reservaId, 'aguardando');  // persiste no localStorage
-          _ativarGuardaSaida();                   // avisa ao sair sem preencher
+          // Nunca salvar dados do form — apenas o ID em memória de sessão
+          _auditLog('reserva_ok', { reservaId: data.reservaId });
           _renderizarTelaFormulario({ reservaId: data.reservaId });
         } else {
-          // Não ganhou
           var msg = data.mensagem || 'A promoção de hoje já foi encerrada. Tente novamente amanhã.';
           if (statusMsg) { statusMsg.textContent = msg; statusMsg.classList.add('vis'); }
           if (btn) btn.disabled = true;
           if (label) label.textContent = 'Reservar agora 🍦';
           _estado = 'reservado';
           _atualizarRobo('reservado');
+          _auditLog('reserva_fail', { msg: msg });
         }
       })
       .catch(function () {
         _reservandoEmAndamento = false;
         if (spinner) spinner.classList.remove('vis');
-        var statusMsg = document.getElementById('pm-status-reserva');
-        if (statusMsg) {
-          statusMsg.textContent = 'Erro de conexão após o clique. Para manter a regra de 1 clique por dia, aguarde e use a opção "Já ganhei hoje mas fechei a página".';
-          statusMsg.classList.add('vis');
+        var sm = document.getElementById('pm-status-reserva');
+        if (sm) {
+          sm.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
+          sm.classList.add('vis');
         }
         if (btn) btn.disabled = true;
         if (label) label.textContent = 'Reservar agora 🍦';
+        _auditLog('reserva_erro_rede');
       });
   }
 
@@ -760,7 +685,9 @@
     if (btn) btn.disabled = true;
     if (spinner) spinner.classList.add('vis');
 
-    var reservaId = dados && dados.reservaId ? dados.reservaId : (_reservaId || (_lsGet() && _lsGet().reservaId));
+    var reservaId = dados && dados.reservaId ? dados.reservaId : _reservaId;
+    _auditLog('form_enviando', { reservaId: reservaId });
+
     fetch(API_BASE + '/api/promocao/picole/reserva/' + encodeURIComponent(reservaId), {
       method: 'POST',
       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -772,13 +699,20 @@
         _enviandoFormulario = false;
         if (spinner) spinner.classList.remove('vis');
         if (data.sucesso) {
-          _limparCacheLocalPromo(); // remove qualquer resíduo local após cadastro
-          _marcarGanhouHojeSessao();
-          _desativarGuardaSaida(); // cancela aviso de saída
-          _renderizarTelaConfirmacao({ codigoRetirada: data.codigoRetirada, nome: nome, celular: celular, dataLocal: _dataHojeFormatada() });
+          _limparCacheLocalPromo(); // limpa TODO cache — nunca deixar resíduo
+          _marcarGanhouHojeSessao(); // persiste no LS + sessão
+          _desativarGuardaSaida();
+          _auditLog('form_enviado_ok', { reservaId: reservaId });
+          _renderizarTelaConfirmacao({
+            codigoRetirada: data.codigoRetirada,
+            nome: nome,
+            celular: celular,
+            dataLocal: _dataHojeFormatada()
+          });
         } else {
           if (btn) btn.disabled = false;
           if (statusMsg) { statusMsg.textContent = data.mensagem || 'Erro ao enviar. Tente novamente.'; statusMsg.classList.add('vis'); }
+          _auditLog('form_enviado_fail', { msg: data.mensagem });
         }
       })
       .catch(function () {
@@ -786,10 +720,12 @@
         if (spinner) spinner.classList.remove('vis');
         if (btn) btn.disabled = false;
         if (statusMsg) { statusMsg.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.'; statusMsg.classList.add('vis'); }
+        _auditLog('form_erro_rede');
       });
   }
 
   // ── Tela de confirmação ──────────────────────────────────────────────────────
+  // Após exibir, abre o WhatsApp automaticamente para garantir o envio.
   function _renderizarTelaConfirmacao(dados) {
     var body = document.getElementById('pm-body');
     var titulo = document.getElementById('pm-titulo');
@@ -797,6 +733,23 @@
     if (body) {
       body.innerHTML = _construirConteudoModal('confirmacao', dados);
     }
+    // Abre WhatsApp automaticamente após 1,5s — garante que o ganhador envia confirmação
+    var wppNum = '5516996062046';
+    var wppMsg = encodeURIComponent(
+      '🍦 Resgate do Picolé – Sorveteria Itapolitana Cajuru\n\n' +
+      'Nome: ' + (dados.nome || '') + '\n' +
+      'Celular: ' + (dados.celular || '') + '\n' +
+      'Data: ' + (dados.dataLocal || _dataHojeFormatada()) + '\n' +
+      'Código de Retirada: ' + (dados.codigoRetirada || '') + '\n\n' +
+      'Prêmio: 1 picolé de fruta grátis\n' +
+      'Retirada: pessoalmente na Sorveteria Itapolitana, Cajuru/SP\n' +
+      '(Sujeito aos sabores disponíveis no momento da retirada)\n\n' +
+      'Apresente este código e o celular cadastrado na loja. ✅'
+    );
+    _auditLog('wpp_aberto_auto', { codigoRetirada: dados.codigoRetirada });
+    setTimeout(function () {
+      window.open('https://wa.me/' + wppNum + '?text=' + wppMsg, '_blank', 'noopener,noreferrer');
+    }, 1500);
   }
 
   function _dataHojeFormatada() {

@@ -98,6 +98,7 @@
     <button class="tab-btn ativo" data-tab="tab-ganhadores">🏆 Ganhadores</button>
     <button class="tab-btn" data-tab="tab-campanha">⚙️ Campanha</button>
     <button class="tab-btn" data-tab="tab-iniciar">🚀 Iniciar/Configurar</button>
+    <button class="tab-btn" data-tab="tab-auditoria">📋 Auditoria Diária</button>
   </div>
 
   <div class="content">
@@ -184,6 +185,32 @@
             <li><strong>ADMIN_PASSWORD_RECORD</strong> ou <strong>ADMIN_SECRET</strong> — senha do painel admin</li>
             <li><strong>Número WhatsApp da sorveteria</strong> — configurável em <code>scripts/itap-picole-promo.js</code> (variável <code>wppNum</code>)</li>
           </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA: AUDITORIA DIÁRIA -->
+    <div id="tab-auditoria" class="section">
+      <div class="card">
+        <div class="card-hdr" style="flex-wrap:wrap;gap:8px">
+          <h2>📋 Auditoria Diária da Promoção</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-blue" id="btn-audit-api" type="button">🔄 Verificar Backend</button>
+            <button class="btn btn-gray" id="btn-audit-local" type="button">📱 Carregar Log Local</button>
+            <button class="btn btn-red" id="btn-audit-limpar" type="button">🗑 Limpar Log Local</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="audit-resumo" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+          <h3 style="font-size:.88rem;font-weight:800;margin-bottom:8px">📡 Status do Backend Hoje</h3>
+          <div id="audit-backend"><div class="empty-state">Clique em "Verificar Backend" para carregar.</div></div>
+          <h3 style="font-size:.88rem;font-weight:800;margin:16px 0 8px">📱 Eventos do Navegador (localStorage)</h3>
+          <p style="font-size:.78rem;color:#888;margin-bottom:8px">Eventos registrados neste navegador. Últimos 7 dias, sem dados pessoais.</p>
+          <div id="audit-local-wrap"><div class="empty-state">Clique em "Carregar Log Local" para exibir.</div></div>
+          <div id="msg-auditoria" class="msg"></div>
+          <div style="margin-top:16px">
+            <button class="btn btn-green" id="btn-audit-wpp" type="button" style="display:none">💬 Enviar Resumo via WhatsApp</button>
+          </div>
         </div>
       </div>
     </div>
@@ -569,6 +596,192 @@
     if (d.length<=10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
     return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
   }
+
+  // ── Auditoria Diária ─────────────────────────────────────────────────────────
+  var _auditTimer = null;
+
+  function _hojeISO() {
+    return new Date().toLocaleDateString('sv-SE');
+  }
+  function _fmtTs(iso) {
+    try { return new Date(iso).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }); }
+    catch(e) { return iso || ''; }
+  }
+  function _tipoLabel(tipo) {
+    var map = {
+      clique_interceptado: '🖱 Clique interceptado',
+      tentativa_reserva:   '📤 Tentativa de reserva',
+      reserva_ok:          '✅ Reserva OK',
+      reserva_fail:        '❌ Reserva falhou',
+      reserva_erro_rede:   '🌐 Erro de rede (reserva)',
+      bloqueio_ganhou_hoje:'🚫 Bloqueado: já ganhou hoje',
+      bloqueio_clicou_hoje:'🚫 Bloqueado: já clicou hoje',
+      form_enviando:       '📝 Enviando formulário',
+      form_enviado_ok:     '✅ Formulário enviado',
+      form_enviado_fail:   '❌ Formulário falhou',
+      form_erro_rede:      '🌐 Erro de rede (form)',
+      wpp_aberto_auto:     '💬 WhatsApp aberto automaticamente'
+    };
+    return map[tipo] || tipo;
+  }
+
+  function _renderAuditResumo(eventos) {
+    var hoje = _hojeISO();
+    var ev = eventos.filter(function(e){ return e.dia === hoje; });
+    var stats = {
+      cliques:   ev.filter(function(e){ return e.tipo === 'clique_interceptado'; }).length,
+      reservas:  ev.filter(function(e){ return e.tipo === 'reserva_ok'; }).length,
+      forms:     ev.filter(function(e){ return e.tipo === 'form_enviado_ok'; }).length,
+      wpp:       ev.filter(function(e){ return e.tipo === 'wpp_aberto_auto'; }).length,
+      bloqueios: ev.filter(function(e){ return e.tipo.startsWith('bloqueio'); }).length,
+      erros:     ev.filter(function(e){ return e.tipo.includes('fail') || e.tipo.includes('erro'); }).length
+    };
+    var cards = [
+      ['🖱', 'Cliques hoje', stats.cliques, '#e3f2fd'],
+      ['📋', 'Reservas OK', stats.reservas, '#e8f5e9'],
+      ['✅', 'Forms enviados', stats.forms, '#e8f5e9'],
+      ['💬', 'WhatsApp enviado', stats.wpp, stats.wpp < stats.forms ? '#ffebee' : '#e8f5e9'],
+      ['🚫', 'Bloqueios', stats.bloqueios, '#fff8e1'],
+      ['❌', 'Erros', stats.erros, stats.erros > 0 ? '#ffebee' : '#f5f5f5']
+    ];
+    document.getElementById('audit-resumo').innerHTML = cards.map(function(c){
+      return '<div style="background:' + c[3] + ';border-radius:10px;padding:12px;text-align:center">' +
+        '<div style="font-size:1.6rem">' + c[0] + '</div>' +
+        '<div style="font-size:.75rem;font-weight:700;color:#555;margin-top:2px">' + c[1] + '</div>' +
+        '<div style="font-size:1.6rem;font-weight:900;color:#333">' + c[2] + '</div>' +
+        '</div>';
+    }).join('');
+    return stats;
+  }
+
+  function _renderAuditLocalTabela(eventos) {
+    var hoje = _hojeISO();
+    var ev = eventos.filter(function(e){ return e.dia === hoje; });
+    if (!ev.length) {
+      document.getElementById('audit-local-wrap').innerHTML = '<div class="empty-state">Nenhum evento registrado hoje neste navegador.</div>';
+      return;
+    }
+    var html = '<table><thead><tr><th>Hora</th><th>Evento</th><th>Info</th></tr></thead><tbody>';
+    ev.slice().reverse().forEach(function(e){
+      var meta = e.meta ? JSON.stringify(e.meta) : '';
+      if (meta === '{}') meta = '';
+      html += '<tr><td style="white-space:nowrap">' + _fmtTs(e.ts) + '</td>' +
+              '<td>' + _esc(String(_tipoLabel(e.tipo))) + '</td>' +
+              '<td style="font-size:.78rem;color:#888">' + _esc(meta) + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('audit-local-wrap').innerHTML = html;
+  }
+
+  function _carregarAuditLocal() {
+    var eventos = [];
+    try {
+      var raw = localStorage.getItem('itap_picole_audit');
+      eventos = raw ? JSON.parse(raw) : [];
+    } catch(e) { eventos = []; }
+    _renderAuditResumo(eventos);
+    _renderAuditLocalTabela(eventos);
+    var stats = _renderAuditResumo(eventos);
+    // Mostrar botão WhatsApp apenas se há formulário enviado
+    var btnWpp = document.getElementById('btn-audit-wpp');
+    if (btnWpp) btnWpp.style.display = stats.forms > 0 ? 'inline-flex' : 'none';
+  }
+
+  function _carregarAuditBackend() {
+    var el = document.getElementById('audit-backend');
+    var msgEl = document.getElementById('msg-auditoria');
+    el.innerHTML = '<div class="empty-state">Consultando backend...</div>';
+    // Consulta status da promoção + ganhadores do dia
+    Promise.all([
+      _get('/api/promocao/picole/status'),
+      _get('/api/admin/promocao/picole/ganhadores')
+    ]).then(function(results){
+      var status = results[0];
+      var ganha  = results[1];
+      var hoje   = _hojeISO();
+      var ganhadoresHoje = (ganha.ganhadores || []).filter(function(g){ return (g.dia || g.data || '').slice(0,10) === hoje; });
+      var wppOk  = ganhadoresHoje.filter(function(g){ return g.statusFormulario === 'preenchido'; });
+      var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px">';
+      html += '<div style="background:#e8f5e9;border-radius:10px;padding:12px"><strong>Estado da promoção:</strong><br>' +
+              '<span class="badge ' + (status.status === 'ativo' ? 'badge-green' : 'badge-gray') + '">' + (status.status || 'inativo') + '</span></div>';
+      html += '<div style="background:#e3f2fd;border-radius:10px;padding:12px"><strong>Ganhadores hoje:</strong><br>' +
+              '<span style="font-size:1.4rem;font-weight:900">' + ganhadoresHoje.length + '</span></div>';
+      html += '<div style="background:' + (wppOk.length >= ganhadoresHoje.length && ganhadoresHoje.length > 0 ? '#e8f5e9' : '#fff8e1') + ';border-radius:10px;padding:12px">' +
+              '<strong>Forms preenchidos hoje:</strong><br><span style="font-size:1.4rem;font-weight:900">' + wppOk.length + '</span></div>';
+      html += '</div>';
+      if (ganhadoresHoje.length > 0) {
+        html += '<h4 style="font-size:.85rem;font-weight:800;margin-bottom:6px">Ganhadores do dia ' + hoje + '</h4>';
+        html += '<table><thead><tr><th>Nome</th><th>Celular</th><th>Código</th><th>Status Form</th><th>Horário</th></tr></thead><tbody>';
+        ganhadoresHoje.forEach(function(g){
+          var statusBadge = g.statusFormulario === 'preenchido'
+            ? '<span class="badge badge-green">Preenchido ✅</span>'
+            : '<span class="badge badge-yellow">Pendente ⏳</span>';
+          html += '<tr><td>' + _esc(g.nome || '—') + '</td>' +
+                  '<td>' + _esc(g.celular || '—') + '</td>' +
+                  '<td><code>' + _esc(g.codigoRetirada || '—') + '</code></td>' +
+                  '<td>' + statusBadge + '</td>' +
+                  '<td style="font-size:.8rem;color:#888">' + _esc((g.ts || g.criadoEm || '').replace('T',' ').slice(0,16)) + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        // Alertas
+        if (ganhadoresHoje.length > 1) {
+          html += '<div class="msg vis msg-err" style="margin-top:10px">⚠️ ALERTA: ' + ganhadoresHoje.length + ' ganhadores encontrados hoje! Verifique o backend imediatamente.</div>';
+        }
+        if (wppOk.length < ganhadoresHoje.length) {
+          html += '<div class="msg vis msg-err" style="margin-top:10px">⚠️ Há ganhador(es) com formulário pendente. Confirme envio do WhatsApp.</div>';
+        }
+      } else {
+        html += '<div class="empty-state">Nenhum ganhador registrado hoje no backend.</div>';
+      }
+      el.innerHTML = html;
+      msgEl.className = 'msg';
+    }).catch(function(){
+      el.innerHTML = '<div class="empty-state">Erro ao consultar backend. Verifique a conexão e o token.</div>';
+    });
+  }
+
+  document.getElementById('btn-audit-api').addEventListener('click', _carregarAuditBackend);
+  document.getElementById('btn-audit-local').addEventListener('click', _carregarAuditLocal);
+  document.getElementById('btn-audit-limpar').addEventListener('click', function(){
+    if (!confirm('Limpar log local de auditoria? Esta ação não pode ser desfeita.')) return;
+    try {
+      localStorage.removeItem('itap_picole_audit');
+      localStorage.removeItem('itap_picole_gd');
+      localStorage.removeItem('itap_picole_cd');
+    } catch(e) {}
+    document.getElementById('audit-local-wrap').innerHTML = '<div class="empty-state">Log local limpo.</div>';
+    document.getElementById('audit-resumo').innerHTML = '';
+    document.getElementById('btn-audit-wpp').style.display = 'none';
+    var msgEl = document.getElementById('msg-auditoria');
+    msgEl.textContent = 'Cache local limpo com sucesso.';
+    msgEl.className = 'msg vis msg-ok';
+  });
+
+  document.getElementById('btn-audit-wpp').addEventListener('click', function(){
+    var hoje = _hojeISO();
+    var eventos = [];
+    try { eventos = JSON.parse(localStorage.getItem('itap_picole_audit') || '[]'); } catch(e) {}
+    var ev = eventos.filter(function(e){ return e.dia === hoje; });
+    var resumo = [
+      '📋 Auditoria Picolé Grátis — ' + hoje,
+      'Cliques interceptados: ' + ev.filter(function(e){ return e.tipo==='clique_interceptado'; }).length,
+      'Reservas OK: ' + ev.filter(function(e){ return e.tipo==='reserva_ok'; }).length,
+      'Forms enviados: ' + ev.filter(function(e){ return e.tipo==='form_enviado_ok'; }).length,
+      'WhatsApp aberto: ' + ev.filter(function(e){ return e.tipo==='wpp_aberto_auto'; }).length,
+      'Bloqueios: ' + ev.filter(function(e){ return e.tipo.startsWith('bloqueio'); }).length,
+      'Erros: ' + ev.filter(function(e){ return e.tipo.includes('fail')||e.tipo.includes('erro'); }).length
+    ].join('\n');
+    window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(resumo), '_blank', 'noopener,noreferrer');
+  });
+
+  // Auto-carrega auditoria ao entrar na aba
+  document.querySelectorAll('.tab-btn[data-tab="tab-auditoria"]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      _carregarAuditLocal();
+      _carregarAuditBackend();
+    });
+  });
+
 })();
 </script>
 </body>
