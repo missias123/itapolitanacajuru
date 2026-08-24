@@ -100,23 +100,28 @@
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:2px; width:94px; height:150px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; width:188px; height:300px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:94px; height:150px; padding:0; justify-content:flex-start; gap:2px; }',
-      '.itabot-launcher-robot { position:relative; flex:0 0 82px; width:78px; height:82px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:188px; height:300px; padding:0; justify-content:flex-start; gap:4px; }',
+      '.itabot-launcher-robot { position:relative; flex:0 0 164px; width:156px; height:164px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:top center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
 
       '.itabot-launcher-dot { display:none; }',
-      '.itabot-launcher-led-panel { position:relative; display:flex; flex:0 0 15px; align-items:center; width:50%; min-width:46px; min-height:15px; height:15px; margin-top:1px; padding:0 5px; box-sizing:border-box; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
+      '.itabot-launcher-led-panel { position:relative; display:flex; flex:0 0 30px; align-items:center; width:50%; min-width:92px; min-height:30px; height:30px; margin-top:2px; padding:0 10px; box-sizing:border-box; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
       '.itabot-launcher-led-panel::after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg,rgba(0,0,0,.2) 0 1px,transparent 1px 3px); mix-blend-mode:multiply; pointer-events:none; }',
-      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 7.5px/13px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 3px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
+      '.itabot-launcher-led-track { position:relative; z-index:1; display:block; flex:0 0 auto; min-width:max-content; padding-left:100%; color:#FFFFFF; font:900 15px/26px Arial,sans-serif; letter-spacing:.035em; text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 0 3px #000; white-space:nowrap; animation:itabot-launcher-led-scroll 6.2s linear infinite; }',
       '@keyframes itabot-launcher-led-scroll { from { transform:translateX(0); } to { transform:translateX(-100%); } }',
       '@keyframes itabot-ghost-float { 0%,100% { transform:translate3d(0,0,0) rotate(-1deg); } 25% { transform:translate3d(1px,-4px,0) rotate(1deg); } 50% { transform:translate3d(0,-8px,0) rotate(0deg); } 75% { transform:translate3d(-1px,-4px,0) rotate(-1deg); } }',
 
-      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { animation:none; transition:none; } }',
-      '@media (max-width:600px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(96px + env(safe-area-inset-bottom, 0px)); width:82px; height:100px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { flex-basis:74px; width:70px; height:74px; } .itabot-launcher-led-panel { flex:0 0 15px; width:50%; min-width:42px; min-height:15px; height:15px; margin-top:1px; padding:0 4px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:6.5px; line-height:13px; } }',
-      '@media (min-width:601px) and (max-width:1024px) { #itabot-launcher { bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:calc(16px + env(safe-area-inset-right, 0px)); } }',
+      '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
+      /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
+      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:2px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
+      /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
+      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(80px + env(safe-area-inset-bottom, 0px)); width:164px; height:220px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:148px; flex-basis:148px; width:140px; height:148px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:2px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
+      /* Tablet: 768px – 1024px (iPad, Android tablet) */
+      '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(16px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:176px; height:280px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:2px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } }',
+      /* Desktop: 1025px+ (PC, Mac, Chrome, Firefox, Edge, Safari) */
       '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
     ].join('');
@@ -191,11 +196,13 @@
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      var fullW = narrow ? 82 : 94;
-      var fullH = narrow ? 102 : 116;
-      var iconW = narrow ? 82 : 94, iconH = narrow ? 102 : 116;
+      // Tamanhos dobrados para corresponder ao CSS
+      // mobile ≤480px: 140×180, phablet 481-767: 164×220, tablet 768-1024: 176×280, desktop: 188×300
+      var fullW = vw <= 480 ? 140 : (vw <= 767 ? 164 : (vw <= 1024 ? 176 : 188));
+      var fullH = vw <= 480 ? 180 : (vw <= 767 ? 220 : (vw <= 1024 ? 280 : 300));
+      var iconW = fullW, iconH = fullH;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
-      var margin = narrow ? 10 : 16;
+      var margin = narrow ? 10 : 20;
       var overlayBottom = safeBottom;
       var fixedNodes = document.querySelectorAll('body *');
       for (var f = 0; f < fixedNodes.length; f++) {
