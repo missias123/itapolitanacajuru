@@ -106,6 +106,8 @@
       '#itabot-launcher.itabot-launcher-icon-only { width:188px; height:300px; padding:0; justify-content:flex-start; gap:0; }',
       '.itabot-launcher-robot { position:relative; flex:0 0 164px; width:156px; height:164px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:bottom center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
+      '.itabot-chest-badge { position:absolute; left:50%; top:58%; width:28%; aspect-ratio:1/1; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; border-radius:50%; border:2px solid rgba(176,234,255,.96); background:radial-gradient(circle at 30% 30%, #7fe8ff 0%, #1ca3ff 42%, #0b4dff 100%); box-shadow:0 0 0 1px rgba(255,255,255,.32), 0 0 12px rgba(0,178,255,.95), 0 0 26px rgba(32,125,255,.75), inset 0 0 10px rgba(255,255,255,.45); color:#fff; font:900 clamp(8px, 1.9vw, 12px)/1 Arial,sans-serif; letter-spacing:.08em; text-shadow:0 1px 3px rgba(0,0,0,.65), 0 0 8px rgba(120,233,255,.92); z-index:3; pointer-events:none; }',
+      '.itabot-chest-badge::after { content:""; position:absolute; inset:-18%; border-radius:50%; border:1px solid rgba(123,227,255,.72); box-shadow:0 0 16px rgba(68,196,255,.7); opacity:.85; }',
 
       '.itabot-launcher-dot { display:none; }',
       '.itabot-launcher-led-panel { position:relative; display:flex; flex:0 0 30px; align-items:center; width:50%; min-width:92px; min-height:30px; height:30px; margin-top:-10px; padding:0 10px; box-sizing:border-box; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
@@ -116,7 +118,7 @@
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
       /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
-      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
+      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-chest-badge { width:30%; border-width:1.6px; font-size:9px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
       /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
       '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(80px + env(safe-area-inset-bottom, 0px)); width:164px; height:220px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:148px; flex-basis:148px; width:140px; height:148px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
       /* Tablet: 768px – 1024px (iPad, Android tablet) */
@@ -139,6 +141,7 @@
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
+        '<span class="itabot-chest-badge" aria-hidden="true">ITA</span>',
       '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
