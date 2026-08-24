@@ -618,9 +618,11 @@
         '<div class="chat-msgs" id="itabot-msgs"></div>',
         '<div class="chat-typing" id="itabot-typing"><span></span><span></span><span></span></div>',
         '<div class="chat-chips" id="itabot-chips"></div>',
-        '<div class="chat-inp-row">',
-          '<input type="text" class="chat-inp" id="itabot-input" placeholder="Digite sua dúvida...">',
+        '<div id="chat-input-area">',
+        '<div class="chat-inp-row" id="itabot-input-area">',
+          '<input type="text" class="chat-inp" id="chat-inp" placeholder="Digite sua dúvida...">',
           '<button class="chat-send" id="itabot-send-btn">➤</button>',
+        '</div>',
         '</div>',
       '</div>'
     ].join('');
@@ -628,7 +630,8 @@
 
     document.getElementById('itabot-close-btn').onclick = _itabotFecharItaBot;
     document.getElementById('itabot-send-btn').onclick = _itabotEnviarMensagem;
-    document.getElementById('itabot-input').onkeydown = function (e) {
+    var chatInput = document.getElementById('chat-inp') || document.getElementById('itabot-input');
+    chatInput.onkeydown = function (e) {
       if (e.key === 'Enter') _itabotEnviarMensagem();
     };
     div.onclick = function (e) {
@@ -661,7 +664,7 @@
     }
     
     setTimeout(function() {
-      var inp = document.getElementById('itabot-input');
+      var inp = document.getElementById('chat-inp') || document.getElementById('itabot-input');
       if (inp) inp.focus();
     }, 300);
   }
@@ -751,7 +754,7 @@
   }
 
   function _itabotEnviarMensagem() {
-    var inp = document.getElementById('itabot-input');
+    var inp = document.getElementById('chat-inp') || document.getElementById('itabot-input');
     var texto = inp.value.trim();
     if (!texto) return;
     inp.value = '';
