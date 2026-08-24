@@ -137,7 +137,7 @@ test.describe('Ita Bot — Chat', () => {
     });
     await page.waitForTimeout(350);
 
-    const inputArea = page.locator('#chat-input-area');
+    const inputArea = page.locator('#chat-input-area, #itabot-direct-message-area').first();
     const box = await inputArea.boundingBox();
     expect(box).not.toBeNull();
     expect(box.y).toBeLessThan(844 - 260);
@@ -232,7 +232,7 @@ test.describe('Ita Bot — Chat', () => {
     expect(noHScroll).toBe(true);
 
     // Botão Enviar acessível
-    const sendBtn = page.locator('.chat-send').first();
+    const sendBtn = page.locator('.chat-send, .itabot-whatsapp-send').first();
     const sendVisible = await sendBtn.isVisible().catch(() => false);
     expect(sendVisible).toBe(true);
   });
