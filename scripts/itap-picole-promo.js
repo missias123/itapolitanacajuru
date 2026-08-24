@@ -610,8 +610,8 @@
           sm.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
           sm.classList.add('vis');
         }
-        if (btn) btn.disabled = true;
-        if (label) label.textContent = 'Reservar agora 🍦';
+        if (btn) btn.disabled = false;
+        if (label) label.textContent = 'Tentar novamente 🍦';
         _auditLog('reserva_erro_rede');
       });
   }
@@ -725,31 +725,20 @@
   }
 
   // ── Tela de confirmação ──────────────────────────────────────────────────────
-  // Após exibir, abre o WhatsApp automaticamente para garantir o envio.
+  // Exibe o resultado e foca o botão do WhatsApp — o usuário deve tocar para enviar.
+  // Nota: window.open() automático é bloqueado por browsers fora de resposta direta
+  // a um clique do usuário. O botão proeminente é a forma confiável de garantir o envio.
   function _renderizarTelaConfirmacao(dados) {
     var body = document.getElementById('pm-body');
     var titulo = document.getElementById('pm-titulo');
     if (titulo) titulo.textContent = '🍦 Cadastro Confirmado!';
     if (body) {
       body.innerHTML = _construirConteudoModal('confirmacao', dados);
+      // Auto-foca o botão WhatsApp para facilitar o envio imediato
+      var wppBtn = body.querySelector('.pm-btn-wpp');
+      if (wppBtn) setTimeout(function () { wppBtn.focus(); }, 100);
     }
-    // Abre WhatsApp automaticamente após 1,5s — garante que o ganhador envia confirmação
-    var wppNum = '5516996062046';
-    var wppMsg = encodeURIComponent(
-      '🍦 Resgate do Picolé – Sorveteria Itapolitana Cajuru\n\n' +
-      'Nome: ' + (dados.nome || '') + '\n' +
-      'Celular: ' + (dados.celular || '') + '\n' +
-      'Data: ' + (dados.dataLocal || _dataHojeFormatada()) + '\n' +
-      'Código de Retirada: ' + (dados.codigoRetirada || '') + '\n\n' +
-      'Prêmio: 1 picolé de fruta grátis\n' +
-      'Retirada: pessoalmente na Sorveteria Itapolitana, Cajuru/SP\n' +
-      '(Sujeito aos sabores disponíveis no momento da retirada)\n\n' +
-      'Apresente este código e o celular cadastrado na loja. ✅'
-    );
-    _auditLog('wpp_aberto_auto', { codigoRetirada: dados.codigoRetirada });
-    setTimeout(function () {
-      window.open('https://wa.me/' + wppNum + '?text=' + wppMsg, '_blank', 'noopener,noreferrer');
-    }, 1500);
+    _auditLog('confirmacao_exibida', { codigoRetirada: dados.codigoRetirada });
   }
 
   function _dataHojeFormatada() {

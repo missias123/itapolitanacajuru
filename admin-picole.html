@@ -620,7 +620,8 @@
       form_enviado_ok:     '✅ Formulário enviado',
       form_enviado_fail:   '❌ Formulário falhou',
       form_erro_rede:      '🌐 Erro de rede (form)',
-      wpp_aberto_auto:     '💬 WhatsApp aberto automaticamente'
+      wpp_aberto_auto:     '💬 WhatsApp aberto automaticamente',
+      confirmacao_exibida: '✅ Tela de confirmação exibida (WhatsApp pendente de toque)'
     };
     return map[tipo] || tipo;
   }
@@ -632,7 +633,7 @@
       cliques:   ev.filter(function(e){ return e.tipo === 'clique_interceptado'; }).length,
       reservas:  ev.filter(function(e){ return e.tipo === 'reserva_ok'; }).length,
       forms:     ev.filter(function(e){ return e.tipo === 'form_enviado_ok'; }).length,
-      wpp:       ev.filter(function(e){ return e.tipo === 'wpp_aberto_auto'; }).length,
+      wpp:       ev.filter(function(e){ return e.tipo === 'confirmacao_exibida'; }).length,
       bloqueios: ev.filter(function(e){ return e.tipo.startsWith('bloqueio'); }).length,
       erros:     ev.filter(function(e){ return e.tipo.includes('fail') || e.tipo.includes('erro'); }).length
     };
@@ -767,7 +768,7 @@
       'Cliques interceptados: ' + ev.filter(function(e){ return e.tipo==='clique_interceptado'; }).length,
       'Reservas OK: ' + ev.filter(function(e){ return e.tipo==='reserva_ok'; }).length,
       'Forms enviados: ' + ev.filter(function(e){ return e.tipo==='form_enviado_ok'; }).length,
-      'WhatsApp aberto: ' + ev.filter(function(e){ return e.tipo==='wpp_aberto_auto'; }).length,
+      'Confirmações exibidas: ' + ev.filter(function(e){ return e.tipo==='confirmacao_exibida'; }).length,
       'Bloqueios: ' + ev.filter(function(e){ return e.tipo.startsWith('bloqueio'); }).length,
       'Erros: ' + ev.filter(function(e){ return e.tipo.includes('fail')||e.tipo.includes('erro'); }).length
     ].join('\n');
