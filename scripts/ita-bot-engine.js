@@ -90,7 +90,7 @@
       'fondue':        '\ud83e\udd6e Fondue de Sorvete R$ 25. Perfeito para compartilhar!',
       'evento':        '\ud83c\udfaa Temos Carrinho para Eventos! Consulte pelo WhatsApp: (16) 99606-2046.',
       'festa':         '\ud83c\udf89 Fazemos encomendas para festas: Torta, Caixas, Picol\u00e9s no atacado e Carrinho para Eventos!',
-      'sorteio':       '\ud83d\udea8 O sorteio da caixa de sorvete foi encerrado; a campanha anterior teve mais de 1.400 inscritos. Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete, exclusivamente pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o. O sorteio come\u00e7a em janeiro de 2027.',
+      'sorteio':       '\ud83d\udea8 O sorteio da caixa de sorvete foi encerrado; a campanha anterior teve mais de 1.400 inscritos. Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete, exclusivamente pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o. O sorteio come\u00e7a em janeiro de 2027. \ud83e\udd16 Veja tamb\u00e9m as respostas do ItaBot sobre a promo\u00e7\u00e3o Ganhe um Picol\u00e9.',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
       'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
@@ -375,7 +375,7 @@
         };
       }
       return {
-        answer: '\ud83d\udea8 O sorteio da caixa de sorvete foi encerrado; a campanha anterior teve mais de 1.400 inscritos.\n\nInscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio come\u00e7a em janeiro de 2027. Cadastre-se exclusivamente pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
+        answer: '\ud83d\udea8 O sorteio da caixa de sorvete foi encerrado; a campanha anterior teve mais de 1.400 inscritos.\n\nInscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio come\u00e7a em janeiro de 2027. Cadastre-se exclusivamente pelo site itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.\n\n\ud83e\udd16 Veja tamb\u00e9m as respostas do ItaBot sobre a promo\u00e7\u00e3o Ganhe um Picol\u00e9.',
         linkText: '\ud83c\udf81 Ver inscri\u00e7\u00e3o para 2027',
         linkHref: 'promocao.html',
         chips: ['\ud83e\uded0 Promo\u00e7\u00f5es de a\u00e7a\u00ed', '\ud83c\udf66 Pre\u00e7os de sorvete']

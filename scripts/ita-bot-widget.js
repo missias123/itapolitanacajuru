@@ -438,7 +438,8 @@
       textos: [
         '⚠️ As inscrições para o sorteio da caixa de sorvete foram encerradas. A campanha anterior teve mais de 1.400 inscritos.',
         '🍰 Inscrições já estão abertas para o sorteio mensal de uma torta de sorvete. O sorteio começa em janeiro de 2027.',
-        '📝 Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promoção.'
+        '📝 Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promoção.',
+        '🤖 Veja também as respostas do ItaBot sobre a promoção Ganhe um Picolé.'
       ],
       linkTexto: 'Ver Página de Promoção',
       linkUrl: 'promocao.html'
