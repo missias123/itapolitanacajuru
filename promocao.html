@@ -536,6 +536,22 @@
     <div style="margin-top:10px;font-size:11px;opacity:0.8;">© 2007–2027 Sorveteria Itapolitana · Todos os direitos reservados</div>
   </div>
 
+  <!-- Regulamento Completo no Rodapé -->
+  <div style="max-width:600px;margin:16px auto 0;text-align:left;border-top:1px solid rgba(255,255,255,0.2);padding-top:16px;">
+    <div style="font-size:12px;font-weight:900;color:#FBD100;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:center;">📋 Regulamento — Promoção Picolé de Fruta Grátis</div>
+    <ul style="font-size:11px;opacity:0.88;line-height:1.8;margin-left:16px;list-style:disc;">
+      <li><strong>Prêmio:</strong> 1 (um) Picolé de Fruta à escolha, sem custo, por ativação da promoção.</li>
+      <li><strong>Disponibilidade:</strong> Ativada de forma aleatória durante o horário de funcionamento da sorveteria. Pode não ocorrer todos os dias.</li>
+      <li><strong>Como ganhar:</strong> Ser o primeiro a clicar no robô ItaBot quando o LED piscar e completar o formulário com dados válidos.</li>
+      <li><strong>Celular DDD 16:</strong> Exclusivo para WhatsApp com DDD 16. Números de outras regiões não são aceitos.</li>
+      <li><strong>Um ganhador por dia:</strong> Apenas 1 picolé é sorteado por ativação. Um mesmo número pode ganhar no máximo 1 vez por semana.</li>
+      <li><strong>Retirada:</strong> Obrigatória no mesmo dia da promoção, até o fechamento da sorveteria. Não é possível retirar em outro dia.</li>
+      <li><strong>Documento:</strong> Apresente o comprovante de reserva recebido no WhatsApp junto ao atendente.</li>
+      <li><strong>Sem transferência:</strong> A reserva é pessoal e intransferível.</li>
+      <li><strong>A Itapolitana reserva o direito</strong> de alterar, pausar ou encerrar a promoção a qualquer momento, com aviso prévio no site.</li>
+    </ul>
+  </div>
+
   <!-- Admin link discreto -->
   <div style="padding:10px 0 20px; text-align:center;">
     <style>
@@ -590,6 +606,17 @@
       box.classList.toggle('ativo');
       arrow.textContent = box.classList.contains('ativo') ? '▲' : '▼';
     }
+  }
+
+  // Acordeão do Regulamento — Promoção Picolé de Fruta Grátis
+  function toggleRegrasPicole(btn) {
+    var box = document.getElementById('picole-rules-box');
+    if (!box) return;
+    var arrow = btn ? btn.querySelector('span:last-child') : null;
+    var open = box.style.display !== 'none';
+    box.style.display = open ? 'none' : 'block';
+    if (btn) btn.setAttribute('aria-expanded', String(!open));
+    if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
   }
 </script>
 <script src="scripts/itap-promo.js" defer></script>
