@@ -503,7 +503,8 @@
 
   window._itabotEnviarWhatsApp = function () {
     var nome = document.getElementById('itabot-nome').value.trim();
-    var msgField = document.getElementById('chat-inp') || document.getElementById('itabot-msg');
+    var msgField = document.getElementById('chat-inp');
+    if (!msgField) return;
     var msg = msgField.value.trim();
     var texto = 'Olá, meu nome é ' + (nome || 'Cliente') + '. ' + (msg || 'Gostaria de tirar uma dúvida sobre a Itapolitana.');
     window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
@@ -664,7 +665,7 @@
     }
     
     setTimeout(function() {
-      var inp = document.getElementById('chat-inp') || document.getElementById('itabot-input');
+      var inp = document.getElementById('itabot-input');
       if (inp) inp.focus();
     }, 300);
   }
@@ -754,7 +755,7 @@
   }
 
   function _itabotEnviarMensagem() {
-    var inp = document.getElementById('chat-inp') || document.getElementById('itabot-input');
+    var inp = document.getElementById('itabot-input');
     var texto = inp.value.trim();
     if (!texto) return;
     inp.value = '';
