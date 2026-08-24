@@ -136,8 +136,10 @@
     if (document.getElementById('itabot-launcher')) return;
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
+    launcher.className = 'ita-bot-duvidas-btn itabot-btn';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
+    launcher.setAttribute('data-itabot-open', 'true');
       launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
