@@ -307,6 +307,8 @@
       var wrap = document.createElement('div');
       wrap.id = 'chat-dialog';
       wrap.className = 'itabot-fullscreen-mode';
+      // Mantemos o formulário direto acima dos temas para garantir que ele permaneça visível
+      // dentro do dialog em mobile/tablet, inclusive quando o teclado virtual é aberto.
       wrap.innerHTML = [
         '<div class="chat-box itabot-fullscreen-box" role="dialog" aria-modal="true" aria-labelledby="fale-modal-titulo">',
           '<div class="chat-hdr">',
@@ -502,9 +504,10 @@
   };
 
   window._itabotEnviarWhatsApp = function () {
-    var nome = document.getElementById('itabot-nome').value.trim();
+    var nomeField = document.getElementById('itabot-nome');
     var msgField = document.getElementById('itabot-whatsapp-msg');
-    if (!msgField) return;
+    if (!nomeField || !msgField) return;
+    var nome = nomeField.value.trim();
     var msg = msgField.value.trim();
     var texto = 'Olá, meu nome é ' + (nome || 'Cliente') + '. ' + (msg || 'Gostaria de tirar uma dúvida sobre a Itapolitana.');
     window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
