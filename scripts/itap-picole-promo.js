@@ -20,6 +20,8 @@
 
   var API_BASE = 'https://api.itapolitanacajuru.com.br';
   var POLL_INTERVAL_MS = 20_000; // 20 segundos
+  var PROMO_START_MINUTES = 11 * 60; // 11:00
+  var PROMO_END_MINUTES = 20 * 60;   // 20:00
   var PAINEL_ID = 'picole-dialog'; // mesmo padrão do #chat-dialog do widget
 
   // ── Estado interno ──────────────────────────────────────────────────────────
@@ -37,6 +39,7 @@
   // O localStorage persiste entre abas e recargas, tornando a recuperação mais robusta.
   // IMPORTANTE: o servidor nunca confia nestes dados para definir o vencedor.
   var LS_KEY = 'itap_picole_reserva';
+  var LS_WIN_DAY_KEY = 'itap_picole_ganhou_dia';
 
   function _hojeISO() {
     // Data local do dispositivo — usada apenas para expirar o registro de UX
@@ -66,6 +69,24 @@
 
   function _lsClear() {
     try { localStorage.removeItem(LS_KEY); } catch (e) {}
+  }
+
+  function _lsWinGet() {
+    try {
+      return localStorage.getItem(LS_WIN_DAY_KEY);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function _lsWinSetHoje() {
+    try {
+      localStorage.setItem(LS_WIN_DAY_KEY, _hojeISO());
+    } catch (e) {}
+  }
+
+  function _ganhouHojeNesteDispositivo() {
+    return _lsWinGet() === _hojeISO();
   }
 
   // Ativa aviso de saída enquanto o formulário não foi preenchido
@@ -112,6 +133,12 @@
   function _validFullName(v) {
     var parts = String(v || '').trim().split(/\s+/).filter(function (p) { return p.length >= 2; });
     return parts.length >= 2 && v.trim().length >= 5;
+  }
+
+  function _estaNoHorarioPromo() {
+    var agora = new Date();
+    var minutos = (agora.getHours() * 60) + agora.getMinutes();
+    return minutos >= PROMO_START_MINUTES && minutos <= PROMO_END_MINUTES;
   }
 
   // ── Atualização do robô / letreiro ──────────────────────────────────────────
@@ -166,6 +193,9 @@
       .then(function (data) {
         _polling = false;
         var novoEstado = data.status || 'inativo';
+        if (novoEstado === 'ativo' && (!_estaNoHorarioPromo() || _ganhouHojeNesteDispositivo())) {
+          novoEstado = 'inativo';
+        }
 
         if (novoEstado === 'campanha_encerrada') {
           _estado = 'campanha_encerrada';
@@ -217,6 +247,9 @@
 
   // ── Interceptor de clique no robô ────────────────────────────────────────────
   window._itabotClickInterceptor = function () {
+    if (_ganhouHojeNesteDispositivo()) {
+      return false;
+    }
     if (_estado === 'ativo' && _janelaAtiva) {
       _abrirPainel('promo');
       return true; // intercepta — abre painel de cadastro
@@ -351,7 +384,7 @@
         '</div>' +
         '<div style="font-size:.84rem;color:#444;line-height:1.5;padding:8px 0">' +
         '📍 <strong>Retirada exclusivamente na loja.</strong> Não há delivery para esta promoção.<br>' +
-        '🕐 Resgate no horário de atendimento da sorveteria.<br>' +
+        '🕐 Resgate e ativações do robô entre 11h e 20h.<br>' +
         '🍦 1 picolé de fruta disponível, sujeito aos sabores disponíveis no momento.<br>' +
         '📱 Informe seu nome e celular cadastrados ao retirar.' +
         '</div>' +
@@ -518,7 +551,20 @@
   function _inicializarTelaPromo() {
     var btn = document.getElementById('pm-btn-reservar');
     var btnJaGanhei = document.getElementById('pm-btn-ja-ganhei');
+    var statusMsg = document.getElementById('pm-status-reserva');
     if (!btn) return;
+
+    if (_ganhouHojeNesteDispositivo()) {
+      btn.disabled = true;
+      if (btnJaGanhei) btnJaGanhei.disabled = true;
+      if (statusMsg) {
+        statusMsg.textContent = 'Você já garantiu seu picolé hoje neste dispositivo. Tente novamente amanhã.';
+        statusMsg.classList.add('vis');
+      }
+      _estado = 'reservado';
+      _atualizarRobo('reservado');
+      return;
+    }
 
     // Verifica se há reservaId no localStorage (retomada automática)
     var lsData = _lsGet();
@@ -558,6 +604,7 @@
         } else if (data.ok && data.statusFormulario === 'preenchido') {
           // Formulário já foi preenchido — exibe confirmação diretamente
           _lsClear();
+          _lsWinSetHoje();
           _renderizarTelaConfirmacao({ codigoRetirada: data.codigoRetirada });
         } else {
           // Reserva expirada, inválida ou de outro dia — limpa e mostra botão normal
@@ -702,6 +749,7 @@
         if (spinner) spinner.classList.remove('vis');
         if (data.sucesso) {
           _lsClear();               // formulário preenchido — remove reserva do localStorage
+          _lsWinSetHoje();          // registra limite local de 1 picolé por dia
           _desativarGuardaSaida(); // cancela aviso de saída
           _renderizarTelaConfirmacao({ codigoRetirada: data.codigoRetirada, nome: nome, celular: celular, dataLocal: _dataHojeFormatada() });
         } else {
