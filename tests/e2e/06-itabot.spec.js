@@ -163,7 +163,7 @@ test.describe('Ita Bot — Chat', () => {
     expect(kbVar).toBeDefined();
 
     // 2. Composer tem dimensões mínimas
-    const inputArea = page.locator('#itabot-input-area');
+    const inputArea = page.locator('#itabot-input-area, #itabot-whatsapp-form').first();
     const areaVisible = await inputArea.isVisible().catch(() => false);
     if (areaVisible) {
       const box = await inputArea.boundingBox();
@@ -219,7 +219,7 @@ test.describe('Ita Bot — Chat', () => {
 
     // Confirma que o composer existe e está acessível (regressão mínima)
     const composerBottom = await page.evaluate(() => {
-      const el = document.getElementById('itabot-input-area');
+      const el = document.getElementById('itabot-input-area') || document.getElementById('itabot-whatsapp-form');
       if (!el) return null;
       return el.getBoundingClientRect().bottom;
     });
