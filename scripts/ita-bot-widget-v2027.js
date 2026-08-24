@@ -618,9 +618,9 @@
         '<div class="chat-msgs" id="itabot-msgs"></div>',
         '<div class="chat-typing" id="itabot-typing"><span></span><span></span><span></span></div>',
         '<div class="chat-chips" id="itabot-chips"></div>',
-        '<div id="chat-input-area">',
-        '<div class="chat-inp-row" id="itabot-input-area">',
-          '<input type="text" class="chat-inp" id="chat-inp" placeholder="Digite sua dúvida...">',
+        '<div id="itabot-chat-input-area">',
+        '<div class="chat-inp-row" id="itabot-chat-composer">',
+          '<input type="text" class="chat-inp" id="itabot-input" placeholder="Digite sua dúvida...">',
           '<button class="chat-send" id="itabot-send-btn">➤</button>',
         '</div>',
         '</div>',
@@ -630,7 +630,7 @@
 
     document.getElementById('itabot-close-btn').onclick = _itabotFecharItaBot;
     document.getElementById('itabot-send-btn').onclick = _itabotEnviarMensagem;
-    var chatInput = document.getElementById('chat-inp') || document.getElementById('itabot-input');
+    var chatInput = document.getElementById('itabot-input');
     chatInput.onkeydown = function (e) {
       if (e.key === 'Enter') _itabotEnviarMensagem();
     };
