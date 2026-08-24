@@ -130,7 +130,7 @@ test.describe('Ita Bot — Chat', () => {
     await botBtn.click();
     await page.waitForTimeout(600);
 
-    const inputMsg = page.locator('#chat-inp').first();
+    const inputMsg = page.locator('#chat-inp, #itabot-whatsapp-msg').first();
     await inputMsg.focus();
     await page.evaluate(() => {
       document.documentElement.style.setProperty('--chat-kb-offset', '260px');
@@ -255,7 +255,7 @@ test.describe('Ita Bot — Chat', () => {
       await page.waitForTimeout(600);
 
       const dialog = page.locator('#chat-dialog .chat-box').first();
-      const input = page.locator('#chat-inp').first();
+      const input = page.locator('#chat-inp, #itabot-whatsapp-msg').first();
       await expect(dialog, `Dialog invisível em ${cenario.nome}`).toBeVisible();
       await expect(input, `Input invisível em ${cenario.nome}`).toBeVisible();
 
@@ -272,7 +272,8 @@ test.describe('Ita Bot — Chat', () => {
 
 /* ─── Lote A — Testes de Ovomaltine, Esquimó e Picolés ─── */
 /* Nota: estes testes usam dicas.html onde o widget (ita-bot-widget.js) é o bot ativo.
- * O index.html tem implementação inline separada (#chat-inp / getResp).
+ * O index.html tem implementação inline separada (#chat-inp / getResp),
+ * enquanto o widget v2027 usa #itabot-whatsapp-msg na tela cheia.
  * O widget injeta #duvidas-pergunta e #duvidas-resposta apenas quando #chat-dialog ainda não existe. */
 test.describe('Ita Bot — Lote A: Ovomaltine e Picolés (preços e desambiguação)', () => {
   /** Abre o bot e envia uma mensagem; retorna o texto do último .msg.bot */
