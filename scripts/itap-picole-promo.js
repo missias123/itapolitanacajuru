@@ -126,7 +126,7 @@
         launcher.style.filter = 'drop-shadow(0 0 18px rgba(255,214,0,0.85))';
       }
       if (ledTrack) {
-        ledTrack.textContent = 'CLIQUE EM MIM E GANHE UM PICOLÉ! 🍦   •   ';
+        ledTrack.textContent = '🍦 PICOLÉ GRÁTIS AGORA! CLIQUE RÁPIDO!   •   ';
         ledTrack.style.color = '#FFD600';
       }
     } else if (novoEstado === 'reservado') {

@@ -26,3 +26,17 @@ Sempre execute o script de auditoria antes de enviar alterações:
 python scripts/itap-world-class-audit.py
 ```
 *Esta verificação é executada automaticamente pelo GitHub Actions em cada push.*
+
+## 5. Regra do Formulário de Picolé Grátis
+
+> **O formulário de Picolé Grátis é SEPARADO do formulário de Dúvidas do ItaBot. São dois formulários diferentes.**
+
+### Como funciona:
+- **Uma vez por dia**, o LED do robô exibe **"🍦 PICOLÉ GRÁTIS AGORA!"**.
+- Nesse momento, o usuário deve **clicar no robô** — abrirá automaticamente o **formulário exclusivo do Picolé Grátis** (identificado com "🍦 PICOLÉ GRÁTIS" no topo da tela).
+- O formulário solicita: **Nome completo como no documento**, **Data de nascimento como no documento**, e o envio é feito **via WhatsApp** para agendar a retirada em uma das datas disponíveis: **Segunda, Quarta ou Sexta**.
+- Ao clicar no robô **fora do momento do LED de Picolé Grátis**, abrirá o formulário de **Dúvidas do ItaBot** — que é diferente.
+
+### Regra obrigatória:
+- O formulário de Dúvidas do ItaBot **deve sempre exibir um aviso destacado** (fundo amarelo com borda dourada) informando que Picolé Grátis é em outro formulário, para evitar que usuários enviem pedidos de picolé pelo canal errado.
+- Nunca remover ou ocultar esse aviso do campo "💬 Enviar mensagem direta via WhatsApp" no painel de Dúvidas.
