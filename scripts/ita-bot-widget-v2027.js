@@ -330,7 +330,7 @@
               '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
               '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
               '<textarea id="itabot-whatsapp-msg" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
-              '<button type="button" class="itabot-whatsapp-send" onclick="_itabotEnviarWhatsApp()" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
+              '<button type="button" class="itabot-whatsapp-send" id="itabot-whatsapp-send-btn" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
             '</div>',
             '</div>',
             '<div style="display:flex;flex-direction:column;gap:10px;max-width:600px;margin:0 auto;">',
@@ -354,6 +354,7 @@
         '</div>'
       ].join('');
       document.body.appendChild(wrap);
+      document.getElementById('itabot-whatsapp-send-btn').onclick = window._itabotEnviarWhatsApp;
       _itabotVincularTeclado(wrap);
       
       // Inserir estilos dos botões de tema
