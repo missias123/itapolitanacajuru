@@ -713,10 +713,33 @@ const SP_TIMEZONE = 'America/Sao_Paulo';
 const PICOLE_CAMPANHA_DIAS = 30;
 const PICOLE_JANELA_INICIO = '11:00';
 const PICOLE_JANELA_FIM = '20:00';
+const PICOLE_AUDITORIA_TTL_S = 7 * 24 * 3600;
 
 // Retorna a data local em SP no formato YYYY-MM-DD
 function hojeEmSP() {
   return new Date().toLocaleDateString('sv-SE', { timeZone: SP_TIMEZONE });
+}
+
+function mascararIp(ip) {
+  const v = String(ip || '').trim();
+  if (v.includes(':')) {
+    const groups = v.split(':').filter(Boolean);
+    if (!groups.length) return 'ipv6:*';
+    return groups.slice(0, 3).join(':') + ':*';
+  }
+  const p = v.split('.');
+  if (p.length !== 4) return 'unknown';
+  return `${p[0]}.${p[1]}.${p[2]}.*`;
+}
+
+async function registrarAuditoriaPicole(env, evento, payload = {}) {
+  if (!env.PROMO_KV) return;
+  const hoje = hojeEmSP();
+  const ts = new Date().toISOString();
+  const rnd = Math.random().toString(36).slice(2, 10);
+  const key = `picole:audit:${hoje}:${Date.now()}:${rnd}`;
+  const body = { evento, ts, ...payload };
+  await env.PROMO_KV.put(key, JSON.stringify(body), { expirationTtl: PICOLE_AUDITORIA_TTL_S });
 }
 
 // Converte "HH:MM:SS" + data local "YYYY-MM-DD" em timestamp UTC (ms)
@@ -759,6 +782,15 @@ function gerarHorariosDiversificados(n) {
     const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
     const s = String(total % 60).padStart(2, '0');
     horarios.push(`${h}:${m}:${s}`);
+  }
+  // Embaralha para que os dias não sigam ordem previsível de horário.
+  const shuffleSeed = new Uint32Array(n);
+  crypto.getRandomValues(shuffleSeed);
+  for (let i = n - 1; i > 0; i--) {
+    const j = shuffleSeed[i] % (i + 1);
+    const tmp = horarios[i];
+    horarios[i] = horarios[j];
+    horarios[j] = tmp;
   }
   return horarios;
 }
@@ -908,13 +940,13 @@ async function handlePicoleStatus(request, env) {
   }
 
   // Janela: promoção dura até o fim do dia (ou até ser reservada)
-  const fimDia = localHorarioParaUtc(hoje, '23:59:59');
+  const fimJanela = localHorarioParaUtc(hoje, `${PICOLE_JANELA_FIM}:00`);
 
   if (agora < inicio) {
     return jsonResp({ status: 'inativo' });
   }
 
-  if (agora >= inicio && agora <= fimDia && dia.status !== 'reservado' && dia.status !== 'encerrado') {
+  if (agora >= inicio && agora <= fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
     // Atualiza status para ativo se ainda era agendado/aguardando
     if (dia.status === 'agendado' || dia.status === 'aguardando_inicio') {
       dia.status = 'ativo';
@@ -925,7 +957,7 @@ async function handlePicoleStatus(request, env) {
   }
 
   // Passou do fim do dia sem reserva → expira
-  if (agora > fimDia && dia.status !== 'reservado' && dia.status !== 'encerrado') {
+  if (agora > fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
     dia.status = 'expirado';
     dia.atualizadoEm = new Date().toISOString();
     await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
@@ -939,7 +971,10 @@ async function handlePicoleReservar(request, env) {
   if (!env.PROMO_KV) return jsonResp({ sucesso: false, codigo: 'CAMPANHA_INATIVA', mensagem: 'Campanha não configurada.' }, 503);
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rl = await checkRateLimit(env, ip, 'picole-reservar');
-  if (!rl.allowed) return jsonResp({ sucesso: false, codigo: 'RATE_LIMIT', mensagem: 'Muitas tentativas. Aguarde.' }, 429);
+  if (!rl.allowed) {
+    await registrarAuditoriaPicole(env, 'reserva_rate_limit', { ip: mascararIp(ip), permitido: false });
+    return jsonResp({ sucesso: false, codigo: 'RATE_LIMIT', mensagem: 'Muitas tentativas. Aguarde.' }, 429);
+  }
 
   const campanha = await garantirCampanhaPicoleAutomatica(env);
   if (!campanha || !campanha.ativo || campanha.pausado) {
@@ -958,12 +993,14 @@ async function handlePicoleReservar(request, env) {
 
   const agora = Date.now();
   const inicio = localHorarioParaUtc(hoje, dia.horarioSorteado);
-  const fimDia = localHorarioParaUtc(hoje, '23:59:59');
+  const fimJanela = localHorarioParaUtc(hoje, `${PICOLE_JANELA_FIM}:00`);
 
   if (agora < inicio) {
+    await registrarAuditoriaPicole(env, 'reserva_antes_inicio', { ip: mascararIp(ip), horarioSorteado: dia.horarioSorteado });
     return jsonResp({ sucesso: false, status: 'inativo', codigo: 'PROMOCAO_NAO_INICIADA', mensagem: 'A promoção ainda não foi ativada hoje.' });
   }
-  if (agora > fimDia) {
+  if (agora > fimJanela) {
+    await registrarAuditoriaPicole(env, 'reserva_fora_janela', { ip: mascararIp(ip), inicioJanela: PICOLE_JANELA_INICIO, fimJanela: PICOLE_JANELA_FIM });
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_EXPIRADA', mensagem: 'A promoção de hoje já encerrou.' });
   }
 
@@ -975,29 +1012,20 @@ async function handlePicoleReservar(request, env) {
   const agora2    = new Date().toISOString();
 
   let doResult;
-  if (env.PICOLE_RESERVA_DO) {
-    // Caminho preferido: Durable Object (atomicidade garantida)
-    const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
-    const doStub = env.PICOLE_RESERVA_DO.get(doId);
-    const doResp = await doStub.fetch(
-      new Request(`https://do-internal/picole?action=reservar&reservaId=${encodeURIComponent(reservaId)}`)
-    );
-    doResult = await doResp.json();
-  } else {
-    // Caminho de fallback: KV com double-check (menos seguro, apenas se DO não estiver configurado)
-    // Aviso: pode haver race condition em casos extremamente raros de concorrência global.
-    const existente = await env.PROMO_KV.get(`picole:winner:${hoje}`);
-    if (existente) {
-      doResult = { ganhou: false };
-    } else {
-      await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
-      await new Promise(r => setTimeout(r, 300));
-      const confirmado = await env.PROMO_KV.get(`picole:winner:${hoje}`);
-      doResult = confirmado === reservaId ? { ganhou: true, reservaId } : { ganhou: false };
-    }
+  if (!env.PICOLE_RESERVA_DO) {
+    await registrarAuditoriaPicole(env, 'reserva_bloqueada_sem_do', { ip: mascararIp(ip) });
+    return jsonResp({ sucesso: false, status: 'inativo', codigo: 'INFRA_INDISPONIVEL', mensagem: 'Promoção temporariamente indisponível. Tente novamente em instantes.' }, 503);
   }
+  // Caminho obrigatório: Durable Object (atomicidade garantida)
+  const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
+  const doStub = env.PICOLE_RESERVA_DO.get(doId);
+  const doResp = await doStub.fetch(
+    new Request(`https://do-internal/picole?action=reservar&reservaId=${encodeURIComponent(reservaId)}`)
+  );
+  doResult = await doResp.json();
 
   if (!doResult.ganhou) {
+    await registrarAuditoriaPicole(env, 'reserva_negada_ja_houve_vencedor', { ip: mascararIp(ip) });
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
   }
 
@@ -1027,6 +1055,7 @@ async function handlePicoleReservar(request, env) {
   dia.vencedorId = reservaId;
   dia.atualizadoEm = agora2;
   await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
+  await registrarAuditoriaPicole(env, 'reserva_vencedora_confirmada', { ip: mascararIp(ip), reservaId, dataLocal: hoje });
 
   return jsonResp({
     sucesso: true,
@@ -1057,16 +1086,24 @@ async function handlePicoleReservaForm(reservaId, request, env) {
   if (!env.PROMO_KV) return jsonResp({ sucesso: false, mensagem: 'Serviço indisponível' }, 503);
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const rl = await checkRateLimit(env, ip, 'picole-form');
-  if (!rl.allowed) return jsonResp({ sucesso: false, mensagem: 'Muitas tentativas. Aguarde.' }, 429);
+  if (!rl.allowed) {
+    await registrarAuditoriaPicole(env, 'form_rate_limit', { ip: mascararIp(ip), reservaId: reservaId || null });
+    return jsonResp({ sucesso: false, mensagem: 'Muitas tentativas. Aguarde.' }, 429);
+  }
 
   const reserva = await env.PROMO_KV.get(`picole:reserva:${reservaId}`, 'json');
-  if (!reserva) return jsonResp({ sucesso: false, mensagem: 'Reserva não encontrada ou expirada.' }, 404);
+  if (!reserva) {
+    await registrarAuditoriaPicole(env, 'form_reserva_inexistente', { ip: mascararIp(ip), reservaId });
+    return jsonResp({ sucesso: false, mensagem: 'Reserva não encontrada ou expirada.' }, 404);
+  }
 
   const hoje = hojeEmSP();
   if (reserva.dataLocal !== hoje) {
+    await registrarAuditoriaPicole(env, 'form_reserva_outro_dia', { ip: mascararIp(ip), reservaId, dataReserva: reserva.dataLocal, hoje });
     return jsonResp({ sucesso: false, mensagem: 'Esta reserva é de outro dia e não pode ser preenchida.' }, 410);
   }
   if (reserva.statusFormulario === 'preenchido') {
+    await registrarAuditoriaPicole(env, 'form_duplicado_rejeitado', { ip: mascararIp(ip), reservaId, codigoRetirada: reserva.codigoRetirada || null });
     // Permite retomada: retorna os dados já salvos
     return jsonResp({
       sucesso: true,
@@ -1084,12 +1121,15 @@ async function handlePicoleReservaForm(reservaId, request, env) {
   const aceiteLGPD = !!body.aceiteLGPD;
 
   if (!validarNomeCompleto(nome)) {
+    await registrarAuditoriaPicole(env, 'form_nome_invalido', { ip: mascararIp(ip), reservaId });
     return jsonResp({ sucesso: false, mensagem: 'Informe seu nome completo (nome e sobrenome).' }, 400);
   }
   if (!celular) {
+    await registrarAuditoriaPicole(env, 'form_celular_invalido', { ip: mascararIp(ip), reservaId });
     return jsonResp({ sucesso: false, mensagem: 'Informe um número de celular válido com DDD.' }, 400);
   }
   if (!aceiteTermos || !aceiteLGPD) {
+    await registrarAuditoriaPicole(env, 'form_termos_nao_aceitos', { ip: mascararIp(ip), reservaId });
     return jsonResp({ sucesso: false, mensagem: 'É necessário aceitar os termos para participar.' }, 400);
   }
 
@@ -1099,28 +1139,29 @@ async function handlePicoleReservaForm(reservaId, request, env) {
   const cont = parseInt(contStr, 10) + 1;
   const codigoRetirada = gerarCodigoRetirada(cont);
 
-  if (env.PICOLE_RESERVA_DO) {
-    const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
-    const doStub = env.PICOLE_RESERVA_DO.get(doId);
-    const doUrl  = `https://do/picole?action=preencherFormulario&reservaId=${encodeURIComponent(reservaId)}&codigoRetirada=${encodeURIComponent(codigoRetirada)}`;
-    const doRes  = await doStub.fetch(doUrl);
-    const doData = await doRes.json();
-    if (!doData.ok) {
-      return jsonResp({ sucesso: false, mensagem: 'Não foi possível confirmar o formulário. Tente novamente.' }, 409);
-    }
-    if (doData.jaPreenchido) {
-      return jsonResp({
-        sucesso: true,
-        codigoRetirada: doData.codigoRetirada,
-        mensagem: 'Cadastro já realizado. Apresente este código na loja para retirar seu picolé.',
-      });
-    }
-    // DO confirmou — agora incrementa o contador (apenas uma vez)
-    await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
-  } else {
-    // Fallback sem DO: persiste mesmo assim
-    await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
+  if (!env.PICOLE_RESERVA_DO) {
+    await registrarAuditoriaPicole(env, 'form_bloqueado_sem_do', { ip: mascararIp(ip), reservaId });
+    return jsonResp({ sucesso: false, mensagem: 'Validação temporariamente indisponível. Tente novamente em instantes.' }, 503);
   }
+  const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
+  const doStub = env.PICOLE_RESERVA_DO.get(doId);
+  const doUrl  = `https://do/picole?action=preencherFormulario&reservaId=${encodeURIComponent(reservaId)}&codigoRetirada=${encodeURIComponent(codigoRetirada)}`;
+  const doRes  = await doStub.fetch(doUrl);
+  const doData = await doRes.json();
+  if (!doData.ok) {
+    await registrarAuditoriaPicole(env, 'form_concorrencia_bloqueada', { ip: mascararIp(ip), reservaId });
+    return jsonResp({ sucesso: false, mensagem: 'Não foi possível confirmar o formulário. Tente novamente.' }, 409);
+  }
+  if (doData.jaPreenchido) {
+    await registrarAuditoriaPicole(env, 'form_ja_preenchido', { ip: mascararIp(ip), reservaId, codigoRetirada: doData.codigoRetirada || null });
+    return jsonResp({
+      sucesso: true,
+      codigoRetirada: doData.codigoRetirada,
+      mensagem: 'Cadastro já realizado. Apresente este código na loja para retirar seu picolé.',
+    });
+  }
+  // DO confirmou — agora incrementa o contador (apenas uma vez)
+  await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
 
   const agora = new Date().toISOString();
   if (!reserva.historico) reserva.historico = [];
@@ -1137,6 +1178,7 @@ async function handlePicoleReservaForm(reservaId, request, env) {
     preenchidoEm: agora,
   };
   await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
+  await registrarAuditoriaPicole(env, 'form_preenchido_com_sucesso', { ip: mascararIp(ip), reservaId, codigoRetirada });
 
   return jsonResp({
     sucesso: true,
