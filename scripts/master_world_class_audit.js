@@ -78,6 +78,18 @@ function auditResponsiveness() {
   return errors === 0;
 }
 
+function auditLauncherPlacementContract() {
+  const widgetJs = fs.readFileSync(path.join(ROOT, 'scripts/ita-bot-widget-v2027.js'), 'utf8');
+  const required = ['obstacleRects', 'mr-lower', 'br', 'ml-lower', 'itabot-launcher-icon-only', 'itabot-launcher-mini'];
+  const missing = required.filter(marker => !widgetJs.includes(marker));
+  if (missing.length === 0) {
+    log('Contrato de posicionamento ItaBot: obstáculos, prioridade meio/baixo e fallbacks compactos presentes.', 'OK');
+    return true;
+  }
+  log(`Contrato de posicionamento ItaBot incompleto: ${missing.join(', ')}`, 'ERRO');
+  return false;
+}
+
 function auditContrast() {
   log('Validando padrões de acessibilidade WCAG AAA...', 'INFO');
   const widgetJs = fs.readFileSync(path.join(ROOT, 'scripts/ita-bot-widget-v2027.js'), 'utf8');
@@ -95,14 +107,17 @@ async function run() {
   
   const assetsOk = await auditAssets();
   const respOk = auditResponsiveness();
+  const placementOk = auditLauncherPlacementContract();
   const contrastOk = auditContrast();
   
   console.log('\n📊 RESUMO DA AUDITORIA:');
   console.log(`- Assets: ${assetsOk ? 'PERFEITO' : 'FALHA'}`);
   console.log(`- Responsividade: ${respOk ? 'PERFEITO' : 'FALHA'}`);
+    console.log(`- Posicionamento ItaBot: ${placementOk ? 'PERFEITO' : 'FALHA'}`);
   console.log(`- Acessibilidade: ${contrastOk ? 'PERFEITO' : 'FALHA'}`);
-  
-  if (assetsOk && respOk && contrastOk) {
+
+  if (assetsOk && respOk && placementOk && contrastOk) {
+
     console.log('\n✅ SITE APROVADO: QUALIDADE MUNDIAL MANTIDA.\n');
     process.exit(0);
   } else {
