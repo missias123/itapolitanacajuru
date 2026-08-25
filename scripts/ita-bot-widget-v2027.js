@@ -134,16 +134,18 @@
     if (document.getElementById('itabot-launcher')) return;
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
-    launcher.className = 'ita-bot-duvidas-btn itabot-btn';
+    // Não herdar o CTA antigo do topo: essa classe usa !important e transforma o launcher em elemento do fluxo.
+    // Os ganchos funcionais permanecem em data-role/data-itabot-open e no id.
+    launcher.className = 'itabot-btn';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
     launcher.setAttribute('data-itabot-open', 'true');
-      launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
+    launcher.setAttribute('aria-label', 'Abrir painel de dúvidas do ItaBot');
     launcher.innerHTML = [
     '<span class="itabot-launcher-robot" aria-hidden="true">',
       '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
     '</span>',
-      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
+      '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDAS · CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
     document.body.appendChild(launcher);
