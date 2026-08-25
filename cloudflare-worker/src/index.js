@@ -85,8 +85,8 @@ const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
 // ═══════════════════════════════════════════════════════════════════════════════
 // ─── DURABLE OBJECT — reserva atômica do Picolé ──────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════════
-// Um DO por dia (idFromName = data local). Garante que somente UMA reserva é
-// criada por dia, independente de quantas requisições simultâneas cheguem.
+// Um DO por campanha e dia (idFromName = campanha:data local). Garante que somente UMA
+// reserva é criada por dia dentro da campanha, independente de requisições simultâneas.
 export class PicoleReservaDO {
   constructor(state, _env) {
     this.state = state;
@@ -102,14 +102,24 @@ export class PicoleReservaDO {
       // enquanto este bloco crítico estiver em execução — leitura + escrita são atômicas.
       return this.state.blockConcurrencyWhile(async () => {
         const existente = await this.state.storage.get('reservaId');
+        const idempotencyKey = url.searchParams.get('idempotencyKey') || '';
         if (existente) {
-          // Já há um vencedor: retorna o reservaId existente para rejeitar o pedido atual
+          const chaveExistente = await this.state.storage.get('idempotencyKey');
+          // Repetição da mesma tentativa: devolve o mesmo vencedor para o Worker
+          // poder reparar uma resposta perdida sem criar outro registro.
+          if (idempotencyKey && chaveExistente && idempotencyKey === chaveExistente) {
+            return new Response(
+              JSON.stringify({ ganhou: true, idempotente: true, reservaId: existente }),
+              { headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+          // Outro cliente/tentativa: há vencedor e a solicitação é rejeitada.
           return new Response(
             JSON.stringify({ ganhou: false, reservaIdVencedor: existente }),
             { headers: { 'Content-Type': 'application/json' } }
           );
         }
-        // Primeiro pedido: registra o novo reservaId de forma atômica
+        // Primeiro pedido: registra reserva e chave de forma atômica.
         const reservaId = url.searchParams.get('reservaId') || '';
         if (!reservaId) {
           return new Response(
@@ -118,6 +128,7 @@ export class PicoleReservaDO {
           );
         }
         await this.state.storage.put('reservaId', reservaId);
+        if (idempotencyKey) await this.state.storage.put('idempotencyKey', idempotencyKey);
         return new Response(
           JSON.stringify({ ganhou: true, reservaId }),
           { headers: { 'Content-Type': 'application/json' } }
@@ -799,7 +810,9 @@ function gerarHorariosDiversificados(n) {
 function montarCampanhaPicole(dataInicio, agoraIso) {
   const dataFim = adicionarDias(dataInicio, PICOLE_CAMPANHA_DIAS - 1);
   return {
-    id: `promo-picole-30-dias-${dataInicio}`,
+    // ID único por ciclo: evita reutilizar o estado do DO se o admin cancelar e
+    // iniciar outra campanha no mesmo dia.
+    id: `promo-picole-30-dias-${dataInicio}-${gerarReservaId().slice(0, 8)}`,
     nome: 'Picolé de Fruta Grátis',
     dataInicio,
     dataFim,
@@ -808,7 +821,14 @@ function montarCampanhaPicole(dataInicio, agoraIso) {
     ativo: true,
     pausado: false,
     produtoDescricao: '1 picolé de fruta, conforme disponibilidade da loja',
-    regras: { umGanhadorPorDia: true, duracaoJanelaSegundos: 5, inicioSorteio: PICOLE_JANELA_INICIO, fimSorteio: PICOLE_JANELA_FIM },
+    regras: {
+      umGanhadorPorDia: true,
+      duracaoJanelaSegundos: 5,
+      inicioSorteio: PICOLE_JANELA_INICIO,
+      fimSorteio: PICOLE_JANELA_FIM,
+      horarioExatoSemRepeticao: true,
+      observacaoHorario: 'um horário exato diferente por dia dentro da faixa; a faixa do mês se repete, não o segundo sorteado',
+    },
     criadoEm: agoraIso,
     atualizadoEm: agoraIso,
   };
@@ -847,25 +867,51 @@ async function criarCampanhaPicole(env, { dataInicio, forcar = false, origem = '
     return { ok: false, error: 'Já existe uma campanha ativa. Use forcar:true para sobrescrever.' };
   }
   const agora = new Date().toISOString();
-  const campanha = { ...montarCampanhaPicole(inicio, agora), origem };
+  const campanha = {
+    ...montarCampanhaPicole(inicio, agora),
+    origem,
+    // Somente a rota administrativa autenticada pode criar uma campanha
+    // operável. GET público e auditorias nunca recebem esta marca.
+    ativacaoAdmin: origem === 'manual',
+    ativacaoAdminEm: origem === 'manual' ? agora : null,
+  };
   const dias = await persistirCampanhaPicole(env, campanha, agora);
   return { ok: true, campanha, dias };
 }
 
-async function garantirCampanhaPicoleAutomatica(env) {
+// Leitura pura do ciclo operacional. Não cria, pausa, expira nem altera dias.
+// A ativação só é válida quando a campanha foi criada pela rota administrativa
+// autenticada e recebeu ativacaoAdmin=true.
+async function obterCampanhaPicole(env) {
   if (!env.PROMO_KV) return null;
-  const hoje = hojeEmSP();
-  const campanha = await env.PROMO_KV.get('picole:campanha', 'json');
-  if (campanha && campanha.ativo && campanha.pausado) return campanha;
-  if (campanha && campanha.ativo && hoje >= campanha.dataInicio && hoje <= campanha.dataFim) return campanha;
-  if (campanha && campanha.ativo && hoje > campanha.dataFim) {
-    campanha.ativo = false;
-    campanha.atualizadoEm = new Date().toISOString();
-    await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
-  }
-  const criada = await criarCampanhaPicole(env, { dataInicio: hoje, forcar: true, origem: 'auto' });
-  if (!criada.ok) return null;
-  return criada.campanha;
+  return env.PROMO_KV.get('picole:campanha', 'json');
+}
+
+function respostaStatusPicole(status, campanha, dia, extra = {}) {
+  const configurada = !!campanha;
+  const ativacaoExplicita = campanha?.ativacaoAdmin === true;
+  const campanhaAtiva = configurada
+    && campanha.ativo === true
+    && ativacaoExplicita
+    && campanha.pausado !== true;
+  const horario = dia && typeof dia.horarioSorteado === 'string' ? dia.horarioSorteado : null;
+  const resposta = {
+    status,
+    campaign_configured: configurada,
+    campaign_active: campanhaAtiva,
+    activation_explicit: ativacaoExplicita,
+    paused: campanha?.pausado === true,
+    schedule_created: !!horario,
+    safeToAnnounce: false,
+    ...extra,
+  };
+  // Recalcula após o spread para que nenhum campo vindo de fora permita
+  // anunciar uma promoção sem os quatro requisitos server-side.
+  resposta.safeToAnnounce = resposta.status === 'ativo'
+    && resposta.campaign_active === true
+    && resposta.paused !== true
+    && resposta.schedule_created === true;
+  return jsonResp(resposta);
 }
 
 // Adiciona N dias a uma data YYYY-MM-DD
@@ -883,16 +929,19 @@ function gerarReservaId() {
 }
 
 // Gera código de retirada legível
-function gerarCodigoRetirada(contador) {
-  const ano = new Date().getFullYear();
-  return `ITP-${ano}-${String(contador).padStart(4, '0')}`;
+function gerarCodigoRetirada(reservaId, dataLocal) {
+  const ano = String(dataLocal || '').slice(0, 4) || String(new Date().getFullYear());
+  const dia = String(dataLocal || '').replace(/-/g, '').slice(-8) || '00000000';
+  // Código determinístico por reserva: não depende de contador KV global,
+  // portanto não há colisão entre formulários de dias diferentes.
+  return `ITP-${ano}-${dia}-${String(reservaId || '').slice(0, 8).toUpperCase()}`;
 }
 
-// Normaliza celular: aceita formatos variados, retorna apenas dígitos (10 ou 11)
+// Normaliza celular: somente celular de Cajuru/região, DDD 16, 11 dígitos.
+// A mesma regra existe no frontend, mas a validação server-side é obrigatória.
 function normalizarCelularPicole(raw) {
   const digits = String(raw || '').replace(/\D/g, '');
-  // Aceita qualquer DDD brasileiro (10 ou 11 dígitos)
-  if (/^\d{10,11}$/.test(digits)) return digits;
+  if (/^169\d{8}$/.test(digits)) return digits;
   return null;
 }
 
@@ -910,62 +959,48 @@ async function handlePicoleStatus(request, env) {
   const rl = await checkRateLimit(env, ip, 'picole-status');
   if (!rl.allowed) return jsonResp({ status: 'inativo', motivo: 'rate_limit' }, 429);
 
-  const campanha = await garantirCampanhaPicoleAutomatica(env);
-  if (!campanha || !campanha.ativo) {
-    return jsonResp({ status: 'campanha_encerrada' });
+  const campanha = await obterCampanhaPicole(env);
+  if (!campanha) {
+    return respostaStatusPicole('inativo', null, null, { motivo: 'campanha_nao_configurada' });
+  }
+  if (campanha.ativacaoAdmin !== true || campanha.ativo !== true) {
+    return respostaStatusPicole('inativo', campanha, null, { motivo: campanha.cancelado ? 'campanha_cancelada' : 'campanha_nao_ativada' });
   }
   if (campanha.pausado) {
-    return jsonResp({ status: 'inativo', motivo: 'campanha_pausada' });
+    return respostaStatusPicole('inativo', campanha, null, { motivo: 'campanha_pausada' });
   }
 
   const hoje = hojeEmSP();
   // Verifica se a campanha ainda está dentro do período
   if (hoje < campanha.dataInicio || hoje > campanha.dataFim) {
-    if (hoje > campanha.dataFim && campanha.ativo) {
-      // Encerra a campanha automaticamente
-      campanha.ativo = false;
-      campanha.atualizadoEm = new Date().toISOString();
-      await env.PROMO_KV.put('picole:campanha', JSON.stringify(campanha));
-    }
-    return jsonResp({ status: 'campanha_encerrada' });
+    return respostaStatusPicole('campanha_encerrada', campanha, null, { motivo: 'fora_do_periodo' });
   }
 
   const dia = await env.PROMO_KV.get(`picole:dia:${hoje}`, 'json');
-  if (!dia) return jsonResp({ status: 'inativo' });
+  if (!dia) return respostaStatusPicole('inativo', campanha, null, { motivo: 'dia_nao_configurado' });
 
   const agora = Date.now();
   const inicio = localHorarioParaUtc(hoje, dia.horarioSorteado);
 
   if (dia.status === 'reservado' || dia.status === 'encerrado') {
-    return jsonResp({ status: 'reservado' });
+    return respostaStatusPicole('reservado', campanha, dia, { horarioSorteado: dia.horarioSorteado, servidorAgora: agora });
   }
 
   // Janela: promoção dura até o fim do dia (ou até ser reservada)
   const fimJanela = inicio + PICOLE_JANELA_DURACAO_MS;
 
   if (agora < inicio) {
-    return jsonResp({ status: 'inativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, servidorAgora: agora });
+    return respostaStatusPicole('inativo', campanha, dia, { horarioSorteado: dia.horarioSorteado, inicioEm: inicio, servidorAgora: agora });
   }
 
   if (agora >= inicio && agora < fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
-    // Atualiza status para ativo se ainda era agendado/aguardando
-    if (dia.status === 'agendado' || dia.status === 'aguardando_inicio') {
-      dia.status = 'ativo';
-      dia.atualizadoEm = new Date().toISOString();
-      await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
-    }
-    return jsonResp({ status: 'ativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
+    // GET é somente leitura. A reserva POST continua sendo a operação que
+    // transforma o dia em reservado após a confirmação atômica no DO.
+    return respostaStatusPicole('ativo', campanha, dia, { horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
   }
 
-  // Passou do fim do dia sem reserva → expira
-  if (agora >= fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
-    dia.status = 'expirado';
-    dia.atualizadoEm = new Date().toISOString();
-    await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
-    return jsonResp({ status: 'inativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
-  }
-
-  return jsonResp({ status: 'inativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
+  // Após a janela, informa expiração sem gravar estado em um GET.
+  return respostaStatusPicole('inativo', campanha, dia, { motivo: 'janela_expirada', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
 }
 
 async function handlePicoleReservar(request, env) {
@@ -977,8 +1012,8 @@ async function handlePicoleReservar(request, env) {
     return jsonResp({ sucesso: false, codigo: 'RATE_LIMIT', mensagem: 'Muitas tentativas. Aguarde.' }, 429);
   }
 
-  const campanha = await garantirCampanhaPicoleAutomatica(env);
-  if (!campanha || !campanha.ativo || campanha.pausado) {
+  const campanha = await obterCampanhaPicole(env);
+  if (!campanha || campanha.ativacaoAdmin !== true || campanha.ativo !== true || campanha.pausado) {
     return jsonResp({ sucesso: false, status: 'campanha_encerrada', codigo: 'CAMPANHA_INATIVA', mensagem: 'A promoção não está disponível no momento.' });
   }
 
@@ -1010,6 +1045,10 @@ async function handlePicoleReservar(request, env) {
   // blockConcurrencyWhile dentro do DO garante atomicidade total —
   // impossível duas requisições simultâneas vencerem.
   const reservaId = gerarReservaId();
+  const idempotencyHeader = request.headers.get('X-Idempotency-Key') || '';
+  const idempotencyKey = /^[A-Za-z0-9_-]{16,80}$/.test(idempotencyHeader)
+    ? idempotencyHeader
+    : reservaId;
   const agora2    = new Date().toISOString();
 
   let doResult;
@@ -1018,10 +1057,10 @@ async function handlePicoleReservar(request, env) {
     return jsonResp({ sucesso: false, status: 'inativo', codigo: 'INFRA_INDISPONIVEL', mensagem: 'Promoção temporariamente indisponível. Tente novamente em instantes.' }, 503);
   }
   // Caminho obrigatório: Durable Object (atomicidade garantida)
-  const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
+  const doId   = env.PICOLE_RESERVA_DO.idFromName(`${campanha.id}:${hoje}`);
   const doStub = env.PICOLE_RESERVA_DO.get(doId);
   const doResp = await doStub.fetch(
-    new Request(`https://do-internal/picole?action=reservar&reservaId=${encodeURIComponent(reservaId)}`)
+    new Request(`https://do-internal/picole?action=reservar&reservaId=${encodeURIComponent(reservaId)}&idempotencyKey=${encodeURIComponent(idempotencyKey)}`)
   );
   doResult = await doResp.json();
 
@@ -1030,12 +1069,23 @@ async function handlePicoleReservar(request, env) {
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_ENCERRADA', mensagem: 'A promoção de hoje já foi encerrada. Tente novamente amanhã.' });
   }
 
+  // Se a resposta anterior se perdeu depois do DO confirmar, a mesma chave
+  // retorna aqui com idempotente=true. Reentrega o mesmo resultado e, caso a
+  // falha tenha ocorrido antes do KV, repara o registro sem gerar novo vencedor.
+  const reservaIdConfirmada = doResult.reservaId || reservaId;
+  if (doResult.idempotente) {
+    const existente = await env.PROMO_KV.get(`picole:reserva:${reservaIdConfirmada}`, 'json');
+    if (existente) {
+      return jsonResp({ sucesso: true, status: 'reservado', reservaId: reservaIdConfirmada, idempotente: true, mensagem: 'Sua reserva já foi confirmada. Preencha seus dados para retirar seu picolé.' }, 200);
+    }
+  }
+
   // Somos o vencedor! Persiste o registro completo no KV.
   const reserva = {
-    reservaId,
+    reservaId: reservaIdConfirmada,
     campanhaId: campanha.id,
     dataLocal: hoje,
-    ipCliente: ip,
+    ipCliente: mascararIp(ip),
     criadoEm: agora2,
     atualizadoEm: agora2,
     statusFormulario: 'aguardando',   // 'aguardando' | 'preenchido'
@@ -1046,22 +1096,22 @@ async function handlePicoleReservar(request, env) {
   };
 
   // Persiste a reserva no KV (TTL generoso — 25 horas para cobrir plenamente o dia)
-  await env.PROMO_KV.put(`picole:reserva:${reservaId}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
+  await env.PROMO_KV.put(`picole:reserva:${reservaIdConfirmada}`, JSON.stringify(reserva), { expirationTtl: 90_000 });
 
   // Índice secundário KV: espelha o winner para o status endpoint e admin
-  await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaId, { expirationTtl: 90_000 });
+  await env.PROMO_KV.put(`picole:winner:${hoje}`, reservaIdConfirmada, { expirationTtl: 90_000 });
 
   // Atualiza o registro do dia
   dia.status = 'reservado';
-  dia.vencedorId = reservaId;
+  dia.vencedorId = reservaIdConfirmada;
   dia.atualizadoEm = agora2;
   await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
-  await registrarAuditoriaPicole(env, 'reserva_vencedora_confirmada', { ip: mascararIp(ip), reservaId, dataLocal: hoje });
+  await registrarAuditoriaPicole(env, 'reserva_vencedora_confirmada', { ip: mascararIp(ip), reservaId: reservaIdConfirmada, dataLocal: hoje });
 
   return jsonResp({
     sucesso: true,
     status: 'reservado',
-    reservaId,
+    reservaId: reservaIdConfirmada,
     mensagem: 'Você foi a primeira pessoa! Preencha seus dados para retirar seu picolé.',
   }, 201);
 }
@@ -1136,15 +1186,13 @@ async function handlePicoleReservaForm(reservaId, request, env) {
 
   // ── Gera código de retirada e grava via DO (atômico) ──────────────────────
   // O DO garante que dois envios simultâneos não geram dois códigos diferentes.
-  const contStr = await env.PROMO_KV.get('picole:meta:contador_retiradas') || '0';
-  const cont = parseInt(contStr, 10) + 1;
-  const codigoRetirada = gerarCodigoRetirada(cont);
+  const codigoRetirada = gerarCodigoRetirada(reservaId, hoje);
 
   if (!env.PICOLE_RESERVA_DO) {
     await registrarAuditoriaPicole(env, 'form_bloqueado_sem_do', { ip: mascararIp(ip), reservaId });
     return jsonResp({ sucesso: false, mensagem: 'Validação temporariamente indisponível. Tente novamente em instantes.' }, 503);
   }
-  const doId   = env.PICOLE_RESERVA_DO.idFromName(hoje);
+  const doId   = env.PICOLE_RESERVA_DO.idFromName(`${reserva.campanhaId}:${hoje}`);
   const doStub = env.PICOLE_RESERVA_DO.get(doId);
   const doUrl  = `https://do/picole?action=preencherFormulario&reservaId=${encodeURIComponent(reservaId)}&codigoRetirada=${encodeURIComponent(codigoRetirada)}`;
   const doRes  = await doStub.fetch(doUrl);
@@ -1161,12 +1209,9 @@ async function handlePicoleReservaForm(reservaId, request, env) {
       mensagem: 'Cadastro já realizado. Apresente este código na loja para retirar seu picolé.',
     });
   }
-  // DO confirmou — agora incrementa o contador (apenas uma vez)
-  await env.PROMO_KV.put('picole:meta:contador_retiradas', String(cont));
-
   const agora = new Date().toISOString();
   if (!reserva.historico) reserva.historico = [];
-  reserva.historico.push({ evento: 'formulario_preenchido', em: agora, ip });
+  reserva.historico.push({ evento: 'formulario_preenchido', em: agora, ip: mascararIp(ip) });
   reserva.statusFormulario = 'preenchido';
   reserva.codigoRetirada = codigoRetirada;
   reserva.atualizadoEm = agora;

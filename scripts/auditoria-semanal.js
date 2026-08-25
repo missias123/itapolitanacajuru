@@ -167,14 +167,31 @@ async function checkPublicSurface() {
   const promo = await request(API_STATUS, { headers: { accept: 'application/json' } });
   let json = null;
   try { json = promo.body ? JSON.parse(promo.body) : null; } catch (_) { /* tratado abaixo */ }
-  const promoOk = promo.ok && promo.status === 200 && json && typeof json === 'object';
+  const promoHttpOk = promo.ok && promo.status === 200 && json && typeof json === 'object';
+  const camposObrigatorios = ['campaign_configured', 'campaign_active', 'activation_explicit', 'paused', 'schedule_created', 'safeToAnnounce'];
+  const contratoOk = promoHttpOk && camposObrigatorios.every((campo) => typeof json[campo] === 'boolean');
+  const ativoSeguro = !promoHttpOk || json.status !== 'ativo' || (
+    json.campaign_active === true
+    && json.activation_explicit === true
+    && json.paused === false
+    && json.schedule_created === true
+    && json.safeToAnnounce === true
+  );
+  const promoOk = promoHttpOk && contratoOk && ativoSeguro;
   const promoBlocked = promo.ok && promo.status === 404;
+  const promoDetail = promoOk
+    ? `Endpoint respondeu JSON HTTP 200 em ${promo.ms} ms; contrato server-authoritative válido; nenhuma mutação foi realizada.`
+    : promoHttpOk && !contratoOk
+      ? `Endpoint respondeu HTTP 200, mas faltam campos booleanos do contrato: ${camposObrigatorios.filter((campo) => typeof json[campo] !== 'boolean').join(', ')}. Não anunciar premiação ativa.`
+      : promoHttpOk && !ativoSeguro
+        ? 'Endpoint declarou status ativo sem ativação explícita e safeToAnnounce completo. Não anunciar premiação.'
+        : `Endpoint não está validado como operacional: ${promo.ok ? `HTTP ${promo.status}` : promo.error}. Não anunciar premiação ativa.`;
   add({
     id: 'promocao-status-publico',
     domain: 'Promoção e integridade operacional',
     severity: promoOk ? 'info' : 'critical',
     status: promoOk ? 'APROVADO' : promoBlocked ? 'BLOQUEADO' : 'PENDENTE',
-    detail: promoOk ? `Endpoint respondeu JSON HTTP 200 em ${promo.ms} ms; nenhuma mutação foi realizada.` : `Endpoint não está validado como operacional: ${promo.ok ? `HTTP ${promo.status}` : promo.error}. Não anunciar premiação ativa.`,
+    detail: promoDetail,
     evidence: [API_STATUS, promo.body ? promo.body.slice(0, 500) : 'sem corpo'],
   });
 }

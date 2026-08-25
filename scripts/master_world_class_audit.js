@@ -24,7 +24,8 @@ const PAGINAS = [
 ];
 
 const ASSETS_CRITICOS = [
-  'images/itabot-3d-v2027.png',
+  'images/itabot-3d-v2027.webp',
+  'images/itabot-3d-v2027.png', // fallback compatível preservado
   'scripts/ita-bot-widget-v2027.js',
   'scripts/ita-bot-engine.js',
   'styles/fueap-premium.css'

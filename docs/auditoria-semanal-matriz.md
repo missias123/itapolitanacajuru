@@ -16,7 +16,7 @@ A auditoria semanal da Itapolitana deve avaliar o produto digital e a operação
 | SEO/PWA | `lang`, title/description, canonical, OG, schema, manifest, theme-color, ícones e offline | Auditoria estática por página | Meta essencial ausente em página principal |
 | Segurança | HTTPS, HSTS, nosniff, Referrer-Policy, CSP, mixed content, exposição de credenciais, inputs e autenticação | Headers públicos, scan estático e testes não destrutivos | Segredo exposto, mixed content, autenticação quebrada ou endpoint inseguro |
 | ItaBot | Um launcher, imagem 3D transparente, LED, posição fixa, áreas livres, ausência no rodapé/colisões e fluxo Dúvidas | DOM, estilo computado, posições em scroll e screenshot | Duplicidade, cobertura de conteúdo/navegação ou fluxo quebrado |
-| Promoção | Endpoint server-authoritative, janela de 5s, um vencedor diário, idempotência, formulário separado e retirada | GET seguro de status; testes isolados sem premiação real | Endpoint 404, lógica não verificável ou possibilidade de dupla premiação |
+| Promoção | Endpoint server-authoritative, janela de 5s, um vencedor diário, idempotência, formulário separado e retirada | GET seguro de status com `campaign_configured`, `campaign_active`, `activation_explicit`, `paused`, `schedule_created` e `safeToAnnounce`; testes isolados sem premiação real | GET com efeitos colaterais, ativação automática, endpoint 404, lógica não verificável ou possibilidade de dupla premiação |
 | Catálogo e SKU | Fonte única de verdade, sequência por tipo, sem sabores inventados e paridade com admin | Comparação JSON↔scripts↔renderização | Divergência de produto, SKU ou preço |
 | Publicação e cache | Commit remoto, Pages build, hashes, query strings, Service Worker e cache | URL pública, workflow e recursos carregados | Build falho, versão antiga ou rota não publicada |
 
@@ -26,7 +26,7 @@ A auditoria semanal da Itapolitana deve avaliar o produto digital e a operação
 
 ## Princípios de execução
 
-A coleta é somente leitura: não salva no admin, não envia WhatsApp, não reserva prêmio, não cria vencedor e não altera dados. Testes de promoção devem usar ambiente isolado, fixture ou endpoint explicitamente seguro; nunca se deve testar concorrência contra a campanha pública. Cada execução deve produzir `auditoria-semanal-latest.json` e `auditoria-semanal-latest.md`, além dos artefatos de teste e do commit auditado.
+A coleta é somente leitura: não salva no admin, não envia WhatsApp, não reserva prêmio, não cria vencedor, não cria campanha e não altera dias ou estado. O GET público de status precisa permanecer sem escritas em `PROMO_KV`; qualquer ativação deve ser feita por rota administrativa autenticada. Testes de promoção devem usar ambiente isolado, fixture ou endpoint explicitamente seguro; nunca se deve testar concorrência contra a campanha pública. Cada execução deve produzir `auditoria-semanal-latest.json` e `auditoria-semanal-latest.md`, além dos artefatos de teste e do commit auditado.
 
 ## Referências normativas
 

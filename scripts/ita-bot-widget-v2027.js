@@ -162,7 +162,7 @@
     launcher.setAttribute('aria-label', 'Abrir painel de dúvidas do ItaBot');
     launcher.innerHTML = [
     '<span class="itabot-launcher-robot" aria-hidden="true">',
-      '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
+      '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.webp?v=20260825-picole-webp" data-fallback="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.onerror=null;this.src=this.dataset.fallback" alt="" draggable="false"/>',
     '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDAS · CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
@@ -451,8 +451,8 @@
         'Esta é a promoção relâmpago do ItaBot. Ela é separada do sorteio mensal da torta e usa um formulário exclusivo.',
         'Quando o servidor confirmar a ativação e o LED mostrar “ENCONTRE UM PICOLÉ · CLIQUE AQUI”, a janela fica aberta por exatamente 5 segundos.',
         'O primeiro clique válido do dia abre o formulário exclusivo. Existe somente um vencedor por dia. Depois do clique, o ItaBot volta para Dúvidas.',
-        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada pelo WhatsApp.',
-        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia.'
+        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada na tela. Um botão abre o WhatsApp com a mensagem de agendamento; é necessário tocar em “Enviar”.',
+        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia. O segundo exato sorteado muda a cada dia e não se repete no ciclo de 30 dias.'
       ],
       linkTexto: 'Ver regras completas na Promoção',
       linkUrl: 'promocao.html'
