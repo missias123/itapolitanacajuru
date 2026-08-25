@@ -175,3 +175,25 @@ Um commit chamado “restaurado” não é prova de que o recurso foi restaurado
 ---
 
 **Resumo memorável:** referência ativa nunca é lixo; limpeza sem auditoria não é segura; publicação só termina depois do teste online.
+
+
+## 13. Regra Permanente de Benchmark e Construção World Class
+
+A partir desta consolidação, toda solicitação de alteração do site feita pelo chat deve ser precedida por pesquisa comparativa em grandes sites de alimentação, delivery e vendas online, usando fontes oficiais e referências técnicas confiáveis sempre que disponíveis. A análise deve comparar o padrão encontrado com o código, as rotas, os fluxos e a experiência atuais da Itapolitana, registrando a adaptação recomendada, os riscos e os critérios de aceitação antes da execução.
+
+A meta do projeto é **qualidade 100/100**, medida por critérios verificáveis de funcionalidade, responsividade em Android/iOS/tablet/desktop, acessibilidade, desempenho, segurança, SEO, integridade de dependências, ausência de duplicidade e experiência visual. Nenhuma nota ou restauração pode ser declarada sem validação no código efetivo, no repositório, na publicação, nas respostas HTTP e na renderização real.
+
+A construção deve preservar a fonte única de dados por SKU, a identidade Premium Glossy, a navegação por cabeçalho único, o ItaBot 3D transparente com um único launcher e posicionamento seguro fora de conteúdo/rodapé, além da separação entre dúvidas e promoção. IDs, handlers, funções de negócio, páginas referenciadas, iframes e arquivos públicos não podem ser removidos ou alterados sem auditoria de dependências, cópia anterior, rollback e testes antes/depois.
+
+Todo deploy deve ser bloqueado quando houver 404, dependência ausente, erro de sintaxe, token exposto, duplicidade visual, quebra de responsividade ou regressão funcional. Após a publicação, é obrigatório conferir commit remoto, Pages, Cloudflare, cache/versionamento do recurso e comportamento visual em múltiplas larguras.
+
+**Regra de decisão:** pesquisar primeiro; comparar com referências globais; propor a adaptação; aplicar somente com evidência; testar antes e depois; publicar apenas com confirmação online; manter rollback.
+
+
+## 14. Regra de Sincronização Integral entre Camadas
+
+Toda mudança no projeto deve ser sincronizada e validada entre memória, documentação, código local, dados, Admin, GitHub, GitHub Pages, Cloudflare, Worker, KV, Durable Object, site público, Service Worker, cache e recursos versionados, conforme a participação de cada camada na mudança.
+
+O procedimento obrigatório é: auditar o estado inicial; criar backup; alterar; testar localmente; publicar; confirmar commit remoto e build; verificar hashes e respostas HTTP; abrir o recurso no navegador com consulta de auditoria; testar os fluxos e larguras relevantes; registrar evidências; e somente então declarar a mudança concluída. Se uma camada não puder ser verificada, o status permanece pendente.
+
+Nenhuma divergência entre Admin e dados, entre código e GitHub, entre GitHub Pages e domínio público, entre Worker e bindings, ou entre recurso publicado e cache do dispositivo deve ser ignorada. Mudanças com rota 404, dependência ausente, build incompleto, recurso antigo carregado, duplicidade visual, regressão funcional ou teste não realizado devem ser bloqueadas até a sincronização ser restabelecida.
