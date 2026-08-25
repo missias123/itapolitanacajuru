@@ -191,7 +191,7 @@
         launcher.style.filter = '';
       }
       if (ledTrack) {
-        ledTrack.textContent = 'DÚVIDA — CLIQUE AQUI   •   ';
+        ledTrack.textContent = 'DÚVIDAS · CLIQUE AQUI   •   ';
         ledTrack.style.color = '';
       }
     } else {
@@ -202,7 +202,7 @@
         launcher.style.filter = '';
       }
       if (ledTrack) {
-        ledTrack.textContent = 'DÚVIDA — CLIQUE AQUI   •   ';
+        ledTrack.textContent = 'DÚVIDAS · CLIQUE AQUI   •   ';
         ledTrack.style.color = '';
       }
     }
