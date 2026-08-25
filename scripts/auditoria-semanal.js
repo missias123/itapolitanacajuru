@@ -237,6 +237,9 @@ function writeReports(summary) {
   checkLocalFiles();
   run('quality-audit', process.execPath, ['scripts/quality-audit.js', '--fail']);
   run('dependency-audit', process.execPath, ['scripts/dependency-audit.js']);
+  if (fs.existsSync(path.join(ROOT, 'scripts', 'auto-corrigir-regras.js'))) {
+    run('auto-correcoes-regras-check', process.execPath, ['scripts/auto-corrigir-regras.js', '--check']);
+  }
   run('admin-espelho-gate', process.execPath, ['scripts/admin-espelho-gate.js']);
   run('auditoria-robusta-admin', process.execPath, ['scripts/auditoria-robusta-admin.js']);
   if (fs.existsSync(path.join(ROOT, 'scripts', 'check-exposed-tokens.js'))) {

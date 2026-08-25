@@ -1,4 +1,4 @@
-name = "itapolitana-api"
+name = "itapolitanacajuru"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
@@ -20,20 +20,16 @@ id         = "7b024fbb09224336b65bfc5aa0080a56"
 preview_id = "7b024fbb09224336b65bfc5aa0080a56"
 
 # ─── KV namespace para a promoção do Picolé (30 dias) ─────────────────────────
-# INSTRUÇÕES: antes de fazer deploy, crie o namespace no dashboard do Cloudflare:
-#   1. Acesse Workers & Pages → KV → Create namespace → nome: "PROMO_KV"
-#   2. Copie o ID gerado e substitua os dois valores abaixo.
-#   3. Faça o mesmo para o ambiente de produção (env.production) mais abaixo.
+# Namespace criado na conta Cloudflare de produção: PROMO_KV (id abaixo).
+# O mesmo namespace é usado no ambiente de preview para impedir divergência de configuração.
 [[kv_namespaces]]
 binding    = "PROMO_KV"
-id         = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
-preview_id = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
+id         = "883b9fd1e89d445e8257f930cb26a3c1"
+preview_id = "883b9fd1e89d445e8257f930cb26a3c1"
 
 # ─── Durable Object para reserva atômica do Picolé ────────────────────────────
-# REQUISITO: Cloudflare Workers Paid Plan (mínimo US$5/mês — Workers Paid).
-# INSTRUÇÕES: o Cloudflare cria a classe automaticamente via a migration abaixo
-# na primeira implantação. Nenhuma ação manual adicional é necessária além
-# de ter o plano pago ativo na conta.
+# A classe é registrada pela migration abaixo no primeiro deploy.
+# Validar limites/plano da conta no Cloudflare antes de ativar a campanha real.
 [durable_objects]
 bindings = [
   { name = "PICOLE_RESERVA_DO", class_name = "PicoleReservaDO" }
@@ -68,8 +64,8 @@ id         = "7b024fbb09224336b65bfc5aa0080a56"
 preview_id = "7b024fbb09224336b65bfc5aa0080a56"
 [[env.production.kv_namespaces]]
 binding    = "PROMO_KV"
-id         = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
-preview_id = "SUBSTITUA_PELO_ID_DO_PROMO_KV"
+id         = "883b9fd1e89d445e8257f930cb26a3c1"
+preview_id = "883b9fd1e89d445e8257f930cb26a3c1"
 
 [env.production.durable_objects]
 bindings = [
@@ -77,6 +73,7 @@ bindings = [
 ]
 
 # ─── Rota personalizada — domínio de produção ─────────────────────────────────
+# O nome do Worker deve permanecer alinhado ao serviço já roteado pela API pública.
 # NOTA: Requer que a zona itapolitanacajuru.com.br esteja gerenciada pelo Cloudflare
 # e que exista um registro DNS para api.itapolitanacajuru.com.br (ex: A 192.0.2.1, proxied).
 [[env.production.routes]]
