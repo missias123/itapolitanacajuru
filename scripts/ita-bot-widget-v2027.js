@@ -117,9 +117,9 @@
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
       /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
-      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
+      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(78px + env(safe-area-inset-bottom, 0px)); width:132px; height:170px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:108px; flex-basis:108px; width:104px; height:108px; } .itabot-launcher-led-panel { -webkit-flex:0 0 21px; flex:0 0 21px; width:84%; min-width:78px; min-height:21px; height:21px; margin-top:-6px; padding:0 5px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:19px; } }',
       /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
-      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(80px + env(safe-area-inset-bottom, 0px)); width:164px; height:220px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:148px; flex-basis:148px; width:140px; height:148px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
+      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(12px + env(safe-area-inset-right, 0px)); bottom:calc(84px + env(safe-area-inset-bottom, 0px)); width:148px; height:196px; max-width:calc(100vw - 24px); } .itabot-launcher-robot { -webkit-flex-basis:128px; flex-basis:128px; width:122px; height:128px; } .itabot-launcher-led-panel { -webkit-flex:0 0 23px; flex:0 0 23px; width:82%; min-width:82px; min-height:23px; height:23px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:11px; line-height:21px; } }',
       /* Tablet: 768px – 1024px (iPad, Android tablet) */
       '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(16px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:176px; height:280px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:-9px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } }',
       /* Desktop: 1025px+ (PC, Mac, Chrome, Firefox, Edge, Safari) */
@@ -199,10 +199,10 @@
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
       launcher.classList.remove('itabot-launcher-icon-only');
-      // Tamanhos dobrados para corresponder ao CSS
-      // mobile ≤480px: 140×180, phablet 481-767: 164×220, tablet 768-1024: 176×280, desktop: 188×300
-      var fullW = vw <= 480 ? 140 : (vw <= 767 ? 164 : (vw <= 1024 ? 176 : 188));
-      var fullH = vw <= 480 ? 180 : (vw <= 767 ? 220 : (vw <= 1024 ? 280 : 300));
+      // Tamanhos reais do launcher; a posição é escolhida dinamicamente.
+      // mobile ≤480px: 132×170, phablet 481-767: 148×196, tablet 768-1024: 176×280, desktop: 188×300
+      var fullW = vw <= 480 ? 132 : (vw <= 767 ? 148 : (vw <= 1024 ? 176 : 188));
+      var fullH = vw <= 480 ? 170 : (vw <= 767 ? 196 : (vw <= 1024 ? 280 : 300));
       var iconW = fullW, iconH = fullH;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
       var margin = narrow ? 10 : 20;
@@ -219,6 +219,8 @@
         if (fixedRect.bottom >= vh - 2 && fixedRect.top > 0) overlayBottom = Math.max(overlayBottom, vh - fixedRect.top + 12);
       }
       var bottomY = Math.max(24, vh - fullH - overlayBottom - 16);
+      // O itaBot volta a flutuar pelo conteúdo: começa no rodapé, mas pode
+      // subir para uma área livre quando o rodapé ou a viewport estiver ocupada.
       var candidates = [
         [vw - fullW - margin, bottomY, 'br'],
         [margin, bottomY, 'bl'],

@@ -34,6 +34,7 @@
   var _pendingUnloadGuard = false; // true enquanto há reserva sem formulário preenchido
   var _janelaAtiva = false;        // true durante os 5 segundos de janela de clique
   var _janela5sTimer = null;       // timer que encerra a janela de 5 segundos
+  var _janelaPrecisaoTimer = null; // agenda a abertura pelo horário do servidor
   var _enviandoFormulario = false; // trava contra duplo envio local
 
   // ── Armazenamento local — SOMENTE flags de controle diário (nunca dados do form) ──
@@ -207,6 +208,32 @@
     }
   }
 
+  // Agenda a janela com base no relógio do servidor; o polling fica apenas como
+  // reconciliação. Assim, uma janela de 5s não é perdida por um intervalo de 20s.
+  function _agendarJanelaPrecisao(data) {
+    if (!data || !data.inicioEm || _ganhouHojeNesteDispositivo() || _clicouHojeNesteDispositivo()) return;
+    if (_janelaPrecisaoTimer) { clearTimeout(_janelaPrecisaoTimer); _janelaPrecisaoTimer = null; }
+    var servidorAgora = Number(data.servidorAgora) || Date.now();
+    var deslocamento = servidorAgora - Date.now();
+    var inicioEm = Number(data.inicioEm);
+    var atraso = inicioEm - (Date.now() + deslocamento);
+    if (!Number.isFinite(atraso) || atraso < -5000 || atraso > 86400000) return;
+    _janelaPrecisaoTimer = setTimeout(function () {
+      _janelaPrecisaoTimer = null;
+      if (_ganhouHojeNesteDispositivo() || _clicouHojeNesteDispositivo()) return;
+      _janelaAtiva = true;
+      _estado = 'ativo';
+      _atualizarRobo('ativo');
+      if (_janela5sTimer) clearTimeout(_janela5sTimer);
+      _janela5sTimer = setTimeout(function () {
+        _janelaAtiva = false;
+        _janela5sTimer = null;
+        if (!_painelAberto) _atualizarRobo('inativo');
+      }, 5000);
+      _consultarStatus();
+    }, Math.max(0, atraso));
+  }
+
   // ── Polling do estado ────────────────────────────────────────────────────────
   function _consultarStatus() {
     if (_polling) return;
@@ -220,14 +247,17 @@
       .then(function (data) {
         _polling = false;
         var novoEstado = data.status || 'inativo';
-        // Guarda de UX no cliente; a segurança real de horário e vencedor único é validada no backend.
-        if (novoEstado === 'ativo' && (!_estaNoHorarioPromo() || _ganhouHojeNesteDispositivo())) {
+        if (novoEstado === 'inativo' && data.inicioEm) _agendarJanelaPrecisao(data);
+        // O servidor é a única fonte de verdade para horário e vencedor.
+        // Não usamos o relógio/fuso do aparelho para esconder uma janela válida.
+        if (novoEstado === 'ativo' && _ganhouHojeNesteDispositivo()) {
           novoEstado = 'inativo';
         }
 
         if (novoEstado === 'campanha_encerrada') {
           _estado = 'campanha_encerrada';
           _janelaAtiva = false;
+          if (_janelaPrecisaoTimer) { clearTimeout(_janelaPrecisaoTimer); _janelaPrecisaoTimer = null; }
           if (_janela5sTimer) { clearTimeout(_janela5sTimer); _janela5sTimer = null; }
           _atualizarRobo('inativo');
           _pararPolling();
@@ -238,12 +268,15 @@
         if (novoEstado === 'ativo' && !_janelaAtiva) {
           _janelaAtiva = true;
           _atualizarRobo('ativo');
+          var servidorAgora = Number(data.servidorAgora) || Date.now();
+          var deslocamento = servidorAgora - Date.now();
+          var restante = data.fimEm ? Number(data.fimEm) - (Date.now() + deslocamento) : 5000;
           _janela5sTimer = setTimeout(function () {
             _janelaAtiva = false;
             _janela5sTimer = null;
             // Reverte LED se o painel não foi aberto
             if (!_painelAberto) _atualizarRobo('inativo');
-          }, 5000);
+          }, Math.max(0, Math.min(5000, restante)));
         }
 
         // Estado voltou para não-ativo (vencedor encontrado etc.)

@@ -712,7 +712,8 @@ function handleAdminAuth(request, env) {
 const SP_TIMEZONE = 'America/Sao_Paulo';
 const PICOLE_CAMPANHA_DIAS = 30;
 const PICOLE_JANELA_INICIO = '11:00';
-const PICOLE_JANELA_FIM = '20:00';
+const PICOLE_JANELA_FIM = '20:00';   // limite para sortear horários
+const PICOLE_JANELA_DURACAO_MS = 5_000; // janela válida de clique: exatamente 5s
 const PICOLE_AUDITORIA_TTL_S = 7 * 24 * 3600;
 
 // Retorna a data local em SP no formato YYYY-MM-DD
@@ -807,7 +808,7 @@ function montarCampanhaPicole(dataInicio, agoraIso) {
     ativo: true,
     pausado: false,
     produtoDescricao: '1 picolé de fruta, conforme disponibilidade da loja',
-    regras: { umGanhadorPorDia: true, inicioJanela: PICOLE_JANELA_INICIO, fimJanela: PICOLE_JANELA_FIM },
+    regras: { umGanhadorPorDia: true, duracaoJanelaSegundos: 5, inicioSorteio: PICOLE_JANELA_INICIO, fimSorteio: PICOLE_JANELA_FIM },
     criadoEm: agoraIso,
     atualizadoEm: agoraIso,
   };
@@ -940,31 +941,31 @@ async function handlePicoleStatus(request, env) {
   }
 
   // Janela: promoção dura até o fim do dia (ou até ser reservada)
-  const fimJanela = localHorarioParaUtc(hoje, `${PICOLE_JANELA_FIM}:00`);
+  const fimJanela = inicio + PICOLE_JANELA_DURACAO_MS;
 
   if (agora < inicio) {
-    return jsonResp({ status: 'inativo' });
+    return jsonResp({ status: 'inativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, servidorAgora: agora });
   }
 
-  if (agora >= inicio && agora <= fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
+  if (agora >= inicio && agora < fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
     // Atualiza status para ativo se ainda era agendado/aguardando
     if (dia.status === 'agendado' || dia.status === 'aguardando_inicio') {
       dia.status = 'ativo';
       dia.atualizadoEm = new Date().toISOString();
       await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
     }
-    return jsonResp({ status: 'ativo' });
+    return jsonResp({ status: 'ativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
   }
 
   // Passou do fim do dia sem reserva → expira
-  if (agora > fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
+  if (agora >= fimJanela && dia.status !== 'reservado' && dia.status !== 'encerrado') {
     dia.status = 'expirado';
     dia.atualizadoEm = new Date().toISOString();
     await env.PROMO_KV.put(`picole:dia:${hoje}`, JSON.stringify(dia));
-    return jsonResp({ status: 'inativo' });
+    return jsonResp({ status: 'inativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
   }
 
-  return jsonResp({ status: 'inativo' });
+  return jsonResp({ status: 'inativo', horarioSorteado: dia.horarioSorteado, inicioEm: inicio, fimEm: fimJanela, servidorAgora: agora });
 }
 
 async function handlePicoleReservar(request, env) {
@@ -993,13 +994,13 @@ async function handlePicoleReservar(request, env) {
 
   const agora = Date.now();
   const inicio = localHorarioParaUtc(hoje, dia.horarioSorteado);
-  const fimJanela = localHorarioParaUtc(hoje, `${PICOLE_JANELA_FIM}:00`);
+  const fimJanela = inicio + PICOLE_JANELA_DURACAO_MS;
 
   if (agora < inicio) {
     await registrarAuditoriaPicole(env, 'reserva_antes_inicio', { ip: mascararIp(ip), horarioSorteado: dia.horarioSorteado });
     return jsonResp({ sucesso: false, status: 'inativo', codigo: 'PROMOCAO_NAO_INICIADA', mensagem: 'A promoção ainda não foi ativada hoje.' });
   }
-  if (agora > fimJanela) {
+  if (agora >= fimJanela) {
     await registrarAuditoriaPicole(env, 'reserva_fora_janela', { ip: mascararIp(ip), inicioJanela: PICOLE_JANELA_INICIO, fimJanela: PICOLE_JANELA_FIM });
     return jsonResp({ sucesso: false, status: 'encerrado', codigo: 'PROMOCAO_EXPIRADA', mensagem: 'A promoção de hoje já encerrou.' });
   }
