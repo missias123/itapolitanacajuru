@@ -36,6 +36,7 @@
   var _janela5sTimer = null;       // timer que encerra a janela de 5 segundos
   var _janelaPrecisaoTimer = null; // agenda a abertura pelo horário do servidor
   var _enviandoFormulario = false; // trava contra duplo envio local
+  var _reservaTentativaKey = null;  // chave não pessoal, reutilizada nesta tentativa
 
   // ── Armazenamento local — SOMENTE flags de controle diário (nunca dados do form) ──
   // Regras absolutas:
@@ -45,6 +46,7 @@
   var LS_GANHOU_D  = 'itap_picole_gd';   // valor = data ISO do ganho
   var LS_CLICOU_D  = 'itap_picole_cd';   // valor = data ISO do clique
   var LS_AUDIT     = 'itap_picole_audit'; // array JSON de eventos do dia
+  var LS_TENTATIVA = 'itap_picole_tentativa'; // data:key, sem PII, para retry idempotente
   var _ganhouHojeSessao = false;
   var _clicouHojeSessao = false;
 
@@ -78,7 +80,7 @@
     try {
       // Remove todas as chaves relacionadas à promoção (atuais e legadas)
       var chaves = [
-        LS_GANHOU_D, LS_CLICOU_D, LS_AUDIT,
+        LS_GANHOU_D, LS_CLICOU_D, LS_AUDIT, LS_TENTATIVA,
         'itap_picole_reserva', 'itap_picole_ganhou_dia', 'itap_picole_clique_dia'
       ];
       chaves.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
@@ -163,6 +165,29 @@
     return parts.length >= 2 && v.trim().length >= 5;
   }
 
+  function _obterChaveTentativa() {
+    if (_reservaTentativaKey) return _reservaTentativaKey;
+    var hoje = _hojeISO();
+    try {
+      var salvo = localStorage.getItem(LS_TENTATIVA) || '';
+      if (salvo.indexOf(hoje + ':') === 0 && /^[A-Za-z0-9_-]{16,80}$/.test(salvo.slice(hoje.length + 1))) {
+        _reservaTentativaKey = salvo.slice(hoje.length + 1);
+        return _reservaTentativaKey;
+      }
+    } catch (e) {}
+    try {
+      _reservaTentativaKey = (window.crypto && window.crypto.randomUUID)
+        ? window.crypto.randomUUID()
+        : 'itap' + Date.now().toString(36) + Math.random().toString(36).slice(2, 20);
+    } catch (e) {
+      _reservaTentativaKey = 'itap' + Date.now().toString(36) + Math.random().toString(36).slice(2, 20);
+    }
+    _reservaTentativaKey = _reservaTentativaKey.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80);
+    if (_reservaTentativaKey.length < 16) _reservaTentativaKey += 'x'.repeat(16 - _reservaTentativaKey.length);
+    try { localStorage.setItem(LS_TENTATIVA, hoje + ':' + _reservaTentativaKey); } catch (e) {}
+    return _reservaTentativaKey;
+  }
+
   function _estaNoHorarioPromo() {
     var agora = new Date();
     var minutos = (agora.getHours() * 60) + agora.getMinutes();
@@ -221,15 +246,8 @@
     _janelaPrecisaoTimer = setTimeout(function () {
       _janelaPrecisaoTimer = null;
       if (_ganhouHojeNesteDispositivo() || _clicouHojeNesteDispositivo()) return;
-      _janelaAtiva = true;
-      _estado = 'ativo';
-      _atualizarRobo('ativo');
-      if (_janela5sTimer) clearTimeout(_janela5sTimer);
-      _janela5sTimer = setTimeout(function () {
-        _janelaAtiva = false;
-        _janela5sTimer = null;
-        if (!_painelAberto) _atualizarRobo('inativo');
-      }, 5000);
+      // O timer não acende o LED sozinho: reconcilia novamente com o servidor,
+      // que continua sendo a única autoridade sobre a janela de 5 segundos.
       _consultarStatus();
     }, Math.max(0, atraso));
   }
@@ -247,7 +265,13 @@
       .then(function (data) {
         _polling = false;
         var novoEstado = data.status || 'inativo';
-        if (novoEstado === 'inativo' && data.inicioEm) _agendarJanelaPrecisao(data);
+        var anuncioSeguro = novoEstado === 'ativo' && data.safeToAnnounce === true
+          && data.campaign_active === true && data.activation_explicit === true
+          && data.paused !== true && data.schedule_created === true;
+        // Um status ativo sem o contrato completo nunca acende o LED nem abre o form.
+        if (!anuncioSeguro && novoEstado === 'ativo') novoEstado = 'inativo';
+        if (novoEstado === 'inativo' && data.inicioEm && data.campaign_active === true
+          && data.activation_explicit === true && data.paused !== true) _agendarJanelaPrecisao(data);
         // O servidor é a única fonte de verdade para horário e vencedor.
         // Não usamos o relógio/fuso do aparelho para esconder uma janela válida.
         if (novoEstado === 'ativo' && _ganhouHojeNesteDispositivo()) {
@@ -314,7 +338,6 @@
       return false; // já usou chance do dia → vai para dúvidas
     }
     if (_estado === 'ativo' && _janelaAtiva) {
-      _marcarCliqueHojeSessao();
       _auditLog('clique_interceptado', { estado: _estado });
       _abrirPainel('promo');
       return true; // intercepta — abre painel de cadastro
@@ -600,6 +623,7 @@
   function _tentarReservar() {
     if (_reservandoEmAndamento) return;
     _reservandoEmAndamento = true;
+    var tentativaKey = _obterChaveTentativa();
     var btn = document.getElementById('pm-btn-reservar');
     var spinner = document.getElementById('pm-spinner-reserva');
     var label = document.getElementById('pm-btn-reservar-label');
@@ -613,13 +637,16 @@
 
     fetch(API_BASE + '/api/promocao/picole/reservar', {
       method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-Idempotency-Key': tentativaKey },
       cache: 'no-store',
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         _reservandoEmAndamento = false;
         if (spinner) spinner.classList.remove('vis');
+        // Uma resposta do servidor consome a chance do dia, seja vitória ou
+        // recusa. Erro de rede permanece retentável com a mesma chave.
+        _marcarCliqueHojeSessao();
         if (data.sucesso && data.reservaId) {
           _reservaId = data.reservaId;
           // Nunca salvar dados do form — apenas o ID em memória de sessão

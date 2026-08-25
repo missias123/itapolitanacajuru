@@ -77,8 +77,8 @@ patchFile('scripts/ita-bot-widget-v2027.js', (source) => {
         'Esta é a promoção relâmpago do ItaBot. Ela é separada do sorteio mensal da torta e usa um formulário exclusivo.',
         'Quando o servidor confirmar a ativação e o LED mostrar “ENCONTRE UM PICOLÉ · CLIQUE AQUI”, a janela fica aberta por exatamente 5 segundos.',
         'O primeiro clique válido do dia abre o formulário exclusivo. Existe somente um vencedor por dia. Depois do clique, o ItaBot volta para Dúvidas.',
-        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada pelo WhatsApp.',
-        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia.'
+        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada na tela. Um botão abre o WhatsApp com a mensagem de agendamento; é necessário tocar em “Enviar”.',
+        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia. O segundo exato sorteado muda a cada dia e não se repete no ciclo de 30 dias.'
       ],
       linkTexto: 'Ver regras completas na Promoção',
       linkUrl: 'promocao.html'
@@ -116,7 +116,7 @@ patchFile('promocao.html', (source) => {
   updated = replaceOnce(updated, 'Passo 3 — Preencha nome e WhatsApp', 'Passo 3 — Use o formulário exclusivo', 'passo 3 título');
   updated = replaceOnce(updated, 'Um formulário rápido abre automaticamente. Digite seu <strong>nome completo</strong> e <strong>WhatsApp DDD 16</strong>. Leva menos de 20 segundos.', 'O clique válido abre outro formulário, separado de Dúvidas. Informe seu <strong>nome completo</strong>, <strong>WhatsApp DDD 16</strong> e aceite os termos.', 'passo 3 descrição');
   updated = replaceOnce(updated, 'Passo 4 — Confirme e retire!', 'Passo 4 — Aguarde o código e retire na loja', 'passo 4 título');
-  updated = replaceOnce(updated, 'Se for o primeiro, você recebe confirmação no <strong>WhatsApp</strong>. Agende a retirada pelo WhatsApp e vá à sorveteria apenas na <strong>segunda, quarta ou sexta</strong> para retirar seu picolé de fruta grátis! 🍦', 'Se você for o vencedor do dia, o sistema confirma no <strong>WhatsApp</strong> e envia um código. A retirada é <strong>presencial na loja</strong>, nas condições informadas pela equipe. Não há delivery. 🍦', 'passo 4 descrição');
+  updated = replaceOnce(updated, 'Se for o primeiro, você recebe confirmação no <strong>WhatsApp</strong>. Agende a retirada pelo WhatsApp e vá à sorveteria apenas na <strong>segunda, quarta ou sexta</strong> para retirar seu picolé de fruta grátis! 🍦', 'Se você for o vencedor do dia, o sistema confirma a reserva e mostra um código. Depois, você pode tocar no botão para abrir o <strong>WhatsApp</strong> com a mensagem de agendamento; é necessário tocar em <strong>Enviar</strong>. A retirada é <strong>presencial na loja</strong>, nas condições informadas pela equipe. Não há delivery. 🍦', 'passo 4 descrição');
   updated = replaceOnce(updated, 'ATENÇÃO: O PICOLÉ GRÁTIS APARECE NO SITE!', 'ATENÇÃO: SÓ VALE QUANDO O SERVIDOR CONFIRMAR', 'alerta de ativação');
   updated = replaceOnce(updated, 'O aviso no robô aparece por apenas <strong>alguns segundos</strong>. Assim que surgir <strong>"PICOLÉ GRÁTIS"</strong>, clique na hora para não perder sua chance!', 'A explicação abaixo mostra a mecânica prevista. A participação só aparece quando o servidor confirmar a campanha ativa e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong> por <strong>exatos 5 segundos</strong>.', 'alerta sem tempo vago');
   const oldRules = `          <ul style="margin-left:18px;">
@@ -137,8 +137,9 @@ patchFile('promocao.html', (source) => {
             <li><strong>Um vencedor por dia:</strong> o servidor aceita apenas o primeiro clique válido do dia. Os demais recebem a informação de que a oportunidade já terminou.</li>
             <li><strong>Um formulário exclusivo:</strong> o clique válido abre o formulário do Picolé, separado do formulário de Dúvidas. Um mesmo envio não cria outro cadastro nem outro código.</li>
             <li><strong>Dados obrigatórios:</strong> informe nome completo e celular com <strong>DDD 16</strong>, aceite os termos e envie somente uma vez.</li>
-            <li><strong>Confirmação:</strong> se você for o vencedor, o sistema confirma a reserva e fornece um código de retirada pelo WhatsApp.</li>
+            <li><strong>Confirmação:</strong> se você for o vencedor, o sistema confirma a reserva e exibe um código. Um botão abre o WhatsApp com a mensagem de agendamento; o envio só acontece depois que você tocar em <strong>Enviar</strong>.</li>
             <li><strong>Retirada:</strong> o prêmio é retirado pessoalmente na loja, conforme data e orientação informadas pela equipe. <strong>Não há delivery.</strong></li>
+            <li><strong>Horário imprevisível:</strong> cada dia recebe um segundo exato diferente dentro da faixa de 11h a 20h; a faixa se repete, mas o segundo sorteado não se repete no ciclo de 30 dias.</li>
             <li><strong>Sem garantia fora da ativação:</strong> ver a página ou clicar fora dos 5 segundos não garante prêmio. A disponibilidade depende da confirmação do servidor.</li>
           </ul>`;
   updated = replaceOnce(updated, oldRules, newRules, 'regulamento completo');

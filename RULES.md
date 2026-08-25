@@ -43,11 +43,13 @@ A rotina semanal também executa `node scripts/auto-corrigir-regras.js --check`,
 ### Como funciona:
 - **Uma vez por dia**, se a campanha estiver ativa, o LED do robô exibe **"🍦 ENCONTRE UM PICOLÉ · CLIQUE AQUI"** durante uma janela de **exatos 5 segundos**.
 - Nesse momento, o usuário deve **clicar no robô** — o servidor valida o primeiro clique e, se ainda não houver vencedor, abre automaticamente o **formulário exclusivo do Picolé**.
-- O formulário solicita **nome completo** e **celular com DDD 16**, além dos aceites obrigatórios; a confirmação e o código de retirada são enviados pelo canal oficial informado no fluxo.
+- O formulário solicita **nome completo** e **celular com DDD 16**, além dos aceites obrigatórios; o sistema confirma a reserva e exibe o código na tela. Um botão abre o WhatsApp com a mensagem de agendamento, mas o participante precisa tocar em **Enviar**.
 - A retirada é presencial na loja e não há delivery para este prêmio.
 - Ao clicar no robô **fora do momento do LED de Picolé Grátis**, abrirá o formulário de **Dúvidas do ItaBot** — que é diferente.
 
 ### Regra obrigatória:
 - O formulário de Dúvidas do ItaBot **deve sempre exibir um aviso destacado** (fundo amarelo com borda dourada) informando que Picolé Grátis é em outro formulário, para evitar que usuários enviem pedidos de picolé pelo canal errado.
 - **Nunca remover ou ocultar esse aviso do campo "💬 Enviar mensagem direta via WhatsApp" no painel de Dúvidas.
-- A comunicação de Dúvidas deve explicar que “Encontre um Picolé” usa outro formulário e só pode ser apresentada como oportunidade ativa quando o endpoint público estiver validado como HTTP 200 com JSON válido.
+- A comunicação de Dúvidas deve explicar que “Encontre um Picolé” usa outro formulário e só pode ser apresentada como oportunidade ativa quando o endpoint público estiver validado como HTTP 200 com JSON válido, `status: ativo`, `campaign_active: true`, `activation_explicit: true`, `paused: false`, `schedule_created: true` e `safeToAnnounce: true`.
+- A criação/ativação de campanha é exclusivamente administrativa e autenticada. O GET público de status e a auditoria semanal são somente leitura: não podem criar campanha, gerar horários, expirar dia, reservar prêmio ou alterar estado.
+- O ciclo de 30 dias usa um **segundo exato diferente por dia** dentro da faixa de 11:00 a 20:00; a faixa horária se repete, mas o segundo sorteado não se repete no ciclo. Não interpretar a regra como 30 horas distintas.
