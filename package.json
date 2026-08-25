@@ -1,0 +1,20 @@
+{
+  "name": "itapolitana-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site estático e auditorias da Sorveteria Itapolitana Cajuru",
+  "scripts": {
+    "audit:weekly": "node scripts/auditoria-semanal.js --ci",
+    "audit:autofix:check": "node scripts/auto-corrigir-regras.js --check",
+    "audit:quality": "node scripts/quality-audit.js --fail",
+    "audit:dependencies": "node scripts/dependency-audit.js",
+    "audit:admin-sync": "node scripts/admin-espelho-gate.js"
+  },
+  "dependencies": {
+    "puppeteer": "^25.7.0",
+    "serve-handler": "^6.1.7"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
