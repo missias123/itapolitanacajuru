@@ -107,8 +107,6 @@
       '.itabot-launcher-robot { position:relative; flex:0 0 164px; width:156px; height:164px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-robot * { pointer-events:none; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:bottom center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
-      '.itabot-chest-badge { position:absolute; left:50%; top:58%; width:28%; aspect-ratio:1/1; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; border-radius:50%; border:2px solid rgba(176,234,255,.96); background:radial-gradient(circle at 30% 30%, #7fe8ff 0%, #1ca3ff 42%, #0b4dff 100%); box-shadow:0 0 0 1px rgba(255,255,255,.32), 0 0 12px rgba(0,178,255,.95), 0 0 26px rgba(32,125,255,.75), inset 0 0 10px rgba(255,255,255,.45); color:#fff; font:900 clamp(8px, 1.9vw, 12px)/1 Arial,sans-serif; letter-spacing:.08em; text-shadow:0 1px 3px rgba(0,0,0,.65), 0 0 8px rgba(120,233,255,.92); z-index:3; pointer-events:none; }',
-      '.itabot-chest-badge::after { content:""; position:absolute; inset:-18%; border-radius:50%; border:1px solid rgba(123,227,255,.72); box-shadow:0 0 16px rgba(68,196,255,.7); opacity:.85; pointer-events:none; }',
 
       '.itabot-launcher-dot { display:none; }',
       '.itabot-launcher-led-panel { position:relative; display:flex; flex:0 0 30px; align-items:center; width:50%; min-width:92px; min-height:30px; height:30px; margin-top:-10px; padding:0 10px; box-sizing:border-box; border:1.5px solid #FF6B73; border-radius:4px; background:#E8000D; box-shadow:0 0 0 1px rgba(255,255,255,.96),0 0 8px rgba(232,0,13,.88),inset 0 0 4px rgba(70,0,0,.62); overflow:hidden; pointer-events:none; user-select:none; }',
@@ -119,7 +117,7 @@
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
       /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
-      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-chest-badge { width:30%; border-width:1.6px; font-size:9px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
+      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
       /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
       '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(80px + env(safe-area-inset-bottom, 0px)); width:164px; height:220px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:148px; flex-basis:148px; width:140px; height:148px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
       /* Tablet: 768px – 1024px (iPad, Android tablet) */
@@ -136,14 +134,15 @@
     if (document.getElementById('itabot-launcher')) return;
     var launcher = document.createElement('button');
     launcher.id = 'itabot-launcher';
+    launcher.className = 'ita-bot-duvidas-btn itabot-btn';
     launcher.type = 'button';
     launcher.setAttribute('data-role', 'duvidas');
+    launcher.setAttribute('data-itabot-open', 'true');
       launcher.setAttribute('aria-label', 'Abrir o painel HTML de dúvidas do ItaBot');
     launcher.innerHTML = [
-      '<span class="itabot-launcher-robot" aria-hidden="true">',
-        '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
-        '<span class="itabot-chest-badge" aria-hidden="true">ITA</span>',
-      '</span>',
+    '<span class="itabot-launcher-robot" aria-hidden="true">',
+      '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-v2027.png?v=2027-resilience" onerror="this.style.display=\'none\'" alt="" draggable="false"/>',
+    '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
       '<span class="itabot-launcher-dot" aria-hidden="true"></span>'
     ].join('');
@@ -308,6 +307,8 @@
       var wrap = document.createElement('div');
       wrap.id = 'chat-dialog';
       wrap.className = 'itabot-fullscreen-mode';
+      // Mantemos o formulário direto acima dos temas para garantir que ele permaneça visível
+      // dentro do dialog em mobile/tablet, inclusive quando o teclado virtual é aberto.
       wrap.innerHTML = [
         '<div class="chat-box itabot-fullscreen-box" role="dialog" aria-modal="true" aria-labelledby="fale-modal-titulo">',
           '<div class="chat-hdr">',
@@ -324,6 +325,14 @@
           '</div>',
           '<div id="fale-tela-temas" class="itabot-fullscreen-scroll" style="overflow-y:auto;flex:1;padding:16px;background:#f9f9f9;">',
             '<p style="font-size:13px;color:#666;text-align:center;margin:0 0 16px;font-weight:700;">Toque em um tema para ver a resposta imediata</p>',
+            '<div id="itabot-direct-message-area" style="margin:0 auto 18px;max-width:600px;">',
+            '<div class="itabot-direct-message" id="itabot-whatsapp-form" style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
+              '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
+              '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
+              '<textarea id="itabot-whatsapp-msg" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
+              '<button type="button" class="itabot-whatsapp-send" id="itabot-whatsapp-send-btn" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
+            '</div>',
+            '</div>',
             '<div style="display:flex;flex-direction:column;gap:10px;max-width:600px;margin:0 auto;">',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'promocao\')"><span style="font-size:18px;">🎉</span><span style="flex:1;text-align:left;font-weight:900;">Promoções e Sorteios</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'horario\')"><span style="font-size:18px;">⏰</span><span style="flex:1;text-align:left;font-weight:900;">Horário de Funcionamento</span><span style="font-size:18px;color:#888;">›</span></button>',
@@ -333,12 +342,6 @@
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'localizacao\')"><span style="font-size:18px;">📍</span><span style="font-size:18px;flex:1;text-align:left;font-weight:900;">Como Chegar</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'avaliacoes\')"><span style="font-size:18px;">⭐</span><span style="flex:1;text-align:left;font-weight:900;">Dicas e Avaliações</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'precos\')"><span style="font-size:18px;">💰</span><span style="flex:1;text-align:left;font-weight:900;">Preços</span><span style="font-size:18px;color:#888;">›</span></button>',
-            '</div>',
-            '<div class="itabot-direct-message" style="margin:24px auto;max-width:600px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">',
-              '<div style="font-size:14px;font-weight:900;color:#07579c;margin-bottom:8px;">💬 Enviar mensagem direta via WhatsApp</div>',
-              '<input type="text" id="itabot-nome" placeholder="Seu nome" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:8px;font-size:14px;outline:none;" />',
-              '<textarea id="itabot-msg" placeholder="Escreva sua dúvida ou pedido..." style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:14px;min-height:80px;outline:none;resize:vertical;"></textarea>',
-              '<button type="button" onclick="_itabotEnviarWhatsApp()" style="width:100%;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(37,211,102,.3);">Enviar via WhatsApp</button>',
             '</div>',
           '</div>',
           '<div id="fale-tela-resposta" class="itabot-fullscreen-scroll" style="display:none;overflow-y:auto;flex:1;padding:20px;background:#f9f9f9;">',
@@ -351,6 +354,7 @@
         '</div>'
       ].join('');
       document.body.appendChild(wrap);
+      document.getElementById('itabot-whatsapp-send-btn').onclick = window._itabotEnviarWhatsApp;
       _itabotVincularTeclado(wrap);
       
       // Inserir estilos dos botões de tema
@@ -501,8 +505,11 @@
   };
 
   window._itabotEnviarWhatsApp = function () {
-    var nome = document.getElementById('itabot-nome').value.trim();
-    var msg = document.getElementById('itabot-msg').value.trim();
+    var nomeField = document.getElementById('itabot-nome');
+    var msgField = document.getElementById('itabot-whatsapp-msg');
+    if (!nomeField || !msgField) return;
+    var nome = nomeField.value.trim();
+    var msg = msgField.value.trim();
     var texto = 'Olá, meu nome é ' + (nome || 'Cliente') + '. ' + (msg || 'Gostaria de tirar uma dúvida sobre a Itapolitana.');
     window.open('https://wa.me/5516996062046?text=' + encodeURIComponent(texto), '_blank');
   };
@@ -616,9 +623,11 @@
         '<div class="chat-msgs" id="itabot-msgs"></div>',
         '<div class="chat-typing" id="itabot-typing"><span></span><span></span><span></span></div>',
         '<div class="chat-chips" id="itabot-chips"></div>',
-        '<div class="chat-inp-row">',
+        '<div id="itabot-chat-input-area">',
+        '<div class="chat-inp-row" id="itabot-chat-composer">',
           '<input type="text" class="chat-inp" id="itabot-input" placeholder="Digite sua dúvida...">',
           '<button class="chat-send" id="itabot-send-btn">➤</button>',
+        '</div>',
         '</div>',
       '</div>'
     ].join('');
@@ -626,7 +635,8 @@
 
     document.getElementById('itabot-close-btn').onclick = _itabotFecharItaBot;
     document.getElementById('itabot-send-btn').onclick = _itabotEnviarMensagem;
-    document.getElementById('itabot-input').onkeydown = function (e) {
+    var chatInput = document.getElementById('itabot-input');
+    chatInput.onkeydown = function (e) {
       if (e.key === 'Enter') _itabotEnviarMensagem();
     };
     div.onclick = function (e) {

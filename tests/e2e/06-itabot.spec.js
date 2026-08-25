@@ -130,14 +130,14 @@ test.describe('Ita Bot — Chat', () => {
     await botBtn.click();
     await page.waitForTimeout(600);
 
-    const inputMsg = page.locator('#chat-inp').first();
+    const inputMsg = page.locator('#chat-inp, #itabot-whatsapp-msg').first();
     await inputMsg.focus();
     await page.evaluate(() => {
       document.documentElement.style.setProperty('--chat-kb-offset', '260px');
     });
     await page.waitForTimeout(350);
 
-    const inputArea = page.locator('#chat-input-area');
+    const inputArea = page.locator('#chat-input-area, #itabot-direct-message-area').first();
     const box = await inputArea.boundingBox();
     expect(box).not.toBeNull();
     expect(box.y).toBeLessThan(844 - 260);
@@ -163,7 +163,7 @@ test.describe('Ita Bot — Chat', () => {
     expect(kbVar).toBeDefined();
 
     // 2. Composer tem dimensões mínimas
-    const inputArea = page.locator('#itabot-input-area');
+    const inputArea = page.locator('#itabot-input-area, #itabot-whatsapp-form, #itabot-chat-composer').first();
     const areaVisible = await inputArea.isVisible().catch(() => false);
     if (areaVisible) {
       const box = await inputArea.boundingBox();
@@ -219,7 +219,7 @@ test.describe('Ita Bot — Chat', () => {
 
     // Confirma que o composer existe e está acessível (regressão mínima)
     const composerBottom = await page.evaluate(() => {
-      const el = document.getElementById('itabot-input-area');
+      const el = document.getElementById('itabot-input-area') || document.getElementById('itabot-whatsapp-form') || document.getElementById('itabot-chat-composer');
       if (!el) return null;
       return el.getBoundingClientRect().bottom;
     });
@@ -232,7 +232,7 @@ test.describe('Ita Bot — Chat', () => {
     expect(noHScroll).toBe(true);
 
     // Botão Enviar acessível
-    const sendBtn = page.locator('.chat-send').first();
+    const sendBtn = page.locator('.chat-send, .itabot-whatsapp-send').first();
     const sendVisible = await sendBtn.isVisible().catch(() => false);
     expect(sendVisible).toBe(true);
   });
@@ -255,7 +255,7 @@ test.describe('Ita Bot — Chat', () => {
       await page.waitForTimeout(600);
 
       const dialog = page.locator('#chat-dialog .chat-box').first();
-      const input = page.locator('#chat-inp').first();
+      const input = page.locator('#chat-inp, #itabot-whatsapp-msg').first();
       await expect(dialog, `Dialog invisível em ${cenario.nome}`).toBeVisible();
       await expect(input, `Input invisível em ${cenario.nome}`).toBeVisible();
 
@@ -272,7 +272,8 @@ test.describe('Ita Bot — Chat', () => {
 
 /* ─── Lote A — Testes de Ovomaltine, Esquimó e Picolés ─── */
 /* Nota: estes testes usam dicas.html onde o widget (ita-bot-widget.js) é o bot ativo.
- * O index.html tem implementação inline separada (#chat-inp / getResp).
+ * O index.html tem implementação inline separada (#chat-inp / getResp),
+ * enquanto o widget v2027 usa #itabot-whatsapp-msg na tela cheia.
  * O widget injeta #duvidas-pergunta e #duvidas-resposta apenas quando #chat-dialog ainda não existe. */
 test.describe('Ita Bot — Lote A: Ovomaltine e Picolés (preços e desambiguação)', () => {
   /** Abre o bot e envia uma mensagem; retorna o texto do último .msg.bot */
