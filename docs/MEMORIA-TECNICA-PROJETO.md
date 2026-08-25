@@ -10,6 +10,7 @@ O assistente virtual **itaBot** foi totalmente reestruturado para atender aos ma
 - **Mascote 3D em Corpo Inteiro:** Utiliza o ativo oficial otimizado (`itabot-3d-v2027.webp`) em 400×400 RGBA lossless, exibindo o robo com pernas e pes visiveis, segurando um picolé azul em uma das maos e um sorvete colorido na outra, alem do cone integrado no peito. O PNG original (`itabot-3d-v2027.png`) permanece versionado como fallback.
 - **Letreiro LED Dinâmico (Marquee):** Posicionado exatamente abaixo dos pes do robo, o painel LED possui fundo vermelho brilhante, borda nítida e exibe a mensagem em movimento contínuo: **`DÚVIDA — CLIQUE AQUI`**. A largura foi ajustada para 50% para manter uma proporção elegante e discreta, enquanto a altura garante perfeita legibilidade.
 - **Interação Inteligente:** Clicar em qualquer parte do launcher (robo, pes, maos ou letreiro LED) aciona instantaneamente a abertura do painel HTML de dúvidas central (`#chat-dialog`), sem duplicações e sem sobrepor botões críticos do site.
+- **Posicionamento sem obstrução:** O algoritmo calcula retângulos de obstáculos para header/nav/footer, links, controles, imagens, banners e texto real. Prioriza slots laterais no meio e na parte inferior; usa topo apenas como fallback. Se o launcher completo não couber, reduz para os modos `icon-only`/`mini`, mantendo o acesso a Dúvidas sem cobrir conteúdo, formulário, botão ou rodapé.
 
 ---
 

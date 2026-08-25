@@ -122,7 +122,14 @@
       '#itabot-launcher { position:fixed; left:0; top:0; z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:188px; height:300px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; visibility:hidden; pointer-events:none; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, top .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
-      '#itabot-launcher.itabot-launcher-icon-only { width:188px; height:300px; padding:0; justify-content:flex-start; gap:0; }',
+      '#itabot-launcher.itabot-launcher-icon-only { width:88px; height:148px; padding:0; justify-content:flex-start; gap:0; }',
+      '#itabot-launcher.itabot-launcher-mini { width:72px; height:110px; padding:0; justify-content:flex-start; gap:0; }',
+      '#itabot-launcher.itabot-launcher-mini .itabot-launcher-robot { flex-basis:58px; width:56px; height:60px; }',
+      '#itabot-launcher.itabot-launcher-mini .itabot-launcher-led-panel { flex-basis:16px; min-width:52px; min-height:16px; height:16px; margin-top:-4px; padding:0 4px; }',
+      '#itabot-launcher.itabot-launcher-mini .itabot-launcher-led-track { font-size:8px; line-height:14px; }',
+      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-robot { flex-basis:86px; width:82px; height:86px; }',
+      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { flex-basis:20px; min-width:68px; min-height:20px; height:20px; margin-top:-6px; padding:0 5px; }',
+      '#itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-track { font-size:10px; line-height:18px; }',
       '.itabot-launcher-robot { position:relative; flex:0 0 164px; width:156px; height:164px; display:block; overflow:hidden; filter:drop-shadow(0 8px 12px rgba(2,56,104,.42)); animation:itabot-ghost-float 4.8s ease-in-out infinite; isolation:isolate; }',
       '.itabot-launcher-robot * { pointer-events:none; }',
       '.itabot-launcher-image { position:absolute; inset:0 auto auto 0; display:block; width:100%; height:100%; max-width:none; object-fit:contain; object-position:bottom center; clip-path:none; user-select:none; -webkit-user-drag:none; pointer-events:none; }',
@@ -136,13 +143,13 @@
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
       /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
-      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { width:124px; height:162px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:108px; flex-basis:108px; width:104px; height:108px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
+      '@media (max-width:480px) { #itabot-launcher { width:124px; height:162px; max-width:calc(100vw - 16px); } #itabot-launcher.itabot-launcher-icon-only { width:48px; height:72px; } #itabot-launcher.itabot-launcher-mini { width:34px; height:58px; } .itabot-launcher-robot { -webkit-flex-basis:108px; flex-basis:108px; width:104px; height:108px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-robot { flex-basis:60px; width:58px; height:62px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { flex-basis:16px; min-width:54px; min-height:16px; height:16px; margin-top:-4px; padding:0 4px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-track { font-size:7px; line-height:14px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-robot { flex-basis:34px; width:32px; height:35px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-led-panel { flex-basis:13px; min-width:28px; min-height:13px; height:13px; margin-top:-3px; padding:0 2px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-led-track { font-size:5px; line-height:11px; } }',
       /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
-      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { width:148px; height:196px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:132px; flex-basis:132px; width:124px; height:132px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
+      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher { width:148px; height:196px; max-width:calc(100vw - 20px); } #itabot-launcher.itabot-launcher-icon-only { width:56px; height:84px; } #itabot-launcher.itabot-launcher-mini { width:44px; height:72px; } .itabot-launcher-robot { -webkit-flex-basis:132px; flex-basis:132px; width:124px; height:132px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-robot { flex-basis:70px; width:68px; height:72px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { flex-basis:17px; min-width:60px; min-height:17px; height:17px; margin-top:-5px; padding:0 4px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-track { font-size:8px; line-height:15px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-robot { flex-basis:42px; width:40px; height:44px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-led-panel { flex-basis:14px; min-width:38px; min-height:14px; height:14px; margin-top:-4px; padding:0 2px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-led-track { font-size:6px; line-height:12px; } }',
       /* Tablet: 768px – 1024px (iPad, Android tablet) */
-      '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { width:176px; height:280px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:-9px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } }',
+      '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher { width:176px; height:280px; max-width:calc(100vw - 20px); } #itabot-launcher.itabot-launcher-icon-only { width:88px; height:148px; } #itabot-launcher.itabot-launcher-mini { width:68px; height:100px; } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:-9px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-robot { flex-basis:86px; width:82px; height:86px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-panel { flex-basis:20px; min-width:68px; min-height:20px; height:20px; margin-top:-6px; } #itabot-launcher.itabot-launcher-icon-only .itabot-launcher-led-track { font-size:10px; line-height:18px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-robot { flex-basis:58px; width:56px; height:60px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-led-panel { flex-basis:16px; min-width:52px; min-height:16px; height:16px; margin-top:-4px; } #itabot-launcher.itabot-launcher-mini .itabot-launcher-led-track { font-size:8px; line-height:14px; } }',
       /* Desktop: 1025px+ (PC, Mac, Chrome, Firefox, Edge, Safari) */
-      '@media (min-width:1025px) { #itabot-launcher { width:188px; height:300px; } }',
+      '@media (min-width:1025px) { #itabot-launcher { width:188px; height:300px; } #itabot-launcher.itabot-launcher-icon-only { width:96px; height:148px; } #itabot-launcher.itabot-launcher-mini { width:72px; height:110px; } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
     ].join('');
     document.head.appendChild(style);
@@ -178,11 +185,41 @@
       var r = el.getBoundingClientRect();
       return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity || '1') > .08 && r.width > 2 && r.height > 2 && r.bottom > 0 && r.right > 0 && r.top < window.innerHeight && r.left < window.innerWidth;
     };
-      var blockedAt = function (x, y) {
+    var obstacleRects = [];
+    var refreshObstacleRects = function () {
+      obstacleRects = [];
+      var selector = 'header,nav,footer,[role="banner"],[role="contentinfo"],a,button,input,textarea,select,[role="button"],img,canvas,.promo-banner-header,.promo-img,[data-itabot-obstacle="true"]';
+      var nodes = document.querySelectorAll(selector);
+      for (var i = 0; i < nodes.length; i++) {
+        var candidate = nodes[i];
+        if (candidate === launcher || (candidate.closest && candidate.closest('#itabot-launcher,#chat-dialog'))) continue;
+        if (!visible(candidate)) continue;
+        var r = candidate.getBoundingClientRect();
+        obstacleRects.push({ left:r.left - 2, top:r.top - 2, right:r.right + 2, bottom:r.bottom + 2 });
+      }
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      var textNode;
+      while ((textNode = walker.nextNode())) {
+        if (textNode.parentElement && textNode.parentElement.closest && textNode.parentElement.closest('#itabot-launcher,#chat-dialog')) continue;
+        if (!String(textNode.textContent || '').trim()) continue;
+        var textRange = document.createRange();
+        textRange.selectNodeContents(textNode);
+        var textRects = textRange.getClientRects();
+        for (var tr = 0; tr < textRects.length; tr++) {
+          var tx = textRects[tr];
+          if (tx.width > 0 && tx.height > 0 && tx.bottom > 0 && tx.top < window.innerHeight) obstacleRects.push({ left:tx.left - 2, top:tx.top - 2, right:tx.right + 2, bottom:tx.bottom + 2 });
+        }
+      }
+    };
+    var blockedAt = function (x, y) {
       var el = document.elementFromPoint(x, y);
       if (!visible(el)) return false;
       if (el.closest && el.closest('#itabot-launcher')) return false;
       var node = el;
+      for (var oi = 0; oi < obstacleRects.length; oi++) {
+        var or = obstacleRects[oi];
+        if (x >= or.left && x <= or.right && y >= or.top && y <= or.bottom) return true;
+      }
       var interactive = el.closest && el.closest('a,button,input,textarea,select,[role="button"],[data-itabot-obstacle="true"]');
       if (interactive && !interactive.closest('#itabot-launcher')) return true;
       var tag = String(el.tagName || '').toLowerCase();
@@ -190,7 +227,8 @@
       var identity = String((el.id || '') + ' ' + (el.className && typeof el.className === 'string' ? el.className : '')).toLowerCase();
       var importantLayer = /(cookie|consent|carrinho|cart|checkout|compr|encomend|footer|header|nav|banner)/.test(identity);
       var structuralLayer = el.closest && el.closest('header,nav,footer,[role="banner"],[role="contentinfo"],[data-itabot-obstacle="true"]');
-      if (semanticText || importantLayer || structuralLayer) return true;
+      var visualLayer = tag === 'img' || tag === 'canvas' || (el.closest && el.closest('.promo-img'));
+      if (semanticText || importantLayer || structuralLayer || visualLayer) return true;
       while (node && node !== document.body && node !== document.documentElement) {
         var cs = window.getComputedStyle(node);
         var r = node.getBoundingClientRect();
@@ -204,6 +242,10 @@
     var collisionScore = function (x, y, w, h) {
       var pad = 6;
       var cols = 4, rows = 3, hits = 0;
+      for (var ri = 0; ri < obstacleRects.length; ri++) {
+        var obstacle = obstacleRects[ri];
+        if (x < obstacle.right && x + w > obstacle.left && y < obstacle.bottom && y + h > obstacle.top) return cols * rows;
+      }
       for (var row = 0; row < rows; row++) {
         for (var col = 0; col < cols; col++) {
           var px = x + pad + ((w - pad * 2) * (col + .5) / cols);
@@ -220,16 +262,23 @@
       var narrow = mobile();
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
-      launcher.classList.remove('itabot-launcher-icon-only', 'itabot-launcher-hidden');
+      launcher.classList.remove('itabot-launcher-icon-only', 'itabot-launcher-mini', 'itabot-launcher-hidden');
+      refreshObstacleRects();
       // Tamanhos compactos sincronizados com o CSS do launcher.
       // mobile ≤480px: 124×162, phablet 481-767: 148×196, tablet 768-1024: 176×280, desktop: 188×300
       var fullW = vw <= 480 ? 124 : (vw <= 767 ? 148 : (vw <= 1024 ? 176 : 188));
       var fullH = vw <= 480 ? 162 : (vw <= 767 ? 196 : (vw <= 1024 ? 280 : 300));
-      var iconW = fullW, iconH = fullH;
+      // Fallback compacto real: continua visível, mas cabe em margens laterais
+      // quando o launcher completo não encontra área livre.
+      var iconW = vw <= 480 ? 48 : (vw <= 767 ? 56 : (vw <= 1024 ? 88 : 96));
+      var iconH = vw <= 480 ? 72 : (vw <= 767 ? 84 : 148);
+      var miniW = vw <= 480 ? 34 : (vw <= 767 ? 44 : (vw <= 1024 ? 68 : 72));
+      var miniH = vw <= 480 ? 58 : (vw <= 767 ? 72 : (vw <= 1024 ? 100 : 110));
       var safeTop = narrow ? 12 : 18;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
-      var margin = narrow ? 10 : 20;
+      var margin = narrow ? 4 : (vw <= 1024 ? 4 : 20);
       var overlayBottom = safeBottom;
+      var overlayTop = safeTop;
       var fixedNodes = document.querySelectorAll('body *');
       for (var f = 0; f < fixedNodes.length; f++) {
         var fixedNode = fixedNodes[f];
@@ -240,16 +289,25 @@
         if (fixedRect.width < 80 || fixedRect.height < 24 || fixedRect.bottom <= 0 || fixedRect.top >= vh) continue;
         if (fixedStyle.pointerEvents === 'none' || fixedStyle.visibility === 'hidden' || parseFloat(fixedStyle.opacity || '1') <= .08) continue;
         if (fixedRect.bottom >= vh - 2 && fixedRect.top > 0) overlayBottom = Math.max(overlayBottom, vh - fixedRect.top + 12);
+        if (fixedRect.top <= 2 && fixedRect.bottom > 0 && fixedRect.bottom < vh * .6) overlayTop = Math.max(overlayTop, Math.min(vh - 80, fixedRect.bottom + 12));
       }
+      safeTop = overlayTop;
       var gridBottom = Math.max(safeTop, vh - fullH - overlayBottom - 16);
       var upperY = Math.max(safeTop, Math.round(vh * .14));
       var middleY = Math.max(safeTop, Math.round(vh * .46 - fullH / 2));
-      // O rodapé nunca é candidato. A ordem começa pelo topo e laterais.
+      var lowerY = Math.max(safeTop, Math.min(gridBottom, Math.round(vh * .72 - fullH / 2)));
+      var lowerMiddleY = Math.max(safeTop, Math.min(gridBottom, Math.round(vh * .60 - fullH / 2)));
+      // O rodapé nunca é candidato. A prioridade é meio/baixo nas laterais;
+      // topo só entra como fallback quando não houver área livre abaixo.
       var candidates = [
-        [vw - fullW - margin, upperY, 'tr'],
-        [margin, upperY, 'tl'],
+        [vw - fullW - margin, lowerY, 'br'],
+        [margin, lowerY, 'bl'],
+        [vw - fullW - margin, lowerMiddleY, 'mr-lower'],
+        [margin, lowerMiddleY, 'ml-lower'],
         [vw - fullW - margin, middleY, 'mr'],
-        [margin, middleY, 'ml']
+        [margin, middleY, 'ml'],
+        [vw - fullW - margin, upperY, 'tr'],
+        [margin, upperY, 'tl']
       ];
       var chosen = null;
       var findFree = function (w, h, icon) {
@@ -268,7 +326,13 @@
       chosen = findFree(fullW, fullH, false);
       if (!chosen) {
         launcher.classList.add('itabot-launcher-icon-only');
+        // Recalcula com o footprint compacto real; não reutiliza as dimensões
+        // do launcher completo, que poderiam continuar bloqueando conteúdo.
         chosen = findFree(iconW, iconH, true);
+      }
+      if (!chosen) {
+        launcher.classList.add('itabot-launcher-mini');
+        chosen = findFree(miniW, miniH, true);
       }
       if (!chosen) {
         // Sem área segura: esconder temporariamente é preferível a cobrir o rodapé.

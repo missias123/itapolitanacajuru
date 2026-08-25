@@ -143,14 +143,14 @@ patchFile('promocao.html', (source) => {
             <li><strong>Sem garantia fora da ativação:</strong> ver a página ou clicar fora dos 5 segundos não garante prêmio. A disponibilidade depende da confirmação do servidor.</li>
           </ul>`;
   updated = replaceOnce(updated, oldRules, newRules, 'regulamento completo');
-  updated = replaceOnce(updated, '<script src="scripts/itap-picole-promo.js?v=20260825-picole-led-fix1" defer></script>', '<script src="scripts/ita-bot-widget-v2027.js?v=20260825-encontre-picole1" defer></script>\n<script src="scripts/itap-picole-promo.js?v=20260825-encontre-picole1" defer></script>', 'widget na página Promoção');
+  updated = replaceOnce(updated, '<script src="scripts/itap-picole-promo.js?v=20260825-picole-led-fix1" defer></script>', '<script src="scripts/ita-bot-widget-v2027.js?v=20260825-itabot-positioning1" defer></script>\n<script src="scripts/itap-picole-promo.js?v=20260825-itabot-positioning1" defer></script>', 'widget na página Promoção');
   return updated;
 });
 
 // Qualquer script alterado recebe nova query para vencer Cache First do Service Worker.
 patchRootHtmls((source) => source
-  .replaceAll('scripts/ita-bot-widget-v2027.js?v=2027-floating-safe-20260825-cssfix1', 'scripts/ita-bot-widget-v2027.js?v=20260825-encontre-picole1')
-  .replaceAll('scripts/itap-picole-promo.js?v=20260825-picole-led-fix1', 'scripts/itap-picole-promo.js?v=20260825-encontre-picole1')
+  .replaceAll('scripts/ita-bot-widget-v2027.js?v=2027-floating-safe-20260825-cssfix1', 'scripts/ita-bot-widget-v2027.js?v=20260825-itabot-positioning1')
+  .replaceAll('scripts/itap-picole-promo.js?v=20260825-picole-led-fix1', 'scripts/itap-picole-promo.js?v=20260825-itabot-positioning1')
   .replace(/scripts\/gaveta-navegacao-mestra\.js\?v=[^"']+/g, 'scripts/gaveta-navegacao-mestra.js?v=20260825-autofix-nav1'));
 
 const unique = [...new Set(changes)];
