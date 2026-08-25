@@ -100,7 +100,7 @@
       '.msg-link-btn.secondary { background: #E65100; box-shadow: 0 2px 8px rgba(230,81,0,0.2); }',
       '.msg-link-btn.secondary:active { background: #EF6C00; }',
       '/* Launcher ItaBot 3D: transparente, flutuante e reposicionável */',
-      '#itabot-launcher { position:fixed; right:calc(14px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px)); z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:188px; height:300px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, right .22s ease, top .22s ease, bottom .22s ease; }',
+      '#itabot-launcher { position:fixed; left:0; top:0; z-index:2147482000; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:0; width:188px; height:300px; max-width:calc(100vw - 20px); padding:0; border:0; border-radius:0; color:#0af; background:transparent; box-shadow:none; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:manipulation; visibility:hidden; pointer-events:none; transition:transform .2s ease, opacity .2s ease, filter .2s ease, left .22s ease, top .22s ease; }',
       '#itabot-launcher:hover { transform:translateY(-4px) scale(1.06); filter:drop-shadow(0 0 14px rgba(34,194,255,.65)); }',
       '#itabot-launcher:focus-visible { outline:2px solid #22c2ff; outline-offset:4px; border-radius:18px; }',
       '#itabot-launcher.itabot-launcher-icon-only { width:188px; height:300px; padding:0; justify-content:flex-start; gap:0; }',
@@ -117,13 +117,13 @@
 
       '@media (prefers-reduced-motion:reduce) { #itabot-launcher, .itabot-launcher-robot, .itabot-launcher-led-track, .sabor-novo-badge { -webkit-animation:none; animation:none; -webkit-transition:none; transition:none; } }',
       /* Celular pequeno: até 480px (iPhone SE, Android compacto) */
-      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(8px + env(safe-area-inset-right, 0px)); bottom:calc(72px + env(safe-area-inset-bottom, 0px)); width:140px; height:180px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:120px; flex-basis:120px; width:116px; height:120px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
+      '@media (max-width:480px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { width:124px; height:162px; max-width:calc(100vw - 16px); } .itabot-launcher-robot { -webkit-flex-basis:108px; flex-basis:108px; width:104px; height:108px; } .itabot-launcher-led-panel { -webkit-flex:0 0 22px; flex:0 0 22px; width:85%; min-width:80px; min-height:22px; height:22px; margin-top:-7px; padding:0 6px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:10px; line-height:20px; } }',
       /* Celular grande / phablet: 481px – 767px (iPhone Plus, Android XL) */
-      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(10px + env(safe-area-inset-right, 0px)); bottom:calc(80px + env(safe-area-inset-bottom, 0px)); width:164px; height:220px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:148px; flex-basis:148px; width:140px; height:148px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
+      '@media (min-width:481px) and (max-width:767px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { width:148px; height:196px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:132px; flex-basis:132px; width:124px; height:132px; } .itabot-launcher-led-panel { -webkit-flex:0 0 26px; flex:0 0 26px; width:80%; min-width:84px; min-height:26px; height:26px; margin-top:-8px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:12px; line-height:24px; } }',
       /* Tablet: 768px – 1024px (iPad, Android tablet) */
-      '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { right:calc(16px + env(safe-area-inset-right, 0px)); bottom:calc(20px + env(safe-area-inset-bottom, 0px)); width:176px; height:280px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:-9px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } }',
+      '@media (min-width:768px) and (max-width:1024px) { #itabot-launcher, #itabot-launcher.itabot-launcher-icon-only { width:176px; height:280px; max-width:calc(100vw - 20px); } .itabot-launcher-robot { -webkit-flex-basis:156px; flex-basis:156px; width:150px; height:158px; } .itabot-launcher-led-panel { -webkit-flex:0 0 28px; flex:0 0 28px; width:75%; min-width:88px; min-height:28px; height:28px; margin-top:-9px; padding:0 8px; box-sizing:border-box; } .itabot-launcher-led-track { font-size:14px; line-height:26px; } }',
       /* Desktop: 1025px+ (PC, Mac, Chrome, Firefox, Edge, Safari) */
-      '@media (min-width:1025px) { #itabot-launcher { bottom:calc(24px + env(safe-area-inset-bottom, 0px)); right:calc(24px + env(safe-area-inset-right, 0px)); } }',
+      '@media (min-width:1025px) { #itabot-launcher { width:188px; height:300px; } }',
       'body.chat-open #itabot-launcher, body.modal-aberto #itabot-launcher, #chat-dialog.aberto ~ #itabot-launcher { display:none !important; }'
     ].join('');
     document.head.appendChild(style);
@@ -157,7 +157,7 @@
       var r = el.getBoundingClientRect();
       return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity || '1') > .08 && r.width > 2 && r.height > 2 && r.bottom > 0 && r.right > 0 && r.top < window.innerHeight && r.left < window.innerWidth;
     };
-    var blockedAt = function (x, y) {
+      var blockedAt = function (x, y) {
       var el = document.elementFromPoint(x, y);
       if (!visible(el)) return false;
       if (el.closest && el.closest('#itabot-launcher')) return false;
@@ -168,7 +168,8 @@
       var semanticText = /^(h1|h2|h3|h4|h5|h6|p|li|label|figcaption|blockquote|summary)$/.test(tag);
       var identity = String((el.id || '') + ' ' + (el.className && typeof el.className === 'string' ? el.className : '')).toLowerCase();
       var importantLayer = /(cookie|consent|carrinho|cart|checkout|compr|encomend|footer|header|nav|banner)/.test(identity);
-      if (semanticText || importantLayer) return true;
+      var structuralLayer = el.closest && el.closest('header,nav,footer,[role="banner"],[role="contentinfo"],[data-itabot-obstacle="true"]');
+      if (semanticText || importantLayer || structuralLayer) return true;
       while (node && node !== document.body && node !== document.documentElement) {
         var cs = window.getComputedStyle(node);
         var r = node.getBoundingClientRect();
@@ -198,12 +199,13 @@
       var narrow = mobile();
       launcher.style.visibility = 'hidden';
       launcher.style.pointerEvents = 'none';
-      launcher.classList.remove('itabot-launcher-icon-only');
-      // Tamanhos dobrados para corresponder ao CSS
-      // mobile ≤480px: 140×180, phablet 481-767: 164×220, tablet 768-1024: 176×280, desktop: 188×300
-      var fullW = vw <= 480 ? 140 : (vw <= 767 ? 164 : (vw <= 1024 ? 176 : 188));
-      var fullH = vw <= 480 ? 180 : (vw <= 767 ? 220 : (vw <= 1024 ? 280 : 300));
+      launcher.classList.remove('itabot-launcher-icon-only', 'itabot-launcher-hidden');
+      // Tamanhos compactos sincronizados com o CSS do launcher.
+      // mobile ≤480px: 124×162, phablet 481-767: 148×196, tablet 768-1024: 176×280, desktop: 188×300
+      var fullW = vw <= 480 ? 124 : (vw <= 767 ? 148 : (vw <= 1024 ? 176 : 188));
+      var fullH = vw <= 480 ? 162 : (vw <= 767 ? 196 : (vw <= 1024 ? 280 : 300));
       var iconW = fullW, iconH = fullH;
+      var safeTop = narrow ? 12 : 18;
       var safeBottom = narrow ? 110 : (vw < 1025 ? 44 : 52);
       var margin = narrow ? 10 : 20;
       var overlayBottom = safeBottom;
@@ -218,14 +220,15 @@
         if (fixedStyle.pointerEvents === 'none' || fixedStyle.visibility === 'hidden' || parseFloat(fixedStyle.opacity || '1') <= .08) continue;
         if (fixedRect.bottom >= vh - 2 && fixedRect.top > 0) overlayBottom = Math.max(overlayBottom, vh - fixedRect.top + 12);
       }
-      var bottomY = Math.max(24, vh - fullH - overlayBottom - 16);
+      var gridBottom = Math.max(safeTop, vh - fullH - overlayBottom - 16);
+      var upperY = Math.max(safeTop, Math.round(vh * .14));
+      var middleY = Math.max(safeTop, Math.round(vh * .46 - fullH / 2));
+      // O rodapé nunca é candidato. A ordem começa pelo topo e laterais.
       var candidates = [
-        [vw - fullW - margin, bottomY, 'br'],
-        [margin, bottomY, 'bl'],
-        [vw - fullW - margin, Math.max(12, vh * .22), 'tr'],
-        [margin, Math.max(12, vh * .22), 'tl'],
-        [vw - fullW - margin, Math.max(12, vh * .5 - fullH / 2), 'mr'],
-        [margin, Math.max(12, vh * .5 - fullH / 2), 'ml']
+        [vw - fullW - margin, upperY, 'tr'],
+        [margin, upperY, 'tl'],
+        [vw - fullW - margin, middleY, 'mr'],
+        [margin, middleY, 'ml']
       ];
       var chosen = null;
       var findFree = function (w, h, icon) {
@@ -234,7 +237,7 @@
         }
         // Grade mais densa: procura uma área livre entre cartões, textos e controles.
         var stepX = Math.max(24, Math.round(vw / 8)), stepY = Math.max(24, Math.round(vh / 8));
-        for (var gy = 10; gy <= Math.max(10, vh - h - overlayBottom); gy += stepY) {
+        for (var gy = safeTop; gy <= Math.max(safeTop, gridBottom - Math.max(0, h - fullH)); gy += stepY) {
           for (var gx = margin; gx <= Math.max(margin, vw - w - margin); gx += stepX) {
             if (isFree(gx, gy, w, h)) return { x:gx, y:gy, mode:'grid', icon:icon };
           }
@@ -247,15 +250,14 @@
         chosen = findFree(iconW, iconH, true);
       }
       if (!chosen) {
-        // Último recurso: escolhe o ponto com menos colisões, mantendo o widget acessível.
-        var best = { score: Infinity, x:Math.max(8, vw - iconW - margin), y:Math.max(8, bottomY), mode:'br-fallback' };
-        var fallbackPoints = candidates.concat([[best.x, best.y, 'br-fallback']]);
-        for (var b = 0; b < fallbackPoints.length; b++) {
-          var score = collisionScore(fallbackPoints[b][0], fallbackPoints[b][1], iconW, iconH);
-          if (score < best.score) best = { score:score, x:fallbackPoints[b][0], y:fallbackPoints[b][1], mode:fallbackPoints[b][2] };
-        }
-        launcher.classList.add('itabot-launcher-icon-only');
-        chosen = { x:best.x, y:best.y, mode:best.mode, icon:true };
+        // Sem área segura: esconder temporariamente é preferível a cobrir o rodapé.
+        launcher.classList.add('itabot-launcher-hidden');
+        launcher.setAttribute('aria-hidden', 'true');
+        launcher.style.visibility = 'hidden';
+        launcher.style.pointerEvents = 'none';
+        launcher.dataset.position = 'hidden';
+        lastLayout = 'hidden';
+        return;
       }
       launcher.style.left = Math.round(chosen.x) + 'px';
       launcher.style.top = Math.round(chosen.y) + 'px';
