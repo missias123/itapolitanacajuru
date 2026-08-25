@@ -28,6 +28,7 @@ id         = "883b9fd1e89d445e8257f930cb26a3c1"
 preview_id = "883b9fd1e89d445e8257f930cb26a3c1"
 
 # ─── Durable Object para reserva atômica do Picolé ────────────────────────────
+# A conta atual exige a migration SQLite para Durable Objects no plano Free.
 # A classe é registrada pela migration abaixo no primeiro deploy.
 # Validar limites/plano da conta no Cloudflare antes de ativar a campanha real.
 [durable_objects]
@@ -38,7 +39,7 @@ bindings = [
 # Migration obrigatória — registra a classe PicoleReservaDO no primeiro deploy
 [[migrations]]
 tag         = "v1"
-new_classes = ["PicoleReservaDO"]
+new_sqlite_classes = ["PicoleReservaDO"]
 
 # ─── Variáveis de ambiente públicas ───────────────────────────────────────────
 [vars]
