@@ -155,7 +155,7 @@
 
   function _validPhone(v) {
     var d = String(v).replace(/\D/g, '');
-    return /^169\d{8}$/.test(d);
+    return /^\d{10,11}$/.test(d);
   }
 
   function _validFullName(v) {
@@ -176,12 +176,12 @@
 
     if (novoEstado === 'ativo') {
       if (launcher) {
-        launcher.setAttribute('aria-label', 'Abrir promoção Encontre um Picolé');
+        launcher.setAttribute('aria-label', 'Abrir promoção do picolé grátis');
         launcher.setAttribute('data-picole', 'ativo');
         launcher.style.filter = 'drop-shadow(0 0 18px rgba(255,214,0,0.85))';
       }
       if (ledTrack) {
-        ledTrack.textContent = '🍦 ENCONTRE UM PICOLÉ · CLIQUE AQUI!   •   ';
+        ledTrack.textContent = '🍦 PICOLÉ GRÁTIS AGORA! CLIQUE RÁPIDO!   •   ';
         ledTrack.style.color = '#FFD600';
       }
     } else if (novoEstado === 'reservado') {

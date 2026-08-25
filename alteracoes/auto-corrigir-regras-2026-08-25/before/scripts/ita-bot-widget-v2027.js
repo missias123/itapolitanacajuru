@@ -42,25 +42,6 @@
     return String(s || '').toLowerCase().normalize('NFD').replace(ACCENT_RE, '').trim();
   }
 
-  /* ─── Sincronização Admin ↔ ItaBot dinâmico ─── */
-  function _itabotAplicarConfigFale(config) {
-    if (!config) return;
-    var titulo = document.getElementById('fale-modal-titulo');
-    var subtitulo = document.getElementById('fale-modal-sub');
-    var nome = document.getElementById('itabot-nome');
-    var mensagem = document.getElementById('itabot-whatsapp-msg');
-    var enviar = document.getElementById('itabot-whatsapp-send-btn');
-    if (titulo && config.faleModalTitulo) titulo.textContent = String(config.faleModalTitulo);
-    if (subtitulo && config.faleModalSub) {
-      var dot = subtitulo.querySelector('.itabot-status-dot');
-      subtitulo.textContent = String(config.faleModalSub);
-      if (dot) subtitulo.prepend(dot);
-    }
-    if (nome && config.faleLabelNome) nome.placeholder = String(config.faleLabelNome);
-    if (mensagem && config.faleLabelMsg) mensagem.placeholder = String(config.faleLabelMsg);
-    if (enviar && config.faleBtnTexto) enviar.textContent = String(config.faleBtnTexto);
-  }
-
   /* ─── Injeção de CSS ─── */
   function _itabotInjetarCss() {
     if (document.getElementById('itabot-css')) return;
@@ -358,7 +339,6 @@
             '</div>',
             '<div style="display:flex;flex-direction:column;gap:10px;max-width:600px;margin:0 auto;">',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'promocao\')"><span style="font-size:18px;">🎉</span><span style="flex:1;text-align:left;font-weight:900;">Promoções e Sorteios</span><span style="font-size:18px;color:#888;">›</span></button>',
-              '<button type="button" class="fale-tema-btn fale-tema-picole" onclick="_itabotMostrarTema(\'picoleGratis\')"><span style="font-size:18px;">🍦</span><span style="flex:1;text-align:left;font-weight:900;">Como funciona: Encontre um Picolé</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'horario\')"><span style="font-size:18px;">⏰</span><span style="flex:1;text-align:left;font-weight:900;">Horário de Funcionamento</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'sabores\')"><span style="font-size:18px;">🍨</span><span style="flex:1;text-align:left;font-weight:900;">Sabores e Cardápio</span><span style="font-size:18px;color:#888;">›</span></button>',
               '<button type="button" class="fale-tema-btn" onclick="_itabotMostrarTema(\'encomendas\')"><span style="font-size:18px;">📦</span><span style="flex:1;text-align:left;font-weight:900;">Encomendas e Retirada na Loja</span><span style="font-size:18px;color:#888;">›</span></button>',
@@ -378,7 +358,6 @@
         '</div>'
       ].join('');
       document.body.appendChild(wrap);
-      _itabotAplicarConfigFale(window.SITE_CONFIG);
       document.getElementById('itabot-whatsapp-send-btn').onclick = window._itabotEnviarWhatsApp;
       _itabotVincularTeclado(wrap);
       
@@ -443,18 +422,6 @@
         '📝 Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promoção.'
       ],
       linkTexto: 'Ver Página de Promoção',
-      linkUrl: 'promocao.html'
-    },
-    picoleGratis: {
-      titulo: '🍦 Como funciona: Encontre um Picolé',
-      textos: [
-        'Esta é a promoção relâmpago do ItaBot. Ela é separada do sorteio mensal da torta e usa um formulário exclusivo.',
-        'Quando o servidor confirmar a ativação e o LED mostrar “ENCONTRE UM PICOLÉ · CLIQUE AQUI”, a janela fica aberta por exatamente 5 segundos.',
-        'O primeiro clique válido do dia abre o formulário exclusivo. Existe somente um vencedor por dia. Depois do clique, o ItaBot volta para Dúvidas.',
-        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada pelo WhatsApp.',
-        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia.'
-      ],
-      linkTexto: 'Ver regras completas na Promoção',
       linkUrl: 'promocao.html'
     },
     horario: {
@@ -897,7 +864,6 @@
 
   // Escutar evento do site-loader para atualizar dados se carregarem depois
   window.addEventListener('siteConfigLoaded', function(e) {
-    _itabotAplicarConfigFale(e && e.detail);
     var eng = _getEngine();
     if (eng && e.detail) {
       eng.loadData(window.PRODUTOS_DATA || null, e.detail.promo || null);

@@ -150,7 +150,7 @@
           width: min(calc(100% - 16px), 420px) !important;
           margin: 0 auto !important;
           grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          gap: 10px !important;
+          gap: 4px !important;
           padding: 0 !important;
           overflow: visible !important;
         }
@@ -159,11 +159,11 @@
           min-width: 0 !important;
           width: 100% !important;
           max-width: none !important;
-          min-height: 56px !important;
-          height: 56px !important;
+          min-height: 38px !important;
+          height: 38px !important;
           padding: 0 4px !important;
-          border-radius: 12px !important;
-          border-width: 2px !important;
+          border-radius: 9px !important;
+          border-width: 1px !important;
           box-shadow: 0 0 0 1px rgba(var(--neon-rgb), 0.22) inset, 0 0 7px rgba(var(--neon-rgb), 0.18) !important;
           gap: 0;
           flex-direction: row !important;
@@ -182,10 +182,10 @@
           order: -1 !important;
           width: 100% !important;
           justify-self: stretch !important;
-          min-height: 56px !important;
-          height: 56px !important;
+          min-height: 38px !important;
+          height: 38px !important;
           padding: 0 8px !important;
-          border-radius: 12px !important;
+          border-radius: 9px !important;
           background: linear-gradient(135deg, #2E7D32 0%, #43A047 52%, #1B5E20 100%) !important;
           box-shadow: 0 4px 10px rgba(27,94,32,0.24), 0 0 0 1px rgba(255,255,255,0.22) inset !important;
           justify-content: center !important;
@@ -218,9 +218,9 @@
       }
       @media (max-width: 380px) {
         .itap-header { padding-bottom: 4px; }
-        .itap-nav-container { width: min(calc(100% - 16px), 420px) !important; gap: 8px !important; padding-inline: 0 !important; }
-        .itap-nav-btn { min-height: 54px !important; height: 54px !important; padding-inline: 3px !important; }
-        .itap-nav-btn:nth-child(3) { min-height: 54px !important; height: 54px !important; width: 100% !important; }
+        .itap-nav-container { width: min(calc(100% - 16px), 420px) !important; gap: 3px !important; padding-inline: 0 !important; }
+        .itap-nav-btn { min-height: 36px !important; height: 36px !important; padding-inline: 3px !important; }
+        .itap-nav-btn:nth-child(3) { min-height: 36px !important; height: 36px !important; width: 100% !important; }
         .itap-nav-label { font-size: 11px !important; letter-spacing: 0.15px !important; }
         .itap-nav-btn:nth-child(3) .itap-nav-label { font-size: 11.5px !important; }
       }
