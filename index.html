@@ -3677,15 +3677,25 @@ function toggleAcc(id) {
   el.classList.add('open');
   atualizarEstadoHeaderAcc(el, true);
   _trackUiEvent('category_open', { category_id: el.id });
-  if (id === 'acc-iso') renderIso();
-  if (id === 'acc-sobremesas') renderSobremesas();
-  if (id === 'acc-enc-caixas') renderEncomendasPreviews();
-  if (id === 'acc-enc-tortas') renderEncomendasPreviews();
-  if (id === 'acc-enc-picolés') renderEncomendasPreviews();
-  if (id === 'acc-complementos') renderEncomendasPreviews();
+  /* O catálogo já é renderizado por renderTudo() no carregamento. Só
+     renderizamos em emergência se um container ainda estiver vazio, evitando
+     reconstruir previews e forçar layout no instante do toque. */
+  var isoBody = document.getElementById('iso-body');
+  var sobremesasBody = document.getElementById('sobremesas-body');
+  var previewIds = ['enc-preview-caixas', 'enc-preview-tortas', 'enc-preview-picoles', 'enc-preview-acrescimos'];
+  var previewsVazios = previewIds.some(function(previewId) {
+   var preview = document.getElementById(previewId);
+   return preview && !preview.children.length;
+  });
+  if (id === 'acc-iso' && isoBody && !isoBody.children.length) renderIso();
+  if (id === 'acc-sobremesas' && sobremesasBody && !sobremesasBody.children.length) renderSobremesas();
+  if ((id === 'acc-enc-caixas' || id === 'acc-enc-tortas' || id === 'acc-enc-picolés' || id === 'acc-complementos') && previewsVazios) renderEncomendasPreviews();
   var body = el.querySelector('.acc-body');
   if (body) {
-   body.style.maxHeight = body.scrollHeight + 'px';
+   body.style.maxHeight = '0';
+   requestAnimationFrame(function() {
+    if (el.classList.contains('open')) body.style.maxHeight = body.scrollHeight + 'px';
+   });
    setTimeout(function() {
     if (el.classList.contains('open')) {
      // Após a transição, elimina a última trava de altura para o gesto nativo.
@@ -6183,6 +6193,7 @@ document.addEventListener('DOMContentLoaded', checkCookies);
 
   <script src="scripts/gaveta-navegacao-mestra.js?v=20260825-autofix-nav1" defer></script>
 	<script src="scripts/horario-pedidos.js?v=20260821-horarios" defer></script>
+  <script src="scripts/itap-touch-feedback.js?v=20260826-touch-feedback" defer></script>
 </body>
 </html>
 

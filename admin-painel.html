@@ -22,15 +22,15 @@ body{font-family:'Nunito','Segoe UI',system-ui,sans-serif;background:#f0f2f5;col
 .inp-wrap{position:relative;margin-bottom:14px}
 	.inp-wrap input{width:100%;padding:16px 44px 16px 16px;border:2px solid #e0e0e0;border-radius:10px;font-size:1.2rem;font-weight:700;outline:none;transition:.2s}
 .inp-wrap input:focus{border-color:#e65100}
-.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px}
-.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#e65100,#f57c00);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s}
+.eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;font-size:1.1rem;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.btn-login{width:100%;min-height:48px;padding:14px;background:linear-gradient(135deg,#e65100,#f57c00);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s;touch-action:manipulation}
 .btn-login:hover{opacity:.9}
 .login-erro{color:#c62828;font-size:.85rem;margin-top:10px;display:none}
 #admin-app{display:none;min-height:100vh}
 .admin-header{background:linear-gradient(135deg,#e8650a 0%,#ff6b35 40%,#1565c0 100%);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 3px 16px rgba(0,0,0,.25)}
 .admin-header .título{font-size:1.1rem;font-weight:900;display:flex;align-items:center;gap:10px;font-family:'Nunito',sans-serif}
 .admin-header .logo-admin-header{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.5);box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.btn-sair{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-sair{min-height:44px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);padding:7px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s;touch-action:manipulation}
 .btn-sair:hover{background:rgba(255,255,255,.35)}
 .admin-nav,
 .admin-tab-container,
@@ -44,10 +44,10 @@ background:#fff;border-bottom:2px solid #f0f2f5;display:flex;flex-wrap:wrap;over
   .admin-tab-container::-webkit-scrollbar,
   .nav-abas-wrapper::-webkit-scrollbar{display:none}
 }
-.nav-btn{padding:10px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s}
+.nav-btn{min-height:44px;padding:10px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:.85rem;font-weight:600;color:#888;cursor:pointer;transition:.2s;touch-action:manipulation}
 .nav-btn:hover{color:#e65100}
 .nav-btn.ativo{color:#e65100;border-bottom-color:#e65100}
-.btn-acao-rapida{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s,opacity .15s}
+.btn-acao-rapida{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:48px;padding:14px 8px;color:#fff;border:none;border-radius:12px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .15s,opacity .15s;touch-action:manipulation}
 .btn-acao-rapida:hover{transform:translateY(-2px);opacity:.9}
 .admin-content{padding:20px;max-width:1000px;margin:0 auto}
 .card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:20px;overflow:hidden}
@@ -2860,7 +2860,7 @@ document.addEventListener('DOMContentLoaded',function(){
  link.href='admin-catalogo.html';
  link.textContent='Lista única de produtos';
  link.setAttribute('data-fid-write','');
- link.style.cssText='position:fixed;right:18px;bottom:18px;z-index:9999;background:#8d251f;color:#fff;border-radius:999px;padding:12px 16px;font:700 13px Arial,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.24)';
+ link.style.cssText='position:fixed;right:18px;bottom:18px;z-index:9999;background:#8d251f;color:#fff;border-radius:999px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;box-sizing:border-box;font:700 13px Arial,sans-serif;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.24);touch-action:manipulation;-webkit-tap-highlight-color:transparent';
  link.setAttribute('aria-label','Abrir lista única de produtos e SKUs');
  document.body.appendChild(link);
 });
@@ -10541,5 +10541,6 @@ async function zerarPontosNegativos(clienteId){
 </script>
   <script src="scripts/nav-active-world-class.js?v=300" defer></script>
   <script src="scripts/gaveta-navegacao-mestra.js?v=20260825-autofix-nav1" defer></script>
+  <script src="scripts/itap-touch-feedback.js?v=20260826-touch-feedback" defer></script>
 </body>
 </html>
