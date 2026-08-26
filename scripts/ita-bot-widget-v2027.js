@@ -510,15 +510,15 @@
       linkUrl: 'promocao.html'
     },
     picoleGratis: {
-      titulo: '🍦 Como funciona: Encontre um Picolé',
+      titulo: '🍦 Como brincar de encontrar um Picolé',
       textos: [
-        'Esta é a promoção relâmpago do ItaBot. Ela é separada do sorteio mensal da torta e usa um formulário exclusivo.',
-        'Quando o servidor confirmar a ativação e o LED mostrar “ENCONTRE UM PICOLÉ · CLIQUE AQUI”, a janela fica aberta por exatamente 5 segundos.',
-        'O primeiro clique válido do dia abre o formulário exclusivo. Existe somente um vencedor por dia. Depois do clique, o ItaBot volta para Dúvidas.',
-        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada na tela. Um botão abre o WhatsApp com a mensagem de agendamento; é necessário tocar em “Enviar”.',
-        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia. O segundo exato sorteado muda a cada dia e não se repete no ciclo de 30 dias.'
+        'Primeiro, espere aparecer “ENCONTRE UM PICOLÉ · CLIQUE AQUI”. Normalmente, o ItaBot mostra DÚVIDAS.',
+        'Quando a frase especial aparecer, toque no robô dentro de 5 segundos. O primeiro toque válido do dia é conferido pelo site.',
+        'Se você for o ganhador, aparece um formulário só da brincadeira. Escreva seu nome completo e WhatsApp com DDD 16; peça ajuda a um adulto se precisar.',
+        'Depois, o site mostra um código. Toque no WhatsApp e depois em Enviar para combinar a retirada na loja. Não há entrega em casa.',
+        'Há 1 ganhador por dia. Ver a página ou tocar fora do tempo não garante Picolé.'
       ],
-      linkTexto: 'Ver regras completas na Promoção',
+      linkTexto: 'Ver o passo a passo na Promoção',
       linkUrl: 'promocao.html'
     },
     horario: {

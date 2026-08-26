@@ -72,15 +72,15 @@ patchFile('scripts/gaveta-navegacao-mestra.js', patchNavigation);
 
 patchFile('scripts/ita-bot-widget-v2027.js', (source) => {
   const topic = `    picoleGratis: {
-      titulo: '🍦 Como funciona: Encontre um Picolé',
+      titulo: '🍦 Como brincar de encontrar um Picolé',
       textos: [
-        'Esta é a promoção relâmpago do ItaBot. Ela é separada do sorteio mensal da torta e usa um formulário exclusivo.',
-        'Quando o servidor confirmar a ativação e o LED mostrar “ENCONTRE UM PICOLÉ · CLIQUE AQUI”, a janela fica aberta por exatamente 5 segundos.',
-        'O primeiro clique válido do dia abre o formulário exclusivo. Existe somente um vencedor por dia. Depois do clique, o ItaBot volta para Dúvidas.',
-        'O formulário pede nome completo e WhatsApp com DDD 16. Após o envio confirmado, você recebe um código de retirada na tela. Um botão abre o WhatsApp com a mensagem de agendamento; é necessário tocar em “Enviar”.',
-        'A retirada é presencial na loja, conforme a orientação da equipe. A promoção não tem delivery e não permite novo cadastro duplicado no mesmo dia. O segundo exato sorteado muda a cada dia e não se repete no ciclo de 30 dias.'
+        'Primeiro, espere aparecer “ENCONTRE UM PICOLÉ · CLIQUE AQUI”. Normalmente, o ItaBot mostra DÚVIDAS.',
+        'Quando a frase especial aparecer, toque no robô dentro de 5 segundos. O primeiro toque válido do dia é conferido pelo site.',
+        'Se você for o ganhador, aparece um formulário só da brincadeira. Escreva seu nome completo e WhatsApp com DDD 16; peça ajuda a um adulto se precisar.',
+        'Depois, o site mostra um código. Toque no WhatsApp e depois em Enviar para combinar a retirada na loja. Não há entrega em casa.',
+        'Há 1 ganhador por dia. Ver a página ou tocar fora do tempo não garante Picolé.'
       ],
-      linkTexto: 'Ver regras completas na Promoção',
+      linkTexto: 'Ver o passo a passo na Promoção',
       linkUrl: 'promocao.html'
     },
 `;
@@ -105,48 +105,22 @@ patchFile('scripts/itap-picole-promo.js', (source) => {
 });
 
 patchFile('promocao.html', (source) => {
-  let updated = source;
-  updated = replaceOnce(updated, 'PROMOÇÃO ROBÔ ITABOT — 1 PICOLÉ DE FRUTA GRÁTIS POR CLIQUE', 'PROMOÇÃO ITABOT — ENCONTRE UM PICOLÉ', 'título técnico do bloco');
-  updated = replaceOnce(updated, '🍦 ALERTA PICOLÉ RELÂMPAGO · 1 POR DIA · 5 SEGUNDOS PARA CLICAR', '🍦 ENCONTRE UM PICOLÉ · 1 VENCEDOR POR DIA · 5 SEGUNDOS', 'badge da promoção');
-  updated = replaceOnce(updated, '🍦 1 Picolé por Clique Vencedor', '🍦 ENCONTRE UM PICOLÉ', 'chamada principal');
-  updated = replaceOnce(updated, 'Ganhe 1&nbsp;<span style="color:#FFD600;">Picolé de Fruta</span><br>Grátis por Cadastro!', 'Encontre 1&nbsp;<span style="color:#FFD600;">Picolé de Fruta</span><br>no chamado do ItaBot!', 'headline da promoção');
-  updated = replaceOnce(updated, 'Cada clique no <strong style="color:#FFD600;">Robô ItaBot</strong> gera <strong>1 cadastro</strong>, e cada cadastro vencedor garante <strong>1 picolé de fruta grátis</strong>. Clicou, cadastrou, ganhou — simples assim!', 'Quando o servidor confirmar a ativação, o primeiro clique válido durante os <strong>5 segundos</strong> abre o formulário exclusivo. Há <strong>1 vencedor por dia</strong>; o clique sozinho não garante o prêmio.', 'descrição sem ambiguidade');
-  updated = replaceOnce(updated, 'Passo 2 — Quando piscar, clique RÁPIDO!', 'Passo 2 — Quando aparecer, clique em até 5 segundos', 'passo 2 título');
-  updated = replaceOnce(updated, 'Quando o LED exibir <strong>"PICOLÉ GRÁTIS · CLIQUE AQUI"</strong>, toque imediatamente: a janela dura exatamente 5 segundos.', 'Quando o LED exibir <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong>, toque dentro da janela de <strong>exatos 5 segundos</strong>. Depois disso, o chamado desaparece.', 'passo 2 LED');
-  updated = replaceOnce(updated, 'Passo 3 — Preencha nome e WhatsApp', 'Passo 3 — Use o formulário exclusivo', 'passo 3 título');
-  updated = replaceOnce(updated, 'Um formulário rápido abre automaticamente. Digite seu <strong>nome completo</strong> e <strong>WhatsApp DDD 16</strong>. Leva menos de 20 segundos.', 'O clique válido abre outro formulário, separado de Dúvidas. Informe seu <strong>nome completo</strong>, <strong>WhatsApp DDD 16</strong> e aceite os termos.', 'passo 3 descrição');
-  updated = replaceOnce(updated, 'Passo 4 — Confirme e retire!', 'Passo 4 — Aguarde o código e retire na loja', 'passo 4 título');
-  updated = replaceOnce(updated, 'Se for o primeiro, você recebe confirmação no <strong>WhatsApp</strong>. Agende a retirada pelo WhatsApp e vá à sorveteria apenas na <strong>segunda, quarta ou sexta</strong> para retirar seu picolé de fruta grátis! 🍦', 'Se você for o vencedor do dia, o sistema confirma a reserva e mostra um código. Depois, você pode tocar no botão para abrir o <strong>WhatsApp</strong> com a mensagem de agendamento; é necessário tocar em <strong>Enviar</strong>. A retirada é <strong>presencial na loja</strong>, nas condições informadas pela equipe. Não há delivery. 🍦', 'passo 4 descrição');
-  updated = replaceOnce(updated, 'ATENÇÃO: O PICOLÉ GRÁTIS APARECE NO SITE!', 'ATENÇÃO: SÓ VALE QUANDO O SERVIDOR CONFIRMAR', 'alerta de ativação');
-  updated = replaceOnce(updated, 'O aviso no robô aparece por apenas <strong>alguns segundos</strong>. Assim que surgir <strong>"PICOLÉ GRÁTIS"</strong>, clique na hora para não perder sua chance!', 'A explicação abaixo mostra a mecânica prevista. A participação só aparece quando o servidor confirmar a campanha ativa e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong> por <strong>exatos 5 segundos</strong>.', 'alerta sem tempo vago');
-  const oldRules = `          <ul style="margin-left:18px;">
-            <li><strong>1 clique = 1 cadastro = 1 picolé:</strong> Cada clique no robô ItaBot abre 1 cadastro. Cada cadastro vencedor garante exatamente 1 (um) Picolé de Fruta Grátis à escolha. Clicar não garante picolé todo dia — apenas o cadastro do clique vencedor é premiado.</li>
-            <li><strong>Como vencer:</strong> Ser o <strong>primeiro</strong> a clicar no robô quando o LED piscar amarelo e completar o formulário com dados válidos. Apenas o primeiro clique válido de cada ativação é aceito.</li>
-            <li><strong>Ativações:</strong> O robô pode ativar aleatoriamente somente entre <strong>11h e 20h</strong>. Pode não ativar todos os dias — não há garantia de ativação diária.</li>
-            <li><strong>Celular DDD 16:</strong> Exclusivo para WhatsApp com DDD 16. Números de outras regiões não são aceitos.</li>
-            <li><strong>Limite por número:</strong> Um mesmo número de WhatsApp pode ganhar no máximo 1 vez por semana, mesmo que clique em todas as ativações.</li>
-            <li><strong>Retirada:</strong> Obrigatoriamente agendada pelo WhatsApp e realizada somente na <strong>segunda, quarta ou sexta</strong>, dentro do horário de funcionamento da sorveteria.</li>
-            <li><strong>Documento:</strong> Apresente o comprovante de reserva recebido no WhatsApp ao atendente.</li>
-            <li><strong>Sem transferência:</strong> A reserva é pessoal e intransferível.</li>
-            <li><strong>A Itapolitana reserva o direito</strong> de alterar, pausar ou encerrar a promoção a qualquer momento, com aviso prévio no site.</li>
-          </ul>`;
-  const newRules = `          <ul style="margin-left:18px;">
-            <li><strong>O que é:</strong> “Encontre um Picolé” é uma promoção separada do sorteio mensal da torta e do formulário de Dúvidas.</li>
-            <li><strong>Quando vale:</strong> somente quando o servidor confirmar a campanha ativa e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong>.</li>
-            <li><strong>Janela exata:</strong> o chamado fica disponível por <strong>exatos 5 segundos</strong>. Fora desse intervalo, o clique volta a abrir Dúvidas.</li>
-            <li><strong>Um vencedor por dia:</strong> o servidor aceita apenas o primeiro clique válido do dia. Os demais recebem a informação de que a oportunidade já terminou.</li>
-            <li><strong>Um formulário exclusivo:</strong> o clique válido abre o formulário do Picolé, separado do formulário de Dúvidas. Um mesmo envio não cria outro cadastro nem outro código.</li>
-            <li><strong>Dados obrigatórios:</strong> informe nome completo e celular com <strong>DDD 16</strong>, aceite os termos e envie somente uma vez.</li>
-            <li><strong>Confirmação:</strong> se você for o vencedor, o sistema confirma a reserva e exibe um código. Um botão abre o WhatsApp com a mensagem de agendamento; o envio só acontece depois que você tocar em <strong>Enviar</strong>.</li>
-            <li><strong>Retirada:</strong> o prêmio é retirado pessoalmente na loja, conforme data e orientação informadas pela equipe. <strong>Não há delivery.</strong></li>
-            <li><strong>Horário imprevisível:</strong> cada dia recebe um segundo exato diferente dentro da faixa de 11h a 20h; a faixa se repete, mas o segundo sorteado não se repete no ciclo de 30 dias.</li>
-            <li><strong>Sem garantia fora da ativação:</strong> ver a página ou clicar fora dos 5 segundos não garante prêmio. A disponibilidade depende da confirmação do servidor.</li>
-          </ul>`;
-  updated = replaceOnce(updated, oldRules, newRules, 'regulamento completo');
-  updated = replaceOnce(updated, '<script src="scripts/itap-picole-promo.js?v=20260825-picole-led-fix1" defer></script>', '<script src="scripts/ita-bot-widget-v2027.js?v=20260825-itabot-positioning1" defer></script>\n<script src="scripts/itap-picole-promo.js?v=20260825-itabot-positioning1" defer></script>', 'widget na página Promoção');
-  return updated;
+  const required = [
+    ['guia infantil', 'class="picole-kids-guide"'],
+    ['cinco passos', 'class="picole-kids-step"'],
+    ['frase normal de Dúvidas', 'DÚVIDAS · CLIQUE AQUI'],
+    ['chamado especial', 'ENCONTRE UM PICOLÉ · CLIQUE AQUI'],
+    ['janela de cinco segundos', 'exatos 5 segundos'],
+    ['um ganhador diário', '1 ganhador por dia'],
+    ['formulário exclusivo', 'formulário especial'],
+    ['regulamento infantil', 'id="picole-rules-box"']
+  ];
+  for (const [label, needle] of required) {
+    if (!source.includes(needle)) throw new Error(`Promoção: ${label} ausente`);
+  }
+  if (/servidor|server/i.test(source)) throw new Error('Promoção: copy pública contém servidor/server');
+  return source;
 });
-
 // Qualquer script alterado recebe nova query para vencer Cache First do Service Worker.
 patchRootHtmls((source) => source
   .replaceAll('scripts/ita-bot-widget-v2027.js?v=2027-floating-safe-20260825-cssfix1', 'scripts/ita-bot-widget-v2027.js?v=20260825-itabot-positioning1')
