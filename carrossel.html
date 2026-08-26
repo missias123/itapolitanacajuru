@@ -82,15 +82,33 @@
       z-index: 3;
     }
     .itp-slider .swiper-pagination-bullet {
-      width: 9px; height: 9px;
-      background: rgba(255,255,255,0.5);
+      position: relative;
+      width: 24px; height: 24px;
+      margin: 0 1px !important;
+      background: transparent;
       opacity: 1;
       border-radius: 50%;
+      touch-action: manipulation;
+      transition: background 0.3s;
+    }
+    .itp-slider .swiper-pagination-bullet::before {
+      content: '';
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 9px; height: 9px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
       transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
     }
     .itp-slider .swiper-pagination-bullet-active {
+      background: transparent;
+      transform: none;
+      box-shadow: none;
+    }
+    .itp-slider .swiper-pagination-bullet-active::before {
       background: #fff;
-      transform: scale(1.55);
+      transform: translate(-50%, -50%) scale(1.55);
       box-shadow: 0 0 8px rgba(255,255,255,0.65);
     }
 
@@ -391,5 +409,6 @@
   </script>
   <script src="scripts/site-loader.js" defer></script>
   <!-- O ItaBot é gerenciado pela página principal; não duplicar dentro do iframe. -->
+  <script src="scripts/itap-touch-feedback.js?v=20260826-touch-feedback" defer></script>
 </body>
 </html>
