@@ -21,3 +21,10 @@ Este documento registra as diretrizes definitivas e inegociáveis estabelecidas 
 - Validação rigorosa de WhatsApp aceitando exclusivamente o **DDD 16**.
 - Sincronismo total com o estoque oficial (`produtos.json`) e painel administrativo (protegido por senha `2007itapolitania` com alternador de visibilidade e engrenagem de acesso).
 - Controle de disponibilidade: itens esgotados aparecem como "Esgotado" e ficam bloqueados para compra.
+
+## 4. Auditoria obrigatória após toda alteração
+- Toda alteração no site, no painel administrativo, nos scripts, nos estilos, nos HTMLs ou nos dados deve ser seguida por uma auditoria de duplicações antes de merge, publicação ou conclusão da tarefa.
+- A auditoria deve verificar, no mínimo: scripts carregados duas vezes, folhas CSS repetidas, IDs HTML duplicados, tags do feedback tátil repetidas, SKUs repetidos no catálogo e referências duplicadas introduzidas pela alteração.
+- O gate reproduzível é `node scripts/auditoria-duplicacoes.js --ci`. Se houver duplicação, a alteração fica bloqueada até a causa ser corrigida ou formalmente justificada.
+- Históricos, backups e artefactos de auditoria não devem ser apagados automaticamente para esconder duplicações. A análise deve distinguir código publicado de backup e manter a evidência fora do código de produção.
+- A auditoria posterior é obrigatória tanto para páginas públicas como para o painel administrativo e deve acompanhar os gates de dependências, qualidade, regras e sincronismo.

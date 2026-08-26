@@ -220,9 +220,46 @@
       padding: 8px;
       border-radius: 8px;
     }
+
+
+    /* GUIA INFANTIL — ENCONTRE UM PICOLÉ */
+    .picole-kids-guide { max-width: 760px; margin: 0 auto 20px; }
+    .picole-kids-intro { text-align: center; margin-bottom: 14px; }
+    .picole-kids-kicker { display: inline-block; color: #07579c; background: #e5f5ff; border: 1px solid #90caf9; border-radius: 999px; padding: 6px 14px; font-size: .76rem; font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
+    .picole-kids-title { color: #062c63; font-size: clamp(1.2rem, 5vw, 1.7rem); line-height: 1.2; margin: 10px 0 6px; }
+    .picole-kids-intro p { color: #38546b; font-size: .95rem; margin: 0 auto; max-width: 600px; }
+    .picole-kids-beacon { display: flex; align-items: center; gap: 10px; background: #062c63; color: #fff; border-radius: 16px; padding: 12px 14px; margin-bottom: 14px; box-shadow: 0 8px 20px rgba(6,44,99,.16); }
+    .picole-kids-light { width: 14px; height: 14px; flex: 0 0 14px; border-radius: 50%; background: #ffd600; box-shadow: 0 0 0 5px rgba(255,214,0,.18); }
+    .picole-kids-beacon strong { display: block; font-size: .88rem; letter-spacing: .2px; }
+    .picole-kids-beacon small { display: block; color: rgba(255,255,255,.78); font-size: .75rem; line-height: 1.35; margin-top: 2px; }
+    .picole-kids-steps { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0; counter-reset: picole-step; }
+    .picole-kids-step { display: flex; align-items: flex-start; gap: 12px; background: #fff; border: 1px solid #d9ecf7; border-left: 5px solid #1565c0; border-radius: 15px; padding: 13px 14px; box-shadow: 0 4px 12px rgba(0,0,0,.06); opacity: 0; transform: translateY(10px); animation: itapPicoleStepIn .42s cubic-bezier(.23,1,.32,1) forwards; }
+    .picole-kids-step:nth-child(2) { border-left-color: #ff9800; animation-delay: 60ms; }
+    .picole-kids-step:nth-child(3) { border-left-color: #2e7d32; animation-delay: 120ms; }
+    .picole-kids-step:nth-child(4) { border-left-color: #e8000d; animation-delay: 180ms; }
+    .picole-kids-step:nth-child(5) { border-left-color: #7b1fa2; animation-delay: 240ms; }
+    .picole-kids-number { display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%; color: #fff; background: linear-gradient(135deg,#1565c0,#0288d1); font: 900 1rem/1 'Poppins',sans-serif; }
+    .picole-kids-step:nth-child(2) .picole-kids-number { background: linear-gradient(135deg,#ff9800,#fbc02d); color: #3d2600; }
+    .picole-kids-step:nth-child(3) .picole-kids-number { background: linear-gradient(135deg,#2e7d32,#43a047); }
+    .picole-kids-step:nth-child(4) .picole-kids-number { background: linear-gradient(135deg,#e8000d,#ff6d00); }
+    .picole-kids-step:nth-child(5) .picole-kids-number { background: linear-gradient(135deg,#7b1fa2,#ab47bc); }
+    .picole-kids-step h4 { color: #062c63; font-size: .94rem; line-height: 1.25; margin: 1px 0 4px; }
+    .picole-kids-step p { color: #4c5d69; font-size: .82rem; line-height: 1.45; margin: 0; }
+    .picole-kids-step strong { color: #173d63; }
+    .picole-kids-note { margin-top: 14px; background: #fff8e1; border: 2px solid #ffd600; border-radius: 14px; color: #5d4300; font-size: .82rem; line-height: 1.5; padding: 12px 14px; }
+    @keyframes itapPicoleStepIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      #promo-robo-picole *, #promo-robo-picole *::before, #promo-robo-picole *::after { animation: none !important; transition: none !important; }
+      .picole-kids-step { opacity: 1; transform: none; }
+    }
+    @media (max-width: 480px) {
+      .picole-kids-step { gap: 10px; padding: 12px 11px; }
+      .picole-kids-number { width: 35px; height: 35px; flex-basis: 35px; font-size: .92rem; }
+      .picole-kids-step h4 { font-size: .88rem; }
+      .picole-kids-step p, .picole-kids-note { font-size: .78rem; }
+    }
 </style>
   <link rel="stylesheet" href="styles/fueap-premium.css">
-  <link rel="stylesheet" href="css/itap-shared.css?v=20260815-icons-approved-2">
   <script src="scripts/itap-icons.js?v=20260815-icons-approved-2" defer></script>
   <link rel="stylesheet" href="css/itap-world-class.css?v=20260816-world-class-1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -412,7 +449,7 @@
           Encontre 1&nbsp;<span style="color:#FFD600;">Picolé de Fruta</span><br>no chamado do ItaBot!
         </h2>
         <p style="font-size:14px;color:rgba(255,255,255,0.85);margin:0;line-height:1.5;">
-          Quando o servidor confirmar a ativação, o primeiro clique válido durante os <strong>5 segundos</strong> abre o formulário exclusivo. Há <strong>1 vencedor por dia</strong>; o clique sozinho não garante o prêmio. O horário exibido é um segundo exato diferente por dia dentro da faixa de 11h a 20h.
+          Quando o site confirmar a brincadeira, o primeiro toque certo dentro dos <strong>5 segundos</strong> abre o formulário especial. Há <strong>1 ganhador por dia</strong>. O toque sozinho não garante o Picolé.
         </p>
       </div>
     </div>
@@ -425,59 +462,36 @@
     <!-- CONTEÚDO BRANCO (como ganhar + regulamento) -->
     <div style="background:#FFF8F0;padding:22px 20px 24px;">
 
-      <!-- COMO GANHAR — cards passo a passo -->
-      <div style="margin-bottom:20px;">
-        <div style="text-align:center;margin-bottom:14px;">
-          <span style="display:inline-block;background:linear-gradient(135deg,#1565C0,#0288D1);color:#fff;font-size:13px;font-weight:900;padding:6px 18px;border-radius:50px;letter-spacing:1px;text-transform:uppercase;">Como Ganhar o Picolé?</span>
+      <!-- GUIA INFANTIL — COMO ENCONTRAR O PICOLÉ -->
+      <section class="picole-kids-guide" aria-labelledby="picole-kids-title">
+        <div class="picole-kids-intro">
+          <span class="picole-kids-kicker">Brincadeira do ItaBot</span>
+          <h3 class="picole-kids-title" id="picole-kids-title">Quer brincar de achar um Picolé?</h3>
+          <p>É fácil: espere a frase aparecer, toque no robô e siga os passos.</p>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:10px;">
-
-          <!-- Passo 1 -->
-          <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 12px rgba(0,0,0,0.06);border-left:4px solid #1565C0;">
-            <div style="flex-shrink:0;width:40px;height:40px;background:linear-gradient(135deg,#1565C0,#0288D1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
-            <div>
-              <div style="font-weight:800;font-size:14px;color:#0a0f3d;margin-bottom:2px;">Passo 1 — Fique atento ao robô</div>
-              <div style="font-size:12.5px;color:#555;line-height:1.4;">Veja o <strong>Robô ItaBot</strong> flutuando em uma área livre da tela, sem cobrir conteúdos ou controles. A posição pode mudar durante a navegação.</div>
-            </div>
-          </div>
-
-          <!-- Passo 2 -->
-          <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 12px rgba(0,0,0,0.06);border-left:4px solid #FF9800;">
-            <div style="flex-shrink:0;width:40px;height:40px;background:linear-gradient(135deg,#FF9800,#FFD600);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;">⚡</div>
-            <div>
-              <div style="font-weight:800;font-size:14px;color:#0a0f3d;margin-bottom:2px;">Passo 2 — Quando aparecer, clique em até 5 segundos</div>
-              <div style="font-size:12.5px;color:#555;line-height:1.4;">Quando o LED exibir <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong>, toque dentro da janela de <strong>exatos 5 segundos</strong>. Depois disso, o chamado desaparece.</div>
-            </div>
-          </div>
-
-          <!-- Passo 3 -->
-          <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 12px rgba(0,0,0,0.06);border-left:4px solid #2E7D32;">
-            <div style="flex-shrink:0;width:40px;height:40px;background:linear-gradient(135deg,#2E7D32,#43A047);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;">📝</div>
-            <div>
-              <div style="font-weight:800;font-size:14px;color:#0a0f3d;margin-bottom:2px;">Passo 3 — Use o formulário exclusivo</div>
-              <div style="font-size:12.5px;color:#555;line-height:1.4;">O clique válido abre outro formulário, separado de Dúvidas. Informe seu <strong>nome completo</strong>, <strong>WhatsApp DDD 16</strong> e aceite os termos.</div>
-            </div>
-          </div>
-
-          <!-- Passo 4 -->
-          <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 4px 12px rgba(0,0,0,0.06);border-left:4px solid #E8000D;">
-            <div style="flex-shrink:0;width:40px;height:40px;background:linear-gradient(135deg,#E8000D,#FF6D00);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;">🎉</div>
-            <div>
-              <div style="font-weight:800;font-size:14px;color:#0a0f3d;margin-bottom:2px;">Passo 4 — Aguarde o código e retire na loja</div>
-              <div style="font-size:12.5px;color:#555;line-height:1.4;">Se você for o vencedor do dia, o sistema confirma a reserva e mostra um código. Depois, você pode tocar no botão para abrir o <strong>WhatsApp</strong> com a mensagem de agendamento; é necessário tocar em <strong>Enviar</strong>. A retirada é <strong>presencial na loja</strong>, nas condições informadas pela equipe. Não há delivery. 🍦</div>
-            </div>
-          </div>
-
+        <div class="picole-kids-beacon" role="note" aria-label="Como saber quando a brincadeira começa">
+          <span class="picole-kids-light" aria-hidden="true"></span>
+          <div><strong>Normalmente: DÚVIDAS · CLIQUE AQUI</strong><small>A brincadeira só começa quando aparecer a frase especial.</small></div>
         </div>
-      </div>
+
+        <ol class="picole-kids-steps" aria-label="Passo a passo para encontrar o Picolé">
+          <li class="picole-kids-step"><span class="picole-kids-number" aria-hidden="true">1</span><div><h4>Espere a frase</h4><p>Olhe o LED do ItaBot. A frase especial é <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong>.</p></div></li>
+          <li class="picole-kids-step"><span class="picole-kids-number" aria-hidden="true">2</span><div><h4>Toque na hora certa</h4><p>Quando a frase aparecer, toque no robô. Você tem <strong>5 segundos</strong>. Depois, o chamado desaparece.</p></div></li>
+          <li class="picole-kids-step"><span class="picole-kids-number" aria-hidden="true">3</span><div><h4>Preencha o formulário certo</h4><p>Se o seu toque for o primeiro toque válido do dia, aparece um formulário só da brincadeira. Escreva seu <strong>nome completo</strong> e o celular com <strong>DDD 16</strong>. Peça ajuda a um adulto se precisar.</p></div></li>
+          <li class="picole-kids-step"><span class="picole-kids-number" aria-hidden="true">4</span><div><h4>Veja o seu código</h4><p>O site confere a ordem dos toques. Se você for o <strong>ganhador do dia</strong>, aparece um código na tela.</p></div></li>
+          <li class="picole-kids-step"><span class="picole-kids-number" aria-hidden="true">5</span><div><h4>Retire o Picolé na loja</h4><p>Toque no WhatsApp e depois toque em <strong>Enviar</strong>. Leve o código e o celular cadastrado para retirar o Picolé na loja. <strong>Não há entrega em casa.</strong></p></div></li>
+        </ol>
+
+        <div class="picole-kids-note"><strong>Regra fácil:</strong> há <strong>1 ganhador por dia</strong>. Clicar fora dos 5 segundos, ver a página ou clicar quando estiver em Dúvidas não garante Picolé. A animação é só uma explicação: ela não liga a brincadeira nem cria ganhador.</div>
+      </section>
 
       <!-- ALERTA DE ATENÇÃO -->
       <div style="background:linear-gradient(135deg,#FFF8E1,#FFF3CD);border:2px solid #FFD600;border-radius:14px;padding:14px 16px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start;">
         <span style="font-size:22px;flex-shrink:0;">⚠️</span>
         <div>
-          <div style="font-weight:900;font-size:13px;color:#E65100;margin-bottom:4px;">ATENÇÃO: SÓ VALE QUANDO O SERVIDOR CONFIRMAR</div>
-          <div style="font-size:12.5px;color:#555;line-height:1.5;">A explicação abaixo mostra a mecânica prevista. A participação só aparece quando o servidor confirmar a campanha ativa e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong> por <strong>exatos 5 segundos</strong>.</div>
+          <div style="font-weight:900;font-size:13px;color:#E65100;margin-bottom:4px;">ATENÇÃO: SÓ VALE QUANDO O SITE CONFIRMAR</div>
+          <div style="font-size:12.5px;color:#555;line-height:1.5;">A explicação abaixo mostra como brincar. A participação só aparece quando o site confirmar a brincadeira e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong> por <strong>exatos 5 segundos</strong>.</div>
         </div>
       </div>
 
@@ -509,16 +523,16 @@
         <div id="picole-rules-box" style="display:none;background:#fff;border:1.5px solid #BBDEFB;border-radius:14px;padding:18px;margin-top:8px;font-size:0.87rem;color:#333;line-height:1.7;">
           <p style="font-weight:800;color:#1565C0;margin-bottom:8px;">Regulamento — Promoção Picolé de Fruta Grátis</p>
           <ul style="margin-left:18px;">
-            <li><strong>O que é:</strong> “Encontre um Picolé” é uma promoção separada do sorteio mensal da torta e do formulário de Dúvidas.</li>
-            <li><strong>Quando vale:</strong> somente quando o servidor confirmar a campanha ativa e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong>.</li>
-            <li><strong>Janela exata:</strong> o chamado fica disponível por <strong>exatos 5 segundos</strong>. Fora desse intervalo, o clique volta a abrir Dúvidas.</li>
-            <li><strong>Um vencedor por dia:</strong> o servidor aceita apenas o primeiro clique válido do dia. Os demais recebem a informação de que a oportunidade já terminou.</li>
-            <li><strong>Um formulário exclusivo:</strong> o clique válido abre o formulário do Picolé, separado do formulário de Dúvidas. Um mesmo envio não cria outro cadastro nem outro código.</li>
-            <li><strong>Dados obrigatórios:</strong> informe nome completo e celular com <strong>DDD 16</strong>, aceite os termos e envie somente uma vez.</li>
-            <li><strong>Confirmação:</strong> se você for o vencedor, o sistema confirma a reserva e exibe um código. Um botão abre o WhatsApp com a mensagem de agendamento; o envio só acontece depois que você tocar em <strong>Enviar</strong>.</li>
-            <li><strong>Retirada:</strong> o prêmio é retirado pessoalmente na loja, conforme data e orientação informadas pela equipe. <strong>Não há delivery.</strong></li>
-            <li><strong>Horário imprevisível:</strong> cada dia recebe um segundo exato diferente dentro da faixa de 11h a 20h; a faixa se repete, mas o segundo sorteado não se repete no ciclo de 30 dias.</li>
-            <li><strong>Sem garantia fora da ativação:</strong> ver a página ou clicar fora dos 5 segundos não garante prêmio. A disponibilidade depende da confirmação do servidor.</li>
+            <li><strong>O que é:</strong> “Encontre um Picolé” é uma brincadeira separada do sorteio mensal da torta e do formulário de Dúvidas.</li>
+            <li><strong>Quando vale:</strong> só vale quando o site confirmar a brincadeira e o LED mostrar <strong>“ENCONTRE UM PICOLÉ · CLIQUE AQUI”</strong>.</li>
+            <li><strong>Tempo para tocar:</strong> a frase fica disponível por <strong>exatos 5 segundos</strong>. Fora desse tempo, o clique volta a abrir Dúvidas.</li>
+            <li><strong>Ganhador:</strong> o site confere e aceita somente o primeiro toque válido do dia. Os outros toques recebem a informação de que a oportunidade acabou.</li>
+            <li><strong>Formulário:</strong> o toque válido abre um formulário exclusivo, separado do formulário de Dúvidas. Um mesmo envio não cria outro cadastro nem outro código.</li>
+            <li><strong>Dados:</strong> informe nome completo e celular com <strong>DDD 16</strong>, aceite os termos e envie apenas uma vez.</li>
+            <li><strong>Código:</strong> se você for o ganhador, o site confirma e mostra um código. O WhatsApp só recebe a mensagem depois que você tocar em <strong>Enviar</strong>.</li>
+            <li><strong>Retirada:</strong> o Picolé é retirado pessoalmente na loja, conforme a orientação da equipe. <strong>Não há delivery.</strong></li>
+            <li><strong>Horário:</strong> o momento da brincadeira muda a cada dia dentro da faixa de 11h a 20h. A página não promete que a brincadeira vai aparecer todos os dias.</li>
+            <li><strong>Sem garantia fora da brincadeira:</strong> ver a página ou clicar fora dos 5 segundos não garante prêmio. A brincadeira depende da confirmação do site.</li>
           </ul>
         </div>
       </div>
