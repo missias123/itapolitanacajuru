@@ -512,6 +512,9 @@ async function router(request, env) {
   if (path === '/api/admin/session' && method === 'POST') return handleAdminSession(request, env);
   if (path === '/api/admin/session' && method === 'DELETE') return handleAdminSessionLogout(request, env);
 
+  if (path === '/api/admin/pbkdf2-selftest' && method === 'POST') return handlePbkdf2Selftest(request, env);
+  if (path === '/api/admin/generate-hash' && method === 'POST') return handleGenerateHash(request, env);
+
   if (path === '/api/admin/sync/domains' && method === 'GET') {
     const guard = requirePermission(await getSession(), 'audit:read');
     if (guard) return guard;
@@ -628,7 +631,7 @@ async function handleAdminSession(request, env) {
   const rl = await checkRateLimit(env, ip, 'admin-login');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
-  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 400); }
   const password = sanitizeString(body.password || body.secret, 200);
   if (!(await verifyAdminPassword(password, env))) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
   const permissions = [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)];
@@ -645,6 +648,68 @@ async function handleAdminSessionLogout(request, env) {
   const token = request.headers.get('X-Itap-Session-Token');
   if (token) await env.RATE_KV.delete(`session:${token}`);
   return jsonResp({ ok: true });
+}
+
+async function handlePbkdf2Selftest(request, env) {
+  if (env.ENVIRONMENT === 'production') {
+    return jsonResp({ ok: false, error: 'Endpoint disponível apenas em staging/local' }, 403);
+  }
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+  const setupKey = sanitizeString(body.setup_key || '', 200);
+  if (!setupKey || !env.SETUP_KEY || !(await timingSafeEqual(setupKey, String(env.SETUP_KEY)))) {
+    return jsonResp({ ok: false, error: 'SETUP_KEY ausente ou incorreta' }, 401);
+  }
+  const iterations = Number(body.iterations ?? PBKDF2_DEFAULT_ITERATIONS);
+  const samples = Number(body.samples ?? 1);
+  if (!Number.isInteger(samples) || samples < 1 || samples > 10) {
+    return jsonResp({ ok: false, error: 'samples deve ser um inteiro entre 1 e 10' }, 400);
+  }
+  const dummySalt = bytesToBase64(crypto.getRandomValues(new Uint8Array(16)));
+  const timingsMs = [];
+  try {
+    for (let i = 0; i < samples; i++) {
+      const t0 = performance.now();
+      await pbkdf2Derive('selftest-dummy-password', dummySalt, iterations);
+      timingsMs.push(Math.round((performance.now() - t0) * 100) / 100);
+    }
+  } catch (e) {
+    return jsonResp({ ok: false, error: e.message }, 500);
+  }
+  return jsonResp({
+    ok: true,
+    algorithm: 'PBKDF2-HMAC-SHA-256',
+    environment: env.ENVIRONMENT || 'unknown',
+    iterations,
+    timingsMs,
+  });
+}
+
+async function handleGenerateHash(request, env) {
+  if (env.ENVIRONMENT === 'production') {
+    return jsonResp({ ok: false, error: 'Endpoint disponível apenas em staging/local' }, 403);
+  }
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+  const setupKey = sanitizeString(body.setup_key || '', 200);
+  if (!setupKey || !env.SETUP_KEY || !(await timingSafeEqual(setupKey, String(env.SETUP_KEY)))) {
+    return jsonResp({ ok: false, error: 'SETUP_KEY ausente ou incorreta' }, 401);
+  }
+  const password = sanitizeString(body.password || '', 200);
+  if (password.length < 16) {
+    return jsonResp({ ok: false, error: 'Senha deve ter pelo menos 16 caracteres' }, 400);
+  }
+  const iterations = Number(body.iterations ?? PBKDF2_DEFAULT_ITERATIONS);
+  const saltBytes = crypto.getRandomValues(new Uint8Array(32));
+  const saltBase64 = bytesToBase64(saltBytes);
+  let hash;
+  try {
+    hash = await pbkdf2Derive(password, saltBase64, iterations);
+  } catch (e) {
+    return jsonResp({ ok: false, error: e.message }, 500);
+  }
+  const record = `${ADMIN_PBKDF2_ALGO}$v=${ADMIN_PBKDF2_VERSION}$iter=${iterations}$salt=${saltBase64}$hash=${hash}`;
+  return jsonResp({ ok: true, ADMIN_PASSWORD_RECORD: record, iterations, algorithm: 'PBKDF2-HMAC-SHA-256' });
 }
 
 async function handleAdminGitHubFileGet(filePath, env) {
