@@ -54,11 +54,13 @@ function checkLocalFiles() {
     'sobre.html',
     'admin-painel.html',
     'dados/config.json',
+    'dados/produtos.json',
     'dados/admin_espelho_matrix.json',
     'scripts/ita-bot-widget-v2027.js',
     'scripts/itap-picole-promo.js',
     'scripts/gaveta-navegacao-mestra.js',
     'scripts/auditoria-duplicacoes.js',
+    'scripts/catalogo-mestre-gate.js',
   ];
   const missing = required.filter((file) => !fs.existsSync(path.join(ROOT, file)));
   add({
@@ -255,6 +257,7 @@ function writeReports(summary) {
   checkLocalFiles();
   run('quality-audit', process.execPath, ['scripts/quality-audit.js', '--fail']);
   run('dependency-audit', process.execPath, ['scripts/dependency-audit.js']);
+  run('catalogo-mestre-gate', process.execPath, ['scripts/catalogo-mestre-gate.js']);
   run('auditoria-duplicacoes', process.execPath, ['scripts/auditoria-duplicacoes.js', '--ci']);
   if (fs.existsSync(path.join(ROOT, 'scripts', 'auto-corrigir-regras.js'))) {
     run('auto-correcoes-regras-check', process.execPath, ['scripts/auto-corrigir-regras.js', '--check']);
