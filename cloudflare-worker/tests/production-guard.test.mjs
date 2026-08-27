@@ -99,6 +99,36 @@ async function assertNoSecrets(resp) {
   return text;
 }
 
+async function withCryptoActivitySpy(run) {
+  const originalGetRandomValues = globalThis.crypto.getRandomValues;
+  const originalImportKey = globalThis.crypto.subtle.importKey;
+  const originalDeriveBits = globalThis.crypto.subtle.deriveBits;
+  let getRandomValuesCalls = 0;
+  let pbkdf2Calls = 0;
+  globalThis.crypto.getRandomValues = function (...args) {
+    getRandomValuesCalls++;
+    return originalGetRandomValues.apply(this, args);
+  };
+  globalThis.crypto.subtle.importKey = async function (...args) {
+    pbkdf2Calls++;
+    return originalImportKey.apply(this, args);
+  };
+  globalThis.crypto.subtle.deriveBits = async function (...args) {
+    pbkdf2Calls++;
+    return originalDeriveBits.apply(this, args);
+  };
+  try {
+    await run({
+      getRandomValuesCalls: () => getRandomValuesCalls,
+      pbkdf2Calls: () => pbkdf2Calls,
+    });
+  } finally {
+    globalThis.crypto.getRandomValues = originalGetRandomValues;
+    globalThis.crypto.subtle.importKey = originalImportKey;
+    globalThis.crypto.subtle.deriveBits = originalDeriveBits;
+  }
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // 1. GUARDS DE PRODUÇÃO — pbkdf2-selftest
 // ──────────────────────────────────────────────────────────────────────────────
@@ -111,6 +141,28 @@ describe('/api/admin/pbkdf2-selftest', () => {
     assert.equal(resp.status, 403);
     const body = await resp.json();
     assert.equal(body.ok, false);
+  });
+
+  for (const envName of [undefined, '', 'unknown', 'preview']) {
+    test(`POST retorna 403 com ENVIRONMENT=${String(envName)}`, async () => {
+      const env = makeEnv(envName, { SETUP_KEY: TEST_SETUP_KEY });
+      const resp = await fetchWorker('/api/admin/pbkdf2-selftest', 'POST',
+        { setup_key: TEST_SETUP_KEY, iterations: 100000, samples: 1 }, env);
+      assert.equal(resp.status, 403);
+      const body = await resp.json();
+      assert.equal(body.ok, false);
+    });
+  }
+
+  test('Fail-closed ocorre antes de PBKDF2 e salt em ENVIRONMENT=preview', async () => {
+    await withCryptoActivitySpy(async (spy) => {
+      const env = makeEnv('preview', { SETUP_KEY: TEST_SETUP_KEY });
+      const resp = await fetchWorker('/api/admin/pbkdf2-selftest', 'POST',
+        { setup_key: TEST_SETUP_KEY, iterations: 100000, samples: 1 }, env);
+      assert.equal(resp.status, 403);
+      assert.equal(spy.getRandomValuesCalls(), 0);
+      assert.equal(spy.pbkdf2Calls(), 0);
+    });
   });
 
   test('GET retorna 404 (método não mapeado) em production', async () => {
@@ -206,6 +258,28 @@ describe('/api/admin/generate-hash', () => {
     assert.equal(resp.status, 403);
     const body = await resp.json();
     assert.equal(body.ok, false);
+  });
+
+  for (const envName of [undefined, '', 'unknown', 'preview']) {
+    test(`POST retorna 403 com ENVIRONMENT=${String(envName)}`, async () => {
+      const env = makeEnv(envName, { SETUP_KEY: TEST_SETUP_KEY });
+      const resp = await fetchWorker('/api/admin/generate-hash', 'POST',
+        { setup_key: TEST_SETUP_KEY, password: 'SenhaSegura1234567890' }, env);
+      assert.equal(resp.status, 403);
+      const body = await resp.json();
+      assert.equal(body.ok, false);
+    });
+  }
+
+  test('Fail-closed ocorre antes de PBKDF2 e salt em ENVIRONMENT=preview', async () => {
+    await withCryptoActivitySpy(async (spy) => {
+      const env = makeEnv('preview', { SETUP_KEY: TEST_SETUP_KEY });
+      const resp = await fetchWorker('/api/admin/generate-hash', 'POST',
+        { setup_key: TEST_SETUP_KEY, password: 'SenhaSegura1234567890' }, env);
+      assert.equal(resp.status, 403);
+      assert.equal(spy.getRandomValuesCalls(), 0);
+      assert.equal(spy.pbkdf2Calls(), 0);
+    });
   });
 
   test('GET retorna 404 (método não mapeado) em production', async () => {
@@ -570,4 +644,3 @@ describe('Rotas públicas e health check', () => {
   });
 
 });
-
