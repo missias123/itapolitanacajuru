@@ -11,7 +11,7 @@
     .sku-editor-intro{padding:15px 18px;background:#fff8f3;border-bottom:1px solid var(--line);color:var(--muted);font-size:13px}.sku-editor-intro strong{color:var(--ink)}.sku-action{min-width:150px}.sku-action.off{border-color:#efb3ae;background:#fff0ef;color:#9b211a}.sku-action.on{border-color:var(--green);background:#eaf8f2;color:#126040}.impact{font-size:11px;color:var(--muted);max-width:260px}.pending{font-size:12px;font-weight:800;color:var(--amber)}.sku-total{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:800;color:var(--wine)}.name-field{display:grid;gap:7px}.sku-linked-badge{display:inline-flex;align-items:center;gap:6px;max-width:max-content;border-radius:999px;padding:4px 8px;background:#fff8e8;border:1px solid #f0d7a6;color:#8d251f;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.action-inline{min-width:132px}.action-inline.off{border-color:#efb3ae;background:#fff0ef;color:#9b211a}.action-inline.on{border-color:#9ccc65;background:#eaf8f2;color:#126040}.section-chooser{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;padding:16px 18px;border-bottom:1px solid var(--line);background:#fff}.section-choice{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px 10px;cursor:pointer;text-align:left}.section-choice strong{display:block;font-size:12px}.section-choice span{display:block;color:var(--muted);font-size:11px}.section-choice em{display:inline-flex;min-width:25px;justify-content:center;padding:2px 7px;border-radius:999px;background:#edf4ff;color:#1d4ed8;font-style:normal;font-weight:800;font-size:11px}.section-order{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:999px;background:#fff;border:1px solid #f0d7a6;color:#8d251f;font-size:12px;font-weight:800;margin-right:8px}.section-head h2{display:flex;align-items:center}.section-hint{font-size:12px;color:var(--muted)}dialog{border:0;border-radius:14px;padding:0;max-width:min(540px,calc(100vw - 28px));box-shadow:0 22px 70px rgba(33,19,14,.28)}dialog::backdrop{background:rgba(31,26,24,.52)}.confirm-card{padding:22px}.confirm-card h2{margin:0 0 9px;font-size:23px}.confirm-card p{margin:0 0 14px;color:var(--muted)}.confirm-impact{margin:0 0 18px;padding:12px;border-radius:8px;background:#fff7e8;color:#5f450e;font-size:13px}.confirm-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}@media(max-width:760px){.confirm-actions .button{width:100%}}.token-card{padding:22px}.token-card h2{margin:0 0 6px;font-size:21px}.token-card .sub{margin:0 0 18px;color:var(--muted);font-size:13px}.token-field-wrap{position:relative;margin-bottom:10px}.token-field-wrap input{width:100%;padding:10px 44px 10px 12px;border:1px solid var(--line);border-radius:9px;font-family:ui-monospace,monospace;font-size:13px;outline:none;background:#fff;color:var(--ink)}.token-field-wrap input:focus{border-color:var(--wine)}.token-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;font-size:1rem;padding:0;color:var(--muted);touch-action:manipulation;-webkit-tap-highlight-color:transparent}.token-hint{font-size:11px;color:var(--muted);margin-bottom:18px}.token-active-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:8px;background:#eaf8f2;border:1px solid #a8dfca;margin-bottom:14px;font-size:13px;font-weight:800;color:#126040}.button.token-btn{border-color:#1d4ed8;background:#edf4ff;color:#1d4ed8}.button.token-btn.active{border-color:var(--green);background:#eaf8f2;color:#126040}
   </style>
   <style>
-    .toolbar-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .search-hint{grid-column:1 / -1;min-height:1.25em;margin:-6px 0 0;color:var(--muted);font-size:12px;font-weight:700}.toolbar-actions{display:flex;gap:10px;flex-wrap:wrap}
     .toolbar-actions .button{flex:1}
     tr.row-off{background:#fff1f1}
     tr.row-off td{border-bottom-color:#f6caca}
@@ -39,7 +39,8 @@
 
     <div class="notice" id="notice">Carregando a base única de SKUs…</div>
     <section class="toolbar" aria-label="Filtros do catálogo">
-      <input class="field" id="search" type="search" placeholder="Buscar por SKU, nome, descrição, tamanho, categoria ou embalagem">
+      <input class="field" id="search" type="search" placeholder="Buscar por SKU, nome, descrição, tamanho, categoria ou embalagem" aria-describedby="searchHint">
+      <p class="search-hint" id="searchHint" role="status" aria-live="polite"></p>
       <select class="field" id="category"><option value="">Todas as categorias</option></select>
       <div class="toolbar-actions">
         <button class="button" id="activeOnly" type="button" aria-pressed="false">Somente disponíveis</button>
@@ -135,6 +136,7 @@
     </div>
   </dialog>
 
+  <script src="scripts/catalogo-mestre.js?v=20260827-sku-resolver"></script>
   <script>
   (function(){
     'use strict';
@@ -261,13 +263,31 @@
       keys.forEach(key=>{if(!(key in ordered))ordered[key]=source[key]});
       state.raw.cadastro_skus.por_chave=ordered;
     }
+    const getSearchResolution=()=>{
+      const query=state.query.trim();
+      const resolver=window.ITAP_CATALOGO_MESTRE?.resolverNome;
+      return query&&state.raw&&resolver?resolver(state.raw,query):null;
+    };
+    const updateSearchHint=resolution=>{
+      const hint=$('searchHint');
+      if(!hint)return;
+      const candidates=resolution?.candidates||[];
+      if(!state.query.trim()||!resolution||['exact_name','exact_alias','exact_sku'].includes(resolution.status)){hint.textContent='';return;}
+      if(resolution.status==='suggestion'&&candidates[0]){hint.textContent=`Sugestão de SKU: ${candidates[0].nome} (${candidates[0].sku}). A sugestão não altera nada; confirme a linha pelo SKU.`;return;}
+      if(resolution.status==='ambiguous'){hint.textContent=`Há ${candidates.length} correspondência(s) possível(is). Escolha o produto pelo SKU; nenhum será seleccionado automaticamente.`;return;}
+      if(resolution.status==='inactive'){hint.textContent='O SKU informado está inactivo e não pode ser usado.';return;}
+      hint.textContent='';
+    };
     const visibleProducts=()=>{
       const q=state.query.trim().toLowerCase();
+      const resolution=getSearchResolution();
+      const resolvedSkus=new Set((resolution?.candidates||[]).map(item=>item.sku));
+      updateSearchHint(resolution);
       return records().filter(r=>{
         const availability=effective(r);
         const categoriaAtual=categoriaVisual(r);
         const hay=[r.sku,r.nome,r.descricao,r.tamanho,categoriaAtual,r.key,(r.dependencias_embalagem||[]).join(' ')].join(' ').toLowerCase();
-        return (!q||hay.includes(q))&&(!state.category||categoriaAtual===state.category)&&(!state.activeOnly||availability.available)&&(!state.soldOutOnly||!availability.available);
+        return (!q||hay.includes(q)||resolvedSkus.has(r.sku))&&(!state.category||categoriaAtual===state.category)&&(!state.activeOnly||availability.available)&&(!state.soldOutOnly||!availability.available);
       });
     };
     function buildManualKey(sku,categoria,picoleTipo){
