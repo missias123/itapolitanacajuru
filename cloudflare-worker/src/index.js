@@ -661,6 +661,9 @@ async function handlePbkdf2Selftest(request, env) {
     return jsonResp({ ok: false, error: 'SETUP_KEY ausente ou incorreta' }, 401);
   }
   const iterations = Number(body.iterations ?? PBKDF2_DEFAULT_ITERATIONS);
+  if (!Number.isInteger(iterations) || iterations < PBKDF2_MIN_ITERATIONS || iterations > PBKDF2_MAX_ITERATIONS) {
+    return jsonResp({ ok: false, error: `iterations deve ser inteiro entre ${PBKDF2_MIN_ITERATIONS} e ${PBKDF2_MAX_ITERATIONS}` }, 400);
+  }
   const samples = Number(body.samples ?? 1);
   if (!Number.isInteger(samples) || samples < 1 || samples > 10) {
     return jsonResp({ ok: false, error: 'samples deve ser um inteiro entre 1 e 10' }, 400);
@@ -700,6 +703,9 @@ async function handleGenerateHash(request, env) {
     return jsonResp({ ok: false, error: 'Senha deve ter pelo menos 16 caracteres' }, 400);
   }
   const iterations = Number(body.iterations ?? PBKDF2_DEFAULT_ITERATIONS);
+  if (!Number.isInteger(iterations) || iterations < PBKDF2_MIN_ITERATIONS || iterations > PBKDF2_MAX_ITERATIONS) {
+    return jsonResp({ ok: false, error: `iterations deve ser inteiro entre ${PBKDF2_MIN_ITERATIONS} e ${PBKDF2_MAX_ITERATIONS}` }, 400);
+  }
   const saltBytes = crypto.getRandomValues(new Uint8Array(32));
   const saltBase64 = bytesToBase64(saltBytes);
   let hash;
