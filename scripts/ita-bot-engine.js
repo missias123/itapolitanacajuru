@@ -61,8 +61,8 @@
       'telefone':      '\ud83d\udcf1 WhatsApp: (16) 99606-2046. Chame para encomendas, d\u00favidas ou eventos!',
       'contato':       '\ud83d\udcf1 Fale conosco pelo WhatsApp: (16) 99606-2046.',
       'instagram':     '\ud83d\udcf8 Nos siga: @sorveteriaitapolitanacajuru',
-      'sabor':         '\ud83c\udf66 Temos 38 Sabores Sorvete Itapolitana! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco) e muito mais.',
-      'sabores':       '\ud83c\udf66 Temos 38 Sabores Sorvete Itapolitana! Digite o nome de um sabor para saber o pre\u00e7o.',
+      'sabor':         '\ud83c\udf66 Temos 39 Sabores Sorvete Itapolitana! Destaques: Chocolate, Nutella, Leite Ninho, Morango Trufado, Ferrero Rocher, Pistache, Kinder Ovo (choc. branco) e muito mais.',
+      'sabores':       '\ud83c\udf66 Temos 39 Sabores Sorvete Itapolitana! Digite o nome de um sabor para saber o pre\u00e7o.',
       'nutella':       '\ud83c\udf66 Sim! Temos sorvete de Nutella, Banana com Nutella, Sundae com Nutela e mais! \ud83d\ude0b',
       'chocolate':     '\ud83c\udf6b Temos Chocolate, Chocolate com Caf\u00e9, Bis e Trufa, Menta com Chocolate, Prest\u00edgio e Torta de Chocolate!',
       'leite ninho':   '\ud83e\udd5b Temos Leite Ninho, Leite Ninho Folheado e Leite Ninho com Oreo! Os favoritos das crian\u00e7as!',
@@ -93,7 +93,7 @@
       'sorteio':       '\ud83c\udf89 Promo\u00e7\u00f5es e Sorteios\n\n\u26a0\ufe0f As inscri\u00e7\u00f5es para o sorteio da caixa de sorvete foram encerradas. A campanha anterior teve mais de 1.400 inscritos.\n\n\ud83c\udf70 Inscri\u00e7\u00f5es j\u00e1 est\u00e3o abertas para o sorteio mensal de uma torta de sorvete. O sorteio come\u00e7a em janeiro de 2027.\n\n\ud83d\udcdd Cadastre-se exclusivamente pelo site oficial da Itapolitana Cajuru: itapolitanacajuru.com.br, na aba Promo\u00e7\u00e3o.',
       'delivery':      '\ud83d\udeab N\u00e3o fazemos delivery. Encomende e retire na loja em Cajuru/SP.',
       'entrega':       '\ud83d\udeab N\u00e3o fazemos delivery. Para encomendas, a retirada \u00e9 na loja.',
-      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 38 Sabores incr\u00edveis!',
+      'artesanal':     '\ud83c\udf66 Nossos sorvetes s\u00e3o Sorvete Itapolitana \u2014 cremosos, em bolas redondas, com 39 Sabores incríveis!',
       'anos':          '\ud83c\udf66 A Sorveteria Itapolitana est\u00e1 em Cajuru desde 2007 \u2014 mais de 19 anos!',
       'historia':      '\ud83c\udf66 Fundada em 2007 em Cajuru/SP, mais de 19 anos de tradi\u00e7\u00e3o!'
     };
@@ -156,10 +156,19 @@
        Fallbacks numéricos apenas quando fonte indisponível.
     ─────────────────────────────────────────────────────────────────── */
 
+    function _saboresMassa() {
+      var official = (_prodData && Array.isArray(_prodData.sabores_sorvete))
+        ? _prodData.sabores_sorvete.map(function (item) { return typeof item === 'string' ? item : (item && item.nome); }).filter(Boolean)
+        : [];
+      if (official.length) return official;
+      var legacy = (_prodData && _prodData.sorvetes && Array.isArray(_prodData.sorvetes.sabores)) ? _prodData.sorvetes.sabores : [];
+      return legacy.map(function (item) { return typeof item === 'string' ? item : (item && item.nome); }).filter(Boolean);
+    }
+
     function _respSorvetes() {
-      var sabores = (_prodData && _prodData.sorvetes && _prodData.sorvetes.sabores) ? _prodData.sorvetes.sabores : [];
+      var sabores = _saboresMassa();
       var precos  = (_prodData && _prodData.sorvetes) ? (_prodData.sorvetes.precos || _prodData.sorvetes.preços || null) : null;
-      var n    = sabores.length || 35;
+      var n    = sabores.length || 39;
       var prev = sabores.length > 0
         ? sabores.slice(0, 8).join(', ') + ' e mais ' + (sabores.length - 8) + '...'
         : 'Chocolate, Nutella, Morango Trufado, Pistache, Kinder Ovo (choc. branco) e mais!';
@@ -340,9 +349,9 @@
 
     /* ── Busca dinâmica de sabor de sorvete ── */
     function _buscarSabor(msg) {
-      if (!_prodData || !_prodData.sorvetes || !_prodData.sorvetes.sabores) return null;
+      var sabores = _saboresMassa();
+      if (!sabores.length) return null;
       var l = _norm(msg);
-      var sabores = _prodData.sorvetes.sabores;
       var encontrado = null;
       for (var i = 0; i < sabores.length; i++) {
         var sNorm = _norm(sabores[i]);
@@ -409,7 +418,7 @@
       var linhaCasquinha = _linhaPreco(precos.casquinha || {});
       var linhaCopo = _linhaPreco(precos.copo || {});
       return {
-        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Sorvete Itapolitana!\n\nCasquinha: ' + linhaCasquinha + '\nCopo: ' + linhaCopo + '\n\n38 Sabores para escolher! Veja o card\u00e1pio completo:',
+        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Sorvete Itapolitana!\n\nCasquinha: ' + linhaCasquinha + '\nCopo: ' + linhaCopo + '\n\n39 Sabores para escolher! Veja o cardápio completo:',
         linkText: '\ud83c\udf66 Ver card\u00e1pio',
         linkHref: 'encomendas.html'
       };

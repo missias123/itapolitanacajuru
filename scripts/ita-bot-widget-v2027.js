@@ -533,7 +533,7 @@
     sabores: {
       titulo: '🍨 Sabores e Cardápio',
       textos: [
-        '✅ Mais de 38 sabores artesanais exclusivos de massas.',
+        '✅ Mais de 39 sabores artesanais exclusivos de massas.',
         '✅ Opções de milkshakes, caixas para viagem (5L e 10L) e complementos para açaí.'
       ],
       linkTexto: 'Ver Cardápio na Início',
