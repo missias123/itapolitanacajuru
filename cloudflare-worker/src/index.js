@@ -650,8 +650,12 @@ async function handleAdminSessionLogout(request, env) {
   return jsonResp({ ok: true });
 }
 
+function isSetupEnvironmentAllowed(env) {
+  return env?.ENVIRONMENT === 'staging' || env?.ENVIRONMENT === 'local';
+}
+
 async function handlePbkdf2Selftest(request, env) {
-  if (env.ENVIRONMENT === 'production') {
+  if (!isSetupEnvironmentAllowed(env)) {
     return jsonResp({ ok: false, error: 'Endpoint disponível apenas em staging/local' }, 403);
   }
   let body;
@@ -689,7 +693,7 @@ async function handlePbkdf2Selftest(request, env) {
 }
 
 async function handleGenerateHash(request, env) {
-  if (env.ENVIRONMENT === 'production') {
+  if (!isSetupEnvironmentAllowed(env)) {
     return jsonResp({ ok: false, error: 'Endpoint disponível apenas em staging/local' }, 403);
   }
   let body;

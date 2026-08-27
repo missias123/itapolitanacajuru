@@ -113,6 +113,17 @@ describe('/api/admin/pbkdf2-selftest', () => {
     assert.equal(body.ok, false);
   });
 
+  for (const envName of [undefined, 'unknown', 'preview']) {
+    test(`POST retorna 403 com ENVIRONMENT=${String(envName)}`, async () => {
+      const env = makeEnv(envName, { SETUP_KEY: TEST_SETUP_KEY });
+      const resp = await fetchWorker('/api/admin/pbkdf2-selftest', 'POST',
+        { setup_key: TEST_SETUP_KEY, iterations: 100000, samples: 1 }, env);
+      assert.equal(resp.status, 403);
+      const body = await resp.json();
+      assert.equal(body.ok, false);
+    });
+  }
+
   test('GET retorna 404 (método não mapeado) em production', async () => {
     const resp = await fetchWorker('/api/admin/pbkdf2-selftest', 'GET', null, makeProductionEnv());
     assert.equal(resp.status, 404);
@@ -207,6 +218,17 @@ describe('/api/admin/generate-hash', () => {
     const body = await resp.json();
     assert.equal(body.ok, false);
   });
+
+  for (const envName of [undefined, 'unknown', 'preview']) {
+    test(`POST retorna 403 com ENVIRONMENT=${String(envName)}`, async () => {
+      const env = makeEnv(envName, { SETUP_KEY: TEST_SETUP_KEY });
+      const resp = await fetchWorker('/api/admin/generate-hash', 'POST',
+        { setup_key: TEST_SETUP_KEY, password: 'SenhaSegura1234567890' }, env);
+      assert.equal(resp.status, 403);
+      const body = await resp.json();
+      assert.equal(body.ok, false);
+    });
+  }
 
   test('GET retorna 404 (método não mapeado) em production', async () => {
     const resp = await fetchWorker('/api/admin/generate-hash', 'GET', null, makeProductionEnv());
@@ -570,4 +592,3 @@ describe('Rotas públicas e health check', () => {
   });
 
 });
-
