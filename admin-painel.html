@@ -648,6 +648,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
     <button class="nav-btn" id="nav-btn-catalogo" onclick="irPara('catalogo-admin',this)">🗂️ Catálogo</button>
     <button class="nav-btn nav-btn-tecnico" id="nav-btn-qualidade" onclick="irPara('qualidade-admin',this)">🧪 Qualidade <span id="badge-quality-nav" style="display:none;margin-left:5px;background:#c62828;color:#fff;border-radius:999px;padding:2px 7px;font-size:.7rem;font-weight:800"></span></button>
+    <button class="nav-btn nav-btn-tecnico" id="nav-btn-sincronizacao" onclick="irPara('sincronizacao-admin',this)">🔄 Sincronização</button>
   </div>
   <div class="admin-content">
     <!-- PÁGINA INICIAL — primeiro botão do site -->
@@ -2617,6 +2618,32 @@ Talento</textarea>
       </div>
     </div>
     <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
+    <!-- ═══════════════ SEÇÃO SINCRONIZAÇÃO ════════════════════ -->
+    <div class="seção" id="sec-sincronizacao">
+      <div class="card">
+        <div class="card-header" style="gap:10px;flex-wrap:wrap">
+          <h2 style="margin-right:auto">🔄 Centro de Sincronização</h2>
+          <button type="button" class="btn btn-salvar" onclick="carregarSincronizacao()" id="btn-reload-sync" aria-label="Recarregar estado de sincronização">↻ Recarregar</button>
+          <button type="button" class="btn btn-cinza" onclick="copiarRelatorioSync()" id="btn-copy-sync" aria-label="Copiar relatório de sincronização sem dados pessoais">📋 Copiar relatório</button>
+        </div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:13px 16px;border-radius:10px;margin-bottom:16px;font-size:.84rem;line-height:1.5;color:#0d47a1">
+            <strong>Leitura somente.</strong> Esta área exibe o estado de sincronização dos domínios do sistema. Nenhuma operação de escrita é realizada aqui. Pedidos, clientes, fidelidade e campanhas não podem ser alterados por esta interface.
+          </div>
+          <div id="sync-status-banner" style="display:none;margin-bottom:12px"></div>
+          <div id="sync-loading" style="text-align:center;padding:32px 16px;color:#888;font-size:.9rem">
+            <div style="font-size:2rem;margin-bottom:8px">🔄</div>
+            <div>Carregando estado de sincronização…</div>
+          </div>
+          <div id="sync-empty" style="display:none;background:#fafafa;border:1px dashed #bbb;border-radius:12px;padding:24px;text-align:center;color:#777;font-size:.84rem">
+            Nenhum dado de sincronização disponível.
+          </div>
+          <div id="sync-domains-grid" style="display:none;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:16px" role="list" aria-label="Domínios de sincronização"></div>
+          <div id="sync-generated-at" style="display:none;font-size:.75rem;color:#999;margin-top:8px;text-align:right"></div>
+        </div>
+      </div>
+    </div>
+    <!-- ═══════════════ FIM SEÇÃO SINCRONIZAÇÃO ══════════════════ -->
 
 </div>
 <script>
@@ -3422,7 +3449,8 @@ function irPara(seção,btn){
     'dicas-admin':    ['depoimentos'],
     'sobre-admin':    ['sobre'],
     'galeria-admin':  ['galeria'],
-    'qualidade-admin': ['qualidade']
+    'qualidade-admin': ['qualidade'],
+    'sincronizacao-admin': ['sincronizacao']
   };
   console.log(`[irPara] Navegando para: ${seção}`);
   document.querySelectorAll('.seção').forEach(s=>s.classList.remove('ativo'));
@@ -3482,6 +3510,7 @@ function irPara(seção,btn){
   if(ids.includes('galeria')){console.log('[irPara] Inicializando GALERIA');safeInit('GALERIA',()=>carregarGaleria());}
   if(ids.includes('encomendas-config')){console.log('[irPara] Inicializando COMPRAR CONFIG');safeInit('COMPRAR CONFIG',()=>carregarEncomendas());}
   if(ids.includes('qualidade')){console.log('[irPara] Inicializando QUALIDADE');safeInit('QUALIDADE',()=>{atualizarScoresQualidade();preencherNotasOperacionais();});}
+  if(ids.includes('sincronizacao')){console.log('[irPara] Inicializando SINCRONIZAÇÃO');safeInit('SINCRONIZACAO',()=>carregarSincronizacao());}
   if(ids.includes('catalogo')){console.log('[irPara] Inicializando CATÁLOGO');safeInit('CATÁLOGO',()=>renderCatalogo());}
   if(ids.includes('rastreio')){console.log('[irPara] Inicializando RASTREIO');safeInit('RASTREIO',()=>renderRastreioRecentes());}
   if(ids.includes('auditoria')){console.log('[irPara] Inicializando AUDITORIA');safeInit('AUDITORIA',()=>executarAuditoria());}
@@ -9194,6 +9223,170 @@ function toggleCatItem(sku, chkId) {
   if (badge) badge.innerHTML = _statusBadge(ativo);
   if (linha) linha.style.background = ativo ? '' : '#fff8f8';
 }
+
+// ─── SINCRONIZAÇÃO ────────────────────────────────────────────────────────────
+let _syncData = null;
+
+async function carregarSincronizacao() {
+  const loading   = document.getElementById('sync-loading');
+  const grid      = document.getElementById('sync-domains-grid');
+  const empty     = document.getElementById('sync-empty');
+  const banner    = document.getElementById('sync-status-banner');
+  const footer    = document.getElementById('sync-generated-at');
+  const reloadBtn = document.getElementById('btn-reload-sync');
+  const copyBtn   = document.getElementById('btn-copy-sync');
+
+  if (!loading || !grid) return;
+
+  // Reset UI
+  loading.style.display = 'block';
+  if(grid)   { grid.style.display   = 'none'; grid.innerHTML = ''; }
+  if(empty)  { empty.style.display  = 'none'; }
+  if(banner) { banner.style.display = 'none'; banner.innerHTML = ''; }
+  if(footer) { footer.style.display = 'none'; footer.textContent = ''; }
+  if(reloadBtn) reloadBtn.disabled = true;
+
+  const sessionToken = getWorkerSessionToken();
+  if (!sessionToken) {
+    loading.style.display = 'none';
+    if(banner) {
+      banner.style.display = 'block';
+      banner.innerHTML = '<div style="background:#ffebee;border-left:4px solid #c62828;padding:12px 16px;border-radius:10px;font-size:.85rem;color:#c62828">⛔ Sessão administrativa ausente ou expirada. Faça login para carregar o estado de sincronização.</div>';
+    }
+    if(reloadBtn) reloadBtn.disabled = false;
+    return;
+  }
+
+  try {
+    const resp = await fetchWithTimeout(ITAP_WORKER_API + '/api/admin/sync/domains', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'X-Itap-Session-Token': sessionToken },
+    }, 12000);
+
+    loading.style.display = 'none';
+
+    if (resp.status === 401 || resp.status === 403) {
+      if(banner) {
+        banner.style.display = 'block';
+        const msg = resp.status === 401
+          ? '🔐 Sessão ausente ou inválida (401). Faça login e tente novamente.'
+          : '🚫 Permissão insuficiente para ler dados de sincronização (403).';
+        banner.innerHTML = `<div style="background:#ffebee;border-left:4px solid #c62828;padding:12px 16px;border-radius:10px;font-size:.85rem;color:#c62828">${esc(msg)}</div>`;
+      }
+      if(reloadBtn) reloadBtn.disabled = false;
+      return;
+    }
+
+    let data;
+    try {
+      const text = await resp.text();
+      data = JSON.parse(text);
+    } catch {
+      if(banner) {
+        banner.style.display = 'block';
+        banner.innerHTML = '<div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:10px;font-size:.85rem;color:#e65100">⚠️ Resposta inválida do servidor. Não foi possível interpretar os dados de sincronização.</div>';
+      }
+      if(reloadBtn) reloadBtn.disabled = false;
+      return;
+    }
+
+    if (!data || !data.ok || !Array.isArray(data.domains)) {
+      if(empty) empty.style.display = 'block';
+      if(reloadBtn) reloadBtn.disabled = false;
+      return;
+    }
+
+    _syncData = data;
+
+    if (data.domains.length === 0) {
+      if(empty) empty.style.display = 'block';
+      if(reloadBtn) reloadBtn.disabled = false;
+      return;
+    }
+
+    if(grid) {
+      grid.innerHTML = '';
+      grid.style.display = 'grid';
+      data.domains.forEach(d => {
+        grid.insertAdjacentHTML('beforeend', _renderSyncDomainCard(d));
+      });
+    }
+
+    if(footer && data.generatedAt) {
+      footer.style.display = 'block';
+      let ts = data.generatedAt;
+      try { ts = new Date(data.generatedAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', hour12: false }); } catch {}
+      footer.textContent = 'Gerado em: ' + ts;
+    }
+
+  } catch (e) {
+    loading.style.display = 'none';
+    if(banner) {
+      banner.style.display = 'block';
+      banner.innerHTML = '<div style="background:#fff3e0;border-left:4px solid #e65100;padding:12px 16px;border-radius:10px;font-size:.85rem;color:#e65100">⚠️ Falha ao conectar com o servidor de sincronização. Verifique a conexão e tente novamente.</div>';
+    }
+  } finally {
+    if(reloadBtn) reloadBtn.disabled = false;
+  }
+}
+
+const _SYNC_STATE_LABELS = { synchronized: 'sincronizado', divergente: 'divergente', conflito: 'conflito', blocked: 'bloqueado', not_verified: 'não verificável' };
+function _syncStateLabel(state) { return _SYNC_STATE_LABELS[state] || state || '—'; }
+
+function _renderSyncDomainCard(d) {
+  const stateColors = {
+    synchronized: { bg: '#e8f5e9', border: '#2e7d32', text: '#2e7d32', icon: '✅' },
+    divergente:   { bg: '#fff3e0', border: '#e65100', text: '#e65100', icon: '⚠️' },
+    conflito:     { bg: '#ffebee', border: '#c62828', text: '#c62828', icon: '🚨' },
+    blocked:      { bg: '#f3e5f5', border: '#6a1b9a', text: '#6a1b9a', icon: '🔒' },
+    not_verified: { bg: '#fafafa', border: '#9e9e9e', text: '#616161', icon: '❓' },
+  };
+  const st = stateColors[d.state] || stateColors.not_verified;
+  const stateLabel = _syncStateLabel(d.state);
+  const hasFallback = !d.revision && d.state !== 'blocked';
+  const revDisplay = d.revision ? esc(String(d.revision).slice(0, 12)) : '—';
+  let updatedDisplay = '—';
+  if (d.updatedAt) {
+    try { updatedDisplay = new Date(d.updatedAt).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', hour12: false }); } catch { updatedDisplay = esc(d.updatedAt); }
+  }
+  return `<div role="listitem" aria-label="Domínio ${esc(d.domain)}" tabindex="0"
+    style="background:${st.bg};border:1.5px solid ${st.border};border-radius:14px;padding:18px 16px;font-size:.83rem;line-height:1.6">
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+      <span aria-hidden="true" style="font-size:1.5rem">${st.icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.9rem;color:#333;word-break:break-all">${esc(d.domain)}</div>
+        <span style="display:inline-block;background:${st.border};color:#fff;border-radius:20px;padding:1px 10px;font-size:.7rem;font-weight:700;letter-spacing:.03em;margin-top:3px">${esc(stateLabel)}</span>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:.8rem">
+      <tr><td style="color:#666;padding:2px 6px 2px 0;width:110px">Fonte de verdade</td><td style="color:#333;word-break:break-all">${esc(d.sourceOfTruth || '—')}</td></tr>
+      <tr><td style="color:#666;padding:2px 6px 2px 0">Revisão / ID</td><td style="color:#333;font-family:monospace">${revDisplay}</td></tr>
+      <tr><td style="color:#666;padding:2px 6px 2px 0">Última leitura</td><td style="color:#333">${updatedDisplay}</td></tr>
+    </table>
+    ${hasFallback ? '<div style="margin-top:10px;padding:7px 10px;background:rgba(255,152,0,.12);border-left:3px solid #ef6c00;border-radius:6px;font-size:.78rem;color:#bf360c">⚠️ Sem SHA/revisão — leitura pode estar em fallback ou desatualizada.</div>' : ''}
+  </div>`;
+}
+
+function copiarRelatorioSync() {
+  if (!_syncData || !Array.isArray(_syncData.domains)) {
+    toast('Nenhum dado de sincronização carregado. Clique em Recarregar primeiro.', 'aviso');
+    return;
+  }
+  const lines = ['# Relatório de Sincronização', '', `Gerado em: ${_syncData.generatedAt || '—'}`, ''];
+  _syncData.domains.forEach(d => {
+    const stateLabel = _syncStateLabel(d.state);
+    lines.push(`## Domínio: ${d.domain}`);
+    lines.push(`  Estado:           ${stateLabel}`);
+    lines.push(`  Fonte de verdade: ${d.sourceOfTruth || '—'}`);
+    lines.push(`  Revisão/ID:       ${d.revision ? String(d.revision).slice(0, 12) : '—'}`);
+    lines.push(`  Última leitura:   ${d.updatedAt || '—'}`);
+    lines.push('');
+  });
+  copiarTextoSeguro(lines.join('\n')).then(ok => {
+    toast(ok ? '📋 Relatório copiado (sem dados pessoais).' : '⚠️ Não foi possível copiar automaticamente.', ok ? 'sucesso' : 'aviso');
+  });
+}
+// ─── FIM SINCRONIZAÇÃO ────────────────────────────────────────────────────────
 
 function renderCatalogo() {
   const p = STATE.produtos;
