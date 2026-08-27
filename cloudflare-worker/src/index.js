@@ -696,22 +696,50 @@ async function handleAdminGitHubFilePut(request, env) {
   });
 }
 
+async function readAdminSyncMatrix(env) {
+  const path = 'dados/admin_espelho_matrix.json';
+  try {
+    const response = await fetch(GH_RAW + path + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!response.ok) return { state: 'not_verified', error: `HTTP_${response.status}`, total: 0, campos: [] };
+    const payload = await response.json();
+    const rows = Array.isArray(payload?.campos) ? payload.campos : [];
+    const campos = rows.map((row) => ({
+      id: sanitizeString(row?.id, 120),
+      sourceFile: sanitizeString(row?.sourceFile, 200),
+      configKey: sanitizeString(row?.configKey, 200),
+      adminId: sanitizeString(row?.adminId, 200),
+      targetFile: sanitizeString(row?.targetFile, 200),
+      siteNeedle: sanitizeString(row?.siteNeedle, 300),
+    }));
+    return {
+      state: 'available',
+      schema: sanitizeString(payload?._schema, 40),
+      revision: await sha256Hex({ schema: payload?._schema || '', campos }),
+      total: campos.length,
+      campos,
+    };
+  } catch {
+    return { state: 'not_verified', error: 'MATRIX_READ_FAILED', total: 0, campos: [] };
+  }
+}
+
 async function handleAdminSyncDomains(env) {
   const catalogMeta = await readGitHubFileMeta(GH_ADMIN_JSON_PATHS.produtos, env);
   const configMeta = await readGitHubFileMeta(GH_ADMIN_JSON_PATHS.config, env);
   const ordersList = await env.ENCOMENDAS_KV.list({ prefix: 'enc:' });
   const campaign = env.PROMO_KV ? await env.PROMO_KV.get('picole:campanha', 'json') : null;
+  const matrix = await readAdminSyncMatrix(env);
   return jsonResp({
     ok: true,
     generatedAt: new Date().toISOString(),
     domains: [
-      { domain: 'catalog', sourceOfTruth: GH_ADMIN_JSON_PATHS.produtos, writePath: 'admin_authenticated_github', state: catalogMeta.revision ? 'synchronized' : 'not_verified', ...catalogMeta },
-      { domain: 'editorial_config', sourceOfTruth: GH_ADMIN_JSON_PATHS.config, writePath: 'admin_authenticated_github', state: configMeta.revision ? 'synchronized' : 'not_verified', ...configMeta },
+      { domain: 'catalog', sourceOfTruth: GH_ADMIN_JSON_PATHS.produtos, writePath: 'admin_authenticated_github', state: catalogMeta.revision ? 'source_available' : 'not_verified', ...catalogMeta },
+      { domain: 'editorial_config', sourceOfTruth: GH_ADMIN_JSON_PATHS.config, writePath: 'admin_authenticated_github', state: configMeta.revision ? 'source_available' : 'not_verified', ...configMeta },
       {
         domain: 'orders',
         sourceOfTruth: 'worker.ENCOMENDAS_KV',
         writePath: 'public_form_to_worker',
-        state: 'synchronized',
+        state: 'source_available',
         revision: String(ordersList.keys.length),
         updatedAt: new Date().toISOString(),
       },
@@ -719,11 +747,16 @@ async function handleAdminSyncDomains(env) {
         domain: 'campaign_picole',
         sourceOfTruth: 'worker.PROMO_KV',
         writePath: 'admin_authenticated_worker',
-        state: campaign ? 'synchronized' : 'blocked',
+        state: !campaign
+          ? 'not_verified'
+          : campaign.safeToAnnounce === false || campaign.paused === true
+            ? 'blocked'
+            : 'source_available',
         revision: campaign?.id || null,
         updatedAt: campaign?.atualizadoEm || null,
       },
     ],
+    matrix,
   });
 }
 

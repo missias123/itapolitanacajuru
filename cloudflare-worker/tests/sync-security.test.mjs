@@ -166,3 +166,40 @@ test('lista encomendas mascaradas por padrão e libera sensível só com manage'
     globalThis.fetch = originalFetch;
   }
 });
+
+test('inclui matriz sanitizada somente com audit:read', async () => {
+  const env = createEnv();
+  await env.RATE_KV.put('session:matrix', JSON.stringify({ permissions: ['audit:read'], expiresAt: Date.now() + 60000 }));
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    const target = String(url);
+    calls.push({ target, method: options.method || 'GET' });
+    if (target.includes('/contents/dados/produtos.json') || target.includes('/contents/dados/config.json')) {
+      return new Response(JSON.stringify({ sha: 'sha-sintetico' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (target.includes('/dados/admin_espelho_matrix.json')) {
+      return new Response(JSON.stringify({
+        _schema: '1.0',
+        campos: [{ id: 'campo1', sourceFile: 'dados/config.json', configKey: 'titulo', adminId: 'campo-titulo', targetFile: 'index.html', siteNeedle: 'data-config="titulo"', segredo: 'não deve sair' }],
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    throw new Error(`URL inesperada: ${target}`);
+  };
+
+  try {
+    const { status, json } = await request(env, '/api/admin/sync/domains', {
+      headers: { 'X-Itap-Session-Token': 'matrix' },
+    });
+    assert.equal(status, 200);
+    assert.equal(json.ok, true);
+    assert.deepEqual(json.domains.map((domain) => domain.state), ['source_available', 'source_available', 'source_available', 'not_verified']);
+    assert.equal(json.matrix.state, 'available');
+    assert.equal(json.matrix.total, 1);
+    assert.equal(json.matrix.campos[0].id, 'campo1');
+    assert.equal(Object.hasOwn(json.matrix.campos[0], 'segredo'), false);
+    assert.equal(calls.some((call) => call.method !== 'GET'), false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

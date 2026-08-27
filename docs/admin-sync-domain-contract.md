@@ -22,6 +22,18 @@ Este contrato define fronteiras de escrita e leitura para evitar sincronização
 4. Pedidos com validação server-side, idempotência por `X-Idempotency-Key` e sem confirmação falsa.
 5. Endpoints públicos não alteram estado por `GET`.
 6. Relatórios administrativos de pedidos retornam dados mascarados por padrão.
+7. A matriz estrutural (`id`, arquivo de origem, chave, `adminId`, alvo e marcador) só é devolvida na resposta autenticada de `GET /api/admin/sync/domains`, sob `audit:read`; ela não é exposta por rota pública nem usada para sobrescrever conteúdo.
+
+## Resposta do endpoint de sincronização
+
+`GET /api/admin/sync/domains` exige `X-Itap-Session-Token` válido e a permissão `audit:read`. A resposta contém `domains` com estado e fonte de verdade de catálogo, configuração editorial, encomendas e campanha do Picolé, além de `matrix` com metadados estruturais sanitizados. O cliente deve exibir divergência, falha de leitura ou conflito como estado de revisão; nunca deve converter uma comparação em escrita automática.
+
+### Semântica dos estados
+
+- `source_available`: a fonte de verdade respondeu e tem revisão/metadado disponível; a igualdade com o Site ainda não foi provada.
+- `synchronized`: reservado para reconciliação exacta e verificável entre a fonte declarada e a superfície correspondente.
+- `blocked`: o domínio está deliberadamente bloqueado ou inactivo, como uma campanha não autorizada; não deve ser anunciado nem activado pela UI.
+- `not_verified`: a leitura falhou, a fonte está ausente ou o estado não pode ser confirmado com segurança.
 
 ## Observações de risco existente
 

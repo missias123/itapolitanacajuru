@@ -585,6 +585,7 @@ body { overflow-x: hidden; }
   .admin-inline-meta .admin-counter { width: 100%; margin-left: 0; }
 }
 
+.sync-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.sync-actions .btn{min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.sync-summary{background:#fafafa;border:1px solid #e0e0e0;border-radius:10px;padding:12px;font-size:.82rem;color:#666;margin-bottom:12px;line-height:1.55}.sync-summary-ok{border-color:#a8dfca;background:#f0fbf5;color:#126040}.sync-summary-error{border-color:#efb4b4;background:#fff7f7;color:#8a1c1c}.sync-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;padding:12px;border:1px solid #e0e0e0;border-radius:10px;background:#fff}.sync-path,.sync-detail{font-size:.75rem;color:#666;line-height:1.45;overflow-wrap:anywhere}.sync-detail{grid-column:1/-1}.sync-pill{align-self:start;display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:4px 9px;border-radius:999px;font-size:.7rem;font-weight:800;white-space:nowrap}.sync-ok{background:#e8f5e9;color:#1b5e20}.sync-warn{background:#fff3e0;color:#8d4b00}.sync-muted{background:#f1f3f5;color:#495057}.sync-matrix-summary{margin-top:14px;padding:12px;border:1px solid #e0e0e0;border-radius:10px;background:#fafafa;font-size:.8rem;line-height:1.55;overflow-wrap:anywhere}.sync-failures{margin:10px 0 0;max-height:340px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#fff7f7;color:#7f1d1d;border:1px solid #efb4b4;border-radius:10px;padding:12px;font-size:.73rem;line-height:1.5}@media(max-width:600px){.sync-actions{width:100%}.sync-actions .btn{width:100%;justify-content:center}.sync-row{grid-template-columns:1fr}.sync-pill{justify-self:start}}@media(prefers-reduced-motion:reduce){.sync-actions .btn{transition:none!important}}
 </style>
 <!-- cache-bust:20260419_000000 -->
   <link rel="stylesheet" href="styles/fueap-premium.css">
@@ -647,6 +648,7 @@ body { overflow-x: hidden; }
     <button class="nav-btn" id="nav-btn-sobre" onclick="irPara('sobre-admin',this)">🏪 Sobre</button>
     <button class="nav-btn" id="nav-btn-galeria" onclick="irPara('galeria-admin',this)">📸 Galeria</button>
     <button class="nav-btn" id="nav-btn-catalogo" onclick="irPara('catalogo-admin',this)">🗂️ Catálogo</button>
+    <button class="nav-btn" id="nav-btn-sincronizacao" onclick="irPara('sincronizacao-admin',this)">🔄 Sincronização</button>
     <button class="nav-btn nav-btn-tecnico" id="nav-btn-qualidade" onclick="irPara('qualidade-admin',this)">🧪 Qualidade <span id="badge-quality-nav" style="display:none;margin-left:5px;background:#c62828;color:#fff;border-radius:999px;padding:2px 7px;font-size:.7rem;font-weight:800"></span></button>
   </div>
   <div class="admin-content">
@@ -2616,6 +2618,26 @@ Talento</textarea>
         </div>
       </div>
     </div>
+    <div class="seção" id="sec-sincronizacao">
+      <div class="card">
+        <div class="card-header" style="gap:10px;flex-wrap:wrap">
+          <h2 style="margin-right:auto">Centro de Sincronização Admin ↔ Site</h2>
+          <div class="sync-actions" role="group" aria-label="Ações de sincronização">
+            <button type="button" class="btn btn-salvar" id="sync-run">Verificar sincronização</button>
+            <button type="button" class="btn btn-cinza" id="sync-copy">Copiar relatório</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="background:#e3f2fd;border-left:4px solid #1565c0;padding:13px 16px;border-radius:10px;margin-bottom:16px;font-size:.84rem;line-height:1.55;color:#0d47a1">
+            <strong>Como funciona:</strong> o painel consulta o Worker com a sessão administrativa e compara os estados autorizados com as páginas públicas e a matriz estrutural. É uma verificação somente leitura: não publica, não modifica dados e não lê clientes, conteúdo completo de pedidos, autenticação ou fidelidade.
+          </div>
+          <div id="sync-summary" class="sync-summary" role="status" aria-live="polite">Nenhuma verificação executada nesta sessão.</div>
+          <div id="sync-sources" style="display:grid;gap:10px" aria-live="polite"></div>
+          <div id="sync-matrix" style="margin-top:14px" aria-live="polite"></div>
+          <pre id="sync-report" tabindex="0" aria-label="Relatório sanitizado de sincronização" style="display:none;white-space:pre-wrap;word-break:break-word;background:#171717;color:#f5f5f5;border-radius:12px;padding:14px;font-size:.76rem;line-height:1.55;max-height:340px;overflow:auto"></pre>
+        </div>
+      </div>
+    </div>
     <!-- ═══════════════ SEÇÃO RASTREIO (Minha Encomenda) ═══════ -->
 
 </div>
@@ -3422,6 +3444,7 @@ function irPara(seção,btn){
     'dicas-admin':    ['depoimentos'],
     'sobre-admin':    ['sobre'],
     'galeria-admin':  ['galeria'],
+    'sincronizacao-admin': ['sincronizacao'],
     'qualidade-admin': ['qualidade']
   };
   console.log(`[irPara] Navegando para: ${seção}`);
@@ -3452,6 +3475,7 @@ function irPara(seção,btn){
   if(ids.includes('produtos')){console.log('[irPara] Inicializando PRODUTOS');safeInit('PRODUTOS',()=>renderProdutosAdmin());}
   if(ids.includes('promoção')){console.log('[irPara] Inicializando PROMO');safeInit('PROMO',()=>{preencherPromoção();preencherSorteio();renderPromocoesTable();carregarInscritosSorteio();});}
   if(ids.includes('participantes')){console.log('[irPara] Inicializando PARTICIPANTES');safeInit('PARTICIPANTES',()=>renderParticipantes());}
+  if(ids.includes('sincronizacao')){console.log('[irPara] Inicializando SINCRONIZAÇÃO');safeInit('SINCRONIZAÇÃO',()=>{if(typeof window.executarSincronizacaoAdminSite==='function')window.executarSincronizacaoAdminSite();});}
   if(ids.includes('clientes')){
     console.log('[irPara] Inicializando CLIENTES');
     safeInit('CLIENTES',()=>{
@@ -10539,6 +10563,7 @@ async function zerarPontosNegativos(clienteId){
   window.copiarRelatorioQualidade=async function(){const report=document.getElementById('quality-report');const value=report?.textContent||'';if(!value){if(typeof toast==='function')toast('Execute a auditoria antes de copiar.','aviso');return;}let ok=false;try{ok=typeof copiarTextoSeguro==='function'?await copiarTextoSeguro(value):false;}catch(e){}if(typeof toast==='function')toast(ok?'Relatório copiado. Cole aqui para correção.':'Selecione o relatório e copie manualmente.',ok?'sucesso':'aviso');};
 })();
 </script>
+  <script src="scripts/admin-site-sync-panel.js?v=20260827-sync2" defer></script>
   <script src="scripts/nav-active-world-class.js?v=300" defer></script>
   <script src="scripts/gaveta-navegacao-mestra.js?v=20260825-autofix-nav1" defer></script>
   <script src="scripts/itap-touch-feedback.js?v=20260826-touch-feedback" defer></script>
