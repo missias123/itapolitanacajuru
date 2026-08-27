@@ -140,7 +140,7 @@
     launcher.innerHTML = [
       '<span class="itabot-launcher-robot" aria-hidden="true">',
         '<img class="itabot-launcher-image" src="' + _base + 'images/itabot-3d-full-body-transparent.png" alt="" draggable="false"/>',
-        '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 38 SABORES •</span></span>',
+        '<span class="itabot-face-led" aria-hidden="true"><span class="itabot-face-led-track">ITAPOLITANA • SORVETE ARTESANAL • MAIS DE 39 SABORES •</span></span>',
         '<span class="itabot-chest-badge" aria-hidden="true">ITA</span>',
       '</span>',
       '<span class="itabot-launcher-led-panel" aria-hidden="true"><span class="itabot-launcher-led-track">DÚVIDA — CLIQUE AQUI&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</span></span>',
@@ -154,7 +154,7 @@
     var ledMessages = [
       'ITAPOLITANA',
       'SORVETE ARTESANAL',
-      'MAIS DE 38 SABORES',
+      'MAIS DE 39 SABORES',
       'PISTACHE • CHEESECAKE • BEM CASADO',
       'RETIRE NA LOJA • CAJURU'
     ];
@@ -459,7 +459,7 @@
     sabores: {
       titulo: '🍨 Sabores e Cardápio',
       textos: [
-        '✅ Mais de 38 sabores artesanais exclusivos de massas.',
+        '✅ Mais de 39 sabores artesanais exclusivos de massas.',
         '✅ Opções de milkshakes, caixas para viagem (5L e 10L) e complementos para açaí.'
       ],
       linkTexto: 'Ver Cardápio na Início',
