@@ -135,16 +135,7 @@
         mostrarMensagem('❌ ' + (dados.error || 'Erro ao realizar cadastro. Verifique se já está cadastrado este mês.'), 'erro');
       }
     } catch (e) {
-      // Fallback elegante caso a rede falhe
-      var regIdFallback = 'SRT-2027-' + Math.floor(1000 + Math.random() * 9000);
-      var msgFallback = `
-        <div style="font-size: 1.1rem; margin-bottom: 8px;">🎉 <strong>Cadastro Realizado!</strong> 🎉</div>
-        <div class="ticket-sorte">
-          <div style="font-size: 0.8rem;">Seu Ticket da Sorte</div>
-          <div class="ticket-codigo">${regIdFallback}</div>
-        </div>
-      `;
-      mostrarMensagem(msgFallback, 'ok');
+      mostrarMensagem('❌ Não foi possível confirmar o cadastro. Verifique sua conexão e tente novamente.', 'erro');
     } finally {
       _promoSubmitting = false;
       if (btnEnviarPromo) {

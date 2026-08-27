@@ -5833,6 +5833,11 @@ function getSaborMassaStyle(nome) {
   const cor = SABOR_MASSA_PALETA[String(nome || '').trim().toLowerCase()] || ['#94A3B8', '#F8FAFC', 'rgba(148,163,184,.30)'];
   return ' --sabor-accent:' + cor[0] + ';--sabor-tint:' + cor[1] + ';--sabor-glow:' + cor[2] + ';';
 }
+function getSaborMassaClass(nome) {
+  var n = String(nome || '').trim().toLowerCase();
+  var novos = ['cheesecake', 'passas ao rum', 'bem casado'];
+  return 'sabor-massa-premium' + (novos.indexOf(n) !== -1 ? ' sabor-novo' : '');
+}
 
 function mostrarSaboresInline(accBodyEl, titulo, sub, chips) {
  if (!accBodyEl) return;
