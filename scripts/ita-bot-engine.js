@@ -158,15 +158,17 @@
 
     function _respSorvetes() {
       var sabores = (_prodData && _prodData.sorvetes && _prodData.sorvetes.sabores) ? _prodData.sorvetes.sabores : [];
-      var precos  = (_prodData && _prodData.sorvetes && _prodData.sorvetes.precos)  ? _prodData.sorvetes.precos  : null;
+      var precos  = (_prodData && _prodData.sorvetes) ? (_prodData.sorvetes.precos || _prodData.sorvetes.preços || null) : null;
       var n    = sabores.length || 35;
       var prev = sabores.length > 0
         ? sabores.slice(0, 8).join(', ') + ' e mais ' + (sabores.length - 8) + '...'
         : 'Chocolate, Nutella, Morango Trufado, Pistache, Kinder Ovo (choc. branco) e mais!';
-      var cp0  = (precos && precos.casquinha_copo && precos.casquinha_copo['1 Bola'] != null) ? precos.casquinha_copo : null;
-      var pMin = cp0 ? 'R$ ' + cp0['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
+      var casquinha = (precos && precos.casquinha) ? precos.casquinha : null;
+      var copo = (precos && precos.copo) ? precos.copo : null;
+      var pMinCasquinha = casquinha && casquinha['1 Bola'] != null ? 'R$ ' + casquinha['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
+      var pMinCopo = copo && copo['1 Bola'] != null ? 'R$ ' + copo['1 Bola'].toFixed(2).replace('.', ',') : 'R$ 8,00';
       return {
-        answer: '\ud83c\udf66 Temos ' + n + ' sabores Sorvete Itapolitana!\n\n\u2728 Destaques: ' + prev + '\n\n\ud83d\udcb0 A partir de ' + pMin + ' (1 bola na casquinha/copo).\nVer card\u00e1pio completo e fazer pedido:',
+        answer: '\ud83c\udf66 Temos ' + n + ' sabores Sorvete Itapolitana!\n\n\u2728 Destaques: ' + prev + '\n\n\ud83d\udcb0 1 bola: casquinha ' + pMinCasquinha + ' · copo ' + pMinCopo + '.\nVer card\u00e1pio completo e fazer pedido:',
         linkText: '\ud83c\udf66 Ver todos os sabores',
         linkHref: 'encomendas.html',
         chips: ['\ud83e\uddd0 Pre\u00e7os de sorvete', '\ud83e\uddc2 Caixas para festas', '\ud83c\udf78 Milkshakes', '\ud83e\uded0 A\u00e7a\u00ed']
@@ -352,13 +354,15 @@
         if (encontrado) break;
       }
       if (!encontrado) return null;
-      var precos = _prodData.sorvetes.precos;
-      var cp = (precos && precos.casquinha_copo && precos.casquinha_copo['1 Bola'] != null) ? precos.casquinha_copo : null;
-      var linhaPre = cp
-        ? '1 bola R$ ' + cp['1 Bola'].toFixed(2).replace('.', ',') + ' \u00b7 2 bolas R$ ' + (cp['2 Bolas'] != null ? cp['2 Bolas'].toFixed(2).replace('.', ',') : '') + ' \u00b7 3 bolas R$ ' + (cp['3 Bolas'] != null ? cp['3 Bolas'].toFixed(2).replace('.', ',') : '')
-        : 'a partir de R$ 8,00';
+      var precos = _prodData.sorvetes.precos || _prodData.sorvetes.preços || {};
+      var casquinha = precos.casquinha || {};
+      var copo = precos.copo || {};
+      function _linhaFormato(label, tabela) {
+        return label + ': 1 bola R$ ' + Number(tabela['1 Bola'] ?? 8).toFixed(2).replace('.', ',') + ' · 2 bolas R$ ' + Number(tabela['2 Bolas'] ?? 10).toFixed(2).replace('.', ',') + ' · 3 bolas R$ ' + Number(tabela['3 Bolas'] ?? 12).toFixed(2).replace('.', ',');
+      }
+      var linhaPre = _linhaFormato('Casquinha', casquinha) + ' · ' + _linhaFormato('Copo', copo);
       return {
-        answer: '\ud83c\udf66 Temos ' + encontrado + '! \ud83d\ude0b\n\nPre\u00e7os (casquinha/copo): ' + linhaPre + '\n\nGostaria de ver outras op\u00e7\u00f5es ou o card\u00e1pio completo?',
+        answer: '\ud83c\udf66 Temos ' + encontrado + '! \ud83d\ude0b\n\nPre\u00e7os: ' + linhaPre + '\n\nGostaria de ver outras op\u00e7\u00f5es ou o card\u00e1pio completo?',
         linkText: '\ud83c\udf66 Ver card\u00e1pio completo',
         linkHref: 'encomendas.html',
         chips: ['\ud83e\uddd0 Outros pre\u00e7os', '\ud83c\udf78 Milkshakes', '\ud83e\uded0 A\u00e7a\u00ed', '\ud83d\udce6 Fazer encomenda']
@@ -398,13 +402,14 @@
     }
 
     function _respPromoSorvetes() {
-      var cp = (_prodData && _prodData.sorvetes && _prodData.sorvetes.precos && _prodData.sorvetes.precos.casquinha_copo)
-        ? _prodData.sorvetes.precos.casquinha_copo : null;
-      var linhaPrecos = cp
-        ? Object.keys(cp).map(function (k) { return k + ': R$ ' + cp[k].toFixed(2).replace('.', ','); }).join(' \u00b7 ')
-        : '1 bola R$ 8,00 \u00b7 2 bolas R$ 10,00 \u00b7 3 bolas R$ 12,00';
+      var precos = (_prodData && _prodData.sorvetes) ? (_prodData.sorvetes.precos || _prodData.sorvetes.preços || {}) : {};
+      function _linhaPreco(tabela) {
+        return '1 bola R$ ' + Number(tabela['1 Bola'] ?? 8).toFixed(2).replace('.', ',') + ' · 2 bolas R$ ' + Number(tabela['2 Bolas'] ?? 10).toFixed(2).replace('.', ',') + ' · 3 bolas R$ ' + Number(tabela['3 Bolas'] ?? 12).toFixed(2).replace('.', ',');
+      }
+      var linhaCasquinha = _linhaPreco(precos.casquinha || {});
+      var linhaCopo = _linhaPreco(precos.copo || {});
       return {
-        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Sorvete Itapolitana!\n\nCasquinha/Copo: ' + linhaPrecos + '\n\n38 Sabores para escolher! Veja o card\u00e1pio completo:',
+        answer: '\ud83c\udf66 Pre\u00e7os dos sorvetes Sorvete Itapolitana!\n\nCasquinha: ' + linhaCasquinha + '\nCopo: ' + linhaCopo + '\n\n38 Sabores para escolher! Veja o card\u00e1pio completo:',
         linkText: '\ud83c\udf66 Ver card\u00e1pio',
         linkHref: 'encomendas.html'
       };

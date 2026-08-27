@@ -764,20 +764,10 @@
         return Number(totalUnidades >= MIN_PICOLES_ATACADO ? precoAtacadoDoGrupo(grupo) : precoVarejoDoGrupo(grupo));
     }
 
-    var PRODUTOS = [
-        { id: "cx5l_2s", nome: "Caixa 5 Litros - 2 Sabores", preco: 100, max: 2, estoque: 18, esgotado: false },
-        { id: "cx5l_3s", nome: "Caixa 5 Litros - 3 Sabores", preco: 115, max: 3, estoque: 18, esgotado: false },
-        { id: "cx10l_2s", nome: "Caixa 10 Litros - 2 Sabores", preco: 150, max: 2, estoque: 15, esgotado: false },
-        { id: "cx10l_3s", nome: "Caixa 10 Litros - 3 Sabores", preco: 165, max: 3, estoque: 15, esgotado: false }
-    ];
-    var TORTA_ESTOQUE = { id: "torta1", nome: "Torta de Sorvete", preco: 100, max: 3, estoque: 10, esgotado: false };
-    var ACRESCIMOS = [
-        { id: "acr_0", nome: "Canudinho Wafer", preco: 0.25, estoque: 100, esgotado: false },
-        { id: "acr_1", nome: "Casquinhas", preco: 0.25, estoque: 100, esgotado: false },
-        { id: "acr_2", nome: "Cascão", preco: 1.00, estoque: 100, esgotado: false },
-        { id: "acr_3", nome: "Cestinha Recheada", preco: 1.00, estoque: 100, esgotado: false },
-        { id: "acr_4", nome: "Cobertura 1.3L", preco: 40.00, estoque: 100, esgotado: false }
-    ];
+    // Não há produtos de reserva neste arquivo. A única fonte é o Cardápio Oficial Mestre.
+    var PRODUTOS = [];
+    var TORTA_ESTOQUE = null;
+    var ACRESCIMOS = [];
     var ESTOQUE_CARREGADO = false;
     var ESTOQUE_URL = "dados/produtos.json";
     var MAPA_PICOLES_ESTOQUE = {};
@@ -804,13 +794,19 @@
             return (indiceA < 0 ? Number.MAX_SAFE_INTEGER : indiceA) - (indiceB < 0 ? Number.MAX_SAFE_INTEGER : indiceB);
         }).forEach(function (chave) {
             var grupo = raw[chave] || {};
-            var registroMestre = mestre['picoles.' + chave] || {};
+            var chaveMestre = chave === 'esquimos' ? 'esquimós' : chave;
+            var registroMestre = mestre['picoles.' + chaveMestre];
+            if (!registroMestre || registroMestre.ativo === false) return;
             var sabores = Array.isArray(grupo.sabores) ? grupo.sabores : [];
-            var nomes = sabores.map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
+            var nomes = sabores.map(function (item) {
+                var codigo = typeof item === 'string' ? item : item && (item.codigo || item.sku);
+                var registroSabor = codigo ? mestre['picoles.' + chaveMestre + '.' + codigo] : null;
+                return registroSabor && registroSabor.nome ? registroSabor.nome : null;
+            }).filter(Boolean);
             var varejo = Number(registroMestre.preco_varejo ?? registroMestre.preco ?? grupo.preço_varejo ?? grupo.preco_varejo ?? 0);
             var atacado = Number(registroMestre.preco_atacado ?? grupo.preço_atacado ?? grupo.preco_atacado ?? varejo);
-            var titulo = (rotulos[chave] || grupo.nome || chave) + ' — Atacado R$ ' + atacado.toFixed(2).replace('.', ',') + ' acima de 100 un.';
-            catalogo[titulo] = { precoVarejo: varejo, precoAtacado: atacado, quantidadeMinimaAtacado: Number(registroMestre.quantidade_minima_atacado ?? 100), sabores: nomes };
+            var titulo = (registroMestre.nome || rotulos[chave] || grupo.nome || chave) + ' — Atacado R$ ' + atacado.toFixed(2).replace('.', ',') + ' acima de 100 un.';
+            catalogo[titulo] = { sku: registroMestre.sku, precoVarejo: varejo, precoAtacado: atacado, quantidadeMinimaAtacado: Number(registroMestre.quantidade_minima_atacado ?? 100), sabores: nomes };
             mapa[titulo] = [{ chave: chave, sabores: nomes }];
         });
         PICOLES_CATALOGO = catalogo;
@@ -865,37 +861,52 @@
             var dados = window.ITAP_CATALOGO_MESTRE && typeof window.ITAP_CATALOGO_MESTRE.aplicar === 'function'
                 ? window.ITAP_CATALOGO_MESTRE.aplicar(dadosBrutos)
                 : dadosBrutos;
+            var mestre = (dados && dados.cadastro_skus && dados.cadastro_skus.por_chave) || {};
             montarCatalogoOficial(dados);
             var caixas = Array.isArray(dados.caixas_enc) ? dados.caixas_enc : [];
             PRODUTOS = caixas.map(function (item) {
+                var baseSku = String(item.sku || '').replace(/-(?:2S|3S)$/i, '');
+                var registro = Object.values(mestre).find(function (entry) { return entry && entry.sku === baseSku && entry.categoria === 'Caixas para encomenda'; });
+                if (!registro) return null;
+                var maxSabores = Number(item.maxSabores || 1);
+                var precoOficial = registro['preco_' + maxSabores + 'sabores'];
+                var dependenciaIndisponivel = (registro.dependencias_embalagem || []).some(function (sku) { return dados.disponibilidade && dados.disponibilidade.embalagens && dados.disponibilidade.embalagens[sku] && dados.disponibilidade.embalagens[sku].ativo === false; });
                 return {
                     id: item.id,
-                    nome: item.nome,
-                    preco: Number(item.preço ?? item.preco ?? 0),
-                    max: Number(item.maxSabores || 1),
+                    sku: registro.sku,
+                    nome: registro.nome + ' - ' + maxSabores + ' Sabores',
+                    preco: Number(precoOficial ?? item.preço ?? item.preco ?? registro.preco ?? 0),
+                    max: maxSabores,
                     estoque: Number(item.estoque ?? 0),
-                    esgotado: Boolean(item.esgotado)
+                    esgotado: Boolean(item.esgotado || registro.ativo === false || dependenciaIndisponivel)
                 };
-            });
+            }).filter(Boolean);
             var tortas = Array.isArray(dados.tortas_enc) ? dados.tortas_enc : [];
-            if (tortas[0]) TORTA_ESTOQUE = {
-                id: tortas[0].id,
-                nome: tortas[0].nome,
-                preco: Number(tortas[0].preço ?? tortas[0].preco ?? 0),
-                max: Number(tortas[0].maxSabores || 1),
-                estoque: Number(tortas[0].estoque ?? 0),
-                esgotado: Boolean(tortas[0].esgotado)
-            };
+            if (tortas[0]) {
+                var registroTorta = mestre['tortas.' + tortas[0].id];
+                if (registroTorta) TORTA_ESTOQUE = {
+                    id: tortas[0].id,
+                    sku: registroTorta.sku,
+                    nome: registroTorta.nome,
+                    preco: Number(registroTorta.preco ?? tortas[0].preço ?? tortas[0].preco ?? 0),
+                    max: Number(tortas[0].maxSabores || 1),
+                    estoque: Number(tortas[0].estoque ?? 0),
+                    esgotado: Boolean(tortas[0].esgotado || registroTorta.ativo === false)
+                };
+            }
             var acrescimos = Array.isArray(dados.acrescimos) ? dados.acrescimos : [];
             ACRESCIMOS = acrescimos.map(function (item) {
+                var registro = mestre['acrescimos.' + item.id];
+                if (!registro) return null;
                 return {
                     id: item.id,
-                    nome: item.nome,
-                    preco: Number(item.preço ?? item.preco ?? 0),
+                    sku: registro.sku,
+                    nome: registro.nome,
+                    preco: Number(registro.preco ?? item.preço ?? item.preco ?? 0),
                     estoque: Number(item.estoque ?? 0),
-                    esgotado: Boolean(item.esgotado)
+                    esgotado: Boolean(item.esgotado || registro.ativo === false)
                 };
-            });
+            }).filter(Boolean);
             var rawPicoles = dados.picolés || dados.picoles || {};
             Object.keys(PICOLES_CATALOGO).forEach(function (tipo) {
                 var grupo = PICOLES_CATALOGO[tipo];
@@ -1066,7 +1077,7 @@
             var indisponivel = Boolean(p.esgotado || Number(p.estoque || 0) <= 0);
             var subtotal = quantidade * Number(p.preco || 0);
             var nome = escaparHtml(p.nome);
-            return `<div class="prod-card prod-card--azul acrescimo-card ${indisponivel ? 'is-esgotado' : ''}">
+            return `<div class="prod-card prod-card--azul acrescimo-card ${indisponivel ? 'is-esgotado' : ''}" data-sku="${escaparHtml(p.sku)}">
                 <div class="prod-nome">${nome}</div>
                 <div class="prod-preco">R$ ${Number(p.preco).toFixed(2).replace('.',',')} <span style="font-size:.75rem;color:#666;font-weight:700;">/ unidade</span></div>
                 <div class="prod-card__estoque ${indisponivel ? 'is-esgotado' : ''}">${indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)'}</div>
@@ -1086,6 +1097,14 @@
         var picolesEl = document.getElementById('lista-picoles');
         var acrescimosEl = document.getElementById('lista-acrescimos');
         if (!caixasEl || !tortasEl || !picolesEl || !acrescimosEl) return;
+        if (!ESTOQUE_CARREGADO || !TORTA_ESTOQUE) {
+            var statusCatalogo = '<p class="catalogo-status" role="status">Carregando o Cardápio Oficial Mestre…</p>';
+            caixasEl.innerHTML = statusCatalogo;
+            tortasEl.innerHTML = statusCatalogo;
+            picolesEl.innerHTML = statusCatalogo;
+            acrescimosEl.innerHTML = statusCatalogo;
+            return;
+        }
 
         caixasEl.innerHTML = PRODUTOS.map(function (p) {
             var indisponivel = Boolean(p.esgotado || Number(p.estoque || 0) <= 0);
@@ -1098,7 +1117,7 @@
 
             var status = indisponivel ? 'Esgotado' : 'Disponível: ' + Number(p.estoque) + ' unidade(s)';
             var nome = escaparHtml(p.nome);
-            return `<div class="prod-card ${cores.card} ${indisponivel ? 'is-esgotado' : ''}">
+            return `<div class="prod-card ${cores.card} ${indisponivel ? 'is-esgotado' : ''}" data-sku="${escaparHtml(p.sku)}" data-variant-id="${escaparHtml(p.id)}">
                 <div class="prod-nome">${nome}</div>
                 ${seloLeitePasteurizadoHtml()}
                 <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">${p.max} Sabores Sorvete Itapolitana</div>
@@ -1109,7 +1128,7 @@
         }).join('');
 
         var tortaIndisponivel = Boolean(TORTA_ESTOQUE.esgotado || Number(TORTA_ESTOQUE.estoque || 0) <= 0);
-        tortasEl.innerHTML = `<div class="prod-card prod-card--verde ${tortaIndisponivel ? 'is-esgotado' : ''}">
+        tortasEl.innerHTML = `<div class="prod-card prod-card--verde ${tortaIndisponivel ? 'is-esgotado' : ''}" data-sku="${escaparHtml(TORTA_ESTOQUE.sku)}">
             <div class="prod-nome">Torta de Sorvete</div>
             ${seloLeitePasteurizadoHtml()}
             <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">Até 3 Sabores Sorvete Itapolitana</div>

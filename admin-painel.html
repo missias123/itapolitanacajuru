@@ -3869,7 +3869,7 @@ function renderPreços(){
   const _sv_raw=p.sorvetes?.precos||p.sorvetes?.preços||{};
   if(!p.sorvetes)p.sorvetes={};
   p.sorvetes.preços={};
-  const _svMap={casquinha_copo:'Casquinha e Copo',copo_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
+  const _svMap={casquinha:'Casquinha',copo:'Copo',copo_recheado:'Copo Recheado',cascão:'Cascão',cestinha:'Cestinha Recheada'};
   for(const[k,v]of Object.entries(_sv_raw)){p.sorvetes.preços[k]=v;}
   const _pic_raw=p['picoles']||p.picolés||{};
   p.picolés={};
@@ -3881,7 +3881,7 @@ function renderPreços(){
   const sv=p.sorvetes?.preços||{};
   html+='<div class="seção-título">🍦 Sorvetes — Preço por Quantidade de Bolas</div>';
   html+='<div style="background:#fff3e0;border-left:3px solid #e65100;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:.78rem">';
-  html+='⚠️ Preço varia por tipo (Casquinha/Copo, Copo Recheado, Cascão, Cestinha) e quantidade de bolas. Alterar aqui muda o cardápio do site imediatamente.';
+  html+='⚠️ Preço varia por tipo (Casquinha, Copo, Copo Recheado, Cascão, Cestinha) e quantidade de bolas. Alterar aqui muda o cardápio do site imediatamente.';
   html+='</div>';
   html+='<div class="preço-grid">';
   for(const[tipo,bolas]of Object.entries(sv)){if(typeof bolas==='object'){for(const[bola,preço]of Object.entries(bolas)){if(typeof preço==='number'){const id=`preço_sorvete_${tipo}_${bola}`.replace(/[\s\W]/g,'_');const label=(_svMap[tipo]||tipo)+' — '+bola;html+=`<div class="preço-item"><label>${label}</label><div class="preço-inp"><span>R$</span><input type="number" id="${id}" value="${preço}" min="0" step="0.5" title="Preço do sorvete ${tipo} com ${bola}"/></div><div class="hint">Ex: 8.50 — use ponto, não vírgula</div></div>`;}}}}
@@ -9210,7 +9210,7 @@ function renderCatalogo() {
   </tr></thead>`;
 
   // ── 1. SORVETES DE MASSA ─────────────────────────────────────
-  // Casquinha e Copo = mesmo preço (SVM-CC), mas dois produtos distintos
+  // Casquinha e Copo usam SKUs próprios do catálogo mestre.
   const sv = p.sorvetes?.preços || p.sorvetes?.precos || {};
   const saboresMassa = Array.isArray(p.sabores_sorvete) ? p.sabores_sorvete : [];
   const skus_sv = p.cadastro_skus?.por_chave || {};
@@ -9219,19 +9219,19 @@ function renderCatalogo() {
     <div class="card-header"><h2>🍦 Sorvetes de Massa</h2>
       ${_catBadge('#7b1fa2','38 sabores disponíveis')}
       <div style="font-size:.76rem;color:#888;margin-top:4px;width:100%">
-        💡 Casquinha e Copo têm SKUs independentes mas compartilham os mesmos preços da tabela <code>casquinha_copo</code> no JSON.
+        💡 Casquinha e Copo têm SKUs e tabelas de preços independentes no Cardápio Oficial Mestre.
       </div>
     </div>
     <div class="card-body">`;
 
   // Embalagens de sorvete: SVM-CASK (Casquinha), SVM-COPO (Copo), SVM-CR, SVM-CS, SVM-CT
   const gruposEmb = [
-    { key:'casquinha_copo', label:'Casquinha', bolas:['1 Bola','2 Bolas','3 Bolas'],
+    { key:'casquinha', label:'Casquinha', bolas:['1 Bola','2 Bolas','3 Bolas'],
       produtos:[
         {sku:'SVM-CASK', nome:'Casquinha', emb:'Embalagem casquinha'}
       ]
     },
-    { key:'casquinha_copo', label:'Copo', bolas:['1 Bola','2 Bolas','3 Bolas'],
+    { key:'copo', label:'Copo', bolas:['1 Bola','2 Bolas','3 Bolas'],
       produtos:[{sku:'SVM-COPO', nome:'Copo', emb:'Embalagem copo plástico'}]
     },
     { key:'copo_recheado', label:'Copo Recheado', bolas:['1 Bola','2 Bolas','3 Bolas'],
