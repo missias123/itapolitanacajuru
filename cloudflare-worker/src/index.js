@@ -81,6 +81,18 @@ const RATE_LIMITS = {
 };
 const MAX_INVALID_CODE_ATTEMPTS = 4; // Block client after this many consecutive invalid code attempts
 const SESSION_TTL = 7200;            // Admin session lifetime: 2 hours
+const ADMIN_PERMISSION_LIST = Object.freeze([
+  'catalog:read',
+  'catalog:write',
+  'orders:read',
+  'orders:manage',
+  'campaign:read',
+  'campaign:configure',
+  'campaign:activate',
+  'reports:export',
+  'audit:read',
+]);
+const ADMIN_ALL_PERMISSIONS = Object.freeze(new Set(ADMIN_PERMISSION_LIST));
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ─── DURABLE OBJECT — reserva atômica do Picolé ──────────────────────────────
@@ -257,15 +269,66 @@ function jsonResp(data, status = 200) {
 }
 
 // ─── Auth helpers ─────────────────────────────────────────────────────────────
-async function isAdmin(request, env) {
+function normalizePermissionList(raw) {
+  if (!raw) return new Set(ADMIN_ALL_PERMISSIONS);
+  const values = String(raw)
+    .split(',')
+    .map((entry) => sanitizeString(entry, 80))
+    .filter(Boolean)
+    .filter((entry) => ADMIN_ALL_PERMISSIONS.has(entry));
+  return values.length ? new Set(values) : new Set(ADMIN_ALL_PERMISSIONS);
+}
+
+function parseStoredSession(stored, env) {
+  if (!stored) return null;
+  if (stored === '1' || stored === 1) {
+    return {
+      ok: true,
+      permissions: normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS),
+      authType: 'legacy',
+    };
+  }
+  if (typeof stored !== 'object') return null;
+  const expiresAt = Number(stored.expiresAt || 0);
+  if (expiresAt && Date.now() > expiresAt) return null;
+  return {
+    ok: true,
+    permissions: new Set(
+      Array.isArray(stored.permissions)
+        ? stored.permissions.filter((entry) => ADMIN_ALL_PERMISSIONS.has(entry))
+        : [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)],
+    ),
+    authType: 'session',
+  };
+}
+
+async function getAdminSession(request, env) {
   const sessionToken = request.headers.get('X-Itap-Session-Token') || '';
   if (sessionToken) {
-    const valid = await env.RATE_KV.get(`session:${sessionToken}`);
-    if (valid === '1') return true;
+    const storedRaw = await env.RATE_KV.get(`session:${sessionToken}`, 'json');
+    const parsed = parseStoredSession(storedRaw, env);
+    if (parsed?.ok) return { authenticated: true, ...parsed };
+    const legacyRaw = await env.RATE_KV.get(`session:${sessionToken}`);
+    const legacyParsed = parseStoredSession(legacyRaw, env);
+    if (legacyParsed?.ok) return { authenticated: true, ...legacyParsed };
   }
   const secret = request.headers.get('X-Itap-Admin-Secret') || '';
-  if (secret && env.ADMIN_SECRET && secret === env.ADMIN_SECRET) return true;
-  return false;
+  if (secret && env.ADMIN_SECRET && secret === env.ADMIN_SECRET) {
+    return { authenticated: true, permissions: new Set(ADMIN_ALL_PERMISSIONS), authType: 'secret' };
+  }
+  return { authenticated: false, permissions: new Set() };
+}
+
+function requireAdmin(session) {
+  if (!session?.authenticated) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
+  return null;
+}
+
+function requirePermission(session, permission) {
+  if (!session?.authenticated) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
+  if (!permission) return null;
+  if (session.permissions.has(permission)) return null;
+  return jsonResp({ ok: false, error: 'Permissão insuficiente', requiredPermission: permission }, 403);
 }
 
 // ─── PBKDF2 password hashing ──────────────────────────────────────────────────
@@ -379,6 +442,41 @@ function generateIdHash() {
   return array[0].toString(36) + array[1].toString(36);
 }
 
+async function sha256Hex(value) {
+  const payload = typeof value === 'string' ? value : JSON.stringify(value ?? null);
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payload));
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function readGitHubFileMeta(path, env) {
+  const headers = { 'User-Agent': 'Itapolitana-Worker' };
+  if (env.GITHUB_TOKEN) headers.Authorization = `token ${env.GITHUB_TOKEN}`;
+  const ghResp = await fetch(GH_API + path, { headers });
+  if (ghResp.ok) {
+    const ghJson = await ghResp.json();
+    return {
+      revision: ghJson.sha || null,
+      source: 'github_api',
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  const rawResp = await fetch(GH_RAW + path + '?t=' + Date.now(), { cache: 'no-store' });
+  if (!rawResp.ok) {
+    return {
+      revision: null,
+      source: 'unavailable',
+      updatedAt: null,
+      error: `HTTP_${rawResp.status}`,
+    };
+  }
+  const text = await rawResp.text();
+  return {
+    revision: await sha256Hex(text),
+    source: 'github_raw_hash',
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 // ─── GitHub API helpers ───────────────────────────────────────────────────────
 async function ghPutFidelidade(data, message, token) {
   const content = JSON.stringify(data, null, 2);
@@ -400,6 +498,11 @@ async function router(request, env) {
   const url    = new URL(request.url);
   const path   = url.pathname;
   const method = request.method;
+  let adminSession = null;
+  const getSession = async () => {
+    if (!adminSession) adminSession = await getAdminSession(request, env);
+    return adminSession;
+  };
 
   if (path === '/api/health' && method === 'GET') {
     return jsonResp({ ok: true, ts: Date.now(), version: '1.0.0' });
@@ -409,47 +512,61 @@ async function router(request, env) {
   if (path === '/api/admin/session' && method === 'POST') return handleAdminSession(request, env);
   if (path === '/api/admin/session' && method === 'DELETE') return handleAdminSessionLogout(request, env);
 
+  if (path === '/api/admin/sync/domains' && method === 'GET') {
+    const guard = requirePermission(await getSession(), 'audit:read');
+    if (guard) return guard;
+    return handleAdminSyncDomains(env);
+  }
+
   if (path === '/api/admin/github-file' && method === 'GET') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'catalog:read');
+    if (guard) return guard;
     return handleAdminGitHubFileGet(url.searchParams.get('path'), env);
   }
   if (path === '/api/admin/github-file' && method === 'PUT') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'catalog:write');
+    if (guard) return guard;
     return handleAdminGitHubFilePut(request, env);
   }
 
   if (path === '/api/clientes' && method === 'POST') return handlePostCliente(request, env);
   if (path === '/api/clientes/login' && method === 'POST') return handleLoginCliente(request, env);
   if (path === '/api/clientes' && method === 'GET') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'orders:read');
+    if (guard) return guard;
     return handleGetClientes(env);
   }
 
   if (path === '/api/encomendas' && method === 'POST') return handlePostEncomenda(request, env);
   if (path === '/api/encomendas' && method === 'GET') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
-    return handleGetEncomendas(env);
+    const session = await getSession();
+    const guard = requirePermission(session, 'orders:read');
+    if (guard) return guard;
+    return handleGetEncomendas(env, url, session);
   }
 
   if (path === '/api/promocao/cadastro' && method === 'POST') return handlePostSorteioCadastro(request, env);
   if (path === '/api/sorteio/buscar' && method === 'GET') return handleGetSorteioBuscar(request, env, url);
 
   if (path === '/api/admin/sorteio/inscritos' && method === 'GET') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:read');
+    if (guard) return guard;
     return handleGetSorteioInscritos(env);
   }
 
   const mSorteioLoteMes = path.match(/^\/api\/admin\/sorteio\/inscritos\/lote\/(\d{4}-\d{2})$/);
   if (mSorteioLoteMes) {
     const loteMes = mSorteioLoteMes[1];
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:configure');
+    if (guard) return guard;
     if (method === 'DELETE') return handleDeleteSorteioInscritosLoteMes(loteMes, env);
   }
 
   const mSorteio = path.match(/^\/api\/admin\/sorteio\/inscritos\/([^/]+)$/);
   if (mSorteio) {
     const id = decodeURIComponent(mSorteio[1]);
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:configure');
+    if (guard) return guard;
     if (method === 'PATCH') return handlePatchSorteioInscrito(id, request, env);
     if (method === 'DELETE') return handleDeleteSorteioInscrito(id, env);
   }
@@ -465,33 +582,40 @@ async function router(request, env) {
   }
 
   if (path === '/api/admin/promocao/picole/iniciar' && method === 'POST') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:activate');
+    if (guard) return guard;
     return handlePicoleAdminIniciar(request, env);
   }
   if (path === '/api/admin/promocao/picole/campanha' && method === 'GET') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:read');
+    if (guard) return guard;
     return handlePicoleAdminCampanha(env);
   }
   if (path === '/api/admin/promocao/picole/campanha' && method === 'DELETE') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:activate');
+    if (guard) return guard;
     return handlePicoleAdminCancelarCampanha(request, env);
   }
   if (path === '/api/admin/promocao/picole/pausar' && method === 'POST') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:activate');
+    if (guard) return guard;
     return handlePicoleAdminTogglePausa(env, true);
   }
   if (path === '/api/admin/promocao/picole/retomar' && method === 'POST') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:activate');
+    if (guard) return guard;
     return handlePicoleAdminTogglePausa(env, false);
   }
   if (path === '/api/admin/promocao/picole/ganhadores' && method === 'GET') {
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'reports:export');
+    if (guard) return guard;
     return handlePicoleAdminGanhadores(env);
   }
   const mPicoleGanhador = path.match(/^\/api\/admin\/promocao\/picole\/ganhadores\/([A-Za-z0-9_-]{10,64})$/);
   if (mPicoleGanhador) {
     const gid = mPicoleGanhador[1];
-    if (!(await isAdmin(request, env))) return jsonResp({ ok: false, error: 'Não autorizado' }, 401);
+    const guard = requirePermission(await getSession(), 'campaign:configure');
+    if (guard) return guard;
     if (method === 'PATCH') return handlePicoleAdminPatchGanhador(gid, request, env);
   }
 
@@ -504,12 +628,17 @@ async function handleAdminSession(request, env) {
   const rl = await checkRateLimit(env, ip, 'admin-login');
   if (!rl.allowed) return jsonResp({ ok: false, error: 'Muitas tentativas de login.' }, 429);
   let body;
-  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const password = sanitizeString(body.password || body.secret, 200);
-  if (!(await verifyAdminPassword(password, env))) return jsonResp({ ok: false, error: 'Senha incorreta' }, 401);
+  if (!(await verifyAdminPassword(password, env))) return jsonResp({ ok: false, error: 'Sessão ausente ou inválida' }, 401);
+  const permissions = [...normalizePermissionList(env.ADMIN_DEFAULT_PERMISSIONS)];
   const token = generateIdHash();
-  await env.RATE_KV.put(`session:${token}`, '1', { expirationTtl: SESSION_TTL });
-  return jsonResp({ ok: true, token });
+  await env.RATE_KV.put(`session:${token}`, JSON.stringify({
+    permissions,
+    createdAt: new Date().toISOString(),
+    expiresAt: Date.now() + SESSION_TTL * 1000,
+  }), { expirationTtl: SESSION_TTL });
+  return jsonResp({ ok: true, token, permissions, ttlSeconds: SESSION_TTL });
 }
 
 async function handleAdminSessionLogout(request, env) {
@@ -522,25 +651,80 @@ async function handleAdminGitHubFileGet(filePath, env) {
   if (!GH_ADMIN_PATH_SET.has(filePath)) return jsonResp({ ok: false, error: 'Caminho não permitido' }, 403);
   const resp = await fetch(GH_RAW + filePath + '?t=' + Date.now(), { cache: 'no-store' });
   if (!resp.ok) return jsonResp({ ok: false, error: 'Falha ao ler arquivo' }, 500);
-  return jsonResp({ ok: true, content: await resp.json() });
+  const content = await resp.json();
+  return jsonResp({
+    ok: true,
+    content,
+    revision: await sha256Hex(JSON.stringify(content)),
+    updatedAt: new Date().toISOString(),
+    origin: 'github_raw',
+  });
 }
 
 async function handleAdminGitHubFilePut(request, env) {
   if (!env.GITHUB_TOKEN) return jsonResp({ ok: false, error: 'GITHUB_TOKEN não configurado' }, 500);
   let body;
-  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
   const filePath = sanitizeString(body.path, 200);
+  const ifMatch = sanitizeString(body.ifMatch || request.headers.get('If-Match') || '', 200);
   if (!GH_ADMIN_PATH_SET.has(filePath)) return jsonResp({ ok: false, error: 'Caminho não permitido' }, 403);
   const getResp = await fetch(GH_API + filePath, { headers: { 'Authorization': `token ${env.GITHUB_TOKEN}`, 'User-Agent': 'Itapolitana-Worker' } });
   if (!getResp.ok) return jsonResp({ ok: false, error: 'Falha ao obter SHA' }, 500);
   const getJson = await getResp.json();
+  if (ifMatch && ifMatch !== getJson.sha) {
+    return jsonResp({
+      ok: false,
+      error: 'Conflito de versão',
+      code: 'VERSION_CONFLICT',
+      currentRevision: getJson.sha,
+      providedRevision: ifMatch,
+    }, 409);
+  }
   const putResp = await fetch(GH_API + filePath, {
     method: 'PUT',
     headers: { 'Authorization': `token ${env.GITHUB_TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': 'Itapolitana-Worker' },
     body: JSON.stringify({ message: `Admin: alteração em ${filePath}`, content: encodeBase64(JSON.stringify(body.content, null, 2)), sha: getJson.sha })
   });
+  if (putResp.status === 409) return jsonResp({ ok: false, error: 'Conflito de versão', code: 'VERSION_CONFLICT' }, 409);
   if (!putResp.ok) return jsonResp({ ok: false, error: 'Falha ao gravar arquivo' }, 500);
-  return jsonResp({ ok: true });
+  const putJson = await putResp.json();
+  return jsonResp({
+    ok: true,
+    revision: putJson?.content?.sha || null,
+    updatedAt: new Date().toISOString(),
+    origin: 'github_api',
+  });
+}
+
+async function handleAdminSyncDomains(env) {
+  const catalogMeta = await readGitHubFileMeta(GH_ADMIN_JSON_PATHS.produtos, env);
+  const configMeta = await readGitHubFileMeta(GH_ADMIN_JSON_PATHS.config, env);
+  const ordersList = await env.ENCOMENDAS_KV.list({ prefix: 'enc:' });
+  const campaign = env.PROMO_KV ? await env.PROMO_KV.get('picole:campanha', 'json') : null;
+  return jsonResp({
+    ok: true,
+    generatedAt: new Date().toISOString(),
+    domains: [
+      { domain: 'catalog', sourceOfTruth: GH_ADMIN_JSON_PATHS.produtos, writePath: 'admin_authenticated_github', state: catalogMeta.revision ? 'synchronized' : 'not_verified', ...catalogMeta },
+      { domain: 'editorial_config', sourceOfTruth: GH_ADMIN_JSON_PATHS.config, writePath: 'admin_authenticated_github', state: configMeta.revision ? 'synchronized' : 'not_verified', ...configMeta },
+      {
+        domain: 'orders',
+        sourceOfTruth: 'worker.ENCOMENDAS_KV',
+        writePath: 'public_form_to_worker',
+        state: 'synchronized',
+        revision: String(ordersList.keys.length),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        domain: 'campaign_picole',
+        sourceOfTruth: 'worker.PROMO_KV',
+        writePath: 'admin_authenticated_worker',
+        state: campaign ? 'synchronized' : 'blocked',
+        revision: campaign?.id || null,
+        updatedAt: campaign?.atualizadoEm || null,
+      },
+    ],
+  });
 }
 
 async function handlePostCliente(request, env) {
@@ -575,24 +759,141 @@ async function handleGetClientes(env) {
   return jsonResp({ ok: true, total: clientes.length, clientes });
 }
 
-async function handlePostEncomenda(request, env) {
-  let body;
-  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'JSON inválido' }, 400); }
-  const id = `enc:${Date.now()}:${generateIdHash().slice(0, 6)}`;
-  const encomenda = { ...body, id, created_at: new Date().toISOString(), status: 'pendente' };
-  await env.ENCOMENDAS_KV.put(id, JSON.stringify(encomenda));
-  return jsonResp({ ok: true, id });
+let catalogCache = { loadedAt: 0, activeSkus: new Set() };
+async function getActiveCatalogSkus() {
+  const now = Date.now();
+  if (catalogCache.loadedAt && now - catalogCache.loadedAt < 5 * 60_000) return catalogCache.activeSkus;
+  const resp = await fetch(GH_RAW + GH_ADMIN_JSON_PATHS.produtos + '?t=' + now, { cache: 'no-store' });
+  if (!resp.ok) throw new Error('Falha ao carregar catálogo oficial');
+  const json = await resp.json();
+  const entries = Object.values(json?.cadastro_skus?.por_chave || {});
+  const active = new Set(entries.filter((entry) => entry?.ativo !== false && entry?.sku).map((entry) => String(entry.sku)));
+  catalogCache = { loadedAt: now, activeSkus: active };
+  return active;
 }
 
-async function handleGetEncomendas(env) {
+function normalizeOrderItem(item, index) {
+  if (!item || typeof item !== 'object') throw new Error(`item_${index}_invalido`);
+  const sku = sanitizeString(item.sku || item.codigo || '', 64);
+  const quantity = Number(item.quantidade ?? item.quantity);
+  if (!sku) throw new Error(`item_${index}_sku_obrigatorio`);
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 200) throw new Error(`item_${index}_quantidade_invalida`);
+  return { sku, quantidade: quantity };
+}
+
+async function normalizeOrderPayload(body) {
+  const nome = sanitizeString(body.nome || body.name, 200);
+  const telefone = String(body.telefone || body.phone || body.cel || '').replace(/\D/g, '');
+  const itensRaw = Array.isArray(body.itens) ? body.itens : (Array.isArray(body.items) ? body.items : []);
+  if (!nome || nome.length < 3) throw new Error('nome_invalido');
+  if (!/^169\d{8}$/.test(telefone)) throw new Error('telefone_invalido');
+  if (!itensRaw.length || itensRaw.length > 100) throw new Error('itens_invalidos');
+  const itens = itensRaw.map(normalizeOrderItem);
+  const skusAtivos = await getActiveCatalogSkus();
+  for (const item of itens) {
+    if (!skusAtivos.has(item.sku)) throw new Error(`sku_inexistente:${item.sku}`);
+  }
+  return {
+    nome,
+    telefone,
+    itens,
+    horario: sanitizeString(body.horario || '', 10),
+    dataRetirada: sanitizeString(body.data_retirada || body.dataRetirada || '', 20),
+    pagamento: sanitizeString(body.pagamento || '', 120),
+    observacoes: sanitizeString(body.observacoes || body.notes || '', 600),
+  };
+}
+
+function maskPhone(phone) {
+  const digits = String(phone || '').replace(/\D/g, '');
+  if (digits.length < 4) return '***';
+  return `***${digits.slice(-4)}`;
+}
+
+async function handlePostEncomenda(request, env) {
+  let body;
+  try { body = await request.json(); } catch { return jsonResp({ ok: false, error: 'Payload inválido' }, 422); }
+  const idempotencyHeader = request.headers.get('X-Idempotency-Key') || '';
+  const idempotencyKey = /^[A-Za-z0-9_-]{16,100}$/.test(idempotencyHeader)
+    ? idempotencyHeader
+    : sanitizeString(body.idempotencyKey || '', 100);
+  if (idempotencyKey) {
+    const existingOrderId = await env.ENCOMENDAS_KV.get(`enc:idem:${idempotencyKey}`);
+    if (existingOrderId) {
+      const existing = await env.ENCOMENDAS_KV.get(existingOrderId, 'json');
+      if (existing) {
+        return jsonResp({ ok: true, id: existing.id, orderId: existing.id, status: existing.status, idempotente: true }, 200);
+      }
+    }
+  }
+  let normalized;
+  try {
+    normalized = await normalizeOrderPayload(body);
+  } catch (error) {
+    const message = String(error?.message || 'payload_invalido');
+    return jsonResp({ ok: false, error: 'Payload inválido', code: message }, 422);
+  }
+  const id = `enc:${Date.now()}:${generateIdHash().slice(0, 6)}`;
+  const now = new Date().toISOString();
+  const eventId = sanitizeString(body.eventId || request.headers.get('X-Event-Id') || '', 100) || null;
+  const encomenda = {
+    id,
+    orderId: id,
+    status: 'recebido',
+    revision: 1,
+    updatedAt: now,
+    created_at: now,
+    origem: 'site_worker',
+    eventId,
+    idempotencyKey: idempotencyKey || null,
+    cliente: {
+      nome: normalized.nome,
+      telefone: normalized.telefone,
+    },
+    itens: normalized.itens,
+    horario: normalized.horario,
+    dataRetirada: normalized.dataRetirada,
+    pagamento: normalized.pagamento,
+    observacoes: normalized.observacoes,
+  };
+  await env.ENCOMENDAS_KV.put(id, JSON.stringify(encomenda));
+  if (idempotencyKey) await env.ENCOMENDAS_KV.put(`enc:idem:${idempotencyKey}`, id, { expirationTtl: 7 * 24 * 3600 });
+  return jsonResp({ ok: true, id, orderId: id, status: 'recebido' }, 201);
+}
+
+async function handleGetEncomendas(env, url, session) {
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10) || 1);
+  const pageSize = Math.min(100, Math.max(1, parseInt(url.searchParams.get('pageSize') || '20', 10) || 20));
+  const statusFilter = sanitizeString(url.searchParams.get('status') || '', 40);
+  const includeSensitive = url.searchParams.get('includeSensitive') === 'true' && session.permissions.has('orders:manage');
   const lista = await env.ENCOMENDAS_KV.list({ prefix: 'enc:' });
   const encomendas = [];
   for (const k of lista.keys) {
     const e = await env.ENCOMENDAS_KV.get(k.name, 'json');
-    if (e) encomendas.push(e);
+    if (e && (!statusFilter || e.status === statusFilter)) {
+      const clone = { ...e };
+      if (!includeSensitive && clone.cliente) {
+        clone.cliente = {
+          nome: clone.cliente.nome ? `${String(clone.cliente.nome).slice(0, 1)}***` : '',
+          telefone: maskPhone(clone.cliente.telefone),
+        };
+      }
+      encomendas.push(clone);
+    }
   }
   encomendas.sort((a, b) => b.created_at.localeCompare(a.created_at));
-  return jsonResp({ ok: true, total: encomendas.length, encomendas });
+  const total = encomendas.length;
+  const start = (page - 1) * pageSize;
+  const pageItems = encomendas.slice(start, start + pageSize);
+  return jsonResp({
+    ok: true,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    includeSensitive,
+    encomendas: pageItems,
+  });
 }
 
 // ─── Sorteio Helpers ──────────────────────────────────────────────────────────
