@@ -53,3 +53,17 @@ A rotina semanal também executa `node scripts/auto-corrigir-regras.js --check`,
 - A comunicação de Dúvidas deve explicar que “Encontre um Picolé” usa outro formulário e só pode ser apresentada como oportunidade ativa quando o endpoint público estiver validado como HTTP 200 com JSON válido, `status: ativo`, `campaign_active: true`, `activation_explicit: true`, `paused: false`, `schedule_created: true` e `safeToAnnounce: true`.
 - A criação/ativação de campanha é exclusivamente administrativa e autenticada. O GET público de status e a auditoria semanal são somente leitura: não podem criar campanha, gerar horários, expirar dia, reservar prêmio ou alterar estado.
 - O ciclo de 30 dias usa um **segundo exato diferente por dia** dentro da faixa de 11:00 a 20:00; a faixa horária se repete, mas o segundo sorteado não se repete no ciclo. Não interpretar a regra como 30 horas distintas.
+
+## 6. Regra de Escalonamento para o Copilot
+
+Quando um problema for detectado e não puder ser corrigido com segurança, não inventar uma solução, não mascarar a falha e não declarar sucesso. Registrar o motivo comprovado do bloqueio e entregar um prompt específico, pronto para uso no GitHub Copilot, contendo:
+
+- o arquivo e a linha ou trecho afectado;
+- a reprodução factual do problema;
+- a causa confirmada ou, se não confirmada, a indicação expressa de que a causa não foi determinada;
+- a alteração esperada, sem inventar dados comerciais;
+- os testes obrigatórios e o critério de aceite;
+- os limites de segurança, privacidade e não mutação em produção;
+- a classificação final como corrigido, pendente, bloqueado ou não verificável.
+
+O prompt para o Copilot deve orientar execução em branch isolada, com backup, testes, PR e prova de publicação quando aplicável. Nenhum item pode ser marcado como corrigido sem alteração real e evidência correspondente.
