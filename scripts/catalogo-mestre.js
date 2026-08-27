@@ -15,6 +15,128 @@
     return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
   }
 
+  function normalizeSearchText(value) {
+    return String(value || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/&/g, ' e ')
+      .replace(/\bc\s*\/\s*/g, 'com ')
+      .replace(/\s+/g, ' ')
+      .replace(/[^a-z0-9 ]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function editDistance(a, b, limit) {
+    var left = String(a || '');
+    var right = String(b || '');
+    if (left === right) return 0;
+    if (limit != null && Math.abs(left.length - right.length) > limit) return limit + 1;
+    var previous = Array.from({ length: right.length + 1 }, function (_, i) { return i; });
+    for (var i = 1; i <= left.length; i += 1) {
+      var current = [i];
+      var rowMin = i;
+      for (var j = 1; j <= right.length; j += 1) {
+        var cost = left[i - 1] === right[j - 1] ? 0 : 1;
+        var value = Math.min(current[j - 1] + 1, previous[j] + 1, previous[j - 1] + cost);
+        if (i > 1 && j > 1 && left[i - 1] === right[j - 2] && left[i - 2] === right[j - 1]) {
+          value = Math.min(value, previous[j - 2] + 1);
+        }
+        current[j] = value;
+        rowMin = Math.min(rowMin, value);
+      }
+      if (limit != null && rowMin > limit) return limit + 1;
+      previous = current;
+    }
+    return previous[right.length];
+  }
+
+  function recordVariants(record) {
+    var aliases = Array.isArray(record && record.aliases) ? record.aliases : [];
+    return [record && record.nome].concat(aliases).filter(Boolean).map(normalizeSearchText).filter(Boolean);
+  }
+
+  function describeMatch(record, variant, score, status) {
+    return {
+      sku: record.sku,
+      nome: record.nome,
+      categoria: record.categoria || '',
+      preco: record.preco ?? null,
+      ativo: record.ativo !== false,
+      matchedText: variant,
+      score: Number(score.toFixed(4)),
+      status: status,
+    };
+  }
+
+  function resolveName(raw, query) {
+    var master = getMaster(raw);
+    var text = String(query || '').trim();
+    var normalized = normalizeSearchText(text);
+    if (!normalized) return { status: 'not_found', query: text, candidates: [], safeToUse: false };
+    var all = Object.values(master).filter(function (record) { return record && record.sku; });
+    var active = all.filter(function (record) { return record.ativo !== false; });
+    var exactSku = all.find(function (record) { return String(record.sku).toLowerCase() === text.toLowerCase(); });
+    if (exactSku) {
+      if (exactSku.ativo === false) {
+        return { status: 'inactive', query: text, candidates: [describeMatch(exactSku, exactSku.sku, 1, 'inactive')], safeToUse: false };
+      }
+      return { status: 'exact_sku', query: text, sku: exactSku.sku, candidates: [describeMatch(exactSku, exactSku.sku, 1, 'exact_sku')], safeToUse: true };
+    }
+
+    var exact = [];
+    var exactInactive = [];
+    all.forEach(function (record) {
+      recordVariants(record).forEach(function (variant) {
+        if (variant !== normalized) return;
+        var status = variant === normalizeSearchText(record.nome) ? 'exact_name' : 'exact_alias';
+        var match = describeMatch(record, variant, 1, record.ativo === false ? 'inactive' : status);
+        (record.ativo === false ? exactInactive : exact).push(match);
+      });
+    });
+    var exactSkus = Array.from(new Set(exact.map(function (match) { return match.sku; })));
+    if (exactSkus.length === 1) {
+      var exactMatch = exact.find(function (match) { return match.sku === exactSkus[0]; });
+      return { status: exactMatch.status, query: text, sku: exactMatch.sku, candidates: [exactMatch], safeToUse: true };
+    }
+    if (exactSkus.length > 1) {
+      return { status: 'ambiguous', query: text, candidates: exact.filter(function (match, index, list) { return list.findIndex(function (item) { return item.sku === match.sku; }) === index; }), safeToUse: false };
+    }
+    var inactiveSkus = Array.from(new Set(exactInactive.map(function (match) { return match.sku; })));
+    if (inactiveSkus.length === 1) {
+      var inactiveMatch = exactInactive.find(function (match) { return match.sku === inactiveSkus[0]; });
+      return { status: 'inactive', query: text, sku: inactiveMatch.sku, candidates: [inactiveMatch], safeToUse: false };
+    }
+    if (inactiveSkus.length > 1) {
+      return { status: 'ambiguous', query: text, candidates: exactInactive.filter(function (match, index, list) { return list.findIndex(function (item) { return item.sku === match.sku; }) === index; }), safeToUse: false };
+    }
+
+    if (normalized.length < 3) return { status: 'not_found', query: text, candidates: [], safeToUse: false };
+    var scored = [];
+    active.forEach(function (record) {
+      var best = null;
+      recordVariants(record).forEach(function (variant) {
+        var distance = editDistance(normalized, variant, Math.max(2, Math.floor(Math.max(normalized.length, variant.length) * 0.25)));
+        var score = 1 - (distance / Math.max(normalized.length, variant.length));
+        if (variant.includes(normalized) || normalized.includes(variant)) score = Math.max(score, 0.86);
+        var candidate = describeMatch(record, variant, score, 'suggestion');
+        if (!best || candidate.score > best.score) best = candidate;
+      });
+      if (best && best.score >= 0.78) scored.push(best);
+    });
+    scored.sort(function (a, b) { return b.score - a.score || a.sku.localeCompare(b.sku); });
+    var unique = scored.filter(function (match, index, list) { return list.findIndex(function (item) { return item.sku === match.sku; }) === index; }).slice(0, 5);
+    if (!unique.length) return { status: 'not_found', query: text, candidates: [], safeToUse: false };
+    var top = unique[0];
+    var second = unique[1];
+    var margin = second ? top.score - second.score : 1;
+    if (margin >= 0.08 && top.score >= 0.9) {
+      return { status: 'suggestion', query: text, candidates: unique, safeToUse: false, requiresConfirmation: true };
+    }
+    return { status: 'ambiguous', query: text, candidates: unique, safeToUse: false, requiresConfirmation: true };
+  }
+
   function getMaster(raw) {
     return raw && raw.cadastro_skus && raw.cadastro_skus.por_chave ? raw.cadastro_skus.por_chave : {};
   }
@@ -160,6 +282,9 @@
   window.ITAP_CATALOGO_MESTRE = {
     aplicar: apply,
     chaveNormalizada: keyPart,
+    normalizarBusca: normalizeSearchText,
+    distanciaBusca: editDistance,
+    resolverNome: resolveName,
     obterRegistro: function (raw, chave) { return item(getMaster(raw), chave); },
     disponivel: function (raw, chave) { return registroDisponivel(raw, item(getMaster(raw), chave)); },
     listar: function (raw) { return Object.values(getMaster(raw)); },
