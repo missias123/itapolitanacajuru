@@ -91,11 +91,12 @@ try {
       const rows = [...document.querySelectorAll('#flavor-distribution-list .flavor-distribution__row')];
       const target = rows.find((row) => /Açaí Natureon/i.test(row.textContent || ''));
       if (!target) return null;
-      const buttons = target.querySelectorAll('button');
+      const plus = target.querySelector('button[aria-label^="Adicionar uma bola de Açaí Natureon"]');
+      const minus = target.querySelector('button[aria-label^="Diminuir Açaí Natureon"]');
       return {
         text: (target.textContent || '').trim().replace(/\s+/g, ' '),
-        plusDisabled: Boolean(buttons[1]?.disabled),
-        minusDisabled: Boolean(buttons[0]?.disabled),
+        plusDisabled: Boolean(plus?.disabled),
+        minusDisabled: Boolean(minus?.disabled),
       };
     });
     assert.ok(massFlavorState, `${viewport.name}: Açaí Natureon não apareceu no fluxo de sorvete para ser validado`);

@@ -1290,18 +1290,20 @@
                 var indisponivel = Boolean(SABORES_SORVETE_ESGOTADOS[normalizarTexto(s)]);
                 var classeEsgotado = indisponivel ? ' is-esgotado' : '';
                 var esgotadoBadge = indisponivel ? '<span class="sabor-esgotado-badge" aria-label="Sabor esgotado">ESGOTADO</span>' : '';
+                var acaoClique = indisponivel ? '' : `onclick="window.toggleSabor('${s}', this)"`;
+                var acaoTeclado = indisponivel ? '' : `onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}"`;
                 
                 // Usamos apenas o estilo de cores, a opacidade é controlada pela classe do grid
                 var style = getSaborMassaStyle(s);
                 
                 return `<div class="sabor-item ${sel?'sel':''}${classeNovo}${classeEsgotado}" 
                              style="${style}" 
-                             tabindex="0" 
+                             tabindex="${indisponivel?'-1':'0'}" 
                              role="button" 
                              aria-pressed="${sel?'true':'false'}"
                              aria-disabled="${indisponivel?'true':'false'}"
-                             onclick="window.toggleSabor('${s}', this)" 
-                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">
+                             ${acaoClique}
+                             ${acaoTeclado}>
                             ${novoBadge}
                             ${esgotadoBadge}
                             <span class="sabor-label">${s}</span>
