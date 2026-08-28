@@ -41,16 +41,6 @@ function patchedCatalog() {
   return data;
 }
 
-function findAcaiFlavorState(selector) {
-  const buttons = [...document.querySelectorAll(selector)];
-  const target = buttons.find((button) => /Açaí Natureon/i.test(button.textContent || ''));
-  return target ? {
-    text: (target.textContent || '').trim().replace(/\s+/g, ' '),
-    disabled: Boolean(target.disabled),
-    className: target.className || '',
-  } : null;
-}
-
 await waitForServer();
 const browser = await puppeteer.launch({
   headless: true,
@@ -99,15 +89,32 @@ try {
 
     await page.click('[data-catalog-sku="SVM-CASK-01"] .add-btn');
     await page.waitForSelector('#flavor-dialog[open]', { timeout: 5000 });
-    const massFlavorState = await page.evaluate(() => findAcaiFlavorState('#flavor-grid button, #flavor-distribution-list button, #flavor-distribution-list .flavor-distribution__row'));
+    const massFlavorState = await page.evaluate(() => {
+      const rows = [...document.querySelectorAll('#flavor-distribution-list .flavor-distribution__row')];
+      const target = rows.find((row) => /Açaí Natureon/i.test(row.textContent || ''));
+      if (!target) return null;
+      const buttons = target.querySelectorAll('button');
+      return {
+        text: (target.textContent || '').trim().replace(/\s+/g, ' '),
+        plusDisabled: Boolean(buttons[1]?.disabled),
+        minusDisabled: Boolean(buttons[0]?.disabled),
+      };
+    });
     assert.ok(massFlavorState, `${viewport.name}: Açaí Natureon não apareceu no fluxo de sorvete para ser validado`);
-    assert.equal(massFlavorState.disabled, true, `${viewport.name}: Açaí Natureon continuou disponível no sorvete de massa com a base esgotada`);
-    assert.match(massFlavorState.text, /esgotado/i, `${viewport.name}: Açaí Natureon não exibiu estado de esgotado no sorvete de massa`);
+    assert.equal(massFlavorState.plusDisabled, true, `${viewport.name}: Açaí Natureon continuou disponível no sorvete de massa com a base esgotada`);
+    assert.equal(massFlavorState.minusDisabled, true, `${viewport.name}: Açaí Natureon deveria iniciar sem permitir decremento no sorvete de massa`);
     await page.keyboard.press('Escape');
 
     await page.click('[data-catalog-sku="MLK-TRD-300"] .add-btn');
     await page.waitForSelector('#flavor-dialog[open]', { timeout: 5000 });
-    const milkshakeFlavorState = await page.evaluate(() => findAcaiFlavorState('#flavor-grid button'));
+    const milkshakeFlavorState = await page.evaluate(() => {
+      const buttons = [...document.querySelectorAll('#flavor-grid button')];
+      const target = buttons.find((button) => /Açaí Natureon/i.test(button.textContent || ''));
+      return target ? {
+        text: (target.textContent || '').trim().replace(/\s+/g, ' '),
+        disabled: Boolean(target.disabled),
+      } : null;
+    });
     assert.ok(milkshakeFlavorState, `${viewport.name}: Açaí Natureon não apareceu no fluxo de milk-shake para ser validado`);
     assert.equal(milkshakeFlavorState.disabled, true, `${viewport.name}: Açaí Natureon continuou disponível no milk-shake tradicional com a base esgotada`);
     assert.match(milkshakeFlavorState.text, /esgotado/i, `${viewport.name}: Açaí Natureon não exibiu estado de esgotado no milk-shake tradicional`);
