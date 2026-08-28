@@ -196,6 +196,7 @@
         (categoria.produtos || []).forEach(function (produto, index) {
           var registro = item(master, 'acai.' + keyPart(categoria.id) + '.' + (index + 1));
           if (!registro) return;
+          produto.sku = registro.sku;
           produto.nome = registro.nome;
           produto.preco = registro.preco;
           produto.preço = registro.preco;
@@ -207,9 +208,8 @@
       if (acai.esgotado_base === true || acaiMassaEsgotado) {
         acai.esgotado_base = true;
         acai.categorias.forEach(function (categoria) {
-          (categoria.produtos || []).forEach(function (produto, index) {
-            var chaveSku = 'acai.' + keyPart(categoria.id) + '.' + (index + 1);
-            if (dependeBaseAcai(raw, chaveSku)) produto.esgotado = true;
+          (categoria.produtos || []).forEach(function (produto) {
+            if (dependeBaseAcai(raw, produto)) produto.esgotado = true;
           });
         });
       }

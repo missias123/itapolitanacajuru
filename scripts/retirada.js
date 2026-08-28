@@ -110,7 +110,7 @@
   function dependsOnAcaiBase(data, key, item) {
     const helper = window.ITAP_CATALOGO_MESTRE?.dependeBaseAcai;
     if (typeof helper === 'function') return helper(data, key || item);
-    return String(item?.sku || '').startsWith('ACA-') && String(item?.sku || '') !== 'PIC-REC-001';
+    return String(item?.sku || '').startsWith('ACA-');
   }
   function applyOrderButtonState(button, label, available = true) {
     const open = retiradaAberta(); const closed = available && !open;
