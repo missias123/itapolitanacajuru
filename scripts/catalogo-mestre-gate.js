@@ -147,11 +147,11 @@ if (catalog && catalogAdapterSource) {
     if (simulated.cadastro_skus?.por_chave?.['massas.MAS-039']) simulated.cadastro_skus.por_chave['massas.MAS-039'].ativo = false;
     const applied = adapter.aplicar(simulated);
     const dependentKeys = Object.keys(simulated.cadastro_skus?.por_chave || {}).filter((key) => adapter.dependeBaseAcai(simulated, key));
-    const allDependentSoldOut = dependentKeys.every((key) => simulated.cadastro_skus.por_chave[key]?.sku && simulated.cadastro_skus.por_chave[key].sku.startsWith('ACA-'));
-    check('dependeBaseAcai cobre apenas SKUs ACA- dependentes da base', allDependentSoldOut, dependentKeys.map((key) => simulated.cadastro_skus.por_chave[key]?.sku));
+    const dependentSkusAreAcaPrefixed = dependentKeys.every((key) => simulated.cadastro_skus.por_chave[key]?.sku && simulated.cadastro_skus.por_chave[key].sku.startsWith('ACA-'));
+    check('dependeBaseAcai cobre apenas SKUs ACA- dependentes da base', dependentSkusAreAcaPrefixed, dependentKeys.map((key) => simulated.cadastro_skus.por_chave[key]?.sku));
     check('picolé de açaí permanece produto independente da base', adapter.dependeBaseAcai(simulated, 'picoles.leite_com_recheio.PIC-REC-001') === false, simulated.cadastro_skus?.por_chave?.['picoles.leite_com_recheio.PIC-REC-001']);
     check('MAS-039 inativo esgota copos e taças de açaí no catálogo aplicado', (applied.açaí?.categorias || []).filter((cat) => cat.id !== 'informacoes').every((cat) => (cat.produtos || []).every((produto) => produto.esgotado === true)), applied.açaí?.categorias);
-    check('MAS-039 inativo não esgota o picolé de açaí separado', applied.picolés?.leite_com_recheio?.sabores?.find((item) => item?.codigo === 'PIC-REC-001')?.esgotado === false, applied.picolés?.leite_com_recheio?.sabores?.find((item) => item?.codigo === 'PIC-REC-001'));
+    check('MAS-039 inativo não esgota o picolé de açaí separado', applied.picolés?.leite_com_recheio?.sabores?.find((item) => item?.codigo === 'PIC-REC-001')?.esgotado !== true, applied.picolés?.leite_com_recheio?.sabores?.find((item) => item?.codigo === 'PIC-REC-001'));
   }
 }
 
