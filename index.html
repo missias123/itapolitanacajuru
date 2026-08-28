@@ -843,6 +843,8 @@ body.menu-foco-aberto #vc-container > .acc.menu-foco-ativo{display:block!importa
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip-sabor{background:linear-gradient(135deg,#FFF3E0,#FFE0B2);color:#BF360C;border:1px solid #FFAB40;border-radius:20px;padding:7px 15px;font-size:13px;font-weight:700}
 .chip-comp{background:linear-gradient(135deg,#F8F0FF,#EDE7F6);color:#6A1B9A;border:1px solid #CE93D8;border-radius:20px;padding:6px 13px;font-size:12px;font-weight:700}
+/* Esgotado: chip-sabor e chip-comp — fundo cinza, riscado (padrão iFood) */
+.chip-sabor.is-esgotado,.chip-comp.is-esgotado{background:linear-gradient(135deg,#F3F4F6,#E5E7EB)!important;color:#6B7280!important;border-color:#9CA3AF!important;text-decoration:line-through;opacity:1;cursor:default;pointer-events:none}
 .comp-group{margin-bottom:16px}
 .comp-group-h{font-size:13px;font-weight:800;color:#1A0A00;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 .comp-preço{font-size:12px;color:#E8000D;font-weight:700}
@@ -4447,7 +4449,7 @@ function abrirComplementos(el){
    const g=document.createElement('div');g.className='comp-group';
    const getNome=i=>typeof i==='object'&&i!==null?i.nome:i;
    const isEsg=i=>typeof i==='object'&&i!==null&&(i.esgotado||i.estoque<=0);
-   g.innerHTML=`<div class="comp-group-h">${labelComp[k]||k}<span class="comp-preço">+ R$ ${info.preço.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${info.itens.map(i=>`<span class="chip-comp" style="${isEsg(i)?'opacity:.45;text-decoration:line-through;':''}"> ${getNome(i)}${isEsg(i)?' ✕':''}</span>`).join('')}</div>`;
+   g.innerHTML=`<div class="comp-group-h">${labelComp[k]||k}<span class="comp-preço">+ R$ ${info.preço.toFixed(2).replace('.',',')} cada</span></div><div class="chips">${info.itens.map(i=>`<span class="chip-comp${isEsg(i)?' is-esgotado':''}"> ${getNome(i)}</span>`).join('')}</div>`;
    lista.appendChild(g);
   });
  }
@@ -6054,7 +6056,7 @@ function abrirComplementosInline(el) {
    html += '<div class="chips-inline">';
    info.itens.forEach(function(i) {
     var esg = isEsg(i);
-    html += '<span class="chip-inline" style="' + (esg ? 'opacity:.45;text-decoration:line-through;' : '') + '">' + getNome(i) + (esg ? ' ✕' : '') + '</span>';
+    html += '<span class="chip-inline' + (esg ? ' is-esgotado' : '') + '">' + getNome(i) + '</span>';
    });
    html += '</div></div>';
   });
