@@ -12,6 +12,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const cp = require('node:child_process');
+const vm = require('node:vm');
 
 const ROOT = path.resolve(__dirname, '..');
 const failures = [];
@@ -29,6 +30,16 @@ function readJson(relativePath) {
   } catch (error) {
     failures.push({ name: `${relativePath}: JSON válido`, detail: error.message });
     return null;
+  }
+}
+
+function readScript(relativePath) {
+  const file = path.join(ROOT, relativePath);
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch (error) {
+    failures.push({ name: `${relativePath}: leitura`, detail: error.message });
+    return '';
   }
 }
 
@@ -66,9 +77,11 @@ function isPublishedSource(relativePath) {
 }
 
 const catalog = readJson('dados/produtos.json');
+const catalogAdapterSource = readScript('scripts/catalogo-mestre.js');
 check('dados/produtos.json: leitura', Boolean(catalog));
+check('scripts/catalogo-mestre.js: leitura', Boolean(catalogAdapterSource));
 
-if (catalog) {
+if (catalog && catalogAdapterSource) {
   const master = catalog.cadastro_skus?.por_chave || {};
   const prices = catalog.sorvetes?.preços || catalog.sorvetes?.precos || {};
   check('cadastro_skus.por_chave existe', Object.keys(master).length > 0, Object.keys(master).length);
@@ -124,6 +137,22 @@ if (catalog) {
   const skuValues = Object.values(master).map((record) => record?.sku).filter(Boolean);
   const duplicateSkus = skuValues.filter((sku, index) => skuValues.indexOf(sku) !== index);
   check('cadastro mestre não duplica SKU', duplicateSkus.length === 0, duplicateSkus);
+
+  const sandbox = { window: {} };
+  vm.runInNewContext(catalogAdapterSource, sandbox, { filename: 'scripts/catalogo-mestre.js' });
+  const adapter = sandbox.window.ITAP_CATALOGO_MESTRE;
+  check('adaptador do catálogo mestre expõe dependeBaseAcai', typeof adapter?.dependeBaseAcai === 'function');
+  if (adapter?.aplicar && adapter?.dependeBaseAcai) {
+    const simulated = JSON.parse(JSON.stringify(catalog));
+    if (simulated.cadastro_skus?.por_chave?.['massas.MAS-039']) simulated.cadastro_skus.por_chave['massas.MAS-039'].ativo = false;
+    const applied = adapter.aplicar(simulated);
+    const dependentKeys = Object.keys(simulated.cadastro_skus?.por_chave || {}).filter((key) => adapter.dependeBaseAcai(simulated, key));
+    const allDependentSoldOut = dependentKeys.every((key) => simulated.cadastro_skus.por_chave[key]?.sku && simulated.cadastro_skus.por_chave[key].sku.startsWith('ACA-'));
+    check('dependeBaseAcai cobre apenas SKUs ACA- dependentes da base', allDependentSoldOut, dependentKeys.map((key) => simulated.cadastro_skus.por_chave[key]?.sku));
+    check('picolé de açaí permanece produto independente da base', adapter.dependeBaseAcai(simulated, 'picoles.leite_com_recheio.PIC-REC-001') === false, simulated.cadastro_skus?.por_chave?.['picoles.leite_com_recheio.PIC-REC-001']);
+    check('MAS-039 inativo esgota copos e taças de açaí no catálogo aplicado', (applied.açaí?.categorias || []).filter((cat) => cat.id !== 'informacoes').every((cat) => (cat.produtos || []).every((produto) => produto.esgotado === true)), applied.açaí?.categorias);
+    check('MAS-039 inativo não esgota o picolé de açaí separado', applied.picolés?.leite_com_recheio?.sabores?.find((item) => item?.codigo === 'PIC-REC-001')?.esgotado === false, applied.picolés?.leite_com_recheio?.sabores?.find((item) => item?.codigo === 'PIC-REC-001'));
+  }
 }
 
 const forbiddenFragments = [

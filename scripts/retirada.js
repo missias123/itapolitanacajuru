@@ -107,6 +107,11 @@
   function preferenceText(preferences = []) { return preferences.map((set, index) => `Opção ${index + 1}: ${(set || []).map((item) => item.name || item).join(', ')}`).filter((line) => !line.endsWith(': ')).join(' | '); }
   function productType(category) { return category === 'Picolés' ? 'picole' : 'produto'; }
   function retiradaAberta() { return !window.ItapHorarioPedidos || window.ItapHorarioPedidos.estaAberto('retirada'); }
+  function dependsOnAcaiBase(data, key, item) {
+    const helper = window.ITAP_CATALOGO_MESTRE?.dependeBaseAcai;
+    if (typeof helper === 'function') return helper(data, key || item);
+    return String(item?.sku || '').startsWith('ACA-') && String(item?.sku || '') !== 'PIC-REC-001';
+  }
   function applyOrderButtonState(button, label, available = true) {
     const open = retiradaAberta(); const closed = available && !open;
     button.disabled = !available;
@@ -125,7 +130,9 @@
     return (item.dependencias_embalagem || []).every((sku) => packages[sku]?.ativo !== false);
   }
   function buildCatalog(data) {
-    const entries = Object.values(data.cadastro_skus?.por_chave || {});
+    const records = data.cadastro_skus?.por_chave || {};
+    const entriesByKey = Object.entries(records);
+    const entries = entriesByKey.map(([, item]) => item);
     const acaiMassaSku = data?.cadastro_skus?.por_chave?.['massas.MAS-039'];
     const acaiBaseEsgotado = Boolean(data?.açaí?.esgotado_base || data?.acai?.esgotado_base || acaiMassaSku?.ativo === false);
     const travelPackagingEntry = entries.find((item) => item.sku === 'EMB-VIAGEM');
@@ -133,11 +140,12 @@
     const travelPackaging = { sku: 'EMB-VIAGEM', name: travelPackagingEntry?.nome || 'Embalagem para viagem', price: Number(travelPackagingEntry?.preco || 1), available: travelPackagingEntry?.ativo !== false && travelPackagingAvailability?.ativo !== false };
     const picoMeta = new Map();
     Object.entries(data.picolés || {}).forEach(([groupId, group]) => (group.sabores || []).forEach((flavor) => picoMeta.set(flavor.codigo, { groupId, groupName: group.nome, varejo: Number(group.preço_varejo), atacado: Number(group.preço_atacado), stock: Number(flavor.estoque ?? group.estoque ?? 0), unavailable: Boolean(flavor.esgotado || group.esgotado) })));
-    return entries.filter((item) => !RETIRADA_SKUS_OCULTOS.has(item.sku)).map((item) => {
+    return entriesByKey.filter(([, item]) => !RETIRADA_SKUS_OCULTOS.has(item.sku)).map(([key, item]) => {
       const meta = picoMeta.get(item.sku);
+      const blockedByAcaiBase = acaiBaseEsgotado && dependsOnAcaiBase(data, key, item);
       const category = item.categoria || 'Outros produtos'; const largeBox = category === 'Caixas para encomenda'; const packagingSku = largeBox ? item.dependencias_embalagem?.[0] : ''; const packagingEntry = packagingSku ? entries.find((entry) => entry.sku === packagingSku) : null; const packagingAvailability = packagingSku ? data?.disponibilidade?.embalagens?.[packagingSku] : null;
       const largeBoxPackaging = packagingSku ? { sku: packagingSku, name: packagingEntry?.nome || packagingAvailability?.nome || packagingSku, price: 0, available: packagingEntry?.ativo !== false && packagingAvailability?.ativo !== false, included: true } : travelPackaging;
-      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false && !(acaiBaseEsgotado && String(item.sku || '').startsWith('ACA-')), available: productAvailable(data, item) && !(acaiBaseEsgotado && String(item.sku || '').startsWith('ACA-')), type: meta ? 'picole' : productType(category), picole: meta || null, includedExtras: Array.isArray(item.acrescimos_inclusos) ? item.acrescimos_inclusos : [], fixedIngredients: Array.isArray(item.ingredientes) ? item.ingredientes : [], travelPackaging: largeBox ? largeBoxPackaging : travelPackaging, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
+      return { id: item.sku, sku: item.sku, category, name: item.nome, size: item.tamanho || '', price: Number(item.preco || 0), active: item.ativo !== false && !blockedByAcaiBase, available: productAvailable(data, item) && !blockedByAcaiBase, type: meta ? 'picole' : productType(category), picole: meta || null, includedExtras: Array.isArray(item.acrescimos_inclusos) ? item.acrescimos_inclusos : [], fixedIngredients: Array.isArray(item.ingredientes) ? item.ingredientes : [], travelPackaging: largeBox ? largeBoxPackaging : travelPackaging, fixedAcai: normalize(category).includes('acai') || normalize(item.nome).includes('acai natureon'), selectable: category !== 'Sabores de massa' && !(category === 'Picolés' && !meta) };
     });
   }
   function preferenceKey(preferences = []) { return (preferences || []).map((set) => (set || []).map((item) => item.code || item).sort().join('+')).join('||'); }

@@ -159,6 +159,15 @@
     });
   }
 
+  function dependeBaseAcai(raw, chaveOuRegistro) {
+    var chave = typeof chaveOuRegistro === 'string' ? chaveOuRegistro : '';
+    var registro = chave ? item(getMaster(raw), chave) : chaveOuRegistro;
+    var sku = String(registro && registro.sku || '');
+    if (!sku) return false;
+    if (sku === 'PIC-REC-001') return false;
+    return sku.indexOf('ACA-') === 0;
+  }
+
   function apply(raw) {
     var view = clone(raw);
     var master = getMaster(view);
@@ -194,12 +203,13 @@
           if (registro.tamanho) categoria.label = registro.tamanho;
         });
       });
-      // Cascata: base esgotada → TODOS os produtos de açaí ficam indisponíveis
+      // Cascata: base esgotada → somente SKUs que dependem da base ficam indisponíveis
       if (acai.esgotado_base === true || acaiMassaEsgotado) {
         acai.esgotado_base = true;
         acai.categorias.forEach(function (categoria) {
-          (categoria.produtos || []).forEach(function (produto) {
-            produto.esgotado = true;
+          (categoria.produtos || []).forEach(function (produto, index) {
+            var chaveSku = 'acai.' + keyPart(categoria.id) + '.' + (index + 1);
+            if (dependeBaseAcai(raw, chaveSku)) produto.esgotado = true;
           });
         });
       }
@@ -299,5 +309,6 @@
     obterRegistro: function (raw, chave) { return item(getMaster(raw), chave); },
     disponivel: function (raw, chave) { return registroDisponivel(raw, item(getMaster(raw), chave)); },
     listar: function (raw) { return Object.values(getMaster(raw)); },
+    dependeBaseAcai: dependeBaseAcai,
   };
 })(window);
