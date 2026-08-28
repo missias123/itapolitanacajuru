@@ -55,11 +55,9 @@ try {
     const errors = [];
     const mutationRequests = [];
     page.on('pageerror', (error) => errors.push(String(error?.message || error)));
-    page.on('request', (request) => {
-      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) mutationRequests.push({ method: request.method(), url: request.url() });
-    });
     await page.setRequestInterception(true);
     page.on('request', (request) => {
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) mutationRequests.push({ method: request.method(), url: request.url() });
       if (/\/dados\/produtos\.json(\?|$)/.test(request.url())) {
         request.respond({
           status: 200,
@@ -105,10 +103,9 @@ try {
     assert.equal(afterAttempt.selected, false, `${viewport.name}: Açaí Natureon foi selecionado mesmo esgotado em encomendas`);
     assert.equal(afterAttempt.status, beforeSelection, `${viewport.name}: tentativa de clique no Açaí esgotado alterou o estado do modal`);
 
-    const dimensions = await page.evaluate(() => ({ bodyWidth: document.body.scrollWidth, viewportWidth: window.innerWidth }));
     assert.deepEqual(errors, [], `${viewport.name}: erros de página`);
     assert.deepEqual(mutationRequests, [], `${viewport.name}: houve requisição mutativa`);
-    results.push({ viewport: viewport.name, flavorState, dimensions });
+    results.push({ viewport: viewport.name, flavorState });
     await page.close();
   }
 } finally {

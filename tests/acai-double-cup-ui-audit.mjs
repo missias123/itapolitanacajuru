@@ -56,11 +56,9 @@ try {
     const errors = [];
     const mutationRequests = [];
     page.on('pageerror', (error) => errors.push(String(error?.message || error)));
-    page.on('request', (request) => {
-      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) mutationRequests.push({ method: request.method(), url: request.url() });
-    });
     await page.setRequestInterception(true);
     page.on('request', (request) => {
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) mutationRequests.push({ method: request.method(), url: request.url() });
       if (/\/dados\/produtos\.json(\?|$)/.test(request.url())) {
         request.respond({
           status: 200,
