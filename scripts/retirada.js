@@ -124,10 +124,13 @@
     const packages = data?.disponibilidade?.embalagens || {};
     return (item.dependencias_embalagem || []).every((sku) => packages[sku]?.ativo !== false);
   }
+  function isAcaiBaseUnavailable(data = state.data) {
+    const acaiMassaSku = data?.cadastro_skus?.por_chave?.['massas.MAS-039'];
+    return Boolean(data?.açaí?.esgotado_base || data?.acai?.esgotado_base || acaiMassaSku?.ativo === false);
+  }
   function buildCatalog(data) {
     const entries = Object.values(data.cadastro_skus?.por_chave || {});
-    const acaiMassaSku = data?.cadastro_skus?.por_chave?.['massas.MAS-039'];
-    const acaiBaseEsgotado = Boolean(data?.açaí?.esgotado_base || data?.acai?.esgotado_base || acaiMassaSku?.ativo === false);
+    const acaiBaseEsgotado = isAcaiBaseUnavailable(data);
     const travelPackagingEntry = entries.find((item) => item.sku === 'EMB-VIAGEM');
     const travelPackagingAvailability = data?.disponibilidade?.embalagens?.['EMB-VIAGEM'];
     const travelPackaging = { sku: 'EMB-VIAGEM', name: travelPackagingEntry?.nome || 'Embalagem para viagem', price: Number(travelPackagingEntry?.preco || 1), available: travelPackagingEntry?.ativo !== false && travelPackagingAvailability?.ativo !== false };
@@ -393,7 +396,13 @@
   }
   function confirmPopsiclePreferences() { const products = state.popsicleGroup || []; const primary = state.popsiclePreferences?.[0]?.[0]; const product = products.find((entry) => entry.sku === primary?.code); if (!product || !state.popsiclePreferences.every((set) => set.length === 1)) return; const item = addProduct(product, [], '', false, '', '', '', [], []); if (state.popsicleQuantity > 1) updateQuantity(item.key, state.popsicleQuantity - 1); closeDialog('popsicle-dialog'); state.popsicleGroup = null; state.popsiclePreferences = []; state.activePopsiclePreference = 0; state.popsicleQuantity = 1; renderCart(); openDialog('cart-dialog'); }
   function flavorDistributionTotal(value) { return (String(value || '').match(/\d+/g) || []).reduce((sum, number) => sum + Number(number), 0); }
-  function massFlavorOptions() { return (state.data.sabores_sorvete || []).map((item) => ({ code: item.codigo, name: item.nome, unavailable: Boolean(item.esgotado || state.data.cadastro_skus?.por_chave?.['massas.' + item.codigo]?.ativo === false) })); }
+  function massFlavorOptions() {
+    const acaiBaseUnavailable = isAcaiBaseUnavailable();
+    return (state.data.sabores_sorvete || []).map((item) => {
+      const isAcaiBaseFlavor = String(item.codigo || '').toUpperCase() === 'MAS-039';
+      return { code: item.codigo, name: item.nome, unavailable: Boolean(item.esgotado || state.data.cadastro_skus?.por_chave?.['massas.' + item.codigo]?.ativo === false || (acaiBaseUnavailable && isAcaiBaseFlavor)) };
+    });
+  }
   function selectedFlavorEntries() { const lookup = new Map(massFlavorOptions().map((item) => [item.code, item])); return Object.entries(state.flavorCounts || {}).filter(([, quantity]) => Number(quantity) > 0).map(([code, quantity]) => ({ ...(lookup.get(code) || { code, name: code }), quantity: Number(quantity) })); }
   function countedFlavorTotal() { return selectedFlavorEntries().reduce((sum, item) => sum + item.quantity, 0); }
   function countedFlavorText() { return selectedFlavorEntries().map((item) => `${item.quantity} ${item.name}`).join(' + '); }

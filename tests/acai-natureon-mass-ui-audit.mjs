@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const raw = JSON.parse(await fs.readFile(path.join(root, 'dados', 'produtos.json'), 'utf8'));
 const port = 8154;
 const base = `http://127.0.0.1:${port}`;
 const server = spawn(process.execPath, ['tests/local-static-server.mjs'], {
@@ -29,6 +31,14 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function patchedCatalog() {
+  const data = JSON.parse(JSON.stringify(raw));
+  if (data.cadastro_skus?.por_chave?.['massas.MAS-039']) data.cadastro_skus.por_chave['massas.MAS-039'].ativo = true;
+  data.açaí = { ...(data.açaí || {}), esgotado_base: false };
+  data.acai = data.açaí;
+  return data;
+}
+
 const viewports = [
   { name: 'iphone-small', width: 320, height: 780, isMobile: true, hasTouch: true },
   { name: 'iphone', width: 390, height: 844, isMobile: true, hasTouch: true },
@@ -50,8 +60,18 @@ try {
     const errors = [];
     const mutationRequests = [];
     page.on('pageerror', (error) => errors.push(String(error?.message || error)));
+    await page.setRequestInterception(true);
     page.on('request', (request) => {
       if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method())) mutationRequests.push({ method: request.method(), url: request.url() });
+      if (/\/dados\/produtos\.json(\?|$)/.test(request.url())) {
+        request.respond({
+          status: 200,
+          contentType: 'application/json; charset=utf-8',
+          body: JSON.stringify(patchedCatalog()),
+        }).catch(() => {});
+        return;
+      }
+      request.continue().catch(() => {});
     });
     await page.goto(`${base}/retirada.html?acai-natureon-audit=${viewport.name}`, { waitUntil: 'networkidle0', timeout: 30000 });
     await page.waitForSelector('[data-catalog-sku="SVM-CASK-01"]', { timeout: 10000 });

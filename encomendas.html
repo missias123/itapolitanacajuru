@@ -288,7 +288,31 @@
         z-index: 1;
         animation: saborNovoPulse 1.8s ease-in-out infinite;
     }
+    .sabor-esgotado-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 6px;
+        bottom: 4px;
+        min-width: 58px;
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #6B7280, #374151);
+        color: #FFFFFF;
+        font-size: .54rem;
+        font-weight: 950;
+        letter-spacing: .05em;
+        line-height: 1;
+        box-shadow: 0 0 0 2px #FFFFFF, 0 0 10px rgba(107,114,128,.35);
+        text-shadow: 0 1px 2px rgba(0,0,0,.35);
+        pointer-events: none;
+        user-select: none;
+        z-index: 1;
+    }
     .sabor-item.sabor-novo { padding-right: 36px; padding-bottom: 24px; }
+    .sabor-item.is-esgotado { padding-right: 54px; padding-bottom: 24px; opacity: .68; cursor: not-allowed; }
     @keyframes saborNovoPulse {
         0%, 100% { transform: scale(1); box-shadow: 0 0 0 2px #FFFFFF, 0 0 8px rgba(232,0,13,.42); }
         50% { transform: scale(1.08); box-shadow: 0 0 0 2px #FFFFFF, 0 0 16px rgba(232,0,13,.78); }
@@ -303,6 +327,12 @@
         border-color: var(--sabor-accent, #94A3B8);
         box-shadow: 0 0 0 2px rgba(255,255,255,.96), 0 0 13px var(--sabor-glow, rgba(148,163,184,.28)), 0 5px 14px rgba(15,23,42,.10);
         outline: none;
+    }
+    .sabor-item.is-esgotado:hover,
+    .sabor-item.is-esgotado:focus-visible {
+        transform: none;
+        border-color: var(--sabor-accent, #94A3B8);
+        box-shadow: 0 2px 8px rgba(15,23,42,.06), inset 0 0 0 1px rgba(255,255,255,.75);
     }
     .sabor-item:active { transform: translateY(0) scale(.98); }
     .sabor-item.sel {
@@ -751,6 +781,7 @@
     var picolesSelecionados = window.picolesSelecionados;
     // Catálogos ativos são montados exclusivamente de dados/produtos.json com cache-busting controlado.
     var SABORES_SORVETE = [];
+    var SABORES_SORVETE_ESGOTADOS = {};
     var PICOLES_CATALOGO = {};
     function precoAtacadoDoGrupo(grupo) {
         return Number(grupo && (grupo.precoAtacado ?? grupo.preco) || 0);
@@ -773,9 +804,28 @@
     var MAPA_PICOLES_ESTOQUE = {};
     var ESTOQUE_PICOLES = {};
 
+    function normalizarTexto(valor) {
+        return String(valor == null ? '' : valor).normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+    }
+
+    function acaiBaseEsgotadaNoSite(dados) {
+        var cadastro = (dados && dados.cadastro_skus && dados.cadastro_skus.por_chave) || {};
+        var acaiBase = cadastro['massas.MAS-039'] || null;
+        return Boolean((dados && dados.açaí && dados.açaí.esgotado_base) || (dados && dados.acai && dados.acai.esgotado_base) || (acaiBase && acaiBase.ativo === false));
+    }
+
     function montarCatalogoOficial(dados) {
         var massas = Array.isArray(dados && dados.sabores_sorvete) ? dados.sabores_sorvete : [];
         SABORES_SORVETE = massas.map(function (item) { return typeof item === 'string' ? item : item && item.nome; }).filter(Boolean);
+        SABORES_SORVETE_ESGOTADOS = {};
+        var baseAcaiEsgotada = acaiBaseEsgotadaNoSite(dados);
+        massas.forEach(function (item) {
+            if (!item || typeof item === 'string') return;
+            var nome = item.nome;
+            var codigo = String(item.codigo || '').toUpperCase();
+            var indisponivel = Boolean(item.esgotado || (codigo === 'MAS-039' && baseAcaiEsgotada));
+            if (nome && indisponivel) SABORES_SORVETE_ESGOTADOS[normalizarTexto(nome)] = true;
+        });
         var raw = (dados && (dados.picolés || dados.picoles)) || {};
         var catalogo = {};
         var mapa = {};
@@ -1237,18 +1287,23 @@
                 var isSaborNovo = ['cheesecake', 'passas ao rum', 'bem casado'].includes(nomeNormalizado);
                 var classeNovo = isSaborNovo ? ' sabor-novo' : '';
                 var novoBadge = isSaborNovo ? '<span class="sabor-novo-badge" aria-label="Novo sabor">NOVO</span>' : '';
+                var indisponivel = Boolean(SABORES_SORVETE_ESGOTADOS[normalizarTexto(s)]);
+                var classeEsgotado = indisponivel ? ' is-esgotado' : '';
+                var esgotadoBadge = indisponivel ? '<span class="sabor-esgotado-badge" aria-label="Sabor esgotado">ESGOTADO</span>' : '';
                 
                 // Usamos apenas o estilo de cores, a opacidade é controlada pela classe do grid
                 var style = getSaborMassaStyle(s);
                 
-                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}" 
+                return `<div class="sabor-item ${sel?'sel':''}${classeNovo}${classeEsgotado}" 
                              style="${style}" 
-                             tabindex="0" 
+                             tabindex="${indisponivel?'-1':'0'}" 
                              role="button" 
-                             aria-pressed="${sel?'true':'false'}" 
-                             onclick="window.toggleSabor('${s}', this)" 
-                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">
+                             aria-pressed="${!indisponivel&&sel?'true':'false'}"
+                             aria-disabled="${indisponivel?'true':'false'}"
+                             onclick="if(this.getAttribute('aria-disabled')!=='true')window.toggleSabor('${s}', this)"
+                             onkeydown="if((event.key==='Enter'||event.key===' ')&&this.getAttribute('aria-disabled')!=='true'){event.preventDefault();window.toggleSabor('${s}', this)}">
                             ${novoBadge}
+                            ${esgotadoBadge}
                             <span class="sabor-label">${s}</span>
                         </div>`;
             }).join('');
@@ -1260,6 +1315,7 @@
     };
 
     window.toggleSabor = function(sabor, el) {
+        if (SABORES_SORVETE_ESGOTADOS[normalizarTexto(sabor)]) return;
         var idx = saboresSelecionados.indexOf(sabor);
         if (idx > -1) {
             // Se já está selecionado, o segundo clique desmarca (ELIMINA A SELEÇÃO)
