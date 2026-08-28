@@ -6096,7 +6096,7 @@ function mostrarDuasSecoes(accBodyEl, titulo1, sub1, chips1, titulo2, sub2, chip
  var chips2Html = chips2.map(function(s) {
   var nome = typeof s === 'object' ? (s.nome || '') : String(s);
   var esgotado = typeof s === 'object' && !!s.esgotado;
-  var extraClass = (esgotado ? 'is-esgotado' : getSaborMassaClass(nome));
+  var extraClass = getSaborMassaClass(nome) + (esgotado ? ' is-esgotado' : '');
   var paletteStyle = (!esgotado) ? getSaborMassaStyle(nome) : '';
   return '<span class="chip-inline ' + extraClass + '" style="' + paletteStyle + '">' + nome + '</span>';
  }).join('');
