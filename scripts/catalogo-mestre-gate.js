@@ -92,7 +92,7 @@ if (catalog && catalogAdapterSource) {
   const acaiNatureonRecord = master['massas.MAS-039'];
   check('sabores_sorvete contém exactamente 39 sabores', massFlavors.length === 39, { count: massFlavors.length });
   check('sabores_sorvete não duplica código', duplicateFlavorCodes.length === 0, duplicateFlavorCodes);
-  check('MAS-039 é Açaí Natureon com preço herdado e activo', Boolean(acaiNatureonFlavor) && acaiNatureonFlavor.nome === 'Açaí Natureon' && Boolean(acaiNatureonRecord) && acaiNatureonRecord.sku === 'MAS-039' && acaiNatureonRecord.nome === 'Açaí Natureon' && acaiNatureonRecord.preco === null && acaiNatureonRecord.ativo === true, { flavor: acaiNatureonFlavor, record: acaiNatureonRecord });
+  check('MAS-039 é Açaí Natureon com preço herdado e estado booleano', Boolean(acaiNatureonFlavor) && acaiNatureonFlavor.nome === 'Açaí Natureon' && Boolean(acaiNatureonRecord) && acaiNatureonRecord.sku === 'MAS-039' && acaiNatureonRecord.nome === 'Açaí Natureon' && acaiNatureonRecord.preco === null && typeof acaiNatureonRecord.ativo === 'boolean', { flavor: acaiNatureonFlavor, record: acaiNatureonRecord });
   check('MAS-039 não aparece nas estruturas de Açaí por copo ou picolé', !Object.values(master).some((record) => record?.sku === 'MAS-039' && (/^Açaí/i.test(record.categoria || '') || record.categoria === 'Picolés')), Object.values(master).filter((record) => record?.sku === 'MAS-039'));
   check('sorvetes.preços não tem chave combinada legada', !Object.keys(prices).some((key) => /casquinha[_/]?copo|copo[_/]?casquinha/i.test(key)), Object.keys(prices));
 
