@@ -4363,8 +4363,10 @@ function getSaboresCompletos() {
 }
 // Verifica se o açaí base está esgotado (nível 2 — cascata para todos os produtos)
 function isAcaiBaseEsgotado() {
- const ac = (window.PRODUTOS_DATA || {}).açaí || {};
- return ac.esgotado_base === true;
+ const fonte = window.PRODUTOS_DATA || {};
+ const ac = fonte.açaí || fonte.acai || {};
+ const acaiMassaSku = fonte.cadastro_skus && fonte.cadastro_skus.por_chave ? fonte.cadastro_skus.por_chave['massas.MAS-039'] : null;
+ return ac.esgotado_base === true || (acaiMassaSku && acaiMassaSku.ativo === false);
 }
 function abrirSabores(tipo,título,el){
  // Convertido para inline — sem modal, sem scroll
