@@ -71,6 +71,7 @@ try {
 
     await page.goto(`${base}/encomendas.html?acai-base-esgotada-audit=${viewport.name}`, { waitUntil: 'networkidle0', timeout: 30000 });
     await page.waitForSelector('#lista-caixas .prod-card[data-sku]', { timeout: 10000 });
+    await page.waitForFunction(() => typeof window.abrirSaboresSorvete === 'function', { timeout: 10000 });
     await page.evaluate(() => {
       const produto = Array.isArray(window.PRODUTOS) ? window.PRODUTOS[0] : null;
       if (!produto) throw new Error('Produto de caixa não encontrado para auditoria.');
