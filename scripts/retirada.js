@@ -10,9 +10,9 @@
   // Regra exclusiva do Peça e retire: o cadastro mestre e Encomendas não são alterados.
   const RETIRADA_SKUS_OCULTOS = new Set(['SOB-009']);
   const BOLO_COPO_CREMES = ['Creme de Leite Ninho', 'Creme de Nutela'];
-  const FONDUE_FRUTAS = ['Morango', 'Banana', 'Uva'];
-  const FONDUE_CREMES = ['Creme de Leite Ninho', 'Creme de Nutela'];
-  const FONDUE_GULOSEIMAS = ['Marshmallow', 'Canudinho Wafer'];
+  const FONDUE_FRUTAS = ['Morango', 'Banana', 'Uva', 'Kiwi', 'Abacaxi', 'Cereja'];
+  const FONDUE_CREMES = ['Nutella', 'Creme de Ninho', 'Geleia de Morango', 'Creme de Amendoim', 'Goiabada', 'Creme de Pistache', 'Mel'];
+  const FONDUE_GULOSEIMAS = ['Granola', 'Paçoca', 'Leite em Pó', 'Ovomaltine', 'Confete', 'Chocoball', 'Chantilly', 'Granulado', 'Leite Condensado'];
   const emptyFondueChoices = () => ({ frutas: {}, cremes: {}, guloseimas: {} });
   const state = { data: null, catalog: [], cart: loadCart(), flavorProduct: null, popsicleGroup: null, selectedFlavors: [], flavorCounts: {}, flavorPreferences: [], activeFlavorPreference: 0, popsiclePreferences: [], activePopsiclePreference: 0, popsicleQuantity: 1, boxAddOnCounts: {}, acaiDoubleChoices: {}, includedCustomizationChoices: {}, serviceMode: '', containerType: '', cakeChoice: '', creamChoice: '', fondueChoices: emptyFondueChoices(), query: '', lastCatalogSku: null, lastCatalogViewport: null };
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -306,7 +306,7 @@
   function buildProductList(products) {
     const list = document.createElement('div'); list.className = 'product-list'; products.forEach((product, index) => {
       const row = document.createElement('article'); row.className = 'product'; row.dataset.catalogSku = product.sku; const hasFlavor = needsMassFlavors(product) || product.category === 'Milkshake'; const hasAcaiDouble = isAcaiCup(product) && acaiDoubleOptions(product).length > 0;
-      const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 2 guloseimas (pode repetir) · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
+      const meta = isIceCreamCake(product) ? `Escolha 3 sabores · Retirada com antecedência mínima de 48 horas.` : isFondue(product) ? 'Escolha 2 frutas, 2 cremes e 1 guloseima · Tudo incluído no preço.' : isBoloCopo(product) ? `${flavorRule(product).label} · depois escolha o creme (Leite Ninho ou Nutela).` : hasFlavor ? flavorRule(product).label : hasAcaiDouble ? 'Escolha quais complementos do copo podem ser pedidos em dobro.' : 'Produto pronto para retirada';
       const extras = product.includedExtras?.length ? ` · Inclui ${product.includedExtras.join(' e ')}.` : '';
       const fixedIngredients = product.fixedIngredients?.length ? `<p class="product__ingredients"><strong>Ingredientes fixos:</strong> ${escape(product.fixedIngredients.filter((item) => !/sabores? de sorvete/i.test(item)).join(', '))}</p>` : '';
       const ballCount = productBallCount(product); const ballRule = usesFlavorDistribution(product) && ballCount ? `<p class="product__ball-rule"><strong>${ballCount} bola${ballCount > 1 ? 's' : ''}:</strong> ${ballCount === 1 ? 'escolha 1 sabor.' : `pode distribuir ${ballCount} bolas entre os sabores que quiser — todas do mesmo sabor ou em sabores diferentes.`}</p>` : '';
@@ -472,7 +472,7 @@
     let section = $('#fondue-choices');
     if (!section) {
       section = document.createElement('section'); section.id = 'fondue-choices'; section.className = 'box-addons'; section.hidden = true; section.setAttribute('aria-labelledby', 'fondue-choices-title');
-      section.innerHTML = '<p class="box-addons__title" id="fondue-choices-title">Monte seu Fondue (incluído no preço)</p><p class="box-addons__hint">Escolha 2 frutas, 2 cremes e 2 guloseimas. Você pode repetir o mesmo item ou combinar 1 de cada. Tudo incluído no preço de R$ 25,00.</p><div id="fondue-choices-body"></div><p class="box-addons__total" id="fondue-choices-total" aria-live="polite"></p>';
+      section.innerHTML = '<p class="box-addons__title" id="fondue-choices-title">Monte seu Fondue (incluído no preço)</p><p class="box-addons__hint">Escolha 2 frutas, 2 cremes e 1 guloseima. Tudo incluído no preço de R$ 25,00.</p><div id="fondue-choices-body"></div><p class="box-addons__total" id="fondue-choices-total" aria-live="polite"></p>';
       $('#item-mode').before(section);
     }
     return { section, body: $('#fondue-choices-body'), total: $('#fondue-choices-total') };
@@ -515,19 +515,19 @@
     };
     body.append(makeGroup('Frutas', FONDUE_FRUTAS, state.fondueChoices.frutas, 2, 'frutas'));
     body.append(makeGroup('Cremes', FONDUE_CREMES, state.fondueChoices.cremes, 2, 'cremes'));
-    body.append(makeGroup('Guloseimas', FONDUE_GULOSEIMAS, state.fondueChoices.guloseimas, 2, 'guloseimas'));
+    body.append(makeGroup('Guloseima', FONDUE_GULOSEIMAS, state.fondueChoices.guloseimas, 1, 'guloseimas'));
     const frutasCount = fondueCount(state.fondueChoices.frutas);
     const cremesCount = fondueCount(state.fondueChoices.cremes);
     const guloseimasCount = fondueCount(state.fondueChoices.guloseimas);
-    const ready = frutasCount === 2 && cremesCount === 2 && guloseimasCount === 2;
-    ui.total.textContent = ready ? `Pronto! Frutas: ${fondueSummary(state.fondueChoices.frutas)} · Cremes: ${fondueSummary(state.fondueChoices.cremes)} · Guloseimas: ${fondueSummary(state.fondueChoices.guloseimas)}. Tudo incluído no R$ 25,00.` : 'Escolha 2 frutas, 2 cremes e 2 guloseimas para confirmar.';
-    const status = $('#flavor-status'); status.textContent = ready ? 'Tudo certo! Confirme para adicionar o Fondue ao pedido.' : `Faltam: ${frutasCount < 2 ? `${2 - frutasCount} fruta(s)` : ''}${cremesCount < 2 ? `${frutasCount < 2 ? ', ' : ''}${2 - cremesCount} creme(s)` : ''}${guloseimasCount < 2 ? `${(frutasCount < 2 || cremesCount < 2) ? ', ' : ''}${2 - guloseimasCount} guloseima(s)` : ''}.`;
+    const ready = frutasCount === 2 && cremesCount === 2 && guloseimasCount === 1;
+    ui.total.textContent = ready ? `Pronto! Frutas: ${fondueSummary(state.fondueChoices.frutas)} · Cremes: ${fondueSummary(state.fondueChoices.cremes)} · Guloseima: ${fondueSummary(state.fondueChoices.guloseimas)}. Tudo incluído no R$ 25,00.` : 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.';
+    const status = $('#flavor-status'); status.textContent = ready ? 'Tudo certo! Confirme para adicionar o Fondue ao pedido.' : `Faltam: ${frutasCount < 2 ? `${2 - frutasCount} fruta(s)` : ''}${cremesCount < 2 ? `${frutasCount < 2 ? ', ' : ''}${2 - cremesCount} creme(s)` : ''}${guloseimasCount < 1 ? `${(frutasCount < 2 || cremesCount < 2) ? ', ' : ''}1 guloseima` : ''}.`;
     status.classList.toggle('ready', Boolean(ready));
     $('#confirm-flavors').disabled = !ready;
   }
   function beginFondue(product) {
     state.flavorProduct = product; state.selectedFlavors = []; state.flavorCounts = {}; state.flavorPreferences = []; state.activeFlavorPreference = 0; state.boxAddOnCounts = {}; state.acaiDoubleChoices = {}; state.includedCustomizationChoices = {}; state.creamChoice = ''; state.fondueChoices = emptyFondueChoices(); state.flavorDistribution = ''; state.serviceMode = ''; state.containerType = ''; state.cakeChoice = '';
-    $('#flavor-title').textContent = 'Fondue de Sorvete'; $('#flavor-subtitle').textContent = 'Escolha 2 frutas, 2 cremes e 2 guloseimas. Pode repetir o mesmo item ou escolher 1 de cada.';
+    $('#flavor-title').textContent = 'Fondue de Sorvete'; $('#flavor-subtitle').textContent = 'Escolha 2 frutas, 2 cremes e 1 guloseima para confirmar.';
     $('#flavor-grid').hidden = true; $('#flavor-grid').innerHTML = ''; $('#flavor-distribution').hidden = true; $('#flavor-preferences').hidden = true; $('#item-mode').hidden = true; $('#cake-choice').hidden = true;
     ensureBoxAddOnsUi().section.hidden = true; ensureIncludedCustomizationsUi().section.hidden = true; ensureBoloCopoCreme().section.hidden = true;
     renderMilkshakeOvomaltine(product, false); renderAcaiDoubleUi(product); renderFondueUi(); openDialog('flavor-dialog');
@@ -535,7 +535,7 @@
   function confirmFondue() {
     if (!state.flavorProduct || !isFondue(state.flavorProduct)) return;
     const { frutas, cremes, guloseimas } = state.fondueChoices;
-    if (fondueCount(frutas) !== 2 || fondueCount(cremes) !== 2 || fondueCount(guloseimas) !== 2) return;
+    if (fondueCount(frutas) !== 2 || fondueCount(cremes) !== 2 || fondueCount(guloseimas) !== 1) return;
     const includedCustomizations = [`Frutas: ${fondueSummary(frutas)}`, `Cremes: ${fondueSummary(cremes)}`, `Guloseimas: ${fondueSummary(guloseimas)}`];
     addProduct(state.flavorProduct, [], '', true, '', '', '', [], [], includedCustomizations);
     closeDialog('flavor-dialog'); state.flavorProduct = null; state.fondueChoices = emptyFondueChoices(); ensureFondueUi().section.hidden = true;
