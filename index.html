@@ -4294,11 +4294,20 @@ function getSaboresDisponíveis() {
   : (fonte.sorvetes && Array.isArray(fonte.sorvetes.sabores) ? fonte.sorvetes.sabores : []);
  return lista.map(item => typeof item === 'string' ? item : (item && item.nome)).filter(Boolean);
 }
+function getSaboresCompletos() {
+ const fonte = window.PRODUTOS_DATA || {};
+ const lista = Array.isArray(fonte.sabores_sorvete)
+  ? fonte.sabores_sorvete
+  : (fonte.sorvetes && Array.isArray(fonte.sorvetes.sabores) ? fonte.sorvetes.sabores : []);
+ return lista.filter(item => item && (typeof item === 'string' || item.nome)).map(item =>
+  typeof item === 'string' ? { nome: item, esgotado: false } : item
+ );
+}
 function abrirSabores(tipo,título,el){
  // Convertido para inline — sem modal, sem scroll
  var accBody = _getAccBody(el, null);
  if (!accBody) { accBody = el ? el.closest ? el.closest('.acc-body') : null : null; }
- var sabores = getSaboresDisponíveis();
+ var sabores = getSaboresCompletos();
  if (accBody) {
   mostrarSaboresInline(accBody, título, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
  }
@@ -4306,14 +4315,22 @@ function abrirSabores(tipo,título,el){
 
 // ── Milkshakes ───────────────────────────────────────────────
 function abrirMilkshakeSabores(el) {
- const sabores = getSaboresDisponíveis();
+ const sabores = getSaboresCompletos();
  const total = sabores.length || 36;
  document.getElementById('ms-título').textContent=`Milkshakes – ${total} Sabores`;
  const chips=document.getElementById('ms-chips');chips.innerHTML='';
 
  // Sincronizado: Usa os mesmos sabores das caixas de sorvete
  if(sabores.length > 0) {
-  sabores.forEach(s=>{const sp=document.createElement('span');sp.className='chip-sabor';sp.textContent=s;chips.appendChild(sp);});
+  sabores.forEach(s=>{
+   const nome = typeof s === 'object' ? s.nome : s;
+   const esgotado = typeof s === 'object' && !!s.esgotado;
+   const sp=document.createElement('span');
+   sp.className='chip-sabor'+(esgotado?' is-esgotado':'');
+   sp.textContent=nome+(esgotado?' ✕':'');
+   if(esgotado){sp.style.opacity='.45';sp.style.textDecoration='line-through';}
+   chips.appendChild(sp);
+  });
  } else {
   // Fallback caso a lista esteja vazia
   const fallback=['Abacaxi ao Vinho','Abacaxi Suíço','Amarena','Ameixa','Banana com Nutella','Bem Casado','Bis e Trufa','Blue Ice','Cereja Trufada','Cheesecake','Chocolate','Chocolate com Café','Coco Queimado','Creme Paris','Croquer','Doce de Leite','Ferrero Rocher','Flocos','Kinder Ovo','Leite Condensado','Leite Ninho','Leite Ninho Folheado','Leite Ninho com Oreo','Limão','Limão Suíço','Menta com Chocolate','Milho Verde','Morango Trufado','Mousse de Maracujá','Mousse de Uva','Nozes','Nutella','Ovomaltine','Passas ao Rum','Pistache','Prestígio','Sensação','Torta de Chocolate'];
@@ -5920,14 +5937,14 @@ function abrirSaboresInline(tipo, titulo, el) {
         tipo === 'sobremesas' ? 'sobremesas-body' : null;
  var accBody = _getAccBody(el, bodyId);
  if (!accBody) return;
- var sabores = getSaboresDisponíveis();
+ var sabores = getSaboresCompletos();
  mostrarSaboresInline(accBody, titulo, 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
 }
 
 function abrirMilkshakeSaboresInline(el) {
  var accBody = _getAccBody(el, 'milk-body');
  if (!accBody) return;
- var sabores = getSaboresDisponíveis();
+ var sabores = getSaboresCompletos();
  mostrarSaboresInline(accBody, '🥤 Milkshakes – ' + sabores.length + ' Sabores', 'Informe o sabor desejado ao fazer seu pedido na loja', sabores);
 }
 
@@ -5936,7 +5953,7 @@ function abrirTacasTradicionaisInline(el) {
  if (!accBody) return;
  var t = produtos && produtos.tacas && produtos.tacas.tradicionais ? produtos.tacas.tradicionais : {};
  var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
- var sabores = getSaboresDisponíveis();
+ var sabores = getSaboresCompletos();
  // Mostra: seção de opções de taças + seção dos 39 sabores
  mostrarDuasSecoes(accBody,
   '🍨 Taças – ' + opcoes.length + ' Opções', 'Escolha a taça desejada ao fazer seu pedido na loja', opcoes,
@@ -5949,7 +5966,7 @@ function abrirTacasSujasInline(el) {
  if (!accBody) return;
  var t = produtos && produtos.tacas && produtos.tacas.sujas ? produtos.tacas.sujas : {};
  var opcoes = Object.entries(t).map(function(e) { return e[0] + ' – R$ ' + e[1].toFixed(2).replace('.',','); });
- var sabores = getSaboresDisponíveis();
+ var sabores = getSaboresCompletos();
  mostrarDuasSecoes(accBody,
   '👑 Taças Premium – ' + opcoes.length + ' Opções', 'Escolha a taça desejada ao fazer seu pedido na loja', opcoes,
   '🍦 ' + sabores.length + ' Sabores Disponíveis', 'Informe o sabor desejado ao fazer seu pedido na loja', sabores
