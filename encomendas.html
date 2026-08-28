@@ -1301,7 +1301,7 @@
                              aria-pressed="${sel?'true':'false'}"
                              aria-disabled="${indisponivel?'true':'false'}"
                              onclick="window.toggleSabor('${s}', this)"
-                             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.toggleSabor('${s}', this)}">
+                             onkeydown="if((event.key==='Enter'||event.key===' ')&&this.getAttribute('aria-disabled')!=='true'){event.preventDefault();window.toggleSabor('${s}', this)}">
                             ${novoBadge}
                             ${esgotadoBadge}
                             <span class="sabor-label">${s}</span>
