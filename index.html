@@ -4075,7 +4075,8 @@ function renderAçaí(){
  // Fonte de dados: nova estrutura categorias
  const _ac=produtos&&(produtos.açaí||produtos.acai)||{};
  const categorias=_ac.categorias||[];
-
+ // Nível 2: base esgotado → cascata automática para todos os produtos
+ const baseEsgotada=isAcaiBaseEsgotado();
 
  if(!categorias.length){
   b.innerHTML='<p style="color:#7B2D8B;font-weight:700;padding:12px">Cardápio em atualização. Em breve!</p>';
@@ -4091,6 +4092,14 @@ function renderAçaí(){
   <p class="natureon-sub">Monte sua combinação favorita com muito sabor, cremosidade e ingredientes especiais.</p>`;
  wrap.appendChild(hdr);
 
+ // Banner de base esgotada (visível a todos quando o açaí base está esgotado)
+ if(baseEsgotada){
+  const banner=document.createElement('div');
+  banner.setAttribute('role','alert');
+  banner.style.cssText='background:#FEE2E2;border:2px solid #B42318;border-radius:12px;padding:14px 16px;margin:0 0 16px;display:flex;align-items:center;gap:10px;';
+  banner.innerHTML='<span style="font-size:24px" aria-hidden="true">🚫</span><div><strong style="color:#7F1D1D;font-size:14px;display:block">Açaí temporariamente indisponível</strong><span style="color:#991B1B;font-size:13px">O açaí base está esgotado no momento. Em breve voltamos com tudo!</span></div>';
+  wrap.appendChild(banner);
+ }
 
  // Renderizar categorias
  categorias.forEach(cat=>{
@@ -4125,7 +4134,8 @@ function renderAçaí(){
   cat.produtos.forEach((p,index)=>{
    if(p.preco===null||p.preco===undefined){return;}
    const chaveSku=`acai.${cat.id}.${index+1}`;
-   const esgotado=!!p.esgotado||produtoEsgotadoPorChave(chaveSku);
+   // OR logic: esgotado se base esgotada OU SKU individual inativo
+   const esgotado=baseEsgotada||!!p.esgotado||produtoEsgotadoPorChave(chaveSku);
    const card=document.createElement('div');card.className='natureon-card';
    card.setAttribute('role','article');
 
@@ -4350,6 +4360,11 @@ function getSaboresCompletos() {
  return lista.filter(item => item && (typeof item === 'string' || item.nome)).map(item =>
   typeof item === 'string' ? { nome: item, esgotado: false } : item
  );
+}
+// Verifica se o açaí base está esgotado (nível 2 — cascata para todos os produtos)
+function isAcaiBaseEsgotado() {
+ const ac = (window.PRODUTOS_DATA || {}).açaí || {};
+ return ac.esgotado_base === true;
 }
 function abrirSabores(tipo,título,el){
  // Convertido para inline — sem modal, sem scroll
