@@ -85,14 +85,20 @@ try {
       return target ? {
         text: (target.textContent || '').trim().replace(/\s+/g, ' '),
         ariaDisabled: target.getAttribute('aria-disabled'),
+        tabindex: target.getAttribute('tabindex'),
         className: target.className || '',
       } : null;
     });
     assert.ok(flavorState, `${viewport.name}: Açaí Natureon não apareceu no modal de encomendas para validação`);
     assert.equal(flavorState.ariaDisabled, 'true', `${viewport.name}: Açaí Natureon continuou selecionável em encomendas com a base esgotada`);
+    assert.equal(flavorState.tabindex, '-1', `${viewport.name}: Açaí Natureon deveria sair da navegação por teclado em encomendas`);
     assert.match(flavorState.text, /esgotado/i, `${viewport.name}: Açaí Natureon não exibiu selo de esgotado em encomendas`);
 
-    const beforeSelection = await page.$eval('#status-sabores', (node) => node.textContent.trim());
+    const beforeSelection = await page.evaluate(() => {
+      const status = document.getElementById('status-sabores');
+      return status ? status.textContent.trim() : '';
+    });
+    assert.ok(beforeSelection, `${viewport.name}: status-sabores não foi encontrado na auditoria de encomendas`);
     await page.evaluate(() => {
       const target = [...document.querySelectorAll('#grid-sabores .sabor-item')].find((item) => /Açaí Natureon/i.test(item.textContent || ''));
       target?.click();
